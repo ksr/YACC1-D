@@ -127,3 +127,9 @@ per image/installer (name, version, SHA-256, size, where the bytes live), nothin
 - Finder duplicates in `YACC1-2026/PCB/Production` (`... 2.brd`, `CAMOutputs 2`)
 - `Dear TSA.docx`
 - the 1802 ELF projects (separate project; the ELF video card is a different design from the YACC1 one)
+
+## History decision (2026-09-20)
+
+The new repository starts fresh (this commit is its root); the 2020-2021 git history stays in `ksr/YACC1-2020`, archived
+read-only on GitHub. Clones of it under YACCS (`YACC1-2020`, `YACC1-2024`, `newgit`, `YACC gitversion`) are the sources
+this tree was built from and remain on disk, untouched.
