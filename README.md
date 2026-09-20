@@ -108,6 +108,7 @@ Cards: `memory` (v1.3, KiCad conversion already done and proven), `alu` (V3.2), 
 
 ## Conventions
 
+- Every `.rtf` note has a generated Markdown twin beside it (`tools/rtf_to_md.py`); the `.rtf` is the original until it is retired.
 - Lower-case, hyphenated directory names; no spaces (the Eagle tree's spaces broke scripts repeatedly).
 - One authoritative copy of anything. Duplicates were the whole problem.
 - Binary images (ROM, microcode hex) are committed **with** the source and a script that rebuilds

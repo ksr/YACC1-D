@@ -31,6 +31,7 @@ for root, dirs, files in os.walk(DST):
         elif rel.startswith(HAND_MADE): buckets["mine: session captures"] += 1
         elif rel.startswith("hardware/bus/blank-card/eagle/v3.2/"): buckets["mine: derived design (Blank V3.2, tools/make_blank_v32.py)"] += 1
         elif rel == "hardware/PROVENANCE.md": buckets["generated: provenance index (tools/gen_provenance.py)"] += 1
+        elif f.endswith(".md") and os.path.exists(os.path.join(root, f[:-3] + ".rtf")): buckets["generated: Markdown twins of .rtf notes (tools/rtf_to_md.py)"] += 1
         elif f == "FABRICATED" or rel == "hardware/FABRICATED.md": buckets["generated: FABRICATED markers/index"] += 1
         elif rel == "hardware/NEWER-DESIGNS-vs-ACTIVE.txt": buckets["generated: design comparison report (tools/compare_eagle.py)"] += 1
         elif f == "SKIP.txt" and os.path.basename(root) == "pdf": buckets["mine: pdf/SKIP.txt lists"] += 1

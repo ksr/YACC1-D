@@ -38,7 +38,7 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   remaining **(confirm)** is the ATmega firmware above.
 
 ## Tree / docs
-- Per-revision `Notes.rtf` → Markdown twins (git can't diff rtf).
+- (done 2026-09-20: every `.rtf` outside archive has a Markdown twin; `tools/rtf_to_md.py`)
 - Theory-of-operation write-ups per card (`docs/cards/`), architecture / memory map / microcode format (`docs/system/`).
 - KiCad conversion of the remaining cards with the memory-card toolchain (`tools/kicad/`); Eagle then frozen.
 - `git init` (no LFS), first commit, GitHub repo; decide whether `archive/` (190 MB) is committed or kept as a separate repo.
