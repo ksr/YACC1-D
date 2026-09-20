@@ -401,7 +401,7 @@ void myputchar(char c) {
 void print_usage(const char *progname) {
     printf("Usage: %s [-h] [-m] [-f filename]\n", progname);
     printf("  -h           Show this help message\n");
-    printf("  -m           Load ../Assembler/basic.img and ../Assembler/monitor.img\n");
+    printf("  -m           Load ../../firmware/basic/basic.img and ../../firmware/monitor/monitor.img (the burned ROM; default)\n");
     printf("  -f filename  Load the specified file using load_file\n");
 }
 
@@ -459,8 +459,8 @@ int main(int argc, char** argv) {
     int regtrigger = 0;
 
     if (load_standard) {
-        load_file("../Assembler/basic.img");
-        load_file("../Assembler/monitor.img");
+        load_file("../../firmware/basic/basic.img");     /* YACC1-D 2026-09-20: was ../Assembler/ (old tree layout) */
+        load_file("../../firmware/monitor/monitor.img");
     }
     if (load_filename) {
         load_file(load_filename);
