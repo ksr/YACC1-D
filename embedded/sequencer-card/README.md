@@ -7,5 +7,5 @@
   `firmware/microcode/ucode-generator2/test.hexz`, compares with `cache` (what was sent last) and sends the differences.
 - `dumpram/` — dumps the microcode RAM back over serial; `test-eeprom/` — Dec-2020 test of the card's I2C EEPROM
   (address $57, the socket the EEPROM adaptor plugs into).
-- `deprecated/` — `sequencer1` (Aug 2020, for the V2.0 cards) and `sequencer2` (Dec 2020), the 19200-baud senders for
+- `deprecated/` — `sequencer1` (Aug 2020, for the V2.0 cards; its `download.ino` tab was filed in a subfolder in the old tree and is now beside the sketch) and `sequencer2` (Dec 2020), the 19200-baud senders for
   the v1 generator's 32-step format, and the Sept-2020 EEPROM test that was filed under the bus tester.

@@ -25,6 +25,7 @@ EXTRA = [   # (absolute source dir, destination dir, mode)
     (os.path.expanduser("~/Documents/Arduino/libraries/YACC"), "embedded/libraries/YACC", "copy"),
     (os.path.expanduser("~/Documents/Arduino/old-libraries/Adafruit_MCP23017_Arduino_Library"),
      "embedded/libraries/Adafruit_MCP23017_Arduino_Library", "copy"),
+    (os.path.expanduser("~/Documents/Arduino/old-libraries/extEEPROM"), "embedded/libraries/extEEPROM", "copy"),   # JChristensen extEEPROM, used by the deprecated sequencer2 sketch
     (os.path.expanduser("~/Documents/eagle/projects/video"), "archive/eagle-projects/video-lm1881-conv", "archive"),
 ]
 

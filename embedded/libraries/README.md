@@ -21,3 +21,6 @@ Install: copy `Adafruit_MCP23017_Arduino_Library/` and `YACC/` into `~/Documents
 table: name, MCP23017 chip, port, bit – the same table the microcode generator's `yaccsignaldata2.h` encodes for the
 sequencer. `YACC_Common_header-pre3-2.h` is its previous version. Neither file existed in any YACCS copy; they came from
 `~/Documents/Arduino/libraries/YACC/` on 2026-09-19.
+
+`extEEPROM/` (JChristensen, 3.4.1) is used only by the deprecated `sequencer-card/deprecated/sequencer2` sketch; vendored 2026-09-20
+from `~/Documents/Arduino/old-libraries/` so that sketch still compiles.

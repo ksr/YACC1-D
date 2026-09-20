@@ -283,6 +283,7 @@ RULES = [
     (C20, "Software-vs/Bus Test Card/bus-driver/bus-driver.ino", "embedded/bus-tester/bus-driver-mcp23x17-wip/", "copy"),
     (C24, "Software/Sequencer Card/Sequencer3/", "embedded/sequencer-card/sequencer3/", "copy"),
     (C24, "Software/Sequencer Card/Sequencer2/", "embedded/sequencer-card/deprecated/sequencer2/", "copy"),
+    (C24, "Software pre vs/Sequencer Card/Sequencer/download/download.ino", "embedded/sequencer-card/deprecated/sequencer1/", "copy"),   # a tab of the sketch that was filed in a subfolder; Arduino needs it beside Sequencer.ino
     (C24, "Software pre vs/Sequencer Card/Sequencer/", "embedded/sequencer-card/deprecated/sequencer1/", "copy"),
     (C24, "Software/Sequencer Card/Microcode loader send to sequencer/", "embedded/sequencer-card/microcode-loader/", "copy"),
     (C24, "Software/Sequencer Card/Test EEPROM/", "embedded/sequencer-card/test-eeprom/", "copy"),

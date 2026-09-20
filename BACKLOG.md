@@ -32,7 +32,7 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 ## Verification still to do
 - Rebuild `embedded/bus-tester/bus-driver` and `embedded/sequencer-card/sequencer3` with arduino-cli from the tree and
   upload them, so the boards run exactly what the tree records (today: assumed).
-- Add an arduino-cli compile check for every sketch (the C tools and firmware already have `tools/verify_firmware.py`).
+- (done 2026-09-20: `tools/verify_embedded.py`, 12 sketches compile against the vendored libraries)
 - Memory v1.3: the 2025 gerbers came from Fusion's CAM; overlay them against the tree's Eagle board (netlist proven, gerbers not).
 - (answered 2026-09-20: jumper boards not fitted/obsolete, EEPROM adaptor fitted, two register cards, RN2 = 1k) — the only
   remaining **(confirm)** is the ATmega firmware above.
