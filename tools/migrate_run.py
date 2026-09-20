@@ -48,6 +48,8 @@ def main(migdir):
                 if any(fnmatch.fnmatch(fn, j) for j in JUNK): continue
                 sp = os.path.join(root, fn)
                 rows.append({"mode": mode, "destination": os.path.join(ddir, os.path.relpath(sp, sdir)), "source": sp, "md5": ""})
+    pf = os.path.join(DST, "tools/patched_files.txt")
+    patched = {l.split("\t")[0].strip() for l in open(pf) if l.strip() and not l.startswith("#")} if os.path.exists(pf) else set()
     log = open(os.path.join(migdir, "run-log-%s.tsv" % time.strftime("%Y-%m-%d")), "a")
     log.write("time\tresult\tmode\tdestination\tsource\n")
     stats = {"copied": 0, "already": 0, "clash": 0, "manifest": 0, "skip": 0, "missing": 0, "bytes": 0}
@@ -67,6 +69,8 @@ def main(migdir):
             manifest.write("%s\t%d\t%s\t%s\n" % (r["destination"], os.path.getsize(sp), h(sp, "sha256"), sp))
             note("manifest", r); continue
         smd5 = h(sp)
+        if r["destination"] in patched and os.path.exists(dp):
+            note("already", r); continue                     # deliberately edited in the tree (tools/patched_files.txt)
         if os.path.exists(dp):
             if h(dp) == smd5:
                 note("already", r); continue

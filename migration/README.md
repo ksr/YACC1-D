@@ -46,3 +46,6 @@ extra sources, and the one stray `dir struct` script). `nbproject/` project defi
 (plan row with matching hash, extra source, hand-made, or generated) and `rebuild-diff-2026-09-20.txt` records the
 diff against the previous tree: 3 leftovers (a `.DS_Store` and the 2026-09-18 EPROM capture, which was carried over). The two `Readme.md` files from the source that landed on my placeholder `README.md`
 (case-insensitive disk) were merged: original text first, placeholder note below.
+
+`tools/patched_files.txt` lists the migrated files that were deliberately edited in the tree (audit accepts them, purge and
+run never revert them). Everything else under the plan is byte-identical to YACCS.

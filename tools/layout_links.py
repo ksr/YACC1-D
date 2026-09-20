@@ -11,6 +11,7 @@ import os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LINKS = {"firmware/opcodes.h": "../software/opcodes.h",
          "software/disassembler/yaccsignaldefine.h": "../../firmware/microcode/yaccsignaldefine.h",
+         "software/disassembler/yaccsignaldata2.h": "../../firmware/microcode/yaccsignaldata2.h",
          "software/disassembler/ucode-Generator2": "../../firmware/microcode/ucode-generator2"}
 for link, target in LINKS.items():
     p = os.path.join(ROOT, link)

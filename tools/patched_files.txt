@@ -1,0 +1,4 @@
+# Migrated files that were deliberately EDITED in YACC1-D (so they no longer match their YACCS original).
+# One path per line, then a tab and the reason. tools/audit_tree.py accepts a differing hash for these;
+# tools/migrate_purge.py never reverts them; tools/migrate_run.py never overwrites them.
+software/disassembler/disasm2/main.c	2026-09-20: re-enabled the yaccsignaldata2.h include and gave printWave() a return type so the tool builds

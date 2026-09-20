@@ -25,8 +25,6 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - `firmware/abi/` — the BIOS/port/variable map still has to be written from the two .asm headers.
 
 ## Software
-- `software/disassembler/disasm2` does not build as committed (signal-table include commented out, two implicit-int
-  functions); restore the include and fix, or keep the documented `-Wno-implicit-int` workaround.
 - The three C tools carry the old tree's relative include paths; `tools/layout_links.py` symlinks cover it. When the
   NetBeans → Makefile move happens (README decision 7), fix the includes and drop the links.
 - Port of the P8X work (OS, monitor, BASIC, compilers) onto YACC1 — the reason this repo exists; not started.

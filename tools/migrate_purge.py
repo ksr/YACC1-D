@@ -22,6 +22,7 @@ for sdir, ddir, mode in mr.EXTRA:
         dirs[:] = [d for d in dirs if not any(fnmatch.fnmatch(d, j) for j in mr.JUNK) and not (root == sdir and d == "tools" and ddir.endswith("/kicad"))]
         for fn in files:
             if not any(fnmatch.fnmatch(fn, j) for j in mr.JUNK): keep.add(os.path.join(ddir, os.path.relpath(os.path.join(root, fn), sdir)))
+PATCHED = {l.split("\t")[0].strip() for l in open(os.path.join(DST, "tools/patched_files.txt")) if l.strip() and not l.startswith("#")}
 removed = []
 for lf in glob.glob(os.path.join(DST, "migration/run-log-*.tsv")):
     for r in csv.DictReader(open(lf), delimiter="\t"):
@@ -29,6 +30,7 @@ for lf in glob.glob(os.path.join(DST, "migration/run-log-*.tsv")):
         if not stale and r["destination"] in plan_md5 and r["result"] == "copied":
             p_ = os.path.join(DST, r["destination"])          # destination still planned: stale only if the bytes on disk are not what the plan wants
             stale = os.path.isfile(p_) and h(p_) not in plan_md5[r["destination"]]
+        if r["destination"] in PATCHED: continue          # deliberately edited in the tree: never reverted
         if r["result"] == "copied" and stale:
             p = os.path.join(DST, r["destination"])
             if os.path.isfile(p): os.remove(p); removed.append(r["destination"])

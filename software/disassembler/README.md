@@ -4,8 +4,8 @@
 `../ucode-Generator2/test.123` – a symlink here points at the generator folder) and prints, per opcode, which control
 signals are active on each step, using the signal names in `firmware/microcode/yaccsignaldefine.h`.
 
-As committed (2024-06-25) `main.c` does not build on its own: line 21, `#include "../yaccsignaldata2.h"` (the signal table), is
-commented out, and two functions are declared without a return type. It builds once that include is restored and clang is told
-`-std=gnu99 -Wno-implicit-int` (verified 2026-09-20 on a scratch copy; the source here is left exactly as migrated).
+Fixed in the tree 2026-09-20 (listed in `tools/patched_files.txt`, the only edited migrated source so far): the
+`#include "../yaccsignaldata2.h"` line, commented out in the 2024 commit, is re-enabled (it resolves through the layout link
+made by `tools/layout_links.py`) and `printWave()` is declared `void`. Builds with plain `cc -o disasm2 main.c` and runs.
 
 `disasm/` (the 32-step, Generator-v1 version; only `main.c` differed) → `archive/superseded-revisions/disasm-v1/`.

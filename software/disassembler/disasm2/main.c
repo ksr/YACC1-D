@@ -18,7 +18,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "../yaccsignaldefine.h"
-//#include "../yaccsignaldata2.h"
+#include "../yaccsignaldata2.h"   /* YACC1-D 2026-09-20: re-enabled; the table had been commented out and the tool did not build */
 //#include "code.h"
 
 #define PORTS_PER_CHIP 2
@@ -173,7 +173,7 @@ void printSignalsHistory(bool * activeSignals, bool validLine[]) {
         }
 }
 
-printWave(int instruction, bool * activeSignals, bool validLine[]) {
+void printWave(int instruction, bool * activeSignals, bool validLine[]) {   /* YACC1-D 2026-09-20: return type (implicit int is an error in C99+) */
     char previous;
 
     printf("\n");

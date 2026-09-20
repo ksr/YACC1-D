@@ -6,6 +6,7 @@ from disk. Run from anywhere. Exit code 1 if anything is unexplained/mismatched/
 import csv, os, hashlib, glob, collections, sys
 DST = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HAND_MADE = ("firmware/rom/eprom-captured-",)      # session artefacts that are not from YACCS
+PATCHED = {l.split("\t")[0].strip() for l in open(os.path.join(DST, "tools/patched_files.txt")) if l.strip() and not l.startswith("#")}
 def h(p):
     m = hashlib.md5()
     with open(p, "rb") as f:
@@ -20,6 +21,7 @@ for root, dirs, files in os.walk(DST):
     for f in files:
         p = os.path.join(root, f); rel = os.path.relpath(p, DST)
         if os.path.islink(p): buckets["generated: layout links (tools/layout_links.py)"] += 1; continue
+        if rel in PATCHED: buckets["mine: patched migrated source (tools/patched_files.txt)"] += 1; continue
         if rel in plan:
             r = plan[rel]; buckets["plan: " + r["mode"]] += 1
             if r["mode"] in ("copy", "archive") and not rel.endswith("Readme.md") and h(p) != r["md5"]: bad.append(rel)
