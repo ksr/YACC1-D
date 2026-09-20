@@ -39,6 +39,13 @@ for root, dirs, files in os.walk(DST):
         elif (f.endswith("-board.pdf") and os.path.basename(root) == "pdf") or rel == "hardware/BOARDS.md": buckets["generated: board PDFs (tools/brd_to_pdf.py)"] += 1
         elif (f.endswith("-schematic.pdf") and os.path.basename(root) == "pdf") or rel == "hardware/SCHEMATICS.md": buckets["generated: schematic PDFs (tools/sch_to_pdf.py)"] += 1
         else: unexplained.append(rel)
+# build products and other git-ignored files are not part of the tree's content
+if unexplained:
+    import subprocess
+    r = subprocess.run(["git", "check-ignore", "--stdin"], cwd=DST, input="\n".join(unexplained), capture_output=True, text=True)
+    ignored = set(r.stdout.split("\n")) if r.returncode in (0, 1) else set()
+    buckets["ignored by git (build products)"] += len([u for u in unexplained if u in ignored])
+    unexplained = [u for u in unexplained if u not in ignored]
 for k, v in sorted(buckets.items(), key=lambda kv: -kv[1]): print("%6d  %s" % (v, k))
 missing = [d for d, r in plan.items() if r["mode"] in ("copy", "archive") and not os.path.exists(os.path.join(DST, d))]
 print("hash mismatches: %d %s" % (len(bad), bad[:10])); print("unexplained files: %d %s" % (len(unexplained), unexplained[:10]))
