@@ -28,6 +28,7 @@ for root, dirs, files in os.walk(DST):
         elif rel in logged: buckets["extra sources (kicad pilot, Arduino libs, eagle conv)"] += 1
         elif rel.startswith(("tools/", "migration/")) or rel in ("README.md", "MIGRATION.md", ".gitignore", ".gitattributes", "BACKLOG.md", "docs/system/MACHINE.md"): buckets["mine: tools/migration/front-page docs"] += 1
         elif f == "README.md": buckets["mine: placeholder README.md"] += 1
+        elif f == "Makefile": buckets["mine: hand-written Makefile (2026-09)"] += 1
         elif rel.startswith(HAND_MADE): buckets["mine: session captures"] += 1
         elif rel.startswith("hardware/bus/blank-card/eagle/v3.2/"): buckets["mine: derived design (Blank V3.2, tools/make_blank_v32.py)"] += 1
         elif rel == "hardware/PROVENANCE.md": buckets["generated: provenance index (tools/gen_provenance.py)"] += 1
