@@ -1,0 +1,15 @@
+# No git-lfs anywhere in this repository (decided 2026-09-19). Large binaries live outside git: migration/large-files-manifest.tsv
+* -filter
+# Store every file byte-for-byte: no line-ending conversion anywhere. The migrated files must stay identical to the
+# originals under YACCS (tools/audit_tree.py checks md5s), and a few Eagle/rtf files carry CRLF as saved.
+* -text
+# Diff hints only (no conversion)
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.zip binary
+*.bin binary
+*.img binary
+*.webarchive binary
+*.skp binary

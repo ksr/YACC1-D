@@ -1,0 +1,160 @@
+DRY RUN 2026-09-20 19:27  (nothing written)
+
+planned files by mode: {'copy': 1027, 'manifest': 7, 'archive': 1288, 'drop': 209, 'skip': 1337}
+planned bytes by mode: {'copy': '153.3 MB', 'manifest': '967.4 MB', 'archive': '191.0 MB', 'drop': '30.8 MB', 'skip': '122.2 MB'}
+
+planned files by destination area:
+   1149  
+      7  ALU V3.1.pro
+      7  ALU V3.2.pro
+      7  ALU V3.3.brd
+      4  ALU V3.3.pro
+      7  ALU V3.3.sch
+      2  ALU V3.3_00.job
+      4  ALU V3.3_00.pro
+      2  ALU V3.3_01.job
+      4  ALU V3.3_01.pro
+      2  ALU V3.3_02.job
+      4  ALU V3.3_02.pro
+      2  ALU V3.3_03.job
+      4  ALU V3.3_03.pro
+      1  Address and TMP V1.0.brd
+      1  Address and TMP V1.0.pro
+      1  Address and TMP V1.0.sch
+     22  CAMOutputs/Assembly
+     14  CAMOutputs/CAMOutputs
+      6  CAMOutputs/DrillFiles
+     76  CAMOutputs/GerberFiles
+      1  IO V1.0.pro
+      1  IO V1.1.brd
+      1  IO V1.1.pro
+      1  IO V1.1.sch
+      1  IO V1.1_00.pro
+      1  IO V1.1_01.pro
+      1  IO V1.1_02.pro
+      1  IO V1.1_03.pro
+      1  Index Registers - 1.1.brd
+      1  Index Registers - 1.1.pro
+      1  Index Registers - 1.1.sch
+      1  Index Registers - 1.2.brd
+      1  Index Registers - 1.2.sch
+      1  Jumper Board Vertical V3.1.sch
+      6  Makefile
+      9  Notes.rtf
+      3  Sequencer-Logic-Prod-V1.0-1_03.job
+      3  Sequencer-Logic-Prod-V1.0-3 2.pdf
+      3  Sequencer-Logic-Prod-V1.0-3-BOM.txt
+      3  Sequencer-Logic-Prod-V1.0-3-bom.csv
+      3  Sequencer-Logic-Prod-V1.0-3.pdf
+      3  Sequencer-Logic-Prod-V1.0-3.pro
+      3  Sequencer-Memory-V1.0-1.brd
+      2  Sequencer-Memory-V1.0-1.pro
+      3  Sequencer-Memory-V1.0-1.sch
+      3  Sequencer-Memory-V1.0-2.brd
+      2  Sequencer-Memory-V1.0-2.pro
+      3  Sequencer-Memory-V1.0-2.sch
+      3  Sequencer-Memory-V1.0-3 2.brd
+      3  Sequencer-Memory-V1.0-3 3.brd
+      3  Sequencer-Memory-V1.0-3.dri
+      3  Sequencer-Memory-V1.0-3.pdf
+      3  Sequencer-Memory-V1.0.sch
+      4  abc
+     30  archive/conflict-losers
+   1005  archive/gen1-2015-2018
+    223  archive/superseded-revisions
+     32  archive/third-party
+      4  asm.c
+      4  asm.doc
+      4  asm.txt
+      4  asmcmds.c
+      4  basic.asmold.asm
+      4  basic.img
+      4  c_standard_headers_indexer.c
+     28  docs/datasheets
+      8  docs/history
+      2  docs/procedures
+      2  docs/references
+      7  docs/system
+      6  embedded/bus-tester
+      1  embedded/clocker
+      9  embedded/command-sender
+      1  embedded/libraries
+     26  embedded/sequencer-card
+      2  emulator
+      2  emulator.old
+      9  firmware/basic
+     24  firmware/microcode
+     10  firmware/monitor
+      3  firmware/rom
+      6  gerbers.zip
+    106  hardware/bus
+    567  hardware/cards
+     45  hardware/libraries
+      5  hardware/mechanical
+      4  header.h
+      4  list
+      2  main
+      2  main.c
+      4  makerom
+      1  media/alu v3.2 solder.jpeg
+      1  media/alu v3.2 top.jpeg
+      1  media/bus v1.0 top.jpeg
+      1  media/bus v1.1 solder.jpeg
+      1  media/double bus.jpeg
+      1  media/index register v1.1 solder.jpeg
+      1  media/index register v1.1 top.jpeg
+      1  media/io v1.1 bottom.jpeg
+      1  media/io v1.1 top.jpeg
+      1  media/memory v1.2 solder.jpeg
+      1  media/memory v1.2 top.jpeg
+      1  media/sequencer logic v2.1 solder.jpeg
+      1  media/sequencer logic v2.1 top.jpeg
+      1  media/sequencer memory v2.1 solder.jpeg
+      1  media/sequencer memory v2.1 top.jpeg
+      1  media/sequencer top.jpeg
+      1  media/system1.jpeg
+      1  media/test board v1.1 solder.jpeg
+      1  media/test board v1.1 top.jpeg
+      4  monitor.img
+      4  mstrings.c
+      4  mstrings.h
+      6  nbproject/Makefile-Debug.mk
+      6  nbproject/Makefile-Release.mk
+      6  nbproject/Makefile-impl.mk
+      6  nbproject/Makefile-variables.mk
+      6  nbproject/Package-Debug.bash
+      6  nbproject/Package-Release.bash
+      6  nbproject/configurations.xml
+      6  nbproject/project.xml
+      4  rcasm.rc
+     49  software/assembler
+     12  software/disassembler
+      1  software/emulator
+      1  software/opcodes.h
+     25  software/ubasic-c
+      4  support.c
+      2  switchtemplate.skp
+      2  switchtemplate.svg
+      1  testcircuit.circ
+      1  tester.brd
+      2  tester.pro
+      2  tester.sch
+     16  tests/assembler
+      1  tests/basic
+     45  tests/bus-tester-scripts
+      4  vm/legacy-installers
+      4  yacc1.def
+      1  yacc2buss.brd
+      1  yacc2buss.sch
+
+dedup: 3270 archive files NOT copied because identical bytes already go elsewhere (907.2 MB saved; 325 of them are .sch/.brd)
+dedup: 1 Eagle .sch/.brd files restored so no archive project folder loses half its pair
+dedup: 97 distinct contents appear at more than one copy destination (kept, see copy-duplicates.txt)
+fab output / BOM files routed into <rev>/fab and <rev>/bom: 804
+archive files dropped because their bytes were deliberately skipped in the live copies: 626
+fab files dropped because a zip in the same fab/ folder already contains them: 46
+
+unclassified files in the four current copies: 0
+destination conflicts (same target, different content): 0
+same relative path, different content across the four current copies: 28 (newest copied; 34 losing versions archived under archive/conflict-losers/)
+same file NAME with more than one distinct content anywhere in the tree: 208 names

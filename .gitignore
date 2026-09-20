@@ -1,0 +1,18 @@
+# macOS / editors
+.DS_Store
+._*
+# Eagle autosave / backup files
+*.b#?
+*.s#?
+*.l#?
+# build products (the C tools and firmware are rebuilt by tools/verify_firmware.py in a scratch dir)
+__pycache__/
+*.o
+*.dSYM/
+build/
+dist/
+nbproject/private/
+# KiCad local state
+*.kicad_prl
+*-backups/
+fp-info-cache

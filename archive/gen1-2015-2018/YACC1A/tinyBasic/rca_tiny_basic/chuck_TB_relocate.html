@@ -1,0 +1,47 @@
+<h3>Chuck Yakym's notes on relocating TMSI Tiny BASIC</h3>
+
+<p>Tiny BASIC as provided by RCA, Pittman, and TMSI, was intended to be loaded at memory 0000H and above.
+Chuck wanted to make his Tiny BASIC source relocatable, to assemble for use in higher memory. Here's what
+he said he found in TMSI TB, and what he did about it, quoted with permission. Note that RCA Tiny BASIC uses a different
+PEEK location than TMSI's Tiny BASIC; changes to the RCA version would be different. - Herb
+
+<P>"The reason that it isn't relocatable is because the way they used R7
+to point to the Fetch subroutine. Understanding that the way TB is written,
+the high order byte of R7 is ALWAYS = 00h. Now a very clever way that they used
+this fact that R7.1 is always 00h, then they could (and did) use the "97h"
+(GHI R7) command to clear the "D" register instead of using the LDI 00h (F8
+00) code. They save one memory byte per usage."
+
+<P>[Note: TB assembly source implements this use, not by the "GHI R7" or "GHI PC"
+assembly instructions, but by defining "LDIO EQU 97H" and use of "DB LDIO". Look
+at the RCA and TMSI TB sources for details. - Herb]
+
+<P>"To make Tiny Basic completely relocatable, this restriction had to be
+removed from the code. Below is the ONLY use of the "97h" (GHI R7) command
+that is used in the Tiny Basic part of my [relocatable] monitor/Tiny Basic program."
+
+<P> <pre> 0148   97            DOIT:    GHI  R7     ; TABLE PAGE</pre>
+
+<P>All the other uses of the "97h"  command had to be changed
+to the "F8 00" (LDI 00h) to make Tiny Basic "truly" relocatable. There is 18
+uses of the "97h" command used in RCA's Tiny Basic that were used to clear
+the "D" register only. [This explains 18 bytes added to the Tiny
+BASIC code.]
+
+<P>[Additionally,] I changed the [TMSI TB's] PEEK subroutine; see below
+
+<P><PRE>                ; MEMORY PEEK AND POKE SUBROUTINES
+                        ;
+0014   f8 00         PEEK:    LDI    00H
+0016   30 2c             BR    PEEK1
+
+                        ;PEEK CONTINUES HERE TO MAINTAIN RCA CALL
+ 				;USR 20 AND 24 ROUTINES VALUES
+002c   ba            PEEK1    PHI    AC
+002d   48                LDA    XX		;XX is R8
+002e   d5                SEP    R5</pre>
+
+<P>"The added BR PEEK1 command is the additional two bytes that I had to
+add because of the original "97h"command was used in address 0014h. This all
+explains why my Tiny Basic is 20 bytes longer than [Lee's version]". - Chuck Yakym
+

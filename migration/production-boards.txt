@@ -1,0 +1,130 @@
+IN-MACHINE revision per card (from tools/fabricated.py; full table = hardware/FABRICATED.md):
+    alu                      V3.2   PCB/Production, 2020-11-29, the ALU in the machine; CAMOutputs in v3.2/fab. The Working 'ALU-V3.3' folder was this design with the bus label reverted - nothing new, folded 2026-09-20. Notes end with NEXT VERSION 3.3 but no 3.3 design was ever started. The Sept-2021 16-bit ALU (V3.3-16) was deleted from this tree on Ken's instruction 2026-09-20 (still in YACCS)
+    backplane                V2.0   PCB/Production, 2021-07-26 (sch) / 2021-08-03 (brd): adds an 8th slot X8 and bulk electrolytics C7/C8 to V1.1. Folder also holds the DXF/SVG/PDF exports. CAMOutputs in fab/
+    bus-tester               V1.1   the 2016 TESTER-PROD-V1.1 board (gerbers identical); Eagle folder was called 'Bus Tester orig'
+    io                       V1.1   PCB/Production, 2020-11-29 (the Working copy of 2020-07-31 was the same board with the old Bus V3.1 net names; folded in 2026-09-20, only its Notes.rtf kept: it adds the never-done V1.2 ideas - directional data-bus buffer driven by -IO-RD, IC5 pin 5 to -BUS-EN). CAMOutputs in v1.1/fab
+    memory                   v1.3   ordered 2025-06-27 (Memory V1_2025-06-27.zip) from the 2021-03-17 design; never moved to PCB/Production. KiCad conversion in cards/memory/kicad. The Working folder also held V1.0 files (= revision 1.1) and an earlier save of V1.2 - removed 2026-09-20, only V1.3 stays here
+    register                 1.1    PCB/Production, 2020-08-31; CAMOutputs in v1.1/fab. The Working 'Index Registers 1.2' folder held byte-identical copies of the 1.1 files renamed 1.2 plus a notes file asking whether bus direction should follow -RD-SEL; folded in here 2026-09-20 (only the notes were new). No 1.2 design exists
+    sequencer-logic          v2.1   PCB/Production, 2020-12-01, 218x114 mm ('V2.1l' = the lengthened board); CAMOutputs in fab/. 'orig size/' = the V2.1 circuit on the original 178 mm outline (silk still says V2.0) plus an unrouted 'copy' - intermediates, never ordered. The old-YACC1/ gen-1 files were dropped 2026-09-20 (identical to archive/gen1-2015-2018)
+    sequencer-memory         V2.1   PCB/Production, 2020-12-01; CAMOutputs in fab/. Carries the microcode EEPROM (IC9; see accessories/eeprom-adaptor) and the ATmega328 loader. old-YACC1/ gen-1 files dropped 2026-09-20 (identical to archive/gen1-2015-2018)
+    video                    V1.0   built from the Fusion 360 design (Fusion is the master; this folder is the 2026-09-18 Eagle export). Installed for bring-up, no CRTC fitted yet. The board file was exported as Blank V3.1.brd (the template it was started from) and is stored here as Video_1.0.brd. Inherits Blank V3.1's stale C3-C6 names (unused)
+
+Board folders found under a production directory (folder -> per source copy: mode and destination area)
+
+Address and TMP-V1.0
+    YACCS-OLD/YACC1-2020-ORIG                     copy: docs/system/connector/YACC1 Connector - V3 - June-18-2020.pdf; copy: hardware/cards/address-tmp/eagle
+ALU-PROD-V1.0
+    YACCS-OLD/YACC1-BACKUP                        archive: archive/gen1-2015-2018/YACC1-BACKUP/PCB-PRODUCTION
+    YACCS-OLD/YACC1A                              archive: archive/gen1-2015-2018/YACC1A/PCB-PRODUCTION
+    YACCS-OLD/YACC1A1                             archive: archive/gen1-2015-2018/YACC1A1/PRODUCTION
+ALU-V3.0-2 layer
+    YACCS-OLD/YACC1-2020-ORIG                     copy: docs/system/connector/YACC1 Connector - V3 - June-18-2020.pdf; copy: docs/system/connector/YACC1 Connector - YACC 3.0-old.pdf; copy: hardware/cards/alu/eagle
+ALU-V3.1 resubmit
+    YACCS-OLD/YACC1-2020-ORIG                     copy: docs/system/connector/YACC1 Connector - V3 - June-18-2020.pdf; copy: hardware/cards/alu/eagle
+ALU-V3.1-buried-vias
+    YACCS-OLD/YACC1-2020-ORIG                     copy: docs/system/connector/YACC1 Connector - V3 - June-18-2020.pdf; copy: hardware/cards/alu/eagle
+ALU-V3.2
+    YACC gitversion/YACC1-2020                    copy: docs/system/connector/YACC1 Connector - V3 - June-18-2020.pdf; copy: hardware/cards/alu/eagle
+    YACCS-OLD/YACC1-2020 July 2021 backup         archive: archive/superseded-revisions/snapshot-2021-07/PCB; copy: docs/system/connector/YACC1 Connector - V3 - June-18-2020.pdf
+    newgit/YACC1-2020                             copy: docs/system/connector/YACC1 Connector - V3 - June-18-2020.pdf
+Bus Jumper Horizontal V3.2
+    YACC gitversion/YACC1-2020                    copy: hardware/bus/bus-jumper-horizontal/eagle
+    YACCS-OLD/YACC1-2020 July 2021 backup         archive: archive/superseded-revisions/snapshot-2021-07/PCB
+    YACCS-OLD/YACC1-2020-ORIG                     archive: archive/superseded-revisions/snapshot-2020-08-orig/PCB
+Bus Jumper V3.0-horiz
+    YACCS-OLD/YACC1-2020-ORIG                     copy: hardware/bus/bus-jumper-vertical/eagle
+Bus Jumper V3.0-vert
+    YACCS-OLD/YACC1-2020-ORIG                     copy: hardware/bus/bus-jumper-horizontal/eagle
+Bus Jumper Vertical V3.0
+    YACC gitversion/YACC1-2020                    copy: hardware/bus/bus-jumper-vertical/eagle
+    YACCS-OLD/YACC1-2020 July 2021 backup         archive: archive/superseded-revisions/snapshot-2021-07/PCB
+Bus Tester orig
+    YACC gitversion/YACC1-2020                    copy: hardware/cards/bus-tester/eagle
+    YACCS-OLD/YACC1-2020 July 2021 backup         archive: archive/superseded-revisions/snapshot-2021-07/PCB
+Bus Tester V3.1
+    YACC gitversion/YACC1-2020                    copy: hardware/cards/bus-tester/eagle
+    YACCS-OLD/YACC1-2020 July 2021 backup         archive: archive/superseded-revisions/snapshot-2021-07/PCB
+    YACCS-OLD/YACC1-2020-ORIG                     archive: archive/superseded-revisions/snapshot-2020-08-orig/PCB
+BUS-JUMPER-PROD-V1.0
+    YACCS-OLD/YACC1A1                             archive: archive/gen1-2015-2018/YACC1A1/PRODUCTION
+    YACCS-OLD/YACC1B                              archive: archive/gen1-2015-2018/YACC1B/PCB
+BUS-PROD-V1.1
+    YACC gitversion/YACC1-2020                    copy: hardware/bus/backplane/eagle
+    YACCS-OLD/YACC1-2020 July 2021 backup         archive: archive/superseded-revisions/snapshot-2021-07/PCB
+    YACCS-OLD/YACC1-2020-ORIG                     archive: archive/superseded-revisions/snapshot-2020-08-orig/PCB
+    YACCS-OLD/YACC1-BACKUP                        archive: archive/gen1-2015-2018/YACC1-BACKUP/PCB-PRODUCTION
+    YACCS-OLD/YACC1A                              archive: archive/gen1-2015-2018/YACC1A/PCB-PRODUCTION
+    YACCS-OLD/YACC1A1                             archive: archive/gen1-2015-2018/YACC1A1/PRODUCTION
+BUS-PROD-V2.0
+    YACC gitversion/YACC1-2020                    copy: hardware/bus/backplane/eagle; copy: hardware/libraries/eagle/test.ctl
+Index Registers 1.0
+    YACCS-OLD/YACC1-2020-ORIG                     copy: docs/system/connector/YACC1 Connector - V3 - June-18-2020.pdf; copy: hardware/cards/register/eagle
+Index Registers 1.1
+    YACC gitversion/YACC1-2020                    copy: docs/system/connector/YACC1 Connector - V3 - June-18-2020.pdf; copy: hardware/cards/register/eagle
+    newgit/YACC1-2020                             copy: docs/system/connector/YACC1 Connector - V3 - June-18-2020.pdf
+IO-V-1.0
+    YACCS-OLD/YACC1-2020-ORIG                     copy: docs/system/connector/YACC1 Connector - V3 - June-18-2020.pdf; copy: docs/system/connector/YACC1 Connector - V3.1.pdf; copy: hardware/cards/io/eagle
+IO-V-1.1
+    YACC gitversion/YACC1-2020                    copy: docs/system/connector/YACC1 Connector - V3.1.pdf; copy: hardware/cards/io/eagle
+    YACCS-OLD/YACC1-2020 July 2021 backup         archive: archive/superseded-revisions/snapshot-2021-07/PCB
+    YACCS-OLD/YACC1-2020-ORIG                     copy: docs/system/connector/YACC1 Connector - V3.1.pdf
+    newgit/YACC1-2020                             copy: docs/system/connector/YACC1 Connector - V3.1.pdf
+Mem Register V1.0
+    YACC gitversion/YACC1-2020                    copy: docs/system/connector/YACC1 Connector - V3.1.pdf; copy: hardware/cards/mem-register/eagle
+    YACC1-2020                                    copy: docs/system/connector/YACC1 Connector - V3.1.pdf
+    newgit/YACC1-2020                             copy: docs/system/connector/YACC1 Connector - V3.1.pdf
+Mem Switch V1.0
+    YACC gitversion/YACC1-2020                    copy: docs/system/connector/YACC1 Connector - V3.1.pdf; copy: hardware/cards/mem-switch/eagle
+    newgit/YACC1-2020                             copy: docs/system/connector/YACC1 Connector - V3.1.pdf
+Mem Switch V1.1
+    YACC gitversion/YACC1-2020                    copy: docs/system/connector/YACC1 Connector - V3.1.pdf; copy: hardware/cards/mem-switch/eagle
+    YACC1-2020                                    copy: docs/system/connector/YACC1 Connector - V3.1.pdf
+    newgit/YACC1-2020                             copy: docs/system/connector/YACC1 Connector - V3.1.pdf
+Memory v1.0
+    YACCS-OLD/YACC1-2020-ORIG                     copy: docs/system/connector/YACC1 Connector - V3 - June-18-2020.pdf; copy: hardware/cards/memory/eagle
+Memory v1.1
+    YACCS-OLD/YACC1-2020-ORIG                     copy: docs/system/connector/YACC1 Connector - V3 - June-18-2020.pdf; copy: hardware/cards/memory/eagle
+Memory v1.2
+    YACC gitversion/YACC1-2020                    copy: docs/system/connector/YACC1 Connector - V3 - June-18-2020.pdf; copy: hardware/cards/memory/eagle
+    YACCS-OLD/YACC1-2020 July 2021 backup         archive: archive/superseded-revisions/snapshot-2021-07/PCB; copy: docs/system/connector/YACC1 Connector - V3 - June-18-2020.pdf
+    newgit/YACC1-2020                             copy: docs/system/connector/YACC1 Connector - V3 - June-18-2020.pdf
+Old
+    YACCS-OLD/YACC1A1                             archive: archive/gen1-2015-2018/YACC1A1/PRODUCTION
+Old & obsolete
+    YACCS-OLD/YACC1-2020-OLD                      copy: docs/system/connector/YACC1 Connector - V3 - June-18-2020.pdf; copy: docs/system/connector/YACC1 Connector - V3.1.pdf; copy: docs/system/connector/YACC1 Connector - YACC 3.0-old.pdf; copy: hardware/bus/bus-jumper-horizontal/eagle; copy: hardware/cards/PRODUCTION-OLD-AND-OBSOLETE-readme-2021-01.md; copy: hardware/cards/address-tmp/eagle; copy: hardware/cards/alu/eagle; copy: hardware/cards/io/eagle; copy: hardware/cards/memory/eagle; copy: hardware/cards/register/eagle; copy: hardware/cards/sequencer-logic/eagle; copy: hardware/cards/sequencer-memory/eagle
+PROTOCARD-PROD-V1.0
+    YACC gitversion/YACC1-2020                    copy: hardware/cards/protocard/eagle
+    YACCS-OLD/YACC1-2020 July 2021 backup         archive: archive/superseded-revisions/snapshot-2021-07/PCB
+    YACCS-OLD/YACC1-BACKUP                        archive: archive/gen1-2015-2018/YACC1-BACKUP/PCB-PRODUCTION
+    YACCS-OLD/YACC1A                              archive: archive/gen1-2015-2018/YACC1A/PCB-PRODUCTION
+    YACCS-OLD/YACC1A1                             archive: archive/gen1-2015-2018/YACC1A1/PRODUCTION
+REGISTER-PROD-V1.2
+    YACCS-OLD/YACC1-BACKUP                        archive: archive/gen1-2015-2018/YACC1-BACKUP/PCB-PRODUCTION
+    YACCS-OLD/YACC1A                              archive: archive/gen1-2015-2018/YACC1A/PCB-PRODUCTION
+    YACCS-OLD/YACC1A1                             archive: archive/gen1-2015-2018/YACC1A1/PRODUCTION
+SEQUENCER-LOGIC-V1.0
+    YACCS-OLD/YACC1A1                             archive: archive/gen1-2015-2018/YACC1A1/PRODUCTION
+Sequencer-Logic-v2.0
+    YACCS-OLD/YACC1-2020-ORIG                     copy: hardware/cards/sequencer-logic/eagle
+Sequencer-Logic-v2.1
+    YACC gitversion/YACC1-2020                    copy: hardware/cards/sequencer-logic/eagle
+    YACCS-OLD/YACC1-2020 July 2021 backup         archive: archive/superseded-revisions/snapshot-2021-07/PCB
+SEQUENCER-MEMORY-Prod-V1.0
+    YACCS-OLD/YACC1A1                             archive: archive/gen1-2015-2018/YACC1A1/PRODUCTION
+Sequencer-Memory-V2.0
+    YACCS-OLD/YACC1-2020-ORIG                     copy: hardware/cards/sequencer-memory/eagle
+Sequencer-Memory-V2.1
+    YACC gitversion/YACC1-2020                    copy: hardware/cards/sequencer-memory/eagle
+    YACCS-OLD/YACC1-2020 July 2021 backup         archive: archive/superseded-revisions/snapshot-2021-07/PCB
+SEQUENCER-PROD-V1.0
+    YACCS-OLD/YACC1-BACKUP                        archive: archive/gen1-2015-2018/YACC1-BACKUP/PCB-PRODUCTION
+    YACCS-OLD/YACC1A                              archive: archive/gen1-2015-2018/YACC1A/PCB-PRODUCTION
+    YACCS-OLD/YACC1B                              archive: archive/gen1-2015-2018/YACC1B/PCB
+SP-PC-PROD-V1.0
+    YACCS-OLD/YACC1-BACKUP                        archive: archive/gen1-2015-2018/YACC1-BACKUP/PCB-PRODUCTION
+    YACCS-OLD/YACC1A                              archive: archive/gen1-2015-2018/YACC1A/PCB-PRODUCTION
+    YACCS-OLD/YACC1A1                             archive: archive/gen1-2015-2018/YACC1A1/PRODUCTION
+TESTER-PROD-V1.1
+    YACCS-OLD/YACC1-BACKUP                        archive: archive/gen1-2015-2018/YACC1-BACKUP/PCB-PRODUCTION
+    YACCS-OLD/YACC1A                              archive: archive/gen1-2015-2018/YACC1A/PCB-PRODUCTION
+    YACCS-OLD/YACC1A1                             archive: archive/gen1-2015-2018/YACC1A1/PRODUCTION

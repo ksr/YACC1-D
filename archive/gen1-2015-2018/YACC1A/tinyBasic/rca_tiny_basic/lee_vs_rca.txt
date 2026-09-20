@@ -1,0 +1,248 @@
+Lee Hart's TB.PRN versus RCA 18S020 Tiny BASIC hex listing
+18S030 Tiny BASIC hex dump 
+0000  01 30 BO C0 00 ED C0 06 6F C0 06 76 C0 06 66 5F
+0010  18 82 80 20 30 22 30 20 58 D5 06 81 08 C8 00 08
+0020  48 38 97 BA 48 D5 C0 06 5A D3 BF 32 86 73 96 73
+
+						Lee Hart Tiny BASIC
+
+0000 	01	??				71		DIS
+	30 B0		BR B0H		00		DB 00
+	 					E4		SEX R4
+	C0 00 ED	LBR 00EDH ;WARM	C0 08 00	LDR SAVER	;save regs/IDIOT
+	C0 06 6F	LBR 066FH ;monitr	C0 09 40	LBR TTYRED	;type in
+	C0 06 76	LBR 0676H ;ditto	C0 09 A4	LBR TYPE	;type out
+	C0 06 66	LBR 0666H ;break	CO 06 66	LBR TSTBR	;break
+	5F		DB 5FH ;<- char	O8		DB 08		;backspace
+
+0010	18		DB 18H		18		DB 18H	;other codes
+	82		DB 82H		82		DB 82H	;
+	80		DB 80H		80		DB 80H	;
+	20		DB 20H		20		DB 20H	;
+
+	30		DB 30H ;codes?	97 PEEK	DB 97H
+	22		DB 22H		BA		PHI RA
+	30		DB 30H		48		LDA R8
+	20		DB 20H		D5		SEP R5	;EXIT
+ 
+0018	58 POKE	STR R8		58 POKE	STR R8
+	D5		SEP R5		D5		SEP R5	;EXIT
+
+	06 81		DW 0681H ;IL ADDR	06 79		DW 0679H	;IL ADDR
+	08 C8		DW 08C8H		11 00 CONST	DW 1100H	;USER ADDR
+	00		DB 00			00		DB 00		;WRAP POINT
+	08		DB 08			10		DB 10H	;PAGE PAGE
+
+0020  48 38 97 BA 48 D5 C0 06 51 D3 BF E2 86 73 96 73
+
+0020	48		LDA R8		C0 06 6F	LBR 066FH	;MONITOR
+	38		SKP			C0 0B FE	LBR 0BFEH	;IOBIT
+						C0 06 51	LBR 0651H	;IO
+0022	97 PEEK	DB 97H
+	BA		PHI RA
+	48		LDA R8
+	D5		SEP R5
+
+	C0 06 51	LBR 0651h
+						;STANDARD CALL ROUTINE
+0029	D3		SEP R3		D3		SEP R3		
+CALL	BF		PHI RF		BF	CALL	PHI RF	 
+	e2 		SEX R2		E2
+	86		GLO R6		86
+	73		STXD			73
+	96		GHI R6		83
+	73		STXD			73
+	...					...
+
+18S030 Tiny BASIC hex dump 
+0080  05 3C 01 D3 04 29 03 6C 03 CB 03 A7 03 98 03 9B
+						Lee Hart Tiny BASIC
+0080 [same]					05 3C		DW
+						01 D3		DW
+						04 29		DW
+						03 6C		DW
+						03 CB		DW
+						03 A7		DW
+						03 98		DW
+						03 9B		DW
+
+00B0 F8 B3 A3 F8 00 B3 D3...
+						Lee Hart Tiny BASIC
+00B0 [same]					F8 B3 COLD	LDI LOW *+3
+						A3		PLO 43
+						F8 00		LDI HIGH *
+						B3		PHI 43
+						D3		SEP R3
+						...
+
+18S030 Tiny BASIC hex dump 
+00ED FF 00 F8
+00F0 F2 A3 F8 00 B3 D3 B4 B5...
+						Lee Hart Tiny BASIC
+00ED [same]					FF 00 WARM	SMI 0
+						F8 F2		LDI *+3
+						A3		PLO R3
+						F8 00		LDI 00
+						B3		PHI R3
+						D3		SEP R3
+						...
+
+
+18S030 Tiny BASIC hex dump 
+0100  4B A7 33 1A D7 20 BB 4D AB 97 5B 1B 5B D7 16 8B
+						Lee Hart Tiny BASIC
+0104	[same]				D7 20 CLEAR: DB 0D7H, 20H
+						BB		PHI RB
+						4D		LDA RD
+						AB		PLO RB
+						97		DB 97H
+						5B		STR RB
+						1B		INC RB
+						5B		STR RB
+						D7 16		DB 0D7H, 16H
+						8B		GLO RB
+
+18S030 Tiny BASIC hex dump 
+0200  BA F8 0A AF ED 1D 8A F4 AA 9A 2D 74 BA 2F 8F 3A
+						Lee Hart Tiny BASIC
+						
+0205						1D	NM10:	INC RD
+						8A		GL RA
+						F4		ADD
+						AA		PLO RA
+						9A		GHI RA
+						2D		DEC RD
+						74		ADC
+						BA		PHI RA
+						2F		DEC RF
+						8F		GLO RF
+						3A 05		BNC NM10
+
+
+18S030 Tiny BASIC hex dump		
+0300  C0 OO 09 D7 1B FA 07 FD 08 AA 8A 32 97 F8 20 D4
+						Lee Hart Tiny BASIC
+
+0303					TAB:	D7 1B		DB 0D7H, 1BH
+						FA 07		ANI 07H
+						FD 08		SDI 8
+						AA		PLO RA
+						8A		GLO RA
+						32 97		BZ 97H
+						F8 20		LDI 20H
+						D4		SEP R4
+	
+
+
+18S030 Tiny BASIC hex dump	 
+0400  7E D4 04 24 22F 8F CA 03 EA 12 02 FE 3B 21 D7 1A
+						Lee Hart Tiny BASIC
+
+0400						7E
+						D4
+						04 24
+						2F
+						8F
+						CA 03 EA
+						12
+						02
+						FE
+						3B 21
+						D7 1A
+
+
+18S030 Tiny BASIC hex dump 
+0500  C5 8A 52 9A F1 C2 02 7F
+						Lee Hart Tiny BASIC
+
+0501						8A		GLO RA
+						52		STR R2
+						9A		GHI AC
+						F1		OR
+						C2 02 7F	LBZ ERR
+
+
+
+18S030 Tiny BASIC hex dump 
+05A0  1D D5 D4 03 5E D4 04 FE FC FF 97 AF 33 BA 9B BD
+						Lee Hart Tiny BASIC
+
+						Lee Hart TB source
+5A0						1D		INC RD
+						D5		SEP R5
+
+5A2						D4		SEP R4	;INSRT ROUTINE
+						03 5E		DW SWAP
+						D4		SEP R4
+						04 f3		DW FIND
+						FC FF		ADI 0FFH
+						97		DB 97H
+						AF		PLO RF
+						33 BA		BDF 0BAH
+						9B		GHI RB
+						BD		PHI RD
+
+18S030 Tiny BASIC hex dump 
+
+0650	B5 73 52 97 BA 2D 43 D5 5D 2D 88 FA 0F F9 60 5D
+0660	FA 08 CE C4 12 DD FC 00 37 6E FF 00 3F 6C D5 D7
+0670	11 8D 73 C0 81 40 D7 12 32 7E DC 17 2D 5D C0 81
+0680	A4 24
+
+18S03O DISASSEMBLY	versus 	Lee Hart Tiny BASIC
+
+651	73	IO	STXD			[same at 651 forward] ; I/O Port Driver
+	52		STR R2
+	97		DB 97H
+	BA		PHI RA
+	2D		DEC RD
+	43		LDA R3
+	D5		SEP R5
+	5D		STR RD
+	2D		DEC RD
+	88		GLO R8
+	FA 0F		ANI 0FH
+	F9 60		ORI 60H
+	5D		STR RD
+660	FA 08		ANI 08H		[same at 660 forward]
+	CE		LSZ
+	C4		NOP
+	12		INC R1
+	DD		SEP RD
+
+666	FC 00	TSTBR	ADI 0H		TSTBR	[same]	;test for BREAK
+	37 6E		B4 $+6
+	FF 00		SMI 0H
+	3F 6C		BN4 $
+66E	D5		SEP R5		[same to 66E backward]
+
+66F	D7 	TTYRED SEP R7		52 MONITOR	STR R2	;monitor
+
+670	11		INC R1		F8 C5		LDI C5H	;low intrupt
+	8d		GLO RD
+	73		STXD			A1		PLO R1
+	CO 84 40	LBR 8440H		F8 08		LDI 08	;hi interupt
+676	D7	TYPE	SEP R7		B1		PHI R1
+	12		INC R2		0D		LDN R2
+	32 7E		BZ  7EH		D1		SEP R1
+						D5		SEP R5
+					679	24 3A 91 ...	;start of IL code
+67A	DC		SEP RC		
+	17		INC R7
+	2D		DEC RD
+	5D		STR RD
+67E	C0 81 A4	LBR 81A4H
+; 
+; IL code starts here
+0681	24 3A 91 ...
+	...	
+
+18S03O DISASSEMBLY	versus 	Lee Hart Tiny BASIC
+
+IL starts at 0681h			IL starts at 0679H
+IL stops at 07F6H				IL stops at 07FEH
+undefined until 0800H			RCA hex dump ends at 07FFH
+
+IDIOT4 monitor at 0800H			??? monitor at ???
+
+  

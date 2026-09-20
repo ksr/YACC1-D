@@ -1,0 +1,458 @@
+56d837ce
+    embedded/sequencer-card/deprecated/sequencer1/EEPROM.ino
+    embedded/sequencer-card/sequencer3/EEPROM.ino
+39a9df77
+    embedded/sequencer-card/deprecated/sequencer1/uCodeRAM.ino
+    embedded/sequencer-card/sequencer3/uCodeRAM.ino
+a9ed26ab
+    firmware/microcode/ucode-generator2/Makefile
+    software/disassembler/disasm2/Makefile
+    tests/bus-tester-scripts/Gen Test Vectors/gen test vectors/Makefile
+30441b14
+    firmware/microcode/ucode-generator2/test.hex
+    firmware/microcode/ucode-generator2/test.hexz
+d41d8cd9
+    hardware/bus/backplane/eagle/v2.0/fab/CAMOutputs/Assembly/PnP_yacc2buss_back.txt
+    hardware/bus/backplane/eagle/v2.0/fab/CAMOutputs/Assembly/PnP_yacc2buss_front.txt
+    hardware/bus/bus-jumper-horizontal/eagle/deprecated/v3.0/fab/CAMOutputs/Assembly/PnP_Jumper Board V3.0_back.txt
+    hardware/bus/bus-jumper-horizontal/eagle/deprecated/v3.0/fab/CAMOutputs/Assembly/PnP_Jumper Board V3.0_front.txt
+    hardware/bus/bus-jumper-horizontal/eagle/v3.2/fab/CAMOutputs/Assembly/PnP_Jumper Board Horizontal V3.1_back.txt
+    hardware/bus/bus-jumper-horizontal/eagle/v3.2/fab/CAMOutputs/Assembly/PnP_Jumper Board Horizontal V3.1_front.txt
+    hardware/bus/bus-jumper-vertical/eagle/v3.0/fab/CAMOutputs/Assembly/PnP_Jumper Board V3.0_back.txt
+    hardware/bus/bus-jumper-vertical/eagle/v3.0/fab/CAMOutputs/Assembly/PnP_Jumper Board V3.0_front.txt
+    hardware/cards/address-tmp/eagle/deprecated/v1.0/fab/CAMOutputs/Assembly/PnP_Address and TMP V1.0_back.txt
+    hardware/cards/address-tmp/eagle/deprecated/v1.0/fab/CAMOutputs/Assembly/PnP_Address and TMP V1.0_front.txt
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/Assembly/PnP_ALU V3.1_back.txt
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/Assembly/PnP_ALU V3.1_front.txt
+    hardware/cards/alu/eagle/deprecated/v3.1-resubmit/fab/gerbers/CAMOutputs/Assembly/PnP_ALU V3.1_back.txt
+    hardware/cards/alu/eagle/deprecated/v3.1-resubmit/fab/gerbers/CAMOutputs/Assembly/PnP_ALU V3.1_front.txt
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/Assembly/PnP_ALU V3.1_back.txt
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/Assembly/PnP_ALU V3.1_front.txt
+    hardware/cards/alu/eagle/v3.2/fab/CAMOutputs/Assembly/PnP_ALU V3.2_back.txt
+    hardware/cards/alu/eagle/v3.2/fab/CAMOutputs/Assembly/PnP_ALU V3.2_front.txt
+    hardware/cards/bus-tester/eagle/v3.1/fab/CAMOutputs/Assembly/PnP_tester_back.txt
+    hardware/cards/bus-tester/eagle/v3.1/fab/CAMOutputs/Assembly/PnP_tester_front.txt
+    hardware/cards/io/eagle/deprecated/v1.0/fab/CAMOutputs/Assembly/PnP_IO V1.0_back.txt
+    hardware/cards/io/eagle/deprecated/v1.0/fab/CAMOutputs/Assembly/PnP_IO V1.0_front.txt
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/Assembly/PnP_IO V1.0_back.txt
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/Assembly/PnP_IO V1.0_front.txt
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/Assembly/PnP_IO V1.1_back.txt
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/Assembly/PnP_IO V1.1_front.txt
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/CAMOutputs/Assembly/PnP_IO V1.1_back.txt
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/CAMOutputs/Assembly/PnP_IO V1.1_front.txt
+    hardware/cards/mem-register/eagle/v1.0/fab/CAMOutputs/Assembly/PnP_Mem Register V1.0_back.txt
+    hardware/cards/mem-register/eagle/v1.0/fab/CAMOutputs/Assembly/PnP_Mem Register V1.0_front.txt
+    hardware/cards/mem-switch/eagle/deprecated/v1.0/fab/CAMOutputs/Assembly/PnP_Mem Switch V1.0_back.txt
+    hardware/cards/mem-switch/eagle/deprecated/v1.0/fab/CAMOutputs/Assembly/PnP_Mem Switch V1.0_front.txt
+    hardware/cards/mem-switch/eagle/v1.1/fab/CAMOutputs/Assembly/PnP_Mem Switch V1.1_back.txt
+    hardware/cards/mem-switch/eagle/v1.1/fab/CAMOutputs/Assembly/PnP_Mem Switch V1.1_front.txt
+    hardware/cards/memory/eagle/deprecated/v1.0/fab/CAMOutputs/Assembly/PnP_Memory V1.0_back.txt
+    hardware/cards/memory/eagle/deprecated/v1.0/fab/CAMOutputs/Assembly/PnP_Memory V1.0_front.txt
+    hardware/cards/memory/eagle/deprecated/v1.1/fab/CAMOutputs/Assembly/PnP_Memory V1.0_back.txt
+    hardware/cards/memory/eagle/deprecated/v1.1/fab/CAMOutputs/Assembly/PnP_Memory V1.0_front.txt
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/Assembly/PnP_Memory V1.0_back.txt
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/Assembly/PnP_Memory V1.0_front.txt
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/Assembly/PnP_Memory V1.2_back.txt
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/Assembly/PnP_Memory V1.2_front.txt
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/Assembly/PnP_Memory V1.0_back.txt
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/Assembly/PnP_Memory V1.0_front.txt
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/Assembly/PnP_Memory V1.2_back.txt
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/Assembly/PnP_Memory V1.2_front.txt
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/fab/CAMOutputs/Assembly/PnP_Index Registers - 1.0_back.txt
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/fab/CAMOutputs/Assembly/PnP_Index Registers - 1.0_front.txt
+    hardware/cards/register/eagle/deprecated/v1.0/fab/CAMOutputs/Assembly/PnP_Index Registers - 1.0_back.txt
+    hardware/cards/register/eagle/deprecated/v1.0/fab/CAMOutputs/Assembly/PnP_Index Registers - 1.0_front.txt
+    hardware/cards/register/eagle/v1.1/fab/CAMOutputs/Assembly/PnP_Index Registers - 1.1_back.txt
+    hardware/cards/register/eagle/v1.1/fab/CAMOutputs/Assembly/PnP_Index Registers - 1.1_front.txt
+    hardware/cards/sequencer-logic/eagle/deprecated/v2.0/fab/CAMOutputs/Assembly/PnP_Sequencer-Logic-Prod-V2.0_back.txt
+    hardware/cards/sequencer-logic/eagle/deprecated/v2.0/fab/CAMOutputs/Assembly/PnP_Sequencer-Logic-Prod-V2.0_front.txt
+    hardware/cards/sequencer-logic/eagle/v2.1/fab/CAMOutputs/Assembly/PnP_Sequencer-Logic-Prod-V2.1l_back.txt
+    hardware/cards/sequencer-logic/eagle/v2.1/fab/CAMOutputs/Assembly/PnP_Sequencer-Logic-Prod-V2.1l_front.txt
+    hardware/cards/sequencer-memory/eagle/deprecated/v2.0/fab/CAMOutputs/Assembly/PnP_Sequencer-Memory-V1.0-3_back.txt
+    hardware/cards/sequencer-memory/eagle/deprecated/v2.0/fab/CAMOutputs/Assembly/PnP_Sequencer-Memory-V1.0-3_front.txt
+    hardware/cards/sequencer-memory/eagle/deprecated/v2.0/fab/CAMOutputs/Assembly/PnP_Sequencer-Memory-V2.0_back.txt
+    hardware/cards/sequencer-memory/eagle/deprecated/v2.0/fab/CAMOutputs/Assembly/PnP_Sequencer-Memory-V2.0_front.txt
+    hardware/cards/sequencer-memory/eagle/v2.1/fab/CAMOutputs/Assembly/PnP_Sequencer-Memory-V1.0-3_back.txt
+    hardware/cards/sequencer-memory/eagle/v2.1/fab/CAMOutputs/Assembly/PnP_Sequencer-Memory-V1.0-3_front.txt
+    hardware/cards/sequencer-memory/eagle/v2.1/fab/CAMOutputs/Assembly/PnP_Sequencer-Memory-V2.0_back.txt
+    hardware/cards/sequencer-memory/eagle/v2.1/fab/CAMOutputs/Assembly/PnP_Sequencer-Memory-V2.0_front.txt
+    hardware/cards/sequencer-memory/eagle/v2.1/fab/CAMOutputs/Assembly/PnP_Sequencer-Memory-V2.1_back.txt
+    hardware/cards/sequencer-memory/eagle/v2.1/fab/CAMOutputs/Assembly/PnP_Sequencer-Memory-V2.1_front.txt
+195cb9d0
+    hardware/bus/backplane/eagle/v2.0/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/bus/backplane/eagle/v2.0/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+f332d9ce
+    hardware/bus/backplane/eagle/v2.0/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/bus/bus-jumper-horizontal/eagle/deprecated/v3.0/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/bus/bus-jumper-horizontal/eagle/v3.2/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/bus/bus-jumper-vertical/eagle/v3.0/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/address-tmp/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1-resubmit/fab/gerbers/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/alu/eagle/v3.2/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/bus-tester/eagle/v3.1/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/io/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/mem-register/eagle/v1.0/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/mem-switch/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/mem-switch/eagle/v1.1/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/memory/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/memory/eagle/deprecated/v1.1/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/register/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/register/eagle/v1.1/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/sequencer-logic/eagle/deprecated/v2.0/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/sequencer-logic/eagle/v2.1/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/sequencer-memory/eagle/deprecated/v2.0/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+    hardware/cards/sequencer-memory/eagle/v2.1/fab/CAMOutputs/GerberFiles/silkscreen_bottom.gbr
+e7cfbb13
+    hardware/bus/backplane/eagle/v2.0/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/bus/bus-jumper-horizontal/eagle/deprecated/v3.0/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/bus/bus-jumper-horizontal/eagle/v3.2/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/bus/bus-jumper-vertical/eagle/v3.0/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/address-tmp/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1-resubmit/fab/gerbers/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/alu/eagle/v3.2/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/bus-tester/eagle/v3.1/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/io/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/mem-register/eagle/v1.0/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/mem-switch/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/mem-switch/eagle/v1.1/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/memory/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/memory/eagle/deprecated/v1.1/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/register/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/register/eagle/v1.1/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/sequencer-logic/eagle/deprecated/v2.0/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/sequencer-logic/eagle/v2.1/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/sequencer-memory/eagle/deprecated/v2.0/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+    hardware/cards/sequencer-memory/eagle/v2.1/fab/CAMOutputs/GerberFiles/solderpaste_bottom.gbr
+5b8f24b9
+    hardware/bus/backplane/eagle/v2.0/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/bus/bus-jumper-horizontal/eagle/deprecated/v3.0/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/bus/bus-jumper-horizontal/eagle/v3.2/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/bus/bus-jumper-vertical/eagle/v3.0/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/address-tmp/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1-resubmit/fab/gerbers/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/alu/eagle/v3.2/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/bus-tester/eagle/v3.1/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/io/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/mem-register/eagle/v1.0/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/mem-switch/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/mem-switch/eagle/v1.1/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/memory/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/memory/eagle/deprecated/v1.1/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/register/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/register/eagle/v1.1/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/sequencer-logic/eagle/deprecated/v2.0/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/sequencer-logic/eagle/v2.1/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/sequencer-memory/eagle/deprecated/v2.0/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+    hardware/cards/sequencer-memory/eagle/v2.1/fab/CAMOutputs/GerberFiles/solderpaste_top.gbr
+eb125675
+    hardware/bus/bus-jumper-horizontal/eagle/deprecated/v3.0/Jumper Board V3.0.sch
+    hardware/bus/bus-jumper-horizontal/eagle/v3.2/Jumper Board Horizontal V3.1.sch
+    hardware/bus/bus-jumper-vertical/eagle/v3.0/Jumper Board V3.0.sch
+fe938773
+    hardware/bus/bus-jumper-horizontal/eagle/deprecated/v3.0/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/bus/bus-jumper-horizontal/eagle/deprecated/v3.0/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+f3a02113
+    hardware/bus/bus-jumper-horizontal/eagle/deprecated/v3.0/fab/CAMOutputs/GerberFiles/silkscreen_top.gbr
+    hardware/bus/bus-jumper-horizontal/eagle/v3.2/fab/CAMOutputs/GerberFiles/silkscreen_top.gbr
+f04f2fde
+    hardware/bus/bus-jumper-horizontal/eagle/v3.2/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/bus/bus-jumper-horizontal/eagle/v3.2/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+50b5ad64
+    hardware/bus/bus-jumper-vertical/eagle/v3.0/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/bus/bus-jumper-vertical/eagle/v3.0/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+20bfe8ca
+    hardware/cards/address-tmp/eagle/deprecated/v1.0/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/address-tmp/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+5ee37e9e
+    hardware/cards/address-tmp/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/profile.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/GerberFiles/profile.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1-resubmit/fab/gerbers/CAMOutputs/GerberFiles/profile.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/GerberFiles/profile.gbr
+    hardware/cards/alu/eagle/v3.2/fab/CAMOutputs/GerberFiles/profile.gbr
+    hardware/cards/mem-register/eagle/v1.0/fab/CAMOutputs/GerberFiles/profile.gbr
+    hardware/cards/mem-switch/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/profile.gbr
+    hardware/cards/mem-switch/eagle/v1.1/fab/CAMOutputs/GerberFiles/profile.gbr
+    hardware/cards/memory/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/profile.gbr
+    hardware/cards/memory/eagle/deprecated/v1.1/fab/CAMOutputs/GerberFiles/profile.gbr
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/GerberFiles/profile.gbr
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/GerberFiles/profile.gbr
+e2114bbf
+    hardware/cards/alu/eagle/deprecated/v3.0-2layer/fab/gerbers 2 layers no outline/alu4.stc
+    hardware/cards/alu/eagle/deprecated/v3.0-2layer/fab/gerbers 2 layers no outline/alu4.sts
+ac460456
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/ALU V3.1.brd
+    hardware/cards/alu/eagle/deprecated/v3.1/ALU V3.1.brd
+358a088b
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/ALU V3.1.pro
+    hardware/cards/alu/eagle/deprecated/v3.1/ALU V3.1.pro
+0af8aa0e
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/ALU V3.1.sch
+    hardware/cards/alu/eagle/deprecated/v3.1-resubmit/ALU V3.1.sch
+    hardware/cards/alu/eagle/deprecated/v3.1/ALU V3.1.sch
+8e1fade5
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/Assembly/ALU V3.1.txt
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/Assembly/ALU V3.1.txt
+a0f44c88
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/DrillFiles/drill_15_16.xln
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/GerberFiles/drill_15_16.xln
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/DrillFiles/drill_15_16.xln
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/GerberFiles/drill_15_16.xln
+845afc92
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/DrillFiles/drill_1_2.xln
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/GerberFiles/drill_1_2.xln
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/DrillFiles/drill_1_2.xln
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/GerberFiles/drill_1_2.xln
+0cb8f83f
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/GerberFiles/Archive.zip
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/GerberFiles/Archive.zip
+f7f390df
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/GerberFiles/copper_bottom_l4.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/GerberFiles/copper_bottom_l4.gbr
+209ac2ee
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/GerberFiles/copper_inner_l2.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/GerberFiles/copper_inner_l2.gbr
+65428a26
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/GerberFiles/copper_inner_l3.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/GerberFiles/copper_inner_l3.gbr
+9ff47ff0
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/GerberFiles/copper_top_l1.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/GerberFiles/copper_top_l1.gbr
+38dbd4ce
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/GerberFiles/gerber_job.gbrjob
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/GerberFiles/gerber_job.gbrjob
+ff4917bf
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/GerberFiles/silkscreen_top.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1-resubmit/fab/gerbers/CAMOutputs/GerberFiles/silkscreen_top.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/GerberFiles/silkscreen_top.gbr
+6205ce7a
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/GerberFiles/soldermask_bottom.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/GerberFiles/soldermask_bottom.gbr
+9d5353b3
+    hardware/cards/alu/eagle/deprecated/v3.1-buried-vias/fab/gerbers/CAMOutputs/GerberFiles/soldermask_top.gbr
+    hardware/cards/alu/eagle/deprecated/v3.1/fab/gerbers/CAMOutputs/GerberFiles/soldermask_top.gbr
+ddfb8a29
+    hardware/cards/alu/eagle/deprecated/v3.1-resubmit/fab/gerbers/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/alu/eagle/deprecated/v3.1-resubmit/fab/gerbers/CAMOutputs/GerberFiles/drill_1_16.xln
+b280a31f
+    hardware/cards/alu/eagle/v3.2/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/alu/eagle/v3.2/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+7715564b
+    hardware/cards/bus-tester/eagle/v1.1/switchtemplate.skp
+    hardware/cards/bus-tester/eagle/v3.1/switchtemplate.skp
+d9bd760e
+    hardware/cards/bus-tester/eagle/v1.1/switchtemplate.svg
+    hardware/cards/bus-tester/eagle/v3.1/switchtemplate.svg
+2466b1b6
+    hardware/cards/bus-tester/eagle/v3.1/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/bus-tester/eagle/v3.1/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+871fe6a3
+    hardware/cards/io/eagle/deprecated/v1.0/fab/CAMOutputs/Assembly/IO V1.0.txt
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/Assembly/IO V1.0.txt
+d24bc2b4
+    hardware/cards/io/eagle/deprecated/v1.0/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/io/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+71c74af1
+    hardware/cards/io/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/profile.gbr
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/CAMOutputs/GerberFiles/profile.gbr
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/GerberFiles/profile.gbr
+4cf24ff5
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/Assembly/IO V1.1.csv
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/CAMOutputs/Assembly/IO V1.1.csv
+be123409
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/CAMOutputs/GerberFiles/copper_bottom.gbr
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/GerberFiles/copper_bottom.gbr
+c2e28c7c
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/CAMOutputs/GerberFiles/copper_top.gbr
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/GerberFiles/copper_top.gbr
+a7933013
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/CAMOutputs/GerberFiles/silkscreen_top.gbr
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/GerberFiles/silkscreen_top.gbr
+8b469783
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/CAMOutputs/GerberFiles/soldermask_bottom.gbr
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/GerberFiles/soldermask_bottom.gbr
+29052ee0
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/CAMOutputs/GerberFiles/soldermask_top.gbr
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/GerberFiles/soldermask_top.gbr
+744a896a
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/io/eagle/v1.1/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+9c858b08
+    hardware/cards/mem-register/eagle/v1.0/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/mem-register/eagle/v1.0/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+d505305e
+    hardware/cards/mem-switch/eagle/deprecated/v1.0/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/mem-switch/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+d3a6a43b
+    hardware/cards/mem-switch/eagle/v1.1/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/mem-switch/eagle/v1.1/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+c273ad90
+    hardware/cards/memory/eagle/deprecated/v1.0/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/memory/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+a317af96
+    hardware/cards/memory/eagle/deprecated/v1.1/ROM ZSelect.circ
+    hardware/cards/memory/eagle/deprecated/v1.2/ROM ZSelect.circ
+    hardware/cards/memory/eagle/v1.3/ROM ZSelect.circ
+ab69c2ef
+    hardware/cards/memory/eagle/deprecated/v1.1/fab/CAMOutputs/Assembly/Memory V1.0.txt
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/Assembly/Memory V1.0.txt
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/Assembly/Memory V1.0.txt
+fd5e7d49
+    hardware/cards/memory/eagle/deprecated/v1.1/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/memory/eagle/deprecated/v1.1/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+d9939408
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/Assembly/Memory V1.2.csv
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/Assembly/Memory V1.2.csv
+c7fc693f
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+a1b18d61
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/GerberFiles/Archive.zip
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/GerberFiles/Archive.zip
+fb0a2e72
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/GerberFiles/copper_bottom_l4.gbr
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/GerberFiles/copper_bottom_l4.gbr
+cc96ccba
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/GerberFiles/copper_inner_l2.gbr
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/GerberFiles/copper_inner_l2.gbr
+a163880c
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/GerberFiles/copper_inner_l3.gbr
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/GerberFiles/copper_inner_l3.gbr
+d1bfe4dd
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/GerberFiles/copper_top_l1.gbr
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/GerberFiles/copper_top_l1.gbr
+6fe3d8a8
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/GerberFiles/gerber_job.gbrjob
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/GerberFiles/gerber_job.gbrjob
+82ebca76
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/GerberFiles/silkscreen_top.gbr
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/GerberFiles/silkscreen_top.gbr
+fac27fe4
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/GerberFiles/soldermask_bottom.gbr
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/GerberFiles/soldermask_bottom.gbr
+07ddaee7
+    hardware/cards/memory/eagle/deprecated/v1.2/fab/CAMOutputs/GerberFiles/soldermask_top.gbr
+    hardware/cards/memory/eagle/v1.3/fab/CAMOutputs/GerberFiles/soldermask_top.gbr
+1d9b2661
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/Index Registers - 1.0.brd
+    hardware/cards/register/eagle/deprecated/v1.0/Index Registers - 1.0.brd
+c893392e
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/Index Registers - 1.0.pro
+    hardware/cards/register/eagle/deprecated/v1.0/Index Registers - 1.0.pro
+76c52e06
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/Index Registers - 1.0.sch
+    hardware/cards/register/eagle/deprecated/v1.0/Index Registers - 1.0.sch
+2fb470cf
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/Index Registers - 1.0_00.pro
+    hardware/cards/register/eagle/deprecated/v1.0/Index Registers - 1.0_00.pro
+ed14d26e
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/Index Registers - 1.0_01.pro
+    hardware/cards/register/eagle/deprecated/v1.0/Index Registers - 1.0_01.pro
+86f93ef7
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/Notes.rtf
+    hardware/cards/register/eagle/deprecated/v1.0/Notes.rtf
+997d75e3
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/fab/CAMOutputs/Assembly/Index Registers - 1.0.txt
+    hardware/cards/register/eagle/deprecated/v1.0/fab/CAMOutputs/Assembly/Index Registers - 1.0.txt
+1851da8c
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+    hardware/cards/register/eagle/deprecated/v1.0/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/register/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+9e37d780
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/fab/CAMOutputs/GerberFiles/Archive.zip
+    hardware/cards/register/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/Archive.zip
+550369ce
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/fab/CAMOutputs/GerberFiles/copper_bottom.gbr
+    hardware/cards/register/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/copper_bottom.gbr
+beb3a859
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/fab/CAMOutputs/GerberFiles/copper_top.gbr
+    hardware/cards/register/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/copper_top.gbr
+aa1806dc
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/fab/CAMOutputs/GerberFiles/gerber_job.gbrjob
+    hardware/cards/register/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/gerber_job.gbrjob
+c2a4b83d
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/fab/CAMOutputs/GerberFiles/profile.gbr
+    hardware/cards/register/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/profile.gbr
+    hardware/cards/register/eagle/v1.1/fab/CAMOutputs/GerberFiles/profile.gbr
+8643f40f
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/fab/CAMOutputs/GerberFiles/silkscreen_top.gbr
+    hardware/cards/register/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/silkscreen_top.gbr
+13ca2731
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/fab/CAMOutputs/GerberFiles/soldermask_bottom.gbr
+    hardware/cards/register/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/soldermask_bottom.gbr
+16a9037e
+    hardware/cards/register/eagle/deprecated/v1.0-no-address/fab/CAMOutputs/GerberFiles/soldermask_top.gbr
+    hardware/cards/register/eagle/deprecated/v1.0/fab/CAMOutputs/GerberFiles/soldermask_top.gbr
+995b4a28
+    hardware/cards/register/eagle/v1.1/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/register/eagle/v1.1/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+4320745d
+    hardware/cards/sequencer-logic/eagle/deprecated/v2.0/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/sequencer-logic/eagle/deprecated/v2.0/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+5807d893
+    hardware/cards/sequencer-logic/eagle/v2.1/bom/Sequencer-Logic-Prod-V2.1l.csv
+    hardware/cards/sequencer-logic/eagle/v2.1/fab/CAMOutputs/Assembly/Sequencer-Logic-Prod-V2.1l.csv
+cf8fea3e
+    hardware/cards/sequencer-logic/eagle/v2.1/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/sequencer-logic/eagle/v2.1/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+33be67d3
+    hardware/cards/sequencer-memory/eagle/deprecated/v2.0/fab/CAMOutputs/Assembly/Sequencer-Memory-V1.0-3.csv
+    hardware/cards/sequencer-memory/eagle/deprecated/v2.0/fab/CAMOutputs/Assembly/Sequencer-Memory-V2.0.csv
+    hardware/cards/sequencer-memory/eagle/v2.1/fab/CAMOutputs/Assembly/Sequencer-Memory-V1.0-3.csv
+    hardware/cards/sequencer-memory/eagle/v2.1/fab/CAMOutputs/Assembly/Sequencer-Memory-V2.0.csv
+04c069e0
+    hardware/cards/sequencer-memory/eagle/deprecated/v2.0/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/sequencer-memory/eagle/deprecated/v2.0/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+4ef03c02
+    hardware/cards/sequencer-memory/eagle/deprecated/v2.0/fab/CAMOutputs/GerberFiles/profile.gbr
+    hardware/cards/sequencer-memory/eagle/v2.1/fab/CAMOutputs/GerberFiles/profile.gbr
+ddef4a86
+    hardware/cards/sequencer-memory/eagle/v2.1/bom/Sequencer-Memory-V2.1.csv
+    hardware/cards/sequencer-memory/eagle/v2.1/fab/CAMOutputs/Assembly/Sequencer-Memory-V2.1.csv
+b09f94f1
+    hardware/cards/sequencer-memory/eagle/v2.1/fab/CAMOutputs/DrillFiles/drill_1_16.xln
+    hardware/cards/sequencer-memory/eagle/v2.1/fab/CAMOutputs/GerberFiles/drill_1_16.xln
+731a3b52
+    hardware/libraries/eagle/Libraries/Adafruit-Eagle-Library-master/README.md
+    hardware/libraries/eagle/Libraries/Adafruit-Eagle-Library-master/README.txt
+ea699060
+    software/disassembler/disasm2/nbproject/configurations.xml
+    tests/bus-tester-scripts/Gen Test Vectors/gen test vectors/nbproject/configurations.xml
+5438f8cc
+    software/ubasic-c/ubasic-master-orig/LICENSE
+    software/ubasic-c/ubasic-master/LICENSE
+4a3dc3ad
+    software/ubasic-c/ubasic-master-orig/nbproject/configurations.xml
+    software/ubasic-c/ubasic-master/nbproject/configurations.xml
+581839fa
+    software/ubasic-c/ubasic-master-orig/tests.c
+    software/ubasic-c/ubasic-master/tests.c
+ab458adf
+    software/ubasic-c/ubasic-master-orig/vartype.h
+    software/ubasic-c/ubasic-master/vartype.h
+ab111cc4
+    tests/bus-tester-scripts/deprecated/gen1-2016/ALU/data
+    tests/bus-tester-scripts/deprecated/gen1-2016/Test Vectors/Registers/BASICREG.txt

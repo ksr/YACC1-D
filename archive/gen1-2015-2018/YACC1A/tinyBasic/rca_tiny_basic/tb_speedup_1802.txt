@@ -1,0 +1,66 @@
+
+;...I found that execution became excruciatingly slow, 
+;simply due to the memory scan for GOTOs, GOSUBs, and RETURNs. 
+;A simple patch to the interpreter converts it to a binary search,
+;for about an order of magnitude speedup in execution time. 
+;The necessary changes are listed in the Appendix. 
+;- Tom Pittman, The First Book of Tiny BASIC Programs"
+
+"TinyBasic interpreter Copyright 1976 Itty Bitty Computers,
+ used by permission." 
+
+
+APPENDIX - Binary Search Speedup Code 1802 
+
+0000 ...1802 TINY BASIC BINARY SEARCH SPEEDUP -- 81 MAY 9 
+0000 ...NOTE: one-byte Lines with Line in [3328 35831 bomb
+ 
+05DA COOOCO; LBR SRCH [05DDH must be "FLINE" - HRJ]
+
+00C0 ; ORG 192 .. ASSUME THIS IS VACANT 
+00CO BB; SRCH: PHI 11 
+0OC1 4D; LDA 13 
+0OC2 AB; PLO 11 
+0OC3 1D; INC 13 
+0OC4 1D; INC 13 
+0OC5 4D; LDA 13 .. GET PROG END
+0OC6 FF01; SMI 1 
+0OC8 B8; PHI 8 
+0OC9 E2; HALF: SEX 2 .. BISECT THE REGION
+OOCA 9B; GHI 11 
+OOCB 52; STR 2 
+00CC 98; GHI 8 
+OOCD F7; SM 
+OOCE CB05DD; LBNF FLINE 
+OOD1 F6; SHR 
+OOD2 C205DD; LBZ FLINE .. TOO SMALL 
+OOD5 F4; ADD
+OOD6 BF; PHI 15 
+OOD7 F800; LDI 0 
+OOD9 AF; PLO 15 
+OODA 1F; INC 15 
+OODB 4F; FLNO: LDA 15 .. FIND A LINE NUMBER 
+O0DC FBOD; XRI 13 
+OODE 3ADB; BNZ FLNO
+OOEO 1F; INC 15 
+OOE1 7C01; ADCI 1 
+OOE3 F6; SHR 
+OOE4 33DA; BDF FLNO-1 ..(SKIP TWO TO SYNC) 
+OOE6 EF; SEX 15 
+OOE7 4F; LDA 15 END? 
+OOE8 Fl; OR 
+OOE9 32F8 BZ HIGH .. YES. 
+OOEB 8A; GLO 10 
+OOEC F7; Sm 
+OOED 2F; DEC 15 
+OOEE 9A; GHI 10 
+OOEF 77; SMB 
+00F0 3BF8; BNF HIGH 
+0OF2 8F; GLO 15 .. TOO LOW
+0OF3 AB; PLO 11 
+0OF4 9F; GHI 15 
+0OF5 BB; PHI 11 
+0OF6 30C9; BR HALF 
+0OF8 9F; HIGH: GHI 15 .. TOO HIGH 
+0OF9 30C8; BR HALF-1 102 
+

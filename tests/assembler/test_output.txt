@@ -1,0 +1,4617 @@
+RC/asm v2.2
+by Michael H. Riley
+
+yacc1 -> Native
+2 Classes read.
+92 Patterns read.
+    1 0000:             
+    2 0000:             ;
+    3 0000:             ; Hardware info
+    4 0000:             UARTA0:       EQU 000h
+    5 0000:             UARTA1:       EQU 008h
+    6 0000:             UARTA2:       EQU 010h
+    7 0000:             UARTA3:       EQU 018h
+    8 0000:             UARTA4:       EQU 020h
+    9 0000:             UARTA5:       EQU 028h
+   10 0000:             UARTA6:       EQU 030h
+   11 0000:             UARTA7:       EQU 038h
+   12 0000:             
+   13 0000:             SWITCHLED:    EQU 001H
+   14 0000:             LCDENABLE:    EQU 002H
+   15 0000:             LCDREGISTER:  EQU 004H
+   16 0000:             UARTCS:       EQU 040H
+   17 0000:             TIL311:       EQU 080H
+   18 0000:             
+   19 0000:             CNTL-PORT:    EQU "P0"
+   20 0000:             DATAPORT:     EQU "P1"
+   21 0000:             
+   22 0000:             ;
+   23 0000:             ; Basic interpreter tokens
+   24 0000:             ;
+   25 0000:             TOKENIZER_ERROR: EQU 00
+   26 0000:             TOKENIZER_EOF: EQU 01
+   27 0000:             TOKENIZER_NUMBER: EQU 02
+   28 0000:             TOKENIZER_STRING: EQU 03
+   29 0000:             TOKENIZER_VARIABLE: EQU 04
+   30 0000:             TOKENIZER_LET: EQU 05
+   31 0000:             TOKENIZER_PRINT: EQU 06
+   32 0000:             TOKENIZER_IF: EQU 07
+   33 0000:             TOKENIZER_THEN: EQU 08
+   34 0000:             TOKENIZER_ELSE: EQU 09
+   35 0000:             TOKENIZER_FOR: EQU 10
+   36 0000:             TOKENIZER_TO: EQU 11
+   37 0000:             TOKENIZER_NEXT: EQU 12
+   38 0000:             TOKENIZER_GOTO: EQU 13
+   39 0000:             TOKENIZER_GOSUB: EQU 14
+   40 0000:             TOKENIZER_RETURN: EQU 15
+   41 0000:             TOKENIZER_CALL: EQU 16
+   42 0000:             TOKENIZER_REM: EQU 17
+   43 0000:             TOKENIZER_PEEK: EQU 18
+   44 0000:             TOKENIZER_POKE: EQU 19
+   45 0000:             TOKENIZER_END: EQU 20
+   46 0000:             TOKENIZER_COMMA: EQU 21
+   47 0000:             TOKENIZER_SEMICOLON: EQU 22
+   48 0000:             TOKENIZER_PLUS: EQU 23
+   49 0000:             TOKENIZER_MINUS: EQU 24
+   50 0000:             TOKENIZER_AND: EQU 25
+   51 0000:             TOKENIZER_OR: EQU 26
+   52 0000:             TOKENIZER_ASTR: EQU 27
+   53 0000:             TOKENIZER_SLASH: EQU 28
+   54 0000:             TOKENIZER_MOD: EQU 29
+   55 0000:             TOKENIZER_HASH: EQU 30
+   56 0000:             TOKENIZER_LEFTP: EQU 31
+   57 0000:             TOKENIZER_RIGHTP: EQU 32
+   58 0000:             TOKENIZER_LT: EQU 33
+   59 0000:             TOKENIZER_GT: EQU 34
+   60 0000:             TOKENIZER_EQ: EQU 35
+   61 0000:             TOKENIZER_CR: EQU 36
+   62 0000:             TOKENIZER_LINENUM: EQU 37
+   63 0000:             
+   64 0000:             ;
+   65 0000:             ; MONITOR MODES
+   66 0000:             ;
+   67 0000:             NOMODE:       EQU 0
+   68 0000:             EXAMINEMODE:  EQU 1
+   69 0000:             DUMPMODE:     EQU 2
+   70 0000:             BLOCKMODE:    EQU 3
+   71 0000:             FILLMODE:     EQU 4
+   72 0000:             
+   73 0000:             ;
+   74 0000:             ; Setup Stack, use R1
+   75 0000:             ;
+   76 0000:             STACK: EQU 0FFFh
+   77 0000:             
+   78 0000:             ;
+   79 0000:             ; remap eprom from 0x0000 to 0xf000 by initial access to 0xf003 via BRanch
+   80 0000:             ;
+   81 0000:                      ORG 0f000h
+   82 f000: a0 f0 03             BR eprom
+   83 f003:                      ORG 0f003h
+   84 f003:             eprom:
+   85 f003:             ;
+   86 f003:             ; Setup Stack
+   87 f003:             ;
+   88 f003: 19 0f ff             MVIW R1,STACK
+   89 f006:             
+   90 f006:             ;
+   91 f006:             ; BASIC interpreter user variables area
+   92 f006:             ; currently 26 1-byte variables
+   93 f006:             ; for now must be 0xAA00 (256 byte) aligned
+   94 f006:             ;
+   95 f006:             BASIC_VARS: EQU 0100h
+   96 f006:             
+   97 f006:             ;
+   98 f006:             ; Basic interpreter internal variables
+   99 f006:             ;
+  100 f006:             emu_mode: EQU 01f0H
+  101 f006:             ;
+  102 f006:             bas_ended: EQU 0200h
+  103 f006:             
+  104 f006:             ;
+  105 f006:             ; for next statement stack ptr and stack data
+  106 f006:             ;
+  107 f006:             ; for next stack data
+  108 f006:             ; format
+  109 f006:             ;   2 bytes for variable id (only first byte used for now)
+  110 f006:             ;   2 bytes to value (upper value) (format HL) (only first byte used for now)
+  111 f006:             ;   2 bytes ptr to line after for instruction (format HL)
+  112 f006:             ; later add step amount
+  113 f006:             ;
+  114 f006:             bas_forstackptr: EQU 0202h
+  115 f006:             bas_forstack: EQU 0204h
+  116 f006:             
+  117 f006:             ;
+  118 f006:             ; gosub stack ptr and data
+  119 f006:             ;
+  120 f006:             ; gosub STACK
+  121 f006:             ; format
+  122 f006:             ;   2 bytes return location ptr
+  123 f006:             ;
+  124 f006:             bas_gosubptr: EQU 0240h
+  125 f006:             bas_gosubstack: EQU 0242h
+  126 f006:             
+  127 f006:             ;
+  128 f006:             ; Basic interpreter text line buffer
+  129 f006:             ;
+  130 f006:             parse_input_line: EQU 300h
+  131 f006:             parse_token_buffer: EQU 400h
+  132 f006:             
+  133 f006:             ;
+  134 f006:             ; basic interpreter, add IO and peek/poke
+  135 f006:             ;
+  136 f006:             
+  137 f006:             ;
+  138 f006:             ; SERIAL OUT SETUP
+  139 f006:             ;
+  140 f006: 70 58                OUTI  P0,(UARTA3!UARTCS)
+  141 f008: 71 80                OUTI  P1,080H
+  142 f00a:             
+  143 f00a: 70 40                OUTI  P0,(UARTA0!UARTCS)
+  144 f00c: 71 0c                OUTI  P1,12
+  145 f00e:             
+  146 f00e: 70 48                OUTI  P0,(UARTA1!UARTCS)
+  147 f010: 71 00                OUTI  P1,00
+  148 f012:             
+  149 f012: 70 58                OUTI  P0,(UARTA3!UARTCS)
+  150 f014: 71 03                OUTI  P1,03H
+  151 f016:             
+  152 f016:             ; Set intial monitor mode
+  153 f016:             
+  154 f016: 16 00                MVIB R6,NOMODE
+  155 f018:             ;
+  156 f018:             ; Main
+  157 f018:             ;
+  158 f018: 04 f7 e2              JSR lblink
+  159 f01b: 1a f8 08              MVIW R2,hello
+  160 f01e: 04 f7 60              JSR stringout
+  161 f021:             ;
+  162 f021:             ; additional proof of life
+  163 f021:             ;
+  164 f021:             ; show first 16 bytes of ROM & REGISTERS
+  165 f021:             ;
+  166 f021: 1b f0 00             MVIW R3,0f000h
+  167 f024: 04 f6 4f             JSR showaddr
+  168 f027: 04 f6 eb             JSR show16
+  169 f02a: 04 f6 b6             JSR showregs
+  170 f02d: 1a f8 28             MVIW R2,CRLF
+  171 f030: 04 f7 60             JSR stringout
+  172 f033:             ;
+  173 f033:             ; show test code addr to use with go command
+  174 f033:             ;
+  175 f033: 1b f0 42             MVIW R3,tttt
+  176 f036: 04 f6 4f             JSR showaddr
+  177 f039: 1a f8 28             MVIW R2,CRLF
+  178 f03c: 04 f7 60             JSR stringout
+  179 f03f:             ;
+  180 f03f:             ; if INPUT high start the monitor
+  181 f03f:             ;
+  182 f03f: a3 f4 42             BRINH cmdloop
+  183 f042:             ;
+  184 f042:             ; else run test/code below at completetion blink OUT LED forever
+  185 f042:             ;
+  186 f042:             tttt:
+  187 f042: 1a fd 0f            MVIW R2,TESTMSG
+  188 f045: 04 f7 60            JSR stringout
+  189 f048:             
+  190 f048: 04 f0 98            jsr add16tests
+  191 f04b:             
+  192 f04b: 1c ff fa            mviw r4,0FFFAh
+  193 f04e: 1d 00 02            mviw r5,0002h
+  194 f051: 04 f0 5c            jsr mul16
+  195 f054:             
+  196 f054: 0e 05               LDAI 5
+  197 f056: 1a f7 f7            MVIW R2,nblink
+  198 f059: 06 02               JSRUR R2
+  199 f05b:             
+  200 f05b: 03                  halt
+  201 f05c:             
+  202 f05c:             mul16:
+  203 f05c:             ;
+  204 f05c:             ; Multiple numbers in R4 and R5
+  205 f05c:             ;
+  206 f05c:             ; R4 = product accumulator
+  207 f05c:             ; R6 = Bit counter
+  208 f05c:             ;
+  209 f05c: 1f 00 00            MVIW R7,0
+  210 f05f: 1e 00 10            MVIW R6,10h
+  211 f062: 04 f6 b6            jsr showregs
+  212 f065:             
+  213 f065:             mulloop:
+  214 f065: 04 f6 b6            jsr showregs
+  215 f068:             
+  216 f068: 25                  mvrla r5
+  217 f069: b3 01               andi  01h
+  218 f06b: a1 f0 71            brz mulskip
+  219 f06e: 04 f0 87            jsr muladd16
+  220 f071:             mulskip:
+  221 f071:             ;
+  222 f071:             ; clear carry flag HACK
+  223 f071:             ;
+  224 f071: b0 00               addi 0
+  225 f073:             ;
+  226 f073: 24                  mvrla r4
+  227 f074: e0                  cshl
+  228 f075: 34                  mvarl r4
+  229 f076: 2c                  mvrha r4
+  230 f077: e0                  cshl
+  231 f078: 3c                  mvarh r4
+  232 f079:             
+  233 f079: b0 00               addi 0
+  234 f07b: 2d                  mvrha r5
+  235 f07c: e1                  cshr
+  236 f07d: 3d                  mvarh r5
+  237 f07e: 25                  mvrla r5
+  238 f07f: e1                  cshr
+  239 f080: 35                  mvarl r5
+  240 f081:             
+  241 f081: 5e                  decr r6
+  242 f082: 26                  mvrla r6
+  243 f083: a2 f0 65            brnz mulloop
+  244 f086: 05                  ret
+  245 f087:             
+  246 f087:             muladd16:
+  247 f087:             
+  248 f087: 27                  MVRLA R7
+  249 f088: 0b                  MVAT
+  250 f089: 24                  mvrla r4
+  251 f08a: b8                  ADDT
+  252 f08b: 37                  mvarl r7
+  253 f08c:             
+  254 f08c: 2f                  mvrha r7
+  255 f08d: 0b                  MVAT
+  256 f08e: 2c                  mvrha r4
+  257 f08f: e3                  addtc
+  258 f090: 3f                  mvarh r7
+  259 f091: 05                  ret
+  260 f092:             
+  261 f092:             alltests:
+  262 f092:             ;         jsr shltest
+  263 f092:             ;         JSR shrtest
+  264 f092:             ;         jsr rshltest
+  265 f092:             ;         jsr rshrtest
+  266 f092:             ;         jsr cshltest
+  267 f092:             ;         JSR cshrtest
+  268 f092:             ;         JSR pshltest
+  269 f092:             ;         JSR additest
+  270 f092:             ;         JSR addictest
+  271 f092:             ;         JSR subtest
+  272 f092:             ;         JSR cmptest
+  273 f092:             ;         JSR shrtest
+  274 f092:             ;         JSR shltest
+  275 f092:             ;         JSR rshrtest
+  276 f092:             ;         JSR rshltest
+  277 f092:             ;         JSR cshltest
+  278 f092:             ;         JSR cshrtest
+  279 f092:             ;         JSR accumtest
+  280 f092:             ;         JSR pushpoptest
+  281 f092:             ;         JSR ortest
+  282 f092:             ;         JSR orttest
+  283 f092:             ;         JSR additest
+  284 f092:             ;         JSR movrrtest
+  285 f092:             ;         JSR add16tests
+  286 f092:             
+  287 f092:             testsdone:
+  288 f092: 04 f7 e2              JSR lblink
+  289 f095: a0 f0 92              BR testsdone
+  290 f098:             
+  291 f098:             ;
+  292 f098:             ; Individual Tests
+  293 f098:             ;
+  294 f098:             
+  295 f098:             ;
+  296 f098:             ; 16 bit add carry tests
+  297 f098:             ;
+  298 f098:             add16tests:
+  299 f098:             ;
+  300 f098:             ; add r4 and r5
+  301 f098:             ;
+  302 f098:             
+  303 f098: 1c ff fa          mviw r4,0FFFAh
+  304 f09b: 1d ff fc          mviw r5,0FFFCh
+  305 f09e: 04 f6 b6          jsr showregs
+  306 f0a1: 04 f0 c6          jsr do_add16
+  307 f0a4: 04 f6 b6          jsr showregs
+  308 f0a7:             
+  309 f0a7: 1c 56 89          mviw r4,05689h
+  310 f0aa: 1d ab cd          mviw r5,0abcdh
+  311 f0ad: 04 f6 b6          jsr showregs
+  312 f0b0: 04 f0 c6          jsr do_add16
+  313 f0b3: 04 f6 b6          jsr showregs
+  314 f0b6:             
+  315 f0b6: 1c ff fa          mviw r4,0FFFAh
+  316 f0b9: 1d ff fe          mviw r5,0FFFEh
+  317 f0bc: 04 f6 b6          jsr showregs
+  318 f0bf: 04 f0 c6          jsr do_add16
+  319 f0c2: 04 f6 b6          jsr showregs
+  320 f0c5: 05                ret
+  321 f0c6:             
+  322 f0c6:             
+  323 f0c6:             do_add16:
+  324 f0c6: 24                MVRLA R4
+  325 f0c7: 0b                MVAT
+  326 f0c8: 25                mvrla r5
+  327 f0c9: b8                ADDT
+  328 f0ca: 34                mvarl r4
+  329 f0cb: 2c                mvrha r4
+  330 f0cc: 0b                MVAT
+  331 f0cd: 2d                mvrha r5
+  332 f0ce: e3                addtc
+  333 f0cf: 3c                mvarh r4
+  334 f0d0: 05                ret
+  335 f0d1:             ;
+  336 f0d1:             ; pushr popr test
+  337 f0d1:             ;
+  338 f0d1: 1b 0f f0             MVIW R3,0ff0h
+  339 f0d4: 0f 51                movrr r1,r5
+  340 f0d6: 04 f6 4f             JSR showaddr
+  341 f0d9: 04 f6 eb             JSR show16
+  342 f0dc: 04 f6 b6             JSR showregs
+  343 f0df: 1a f8 28             MVIW R2,CRLF
+  344 f0e2: 04 f7 60             JSR stringout
+  345 f0e5:             
+  346 f0e5: 1e 12 34             mviw r6,01234h
+  347 f0e8: 0f 51                movrr r1,r5
+  348 f0ea: 1b 0f f0             MVIW R3,0ff0h
+  349 f0ed: 04 f6 4f             JSR showaddr
+  350 f0f0: 04 f6 eb             JSR show16
+  351 f0f3: 04 f6 b6             JSR showregs
+  352 f0f6: 1a f8 28             MVIW R2,CRLF
+  353 f0f9: 04 f7 60             JSR stringout
+  354 f0fc:             
+  355 f0fc: 07 06                pushr r6
+  356 f0fe: 0f 51                movrr r1,r5
+  357 f100: 1b 0f f0             MVIW R3,0ff0h
+  358 f103: 04 f6 4f             JSR showaddr
+  359 f106: 04 f6 eb             JSR show16
+  360 f109: 04 f6 b6             JSR showregs
+  361 f10c: 1a f8 28             MVIW R2,CRLF
+  362 f10f: 04 f7 60             JSR stringout
+  363 f112:             
+  364 f112: 1e 00 00             mviw r6,0h
+  365 f115: 0f 51                movrr r1,r5
+  366 f117: 1b 0f f0             MVIW R3,0ff0h
+  367 f11a: 04 f6 4f             JSR showaddr
+  368 f11d: 04 f6 eb             JSR show16
+  369 f120: 04 f6 b6             JSR showregs
+  370 f123: 1a f8 28             MVIW R2,CRLF
+  371 f126: 04 f7 60             JSR stringout
+  372 f129:             
+  373 f129: 08 60                popr r6
+  374 f12b: 0f 51                movrr r1,r5
+  375 f12d: 1b 0f f0             MVIW R3,0ff0h
+  376 f130: 04 f6 4f             JSR showaddr
+  377 f133: 04 f6 eb             JSR show16
+  378 f136: 04 f6 b6             JSR showregs
+  379 f139: 1a f8 28             MVIW R2,CRLF
+  380 f13c: 04 f7 60             JSR stringout
+  381 f13f: 05                   ret
+  382 f140:             
+  383 f140:             ;
+  384 f140:             ; Register to Register move test
+  385 f140:             ;
+  386 f140:             movrrtest:
+  387 f140: 1a fd 01            MVIW   R2,MOVRRHELP
+  388 f143: 04 f7 60            JSR    stringout
+  389 f146:             
+  390 f146: 1b 12 34            MVIW R3,1234h
+  391 f149: 18 56 78            MVIW R8,5678h
+  392 f14c:             
+  393 f14c: 04 f1 d1            jsr showreg38
+  394 f14f:             
+  395 f14f: 0f 83               MOVRR R3,R8
+  396 f151:             
+  397 f151: 04 f1 d1            jsr showreg38
+  398 f154:             
+  399 f154: 1b 43 21            MVIW R3,4321h
+  400 f157:             
+  401 f157: 04 f1 d1            jsr showreg38
+  402 f15a:             
+  403 f15a: 1a 12 34            MVIW R2,1234h
+  404 f15d: 19 56 78            MVIW R9,5678h
+  405 f160:             
+  406 f160: 04 f2 02            jsr showreg29
+  407 f163:             
+  408 f163: 0f 92               MOVRR R2,R9
+  409 f165:             
+  410 f165: 04 f2 02            jsr showreg29
+  411 f168:             
+  412 f168:             
+  413 f168: 1a 43 21            MVIW R2,4321h
+  414 f16b:             
+  415 f16b: 04 f2 02            jsr showreg29
+  416 f16e:             
+  417 f16e: 05                  ret
+  418 f16f:             
+  419 f16f:             ;
+  420 f16f:             ; sho registers (hard coded)
+  421 f16f:             ;
+  422 f16f:             showreg23:
+  423 f16f: 0e 00               LDAI 0h
+  424 f171: 04 f7 58            JSR ledout
+  425 f174: 2a                  MVRHA r2
+  426 f175: 04 f7 5c            JSR TIL311out
+  427 f178: 04 f7 b2            JSR switchtoggle
+  428 f17b: 0e 01               LDAI 1h
+  429 f17d: 04 f7 58            JSR ledout
+  430 f180: 22                  MVRLA r2
+  431 f181: 04 f7 5c            JSR TIL311out
+  432 f184: 04 f7 b2            JSR switchtoggle
+  433 f187: 0e 02               LDAI 2h
+  434 f189: 04 f7 58            JSR ledout
+  435 f18c: 2b                  MVRHA r3
+  436 f18d: 04 f7 5c            JSR TIL311out
+  437 f190: 04 f7 b2            JSR switchtoggle
+  438 f193: 0e 03               LDAI 3h
+  439 f195: 04 f7 58            JSR ledout
+  440 f198: 23                  MVRLA r3
+  441 f199: 04 f7 5c            JSR TIL311out
+  442 f19c: 04 f7 b2            JSR switchtoggle
+  443 f19f: 05                  ret
+  444 f1a0:             
+  445 f1a0:             showreg34:
+  446 f1a0: 0e 00               LDAI 0h
+  447 f1a2: 04 f7 58            JSR ledout
+  448 f1a5: 2b                  MVRHA r3
+  449 f1a6: 04 f7 5c            JSR TIL311out
+  450 f1a9: 04 f7 b2            JSR switchtoggle
+  451 f1ac: 0e 01               LDAI 1h
+  452 f1ae: 04 f7 58            JSR ledout
+  453 f1b1: 23                  MVRLA r3
+  454 f1b2: 04 f7 5c            JSR TIL311out
+  455 f1b5: 04 f7 b2            JSR switchtoggle
+  456 f1b8: 0e 02               LDAI 2h
+  457 f1ba: 04 f7 58            JSR ledout
+  458 f1bd: 2c                  MVRHA r4
+  459 f1be: 04 f7 5c            JSR TIL311out
+  460 f1c1: 04 f7 b2            JSR switchtoggle
+  461 f1c4: 0e 03               LDAI 3h
+  462 f1c6: 04 f7 58            JSR ledout
+  463 f1c9: 24                  MVRLA r4
+  464 f1ca: 04 f7 5c            JSR TIL311out
+  465 f1cd: 04 f7 b2            JSR switchtoggle
+  466 f1d0: 05                  ret
+  467 f1d1:             
+  468 f1d1:             showreg38:
+  469 f1d1: 0e 00               LDAI 0h
+  470 f1d3: 04 f7 58            JSR ledout
+  471 f1d6: 2b                  MVRHA r3
+  472 f1d7: 04 f7 5c            JSR TIL311out
+  473 f1da: 04 f7 b2            JSR switchtoggle
+  474 f1dd: 0e 01               LDAI 1h
+  475 f1df: 04 f7 58            JSR ledout
+  476 f1e2: 23                  MVRLA r3
+  477 f1e3: 04 f7 5c            JSR TIL311out
+  478 f1e6: 04 f7 b2            JSR switchtoggle
+  479 f1e9: 0e 02               LDAI 2h
+  480 f1eb: 04 f7 58            JSR ledout
+  481 f1ee: 28                  MVRHA r8
+  482 f1ef: 04 f7 5c            JSR TIL311out
+  483 f1f2: 04 f7 b2            JSR switchtoggle
+  484 f1f5: 0e 03               LDAI 3h
+  485 f1f7: 04 f7 58            JSR ledout
+  486 f1fa: 28                  MVRLA r8
+  487 f1fb: 04 f7 5c            JSR TIL311out
+  488 f1fe: 04 f7 b2            JSR switchtoggle
+  489 f201: 05                  ret
+  490 f202:             showreg29:
+  491 f202: 0e 00               LDAI 0h
+  492 f204: 04 f7 58            JSR ledout
+  493 f207: 2a                  MVRHA r2
+  494 f208: 04 f7 5c            JSR TIL311out
+  495 f20b: 04 f7 b2            JSR switchtoggle
+  496 f20e: 0e 01               LDAI 1h
+  497 f210: 04 f7 58            JSR ledout
+  498 f213: 22                  MVRLA r2
+  499 f214: 04 f7 5c            JSR TIL311out
+  500 f217: 04 f7 b2            JSR switchtoggle
+  501 f21a: 0e 02               LDAI 2h
+  502 f21c: 04 f7 58            JSR ledout
+  503 f21f: 29                  MVRHA r9
+  504 f220: 04 f7 5c            JSR TIL311out
+  505 f223: 04 f7 b2            JSR switchtoggle
+  506 f226: 0e 03               LDAI 3h
+  507 f228: 04 f7 58            JSR ledout
+  508 f22b: 29                  MVRLA r9
+  509 f22c: 04 f7 5c            JSR TIL311out
+  510 f22f: 04 f7 b2            JSR switchtoggle
+  511 f232: 05                  ret
+  512 f233:             ;
+  513 f233:             ; OR - OR accumulator immediate
+  514 f233:             ;
+  515 f233: 4f 52 20 54 
+            45 53 54 53 
+            20 2d 20 4f 
+            52 20 49 4e 
+            50 55 54 20 
+            53 57 49 54 
+            43 48 45 53 
+            20 57 49 54 
+            48 20 30 58 
+            35 35 20 28 
+            35 58 29 0a 
+            0d 00       ORHELP: DB "OR tests - or input switches with 0x55 (5x)",0ah,0dh,0
+  516 f261:             ortest:
+  517 f261: 1a f2 33             MVIW   R2,ORHELP
+  518 f264: 04 f7 60             JSR    stringout
+  519 f267: 12 05                MVIB   R2,5
+  520 f269:             orloop:
+  521 f269: 04 f7 b2             JSR switchtoggle
+  522 f26c: 70 01                OUTI P0,(SWITCHLED)
+  523 f26e: 91                   INP P1
+  524 f26f: b2 55                ORI  055H
+  525 f271: 61                   OUTA  P1
+  526 f272:             
+  527 f272: 5a                   DECR R2
+  528 f273: 22                   MVRLA R2
+  529 f274: a2 f2 69             BRNZ orloop
+  530 f277: 05                   RET
+  531 f278:             
+  532 f278:             ;
+  533 f278:             ; ADDI - ADD accumulator with immediate
+  534 f278:             ;
+  535 f278:             additest:
+  536 f278: 1a fc ae           MVIW   R2,ADDIHELP
+  537 f27b: 04 f7 60           JSR    stringout
+  538 f27e: 12 05              MVIB   R2,5
+  539 f280:             addiloop:
+  540 f280: 04 f7 b2           JSR switchtoggle
+  541 f283: 70 01              OUTI P0,(SWITCHLED)
+  542 f285: 91                 INP P1
+  543 f286: b0 02              ADDI 02h
+  544 f288: 61                 OUTA  P1
+  545 f289:             
+  546 f289: 5a                 DECR R2
+  547 f28a: 22                 MVRLA R2
+  548 f28b: a2 f2 80           BRNZ addiloop
+  549 f28e: 05                 RET
+  550 f28f:             
+  551 f28f:             ;
+  552 f28f:             ; ADDIC - ADD accumulator with immediate with carry
+  553 f28f:             ;
+  554 f28f:             addictest:
+  555 f28f: 1a fc d2          MVIW   R2,ADDICHELP
+  556 f292: 04 f7 60          JSR    stringout
+  557 f295: 12 05             MVIB   R2,5
+  558 f297:             addicloop:
+  559 f297: 04 f7 b2          JSR switchtoggle
+  560 f29a: 70 01             OUTI P0,(SWITCHLED)
+  561 f29c: 91                INP P1
+  562 f29d: e2 02             ADDIC 02h
+  563 f29f: 61                OUTA  P1
+  564 f2a0:             
+  565 f2a0: 5a                DECR R2
+  566 f2a1: 22                MVRLA R2
+  567 f2a2: a2 f2 97          BRNZ addicloop
+  568 f2a5: 05                RET
+  569 f2a6:             
+  570 f2a6:             ;
+  571 f2a6:             ; ORT - OR accumulator with tmp register
+  572 f2a6:             ;
+  573 f2a6:             orttest:
+  574 f2a6: 1a fc 96            MVIW   R2,ORTHELP
+  575 f2a9: 04 f7 60            JSR    stringout
+  576 f2ac: 12 05               MVIB   R2,5
+  577 f2ae:             ortloop:
+  578 f2ae: 04 f7 b2            JSR switchtoggle
+  579 f2b1: 70 01               OUTI P0,(SWITCHLED)
+  580 f2b3: 91                  INP P1
+  581 f2b4: 0b                  MVAT
+  582 f2b5: 04 f7 b2            JSR switchtoggle
+  583 f2b8: 70 01               OUTI P0,(SWITCHLED)
+  584 f2ba: 91                  INP P1
+  585 f2bb: ba                  ORT
+  586 f2bc: 61                  OUTA  P1
+  587 f2bd:             
+  588 f2bd: 5a                  DECR R2
+  589 f2be: 22                  MVRLA R2
+  590 f2bf: a2 f2 ae            BRNZ ortloop
+  591 f2c2: 05                  RET
+  592 f2c3:             ;
+  593 f2c3:             ; push pop tests - push 3 values onto stack, pop 3values from stack
+  594 f2c3:             ;
+  595 f2c3:             pushpoptest:
+  596 f2c3: 1a fc 7b             MVIW   R2,PUSHPOPHELP
+  597 f2c6: 04 f7 60             JSR    stringout
+  598 f2c9:             
+  599 f2c9: 12 03                MVIB   R2,3
+  600 f2cb:             ppenterloop:
+  601 f2cb: 04 f7 b2             JSR switchtoggle
+  602 f2ce: 70 01                OUTI P0,(SWITCHLED)
+  603 f2d0: 91                   INP P1
+  604 f2d1: 09                   push
+  605 f2d2:             
+  606 f2d2: 5a                   DECR R2
+  607 f2d3: 22                   MVRLA R2
+  608 f2d4: a2 f2 cb             BRNZ ppenterloop
+  609 f2d7:             
+  610 f2d7: 12 03                MVIB   R2,3
+  611 f2d9:             ppdisloop:
+  612 f2d9: 04 f7 b2            JSR switchtoggle
+  613 f2dc: 70 01               OUTI P0,(SWITCHLED)
+  614 f2de: 0a                  POP
+  615 f2df: 61                  OUTA  P1
+  616 f2e0: 5a                  DECR R2
+  617 f2e1: 22                  MVRLA R2
+  618 f2e2: a2 f2 d9            BRNZ ppdisloop
+  619 f2e5:             
+  620 f2e5: 05                  RET
+  621 f2e6:             ;
+  622 f2e6:             ; accumulator register Tests - move values between accumulator and register HI 8 bits
+  623 f2e6:             ;                              move values between accumulator and register LO 8 bits
+  624 f2e6:             ;
+  625 f2e6:             accumtest:
+  626 f2e6: 1a fc 68             MVIW   R2,accumhelp
+  627 f2e9: 04 f7 60             JSR    stringout
+  628 f2ec: 12 0a                MVIB   R2,10
+  629 f2ee:             accloop:
+  630 f2ee: 04 f7 b2             JSR switchtoggle
+  631 f2f1: 70 01                OUTI P0,(SWITCHLED)
+  632 f2f3: 91                   INP P1
+  633 f2f4: 3b                   MVARH R3
+  634 f2f5: 53                   INCR R3
+  635 f2f6: 2b                   MVRHA R3
+  636 f2f7: 61                   OUTA P1
+  637 f2f8: 04 f7 b2             JSR switchtoggle
+  638 f2fb: 70 01                OUTI P0,(SWITCHLED)
+  639 f2fd: 91                   INP P1
+  640 f2fe: 33                   MVARL R3
+  641 f2ff: 53                   INCR R3
+  642 f300: 23                   MVRLA R3
+  643 f301: 61                   OUTA P1
+  644 f302:             
+  645 f302: 5a                   DECR R2
+  646 f303: 22                   MVRLA R2
+  647 f304: a2 f2 ee             BRNZ accloop
+  648 f307: 05                   RET
+  649 f308:             ;
+  650 f308:             ; shift tests
+  651 f308:             ;
+  652 f308:             ; Shift left
+  653 f308:             ;
+  654 f308: 53 48 49 46 
+            54 20 4c 45 
+            46 54 20 2d 
+            20 53 48 49 
+            46 54 20 49 
+            4e 50 55 54 
+            20 53 57 49 
+            54 43 48 45 
+            53 20 28 35 
+            58 29 0a 0d 
+            00          SHIFT_LEFTHELP: DB "Shift Left - shift input switches (5x)",0ah,0dh,0
+  655 f331:             shltest:
+  656 f331: 1a f3 08             MVIW   R2,SHIFT_LEFTHELP
+  657 f334: 04 f7 60             JSR    stringout
+  658 f337: 12 05                MVIB   R2,5
+  659 f339:             shlloop:
+  660 f339: 04 f7 b2             JSR switchtoggle
+  661 f33c: 70 01                OUTI P0,(SWITCHLED)
+  662 f33e: 91                   INP P1
+  663 f33f: b6                   SHL
+  664 f340: 61                   OUTA  P1
+  665 f341:             
+  666 f341: 5a                   DECR R2
+  667 f342: 22                   MVRLA R2
+  668 f343: a2 f3 39             BRNZ shlloop
+  669 f346: 05                   RET
+  670 f347:             ;
+  671 f347:             ; shift Right
+  672 f347:             ;
+  673 f347: 53 48 49 46 
+            54 20 52 49 
+            47 48 54 20 
+            2d 20 53 48 
+            49 46 54 20 
+            49 4e 50 55 
+            54 20 53 57 
+            49 54 43 48 
+            45 53 20 28 
+            35 58 29 0a 
+            0d 00       SHIFT_RIGHTHELP: DB "Shift Right - shift input switches (5x)",0ah,0dh,0
+  674 f371:             shrtest:
+  675 f371: 1a f3 47              MVIW   R2,SHIFT_RIGHTHELP
+  676 f374: 04 f7 60              JSR    stringout
+  677 f377: 12 05                 MVIB   R2,5
+  678 f379:             shrloop:
+  679 f379: 04 f7 b2              JSR switchtoggle
+  680 f37c: 70 01                 OUTI P0,(SWITCHLED)
+  681 f37e: 91                    INP P1
+  682 f37f: b7                    SHR
+  683 f380: 61                    OUTA  P1
+  684 f381:             
+  685 f381: 5a                    DECR R2
+  686 f382: 22                    MVRLA R2
+  687 f383: a2 f3 79              BRNZ shrloop
+  688 f386: 05                    RET
+  689 f387:             ;
+  690 f387:             ; ring shift left
+  691 f387:             ;
+  692 f387:             rshltest:
+  693 f387: 1a fb ff             MVIW   R2,RSHIFT_LEFTHELP
+  694 f38a: 04 f7 60             JSR    stringout
+  695 f38d: 12 0a                MVIB   R2,10
+  696 f38f:             rshlloop:
+  697 f38f: 04 f7 b2             JSR switchtoggle
+  698 f392: 70 01                OUTI P0,(SWITCHLED)
+  699 f394: 91                   INP P1
+  700 f395: bd                   RSHL
+  701 f396: 61                   OUTA  P1
+  702 f397:             
+  703 f397: 5a                   DECR R2
+  704 f398: 22                   MVRLA R2
+  705 f399: a2 f3 8f             BRNZ rshlloop
+  706 f39c: 05                   RET
+  707 f39d:             ;
+  708 f39d:             ; ring shift right
+  709 f39d:             ;
+  710 f39d:             rshrtest:
+  711 f39d: 1a fc 11              MVIW   R2,RSHIFT_RIGHTHELP
+  712 f3a0: 04 f7 60              JSR    stringout
+  713 f3a3: 12 0a                 MVIB   R2,10
+  714 f3a5:             rshrloop:
+  715 f3a5: 04 f7 b2              JSR switchtoggle
+  716 f3a8: 70 01                 OUTI P0,(SWITCHLED)
+  717 f3aa: 91                    INP P1
+  718 f3ab: be                    RSHR
+  719 f3ac: 61                    OUTA  P1
+  720 f3ad:             
+  721 f3ad: 5a                    DECR R2
+  722 f3ae: 22                    MVRLA R2
+  723 f3af: a2 f3 a5              BRNZ rshrloop
+  724 f3b2: 05                    RET
+  725 f3b3:             ;
+  726 f3b3:             ; shift left and propagate sign bit
+  727 f3b3:             ;
+  728 f3b3:             pshltest:
+  729 f3b3: 1a fc 24              MVIW   R2,PSHIFT_LEFTHELP
+  730 f3b6: 04 f7 60              JSR    stringout
+  731 f3b9: 12 0a                 MVIB   R2,10
+  732 f3bb:             pshlloop:
+  733 f3bb: 04 f7 b2              JSR switchtoggle
+  734 f3be: 70 01                 OUTI P0,(SWITCHLED)
+  735 f3c0: 91                    INP P1
+  736 f3c1: bf                    PSHR
+  737 f3c2: 61                    OUTA  P1
+  738 f3c3:             
+  739 f3c3: 5a                    DECR R2
+  740 f3c4: 22                    MVRLA R2
+  741 f3c5: a2 f3 bb              BRNZ pshlloop
+  742 f3c8: 05                    RET
+  743 f3c9:             ;
+  744 f3c9:             ; ring shift left through carry bit
+  745 f3c9:             ;
+  746 f3c9:             cshltest:
+  747 f3c9: 1a fc 36              MVIW   R2,CSHIFT_LEFTHELP
+  748 f3cc: 04 f7 60              JSR    stringout
+  749 f3cf: 12 0a                 MVIB   R2,10
+  750 f3d1:             cshlloop:
+  751 f3d1: 04 f7 b2              JSR switchtoggle
+  752 f3d4: 70 01                 OUTI P0,(SWITCHLED)
+  753 f3d6: 91                    INP P1
+  754 f3d7: e1                    CSHR
+  755 f3d8: 61                    OUTA  P1
+  756 f3d9:             
+  757 f3d9: 5a                    DECR R2
+  758 f3da: 22                    MVRLA R2
+  759 f3db: a2 f3 d1              BRNZ cshlloop
+  760 f3de: 05                    RET
+  761 f3df:             ;
+  762 f3df:             ; ring shift right through carry bit
+  763 f3df:             ;
+  764 f3df:             cshrtest:
+  765 f3df: 1a fc 49              MVIW   R2,CSHIFT_RIGHTHELP
+  766 f3e2: 04 f7 60              JSR    stringout
+  767 f3e5: 12 0a                 MVIB   R2,10
+  768 f3e7:             cshrloop:
+  769 f3e7: 04 f7 b2              JSR switchtoggle
+  770 f3ea: 70 01                 OUTI P0,(SWITCHLED)
+  771 f3ec: 91                    INP P1
+  772 f3ed: e1                    CSHR
+  773 f3ee: 61                    OUTA  P1
+  774 f3ef:             
+  775 f3ef: 5a                    DECR R2
+  776 f3f0: 22                    MVRLA R2
+  777 f3f1: a2 f3 e7              BRNZ cshrloop
+  778 f3f4: 05                    RET
+  779 f3f5:             ;
+  780 f3f5:             ; subtraction tests
+  781 f3f5:             ;
+  782 f3f5:             subtest:
+  783 f3f5: 1a fc 5d              MVIW   R2,SUBHELP
+  784 f3f8: 04 f7 60              JSR    stringout
+  785 f3fb: 12 0a                 MVIB   R2,10
+  786 f3fd:             subloop:
+  787 f3fd: 04 f7 b2              JSR switchtoggle
+  788 f400: 70 01                 OUTI P0,(SWITCHLED)
+  789 f402: 91                    INP P1
+  790 f403: b1 01                 SUBI  1
+  791 f405: 61                    OUTA  P1
+  792 f406:             
+  793 f406: 5a                    DECR R2
+  794 f407: 22                    MVRLA R2
+  795 f408: a2 f3 fd              BRNZ subloop
+  796 f40b: 05                    RET
+  797 f40c:             ;
+  798 f40c:             ; Compare Tests/compare input switches to 0x55 10 times
+  799 f40c:             ;
+  800 f40c:             cmptest:
+  801 f40c: 1a fb ef              MVIW   R2,COMPAREHELP
+  802 f40f: 04 f7 60              JSR    stringout
+  803 f412: 12 0a                 MVIB   R2,10
+  804 f414: 0d 55                 LDTI   055H
+  805 f416:             cmploop:
+  806 f416: 04 f7 b2              JSR switchtoggle
+  807 f419: 70 01                 OUTI P0,(SWITCHLED)
+  808 f41b: 91                    INP P1
+  809 f41c: a9 f4 2a              BRGT OUTGT
+  810 f41f: a8 f4 2f              BREQ OUTEQ
+  811 f422: a7 f4 34              BRLT OUTLT
+  812 f425:             ;Should not happen
+  813 f425: 0e 3f                 LDAI '?'
+  814 f427: a0 f4 39              BR cmpres
+  815 f42a:             OUTGT:
+  816 f42a: 0e 47                 LDAI 'G'
+  817 f42c: a0 f4 39              BR cmpres
+  818 f42f:             OUTEQ:
+  819 f42f: 0e 45                 LDAI 'E'
+  820 f431: a0 f4 39              BR cmpres
+  821 f434:             OUTLT:
+  822 f434: 0e 4c                 LDAI 'L'
+  823 f436: a0 f4 39              BR cmpres
+  824 f439:             
+  825 f439:             cmpres:
+  826 f439: 04 f7 6e              JSR uartout
+  827 f43c: 5a                    DECR R2
+  828 f43d: 22                    MVRLA R2
+  829 f43e: a2 f4 16              BRNZ cmploop
+  830 f441: 05                    RET
+  831 f442:             
+  832 f442:             ;
+  833 f442:             ; Monitor
+  834 f442:             ;
+  835 f442:             
+  836 f442:             ; Single char
+  837 f442:             ;
+  838 f442:             ;
+  839 f442:             ; Commands
+  840 f442:             ;
+  841 f442:             ; H      - Display help menu
+  842 f442:             ;
+  843 f442:             ; T      - Test menu
+  844 f442:             ;
+  845 f442:             ; B AAAA - Show 256 bytes at address AAAA (16 byte aligned)
+  846 f442:             ;          followed by CR display next 256 bytes
+  847 f442:             ;
+  848 f442:             ; D AAAA - Show 16 bytes at address AAAA (16 byte aligned)
+  849 f442:             ;          followed by CR display next 16 bytes
+  850 f442:             ;
+  851 f442:             ; E AAAA - show contents of location AAAA (Output AAAA:XX)
+  852 f442:             ;          if followed by ASCII-HEX modify location with new value (and redisplay)
+  853 f442:             ;          if followed by CR display next location
+  854 f442:             ;
+  855 f442:             ; F AAAA - fill block with 0
+  856 f442:             ;          if followed by CR fill next location
+  857 f442:             ;
+  858 f442:             ; G AAAA - Jump to (and execute) starting at AAAA
+  859 f442:             ;          code could end in BR to 0xf000h to restart monitor or RET if called via JSR
+  860 f442:             ;
+  861 f442:             ; R      - SHOW REGISTERS
+  862 f442:             ;
+  863 f442:             ; Z      - Basic Interpreter
+  864 f442:             ;
+  865 f442:             ; Output Prompt
+  866 f442:             :
+  867 f442:             
+  868 f442:             cmdloop:
+  869 f442: 1a f8 25          MVIW R2,PROMPT
+  870 f445: 04 f7 60          JSR stringout
+  871 f448:             
+  872 f448: 04 f7 80          JSR uartin
+  873 f44b: 04 f6 46          JSR toupper
+  874 f44e:             ;
+  875 f44e:             ; added for emulator eat cr next 3 lines
+  876 f44e:             ;
+  877 f44e:             ;     push
+  878 f44e:             ;     JSR uartin
+  879 f44e:             ;     pop
+  880 f44e: 0d 48             LDTI 'H'
+  881 f450: aa f4 62          BRNEQ testexamine
+  882 f453: 1a f8 28          MVIW R2,CRLF
+  883 f456: 04 f7 60          JSR stringout
+  884 f459: 1a f8 cd          MVIW R2,helpmenu
+  885 f45c: 04 f7 60          JSR stringout
+  886 f45f: a0 f4 42          BR cmdloop
+  887 f462:             
+  888 f462:             testexamine:
+  889 f462: 0d 5a             LDTI 'Z'
+  890 f464: a8 f4 d2          BREQ cmd_basic
+  891 f467: 0d 42             LDTI 'B'
+  892 f469: a8 f4 e1          BREQ dumpblock
+  893 f46c: 0d 44             LDTI 'D'
+  894 f46e: a8 f4 f8          BREQ dump
+  895 f471: 0d 45             LDTI 'E'
+  896 f473: a8 f5 12          BREQ examine
+  897 f476: 0d 46             LDTI 'F'
+  898 f478: a8 f5 61          BREQ fillblock
+  899 f47b: 0d 47             LDTI 'G'
+  900 f47d: a8 f5 92          BREQ go
+  901 f480: 0d 4c             LDTI 'L'
+  902 f482: a8 f4 d8          BREQ cmd_basiclist
+  903 f485: 0d 52             LDTI 'R'
+  904 f487: a8 f5 9c          BREQ dumpreg
+  905 f48a: 0d 54             LDTI 'T'
+  906 f48c: a8 f5 a4          BREQ tests
+  907 f48f: 0d 0d             LDTI 0Dh
+  908 f491: a8 f4 ae          BREQ continue
+  909 f494:             ;
+  910 f494:             ; add for emulator
+  911 f494:             ;
+  912 f494: 0d 0a             LDTI 0ah
+  913 f496: a8 f4 ae          BREQ continue
+  914 f499:             
+  915 f499: 1a f8 28          MVIW R2,CRLF
+  916 f49c:             
+  917 f49c: 04 f7 60          JSR stringout
+  918 f49f:             
+  919 f49f: 1a f8 2b          MVIW R2,ERROR
+  920 f4a2: 04 f7 60          JSR stringout
+  921 f4a5:             
+  922 f4a5: 1a f8 cd          MVIW R2,helpmenu
+  923 f4a8: 04 f7 60          JSR stringout
+  924 f4ab: a0 f4 42          BR cmdloop
+  925 f4ae:             ;
+  926 f4ae:             continue:
+  927 f4ae: 26                 MVRLA R6
+  928 f4af:             
+  929 f4af: 0d 03              LDTI BLOCKMODE
+  930 f4b1: a8 f4 f2           BREQ dumpblockcont
+  931 f4b4:             
+  932 f4b4: 0d 02              LDTI DUMPMODE
+  933 f4b6: a8 f5 09           BREQ dumpcont
+  934 f4b9:             
+  935 f4b9: 0d 01              LDTI EXAMINEMODE
+  936 f4bb: a8 f5 23           BREQ examinecont
+  937 f4be:             
+  938 f4be: 0d 04              LDTI FILLMODE
+  939 f4c0: a8 f5 72           BREQ fillcont
+  940 f4c3: a0 f4 42           BR cmdloop
+  941 f4c6:             ;
+  942 f4c6:             ;      ERROR
+  943 f4c6:             ;
+  944 f4c6: 1a f8 43           MVIW R2,CONTINUEERROR
+  945 f4c9: 04 f7 60           JSR stringout
+  946 f4cc: a0 f4 42           BR cmdloop
+  947 f4cf:             
+  948 f4cf: a0 f4 cf    stop:   BR stop
+  949 f4d2:             
+  950 f4d2:             cmd_basic:
+  951 f4d2: 04 e3 76           jsr do_basic
+  952 f4d5: a0 f4 42           BR cmdloop
+  953 f4d8:             
+  954 f4d8:             cmd_basiclist:
+  955 f4d8: 1f e9 60            mviw r7,basic_test
+  956 f4db: 04 e4 aa            JSR tok_list
+  957 f4de: a0 f4 42            BR cmdloop
+  958 f4e1:             
+  959 f4e1:             dumpblock:
+  960 f4e1: 16 03              MVIB R6,BLOCKMODE
+  961 f4e3: 1a f8 65           MVIW R2,DUMPBLOCKMSG
+  962 f4e6: 04 f7 60           JSR stringout
+  963 f4e9: 04 f6 0a           jsr getaddress
+  964 f4ec: 1a f8 28           MVIW R2,CRLF
+  965 f4ef: 04 f7 60           JSR stringout
+  966 f4f2:             
+  967 f4f2:             dumpblockcont:
+  968 f4f2: 04 f7 05           jsr show256
+  969 f4f5: a0 f4 42           BR cmdloop
+  970 f4f8:             
+  971 f4f8:             dump:
+  972 f4f8: 16 02              MVIB R6,DUMPMODE
+  973 f4fa: 1a f8 58           MVIW R2,DUMPMSG
+  974 f4fd: 04 f7 60           JSR stringout
+  975 f500: 04 f6 0a           jsr getaddress
+  976 f503: 1a f8 28           MVIW R2,CRLF
+  977 f506: 04 f7 60           JSR stringout
+  978 f509:             
+  979 f509:             dumpcont:
+  980 f509: 04 f6 4f           jsr showaddr
+  981 f50c: 04 f6 eb           jsr show16
+  982 f50f: a0 f4 42           BR cmdloop
+  983 f512:             
+  984 f512:             examine:
+  985 f512: 16 01              MVIB R6,EXAMINEMODE
+  986 f514: 1a f8 99           MVIW R2,EXAMINEMSG
+  987 f517: 04 f7 60           JSR stringout
+  988 f51a: 04 f6 0a           jsr getaddress
+  989 f51d: 1a f8 28           MVIW R2,CRLF
+  990 f520: 04 f7 60           JSR stringout
+  991 f523:             
+  992 f523:             examinecont:
+  993 f523: 04 f6 4f          JSR showaddr
+  994 f526: 04 f7 1c          JSR showbyte
+  995 f529: 0e 20             LDAI ' '
+  996 f52b: 04 f7 6e          JSR uartout
+  997 f52e:             
+  998 f52e: 04 f7 80          JSR uartin
+  999 f531: 0d 1b             LDTI 01bh
+ 1000 f533: a8 f5 58          BREQ examdone
+ 1001 f536: 0d 0d             LDTI 0dh
+ 1002 f538: a8 f5 4a          BREQ examnext
+ 1003 f53b: 04 f6 36          JSR getnibblec
+ 1004 f53e: b6                SHL
+ 1005 f53f: b6                SHL
+ 1006 f540: b6                SHL
+ 1007 f541: b6                SHL
+ 1008 f542: 09                push
+ 1009 f543: 04 f6 33          jsr getnibble
+ 1010 f546: 0b                MVAT
+ 1011 f547: 0a                Pop
+ 1012 f548: ba                ORT
+ 1013 f549: 4b                STAVR R3
+ 1014 f54a:             
+ 1015 f54a:             examnext:
+ 1016 f54a: 53                INCR R3
+ 1017 f54b: 0e 0a             LDAI 0ah
+ 1018 f54d: 04 f7 6e          JSR uartout
+ 1019 f550: 0e 0d             LDAI 0dh
+ 1020 f552: 04 f7 6e          JSR uartout
+ 1021 f555: a0 f5 23          BR examinecont
+ 1022 f558:             examdone:
+ 1023 f558: 1a f8 28          MVIW R2,CRLF
+ 1024 f55b: 04 f7 60          JSR stringout
+ 1025 f55e: a0 f4 42          BR cmdloop
+ 1026 f561:             
+ 1027 f561:             fillblock:
+ 1028 f561: 16 04              MVIB R6,FILLMODE
+ 1029 f563: 1a f8 78           MVIW R2,FILLMSG
+ 1030 f566: 04 f7 60           JSR stringout
+ 1031 f569: 04 f6 0a           jsr getaddress
+ 1032 f56c: 1a f8 28           MVIW R2,CRLF
+ 1033 f56f: 04 f7 60           JSR stringout
+ 1034 f572:             
+ 1035 f572:             fillcont:
+ 1036 f572: 04 f6 4f          jsr showaddr
+ 1037 f575: 1a f8 28          MVIW R2,CRLF
+ 1038 f578: 04 f7 60          JSR stringout
+ 1039 f57b:             
+ 1040 f57b:             morefill:
+ 1041 f57b: 0e 00             LDAI 0
+ 1042 f57d: 4b                STAVR R3
+ 1043 f57e: 53                INCR R3
+ 1044 f57f: 23                MVRLA R3
+ 1045 f580: b3 ff             ANDI  0FFH
+ 1046 f582: a2 f5 7b          BRNZ morefill
+ 1047 f585: 0e 0a             LDAI 0ah
+ 1048 f587: 04 f7 6e          JSR uartout
+ 1049 f58a: 0e 0d             LDAI 0dh
+ 1050 f58c: 04 f7 6e          JSR uartout
+ 1051 f58f: a0 f4 42          BR cmdloop
+ 1052 f592:             
+ 1053 f592:             
+ 1054 f592:             go:
+ 1055 f592: 1a f8 8b          MVIW R2,GOMSG
+ 1056 f595: 04 f7 60          JSR stringout
+ 1057 f598: 04 f6 0a          jsr getaddress
+ 1058 f59b: db                BRVR R3
+ 1059 f59c:             
+ 1060 f59c:             dumpreg:
+ 1061 f59c: 04 f6 b6          JSR showregs
+ 1062 f59f: 16 00             MVIB R6,NOMODE
+ 1063 f5a1: a0 f4 42          BR cmdloop
+ 1064 f5a4:             
+ 1065 f5a4:             tests:
+ 1066 f5a4: 16 00             MVIB R6,NOMODE
+ 1067 f5a6: 1a f8 28          MVIW R2,CRLF
+ 1068 f5a9: 04 f7 60          JSR stringout
+ 1069 f5ac: 1b fd 1f          MVIW R3,testmenu
+ 1070 f5af: 1c 00 00          MVIW R4,0000h
+ 1071 f5b2:             
+ 1072 f5b2:             testsloop:
+ 1073 f5b2:             
+ 1074 f5b2: 53                INCR R3
+ 1075 f5b3: 53                INCR R3
+ 1076 f5b4: 43                LDAVR R3
+ 1077 f5b5: 3a                MVARH R2
+ 1078 f5b6: 53                INCR  R3
+ 1079 f5b7: 43                LDAVR R3
+ 1080 f5b8: 32                MVARL R2
+ 1081 f5b9: 53                INCR R3
+ 1082 f5ba: 42                LDAVR R2
+ 1083 f5bb: 0d 2d             LDTI '-'
+ 1084 f5bd: a8 f5 d6          BREQ testsloopdone
+ 1085 f5c0: 24                MVRLA R4
+ 1086 f5c1: 04 f7 2d          JSR showbytea
+ 1087 f5c4: 0e 2d             LDAI  '-'
+ 1088 f5c6: 04 f7 6e          JSR uartout
+ 1089 f5c9: 04 f7 60          JSR stringout
+ 1090 f5cc: 1a f8 28          MVIW R2,CRLF
+ 1091 f5cf: 04 f7 60          JSR stringout
+ 1092 f5d2: 54                INCR R4
+ 1093 f5d3: a0 f5 b2          BR testsloop
+ 1094 f5d6:             
+ 1095 f5d6:             testsloopdone:
+ 1096 f5d6:             ; get test number
+ 1097 f5d6:             ; multiple by 4 and add to test list base
+ 1098 f5d6:             ; JSR via register holding info
+ 1099 f5d6:             ;
+ 1100 f5d6: 1a f8 ba          MVIW R2,gettestpromopt
+ 1101 f5d9: 04 f7 60          JSR stringout
+ 1102 f5dc:             
+ 1103 f5dc: 04 f6 33          JSR getnibble
+ 1104 f5df: b6                SHL
+ 1105 f5e0: b6                SHL
+ 1106 f5e1: b6                SHL
+ 1107 f5e2: b6                SHL
+ 1108 f5e3: 09                push
+ 1109 f5e4: 04 f6 33          jsr getnibble
+ 1110 f5e7: 0b                MVAT
+ 1111 f5e8: 0a                Pop
+ 1112 f5e9: ba                ORT
+ 1113 f5ea:             ; calculate test address
+ 1114 f5ea: b6                shl
+ 1115 f5eb: b6                shl
+ 1116 f5ec: 04 f7 5c          JSR TIL311out
+ 1117 f5ef: 0b                MVAT
+ 1118 f5f0: 1b fd 1f          MVIW R3,testmenu
+ 1119 f5f3: 23                MVRLA R3
+ 1120 f5f4: b8                ADDT
+ 1121 f5f5: 33                MVARL R3
+ 1122 f5f6: 04 f7 5c          JSR TIL311out
+ 1123 f5f9: a6 f5 ff          BRC menucarry
+ 1124 f5fc: a0 f6 00          BR dotest
+ 1125 f5ff:             
+ 1126 f5ff:             menucarry:
+ 1127 f5ff: 53                incr r3
+ 1128 f600:             
+ 1129 f600:             dotest:
+ 1130 f600: 43                LDAVR R3
+ 1131 f601: 3c                MVARH R4
+ 1132 f602: 53                INCR  R3
+ 1133 f603: 43                LDAVR R3
+ 1134 f604: 34                MVARL R4
+ 1135 f605: 06 04             JSRUR R4
+ 1136 f607: a0 f4 42          BR cmdloop
+ 1137 f60a:             
+ 1138 f60a:             getaddress:
+ 1139 f60a:             ;
+ 1140 f60a:             ; Read 4 char address and return in R3
+ 1141 f60a:             ;
+ 1142 f60a: 09                      Push
+ 1143 f60b: 04 f6 33                JSR getnibble
+ 1144 f60e: b6                      SHL
+ 1145 f60f: b6                      SHL
+ 1146 f610: b6                      SHL
+ 1147 f611: b6                      SHL
+ 1148 f612: b3 f0                   ANDI 0f0h
+ 1149 f614: 09                      Push
+ 1150 f615: 04 f6 33                JSR getnibble
+ 1151 f618: b3 0f                   ANDI 0FH
+ 1152 f61a: 0b                      MVAT
+ 1153 f61b: 0a                      Pop
+ 1154 f61c: ba                      ORT
+ 1155 f61d: 3b                      MVARH R3
+ 1156 f61e:             
+ 1157 f61e: 04 f6 33                JSR getnibble
+ 1158 f621: b6                      SHL
+ 1159 f622: b6                      shl
+ 1160 f623: b6                      shl
+ 1161 f624: b6                      shl
+ 1162 f625: b3 f0                   ANDI 0f0h
+ 1163 f627: 09                      push
+ 1164 f628: 04 f6 33                JSR getnibble
+ 1165 f62b: b3 0f                   ANDI 0FH
+ 1166 f62d: 0b                      MVAT
+ 1167 f62e: 0a                      pop
+ 1168 f62f: ba                      ORT
+ 1169 f630: 33                      MVARL R3
+ 1170 f631: 0a                      POP
+ 1171 f632: 05                      RET
+ 1172 f633:             ;
+ 1173 f633:             ; getnibble return in accumulator
+ 1174 f633:             ;
+ 1175 f633:             getnibble:
+ 1176 f633: 04 f7 80              JSR uartin
+ 1177 f636:             getnibblec:
+ 1178 f636: 0d 39                 LDTI '9'
+ 1179 f638: a9 f6 3e              BRGT INAF
+ 1180 f63b: b1 30                 SUBI '0'
+ 1181 f63d: 05                    RET
+ 1182 f63e: 04 f6 46    INAF:     JSR toupper
+ 1183 f641: b1 41                 SUBI 'A'
+ 1184 f643: b0 0a                 ADDI 10
+ 1185 f645: 05                    RET
+ 1186 f646:             ;
+ 1187 f646:             ; convert to uppercase
+ 1188 f646:             ;
+ 1189 f646: 0d 5a       toupper:  LDTI 'Z'
+ 1190 f648: a9 f6 4c              BRGT lower
+ 1191 f64b: 05                    RET
+ 1192 f64c:             lower:
+ 1193 f64c: b1 20                 SUBI 020h
+ 1194 f64e: 05                    RET
+ 1195 f64f:             ;
+ 1196 f64f:             ; display R3 followed by a ":" and " " for showaddr and nothing for shownum
+ 1197 f64f:             ;
+ 1198 f64f: 09          showaddr:   Push
+ 1199 f650: 2b                      MVRHA R3
+ 1200 f651: b7                      SHR
+ 1201 f652: b7                      SHR
+ 1202 f653: b7                      SHR
+ 1203 f654: b7                      SHR
+ 1204 f655: 04 f7 3e                JSR shownibble
+ 1205 f658: 2b                      MVRHA R3
+ 1206 f659: b3 0f                   ANDI 0FH
+ 1207 f65b: 04 f7 3e                JSR shownibble
+ 1208 f65e: 23                      MVRLA R3
+ 1209 f65f: b7                      SHR
+ 1210 f660: b7                      SHR
+ 1211 f661: b7                      SHR
+ 1212 f662: b7                      SHR
+ 1213 f663: 04 f7 3e                JSR shownibble
+ 1214 f666: 23                      MVRLA R3
+ 1215 f667: b3 0f                   ANDI 0FH
+ 1216 f669: 04 f7 3e                JSR shownibble
+ 1217 f66c: 0e 3a                   LDAI ':'
+ 1218 f66e: 04 f7 6e                JSR uartout
+ 1219 f671: 0e 20                   LDAI ' '
+ 1220 f673: 04 f7 6e                JSR uartout
+ 1221 f676: 0a                      POP
+ 1222 f677: 05                      RET
+ 1223 f678:             
+ 1224 f678: 09          shownum:   Push
+ 1225 f679: 2b                      MVRHA R3
+ 1226 f67a: b7                      SHR
+ 1227 f67b: b7                      SHR
+ 1228 f67c: b7                      SHR
+ 1229 f67d: b7                      SHR
+ 1230 f67e: 04 f7 3e                JSR shownibble
+ 1231 f681: 2b                      MVRHA R3
+ 1232 f682: b3 0f                   ANDI 0FH
+ 1233 f684: 04 f7 3e                JSR shownibble
+ 1234 f687: 23                      MVRLA R3
+ 1235 f688: b7                      SHR
+ 1236 f689: b7                      SHR
+ 1237 f68a: b7                      SHR
+ 1238 f68b: b7                      SHR
+ 1239 f68c: 04 f7 3e                JSR shownibble
+ 1240 f68f: 23                      MVRLA R3
+ 1241 f690: b3 0f                   ANDI 0FH
+ 1242 f692: 04 f7 3e                JSR shownibble
+ 1243 f695: 0a                      POP
+ 1244 f696: 05                      RET
+ 1245 f697:             ;
+ 1246 f697:             ; display R7 followed by a ":" and " "
+ 1247 f697:             ;
+ 1248 f697: 09          showr7:     Push
+ 1249 f698: 2f                      MVRHA R7
+ 1250 f699: b7                      SHR
+ 1251 f69a: b7                      SHR
+ 1252 f69b: b7                      SHR
+ 1253 f69c: b7                      SHR
+ 1254 f69d: 04 f7 3e                JSR shownibble
+ 1255 f6a0: 2f                      MVRHA R7
+ 1256 f6a1: b3 0f                   ANDI 0FH
+ 1257 f6a3: 04 f7 3e                JSR shownibble
+ 1258 f6a6: 27                      MVRLA R7
+ 1259 f6a7: b7                      SHR
+ 1260 f6a8: b7                      SHR
+ 1261 f6a9: b7                      SHR
+ 1262 f6aa: b7                      SHR
+ 1263 f6ab: 04 f7 3e                JSR shownibble
+ 1264 f6ae: 27                      MVRLA R7
+ 1265 f6af: b3 0f                   ANDI 0FH
+ 1266 f6b1: 04 f7 3e                JSR shownibble
+ 1267 f6b4: 0a                      POP
+ 1268 f6b5: 05                      RET
+ 1269 f6b6:             ;
+ 1270 f6b6:             ;
+ 1271 f6b6:             ;
+ 1272 f6b6:             showregs:
+ 1273 f6b6: 1a f8 28                MVIW R2,CRLF
+ 1274 f6b9: 04 f7 60                JSR stringout
+ 1275 f6bc: 0f 30                   MOVRR r0,r3
+ 1276 f6be: 04 f6 4f                jsr showaddr
+ 1277 f6c1: 0f 31                   MOVRR r1,r3
+ 1278 f6c3: 04 f6 4f                jsr showaddr
+ 1279 f6c6: 0f 32                   MOVRR r2,r3
+ 1280 f6c8: 04 f6 4f                jsr showaddr
+ 1281 f6cb: 0f 33                   MOVRR r3,r3
+ 1282 f6cd: 04 f6 4f                jsr showaddr
+ 1283 f6d0: 0f 34                   MOVRR r4,r3
+ 1284 f6d2: 04 f6 4f                jsr showaddr
+ 1285 f6d5: 0f 35                   MOVRR r5,r3
+ 1286 f6d7: 04 f6 4f                jsr showaddr
+ 1287 f6da: 0f 36                   MOVRR r6,r3
+ 1288 f6dc: 04 f6 4f                jsr showaddr
+ 1289 f6df: 0f 37                   MOVRR r7,r3
+ 1290 f6e1: 04 f6 4f                jsr showaddr
+ 1291 f6e4:             
+ 1292 f6e4: 1a f8 28                MVIW R2,CRLF
+ 1293 f6e7: 04 f7 60                JSR stringout
+ 1294 f6ea: 05                      RET
+ 1295 f6eb:             ;
+ 1296 f6eb:             ; display upto 16 bytes point to by R3, stops on a 16 byte boundry, increments R3
+ 1297 f6eb:             ;
+ 1298 f6eb: 04 f7 1c    show16:     JSR showbyte
+ 1299 f6ee: 53                      INCR R3
+ 1300 f6ef: 0e 20                   LDAI ' '
+ 1301 f6f1: 04 f7 6e                JSR uartout
+ 1302 f6f4: 23                      MVRLA R3
+ 1303 f6f5: b3 0f                   ANDI 0FH
+ 1304 f6f7: a2 f6 eb                BRNZ show16
+ 1305 f6fa: 0e 0a                   LDAI 0ah
+ 1306 f6fc: 04 f7 6e                JSR uartout
+ 1307 f6ff: 0e 0d                   LDAI 0dh
+ 1308 f701: 04 f7 6e                JSR uartout
+ 1309 f704: 05                      RET
+ 1310 f705:             ;
+ 1311 f705:             ; display upto 256 bytes point to by R3, stops on a 256 byte boundry, increments R3
+ 1312 f705:             show256:
+ 1313 f705: 04 f6 4f              jsr showaddr
+ 1314 f708: 04 f6 eb              jsr show16
+ 1315 f70b:             ;          MVIW R2,CRLF
+ 1316 f70b:             ;          JSR stringout
+ 1317 f70b: 23                    MVRLA R3
+ 1318 f70c: b3 ff                 ANDI  0FFH
+ 1319 f70e: a2 f7 05              BRNZ show256
+ 1320 f711: 0e 0a                 LDAI 0ah
+ 1321 f713: 04 f7 6e              JSR uartout
+ 1322 f716: 0e 0d                 LDAI 0dh
+ 1323 f718: 04 f7 6e              JSR uartout
+ 1324 f71b: 05                    RET
+ 1325 f71c:             ;
+ 1326 f71c:             ; Output ASCII representation of a BYTE pointed to by R3
+ 1327 f71c:             ; or use showbytea in accumulator
+ 1328 f71c:             ; both destructive for accumulator - no longer true with push/pop?
+ 1329 f71c:             :
+ 1330 f71c: 09          showbyte:   PUSH
+ 1331 f71d: 43                      LDAVR R3
+ 1332 f71e:             
+ 1333 f71e: b7                      SHR
+ 1334 f71f: b7                      SHR
+ 1335 f720: b7                      SHR
+ 1336 f721: b7                      SHR
+ 1337 f722: 04 f7 3e                JSR shownibble
+ 1338 f725: 43                      LDAVR R3
+ 1339 f726: b3 0f                   ANDI 0FH
+ 1340 f728: 04 f7 3e                JSR shownibble
+ 1341 f72b: 0a                      POP
+ 1342 f72c: 05                      RET
+ 1343 f72d:             ;
+ 1344 f72d: 09          showbytea:  PUSH
+ 1345 f72e: 09                      PUSH
+ 1346 f72f:             
+ 1347 f72f: b7                      SHR
+ 1348 f730: b7                      SHR
+ 1349 f731: b7                      SHR
+ 1350 f732: b7                      SHR
+ 1351 f733: 04 f7 3e                JSR shownibble
+ 1352 f736: 0a                      POP
+ 1353 f737: b3 0f                   ANDI 0FH
+ 1354 f739: 04 f7 3e                JSR shownibble
+ 1355 f73c: 0a                      POP
+ 1356 f73d: 05                      RET
+ 1357 f73e:             ;
+ 1358 f73e:             ; Display nibble in accumulator (destructive)
+ 1359 f73e:             ;
+ 1360 f73e: 09          shownibble:  PUSH
+ 1361 f73f: 0d 09                    LDTI 9
+ 1362 f741: a9 f7 4b                 BRGT AF
+ 1363 f744: b0 30                    ADDI '0'
+ 1364 f746: 04 f7 6e                 JSR uartout
+ 1365 f749: 0a                       Pop
+ 1366 f74a: 05                       RET
+ 1367 f74b:             
+ 1368 f74b: b1 0a       AF:          SUBI 10
+ 1369 f74d: b0 41                    ADDI 'A'
+ 1370 f74f: 04 f7 6e                 JSR uartout
+ 1371 f752: 0a                       Pop
+ 1372 f753: 05                       RET
+ 1373 f754:             ;
+ 1374 f754:             ; reading switches into accumulator
+ 1375 f754:             ;
+ 1376 f754:             switchin:
+ 1377 f754: 70 01               OUTI  P0,(SWITCHLED)
+ 1378 f756: 91                  INP   P1
+ 1379 f757: 05                  RET
+ 1380 f758:             ;
+ 1381 f758:             ;
+ 1382 f758:             ; output accumulator to LEDS or Hex displays (non distructive)
+ 1383 f758:             ;
+ 1384 f758:             ledout:
+ 1385 f758: 70 01               OUTI  P0,(SWITCHLED)
+ 1386 f75a: 61                  OUTA  P1
+ 1387 f75b: 05                  RET
+ 1388 f75c:             TIL311out:
+ 1389 f75c: 70 80               OUTI  P0,(TIL311)
+ 1390 f75e: 61                  OUTA  P1
+ 1391 f75f: 05                  RET
+ 1392 f760:             ;
+ 1393 f760:             ; Output null terminated string pointed to by R2 to UART then send CR and LF
+ 1394 f760:             ; Advances R2 to end of string
+ 1395 f760:             ;
+ 1396 f760:             stringout:
+ 1397 f760: 09                  Push
+ 1398 f761:             sloop:
+ 1399 f761: 42                  LDAVR R2
+ 1400 f762: a1 f7 6c            BRZ sloopdone
+ 1401 f765: 04 f7 6e            JSR uartout
+ 1402 f768: 52                  INCR R2
+ 1403 f769: a0 f7 61            BR sloop
+ 1404 f76c:             ;
+ 1405 f76c:             ; send CR and LF
+ 1406 f76c:             ;
+ 1407 f76c:             sloopdone:
+ 1408 f76c: 0a                  POP
+ 1409 f76d: 05                  RET
+ 1410 f76e:             ;
+ 1411 f76e:             ; output accumulator to UART
+ 1412 f76e:             ;
+ 1413 f76e:             charout:
+ 1414 f76e:             uartout:
+ 1415 f76e:             ;
+ 1416 f76e:             ; add for emulator
+ 1417 f76e:             ;
+ 1418 f76e: 62                outa p2
+ 1419 f76f: 05                ret
+ 1420 f770:             ;
+ 1421 f770: 09                  PUSH
+ 1422 f771: 09                  push
+ 1423 f772:             ; doubt 2nd push pop is needed, to be tested
+ 1424 f772:             uartoutw:
+ 1425 f772: 70 68               OUTI  P0,(UARTCS!UARTA5)
+ 1426 f774: 91                  INP   p1
+ 1427 f775: b3 40               ANDI  040h
+ 1428 f777:             ;
+ 1429 f777:             ; i think this a brnz test -- that didn't work
+ 1430 f777: a1 f7 72            BRZ   uartoutw
+ 1431 f77a: 0a                  POP
+ 1432 f77b: 70 40               OUTI  P0,UARTCS
+ 1433 f77d: 61                  OUTA  P1
+ 1434 f77e:             ;
+ 1435 f77e:             ; may not be needed
+ 1436 f77e: 0a                 Pop
+ 1437 f77f: 05                 RET
+ 1438 f780:             
+ 1439 f780:             ;
+ 1440 f780:             ; OLD
+ 1441 f780:             ;
+ 1442 f780:             ;        MVIW R7,01FFh
+ 1443 f780:             ;uartdelay:
+ 1444 f780:             ;        DECR R7
+ 1445 f780:             ;        MVRHA R7
+ 1446 f780:             ;        BRNZ uartdelay
+ 1447 f780:             ;        POP
+ 1448 f780:             ;        RET
+ 1449 f780:             ;
+ 1450 f780:             ; input UART to accumulator
+ 1451 f780:             ;
+ 1452 f780:             uartin:
+ 1453 f780:             ;
+ 1454 f780:             ; add for emulator
+ 1455 f780:             ;
+ 1456 f780: 92               inp p2
+ 1457 f781: 05              ret
+ 1458 f782:             ;
+ 1459 f782: 70 68               OUTI  P0,(UARTCS!UARTA5)
+ 1460 f784: 91                  INP   p1
+ 1461 f785: b3 01               ANDI  01h
+ 1462 f787: a1 f7 80            BRZ   uartin
+ 1463 f78a: 70 40               OUTI  P0,(UARTCS)
+ 1464 f78c: 91                  INP   P1
+ 1465 f78d: 04 f7 6e            JSR uartout
+ 1466 f790: 05                  RET
+ 1467 f791:             ;
+ 1468 f791:             ; long delay (approx 5 seconds)
+ 1469 f791:             ;
+ 1470 f791:             LONGDELAY:
+ 1471 f791: 09                  PUSH
+ 1472 f792: 1f ff ff            MVIW R7,0FFFFh
+ 1473 f795:             longdelayloop:
+ 1474 f795: 5f                  DECR R7
+ 1475 f796: 2f                  MVRHA R7
+ 1476 f797: a2 f7 95            BRNZ longdelayloop
+ 1477 f79a: 0a                  POP
+ 1478 f79b: 05                  RET
+ 1479 f79c:             ;
+ 1480 f79c:             ; short delay (approx 1 second)
+ 1481 f79c:             ;
+ 1482 f79c:             SHORTDELAY:
+ 1483 f79c: 09                  PUSH
+ 1484 f79d: 1f 33 ff            MVIW R7,033FFh
+ 1485 f7a0:             shortdelayloop:
+ 1486 f7a0: 5f                  DECR R7
+ 1487 f7a1: 2f                  MVRHA R7
+ 1488 f7a2: a2 f7 a0            BRNZ shortdelayloop
+ 1489 f7a5: 0a                  POP
+ 1490 f7a6: 05                  RET
+ 1491 f7a7:             
+ 1492 f7a7:             NODELAY:
+ 1493 f7a7: 09                PUSH
+ 1494 f7a8: 1f 00 ff          MVIW R7,00FFh
+ 1495 f7ab:             nodelayloop:
+ 1496 f7ab: 5f                DECR R7
+ 1497 f7ac: 2f                MVRHA R7
+ 1498 f7ad: a2 f7 ab          BRNZ nodelayloop
+ 1499 f7b0: 0a                POP
+ 1500 f7b1: 05                RET
+ 1501 f7b2:             ;
+ 1502 f7b2:             ; toggle input switch (with debounce)
+ 1503 f7b2:             ;
+ 1504 f7b2:             switchtoggle:
+ 1505 f7b2: 09                  Push
+ 1506 f7b3: a4 f7 b3    offw:   BRINL offw
+ 1507 f7b6: 1f 01 ff            MVIW R7,01FFh
+ 1508 f7b9:             delaya:
+ 1509 f7b9: 5f                  DECR R7
+ 1510 f7ba: 2f                  MVRHA R7
+ 1511 f7bb: a2 f7 b9            BRNZ delaya
+ 1512 f7be: 01                  ON
+ 1513 f7bf:             
+ 1514 f7bf: a3 f7 bf    onw:    BRINH onw
+ 1515 f7c2: 1f 01 ff            MVIW R7,01FFh
+ 1516 f7c5:             delayb:
+ 1517 f7c5: 5f                  DECR R7
+ 1518 f7c6: 2f                  MVRHA R7
+ 1519 f7c7: a2 f7 c5            BRNZ delayb
+ 1520 f7ca: 02                  OFF
+ 1521 f7cb: 0a                  Pop
+ 1522 f7cc: 05                  RET
+ 1523 f7cd:             ;
+ 1524 f7cd:             ; quick blink LED
+ 1525 f7cd:             ;
+ 1526 f7cd:             blink:
+ 1527 f7cd:             ;
+ 1528 f7cd:             ; added for emulator
+ 1529 f7cd:             ;
+ 1530 f7cd:             ;        ret
+ 1531 f7cd: 09                  Push
+ 1532 f7ce: 01                  ON
+ 1533 f7cf: 1f 03 ff            MVIW R7,03FFh
+ 1534 f7d2:             onloop:
+ 1535 f7d2: 5f                  DECR R7
+ 1536 f7d3: 2f                  MVRHA R7
+ 1537 f7d4: a2 f7 d2            BRNZ onloop
+ 1538 f7d7:             
+ 1539 f7d7: 02                  OFF
+ 1540 f7d8: 1f 03 ff            MVIW R7,003FFh
+ 1541 f7db:             offloop:
+ 1542 f7db: 5f                  DECR R7
+ 1543 f7dc: 2f                  MVRHA R7
+ 1544 f7dd: a2 f7 db            BRNZ offloop
+ 1545 f7e0: 0a                  Pop
+ 1546 f7e1: 05                  RET
+ 1547 f7e2:             ;
+ 1548 f7e2:             ; long blink LED
+ 1549 f7e2:             ;
+ 1550 f7e2:             lblink:
+ 1551 f7e2:             ;
+ 1552 f7e2:             ; emulator change
+ 1553 f7e2:             ;
+ 1554 f7e2:             ;       ret
+ 1555 f7e2: 09                  Push
+ 1556 f7e3: 01                  ON
+ 1557 f7e4: 1f 18 ff            MVIW R7,018FFh
+ 1558 f7e7:             lonloop:
+ 1559 f7e7: 5f                  DECR R7
+ 1560 f7e8: 2f                  MVRHA R7
+ 1561 f7e9: a2 f7 e7            BRNZ lonloop
+ 1562 f7ec:             
+ 1563 f7ec: 02                  OFF
+ 1564 f7ed: 1f 18 ff            MVIW R7,018FFh
+ 1565 f7f0:             loffloop:
+ 1566 f7f0: 5f                  DECR R7
+ 1567 f7f1: 2f                  MVRHA R7
+ 1568 f7f2: a2 f7 f0            BRNZ loffloop
+ 1569 f7f5: 0a                  Pop
+ 1570 f7f6: 05                  RET
+ 1571 f7f7:             ;
+ 1572 f7f7:             ; blink n times in accumulator
+ 1573 f7f7:             ;
+ 1574 f7f7:             ;
+ 1575 f7f7:             ; emulator change
+ 1576 f7f7:             ;
+ 1577 f7f7:             ;    ret
+ 1578 f7f7:             nblink:
+ 1579 f7f7: 09                  push
+ 1580 f7f8:             nblinkloop:
+ 1581 f7f8: 04 f7 5c            JSR TIL311out
+ 1582 f7fb: a1 f8 06            BRZ nblinkdone
+ 1583 f7fe: 04 f7 cd            JSR blink
+ 1584 f801: b1 01               subi 1
+ 1585 f803: a0 f7 f8            BR nblinkloop
+ 1586 f806:             nblinkdone:
+ 1587 f806: 0a                  POP
+ 1588 f807: 05                  RET
+ 1589 f808:             
+ 1590 f808:             
+ 1591 f808:             ;
+ 1592 f808:             ; MONITOR STRINGS
+ 1593 f808:             ;
+ 1594 f808: 0a 0d 59 41 
+            43 43 20 32 
+            30 32 30 3a 
+            20 48 45 4c 
+            4c 4f 20 57 
+            4f 52 4c 44 
+            20 20 0a 0d 
+            00          hello:  DB 0ah,0dh,"YACC 2020: hello world  ",0ah,0dh,0
+ 1595 f825: 3e 3e 00    PROMPT: DB ">>",0
+ 1596 f828: 0a 0d 00    CRLF: DB 0ah,0dh,0
+ 1597 f82b: 55 4e 52 45 
+            43 4f 47 49 
+            4e 49 5a 45 
+            44 20 43 4f 
+            4d 4d 41 4e 
+            44 0a 0d 00 ERROR: DB "UNRECOGINIZED COMMAND",0ah,0dh,0
+ 1598 f843: 43 4f 4e 54 
+            49 4e 55 45 
+            20 43 4d 44 
+            20 45 52 52 
+            4f 52 0a 0d 
+            00          CONTINUEERROR: DB "CONTINUE CMD ERROR",0ah,0dh,0
+ 1599 f858: 0a 0d 44 55 
+            4d 50 20 41 
+            44 44 52 3a 
+            00          DUMPMSG: DB 0ah,0dh,"DUMP ADDR:",0
+ 1600 f865: 0a 0d 44 55 
+            4d 50 20 42 
+            4c 4f 43 4b 
+            20 41 44 44 
+            52 3a 00    DUMPBLOCKMSG: DB 0ah,0dh,"DUMP BLOCK ADDR:",0
+ 1601 f878: 0a 0d 46 49 
+            4c 4c 20 42 
+            4c 4f 43 4b 
+            20 41 44 44 
+            52 3a 00    FILLMSG: DB 0ah,0dh,"FILL BLOCK ADDR:",0
+ 1602 f88b: 0a 0d 47 4f 
+            20 41 44 44 
+            52 45 53 53 
+            3a 00       GOMSG: DB 0ah,0dh,"GO ADDRESS:",0
+ 1603 f899: 0a 0d 45 58 
+            41 4d 49 4e 
+            45 20 41 44 
+            44 52 45 53 
+            53 3a 00    EXAMINEMSG: DB 0ah,0Dh,"EXAMINE ADDRESS:",0
+ 1604 f8ac: 43 4f 4e 54 
+            49 4e 55 45 
+            20 4d 4f 44 
+            45 00       CONTMSG: DB "CONTINUE MODE",0
+ 1605 f8ba: 45 4e 54 45 
+            52 20 54 45 
+            53 54 20 4e 
+            55 4d 42 45 
+            52 3a 00    gettestpromopt: DB "Enter Test number:",0
+ 1606 f8cd:             ;
+ 1607 f8cd:             helpmenu:
+ 1608 f8cd: 48 20 20 20 
+            20 20 20 2d 
+            20 44 49 53 
+            50 4c 41 59 
+            20 48 45 4c 
+            50 20 4d 45 
+            4e 55 0a 0d DB "H      - Display help menu",0ah,0dh
+ 1609 f8e9: 42 20 41 41 
+            41 41 20 2d 
+            20 53 48 4f 
+            57 20 32 35 
+            36 20 42 59 
+            54 45 53 20 
+            4f 46 20 4d 
+            45 4d 4f 52 
+            59 20 41 54 
+            20 41 44 44 
+            52 45 53 53 
+            20 41 41 41 
+            41 20 28 31 
+            36 20 42 59 
+            54 45 20 41 
+            4c 49 47 4e 
+            45 44 29 0a 
+            0d          DB "B AAAA - Show 256 bytes of memory at address AAAA (16 byte aligned)",0ah,0dh
+ 1610 f92e: 20 20 20 20 
+            20 20 20 20 
+            20 46 4f 4c 
+            4c 4f 57 45 
+            44 20 42 59 
+            20 43 52 20 
+            44 49 53 50 
+            4c 41 59 20 
+            4e 45 58 54 
+            20 32 35 36 
+            20 42 59 54 
+            45 53 0a 0d DB "         followed by CR display next 256 bytes",0ah,0dh
+ 1611 f95e: 44 20 41 41 
+            41 41 20 2d 
+            20 53 48 4f 
+            57 20 31 36 
+            20 42 59 54 
+            45 53 20 4f 
+            46 20 4d 45 
+            4d 4f 52 59 
+            20 41 54 20 
+            41 44 44 52 
+            45 53 53 20 
+            41 41 41 41 
+            20 28 31 36 
+            20 42 59 54 
+            45 20 41 4c 
+            49 47 4e 45 
+            44 29 0a 0d DB "D AAAA - Show 16 bytes of memory at address AAAA (16 byte aligned)",0ah,0dh
+ 1612 f9a2: 20 20 20 20 
+            20 20 20 20 
+            20 46 4f 4c 
+            4c 4f 57 45 
+            44 20 42 59 
+            20 43 52 20 
+            44 49 53 50 
+            4c 41 59 20 
+            4e 45 58 54 
+            20 31 36 20 
+            42 59 54 45 
+            53 0a 0d    DB "         followed by CR display next 16 bytes",0ah,0dh
+ 1613 f9d1: 45 20 41 41 
+            41 41 20 2d 
+            20 53 48 4f 
+            57 20 43 4f 
+            4e 54 45 4e 
+            54 53 20 4f 
+            46 20 4c 4f 
+            43 41 54 49 
+            4f 4e 20 41 
+            41 41 41 20 
+            28 4f 55 54 
+            50 55 54 20 
+            41 41 41 41 
+            3a 58 58 29 
+            0a 0d       DB "E AAAA - show contents of location AAAA (Output AAAA:XX)",0ah,0dh
+ 1614 fa0b: 20 20 20 20 
+            20 20 20 20 
+            20 49 46 20 
+            46 4f 4c 4c 
+            4f 57 45 44 
+            20 42 59 20 
+            41 53 43 49 
+            49 2d 48 45 
+            58 20 4d 4f 
+            44 49 46 59 
+            20 4c 4f 43 
+            41 54 49 4f 
+            4e 20 57 49 
+            54 48 20 4e 
+            45 57 20 56 
+            41 4c 55 45 
+            20 28 41 4e 
+            44 20 52 45 
+            44 49 53 50 
+            4c 41 59 29 
+            0a 0d       DB "         if followed by ASCII-HEX modify location with new value (and redisplay)",0ah,0DH
+ 1615 fa5d: 20 20 20 20 
+            20 20 20 20 
+            20 49 46 20 
+            46 4f 4c 4c 
+            4f 57 45 44 
+            20 42 59 20 
+            43 52 20 44 
+            49 53 50 4c 
+            41 59 20 4e 
+            45 58 54 20 
+            4c 4f 43 41 
+            54 49 4f 4e 
+            0a 0d       DB "         if followed by CR display next location",0ah,0dh
+ 1616 fa8f: 46 20 41 41 
+            41 41 20 20 
+            20 46 49 4c 
+            4c 20 43 4f 
+            4e 54 45 4e 
+            54 53 20 32 
+            35 36 20 42 
+            59 54 45 53 
+            20 4f 46 20 
+            4d 45 4d 4f 
+            52 59 20 41 
+            54 20 41 44 
+            44 52 45 53 
+            53 20 41 41 
+            41 41 20 57 
+            49 54 48 20 
+            30 28 31 36 
+            20 42 59 54 
+            45 20 41 4c 
+            49 47 4e 45 
+            44 29 20 57 
+            49 54 48 20 
+            30 0a 0d    DB "F AAAA   Fill contents 256 bytes of memory at address AAAA with 0(16 byte aligned) with 0",0ah,0dh
+ 1617 faea: 20 20 20 20 
+            20 20 20 20 
+            20 49 46 20 
+            46 4f 4c 4c 
+            4f 57 45 44 
+            20 42 59 20 
+            43 52 20 46 
+            49 4c 4c 20 
+            4e 45 58 54 
+            20 32 35 36 
+            20 42 59 54 
+            45 53 0a 0d DB "         if followed by CR fill next 256 bytes",0ah,0dh
+ 1618 fb1a: 47 20 41 41 
+            41 41 20 2d 
+            20 4a 55 4d 
+            50 20 54 4f 
+            20 28 41 4e 
+            44 20 45 58 
+            45 43 55 54 
+            45 29 20 53 
+            54 41 52 54 
+            49 4e 47 20 
+            41 54 20 41 
+            41 41 41 0a 
+            0d          DB "G AAAA - Jump to (and execute) starting at AAAA",0ah,0dh
+ 1619 fb4b: 20 20 20 20 
+            20 20 20 20 
+            20 43 4f 44 
+            45 20 43 4f 
+            55 4c 44 20 
+            45 4e 44 20 
+            49 4e 20 42 
+            52 20 54 4f 
+            20 30 58 46 
+            30 30 30 48 
+            20 54 4f 20 
+            52 45 53 54 
+            41 52 54 20 
+            4d 4f 4e 49 
+            54 4f 52 20 
+            4f 52 20 52 
+            45 54 20 49 
+            46 20 43 41 
+            4c 4c 45 44 
+            20 56 49 41 
+            20 4a 53 52 
+            0a 0d       DB "         code could end in BR to 0xf000h to restart monitor or RET if called via JSR",0ah,0dh
+ 1620 fba1: 52 20 20 20 
+            20 20 20 2d 
+            20 53 48 4f 
+            57 20 52 45 
+            47 49 53 54 
+            45 52 53 0a 
+            0d          DB "R      - Show registers",0ah,0dh
+ 1621 fbba: 54 20 20 20 
+            20 20 20 2d 
+            20 54 45 53 
+            54 20 4d 45 
+            4e 55 0a 0d DB "T      - Test menu",0ah,0DH
+ 1622 fbce: 5a 20 20 20 
+            20 20 20 2d 
+            20 52 55 4e 
+            20 42 41 53 
+            49 43 20 49 
+            4e 54 45 52 
+            50 52 45 54 
+            45 52 0a 0d DB "Z      - Run Basic interpreter",0ah,0DH
+ 1623 fbee: 00          DB 0
+ 1624 fbef:             ;
+ 1625 fbef:             ; TEST HELP MESSAGES
+ 1626 fbef:             ;
+ 1627 fbef: 43 4f 4d 50 
+            41 52 45 20 
+            54 45 53 54 
+            53 0a 0d 00 COMPAREHELP: DB "Compare Tests",0ah,0dh,0
+ 1628 fbff: 52 49 4e 47 
+            20 53 48 49 
+            46 54 20 4c 
+            45 46 54 0a 
+            0d 00       RSHIFT_LEFTHELP: DB "Ring Shift Left",0ah,0dh,0
+ 1629 fc11: 52 49 4e 47 
+            20 53 48 49 
+            46 54 20 52 
+            49 47 48 54 
+            0a 0d 00    RSHIFT_RIGHTHELP: DB "Ring Shift Right",0ah,0dh,0
+ 1630 fc24: 50 52 4f 50 
+            20 53 48 49 
+            46 54 20 4c 
+            45 46 54 0a 
+            0d 00       PSHIFT_LEFTHELP: DB "PROP Shift Left",0ah,0dh,0
+ 1631 fc36: 43 41 52 52 
+            59 20 53 48 
+            49 46 54 20 
+            4c 45 46 54 
+            0a 0d 00    CSHIFT_LEFTHELP: DB "CARRY Shift Left",0ah,0dh,0
+ 1632 fc49: 43 41 52 52 
+            59 20 53 48 
+            49 46 54 20 
+            52 49 47 48 
+            54 0a 0d 00 CSHIFT_RIGHTHELP: DB "CARRY Shift Right",0ah,0dh,0
+ 1633 fc5d: 53 55 42 54 
+            52 41 43 54 
+            0a 0d 00    SUBHELP: DB "SUBTRACT",0ah,0dh,0
+ 1634 fc68: 41 43 43 55 
+            4d 55 4c 41 
+            54 4f 52 20 
+            54 45 53 54 
+            0a 0d 00    accumhelp: DB "accumulator test",0ah,0dh,0
+ 1635 fc7b: 50 55 53 48 
+            20 50 4f 50 
+            20 45 4e 54 
+            45 52 20 33 
+            20 4e 55 4d 
+            42 45 52 53 
+            0a 0d 00    PUSHPOPHELP: DB "Push Pop enter 3 numbers",0ah,0dh,0
+ 1636 fc96: 4f 52 20 54 
+            4d 50 20 52 
+            45 47 49 53 
+            54 45 52 20 
+            54 45 53 54 
+            53 0a 0d 00 ORTHELP: DB "OR Tmp register tests",0ah,0dh,0
+ 1637 fcae: 41 44 44 20 
+            49 4d 4d 45 
+            44 49 41 54 
+            45 20 30 32 
+            48 20 54 4f 
+            20 49 4e 50 
+            55 54 20 4e 
+            55 4d 42 45 
+            52 0a 0d 00 ADDIHELP: DB "Add immediate 02h to input number",0ah,0dh,0
+ 1638 fcd2: 41 44 44 20 
+            49 4d 4d 45 
+            44 49 41 54 
+            45 20 57 49 
+            54 48 20 43 
+            41 52 52 59 
+            20 30 32 48 
+            20 54 4f 20 
+            49 4e 50 55 
+            54 20 4e 55 
+            4d 42 45 52 
+            0a 0d 00    ADDICHELP: DB "Add immediate with carry 02h to input number",0ah,0dh,0
+ 1639 fd01: 4d 4f 56 45 
+            52 52 20 54 
+            45 53 54 0a 
+            0d 00       MOVRRHELP: DB "MOVERR TEST",0ah,0dh,0
+ 1640 fd0f: 52 55 4e 20 
+            54 45 53 54 
+            20 43 4f 44 
+            45 0a 0d 00 TESTMSG: DB "Run test code",0ah,0dh,0
+ 1641 fd1f:             
+ 1642 fd1f:             ;
+ 1643 fd1f:             ; TEST MENU
+ 1644 fd1f:             ;
+ 1645 fd1f:             testmenu:
+ 1646 fd1f: f2 61 fd 63       DW ortest,ormenu
+ 1647 fd23: f2 a6 fd 66       DW orttest,ortmenu
+ 1648 fd27: f2 c3 fd 6a       DW pushpoptest,pushpopmenu
+ 1649 fd2b: f2 e6 fd 73       DW accumtest,accummenu
+ 1650 fd2f: f3 31 fd 8c       DW shltest,shlmenu
+ 1651 fd33: f3 71 fd 90       DW shrtest,shrmenu
+ 1652 fd37: f3 87 fd 94       DW rshltest,rshlmenu
+ 1653 fd3b: f3 9d fd 99       DW rshrtest,rshrmenu
+ 1654 fd3f: f3 c9 fd 9e       DW cshltest,cshlmenu
+ 1655 fd43: f3 df fd a3       DW cshrtest,cshrmenu
+ 1656 fd47: f3 b3 fd a8       DW pshltest,pshlmenu
+ 1657 fd4b: f3 f5 fd ad       DW subtest,submenu
+ 1658 fd4f: f4 0c fd b1       DW cmptest,cmpmenu
+ 1659 fd53: f2 78 fd c0       DW additest,addimenu
+ 1660 fd57: f2 8f fd c5       DW addictest,addicmenu
+ 1661 fd5b: f1 40 fd ca       DW movrrtest,movrrmenu
+ 1662 fd5f: fd d0 fd d0       DW endmenu,endmenu
+ 1663 fd63:             
+ 1664 fd63:             ;
+ 1665 fd63:             ; TEST MENU STRINGS
+ 1666 fd63:             ;
+ 1667 fd63:             testmenustrings:
+ 1668 fd63: 4f 52 00    ormenu: DB "OR",0
+ 1669 fd66: 4f 52 54 00 ortmenu: DB "ORT",0
+ 1670 fd6a: 50 55 53 48 
+            2f 50 4f 50 
+            00          pushpopmenu: DB "PUSH/POP",0
+ 1671 fd73: 41 43 43 55 
+            4d 55 4c 41 
+            54 4f 52 20 
+            3c 2d 3e 20 
+            52 45 47 49 
+            53 54 45 52 
+            00          accummenu: DB "Accumulator <-> Register",0
+ 1672 fd8c: 53 48 4c 00 shlmenu: DB "SHL",0
+ 1673 fd90: 53 48 52 00 shrmenu: DB "SHR",0
+ 1674 fd94: 52 53 48 4c 
+            00          rshlmenu: DB "RSHL",0
+ 1675 fd99: 52 53 48 52 
+            00          rshrmenu: DB "RSHR",0
+ 1676 fd9e: 43 53 48 4c 
+            00          cshlmenu: DB "CSHL",0
+ 1677 fda3: 43 53 48 52 
+            00          cshrmenu: DB "CSHR",0
+ 1678 fda8: 50 53 48 4c 
+            00          pshlmenu: DB "PSHL",0
+ 1679 fdad: 53 55 42 00 submenu: DB "SUB",0
+ 1680 fdb1: 43 4f 4d 50 
+            41 52 45 20 
+            42 52 41 4e 
+            43 48 00    cmpmenu: DB "Compare Branch",0
+ 1681 fdc0: 41 44 44 49 
+            00          addimenu: DB "ADDI",0
+ 1682 fdc5: 41 44 44 49 
+            00          addicmenu: DB "ADDI",0
+ 1683 fdca: 4d 4f 56 52 
+            52 00       movrrmenu: DB "MOVRR",0
+ 1684 fdd0: 2d 00       endmenu: DB "-",0
+ 1685 fdd2:             
+ 1686 fdd2:             ;
+ 1687 fdd2:             ; OLD
+ 1688 fdd2:             ;
+ 1689 fdd2:             ;
+ 1690 fdd2:             ;LCD
+ 1691 fdd2:             ;
+ 1692 fdd2:             ;xlcdtest:
+ 1693 fdd2:             ;        OUTI P0,(LCDENABLE)
+ 1694 fdd2:             
+ 1695 fdd2:             ;        MVIW R3,1fFFh
+ 1696 fdd2:             ;xdelay0:
+ 1697 fdd2:             ;        DECR R3
+ 1698 fdd2:             ;        MVRHA R3
+ 1699 fdd2:             ;        BRNZ xdelay0
+ 1700 fdd2:             
+ 1701 fdd2:             ;        OUTI P1,3CH
+ 1702 fdd2:             
+ 1703 fdd2:             ;        MVIW R3,1fFFh
+ 1704 fdd2:             ;xdelay1:
+ 1705 fdd2:             ;        DECR R3
+ 1706 fdd2:             ;        MVRHA R3
+ 1707 fdd2:             ;        BRNZ xdelay1
+ 1708 fdd2:             
+ 1709 fdd2:             ;        OUTI P1,01H
+ 1710 fdd2:             
+ 1711 fdd2:             ;        MVIW R3,1fFFh
+ 1712 fdd2:             ;xdelay2:
+ 1713 fdd2:             ;        DECR R3
+ 1714 fdd2:             ;        MVRHA R3
+ 1715 fdd2:             ;        BRNZ xdelay2
+ 1716 fdd2:             
+ 1717 fdd2:             ;        OUTI P1,0FH
+ 1718 fdd2:             
+ 1719 fdd2:             ;        MVIW R3,1fFFh
+ 1720 fdd2:             ;xdelay3:
+ 1721 fdd2:             ;        DECR R3
+ 1722 fdd2:             ;        MVRHA R3
+ 1723 fdd2:             ;        BRNZ xdelay3
+ 1724 fdd2:             
+ 1725 fdd2:             ;        OUTI P0,(LCDENABLE!LCDREGISTER)
+ 1726 fdd2:             
+ 1727 fdd2:             ;        MVIW R3,1fFFh
+ 1728 fdd2:             ;xdelay4:
+ 1729 fdd2:             ;        DECR R3
+ 1730 fdd2:             ;        MVRHA R3
+ 1731 fdd2:             ;        BRNZ xdelay4
+ 1732 fdd2:             
+ 1733 fdd2:             ;        OUTI P1,'A'
+ 1734 fdd2:             
+ 1735 fdd2:             ;xdelay5:
+ 1736 fdd2:             ;        DECR R3
+ 1737 fdd2:             ;        MVRHA R3
+ 1738 fdd2:             ;        BRNZ xdelay5
+ 1739 fdd2:             
+ 1740 fdd2:             ;        OUTI P1,'B'
+ 1741 fdd2:             
+ 1742 fdd2:             ;xaddtest:
+ 1743 fdd2:             ;      OUTI  P0,(SWITCHLED)
+ 1744 fdd2:             ;      INP   P1
+ 1745 fdd2:             ;      ADDI  001H
+ 1746 fdd2:             ;      OUTA  P1
+ 1747 fdd2:             
+ 1748 fdd2:             ;xandtest:
+ 1749 fdd2:             ;      OUTI  P0,(SWITCHLED)
+ 1750 fdd2:             ;      INP   P1
+ 1751 fdd2:             ;      ANDI  055H
+ 1752 fdd2:             ;      OUTA  P1
+ 1753 fdd2:             
+ 1754 fdd2:             ;xxortest:
+ 1755 fdd2:             ;     OUTI  P0,(SWITCHLED)
+ 1756 fdd2:             ;     INP   P1
+ 1757 fdd2:             ;     XORI  055H
+ 1758 fdd2:             ;     OUTA  P1
+ 1759 fdd2: 06 02             JSRUR R2
+ 1760 fdd4:             ;
+ 1761 fdd4:             ; Basic Interpreter
+ 1762 fdd4:             ;
+ 1763 fdd4:                   ORG 0e000h
+ 1764 e000:             ;
+ 1765 e000:             ; basic interpreter messages
+ 1766 e000:             ;
+ 1767 e000: 55 4e 45 58 
+            50 45 43 54 
+            45 44 20 54 
+            4f 4b 45 4e 
+            00 0a 0d    bas_msg1: db "unexpected token",0,0ah,0dh
+ 1768 e013: 4c 49 4e 45 
+            20 4e 4f 54 
+            20 46 4f 55 
+            4e 44 00 0a 
+            0d          bas_msg2: db "line not found",0,0ah,0dh
+ 1769 e024: 42 41 53 49 
+            43 20 49 4e 
+            53 20 4e 4f 
+            54 20 46 4f 
+            55 4e 44 20 
+            0a 0d       bas_msg3: db "Basic ins not found ",0ah,0dh
+ 1770 e03a: 45 58 45 20 
+            53 54 4d 54 
+            20 00       exe_stmt_msg: db "EXE STMT ",0
+ 1771 e044:             ;
+ 1772 e044:             ; Basic interpreter - execution engine
+ 1773 e044:             ; Register Usage
+ 1774 e044:             ; R0 - Program Counter
+ 1775 e044:             ; R1 - Stack Pointer
+ 1776 e044:             ; R2 - Used to send strings for output - assume destructive
+ 1777 e044:             ; R3 - Basic Interpreter Token Buffer ptr
+ 1778 e044:             ; R4 - working register
+ 1779 e044:             ; R5 - working register
+ 1780 e044:             ; R6 - Working register
+ 1781 e044:             ; R7 - return value
+ 1782 e044:             ;
+ 1783 e044:             exe:
+ 1784 e044:             
+ 1785 e044:             ;
+ 1786 e044:             ; void ubasic_init()
+ 1787 e044:             ;
+ 1788 e044:             ; Setup basic interpreter execution engine
+ 1789 e044:             ;
+ 1790 e044:             ; destorys R4 and accumulator
+ 1791 e044:             ; ?? Should these pointers be zero based or actual address in memory
+ 1792 e044:             ;
+ 1793 e044:             exe_init:
+ 1794 e044: 1d 02 42        MVIW R5,bas_gosubstack
+ 1795 e047:             ;    movrr r6,r9
+ 1796 e047: 1c 02 04        MVIW R4,bas_forstack
+ 1797 e04a:             ;    movrr r6,r8
+ 1798 e04a: 1e 02 00        MVIW R6,bas_ended
+ 1799 e04d: 0e 00           LDAI 0
+ 1800 e04f: 4e              STAVR R6
+ 1801 e050:             ;
+ 1802 e050:             ; initialize tokenbufferptr to start of tokenBuffer (actual memory address)
+ 1803 e050:             ;
+ 1804 e050: 04 e3 b3        JSR tok_init
+ 1805 e053: 05              RET
+ 1806 e054:             
+ 1807 e054:             ;
+ 1808 e054:             ; void accept(int)
+ 1809 e054:             ;
+ 1810 e054:             ; compare accumulator with current token then advance to next token in buffer
+ 1811 e054:             ; assume accumulator destroyed
+ 1812 e054:             ;
+ 1813 e054:             exe_accept:
+ 1814 e054: 09              push
+ 1815 e055:             ;
+ 1816 e055:             ; get current token into accumulator
+ 1817 e055:             ;
+ 1818 e055: 04 e3 b1        jsr tok_token
+ 1819 e058: 0b              MVAT
+ 1820 e059: 0a              POP
+ 1821 e05a: a8 e0 63        BREQ exe_accept_done
+ 1822 e05d: 1a e0 00        mviw r2,bas_msg1
+ 1823 e060: 04 e3 b0        JSR bas_error
+ 1824 e063:             exe_accept_done:
+ 1825 e063: 04 e3 b7        jsr tok_next
+ 1826 e066: 05              RET
+ 1827 e067:             
+ 1828 e067:             ;
+ 1829 e067:             ; int varfactor()
+ 1830 e067:             ;
+ 1831 e067:             ; get variable id pointed to by tok_variable_num in token stream
+ 1832 e067:             ; (this is not a value but a variable id)
+ 1833 e067:             ; value returned by exe_get_variable in r7
+ 1834 e067:             ;
+ 1835 e067:             ; return value in R7
+ 1836 e067:             ;
+ 1837 e067:             exe_varfactor:
+ 1838 e067:             ; get variable number id (one byte for now a-z) into accumulator
+ 1839 e067:             ;
+ 1840 e067: 04 e3 f0        jsr tok_variable_num
+ 1841 e06a:             ;
+ 1842 e06a:             ; variable id in accumulator, return in r7
+ 1843 e06a:             ;
+ 1844 e06a: 04 e3 a6        jsr exe_get_variable
+ 1845 e06d: 0e 04           LDAI TOKENIZER_VARIABLE
+ 1846 e06f: 04 e0 54        JSR exe_accept
+ 1847 e072: 05              RET
+ 1848 e073:             
+ 1849 e073:             ;
+ 1850 e073:             ; int factor()
+ 1851 e073:             ; return value in R7
+ 1852 e073:             ;
+ 1853 e073:             exe_factor:
+ 1854 e073:             ;
+ 1855 e073:             ; get current token into accumulator
+ 1856 e073:             ;
+ 1857 e073: 04 e3 b1        jsr tok_token
+ 1858 e076:             ;
+ 1859 e076: 0d 02           LDTI TOKENIZER_NUMBER
+ 1860 e078: aa e0 83        BRNEQ exe_factor1
+ 1861 e07b: 04 e3 e7        JSR tok_num
+ 1862 e07e: 0c              MVTA
+ 1863 e07f: 04 e0 54        JSR exe_accept
+ 1864 e082: 05              RET
+ 1865 e083:             
+ 1866 e083:             exe_factor1:
+ 1867 e083: 0d 1f           LDTI TOKENIZER_LEFTP
+ 1868 e085: aa e0 94        BRNEQ exe_factor2
+ 1869 e088: 04 e0 54        JSR exe_accept
+ 1870 e08b: 04 e0 de        JSR exe_expr
+ 1871 e08e: 0e 20           LDAI TOKENIZER_RIGHTP
+ 1872 e090: 04 e0 54        JSR exe_accept
+ 1873 e093: 05              RET
+ 1874 e094:             
+ 1875 e094:             exe_factor2:
+ 1876 e094: 04 e0 67        jsr exe_varfactor
+ 1877 e097: 05              ret
+ 1878 e098:             
+ 1879 e098:             ;
+ 1880 e098:             ; int term()
+ 1881 e098:             ; R5 = F1
+ 1882 e098:             ; R6 = F2
+ 1883 e098:             ; R7 = return value
+ 1884 e098:             ;
+ 1885 e098:             exe_term:
+ 1886 e098: 07 05           pushr r5
+ 1887 e09a: 07 06           pushr r6
+ 1888 e09c:             
+ 1889 e09c: 04 e0 73        jsr exe_factor
+ 1890 e09f: 0f 57           MOVRR r7,r5
+ 1891 e0a1:             
+ 1892 e0a1:             exe_term_loop:
+ 1893 e0a1: 04 e3 b1        jsr tok_token
+ 1894 e0a4: 0d 1b           ldti TOKENIZER_ASTR
+ 1895 e0a6: a8 e0 b6        BREQ exe_term_astr
+ 1896 e0a9: 0d 1c           LDTI TOKENIZER_SLASH
+ 1897 e0ab: a8 e0 c1        breq exe_term_slash
+ 1898 e0ae: 0d 1d           ldti TOKENIZER_MOD
+ 1899 e0b0: a8 e0 cc        breq exe_term_mod
+ 1900 e0b3: a0 e0 d7        br exe_term_done
+ 1901 e0b6:             
+ 1902 e0b6:             exe_term_astr:
+ 1903 e0b6: 04 e3 b7        jsr tok_next
+ 1904 e0b9: 04 e0 73        jsr exe_factor
+ 1905 e0bc: 0f 67           movrr r7,r6
+ 1906 e0be:             ;
+ 1907 e0be:             ; do mulitply f1 = f1 * f2
+ 1908 e0be:             ;
+ 1909 e0be: a0 e0 a1        BR exe_term_loop
+ 1910 e0c1:             
+ 1911 e0c1:             exe_term_slash:
+ 1912 e0c1: 04 e3 b7        jsr tok_next
+ 1913 e0c4: 04 e0 73        jsr exe_factor
+ 1914 e0c7: 0f 67           movrr r7,r6
+ 1915 e0c9:             ;
+ 1916 e0c9:             ; do divide f1 = f1 / f2
+ 1917 e0c9:             ;
+ 1918 e0c9: a0 e0 a1        BR exe_term_loop
+ 1919 e0cc:             
+ 1920 e0cc:             exe_term_mod:
+ 1921 e0cc: 04 e3 b7        jsr tok_next
+ 1922 e0cf: 04 e0 73        jsr exe_factor
+ 1923 e0d2: 0f 67           movrr r7,r6
+ 1924 e0d4:             ;
+ 1925 e0d4:             ; f1 = f1 % f2
+ 1926 e0d4:             ;
+ 1927 e0d4: a0 e0 a1        BR exe_term_loop
+ 1928 e0d7:             
+ 1929 e0d7:             exe_term_done:
+ 1930 e0d7: 0f 75           MOVRR r5,r7
+ 1931 e0d9: 08 60           popr r6
+ 1932 e0db: 08 50           popr r5
+ 1933 e0dd: 05              ret
+ 1934 e0de:             ;
+ 1935 e0de:             ; static VARIABLE_TYPE expr()
+ 1936 e0de:             ;
+ 1937 e0de:             ; R5 = t1
+ 1938 e0de:             ; R6 = t2
+ 1939 e0de:             ; R7 = return value
+ 1940 e0de:             ;
+ 1941 e0de:             exe_expr:
+ 1942 e0de: 07 05           pushr r5
+ 1943 e0e0: 07 06           pushr r6
+ 1944 e0e2:             
+ 1945 e0e2: 04 e0 98        jsr exe_term
+ 1946 e0e5: 0f 57           MOVRR r7,r5
+ 1947 e0e7:             
+ 1948 e0e7:             exe_expr_loop:
+ 1949 e0e7: 04 e3 b1        jsr tok_token
+ 1950 e0ea: 0d 17           ldtI TOKENIZER_PLUS
+ 1951 e0ec: a8 e1 01        BREQ exe_expr_plus
+ 1952 e0ef: 0d 18           ldtI TOKENIZER_MINUS
+ 1953 e0f1: a8 e1 0c        breq exe_expr_minus
+ 1954 e0f4: 0d 19           ldtI TOKENIZER_AND
+ 1955 e0f6: a8 e1 17        breq exe_expr_and
+ 1956 e0f9: 0d 1a           ldti TOKENIZER_OR
+ 1957 e0fb: a8 e1 22        breq exe_expr_or
+ 1958 e0fe:             
+ 1959 e0fe: a0 e1 2d        br exe_expr_done
+ 1960 e101:             
+ 1961 e101:             exe_expr_plus:
+ 1962 e101: 04 e3 b7        jsr tok_next
+ 1963 e104: 04 e0 98        jsr exe_term
+ 1964 e107: 0f 67           movrr r7,r6
+ 1965 e109:             ;
+ 1966 e109:             ; t1 = t1 + t2
+ 1967 e109:             ;
+ 1968 e109: a0 e0 e7        BR exe_expr_loop
+ 1969 e10c:             
+ 1970 e10c:             exe_expr_minus:
+ 1971 e10c: 04 e3 b7        jsr tok_next
+ 1972 e10f: 04 e0 98        jsr exe_term
+ 1973 e112: 0f 67           movrr r7,r6
+ 1974 e114:             ;
+ 1975 e114:             ; t1 = t1 - t2
+ 1976 e114:             ;
+ 1977 e114: a0 e0 e7        BR exe_expr_loop
+ 1978 e117:             
+ 1979 e117:             exe_expr_and:
+ 1980 e117: 04 e3 b7        jsr tok_next
+ 1981 e11a: 04 e0 98        jsr exe_term
+ 1982 e11d: 0f 67           movrr r7,r6
+ 1983 e11f:             ;
+ 1984 e11f:             ; t1 = t1 & t2
+ 1985 e11f:             ;
+ 1986 e11f: a0 e0 e7        BR exe_expr_loop
+ 1987 e122:             
+ 1988 e122:             exe_expr_or:
+ 1989 e122: 04 e3 b7        jsr tok_next
+ 1990 e125: 04 e0 98        jsr exe_term
+ 1991 e128: 0f 67           movrr r7,r6
+ 1992 e12a:             ;
+ 1993 e12a:             ; t1 = t1 | t2
+ 1994 e12a:             ;
+ 1995 e12a: a0 e0 e7        BR exe_expr_loop
+ 1996 e12d:             
+ 1997 e12d:             exe_expr_done:
+ 1998 e12d: 0f 75           MOVRR r5,r7
+ 1999 e12f: 08 60           popr r6
+ 2000 e131: 08 50           popr r5
+ 2001 e133: 05              ret
+ 2002 e134:             ;
+ 2003 e134:             ; int relation ()
+ 2004 e134:             ;
+ 2005 e134:             ; R5 = r1
+ 2006 e134:             ; R6 = r2
+ 2007 e134:             ; R7 = return value
+ 2008 e134:             ;
+ 2009 e134:             
+ 2010 e134:             exe_relation:
+ 2011 e134: 07 05           pushr r5
+ 2012 e136: 07 06           pushr r6
+ 2013 e138:             
+ 2014 e138: 04 e0 de        jsr exe_expr
+ 2015 e13b: 0f 57           MOVRR r7,r5
+ 2016 e13d:             
+ 2017 e13d:             exe_relation_loop:
+ 2018 e13d: 04 e3 b1        jsr tok_token
+ 2019 e140: 0d 21           LDTI TOKENIZER_LT
+ 2020 e142: a8 e1 52        BREQ exe_relation_lt
+ 2021 e145: 0d 22           ldti TOKENIZER_GT
+ 2022 e147: a8 e1 5d        breq exe_relation_gt
+ 2023 e14a: 0d 23           ldti TOKENIZER_EQ
+ 2024 e14c: a8 e1 68        breq exe_relation_eq
+ 2025 e14f:             
+ 2026 e14f: a0 e1 73        br exe_relation_done
+ 2027 e152:             
+ 2028 e152:             exe_relation_lt:
+ 2029 e152: 04 e3 b7        jsr tok_next
+ 2030 e155: 04 e0 de        jsr exe_expr
+ 2031 e158: 0f 67           movrr r7,r6
+ 2032 e15a:             ;
+ 2033 e15a:             ; r1 = r1 < r2
+ 2034 e15a:             ;
+ 2035 e15a: a0 e1 3d        BR exe_relation_loop
+ 2036 e15d:             
+ 2037 e15d:             exe_relation_gt:
+ 2038 e15d: 04 e3 b7        jsr tok_next
+ 2039 e160: 04 e0 de        jsr exe_expr
+ 2040 e163: 0f 67           movrr r7,r6
+ 2041 e165:             ;
+ 2042 e165:             ; r1 = r1 > r2
+ 2043 e165:             ;
+ 2044 e165:             
+ 2045 e165: a0 e1 3d        BR exe_relation_loop
+ 2046 e168:             
+ 2047 e168:             exe_relation_eq:
+ 2048 e168: 04 e3 b7        jsr tok_next
+ 2049 e16b: 04 e0 de        jsr exe_expr
+ 2050 e16e: 0f 67           movrr r7,r6
+ 2051 e170:             ;
+ 2052 e170:             ; r1 = r1 == r2
+ 2053 e170:             ;
+ 2054 e170: a0 e1 3d        BR exe_relation_loop
+ 2055 e173:             
+ 2056 e173:             exe_relation_done:
+ 2057 e173: 0f 75           MOVRR r5,r7
+ 2058 e175: 08 60           popr r6
+ 2059 e177: 08 50           popr r5
+ 2060 e179: 05              ret
+ 2061 e17a:             
+ 2062 e17a:             ;
+ 2063 e17a:             ; char * index_find (int linenum)
+ 2064 e17a:             ;
+ 2065 e17a:             ; call with line in R7
+ 2066 e17a:             ; return with val in R7 - tokenbuffer ptr
+ 2067 e17a:             ;
+ 2068 e17a:             exe_index_find:
+ 2069 e17a: 04 e4 04        JSR tok_find
+ 2070 e17d: 05              RET
+ 2071 e17e:             ;
+ 2072 e17e:             ; void jump_linenum(linenum)
+ 2073 e17e:             ;
+ 2074 e17e:             ; Linenum in R7
+ 2075 e17e:             ;
+ 2076 e17e:             exe_jump_line:
+ 2077 e17e: 04 e1 7a        JSR exe_index_find
+ 2078 e181: 2f              MVRHA R7
+ 2079 e182: a2 e1 95        BRNZ exe_jump_line1
+ 2080 e185: 27              MVRLA R7
+ 2081 e186: a2 e1 95        BRNZ exe_jump_line1
+ 2082 e189:             ;
+ 2083 e189:             ; returned 0 line not found
+ 2084 e189:             ;
+ 2085 e189: 0e 24           LDAI TOKENIZER_CR
+ 2086 e18b: 04 e0 54        JSR exe_accept
+ 2087 e18e: 1e 02 00        MVIW r6,bas_ended
+ 2088 e191: 0e 01           LDAI 1
+ 2089 e193: 4e              STAVR R6
+ 2090 e194: 05              ret
+ 2091 e195:             exe_jump_line1:
+ 2092 e195: 04 e4 40        jsr tok_goto
+ 2093 e198: 05              ret
+ 2094 e199:             ;
+ 2095 e199:             ; void goto_statement()
+ 2096 e199:             ;
+ 2097 e199:             exe_goto_stmt:
+ 2098 e199: 0e 0d           LDAI TOKENIZER_GOTO
+ 2099 e19b: 04 e0 54        JSR exe_accept
+ 2100 e19e: 04 e0 de        JSR exe_expr
+ 2101 e1a1: 04 e1 7e        JSR exe_jump_line
+ 2102 e1a4: 05              RET
+ 2103 e1a5:             ;
+ 2104 e1a5:             ; void print_statment()
+ 2105 e1a5:             ;
+ 2106 e1a5:             exe_print_stmt:
+ 2107 e1a5: 0e 06           LDAI TOKENIZER_PRINT
+ 2108 e1a7: 04 e0 54        jsr exe_accept
+ 2109 e1aa:             
+ 2110 e1aa:             exe_print_stmt_loop:
+ 2111 e1aa: 04 e3 b1        jsr tok_token
+ 2112 e1ad: 0d 03           LDTI TOKENIZER_STRING
+ 2113 e1af: aa e1 c0        BRNEQ exe_print_stmt1
+ 2114 e1b2:             ;
+ 2115 e1b2:             ; this should return string to print in r2
+ 2116 e1b2:             ; tok_string may not be needed tokenbufferptr is at string ?
+ 2117 e1b2:             ;
+ 2118 e1b2: 04 e3 f4        jsr tok_string
+ 2119 e1b5: 0f 27           movrr r7,r2
+ 2120 e1b7: 04 f7 60        jsr stringout
+ 2121 e1ba: 04 e3 b7        jsr tok_next
+ 2122 e1bd: a0 e1 f3        br exe_print_stmt_test
+ 2123 e1c0:             
+ 2124 e1c0:             exe_print_stmt1:
+ 2125 e1c0:             
+ 2126 e1c0: 0d 15           ldti TOKENIZER_COMMA
+ 2127 e1c2: aa e1 d0        BRNEQ exe_print_stmt2
+ 2128 e1c5: 0e 20           LDAI ' '
+ 2129 e1c7: 04 f7 6e        JSR charout
+ 2130 e1ca: 04 e3 b7        jsr tok_next
+ 2131 e1cd: a0 e1 f3        br exe_print_stmt_test
+ 2132 e1d0:             
+ 2133 e1d0:             exe_print_stmt2:
+ 2134 e1d0: 0d 16           ldti TOKENIZER_SEMICOLON
+ 2135 e1d2: aa e1 db        BRNEQ exe_print_stmt3
+ 2136 e1d5: 04 e3 b7        jsr tok_next
+ 2137 e1d8: a0 e1 f3        br exe_print_stmt_test
+ 2138 e1db:             
+ 2139 e1db:             exe_print_stmt3:
+ 2140 e1db: 0d 04           ldti TOKENIZER_VARIABLE
+ 2141 e1dd: a8 e1 ed        BREQ exe_print_stmt4
+ 2142 e1e0: 0d 02           ldti TOKENIZER_NUMBER
+ 2143 e1e2: a8 e1 ed        breq exe_print_stmt4
+ 2144 e1e5: 0d 1f           ldti  TOKENIZER_LEFTP
+ 2145 e1e7: a8 e1 ed        breq exe_print_stmt4
+ 2146 e1ea:             
+ 2147 e1ea: a0 e2 03        br exe_print_stmt_done
+ 2148 e1ed:             
+ 2149 e1ed:             exe_print_stmt4:
+ 2150 e1ed: 04 e0 de        jsr exe_expr
+ 2151 e1f0: 04 f6 97        JSR showr7
+ 2152 e1f3:             ;   br exe_print_stmt_test // falls through
+ 2153 e1f3:             
+ 2154 e1f3:             exe_print_stmt_test:
+ 2155 e1f3: 04 e3 b1        jsr tok_token
+ 2156 e1f6: 0d 24           LDTI TOKENIZER_CR
+ 2157 e1f8: a8 e2 03        breq exe_print_stmt_done
+ 2158 e1fb: 0d 01           LDTI TOKENIZER_EOF
+ 2159 e1fd: a8 e2 03        breq exe_print_stmt_done
+ 2160 e200: a0 e1 aa        br exe_print_stmt_loop
+ 2161 e203:             
+ 2162 e203:             exe_print_stmt_done:
+ 2163 e203: 1a f8 28        mviw R2,CRLF
+ 2164 e206: 04 f7 60        jsr stringout
+ 2165 e209: 04 e3 b7        jsr tok_next
+ 2166 e20c: 05              ret
+ 2167 e20d:             
+ 2168 e20d:             ;
+ 2169 e20d:             ; void if_statement()
+ 2170 e20d:             ;
+ 2171 e20d:             exe_if_stmt:
+ 2172 e20d: 03              halt
+ 2173 e20e: 0e 07           LDAI TOKENIZER_IF
+ 2174 e210: 04 e0 54        JSR exe_accept
+ 2175 e213:             
+ 2176 e213: 04 e1 34        JSR exe_relation
+ 2177 e216: 0e 08           LDAI TOKENIZER_THEN
+ 2178 e218: 04 e0 54        JSR exe_accept
+ 2179 e21b: 0d 01           LDTI 1
+ 2180 e21d: aa e2 23        BRNEQ exe_if_stmt1
+ 2181 e220: 04 e2 ea        JSR exe_stmt
+ 2182 e223:             exe_if_stmt1:
+ 2183 e223: 04 00 0c        jsr TOKENIZER_NEXT
+ 2184 e226:             ;    ////////
+ 2185 e226:             
+ 2186 e226:             ;
+ 2187 e226:             ; void let_statement()
+ 2188 e226:             ;
+ 2189 e226:             exe_let_stmt:
+ 2190 e226: 04 e3 f0      jsr tok_variable_num
+ 2191 e229: 37            mvarl r7
+ 2192 e22a: 0f 67         movrr r7,r6
+ 2193 e22c: 0e 04         ldai TOKENIZER_VARIABLE
+ 2194 e22e: 04 e0 54      jsr exe_accept
+ 2195 e231: 0e 23         ldai TOKENIZER_EQ
+ 2196 e233: 04 e0 54      jsr exe_accept
+ 2197 e236: 04 e0 de      jsr exe_expr
+ 2198 e239: 26            mvrla r6
+ 2199 e23a: 04 e3 9f      JSR exe_set_variable
+ 2200 e23d: 0e 24         ldai TOKENIZER_CR
+ 2201 e23f: 04 e0 54      jsr exe_accept
+ 2202 e242: 05            ret
+ 2203 e243:             
+ 2204 e243:             ;
+ 2205 e243:             ; void gosub_statement()
+ 2206 e243:             ;
+ 2207 e243:             exe_gosub_stmt:
+ 2208 e243: 0e 0e           ldai TOKENIZER_GOSUB
+ 2209 e245: 04 e0 54        jsr exe_accept
+ 2210 e248: 04 e3 e7        jsr tok_num
+ 2211 e24b: 0e 02           ldai TOKENIZER_NUMBER
+ 2212 e24d: 04 e0 54        jsr exe_accept
+ 2213 e250: 0e 24           ldai TOKENIZER_CR
+ 2214 e252: 04 e0 54        jsr exe_accept
+ 2215 e255:             ;
+ 2216 e255:             ; setup to use for storage area via R4
+ 2217 e255:             ;
+ 2218 e255:             ;   movrr R9,R4
+ 2219 e255:             ;
+ 2220 e255:             ; save current token buffer ptr to gosub stack
+ 2221 e255:             ;
+ 2222 e255: 23             mvrla r3
+ 2223 e256: 4d             stavr r5
+ 2224 e257: 55             incr r5
+ 2225 e258: 2b             mvrha r3
+ 2226 e259: 4d             stavr r5
+ 2227 e25a: 55             incr  r5
+ 2228 e25b:             ;
+ 2229 e25b:             ; write new gosub stack ptr location back
+ 2230 e25b:             ;
+ 2231 e25b:             ;   MOVRR R4,R9
+ 2232 e25b:             
+ 2233 e25b: 04 e1 7e       JSR exe_jump_line
+ 2234 e25e: 05             RET
+ 2235 e25f:             
+ 2236 e25f:             ;
+ 2237 e25f:             ; void return_statment()
+ 2238 e25f:             ;
+ 2239 e25f:             exe_return_stmt:
+ 2240 e25f: 0e 0f           ldai TOKENIZER_RETURN
+ 2241 e261: 04 e0 54        jsr exe_accept
+ 2242 e264:             ;
+ 2243 e264:             ; setup to use for storage area via R4
+ 2244 e264:             ;
+ 2245 e264:             ;   movrr R9,R4
+ 2246 e264:             
+ 2247 e264: 5d             decr r5
+ 2248 e265: 5d             decr r5
+ 2249 e266:             
+ 2250 e266: 45             ldavr r5
+ 2251 e267: 33             mvarl r3
+ 2252 e268: 55             incr r5
+ 2253 e269: 45             ldavr r5
+ 2254 e26a: 3b             mvarh r3
+ 2255 e26b:             
+ 2256 e26b: 5d             decr r5
+ 2257 e26c:             ;   movrr r4,r9
+ 2258 e26c:             
+ 2259 e26c: 05             ret
+ 2260 e26d:             
+ 2261 e26d:             ;
+ 2262 e26d:             ; void next_statement()
+ 2263 e26d:             ;
+ 2264 e26d:             exe_next_stmt:
+ 2265 e26d:             ;
+ 2266 e26d:             ; setup to use for storage area via R4
+ 2267 e26d:             ;
+ 2268 e26d:             ;    movrr r8,r4
+ 2269 e26d:             ; backup to the TO Value
+ 2270 e26d: 5c              decr r4
+ 2271 e26e: 5c              decr r4
+ 2272 e26f: 5c              decr r4
+ 2273 e270: 5c              decr r4
+ 2274 e271:             ;
+ 2275 e271:             ; eat next
+ 2276 e271:             ;
+ 2277 e271: 0e 0c           ldai TOKENIZER_NEXT
+ 2278 e273: 04 e0 54        jsr exe_accept
+ 2279 e276:             ;
+ 2280 e276:             ; get variable id (in accumulator) and hold in r6 lo
+ 2281 e276:             ;
+ 2282 e276: 04 e3 f0        jsr tok_variable_num
+ 2283 e279: 36              mvarl r6
+ 2284 e27a:             ;
+ 2285 e27a:             ; eat TOKENIZER_VARIABLE id
+ 2286 e27a:             ;
+ 2287 e27a: 0e 04           ldai TOKENIZER_VARIABLE
+ 2288 e27c: 04 e0 54        jsr exe_accept
+ 2289 e27f:             ;
+ 2290 e27f:             ; get variable value, inc by 1 and store
+ 2291 e27f:             ;
+ 2292 e27f: 26              mvrla r6
+ 2293 e280: 04 e3 a6        jsr exe_get_variable
+ 2294 e283: 57              incr r7
+ 2295 e284: 26              mvrla r6
+ 2296 e285: 04 e3 9f        jsr exe_set_variable
+ 2297 e288:             ;
+ 2298 e288:             ; get TO value into R6
+ 2299 e288: 44              ldavr r4
+ 2300 e289: 36              mvarl r6
+ 2301 e28a: 54              incr r4
+ 2302 e28b: 44              ldavr r4
+ 2303 e28c: 3e              mvarh r6
+ 2304 e28d: 54              incr r4
+ 2305 e28e:             ;
+ 2306 e28e:             ; for now only compare low byte hack
+ 2307 e28e:             ;
+ 2308 e28e: 26              mvrla r6
+ 2309 e28f: 0b              mvat
+ 2310 e290: 27              mvrla r7
+ 2311 e291: a9 e2 9b        brgt exe_next_done
+ 2312 e294:             ;
+ 2313 e294: 44              ldavr r4
+ 2314 e295: 33              mvarl r3
+ 2315 e296: 54              incr r4
+ 2316 e297: 44              ldavr r4
+ 2317 e298: 3b              mvarh r3
+ 2318 e299: 54              incr r4
+ 2319 e29a: 05              ret
+ 2320 e29b:             
+ 2321 e29b:             exe_next_done:
+ 2322 e29b: 5c            decr r4
+ 2323 e29c: 5c            decr r4
+ 2324 e29d: 5c            decr r4
+ 2325 e29e: 5c            decr r4
+ 2326 e29f: 5c            decr r4
+ 2327 e2a0: 5c            decr r4
+ 2328 e2a1:             ;  movrr r4,r8
+ 2329 e2a1: 0e 24         ldai TOKENIZER_CR
+ 2330 e2a3: 04 e0 54      jsr exe_accept
+ 2331 e2a6: 05            ret
+ 2332 e2a7:             
+ 2333 e2a7:             ;
+ 2334 e2a7:             ; void for_statement()
+ 2335 e2a7:             ;
+ 2336 e2a7:             exe_for_stmt:
+ 2337 e2a7:             ;
+ 2338 e2a7:             ; setup to use for storage area via R4
+ 2339 e2a7:             ;
+ 2340 e2a7:             ;    movrr r8,r4
+ 2341 e2a7:             ;
+ 2342 e2a7:             ; eat FOR
+ 2343 e2a7:             ;
+ 2344 e2a7: 0e 0a         ldai TOKENIZER_FOR
+ 2345 e2a9: 04 e0 54      jsr exe_accept
+ 2346 e2ac:             ;
+ 2347 e2ac:             ; get variable id (in accumulator) and hold in r6 lo
+ 2348 e2ac:             ;
+ 2349 e2ac: 04 e3 f0      jsr tok_variable_num
+ 2350 e2af: 36            mvarl r6
+ 2351 e2b0:             ;
+ 2352 e2b0:             ; store variable id in for storage hack only lo byte, hi byte 0
+ 2353 e2b0:             ;
+ 2354 e2b0: 4c            stavr r4
+ 2355 e2b1: 54            incr r4
+ 2356 e2b2: 0e 00         ldai 0
+ 2357 e2b4: 4c            stavr r4
+ 2358 e2b5: 54            incr r4
+ 2359 e2b6:             ;
+ 2360 e2b6:             ; eat variable id and = then get starting value
+ 2361 e2b6:             ;
+ 2362 e2b6: 0e 04         ldai TOKENIZER_VARIABLE
+ 2363 e2b8: 04 e0 54      jsr exe_accept
+ 2364 e2bb: 0e 23         ldai TOKENIZER_EQ
+ 2365 e2bd: 04 e0 54      jsr exe_accept
+ 2366 e2c0: 04 e0 de      jsr exe_expr
+ 2367 e2c3:             ;
+ 2368 e2c3:             ; set variable to starting value
+ 2369 e2c3:             ;
+ 2370 e2c3: 26            mvrla r6
+ 2371 e2c4: 04 e3 9f      JSR exe_set_variable
+ 2372 e2c7:             ;
+ 2373 e2c7:             ; eat TO and get to value
+ 2374 e2c7:             ;
+ 2375 e2c7: 0e 0b         ldai TOKENIZER_TO
+ 2376 e2c9: 04 e0 54      jsr exe_accept
+ 2377 e2cc: 04 e0 de      jsr exe_expr
+ 2378 e2cf:             ;
+ 2379 e2cf:             ; store to value in for storage area
+ 2380 e2cf:             ;
+ 2381 e2cf: 27            mvrla r7
+ 2382 e2d0: 4c            stavr r4
+ 2383 e2d1: 54            incr r4
+ 2384 e2d2: 2f            mvrha r7
+ 2385 e2d3: 4c            stavr r4
+ 2386 e2d4: 54            incr r4
+ 2387 e2d5:             ;
+ 2388 e2d5:             ; EAT EOL
+ 2389 e2d5:             ;
+ 2390 e2d5: 0e 24         ldai TOKENIZER_CR
+ 2391 e2d7: 04 e0 54      jsr exe_accept
+ 2392 e2da:             ;
+ 2393 e2da:             ; store instruction after for in for storage area
+ 2394 e2da:             ;
+ 2395 e2da: 23              mvrla r3
+ 2396 e2db: 4c              stavr r4
+ 2397 e2dc: 54              incr r4
+ 2398 e2dd: 2b              mvrha r3
+ 2399 e2de: 4c              stavr r4
+ 2400 e2df: 54              incr r4
+ 2401 e2e0:             ;
+ 2402 e2e0:             ;   save for stackptr
+ 2403 e2e0:             ;
+ 2404 e2e0:             ;    movrr r4,r8
+ 2405 e2e0:             ;
+ 2406 e2e0: 05              ret
+ 2407 e2e1:             ;
+ 2408 e2e1:             ; void peek_statment()
+ 2409 e2e1:             ;
+ 2410 e2e1:             exe_peek_stmt:
+ 2411 e2e1: 03            halt
+ 2412 e2e2:             
+ 2413 e2e2:             ;
+ 2414 e2e2:             ; void poke_statement()
+ 2415 e2e2:             ;
+ 2416 e2e2:             exe_poke_stmt:
+ 2417 e2e2: 03            halt
+ 2418 e2e3:             
+ 2419 e2e3:             ;
+ 2420 e2e3:             ; void end_statement()
+ 2421 e2e3:             ;
+ 2422 e2e3:             exe_end_stmt:
+ 2423 e2e3: 1e 02 00      mviw r6,bas_ended
+ 2424 e2e6: 0e 01         LDAI 1
+ 2425 e2e8: 4e            STAVR r6
+ 2426 e2e9: 05            ret
+ 2427 e2ea:             ;
+ 2428 e2ea:             ; void statment()
+ 2429 e2ea:             ;
+ 2430 e2ea:             exe_stmt:
+ 2431 e2ea:             ;    MVIW R2,exe_stmt_msg
+ 2432 e2ea:             ;    JSR stringout
+ 2433 e2ea:             ;    JSR showaddr
+ 2434 e2ea: 04 e3 b1        jsr tok_token
+ 2435 e2ed:             ;    PUSH
+ 2436 e2ed:             ;    JSR showbytea
+ 2437 e2ed:             ;    MVIW R2,CRLF
+ 2438 e2ed:             ;    JSR STRINGOUT
+ 2439 e2ed:             ;    POP
+ 2440 e2ed:             
+ 2441 e2ed:             
+ 2442 e2ed: 0d 06           LDTI TOKENIZER_PRINT
+ 2443 e2ef: aa e2 f6        BRNEQ exe_stmt1
+ 2444 e2f2: 04 e1 a5        JSR exe_print_stmt
+ 2445 e2f5: 05              ret
+ 2446 e2f6:             
+ 2447 e2f6:             exe_stmt1:
+ 2448 e2f6: 0d 07           LDTI TOKENIZER_IF
+ 2449 e2f8: aa e2 ff        BRNEQ exe_stmt2
+ 2450 e2fb: 04 e2 0d        JSR exe_if_stmt
+ 2451 e2fe: 05              ret
+ 2452 e2ff:             
+ 2453 e2ff:             exe_stmt2:
+ 2454 e2ff: 0d 04           LDTI TOKENIZER_VARIABLE
+ 2455 e301: aa e3 08        BRNEQ exe_stmt3
+ 2456 e304: 04 e2 26        JSR exe_let_stmt
+ 2457 e307: 05              ret
+ 2458 e308:             
+ 2459 e308:             exe_stmt3:
+ 2460 e308: 0d 0e           LDTI TOKENIZER_GOSUB
+ 2461 e30a: aa e3 11        BRNEQ exe_stmt4
+ 2462 e30d: 04 e2 43        JSR exe_gosub_stmt
+ 2463 e310: 05              ret
+ 2464 e311:             
+ 2465 e311:             exe_stmt4:
+ 2466 e311: 0d 0f           LDTI TOKENIZER_RETURN
+ 2467 e313: aa e3 1a        BRNEQ exe_stmt5
+ 2468 e316: 04 e2 5f        JSR exe_return_stmt
+ 2469 e319: 05              ret
+ 2470 e31a:             
+ 2471 e31a:             exe_stmt5:
+ 2472 e31a: 0d 0a           LDTI TOKENIZER_FOR
+ 2473 e31c: aa e3 23        BRNEQ exe_stmt6
+ 2474 e31f: 04 e2 a7        JSR exe_for_stmt
+ 2475 e322: 05              ret
+ 2476 e323:             
+ 2477 e323:             exe_stmt6:
+ 2478 e323: 0d 12           LDTI TOKENIZER_PEEK
+ 2479 e325: aa e3 2c        BRNEQ exe_stmt7
+ 2480 e328: 04 e2 e1        JSR exe_peek_stmt
+ 2481 e32b: 05              ret
+ 2482 e32c:             
+ 2483 e32c:             exe_stmt7:
+ 2484 e32c: 0d 13           LDTI TOKENIZER_POKE
+ 2485 e32e: aa e3 35        BRNEQ exe_stmt8
+ 2486 e331: 04 e2 e2        JSR exe_poke_stmt
+ 2487 e334: 05              ret
+ 2488 e335:             
+ 2489 e335:             exe_stmt8:
+ 2490 e335: 0d 0c           LDTI TOKENIZER_NEXT
+ 2491 e337: aa e3 3e        BRNEQ exe_stmt9
+ 2492 e33a: 04 e2 6d        JSR exe_next_stmt
+ 2493 e33d: 05              ret
+ 2494 e33e:             
+ 2495 e33e:             exe_stmt9:
+ 2496 e33e: 0d 14           LDTI TOKENIZER_END
+ 2497 e340: aa e3 47        BRNEQ exe_stmt10
+ 2498 e343: 04 e2 e3        JSR exe_end_stmt
+ 2499 e346: 05              ret
+ 2500 e347:             
+ 2501 e347:             exe_stmt10:
+ 2502 e347: 0d 05           LDTI TOKENIZER_LET
+ 2503 e349: aa e3 55        BRNEQ exe_stmt11
+ 2504 e34c: 0e 05           LDAI TOKENIZER_LET
+ 2505 e34e: 04 e0 54        JSR exe_accept
+ 2506 e351: 04 e2 26        JSR exe_let_stmt
+ 2507 e354: 05              ret
+ 2508 e355:             
+ 2509 e355:             exe_stmt11:
+ 2510 e355: 0d 0d           LDTI TOKENIZER_GOTO
+ 2511 e357: aa e3 5e        BRNEQ exe_stmt12
+ 2512 e35a: 04 e1 99        JSR exe_goto_stmt
+ 2513 e35d: 05              ret
+ 2514 e35e:             
+ 2515 e35e:             exe_stmt12:
+ 2516 e35e: 1a e0 24        MVIW R2,bas_msg3
+ 2517 e361: 04 f7 60        jsr stringout
+ 2518 e364: 04 f6 4f        jsr showaddr
+ 2519 e367: 04 f7 1c        jsr showbyte
+ 2520 e36a: 04 e3 b0        jsr bas_error
+ 2521 e36d:             
+ 2522 e36d:             ;
+ 2523 e36d:             ; void line_statement (void)
+ 2524 e36d:             ;
+ 2525 e36d:             exe_line_stmt:
+ 2526 e36d:             ;line_statement(void) {
+ 2527 e36d:             ;    DEBUG_PRINTF("----------- Line number %d ---------\n", tokenizer_num());
+ 2528 e36d:             ;#ifdef unused
+ 2529 e36d:             ;    index_add(tokenizer_num(), tokenizer_pos());
+ 2530 e36d:             ;#endif
+ 2531 e36d:             ;    accept(TOKENIZER_LINENUM);
+ 2532 e36d:             ;    statement();
+ 2533 e36d:             ;    return;
+ 2534 e36d: 0e 25           LDAI TOKENIZER_LINENUM
+ 2535 e36f: 04 e0 54        jsr exe_accept
+ 2536 e372: 04 e2 ea        jsr exe_stmt
+ 2537 e375: 05              ret
+ 2538 e376:             
+ 2539 e376:             ;
+ 2540 e376:             ; void ubasic_run()
+ 2541 e376:             ;
+ 2542 e376:             do_basic:
+ 2543 e376:             ;    mviw r7,000ah
+ 2544 e376:             ;    jsr tok_find
+ 2545 e376:             ;    jsr showr7
+ 2546 e376:             ;    mviw r2,CRLF
+ 2547 e376:             ;    jsr stringout
+ 2548 e376:             
+ 2549 e376:             ;    mviw r7,0014h
+ 2550 e376:             ;    jsr tok_find
+ 2551 e376:             ;    jsr showr7
+ 2552 e376:             ;    mviw r2,CRLF
+ 2553 e376:             ;    jsr stringout
+ 2554 e376:             
+ 2555 e376: 04 e0 44        JSR exe_init
+ 2556 e379:             
+ 2557 e379:             ;    mviw r7,0080h
+ 2558 e379:             ;    jsr tok_find
+ 2559 e379:             ;    jsr showr7
+ 2560 e379:             ;    mviw r2,CRLF
+ 2561 e379:             ;    jsr stringout
+ 2562 e379:             exe_run:
+ 2563 e379: 04 e3 88        jsr exe_finished
+ 2564 e37c: 0d 01           LDTI 1
+ 2565 e37e: aa e3 82        BRNEQ exe_run_cont
+ 2566 e381: 05              ret
+ 2567 e382:             
+ 2568 e382:             exe_run_cont:
+ 2569 e382: 04 e3 6d        jsr exe_line_stmt
+ 2570 e385: a0 e3 79        BR exe_run
+ 2571 e388:             
+ 2572 e388:             ;
+ 2573 e388:             ; int ubasic_finished()
+ 2574 e388:             ;
+ 2575 e388:             exe_finished:
+ 2576 e388: 1a 02 00        MVIW R2,bas_ended
+ 2577 e38b: 42              LDAVR R2
+ 2578 e38c: 0d 01           LDTI 1
+ 2579 e38e: a8 e3 9c        BREQ exe_finished_yes
+ 2580 e391: 04 e3 f8        JSR tok_finished
+ 2581 e394: 0d 01           LDTI 1
+ 2582 e396: a8 e3 9c        BREQ exe_finished_yes
+ 2583 e399: 0e 00           LDAI 0
+ 2584 e39b: 05              RET
+ 2585 e39c:             exe_finished_yes:
+ 2586 e39c: 0e 01           LDAI 1
+ 2587 e39e: 05              ret
+ 2588 e39f:             
+ 2589 e39f:             ;
+ 2590 e39f:             ; void ubasic_set_variable(int varnum, VARIABLE_TYPE value)
+ 2591 e39f:             ;
+ 2592 e39f:             ; R7 value (only using low byte)
+ 2593 e39f:             ; ACCUMULATOR Variable ref number
+ 2594 e39f:             ;
+ 2595 e39f:             ; Destroys R2 and accumulator, could be fixed with a push/pop
+ 2596 e39f:             ;
+ 2597 e39f:             exe_set_variable:
+ 2598 e39f: 1a 01 00        MVIW R2,BASIC_VARS
+ 2599 e3a2: 32              MVARL R2
+ 2600 e3a3:             ;
+ 2601 e3a3: 27              MVRLA R7
+ 2602 e3a4: 4a              STAVR R2
+ 2603 e3a5: 05              RET
+ 2604 e3a6:             ;
+ 2605 e3a6:             ; VARIABLE_TYPE ubasic_get_variable(int varnum)
+ 2606 e3a6:             ;
+ 2607 e3a6:             ; ACCUMULATOR HOLDS VARIABLE REF NUMBER, VALUE RETURN IN R7
+ 2608 e3a6:             ;
+ 2609 e3a6:             ; HACK for now BASIC_VARS needs to be 256 byte 0xAA00 aligned
+ 2610 e3a6:             ; and only 0-25 (var names a-z) supported
+ 2611 e3a6:             ; for now values are 1 byte, upper byte of R7 forced to 0
+ 2612 e3a6:             ;
+ 2613 e3a6:             ; Destroys R2 and accumulator, could be fixed with a push/pop
+ 2614 e3a6:             ;
+ 2615 e3a6:             exe_get_variable:
+ 2616 e3a6: 1a 01 00        MVIW R2,BASIC_VARS
+ 2617 e3a9: 32              MVARL R2
+ 2618 e3aa:             ;
+ 2619 e3aa: 42              LDAVR R2
+ 2620 e3ab: 37              MVARL R7
+ 2621 e3ac: 0e 00           LDAI 0
+ 2622 e3ae: 3f              MVARH R7
+ 2623 e3af: 05              RET
+ 2624 e3b0:             
+ 2625 e3b0:             
+ 2626 e3b0:             bas_error:
+ 2627 e3b0: 05            RET
+ 2628 e3b1:             
+ 2629 e3b1:             ;
+ 2630 e3b1:             ; Tokenizer execute support code
+ 2631 e3b1:             ;
+ 2632 e3b1:             tok_token:
+ 2633 e3b1: 43            LDAVR R3
+ 2634 e3b2: 05            RET
+ 2635 e3b3:             
+ 2636 e3b3:             tok_init:
+ 2637 e3b3: 1b e9 60      MVIW r3,basic_test
+ 2638 e3b6: 05            RET
+ 2639 e3b7:             
+ 2640 e3b7:             tok_next:
+ 2641 e3b7: 43            ldavr r3
+ 2642 e3b8: 0d 02         ldti TOKENIZER_NUMBER
+ 2643 e3ba: aa e3 c1      BRNEQ tok_next1
+ 2644 e3bd: 53            incr r3
+ 2645 e3be: 53            incr r3
+ 2646 e3bf: 53            incr r3
+ 2647 e3c0: 05            RET
+ 2648 e3c1:             
+ 2649 e3c1:             tok_next1:
+ 2650 e3c1: 0d 04         ldti TOKENIZER_VARIABLE
+ 2651 e3c3: aa e3 ca      BRNEQ tok_next2
+ 2652 e3c6: 53            incr r3
+ 2653 e3c7: 53            incr r3
+ 2654 e3c8: 53            incr r3
+ 2655 e3c9: 05            RET
+ 2656 e3ca:             
+ 2657 e3ca:             tok_next2:
+ 2658 e3ca: 0d 25         ldti TOKENIZER_LINENUM
+ 2659 e3cc: aa e3 d5      BRNEQ tok_next3
+ 2660 e3cf: 53            incr r3
+ 2661 e3d0: 53            incr r3
+ 2662 e3d1: 53            incr r3
+ 2663 e3d2: 53            incr r3
+ 2664 e3d3: 53            incr r3
+ 2665 e3d4: 05            RET
+ 2666 e3d5:             
+ 2667 e3d5:             tok_next3:
+ 2668 e3d5: 0d 03         ldti TOKENIZER_STRING
+ 2669 e3d7: aa e3 e5      BRNEQ tok_next4
+ 2670 e3da: 53            incr r3
+ 2671 e3db:             
+ 2672 e3db:             tok_next3_loop:
+ 2673 e3db: 43            LDAVR R3
+ 2674 e3dc: a1 e3 e3      BRZ tok_next3_done
+ 2675 e3df: 53            incr r3
+ 2676 e3e0: a0 e3 db      BR tok_next3_loop
+ 2677 e3e3:             
+ 2678 e3e3:             tok_next3_done:
+ 2679 e3e3: 53            incr r3
+ 2680 e3e4: 05            RET
+ 2681 e3e5:             
+ 2682 e3e5:             tok_next4:
+ 2683 e3e5: 53            incr r3
+ 2684 e3e6: 05            ret
+ 2685 e3e7:             
+ 2686 e3e7:             ;
+ 2687 e3e7:             ; numbers stored low byte followed by high byte in memory
+ 2688 e3e7:             
+ 2689 e3e7:             tok_num:
+ 2690 e3e7: 53              incr r3
+ 2691 e3e8: 43              ldavr r3
+ 2692 e3e9: 37              mvarl r7
+ 2693 e3ea: 53              incr r3
+ 2694 e3eb: 43              ldavr r3
+ 2695 e3ec: 3f              mvarh r7
+ 2696 e3ed: 5b              decr r3
+ 2697 e3ee: 5b              decr r3
+ 2698 e3ef: 05              ret
+ 2699 e3f0:             
+ 2700 e3f0:             ;
+ 2701 e3f0:             ; hack only using low byte of id for now
+ 2702 e3f0:             ; return in accumulator
+ 2703 e3f0:             ;
+ 2704 e3f0:             tok_variable_num:
+ 2705 e3f0: 53              incr r3
+ 2706 e3f1: 43              ldavr r3
+ 2707 e3f2: 5b              decr r3
+ 2708 e3f3: 05              ret
+ 2709 e3f4:             
+ 2710 e3f4:             tok_string:
+ 2711 e3f4: 0f 73           movrr r3,r7
+ 2712 e3f6: 57              incr r7
+ 2713 e3f7: 05              ret
+ 2714 e3f8:             
+ 2715 e3f8:             tok_finished:
+ 2716 e3f8: 43              ldavr r3
+ 2717 e3f9: 0d 01           ldti 1
+ 2718 e3fb: aa e4 01        brneq tok_finished1
+ 2719 e3fe: 0e 01           ldai 1
+ 2720 e400: 05              ret
+ 2721 e401:             tok_finished1:
+ 2722 e401: 0e 00           ldai 0
+ 2723 e403: 05              ret
+ 2724 e404:             
+ 2725 e404:             ;
+ 2726 e404:             ; find linenum in r7
+ 2727 e404:             ;
+ 2728 e404:             tok_find:
+ 2729 e404:             ;    jsr showr7
+ 2730 e404: 07 05           pushr r5
+ 2731 e406: 1d e9 60        MVIW r5,basic_test
+ 2732 e409:             
+ 2733 e409:             tok_find_loop:
+ 2734 e409: 45              ldavr r5
+ 2735 e40a: 0d 01           ldti 01
+ 2736 e40c: aa e4 16        brneq tok_find_loop1
+ 2737 e40f: 1f 00 00        mviw r7,0
+ 2738 e412: 27              mvrla r7
+ 2739 e413: 08 50           popr r5
+ 2740 e415:             
+ 2741 e415: 05              ret
+ 2742 e416:             tok_find_loop1:
+ 2743 e416: 55              incr r5
+ 2744 e417: 27              mvrla r7
+ 2745 e418: 0b              MVAT
+ 2746 e419: 45              ldavr r5
+ 2747 e41a: aa e4 2d        brneq tok_find1
+ 2748 e41d: 55              incr r5
+ 2749 e41e: 2f              mvrha r7
+ 2750 e41f: 0b              MVAT
+ 2751 e420: 45              ldavr r5
+ 2752 e421: aa e4 2e        brneq tok_find2
+ 2753 e424: 5d              decr r5
+ 2754 e425: 5d              decr r5
+ 2755 e426: 0f 75           movrr r5,r7
+ 2756 e428: 0e 01           ldai 1
+ 2757 e42a: 08 50           popr r5
+ 2758 e42c: 05              ret
+ 2759 e42d:             
+ 2760 e42d:             tok_find1:
+ 2761 e42d: 55              incr r5
+ 2762 e42e:             tok_find2:
+ 2763 e42e: 55              incr r5
+ 2764 e42f: 45              ldavr r5
+ 2765 e430: 1e 00 00        mviw r6,0
+ 2766 e433: 36              mvarl r6
+ 2767 e434: 5e              decr r6
+ 2768 e435: 5e              decr r6
+ 2769 e436: 5e              decr r6
+ 2770 e437:             tok_find_moveptr:
+ 2771 e437: 55              incr r5
+ 2772 e438: 5e              decr r6
+ 2773 e439: 26              mvrla r6
+ 2774 e43a: a2 e4 37        brnz tok_find_moveptr
+ 2775 e43d: a0 e4 09        br tok_find_loop
+ 2776 e440:             
+ 2777 e440:             tok_goto:
+ 2778 e440: 0f 37           movrr r7,r3
+ 2779 e442: 05              ret
+ 2780 e443:             
+ 2781 e443:             ;
+ 2782 e443:             ; list out token buffer
+ 2783 e443:             ; buffer address in r7
+ 2784 e443:             ;
+ 2785 e443: 4c 45 54 20 
+            00          tokl_let: DB "LET ",0
+ 2786 e448: 50 52 49 4e 
+            54 20 00    tokl_print: DB "PRINT ",0
+ 2787 e44f: 49 46 20 00 tokl_if: DB "IF ",0
+ 2788 e453: 54 48 45 4e 
+            20 00       tokl_then: DB "THEN ",0
+ 2789 e459: 45 4c 53 45 
+            20 00       tokl_else: DB "ELSE ",0
+ 2790 e45f: 46 4f 52 20 
+            00          tokl_for: DB "FOR ",0
+ 2791 e464: 54 4f 20 00 tokl_to: DB "TO ",0
+ 2792 e468: 4e 45 58 54 
+            20 00       tokl_next: DB "NEXT ",0
+ 2793 e46e: 47 4f 54 4f 
+            20 00       tokl_goto: DB "GOTO ",0
+ 2794 e474: 47 4f 53 55 
+            42 20 00    tokl_gosub: DB "GOSUB ",0
+ 2795 e47b: 52 45 54 55 
+            52 4e 20 00 tokl_return: DB "RETURN ",0
+ 2796 e483: 52 45 4d 20 
+            00          tokl_rem: DB "REM ",0
+ 2797 e488: 50 45 45 4b 
+            20 00       tokl_peek: DB "PEEK ",0
+ 2798 e48e: 50 4f 4b 45 
+            20 00       tokl_poke: DB "POKE ",0
+ 2799 e494: 45 4e 44 20 
+            00          tokl_end: DB "END ",0
+ 2800 e499: 43 41 4c 4c 
+            20 00       tokl_call: DB "CALL ",0
+ 2801 e49f: 4c 49 53 54 
+            20 45 52 52 
+            4f 52 00    tokl_error: DB "LIST ERROR",0
+ 2802 e4aa:             
+ 2803 e4aa:             
+ 2804 e4aa:             tok_list:
+ 2805 e4aa: 07 03           pushr r3
+ 2806 e4ac: 0f 37           movrr r7,r3
+ 2807 e4ae:             
+ 2808 e4ae:             
+ 2809 e4ae:             tok_list_loop:
+ 2810 e4ae: 43              ldavr r3
+ 2811 e4af:             
+ 2812 e4af: 0d 00           LDTI TOKENIZER_ERROR
+ 2813 e4b1: aa e4 c3        BRNEQ tok_list1
+ 2814 e4b4: 1a e4 9f        MVIW R2,tokl_error
+ 2815 e4b7: 04 f7 60        JSR stringout
+ 2816 e4ba: 04 f6 4f        JSR showaddr
+ 2817 e4bd: a0 e7 59        BR tok_list_done
+ 2818 e4c0: a0 e4 ae        BR tok_list_loop
+ 2819 e4c3:             
+ 2820 e4c3:             tok_list1:
+ 2821 e4c3: 0d 01           LDTI TOKENIZER_EOF
+ 2822 e4c5: aa e4 ce        BRNEQ tok_list2
+ 2823 e4c8: a0 e7 59        BR tok_list_done
+ 2824 e4cb: a0 e4 ae        BR tok_list_loop
+ 2825 e4ce:             
+ 2826 e4ce:             tok_list2:
+ 2827 e4ce: 0d 02           LDTI TOKENIZER_NUMBER
+ 2828 e4d0: aa e4 e5        BRNEQ tok_list3
+ 2829 e4d3: 53              incr r3
+ 2830 e4d4: 43              ldavr r3
+ 2831 e4d5: 37              mvarl r7
+ 2832 e4d6: 53              incr r3
+ 2833 e4d7: 43              ldavr r3
+ 2834 e4d8: 3f              mvarh r7
+ 2835 e4d9: 53              INCR R3
+ 2836 e4da: 04 f6 97        jsr showr7
+ 2837 e4dd: 0e 20           ldai ' '
+ 2838 e4df: 04 f7 6e        jsr uartout
+ 2839 e4e2: a0 e4 ae        BR tok_list_loop
+ 2840 e4e5:             
+ 2841 e4e5:             tok_list3:
+ 2842 e4e5: 0d 03           LDTI TOKENIZER_STRING
+ 2843 e4e7: aa e5 01        BRNEQ tok_list4
+ 2844 e4ea: 53              incr r3
+ 2845 e4eb: 0f 23           movrr r3,r2
+ 2846 e4ed: 04 f7 60        jsr stringout
+ 2847 e4f0: 0e 20           ldai ' '
+ 2848 e4f2: 04 f7 6e        jsr uartout
+ 2849 e4f5:             tok_list_string:
+ 2850 e4f5: 43              ldavr r3
+ 2851 e4f6: a1 e4 fd        brz tok_list_stringend
+ 2852 e4f9: 53              incr r3
+ 2853 e4fa: a0 e4 f5        br tok_list_string
+ 2854 e4fd:             tok_list_stringend:
+ 2855 e4fd: 53              incr r3
+ 2856 e4fe: a0 e4 ae        BR tok_list_loop
+ 2857 e501:             
+ 2858 e501:             tok_list4:
+ 2859 e501: 0d 04           LDTI TOKENIZER_VARIABLE
+ 2860 e503: aa e5 18        BRNEQ tok_list5
+ 2861 e506: 53              incr r3
+ 2862 e507: 43              ldavr r3
+ 2863 e508: 0d 41           ldti 'A'
+ 2864 e50a: b8              ADDT
+ 2865 e50b: 53              incr r3
+ 2866 e50c: 53              incr r3
+ 2867 e50d: 04 f7 6e        jsr uartout
+ 2868 e510:             
+ 2869 e510:             ;    ldavr r3
+ 2870 e510:             ;    mvarl r7
+ 2871 e510:             ;    incr r3
+ 2872 e510:             ;    ldavr r3
+ 2873 e510:             ;    mvarh r7
+ 2874 e510:             ;    INCR R3
+ 2875 e510:             ;    jsr showr7
+ 2876 e510:             
+ 2877 e510: 0e 20           ldai ' '
+ 2878 e512: 04 f7 6e        jsr uartout
+ 2879 e515: a0 e4 ae        BR tok_list_loop
+ 2880 e518:             
+ 2881 e518:             tok_list5:
+ 2882 e518: 0d 05           LDTI TOKENIZER_LET
+ 2883 e51a: aa e5 27        BRNEQ tok_list6
+ 2884 e51d: 1a e4 43        MVIW R2,tokl_let
+ 2885 e520: 04 f7 60        JSR stringout
+ 2886 e523: 53              INCR R3
+ 2887 e524: a0 e4 ae        BR tok_list_loop
+ 2888 e527:             
+ 2889 e527:             tok_list6:
+ 2890 e527: 0d 06           LDTI TOKENIZER_PRINT
+ 2891 e529: aa e5 36        BRNEQ tok_list7
+ 2892 e52c: 1a e4 48        MVIW R2,tokl_print
+ 2893 e52f: 04 f7 60        jsr STRINGOUT
+ 2894 e532: 53              INCR R3
+ 2895 e533: a0 e4 ae        BR tok_list_loop
+ 2896 e536:             
+ 2897 e536:             tok_list7:
+ 2898 e536: 0d 07           LDTI TOKENIZER_IF
+ 2899 e538: aa e5 45        BRNEQ tok_list8
+ 2900 e53b: 1a e4 4f        MVIW R2,tokl_if
+ 2901 e53e: 04 f7 60        JSR stringout
+ 2902 e541: 53              INCR R3
+ 2903 e542: a0 e4 ae        BR tok_list_loop
+ 2904 e545:             
+ 2905 e545:             tok_list8:
+ 2906 e545: 0d 08           LDTI TOKENIZER_THEN
+ 2907 e547: aa e5 54        BRNEQ tok_list9
+ 2908 e54a: 1a e4 53        MVIW R2,tokl_then
+ 2909 e54d: 04 f7 60        JSR stringout
+ 2910 e550: 53              INCR R3
+ 2911 e551: a0 e4 ae        BR tok_list_loop
+ 2912 e554:             
+ 2913 e554:             tok_list9:
+ 2914 e554: 0d 09           LDTI TOKENIZER_ELSE
+ 2915 e556: aa e5 63        BRNEQ tok_list10
+ 2916 e559: 1a e4 59        MVIW R2,tokl_else
+ 2917 e55c: 04 f7 60        JSR stringout
+ 2918 e55f: 53              INCR R3
+ 2919 e560: a0 e4 ae        BR tok_list_loop
+ 2920 e563:             
+ 2921 e563:             tok_list10:
+ 2922 e563: 0d 0a           LDTI TOKENIZER_FOR
+ 2923 e565: aa e5 72        BRNEQ tok_list11
+ 2924 e568: 1a e4 5f        MVIW R2,tokl_for
+ 2925 e56b: 04 f7 60        JSR stringout
+ 2926 e56e: 53              INCR R3
+ 2927 e56f: a0 e4 ae        BR tok_list_loop
+ 2928 e572:             
+ 2929 e572:             tok_list11:
+ 2930 e572: 0d 0b           LDTI TOKENIZER_TO
+ 2931 e574: aa e5 81        BRNEQ tok_list12
+ 2932 e577: 1a e4 64        MVIW R2,tokl_to
+ 2933 e57a: 04 f7 60        JSR stringout
+ 2934 e57d: 53              INCR R3
+ 2935 e57e: a0 e4 ae        BR tok_list_loop
+ 2936 e581:             
+ 2937 e581:             tok_list12:
+ 2938 e581: 0d 0c           LDTI TOKENIZER_NEXT
+ 2939 e583: aa e5 90        BRNEQ tok_list13
+ 2940 e586: 1a e4 68        MVIW R2,tokl_next
+ 2941 e589: 04 f7 60        JSR stringout
+ 2942 e58c: 53              INCR R3
+ 2943 e58d: a0 e4 ae        BR tok_list_loop
+ 2944 e590:             
+ 2945 e590:             tok_list13:
+ 2946 e590: 0d 0d           LDTI TOKENIZER_GOTO
+ 2947 e592: aa e5 9f        BRNEQ tok_list14
+ 2948 e595: 1a e4 6e        MVIW R2,tokl_goto
+ 2949 e598: 04 f7 60        JSR stringout
+ 2950 e59b: 53              INCR R3
+ 2951 e59c: a0 e4 ae        BR tok_list_loop
+ 2952 e59f:             
+ 2953 e59f:             tok_list14:
+ 2954 e59f: 0d 0e           LDTI TOKENIZER_GOSUB
+ 2955 e5a1: aa e5 ae        BRNEQ tok_list15
+ 2956 e5a4: 1a e4 74        MVIW R2,tokl_gosub
+ 2957 e5a7: 04 f7 60        JSR stringout
+ 2958 e5aa: 53              INCR R3
+ 2959 e5ab: a0 e4 ae        BR tok_list_loop
+ 2960 e5ae:             
+ 2961 e5ae:             tok_list15:
+ 2962 e5ae: 0d 0f           LDTI TOKENIZER_RETURN
+ 2963 e5b0: aa e5 bd        BRNEQ tok_list16
+ 2964 e5b3: 1a e4 7b        MVIW R2,tokl_return
+ 2965 e5b6: 04 f7 60        JSR stringout
+ 2966 e5b9: 53              INCR R3
+ 2967 e5ba: a0 e4 ae        BR tok_list_loop
+ 2968 e5bd:             
+ 2969 e5bd:             tok_list16:
+ 2970 e5bd: 0d 10           LDTI TOKENIZER_CALL
+ 2971 e5bf: aa e5 cc        BRNEQ tok_list17
+ 2972 e5c2: 1a e4 99        MVIW R2,tokl_call
+ 2973 e5c5: 04 f7 60        JSR stringout
+ 2974 e5c8: 53              INCR R3
+ 2975 e5c9: a0 e4 ae        BR tok_list_loop
+ 2976 e5cc:             
+ 2977 e5cc:             tok_list17:
+ 2978 e5cc: 0d 11           LDTI TOKENIZER_REM
+ 2979 e5ce: aa e5 db        BRNEQ tok_list18
+ 2980 e5d1: 1a e4 83        MVIW R2,tokl_rem
+ 2981 e5d4: 04 f7 60        JSR stringout
+ 2982 e5d7: 53              INCR R3
+ 2983 e5d8: a0 e4 ae        BR tok_list_loop
+ 2984 e5db:             
+ 2985 e5db:             tok_list18:
+ 2986 e5db: 0d 12           LDTI TOKENIZER_PEEK
+ 2987 e5dd: aa e5 ea        BRNEQ tok_list19
+ 2988 e5e0: 1a e4 88        MVIW R2,tokl_peek
+ 2989 e5e3: 04 f7 60        JSR stringout
+ 2990 e5e6: 53              INCR R3
+ 2991 e5e7: a0 e4 ae        BR tok_list_loop
+ 2992 e5ea:             
+ 2993 e5ea:             tok_list19:
+ 2994 e5ea: 0d 13           LDTI TOKENIZER_POKE
+ 2995 e5ec: aa e5 f9        BRNEQ tok_list20
+ 2996 e5ef: 1a e4 8e        MVIW R2,tokl_poke
+ 2997 e5f2: 04 f7 60        JSR stringout
+ 2998 e5f5: 53              INCR R3
+ 2999 e5f6: a0 e4 ae        BR tok_list_loop
+ 3000 e5f9:             
+ 3001 e5f9:             tok_list20:
+ 3002 e5f9: 0d 14           LDTI TOKENIZER_END
+ 3003 e5fb: aa e6 08        BRNEQ tok_list21
+ 3004 e5fe: 1a e4 94        MVIW R2,tokl_end
+ 3005 e601: 04 f7 60        JSR stringout
+ 3006 e604: 53              INCR R3
+ 3007 e605: a0 e4 ae        BR tok_list_loop
+ 3008 e608:             
+ 3009 e608:             tok_list21:
+ 3010 e608: 0d 15           LDTI TOKENIZER_COMMA
+ 3011 e60a: aa e6 1b        BRNEQ tok_list22
+ 3012 e60d: 0e 2c           ldai ','
+ 3013 e60f: 04 f7 6e        jsr uartout
+ 3014 e612: 0e 20           ldai ' '
+ 3015 e614: 04 f7 6e        jsr uartout
+ 3016 e617: 53              INCR R3
+ 3017 e618: a0 e4 ae        BR tok_list_loop
+ 3018 e61b:             
+ 3019 e61b:             tok_list22:
+ 3020 e61b: 0d 16           LDTI TOKENIZER_SEMICOLON
+ 3021 e61d: aa e6 2e        BRNEQ tok_list23
+ 3022 e620: 0e 3b           ldai ';'
+ 3023 e622: 04 f7 6e        jsr uartout
+ 3024 e625: 0e 20           ldai ' '
+ 3025 e627: 04 f7 6e        jsr uartout
+ 3026 e62a: 53              INCR R3
+ 3027 e62b: a0 e4 ae        BR tok_list_loop
+ 3028 e62e:             
+ 3029 e62e:             tok_list23:
+ 3030 e62e: 0d 17           LDTI TOKENIZER_PLUS
+ 3031 e630: aa e6 41        BRNEQ tok_list24
+ 3032 e633: 0e 2b           ldai '+'
+ 3033 e635: 04 f7 6e        jsr uartout
+ 3034 e638: 0e 20           ldai ' '
+ 3035 e63a: 04 f7 6e        jsr uartout
+ 3036 e63d: 53              INCR R3
+ 3037 e63e: a0 e4 ae        BR tok_list_loop
+ 3038 e641:             
+ 3039 e641:             tok_list24:
+ 3040 e641: 0d 18           LDTI TOKENIZER_MINUS
+ 3041 e643: aa e6 54        BRNEQ tok_list25
+ 3042 e646: 0e 2d           ldai '-'
+ 3043 e648: 04 f7 6e        jsr uartout
+ 3044 e64b: 0e 20           ldai ' '
+ 3045 e64d: 04 f7 6e        jsr uartout
+ 3046 e650: 53              INCR R3
+ 3047 e651: a0 e4 ae        BR tok_list_loop
+ 3048 e654:             
+ 3049 e654:             tok_list25:
+ 3050 e654: 0d 19           LDTI TOKENIZER_AND
+ 3051 e656: aa e6 67        BRNEQ tok_list26
+ 3052 e659: 0e 26           ldai '&'
+ 3053 e65b: 04 f7 6e        jsr uartout
+ 3054 e65e: 0e 20           ldai ' '
+ 3055 e660: 04 f7 6e        jsr uartout
+ 3056 e663: 53              INCR R3
+ 3057 e664: a0 e4 ae        BR tok_list_loop
+ 3058 e667:             
+ 3059 e667:             tok_list26:
+ 3060 e667: 0d 1a           LDTI TOKENIZER_OR
+ 3061 e669: aa e6 7a        BRNEQ tok_list27
+ 3062 e66c: 0e 7c           ldai '|'
+ 3063 e66e: 04 f7 6e        jsr uartout
+ 3064 e671: 0e 20           ldai ' '
+ 3065 e673: 04 f7 6e        jsr uartout
+ 3066 e676: 53              INCR R3
+ 3067 e677: a0 e4 ae        BR tok_list_loop
+ 3068 e67a:             
+ 3069 e67a:             tok_list27:
+ 3070 e67a: 0d 1b           LDTI TOKENIZER_ASTR
+ 3071 e67c: aa e6 8d        BRNEQ tok_list28
+ 3072 e67f: 0e 2a           ldai '*'
+ 3073 e681: 04 f7 6e        jsr uartout
+ 3074 e684: 0e 20           ldai ' '
+ 3075 e686: 04 f7 6e        jsr uartout
+ 3076 e689: 53              INCR R3
+ 3077 e68a: a0 e4 ae        BR tok_list_loop
+ 3078 e68d:             
+ 3079 e68d:             tok_list28:
+ 3080 e68d: 0d 1c           LDTI TOKENIZER_SLASH
+ 3081 e68f: aa e6 a0        BRNEQ tok_list29
+ 3082 e692: 0e 2f           ldai '/'
+ 3083 e694: 04 f7 6e        jsr uartout
+ 3084 e697: 0e 20           ldai ' '
+ 3085 e699: 04 f7 6e        jsr uartout
+ 3086 e69c: 53              INCR R3
+ 3087 e69d: a0 e4 ae        BR tok_list_loop
+ 3088 e6a0:             
+ 3089 e6a0:             tok_list29:
+ 3090 e6a0: 0d 1d           LDTI TOKENIZER_MOD
+ 3091 e6a2: aa e6 b3        BRNEQ tok_list30
+ 3092 e6a5: 0e 25           ldai '%'
+ 3093 e6a7: 04 f7 6e        jsr uartout
+ 3094 e6aa: 0e 20           ldai ' '
+ 3095 e6ac: 04 f7 6e        jsr uartout
+ 3096 e6af: 53              INCR R3
+ 3097 e6b0: a0 e4 ae        BR tok_list_loop
+ 3098 e6b3:             
+ 3099 e6b3:             tok_list30:
+ 3100 e6b3: 0d 1e           LDTI TOKENIZER_HASH
+ 3101 e6b5: aa e6 c6        BRNEQ tok_list31
+ 3102 e6b8: 0e 23           ldai '#'
+ 3103 e6ba: 04 f7 6e        jsr uartout
+ 3104 e6bd: 0e 20           ldai ' '
+ 3105 e6bf: 04 f7 6e        jsr uartout
+ 3106 e6c2: 53              INCR R3
+ 3107 e6c3: a0 e4 ae        BR tok_list_loop
+ 3108 e6c6:             
+ 3109 e6c6:             tok_list31:
+ 3110 e6c6: 0d 1f           LDTI TOKENIZER_LEFTP
+ 3111 e6c8: aa e6 d9        BRNEQ tok_list32
+ 3112 e6cb: 0e 28           ldai '()'
+ 3113 e6cd: 04 f7 6e        jsr uartout
+ 3114 e6d0: 0e 20           ldai ' '
+ 3115 e6d2: 04 f7 6e        jsr uartout
+ 3116 e6d5: 53              INCR R3
+ 3117 e6d6: a0 e4 ae        BR tok_list_loop
+ 3118 e6d9:             
+ 3119 e6d9:             tok_list32:
+ 3120 e6d9: 0d 20           LDTI TOKENIZER_RIGHTP
+ 3121 e6db: aa e6 ec        BRNEQ tok_list33
+ 3122 e6de: 0e 29           ldai ')'
+ 3123 e6e0: 04 f7 6e        jsr uartout
+ 3124 e6e3: 0e 20           ldai ' '
+ 3125 e6e5: 04 f7 6e        jsr uartout
+ 3126 e6e8: 53              INCR R3
+ 3127 e6e9: a0 e4 ae        BR tok_list_loop
+ 3128 e6ec:             
+ 3129 e6ec:             tok_list33:
+ 3130 e6ec: 0d 21           LDTI TOKENIZER_LT
+ 3131 e6ee: aa e6 ff        BRNEQ tok_list34
+ 3132 e6f1: 0e 3c           ldai '<'
+ 3133 e6f3: 04 f7 6e        jsr uartout
+ 3134 e6f6: 0e 20           ldai ' '
+ 3135 e6f8: 04 f7 6e        jsr uartout
+ 3136 e6fb: 53              INCR R3
+ 3137 e6fc: a0 e4 ae        BR tok_list_loop
+ 3138 e6ff:             
+ 3139 e6ff:             tok_list34:
+ 3140 e6ff: 0d 22           LDTI TOKENIZER_GT
+ 3141 e701: aa e7 12        BRNEQ tok_list35
+ 3142 e704: 0e 3e           ldai '>'
+ 3143 e706: 04 f7 6e        jsr uartout
+ 3144 e709: 0e 20           ldai ' '
+ 3145 e70b: 04 f7 6e        jsr uartout
+ 3146 e70e: 53              INCR R3
+ 3147 e70f: a0 e4 ae        BR tok_list_loop
+ 3148 e712:             
+ 3149 e712:             tok_list35:
+ 3150 e712: 0d 23           LDTI TOKENIZER_EQ
+ 3151 e714: aa e7 25        BRNEQ tok_list36
+ 3152 e717: 0e 3d           ldai '='
+ 3153 e719: 04 f7 6e        jsr uartout
+ 3154 e71c: 0e 20           ldai ' '
+ 3155 e71e: 04 f7 6e        jsr uartout
+ 3156 e721: 53              INCR R3
+ 3157 e722: a0 e4 ae        BR tok_list_loop
+ 3158 e725:             
+ 3159 e725:             tok_list36:
+ 3160 e725: 0d 24           LDTI TOKENIZER_CR
+ 3161 e727: aa e7 34        BRNEQ tok_list37
+ 3162 e72a: 1a f8 28        mviw r2,CRLF
+ 3163 e72d: 04 f7 60        jsr stringout
+ 3164 e730: 53              INCR R3
+ 3165 e731: a0 e4 ae        BR tok_list_loop
+ 3166 e734:             
+ 3167 e734:             tok_list37:
+ 3168 e734: 0d 25           LDTI TOKENIZER_LINENUM
+ 3169 e736: aa e7 4d        BRNEQ tok_list38
+ 3170 e739: 53              incr r3
+ 3171 e73a: 43              ldavr r3
+ 3172 e73b: 37              mvarl r7
+ 3173 e73c: 53              incr r3
+ 3174 e73d: 43              ldavr r3
+ 3175 e73e: 3f              mvarh r7
+ 3176 e73f: 53              INCR R3
+ 3177 e740: 53              incr r3
+ 3178 e741: 53              incr r3
+ 3179 e742: 04 f6 97        jsr showr7
+ 3180 e745: 0e 20           ldai ' '
+ 3181 e747: 04 f7 6e        jsr uartout
+ 3182 e74a: a0 e4 ae        BR tok_list_loop
+ 3183 e74d:             
+ 3184 e74d:             tok_list38:
+ 3185 e74d: 1a e4 9f        MVIW R2,tokl_error
+ 3186 e750: 04 f7 60        JSR stringout
+ 3187 e753: 04 f6 4f        JSR showaddr
+ 3188 e756: a0 e7 59        BR tok_list_done
+ 3189 e759:             ;
+ 3190 e759:             ; any cleanup
+ 3191 e759:             ;
+ 3192 e759:             tok_list_done:
+ 3193 e759: 08 30           popr r3
+ 3194 e75b: 05              ret
+ 3195 e75c:             
+ 3196 e75c:             ;
+ 3197 e75c:             ;
+ 3198 e75c:             ; Basic InterpreterParser
+ 3199 e75c:             ; R3   =  UTILITY PTR
+ 3200 e75c:             ; R4.L =  INPUT TEXT LINE PTR
+ 3201 e75c:             ; R4.H =  INPUT TEXT LINE NEXTPTR
+ 3202 e75c:             ; R5.L =  TOKEN BUFFER PTR
+ 3203 e75c:             ; R5.H =  CURRENT TOKEN
+ 3204 e75c:             ;
+ 3205 e75c:             parse_keywords:
+ 3206 e75c: 4c 45 54 00 
+            05                DB "let",0,TOKENIZER_LET
+ 3207 e761: 50 52 49 4e 
+            54 00 06          DB "print",0,TOKENIZER_PRINT
+ 3208 e768: 49 46 00 07       DB "if",0,TOKENIZER_IF
+ 3209 e76c: 54 48 45 4e 
+            00 08             DB "then",0,TOKENIZER_THEN
+ 3210 e772: 45 4c 53 45 
+            00 09             DB "else",0,TOKENIZER_ELSE
+ 3211 e778: 46 4f 52 00 
+            0a                DB "for",0,TOKENIZER_FOR
+ 3212 e77d: 54 4f 00 0b       DB "to",0,TOKENIZER_TO
+ 3213 e781: 4e 45 58 54 
+            00 0c             DB "next",0,TOKENIZER_NEXT
+ 3214 e787: 47 4f 54 4f 
+            00 0d             DB "goto",0,TOKENIZER_GOTO
+ 3215 e78d: 47 4f 53 55 
+            42 00 0e          DB "gosub",0,TOKENIZER_GOSUB
+ 3216 e794: 52 45 54 55 
+            52 4e 00 0f       DB "return",0,TOKENIZER_RETURN
+ 3217 e79c: 43 41 4c 4c 
+            00 10             DB "call",0,TOKENIZER_CALL
+ 3218 e7a2: 52 45 4d 00 
+            11                DB "rem",0,TOKENIZER_REM
+ 3219 e7a7: 50 45 45 4b 
+            00 12             DB "peek",0,TOKENIZER_PEEK
+ 3220 e7ad: 50 4f 4b 45 
+            00 13             DB "poke",0,TOKENIZER_POKE
+ 3221 e7b3: 45 4e 44 00 
+            14                DB "end",0,TOKENIZER_END
+ 3222 e7b8: 00 00 00          DB 0,0,TOKENIZER_ERROR
+ 3223 e7bb:             
+ 3224 e7bb:             ;
+ 3225 e7bb:             ; int singlechar (void)
+ 3226 e7bb:             ;
+ 3227 e7bb:             ; return TOKEN result in accumulator
+ 3228 e7bb:             ;
+ 3229 e7bb:             ; ready for testing
+ 3230 e7bb:             ;
+ 3231 e7bb:             parse_singlechar:
+ 3232 e7bb:             ;
+ 3233 e7bb: 1b 03 00        MVIW r3,parse_input_line
+ 3234 e7be: 24              mvrla r4
+ 3235 e7bf: 33              mvarl r3
+ 3236 e7c0:             ;
+ 3237 e7c0: 0d 0a           ldti 0ah
+ 3238 e7c2: aa e7 c8        brneq parsechar1
+ 3239 e7c5: 0e 24           ldai TOKENIZER_CR
+ 3240 e7c7: 05              ret
+ 3241 e7c8:             parsechar1:
+ 3242 e7c8: 0d 2c           ldti ','
+ 3243 e7ca: aa e7 d0        brneq parsechar2
+ 3244 e7cd: 0e 15           ldai TOKENIZER_COMMA
+ 3245 e7cf: 05              ret
+ 3246 e7d0:             parsechar2:
+ 3247 e7d0: 0d 3b           ldti ';'
+ 3248 e7d2: aa e7 d8        brneq parsechar3
+ 3249 e7d5: 0e 16           ldai TOKENIZER_SEMICOLON
+ 3250 e7d7: 05              ret
+ 3251 e7d8:             parsechar3:
+ 3252 e7d8: 0d 2b           ldti '+'
+ 3253 e7da: aa e7 e0        brneq parsechar4
+ 3254 e7dd: 0e 17           ldai TOKENIZER_PLUS
+ 3255 e7df: 05              ret
+ 3256 e7e0:             parsechar4:
+ 3257 e7e0: 0d 2d           ldti '-'
+ 3258 e7e2: aa e7 e8        brneq parsechar5
+ 3259 e7e5: 0e 18           ldai TOKENIZER_MINUS
+ 3260 e7e7: 05              ret
+ 3261 e7e8:             parsechar5:
+ 3262 e7e8: 0d 26           ldti '&'
+ 3263 e7ea: aa e7 f0        brneq parsechar6
+ 3264 e7ed: 0e 19           ldai TOKENIZER_AND
+ 3265 e7ef: 05              ret
+ 3266 e7f0:             parsechar6:
+ 3267 e7f0: 0d 7c           ldti '|'
+ 3268 e7f2: aa e7 f8        brneq parsechar7
+ 3269 e7f5: 0e 1a           ldai TOKENIZER_OR
+ 3270 e7f7: 05              ret
+ 3271 e7f8:             parsechar7:
+ 3272 e7f8: 0d 2a           ldti '*'
+ 3273 e7fa: aa e8 00        brneq parsechar8
+ 3274 e7fd: 0e 1b           ldai TOKENIZER_ASTR
+ 3275 e7ff: 05              ret
+ 3276 e800:             parsechar8:
+ 3277 e800: 0d 25           ldti '%'
+ 3278 e802: aa e8 08        brneq parsechar9
+ 3279 e805: 0e 1d           ldai TOKENIZER_MOD
+ 3280 e807: 05              ret
+ 3281 e808:             parsechar9:
+ 3282 e808: 0d 28           ldti '()'
+ 3283 e80a: aa e8 10        brneq parsechar10
+ 3284 e80d: 0e 1f           ldai TOKENIZER_LEFTP
+ 3285 e80f: 05              ret
+ 3286 e810:             parsechar10:
+ 3287 e810: 0d 23           ldti '#'
+ 3288 e812: aa e8 18        brneq parsechar11
+ 3289 e815: 0e 1e           ldai TOKENIZER_HASH
+ 3290 e817: 05              ret
+ 3291 e818:             parsechar11:
+ 3292 e818: 0d 29           ldti ')'
+ 3293 e81a: aa e8 20        brneq parsechar12
+ 3294 e81d: 0e 20           ldai TOKENIZER_RIGHTP
+ 3295 e81f: 05              ret
+ 3296 e820:             parsechar12:
+ 3297 e820: 0d 3c           ldti '<'
+ 3298 e822: aa e8 28        brneq parsechar13
+ 3299 e825: 0e 21           ldai TOKENIZER_LT
+ 3300 e827: 05              ret
+ 3301 e828:             parsechar13:
+ 3302 e828: 0d 3e           ldti '>'
+ 3303 e82a: aa e8 30        brneq parsechar14
+ 3304 e82d: 0e 22           ldai TOKENIZER_GT
+ 3305 e82f: 05              ret
+ 3306 e830:             parsechar14:
+ 3307 e830: 0d 3d           ldti '='
+ 3308 e832: aa e8 38        brneq parsechar15
+ 3309 e835: 0e 23           ldai TOKENIZER_EQ
+ 3310 e837: 05              ret
+ 3311 e838:             parsechar15:
+ 3312 e838: 0e 00           ldai 0
+ 3313 e83a: 05              ret
+ 3314 e83b:             
+ 3315 e83b:             ;
+ 3316 e83b:             ; int get_next_token(void)
+ 3317 e83b:             ;
+ 3318 e83b:             ; under development fix ptr nextptr
+ 3319 e83b:             
+ 3320 e83b:             parse_get_next_tok:
+ 3321 e83b: 07 06           pushr r6
+ 3322 e83d: 1b 03 00        MVIW r3,parse_input_line
+ 3323 e840: 24              mvrla r4
+ 3324 e841: 33              mvarl r3
+ 3325 e842:             ;
+ 3326 e842: 43              ldavr R3
+ 3327 e843: a2 e8 4b        brnz parse_gnt1
+ 3328 e846: 0e 01           ldai TOKENIZER_EOF
+ 3329 e848: 08 60           popr r6
+ 3330 e84a: 05              ret
+ 3331 e84b:             
+ 3332 e84b:             parse_gnt1:
+ 3333 e84b:             ;
+ 3334 e84b:             ; is digit
+ 3335 e84b:             ;
+ 3336 e84b:             ; chcek for number
+ 3337 e84b: 43              ldavr R3
+ 3338 e84c: 04 e9 43        jsr parse_isdigit
+ 3339 e84f: a1 e8 60        brz parse_gnt2
+ 3340 e852:             parse_gnt1loop:
+ 3341 e852: 53              incr R3
+ 3342 e853: 04 e9 43        jsr parse_isdigit
+ 3343 e856: a2 e8 52        brnz parse_gnt1loop
+ 3344 e859: 23              mvrla R3
+ 3345 e85a: 3c              mvarh R4
+ 3346 e85b: 0e 02           ldai TOKENIZER_NUMBER
+ 3347 e85d: 08 60           popr r6
+ 3348 e85f: 05              ret
+ 3349 e860:             ;
+ 3350 e860:             parse_gnt2:
+ 3351 e860:             ;
+ 3352 e860:             ; singlechar
+ 3353 e860:             ;
+ 3354 e860: 43             ldavr R3
+ 3355 e861: 04 e7 bb       jsr parse_singlechar
+ 3356 e864: a1 e8 6f       BRZ parse_gnt3
+ 3357 e867: 09             push
+ 3358 e868: 53             incr r3
+ 3359 e869: 23             mvrla R3
+ 3360 e86a: 3c             mvarh R4
+ 3361 e86b: 0a             pop
+ 3362 e86c: 08 60          popr r6
+ 3363 e86e: 05             ret
+ 3364 e86f:             ;
+ 3365 e86f:             parse_gnt3:
+ 3366 e86f:             ;
+ 3367 e86f:             ; quote
+ 3368 e86f:             ;
+ 3369 e86f: 43            ldavr R3
+ 3370 e870: 0d 22         ldti '"'
+ 3371 e872: aa e8 84      brneq parse_gnt4
+ 3372 e875:             parse_gnt3loop:
+ 3373 e875: 53            incr r3
+ 3374 e876: 43            ldavr R3
+ 3375 e877: 0d 22         ldti '"'
+ 3376 e879: aa e8 75      brneq parse_gnt3loop
+ 3377 e87c: 53            incr r3
+ 3378 e87d: 23            mvrla R3
+ 3379 e87e: 3c            mvarh R4
+ 3380 e87f: 0e 03         ldai TOKENIZER_STRING
+ 3381 e881: 08 60         popr r6
+ 3382 e883: 05            ret
+ 3383 e884:             ;
+ 3384 e884:             parse_gnt4:
+ 3385 e884:             ;
+ 3386 e884:             ; keyword search
+ 3387 e884:             ;
+ 3388 e884: 07 05         pushr r5
+ 3389 e886: 1d e7 5c      mviw r5,parse_keywords
+ 3390 e889:             top:
+ 3391 e889: 45            ldavr r5
+ 3392 e88a: a1 e8 af      brz nokeyowrdsfound
+ 3393 e88d: 0f 63         movrr r3,r6
+ 3394 e88f:             pcmploop:
+ 3395 e88f: 45            ldavr r5
+ 3396 e890: a1 e8 a6      brz found
+ 3397 e893: 0b            MVAT
+ 3398 e894: 46            ldavr r6
+ 3399 e895: aa e8 9d      brneq skiptoend
+ 3400 e898: 55            incr r5
+ 3401 e899: 56            incr r6
+ 3402 e89a: a0 e8 8f      br pcmploop
+ 3403 e89d:             
+ 3404 e89d:             skiptoend:
+ 3405 e89d:             ;  skip to end of string and skip over token
+ 3406 e89d:             skiploop:
+ 3407 e89d: 45              ldavr r5
+ 3408 e89e: 55              incr r5
+ 3409 e89f: a2 e8 9d        brnz skiploop
+ 3410 e8a2: 55              incr r5
+ 3411 e8a3: a0 e8 89        br top
+ 3412 e8a6:             
+ 3413 e8a6:             found:
+ 3414 e8a6: 26              mvrla r6
+ 3415 e8a7: 3c              mvarh r4
+ 3416 e8a8: 55              incr r5
+ 3417 e8a9: 45              ldavr r5
+ 3418 e8aa: 08 50           popr r5
+ 3419 e8ac: 08 60           popr r6
+ 3420 e8ae: 05              ret
+ 3421 e8af:             
+ 3422 e8af:             nokeyowrdsfound:
+ 3423 e8af: 08 60           popr r6
+ 3424 e8b1: 08 50           popr r5
+ 3425 e8b3:             ;
+ 3426 e8b3:             ;  check for variables
+ 3427 e8b3:             ;
+ 3428 e8b3: 43              ldavr r3
+ 3429 e8b4: 0d 41           ldti 'A'
+ 3430 e8b6: a7 e8 c6        BRLT parse_gnt_error
+ 3431 e8b9: 0d 5a           ldti 'Z'
+ 3432 e8bb: a9 e8 c6        BRGT parse_gnt_error
+ 3433 e8be: 53              INCR r3
+ 3434 e8bf: 23              mvrla R3
+ 3435 e8c0: 34              mvarl R4
+ 3436 e8c1: 0e 04           LDAI tokenizer_variable
+ 3437 e8c3: 08 60           POPR R6
+ 3438 e8c5: 05              RET
+ 3439 e8c6:             parse_gnt_error:
+ 3440 e8c6: 0e 00           ldai tokenizer_error
+ 3441 e8c8: 08 60           POPR R6
+ 3442 e8ca: 05              ret
+ 3443 e8cb:             
+ 3444 e8cb:             ;
+ 3445 e8cb:             ; void TOKENIZER_GOTO (char * program)
+ 3446 e8cb:             ;
+ 3447 e8cb:             ; under development
+ 3448 e8cb:             ;
+ 3449 e8cb:             parse_goto:
+ 3450 e8cb: 0f 37           movrr r7,r3
+ 3451 e8cd: 04 e8 3b        jsr parse_get_next_tok
+ 3452 e8d0: 36              mvarl r6
+ 3453 e8d1: 05              ret
+ 3454 e8d2:             
+ 3455 e8d2:             ;
+ 3456 e8d2:             ; void tokenizer_init(int ptr)
+ 3457 e8d2:             ;
+ 3458 e8d2:             ; changed to set ptr to 0, assumes input line buffer is 256 byte aligned
+ 3459 e8d2:             ; so set ptrs to 0
+ 3460 e8d2:             ; ptr into line buffer R4.L
+ 3461 e8d2:             ; ptr int token buffer R5.L
+ 3462 e8d2:             ; token counter R5.H
+ 3463 e8d2:             ;
+ 3464 e8d2:             ; under development
+ 3465 e8d2:             ;
+ 3466 e8d2:             parse_init:
+ 3467 e8d2: 0e 00           ldai 0
+ 3468 e8d4: 34              mvarl R4
+ 3469 e8d5: 3d              mvarh R5
+ 3470 e8d6: 35              mvarl R5
+ 3471 e8d7: 04 e8 3b        jsr parse_get_next_tok
+ 3472 e8da: 05              ret
+ 3473 e8db:             
+ 3474 e8db:             ;
+ 3475 e8db:             ; int tokenizer_token(void)
+ 3476 e8db:             :
+ 3477 e8db:             parse_token:
+ 3478 e8db: 26              mvrla r6
+ 3479 e8dc: 05              ret
+ 3480 e8dd:             
+ 3481 e8dd:             ;
+ 3482 e8dd:             ; void tokenizer_next(void)
+ 3483 e8dd:             ;
+ 3484 e8dd:             parse_next:
+ 3485 e8dd:             
+ 3486 e8dd:             ;
+ 3487 e8dd:             ; VARIABLE_TYPE tokenizer_num(void)
+ 3488 e8dd:             ;
+ 3489 e8dd:             ; Hack for now input characters are ascii hex format HHHH
+ 3490 e8dd:             ;
+ 3491 e8dd:             ; value returned in R7
+ 3492 e8dd:             ;
+ 3493 e8dd:             ; Should this advance the line ptr?
+ 3494 e8dd:             ;
+ 3495 e8dd:             parse_num:
+ 3496 e8dd: 04 e9 04        JSR parse_getnibble
+ 3497 e8e0: b6              SHL
+ 3498 e8e1: b6              SHL
+ 3499 e8e2: b6              SHL
+ 3500 e8e3: b6              SHL
+ 3501 e8e4: b3 f0           ANDI 0f0h
+ 3502 e8e6: 09              Push
+ 3503 e8e7: 04 e9 04        JSR parse_getnibble
+ 3504 e8ea: b3 0f           ANDI 0FH
+ 3505 e8ec: 0b              MVAT
+ 3506 e8ed: 0a              Pop
+ 3507 e8ee: ba              ORT
+ 3508 e8ef: 3f              MVARH R7
+ 3509 e8f0:             
+ 3510 e8f0: 04 e9 04        JSR parse_getnibble
+ 3511 e8f3: b6              SHL
+ 3512 e8f4: b6              shl
+ 3513 e8f5: b6              shl
+ 3514 e8f6: b6              shl
+ 3515 e8f7: b3 f0           ANDI 0f0h
+ 3516 e8f9: 09              push
+ 3517 e8fa: 04 e9 04        JSR parse_getnibble
+ 3518 e8fd: b3 0f           ANDI 0FH
+ 3519 e8ff: 0b              MVAT
+ 3520 e900: 0a              pop
+ 3521 e901: ba              ORT
+ 3522 e902: 37              MVARL R7
+ 3523 e903: 05              RET
+ 3524 e904:             
+ 3525 e904:             ;
+ 3526 e904:             ; add error checking
+ 3527 e904:             ;
+ 3528 e904:             ; return hex nibble in accumulator
+ 3529 e904:             ;
+ 3530 e904:             parse_getnibble:
+ 3531 e904: 1b 03 00          MVIW r3,parse_input_line
+ 3532 e907: 24                mvrla r4
+ 3533 e908: 33                mvarl r3
+ 3534 e909:             ;
+ 3535 e909: 43                LDAVR R3
+ 3536 e90a:             ;
+ 3537 e90a:             ; Risk if input line is greater then 255 chars, maybe test at input
+ 3538 e90a:             ;
+ 3539 e90a: 54                incr r4
+ 3540 e90b:             
+ 3541 e90b: 0d 39             LDTI '9'
+ 3542 e90d: a9 e9 13          BRGT parse_af
+ 3543 e910: b1 30             SUBI '0'
+ 3544 e912: 05                RET
+ 3545 e913:             parse_af:
+ 3546 e913: 04 f6 46          JSR toupper
+ 3547 e916: b1 41             SUBI 'A'
+ 3548 e918: b0 0a             ADDI 10
+ 3549 e91a: 05                RET
+ 3550 e91b:             ;
+ 3551 e91b:             ; void tokenizer_string(char *dest, int len)
+ 3552 e91b:             ;
+ 3553 e91b:             parse_string:
+ 3554 e91b: 04 e8 db        JSR parse_token
+ 3555 e91e: 0d 03           LDTI TOKENIZER_STRING
+ 3556 e920: a8 e9 24        BREQ parse_string1
+ 3557 e923: 05              ret
+ 3558 e924:             
+ 3559 e924:             parse_string1:
+ 3560 e924: 1b 03 00        MVIW r3,parse_input_line
+ 3561 e927: 24              mvrla r4
+ 3562 e928: 33              mvarl r3
+ 3563 e929:                 ;
+ 3564 e929: 43              LDAVR R3
+ 3565 e92a:             
+ 3566 e92a:             
+ 3567 e92a:             ;
+ 3568 e92a:             ; void tokenizer_error_print(void)
+ 3569 e92a:             ;
+ 3570 e92a:             parse_error_print:
+ 3571 e92a:             
+ 3572 e92a:             ;
+ 3573 e92a:             ; int tokenizer_finished(void)
+ 3574 e92a:             ;
+ 3575 e92a:             parse_finished:
+ 3576 e92a:             
+ 3577 e92a:             ;
+ 3578 e92a:             ; int tokenizer_variable_num(void)
+ 3579 e92a:             ;
+ 3580 e92a:             parse_variable_num:
+ 3581 e92a:             
+ 3582 e92a:             ;
+ 3583 e92a:             ; char *const tokenizer_pos(void)
+ 3584 e92a:             ;
+ 3585 e92a:             parse_pos:
+ 3586 e92a:             
+ 3587 e92a:             ;not used old
+ 3588 e92a:             ; char *tokenize(char *program)
+ 3589 e92a:             ;
+ 3590 e92a:             ; parse:
+ 3591 e92a:             
+ 3592 e92a:             ;
+ 3593 e92a:             ; char *tokenizeLine(char *line)
+ 3594 e92a:             ;
+ 3595 e92a:             parse_line:
+ 3596 e92a: 1b 04 00        MVIW R3,parse_token_buffer
+ 3597 e92d: 0e 00           LDAI 0
+ 3598 e92f: 33              mvarl R3
+ 3599 e930: 34              mvarl R4
+ 3600 e931: 35              MVARL R5
+ 3601 e932: 0e 25           LDAI TOKENIZER_LINENUM
+ 3602 e934: 4b              STAVR R3
+ 3603 e935: 53              INCR R3
+ 3604 e936:             
+ 3605 e936: 04 e8 dd        JSR parse_num ; testexamine
+ 3606 e939:             
+ 3607 e939:                 ;
+ 3608 e939: 43              LDAVR R3
+ 3609 e93a:             
+ 3610 e93a: 04 e8 db    JSR parse_token
+ 3611 e93d: 0d 03       LDTI TOKENIZER_STRING
+ 3612 e93f: a8 e9 24    BREQ parse_string1
+ 3613 e942: 05          ret
+ 3614 e943:             
+ 3615 e943:             
+ 3616 e943:             ;
+ 3617 e943:             ; void addLine(char *buff)
+ 3618 e943:             ;
+ 3619 e943:             parse_addline:
+ 3620 e943:             
+ 3621 e943:             ;
+ 3622 e943:             ; void removeLine(int lineNum)
+ 3623 e943:             ;
+ 3624 e943:             parse_removeline:
+ 3625 e943:             
+ 3626 e943:             ;
+ 3627 e943:             ; parse utilites
+ 3628 e943:             ;
+ 3629 e943:             
+ 3630 e943:             ;
+ 3631 e943:             ; is digit
+ 3632 e943:             ; returns 1 if yes and 0 if no
+ 3633 e943:             ;
+ 3634 e943:             ; hack for now include HEX
+ 3635 e943:             ;
+ 3636 e943:             ; destroys tmp register
+ 3637 e943:             parse_isdigit:
+ 3638 e943: 0d 30          ldti '0'
+ 3639 e945: a7 e9 5d       brlt parse_isdigit_no
+ 3640 e948: 0d 39          ldti '9'
+ 3641 e94a: a9 e9 50       brgt parse_isdigit_af
+ 3642 e94d: a0 e9 5a       br parse_isdigit_yes
+ 3643 e950:             
+ 3644 e950:             parse_isdigit_af:
+ 3645 e950: 0d 41           ldti 'A'
+ 3646 e952: a7 e9 5d        brlt parse_isdigit_no
+ 3647 e955: 0d 46           ldti 'F'
+ 3648 e957: a9 e9 5d        brgt parse_isdigit_no
+ 3649 e95a:             
+ 3650 e95a:             parse_isdigit_yes:
+ 3651 e95a: 0e 01           ldai 1
+ 3652 e95c: 05              ret
+ 3653 e95d:             
+ 3654 e95d:             parse_isdigit_no:
+ 3655 e95d: 0e 00           ldai 0
+ 3656 e95f: 05              ret
+ 3657 e960:             
+ 3658 e960:             basic_test:
+ 3659 e960: 25 0a 00 0e 
+            00 06 03 68 
+            65 6c 6c 6f 
+            00 24 25 14     DB  25h,0ah,00h,0eh,00h,06h,03h,68h,65h,6ch,6ch,6fh,00h,24h,25h,14h
+ 3660 e970: 00 0d 00 04 
+            02 00 23 02 
+            09 00 24 25 
+            1e 00 0a 00     DB  00h,0dh,00h,04h,02h,00h,23h,02h,09h,00h,24h,25h,1eh,00h,0ah,00h
+ 3661 e980: 06 04 02 00 
+            24 25 28 00 
+            0d 00 04 04 
+            00 23 02 32     DB  06h,04h,02h,00h,24h,25h,28h,00h,0dh,00h,04h,04h,00h,23h,02h,32h
+ 3662 e990: 00 24 25 32 
+            00 17 00 06 
+            03 68 32 00 
+            15 04 02 00     DB  00h,24h,25h,32h,00h,17h,00h,06h,03h,68h,32h,00h,15h,04h,02h,00h
+ 3663 e9a0: 15 04 04 00 
+            15 02 16 00 
+            24 25 3c 00 
+            12 00 0a 04     DB  15h,04h,04h,00h,15h,02h,16h,00h,24h,25h,3ch,00h,12h,00h,0ah,04h
+ 3664 e9b0: 03 00 23 02 
+            01 00 0b 02 
+            05 00 24 25 
+            46 00 0a 00     DB  03h,00h,23h,02h,01h,00h,0bh,02h,05h,00h,24h,25h,46h,00h,0ah,00h
+ 3665 e9c0: 06 04 03 00 
+            24 25 50 00 
+            0a 00 0c 04 
+            03 00 24 25     DB  06h,04h,03h,00h,24h,25h,50h,00h,0ah,00h,0ch,04h,03h,00h,24h,25h
+ 3666 e9d0: 51 00 12 00 
+            06 03 6e 65 
+            78 74 20 64 
+            6f 6e 65 00     DB  51h,00h,12h,00h,06h,03h,6eh,65h,78h,74h,20h,64h,6fh,6eh,65h,00h
+ 3667 e9e0: 24 25 52 00 
+            0a 00 0e 02 
+            6e 00 24 25 
+            55 00 0a 00     DB  24h,25h,52h,00h,0ah,00h,0eh,02h,6eh,00h,24h,25h,55h,00h,0ah,00h
+ 3668 e9f0: 0d 02 7d 00 
+            24 25 5a 00 
+            12 00 06 03 
+            6e 65 78 74     DB  0dh,02h,7dh,00h,24h,25h,5ah,00h,12h,00h,06h,03h,6eh,65h,78h,74h
+ 3669 ea00: 20 64 6f 6e 
+            65 00 24 25 
+            6e 00 11 00 
+            06 03 69 6e     DB  20h,64h,6fh,6eh,65h,00h,24h,25h,6eh,00h,11h,00h,06h,03h,69h,6eh
+ 3670 ea10: 20 67 6f 73 
+            75 62 00 24 
+            25 70 00 11 
+            00 06 03 69     DB  20h,67h,6fh,73h,75h,62h,00h,24h,25h,70h,00h,11h,00h,06h,03h,69h
+ 3671 ea20: 6e 20 73 75 
+            62 20 32 00 
+            24 25 72 00 
+            07 00 0f 24     DB  6eh,20h,73h,75h,62h,20h,32h,00h,24h,25h,72h,00h,07h,00h,0fh,24h
+ 3672 ea30: 25 7d 00 0c 
+            00 06 03 65 
+            6e 64 00 24 
+            25 7e 00 07     DB  25h,7dh,00h,0ch,00h,06h,03h,65h,6eh,64h,00h,24h,25h,7eh,00h,07h
+ 3673 ea40: 00 14 24 01 
+            00 00 00 00 
+            00 00 00 00 
+            00 00 00 00     DB  00h,14h,24h,01h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+ 3674 ea50:             
+ 3675 ea50:             ;
+ 3676 ea50:             ; The End
+ 3677 ea50:             ;
+ 3678 ea50:             ZZZZ:
+ 3679 ea50: 00            DB   0
+
+f2eeh: ACCLOOP          - <   629>    647 
+fc68h: ACCUMHELP        - <  1634>    626 
+fd73h: ACCUMMENU        - <  1671>   1649 
+f2e6h: ACCUMTEST        - <   625>   1649   1649 
+f098h: ADD16TESTS       - <   298>    190 
+fcd2h: ADDICHELP        - <  1638>    555 
+f297h: ADDICLOOP        - <   558>    567 
+fdc5h: ADDICMENU        - <  1682>   1660 
+f28fh: ADDICTEST        - <   554>   1660   1660 
+fcaeh: ADDIHELP         - <  1637>    536 
+f280h: ADDILOOP         - <   539>    548 
+fdc0h: ADDIMENU         - <  1681>   1659 
+f278h: ADDITEST         - <   535>   1659   1659 
+f74bh: AF               - <  1368>   1362 
+f092h: ALLTESTS         - <   261> 
+e960h: BASIC_TEST       - <  3658>    955   2637   2731 
+0100h: BASIC_VARS       - <    95>   2598   2616 
+0200h: BAS_ENDED        - <   102>   1798   2087   2423   2576 
+e3b0h: BAS_ERROR        - <  2626>   1823   2520 
+0204h: BAS_FORSTACK     - <   115>   1796 
+0202h: BAS_FORSTACKPTR  - <   114> 
+0240h: BAS_GOSUBPTR     - <   124> 
+0242h: BAS_GOSUBSTACK   - <   125>   1794 
+e000h: BAS_MSG1         - <  1767>   1822 
+e013h: BAS_MSG2         - <  1768> 
+e024h: BAS_MSG3         - <  1769>   2516 
+f7cdh: BLINK            - <  1526>   1583 
+0003h: BLOCKMODE        - <    70>    929    960 
+f76eh: CHAROUT          - <  1413>   2129 
+f442h: CMDLOOP          - <   868>    182    886    924    940    946    952 
+          957    969    982   1025   1051   1063   1136 
+f4d2h: CMD_BASIC        - <   950>    890 
+f4d8h: CMD_BASICLIST    - <   954>    902 
+f416h: CMPLOOP          - <   805>    829 
+fdb1h: CMPMENU          - <  1680>   1658 
+f439h: CMPRES           - <   825>    814    817    820    823 
+f40ch: CMPTEST          - <   800>   1658   1658 
+0050h: CNTL-PORT        - <    19> 
+fbefh: COMPAREHELP      - <  1627>    801 
+f4aeh: CONTINUE         - <   926>    908    913 
+f843h: CONTINUEERROR    - <  1598>    944 
+f8ach: CONTMSG          - <  1604> 
+f828h: CRLF             - <  1596>    170    177    343    352    361    370 
+          379    882    915    964    976    989   1023   1032   1037   1067 
+         1090   1273   1292   2163   3162 
+fc36h: CSHIFT_LEFTHELP  - <  1631>    747 
+fc49h: CSHIFT_RIGHTHELP - <  1632>    765 
+f3d1h: CSHLLOOP         - <   750>    759 
+fd9eh: CSHLMENU         - <  1676>   1654 
+f3c9h: CSHLTEST         - <   746>   1654   1654 
+f3e7h: CSHRLOOP         - <   768>    777 
+fda3h: CSHRMENU         - <  1677>   1655 
+f3dfh: CSHRTEST         - <   764>   1655   1655 
+0050h: DATAPORT         - <    20> 
+f7b9h: DELAYA           - <  1508>   1511 
+f7c5h: DELAYB           - <  1516>   1519 
+f600h: DOTEST           - <  1129>   1124 
+f0c6h: DO_ADD16         - <   323>    306    312    318 
+e376h: DO_BASIC         - <  2542>    951 
+f4f8h: DUMP             - <   971>    894 
+f4e1h: DUMPBLOCK        - <   959>    892 
+f4f2h: DUMPBLOCKCONT    - <   967>    930 
+f865h: DUMPBLOCKMSG     - <  1600>    961 
+f509h: DUMPCONT         - <   979>    933 
+0002h: DUMPMODE         - <    69>    932    972 
+f858h: DUMPMSG          - <  1599>    973 
+f59ch: DUMPREG          - <  1060>    904 
+01f0h: EMU_MODE         - <   100> 
+fdd0h: ENDMENU          - <  1684>   1662   1662   1662 
+f003h: EPROM            - <    84>     82 
+f82bh: ERROR            - <  1597>    919 
+f558h: EXAMDONE         - <  1022>   1000 
+f512h: EXAMINE          - <   984>    896 
+f523h: EXAMINECONT      - <   992>    936   1021 
+0001h: EXAMINEMODE      - <    68>    935    985 
+f899h: EXAMINEMSG       - <  1603>    986 
+f54ah: EXAMNEXT         - <  1015>   1002 
+e044h: EXE              - <  1783> 
+e054h: EXE_ACCEPT       - <  1813>   1846   1863   1869   1872   2086   2099 
+         2108   2174   2178   2194   2196   2201   2209   2212   2214   2241 
+         2278   2288   2330   2345   2363   2365   2376   2391   2505   2535 
+e063h: EXE_ACCEPT_DONE  - <  1824>   1821 
+e2e3h: EXE_END_STMT     - <  2422>   2498 
+e0deh: EXE_EXPR         - <  1941>   1870   2014   2030   2039   2049   2100 
+         2150   2197   2366   2377 
+e117h: EXE_EXPR_AND     - <  1979>   1955 
+e12dh: EXE_EXPR_DONE    - <  1997>   1959 
+e0e7h: EXE_EXPR_LOOP    - <  1948>   1968   1977   1986   1995 
+e10ch: EXE_EXPR_MINUS   - <  1970>   1953 
+e122h: EXE_EXPR_OR      - <  1988>   1957 
+e101h: EXE_EXPR_PLUS    - <  1961>   1951 
+e073h: EXE_FACTOR       - <  1853>   1889   1904   1913   1922 
+e083h: EXE_FACTOR1      - <  1866>   1860 
+e094h: EXE_FACTOR2      - <  1875>   1868 
+e388h: EXE_FINISHED     - <  2575>   2563 
+e39ch: EXE_FINISHED_YES - <  2585>   2579   2582 
+e2a7h: EXE_FOR_STMT     - <  2336>   2474 
+e3a6h: EXE_GET_VARIABLE - <  2615>   1844   2293 
+e243h: EXE_GOSUB_STMT   - <  2207>   2462 
+e199h: EXE_GOTO_STMT    - <  2097>   2512 
+e20dh: EXE_IF_STMT      - <  2171>   2450 
+e223h: EXE_IF_STMT1     - <  2182>   2180 
+e17ah: EXE_INDEX_FIND   - <  2068>   2077 
+e044h: EXE_INIT         - <  1793>   2555 
+e17eh: EXE_JUMP_LINE    - <  2076>   2101   2233 
+e195h: EXE_JUMP_LINE1   - <  2091>   2079   2081 
+e226h: EXE_LET_STMT     - <  2189>   2456   2506 
+e36dh: EXE_LINE_STMT    - <  2525>   2569 
+e29bh: EXE_NEXT_DONE    - <  2321>   2311 
+e26dh: EXE_NEXT_STMT    - <  2264>   2492 
+e2e1h: EXE_PEEK_STMT    - <  2410>   2480 
+e2e2h: EXE_POKE_STMT    - <  2416>   2486 
+e1a5h: EXE_PRINT_STMT   - <  2106>   2444 
+e1c0h: EXE_PRINT_STMT1  - <  2124>   2113 
+e1d0h: EXE_PRINT_STMT2  - <  2133>   2127 
+e1dbh: EXE_PRINT_STMT3  - <  2139>   2135 
+e1edh: EXE_PRINT_STMT4  - <  2149>   2141   2143   2145 
+e203h: EXE_PRINT_STMT_DONE - <  2162>   2147   2157   2159 
+e1aah: EXE_PRINT_STMT_LOOP - <  2110>   2160 
+e1f3h: EXE_PRINT_STMT_TEST - <  2154>   2122   2131   2137 
+e134h: EXE_RELATION     - <  2010>   2176 
+e173h: EXE_RELATION_DONE - <  2056>   2026 
+e168h: EXE_RELATION_EQ  - <  2047>   2024 
+e15dh: EXE_RELATION_GT  - <  2037>   2022 
+e13dh: EXE_RELATION_LOOP - <  2017>   2035   2045   2054 
+e152h: EXE_RELATION_LT  - <  2028>   2020 
+e25fh: EXE_RETURN_STMT  - <  2239>   2468 
+e379h: EXE_RUN          - <  2562>   2570 
+e382h: EXE_RUN_CONT     - <  2568>   2565 
+e39fh: EXE_SET_VARIABLE - <  2597>   2199   2296   2371 
+e2eah: EXE_STMT         - <  2430>   2181   2536 
+e2f6h: EXE_STMT1        - <  2447>   2443 
+e347h: EXE_STMT10       - <  2501>   2497 
+e355h: EXE_STMT11       - <  2509>   2503 
+e35eh: EXE_STMT12       - <  2515>   2511 
+e2ffh: EXE_STMT2        - <  2453>   2449 
+e308h: EXE_STMT3        - <  2459>   2455 
+e311h: EXE_STMT4        - <  2465>   2461 
+e31ah: EXE_STMT5        - <  2471>   2467 
+e323h: EXE_STMT6        - <  2477>   2473 
+e32ch: EXE_STMT7        - <  2483>   2479 
+e335h: EXE_STMT8        - <  2489>   2485 
+e33eh: EXE_STMT9        - <  2495>   2491 
+e03ah: EXE_STMT_MSG     - <  1770> 
+e098h: EXE_TERM         - <  1885>   1945   1963   1972   1981   1990 
+e0b6h: EXE_TERM_ASTR    - <  1902>   1895 
+e0d7h: EXE_TERM_DONE    - <  1929>   1900 
+e0a1h: EXE_TERM_LOOP    - <  1892>   1909   1918   1927 
+e0cch: EXE_TERM_MOD     - <  1920>   1899 
+e0c1h: EXE_TERM_SLASH   - <  1911>   1897 
+e067h: EXE_VARFACTOR    - <  1837>   1876 
+f561h: FILLBLOCK        - <  1027>    898 
+f572h: FILLCONT         - <  1035>    939 
+0004h: FILLMODE         - <    71>    938   1028 
+f878h: FILLMSG          - <  1601>   1029 
+e8a6h: FOUND            - <  3413>   3396 
+f60ah: GETADDRESS       - <  1138>    963    975    988   1031   1057 
+f633h: GETNIBBLE        - <  1175>   1009   1103   1109   1143   1150   1157 
+         1164 
+f636h: GETNIBBLEC       - <  1177>   1003 
+f8bah: GETTESTPROMOPT   - <  1605>   1100 
+f592h: GO               - <  1054>    900 
+f88bh: GOMSG            - <  1602>   1055 
+f808h: HELLO            - <  1594>    159 
+f8cdh: HELPMENU         - <  1607>    884    922 
+f63eh: INAF             - <  1182>   1179 
+f7e2h: LBLINK           - <  1550>    158    288 
+0002h: LCDENABLE        - <    14> 
+0004h: LCDREGISTER      - <    15> 
+f758h: LEDOUT           - <  1384>    424    429    434    439    447    452 
+          457    462    470    475    480    485    492    497    502    507 
+f7f0h: LOFFLOOP         - <  1565>   1568 
+f791h: LONGDELAY        - <  1470> 
+f795h: LONGDELAYLOOP    - <  1473>   1476 
+f7e7h: LONLOOP          - <  1558>   1561 
+f64ch: LOWER            - <  1192>   1190 
+f5ffh: MENUCARRY        - <  1126>   1123 
+f57bh: MOREFILL         - <  1040>   1046 
+fd01h: MOVRRHELP        - <  1639>    387 
+fdcah: MOVRRMENU        - <  1683>   1661 
+f140h: MOVRRTEST        - <   386>   1661   1661 
+f05ch: MUL16            - <   202>    194 
+f087h: MULADD16         - <   246>    219 
+f065h: MULLOOP          - <   213>    243 
+f071h: MULSKIP          - <   220>    218 
+f7f7h: NBLINK           - <  1578>    197 
+f806h: NBLINKDONE       - <  1586>   1582 
+f7f8h: NBLINKLOOP       - <  1580>   1585 
+f7a7h: NODELAY          - <  1492> 
+f7abh: NODELAYLOOP      - <  1495>   1498 
+e8afh: NOKEYOWRDSFOUND  - <  3422>   3392 
+0000h: NOMODE           - <    67>    154   1062   1066 
+f7dbh: OFFLOOP          - <  1541>   1544 
+f7b3h: OFFW             - <  1506>   1506 
+f7d2h: ONLOOP           - <  1534>   1537 
+f7bfh: ONW              - <  1514>   1514 
+f233h: ORHELP           - <   515>    517 
+f269h: ORLOOP           - <   520>    529 
+fd63h: ORMENU           - <  1668>   1646 
+f261h: ORTEST           - <   516>   1646   1646 
+fc96h: ORTHELP          - <  1636>    574 
+f2aeh: ORTLOOP          - <   577>    590 
+fd66h: ORTMENU          - <  1669>   1647 
+f2a6h: ORTTEST          - <   573>   1647   1647 
+f42fh: OUTEQ            - <   818>    810 
+f42ah: OUTGT            - <   815>    809 
+f434h: OUTLT            - <   821>    811 
+e7c8h: PARSECHAR1       - <  3241>   3238 
+e810h: PARSECHAR10      - <  3286>   3283 
+e818h: PARSECHAR11      - <  3291>   3288 
+e820h: PARSECHAR12      - <  3296>   3293 
+e828h: PARSECHAR13      - <  3301>   3298 
+e830h: PARSECHAR14      - <  3306>   3303 
+e838h: PARSECHAR15      - <  3311>   3308 
+e7d0h: PARSECHAR2       - <  3246>   3243 
+e7d8h: PARSECHAR3       - <  3251>   3248 
+e7e0h: PARSECHAR4       - <  3256>   3253 
+e7e8h: PARSECHAR5       - <  3261>   3258 
+e7f0h: PARSECHAR6       - <  3266>   3263 
+e7f8h: PARSECHAR7       - <  3271>   3268 
+e800h: PARSECHAR8       - <  3276>   3273 
+e808h: PARSECHAR9       - <  3281>   3278 
+e943h: PARSE_ADDLINE    - <  3619> 
+e913h: PARSE_AF         - <  3545>   3542 
+e92ah: PARSE_ERROR_PRINT - <  3570> 
+e92ah: PARSE_FINISHED   - <  3575> 
+e904h: PARSE_GETNIBBLE  - <  3530>   3496   3503   3510   3517 
+e83bh: PARSE_GET_NEXT_TOK - <  3320>   3451   3471 
+e84bh: PARSE_GNT1       - <  3332>   3327 
+e852h: PARSE_GNT1LOOP   - <  3340>   3343 
+e860h: PARSE_GNT2       - <  3350>   3339 
+e86fh: PARSE_GNT3       - <  3365>   3356 
+e875h: PARSE_GNT3LOOP   - <  3372>   3376 
+e884h: PARSE_GNT4       - <  3384>   3371 
+e8c6h: PARSE_GNT_ERROR  - <  3439>   3430   3432 
+e8cbh: PARSE_GOTO       - <  3449> 
+e8d2h: PARSE_INIT       - <  3466> 
+0300h: PARSE_INPUT_LINE - <   130>   3233   3322   3531   3560 
+e943h: PARSE_ISDIGIT    - <  3637>   3338   3342 
+e950h: PARSE_ISDIGIT_AF - <  3644>   3641 
+e95dh: PARSE_ISDIGIT_NO - <  3654>   3639   3646   3648   3648 
+e95ah: PARSE_ISDIGIT_YES - <  3650>   3642 
+e75ch: PARSE_KEYWORDS   - <  3205>   3389 
+e92ah: PARSE_LINE       - <  3595> 
+e8ddh: PARSE_NEXT       - <  3484> 
+e8ddh: PARSE_NUM        - <  3495>   3605 
+e92ah: PARSE_POS        - <  3585> 
+e943h: PARSE_REMOVELINE - <  3624> 
+e7bbh: PARSE_SINGLECHAR - <  3231>   3355 
+e91bh: PARSE_STRING     - <  3553> 
+e924h: PARSE_STRING1    - <  3559>   3556   3612 
+e8dbh: PARSE_TOKEN      - <  3477>   3554   3610 
+0400h: PARSE_TOKEN_BUFFER - <   131>   3596 
+e92ah: PARSE_VARIABLE_NUM - <  3580> 
+e88fh: PCMPLOOP         - <  3394>   3402 
+f2d9h: PPDISLOOP        - <   611>    618 
+f2cbh: PPENTERLOOP      - <   600>    608 
+f825h: PROMPT           - <  1595>    869 
+fc24h: PSHIFT_LEFTHELP  - <  1630>    729 
+f3bbh: PSHLLOOP         - <   732>    741 
+fda8h: PSHLMENU         - <  1678>   1656 
+f3b3h: PSHLTEST         - <   728>   1656   1656 
+fc7bh: PUSHPOPHELP      - <  1635>    596 
+fd6ah: PUSHPOPMENU      - <  1670>   1648 
+f2c3h: PUSHPOPTEST      - <   595>   1648   1648 
+fbffh: RSHIFT_LEFTHELP  - <  1628>    693 
+fc11h: RSHIFT_RIGHTHELP - <  1629>    711 
+f38fh: RSHLLOOP         - <   696>    705 
+fd94h: RSHLMENU         - <  1674>   1652 
+f387h: RSHLTEST         - <   692>   1652   1652 
+f3a5h: RSHRLOOP         - <   714>    723 
+fd99h: RSHRMENU         - <  1675>   1653 
+f39dh: RSHRTEST         - <   710>   1653   1653 
+f308h: SHIFT_LEFTHELP   - <   654>    656 
+f347h: SHIFT_RIGHTHELP  - <   673>    675 
+f339h: SHLLOOP          - <   659>    668 
+fd8ch: SHLMENU          - <  1672>   1650 
+f331h: SHLTEST          - <   655>   1650   1650 
+f79ch: SHORTDELAY       - <  1482> 
+f7a0h: SHORTDELAYLOOP   - <  1485>   1488 
+f6ebh: SHOW16           - <  1298>    168    341    350    359    368    377 
+          981   1304   1314 
+f705h: SHOW256          - <  1312>    968   1319 
+f64fh: SHOWADDR         - <  1198>    167    176    340    349    358    367 
+          376    980    993   1036   1276   1278   1280   1282   1284   1286 
+         1288   1290   1313   2518   2816   3187 
+f71ch: SHOWBYTE         - <  1330>    994   1298   2519 
+f72dh: SHOWBYTEA        - <  1344>   1086 
+f73eh: SHOWNIBBLE       - <  1360>   1204   1207   1213   1216   1230   1233 
+         1239   1242   1254   1257   1263   1266   1337   1340   1351   1354 
+f678h: SHOWNUM          - <  1224> 
+f697h: SHOWR7           - <  1248>   2151   2836   3179 
+f16fh: SHOWREG23        - <   422> 
+f202h: SHOWREG29        - <   490>    406    410    415 
+f1a0h: SHOWREG34        - <   445> 
+f1d1h: SHOWREG38        - <   468>    393    397    401 
+f6b6h: SHOWREGS         - <  1272>    169    211    214    305    307    311 
+          313    317    319    342    351    360    369    378   1061 
+f379h: SHRLOOP          - <   678>    687 
+fd90h: SHRMENU          - <  1673>   1651 
+f371h: SHRTEST          - <   674>   1651   1651 
+e89dh: SKIPLOOP         - <  3406>   3409 
+e89dh: SKIPTOEND        - <  3404>   3399 
+f761h: SLOOP            - <  1398>   1403 
+f76ch: SLOOPDONE        - <  1407>   1400 
+0fffh: STACK            - <    76>     88 
+f4cfh: STOP             - <   948>    948 
+f760h: STRINGOUT        - <  1396>    160    171    178    188    344    353 
+          362    371    380    388    518    537    556    575    597    627 
+          657    676    694    712    730    748    766    784    802    870 
+          883    885    917    920    923    945    962    965    974    977 
+          987    990   1024   1030   1033   1038   1056   1068   1089   1091 
+         1101   1274   1293   2120   2164   2517   2815   2846   2885   2893 
+         2901   2909   2917   2925   2933   2941   2949   2957   2965   2973 
+         2981   2989   2997   3005   3163   3186 
+fc5dh: SUBHELP          - <  1633>    783 
+f3fdh: SUBLOOP          - <   786>    795 
+fdadh: SUBMENU          - <  1679>   1657 
+f3f5h: SUBTEST          - <   782>   1657   1657 
+f754h: SWITCHIN         - <  1376> 
+0001h: SWITCHLED        - <    13>    522    541    560    579    583    602 
+          613    631    638    661    680    698    716    734    752    770 
+          788    807   1377   1385 
+f7b2h: SWITCHTOGGLE     - <  1504>    427    432    437    442    450    455 
+          460    465    473    478    483    488    495    500    505    510 
+          521    540    559    578    582    601    612    630    637    660 
+          679    697    715    733    751    769    787    806 
+f462h: TESTEXAMINE      - <   888>    881 
+fd1fh: TESTMENU         - <  1645>   1069   1118 
+fd63h: TESTMENUSTRINGS  - <  1667> 
+fd0fh: TESTMSG          - <  1640>    187 
+f5a4h: TESTS            - <  1065>    906 
+f092h: TESTSDONE        - <   287>    289 
+f5b2h: TESTSLOOP        - <  1072>   1093 
+f5d6h: TESTSLOOPDONE    - <  1095>   1084 
+0080h: TIL311           - <    17>   1389 
+f75ch: TIL311OUT        - <  1388>    426    431    436    441    449    454 
+          459    464    472    477    482    487    494    499    504    509 
+         1116   1122   1581 
+0019h: TOKENIZER_AND    - <    50>   1954   3050   3264 
+001bh: TOKENIZER_ASTR   - <    52>   1894   3070   3274 
+0010h: TOKENIZER_CALL   - <    41>   2970   3217 
+0015h: TOKENIZER_COMMA  - <    46>   2126   3010   3244 
+0024h: TOKENIZER_CR     - <    61>   2085   2156   2200   2213   2329   2390 
+         3160   3239 
+0009h: TOKENIZER_ELSE   - <    34>   2914   3210 
+0014h: TOKENIZER_END    - <    45>   2496   3002   3221 
+0001h: TOKENIZER_EOF    - <    26>   2158   2821   3328 
+0023h: TOKENIZER_EQ     - <    60>   2023   2195   2364   3150   3309 
+0000h: TOKENIZER_ERROR  - <    25>   2812   3222   3440 
+000ah: TOKENIZER_FOR    - <    35>   2344   2472   2922   3211 
+000eh: TOKENIZER_GOSUB  - <    39>   2208   2460   2954   3215 
+000dh: TOKENIZER_GOTO   - <    38>   2098   2510   2946   3214 
+0022h: TOKENIZER_GT     - <    59>   2021   3140   3304 
+001eh: TOKENIZER_HASH   - <    55>   3100   3289 
+0007h: TOKENIZER_IF     - <    32>   2173   2448   2898   3208 
+001fh: TOKENIZER_LEFTP  - <    56>   1867   2144   3110   3284 
+0005h: TOKENIZER_LET    - <    30>   2502   2504   2882   3206 
+0025h: TOKENIZER_LINENUM - <    62>   2534   2658   3168   3601 
+0021h: TOKENIZER_LT     - <    58>   2019   3130   3299 
+0018h: TOKENIZER_MINUS  - <    49>   1952   3040   3259 
+001dh: TOKENIZER_MOD    - <    54>   1898   3090   3279 
+000ch: TOKENIZER_NEXT   - <    37>   2183   2277   2490   2938   3213 
+0002h: TOKENIZER_NUMBER - <    27>   1859   2142   2211   2642   2827   3346 
+001ah: TOKENIZER_OR     - <    51>   1956   3060   3269 
+0012h: TOKENIZER_PEEK   - <    43>   2478   2986   3219 
+0017h: TOKENIZER_PLUS   - <    48>   1950   3030   3254 
+0013h: TOKENIZER_POKE   - <    44>   2484   2994   3220 
+0006h: TOKENIZER_PRINT  - <    31>   2107   2442   2890   3207 
+0011h: TOKENIZER_REM    - <    42>   2978   3218 
+000fh: TOKENIZER_RETURN - <    40>   2240   2466   2962   3216 
+0020h: TOKENIZER_RIGHTP - <    57>   1871   3120   3294 
+0016h: TOKENIZER_SEMICOLON - <    47>   2134   3020   3249 
+001ch: TOKENIZER_SLASH  - <    53>   1896   3080 
+0003h: TOKENIZER_STRING - <    28>   2112   2668   2842   3380   3555   3611 
+0008h: TOKENIZER_THEN   - <    33>   2177   2906   3209 
+000bh: TOKENIZER_TO     - <    36>   2375   2930   3212 
+0004h: TOKENIZER_VARIABLE - <    29>   1845   2140   2193   2287   2362   2454 
+         2650   2859   3436 
+e499h: TOKL_CALL        - <  2800>   2972 
+e459h: TOKL_ELSE        - <  2789>   2916 
+e494h: TOKL_END         - <  2799>   3004 
+e49fh: TOKL_ERROR       - <  2801>   2814   3185 
+e45fh: TOKL_FOR         - <  2790>   2924 
+e474h: TOKL_GOSUB       - <  2794>   2956 
+e46eh: TOKL_GOTO        - <  2793>   2948 
+e44fh: TOKL_IF          - <  2787>   2900 
+e443h: TOKL_LET         - <  2785>   2884 
+e468h: TOKL_NEXT        - <  2792>   2940 
+e488h: TOKL_PEEK        - <  2797>   2988 
+e48eh: TOKL_POKE        - <  2798>   2996 
+e448h: TOKL_PRINT       - <  2786>   2892 
+e483h: TOKL_REM         - <  2796>   2980 
+e47bh: TOKL_RETURN      - <  2795>   2964 
+e453h: TOKL_THEN        - <  2788>   2908 
+e464h: TOKL_TO          - <  2791>   2932 
+e404h: TOK_FIND         - <  2728>   2069 
+e42dh: TOK_FIND1        - <  2760>   2747 
+e42eh: TOK_FIND2        - <  2762>   2752 
+e409h: TOK_FIND_LOOP    - <  2733>   2775 
+e416h: TOK_FIND_LOOP1   - <  2742>   2736 
+e437h: TOK_FIND_MOVEPTR - <  2770>   2774 
+e3f8h: TOK_FINISHED     - <  2715>   2580 
+e401h: TOK_FINISHED1    - <  2721>   2718 
+e440h: TOK_GOTO         - <  2777>   2092 
+e3b3h: TOK_INIT         - <  2636>   1804 
+e4aah: TOK_LIST         - <  2804>    956 
+e4c3h: TOK_LIST1        - <  2820>   2813 
+e563h: TOK_LIST10       - <  2921>   2915 
+e572h: TOK_LIST11       - <  2929>   2923 
+e581h: TOK_LIST12       - <  2937>   2931 
+e590h: TOK_LIST13       - <  2945>   2939 
+e59fh: TOK_LIST14       - <  2953>   2947 
+e5aeh: TOK_LIST15       - <  2961>   2955 
+e5bdh: TOK_LIST16       - <  2969>   2963 
+e5cch: TOK_LIST17       - <  2977>   2971 
+e5dbh: TOK_LIST18       - <  2985>   2979 
+e5eah: TOK_LIST19       - <  2993>   2987 
+e4ceh: TOK_LIST2        - <  2826>   2822 
+e5f9h: TOK_LIST20       - <  3001>   2995 
+e608h: TOK_LIST21       - <  3009>   3003 
+e61bh: TOK_LIST22       - <  3019>   3011 
+e62eh: TOK_LIST23       - <  3029>   3021 
+e641h: TOK_LIST24       - <  3039>   3031 
+e654h: TOK_LIST25       - <  3049>   3041 
+e667h: TOK_LIST26       - <  3059>   3051 
+e67ah: TOK_LIST27       - <  3069>   3061 
+e68dh: TOK_LIST28       - <  3079>   3071 
+e6a0h: TOK_LIST29       - <  3089>   3081 
+e4e5h: TOK_LIST3        - <  2841>   2828 
+e6b3h: TOK_LIST30       - <  3099>   3091 
+e6c6h: TOK_LIST31       - <  3109>   3101 
+e6d9h: TOK_LIST32       - <  3119>   3111 
+e6ech: TOK_LIST33       - <  3129>   3121 
+e6ffh: TOK_LIST34       - <  3139>   3131 
+e712h: TOK_LIST35       - <  3149>   3141 
+e725h: TOK_LIST36       - <  3159>   3151 
+e734h: TOK_LIST37       - <  3167>   3161 
+e74dh: TOK_LIST38       - <  3184>   3169 
+e501h: TOK_LIST4        - <  2858>   2843 
+e518h: TOK_LIST5        - <  2881>   2860 
+e527h: TOK_LIST6        - <  2889>   2883 
+e536h: TOK_LIST7        - <  2897>   2891 
+e545h: TOK_LIST8        - <  2905>   2899 
+e554h: TOK_LIST9        - <  2913>   2907 
+e759h: TOK_LIST_DONE    - <  3192>   2817   2823   3188 
+e4aeh: TOK_LIST_LOOP    - <  2809>   2818   2824   2839   2856   2879   2887 
+         2895   2903   2911   2919   2927   2935   2943   2951   2959   2967 
+         2975   2983   2991   2999   3007   3017   3027   3037   3047   3057 
+         3067   3077   3087   3097   3107   3117   3127   3137   3147   3157 
+         3165   3182 
+e4f5h: TOK_LIST_STRING  - <  2849>   2853 
+e4fdh: TOK_LIST_STRINGEND - <  2854>   2851 
+e3b7h: TOK_NEXT         - <  2640>   1825   1903   1912   1921   1962   1971 
+         1980   1989   2029   2038   2048   2121   2130   2136   2165 
+e3c1h: TOK_NEXT1        - <  2649>   2643 
+e3cah: TOK_NEXT2        - <  2657>   2651 
+e3d5h: TOK_NEXT3        - <  2667>   2659 
+e3e3h: TOK_NEXT3_DONE   - <  2678>   2674 
+e3dbh: TOK_NEXT3_LOOP   - <  2672>   2676 
+e3e5h: TOK_NEXT4        - <  2682>   2669 
+e3e7h: TOK_NUM          - <  2689>   1861   2210 
+e3f4h: TOK_STRING       - <  2710>   2118 
+e3b1h: TOK_TOKEN        - <  2632>   1818   1857   1893   1949   2018   2111 
+         2155   2434 
+e3f0h: TOK_VARIABLE_NUM - <  2704>   1840   2190   2282   2349 
+e889h: TOP              - <  3390>   3411 
+f646h: TOUPPER          - <  1189>    873   1182   3546 
+f042h: TTTT             - <   186>    175 
+0000h: UARTA0           - <     4>    143 
+0008h: UARTA1           - <     5>    146 
+0010h: UARTA2           - <     6> 
+0018h: UARTA3           - <     7>    140    149 
+0020h: UARTA4           - <     8> 
+0028h: UARTA5           - <     9>   1425   1459 
+0030h: UARTA6           - <    10> 
+0038h: UARTA7           - <    11> 
+0040h: UARTCS           - <    16>    140    143    146    149   1425   1432 
+         1459   1463 
+f780h: UARTIN           - <  1452>    872    998   1176   1462 
+f76eh: UARTOUT          - <  1414>    826    996   1018   1020   1048   1050 
+         1088   1218   1220   1301   1306   1308   1321   1323   1364   1370 
+         1401   1465   2838   2848   2867   2878   3013   3015   3023   3025 
+         3033   3035   3043   3045   3053   3055   3063   3065   3073   3075 
+         3083   3085   3093   3095   3103   3105   3113   3115   3123   3125 
+         3133   3135   3143   3145   3153   3155   3181 
+f772h: UARTOUTW         - <  1424>   1430 
+ea50h: ZZZZ             - <  3678> 
+
+3679 Lines assembled
+0 Errors
+447 Labels
+Object Code:6181 bytes
+

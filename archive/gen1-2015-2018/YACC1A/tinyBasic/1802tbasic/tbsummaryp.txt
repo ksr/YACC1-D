@@ -1,0 +1,60 @@
+			TMSI Tiny BASIC Summary
+GENERAL
+  input line	: 72 characters maximum
+  output line	: 125 characters maximum
+  numbers	: 16-bit integers, -32768 to +32767
+  variables	: 26, named A to Z
+  variablelist	: one or more variables, separated by commas (,)
+  expressions	: one or more variables or numbers, separated by + - * /
+  expressionlist: one or more expressions, separated by commas (,)
+  relation	: = > < >= <= <> or ><
+COMMANDS
+  RUN [expressionlist]
+		Begin BASIC program execution at first line number.
+		Save expressionlist for first INPUT statements.
+  LIST [expression][,expression]
+		List entire program, or one line, or range of lines.
+  NEW
+		Clear the BASIC program from memory.
+STATEMENTS
+  REM [any comment]
+		Remark: Used for comments; ignored during execution.
+  [LET] variable = expresion
+		Set variable equal to the value of the expression.
+  IF expression relation expression [THEN] statement
+		If relationship between expressions is true, then
+		execute statement; otherwise skip the statement.
+  GOTO expression
+		Jump to line number given by value of expression.
+  GOSUB expression
+		Save line number of the following line, then GOTO
+		line number given by value of expression.
+  RET[URN]
+		Return to line number saved by the last GOSUB.
+  PR[INT] printlist
+		Print values of expressions, characters between quotes
+		(") verbatim. Comma (,) between items leaves no space.
+                Semicolon (;) between items moves to next Tab stop.
+  IN[PUT] variablelist
+		Read and evauate expressions from the keyboard, and
+		assign them to variables in the variablelist.
+FUNCTIONS
+  RND (expression, expression)
+		Return a random number between the values of the two
+		expressions (inclusive). Expressions must be positive.
+  USR (expression [,expression] [,expression] )
+		Call machine-language subroutine at address of first
+		expression value, with second expression value in R8,
+		and third expression value in RA. The value of the
+		USR function is determined by the subroutine called.
+  USR(6)	Read character from keyboard.
+  USR(9,0,n)	Print character n.
+  USR(20,a)	Peek: Read byte from memory address a.
+  USR(24,a,m)	Poke: Write byte m into memory address a.
+  USR(32)	Call IDIOT monitor
+  USR(35,n,m)	Read 1802 flag pins EF1-EF4, and set/reset Q pin:
+		If m=1, set Q; if m=-1, reset Q; if m=0 leave Q as-is.
+		If n=0, read Q; if n=1 to 4, read EFn.
+  USR(38,a,b)	Read/Write 1802 I/O ports:
+		If a=1 to 7, writes byte b to output port 1-7.
+		If a=9 to 15, reads byte from input port 1-7.

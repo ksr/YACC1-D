@@ -1,0 +1,348 @@
+RC/asm v2.2
+by Michael H. Riley
+
+yacc1 -> Native
+2 Classes read.
+94 Patterns read.
+    1 0000:             ; Simple Monitor Program for YACC1-2020
+    2 0000:             ; Supports: 
+    3 0000:             ; 1) Display a memory location (D command)
+    4 0000:             ; 2) Modify a memory location (M command)
+    5 0000:             ; 3) Display 256 bytes of memory block (B command)
+    6 0000:             ; Uses support functions:
+    7 0000:             ; - getc: gets character from keyboard, returns in R7
+    8 0000:             ; - putc: outputs character in R7 to the screen
+    9 0000:             
+   10 0000:             ; Constants
+   11 0000:             CR: EQU  0x0D       ; Carriage return
+   12 0000:             LF: EQU 0x0A       ; Line feed
+   13 0000:             SPACE:  EQU 0x20    ; Space character
+   14 0000:             CMD_DISP: EQU 0x44 ; 'D' - Display memory location
+   15 0000:             CMD_MOD: EQU 0x4D  ; 'M' - Modify memory location
+   16 0000:             CMD_BLOCK:  EQU 0x42 ; 'B' - Display memory block
+   17 0000:             
+   18 0000:             ; Main program starts here
+   19 0000:             START:
+   20 0000:                 ; Print welcome message
+   21 0000: 21: ***ERROR*** Invalid opcode :     LDR R1, MSG_WELCOME    ; F1 [MSG_HI] [MSG_LO]
+
+                LDR R1, MSG_WELCOME    ; F1 [MSG_HI] [MSG_LO]
+   22 0000: 22:Label not found - PRINT_STRING
+04 00 00        JSR PRINT_STRING       ; 04 [PRINT_STRING_HI] [PRINT_STRING_LO]
+   23 0003:                 
+   24 0003:             MAIN_LOOP:
+   25 0003:                 ; Print prompt
+   26 0003: 26: ***ERROR*** Invalid opcode :     LDR R1, MSG_PROMPT     ; F1 [PROMPT_HI] [PROMPT_LO]
+
+                LDR R1, MSG_PROMPT     ; F1 [PROMPT_HI] [PROMPT_LO]
+   27 0003: 27:Label not found - PRINT_STRING
+04 00 00        JSR PRINT_STRING       ; 04 [PRINT_STRING_HI] [PRINT_STRING_LO]
+   28 0006:                 
+   29 0006:                 ; Get command
+   30 0006: 04 00 ec        JSR GETC_TO_CHAR       ; 04 [GETC_HI] [GETC_LO]
+   31 0009: 27              MVRLA R7              ; 27  ; Get input character
+   32 000a: 0b              MVAT                  ; 0B  ; Store in tmp
+   33 000b:                 
+   34 000b:                 ; Echo the character
+   35 000b: 04 00 f0        JSR PUTC_CHAR         ; 04 [PUTC_HI] [PUTC_LO]
+   36 000e:                 
+   37 000e:                 ; Print newline
+   38 000e: 04 00 f4        JSR PRINT_NEWLINE     ; 04 [NEWLINE_HI] [NEWLINE_LO]
+   39 0011:                 
+   40 0011:                 ; Compare with commands
+   41 0011: 0c              MVTA                  ; 0C  ; Restore character to accumulator
+   42 0012:                 
+   43 0012:                 ; Compare with 'D' (Display)
+   44 0012: 0d 00           LDTI CMD_DISP         ; 0D 44
+   45 0014: a8 00 27        BREQ HANDLE_DISPLAY   ; A8 [DISPLAY_HI] [DISPLAY_LO]
+   46 0017:                 
+   47 0017:                 ; Compare with 'M' (Modify)
+   48 0017: 0d 00           LDTI CMD_MOD         ; 0D 4D
+   49 0019: a8 00 53        BREQ HANDLE_MODIFY   ; A8 [MODIFY_HI] [MODIFY_LO]
+   50 001c:                 
+   51 001c:                 ; Compare with 'B' (Block display)
+   52 001c: 0d 00           LDTI CMD_BLOCK       ; 0D 42
+   53 001e: a8 00 9c        BREQ HANDLE_BLOCK    ; A8 [BLOCK_HI] [BLOCK_LO]
+   54 0021:                 
+   55 0021:                 ; Unknown command
+   56 0021: 56: ***ERROR*** Invalid opcode :     LDR R1, MSG_UNKNOWN   ; F1 [UNKNOWN_HI] [UNKNOWN_LO]
+
+                LDR R1, MSG_UNKNOWN   ; F1 [UNKNOWN_HI] [UNKNOWN_LO]
+   57 0021: 57:Label not found - PRINT_STRING
+04 00 00        JSR PRINT_STRING      ; 04 [PRINT_STRING_HI] [PRINT_STRING_LO]
+   58 0024: a0 00 03        BR MAIN_LOOP          ; A0 [MAIN_LOOP_HI] [MAIN_LOOP_LO]
+   59 0027:             
+   60 0027:             ; ---- Handle Display Memory Location ----
+   61 0027:             HANDLE_DISPLAY:
+   62 0027:                 ; Print message
+   63 0027: 63: ***ERROR*** Invalid opcode :     LDR R1, MSG_ADDR_REQ  ; F1 [ADDR_REQ_HI] [ADDR_REQ_LO]
+
+                LDR R1, MSG_ADDR_REQ  ; F1 [ADDR_REQ_HI] [ADDR_REQ_LO]
+   64 0027: 64:Label not found - PRINT_STRING
+04 00 00        JSR PRINT_STRING      ; 04 [PRINT_STRING_HI] [PRINT_STRING_LO]
+   65 002a:                 
+   66 002a:                 ; Get address
+   67 002a: 67:Label not found - GET_HEX_WORD
+04 00 00        JSR GET_HEX_WORD      ; 04 [GET_HEX_WORD_HI] [GET_HEX_WORD_LO]
+   68 002d:                 
+   69 002d:                 ; R0 now contains the address to display
+   70 002d: 70: ***ERROR*** Invalid opcode :     MOVRR R0, R3          ; 0F 03  ; Copy address to R3
+
+                MOVRR R0, R3          ; 0F 03  ; Copy address to R3
+   71 002d:                 
+   72 002d:                 ; Print newline
+   73 002d: 04 00 f4        JSR PRINT_NEWLINE     ; 04 [NEWLINE_HI] [NEWLINE_LO]
+   74 0030:                 
+   75 0030:                 ; Print address
+   76 0030: 76: ***ERROR*** Invalid opcode :     MOVRR R3, R0          ; 0F 30  ; Copy address to R0
+
+                MOVRR R3, R0          ; 0F 30  ; Copy address to R0
+   77 0030: 77:Label not found - PRINT_HEX_WORD
+04 00 00        JSR PRINT_HEX_WORD    ; 04 [PRINT_HEX_WORD_HI] [PRINT_HEX_WORD_LO]
+   78 0033:                 
+   79 0033:                 ; Print separator
+   80 0033: 0e 00           LDAI SPACE            ; 0E 20
+   81 0035: 37              MVARL R7             ; 37
+   82 0036: 04 00 f0        JSR PUTC_CHAR        ; 04 [PUTC_HI] [PUTC_LO]
+   83 0039: 0e 3a           LDAI ':'             ; 0E 3A
+   84 003b: 37              MVARL R7             ; 37
+   85 003c: 04 00 f0        JSR PUTC_CHAR        ; 04 [PUTC_HI] [PUTC_LO]
+   86 003f: 0e 00           LDAI SPACE           ; 0E 20
+   87 0041: 37              MVARL R7             ; 37
+   88 0042: 04 00 f0        JSR PUTC_CHAR        ; 04 [PUTC_HI] [PUTC_LO]
+   89 0045:                 
+   90 0045:                 ; Load and display byte from memory
+   91 0045: 43              LDAVR R3             ; 43  ; Load byte at address in R3
+   92 0046: 30              MVARL R0             ; 30  ; Store in R0 low
+   93 0047: 0e 00           LDAI 0               ; 0E 00
+   94 0049: 38              MVARH R0             ; 38  ; Clear R0 high
+   95 004a: 95:Label not found - PRINT_HEX_BYTE
+04 00 00        JSR PRINT_HEX_BYTE   ; 04 [PRINT_HEX_BYTE_HI] [PRINT_HEX_BYTE_LO]
+   96 004d:                 
+   97 004d:                 ; Print newline
+   98 004d: 04 00 f4        JSR PRINT_NEWLINE    ; 04 [NEWLINE_HI] [NEWLINE_LO]
+   99 0050:                 
+  100 0050: a0 00 03        BR MAIN_LOOP         ; A0 [MAIN_LOOP_HI] [MAIN_LOOP_LO]
+  101 0053:             
+  102 0053:             ; ---- Handle Modify Memory Location ----
+  103 0053:             HANDLE_MODIFY:
+  104 0053:                 ; Print message
+  105 0053: 105: ***ERROR*** Invalid opcode :     LDR R1, MSG_ADDR_REQ  ; F1 [ADDR_REQ_HI] [ADDR_REQ_LO]
+
+                LDR R1, MSG_ADDR_REQ  ; F1 [ADDR_REQ_HI] [ADDR_REQ_LO]
+  106 0053: 106:Label not found - PRINT_STRING
+04 00 00        JSR PRINT_STRING      ; 04 [PRINT_STRING_HI] [PRINT_STRING_LO]
+  107 0056:                 
+  108 0056:                 ; Get address
+  109 0056: 109:Label not found - GET_HEX_WORD
+04 00 00        JSR GET_HEX_WORD      ; 04 [GET_HEX_WORD_HI] [GET_HEX_WORD_LO]
+  110 0059:                 
+  111 0059:                 ; R0 now contains the address to modify
+  112 0059: 112: ***ERROR*** Invalid opcode :     MOVRR R0, R3          ; 0F 03  ; Copy address to R3
+
+                MOVRR R0, R3          ; 0F 03  ; Copy address to R3
+  113 0059:                 
+  114 0059:                 ; Print current value
+  115 0059: 04 00 f4        JSR PRINT_NEWLINE     ; 04 [NEWLINE_HI] [NEWLINE_LO]
+  116 005c:                 
+  117 005c:                 ; Print address
+  118 005c: 118: ***ERROR*** Invalid opcode :     MOVRR R3, R0          ; 0F 30  ; Copy address to R0
+
+                MOVRR R3, R0          ; 0F 30  ; Copy address to R0
+  119 005c: 119:Label not found - PRINT_HEX_WORD
+04 00 00        JSR PRINT_HEX_WORD    ; 04 [PRINT_HEX_WORD_HI] [PRINT_HEX_WORD_LO]
+  120 005f:                 
+  121 005f:                 ; Print separator
+  122 005f: 0e 00           LDAI SPACE            ; 0E 20
+  123 0061: 37              MVARL R7             ; 37
+  124 0062: 04 00 f0        JSR PUTC_CHAR        ; 04 [PUTC_HI] [PUTC_LO]
+  125 0065: 0e 3a           LDAI ':'             ; 0E 3A
+  126 0067: 37              MVARL R7             ; 37
+  127 0068: 04 00 f0        JSR PUTC_CHAR        ; 04 [PUTC_HI] [PUTC_LO]
+  128 006b: 0e 00           LDAI SPACE           ; 0E 20
+  129 006d: 37              MVARL R7             ; 37
+  130 006e: 04 00 f0        JSR PUTC_CHAR        ; 04 [PUTC_HI] [PUTC_LO]
+  131 0071:                 
+  132 0071:                 ; Load and display current byte
+  133 0071: 43              LDAVR R3             ; 43  ; Load byte at address in R3
+  134 0072: 30              MVARL R0             ; 30  ; Store in R0 low
+  135 0073: 0e 00           LDAI 0               ; 0E 00
+  136 0075: 38              MVARH R0             ; 38  ; Clear R0 high
+  137 0076: 137:Label not found - PRINT_HEX_BYTE
+04 00 00        JSR PRINT_HEX_BYTE   ; 04 [PRINT_HEX_BYTE_HI] [PRINT_HEX_BYTE_LO]
+  138 0079:                 
+  139 0079:                 ; Print separator for new value
+  140 0079: 0e 00           LDAI SPACE            ; 0E 20
+  141 007b: 37              MVARL R7             ; 37
+  142 007c: 04 00 f0        JSR PUTC_CHAR        ; 04 [PUTC_HI] [PUTC_LO]
+  143 007f: 0e 2d           LDAI '-'             ; 0E 2D
+  144 0081: 37              MVARL R7             ; 37
+  145 0082: 04 00 f0        JSR PUTC_CHAR        ; 04 [PUTC_HI] [PUTC_LO]
+  146 0085: 0e 3e           LDAI '>'             ; 0E 3E
+  147 0087: 37              MVARL R7             ; 37
+  148 0088: 04 00 f0        JSR PUTC_CHAR        ; 04 [PUTC_HI] [PUTC_LO]
+  149 008b: 0e 00           LDAI SPACE           ; 0E 20
+  150 008d: 37              MVARL R7             ; 37
+  151 008e: 04 00 f0        JSR PUTC_CHAR        ; 04 [PUTC_HI] [PUTC_LO]
+  152 0091:                 
+  153 0091:                 ; Get new value
+  154 0091: 154:Label not found - GET_HEX_BYTE
+04 00 00        JSR GET_HEX_BYTE     ; 04 [GET_HEX_BYTE_HI] [GET_HEX_BYTE_LO]
+  155 0094:                 
+  156 0094:                 ; R0 now contains new byte value
+  157 0094: 20              MVRLA R0             ; 20  ; Load new value to accumulator
+  158 0095: 4b              STAVR R3             ; 4B  ; Store at address in R3
+  159 0096:                 
+  160 0096:                 ; Print newline
+  161 0096: 04 00 f4        JSR PRINT_NEWLINE    ; 04 [NEWLINE_HI] [NEWLINE_LO]
+  162 0099:                 
+  163 0099: a0 00 03        BR MAIN_LOOP         ; A0 [MAIN_LOOP_HI] [MAIN_LOOP_LO]
+  164 009c:             
+  165 009c:             ; ---- Handle Block Display ----
+  166 009c:             HANDLE_BLOCK:
+  167 009c:                 ; Print message
+  168 009c: 168: ***ERROR*** Invalid opcode :     LDR R1, MSG_ADDR_REQ  ; F1 [ADDR_REQ_HI] [ADDR_REQ_LO]
+
+                LDR R1, MSG_ADDR_REQ  ; F1 [ADDR_REQ_HI] [ADDR_REQ_LO]
+  169 009c: 169:Label not found - PRINT_STRING
+04 00 00        JSR PRINT_STRING      ; 04 [PRINT_STRING_HI] [PRINT_STRING_LO]
+  170 009f:                 
+  171 009f:                 ; Get start address
+  172 009f: 172:Label not found - GET_HEX_WORD
+04 00 00        JSR GET_HEX_WORD      ; 04 [GET_HEX_WORD_HI] [GET_HEX_WORD_LO]
+  173 00a2:                 
+  174 00a2:                 ; R0 now contains start address
+  175 00a2: 175: ***ERROR*** Invalid opcode :     MOVRR R0, R3          ; 0F 03  ; Copy to R3 (current address)
+
+                MOVRR R0, R3          ; 0F 03  ; Copy to R3 (current address)
+  176 00a2:                 
+  177 00a2:                 ; Use R4 as line counter (16 bytes per line)
+  178 00a2: 178: ***ERROR*** Invalid opcode :     MVIW R4, 0            ; 1C 00 00
+
+                MVIW R4, 0            ; 1C 00 00
+  179 00a2:                 
+  180 00a2:                 ; Use R5 as byte counter (256 bytes total)
+  181 00a2: 181: ***ERROR*** Invalid opcode :     MVIW R5, 0            ; 1D 00 00
+
+                MVIW R5, 0            ; 1D 00 00
+  182 00a2:                 
+  183 00a2:                 ; Print newline
+  184 00a2: 04 00 f4        JSR PRINT_NEWLINE     ; 04 [NEWLINE_HI] [NEWLINE_LO]
+  185 00a5:             
+  186 00a5:             BLOCK_LOOP:
+  187 00a5:                 ; Check if we need a new line (R4 == 0)
+  188 00a5: 24              MVRLA R4              ; 24
+  189 00a6: b2 00           ORI 0                 ; B2 00  ; Test if zero
+  190 00a8: a2 00 c0        BRNZ BLOCK_CONT       ; A2 [BLOCK_CONT_HI] [BLOCK_CONT_LO]
+  191 00ab:                 
+  192 00ab:                 ; New line - print address
+  193 00ab: 193: ***ERROR*** Invalid opcode :     MOVRR R3, R0          ; 0F 30  ; Copy address to R0
+
+                MOVRR R3, R0          ; 0F 30  ; Copy address to R0
+  194 00ab: 194:Label not found - PRINT_HEX_WORD
+04 00 00        JSR PRINT_HEX_WORD    ; 04 [PRINT_HEX_WORD_HI] [PRINT_HEX_WORD_LO]
+  195 00ae:                 
+  196 00ae:                 ; Print separator
+  197 00ae: 0e 00           LDAI SPACE            ; 0E 20
+  198 00b0: 37              MVARL R7             ; 37
+  199 00b1: 04 00 f0        JSR PUTC_CHAR        ; 04 [PUTC_HI] [PUTC_LO]
+  200 00b4: 0e 3a           LDAI ':'             ; 0E 3A
+  201 00b6: 37              MVARL R7             ; 37
+  202 00b7: 04 00 f0        JSR PUTC_CHAR        ; 04 [PUTC_HI] [PUTC_LO]
+  203 00ba: 0e 00           LDAI SPACE           ; 0E 20
+  204 00bc: 37              MVARL R7             ; 37
+  205 00bd: 04 00 f0        JSR PUTC_CHAR        ; 04 [PUTC_HI] [PUTC_LO]
+  206 00c0:                 
+  207 00c0:             BLOCK_CONT:
+  208 00c0:                 ; Display byte at current address
+  209 00c0: 43              LDAVR R3              ; 43  ; Load byte at address in R3
+  210 00c1: 30              MVARL R0              ; 30  ; Store in R0 low
+  211 00c2: 0e 00           LDAI 0                ; 0E 00
+  212 00c4: 38              MVARH R0              ; 38  ; Clear R0 high
+  213 00c5: 213:Label not found - PRINT_HEX_BYTE
+04 00 00        JSR PRINT_HEX_BYTE    ; 04 [PRINT_HEX_BYTE_HI] [PRINT_HEX_BYTE_LO]
+  214 00c8:                 
+  215 00c8:                 ; Print space
+  216 00c8: 0e 00           LDAI SPACE            ; 0E 20
+  217 00ca: 37              MVARL R7              ; 37
+  218 00cb: 04 00 f0        JSR PUTC_CHAR         ; 04 [PUTC_HI] [PUTC_LO]
+  219 00ce:                 
+  220 00ce:                 ; Increment address
+  221 00ce: 53              INCR R3               ; 53
+  222 00cf:                 
+  223 00cf:                 ; Increment byte counter
+  224 00cf: 55              INCR R5               ; 55
+  225 00d0:                 
+  226 00d0:                 ; Increment and check line counter
+  227 00d0: 54              INCR R4               ; 54
+  228 00d1: 24              MVRLA R4              ; 24
+  229 00d2: 0d 10           LDTI 16               ; 0D 10
+  230 00d4: aa 00 da        BRNEQ BLOCK_LINE_CONT ; AA [BLOCK_LINE_CONT_HI] [BLOCK_LINE_CONT_LO]
+  231 00d7:                 
+  232 00d7:                 ; End of line - reset line counter and print newline
+  233 00d7: 233: ***ERROR*** Invalid opcode :     MVIW R4, 0            ; 1C 00 00
+
+                MVIW R4, 0            ; 1C 00 00
+  234 00d7: 04 00 f4        JSR PRINT_NEWLINE     ; 04 [NEWLINE_HI] [NEWLINE_LO]
+  235 00da:                 
+  236 00da:             BLOCK_LINE_CONT:
+  237 00da:                 ; Check if we've displayed 256 bytes
+  238 00da: 25              MVRLA R5              ; 25
+  239 00db: 0d 00           LDTI 0                ; 0D 00
+  240 00dd: aa 00 a5        BRNEQ BLOCK_LOOP      ; AA [BLOCK_LOOP_HI] [BLOCK_LOOP_LO]
+  241 00e0: 2d              MVRHA R5              ; 2D
+  242 00e1: 0d 01           LDTI 1                ; 0D 01
+  243 00e3: aa 00 a5        BRNEQ BLOCK_LOOP      ; AA [BLOCK_LOOP_HI] [BLOCK_LOOP_LO]
+  244 00e6:                 
+  245 00e6:                 ; Done with block display
+  246 00e6: 04 00 f4        JSR PRINT_NEWLINE     ; 04 [NEWLINE_HI] [NEWLINE_LO]
+  247 00e9: a0 00 03        BR MAIN_LOOP          ; A0 [MAIN_LOOP_HI] [MAIN_LOOP_LO]
+  248 00ec:             
+  249 00ec:             ; ---- Support Subroutines ----
+  250 00ec:             
+  251 00ec:             ; Get character from keyboard into R7
+  252 00ec:             GETC_TO_CHAR:
+  253 00ec: 253:Label not found - GETC
+04 00 00        JSR GETC             ; 04 [SYSTEM_GETC_HI] [SYSTEM_GETC_LO]
+  254 00ef: 05              RET                  ; 05
+  255 00f0:             
+  256 00f0:             ; Output character in R7 to screen
+  257 00f0:             PUTC_CHAR:
+  258 00f0: 258:Label not found - PUTC
+04 00 00        JSR PUTC             ; 04 [SYSTEM_PUTC_HI] [SYSTEM_PUTC_LO]
+  259 00f3: 05              RET                  ; 05
+  260 00f4:             
+  261 00f4:             ; Print newline (CR+LF)
+  262 00f4:             PRINT_NEWLINE:
+  263 00f4: 07 07           PUSHR R7             ; 07
+  264 00f6: 0e 00           LDAI CR              ; 0E 0D
+  265 00f8: 37              MVARL R7             ; 37
+  266 00f9: 04 00 f0        JSR PUTC_CHAR        ; 04 [PUTC_HI] [PUTC_LO]
+  267 00fc: 0e 00           LDAI LF              ; 0E 0A
+
+00c0h: BLOCK_CONT       - <   207>    190 
+00dah: BLOCK_LINE_CONT  - <   236>    230 
+00a5h: BLOCK_LOOP       - <   186>    240    243 
+0000h: CMD_BLOCK        - <    16>     52 
+0000h: CMD_DISP         - <    14>     44 
+0000h: CMD_MOD          - <    15>     48 
+0000h: CR               - <    11>    264 
+00ech: GETC_TO_CHAR     - <   252>     30 
+009ch: HANDLE_BLOCK     - <   166>     53 
+0027h: HANDLE_DISPLAY   - <    61>     45 
+0053h: HANDLE_MODIFY    - <   103>     49 
+0000h: LF               - <    12>    267    267 
+0003h: MAIN_LOOP        - <    24>     58    100    163    247 
+00f4h: PRINT_NEWLINE    - <   262>     38     73     98    115    161    184 
+          234    246 
+00f0h: PUTC_CHAR        - <   257>     35     82     85     88    124    127 
+          130    142    145    148    151    199    202    205    218    266 
+0000h: SPACE            - <    13>     80     86    122    128    140    149 
+          197    203    216 
+0000h: START            - <    19> 
+
+267 Lines assembled
+33 Errors
+17 Labels
+Object Code:254 bytes
+

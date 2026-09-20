@@ -1,0 +1,134 @@
+                        ;Sept 2016 Herb Johnson
+                        ;Chuck Yakym's alternative Tiny BASIC cold-start, 
+                        ;to speed up discovery of RAM
+                        ;provided with permission 
+                        
+   0000                 	ORG	0
+                        	INCL "1802reg.asm"	;R0-RF defined HRJ
+                        ;HRJ A18 wants register names defined...
+                        
+   0000                 R0		EQU	0
+   0001                 R1		EQU	1
+   0002                 R2		EQU	2
+   0003                 R3		EQU	3
+   0004                 R4		EQU	4
+   0005                 R5		EQU	5
+   0006                 R6		EQU	6
+   0007                 R7		EQU	7
+   0008                 R8		EQU	8
+   0009                 R9		EQU	9
+   000a                 R10		EQU	10
+   000b                 R11		EQU	11
+   000c                 R12		EQU	12
+   000d                 R13		EQU	13
+   000e                 R14		EQU	14
+   000f                 R15		EQU	15
+                        
+   0000                 R0		EQU	0
+   0001                 R1		EQU	1
+   0002                 R2		EQU	2
+   0003                 R3		EQU	3
+   0004                 R4		EQU	4
+   0005                 R5		EQU	5
+   0006                 R6		EQU	6
+   0007                 R7		EQU	7
+   0008                 R8		EQU	8
+   0009                 R9		EQU	9
+   000a                 RA		EQU	10
+   000b                 RB		EQU	11
+   000c                 RC		EQU	12
+   000d                 RD		EQU	13
+   000e                 RE		EQU	14
+   000f                 RF		EQU	15
+                        
+                        
+                        ;from Tiny BASIC
+   000d                 PZ	EQU	13	;register, BASIC PAGE 0 POINTER
+   000a                 AC	EQU	10	;register, MONITOR MEMORY POINTER
+   0013                 BS	EQU	 +13H	; BACKSPACE CHARACTER
+   001c                 CONST	EQU	001CH		;addr to addr of monitor
+   0800                 PAGE:	EQU  0800H		; WORKSPACE BEGINNING ADDRESS
+   0022                 STACK: EQU	+22H	; WORKSPACE, HIGHEST LOW-ORDER ADDRESS OF USER RAM
+                        
+   00b0                 	ORG 00B0H		;cold location for RCA Tiny BASIC
+                        ;-----------------------------------------------;
+                        ;	COLD & WARM START INITIALIZATION	;
+                        ;-----------------------------------------------;
+                        ;
+                        ;
+                        ; DETERMINE SIZE OF USER RAM
+   00b0   f8 00         COLD	LDI	HIGH CONST
+   00b2   ba            	PHI  AC 	; GET LOW END ADDR.
+   00b3   f8 1c         	LDI  LOW CONST	;   OF USER PROGRAM
+   00b5   aa            	PLO  AC 	;   RAM (AT "CONST")
+                        
+                        ;RC POINTS TO MEMORY THAT HOLDS THE START OF USER MEMORY
+                        
+   00b6   1a            	INC	AC
+   00b7   1a            	INC	AC
+   00b8   1a            	INC	AC	; SET AC TO +3 OFFSET ADDRESS
+                        			; NEEDED WHEN THE PARAMETERS ARE TRANSFERRED
+                        
+                        ;ADDED TO PRESERVE SIZE OF THIS PATCH
+   00b9   c4            	NOP
+   00ba   c4            	NOP
+   00bb   c4            	NOP
+   00bc   c4            	NOP
+   00bd   c4            	NOP
+   00be   c4            	NOP
+                        
+                        ; FIND TOP OF MEMORY (NEW)
+   00bf   f8 ff         	LDI	0FFH	; LOAD D WITH FFH
+   00c1   b2            	PHI	R2	; LOAD R2.1 WITH D
+   00c2   a2            	PLO	R2	; LOAD R2.0 WITH D , R2 = FFFFH
+   00c3   f8 00         SCAN	LDI	00H	; LOAD D WITH 00H
+   00c5   52            	STR	R2	; WRITE BYTE 00 INTO MEMORY POINTED TO BY R2
+   00c6   02            	LDN	R2	; READ BYTE INTO D POINTED TO BY R2
+   00c7   3a d1         	BNZ	SCAN1	; IF NOT ZERO THEN GOTO THE NEXT LOWER PAGE OF MEMORY AND TEST AGAIN
+                        			;  FOR RAM MEMORY
+   00c9   f8 ff         	LDI	0FFH	; LOAD D WITH FFH
+   00cb   52            	STR	R2	; WRITE BYTE FF INTO MEMORY POINTED TO BY R2
+   00cc   02            	LDN	R2	; READ BYTE INTO D POINTED TO BY R2
+   00cd   fd ff         	SDI	0FFH	; SUBTRACT FFH FROM D
+   00cf   32 d7         	BZ	SCAN2	; IF ZERO THEN TOP OF RAM MEMORY FOUND
+   00d1   92            SCAN1	GHI	R2	; PUT R2.1 INTO D
+   00d2   fc ff         	ADI	0FFH	; SUBTRACT FFH FROM D
+   00d4   b2            	PHI	R2	; SAVE BACK TO R2.1, R2 NOW POINTS TO THE NEXT LOWER MEMORY PAGE OF RAM
+   00d5   30 c3         	BR	SCAN	; RAM MEMORY NOT FOUND YET
+                        			; TOP OF MEMORY SAVED IN R2
+                        
+   00d7   ed            SCAN2	SEX  PZ
+                        
+                        ;R2 = TOP OF MEMORY
+                        
+   00d8   f8 08         	LDI	HIGH PAGE	; RAM SIZED: SET
+   00da   bd            	PHI  PZ 	;   POINTER PZ TO WORK AREA AT 256 BYTES UNDER THE USER DEFINED ADDRESS
+   00db   f8 23         	LDI  STACK+1	;   
+   00dd   ad            	PLO  PZ
+   00de   82            	GLO  R2 	; STORE RAM END ADDRESS
+   00df   73            	STXD
+   00e0   92            	GHI  R2
+   00e1   73            	STXD		; GET & STORE RAM BEGINNIG
+   00e2   2a            	DEC  AC 	; REPEAT TO COPY PARAMETERS..
+   00e3   2a            	DEC  AC 	; - POINT TO NEXT
+   00e4   0a            	LDN  AC 	; - GET PARAMETER
+   00e5   73            	STXD		; - STORE IN WORK AREA
+   00e6   8d            	GLO  PZ
+   00e7   fb 12         	XRI  BS-1	; - TEST FOR LAST PARAMETER
+   00e9   3a e3         	BNZ  $-6	; - ..UNTIL LAST COPIED
+                        
+   00eb   f6            	SHR		; SET DF=0 FOR "CLEAR"
+   00ec   c8            	LSKP
+                        ;
+                        ; "WARM" Tiny BASIC code will follow below. 
+                        ;
+   00ed                 	END
+000a  AC            0013  BS            00b0  COLD          001c  CONST     
+0800  PAGE          000d  PZ            0000  R0            0001  R1        
+000a  R10           000b  R11           000c  R12           000d  R13       
+000e  R14           000f  R15           0002  R2            0003  R3        
+0004  R4            0005  R5            0006  R6            0007  R7        
+0008  R8            0009  R9            000a  RA            000b  RB        
+000c  RC            000d  RD            000e  RE            000f  RF        
+00c3  SCAN          00d1  SCAN1         00d7  SCAN2         0022  STACK     
+

@@ -1,0 +1,11311 @@
+(export
+	(version "E")
+	(design
+		(source "/Users/ksr77/Documents/YACCS/kicad/memory-card-v1.3/memory-card-v1.3.kicad_sch")
+		(date "2026-09-19T11:33:27")
+		(tool "Eeschema 10.0.6")
+		(sheet
+			(number "1")
+			(name "/")
+			(tstamps "/")
+			(title_block
+				(title "memory-card-v1.3")
+				(company)
+				(rev)
+				(date)
+				(source "memory-card-v1.3.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle schematic; see README.md")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+		(sheet
+			(number "2")
+			(name "/Sheet 1/")
+			(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			(title_block
+				(title "memory-card-v1.3 sheet 1")
+				(company)
+				(rev)
+				(date)
+				(source "memory-card-v1.3-sheet1.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle: Memory V1.3.sch sheet 1")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+		(sheet
+			(number "3")
+			(name "/Sheet 2/")
+			(tstamps "/bf02352f-ab44-7145-1cb8-3f0c430c84af/")
+			(title_block
+				(title "memory-card-v1.3 sheet 2")
+				(company)
+				(rev)
+				(date)
+				(source "memory-card-v1.3-sheet2.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle: Memory V1.3.sch sheet 2")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+		(sheet
+			(number "4")
+			(name "/Sheet 3/")
+			(tstamps "/45aaf0b1-933f-0c1c-b79c-de3a95582d14/")
+			(title_block
+				(title "memory-card-v1.3 sheet 3")
+				(company)
+				(rev)
+				(date)
+				(source "memory-card-v1.3-sheet3.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle: Memory V1.3.sch sheet 3")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+		(sheet
+			(number "5")
+			(name "/Sheet 4/")
+			(tstamps "/e96a91e0-ef2e-cda2-a79c-0c37f36b029d/")
+			(title_block
+				(title "memory-card-v1.3 sheet 4")
+				(company)
+				(rev)
+				(date)
+				(source "memory-card-v1.3-sheet4.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle: Memory V1.3.sch sheet 4")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+		(sheet
+			(number "6")
+			(name "/Sheet 5/")
+			(tstamps "/9fbfe9e3-435c-9112-8b1e-9e041350a19c/")
+			(title_block
+				(title "memory-card-v1.3 sheet 5")
+				(company)
+				(rev)
+				(date)
+				(source "memory-card-v1.3-sheet5.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle: Memory V1.3.sch sheet 5")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+		(sheet
+			(number "7")
+			(name "/Sheet 6/")
+			(tstamps "/70ebbe5b-7bb8-5428-8f40-143534a0dfd7/")
+			(title_block
+				(title "memory-card-v1.3 sheet 6")
+				(company)
+				(rev)
+				(date)
+				(source "memory-card-v1.3-sheet6.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle: Memory V1.3.sch sheet 6")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+	)
+	(components
+		(comp
+			(ref "C1")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "611fbf37-4c6a-09b6-79e3-1a8421e263b0")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C2")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "3b33fae8-0b53-6174-0fbf-91563c486486")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C3")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "44e555ac-28ae-1850-5f66-ca6006d6b496")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C4")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "b086d3b1-16d4-2736-e1a3-feaa396603db")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C5")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "cdd605f7-797f-4a9e-27fa-e76acde1938d")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C6")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "78eb4706-4f99-3fb9-ebbf-5d31b1757ef2")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C7")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "c654bebf-1bc3-111b-994b-e094b8cca396")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C8")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "e0ec4aaf-7b74-583f-f8cd-13e1b8d85be0")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C9")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "445c5ee4-734e-8cc2-ae5c-415e11c5e639")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C10")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "ef81a728-9f19-54cc-28e1-5773ccc743de")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C11")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "aea0c05a-a275-33ca-849a-16ca4e0849ec")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C12")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "57574929-0ac3-c958-3cde-3b887cc5d1eb")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C13")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "de02739b-37c1-198e-01ab-34c0a150ca69")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C14")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "e58dc7f7-9a2c-72cc-cee8-df405bcbea54")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C15")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "8a939dd0-b3b3-805a-9f2f-50ac53e04a86")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C16")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "99ed70a2-a03d-7670-edb8-4c577b2b63b2")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C17")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "2137d28a-01a9-e7d0-8e02-ccf74f7479c3")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C18")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "b58e8d0c-2939-0a5c-f93a-c84008e87c21")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C19")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "5e9e9500-6d34-0add-4389-d5c2db0ac48a")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C20")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "37b53daa-b547-9f25-d2e4-176030582763")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C21")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "5406c787-9f88-b2ee-3210-b372a9c35b69")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C22")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "834565e0-9e22-0edc-243c-480af722af4f")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C23")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "28fe59a4-ea34-1ce6-801a-9f87c7f6b2b2")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C24")
+			(value "C-US")
+			(footprint "memory-card-v1.3-eagle:C025-025X050")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_C-US_025-025X050")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "79583d94-104f-96d1-bf0f-67ef9498f066")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC3")
+			(value "74*32")
+			(footprint "memory-card-v1.3-eagle:DIL14")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL14")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "74xx-us_74x32_N_pwrhidden")
+				(description "Eagle 74xx-us:74*32")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "74d09860-2283-3a23-570e-daa1e7e8016b" "922f4228-85ee-7e33-58f1-9d6c50b20201"
+				"206625f3-1c7f-a85e-1e39-1dec61957434"
+			)
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "6")
+						)
+					)
+				)
+				(unit
+					(name "C")
+					(pins
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+				(unit
+					(name "D")
+					(pins
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "11")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC12")
+			(value "74*74")
+			(footprint "memory-card-v1.3-eagle:DIL14")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL14")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "74xx-us_74x74_N_pwrhidden")
+				(description "Eagle 74xx-us:74*74")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "73cb034a-7725-753b-82f0-1e2e9f121852")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "PWR0")
+			(value "LED")
+			(footprint "memory-card-v1.3-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "4ff0ddc3-8d57-fbad-1b1b-58a282f46121")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R2")
+			(value "330")
+			(footprint "memory-card-v1.3-eagle:0207/10")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:0207/10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "eagle-ltspice_R_0207_10")
+				(description "Eagle eagle-ltspice:R")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "49d330ad-cc5c-cf93-3fc2-d28c5b779366")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "X1")
+			(value "FABC96R")
+			(footprint "memory-card-v1.3-eagle:FABC96R")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:FABC96R")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "con-vg_FABC96R")
+				(description "Eagle con-vg:FABC96R")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/652fffc6-cfea-689c-1620-d762f233ee70/")
+			)
+			(tstamps "ec6f3a0b-aa0f-d554-669a-e18e7bd37263" "dfd1b15b-ecdf-3659-f9a1-837475dbc8b4"
+				"6b0da6c7-753a-6f6a-7bc8-fe58b41486ce" "93fb8056-3124-8f87-79e1-3a8c4cae2c64"
+				"5928210a-8d01-1c27-7949-0fcc1c6a7873" "c198a30c-2380-0573-d74f-058464ed5a46"
+				"2332c8c7-cb0a-c26f-c860-0e38299145d1" "3526c1a7-7b78-6767-2b52-dbce90980b53"
+				"8e46f415-43b5-88b7-7157-c78a0a77843d" "661d67e3-4f9f-032a-e3cb-6e857e239422"
+				"503afdf0-f339-4250-69eb-a415392f87b7" "6f35e964-004a-5bda-6e43-7e7a4fbd09ce"
+				"669283d6-1351-959e-1f50-b26618d737e3" "6e5d8601-de99-e09e-b5b8-01836503bdad"
+				"56a1d7b7-c1a6-14e5-399b-34f5602fcfb9" "1a1d16bb-3c87-51cf-a033-ebf9c56bfbb6"
+				"712eece9-328d-ae82-4f3f-0d11060e924a" "7e343f97-5e9b-e187-961c-f8f698dd88c9"
+				"9533d14e-225a-6df2-03b8-621eca657e2e" "fe4bd332-ae0f-7af8-17c3-c63b9426e05f"
+				"61d18b78-a4ce-958f-76be-ba588b012dec" "76dd4841-161a-260e-2e9d-06def35bf106"
+				"fc29bc30-ff46-b58c-3d50-4b4d55942ded" "801c7561-e847-695c-57a5-043dda263762"
+				"14c4a80c-f22f-402d-1331-62edaa71b5ad" "5629ce8a-3e93-fc59-3a7f-8d5b23ca0d05"
+				"cee1ebac-2f1b-64ac-11a0-c450f614543a" "c136d46b-c6a8-864a-c66b-f5d3bddd5d82"
+				"f5098986-f75a-994b-f32c-381729ddaf22" "46710d71-7c17-651e-10f1-a80861f93739"
+				"ff3921bd-135b-5c7b-5cc4-1e92c34cd94f" "9d83810b-c114-d7c9-e8c8-713551c41fec"
+				"3a983348-d63c-916e-9c3b-a2b33b5009f0" "cce2f1aa-d2b9-e220-fb6c-3f7f373cb840"
+				"5be7b4ec-8309-718e-1aaa-8a6dc418f245" "0aeb3cfa-7094-f2f7-ad83-bedbdd33c74d"
+				"7be5590a-74c0-7148-b012-814227f5170f" "fdcae8af-02f1-8cc5-32dc-aa63e1c77276"
+				"629cef2a-55d0-ae74-d388-bab34fccf3e6" "1d9506ff-26ab-a594-d441-ec04282b4ee2"
+				"84503460-0401-e5f2-b471-fa359a7ff6a6" "326a6529-2362-597f-03fc-9c502c1eb93e"
+				"4902215b-e933-9057-4019-8b72623a72a9" "cc7d3bbd-5b54-4890-87ad-8485463c6ec2"
+				"24c144a8-f7bf-ff17-0ecc-9c877edede52" "fa32f885-1bb1-403d-b87b-f49c8cc2e693"
+				"82b76f9d-c920-1791-21e6-c875b5f2d8e6" "e5656d7f-da10-674d-78bd-603c0a3e3c7b"
+				"8d3e2374-03fa-ff13-c9e9-4483b319e932" "661deef4-db88-9da9-7787-48d88f18fef4"
+				"dac21cbd-e92d-6315-1367-9d33826ca7df" "a0a0eebc-6def-8e87-1a8f-2c280517b67e"
+				"49b0495a-6a65-122b-a816-0348ecc94a87" "bee3b003-9eeb-7451-a942-f4289acd5a77"
+				"6eb9baa8-b70c-57cc-6561-5b27a24eb808" "ac26818c-dd59-1ec3-dc5d-0a52c666c3b2"
+				"e08520c4-8c02-f28d-36b3-4956a7fd6f4b" "7d1f417a-1b53-741e-628f-8f44935a4f4b"
+				"06482df0-05db-b8b2-a2c3-3ec56f93d490" "08b90ed2-b9ba-bfd3-b98a-6f427454d9f5"
+				"1f2478ee-03d9-0f70-7c86-84f545ea207c" "f22b5c8a-7c9c-307d-c548-77584b981493"
+				"270bf478-547c-9a5c-f13d-60300ffe4d73" "eda2ea08-69fa-f745-7bfe-cd21c5fa8958"
+				"5fc737b3-ba25-004f-c66e-f9d1711e72e2" "35821561-1942-f81c-89b8-ceb81dc7b005"
+				"15724963-81a5-11e3-21a7-66ff8fab7be8" "3a944320-e300-6298-f0a4-c48662830c2b"
+				"a58ea5f7-ccc3-96e5-a53a-be750a21a1c9" "887123c5-2c3d-3925-28ef-45c6591a1031"
+				"ee13a56e-698e-0267-0772-47b452e84f7d" "d0fcbc2f-98e3-ef55-b12c-2d83383bee54"
+				"0b13bd62-7626-d365-cf8c-feddcf1e09eb" "68c54bf9-47c5-0d89-57a6-7119438f7972"
+				"6ebb0f9e-a71d-5e3d-d721-06b157d4332c" "8f0defba-5193-d1ac-ac9b-5fe4e4018ce1"
+				"041afe13-ca9e-322e-ed61-8364442a667f" "745da5dc-3ecc-7d52-82bc-883eed6507e7"
+				"ac744c8d-2231-ff48-f5ae-f0488eab9510" "367e3b8c-ee26-469e-f6d5-fe5ecc812d59"
+				"d0228a09-a383-cf4f-0a08-b969f864b9f4" "1cbaa0bd-7c3e-cfc4-35b9-bcd38926a391"
+				"10ac2af3-094b-2922-f499-effdcb434afb" "989c76c8-dc0e-acc2-f4ef-9be9d31ef5d4"
+				"f973ecc1-042b-519b-fcac-4a4baf0563cd" "44624aa2-96f0-a005-3c11-d7e887f9cf1d"
+				"3c9fa2db-22fb-fa8a-30f5-83c3f43f24bd" "fb0f997a-8026-94a2-9f21-069bc483a08c"
+				"c847600b-baae-b7f6-aada-f9152fed00ca" "d7b87e26-7723-782c-b901-aaa8fbf4efab"
+				"c747633b-47f4-ff4b-3ed9-4dfb5da96be3" "f55c34f2-44c9-2e96-1bfc-dcae1fb010af"
+				"ddbf571f-cbfd-c362-e742-5e20e0c259c3" "4f5a9776-afdb-586f-569f-c352aea458b4"
+				"2ff0726f-fcf3-4b61-111e-b395d66f7e7d" "01edcc72-6351-bbb6-d6c2-85b06b822210"
+			)
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A1")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "A2")
+						)
+					)
+				)
+				(unit
+					(name "C")
+					(pins
+						(pin
+							(num "A3")
+						)
+					)
+				)
+				(unit
+					(name "D")
+					(pins
+						(pin
+							(num "A4")
+						)
+					)
+				)
+				(unit
+					(name "E")
+					(pins
+						(pin
+							(num "A5")
+						)
+					)
+				)
+				(unit
+					(name "F")
+					(pins
+						(pin
+							(num "A6")
+						)
+					)
+				)
+				(unit
+					(name "G")
+					(pins
+						(pin
+							(num "A7")
+						)
+					)
+				)
+				(unit
+					(name "H")
+					(pins
+						(pin
+							(num "A8")
+						)
+					)
+				)
+				(unit
+					(name "I")
+					(pins
+						(pin
+							(num "A9")
+						)
+					)
+				)
+				(unit
+					(name "J")
+					(pins
+						(pin
+							(num "A10")
+						)
+					)
+				)
+				(unit
+					(name "K")
+					(pins
+						(pin
+							(num "A11")
+						)
+					)
+				)
+				(unit
+					(name "L")
+					(pins
+						(pin
+							(num "A12")
+						)
+					)
+				)
+				(unit
+					(name "M")
+					(pins
+						(pin
+							(num "A13")
+						)
+					)
+				)
+				(unit
+					(name "N")
+					(pins
+						(pin
+							(num "A14")
+						)
+					)
+				)
+				(unit
+					(name "O")
+					(pins
+						(pin
+							(num "A15")
+						)
+					)
+				)
+				(unit
+					(name "P")
+					(pins
+						(pin
+							(num "A16")
+						)
+					)
+				)
+				(unit
+					(name "Q")
+					(pins
+						(pin
+							(num "A17")
+						)
+					)
+				)
+				(unit
+					(name "R")
+					(pins
+						(pin
+							(num "A18")
+						)
+					)
+				)
+				(unit
+					(name "S")
+					(pins
+						(pin
+							(num "A19")
+						)
+					)
+				)
+				(unit
+					(name "T")
+					(pins
+						(pin
+							(num "A20")
+						)
+					)
+				)
+				(unit
+					(name "U")
+					(pins
+						(pin
+							(num "A21")
+						)
+					)
+				)
+				(unit
+					(name "V")
+					(pins
+						(pin
+							(num "A22")
+						)
+					)
+				)
+				(unit
+					(name "W")
+					(pins
+						(pin
+							(num "A23")
+						)
+					)
+				)
+				(unit
+					(name "X")
+					(pins
+						(pin
+							(num "A24")
+						)
+					)
+				)
+				(unit
+					(name "Y")
+					(pins
+						(pin
+							(num "A25")
+						)
+					)
+				)
+				(unit
+					(name "Z")
+					(pins
+						(pin
+							(num "A26")
+						)
+					)
+				)
+				(unit
+					(name "AA")
+					(pins
+						(pin
+							(num "A27")
+						)
+					)
+				)
+				(unit
+					(name "AB")
+					(pins
+						(pin
+							(num "A28")
+						)
+					)
+				)
+				(unit
+					(name "AC")
+					(pins
+						(pin
+							(num "A29")
+						)
+					)
+				)
+				(unit
+					(name "AD")
+					(pins
+						(pin
+							(num "A30")
+						)
+					)
+				)
+				(unit
+					(name "AE")
+					(pins
+						(pin
+							(num "A31")
+						)
+					)
+				)
+				(unit
+					(name "AF")
+					(pins
+						(pin
+							(num "A32")
+						)
+					)
+				)
+				(unit
+					(name "AG")
+					(pins
+						(pin
+							(num "B1")
+						)
+					)
+				)
+				(unit
+					(name "AH")
+					(pins
+						(pin
+							(num "B2")
+						)
+					)
+				)
+				(unit
+					(name "AI")
+					(pins
+						(pin
+							(num "B3")
+						)
+					)
+				)
+				(unit
+					(name "AJ")
+					(pins
+						(pin
+							(num "B4")
+						)
+					)
+				)
+				(unit
+					(name "AK")
+					(pins
+						(pin
+							(num "B5")
+						)
+					)
+				)
+				(unit
+					(name "AL")
+					(pins
+						(pin
+							(num "B6")
+						)
+					)
+				)
+				(unit
+					(name "AM")
+					(pins
+						(pin
+							(num "B7")
+						)
+					)
+				)
+				(unit
+					(name "AN")
+					(pins
+						(pin
+							(num "B8")
+						)
+					)
+				)
+				(unit
+					(name "AO")
+					(pins
+						(pin
+							(num "B9")
+						)
+					)
+				)
+				(unit
+					(name "AP")
+					(pins
+						(pin
+							(num "B10")
+						)
+					)
+				)
+				(unit
+					(name "AQ")
+					(pins
+						(pin
+							(num "B11")
+						)
+					)
+				)
+				(unit
+					(name "AR")
+					(pins
+						(pin
+							(num "B12")
+						)
+					)
+				)
+				(unit
+					(name "AS")
+					(pins
+						(pin
+							(num "B13")
+						)
+					)
+				)
+				(unit
+					(name "AT")
+					(pins
+						(pin
+							(num "B14")
+						)
+					)
+				)
+				(unit
+					(name "AU")
+					(pins
+						(pin
+							(num "B15")
+						)
+					)
+				)
+				(unit
+					(name "AV")
+					(pins
+						(pin
+							(num "B16")
+						)
+					)
+				)
+				(unit
+					(name "AW")
+					(pins
+						(pin
+							(num "B17")
+						)
+					)
+				)
+				(unit
+					(name "AX")
+					(pins
+						(pin
+							(num "B18")
+						)
+					)
+				)
+				(unit
+					(name "AY")
+					(pins
+						(pin
+							(num "B19")
+						)
+					)
+				)
+				(unit
+					(name "AZ")
+					(pins
+						(pin
+							(num "B20")
+						)
+					)
+				)
+				(unit
+					(name "BA")
+					(pins
+						(pin
+							(num "B21")
+						)
+					)
+				)
+				(unit
+					(name "BB")
+					(pins
+						(pin
+							(num "B22")
+						)
+					)
+				)
+				(unit
+					(name "BC")
+					(pins
+						(pin
+							(num "B23")
+						)
+					)
+				)
+				(unit
+					(name "BD")
+					(pins
+						(pin
+							(num "B24")
+						)
+					)
+				)
+				(unit
+					(name "BE")
+					(pins
+						(pin
+							(num "B25")
+						)
+					)
+				)
+				(unit
+					(name "BF")
+					(pins
+						(pin
+							(num "B26")
+						)
+					)
+				)
+				(unit
+					(name "BG")
+					(pins
+						(pin
+							(num "B27")
+						)
+					)
+				)
+				(unit
+					(name "BH")
+					(pins
+						(pin
+							(num "B28")
+						)
+					)
+				)
+				(unit
+					(name "BI")
+					(pins
+						(pin
+							(num "B29")
+						)
+					)
+				)
+				(unit
+					(name "BJ")
+					(pins
+						(pin
+							(num "B30")
+						)
+					)
+				)
+				(unit
+					(name "BK")
+					(pins
+						(pin
+							(num "B31")
+						)
+					)
+				)
+				(unit
+					(name "BL")
+					(pins
+						(pin
+							(num "B32")
+						)
+					)
+				)
+				(unit
+					(name "BM")
+					(pins
+						(pin
+							(num "C1")
+						)
+					)
+				)
+				(unit
+					(name "BN")
+					(pins
+						(pin
+							(num "C2")
+						)
+					)
+				)
+				(unit
+					(name "BO")
+					(pins
+						(pin
+							(num "C3")
+						)
+					)
+				)
+				(unit
+					(name "BP")
+					(pins
+						(pin
+							(num "C4")
+						)
+					)
+				)
+				(unit
+					(name "BQ")
+					(pins
+						(pin
+							(num "C5")
+						)
+					)
+				)
+				(unit
+					(name "BR")
+					(pins
+						(pin
+							(num "C6")
+						)
+					)
+				)
+				(unit
+					(name "BS")
+					(pins
+						(pin
+							(num "C7")
+						)
+					)
+				)
+				(unit
+					(name "BT")
+					(pins
+						(pin
+							(num "C8")
+						)
+					)
+				)
+				(unit
+					(name "BU")
+					(pins
+						(pin
+							(num "C9")
+						)
+					)
+				)
+				(unit
+					(name "BV")
+					(pins
+						(pin
+							(num "C10")
+						)
+					)
+				)
+				(unit
+					(name "BW")
+					(pins
+						(pin
+							(num "C11")
+						)
+					)
+				)
+				(unit
+					(name "BX")
+					(pins
+						(pin
+							(num "C12")
+						)
+					)
+				)
+				(unit
+					(name "BY")
+					(pins
+						(pin
+							(num "C13")
+						)
+					)
+				)
+				(unit
+					(name "BZ")
+					(pins
+						(pin
+							(num "C14")
+						)
+					)
+				)
+				(unit
+					(name "CA")
+					(pins
+						(pin
+							(num "C15")
+						)
+					)
+				)
+				(unit
+					(name "CB")
+					(pins
+						(pin
+							(num "C16")
+						)
+					)
+				)
+				(unit
+					(name "CC")
+					(pins
+						(pin
+							(num "C17")
+						)
+					)
+				)
+				(unit
+					(name "CD")
+					(pins
+						(pin
+							(num "C18")
+						)
+					)
+				)
+				(unit
+					(name "CE")
+					(pins
+						(pin
+							(num "C19")
+						)
+					)
+				)
+				(unit
+					(name "CF")
+					(pins
+						(pin
+							(num "C20")
+						)
+					)
+				)
+				(unit
+					(name "CG")
+					(pins
+						(pin
+							(num "C21")
+						)
+					)
+				)
+				(unit
+					(name "CH")
+					(pins
+						(pin
+							(num "C22")
+						)
+					)
+				)
+				(unit
+					(name "CI")
+					(pins
+						(pin
+							(num "C23")
+						)
+					)
+				)
+				(unit
+					(name "CJ")
+					(pins
+						(pin
+							(num "C24")
+						)
+					)
+				)
+				(unit
+					(name "CK")
+					(pins
+						(pin
+							(num "C25")
+						)
+					)
+				)
+				(unit
+					(name "CL")
+					(pins
+						(pin
+							(num "C26")
+						)
+					)
+				)
+				(unit
+					(name "CM")
+					(pins
+						(pin
+							(num "C27")
+						)
+					)
+				)
+				(unit
+					(name "CN")
+					(pins
+						(pin
+							(num "C28")
+						)
+					)
+				)
+				(unit
+					(name "CO")
+					(pins
+						(pin
+							(num "C29")
+						)
+					)
+				)
+				(unit
+					(name "CP")
+					(pins
+						(pin
+							(num "C30")
+						)
+					)
+				)
+				(unit
+					(name "CQ")
+					(pins
+						(pin
+							(num "C31")
+						)
+					)
+				)
+				(unit
+					(name "CR")
+					(pins
+						(pin
+							(num "C32")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC4")
+			(value "74*30")
+			(footprint "memory-card-v1.3-eagle:DIL14")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL14")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "74xx-us_74x30_N_pwrhidden")
+				(description "Eagle 74xx-us:74*30")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/bf02352f-ab44-7145-1cb8-3f0c430c84af/")
+			)
+			(tstamps "fc0a11c0-f1e0-fa6a-939a-821f4308319d")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC6")
+			(value "74*04")
+			(footprint "memory-card-v1.3-eagle:DIL14")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL14")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "74xx-us_74x04_N_pwrhidden")
+				(description "Eagle 74xx-us:74*04")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/bf02352f-ab44-7145-1cb8-3f0c430c84af/")
+			)
+			(tstamps "aba60dfa-6bdb-36e2-bdc3-b74acc45c639" "1ce7e4ef-60cb-4708-8fad-2ec83a033b34")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "4")
+						)
+					)
+				)
+				(unit
+					(name "C")
+					(pins
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "6")
+						)
+					)
+				)
+				(unit
+					(name "D")
+					(pins
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+				(unit
+					(name "E")
+					(pins
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "10")
+						)
+					)
+				)
+				(unit
+					(name "F")
+					(pins
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "12")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC7")
+			(value "74*138")
+			(footprint "memory-card-v1.3-eagle:DIL16")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL16")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "74xx-us_74x138_N_pwrhidden")
+				(description "Eagle 74xx-us:74*138")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/bf02352f-ab44-7145-1cb8-3f0c430c84af/")
+			)
+			(tstamps "3cfe4a37-c6a7-50c8-41d6-b4299f506de4")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "7")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC10")
+			(value "74*00")
+			(footprint "memory-card-v1.3-eagle:DIL14")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL14")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "74xx-us_74x00_N_pwrhidden")
+				(description "Eagle 74xx-us:74*00")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/bf02352f-ab44-7145-1cb8-3f0c430c84af/")
+			)
+			(tstamps "d5cd51d5-9ba9-9420-be11-7d4f1e777e2d" "afd7b875-31be-1aad-6433-6c5a80dd2530"
+				"7c3f1e2c-128f-5fe2-63b4-c75771f8da57"
+			)
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "6")
+						)
+					)
+				)
+				(unit
+					(name "C")
+					(pins
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+				(unit
+					(name "D")
+					(pins
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "11")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC18")
+			(value "74*30")
+			(footprint "memory-card-v1.3-eagle:DIL14")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL14")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "74xx-us_74x30_N_pwrhidden")
+				(description "Eagle 74xx-us:74*30")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/bf02352f-ab44-7145-1cb8-3f0c430c84af/")
+			)
+			(tstamps "952c0838-1c80-d622-bdf4-1a2a7bb15a63")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "JP1")
+			(value "PINHD-1X3")
+			(footprint "memory-card-v1.3-eagle:1X03")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:1X03")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "pinhead_PINHD-1X3")
+				(description "Eagle pinhead:PINHD-1X3")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/bf02352f-ab44-7145-1cb8-3f0c430c84af/")
+			)
+			(tstamps "bc8a4cfa-2550-733e-6f13-760d198ebf5b")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "RN7")
+			(value "G08R")
+			(footprint "memory-card-v1.3-eagle:SIL9")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:SIL9")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "resistor-sil_G08R")
+				(description "Eagle resistor-sil:G08R")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/bf02352f-ab44-7145-1cb8-3f0c430c84af/")
+			)
+			(tstamps "807e95e3-c178-23ac-59c6-5b33cf4a257e")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "9")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "RN8")
+			(value "G08R")
+			(footprint "memory-card-v1.3-eagle:SIL9")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:SIL9")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "resistor-sil_G08R")
+				(description "Eagle resistor-sil:G08R")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/bf02352f-ab44-7145-1cb8-3f0c430c84af/")
+			)
+			(tstamps "0d77319f-c7d3-a13c-09fa-b0cd52e34cfb")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "9")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "U$1")
+			(value "PIN_3X8")
+			(footprint "memory-card-v1.3-eagle:PIN_3X8")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:PIN_3X8")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "pinhead_3row_PIN_3X8")
+				(description "Eagle pinhead_3row:PIN_3X8")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/bf02352f-ab44-7145-1cb8-3f0c430c84af/")
+			)
+			(tstamps "9d4fbf1b-6fc5-7004-60cd-1e48bf4b9627")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "24")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC1")
+			(value "62256P")
+			(footprint "memory-card-v1.3-eagle:DIL28-6")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL28-6")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "memory-hitachi_62256P")
+				(description "Eagle memory-hitachi:62256P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/45aaf0b1-933f-0c1c-b79c-de3a95582d14/")
+			)
+			(tstamps "d7b148a0-e6b6-1df9-3173-8299023a54a4")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "14")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC2")
+			(value "62256P")
+			(footprint "memory-card-v1.3-eagle:DIL28-6")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL28-6")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "memory-hitachi_62256P")
+				(description "Eagle memory-hitachi:62256P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/45aaf0b1-933f-0c1c-b79c-de3a95582d14/")
+			)
+			(tstamps "12037381-d25d-9356-5a1e-a20764dd1fba")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "14")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC13")
+			(value "28C64C")
+			(footprint "memory-card-v1.3-eagle:DIL28-6")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL28-6")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "memory-nec_28C64C")
+				(description "Eagle memory-nec:28C64C")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/45aaf0b1-933f-0c1c-b79c-de3a95582d14/")
+			)
+			(tstamps "0d196910-e78c-2109-4d02-d626cc9bb504")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "14")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC14")
+			(value "74*04")
+			(footprint "memory-card-v1.3-eagle:DIL14")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL14")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "74xx-us_74x04_N_pwrhidden")
+				(description "Eagle 74xx-us:74*04")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/45aaf0b1-933f-0c1c-b79c-de3a95582d14/")
+			)
+			(tstamps "7643815b-ecf1-4f6d-1500-e9501ee42a41" "40ca7635-e763-6354-dbe2-91fbb6d0a86a")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "4")
+						)
+					)
+				)
+				(unit
+					(name "C")
+					(pins
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "6")
+						)
+					)
+				)
+				(unit
+					(name "D")
+					(pins
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+				(unit
+					(name "E")
+					(pins
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "10")
+						)
+					)
+				)
+				(unit
+					(name "F")
+					(pins
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "12")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC8")
+			(value "74*244")
+			(footprint "memory-card-v1.3-eagle:DIL20")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL20")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "74xx-us_74x244_N_pwrhidden")
+				(description "Eagle 74xx-us:74*244")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/e96a91e0-ef2e-cda2-a79c-0c37f36b029d/")
+			)
+			(tstamps "af6bc083-7754-2a6c-1f66-20d5c8dcb473" "8bc34a01-5fee-c22f-f7e6-cd6890b551a2")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "12")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC9")
+			(value "74*244")
+			(footprint "memory-card-v1.3-eagle:DIL20")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL20")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "74xx-us_74x244_N_pwrhidden")
+				(description "Eagle 74xx-us:74*244")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/e96a91e0-ef2e-cda2-a79c-0c37f36b029d/")
+			)
+			(tstamps "da81c587-f109-d20e-b755-10137ab5665a" "c0f13e56-9482-214f-b0b3-e504d106f444")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "12")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC11")
+			(value "74*157")
+			(footprint "memory-card-v1.3-eagle:DIL16")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL16")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "74xx-us_74x157_N_pwrhidden")
+				(description "Eagle 74xx-us:74*157")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/e96a91e0-ef2e-cda2-a79c-0c37f36b029d/")
+			)
+			(tstamps "e5d352bf-90af-45d9-ed03-8ea9de4209ac")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "12")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC5")
+			(value "74*245")
+			(footprint "memory-card-v1.3-eagle:DIL20")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL20")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "adafruit_74x245_N_pwrhidden")
+				(description "Eagle adafruit:74*245")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 5")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet5.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 5/")
+				(tstamps "/9fbfe9e3-435c-9112-8b1e-9e041350a19c/")
+			)
+			(tstamps "ad01703f-65f7-defe-4d55-115138507d61")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "11")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC26")
+			(value "74*374")
+			(footprint "memory-card-v1.3-eagle:DIL20")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL20")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "74xx-us_74x374_N_pwrhidden")
+				(description "Eagle 74xx-us:74*374")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 6")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet6.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 6/")
+				(tstamps "/70ebbe5b-7bb8-5428-8f40-143534a0dfd7/")
+			)
+			(tstamps "f703942e-dbb3-a3b4-3e1f-49a8d6e90c5a")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "19")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC27")
+			(value "74*374")
+			(footprint "memory-card-v1.3-eagle:DIL20")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL20")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "74xx-us_74x374_N_pwrhidden")
+				(description "Eagle 74xx-us:74*374")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 6")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet6.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 6/")
+				(tstamps "/70ebbe5b-7bb8-5428-8f40-143534a0dfd7/")
+			)
+			(tstamps "3cfc57ec-17e5-d318-8dcc-87764168cae7")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "19")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC28")
+			(value "74*374")
+			(footprint "memory-card-v1.3-eagle:DIL20")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL20")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "74xx-us_74x374_N_pwrhidden")
+				(description "Eagle 74xx-us:74*374")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 6")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet6.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 6/")
+				(tstamps "/70ebbe5b-7bb8-5428-8f40-143534a0dfd7/")
+			)
+			(tstamps "f08249a8-3df4-13af-d3c1-231efe3e625b")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "19")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC29")
+			(value "74*374")
+			(footprint "memory-card-v1.3-eagle:DIL20")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL20")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "74xx-us_74x374_N_pwrhidden")
+				(description "Eagle 74xx-us:74*374")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 6")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet6.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 6/")
+				(tstamps "/70ebbe5b-7bb8-5428-8f40-143534a0dfd7/")
+			)
+			(tstamps "e606cbda-87dd-ce72-5dfd-67929bdade05")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "19")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "RN5")
+			(value "RNX8")
+			(footprint "memory-card-v1.3-eagle:RN-9")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:RN-9")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "resistor-net_RNX8")
+				(description "Eagle resistor-net:RNX8")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 6")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet6.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 6/")
+				(tstamps "/70ebbe5b-7bb8-5428-8f40-143534a0dfd7/")
+			)
+			(tstamps "3219f9af-194b-9893-0002-c89d4c4e3b4c" "4795ef92-034f-0d3a-4a18-09094e484c7d"
+				"5fc18431-cc6b-81fb-e373-e024c83b3e38" "268c6a8e-3e75-9ad6-1dc2-56fb95ec3580"
+				"d2d29d3a-bfb5-c5ce-d1d2-05c7b0c305f3" "ced1dd28-37e0-9d75-f614-06d8083bb0ae"
+				"ad3e601f-946f-4be0-1112-ecd4a3ea69bd" "dcf90a39-5aa9-d184-514c-ecd1f733935f"
+				"23ac136d-4a2a-4a60-ac1c-4318daa19702"
+			)
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "2")
+						)
+					)
+				)
+				(unit
+					(name "C")
+					(pins
+						(pin
+							(num "3")
+						)
+					)
+				)
+				(unit
+					(name "D")
+					(pins
+						(pin
+							(num "4")
+						)
+					)
+				)
+				(unit
+					(name "E")
+					(pins
+						(pin
+							(num "5")
+						)
+					)
+				)
+				(unit
+					(name "F")
+					(pins
+						(pin
+							(num "6")
+						)
+					)
+				)
+				(unit
+					(name "G")
+					(pins
+						(pin
+							(num "7")
+						)
+					)
+				)
+				(unit
+					(name "H")
+					(pins
+						(pin
+							(num "8")
+						)
+					)
+				)
+				(unit
+					(name "I")
+					(pins
+						(pin
+							(num "9")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "RN6")
+			(value "RNX8")
+			(footprint "memory-card-v1.3-eagle:RN-9")
+			(fields
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:RN-9")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-card-v1.3-eagle")
+				(part "resistor-net_RNX8")
+				(description "Eagle resistor-net:RNX8")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 6")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-card-v1.3-sheet6.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 6/")
+				(tstamps "/70ebbe5b-7bb8-5428-8f40-143534a0dfd7/")
+			)
+			(tstamps "6c6b2efd-27bb-4752-633b-fd4160a50fc2" "6c071c90-5c9b-ff7c-89e3-4cb853aa6115"
+				"dddc5577-e6d9-45f4-0bf9-628cd024399e" "84ae4352-363b-a4c0-28be-429a30eea1f9"
+				"6abde09e-64f5-81c5-9249-51b9f5315e97" "5d090e73-45a1-4706-889f-97ee6e0716b7"
+				"fb408521-fef3-5156-d86f-35c937b65fe2" "4dd9b4b4-7670-f018-028f-db3303426c46"
+				"03e1157a-2426-860b-7a78-d88e1dfa3957"
+			)
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "2")
+						)
+					)
+				)
+				(unit
+					(name "C")
+					(pins
+						(pin
+							(num "3")
+						)
+					)
+				)
+				(unit
+					(name "D")
+					(pins
+						(pin
+							(num "4")
+						)
+					)
+				)
+				(unit
+					(name "E")
+					(pins
+						(pin
+							(num "5")
+						)
+					)
+				)
+				(unit
+					(name "F")
+					(pins
+						(pin
+							(num "6")
+						)
+					)
+				)
+				(unit
+					(name "G")
+					(pins
+						(pin
+							(num "7")
+						)
+					)
+				)
+				(unit
+					(name "H")
+					(pins
+						(pin
+							(num "8")
+						)
+					)
+				)
+				(unit
+					(name "I")
+					(pins
+						(pin
+							(num "9")
+						)
+					)
+				)
+			)
+		)
+	)
+	(groups)
+	(variants)
+	(libparts
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "74xx-us_74x00_N_pwrhidden")
+			(description "Eagle 74xx-us:74*00")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "74*00")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL14")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle 74xx-us:74*00")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "I0")
+					(type "input")
+				)
+				(pin
+					(num "2")
+					(name "I1")
+					(type "input")
+				)
+				(pin
+					(num "3")
+					(name "O")
+					(type "output")
+				)
+				(pin
+					(num "4")
+					(name "I0")
+					(type "input")
+				)
+				(pin
+					(num "5")
+					(name "I1")
+					(type "input")
+				)
+				(pin
+					(num "6")
+					(name "O")
+					(type "output")
+				)
+				(pin
+					(num "7")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "8")
+					(name "O")
+					(type "output")
+				)
+				(pin
+					(num "9")
+					(name "I0")
+					(type "input")
+				)
+				(pin
+					(num "10")
+					(name "I1")
+					(type "input")
+				)
+				(pin
+					(num "11")
+					(name "O")
+					(type "output")
+				)
+				(pin
+					(num "12")
+					(name "I0")
+					(type "input")
+				)
+				(pin
+					(num "13")
+					(name "I1")
+					(type "input")
+				)
+				(pin
+					(num "14")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "74xx-us_74x04_N_pwrhidden")
+			(description "Eagle 74xx-us:74*04")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "74*04")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL14")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle 74xx-us:74*04")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "I")
+					(type "input")
+				)
+				(pin
+					(num "2")
+					(name "O")
+					(type "output")
+				)
+				(pin
+					(num "3")
+					(name "I")
+					(type "input")
+				)
+				(pin
+					(num "4")
+					(name "O")
+					(type "output")
+				)
+				(pin
+					(num "5")
+					(name "I")
+					(type "input")
+				)
+				(pin
+					(num "6")
+					(name "O")
+					(type "output")
+				)
+				(pin
+					(num "7")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "8")
+					(name "O")
+					(type "output")
+				)
+				(pin
+					(num "9")
+					(name "I")
+					(type "input")
+				)
+				(pin
+					(num "10")
+					(name "O")
+					(type "output")
+				)
+				(pin
+					(num "11")
+					(name "I")
+					(type "input")
+				)
+				(pin
+					(num "12")
+					(name "O")
+					(type "output")
+				)
+				(pin
+					(num "13")
+					(name "I")
+					(type "input")
+				)
+				(pin
+					(num "14")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "74xx-us_74x138_N_pwrhidden")
+			(description "Eagle 74xx-us:74*138")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "74*138")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL16")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle 74xx-us:74*138")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "A")
+					(type "input")
+				)
+				(pin
+					(num "2")
+					(name "B")
+					(type "input")
+				)
+				(pin
+					(num "3")
+					(name "C")
+					(type "input")
+				)
+				(pin
+					(num "4")
+					(name "G2A")
+					(type "input")
+				)
+				(pin
+					(num "5")
+					(name "G2B")
+					(type "input")
+				)
+				(pin
+					(num "6")
+					(name "G1")
+					(type "input")
+				)
+				(pin
+					(num "7")
+					(name "Y7")
+					(type "output")
+				)
+				(pin
+					(num "8")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "9")
+					(name "Y6")
+					(type "output")
+				)
+				(pin
+					(num "10")
+					(name "Y5")
+					(type "output")
+				)
+				(pin
+					(num "11")
+					(name "Y4")
+					(type "output")
+				)
+				(pin
+					(num "12")
+					(name "Y3")
+					(type "output")
+				)
+				(pin
+					(num "13")
+					(name "Y2")
+					(type "output")
+				)
+				(pin
+					(num "14")
+					(name "Y1")
+					(type "output")
+				)
+				(pin
+					(num "15")
+					(name "Y0")
+					(type "output")
+				)
+				(pin
+					(num "16")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "74xx-us_74x157_N_pwrhidden")
+			(description "Eagle 74xx-us:74*157")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "74*157")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL16")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle 74xx-us:74*157")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "~{A}/B")
+					(type "input")
+				)
+				(pin
+					(num "2")
+					(name "1A")
+					(type "input")
+				)
+				(pin
+					(num "3")
+					(name "1B")
+					(type "input")
+				)
+				(pin
+					(num "4")
+					(name "1Y")
+					(type "output")
+				)
+				(pin
+					(num "5")
+					(name "2A")
+					(type "input")
+				)
+				(pin
+					(num "6")
+					(name "2B")
+					(type "input")
+				)
+				(pin
+					(num "7")
+					(name "2Y")
+					(type "output")
+				)
+				(pin
+					(num "8")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "9")
+					(name "3Y")
+					(type "output")
+				)
+				(pin
+					(num "10")
+					(name "3B")
+					(type "input")
+				)
+				(pin
+					(num "11")
+					(name "3A")
+					(type "input")
+				)
+				(pin
+					(num "12")
+					(name "4Y")
+					(type "output")
+				)
+				(pin
+					(num "13")
+					(name "4B")
+					(type "input")
+				)
+				(pin
+					(num "14")
+					(name "4A")
+					(type "input")
+				)
+				(pin
+					(num "15")
+					(name "G")
+					(type "input")
+				)
+				(pin
+					(num "16")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "74xx-us_74x244_N_pwrhidden")
+			(description "Eagle 74xx-us:74*244")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "74*244")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL20")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle 74xx-us:74*244")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "G")
+					(type "input")
+				)
+				(pin
+					(num "2")
+					(name "A1")
+					(type "input")
+				)
+				(pin
+					(num "3")
+					(name "Y4")
+					(type "tri_state")
+				)
+				(pin
+					(num "4")
+					(name "A2")
+					(type "input")
+				)
+				(pin
+					(num "5")
+					(name "Y3")
+					(type "tri_state")
+				)
+				(pin
+					(num "6")
+					(name "A3")
+					(type "input")
+				)
+				(pin
+					(num "7")
+					(name "Y2")
+					(type "tri_state")
+				)
+				(pin
+					(num "8")
+					(name "A4")
+					(type "input")
+				)
+				(pin
+					(num "9")
+					(name "Y1")
+					(type "tri_state")
+				)
+				(pin
+					(num "10")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "11")
+					(name "A1")
+					(type "input")
+				)
+				(pin
+					(num "12")
+					(name "Y4")
+					(type "tri_state")
+				)
+				(pin
+					(num "13")
+					(name "A2")
+					(type "input")
+				)
+				(pin
+					(num "14")
+					(name "Y3")
+					(type "tri_state")
+				)
+				(pin
+					(num "15")
+					(name "A3")
+					(type "input")
+				)
+				(pin
+					(num "16")
+					(name "Y2")
+					(type "tri_state")
+				)
+				(pin
+					(num "17")
+					(name "A4")
+					(type "input")
+				)
+				(pin
+					(num "18")
+					(name "Y1")
+					(type "tri_state")
+				)
+				(pin
+					(num "19")
+					(name "G")
+					(type "input")
+				)
+				(pin
+					(num "20")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "74xx-us_74x30_N_pwrhidden")
+			(description "Eagle 74xx-us:74*30")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "74*30")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL14")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle 74xx-us:74*30")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "I0")
+					(type "input")
+				)
+				(pin
+					(num "2")
+					(name "I1")
+					(type "input")
+				)
+				(pin
+					(num "3")
+					(name "I2")
+					(type "input")
+				)
+				(pin
+					(num "4")
+					(name "I3")
+					(type "input")
+				)
+				(pin
+					(num "5")
+					(name "I4")
+					(type "input")
+				)
+				(pin
+					(num "6")
+					(name "I5")
+					(type "input")
+				)
+				(pin
+					(num "7")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "8")
+					(name "O")
+					(type "output")
+				)
+				(pin
+					(num "11")
+					(name "I6")
+					(type "input")
+				)
+				(pin
+					(num "12")
+					(name "I7")
+					(type "input")
+				)
+				(pin
+					(num "14")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "74xx-us_74x32_N_pwrhidden")
+			(description "Eagle 74xx-us:74*32")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "74*32")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL14")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle 74xx-us:74*32")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "I0")
+					(type "input")
+				)
+				(pin
+					(num "2")
+					(name "I1")
+					(type "input")
+				)
+				(pin
+					(num "3")
+					(name "O")
+					(type "output")
+				)
+				(pin
+					(num "4")
+					(name "I0")
+					(type "input")
+				)
+				(pin
+					(num "5")
+					(name "I1")
+					(type "input")
+				)
+				(pin
+					(num "6")
+					(name "O")
+					(type "output")
+				)
+				(pin
+					(num "7")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "8")
+					(name "O")
+					(type "output")
+				)
+				(pin
+					(num "9")
+					(name "I0")
+					(type "input")
+				)
+				(pin
+					(num "10")
+					(name "I1")
+					(type "input")
+				)
+				(pin
+					(num "11")
+					(name "O")
+					(type "output")
+				)
+				(pin
+					(num "12")
+					(name "I0")
+					(type "input")
+				)
+				(pin
+					(num "13")
+					(name "I1")
+					(type "input")
+				)
+				(pin
+					(num "14")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "74xx-us_74x374_N_pwrhidden")
+			(description "Eagle 74xx-us:74*374")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "74*374")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL20")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle 74xx-us:74*374")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "OC")
+					(type "input")
+				)
+				(pin
+					(num "2")
+					(name "1Q")
+					(type "tri_state")
+				)
+				(pin
+					(num "3")
+					(name "1D")
+					(type "input")
+				)
+				(pin
+					(num "4")
+					(name "2D")
+					(type "input")
+				)
+				(pin
+					(num "5")
+					(name "2Q")
+					(type "tri_state")
+				)
+				(pin
+					(num "6")
+					(name "3Q")
+					(type "tri_state")
+				)
+				(pin
+					(num "7")
+					(name "3D")
+					(type "input")
+				)
+				(pin
+					(num "8")
+					(name "4D")
+					(type "input")
+				)
+				(pin
+					(num "9")
+					(name "4Q")
+					(type "tri_state")
+				)
+				(pin
+					(num "10")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "11")
+					(name "CLK")
+					(type "input")
+				)
+				(pin
+					(num "12")
+					(name "5Q")
+					(type "tri_state")
+				)
+				(pin
+					(num "13")
+					(name "5D")
+					(type "input")
+				)
+				(pin
+					(num "14")
+					(name "6D")
+					(type "input")
+				)
+				(pin
+					(num "15")
+					(name "6Q")
+					(type "tri_state")
+				)
+				(pin
+					(num "16")
+					(name "7Q")
+					(type "tri_state")
+				)
+				(pin
+					(num "17")
+					(name "7D")
+					(type "input")
+				)
+				(pin
+					(num "18")
+					(name "8D")
+					(type "input")
+				)
+				(pin
+					(num "19")
+					(name "8Q")
+					(type "tri_state")
+				)
+				(pin
+					(num "20")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "74xx-us_74x74_N_pwrhidden")
+			(description "Eagle 74xx-us:74*74")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "74*74")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL14")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle 74xx-us:74*74")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "CLR")
+					(type "input")
+				)
+				(pin
+					(num "2")
+					(name "D")
+					(type "input")
+				)
+				(pin
+					(num "3")
+					(name "CLK")
+					(type "input")
+				)
+				(pin
+					(num "4")
+					(name "PRE")
+					(type "input")
+				)
+				(pin
+					(num "5")
+					(name "Q")
+					(type "output")
+				)
+				(pin
+					(num "6")
+					(name "~{Q}")
+					(type "output")
+				)
+				(pin
+					(num "7")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "8")
+					(name "~{Q}")
+					(type "output")
+				)
+				(pin
+					(num "9")
+					(name "Q")
+					(type "output")
+				)
+				(pin
+					(num "10")
+					(name "PRE")
+					(type "input")
+				)
+				(pin
+					(num "11")
+					(name "CLK")
+					(type "input")
+				)
+				(pin
+					(num "12")
+					(name "D")
+					(type "input")
+				)
+				(pin
+					(num "13")
+					(name "CLR")
+					(type "input")
+				)
+				(pin
+					(num "14")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "adafruit_74x245_N_pwrhidden")
+			(description "Eagle adafruit:74*245")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "74*245")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL20")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle adafruit:74*245")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "DIR")
+					(type "input")
+				)
+				(pin
+					(num "2")
+					(name "A1")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "A2")
+					(type "passive")
+				)
+				(pin
+					(num "4")
+					(name "A3")
+					(type "passive")
+				)
+				(pin
+					(num "5")
+					(name "A4")
+					(type "passive")
+				)
+				(pin
+					(num "6")
+					(name "A5")
+					(type "passive")
+				)
+				(pin
+					(num "7")
+					(name "A6")
+					(type "passive")
+				)
+				(pin
+					(num "8")
+					(name "A7")
+					(type "passive")
+				)
+				(pin
+					(num "9")
+					(name "A8")
+					(type "passive")
+				)
+				(pin
+					(num "10")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "11")
+					(name "B8")
+					(type "passive")
+				)
+				(pin
+					(num "12")
+					(name "B7")
+					(type "passive")
+				)
+				(pin
+					(num "13")
+					(name "B6")
+					(type "passive")
+				)
+				(pin
+					(num "14")
+					(name "B5")
+					(type "passive")
+				)
+				(pin
+					(num "15")
+					(name "B4")
+					(type "passive")
+				)
+				(pin
+					(num "16")
+					(name "B3")
+					(type "passive")
+				)
+				(pin
+					(num "17")
+					(name "B2")
+					(type "passive")
+				)
+				(pin
+					(num "18")
+					(name "B1")
+					(type "passive")
+				)
+				(pin
+					(num "19")
+					(name "G")
+					(type "input")
+				)
+				(pin
+					(num "20")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "adafruit_C-US_025-025X050")
+			(description "Eagle adafruit:C-US")
+			(fields
+				(field
+					(name "Reference") "C")
+				(field
+					(name "Value") "C-US")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:C025-025X050")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle adafruit:C-US")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "con-vg_FABC96R")
+			(description "Eagle con-vg:FABC96R")
+			(fields
+				(field
+					(name "Reference") "X")
+				(field
+					(name "Value") "FABC96R")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:FABC96R")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle con-vg:FABC96R")
+			)
+			(pins
+				(pin
+					(num "A1")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A2")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A3")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A4")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A5")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A6")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A7")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A8")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A9")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A10")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A11")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A12")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A13")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A14")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A15")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A16")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A17")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A18")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A19")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A20")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A21")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A22")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A23")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A24")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A25")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A26")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A27")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A28")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A29")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A30")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A31")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A32")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B1")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B2")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B3")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B4")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B5")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B6")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B7")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B8")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B9")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B10")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B11")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B12")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B13")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B14")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B15")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B16")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B17")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B18")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B19")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B20")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B21")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B22")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B23")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B24")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B25")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B26")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B27")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B28")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B29")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B30")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B31")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B32")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C1")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C2")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C3")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C4")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C5")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C6")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C7")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C8")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C9")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C10")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C11")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C12")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C13")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C14")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C15")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C16")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C17")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C18")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C19")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C20")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C21")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C22")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C23")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C24")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C25")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C26")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C27")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C28")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C29")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C30")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C31")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C32")
+					(name "B")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "eagle-ltspice_R_0207_10")
+			(description "Eagle eagle-ltspice:R")
+			(fields
+				(field
+					(name "Reference") "R")
+				(field
+					(name "Value") "R")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:0207/10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle eagle-ltspice:R")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "led_LED_5MM")
+			(description "Eagle led:LED")
+			(fields
+				(field
+					(name "Reference") "LED")
+				(field
+					(name "Value") "LED")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle led:LED")
+			)
+			(pins
+				(pin
+					(num "A")
+					(name "A")
+					(type "passive")
+				)
+				(pin
+					(num "K")
+					(name "C")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "memory-hitachi_62256P")
+			(description "Eagle memory-hitachi:62256P")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "62256P")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL28-6")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle memory-hitachi:62256P")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "A14")
+					(type "input")
+				)
+				(pin
+					(num "2")
+					(name "A12")
+					(type "input")
+				)
+				(pin
+					(num "3")
+					(name "A7")
+					(type "input")
+				)
+				(pin
+					(num "4")
+					(name "A6")
+					(type "input")
+				)
+				(pin
+					(num "5")
+					(name "A5")
+					(type "input")
+				)
+				(pin
+					(num "6")
+					(name "A4")
+					(type "input")
+				)
+				(pin
+					(num "7")
+					(name "A3")
+					(type "input")
+				)
+				(pin
+					(num "8")
+					(name "A2")
+					(type "input")
+				)
+				(pin
+					(num "9")
+					(name "A1")
+					(type "input")
+				)
+				(pin
+					(num "10")
+					(name "A0")
+					(type "input")
+				)
+				(pin
+					(num "11")
+					(name "I/O0")
+					(type "passive")
+				)
+				(pin
+					(num "12")
+					(name "I/O1")
+					(type "passive")
+				)
+				(pin
+					(num "13")
+					(name "I/O2")
+					(type "passive")
+				)
+				(pin
+					(num "14")
+					(name "VSS")
+					(type "power_in")
+				)
+				(pin
+					(num "15")
+					(name "I/O3")
+					(type "passive")
+				)
+				(pin
+					(num "16")
+					(name "I/O4")
+					(type "passive")
+				)
+				(pin
+					(num "17")
+					(name "I/O5")
+					(type "passive")
+				)
+				(pin
+					(num "18")
+					(name "I/O6")
+					(type "passive")
+				)
+				(pin
+					(num "19")
+					(name "I/O7")
+					(type "passive")
+				)
+				(pin
+					(num "20")
+					(name "~{CS}")
+					(type "input")
+				)
+				(pin
+					(num "21")
+					(name "A10")
+					(type "input")
+				)
+				(pin
+					(num "22")
+					(name "~{OE}")
+					(type "input")
+				)
+				(pin
+					(num "23")
+					(name "A11")
+					(type "input")
+				)
+				(pin
+					(num "24")
+					(name "A9")
+					(type "input")
+				)
+				(pin
+					(num "25")
+					(name "A8")
+					(type "input")
+				)
+				(pin
+					(num "26")
+					(name "A13")
+					(type "input")
+				)
+				(pin
+					(num "27")
+					(name "~{WE}")
+					(type "input")
+				)
+				(pin
+					(num "28")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "memory-nec_28C64C")
+			(description "Eagle memory-nec:28C64C")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "28C64C")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:DIL28-6")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle memory-nec:28C64C")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "NC")
+					(type "no_connect")
+				)
+				(pin
+					(num "2")
+					(name "A12")
+					(type "input")
+				)
+				(pin
+					(num "3")
+					(name "A7")
+					(type "input")
+				)
+				(pin
+					(num "4")
+					(name "A6")
+					(type "input")
+				)
+				(pin
+					(num "5")
+					(name "A5")
+					(type "input")
+				)
+				(pin
+					(num "6")
+					(name "A4")
+					(type "input")
+				)
+				(pin
+					(num "7")
+					(name "A3")
+					(type "input")
+				)
+				(pin
+					(num "8")
+					(name "A2")
+					(type "input")
+				)
+				(pin
+					(num "9")
+					(name "A1")
+					(type "input")
+				)
+				(pin
+					(num "10")
+					(name "A0")
+					(type "input")
+				)
+				(pin
+					(num "11")
+					(name "I/O0")
+					(type "passive")
+				)
+				(pin
+					(num "12")
+					(name "I/O1")
+					(type "passive")
+				)
+				(pin
+					(num "13")
+					(name "I/O2")
+					(type "passive")
+				)
+				(pin
+					(num "14")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "15")
+					(name "I/O3")
+					(type "passive")
+				)
+				(pin
+					(num "16")
+					(name "I/O4")
+					(type "passive")
+				)
+				(pin
+					(num "17")
+					(name "I/O5")
+					(type "passive")
+				)
+				(pin
+					(num "18")
+					(name "I/O6")
+					(type "passive")
+				)
+				(pin
+					(num "19")
+					(name "I/O7")
+					(type "passive")
+				)
+				(pin
+					(num "20")
+					(name "~{CE}")
+					(type "input")
+				)
+				(pin
+					(num "21")
+					(name "A10")
+					(type "input")
+				)
+				(pin
+					(num "22")
+					(name "~{OE}")
+					(type "input")
+				)
+				(pin
+					(num "23")
+					(name "A11")
+					(type "input")
+				)
+				(pin
+					(num "24")
+					(name "A9")
+					(type "input")
+				)
+				(pin
+					(num "25")
+					(name "A8")
+					(type "input")
+				)
+				(pin
+					(num "26")
+					(name "NC@1")
+					(type "no_connect")
+				)
+				(pin
+					(num "27")
+					(name "~{WE}")
+					(type "input")
+				)
+				(pin
+					(num "28")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "pinhead_3row_PIN_3X8")
+			(description "Eagle pinhead_3row:PIN_3X8")
+			(fields
+				(field
+					(name "Reference") "U")
+				(field
+					(name "Value") "PIN_3X8")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:PIN_3X8")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle pinhead_3row:PIN_3X8")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "3")
+					(type "passive")
+				)
+				(pin
+					(num "4")
+					(name "4")
+					(type "passive")
+				)
+				(pin
+					(num "5")
+					(name "5")
+					(type "passive")
+				)
+				(pin
+					(num "6")
+					(name "6")
+					(type "passive")
+				)
+				(pin
+					(num "7")
+					(name "7")
+					(type "passive")
+				)
+				(pin
+					(num "8")
+					(name "8")
+					(type "passive")
+				)
+				(pin
+					(num "9")
+					(name "9")
+					(type "passive")
+				)
+				(pin
+					(num "10")
+					(name "10")
+					(type "passive")
+				)
+				(pin
+					(num "11")
+					(name "11")
+					(type "passive")
+				)
+				(pin
+					(num "12")
+					(name "12")
+					(type "passive")
+				)
+				(pin
+					(num "13")
+					(name "13")
+					(type "passive")
+				)
+				(pin
+					(num "14")
+					(name "14")
+					(type "passive")
+				)
+				(pin
+					(num "15")
+					(name "15")
+					(type "passive")
+				)
+				(pin
+					(num "16")
+					(name "16")
+					(type "passive")
+				)
+				(pin
+					(num "17")
+					(name "17")
+					(type "passive")
+				)
+				(pin
+					(num "18")
+					(name "18")
+					(type "passive")
+				)
+				(pin
+					(num "19")
+					(name "19")
+					(type "passive")
+				)
+				(pin
+					(num "20")
+					(name "20")
+					(type "passive")
+				)
+				(pin
+					(num "21")
+					(name "21")
+					(type "passive")
+				)
+				(pin
+					(num "22")
+					(name "22")
+					(type "passive")
+				)
+				(pin
+					(num "23")
+					(name "23")
+					(type "passive")
+				)
+				(pin
+					(num "24")
+					(name "24")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "pinhead_PINHD-1X3")
+			(description "Eagle pinhead:PINHD-1X3")
+			(fields
+				(field
+					(name "Reference") "JP")
+				(field
+					(name "Value") "PINHD-1X3")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:1X03")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle pinhead:PINHD-1X3")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "3")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "resistor-net_RNX8")
+			(description "Eagle resistor-net:RNX8")
+			(fields
+				(field
+					(name "Reference") "RN")
+				(field
+					(name "Value") "RNX8")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:RN-9")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle resistor-net:RNX8")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "4")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "5")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "6")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "7")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "8")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "9")
+					(name "1")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-card-v1.3-eagle")
+			(part "resistor-sil_G08R")
+			(description "Eagle resistor-sil:G08R")
+			(fields
+				(field
+					(name "Reference") "RN")
+				(field
+					(name "Value") "G08R")
+				(field
+					(name "Footprint") "memory-card-v1.3-eagle:SIL9")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle resistor-sil:G08R")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "3")
+					(type "passive")
+				)
+				(pin
+					(num "4")
+					(name "4")
+					(type "passive")
+				)
+				(pin
+					(num "5")
+					(name "5")
+					(type "passive")
+				)
+				(pin
+					(num "6")
+					(name "6")
+					(type "passive")
+				)
+				(pin
+					(num "7")
+					(name "7")
+					(type "passive")
+				)
+				(pin
+					(num "8")
+					(name "8")
+					(type "passive")
+				)
+				(pin
+					(num "9")
+					(name "9")
+					(type "passive")
+				)
+			)
+		)
+	)
+	(libraries
+		(library
+			(logical "memory-card-v1.3-eagle")
+			(uri "${KIPRJMOD}/memory-card-v1.3-eagle.kicad_sym")
+		)
+	)
+	(nets
+		(net
+			(code "1")
+			(name "-AC-LD")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C22")
+				(pinfunction "B_C22")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "2")
+			(name "-AC-LD-INV")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C20")
+				(pinfunction "B_C20")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "3")
+			(name "-AC-RD")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C21")
+				(pinfunction "B_C21")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "4")
+			(name "-ADDR-REG-ID0")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C3")
+				(pinfunction "B_C3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "5")
+			(name "-ADDR-REG-ID1")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C4")
+				(pinfunction "B_C4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "6")
+			(name "-ADDR-REG-ID2")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C5")
+				(pinfunction "B_C5")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "7")
+			(name "-ADDR-REG-ID3")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C6")
+				(pinfunction "B_C6")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "8")
+			(name "-ALU-FUNC")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C15")
+				(pinfunction "B_C15")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "9")
+			(name "-BUS-EN")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "2")
+				(pinfunction "I1_2")
+				(pintype "input")
+			)
+			(node
+				(ref "JP1")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C28")
+				(pinfunction "B_C28")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "10")
+			(name "-HI-RAM")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "20")
+				(pinfunction "~{CS}_20")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "10")
+				(pinfunction "O_10")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "11")
+			(name "-HL-SWAP")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C25")
+				(pinfunction "B_C25")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "12")
+			(name "-IN")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C26")
+				(pinfunction "B_C26")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "13")
+			(name "-INT")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C13")
+				(pinfunction "B_C13")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "14")
+			(name "-INTA")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C14")
+				(pinfunction "B_C14")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "15")
+			(name "-IO-ADDR-LD")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C11")
+				(pinfunction "B_C11")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "16")
+			(name "-IO-RD")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B25")
+				(pinfunction "B_B25")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "17")
+			(name "-IO-WR")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B26")
+				(pinfunction "B_B26")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "18")
+			(name "-LO-RAM")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "20")
+				(pinfunction "~{CS}_20")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "3")
+				(pinfunction "O_3")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "19")
+			(name "-MEM-RD")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "1")
+				(pinfunction "DIR_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "5")
+				(pinfunction "I_5")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "B23")
+				(pinfunction "B_B23")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "20")
+			(name "-MEM-WR")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "9")
+				(pinfunction "I_9")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "B24")
+				(pinfunction "B_B24")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "21")
+			(name "-OUT")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C27")
+				(pinfunction "B_C27")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "22")
+			(name "-REG-DN")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B21")
+				(pinfunction "B_B21")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "23")
+			(name "-REG-FUNC-LD")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B8")
+				(pinfunction "B_B8")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "24")
+			(name "-REG-FUNC-RD")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B7")
+				(pinfunction "B_B7")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "25")
+			(name "-REG-LD-HI")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B20")
+				(pinfunction "B_B20")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "26")
+			(name "-REG-LD-LO")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B18")
+				(pinfunction "B_B18")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "27")
+			(name "-REG-RD-HI")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B19")
+				(pinfunction "B_B19")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "28")
+			(name "-REG-RD-LO")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B17")
+				(pinfunction "B_B17")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "29")
+			(name "-REG-UP")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B22")
+				(pinfunction "B_B22")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "30")
+			(name "-RESET")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "4")
+				(pinfunction "PRE_4")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "C30")
+				(pinfunction "B_C30")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "31")
+			(name "-ROM-CS")
+			(class "Default")
+			(node
+				(ref "IC13")
+				(pin "20")
+				(pinfunction "~{CE}_20")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "12")
+				(pinfunction "O_12")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "32")
+			(name "-RUN")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C29")
+				(pinfunction "B_C29")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "33")
+			(name "-SR-LD")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C23")
+				(pinfunction "B_C23")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "34")
+			(name "-TMP-REG-LD0")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "1")
+				(pinfunction "I_1")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "B28")
+				(pinfunction "B_B28")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "35")
+			(name "-TMP-REG-LD1")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "13")
+				(pinfunction "I_13")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "B30")
+				(pinfunction "B_B30")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "36")
+			(name "-TMP-REG-RD0")
+			(class "Default")
+			(node
+				(ref "IC26")
+				(pin "1")
+				(pinfunction "OC_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC27")
+				(pin "1")
+				(pinfunction "OC_1")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "B27")
+				(pinfunction "B_B27")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "37")
+			(name "-TMP-REG-RD1")
+			(class "Default")
+			(node
+				(ref "IC28")
+				(pin "1")
+				(pinfunction "OC_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC29")
+				(pin "1")
+				(pinfunction "OC_1")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "B29")
+				(pinfunction "B_B29")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "38")
+			(name "-VMA")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "11")
+				(pinfunction "I_11")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "1")
+				(pinfunction "I0_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "19")
+				(pinfunction "G_19")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "4")
+				(pinfunction "G2A_4")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "C12")
+				(pinfunction "B_C12")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "39")
+			(name "ADDR0")
+			(class "Default")
+			(node
+				(ref "IC8")
+				(pin "2")
+				(pinfunction "A1_2")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "A3")
+				(pinfunction "B_A3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "40")
+			(name "ADDR1")
+			(class "Default")
+			(node
+				(ref "IC8")
+				(pin "4")
+				(pinfunction "A2_4")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "A4")
+				(pinfunction "B_A4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "41")
+			(name "ADDR2")
+			(class "Default")
+			(node
+				(ref "IC8")
+				(pin "6")
+				(pinfunction "A3_6")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "A5")
+				(pinfunction "B_A5")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "42")
+			(name "ADDR3")
+			(class "Default")
+			(node
+				(ref "IC8")
+				(pin "8")
+				(pinfunction "A4_8")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "A6")
+				(pinfunction "B_A6")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "43")
+			(name "ADDR4")
+			(class "Default")
+			(node
+				(ref "IC8")
+				(pin "11")
+				(pinfunction "A1_11")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "A7")
+				(pinfunction "B_A7")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "44")
+			(name "ADDR5")
+			(class "Default")
+			(node
+				(ref "IC8")
+				(pin "13")
+				(pinfunction "A2_13")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "A8")
+				(pinfunction "B_A8")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "45")
+			(name "ADDR6")
+			(class "Default")
+			(node
+				(ref "IC8")
+				(pin "15")
+				(pinfunction "A3_15")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "A9")
+				(pinfunction "B_A9")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "46")
+			(name "ADDR7")
+			(class "Default")
+			(node
+				(ref "IC8")
+				(pin "17")
+				(pinfunction "A4_17")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "A10")
+				(pinfunction "B_A10")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "47")
+			(name "ADDR8")
+			(class "Default")
+			(node
+				(ref "IC9")
+				(pin "2")
+				(pinfunction "A1_2")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "A11")
+				(pinfunction "B_A11")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "48")
+			(name "ADDR9")
+			(class "Default")
+			(node
+				(ref "IC9")
+				(pin "4")
+				(pinfunction "A2_4")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "A12")
+				(pinfunction "B_A12")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "49")
+			(name "ADDR10")
+			(class "Default")
+			(node
+				(ref "IC9")
+				(pin "6")
+				(pinfunction "A3_6")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "A13")
+				(pinfunction "B_A13")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "50")
+			(name "ADDR11")
+			(class "Default")
+			(node
+				(ref "IC9")
+				(pin "8")
+				(pinfunction "A4_8")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "A14")
+				(pinfunction "B_A14")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "51")
+			(name "ADDR12")
+			(class "Default")
+			(node
+				(ref "IC9")
+				(pin "11")
+				(pinfunction "A1_11")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "A15")
+				(pinfunction "B_A15")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "52")
+			(name "ADDR13")
+			(class "Default")
+			(node
+				(ref "IC9")
+				(pin "13")
+				(pinfunction "A2_13")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "A16")
+				(pinfunction "B_A16")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "53")
+			(name "ADDR14")
+			(class "Default")
+			(node
+				(ref "IC9")
+				(pin "15")
+				(pinfunction "A3_15")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "A17")
+				(pinfunction "B_A17")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "54")
+			(name "ADDR15")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "4")
+				(pinfunction "I0_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "17")
+				(pinfunction "A4_17")
+				(pintype "input")
+			)
+			(node
+				(ref "X1")
+				(pin "A18")
+				(pinfunction "B_A18")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "55")
+			(name "ALU0")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C16")
+				(pinfunction "B_C16")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "56")
+			(name "ALU1")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C17")
+				(pinfunction "B_C17")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "57")
+			(name "ALU2")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C18")
+				(pinfunction "B_C18")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "58")
+			(name "ALU3")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C19")
+				(pinfunction "B_C19")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "59")
+			(name "BADDR0")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "10")
+				(pinfunction "A0_10")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "10")
+				(pinfunction "A0_10")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "10")
+				(pinfunction "A0_10")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "18")
+				(pinfunction "Y1_18")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "60")
+			(name "BADDR1")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "9")
+				(pinfunction "A1_9")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "9")
+				(pinfunction "A1_9")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "9")
+				(pinfunction "A1_9")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "16")
+				(pinfunction "Y2_16")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "61")
+			(name "BADDR2")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "8")
+				(pinfunction "A2_8")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "8")
+				(pinfunction "A2_8")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "8")
+				(pinfunction "A2_8")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "14")
+				(pinfunction "Y3_14")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "62")
+			(name "BADDR3")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "7")
+				(pinfunction "A3_7")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "7")
+				(pinfunction "A3_7")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "7")
+				(pinfunction "A3_7")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "12")
+				(pinfunction "Y4_12")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "63")
+			(name "BADDR4")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "6")
+				(pinfunction "A4_6")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "6")
+				(pinfunction "A4_6")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "6")
+				(pinfunction "A4_6")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "9")
+				(pinfunction "Y1_9")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "64")
+			(name "BADDR5")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "5")
+				(pinfunction "A5_5")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "5")
+				(pinfunction "A5_5")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "5")
+				(pinfunction "A5_5")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "7")
+				(pinfunction "Y2_7")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "65")
+			(name "BADDR6")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "4")
+				(pinfunction "A6_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "4")
+				(pinfunction "A6_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "4")
+				(pinfunction "A6_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "5")
+				(pinfunction "Y3_5")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "66")
+			(name "BADDR7")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "3")
+				(pinfunction "A7_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "3")
+				(pinfunction "A7_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "3")
+				(pinfunction "A7_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "3")
+				(pinfunction "Y4_3")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "67")
+			(name "BADDR8")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "25")
+				(pinfunction "A8_25")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "25")
+				(pinfunction "A8_25")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "25")
+				(pinfunction "A8_25")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "18")
+				(pinfunction "Y1_18")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "68")
+			(name "BADDR9")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "24")
+				(pinfunction "A9_24")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "24")
+				(pinfunction "A9_24")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "24")
+				(pinfunction "A9_24")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "16")
+				(pinfunction "Y2_16")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "69")
+			(name "BADDR10")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "21")
+				(pinfunction "A10_21")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "21")
+				(pinfunction "A10_21")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "21")
+				(pinfunction "A10_21")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "14")
+				(pinfunction "Y3_14")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "70")
+			(name "BADDR11")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "23")
+				(pinfunction "A11_23")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "23")
+				(pinfunction "A11_23")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "23")
+				(pinfunction "A11_23")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "12")
+				(pinfunction "Y4_12")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "71")
+			(name "BADDR12")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "2")
+				(pinfunction "A12_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC11")
+				(pin "4")
+				(pinfunction "1Y_4")
+				(pintype "output")
+			)
+			(node
+				(ref "IC13")
+				(pin "2")
+				(pinfunction "A12_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "2")
+				(pinfunction "A12_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "1")
+				(pinfunction "A_1")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "72")
+			(name "BADDR13")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "26")
+				(pinfunction "A13_26")
+				(pintype "input")
+			)
+			(node
+				(ref "IC11")
+				(pin "7")
+				(pinfunction "2Y_7")
+				(pintype "output")
+			)
+			(node
+				(ref "IC2")
+				(pin "26")
+				(pinfunction "A13_26")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "2")
+				(pinfunction "B_2")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "73")
+			(name "BADDR14")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "1")
+				(pinfunction "A14_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC11")
+				(pin "9")
+				(pinfunction "3Y_9")
+				(pintype "output")
+			)
+			(node
+				(ref "IC2")
+				(pin "1")
+				(pinfunction "A14_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "3")
+				(pinfunction "C_3")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "74")
+			(name "BADDR15")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "12")
+				(pinfunction "4Y_12")
+				(pintype "output")
+			)
+			(node
+				(ref "IC14")
+				(pin "3")
+				(pinfunction "I_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "6")
+				(pinfunction "G1_6")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "75")
+			(name "BDATA0")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "11")
+				(pinfunction "I/O0_11")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC13")
+				(pin "11")
+				(pinfunction "I/O0_11")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "11")
+				(pinfunction "I/O0_11")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC5")
+				(pin "18")
+				(pinfunction "B1_18")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "76")
+			(name "BDATA1")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "12")
+				(pinfunction "I/O1_12")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC13")
+				(pin "12")
+				(pinfunction "I/O1_12")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "12")
+				(pinfunction "I/O1_12")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC5")
+				(pin "17")
+				(pinfunction "B2_17")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "77")
+			(name "BDATA2")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "13")
+				(pinfunction "I/O2_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC13")
+				(pin "13")
+				(pinfunction "I/O2_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "13")
+				(pinfunction "I/O2_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC5")
+				(pin "16")
+				(pinfunction "B3_16")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "78")
+			(name "BDATA3")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "15")
+				(pinfunction "I/O3_15")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC13")
+				(pin "15")
+				(pinfunction "I/O3_15")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "15")
+				(pinfunction "I/O3_15")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC5")
+				(pin "15")
+				(pinfunction "B4_15")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "79")
+			(name "BDATA4")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "16")
+				(pinfunction "I/O4_16")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC13")
+				(pin "16")
+				(pinfunction "I/O4_16")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "16")
+				(pinfunction "I/O4_16")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC5")
+				(pin "14")
+				(pinfunction "B5_14")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "80")
+			(name "BDATA5")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "17")
+				(pinfunction "I/O5_17")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC13")
+				(pin "17")
+				(pinfunction "I/O5_17")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "17")
+				(pinfunction "I/O5_17")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC5")
+				(pin "13")
+				(pinfunction "B6_13")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "81")
+			(name "BDATA6")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "18")
+				(pinfunction "I/O6_18")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC13")
+				(pin "18")
+				(pinfunction "I/O6_18")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "18")
+				(pinfunction "I/O6_18")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC5")
+				(pin "12")
+				(pinfunction "B7_12")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "82")
+			(name "BDATA7")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "19")
+				(pinfunction "I/O7_19")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC13")
+				(pin "19")
+				(pinfunction "I/O7_19")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "19")
+				(pinfunction "I/O7_19")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC5")
+				(pin "11")
+				(pinfunction "B8_11")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "83")
+			(name "BR-COND")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C24")
+				(pinfunction "B_C24")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "84")
+			(name "DATA0")
+			(class "Default")
+			(node
+				(ref "IC26")
+				(pin "2")
+				(pinfunction "1Q_2")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC26")
+				(pin "3")
+				(pinfunction "1D_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC28")
+				(pin "2")
+				(pinfunction "1Q_2")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC28")
+				(pin "3")
+				(pinfunction "1D_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "2")
+				(pinfunction "A1_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN5")
+				(pin "2")
+				(pinfunction "1_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A19")
+				(pinfunction "B_A19")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "85")
+			(name "DATA1")
+			(class "Default")
+			(node
+				(ref "IC26")
+				(pin "4")
+				(pinfunction "2D_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC26")
+				(pin "5")
+				(pinfunction "2Q_5")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC28")
+				(pin "4")
+				(pinfunction "2D_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC28")
+				(pin "5")
+				(pinfunction "2Q_5")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC5")
+				(pin "3")
+				(pinfunction "A2_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN5")
+				(pin "3")
+				(pinfunction "1_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A20")
+				(pinfunction "B_A20")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "86")
+			(name "DATA2")
+			(class "Default")
+			(node
+				(ref "IC26")
+				(pin "6")
+				(pinfunction "3Q_6")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC26")
+				(pin "7")
+				(pinfunction "3D_7")
+				(pintype "input")
+			)
+			(node
+				(ref "IC28")
+				(pin "6")
+				(pinfunction "3Q_6")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC28")
+				(pin "7")
+				(pinfunction "3D_7")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "4")
+				(pinfunction "A3_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN5")
+				(pin "4")
+				(pinfunction "1_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A21")
+				(pinfunction "B_A21")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "87")
+			(name "DATA3")
+			(class "Default")
+			(node
+				(ref "IC26")
+				(pin "8")
+				(pinfunction "4D_8")
+				(pintype "input")
+			)
+			(node
+				(ref "IC26")
+				(pin "9")
+				(pinfunction "4Q_9")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC28")
+				(pin "8")
+				(pinfunction "4D_8")
+				(pintype "input")
+			)
+			(node
+				(ref "IC28")
+				(pin "9")
+				(pinfunction "4Q_9")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC5")
+				(pin "5")
+				(pinfunction "A4_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN5")
+				(pin "5")
+				(pinfunction "1_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A22")
+				(pinfunction "B_A22")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "88")
+			(name "DATA4")
+			(class "Default")
+			(node
+				(ref "IC26")
+				(pin "12")
+				(pinfunction "5Q_12")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC26")
+				(pin "13")
+				(pinfunction "5D_13")
+				(pintype "input")
+			)
+			(node
+				(ref "IC28")
+				(pin "12")
+				(pinfunction "5Q_12")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC28")
+				(pin "13")
+				(pinfunction "5D_13")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "6")
+				(pinfunction "A5_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN5")
+				(pin "6")
+				(pinfunction "1_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A23")
+				(pinfunction "B_A23")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "89")
+			(name "DATA5")
+			(class "Default")
+			(node
+				(ref "IC26")
+				(pin "14")
+				(pinfunction "6D_14")
+				(pintype "input")
+			)
+			(node
+				(ref "IC26")
+				(pin "15")
+				(pinfunction "6Q_15")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC28")
+				(pin "14")
+				(pinfunction "6D_14")
+				(pintype "input")
+			)
+			(node
+				(ref "IC28")
+				(pin "15")
+				(pinfunction "6Q_15")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC5")
+				(pin "7")
+				(pinfunction "A6_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN5")
+				(pin "7")
+				(pinfunction "1_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A24")
+				(pinfunction "B_A24")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "90")
+			(name "DATA6")
+			(class "Default")
+			(node
+				(ref "IC26")
+				(pin "16")
+				(pinfunction "7Q_16")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC26")
+				(pin "17")
+				(pinfunction "7D_17")
+				(pintype "input")
+			)
+			(node
+				(ref "IC28")
+				(pin "16")
+				(pinfunction "7Q_16")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC28")
+				(pin "17")
+				(pinfunction "7D_17")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "8")
+				(pinfunction "A7_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN5")
+				(pin "8")
+				(pinfunction "1_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A25")
+				(pinfunction "B_A25")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "91")
+			(name "DATA7")
+			(class "Default")
+			(node
+				(ref "IC26")
+				(pin "18")
+				(pinfunction "8D_18")
+				(pintype "input")
+			)
+			(node
+				(ref "IC26")
+				(pin "19")
+				(pinfunction "8Q_19")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC28")
+				(pin "18")
+				(pinfunction "8D_18")
+				(pintype "input")
+			)
+			(node
+				(ref "IC28")
+				(pin "19")
+				(pinfunction "8Q_19")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC5")
+				(pin "9")
+				(pinfunction "A8_9")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN5")
+				(pin "9")
+				(pinfunction "1_9")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A26")
+				(pinfunction "B_A26")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "92")
+			(name "DATA8")
+			(class "Default")
+			(node
+				(ref "IC27")
+				(pin "2")
+				(pinfunction "1Q_2")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC27")
+				(pin "3")
+				(pinfunction "1D_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC29")
+				(pin "2")
+				(pinfunction "1Q_2")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC29")
+				(pin "3")
+				(pinfunction "1D_3")
+				(pintype "input")
+			)
+			(node
+				(ref "RN6")
+				(pin "2")
+				(pinfunction "1_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A27")
+				(pinfunction "B_A27")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "93")
+			(name "DATA9")
+			(class "Default")
+			(node
+				(ref "IC27")
+				(pin "4")
+				(pinfunction "2D_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC27")
+				(pin "5")
+				(pinfunction "2Q_5")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC29")
+				(pin "4")
+				(pinfunction "2D_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC29")
+				(pin "5")
+				(pinfunction "2Q_5")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "RN6")
+				(pin "3")
+				(pinfunction "1_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A28")
+				(pinfunction "B_A28")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "94")
+			(name "DATA10")
+			(class "Default")
+			(node
+				(ref "IC27")
+				(pin "6")
+				(pinfunction "3Q_6")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC27")
+				(pin "7")
+				(pinfunction "3D_7")
+				(pintype "input")
+			)
+			(node
+				(ref "IC29")
+				(pin "6")
+				(pinfunction "3Q_6")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC29")
+				(pin "7")
+				(pinfunction "3D_7")
+				(pintype "input")
+			)
+			(node
+				(ref "RN6")
+				(pin "4")
+				(pinfunction "1_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A29")
+				(pinfunction "B_A29")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "95")
+			(name "DATA11")
+			(class "Default")
+			(node
+				(ref "IC27")
+				(pin "8")
+				(pinfunction "4D_8")
+				(pintype "input")
+			)
+			(node
+				(ref "IC27")
+				(pin "9")
+				(pinfunction "4Q_9")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC29")
+				(pin "8")
+				(pinfunction "4D_8")
+				(pintype "input")
+			)
+			(node
+				(ref "IC29")
+				(pin "9")
+				(pinfunction "4Q_9")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "RN6")
+				(pin "5")
+				(pinfunction "1_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A30")
+				(pinfunction "B_A30")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "96")
+			(name "DATA12")
+			(class "Default")
+			(node
+				(ref "IC27")
+				(pin "12")
+				(pinfunction "5Q_12")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC27")
+				(pin "13")
+				(pinfunction "5D_13")
+				(pintype "input")
+			)
+			(node
+				(ref "IC29")
+				(pin "12")
+				(pinfunction "5Q_12")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC29")
+				(pin "13")
+				(pinfunction "5D_13")
+				(pintype "input")
+			)
+			(node
+				(ref "RN6")
+				(pin "6")
+				(pinfunction "1_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B3")
+				(pinfunction "B_B3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "97")
+			(name "DATA13")
+			(class "Default")
+			(node
+				(ref "IC27")
+				(pin "14")
+				(pinfunction "6D_14")
+				(pintype "input")
+			)
+			(node
+				(ref "IC27")
+				(pin "15")
+				(pinfunction "6Q_15")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC29")
+				(pin "14")
+				(pinfunction "6D_14")
+				(pintype "input")
+			)
+			(node
+				(ref "IC29")
+				(pin "15")
+				(pinfunction "6Q_15")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "RN6")
+				(pin "7")
+				(pinfunction "1_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B4")
+				(pinfunction "B_B4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "98")
+			(name "DATA14")
+			(class "Default")
+			(node
+				(ref "IC27")
+				(pin "16")
+				(pinfunction "7Q_16")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC27")
+				(pin "17")
+				(pinfunction "7D_17")
+				(pintype "input")
+			)
+			(node
+				(ref "IC29")
+				(pin "16")
+				(pinfunction "7Q_16")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC29")
+				(pin "17")
+				(pinfunction "7D_17")
+				(pintype "input")
+			)
+			(node
+				(ref "RN6")
+				(pin "8")
+				(pinfunction "1_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B5")
+				(pinfunction "B_B5")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "99")
+			(name "DATA15")
+			(class "Default")
+			(node
+				(ref "IC27")
+				(pin "18")
+				(pinfunction "8D_18")
+				(pintype "input")
+			)
+			(node
+				(ref "IC27")
+				(pin "19")
+				(pinfunction "8Q_19")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC29")
+				(pin "18")
+				(pinfunction "8D_18")
+				(pintype "input")
+			)
+			(node
+				(ref "IC29")
+				(pin "19")
+				(pinfunction "8Q_19")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "RN6")
+				(pin "9")
+				(pinfunction "1_9")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B6")
+				(pinfunction "B_B6")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "100")
+			(name "FORCE-ROM")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "1")
+				(pinfunction "~{A}/B_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC12")
+				(pin "5")
+				(pinfunction "Q_5")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "101")
+			(name "GND")
+			(class "Default")
+			(node
+				(ref "C1")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C10")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C11")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C12")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C13")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C14")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C15")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C16")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C17")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C18")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C19")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C2")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C20")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C21")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C22")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C23")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C24")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C3")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C4")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C5")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C6")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C7")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C8")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C9")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC1")
+				(pin "14")
+				(pinfunction "VSS_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC10")
+				(pin "7")
+				(pinfunction "GND_7")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC11")
+				(pin "15")
+				(pinfunction "G_15")
+				(pintype "input")
+			)
+			(node
+				(ref "IC11")
+				(pin "8")
+				(pinfunction "GND_8")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC12")
+				(pin "10")
+				(pinfunction "PRE_10")
+				(pintype "input")
+			)
+			(node
+				(ref "IC12")
+				(pin "11")
+				(pinfunction "CLK_11")
+				(pintype "input")
+			)
+			(node
+				(ref "IC12")
+				(pin "12")
+				(pinfunction "D_12")
+				(pintype "input")
+			)
+			(node
+				(ref "IC12")
+				(pin "13")
+				(pinfunction "CLR_13")
+				(pintype "input")
+			)
+			(node
+				(ref "IC12")
+				(pin "2")
+				(pinfunction "D_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC12")
+				(pin "7")
+				(pinfunction "GND_7")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC13")
+				(pin "14")
+				(pinfunction "GND_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC14")
+				(pin "7")
+				(pinfunction "GND_7")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC18")
+				(pin "7")
+				(pinfunction "GND_7")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC2")
+				(pin "14")
+				(pinfunction "VSS_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC26")
+				(pin "10")
+				(pinfunction "GND_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC27")
+				(pin "10")
+				(pinfunction "GND_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC28")
+				(pin "10")
+				(pinfunction "GND_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC29")
+				(pin "10")
+				(pinfunction "GND_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC3")
+				(pin "10")
+				(pinfunction "I1_10")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "12")
+				(pinfunction "I0_12")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "13")
+				(pinfunction "I1_13")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "4")
+				(pinfunction "I0_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "5")
+				(pinfunction "I1_5")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "7")
+				(pinfunction "GND_7")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC3")
+				(pin "9")
+				(pinfunction "I0_9")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "7")
+				(pinfunction "GND_7")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC5")
+				(pin "10")
+				(pinfunction "GND_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC6")
+				(pin "7")
+				(pinfunction "GND_7")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC7")
+				(pin "8")
+				(pinfunction "GND_8")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC8")
+				(pin "1")
+				(pinfunction "G_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "10")
+				(pinfunction "GND_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC8")
+				(pin "19")
+				(pinfunction "G_19")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "1")
+				(pinfunction "G_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "10")
+				(pinfunction "GND_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC9")
+				(pin "19")
+				(pinfunction "G_19")
+				(pintype "input")
+			)
+			(node
+				(ref "JP1")
+				(pin "3")
+				(pinfunction "3_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "PWR0")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN5")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN6")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A1")
+				(pinfunction "B_A1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A32")
+				(pinfunction "B_A32")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B1")
+				(pinfunction "B_B1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B32")
+				(pinfunction "B_B32")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C1")
+				(pinfunction "B_C1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C32")
+				(pinfunction "B_C32")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "102")
+			(name "IO-ADDR0")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C7")
+				(pinfunction "B_C7")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "103")
+			(name "IO-ADDR1")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C8")
+				(pinfunction "B_C8")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "104")
+			(name "IO-ADDR2")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C9")
+				(pinfunction "B_C9")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "105")
+			(name "IO-ADDR3")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C10")
+				(pinfunction "B_C10")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "106")
+			(name "MEM-RD")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "1")
+				(pinfunction "I_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "6")
+				(pinfunction "O_6")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "107")
+			(name "N$2")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "3")
+				(pinfunction "I_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "8")
+				(pinfunction "O_8")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "108")
+			(name "N$3")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "22")
+				(pinfunction "~{OE}_22")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "22")
+				(pinfunction "~{OE}_22")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "22")
+				(pinfunction "~{OE}_22")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "2")
+				(pinfunction "O_2")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "109")
+			(name "N$4")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "27")
+				(pinfunction "~{WE}_27")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "27")
+				(pinfunction "~{WE}_27")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "27")
+				(pinfunction "~{WE}_27")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "4")
+				(pinfunction "O_4")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "110")
+			(name "N$5")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "1")
+				(pinfunction "I0_1")
+				(pintype "input")
+			)
+			(node
+				(ref "RN8")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "17")
+				(pinfunction "17_17")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "111")
+			(name "N$6")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "2")
+				(pinfunction "I1_2")
+				(pintype "input")
+			)
+			(node
+				(ref "RN8")
+				(pin "3")
+				(pinfunction "3_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "18")
+				(pinfunction "18_18")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "112")
+			(name "N$7")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "3")
+				(pinfunction "I2_3")
+				(pintype "input")
+			)
+			(node
+				(ref "RN8")
+				(pin "4")
+				(pinfunction "4_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "19")
+				(pinfunction "19_19")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "113")
+			(name "N$8")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "4")
+				(pinfunction "I3_4")
+				(pintype "input")
+			)
+			(node
+				(ref "RN8")
+				(pin "5")
+				(pinfunction "5_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "20")
+				(pinfunction "20_20")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "114")
+			(name "N$9")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "5")
+				(pinfunction "I4_5")
+				(pintype "input")
+			)
+			(node
+				(ref "RN8")
+				(pin "6")
+				(pinfunction "6_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "21")
+				(pinfunction "21_21")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "115")
+			(name "N$10")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "6")
+				(pinfunction "I5_6")
+				(pintype "input")
+			)
+			(node
+				(ref "RN8")
+				(pin "7")
+				(pinfunction "7_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "22")
+				(pinfunction "22_22")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "116")
+			(name "N$11")
+			(class "Default")
+			(node
+				(ref "PWR0")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+			(node
+				(ref "R2")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "117")
+			(name "N$12")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "2")
+				(pinfunction "I1_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC14")
+				(pin "10")
+				(pinfunction "O_10")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "118")
+			(name "N$13")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "1")
+				(pinfunction "I0_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC14")
+				(pin "4")
+				(pinfunction "O_4")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "119")
+			(name "N$15")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "2")
+				(pinfunction "1A_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "9")
+				(pinfunction "Y1_9")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "120")
+			(name "N$16")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "5")
+				(pinfunction "2A_5")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "7")
+				(pinfunction "Y2_7")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "121")
+			(name "N$17")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "11")
+				(pinfunction "3A_11")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "5")
+				(pinfunction "Y3_5")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "122")
+			(name "N$18")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "14")
+				(pinfunction "4A_14")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "3")
+				(pinfunction "Y4_3")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "123")
+			(name "N$19")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "8")
+				(pinfunction "O_8")
+				(pintype "output")
+			)
+			(node
+				(ref "IC12")
+				(pin "3")
+				(pinfunction "CLK_3")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "124")
+			(name "N$20")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "10")
+				(pinfunction "I1_10")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "6")
+				(pinfunction "O_6")
+				(pintype "output")
+			)
+			(node
+				(ref "IC10")
+				(pin "9")
+				(pinfunction "I0_9")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "125")
+			(name "N$22")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "11")
+				(pinfunction "O_11")
+				(pintype "output")
+			)
+			(node
+				(ref "IC10")
+				(pin "5")
+				(pinfunction "I1_5")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "126")
+			(name "N$24")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "5")
+				(pinfunction "G2B_5")
+				(pintype "input")
+			)
+			(node
+				(ref "JP1")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "127")
+			(name "N$25")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "12")
+				(pinfunction "I0_12")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "13")
+				(pinfunction "I1_13")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "3")
+				(pinfunction "O_3")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "128")
+			(name "N$26")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "11")
+				(pinfunction "I6_11")
+				(pintype "input")
+			)
+			(node
+				(ref "RN8")
+				(pin "8")
+				(pinfunction "8_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "23")
+				(pinfunction "23_23")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "129")
+			(name "N$27")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "12")
+				(pinfunction "I7_12")
+				(pintype "input")
+			)
+			(node
+				(ref "RN8")
+				(pin "9")
+				(pinfunction "9_9")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "24")
+				(pinfunction "24_24")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "130")
+			(name "N$28")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "12")
+				(pinfunction "I7_12")
+				(pintype "input")
+			)
+			(node
+				(ref "RN7")
+				(pin "9")
+				(pinfunction "9_9")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "131")
+			(name "N$29")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "11")
+				(pinfunction "I6_11")
+				(pintype "input")
+			)
+			(node
+				(ref "RN7")
+				(pin "8")
+				(pinfunction "8_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "132")
+			(name "N$30")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "6")
+				(pinfunction "I5_6")
+				(pintype "input")
+			)
+			(node
+				(ref "RN7")
+				(pin "7")
+				(pinfunction "7_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "3")
+				(pinfunction "3_3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "133")
+			(name "N$31")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "5")
+				(pinfunction "I4_5")
+				(pintype "input")
+			)
+			(node
+				(ref "RN7")
+				(pin "6")
+				(pinfunction "6_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "4")
+				(pinfunction "4_4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "134")
+			(name "N$32")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "1")
+				(pinfunction "I0_1")
+				(pintype "input")
+			)
+			(node
+				(ref "RN7")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "8")
+				(pinfunction "8_8")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "135")
+			(name "N$33")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "2")
+				(pinfunction "O_2")
+				(pintype "output")
+			)
+			(node
+				(ref "IC26")
+				(pin "11")
+				(pinfunction "CLK_11")
+				(pintype "input")
+			)
+			(node
+				(ref "IC27")
+				(pin "11")
+				(pinfunction "CLK_11")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "136")
+			(name "N$34")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "2")
+				(pinfunction "I1_2")
+				(pintype "input")
+			)
+			(node
+				(ref "RN7")
+				(pin "3")
+				(pinfunction "3_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "7")
+				(pinfunction "7_7")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "137")
+			(name "N$35")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "3")
+				(pinfunction "I2_3")
+				(pintype "input")
+			)
+			(node
+				(ref "RN7")
+				(pin "4")
+				(pinfunction "4_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "6")
+				(pinfunction "6_6")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "138")
+			(name "N$36")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "7")
+				(pinfunction "Y7_7")
+				(pintype "output")
+			)
+			(node
+				(ref "U$1")
+				(pin "16")
+				(pinfunction "16_16")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "139")
+			(name "N$37")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "9")
+				(pinfunction "Y6_9")
+				(pintype "output")
+			)
+			(node
+				(ref "U$1")
+				(pin "15")
+				(pinfunction "15_15")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "140")
+			(name "N$38")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "10")
+				(pinfunction "Y5_10")
+				(pintype "output")
+			)
+			(node
+				(ref "U$1")
+				(pin "14")
+				(pinfunction "14_14")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "141")
+			(name "N$39")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "11")
+				(pinfunction "Y4_11")
+				(pintype "output")
+			)
+			(node
+				(ref "U$1")
+				(pin "13")
+				(pinfunction "13_13")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "142")
+			(name "N$40")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "12")
+				(pinfunction "Y3_12")
+				(pintype "output")
+			)
+			(node
+				(ref "U$1")
+				(pin "12")
+				(pinfunction "12_12")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "143")
+			(name "N$41")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "13")
+				(pinfunction "Y2_13")
+				(pintype "output")
+			)
+			(node
+				(ref "U$1")
+				(pin "11")
+				(pinfunction "11_11")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "144")
+			(name "N$42")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "14")
+				(pinfunction "Y1_14")
+				(pintype "output")
+			)
+			(node
+				(ref "U$1")
+				(pin "10")
+				(pinfunction "10_10")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "145")
+			(name "N$43")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "15")
+				(pinfunction "Y0_15")
+				(pintype "output")
+			)
+			(node
+				(ref "U$1")
+				(pin "9")
+				(pinfunction "9_9")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "146")
+			(name "N$44")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "4")
+				(pinfunction "I3_4")
+				(pintype "input")
+			)
+			(node
+				(ref "RN7")
+				(pin "5")
+				(pinfunction "5_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "5")
+				(pinfunction "5_5")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "147")
+			(name "N$47")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "12")
+				(pinfunction "O_12")
+				(pintype "output")
+			)
+			(node
+				(ref "IC28")
+				(pin "11")
+				(pinfunction "CLK_11")
+				(pintype "input")
+			)
+			(node
+				(ref "IC29")
+				(pin "11")
+				(pinfunction "CLK_11")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "148")
+			(name "Net-(IC4-O)")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "8")
+				(pinfunction "O_8")
+				(pintype "output")
+			)
+			(node
+				(ref "IC6")
+				(pin "11")
+				(pinfunction "I_11")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "149")
+			(name "Net-(IC18-O)")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "8")
+				(pinfunction "O_8")
+				(pintype "output")
+			)
+			(node
+				(ref "IC6")
+				(pin "13")
+				(pinfunction "I_13")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "150")
+			(name "REG-LD-ID0")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B13")
+				(pinfunction "B_B13")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "151")
+			(name "REG-LD-ID1")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B14")
+				(pinfunction "B_B14")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "152")
+			(name "REG-LD-ID2")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B15")
+				(pinfunction "B_B15")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "153")
+			(name "REG-LD-ID3")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B16")
+				(pinfunction "B_B16")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "154")
+			(name "REG-RD-ID0")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B9")
+				(pinfunction "B_B9")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "155")
+			(name "REG-RD-ID1")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B10")
+				(pinfunction "B_B10")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "156")
+			(name "REG-RD-ID2")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B11")
+				(pinfunction "B_B11")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "157")
+			(name "REG-RD-ID3")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B12")
+				(pinfunction "B_B12")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "158")
+			(name "VCC")
+			(class "Default")
+			(node
+				(ref "C1")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C10")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C11")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C12")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C13")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C14")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C15")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C16")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C17")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C18")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C19")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C2")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C20")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C21")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C22")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C23")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C24")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C3")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C4")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C5")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C6")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C7")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C8")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C9")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC1")
+				(pin "28")
+				(pinfunction "VCC_28")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC10")
+				(pin "14")
+				(pinfunction "VCC_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC11")
+				(pin "10")
+				(pinfunction "3B_10")
+				(pintype "input")
+			)
+			(node
+				(ref "IC11")
+				(pin "13")
+				(pinfunction "4B_13")
+				(pintype "input")
+			)
+			(node
+				(ref "IC11")
+				(pin "16")
+				(pinfunction "VCC_16")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC11")
+				(pin "3")
+				(pinfunction "1B_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC11")
+				(pin "6")
+				(pinfunction "2B_6")
+				(pintype "input")
+			)
+			(node
+				(ref "IC12")
+				(pin "1")
+				(pinfunction "CLR_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC12")
+				(pin "14")
+				(pinfunction "VCC_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC13")
+				(pin "28")
+				(pinfunction "VCC_28")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC14")
+				(pin "14")
+				(pinfunction "VCC_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC18")
+				(pin "14")
+				(pinfunction "VCC_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC2")
+				(pin "28")
+				(pinfunction "VCC_28")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC26")
+				(pin "20")
+				(pinfunction "VCC_20")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC27")
+				(pin "20")
+				(pinfunction "VCC_20")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC28")
+				(pin "20")
+				(pinfunction "VCC_20")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC29")
+				(pin "20")
+				(pinfunction "VCC_20")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC3")
+				(pin "14")
+				(pinfunction "VCC_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC4")
+				(pin "14")
+				(pinfunction "VCC_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC5")
+				(pin "20")
+				(pinfunction "VCC_20")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC6")
+				(pin "14")
+				(pinfunction "VCC_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC7")
+				(pin "16")
+				(pinfunction "VCC_16")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC8")
+				(pin "20")
+				(pinfunction "VCC_20")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC9")
+				(pin "20")
+				(pinfunction "VCC_20")
+				(pintype "power_in")
+			)
+			(node
+				(ref "R2")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN7")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN8")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A2")
+				(pinfunction "B_A2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A31")
+				(pinfunction "B_A31")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B2")
+				(pinfunction "B_B2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B31")
+				(pinfunction "B_B31")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C2")
+				(pinfunction "B_C2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C31")
+				(pinfunction "B_C31")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "159")
+			(name "unconnected-(IC3B-O-Pad6)")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "6")
+				(pinfunction "O_6")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "160")
+			(name "unconnected-(IC3C-O-Pad8)")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "8")
+				(pinfunction "O_8")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "161")
+			(name "unconnected-(IC3D-O-Pad11)")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "11")
+				(pinfunction "O_11")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "162")
+			(name "unconnected-(IC12A-~{Q}-Pad6)")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "6")
+				(pinfunction "~{Q}_6")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "163")
+			(name "unconnected-(IC12B-Q-Pad9)")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "9")
+				(pinfunction "Q_9")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "164")
+			(name "unconnected-(IC12B-~{Q}-Pad8)")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "8")
+				(pinfunction "~{Q}_8")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "165")
+			(name "unconnected-(IC13-NC-Pad1)")
+			(class "Default")
+			(node
+				(ref "IC13")
+				(pin "1")
+				(pinfunction "NC_1")
+				(pintype "no_connect")
+			)
+		)
+		(net
+			(code "166")
+			(name "unconnected-(IC13-NC@1-Pad26)")
+			(class "Default")
+			(node
+				(ref "IC13")
+				(pin "26")
+				(pinfunction "NC@1_26")
+				(pintype "no_connect")
+			)
+		)
+	)
+)

@@ -1,0 +1,66 @@
+                        ;...I found that execution became excruciatingly slow, 
+                        ;simply due to the memory scan for GOTOs, GOSUBs, and RETURNs. 
+                        ;A simple patch to the interpreter converts it to a binary search,
+                        ;for about an order of magnitude speedup in execution time. 
+                        ;The necessary changes are listed in the Appendix. 
+                        ;- Tom Pittman, The First Book of Tiny BASIC Programs</
+                        ;
+                        ; APPENDIX - Binary Search Speedup Code 1802
+                        ; TINY BASIC BINARY SEARCH SPEEDUP -- 81 MAY 9 0000 ... 
+                        ; NOTE: one-byte Lines with Line in [3328 35831 bomb
+                        
+   05dd                  ORG 05DDH
+   05dd   c0 00 c0      FLINE: LBR SRCH 
+                        
+   00c0                  ORG 192 ;.. ASSUME THIS IS VACANT 
+                        
+   00c0   bb            SRCH: PHI 11 
+   00c1   4d             LDA 13 
+   00c2   ab             PLO 11 
+   00c3   1d             INC 13 
+   00c4   1d             INC 13 
+   00c5   4d             LDA 13 ;.. GET PROG END
+   00c6   ff 01          SMI 1 
+   00c8   b8             PHI 8 
+   00c9   e2            HALF: SEX 2 ;.. BISECT THE REGION
+   00ca   9b             GHI 11 
+   00cb   52             STR 2 
+   00cc   98             GHI 8 
+   00cd   f7             SM 
+   00ce   cb 05 dd       LBNF FLINE 
+   00d1   f6             SHR 
+   00d2   c2 05 dd       LBZ FLINE ;.. TOO SMALL 
+   00d5   f4             ADD
+   00d6   bf             PHI 15 
+   00d7   f8 00          LDI 0 
+   00d9   af             PLO 15 
+   00da   1f             INC 15 
+   00db   4f            FLNO: LDA 15 ;.. FIND A LINE NUMBER 
+   00dc   fb 0d          XRI 13 
+   00de   3a db          BNZ FLNO
+   00e0   1f             INC 15 
+   00e1   7c 01          ADCI 1 
+   00e3   f6             SHR 
+   00e4   33 da          BDF FLNO-1 ;..(SKIP TWO TO SYNC) 
+   00e6   ef             SEX 15 
+   00e7   4f             LDA 15 ;..END? 
+   00e8   f1             OR 
+   00e9   32 f8          BZ HIGHR ;.. YES. 
+   00eb   8a             GLO 10 
+   00ec   f7             SM
+   00ed   2f             DEC 15 
+   00ee   9a             GHI 10 
+   00ef   77             SMB 
+   00f0   3b f8          BNF HIGHR 
+   00f2   8f             GLO 15 ;.. TOO LOW
+   00f3   ab             PLO 11 
+   00f4   9f             GHI 15 
+   00f5   bb             PHI 11 
+   00f6   30 c9          BR HALF
+   00f8   9f            HIGHR: GHI 15 ;.. TOO HIGH 
+   00f9   30 c8          BR HALF-1  
+                        
+   00fb                  END
+05dd  FLINE         00db  FLNO          00c9  HALF          00f8  HIGHR     
+00c0  SRCH          
+

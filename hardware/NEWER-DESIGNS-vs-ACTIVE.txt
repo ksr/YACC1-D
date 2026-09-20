@@ -1,0 +1,309 @@
+
+### ALU: V3.2 (active) vs V3.3
+====================================================================================================
+A (older/active): /Users/ksr77/Developer/YACC1-D/hardware/cards/alu/eagle/v3.2/ALU V3.2.sch
+B (newer):        /Users/ksr77/Developer/YACC1-D/hardware/cards/alu/eagle/v3.3/ALU V3.3.sch
+SCHEMATIC parts: A=112 B=112 | added 0, removed 0, device changed 0, value-only changed 0
+SCHEMATIC connectivity: nets A=217 B=217 | pin-sets only in A: 0, only in B: 0, renamed nets: 0
+BOARD elements: A=86 B=86 | added 0, removed 0, package changed 0, moved 0
+BOARD connectivity: pad-sets only in A: 0, only in B: 0 | copper hash A=f57c296b B=f57c296b | wires 2254->2254 vias 321->321
+VERDICT: IDENTICAL NETLIST AND PARTS (board identical too)
+
+### ALU: V3.2 (active) vs V3.3-16
+====================================================================================================
+A (older/active): /Users/ksr77/Developer/YACC1-D/hardware/cards/alu/eagle/v3.2/ALU V3.2.sch
+B (newer):        /Users/ksr77/Developer/YACC1-D/hardware/cards/alu/eagle/v3.3-16/ALU V3.3.sch
+SCHEMATIC parts: A=112 B=165 | added 58, removed 5, device changed 32, value-only changed 39
+   + C40 ('C-US', '025-024X044', '')
+   + C41 ('C-US', '025-024X044', '')
+   + C42 ('C-US', '025-024X044', '')
+   + C43 ('C-US', '025-024X044', '')
+   + C44 ('C-US', '025-024X044', '')
+   + C45 ('C-US', '025-024X044', '')
+   + C46 ('C-US', '025-024X044', '')
+   + C47 ('C-US', '025-024X044', '')
+   + C48 ('C-US', '025-024X044', '')
+   + C49 ('C-US', '025-024X044', '')
+   - JP1 ('PINHD-1X3', '', '')
+   - JP2 ('PINHD-1X3', '', '')
+   - SV1 ('MA05-2', '', '')
+   - V1 ('74*4078', 'N', '')
+   - V2 ('74*4078', 'N', '')
+   ~ IC1 ('74*04', 'N') -> ('74*245', 'N')
+   ~ IC10 ('74*245', 'N') -> ('74*244', 'N')
+   ~ IC11 ('74*245', 'N') -> ('74*244', 'N')
+   ~ IC14 ('74*86', 'N') -> ('74*240', 'N')
+   ~ IC15 ('74*86', 'N') -> ('74*244', 'N')
+   ~ IC16 ('74*244', 'N') -> ('74*86', 'N')
+   ~ IC17 ('74*244', 'N') -> ('74*86', 'N')
+   ~ IC18 ('74*08', 'N') -> ('74*4078', 'N')
+   ~ IC2 ('74*240', 'N') -> ('74*245', 'N')
+   ~ IC20 ('74*244', 'N') -> ('74*08', 'N')
+   v C1 '.1uf' -> ''
+   v C10 '.1uf' -> ''
+   v C11 '.1uf' -> ''
+   v C12 '.1uf' -> ''
+   v C13 '.1uf' -> ''
+   v C14 '.1uf' -> ''
+   v C15 '.1uf' -> ''
+   v C16 '.1uf' -> ''
+   v C17 '.1uf' -> ''
+   v C18 '.1uf' -> ''
+SCHEMATIC connectivity: nets A=217 B=297 | pin-sets only in A: 161, only in B: 241, renamed nets: 0
+   nets in A not in B:
+      -AC-LD       IC1.F.I, JP2.A.1, X1.-C22.B
+      -AC-LD-INV   IC1.A.I, IC2.A.G, IC2.B.G, X1.-C20.B
+      -AC-RD       IC10.A.DIR, IC11.A.DIR, IC12.A.G, IC12.B.G, X1.-C21.B
+      -ADD         IC6.A.I0, IC8.A.Y7
+      -ADD/SUB     IC1.D.I, IC37.A.G, IC37.B.G, IC4.A.I0, IC6.A.O
+      -ALU-FUNC    IC7.D.I0, JP1.A.1, X1.-C15.B
+      -ALU-IO-EN   IC10.A.G, IC11.A.G, IC7.D.O
+      -AND         IC20.A.G, IC20.B.G, IC8.A.Y2
+      ... 153 more
+   nets in B not in A:
+      -AC-LD       IC28.F.I, X1.-C22.B
+      -AC-LD-INV   IC14.A.G, IC14.B.G, IC28.A.I, IC43.A.G, IC43.B.G, X1.-C20.B
+      -AC-RD       IC1.A.DIR, IC11.A.G, IC11.B.G, IC12.A.G, IC12.B.G, IC2.A.DIR ...
+      -ADD         IC27.A.I0, IC4.A.Y7
+      -ADD/SUB     IC24.A.I0, IC27.A.O, IC28.E.I, IC50.A.G, IC50.B.G, IC60.A.G ...
+      -ALU-FUNC    IC37.D.I0, IC6.A.G, X1.-C15.B
+      -ALU-IO-EN   IC1.A.G, IC2.A.G, IC37.D.O
+      -AND         IC10.A.G, IC10.B.G, IC4.A.Y2, IC48.A.G, IC48.B.G
+      ... 233 more
+BOARD elements: A=86 B=135 | added 54, removed 5, package changed 24, moved 80
+   + C40 ('C025-024X044', '')
+   + C41 ('C025-024X044', '')
+   + C42 ('C025-024X044', '')
+   + C43 ('C025-024X044', '')
+   + C44 ('C025-024X044', '')
+   + C45 ('C025-024X044', '')
+   + C46 ('C025-024X044', '')
+   + C47 ('C025-024X044', '')
+   - JP1 ('1X03', '')
+   - JP2 ('1X03', '')
+   - SV1 ('MA05-2', '')
+   - V1 ('DIL14', '744078N')
+   - V2 ('DIL14', '744078N')
+   ~ IC1 DIL14 -> DIL20
+   ~ IC14 DIL14 -> DIL20
+   ~ IC15 DIL14 -> DIL20
+   ~ IC16 DIL20 -> DIL14
+   ~ IC17 DIL20 -> DIL14
+   ~ IC20 DIL20 -> DIL14
+   ~ IC23 DIL20 -> DIL14
+   ~ IC24 DIL16 -> DIL14
+BOARD connectivity: pad-sets only in A: 161, only in B: 241 | copper hash A=f57c296b B=1f557ce0 | wires 2254->1024 vias 321->0
+   pad-sets in A not in B: 161, in B not in A: 241
+VERDICT: ELECTRICALLY DIFFERENT
+
+### ALU: V3.3 vs V3.3-16
+====================================================================================================
+A (older/active): /Users/ksr77/Developer/YACC1-D/hardware/cards/alu/eagle/v3.3/ALU V3.3.sch
+B (newer):        /Users/ksr77/Developer/YACC1-D/hardware/cards/alu/eagle/v3.3-16/ALU V3.3.sch
+SCHEMATIC parts: A=112 B=165 | added 58, removed 5, device changed 32, value-only changed 39
+   + C40 ('C-US', '025-024X044', '')
+   + C41 ('C-US', '025-024X044', '')
+   + C42 ('C-US', '025-024X044', '')
+   + C43 ('C-US', '025-024X044', '')
+   + C44 ('C-US', '025-024X044', '')
+   + C45 ('C-US', '025-024X044', '')
+   + C46 ('C-US', '025-024X044', '')
+   + C47 ('C-US', '025-024X044', '')
+   + C48 ('C-US', '025-024X044', '')
+   + C49 ('C-US', '025-024X044', '')
+   - JP1 ('PINHD-1X3', '', '')
+   - JP2 ('PINHD-1X3', '', '')
+   - SV1 ('MA05-2', '', '')
+   - V1 ('74*4078', 'N', '')
+   - V2 ('74*4078', 'N', '')
+   ~ IC1 ('74*04', 'N') -> ('74*245', 'N')
+   ~ IC10 ('74*245', 'N') -> ('74*244', 'N')
+   ~ IC11 ('74*245', 'N') -> ('74*244', 'N')
+   ~ IC14 ('74*86', 'N') -> ('74*240', 'N')
+   ~ IC15 ('74*86', 'N') -> ('74*244', 'N')
+   ~ IC16 ('74*244', 'N') -> ('74*86', 'N')
+   ~ IC17 ('74*244', 'N') -> ('74*86', 'N')
+   ~ IC18 ('74*08', 'N') -> ('74*4078', 'N')
+   ~ IC2 ('74*240', 'N') -> ('74*245', 'N')
+   ~ IC20 ('74*244', 'N') -> ('74*08', 'N')
+   v C1 '.1uf' -> ''
+   v C10 '.1uf' -> ''
+   v C11 '.1uf' -> ''
+   v C12 '.1uf' -> ''
+   v C13 '.1uf' -> ''
+   v C14 '.1uf' -> ''
+   v C15 '.1uf' -> ''
+   v C16 '.1uf' -> ''
+   v C17 '.1uf' -> ''
+   v C18 '.1uf' -> ''
+SCHEMATIC connectivity: nets A=217 B=297 | pin-sets only in A: 161, only in B: 241, renamed nets: 0
+   nets in A not in B:
+      -AC-LD       IC1.F.I, JP2.A.1, X1.-C22.B
+      -AC-LD-INV   IC1.A.I, IC2.A.G, IC2.B.G, X1.-C20.B
+      -AC-RD       IC10.A.DIR, IC11.A.DIR, IC12.A.G, IC12.B.G, X1.-C21.B
+      -ADD         IC6.A.I0, IC8.A.Y7
+      -ADD/SUB     IC1.D.I, IC37.A.G, IC37.B.G, IC4.A.I0, IC6.A.O
+      -ALU-FUNC    IC7.D.I0, JP1.A.1, X1.-C15.B
+      -ALU-IO-EN   IC10.A.G, IC11.A.G, IC7.D.O
+      -AND         IC20.A.G, IC20.B.G, IC8.A.Y2
+      ... 153 more
+   nets in B not in A:
+      -AC-LD       IC28.F.I, X1.-C22.B
+      -AC-LD-INV   IC14.A.G, IC14.B.G, IC28.A.I, IC43.A.G, IC43.B.G, X1.-C20.B
+      -AC-RD       IC1.A.DIR, IC11.A.G, IC11.B.G, IC12.A.G, IC12.B.G, IC2.A.DIR ...
+      -ADD         IC27.A.I0, IC4.A.Y7
+      -ADD/SUB     IC24.A.I0, IC27.A.O, IC28.E.I, IC50.A.G, IC50.B.G, IC60.A.G ...
+      -ALU-FUNC    IC37.D.I0, IC6.A.G, X1.-C15.B
+      -ALU-IO-EN   IC1.A.G, IC2.A.G, IC37.D.O
+      -AND         IC10.A.G, IC10.B.G, IC4.A.Y2, IC48.A.G, IC48.B.G
+      ... 233 more
+BOARD elements: A=86 B=135 | added 54, removed 5, package changed 24, moved 80
+   + C40 ('C025-024X044', '')
+   + C41 ('C025-024X044', '')
+   + C42 ('C025-024X044', '')
+   + C43 ('C025-024X044', '')
+   + C44 ('C025-024X044', '')
+   + C45 ('C025-024X044', '')
+   + C46 ('C025-024X044', '')
+   + C47 ('C025-024X044', '')
+   - JP1 ('1X03', '')
+   - JP2 ('1X03', '')
+   - SV1 ('MA05-2', '')
+   - V1 ('DIL14', '744078N')
+   - V2 ('DIL14', '744078N')
+   ~ IC1 DIL14 -> DIL20
+   ~ IC14 DIL14 -> DIL20
+   ~ IC15 DIL14 -> DIL20
+   ~ IC16 DIL20 -> DIL14
+   ~ IC17 DIL20 -> DIL14
+   ~ IC20 DIL20 -> DIL14
+   ~ IC23 DIL20 -> DIL14
+   ~ IC24 DIL16 -> DIL14
+BOARD connectivity: pad-sets only in A: 161, only in B: 241 | copper hash A=f57c296b B=1f557ce0 | wires 2254->1024 vias 321->0
+   pad-sets in A not in B: 161, in B not in A: 241
+VERDICT: ELECTRICALLY DIFFERENT
+
+### Index Registers: 1.1 (active) vs 1.2
+====================================================================================================
+A (older/active): /Users/ksr77/Developer/YACC1-D/hardware/cards/register/eagle/v1.1/Index Registers - 1.1.sch
+B (newer):        /Users/ksr77/Developer/YACC1-D/hardware/cards/register/eagle/v1.2/Index Registers - 1.2.sch
+SCHEMATIC parts: A=118 B=118 | added 0, removed 0, device changed 0, value-only changed 0
+SCHEMATIC connectivity: nets A=251 B=251 | pin-sets only in A: 0, only in B: 0, renamed nets: 0
+BOARD elements: A=102 B=102 | added 0, removed 0, package changed 0, moved 0
+BOARD connectivity: pad-sets only in A: 0, only in B: 0 | copper hash A=478b5252 B=478b5252 | wires 3591->3591 vias 544->544
+VERDICT: IDENTICAL NETLIST AND PARTS (board identical too)
+
+### Bus tester: v1.1 (active) vs V3.1
+====================================================================================================
+A (older/active): /Users/ksr77/Developer/YACC1-D/hardware/cards/bus-tester/eagle/v1.1/tester.sch
+B (newer):        /Users/ksr77/Developer/YACC1-D/hardware/cards/bus-tester/eagle/v3.1/tester.sch
+SCHEMATIC parts: A=125 B=152 | added 28, removed 1, device changed 0, value-only changed 0
+   + -BUS-EN ('PINHD-1X3', '', '')
+   + -RESET ('PINHD-1X3', '', '')
+   + C14 ('C-US', '025-024X044', '0.1')
+   + C15 ('C-US', '025-024X044', '0.1')
+   + C16 ('C-US', '025-024X044', '0.1')
+   + C17 ('C-US', '025-024X044', '0.1')
+   + C18 ('C-US', '025-024X044', '0.1')
+   + C19 ('C-US', '025-024X044', '0.1')
+   + C20 ('C-US', '025-024X044', '0.1')
+   + C21 ('C-US', '025-024X044', '0.1')
+   - BUS-RESET ('SWITCH-MOMENTARY-2', 'SIDE_EZ', '')
+SCHEMATIC connectivity: nets A=149 B=239 | pin-sets only in A: 87, only in B: 177, renamed nets: 0
+   nets in A not in B:
+      A10          IC1..GPA7, RN3.-8.1, X1.-A10.B
+      A11          IC1..GPB0, RN4.-1.1, X1.-A11.B
+      A12          IC1..GPB1, RN4.-2.1, X1.-A12.B
+      A13          IC1..GPB2, RN4.-3.1, X1.-A13.B
+      A14          IC1..GPB3, RN4.-4.1, X1.-A14.B
+      A15          IC1..GPB4, RN4.-5.1, X1.-A15.B
+      A16          IC1..GPB5, RN4.-6.1, X1.-A16.B
+      A17          IC1..GPB6, RN4.-7.1, X1.-A17.B
+      ... 79 more
+   nets in B not in A:
+      -BUF-EN      IC10..PD7(AIN1), IC11.A.OC, IC12.A.OC, IC13.A.OC, IC14.A.OC, IC15.A.OC ...
+      -SOFT-BUS-EN -BUS-EN.A.1, IC10..PD5(T1)
+      -SOFT-RESET  -RESET.A.1, IC10..PD6(AIN0)
+      A10          IC11.A.8Q, RN3.-8.1, X1.-A10.B
+      A11          IC15.A.1Q, RN4.-1.1, X1.-A11.B
+      A12          IC15.A.2Q, RN4.-2.1, X1.-A12.B
+      A13          IC15.A.3Q, RN4.-3.1, X1.-A13.B
+      A14          IC15.A.4Q, RN4.-4.1, X1.-A14.B
+      ... 169 more
+BOARD elements: A=86 B=110 | added 25, removed 1, package changed 0, moved 70
+   + -BUS-EN ('1X03', '')
+   + -RESET ('1X03', '')
+   + C14 ('C025-024X044', '0.1')
+   + C15 ('C025-024X044', '0.1')
+   + C16 ('C025-024X044', '0.1')
+   + C17 ('C025-024X044', '0.1')
+   + C18 ('C025-024X044', '0.1')
+   + C19 ('C025-024X044', '0.1')
+   - BUS-RESET ('TACTILE-PTH-SIDEEZ', 'SWITCH-MOMENTARY-2SIDE_EZ')
+BOARD connectivity: pad-sets only in A: 87, only in B: 177 | copper hash A=96a6ea58 B=c6d5601f | wires 1469->2473 vias 173->292
+   pad-sets in A not in B: 87, in B not in A: 177
+VERDICT: ELECTRICALLY DIFFERENT
+
+### Bus tester: V3.1 vs V3.11
+====================================================================================================
+A (older/active): /Users/ksr77/Developer/YACC1-D/hardware/cards/bus-tester/eagle/v3.1/tester.sch
+B (newer):        /Users/ksr77/Developer/YACC1-D/hardware/cards/bus-tester/eagle/v3.11/tester.sch
+SCHEMATIC parts: A=152 B=152 | added 0, removed 0, device changed 0, value-only changed 0
+SCHEMATIC connectivity: nets A=239 B=239 | pin-sets only in A: 0, only in B: 0, renamed nets: 0
+BOARD elements: A=110 B=110 | added 0, removed 0, package changed 0, moved 110
+BOARD connectivity: pad-sets only in A: 0, only in B: 0 | copper hash A=c6d5601f B=68395a6e | wires 2473->334 vias 292->0
+VERDICT: IDENTICAL NETLIST AND PARTS (board re-laid out / moved parts only)
+
+### Vertical jumper: V3.0 (active) vs V3.1
+====================================================================================================
+A (older/active): /Users/ksr77/Developer/YACC1-D/hardware/bus/bus-jumper-vertical/eagle/v3.0/Jumper Board V3.0.sch
+B (newer):        /Users/ksr77/Developer/YACC1-D/hardware/bus/bus-jumper-vertical/eagle/v3.1/Jumper Board Vertical V3.1.sch
+SCHEMATIC parts: A=7 B=7 | added 0, removed 0, device changed 0, value-only changed 0
+SCHEMATIC connectivity: nets A=89 B=89 | pin-sets only in A: 0, only in B: 0, renamed nets: 0
+BOARD elements: A=7 B=7 | added 0, removed 0, package changed 0, moved 0
+BOARD connectivity: pad-sets only in A: 0, only in B: 0 | copper hash A=307c4f3d B=307c4f3d | wires 354->354 vias 0->0
+VERDICT: IDENTICAL NETLIST AND PARTS (board identical too)
+
+### Horizontal jumper: V3.2 vs V3.2-working
+====================================================================================================
+A (older/active): /Users/ksr77/Developer/YACC1-D/hardware/bus/bus-jumper-horizontal/eagle/v3.2/Jumper Board Horizontal V3.1.sch
+B (newer):        /Users/ksr77/Developer/YACC1-D/hardware/bus/bus-jumper-horizontal/eagle/v3.2-working/Jumper Board Horizontal V3.1.sch
+SCHEMATIC parts: A=7 B=7 | added 0, removed 0, device changed 0, value-only changed 0
+SCHEMATIC connectivity: nets A=89 B=89 | pin-sets only in A: 0, only in B: 0, renamed nets: 0
+BOARD elements: A=7 B=7 | added 0, removed 0, package changed 0, moved 0
+BOARD connectivity: pad-sets only in A: 0, only in B: 0 | copper hash A=df2b9fef B=df2b9fef | wires 1133->1133 vias 229->229
+VERDICT: IDENTICAL NETLIST AND PARTS (board identical too)
+
+### IO: 1.1 (active) vs 1.1-working-edits
+====================================================================================================
+A (older/active): /Users/ksr77/Developer/YACC1-D/hardware/cards/io/eagle/v1.1/IO V1.1.sch
+B (newer):        /Users/ksr77/Developer/YACC1-D/hardware/cards/io/eagle/v1.1-working-edits/IO V1.1.sch
+SCHEMATIC parts: A=98 B=98 | added 0, removed 0, device changed 0, value-only changed 0
+SCHEMATIC connectivity: nets A=178 B=178 | pin-sets only in A: 0, only in B: 0, renamed nets: 4
+   renamed: ADDR-REG-ID2 -> -ADDR-REG-RD1
+   renamed: ADDR-REG-ID0 -> -ADDR-REG-RD0
+   renamed: ADDR-REG-ID1 -> -ADDR-REG-LD0
+   renamed: ADDR-REG-ID3 -> -ADDR-REG-LD1
+BOARD elements: A=71 B=71 | added 0, removed 0, package changed 0, moved 0
+BOARD connectivity: pad-sets only in A: 0, only in B: 0 | copper hash A=0ffa3403 B=0ffa3403 | wires 1409->1409 vias 158->158
+VERDICT: IDENTICAL NETLIST AND PARTS (board identical too)
+
+### Backplane: 1.1 vs 1.1-working-edits
+====================================================================================================
+A (older/active): /Users/ksr77/Developer/YACC1-D/hardware/bus/backplane/eagle/deprecated/v1.1/yacc2buss.sch
+B (newer):        /Users/ksr77/Developer/YACC1-D/hardware/bus/backplane/eagle/deprecated/v1.1-working-edits/yacc2buss.sch
+SCHEMATIC parts: A=49 B=49 | added 0, removed 0, device changed 0, value-only changed 0
+SCHEMATIC connectivity: nets A=87 B=87 | pin-sets only in A: 0, only in B: 0, renamed nets: 0
+BOARD elements: A=17 B=17 | added 0, removed 0, package changed 0, moved 0
+BOARD connectivity: pad-sets only in A: 0, only in B: 0 | copper hash A=08c33014 B=08c33014 | wires 2268->2268 vias 3->3
+VERDICT: IDENTICAL NETLIST AND PARTS (board identical too)
+
+### Address/TMP: 1.0 vs 1.0-working-edits
+====================================================================================================
+A (older/active): /Users/ksr77/Developer/YACC1-D/hardware/cards/address-tmp/eagle/deprecated/v1.0/Address and TMP V1.0.sch
+B (newer):        /Users/ksr77/Developer/YACC1-D/hardware/cards/address-tmp/eagle/deprecated/v1.0-working-edits/Address and TMP V1.0.sch
+SCHEMATIC parts: A=23 B=23 | added 0, removed 0, device changed 0, value-only changed 0
+SCHEMATIC connectivity: nets A=91 B=91 | pin-sets only in A: 0, only in B: 0, renamed nets: 0
+BOARD elements: A=16 B=16 | added 0, removed 0, package changed 0, moved 0
+BOARD connectivity: pad-sets only in A: 0, only in B: 0 | copper hash A=e2f3a6b8 B=e2f3a6b8 | wires 731->731 vias 57->57
+VERDICT: IDENTICAL NETLIST AND PARTS (board identical too)

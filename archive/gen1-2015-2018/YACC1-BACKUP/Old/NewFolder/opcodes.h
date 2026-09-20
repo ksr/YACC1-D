@@ -1,0 +1,9 @@
+#define START           0x00
+#define OUT_ON          0x01
+#define OUT_OFF         0x02
+#define BRANCH          0x03
+#define BRANCH_IN_TRUE  0x04
+#define BRANCH_IN_FALSE 0x05
+#define LD_ACC_I        0x06
+#define ADD_ACC_I       0x07
+#define BRANCH_ACC_NZ   0x08

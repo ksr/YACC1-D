@@ -1,0 +1,706 @@
+{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\froman\fcharset0 Times New Roman;}{\f1\fswiss\fcharset0 Arial;}{\f2\froman\fprq2\fcharset0 Times New Roman;}{\f3\fswiss\fcharset0 HiddenHorzOCl;}}
+{\colortbl ;\red0\green0\blue0;}
+{\*\generator Msftedit 5.41.15.1515;}\viewkind4\uc1\pard\lang1033\f0\fs24 CDP18S020 \fs22 Evaluation Kit - \fs24 COSMAC TINY BASIC\cf1\fs22\par
+\pard\sl363\slmult0\par
+Preface \par
+\par
+\pard\sl368\slmult0 TINY BASIC provides the most fundamental of those functions normally attributed to the high-level programming language called BASIC. It is specifically designed for a microcomputer with minimal memory. The TINY BASIC interpreter program requires only 2K bytes of storage. Thus, an Evaluation Kit with 4K of RAM can accomodate modest (about 100 statements in length) TINY BASIC programs. \par
+\par
+\pard\sl366\slmult0 TINY BASIC is perhaps the best language for the beginning microcomputer programmer. It is easily learned, and elementary application programs may \fs19 be \fs22 developed quickly. For the more experienced programmer, TINY forms the kernel of a system whose facilities may \fs19 be \fs22 extended indefinitely by the addition of machine-language subroutines .(limited only by the amount of memory \'b7which is available).\par
+ \par
+\pard\sl368\slmult0 TINY packs a significant amount of processing capability within 2K bytes. For example, it includes its own line editor, and it provides a rich assortment of error messages to the user. However, clearly one cannot expect certain features which are normally available only in 8K systems. For example, TINY does not do floating-point arithmetic. (Its numeric capability is limited to integers in the range -32768 to +32767.) It cannot directly handle arrays or alphanumeric strings. (On the other hand, each of these (and other) advanced facilities may be added via a machine-language extension). In addition, one must recognize that economies in memory space used were achieved at the expense of processing speed. \par
+\par
+Generally, then, TINY BASIC may be considered as a good "budget" high-level language for a user with a comparable microcomputer setup. Although TINY is quite slow and is of limited capability, it can act as the nucleus of a system whose sophistication may \fs19 be \fs22 indefinitely extended. \par
+\par
+\pard\qc\fs23 10-1 \par
+\par
+\pard\pagebb\qc\fs22 COSMAC TINY BASIC \par
+\pard INTRODUCTION \par
+\pard\sl368\slmult0 We assume that you are already familiar with section III of the Evaluation Kit Manual which explains the functions available from the resident utility program UT4. UT4 permanently resides in memory locations 8000-8IFF. After it is given control (via the RESET, RUN U, CR or LF sequence), it types its prompt character, an asterisk, indicating that it is awaiting your input. Each of your input lines (terminated with a CR) is interpreted and executed by UT4. After dis\-posing of your input command, UT4 indicates that it is ready for new. input by typing another \f1\fs29 * \f0\fs22 prompt. \par
+\par
+One important function of UT4 is to permit you to load an arbitrary sequence of hexadecimal digits (a machine language program) into an arbitrary area in memory and then to invoke this program (transfer control to it; run it) via the appropriate $P command. When your program completes its computation, it may relinquish control back to UT4 by executing a C08039 instruction (a long branch to the location labeled START on p.3-l6), provided all registers used by UT4 have the values they had when UT4 exitedf Under these conditions, a user program halt (or exit) would be signified by a new \f1\fs25 * \f0\fs22 UT4 prompt. \par
+\par
+COSMAC \fs20 2K \fs22 TINY BASIC is a program which must be loaded into the lowest \fs20 2K \fs22 bytes of memory (locations 0000-07FF). A hexadecimal listing of the program and loading instructions for it appear in Appendix A. After TINY BASIC is made resident, control is transferred to it using the proper $P UT4 command (see Appendix A). Once it receives control, TINY BASIC delivers its prompt character, a colon, and awaits your input. Each time after it has properly disposed of an input line (terminated with a carriage return -CR), TINY BASIC again types its : prompt\f2 .\par
+ \par
+---------\par
+note: in particular, P should be 5. \par
+\f0 10-2\par
+\pard\par
+\pard\pagebb\sl371\slmult0 CDP18S020 Evaluation Kit \tab\tab COSMAC TINY BASIC \par
+\par
+\pard\sl371\slmult0 If an input line does not begin with a number, TINY BASIC immediately interprets it and executes it. (The line is palled a statement.) If the line begins with a number (normally followed by a statement), then TINY BASIC merely stores it, in the proper position, in an area of memory where the user program (a sequence of statements ordered by statement number) is \f3\fs15 ~~led. \f0\fs22 If the statement number is the same as one already existing in this area, then the new statement replaces the old one. Thus, you load a TINY BASIC program by entering a sequence of statements (one per line), each preceded by a unique statement number. The program must have at least one END statement in it. \par
+\par
+\pard\sl368\slmult0 After your program has been loaded, you can run it by typing a RUN command (equivalent to the $P command to UT4). TINY BASIC will then interpret and execute your program's statments, in order, following the rules discussed \f1\fs20 in \f0\fs22 subsequent sections. When an END statement is encountered during execution, control will \fs19 be \fs22 passed back to TINY BASIC's "enter" mode, and another : prompt will be issued. \par
+\f1\fs16\par
+\f0\fs22 Note that TINY BASIC assembles statements which begin with numbers into the program area in memory without any further analysis. Errors are detected only when execution is attempted. If an entered line consists only of a line number, it \i is \i0 considered a deletion. The previously inserted statement with the same line number is erased. Note also that 0 is not a valid line number. Blanks within a line have no significance to TINY. All spaces, until the first non-numeric character, are totally ignored. After that, however, blanks are preserved \i in \i0 the memory copy of the statement (i.e., each blank character occupies one byte). \par
+\pard\f1\fs16\par
+\pard\sl368\slmult0\f0\fs22 NUMBERS\par
+\par
+A number is any sequence of decimal digits optionally preceded by a sign. If no sign is present, the number is assumed positive. Since TINY BASIC stores all numbers internally as l6-bit signed integers, positive values may run from 0 to 32767 (2 \super\up9\fs16 15 \nosupersub\up0\fs21 _1) \fs22 and negative values may run from \f1\fs19 -1 \f0\fs22 to -32768 (_2 \super\up10\fs16 15\nosupersub\up0 ). \par
+\par
+\pard\sl373\slmult0\fs22 10-3 \par
+\par
+\pard\pagebb\fs23 CDP18S020 \fs22 Evaluation Kit \tab\fs23 COSMAC TINY BASIC \par
+\par
+\pard\sl368\slmult0\fs22 VARIABLES\par
+A variable is any single capital letter (A-Z). Each possible variable \fs23 is \fs22 assigned a unique two-byte location in memory. The value of the variable is the contents of that location --i.e., a number in the range -32768 to +32767. \par
+\par
+\pard\sl371\slmult0 EXPRESSIONS \par
+\pard\sl368\slmult0\fs21 An expression \fs22 is a combination of one or more numbers or variables, joined by operators and possibly grouped by parenthesis pairs. The permissible operators are: \par
+\par
+\pard\sl363\slmult0\fs23 + \tab\fs22 addition \par
+-\tab subtraction \par
+\pard\sl371\slmult0\f1\fs30 * \tab\f0\fs22 multiplication \par
+/ \tab division \par
+\par
+Whenever TINY BASIC encounters an expression within a statement (during its execution) it evaluates the expression --combining the numbers and the values of the variables, using the indicated operations. The exact disposition of the final computed value depends on the type of statement. This is discussed further later. \par
+\par
+\pard\sl368\slmult0 Internal sub-expressions within parentheses are evaluated first. Usually parentheses make clear the order in which operations are to be performed. However, if there is ambiguity because parentheses are absent, TINY gives precedence to multiplication and division over addition and subtraction. Thus, in evaluating \par
+\tab B-14*C \par
+the multiplication is performed first. In cases involving two operators of equal precedence, evaluation would proceed from left to right. \fs19 An \fs22 expression may be optionally preceded by a sign.\par
+ \par
+\pard\fs23 10-4\par
+\par
+\pard\pagebb CDP18S020 \fs22 Evaluation Kit    \fs23 COSMAC TINY BASIC \par
+\par
+\pard\sl371\slmult0\fs22 Note that during the evaluation of an expression, all intermediate values, and the final value, are truncated --using the lowest 16 bits of the results. That is, expressions are evaluated modulo \fs21 2\super\up10\fs16 16 \nosupersub\up0\bullet  \fs22 TINY BASIC makes no attempt to discover arithmetic overflow conditions, except that an attempt to divide by zero results in an error stop. \par
+\par
+\pard\sl376\slmult0 The following are some examples of valid expressions: \par
+\pard\sl366\slmult0 (Note that a single variable or number is also an expression.) \par
+\fs20 A \par
+\fs22 123 \par
+1+2-3 \par
+B-14*C \par
+\pard\sl378\slmult0 (A+B)/(C+D) \par
+-128/(-32768+(I*I\'bb \fs25\par
+\pard\sl376\slmult0\fs22 ((((Q))))\par
+\par
+The following are some examples of \par
+\pard\sl366\slmult0 -4096 \par
+15*4096 \par
+32768/8 \par
+30720+30720 \par
+\pard\sl360\slmult0 because any number in the range 32768 to 65535 (2**15 to 2**16) has a sign bit of 1 (making it negative), so that it is actually treated by TINY BASIC as if 65536 (2 \super\up9\fs16 16 \nosupersub\up0 ) \fs22 were subtracted from it.\par
+\par
+\pard\sl371\slmult0 THE RND FUNCTION \par
+\par
+\pard\sl368\slmult0 TINY BASIC includes the ability to generate a positive pseudo-random number in a specified range. Whenever it encounters the form \par
+RND (expression 1, expression 2) \par
+\pard\sl371\slmult0 during execution of a statement, TINY generates a random number in the range from the value of expression 1 to the value of expression 2, inclusive. The resulting number may be used as would any other number. In particular, the above form may itself be used within another expression. If the arguments are invalid, an error stop may result. \par
+\par
+\pard 10-5 \par
+\par
+\pard\pagebb CDP18S020 Evaluation Kit COSMAC TINY BASIC \par
+\par
+\pard THE RND FUNCTION (cont'd) \f2\par
+\par
+\pard\sl373\slmult0 RND (1,100) RND (A,B) \par
+are valid RND functions (assuming 0<A<B). \par
+\f0\par
+\pard STATEMENT TYPES \par
+\par
+\pard\sl368\slmult0 A statement normally begins with a keyword, such as PRINT or GOTO, indicating the type of statement. The interpretation of the remainder of the statement depends on this keyword. In some cases, a short form of the key word is also acceptable -- for example, PR instead of PRINT. \par
+\par
+\pard\sl371\slmult0 REM STATEMENT \par
+\par
+\pard\sl368\slmult0 Following the keyword REM (for remark or comment) any sequence of characters may appear. This statement is ignored by TINY BASIC. It is used to permit you to intersperse arbitrary comments or remarks within your program. \par
+\par
+\pard\sl371\slmult0 END STATEMENT \par
+\par
+\pard\sl368\slmult0\fs19 END \fs22 must be the last statement executed in a program. It is used to halt execution and return to TINY BASIC's "enter" mode. There may be as many END statements \f1\fs19 in \f0\fs22 a program as needed. \par
+\par
+\pard\sl371\slmult0 LET STATEMENT \par
+\par
+\pard\sl368\slmult0 This statement has the form \par
+\pard\fi100\sl371\slmult0 LET variable \fs30 = \fs22 expression Alternatively, the keyWord LET may be omitted entirely. Execution of this statement assigns the value of the expression to the variable. The following are valid LET statements: \par
+\par
+\pard\qj LET A=B+C \par
+I = I + 1\par
+J = 0\par
+LET \fs23 Q = \fs22 RND (5,33)\fs21\par
+\par
+\pard\fs22 10-6 \par
+\pard\qj  \par
+\pard\pagebb\fs23 CDP1BS020 Evaluation Kit \tab COSMAC TINY BASIC \par
+\par
+\pard\fs22 IF STATEMENT \par
+\par
+This statement has the \fs23 form \par
+\pard\fi3\sl371\slmult0\fs22 IF expressionl relation expression2 THEN statement \par
+\par
+The keyword THEN may be omitted entirely. Execution of this statement evaluates the two expressions and compares them according to the relation specified. If the condition specified is TRUE, \f3\fs15  \f0\fs22 then the associated state\-ment is executed. Otherwise, the associated statement is skipped. The permissible relational operators are as follows: \par
+\par
+\pard\sl338\slmult0 = equal \par
+< less than. \par
+\pard\sl366\slmult0 > greater than \par
+<= less than or equal (not greater) \par
+\fs23 >= \fs22 greater than or equal (not less) \par
+<> or >< not equal (greater than or less than) \par
+\par
+\pard\sl368\slmult0 The associated \tab statement may be any other valid TINY BASIC statement including, \f1\fs20 in \f0\fs22 particular, another IF statement. The following are some valid IF statements: \par
+IF I>25 THEN END \par
+IF A>B IF B>C I=I+1 \par
+(The last statement increments I only if B is between C and A.) \par
+\par
+\pard\sl363\slmult0 TRANSFERS OF CONTROL \par
+\par
+TINY BASIC normally executes statements in a program in statement number order. The following statements may be used to alter this flow: \par
+\par
+(a) \tab GOTO expression \par
+\par
+\pard\sl368\slmult0 The subsequent statement executed is the one whose line number equals the value of the expression. Note that this permits you to compute the line number of the next statement on the basis of program parameters during execution. The following are some valid GOTO statements: \par
+\pard\sl366\slmult0\par
+GOTO 100\par
+GO TO 200 \f1\fs21 + \f0\fs22 1*10 \par
+\par
+\pard\fs23 10-7 \par
+\par
+\pard\pagebb CDP18S020 \fs22 Evaluation Kit \fs23 COSMAC TINY BASIC \par
+\par
+(b) G\fs22 OSUB expression \par
+\par
+\pard\sl366\slmult0 This statement executes exactly as does the GOTO statement, except that in addition TINY records (remembers) the statement number of the following statement (the one which would have 'been executed next, had the branch not taken place). \par
+\par
+(c) RETURN\par
+\f1\fs17\par
+\pard\sl368\slmult0\f0\fs22 This statement (which also has the short form RET) executes by transferring control back to the statement whose number was last recorded as the result of the execution of a GOSUB. This last-recorded statement number is also forgotten. \par
+\par
+\pard\sl371\slmult0 SUBROUTINE NESTING \par
+\par
+\pard\sl368\slmult0 A subroutine is a sub-program which is normally evoked in \fs19 two \fs22 or more places within a main program. Rather than duplicate the statements of the sub-program in several places, it appears only once. It is written so that it exits with a RETURN statement. It is evoked at any point in a program by a GOSUB statement which transfers control to it. \par
+\par
+Whenever one subroutine calls another subroutine (termed subroutine "nesting"), an additional "return-statement-number" is recorded. These are stored in order, so that every RETURN jumps back to the statement following the GOSUB which called it. Subroutines may be nested to any depth, limited only by the amount of user program memory remaining. \par
+\par
+\pard\sl371\slmult0 PRINT STATEMENT \par
+\par
+\pard\sl368\slmult0 This statement has the form \par
+\pard\sl371\slmult0 PRINT printlist \par
+\par
+where printlist is a succession of one or more items to be printed separated by either commas or semicolons. The acceptable short form for PRINT is PR. Each print item may be either an expression or a character string enclosed in quotes. In the first case the value of the expression is typed. In the second case the character string is printed verbatim. No spaces are generated \par
+\pard\fi514\sl371\slmult0 10-8\fs23\par
+\pard\par
+\pard\pagebb\f2\fs22 CDP18S020 Evaluation Kit COSMAC TINY BASIC \par
+\par
+\pard\sl360\slmult1 between the printouts of items separated by semicolons in the PRINT statement. \par
+\par
+On the other hand, the printout of an item, preceded by a comma in the PRINT statement, begins at the next "tab setting. Tabs are automatically set everyeight character spaces. Thus, \par
+PRINT 1,2,3 prints as \par
+1\tab 2\tab 3 \par
+while PRINT 1;2;3 \i  \i0 prints as \par
+123 \par
+\par
+\pard\sl371\slmult0 Commas and semicolons, character strings and expressions may be mixed in one PRINT statement in any manner. \par
+\pard\sl368\slmult0\par
+Normally, the execution of a PRINT statement terminates with the generation of a carriage return and line feed to begin a new line. However, if the PRINT statement ends with a comma or semicolon, then the CR-LF sequence is suppressed, permitting subsequent PRINT statements to output on the same line or permitting an input message (see INPUT, next) to appear on the same line as previous output. \par
+\par
+\pard\sl371\slmult0 The following are valid PRINT statement examples: \par
+\par
+PRINT "A=";A,"B+C=";B+C\i\par
+\i0 PR (generates a blank line) \par
+PRI (prints the value of variable I) \par
+PRINT 1,','.Q*P;",".R/42; \par
+\par
+INPUT STATEMENT \par
+\pard\sl368\slmult0\f0\fs23 This statement has the form \par
+\pard\sl371\slmult0 INPUT inputlist \par
+where inputlist is a succession of one or more variables separated by commas. The acceptable short form for INPUT is IN. Normally, execution of this statement begins with the typing of a question mark prompt indicating that TINY is expecting the user to type in data. The user should respond by typing in a line of one or more expressions separated by commas and terminated with a carriage return. Each input expression is evaluated and assigned to its associated variable in the INPUT statement. \par
+\par
+\pard\qc 10-9 \par
+\par
+\pard\pagebb\sl368\slmult0\fs22 If the number of requested variables in the inputlist is not satisfied by the number of expressions in the user's input line, a new? prompt will be issued asking for more input information. If the number of expressions in the user's input line is greater than the number \i\fs23 ot \i0\fs22 requested variables, then those input expressions not requested are saved internally and used to satisfy subsequent INPUT requests. Thus, before a \fs21 ? \fs22 prompt is issued during execution of an INPUT instruction, TINY first checks to see if any saved expressions exist. If so, then these are used first -to satisfy some or all of the variables requesting values. Only when no saved data exists is the \fs21 ? \fs22 prompt issued. The user is cautioned to use the latter property of the INPUT statement with care. \par
+\par
+\pard\sl360\slmult1 Example: Suppose statement INPUT X,Y,Z is executed, and the user responds by typing A,C,B. The results are the same as if X=A, Y=C and Z=B had been executed. Note that commas are required in the user's input line only to avoid ambiguity. If he had entered ACB, the same results would have occurred. On the other hand, an input line of +1 -3 +6 0 in response to INPUT A,B,C,D will result in A being given the value 58 and a new \fs19 ? \fs22 prompt issued for values for B, C and D. \par
+\pard\sl371\slmult0\par
+SYSTEM CONTROL STATEMENTS \par
+\par
+\pard\sl360\slmult1 The statements listed below are normally not included as part of a program. That is, they are normally entered without line numbers: \par
+(a) NEW\par
+Execution of this statement clears the program area in memory. It is used before entering a new program. \par
+(b)  RUN \par
+Begin program execution at the first (lowest) line number. Note: If RUN is followed by a comma followed by a sequence of one or more expressions (separated with commas), then the expression list is treated as an initial input line --which will be scanned first whenever INPUT statements are executed. (See discussion of INPUT statement.) \par
+\par
+(c) LIST \par
+LIST expression \par
+LIST expression, expression\par
+\par
+\pard\sl380\slmult0 10-10 \par
+\par
+\pard\pagebb\fs23 COSMAC TINY BASIC CDP18S020 \fs22 Evaluation Kit \par
+\pard\sl371\slmult0 SYSTEM CONTROL STATEMENTS (cont'd) \par
+\pard\sl368\slmult0 (c) \tab (cont'd) \fs23 The \fs22 LIST statement causes part or all of a stored user program to \fs20 be \fs22 printed. If no parameters are given, the whole program is listed. A single expression parameter is evaluated to a line number. If the line exists, it is printed. If both parameters are given, all lines with numbers in the range specified are printed. \par
+\par
+10-11\par
+\par
+\pard\pagebb\f2 SUMMARY OF COSMAC TINY BASIC REPERTOIRE \par
+\pard\sl368\slmult0 The following should serve as your short form guide to the facilities offered by TINY BASIC. Characters enclosed in brackets [ ] are optional and may be omitted.\par
+\par
+FORM OF STATEMENT \tab\tab BRIEF EXPANATION OF EXECUTION\par
+\par
+\pard REM any comment\tab\tab\tab\cf0 Ignored.\par
+\par
+END\tab\tab\tab\tab\tab Halt execution and return to I"enter" mode.\par
+\par
+[LET\} variable = expression\tab\tab Assign the value of the expression to the variable\par
+\par
+IF expr rel expr [THEN] statement\tab If the relation between the values of the expressions is TRUE,\par
+\tab\tab\tab\tab\tab  execute the statement, otherwise, skip it.\par
+\par
+GOTO expression\tab\tab\tab Jump to the statement whose number is the expression's value.\par
+\par
+GOSUB expression\tab\tab\tab Save the statement number of the next statement\par
+\tab\tab\tab\tab\tab in sequence. Then execute a GOTO.\par
+\par
+RET[URN]\tab\tab\tab\tab Jump to the last saved statement number\par
+\tab\tab\tab\tab\tab (see GOSUB) and "unsave" this number.\par
+\par
+PR[INT] printlist\tab\tab\tab Type the items in the printlist. Type values\par
+\tab\tab\tab\tab\tab of expressions. Type quoted strings verbatim.\par
+\tab\tab\tab\tab\tab Horizontal TAB on comma.\par
+\par
+IN[PUT] inputlist\tab\tab\tab Read and evaluate expressions from the keyboard\par
+\tab\tab\tab\tab\tab and assign them in order to the variables\par
+\tab\tab\tab\tab\tab specified in the inputlist.\par
+\par
+NEW\tab\tab\tab\tab\tab Clear the program area.\par
+\par
+RUN[,expression sequence]\tab\tab Start execution at first statement. (Save\par
+\tab\tab\tab\tab\tab the expression sequence to satisfy\par
+\tab\tab\tab\tab\tab subsequent INPUT's.)\par
+\par
+LIST[expression],[expression]\tab\tab Print entire program, or one selected line,\par
+\tab\tab\tab\tab\tab or a range of lines.\par
+\par
+where:\par
+\par
+\f0 number = -32768 to +32767; variable = single capital letter.\par
+\f2\par
+expression = one or more numbers or variables (possibly grouped by parentheses) joined by operators +,-,*, or /.\par
+\par
+relations are =,>,<,<=,>=,<>, or >< \par
+\par
+printlist = one or more expressions or quoted strings separated by commas or semicolons. \par
+\par
+inputlist = one or more variables separated by commas. \par
+\par
+expression sequence = one or more expressions separated by commas. \par
+\par
+\pard\sl258\slmult0\qj NOTE: \tab The RND(exprl,expr2) function generates a positive random number in the range between the values of the expressions. This function may be used anywhere in place of a number. \par
+\par
+10-12 \par
+\par
+\pard\pagebb CDP18S020 COSMAC TINY BASIC \par
+\par
+\pard IMMEDIATE EXECUTION VS. PROGRAM MODE \par
+\par
+\pard\sl366\slmult0 One important use of the immediate execution mode (entering a statement without a line number) is to permit line-at-a-time testing. LET, IF and PRINT can be demonstrated this way. Due to the way TINY BASIC buffers its input lines, the INPUT statement cannot be directly executed for more than one variable at a time, and if the following statement is typed in without a line number, \par
+\pard\sl371\slmult0 INPUT A,B,C \par
+the value of B will be copied to A, and only one value (for C) will be requested from the console/terminal. Similarly, the statement, \par
+INPUT X,1,Y,2,Z,3 \par
+will execute directly (loading.X,Y, and Z with the values 1,2,3), requesting no input, but with a line number, in a program, this statement will produce an error stop after requesting one value. \par
+\pard\fi147\sl371\slmult0\par
+\pard\sl373\slmult0 Clearly there is no point to executing REM or END in the immediate mode. Furthermore, GOSUB and RETURN are normally meant for the program mode. On the other hand, an immediate GOTO has the same effect as if RUN were typed, but execution may begin at other than the program's first statement.\par
+ \par
+\pard\sl371\slmult0 Similarly, the stored program should not contain a NEW statement (self destruct!), and a stored RUN statement will be equivalent to a GOTO to the first statement. On the other hand, a LIST statement may be included as part of a program and used for printing large text strings, such as instructions to the operator. \par
+\pard\qc 10-13 \par
+\par
+\pard\pagebb CDP18S020 Evaluation Kit COSMAC TINY BASIC \par
+\par
+\pard PROGRAMMING EXAMPLES \par
+\par
+\pard\sl371\slmult0 The following two simple programs are designed to give you examples of TINY BASIC in action. The first uses most of the statements in TINY's repertoire. The second demonstrates particularly the use of subroutines. REMarks are omitted from the listings to keep them short. Instead, each program is accompanied by a detailed explanation of its functioning. (It should be emphasized that omission of comments is generally bad documentation practice, but it suits our present objectives.) Each program can be entered in a few minutes. It is recommended that you run both of them to gain. experience with the system. \par
+\par
+\pard I. Arithmetic Drill Program \par
+\par
+\pard\sl371\slmult0 This program generates a random sequence of arithmetic problems. After the program prints the problem, you respond with your solution. The program tells you whether your answer was correct or not (providing the right answer in the latter case) and then proceeds to generate a new problem, and so on. \par
+\par
+Stepping through the program listed below: first, three random numbers are generated. The value of F (1 to 4) will be used to decide whether this will be an add, subtract, multiply or divide problem. The range of Possible values for the arguments A and B was chosen to prevent the Possiblity of overflow under two conditions: First, 181*181 is still less than 32767. Second, division by zero is prevented. Because TINY BASIC discards division remainders, the fourth state\-ment is included to keep the division problems interesting. It says: If this is a division problem where the quotient would ordinarily come out as zero (true for many of the A,B combinations that might be generated), arbitrarily increase the size of the dividend (to a maximum of 18100 in this case) to make the problem non-trivial. Statement 50 begins the presentation of the problem to the user by printing an encouraging message followed by the value of the first argument. Notice that the final semicolon keeps the printer on the same line without advancing the carriage further. \par
+\par
+\pard\sl368\slmult0 Statement 60 does a four-way branch based on the value of F (the arithmetic function selected). Thus, control passes next to one of the following statement numbers: 70, 100, 130 or 160. Each of these statements begins a short sequence which prints the sign for the arithmetic operation and then computes the proper \par
+10-14 \par
+\par
+\pard\pagebb I. Arithmetic Drill Program (cont'd) \par
+\par
+\pard\sl360\slmult1 function, placing the result in c. (Notice the final semicolons again, \par
+in the PRINT statements.) No matter which path is taken, control passes next to \par
+statement 180, which prints the second argument value followed by an = sign. \par
+The presentation of the problem to the user is now complete, and the INPUT \par
+statement at 190 delivers a ? prompt on the same print line and reads the \par
+user's answer into D. Statement 200, congratulates the user on a correct answer, \par
+while 210 points out that his answer was incorrect and provides him with the \par
+proper result. The commas at the end of both PRINT statements here again inhibit \par
+a new line from starting, but they space over to the next tab setting, where a new \par
+problem is posed as a result of the loop (at 220) back to the top. \par
+\fs23\par
+\pard\sl248\slmult0\fs24 10 A=RND (1,181) \par
+20 B=RND (1,181)\par
+30 F=RND (1,4) \par
+40 IF F=4 IF A/B<1 A=A*100 \par
+50 PRINT "TRY THIS ONE: ";A;\par
+60 60 TO 40+F*30 \par
+70 PRINT "+";\par
+80 C=A+B \par
+90 GO TO 180 \par
+100 PRING "-";\par
+110 C=A-B: \par
+120 GO TO 180 \par
+\pard 130 PRINT "*"; \par
+140 C=A*B\par
+\pard\sl248\slmult0 150 GO TO 180 \par
+160 PRINT "/";\par
+170 C=A/B \par
+180 PRINT B;" =" ; \par
+190 INPUT D\par
+200 IF D=C PRINT "RIGHT!". \par
+210 IF D <> C PRINT "WRONG. CORRECT ANSWER IS ";C,\par
+220 GO TO 10 \par
+\f0\fs26\par
+\pard\sl360\slmult1\fs22 Notice that an END statement is not present here --contrary to earlier advice. \par
+The nature of this program is such that TINY will never go past the last statement. \par
+The program as written loops endlessly, and only under these conditions is the \par
+omission of an END permissible. \par
+Running this program should give you some practice in learning how TINY divides.\par
+\pard\sl326\slmult0 10-15\par
+\fs23\par
+\pard\pagebb\fs22 CDP18S020 Evaluation Kit  COSMAC TINY BASIC  \par
+\fs23\par
+\pard\sl368\slmult0\fs22 II. Geometric Print Pattern Program \par
+\par
+This program is designed to print three identical, trapezoidal patterns across the page, each filled with repeated imprints of the same numeric digit. The user can specify which digit is to fill each trapezoid and, for all three, the number of characters across its top, the slope of its sides (positive or negative) and its height. He can also specify the spacing between the patterns on the page. \par
+\par
+Since the printer prints line-by-line, the program prints the pattern in a scanning mode. Every line consists of-a sequence of three identical segments, and each segment contains 0 spaces followed by E identical digits followed by \fs21 D \fs22 spaces again. The values of 0 and E vary from line to line. For each new line, \par
+\pard\sl360\slmult0\fs25 D \fs22 is decremented by a value I (positive or negative) and E is incremented by \f1\fs20 2*F \f0\fs22 (to keep the pattern symmetrical). \par
+\par
+\pard\sl368\slmult0 To analyze the program listed below, let us begin by identifying its subroutines. Reading from the bottom up, the subroutine from 250 to 280 prints the digit N, M times across (notice the semicolon). Similarly, the subroutine from 210 to 240 prints a sequence of M spaces. Finally, the subroutine from 140 to 200\fs20  \fs22 prints 0 spaces followed by E digits (all N) followed again by 0 spaces. Notice that this subroutine calls the other two. \par
+\pard\sl371\slmult0\par
+\f2 The main part of the program runs from 10 to 130. First, the program initializes a counter J for the number of lines which have been printed. Then it reads (from the user) initial values for A to E, I and L (the total number of lines to be printed). A,B and C should be single digits. O,E and L must be > 0. Each of the three sequences 30-40, 50-60, and 70-80 prints one segment of a line using the digit specified by the user. 85 starts a new line. 90 and 100 advance D and E as explained earlier, and 110-120 decide whether or not a sufficient number of lines have yet been printed. If not, a new line is started. \f0\par
+10-16\par
+\par
+\pard\pagebb\f2 CDP18S020 Evaluation Kit COSMAC TINY BASIC \par
+\pard\pagebb\qc\par
+\pard GEOMETRIC PRINT PATTERN PROGRAM \par
+\f1\fs18\par
+\f2\fs24 10 J=0 \par
+20 INPUT A,B,C,D,E,I,L \par
+30 N=A \par
+\pard\sl248\slmult0 40 GOSUB 140 \par
+\pard 50 N=B \par
+\pard\sl248\slmult0 60 GOSUB 140 \par
+\pard 70 N=C \par
+\pard\sl248\slmult0 80 GOSUB 140 \par
+85 PRINT \par
+90 D=D-I\par
+\pard 100 E=E+2+I \par
+110 J=J+1 \par
+120 IF J<>L GO TO 30 \par
+130 END\par
+\pard\sl248\slmult0 140 M=D \par
+150 GOSUB 210 \par
+160 M=E \par
+170 GOSUB 250 \par
+\pard 180 M=D \par
+\pard\sl248\slmult0 190 GOSUB 210 \par
+200 RETUrN \par
+\pard 210 PRINT " ";\par
+220 M=M-1 \par
+230 IF M>0 GOT0 210 \par
+240 RETURN \par
+250 PRINT N;\par
+260 M=M-1 \par
+270 IF M>0 GOTO 250 \par
+280 RETURN \par
+\f3\fs17\par
+\pard\sl360\slmult1\f0\fs22 For this program to run properly the values of D and E should not become \par
+too small. Nor should they be so large as to require excessive line length. \par
+The inital values should obey the following relations: 3 (E+2D) \fs20 < \fs22 maximum line \par
+width; If I<0, E>2|I|(L-l); If I>0, D>I(L-1). \par
+\pard\par
+\pard\qc\fs23 10-17 \par
+\fs22\par
+\pard\pagebb CDP18S020 Evaluation Kit COSMAC TINY BASIC \fs23\par
+\par
+\pard\fs22 THE USR FUNCTION \par
+\pard\sl368\slmult0 TINY BASIC includes an important feature to permit you to extend its facilities via machine language subroutines. To use this feature, you must \fs21 be \fs22 familiar with many of the intricate details associated with machine language programming. Not only must you know the instruction set for the CPU (See MPM-201, User Manual for the COP1802 Microprocessor), but you must also be aware of which CPU and memory registers are reserved for TINY, which are freely available for your use and which can act as an interface between your machine-language program and your TINY BASIC program. We assume here that you are familiar with the manual cited above and that you have some introductory machine language programming experience. \par
+\par
+\pard The form of the USR construct within a TINY BASIC statement is as follows: \par
+\par
+USR (expression [,expression][, expression ]) \par
+\par
+\pard\sl373\slmult0 where the brackets indicate that either or both of the latter two expressions may be omitted. On encountering this form, TINY evaluates the first expression and transfers control to that address. (Remember that a desired hex address must be converted into its equivalent decimal expression value, and that addresses in the upper half of memory have negative equivalent decimal values.) If a second ex\-pression is included, it is evaluated and the resulting value is passed to the called program as the contents of CPU register 8. If a third expression is included, its value is passed in register A (with D also holding RA.0). The subroutine receives control with P=3 and X=2. \par
+\par
+\pard\sl368\slmult0 Your called program must return with a SEP 5 (D5) instruction. When it returns, its 16-bit function value is the final contents of RA.l and 0 (lower 8 bits in 0) just before the SEP 5 was executed. This. is why USR is called a function. Whenever it is called, it returns a result -a number. Thus, the USR form can appear anywhere in a TINY BASIC statement where a number can normally appear. (Recall our previous discussion of the RND function. Exactly the same idea applies here.) \par
+\par
+\pard\fs23 10-18 \par
+\par
+\pard\pagebb\sl366\slmult0\fs22 Thus, in addition to performing some \f2 machine-language \f0 function (for example, moving a block of data), your USR program will always return a value or result in RA.l and D. In many cases, this is desirable --for example, when your subroutine is given two arguments X and Y (in R8 and RA) and returns a number which is, say, the larger of the two. In other cases, however, your USR program will not need to return a value. In that case the value returned must \fs20 be \fs22 ignored in the TINY BASIC program which called it. There are several ways to do this. For example, if \par
+\par
+\pard\sl360\slmult0 +0*USR\{......) \par
+\par
+\pard\sl368\slmult0 were included in an expression, then the USR function would \fs20 be \fs22 executed but the returned value would be ignored. \par
+\par
+\pard\sl366\slmult0 For your convenience, TINY itself includes four built-in subroutines which you may want to make use of via the USR mechanism. They are as follows: \par
+\par
+\pard\sl368\slmult0 (1) USR(20,N) \par
+\par
+\pard\sl371\slmult0 Returns the decimal value of the byte at memory location N (decimal), where N is the value of the second expression. (Note that this machine language routine begins at location 14 hex.) \par
+\pard\par
+(2) USR(24,N,M) \par
+\par
+\pard\sl371\slmult0 Stores the value of the third expression M (mod 256) into the byte at location N (decimal), the value of the second expression. Also returns the value M as the function's "value". \par
+\par
+\pard\sl373\slmult0 Examples: PRINT USR(20,3072) prints the decimal contents of memory location C000\par
+A=USR(24,3072,254) loads memory location OCOO with FE and also loads the"returned value", 254, into A. \par
+\pard\sl368\slmult0\par
+(3) USR(6) \par
+\par
+Reads one ASCII character from the keyboard and returns its decimal equivalent (including parity bit if any). \par
+\par
+\pard\fs23 10-19 \par
+\par
+\pard\pagebb CDP18S020 \fs22 Evaluation Kit \tab\tab\fs23 COSMAC TINY BASIC \par
+\fs22\par
+\pard\sl373\slmult0 (4) USR(9,0,C) \par
+\par
+\pard\sl371\slmult0 Prints the ASCII character whose code is the right half of the (hex) value of expression C. (Note: The second expression, in this case 0, is iqnored. The character to be typed must start out in a D register. Hence, the above format. The third expression is passed in RA with its lower half also in D.) This routine happens to return a "value" 251 in all cases --which would normally \fs20 be \fs22 ignored, as explained earlier. \par
+\par
+Examples: \par
+\par
+PRINT USR(6) \par
+will read a character and print its decimal equivalent. On the printer you would see, for example, A65 for a zero parity bit (where A was typed by you).  \par
+\par
+A = A+0\'b7USR(9,0,66) \par
+will print the character B and ignore the returned result (251).\par
+\par
+Register Usage and An Example USR Routine: \par
+\par
+When you write your own USR routine, you must be careful not to modify the contents of those registers which are used by TINY BASIC. These include CPU registers and memory registers. Appendix B lists how the CPU registers are used by TINY. Machine language subroutines have the free use of \par
+\pard\sl486\slmult0 R0,R1,R8,RA,RD and RF. \par
+In addition, R2 is pointing at a free byte on the control stack. \par
+\par
+\pard\sl366\slmult0 Clearly, the memory areas used by TINY should also not be modified, except with care. TINY uses most of the first page of the available RAM (beginning at 0800) for its own storage. A table of the allocation of this space is given in Appendix C. You probably will not want to bother with any part of this area except for that which includes the A to Z variable cells. These are located at 0882 to 08B5. Note also that, by reducing the address value stored in 0822, you can make space for your added program and data areas in upper memory. \par
+\par
+\pard\fs23 10-20 \par
+\pard\pagebb\qc CDP18S020 \fs22 Evaluation Kit \fs23 COSMAC TINY BASIC \par
+\par
+\pard\sl368\slmult0\fs22 Appendix D lists some key locations at the beginning of the TINY BASIC program itself. (Notice locations 6, 9, 14 and 18 which correspond to the entry points for the built-in subroutines discussed earlier.) TINY BASIC was written \b as a \b0 pure procedure (capable of execution out of ROM) --not modified in any way \b as \b0 it runs. This area should not be altered except, conceivably, for modifications to the special character codes beginning at location F. This is discussed further later \f1\fs20 in \f0\fs22 this manual. \par
+\par
+Consider now an example of a USR added routine. Assume we wish to add a logica AND operation to TINY's repertoire. The machine language routine given below will do the job, given that the two arguments are passed in R8 and RA, and that the computed result must be passed back in RA.l and D. \par
+\par
+98\tab GHI\tab R8\par
+52\tab STR\tab R2\par
+9A\tab AND\par
+BA\tab PHI\tab RA\par
+88\tab GLO\tab R8\par
+52\tab STR\tab R2\par
+\par
+8A\tab GLO\tab RA\par
+F2\tab AND\par
+D5\tab SEP\tab R5\par
+\par
+\pard\sl360\slmult1\f2 Given two l6-bit arguments, this routine computes the l6-bit AND of these and returns that result. Note the use of the spare byte pointed to by R2 and the assumption that X=2 on entry. Notice also the SEP R5 exit. This routine can be stored in any available memory area.\par
+\par
+Assuming the above program is stored at location 0C00, then if L=3072, the statement T=USR(L,R,S) will assign to T the l6-bit AND of the values of variables R and S. \par
+\pard\sl368\slmult0\f0\par
+\pard 10-21 \par
+\par
+\pard\pagebb\sl393\slmult0 ERROR MESSAGES AND PROGRAM DEBUGGING \par
+\par
+Error Messages: \par
+\par
+\pard\sl366\slmult0 Whenever TINY BASIC detects an error in a statement, it generates an error message consisting of an exclamation point followed by a decimal error number. A listing of error numbers and their corresponding meanings is given \f1\fs20 in \f0\fs22 Appendix E. If the error is detected during program execution, the error code is followed by the word AT followed by the offending statement's number. \par
+\par
+\pard\sl360\slmult1 Almost all of the errors detected by TINY are syntax errors. TINY was in the process of interpreting a statement and found it unacceptable for some reason. Only two of the errors in the error list are detected during execution of a statement (i.e., after its syntax has been accepted). These are errors 141 and \par
+\fs21 243. \par
+\pard\sl368\slmult0\fs22 Any other error number not listed in the table signifies a memory "full" condition --probably due to too many nested GOSUB's or an excessively complex expression. \par
+\par
+Program Debugging:\par
+\fs9\par
+\fs22 Most program execution errors are due to either incorrect flow or improper modification of variable values. To find an error of the first kind, you must determine whether your program is sequencing properly -- whether certain sections of code are indeed executed when expected. Often, the insertion of dummy PRINT statements within suspected code sections will reveal whether the flow within the program is proper. \par
+\par
+The second type of error is most easily detected by inserting dummy program stops at key point. This procedure is also useful for diagnosing incorrect flow. A dummy stop is an inserted END, or some other inserted statement which is intent\-ionally erroneous to cause an error stop. Once the stop occurs, you may examine the values of key variables (using the immediate execution mode -e.g., PRINT A,B,C) to see if they indeed have the expected behavior. In some cases, variable values may be corrected, in the iramediate mode, while the program is still stopped. In this case, and in the case where the program behavior is proper so far, you will want to resume the program at the point where it last stopped. \f1\fs17 An \f0\fs22 immediate or direct GOTO, using the statement number after the stop, will permit the program to proceed as if it had not been interrupted. \par
+\par
+10-22 \par
+\par
+\pard\pagebb CDP18S020 Evaluation Kit COSMAC TINY BASIC \par
+\par
+\pard APPENDIX A \par
+\par
+LOADING AND STARTING TINY BASIC \par
+\par
+\pard\sl368\slmult0 The hexadecimal listing given below is the TINY BASIC object program (listed in UT4 semicolon format). Initially, you will have to load this file into memory by hand from the keyboard and then verify that it is a faithful copy. While this process is time consuming, it needs to \fs19 be \fs22 done only once. After memory is loaded, the contents of the first 2K bytes should be properly recorded on your peripheral file storage medium. Section III of your Evaluation Kit Manual contains instructions for recording a file from memory (using UT4's ?M command) onto a Teletype's paper tape or a TI terminal's magnetic tape cassette. If your terminal is different from either of these, you must develol equivalent procedures to those described in the manual. Once you have correctly recorded a copy of TINY BASIC on paper tape or tape cassette, it should be easily reloadable by preceding the tape read with a !M from the keyboard. This is discussed in the Evaluation Kit Manual. \par
+\par
+\pard Once TINY BASIC has been loaded, it may be started at one of two locations: \par
+\par
+\pard\sl371\slmult0 $P1 is the normal "cold" start. TINY BASIC initializes itself (sizes memory; copies a control block from OOOF-OOIB to 08l3-08lF; and marks the user program space empty) and then delivers the,: prompt.\par
+ \par
+\pard\sl368\slmult0 $P3 is the "warm" start, which skips the initialization procedure and preserves the state of RAM. It is used as a restart, when there is already a useful program resident in RAM or when certain control parameters have been modified so that they are different from those which were first initialized. If, after a "warm" start, you wish to enter a new program, type the NEW command. \par
+\par
+[pages 10-24 and 10-25 are the Tiny BASIC hex dump. See the JPEG image file  and HEX file for that information.]\par
+10-23\par
+\pard\fs24\par
+\pard\pagebb\f2\fs22 APPENDIX B \par
+\par
+\pard REGISTER ALLOCATIONS \par
+\pard\sl366\slmult0 Registers R0 and R1 are not used by TINY BASIC in any way. In addition, the program makes no reference to Q or EFl,2,3 or 4. All character I/O is funnelled through a vector near the beginning of the program. The user may request the performance of INP or OUT instructions as part of the BASIC program, but these are up to the user's discretion. \par
+\par
+\pard\sl376\slmult0 The other registers used by TINY are as follows: \par
+2 Control stack pointer.\par
+3 Inner interpreter Program Counter.\par
+4 Call linkage PC. \par
+5 Return linkage PC. \par
+\pard\sl371\slmult0 6 Top of control stack; -address of caller. Also holds branch address.\par
+7 Byte Fetch PC. \par
+8 Temporary work register. Receives second argument in USR call \par
+9 OUter interpreter Program Counter. ~address of next IL opcode. \par
+A l6-bit accumulator and work register. Contains third argument of USR calls, and part of response from USR calls. \par
+B BASIC Pointer. Points to next token.\par
+C Timing subroutine in  Terminal I/O. \par
+D Workspace memory pointer. = Expression Stack Pointer in USR calls. \par
+E Subroutine linkage temporary and Terminal timing constant. \par
+F Temporary work register. \par
+\par
+\pard\sl376\slmult0 Machine language subroutines called via the USR function have the free use of R0,R1,R8,RA,RD,RF. \par
+\f0\fs23\par
+\pard 10-26 \par
+\pard\pagebb\sl486\slmult0\fs22 APPENDIX C \par
+USE OF FIRST PAGE OF USER RAM BY TINY BASIC \par
+\pard\sl371\slmult0\par
+0812\tab\tab\fs20 UT3/UT4 \fs22 output delay flag \par
+0813\tab\tab Copy of BACKSPACE code \par
+0814\tab\tab Copy of CANCEL code \par
+0815\tab\tab Copy of Pad code \par
+0816\tab\tab Copy of Tape Mode Enable \par
+0817\tab\tab Copy of Spare stack Space \par
+0818\tab\tab Execution mode flag \par
+0819\tab\tab End of input line \par
+\pard\sl360\slmult1 081A\tab\tab Expression Stack pointer \par
+081B\tab\tab Output Control \par
+081C-081D\tab Saved address for NX \par
+081E-081F\tab Copy of IL base address \par
+0820-0821\tab Lowest address of user program space \par
+0822-0823\tab Highest address of user program space \par
+0824-0825\tab End of user program \f1\fs23 + \f0\fs22 stack reserve \par
+0862-0827\tab Top of GOSUB stack \par
+0828-0829\tab Current Line number in BASIC \par
+082A-082D\tab Temporary \par
+082E-082F\tab Input line pointer \par
+0830-087F\tab Input line, buffer and expression computation stack \par
+0880-0881\tab Random Number Generator seed \par
+0882-08B5\tab BASIC variables A-Z \par
+\pard\sl371\slmult0\par
+\pard\sl323\slmult0 Note: Each basic variable occupies two bytes beginning page which is twice its ASCII code. \par
+\par
+\pard\qj Displacement Variable \par
+\par
+\pard\sl360\slmult1\qj 0082\tab\tab A\par
+0084\tab\tab B\par
+...\par
+00B4\tab\tab Z\par
+\par
+\pard 10-27 \par
+\pard\pagebb\qc CDP18S020 Evaluation Kit COSMAC TINY BASIC \par
+\pard\pagebb\qj\fs23\par
+\pard\fs22 APPENDIX D\par
+\pard\pagebb\qj ALLOCATIONS IN LOW RAM\par
+\par
+\pard 0001 Cold Start\par
+0003 Warm Start\par
+0006-0008 LBR to character input\par
+0009-000B LBR to character output\par
+000C-000E LBR to Break test\par
+000F Backspace code\par
+0010 Line Cancel code\par
+0011 Pad character .\par
+0012 Tape Mode enable flag (hex 80=enab1ed)\par
+0013 Space stack size\par
+0014 Byte fetch subroutine\par
+0016 Double byte fetch entry vector\par
+0018 Byte store Subroutine\par
+001A-001B Address of IL\par
+001C-001D User space start for scan\par
+001E Page for memory wrap test\par
+001F Page for workspace\par
+0120 Entry vector for Hex input\par
+0123 Entry vector for Hex print\par
+0126 Entry vector for I/O\par
+0129 Entry vector for AND\par
+0800 Beginning of user RAM space\par
+\fs21\par
+\pard\pagebb\qj\fs23\par
+\f2\fs22 APPENDIX E \par
+\par
+\pard\qj ERROR MESSAGE SUMMARY\par
+\par
+0 Break during execution \par
+8 Memory overflow; line not inserted \par
+9 Line number 0 not allowed \par
+11 RUN with no program in memory \par
+33 Improper syntax in GOTO \par
+35 Nolineto GO TO \par
+40 LET is missing a variable name \par
+42 LET is missing an = \par
+45 Improper syntax in LET \par
+47 LET is not followed by END \par
+65 Missing close quote in PRINT string \par
+83 Circumflex in PRINT is not at end of statement \par
+85 PRINT not followed by END \par
+101 IF not followed by END \par
+111 INPUT syntax bad -expects variable name \par
+130 INPUT syntax bad -expects comma \par
+131 INPUT not followed by END \par
+140 RETURN syntax bad \par
+141 RETURN has no matching GOSUB \par
+142 GOSUB not followed by END \par
+147 END syntax bad \par
+179 LIST syntax error -expects comma \par
+189 Can't LIST line number 0 \par
+193 LIST not followed by END \par
+198 REM not followed by END \par
+199 Missing statement type ke~lord \par
+201 Misspelled statement type keyword \par
+243 Divide by zero \par
+276 Syntax error in Expression -expects value \par
+281 RND expects two arguments \par
+286 Missing right parenthesis \par
+321 IF expects relation operator \par
+\pard\sl366\slmult0\qj 356 Invalid arguments in RND \par
+\par
+\pard\sl238\slmult0\qj All other error numbers signify memory overflow (too many nested GOSUBS) or an excessively complex expression. \par
+\par
+10-29 \par
+\pard\pagebb\par
+CDP18S020 Evaluation Kit COSMAC TINY BASIC \par
+\f0\fs23\par
+\pard\fs22 APPENDIX F \par
+\par
+SPECIAL KEYBOARD CONTROL CHARACTERS \par
+\pard\sl368\slmult0 You may erase (backspace over) \fs21 an \fs22 incorrectly-entered character by hitting the "erase previous character" key. Its hex code is stored in location 000F, and it is presently an ASCII Left-arrow or Underline (Shift 0\fs20 ; \fs22 hex 5F). Each occurrence of _ erases the last stored input character. Thus, \par
+\pard\par
+POINT ____ RINT\fs19\par
+\pard\sl371\slmult0\fs22 corrects the erroneous second character. Similarly, you may erase the entire input line and start over by hitting, the "cancel line" character. Its hex code is stored in location 0010, and it is presently an ASCII CANCEL (Control X; hex 18) . You may change either of these edit control characters by changing its stored code\'b7 to any value except DC3, LF, NULL, or DELETE (hex codes 13, OA, 00 and FF, respectively). These special characters are trapped by TINY before its line edit code is entered. \par
+\par
+\pard\sl368\slmult0 The BREAK key may be used for two purposes: to interrupt a long LISTing or to interrupt the execution of a program (for example, one caught in an endless loop). While executing the LIST command, TINY checks BREAK at the beginning of every typed line. While executing a stored program, TINY checks BREAK between statements. \par
+\par
+\pard\sl371\slmult0 Each of your input lines from the keyboard 'is terminated with a carriage return (CR). Whenever TINY generates a new line (for example, when it echoes your CR), it generates CR PAD PAD LF PAD, where the pad character depends on the 2**7 bit of location 0011 (hex). If 0, it is the NULL character (hex 00). If 1, it is the RUBOUT/DELETE character (hex FF). The rest of the byte in location 0011 defines the count of the number of pads to be sent between each, CR and LF. It is presently set to 2. \par
+\par
+SUMMARY OF KEY CHARACTERS \par
+\par
+\pard\sl360\slmult1 CR\tab Terminates every entry line. \par
+_\tab Backspace. \par
+CAN\tab Cancel line. \par
+\pard\pagebb\sl360\slmult1 BREAK Interrupt long printout or execution. \par
+\pard\pagebb\par
+10-30\par
+\par
+Appendix G \par
+\par
+\pard Tape Control Characters \par
+\par
+\pard\sl368\slmult0 Whenever TINY generates the \fs21 ? \fs22 prompt character (during execution of an INPUT statement), it follows this by generating the XON (ASCII DC1) control character. If the input comes from tape, the user may elect to use this special control character to activate the tape reader. \par
+\par
+Similarly, TINY generates the XOFF (ASCII DC3; hex 13; Control S) control character whenever an error stop or NEW or END occurs - under the assumption that the user may want to deactivate the reader with this character. \par
+\par
+\pard\sl366\slmult0 These control characters may \f1\fs18 be \f0\fs22 ignored if the user has found an alternative method for tape I/O. \par
+\par
+\pard\fs23 10-31 \f1\fs20\par
+}
+ 

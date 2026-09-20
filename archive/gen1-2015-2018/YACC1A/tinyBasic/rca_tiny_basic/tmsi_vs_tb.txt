@@ -1,0 +1,25 @@
+> I'm looking for an 1802 version of Tiny Basic [as originally distributed]. 
+
+There's one published in the RCA "Instruction Manual for the RCA COSMAC
+Evaluation Kit CDP18S020 [#MPM-203] and the EK/Assembler-Editor Design Kit
+CDP18S024", #MPM-224. It includes the object listing (hex bytes and
+memory addresses), and Tom Pittman's user manual. RCA sold this version
+on paper tape.
+
+Tom Pittman sold a slightly different version himself, on paper tape,
+which included the "Experimenter's Manual". This may be the one you are
+thinking of.
+
+I have both, and am only aware of two differences between them:
+
+1. The RND function in RCA's version has 2 arguments; RND(exp1,exp2).
+Tom's version has 1 argument; RND(exp1).
+
+2. The RCA version has 3 addresses already patched to point to the
+UT4 monitor's console input, console output, and tape reader.
+Tom's version required that you add these patches yourself.
+
+The TMSI Tiny BASIC I posted on the cosmacelf website is derived from
+the RCA version.
+
+- Lee Hart, published in cosmacelf Yahoo Group post, Sept 2016
