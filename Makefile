@@ -11,6 +11,7 @@ check:
 	python3 tools/audit_tree.py
 	python3 tools/verify_firmware.py
 	python3 tools/verify_embedded.py
+	python3 tools/verify_processing.py
 	$(MAKE) -s -C software/assembler check
 	$(MAKE) -s -C firmware/microcode/ucode-generator2 check
 clean:

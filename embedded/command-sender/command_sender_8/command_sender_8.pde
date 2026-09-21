@@ -1,19 +1,8 @@
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JButton;
-import javax.swing.JToggleButton;
-import java.awt.Color;
-import javax.swing.JTabbedPane;
+/* YACC1-D 2026-09-20: unused imports removed (ActionEvent/ActionListener, JFrame, JPanel, JMenu*, JButton,
+ * JToggleButton, Color, JTabbedPane, Date, java.util.*). 'import java.io.*' also went: since Java 14 it brings in
+ * java.io.Serial, which made 'Serial' ambiguous and stopped the sketch building under Processing 4. */
 import processing.serial.*;
-import java.io.*;
-import java.util.Date;
-import javax.swing.*; 
-import java.util.*;
+import javax.swing.*;
 
 final boolean debug = false;
 final boolean useSerial = true;
@@ -54,8 +43,8 @@ final int VARS=100;
 varEntry[] vars = new varEntry[VARS];
 int nextVar=0;
 
-void saveLabel(String label, int index) {
-  labels.set(label, index);
+void saveLabel(String label, int lineIndex) {   /* YACC1-D 2026-09-20: parameter renamed, it shadowed the global 'index' */
+  labels.set(label, lineIndex);
 }
 
 int findLabelIndex(String label) {
@@ -306,7 +295,7 @@ int doCommand(String command, boolean match) {
     }
   }
   delay(delayString); // needed?
-  while (!isPrompt(getLine()));
+  while (!isPrompt(getLine())) { /* wait for the >> prompt */ }
   if (verbose!=0) println("Received Prompt"); //complete
   returnExpected = false;
   return(returnValueActual);
@@ -346,23 +335,22 @@ void setup() {
           JDialog dialog = new JDialog(); 
           dialog.setAlwaysOnTop(true); 
           COMx =  JOptionPane.showInputDialog(dialog, "Which COM port...\n"+COMlist);
-          if (COMx == null) exit();
-          if (COMx.isEmpty()) exit();
+          if (COMx == null || COMx.isEmpty()) { exit(); return; }   /* YACC1-D 2026-09-20: cancelled dialog no longer falls through to charAt(0) */
           i = int(COMx.toLowerCase().charAt(0) - 'a') + 1;
         }
         String portName = Serial.list()[i-1];
         if (verbose > 1) println(portName);
         myPort = new Serial(this, portName, 19200); // change baud rate to your liking
         delay(5000);
-        while (!isPrompt(getLine()));
+        while (!isPrompt(getLine())) { /* wait for the >> prompt */ }
       } else {
-        JOptionPane.showMessageDialog(frame, "Device is not connected to the PC");
+        JOptionPane.showMessageDialog(null, "Device is not connected to the PC");   /* YACC1-D 2026-09-20: was 'frame' (removed in Processing 3), null = centred dialog */
         exit();
       }
     }
     catch (Exception e)
     { //Print the type of error
-      JOptionPane.showMessageDialog(frame, "COM port is not available (may\nbe in use by another program)");
+      JOptionPane.showMessageDialog(null, "COM port is not available (may\nbe in use by another program)");
       println("Error:", e);
       exit();
     }

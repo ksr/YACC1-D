@@ -10,5 +10,6 @@
 
 Build check: `tools/verify_embedded.py` compiles every sketch here with arduino-cli (Uno / ATmega328) against ONLY the
 vendored `libraries/`; 12 sketches, all compile with zero sketch warnings (`--warnings all`) as of 2026-09-20 except the MCP23X17 work-in-progress, which is expected
-(it needs the 2.x Adafruit library). Manual build: copy `libraries/*` into `~/Documents/Arduino/libraries/` and use the IDE. The sequencer sketches carry their own copy of the signal subset
+(it needs the 2.x Adafruit library). The Processing host in `command-sender/` is checked the same way by
+`tools/verify_processing.py` (Processing 4 CLI build + Eclipse-compiler warnings). Manual build: copy `libraries/*` into `~/Documents/Arduino/libraries/` and use the IDE. The sequencer sketches carry their own copy of the signal subset
 (`YACC_Common_headera.h`, per generation) beside the .ino.

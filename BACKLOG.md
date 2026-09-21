@@ -32,6 +32,12 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   2016 register-card codes (REG-FUNC-LD, REG-BRD-LD-ID, WDATA/RDATAL) which are not in the 2020 bus table, where the card
   select became REG-LD-ID2..3 / ADDR-REG-ID0..3; the `fix` converter only maps BUS-WR. Rewrite it against the current
   signal table before generating vectors for the 2020 Index Register cards.
+- **Replace the Processing command sender with a Python host** (Ken, 2026-09-20). `embedded/command-sender/command_sender_8`
+  builds again under Processing 4.5.6 (2026-09-20 fixes) but is a dead end. `tools/busdrv.py` already speaks the bus tester's
+  `CMD:OPERAND#` / `>>` protocol; still needed is the script interpreter from the sketch: `//` comments, `:label` + `GOTO`,
+  `LET`, `FOR`/`NEXT`, `DUMP start end`, `WAIT`, `DUMPVARS`/`DUMPLABELS`, and `CMD:OP#EXPECTED!VAR` return-value matching
+  and capture (hex in the scripts, decimal on the wire). Retire the sketch to `deprecated/` once the Python version runs the
+  scripts in `tests/bus-tester-scripts/` on the bench.
 - Port of the P8X work (OS, monitor, BASIC, compilers) onto YACC1 — the reason this repo exists; not started.
 
 ## Verification still to do
