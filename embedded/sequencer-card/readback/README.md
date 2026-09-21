@@ -1,7 +1,7 @@
 # embedded/sequencer-card/readback — flash read out of the sequencer card's ATmega328P
 
 `sequencer-flash-2026-09-21.hex` is the whole 32K flash as read through the Arduino bootloader on 2026-09-21 (Intel hex, unused
-bytes $FF). It is a Sequencer3 build (older avr-gcc), still running on the card.
+bytes $FF). It is a Sequencer3 build (older avr-gcc); replaced 2026-09-21 by a tree build of sequencer3/ (same source).
 
 Read with:
 ```

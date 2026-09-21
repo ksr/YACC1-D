@@ -10,5 +10,6 @@
 - `deprecated/` — `sequencer1` (Aug 2020, for the V2.0 cards; its `download.ino` tab was filed in a subfolder in the old tree and is now beside the sketch) and `sequencer2` (Dec 2020), the 19200-baud senders for
   the v1 generator's 32-step format, and the Sept-2020 EEPROM test that was filed under the bus tester.
 
-Flash read-out of the card's ATmega328P, 2026-09-21 (`readback/`): a Sequencer3 build (identical message strings to a
-build of this folder; older compiler, 13,290 vs 11,186 bytes today). Not re-flashed.
+Flash read-out of the card's ATmega328P, 2026-09-21 (`readback/`, with the restore command): a Sequencer3 build (identical
+message strings to a build of this folder; older compiler, 13,290 vs 11,186 bytes today). **Re-flashed from this folder the
+same day; the flash reads back byte-identical to the tree build.**

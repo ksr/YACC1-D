@@ -40,10 +40,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - Port of the P8X work (OS, monitor, BASIC, compilers) onto YACC1 — the reason this repo exists; not started.
 
 ## Verification still to do
-- Rebuild `embedded/sequencer-card/sequencer3` with arduino-cli from the tree and upload it, so the sequencer runs exactly
-  what the tree records (2026-09-21: the flash read-out is a Sequencer3 build from an older toolchain - same messages,
-  bytes unprovable). The bus tester was done 2026-09-21 (blocks-1 firmware; the old flash was read out
-  first and was the 2020 bus-driver).
+- (done 2026-09-21: both ATmegas now run tree builds, verified by reading the flash back; the previous binaries are in
+  `embedded/*/readback/`)
 - (done 2026-09-20: `tools/verify_embedded.py`, 12 sketches compile against the vendored libraries)
 - Memory v1.3: the 2025 gerbers came from Fusion's CAM; overlay them against the tree's Eagle board (netlist proven, gerbers not).
 - (answered 2026-09-20: jumper boards not fitted/obsolete, EEPROM adaptor fitted, two register cards, RN2 = 1k; bus tester
