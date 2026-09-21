@@ -57,7 +57,6 @@ int WildMatch(char *src,char *dest)
 {
   char flag;
   char buffer[255];
-  char class[20];
   char *BPtr;
   int i;
   word wrd;
@@ -235,7 +234,7 @@ int WildMatch(char *src,char *dest)
 
 int Match(int Entry)
 {
-  int i,m1,m2;
+  int m1;
   ArgCount=0;
   m1=WildMatch(DefFile.Command[Entry],command);
   if (m1 != 0) return 1;
@@ -247,7 +246,6 @@ void Translate(int Entry)
   int  labelNum;
   char *Ptr;
   char *Lptr;
-  char *BPtr;
   char quotes;
   byte B,i,j;
   word w;
@@ -402,7 +400,6 @@ void Translate(int Entry)
       if (argtype[i]=='L' || argtype[i] == 'M') {
         Lptr=listBuffer;
         quotes=0;
-        BPtr=buffer;
         pTemp = temp;
         flag='*';
         while (flag == '*') {

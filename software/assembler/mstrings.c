@@ -7,7 +7,6 @@ void replace(char* buffer,char* search,char* rpl)
   char *origin;
   char *tmpb;
   char *tmps;
-  char *tmpr;
   char *dst;
   origin=buffer;
   dst=_strbuffer;
@@ -109,8 +108,6 @@ char* remspace(char* buffer)
 
 char* trailspace(char* buffer)
 {
-  char *dest;
-  dest=_strbuffer;
   strcpy(_strbuffer,buffer);
   while (strlen(_strbuffer)>0 && _strbuffer[strlen(_strbuffer)-1]==' ')
     _strbuffer[strlen(_strbuffer)-1]='\0';

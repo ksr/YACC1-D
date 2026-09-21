@@ -61,7 +61,6 @@ void write_byte(byte i)
 word find_label_number(char* buf) {
   int i;
   int f;
-  char mode;
   if (pass == 1) return 0;
   for (i=1;i<=nlabel;i++) {
     if (strcmp(labels[i],buf)==0)  f=i;
@@ -130,7 +129,6 @@ byte char_to_hex(char buffer) {
 
 word conv_hex(char* buffer)
 {
-  int i;
   word t;
   t=0;
   while (*buffer!='\0')
@@ -331,8 +329,6 @@ word get_num(char* buf)
   int  i,j,k;
   int  flag;
   word v;
-  word e;
-  char sign;
   buildTokens(buf);
 /*
 printf("token count = %d\n",tokenCount);
