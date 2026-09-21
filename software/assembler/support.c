@@ -6,7 +6,7 @@
 #include "header.h"
 #include "mstrings.h"
 
-int atoi();
+/* int atoi(); -- YACC1-D 2026-09-20: K&R declaration removed, <stdlib.h> provides the prototype */
 
 void write_line() {
   int i;
