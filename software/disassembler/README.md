@@ -1,8 +1,9 @@
 # software/disassembler — microcode disassembler
 
-`disasm2/` decodes the 64-step microcode image produced by `firmware/microcode/ucode-generator2/` (it reads
-`../ucode-Generator2/test.123` – a symlink here points at the generator folder) and prints, per opcode, which control
-signals are active on each step, using the signal names in `firmware/microcode/yaccsignaldefine.h`.
+`disasm2/` decodes the 64-step microcode image produced by `firmware/microcode/ucode-generator2/` and prints, per opcode,
+which control signals are active on each step, using the signal names in `firmware/microcode/yaccsignaldefine.h`.
+`make` builds it; `./disasm2` decodes every opcode, `./disasm2 04 05` selected ones (hex). It finds `test.123` relative to its
+own location, so it runs from anywhere (Finder double-click included).
 
 Fixed in the tree 2026-09-20 (listed in `tools/patched_files.txt`, the only edited migrated source so far): the
 `#include "../yaccsignaldata2.h"` line, commented out in the 2024 commit, is re-enabled (it resolves through the layout link

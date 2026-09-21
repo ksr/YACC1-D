@@ -2829,7 +2829,7 @@ copy	firmware/basic/candidates/2021-09-02-3bcacf3-not-working/basic.lst	YACC git
 copy	firmware/basic/candidates/2021-09-8afde21/basic.asm	YACC1-2024/Software pre vs/Assembler/basic.asm	795915fa2596ed726c495ed3e7035e43
 copy	firmware/basic/candidates/basic.asmold.asm	YACC1-2024/Software-vs/Assembler/basic.asmold.asm	a93bbdea021bdef8644a6a2fa8c97bc2
 copy	firmware/microcode/ucode-generator2/CodeGen.h	YACC1-2024/Software/Sequencer Card/uCode-Generator2/CodeGen.h	cc41c31a062469100ac2c864c97d6a82
-copy	firmware/microcode/ucode-generator2/Makefile	YACC1-2024/Software/Sequencer Card/uCode-Generator2/Makefile	a9ed26ab7eaad2726af7a610a26eb390
+copy	firmware/microcode/ucode-generator2/Makefile.netbeans	YACC1-2024/Software/Sequencer Card/uCode-Generator2/Makefile	a9ed26ab7eaad2726af7a610a26eb390
 copy	firmware/microcode/ucode-generator2/accumulator.c	YACC1-2024/Software/Sequencer Card/uCode-Generator2/accumulator.c	3ab8f9dbad92cdf26665e939e503e153
 copy	firmware/microcode/ucode-generator2/branch.c	YACC1-2024/Software/Sequencer Card/uCode-Generator2/branch.c	896df6122f959241867b288d1886a0be
 copy	firmware/microcode/ucode-generator2/cache	YACC1-2024/Software/Sequencer Card/uCode-Generator2/cache	f42deebffb97cd467e1b6fa3a7f6fa5a
@@ -3742,7 +3742,7 @@ copy	software/assembler/upstream/rcasm-2.2/test.asm	YACC gitversion/YACC1-2020/S
 copy	software/assembler/upstream/rcasm-2.2/z8.def	YACC gitversion/YACC1-2020/Software/Assembler/old/rcasm-orig/z8.def	2af4cb7ddf2498dabe643d6ae99c4855
 copy	software/assembler/upstream/rcasm-2.2/z80.def	YACC gitversion/YACC1-2020/Software/Assembler/old/rcasm-orig/z80.def	d5c071ee2542562a02fbc2213e390782
 copy	software/assembler/yacc1.def	YACC1-2020/Software/Assembler/yacc1.def	a9a9007510fb9b7d699010425021861f
-copy	software/disassembler/disasm2/Makefile	YACC1-2024/Software/Sequencer Card/disasm2/Makefile	a9ed26ab7eaad2726af7a610a26eb390
+copy	software/disassembler/disasm2/Makefile.netbeans	YACC1-2024/Software/Sequencer Card/disasm2/Makefile	a9ed26ab7eaad2726af7a610a26eb390
 copy	software/disassembler/disasm2/code.h	YACC1-2024/Software/Sequencer Card/disasm2/code.h	dfc3db2e59b5a15615bfa6676d76fa39
 copy	software/disassembler/disasm2/main.c	YACC1-2024/Software/Sequencer Card/disasm2/main.c	3a39c9b9cf13722826ebd24b0e9e7aa6
 copy	software/disassembler/disasm2/nbproject/Makefile-Debug.mk	YACC1-2024/Software/Sequencer Card/disasm2/nbproject/Makefile-Debug.mk	0c7261508efd0e744a230a9d8c4b8a24
@@ -3769,7 +3769,7 @@ copy	software/ubasic-c/ubasic-master-orig/ubasic.h	YACC1-2024/Software-vs/ubasic
 copy	software/ubasic-c/ubasic-master-orig/use-ubasic.c	YACC1-2024/Software-vs/ubasic-master-orig/use-ubasic.c	88973f923e14cd571ab6bddd147b0c67
 copy	software/ubasic-c/ubasic-master-orig/vartype.h	YACC1-2024/Software-vs/ubasic-master-orig/vartype.h	ab458adf83a597579da30b6f05ae68c8
 copy	software/ubasic-c/ubasic-master/LICENSE	YACC1-2024/Software-vs/ubasic-master/LICENSE	5438f8cca89b16a8566b74b66cc10f09
-copy	software/ubasic-c/ubasic-master/Makefile	YACC1-2024/Software-vs/ubasic-master/Makefile	867e3361a5c944d44cc18e1ccd3e6145
+copy	software/ubasic-c/ubasic-master/Makefile.netbeans	YACC1-2024/Software-vs/ubasic-master/Makefile	867e3361a5c944d44cc18e1ccd3e6145
 copy	software/ubasic-c/ubasic-master/README.md	YACC1-2024/Software-vs/ubasic-master/README.md	c0ea5d3c8aa22128cc2945e032ceaa76
 copy	software/ubasic-c/ubasic-master/nbproject/configurations.xml	YACC1-2024/Software-vs/ubasic-master/nbproject/configurations.xml	4a3dc3ada193164d7527233f21164d77
 copy	software/ubasic-c/ubasic-master/nbproject/project.xml	YACC1-2024/Software-vs/ubasic-master/nbproject/project.xml	449301ac630b37d3a7454dcc96aed073
@@ -3818,7 +3818,7 @@ copy	tests/bus-tester-scripts/ALU/branch.new	YACC gitversion/YACC1-2020/Software
 copy	tests/bus-tester-scripts/ALU/or.new	YACC gitversion/YACC1-2020/Software/Bus Test Card/Command sender/tests/ALU/or.new	d25f0bfdce59c88e8668770d517854b3
 copy	tests/bus-tester-scripts/ALU/sub.new	YACC gitversion/YACC1-2020/Software/Bus Test Card/Command sender/tests/ALU/sub.new	42a8e57a9952cb3a30dd32ec4ed441b5
 copy	tests/bus-tester-scripts/ALU/zero test.new	YACC gitversion/YACC1-2020/Software/Bus Test Card/Command sender/tests/ALU/zero test.new	eb5a4e78e11886893523d3fd9763895a
-copy	tests/bus-tester-scripts/Gen Test Vectors/gen test vectors/Makefile	YACC gitversion/YACC1-2020/Software/Bus Test Card/Command sender/tests/Gen Test Vectors/gen test vectors/Makefile	a9ed26ab7eaad2726af7a610a26eb390
+copy	tests/bus-tester-scripts/Gen Test Vectors/gen test vectors/Makefile.netbeans	YACC gitversion/YACC1-2020/Software/Bus Test Card/Command sender/tests/Gen Test Vectors/gen test vectors/Makefile	a9ed26ab7eaad2726af7a610a26eb390
 copy	tests/bus-tester-scripts/Gen Test Vectors/gen test vectors/main.c	YACC gitversion/YACC1-2020/Software/Bus Test Card/Command sender/tests/Gen Test Vectors/gen test vectors/main.c	3c4d500a50063bce3a28c408d944cd7b
 copy	tests/bus-tester-scripts/Gen Test Vectors/gen test vectors/nbproject/Makefile-Debug.mk	YACC gitversion/YACC1-2020/Software/Bus Test Card/Command sender/tests/Gen Test Vectors/gen test vectors/nbproject/Makefile-Debug.mk	2b23badb9df43c877573802421ff2025
 copy	tests/bus-tester-scripts/Gen Test Vectors/gen test vectors/nbproject/Makefile-Release.mk	YACC gitversion/YACC1-2020/Software/Bus Test Card/Command sender/tests/Gen Test Vectors/gen test vectors/nbproject/Makefile-Release.mk	523180f675684b0ac5c5f23cf1e6d4f3

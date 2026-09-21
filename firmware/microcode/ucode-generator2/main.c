@@ -248,7 +248,9 @@ void putBustoRegMem(int reg, char *source) { // Source is either Accumulator TMP
 
 }
 
+const char *g_argv0 = "";   /* YACC1-D 2026-09-20: for exe_relative() in controlLine.c */
 int main(int argc, char** argv) {
+    g_argv0 = argv[0];
     int reg;
     int ins;
 

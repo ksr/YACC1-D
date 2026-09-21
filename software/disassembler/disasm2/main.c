@@ -270,20 +270,45 @@ bool processInstruction(int instruction) {
 /*
  * 
  */
+/* YACC1-D 2026-09-20: resolve a path relative to the folder this executable is in, so the program works from a
+   Finder double-click or any working directory. */
+#include <libgen.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
+static const char *g_argv0 = "";
+static void exe_relative(char *out, size_t outlen, const char *rel) {
+    char exe[4096], dir[4096];
+#ifdef __APPLE__
+    uint32_t n = sizeof(exe);
+    if (_NSGetExecutablePath(exe, &n) != 0) strncpy(exe, g_argv0, sizeof(exe) - 1);
+#else
+    strncpy(exe, g_argv0, sizeof(exe) - 1);
+#endif
+    exe[sizeof(exe) - 1] = 0;
+    if (realpath(exe, dir) == NULL) strncpy(dir, exe, sizeof(dir) - 1);
+    snprintf(out, outlen, "%s/%s", dirname(dir), rel);
+}
+
+/* YACC1-D 2026-09-20: usage  disasm2 [opcode ...]   (hex, e.g. 04 0x05; none = every opcode)
+   reads firmware/microcode/ucode-generator2/test.123 found relative to this program */
 int main(int argc, char** argv) {
     int i;
-
+    char path[4096];
+    g_argv0 = argv[0];
     printf("Start Disassembler\n");
-    printf("Read in file\n");
-    readSource("../ucode-Generator2/test.123");
-
-    for (i = 0; i < INSTRUCTIONS; i++) {
-        if (processInstruction(i)) {
-            //printf("Instruction [%d] found\n", i);
-        }
+    exe_relative(path, sizeof path, "../../../firmware/microcode/ucode-generator2/test.123");
+    printf("Read in file %s\n", path);
+    readSource(path);
+    if (argc > 1) {
+        for (i = 1; i < argc; i++) processInstruction((int) strtol(argv[i], NULL, 16));
+    } else {
+        for (i = 0; i < INSTRUCTIONS; i++) processInstruction(i);
     }
-    processInstruction(0x04);
-    processInstruction(0x05);
     return (EXIT_SUCCESS);
 }
 

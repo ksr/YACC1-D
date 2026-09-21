@@ -25,8 +25,9 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - `firmware/abi/` — the BIOS/port/variable map still has to be written from the two .asm headers.
 
 ## Software
-- The three C tools carry the old tree's relative include paths; `tools/layout_links.py` symlinks cover it. When the
-  NetBeans → Makefile move happens (README decision 7), fix the includes and drop the links.
+- Every C tool now has a plain Makefile (2026-09-20); the NetBeans projects are kept but no longer needed to build. The three
+  tools still carry the old tree's relative include paths, satisfied by `tools/layout_links.py` symlinks; fixing the includes
+  would let the links go.
 - Port of the P8X work (OS, monitor, BASIC, compilers) onto YACC1 — the reason this repo exists; not started.
 
 ## Verification still to do

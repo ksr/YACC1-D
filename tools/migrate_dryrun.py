@@ -188,6 +188,7 @@ RULES = [
     (C20, "Software/Assembler/xx", "firmware/monitor/monnew-2025/monnew.lst", "copy"),
     (C20, "Software/Assembler/yacc1.def", "software/assembler/", "copy"),           # 2025-03-14: the 2020 def + lowercase 'equ' -> THE assembler definition
     (C24, "Software/Sequencer Card/uCode-Generator2/cache.old", "", "drop"),        # byte-identical to cache
+    (C24, "Software/Sequencer Card/uCode-Generator2/Makefile", "firmware/microcode/ucode-generator2/Makefile.netbeans", "copy"),
     (C24, "Software/Sequencer Card/uCode-Generator2/", "firmware/microcode/ucode-generator2/", "copy"),
     (C24, "Software/Sequencer Card/yaccsignaldata2.h", "firmware/microcode/", "copy"),
     (C24, "Software/Sequencer Card/yaccsignaldata.h", "archive/superseded-revisions/ucode-generator-v1/", "archive"),   # the v1 signal table (SPARE1/-BRANCH-RD-LO/HI) belongs with the v1 generator
@@ -228,11 +229,13 @@ RULES = [
     (NG, "Software/Assembler/test_output.txt", "tests/assembler/", "copy"),
     (C24, "Software/emulator/main.c", "software/emulator/", "copy"),
     (C24, "Software/opcodes.h", "software/", "copy"),                                  # the ISA opcode table, shared by emulator / disasm2 / ucode-generator2
+    (C24, "Software/Sequencer Card/disasm2/Makefile", "software/disassembler/disasm2/Makefile.netbeans", "copy"),
     (C24, "Software/Sequencer Card/disasm2/", "software/disassembler/disasm2/", "copy"),
     (C24, "Software/Sequencer Card/disasm/", "archive/superseded-revisions/disasm-v1/", "archive"),   # 32-step microcode version, pairs with ucode-generator-v1
     (C24, "Software-vs/ubasic-master/tokenizer copy.c", "", "drop"),                    # 2020-11-06 intermediate
     (C24, "Software-vs/ubasic-master/use-ubasic", "", "drop"),                          # compiled arm64 binaries
     (C24, "Software-vs/ubasic-master-orig/use-ubasic", "", "drop"),
+    (C24, "Software-vs/ubasic-master/Makefile", "software/ubasic-c/ubasic-master/Makefile.netbeans", "copy"),
     (C24, "Software-vs/ubasic-master/", "software/ubasic-c/ubasic-master/", "copy"),
     (C24, "Software-vs/ubasic-master-orig/", "software/ubasic-c/ubasic-master-orig/", "copy"),
     # 16-bit software experiment (Sept 2021): DELETED on Ken's instruction 2026-09-20; originals stay in YACCS
@@ -261,6 +264,7 @@ RULES = [
     (C24, "Software-vs/Bus Test Card/Command sender/tests/Test Vectors/", "tests/bus-tester-scripts/deprecated/gen1-2016/Test Vectors/", "copy"),
     (GV, "Software/Bus Test Card/Command sender/tests/Address Register/", "tests/bus-tester-scripts/deprecated/address-register-2020-07/", "copy"),
     (C24, "Software-vs/Bus Test Card/Command sender/tests/Address Register/", "tests/bus-tester-scripts/deprecated/address-register-2020-07/", "copy"),
+    (None, "Software*/Bus Test Card/Command sender/tests/Gen Test Vectors/gen test vectors/Makefile", "tests/bus-tester-scripts/Gen Test Vectors/gen test vectors/Makefile.netbeans", "copy"),
     (C24, "Software-vs/Bus Test Card/Command sender/tests/", "tests/bus-tester-scripts/", "copy"),
     (GV, "Software/Bus Test Card/Command sender/tests/", "tests/bus-tester-scripts/", "copy"),
     # ---- embedded cleanup 2026-09-20: current sketch/app at the top, superseded generations under deprecated/

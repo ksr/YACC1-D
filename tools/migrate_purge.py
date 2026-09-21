@@ -23,7 +23,7 @@ for sdir, ddir, mode in mr.EXTRA:
         for fn in files:
             if not any(fnmatch.fnmatch(fn, j) for j in mr.JUNK): keep.add(os.path.join(ddir, os.path.relpath(os.path.join(root, fn), sdir)))
 PATCHED = {l.split("\t")[0].strip() for l in open(os.path.join(DST, "tools/patched_files.txt")) if l.strip() and not l.startswith("#")}
-removed = []
+removed = []; kept = []
 for lf in glob.glob(os.path.join(DST, "migration/run-log-*.tsv")):
     for r in csv.DictReader(open(lf), delimiter="\t"):
         stale = r["destination"] not in keep
@@ -33,8 +33,13 @@ for lf in glob.glob(os.path.join(DST, "migration/run-log-*.tsv")):
         if r["destination"] in PATCHED: continue          # deliberately edited in the tree: never reverted
         if r["result"] == "copied" and stale:
             p = os.path.join(DST, r["destination"])
-            if os.path.isfile(p): os.remove(p); removed.append(r["destination"])
+            if not os.path.isfile(p): continue
+            src = r["source"] if os.path.isabs(r["source"]) else os.path.join(mr.SRC, r["source"])
+            if os.path.isfile(src) and h(p) != h(src):
+                kept.append(r["destination"]); continue        # no longer the migrated bytes: something hand-written took this path, leave it
+            os.remove(p); removed.append(r["destination"])
 for top in ("hardware", "archive", "software", "firmware", "embedded", "docs", "tests"):
     for root, dirs, files in os.walk(os.path.join(DST, top), topdown=False):
         if root != os.path.join(DST, top) and not os.listdir(root): os.rmdir(root)
 print("stale files removed: %d" % len(removed)); [print("   ", x) for x in removed[:20]]
+if kept: print("left alone (hand-written content at a stale path): %d" % len(kept)); [print("   ", x) for x in kept[:10]]

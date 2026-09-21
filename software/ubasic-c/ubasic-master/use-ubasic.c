@@ -141,6 +141,7 @@ int main(int argc, char *argv[]) {
                 c = fgetc(stdin);
                 linebuff[i++] = c;
             } while ((c != '\n') && (c != -1));
+            if (c == -1) { printf("\n"); return 0; }   /* YACC1-D 2026-09-20: end of input ends the session (was an endless loop) */
 
             DEBUG_PRINTF("input line=[%s]\n", linebuff);
 

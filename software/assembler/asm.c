@@ -180,8 +180,11 @@ void Read_Def_File(char *FileName)
   if ((InFile=fopen(FileName,"r"))==NULL) {
     strcpy(Buffer,DEF_DIR);
     strcat(Buffer,FileName);
-      printf("KEN %s\n",Buffer);
     InFile=fopen(Buffer,"r");
+    }
+  if (InFile==NULL) {   /* YACC1-D 2026-09-20: was a crash */
+    printf("Definition file %s not found (looked in the current directory and %s). Use -d=yacc1 with yacc1.def beside you.\n",FileName,DEF_DIR);
+    exit(1);
     }
   fgets(Buffer,80,InFile);
   Buffer[strlen(Buffer)-1]='\0';
@@ -268,6 +271,10 @@ int main(int argc,char** argv)
       {
         readOptions(argv[i]);
      }
+  if (workfile[0]=='\0') {   /* YACC1-D 2026-09-20: no source given -> usage instead of a crash */
+    printf("RC/asm v%2.1f (YACC1 port)\nusage: asm SOURCE -d=yacc1     (SOURCE without .asm, BEFORE the options; needs rcasm.rc + yacc1.def in the current dir)\n",VERSION);
+    exit(1);
+    }
   Read_Def_File(DefName);
   strcpy(inname,workfile);
   strcat(inname,".asm");

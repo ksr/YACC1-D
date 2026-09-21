@@ -128,17 +128,42 @@ void bitOff(int signalNum) {
 #endif
 }
 
+/* YACC1-D 2026-09-20: resolve a path relative to the folder this executable is in, so the program works from a
+   Finder double-click or any working directory. */
+#include <libgen.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
+extern const char *g_argv0;
+static void exe_relative(char *out, size_t outlen, const char *rel) {
+    char exe[4096], dir[4096];
+#ifdef __APPLE__
+    uint32_t n = sizeof(exe);
+    if (_NSGetExecutablePath(exe, &n) != 0) strncpy(exe, g_argv0, sizeof(exe) - 1);
+#else
+    strncpy(exe, g_argv0, sizeof(exe) - 1);
+#endif
+    exe[sizeof(exe) - 1] = 0;
+    if (realpath(exe, dir) == NULL) strncpy(dir, exe, sizeof(dir) - 1);
+    snprintf(out, outlen, "%s/%s", dirname(dir), rel);
+}
+
 void dumpCntlMemory() {
     unsigned char checksum;
     int i, j, k;
     FILE *dumper;
-    dumper = fopen("test.123", "wb");
+    char outpath[4096];
+    exe_relative(outpath, sizeof outpath, "test.123"); dumper = fopen(outpath, "wb");   /* YACC1-D: outputs beside the executable */
     //for(int i=0;i<MEMORY_SIZE;i++)
     fwrite(cntlMemory, 1, MEMORY_SIZE, dumper);
     fclose(dumper);
 
     FILE *dumper2;
-    dumper2 = fopen("test.hex", "w");
+    exe_relative(outpath, sizeof outpath, "test.hex"); dumper2 = fopen(outpath, "w");
     for (i = 0; i < INSTRUCTIONS_TO_OUTPUT; i++) {
         checksum = 0;
         for (j = 0; j < INSTRUCTION_SIZE; j++) {
@@ -161,7 +186,8 @@ void dumpCntlMemory() {
     //flush(dumper2)
     fclose(dumper2);
 
-    dumper2 = fopen("test.hexz", "w");
+    exe_relative(outpath, sizeof outpath, "test.hexz"); dumper2 = fopen(outpath, "w");
+    printf("microcode written beside the program: test.123, test.hex, test.hexz\n");
     for (i = 0; i < INSTRUCTIONS_TO_OUTPUT; i++) {
         checksum = 0;
         for (j = 0; j < INSTRUCTION_SIZE; j++) {
