@@ -26,7 +26,6 @@ void makeupper(char *buffer) {
 
 void trim(char *buffer) {
   char *BPtr;
-  int i;
     char tmp[100]; // ken
 /*
   for (i=0;i<strlen(buffer);i++)

@@ -6,6 +6,7 @@ software/emulator/main.c	2026-09-20: -m (and the no-argument default) load firmw
 firmware/microcode/ucode-generator2/controlLine.c	2026-09-20: outputs (test.123/.hex/.hexz) written beside the executable, not in the cwd (Finder double-click)
 firmware/microcode/ucode-generator2/main.c	2026-09-20: keeps argv[0] for controlLine.c's exe_relative()
 software/ubasic-c/ubasic-master/use-ubasic.c	2026-09-20: interactive mode exits at end of input instead of looping forever
-software/assembler/asm.c	2026-09-20: usage message when no source is given, clean error when the .def is missing (both crashed before)
-software/assembler/asmcmds.c	2026-09-20: parentheses in the quote/comma loop condition; explicit (int) cast in the abs() range check (both warning fixes, no behaviour change)
-software/assembler/support.c	2026-09-20: #include <stdlib.h> for atoi(), old K&R 'int atoi();' declaration removed
+software/assembler/asm.c	2026-09-20: usage message when no source is given, clean error when the .def is missing (both crashed before); unused local removed
+software/assembler/asmcmds.c	2026-09-20: parentheses in the quote/comma loop condition; explicit (int) cast in the abs() range check (both warning fixes, no behaviour change); unused locals class/i/m2/BPtr removed
+software/assembler/support.c	2026-09-20: #include <stdlib.h> for atoi(), old K&R 'int atoi();' declaration removed; unused locals mode/i/e/sign removed
+software/assembler/mstrings.c	2026-09-20: unused locals tmpr/dest removed

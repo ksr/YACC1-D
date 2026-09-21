@@ -7,7 +7,7 @@
 # Invocation gotcha: `asm NAME -d=yacc1` — the source name (no extension) must come BEFORE -d=…, because the -d
 # handler skips the following argument. The assembler wants rcasm.rc, yacc1.def and NAME.asm in the current dir.
 CC      ?= cc
-CFLAGS  ?= -O2 -Wall -Wno-unused-variable -Wno-unused-but-set-variable
+CFLAGS  ?= -O2 -Wall
 SRC      = asm.c asmcmds.c support.c mstrings.c
 FW       = ../../firmware
 TARGETS  = monitor basic
