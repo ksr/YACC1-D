@@ -18,10 +18,13 @@ asm: $(SRC) header.h mstrings.h
 	$(CC) $(CFLAGS) -o $@ $(SRC)
 
 # assemble one firmware source in build/NAME/ (keeps the tree clean); listing = the assembler's stdout
-build/%/%.img: asm yacc1.def rcasm.rc $(FW)/%/%.asm
-	@mkdir -p build/$*
-	@cp yacc1.def rcasm.rc "$(FW)/$*/$*.asm" build/$*/
-	@cd build/$* && ../../asm $* -d=yacc1 > $*.lst
+define ASM_RULE
+build/$(1)/$(1).img: asm yacc1.def rcasm.rc $(FW)/$(1)/$(1).asm
+	@mkdir -p build/$(1)
+	@cp yacc1.def rcasm.rc "$(FW)/$(1)/$(1).asm" build/$(1)/
+	@cd build/$(1) && ../../asm $(1) -d=yacc1 > $(1).lst
+endef
+$(foreach t,$(TARGETS),$(eval $(call ASM_RULE,$(t))))
 
 check: $(foreach t,$(TARGETS),build/$(t)/$(t).img)
 	@ok=1; for t in $(TARGETS); do \
