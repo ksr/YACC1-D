@@ -9,11 +9,10 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Bus Tester V3.1** (`hardware/cards/bus-tester/eagle/v3.1`, 2020-07): latches drive the bus, soft bus-enable/reset,
   bypass caps; routed, CAM run, never ordered. Decide: build it, or keep the 2016 v1.1 for good.
 - **Video card**: RN2 is currently 1k (design says 10k, changed during the 2026-09-18 tests) — decide which value stays.
-- **Video card fixes** (`hardware/cards/video`): 6845 CS/RS both on A0; 7416 outputs need pull-ups; block-0/9
-  write-through fault to be diagnosed (ADP2230 capture on IC18 pin 6). Fusion 360 is the master — decide whether the
-  tree's Eagle export (or a KiCad conversion) becomes the master.
-  Also: schematic and board disagree on IC1/IC2's supply (+5V on the board, implicit VCC in the schematic; found by the
-  KiCad netlist proof 2026-09-20) — settle it in the next revision.
+- **Video card fixes** (`hardware/cards/video`, next revision): join +5V and VCC in the design (the +5V rail had no source;
+  bench wire since 2026-09-21 — this was the cause of the block-0/9 write-through fault, resolved); drop the /A0 term from
+  the 6845 -CS decode (data register unreachable as drawn; bench fix = IC1 pin 13 high); pull-ups on the 7416 outputs.
+  Fusion 360 is the master — decide whether the tree's Eagle export (or the KiCad conversion) becomes the master.
 - **IO V1.2 ideas** (IO notes): directional data-bus buffer driven by -IO-RD; 74138 IC5 pin 5 tied to -BUS-EN.
 - **Index Registers**: notes ask whether bus direction should follow -RD-SEL (the same question as the IO buffer).
 - **Memory v1.3 notes**: "should TMP registers move to the ALU", hard-jumper a boot-loader enable, 4K-block EEPROM select.

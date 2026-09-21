@@ -11,16 +11,24 @@ composite-video experiment.
 blank card template; stored here under the matching name so Eagle links the pair). One version, built, in the
 machine for bring-up without a CRTC fitted.
 
-Known issues (bus-driver tests 2026-09-18):
-- as drawn, the 6845 data register is unreachable: CS needs A0 = 0 while RS = A0;
-- 7416 open-collector outputs drive lines with no pull-ups;
-- write-through fault: a write to block 0 or block 9 (A0 = 0, A11 = 0, -MEM-WR falling edge, -VMA asserted)
-  lands in the video RAM regardless of the board-select comparator; independent of the memory card and of the
-  RN2 value. Needs a logic-analyser capture on IC18 pin 6 (see the ADP2230 plan) or a 7485 swap.
+Known issues and findings:
+- **+5V rail unpowered as designed (found 2026-09-20 by the KiCad netlist proof, confirmed on the bench 2026-09-21).**
+  The design has two 5 V nets with nothing joining them: `VCC` (bus pins, the implicit power pins of IC17–IC28) and `+5V`
+  (IC1 74ALS08, IC2 74LS373, IC15 pin 2, RN2, R10, R12 and every decoupling cap). `+5V` reaches no connector pin, so IC1,
+  IC2 and the SV3 pull-ups ran on phantom power through input clamp diodes. Ken joined the two rails with a wire
+  (2026-09-21); after that the write-through fault below was gone. The KiCad conversion's `reports/netlist-compare.txt`
+  shows the two nets.
+- **Write-through fault — RESOLVED 2026-09-21.** On 2026-09-18 a write to block 0 or block 9 (A0 = 0, A11 = 0, -MEM-WR
+  falling edge, -VMA asserted) landed in the video RAM regardless of the board-select comparator. Cause: the unpowered
+  `+5V` rail (IC1 drives BOARDSEL into the 7485, RN2 pulls the SV3 jumper inputs up to that rail). With the rails joined,
+  `tests/video/video_ram_test.py` passes 8/8 over all 1K (patterns, inverse, neighbour isolation, writes from $0010/$9010/
+  $0011/$1010 never reach $D010, read stability) and `tools/alias_min.py` reports no fault.
+- **6845 data register unreachable as drawn.** -CS (IC17 pin 25) = NAND(BOARDSEL, A11 AND /A0): IC19 pin 3, from IC1 pin 11
+  (A11 AND N$5) where N$5 = IC27 pin 8 = /A0. RS is A0. So the chip is only selected with A0 = 0, which is always RS = 0:
+  only the address register is reachable, the data register never. Bench fix: lift IC1 pin 13 off IC27 pin 8 and tie it
+  high; then $D400 = address register, $D401 = data register (repeating through $D7FF). Design fix: drop the inverter stage.
+- 7416 open-collector outputs (IC27) drive IC1, IC2 and IC26 with no pull-ups; N$5 above only reads high when floating.
 - Inherits the Blank V3.1 template's pre-V3.2 names on bus pins C3–C6 (unused by the card).
-- The Eagle schematic and board disagree on the supply of IC1 and IC2 (found by the KiCad conversion's netlist proof,
-  2026-09-20): the board feeds IC1 pin 14 and IC2 pin 20 from `+5V` (the decoupled rail behind R10/R12), the schematic's
-  implicit power pins put them on `VCC` (the bus rail). Both rails are 5 V, so the built card works; `kicad/.../README.md`
-  shows the two nets. Decide which is intended when the card is next revised.
 
-Bench state: RN2 is currently 1k (design: 10k), changed during the 2026-09-18 tests and left in (Ken 2026-09-20).
+Bench state: RN2 is currently 1k (design: 10k), changed during the 2026-09-18 tests and left in (Ken 2026-09-20);
++5V and VCC joined by a wire (Ken 2026-09-21). No 6845 fitted.
