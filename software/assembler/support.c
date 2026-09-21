@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>   /* YACC1-D 2026-09-20: prototype for atoi() */
 #include "header.h"
 #include "mstrings.h"
 

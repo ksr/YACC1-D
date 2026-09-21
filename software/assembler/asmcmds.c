@@ -123,8 +123,8 @@ int WildMatch(char *src,char *dest)
           typ=bs;
           BPtr=buffer;
           inQuote = 0;
-          while (*dest != 0 && (inQuote != 0 || 
-                 *dest != ',' && *dest != ' ')) {
+          while (*dest != 0 && (inQuote != 0 ||
+                 (*dest != ',' && *dest != ' '))) {   /* YACC1-D 2026-09-20: parentheses only, same precedence as before */
             if (*dest == inQuote) inQuote = 0;
               else if (*dest == '\'' || *dest == '"') inQuote = *dest;
             *BPtr++ = *dest++;
@@ -160,7 +160,7 @@ int WildMatch(char *src,char *dest)
           if (BPtr != buffer) {
             args[ArgCount]=get_num(buffer);
             argtype[ArgCount++]=typ;
-            if (abs(args[ArgCount-1])>=max) {
+            if (abs((int)args[ArgCount-1])>=max) {   /* YACC1-D 2026-09-20: explicit int cast = the implicit conversion abs() always applied (keeps negative immediates in range) */
               matched='N'; flag='n'; ArgCount--;
               }
             } else { matched='N'; flag='n'; }
