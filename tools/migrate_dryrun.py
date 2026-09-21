@@ -223,6 +223,7 @@ RULES = [
     (GV, "Software/Assembler/monitor.img", "firmware/monitor/candidates/2021-09-02-3bcacf3-not-working/", "copy"),
     (GV, "Software/Assembler/rom", "firmware/rom/builds/2021-09-02-3bcacf3-not-working/", "copy"),
     (GV, "Software/Assembler/yacc1.def", "", "drop"),                                    # superseded by the 2025 def (adds 'equ'), routed below
+    (GV, "Software/Assembler/Makefile", "software/assembler/Makefile.netbeans", "copy"),   # the NetBeans-generated one, kept byte-identical; a hand-written Makefile takes the plain name
     (GV, "Software/Assembler/", "software/assembler/", "copy"),
     (NG, "Software/Assembler/test_output.txt", "tests/assembler/", "copy"),
     (C24, "Software/emulator/main.c", "software/emulator/", "copy"),

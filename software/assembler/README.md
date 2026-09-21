@@ -5,8 +5,9 @@ for other CPUs). The YACC1 port (2020-08 → 2021-07-09) changed `asm.c asmcmds.
 Makefile rcasm.rc` and added `yacc1.def`, the YACC1 instruction table. `asm.txt` / `asm.doc` = the manual.
 
 `yacc1.def` here is the 2025-03-14 version: the 2020-11-25 table plus a lowercase `equ` directive (the only
-difference); it is what `firmware/monitor/monnew-2025/` was assembled with. Build: `cc -o asm asm.c asmcmds.c support.c mstrings.c`
-(or the NetBeans project). Run from a folder containing `rcasm.rc`.
+difference); it is what `firmware/monitor/monnew-2025/` was assembled with. Build: `make` (plain Makefile, 2026-09-20; the NetBeans one is `Makefile.netbeans`). `make check` assembles the monitor and BASIC
+sources from `firmware/` in `build/` and diffs the images and the ROM against the committed ones; `make install` copies a
+fresh build into `firmware/` when a source was changed on purpose. Run the assembler from a folder containing `rcasm.rc`.
 
 Moved out of here 2026-09-20 (this folder used to be the working directory for everything):
 - monitor/BASIC sources, listings, images and `rom` → `firmware/` (the copies here were the git-HEAD "not working"

@@ -1,129 +1,42 @@
-#
-#  There exist several targets which are by default empty and which can be 
-#  used for execution of your targets. These targets are usually executed 
-#  before and after some main targets. They are: 
-#
-#     .build-pre:              called before 'build' target
-#     .build-post:             called after 'build' target
-#     .clean-pre:              called before 'clean' target
-#     .clean-post:             called after 'clean' target
-#     .clobber-pre:            called before 'clobber' target
-#     .clobber-post:           called after 'clobber' target
-#     .all-pre:                called before 'all' target
-#     .all-post:               called after 'all' target
-#     .help-pre:               called before 'help' target
-#     .help-post:              called after 'help' target
-#
-#  Targets beginning with '.' are not intended to be called on their own.
-#
-#  Main targets can be executed directly, and they are:
-#  
-#     build                    build a specific configuration
-#     clean                    remove built files from a configuration
-#     clobber                  remove all built files
-#     all                      build all configurations
-#     help                     print help mesage
-#  
-#  Targets .build-impl, .clean-impl, .clobber-impl, .all-impl, and
-#  .help-impl are implemented in nbproject/makefile-impl.mk.
-#
-#  Available make variables:
-#
-#     CND_BASEDIR                base directory for relative paths
-#     CND_DISTDIR                default top distribution directory (build artifacts)
-#     CND_BUILDDIR               default top build directory (object files, ...)
-#     CONF                       name of current configuration
-#     CND_PLATFORM_${CONF}       platform name (current configuration)
-#     CND_ARTIFACT_DIR_${CONF}   directory of build artifact (current configuration)
-#     CND_ARTIFACT_NAME_${CONF}  name of build artifact (current configuration)
-#     CND_ARTIFACT_PATH_${CONF}  path to build artifact (current configuration)
-#     CND_PACKAGE_DIR_${CONF}    directory of package (current configuration)
-#     CND_PACKAGE_NAME_${CONF}   name of package (current configuration)
-#     CND_PACKAGE_PATH_${CONF}   path to package (current configuration)
-#
-# NOCDDL
+# RC/asm v2.2, YACC1 port — plain make (the NetBeans-generated one is Makefile.netbeans).
+#   make            build ./asm
+#   make check      assemble firmware/monitor/monitor.asm and firmware/basic/basic.asm in build/ and diff the
+#                   images against the committed ones (the burned ROM); fails on any difference
+#   make install    copy the freshly assembled .img/.lst into firmware/ (only after changing a source on purpose)
+#   make clean
+# Invocation gotcha: `asm NAME -d=yacc1` — the source name (no extension) must come BEFORE -d=…, because the -d
+# handler skips the following argument. The assembler wants rcasm.rc, yacc1.def and NAME.asm in the current dir.
+CC      ?= cc
+CFLAGS  ?= -O2 -Wall -Wno-unused-variable -Wno-unused-but-set-variable
+SRC      = asm.c asmcmds.c support.c mstrings.c
+FW       = ../../firmware
+TARGETS  = monitor basic
 
+all: asm
 
-# Environment 
-MKDIR=mkdir
-CP=cp
-CCADMIN=CCadmin
+asm: $(SRC) header.h mstrings.h
+	$(CC) $(CFLAGS) -o $@ $(SRC)
 
+# assemble one firmware source in build/NAME/ (keeps the tree clean); listing = the assembler's stdout
+build/%/%.img: asm yacc1.def rcasm.rc $(FW)/%/%.asm
+	@mkdir -p build/$*
+	@cp yacc1.def rcasm.rc "$(FW)/$*/$*.asm" build/$*/
+	@cd build/$* && ../../asm $* -d=yacc1 > $*.lst
 
-# build
-build: .build-post
+check: $(foreach t,$(TARGETS),build/$(t)/$(t).img)
+	@ok=1; for t in $(TARGETS); do \
+	  if cmp -s build/$$t/$$t.img $(FW)/$$t/$$t.img; then echo "$$t.img: IDENTICAL to firmware/$$t/$$t.img"; \
+	  else echo "$$t.img: DIFFERS from firmware/$$t/$$t.img"; ok=0; fi; \
+	  if cmp -s build/$$t/$$t.lst $(FW)/$$t/$$t.lst; then echo "$$t.lst: identical"; else echo "$$t.lst: differs (listing only)"; fi; \
+	done; \
+	awk 'n>=1 { print a[n%1] } { a[n%1]=$$0; n=n+1 }' build/basic/basic.img > build/tmprom && cat build/tmprom build/monitor/monitor.img > build/rom; \
+	if cmp -s build/rom $(FW)/rom/shipped/rom; then echo "rom: IDENTICAL to the burned EEPROM image"; else echo "rom: DIFFERS from firmware/rom/shipped/rom"; ok=0; fi; \
+	[ $$ok = 1 ]
 
-.build-pre:
-# Add your pre 'build' code here...
+install: check
+	@for t in $(TARGETS); do cp build/$$t/$$t.img build/$$t/$$t.lst $(FW)/$$t/; done; cp build/rom $(FW)/rom/shipped/rom; echo "installed into firmware/"
 
-.build-post: .build-impl
-# Add your post 'build' code here...
+clean:
+	rm -rf asm build
 
-
-# clean
-clean: .clean-post
-
-.clean-pre:
-# Add your pre 'clean' code here...
-
-.clean-post: .clean-impl
-# Add your post 'clean' code here...
-
-
-# clobber
-clobber: .clobber-post
-
-.clobber-pre:
-# Add your pre 'clobber' code here...
-
-.clobber-post: .clobber-impl
-# Add your post 'clobber' code here...
-
-
-# all
-all: .all-post
-
-.all-pre:
-# Add your pre 'all' code here...
-
-.all-post: .all-impl
-# Add your post 'all' code here...
-
-
-# build tests
-build-tests: .build-tests-post
-
-.build-tests-pre:
-# Add your pre 'build-tests' code here...
-
-.build-tests-post: .build-tests-impl
-# Add your post 'build-tests' code here...
-
-
-# run tests
-test: .test-post
-
-.test-pre: build-tests
-# Add your pre 'test' code here...
-
-.test-post: .test-impl
-# Add your post 'test' code here...
-
-
-# help
-help: .help-post
-
-.help-pre:
-# Add your pre 'help' code here...
-
-.help-post: .help-impl
-# Add your post 'help' code here...
-
-
-
-# include project implementation makefile
-include nbproject/Makefile-impl.mk
-
-# include project make variables
-include nbproject/Makefile-variables.mk
-
+.PHONY: all check install clean
