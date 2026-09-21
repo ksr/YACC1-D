@@ -28,17 +28,15 @@ void sendReadyPrompt() {
 
 void downloadInstruction() {
   unsigned char instructionBytes[INSTRUCTION_SIZE];
-  unsigned char currentChecksum;
+  unsigned char currentChecksum __attribute__((unused));   /* YACC1-D 2026-09-20 */
   unsigned char currentInstruction;
-  unsigned char instructionChecksum;
+  unsigned char instructionChecksum __attribute__((unused));   /* YACC1-D 2026-09-20: only debug output reads it */
   //unsigned char readIns[INSTRUCTION_SIZE];
-  char tmp[20];
 
 //  for (int i = 0; i < INSTRUCTION_SIZE; i++)
 //    readIns[i] = 0xff;
 
 #ifndef TESTING
-  int instruction;
   currentChecksum = getChecksum();
   currentInstruction = getInstructionNumber();
   instructionChecksum = getCode(instructionBytes);
@@ -99,6 +97,7 @@ boolean waitInstructionBegin() {
     return (false);
   else
     doError("Unexpected Char", 5);
+  return (false);   /* YACC1-D 2026-09-20: unreachable: doError() never returns */
 }
 
 unsigned char getChecksum() {

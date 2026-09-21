@@ -12,7 +12,7 @@ void i2c_eeprom_write_byte( int deviceaddress, int eeaddress, byte data ) {
   Wire.write((int)(eeaddress >> 8)); // MSB
   Wire.write((int)(eeaddress & 0xFF)); // LSB
   Wire.write(rdata);
-  int res=Wire.endTransmission();
+  Wire.endTransmission();   /* YACC1-D 2026-09-20 */
   //Serial.println(res);
   delay(5);
 }
@@ -29,7 +29,7 @@ byte i2c_eeprom_read_byte( int deviceaddress, int eeaddress ) {
   Wire.beginTransmission(deviceaddress);
   Wire.write((int)(eeaddress >> 8)); // MSB
   Wire.write((int)(eeaddress & 0xFF)); // LSB
-  int res=Wire.endTransmission();
+  Wire.endTransmission();   /* YACC1-D 2026-09-20: result was unused */
   //Serial.println(res);
   Wire.requestFrom(deviceaddress, 1);
   if (Wire.available()) {

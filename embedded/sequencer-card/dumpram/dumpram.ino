@@ -117,7 +117,6 @@ void setAddressInput() {
 //FIX TEST TEST TEST use this call in read instruction
 void readData(unsigned char ptr[]) {
   int i;
-  char tmp[30];
 
   for (i = 0; i < DATA_CHIPS; i++) {
     //sprintf(tmp, "low = %x  hi=%x both=%x", mcp[i + DATA_CHIP_START].readGPIO(0),mcp[i + DATA_CHIP_START].readGPIO(1),mcp[i + DATA_CHIP_START].readGPIOAB());
@@ -157,7 +156,7 @@ void uCodeRamSelect(int mode) {
     digitalWrite(MEMSEL, HIGH);
 }
 
-unsigned int readInstruction(int instruction, unsigned char *data) {
+void readInstruction(int instruction, unsigned char *data) {   /* YACC1-D 2026-09-20: never returned a value */
   int i, j;
   unsigned char *ptr;
   unsigned int address;
@@ -184,7 +183,7 @@ unsigned int readInstruction(int instruction, unsigned char *data) {
   }
 }
 
-void doError(String errorMsg, int code) {
+void doError(String errorMsg, int code) { (void)errorMsg;   /* YACC1-D 2026-09-20 */
   ///Serial.print("Error: ");
   ///Serial.println(errorMsg);
   while (1) {
@@ -264,14 +263,9 @@ void setup() {
 
 void loop() {
 
-  int address;
-  int line;
-  int instruction, ins;
-  unsigned char data[BYTES_PER_LINE];
-  unsigned int counter;
-  char tmp[100];
+  int instruction;   /* YACC1-D 2026-09-20: ins unused */
   boolean statusLed = false;
-  int i, j;
+  /* YACC1-D 2026-09-20: 'int i, j;' removed, unused */
 
   if (mode == WRITEMEM) { // DUMP RAM CONTENTS
 

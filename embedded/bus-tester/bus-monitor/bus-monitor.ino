@@ -35,7 +35,6 @@ unsigned int current[NUMBER_OF_CONTROLLERS];
 boolean first=true;
 
 void flashLed(int led) {
-  char tmp[20];
 
 #ifdef DEBUG
   sprintf(tmp, "Flash %d\n", led);
@@ -48,7 +47,6 @@ void flashLed(int led) {
 }
 
 void blinkLed(int led) {
-  char tmp[20];
 
 #ifdef DEBUG
   sprintf(tmp, "Flash %d\n", led);
@@ -69,7 +67,6 @@ String  strOpcode(int chip, int pinab) {
   int i;
   int port;
   int pin;
-  char tmp[100];
 
   /* Need to convert a 15 bit port bit pin number (pinab) in range 0-15 to port 0 or 1 and a a 8 bit pin
       Pins 0-7 are on port 0, pint 8-15 are on port 1
@@ -102,7 +99,7 @@ String  strOpcode(int chip, int pinab) {
 }
 
 void setup() {
-  int i, j, chip, pin;
+  int i, j;   /* YACC1-D 2026-09-20: chip/pin unused */
 
   Serial.begin(19200);
   Serial.println("Setup Start");

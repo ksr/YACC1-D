@@ -22,7 +22,7 @@ void uCodeRamWritePulse() {
 }
 
 
-unsigned int readInstruction(int instruction, unsigned char *data){
+void readInstruction(int instruction, unsigned char *data){   /* YACC1-D 2026-09-20: never returned a value */
   int i, j;
   unsigned char *ptr;
   unsigned int address;
@@ -50,7 +50,7 @@ unsigned int readInstruction(int instruction, unsigned char *data){
 }
 
 void writeInstruction(int instruction, unsigned char *data) {
-  int i, j;
+  int j;   /* YACC1-D 2026-09-20: i unused */
   unsigned int address;
   unsigned char *ptr;
 

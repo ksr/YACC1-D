@@ -55,7 +55,7 @@ void setup()
 
 #define WRITE_MEM
 #ifdef WRITE_MEM
-  for (i = 0; i < strlen(somedata) + 1; i++) { //+1 for ending null
+  for (i = 0; i < (int)strlen(somedata) + 1; i++) { //+1 for ending null
     i2c_eeprom_write_byte(0x57, i + offset, somedata[i] ); // write to EEPROM
     Serial.println(somedata[i]);
     delay(10);
@@ -70,8 +70,6 @@ void loop()
 {
   int addr; //first address
   byte b;
-  int instruction = 0, line = 0, byteinfo = 0;
-  char tmp[40];
 
 
 

@@ -119,7 +119,6 @@ void setup() {
 
 void loop() {
   int i, j;
-  unsigned int mask;
   char tmp[100];
 
 

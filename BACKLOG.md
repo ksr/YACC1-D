@@ -28,6 +28,10 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - Every C tool now has a plain Makefile (2026-09-20); the NetBeans projects are kept but no longer needed to build. The three
   tools still carry the old tree's relative include paths, satisfied by `tools/layout_links.py` symlinks; fixing the includes
   would let the links go.
+- **Test-vector generator uses the 2016 signal names** (`tests/bus-tester-scripts/Gen Test Vectors/`): it emits the
+  2016 register-card codes (REG-FUNC-LD, REG-BRD-LD-ID, WDATA/RDATAL) which are not in the 2020 bus table, where the card
+  select became REG-LD-ID2..3 / ADDR-REG-ID0..3; the `fix` converter only maps BUS-WR. Rewrite it against the current
+  signal table before generating vectors for the 2020 Index Register cards.
 - Port of the P8X work (OS, monitor, BASIC, compilers) onto YACC1 — the reason this repo exists; not started.
 
 ## Verification still to do

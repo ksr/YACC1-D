@@ -63,7 +63,6 @@ void setLed(int led, int state) {
 }
 
 void flashLed(int led) {
-  char tmp[20];
 
 #ifdef DEBUG
   sprintf(tmp, "Flash %d\n", led);
@@ -76,7 +75,6 @@ void flashLed(int led) {
 }
 
 void blinkLed(int led) {
-  char tmp[20];
 
 #ifdef DEBUG
   sprintf(tmp, "Flash %d\n", led);
@@ -89,32 +87,31 @@ void blinkLed(int led) {
   delay(100);
 }
 
-void switch_led_setup() {
+void switch_led_setup() {   /* YACC1-D 2026-09-20: (int) casts on the char 'chip' field used as an array index */
   int i;
   char tmp[20];
 
   strcpy(tmp, "OUT-LED");
   i = opLookUp(tmp);
-  mcp[opcodes[i].chip].pinMode(opcodes[i].port * PINS_PER_PORT + opcodes[i].pin, OUTPUT);
+  mcp[(int)opcodes[i].chip].pinMode(opcodes[i].port * PINS_PER_PORT + opcodes[i].pin, OUTPUT);
 
   strcpy(tmp, "IN-SWITCH");
   i = opLookUp(tmp);
-  mcp[opcodes[i].chip].pinMode(opcodes[i].port * PINS_PER_PORT + opcodes[i].pin, OUTPUT); //assumes chip port 0 for these
+  mcp[(int)opcodes[i].chip].pinMode(opcodes[i].port * PINS_PER_PORT + opcodes[i].pin, OUTPUT); //assumes chip port 0 for these
 
   strcpy(tmp, "LEDS-LD");
   i = opLookUp(tmp);
-  mcp[opcodes[i].chip].pinMode(opcodes[i].port * PINS_PER_PORT + opcodes[i].pin, OUTPUT); //assumes chip port 0 for these
+  mcp[(int)opcodes[i].chip].pinMode(opcodes[i].port * PINS_PER_PORT + opcodes[i].pin, OUTPUT); //assumes chip port 0 for these
 
   strcpy(tmp, "SWITCHES-RD");
   i = opLookUp(tmp);
-  mcp[opcodes[i].chip].pinMode(opcodes[i].port * PINS_PER_PORT + opcodes[i].pin, OUTPUT); //assumes chip port 0 for these
-  mcp[opcodes[i].chip].digitalWrite(opcodes[i].port * PINS_PER_PORT + opcodes[i].pin, 1); // turn off switch bus driver
+  mcp[(int)opcodes[i].chip].pinMode(opcodes[i].port * PINS_PER_PORT + opcodes[i].pin, OUTPUT); //assumes chip port 0 for these
+  mcp[(int)opcodes[i].chip].digitalWrite(opcodes[i].port * PINS_PER_PORT + opcodes[i].pin, 1); // turn off switch bus driver
 }
 
 unsigned int read_switches() {
   int j;
   unsigned int i;
-  char tmp[20];
 
   for (j = 8; j < 16; j++) {
     mcp[5].pinMode(j, INPUT);
@@ -165,7 +162,7 @@ void doError(String errorMsg, int led) {
     blinkLed(led);
 }
 
-int setCntlPin(int codeIndex, boolean state) {
+void setCntlPin(int codeIndex, boolean state) {   /* YACC1-D 2026-09-20: never returned a value */
   int chip, pin;
 
 #ifdef DEBUG
@@ -206,13 +203,13 @@ int opLookUp(char *codeToLookup) {
     i++;
   }
   doError(F("Bad opcode"), BAD_OPCODE);
+  return -1;   /* YACC1-D 2026-09-20: unreachable: doError() never returns */
 }
 
 
 void setup() {
   int i, j, chip, pin;
   char opcode[20];
-  char tmp[30];
 
   Serial.begin(19200);
 
@@ -475,7 +472,7 @@ unsigned int readDataLo() {
   return (mcp[DATA_CHIP].readGPIO(0));
 }
 
-int writeDataLo() {
+void writeDataLo() {   /* YACC1-D 2026-09-20: never returned a value */
   doError(F("Write Data Low Dows Not Exist"), DATA_BUS_MODE);
 }
 

@@ -9,6 +9,6 @@
 | `libraries/` | – | VENDORED: `Adafruit_MCP23017_Arduino_Library` 1.1.0 (the 1.x API every sketch here uses), `extEEPROM` 3.4.1 (the deprecated sequencer2 only) and `YACC/YACC_Common_header.h` (the bus signal table the tester sketches include; `-pre3-2.h` = its previous version). Install both in `~/Documents/Arduino/libraries/` | – |
 
 Build check: `tools/verify_embedded.py` compiles every sketch here with arduino-cli (Uno / ATmega328) against ONLY the
-vendored `libraries/`; 12 sketches, all compile as of 2026-09-20 except the MCP23X17 work-in-progress, which is expected
+vendored `libraries/`; 12 sketches, all compile with zero sketch warnings (`--warnings all`) as of 2026-09-20 except the MCP23X17 work-in-progress, which is expected
 (it needs the 2.x Adafruit library). Manual build: copy `libraries/*` into `~/Documents/Arduino/libraries/` and use the IDE. The sequencer sketches carry their own copy of the signal subset
 (`YACC_Common_headera.h`, per generation) beside the .ino.

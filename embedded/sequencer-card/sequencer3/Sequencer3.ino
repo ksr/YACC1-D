@@ -65,7 +65,7 @@ void writeCodeToROM(int, unsigned char *);
 
 
 
-void doError(String errorMsg, int code) {
+void doError(String errorMsg, int code) { (void)errorMsg;   /* YACC1-D 2026-09-20: its print is commented out */
   ///Serial.print("Error: ");
   ///Serial.println(errorMsg);
   while (1) {
@@ -200,7 +200,7 @@ void loop() {
   unsigned int counter;
   char tmp[60];
   boolean statusLed = false;
-  int i, j;
+  int i;   /* YACC1-D 2026-09-20: j unused */
 
   int previousLine;
   int previousInstruction;

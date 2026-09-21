@@ -65,7 +65,6 @@ void setAddressInput() {
 //FIX TEST TEST TEST use this call in read instruction
 void readData(unsigned char ptr[]){
   int i;
-  char tmp[30];
   
   for (i = 0; i < DATA_CHIPS; i++) {
     //sprintf(tmp, "low = %x  hi=%x both=%x", mcp[i + DATA_CHIP_START].readGPIO(0),mcp[i + DATA_CHIP_START].readGPIO(1),mcp[i + DATA_CHIP_START].readGPIOAB());
@@ -76,7 +75,7 @@ void readData(unsigned char ptr[]){
   }
 }
 
-unsigned int writeData(unsigned char data[]) {
+void writeData(unsigned char data[]) {   /* YACC1-D 2026-09-20: never returned a value */
   int i;
   unsigned char *ptr;
   unsigned int dlow, dhigh, dfull;

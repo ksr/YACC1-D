@@ -107,9 +107,7 @@ void setup() {
 
 
 void loop() {
-  int i, j;
-  unsigned int mask;
-  char tmp[100];
+  int i;   /* YACC1-D 2026-09-20: j unused */
 
   while (1) {
 
