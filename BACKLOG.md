@@ -11,6 +11,16 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Video card v1.1** (`hardware/cards/video/kicad/v1.1`, the KiCad master since 2026-09-21; Fusion abandoned): DONE in the
   design — one 5 V rail (`+5V` folded into `VCC`, joining track added; proof 116/116). TO DO — move the 6845 RS from A0 to A1
   (`hardware/cards/video/docs/fix-6845-register-select.md`; bench job first), pull-ups on the 7416 outputs; then order.
+- **Sequencer logic v2.2: a "CPU off" switch** (`hardware/cards/sequencer-logic`). Today the card's outputs can never be
+  silenced while the memory card is enabled: -BUS-EN is generated on the card itself (IC36 74LS04 from the sequencer's
+  READY line) and is also the output enable of all nine pipeline 74LS374s and the two microcode-address 74LS244s; -RESET
+  only clears the instruction register and step counter, so in reset the pipeline still drives every control line (word
+  instruction 0 step 0: -VMA asserted, R0 selected as address source, the rest driven inactive). The bus tester therefore
+  cannot load RAM with the logic card fitted (found 2026-09-21; every switch on the card is in use and the -BUS-EN copper
+  cannot be split with one cut). Change: (1) route the 374/244 output enables through a new switch or jumper, RUN = follow
+  -BUS-EN, OFF = pulled high; (2) make the READY-to-BUS-EN driver open-collector (or jumperable) so the bus tester can own
+  -BUS-EN without shorting the LS04. With that, the tester loads RAM with everything plugged in. Until then: ROM monitor
+  over the UART, or unplug the logic card.
 - **IO V1.2 ideas** (IO notes): directional data-bus buffer driven by -IO-RD; 74138 IC5 pin 5 tied to -BUS-EN.
 - **Index Registers**: notes ask whether bus direction should follow -RD-SEL (the same question as the IO buffer).
 - **Memory v1.3 notes**: "should TMP registers move to the ALU", hard-jumper a boot-loader enable, 4K-block EEPROM select.
