@@ -18,7 +18,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   instruction 0 step 0: -VMA asserted, R0 selected as address source, the rest driven inactive). The bus tester therefore
   cannot load RAM with the logic card fitted (found 2026-09-21; every switch on the card is in use and the -BUS-EN copper
   cannot be split with one cut). Change: (1) route the 374/244 output enables through a new switch or jumper, RUN = follow
-  -BUS-EN, OFF = pulled high; (2) make the READY-to-BUS-EN driver open-collector (or jumperable) so the bus tester can own
+  -BUS-EN, OFF = pulled high - AND the 17 lines the 2026-09-21 review found driven regardless of -BUS-EN (IC4/IC5/IC18 select
+  buffers, -REG-LD-LO/HI, -RESET, OUT); (2) make the READY-to-BUS-EN driver open-collector (or jumperable) so the bus tester can own
   -BUS-EN without shorting the LS04. With that, the tester loads RAM with everything plugged in. Until then: ROM monitor
   over the UART, or unplug the logic card.
 - **IO V1.2 ideas** (IO notes): directional data-bus buffer driven by -IO-RD; 74138 IC5 pin 5 tied to -BUS-EN.
@@ -32,6 +33,39 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   BASIC ON/OFF statements, break into a running program. Needs a hardware test, then burn and update `rom/shipped`.
 - **monnew-2025** (`firmware/monitor/monnew-2025`): small D/M/B monitor; assembled, never run on the machine.
 - `firmware/abi/` — the BIOS/port/variable map still has to be written from the two .asm headers.
+
+## Design review 2026-09-21 (reports: `hardware/DESIGN-REVIEW.md`, `hardware/DESIGN-REVIEW-NOTES-datapath.md`,
+`hardware/DESIGN-REVIEW-NOTES-control-io.md`, `docs/isa/MICROCODE-REVIEW.md`, `docs/isa/MICROCODE-REVIEW-NOTES.md`)
+Items below were traced to nets/pins or to test.hex and spot-checked; the reports give the evidence and a bench check each.
+- **HIGH, microcode: 38 undefined opcodes are all-zero words** ($80-$8F, $A5, $AD, $AE, $C0-$CF, $F8-$FA). An all-zero word asserts
+  every active-low line (-MEM-RD and -MEM-WR together, every register strobe) for 61 steps: a bus fight on any stray opcode.
+  Fix in `firmware/microcode/ucode-generator2`: fill undefined opcodes with an inactive word + UCODE-COUNT-RESET (a 1-step trap).
+- **HIGH, microcode: PUSHR** writes both stack bytes while the register card and TMP1 both drive the data bus (read strobes never
+  cleared); **BRZ/BRNZ/BR16Z/BR16NZ** keep -AC-RD on while -BRANCH-RD loads the PC; BR16Z/NZ cannot work (BDATA8-15 are pull-ups
+  under -AC-RD). None exercised by `ledcount`; bench order in the notes: IC11 scope check, then BRZ, then PUSHR.
+- **HIGH, logic card: 17 bus lines driven regardless of -BUS-EN** (REG-RD-ID/REG-LD-ID/ADDR-REG-ID via IC4/IC5/IC18 enabled by the
+  operand-select pipeline bits; -REG-LD-LO/HI, -RESET, OUT from plain gate outputs). The v2.2 "CPU off" switch must cover these
+  too, and bus-driver on the tester fights them whenever the logic card is fitted.
+- **HIGH, BOM: step counters and all 16 register counters are 74LS192 (BCD)** in schematic/board/BOM (`sequencer-logic` IC33/34,
+  `register` x16); the machine runs 32-step binary microcode, so 74LS193 must be fitted. Read a chip label; fix the design files.
+- **HIGH (masked), memory v1.3: FORCE-ROM race** - IC12 (74LS74) is clocked by ADDR15·-VMA·-BUS-EN while the register card puts the
+  address up ~40 ns after -VMA and the address bus floats high between cycles; masked since 2020 by asserting -VMA in EVERY
+  microcode step (`main.c:103,115` "Hack prevent ROM mapping from triggering"), which removes -VMA from all memory chip selects.
+- **HIGH (untested), video v1.1: 6845 E clock** derived from C1/R1 discharged by a 7416 open-collector output with no pull-up;
+  unreliable at run speed. Goes with the RS-to-A1 change and the 7416 pull-ups before a CRTC is fitted.
+- **MED**: 28C64 -WE is raw -MEM-WR (any store during FORCE-ROM writes the EEPROM; the monitor is safe only because its first
+  instruction jumps above $8000); reset does not reload the pipeline (stale word on the bus during reset, with FORCE-ROM active);
+  no power-on reset anywhere (FORCE-ROM, counters, carry undefined until the button); register card IC34 is a CD4077 driven by LS
+  levels; count strobe = OR(-Rx-RDSEL, -REG-UP) counts a deselected register on a REG-RD-ID change; the register card drives $FFFF
+  onto DATA0-15 on every increment step, overlapping -MEM-RD (327 steps); one-step memory windows before leading-edge latches
+  (LDTI, LDIVR, LDT, BRANCH-LD, INT-LD) are the first to fail at a faster clock; JP2 on the logic card would hold the sequencer
+  card in reset; video character clock is a ~50 ns runt; TMP registers latch on the leading edge (microcode must present the
+  source a step early - it does).
+- **LOW / speed**: 351 idle steps; the 6-step fetch prologue could be 3 (~22% of executed steps); ~30% total savings tabulated per
+  opcode in the microcode notes; emulator mismatches listed there (BRVR, JSRUR byte order, carry on SUB/shifts, R0-load suppression).
+- Timing-diagram model (`tools/ucode_wavedrom.py`) corrections from the review: IR/operand/branch/TMP/ACC latch on the LEADING
+  edge of their strobe; one step = two clocks; steps 0-2 run with the previous opcode in the IR; -REG-RD-LO/HI are byte lanes.
+  To fold into the generator when the diagrams are next regenerated.
 
 ## Software
 - Every C tool now has a plain Makefile (2026-09-20); the NetBeans projects are kept but no longer needed to build. The three
