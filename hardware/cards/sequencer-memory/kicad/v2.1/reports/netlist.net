@@ -1,0 +1,9561 @@
+(export
+	(version "E")
+	(design
+		(source "/Users/ksr77/Developer/YACC1-D/hardware/cards/sequencer-memory/kicad/v2.1/sequencer-memory-v2.1.kicad_sch")
+		(date "2026-09-20T21:37:19")
+		(tool "Eeschema 10.0.6")
+		(sheet
+			(number "1")
+			(name "/")
+			(tstamps "/")
+			(title_block
+				(title "sequencer-memory-v2.1")
+				(company)
+				(rev)
+				(date)
+				(source "sequencer-memory-v2.1.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle schematic; see README.md")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+		(sheet
+			(number "2")
+			(name "/Sheet 1/")
+			(tstamps "/9707613d-431a-ef21-1aa6-7222ac0f3ffb/")
+			(title_block
+				(title "sequencer-memory-v2.1 sheet 1")
+				(company)
+				(rev)
+				(date)
+				(source "sequencer-memory-v2.1-sheet1.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle: Sequencer-Memory-V2.1.sch sheet 1")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+		(sheet
+			(number "3")
+			(name "/Sheet 2/")
+			(tstamps "/3feaa06a-13b6-e05f-ae1b-f8e42728885e/")
+			(title_block
+				(title "sequencer-memory-v2.1 sheet 2")
+				(company)
+				(rev)
+				(date)
+				(source "sequencer-memory-v2.1-sheet2.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle: Sequencer-Memory-V2.1.sch sheet 2")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+		(sheet
+			(number "4")
+			(name "/Sheet 3/")
+			(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			(title_block
+				(title "sequencer-memory-v2.1 sheet 3")
+				(company)
+				(rev)
+				(date)
+				(source "sequencer-memory-v2.1-sheet3.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle: Sequencer-Memory-V2.1.sch sheet 3")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+		(sheet
+			(number "5")
+			(name "/Sheet 4/")
+			(tstamps "/8cf4fb6d-12b3-2313-98eb-d967889e4c95/")
+			(title_block
+				(title "sequencer-memory-v2.1 sheet 4")
+				(company)
+				(rev)
+				(date)
+				(source "sequencer-memory-v2.1-sheet4.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle: Sequencer-Memory-V2.1.sch sheet 4")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+	)
+	(components
+		(comp
+			(ref "IC1")
+			(value "62256P")
+			(footprint "sequencer-memory-v2.1-eagle:DIL28-6")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL28-6")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "memory-hitachi_62256P")
+				(description "Eagle memory-hitachi:62256P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/9707613d-431a-ef21-1aa6-7222ac0f3ffb/")
+			)
+			(tstamps "0aad0c28-145d-82ab-eaa3-3af3fa69fb81")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "14")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC2")
+			(value "62256P")
+			(footprint "sequencer-memory-v2.1-eagle:DIL28-6")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL28-6")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "memory-hitachi_62256P")
+				(description "Eagle memory-hitachi:62256P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/9707613d-431a-ef21-1aa6-7222ac0f3ffb/")
+			)
+			(tstamps "47a6a8ca-ff5b-68e6-ec14-7c0fb4f6a5f0")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "14")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC3")
+			(value "62256P")
+			(footprint "sequencer-memory-v2.1-eagle:DIL28-6")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL28-6")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "memory-hitachi_62256P")
+				(description "Eagle memory-hitachi:62256P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/9707613d-431a-ef21-1aa6-7222ac0f3ffb/")
+			)
+			(tstamps "ba7dc4dd-12f8-c788-fe55-06f37d7e997a")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "14")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC4")
+			(value "62256P")
+			(footprint "sequencer-memory-v2.1-eagle:DIL28-6")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL28-6")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "memory-hitachi_62256P")
+				(description "Eagle memory-hitachi:62256P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/9707613d-431a-ef21-1aa6-7222ac0f3ffb/")
+			)
+			(tstamps "2d260246-3914-d312-6c1f-fc7d75d85ce0")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "14")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC5")
+			(value "62256P")
+			(footprint "sequencer-memory-v2.1-eagle:DIL28-6")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL28-6")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "memory-hitachi_62256P")
+				(description "Eagle memory-hitachi:62256P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/9707613d-431a-ef21-1aa6-7222ac0f3ffb/")
+			)
+			(tstamps "1bc33151-fb8c-ec22-e319-91d18e2b4ff7")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "14")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC6")
+			(value "62256P")
+			(footprint "sequencer-memory-v2.1-eagle:DIL28-6")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL28-6")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "memory-hitachi_62256P")
+				(description "Eagle memory-hitachi:62256P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/9707613d-431a-ef21-1aa6-7222ac0f3ffb/")
+			)
+			(tstamps "89e3249f-c926-001f-7069-23bb8ff86f4d")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "14")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC7")
+			(value "62256P")
+			(footprint "sequencer-memory-v2.1-eagle:DIL28-6")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL28-6")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "memory-hitachi_62256P")
+				(description "Eagle memory-hitachi:62256P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/9707613d-431a-ef21-1aa6-7222ac0f3ffb/")
+			)
+			(tstamps "69054217-586f-9033-c381-ce38603466e6")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "14")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC8")
+			(value "62256P")
+			(footprint "sequencer-memory-v2.1-eagle:DIL28-6")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL28-6")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "memory-hitachi_62256P")
+				(description "Eagle memory-hitachi:62256P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/9707613d-431a-ef21-1aa6-7222ac0f3ffb/")
+			)
+			(tstamps "8e1ea7cc-6bc5-6f14-0cd6-3312f6747b4b")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "14")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "JP1")
+			(value "PINHD-2X2")
+			(footprint "sequencer-memory-v2.1-eagle:2X02")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:2X02")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "Connector_PINHD-2X2")
+				(description "Eagle Connector:PINHD-2X2")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/3feaa06a-13b6-e05f-ae1b-f8e42728885e/")
+			)
+			(tstamps "48440ff7-1335-bbf9-4b74-f09da1abe101")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "4")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "SV1")
+			(value "MA20-2")
+			(footprint "sequencer-memory-v2.1-eagle:MA20-2")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:MA20-2")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "con-lstb_MA20-2")
+				(description "Eagle con-lstb:MA20-2")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/3feaa06a-13b6-e05f-ae1b-f8e42728885e/")
+			)
+			(tstamps "08933bac-f5b1-98e7-9ea0-e722e945598e")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "40")
+						)
+						(pin
+							(num "38")
+						)
+						(pin
+							(num "36")
+						)
+						(pin
+							(num "34")
+						)
+						(pin
+							(num "32")
+						)
+						(pin
+							(num "30")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "39")
+						)
+						(pin
+							(num "37")
+						)
+						(pin
+							(num "35")
+						)
+						(pin
+							(num "33")
+						)
+						(pin
+							(num "31")
+						)
+						(pin
+							(num "29")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "1")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "SV2")
+			(value "MA20-2")
+			(footprint "sequencer-memory-v2.1-eagle:MA20-2")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:MA20-2")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "con-lstb_MA20-2")
+				(description "Eagle con-lstb:MA20-2")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/3feaa06a-13b6-e05f-ae1b-f8e42728885e/")
+			)
+			(tstamps "dbad02f9-c88e-db70-b4c6-29e01549c522")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "40")
+						)
+						(pin
+							(num "38")
+						)
+						(pin
+							(num "36")
+						)
+						(pin
+							(num "34")
+						)
+						(pin
+							(num "32")
+						)
+						(pin
+							(num "30")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "39")
+						)
+						(pin
+							(num "37")
+						)
+						(pin
+							(num "35")
+						)
+						(pin
+							(num "33")
+						)
+						(pin
+							(num "31")
+						)
+						(pin
+							(num "29")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "1")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C1")
+			(value "0.1")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "36a7f129-2203-cc6f-929d-267ca7ef9400")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C2")
+			(value "0.1")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "34ece850-dc4d-c3de-bcf8-0bf80666b1d1")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C3")
+			(value "0.1")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "71486684-9c55-53fd-430f-c43af07bfd3c")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C4")
+			(value "0.1")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "d94ca8db-aaa8-de89-7e1a-a194ecdee0f2")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C5")
+			(value "0.1")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "16f436e9-c4a8-0b77-f0a1-06c555470f9b")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C6")
+			(value "0.1")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "ff1b09eb-be8d-a1bf-2342-cf1ddbcfb34b")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C7")
+			(value "0.1")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "c8f02baa-f687-d14b-e64a-492c1c9f8bb7")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C8")
+			(value "0.1")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "39670a99-1753-8088-3db1-48ed66c80c89")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C9")
+			(value "0.1")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "a9f09474-7d3b-b3aa-64e0-5c5d5bf99444")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C10")
+			(value "0.1")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "6f32dd9c-ffa4-4679-964f-a5e72a70ae7d")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C11")
+			(value "0.1")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "c434f055-753b-d163-40dd-402597703e2a")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C12")
+			(value "0.1")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "53605c49-f47c-2f93-25a7-e2553716ac37")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C13")
+			(value "0.1")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "d4536f61-6164-67fc-b06f-b03b6738d524")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C14")
+			(value "0.1")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "406579b8-a767-5e79-87fc-201b5a0af48d")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C15")
+			(value "0.1")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "de0a31c5-2dcf-2528-9b95-c5f0ac46ff6a")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C16")
+			(value "20pf")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "e1528795-cd63-3fc7-0f97-7d6dd4ff3d16")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C17")
+			(value "0.1")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "06ab611b-0122-09d6-20cd-061d1af79a92")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C18")
+			(value "20pf")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "8b094bc9-500c-3665-081c-3c3df68e4911")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C19")
+			(value "0.1")
+			(footprint "sequencer-memory-v2.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "17a4dd70-0f2e-ac65-f9ed-3c91d4c6c8dd")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "DTR-RESET0")
+			(value "JP1E")
+			(footprint "sequencer-memory-v2.1-eagle:JP1")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:JP1")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "jumper_JP1E")
+				(description "Eagle jumper:JP1E")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "e4b40e69-6e8c-cfea-643e-626506d3b406")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "FAULT0")
+			(value "LED")
+			(footprint "sequencer-memory-v2.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "40fa6bed-ec37-2054-2085-e37c91de6182")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "FTDI-VCC0")
+			(value "JP1E")
+			(footprint "sequencer-memory-v2.1-eagle:JP1")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:JP1")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "jumper_JP1E")
+				(description "Eagle jumper:JP1E")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "031404c8-03fc-a046-1bbd-9afb6a3bfb63")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC9")
+			(value "24*")
+			(footprint "sequencer-memory-v2.1-eagle:DIL8")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL8")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "microchip_24x_P")
+				(description "Eagle microchip:24*")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "75b7e542-61e2-6969-de19-14eaea8641f4")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC15")
+			(value "ATMEGA328P_PDIP")
+			(footprint "sequencer-memory-v2.1-eagle:DIL28-3")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL28-3")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "SparkFun-DigitalIC_ATMEGA328P_PDIP")
+				(description "Eagle SparkFun-DigitalIC:ATMEGA328P_PDIP")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "ee088afd-1174-43ab-cf65-0fc55c6062b4")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "19")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "JP2")
+			(value "PINHD-1X3")
+			(footprint "sequencer-memory-v2.1-eagle:1X03")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:1X03")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "pinhead_PINHD-1X3")
+				(description "Eagle pinhead:PINHD-1X3")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "889b8de8-7733-7b5d-ea5a-d904bbfb3d23")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "JP3")
+			(value "FTDI_DEVICE")
+			(footprint "sequencer-memory-v2.1-eagle:FTDI_DEVICE_SIDE")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:FTDI_DEVICE_SIDE")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "SparkFun-Connectors_FTDI_DEVICE")
+				(description "Eagle SparkFun-Connectors:FTDI_DEVICE")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "2a917894-432a-adbc-3400-4355a9cd2a22")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "P$1")
+						)
+						(pin
+							(num "P$2")
+						)
+						(pin
+							(num "P$3")
+						)
+						(pin
+							(num "P$4")
+						)
+						(pin
+							(num "P$5")
+						)
+						(pin
+							(num "P$6")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "LOADING0")
+			(value "LED")
+			(footprint "sequencer-memory-v2.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "fc6db156-262a-3193-7007-845a3c2db627")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "LOCAL-CPU-RESET0")
+			(value "TS-1109-7")
+			(footprint "sequencer-memory-v2.1-eagle:SW4-6.2X6.2X5.0MM")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:SW4-6.2X6.2X5.0MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "Seeed-OPL-Switch_DIP-BUTTON-TOP-BLACK(4P-D6.2MM)")
+				(description "Eagle Seeed-OPL-Switch:DIP-BUTTON-TOP-BLACK(4P-D6.2MM)")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "51223ed4-9443-b6a7-d859-0ac22086a98a")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "PWR0")
+			(value "LED")
+			(footprint "sequencer-memory-v2.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "717e78fb-a2fd-f0f0-72c8-40a1b294d87d")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "Q1")
+			(value "16Mhz")
+			(footprint "sequencer-memory-v2.1-eagle:HC49_S")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:HC49_S")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "crystal_CRYSTAL_HC49S")
+				(description "Eagle crystal:CRYSTAL")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "c1bf0f75-0f17-b142-7240-0b95af2fba33")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R1")
+			(value "10k")
+			(footprint "sequencer-memory-v2.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "939ba8f7-8355-b446-ef9a-b038bb1dc646")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R2")
+			(value "2.2k")
+			(footprint "sequencer-memory-v2.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "1effde77-899a-82f2-4d10-814829f3601f")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R3")
+			(value "2.2k")
+			(footprint "sequencer-memory-v2.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "a3c1f00f-4d9a-500e-22e3-09254cd912c1")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R4")
+			(value "10k")
+			(footprint "sequencer-memory-v2.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "6b760986-8c32-3402-dfbd-790bc831ef81")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R6")
+			(value "330")
+			(footprint "sequencer-memory-v2.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "eagle-ltspice_R_0207_10")
+				(description "Eagle eagle-ltspice:R")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "5af4d204-903e-16b9-dd18-b5ee093e2a47")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R7")
+			(value "330")
+			(footprint "sequencer-memory-v2.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "e12faa2c-4866-ff11-7f00-ae374b9db49d")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R8")
+			(value "330")
+			(footprint "sequencer-memory-v2.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "d014555e-1969-7a30-314a-0d194cd514ed")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R9")
+			(value "330")
+			(footprint "sequencer-memory-v2.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "a3f61020-9a5e-5091-2bf4-b8be3d35e825")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "READY0")
+			(value "LED")
+			(footprint "sequencer-memory-v2.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "4e09991b-5ee4-56e1-a938-613589ffa799")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "START0")
+			(value "SWITCH-MOMENTARY-2")
+			(footprint "sequencer-memory-v2.1-eagle:TACTILE-PTH-SIDEEZ")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:TACTILE-PTH-SIDEEZ")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "SparkFun-Electromechanical_SWITCH-MOMENTARY-2_SIDE_EZ")
+				(description "Eagle SparkFun-Electromechanical:SWITCH-MOMENTARY-2")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "cdc7fcd2-f387-7923-45bd-b8844a5fb27c")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "UCODE0")
+			(value "9070-1W")
+			(footprint "sequencer-memory-v2.1-eagle:9070-1W")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:9070-1W")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "switch_9070-1W")
+				(description "Eagle switch:9070-1W")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/c0758787-f4e9-1ba9-3679-b3997984beae/")
+			)
+			(tstamps "c25dd47b-17cb-8d44-3bf4-b3bc925d65d2")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "B1")
+						)
+						(pin
+							(num "B")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "CADDR14")
+			(value "PINHD-1X2")
+			(footprint "sequencer-memory-v2.1-eagle:1X02")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:1X02")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "Connector_PINHD-1X2")
+				(description "Eagle Connector:PINHD-1X2")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/8cf4fb6d-12b3-2313-98eb-d967889e4c95/")
+			)
+			(tstamps "34fa92fd-feed-97d7-8154-a65717c7e89a")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC10")
+			(value "MCP23017")
+			(footprint "sequencer-memory-v2.1-eagle:DIL28-3")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL28-3")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "microchip_MCP23017_SP")
+				(description "Eagle microchip:MCP23017")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/8cf4fb6d-12b3-2313-98eb-d967889e4c95/")
+			)
+			(tstamps "f7900cc6-f756-1e3e-8bd5-83f5ee8dba61")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC11")
+			(value "MCP23017")
+			(footprint "sequencer-memory-v2.1-eagle:DIL28-3")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL28-3")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "microchip_MCP23017_SP")
+				(description "Eagle microchip:MCP23017")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/8cf4fb6d-12b3-2313-98eb-d967889e4c95/")
+			)
+			(tstamps "07b77aaf-2f21-e643-0012-5f3d73e31cd5")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC12")
+			(value "MCP23017")
+			(footprint "sequencer-memory-v2.1-eagle:DIL28-3")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL28-3")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "microchip_MCP23017_SP")
+				(description "Eagle microchip:MCP23017")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/8cf4fb6d-12b3-2313-98eb-d967889e4c95/")
+			)
+			(tstamps "e76ad1d7-1dfd-bbf7-8d78-aebd4439dfb5")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC13")
+			(value "MCP23017")
+			(footprint "sequencer-memory-v2.1-eagle:DIL28-3")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL28-3")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "microchip_MCP23017_SP")
+				(description "Eagle microchip:MCP23017")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/8cf4fb6d-12b3-2313-98eb-d967889e4c95/")
+			)
+			(tstamps "2fb3f4b4-b8fd-8289-8c19-a562d4f03e04")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC14")
+			(value "MCP23017")
+			(footprint "sequencer-memory-v2.1-eagle:DIL28-3")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL28-3")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "microchip_MCP23017_SP")
+				(description "Eagle microchip:MCP23017")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/8cf4fb6d-12b3-2313-98eb-d967889e4c95/")
+			)
+			(tstamps "2f3f9ef3-76a4-d0ef-187a-a2f65b2f5aaf")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R5")
+			(value "10k")
+			(footprint "sequencer-memory-v2.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-v2.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-v2.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/8cf4fb6d-12b3-2313-98eb-d967889e4c95/")
+			)
+			(tstamps "4f0d6720-5050-8c30-3d79-1d11eb1c1620")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+	)
+	(groups)
+	(variants)
+	(libparts
+		(libpart
+			(lib "sequencer-memory-v2.1-eagle")
+			(part "Connector_PINHD-1X2")
+			(description "Eagle Connector:PINHD-1X2")
+			(fields
+				(field
+					(name "Reference") "JP")
+				(field
+					(name "Value") "PINHD-1X2")
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:1X02")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle Connector:PINHD-1X2")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "sequencer-memory-v2.1-eagle")
+			(part "Connector_PINHD-2X2")
+			(description "Eagle Connector:PINHD-2X2")
+			(fields
+				(field
+					(name "Reference") "JP")
+				(field
+					(name "Value") "PINHD-2X2")
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:2X02")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle Connector:PINHD-2X2")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "3")
+					(type "passive")
+				)
+				(pin
+					(num "4")
+					(name "4")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "sequencer-memory-v2.1-eagle")
+			(part "Seeed-OPL-Switch_DIP-BUTTON-TOP-BLACK(4P-D6.2MM)")
+			(description "Eagle Seeed-OPL-Switch:DIP-BUTTON-TOP-BLACK(4P-D6.2MM)")
+			(fields
+				(field
+					(name "Reference") "K")
+				(field
+					(name "Value") "DIP-BUTTON-TOP-BLACK(4P-D6.2MM)")
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:SW4-6.2X6.2X5.0MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle Seeed-OPL-Switch:DIP-BUTTON-TOP-BLACK(4P-D6.2MM)")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "A0")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "B0")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "B1")
+					(type "passive")
+				)
+				(pin
+					(num "4")
+					(name "A1")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "sequencer-memory-v2.1-eagle")
+			(part "SparkFun-Connectors_FTDI_DEVICE")
+			(description "Eagle SparkFun-Connectors:FTDI_DEVICE")
+			(fields
+				(field
+					(name "Reference") "JP")
+				(field
+					(name "Value") "FTDI_DEVICE")
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:FTDI_DEVICE_SIDE")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle SparkFun-Connectors:FTDI_DEVICE")
+			)
+			(pins
+				(pin
+					(num "P$1")
+					(name "DTR")
+					(type "passive")
+				)
+				(pin
+					(num "P$2")
+					(name "TXO")
+					(type "passive")
+				)
+				(pin
+					(num "P$3")
+					(name "RXI")
+					(type "passive")
+				)
+				(pin
+					(num "P$4")
+					(name "VCC")
+					(type "passive")
+				)
+				(pin
+					(num "P$5")
+					(name "CTS")
+					(type "passive")
+				)
+				(pin
+					(num "P$6")
+					(name "GND")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "sequencer-memory-v2.1-eagle")
+			(part "SparkFun-DigitalIC_ATMEGA328P_PDIP")
+			(description "Eagle SparkFun-DigitalIC:ATMEGA328P_PDIP")
+			(fields
+				(field
+					(name "Reference") "U")
+				(field
+					(name "Value") "ATMEGA328P_PDIP")
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL28-3")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle SparkFun-DigitalIC:ATMEGA328P_PDIP")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "PC6(/RESET)")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "PD0(RXD)")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "PD1(TXD)")
+					(type "passive")
+				)
+				(pin
+					(num "4")
+					(name "PD2(INT0)")
+					(type "passive")
+				)
+				(pin
+					(num "5")
+					(name "PD3(INT1)")
+					(type "passive")
+				)
+				(pin
+					(num "6")
+					(name "PD4(XCK/T0)")
+					(type "passive")
+				)
+				(pin
+					(num "7")
+					(name "VCC")
+					(type "passive")
+				)
+				(pin
+					(num "8")
+					(name "GND@1")
+					(type "passive")
+				)
+				(pin
+					(num "9")
+					(name "PB6(XTAL1/TOSC1)")
+					(type "passive")
+				)
+				(pin
+					(num "10")
+					(name "PB7(XTAL2/TOSC2)")
+					(type "passive")
+				)
+				(pin
+					(num "11")
+					(name "PD5(T1)")
+					(type "passive")
+				)
+				(pin
+					(num "12")
+					(name "PD6(AIN0)")
+					(type "passive")
+				)
+				(pin
+					(num "13")
+					(name "PD7(AIN1)")
+					(type "passive")
+				)
+				(pin
+					(num "14")
+					(name "PB0(ICP)")
+					(type "passive")
+				)
+				(pin
+					(num "15")
+					(name "PB1(OC1A)")
+					(type "passive")
+				)
+				(pin
+					(num "16")
+					(name "PB2(SS/OC1B)")
+					(type "passive")
+				)
+				(pin
+					(num "17")
+					(name "PB3(MOSI/OC2)")
+					(type "passive")
+				)
+				(pin
+					(num "18")
+					(name "PB4(MISO)")
+					(type "passive")
+				)
+				(pin
+					(num "19")
+					(name "PB5(SCK)")
+					(type "passive")
+				)
+				(pin
+					(num "20")
+					(name "AVCC")
+					(type "passive")
+				)
+				(pin
+					(num "21")
+					(name "AREF")
+					(type "passive")
+				)
+				(pin
+					(num "22")
+					(name "GND@2")
+					(type "passive")
+				)
+				(pin
+					(num "23")
+					(name "PC0(ADC0)")
+					(type "passive")
+				)
+				(pin
+					(num "24")
+					(name "PC1(ADC1)")
+					(type "passive")
+				)
+				(pin
+					(num "25")
+					(name "PC2(ADC2)")
+					(type "passive")
+				)
+				(pin
+					(num "26")
+					(name "PC3(ADC3)")
+					(type "passive")
+				)
+				(pin
+					(num "27")
+					(name "PC4(ADC4/SDA)")
+					(type "passive")
+				)
+				(pin
+					(num "28")
+					(name "PC5(ADC5/SCL)")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "sequencer-memory-v2.1-eagle")
+			(part "SparkFun-Electromechanical_SWITCH-MOMENTARY-2_SIDE_EZ")
+			(description "Eagle SparkFun-Electromechanical:SWITCH-MOMENTARY-2")
+			(fields
+				(field
+					(name "Reference") "S")
+				(field
+					(name "Value") "SWITCH-MOMENTARY-2")
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:TACTILE-PTH-SIDEEZ")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle SparkFun-Electromechanical:SWITCH-MOMENTARY-2")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "sequencer-memory-v2.1-eagle")
+			(part "adafruit_C-US_025-024X044")
+			(description "Eagle adafruit:C-US")
+			(fields
+				(field
+					(name "Reference") "C")
+				(field
+					(name "Value") "C-US")
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle adafruit:C-US")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "sequencer-memory-v2.1-eagle")
+			(part "con-lstb_MA20-2")
+			(description "Eagle con-lstb:MA20-2")
+			(fields
+				(field
+					(name "Reference") "SV")
+				(field
+					(name "Value") "MA20-2")
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:MA20-2")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle con-lstb:MA20-2")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "3")
+					(type "passive")
+				)
+				(pin
+					(num "4")
+					(name "4")
+					(type "passive")
+				)
+				(pin
+					(num "5")
+					(name "5")
+					(type "passive")
+				)
+				(pin
+					(num "6")
+					(name "6")
+					(type "passive")
+				)
+				(pin
+					(num "7")
+					(name "7")
+					(type "passive")
+				)
+				(pin
+					(num "8")
+					(name "8")
+					(type "passive")
+				)
+				(pin
+					(num "9")
+					(name "9")
+					(type "passive")
+				)
+				(pin
+					(num "10")
+					(name "10")
+					(type "passive")
+				)
+				(pin
+					(num "11")
+					(name "11")
+					(type "passive")
+				)
+				(pin
+					(num "12")
+					(name "12")
+					(type "passive")
+				)
+				(pin
+					(num "13")
+					(name "13")
+					(type "passive")
+				)
+				(pin
+					(num "14")
+					(name "14")
+					(type "passive")
+				)
+				(pin
+					(num "15")
+					(name "15")
+					(type "passive")
+				)
+				(pin
+					(num "16")
+					(name "16")
+					(type "passive")
+				)
+				(pin
+					(num "17")
+					(name "17")
+					(type "passive")
+				)
+				(pin
+					(num "18")
+					(name "18")
+					(type "passive")
+				)
+				(pin
+					(num "19")
+					(name "19")
+					(type "passive")
+				)
+				(pin
+					(num "20")
+					(name "20")
+					(type "passive")
+				)
+				(pin
+					(num "21")
+					(name "21")
+					(type "passive")
+				)
+				(pin
+					(num "22")
+					(name "22")
+					(type "passive")
+				)
+				(pin
+					(num "23")
+					(name "23")
+					(type "passive")
+				)
+				(pin
+					(num "24")
+					(name "24")
+					(type "passive")
+				)
+				(pin
+					(num "25")
+					(name "25")
+					(type "passive")
+				)
+				(pin
+					(num "26")
+					(name "26")
+					(type "passive")
+				)
+				(pin
+					(num "27")
+					(name "27")
+					(type "passive")
+				)
+				(pin
+					(num "28")
+					(name "28")
+					(type "passive")
+				)
+				(pin
+					(num "29")
+					(name "29")
+					(type "passive")
+				)
+				(pin
+					(num "30")
+					(name "30")
+					(type "passive")
+				)
+				(pin
+					(num "31")
+					(name "31")
+					(type "passive")
+				)
+				(pin
+					(num "32")
+					(name "32")
+					(type "passive")
+				)
+				(pin
+					(num "33")
+					(name "33")
+					(type "passive")
+				)
+				(pin
+					(num "34")
+					(name "34")
+					(type "passive")
+				)
+				(pin
+					(num "35")
+					(name "35")
+					(type "passive")
+				)
+				(pin
+					(num "36")
+					(name "36")
+					(type "passive")
+				)
+				(pin
+					(num "37")
+					(name "37")
+					(type "passive")
+				)
+				(pin
+					(num "38")
+					(name "38")
+					(type "passive")
+				)
+				(pin
+					(num "39")
+					(name "39")
+					(type "passive")
+				)
+				(pin
+					(num "40")
+					(name "40")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "sequencer-memory-v2.1-eagle")
+			(part "crystal_CRYSTAL_HC49S")
+			(description "Eagle crystal:CRYSTAL")
+			(fields
+				(field
+					(name "Reference") "Q")
+				(field
+					(name "Value") "CRYSTAL")
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:HC49_S")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle crystal:CRYSTAL")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "sequencer-memory-v2.1-eagle")
+			(part "eagle-ltspice_R_0207_10")
+			(description "Eagle eagle-ltspice:R")
+			(fields
+				(field
+					(name "Reference") "R")
+				(field
+					(name "Value") "R")
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle eagle-ltspice:R")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "sequencer-memory-v2.1-eagle")
+			(part "jumper_JP1E")
+			(description "Eagle jumper:JP1E")
+			(fields
+				(field
+					(name "Reference") "JP")
+				(field
+					(name "Value") "JP1E")
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:JP1")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle jumper:JP1E")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "sequencer-memory-v2.1-eagle")
+			(part "led_LED_5MM")
+			(description "Eagle led:LED")
+			(fields
+				(field
+					(name "Reference") "LED")
+				(field
+					(name "Value") "LED")
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle led:LED")
+			)
+			(pins
+				(pin
+					(num "A")
+					(name "A")
+					(type "passive")
+				)
+				(pin
+					(num "K")
+					(name "C")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "sequencer-memory-v2.1-eagle")
+			(part "memory-hitachi_62256P")
+			(description "Eagle memory-hitachi:62256P")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "62256P")
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL28-6")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle memory-hitachi:62256P")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "A14")
+					(type "input")
+				)
+				(pin
+					(num "2")
+					(name "A12")
+					(type "input")
+				)
+				(pin
+					(num "3")
+					(name "A7")
+					(type "input")
+				)
+				(pin
+					(num "4")
+					(name "A6")
+					(type "input")
+				)
+				(pin
+					(num "5")
+					(name "A5")
+					(type "input")
+				)
+				(pin
+					(num "6")
+					(name "A4")
+					(type "input")
+				)
+				(pin
+					(num "7")
+					(name "A3")
+					(type "input")
+				)
+				(pin
+					(num "8")
+					(name "A2")
+					(type "input")
+				)
+				(pin
+					(num "9")
+					(name "A1")
+					(type "input")
+				)
+				(pin
+					(num "10")
+					(name "A0")
+					(type "input")
+				)
+				(pin
+					(num "11")
+					(name "I/O0")
+					(type "passive")
+				)
+				(pin
+					(num "12")
+					(name "I/O1")
+					(type "passive")
+				)
+				(pin
+					(num "13")
+					(name "I/O2")
+					(type "passive")
+				)
+				(pin
+					(num "14")
+					(name "VSS")
+					(type "power_in")
+				)
+				(pin
+					(num "15")
+					(name "I/O3")
+					(type "passive")
+				)
+				(pin
+					(num "16")
+					(name "I/O4")
+					(type "passive")
+				)
+				(pin
+					(num "17")
+					(name "I/O5")
+					(type "passive")
+				)
+				(pin
+					(num "18")
+					(name "I/O6")
+					(type "passive")
+				)
+				(pin
+					(num "19")
+					(name "I/O7")
+					(type "passive")
+				)
+				(pin
+					(num "20")
+					(name "~{CS}")
+					(type "input")
+				)
+				(pin
+					(num "21")
+					(name "A10")
+					(type "input")
+				)
+				(pin
+					(num "22")
+					(name "~{OE}")
+					(type "input")
+				)
+				(pin
+					(num "23")
+					(name "A11")
+					(type "input")
+				)
+				(pin
+					(num "24")
+					(name "A9")
+					(type "input")
+				)
+				(pin
+					(num "25")
+					(name "A8")
+					(type "input")
+				)
+				(pin
+					(num "26")
+					(name "A13")
+					(type "input")
+				)
+				(pin
+					(num "27")
+					(name "~{WE}")
+					(type "input")
+				)
+				(pin
+					(num "28")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "sequencer-memory-v2.1-eagle")
+			(part "microchip_24x_P")
+			(description "Eagle microchip:24*")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "24*")
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL8")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle microchip:24*")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "A0")
+					(type "input")
+				)
+				(pin
+					(num "2")
+					(name "A1")
+					(type "input")
+				)
+				(pin
+					(num "3")
+					(name "A2")
+					(type "input")
+				)
+				(pin
+					(num "4")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "5")
+					(name "SDA")
+					(type "passive")
+				)
+				(pin
+					(num "6")
+					(name "SCL")
+					(type "input")
+				)
+				(pin
+					(num "7")
+					(name "WP")
+					(type "input")
+				)
+				(pin
+					(num "8")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "sequencer-memory-v2.1-eagle")
+			(part "microchip_MCP23017_SP")
+			(description "Eagle microchip:MCP23017")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "MCP23017")
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:DIL28-3")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle microchip:MCP23017")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "GPB0")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "GPB1")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "GPB2")
+					(type "passive")
+				)
+				(pin
+					(num "4")
+					(name "GPB3")
+					(type "passive")
+				)
+				(pin
+					(num "5")
+					(name "GPB4")
+					(type "passive")
+				)
+				(pin
+					(num "6")
+					(name "GPB5")
+					(type "passive")
+				)
+				(pin
+					(num "7")
+					(name "GPB6")
+					(type "passive")
+				)
+				(pin
+					(num "8")
+					(name "GPB7")
+					(type "passive")
+				)
+				(pin
+					(num "9")
+					(name "VDD")
+					(type "power_in")
+				)
+				(pin
+					(num "10")
+					(name "VSS")
+					(type "power_in")
+				)
+				(pin
+					(num "12")
+					(name "SCL")
+					(type "input")
+				)
+				(pin
+					(num "13")
+					(name "SDA")
+					(type "passive")
+				)
+				(pin
+					(num "15")
+					(name "A0")
+					(type "input")
+				)
+				(pin
+					(num "16")
+					(name "A1")
+					(type "input")
+				)
+				(pin
+					(num "17")
+					(name "A2")
+					(type "input")
+				)
+				(pin
+					(num "18")
+					(name "~{RESET}")
+					(type "input")
+				)
+				(pin
+					(num "19")
+					(name "INTB")
+					(type "output")
+				)
+				(pin
+					(num "20")
+					(name "INTA")
+					(type "output")
+				)
+				(pin
+					(num "21")
+					(name "GPA0")
+					(type "passive")
+				)
+				(pin
+					(num "22")
+					(name "GPA1")
+					(type "passive")
+				)
+				(pin
+					(num "23")
+					(name "GPA2")
+					(type "passive")
+				)
+				(pin
+					(num "24")
+					(name "GPA3")
+					(type "passive")
+				)
+				(pin
+					(num "25")
+					(name "GPA4")
+					(type "passive")
+				)
+				(pin
+					(num "26")
+					(name "GPA5")
+					(type "passive")
+				)
+				(pin
+					(num "27")
+					(name "GPA6")
+					(type "passive")
+				)
+				(pin
+					(num "28")
+					(name "GPA7")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "sequencer-memory-v2.1-eagle")
+			(part "pinhead_PINHD-1X3")
+			(description "Eagle pinhead:PINHD-1X3")
+			(fields
+				(field
+					(name "Reference") "JP")
+				(field
+					(name "Value") "PINHD-1X3")
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:1X03")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle pinhead:PINHD-1X3")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "3")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "sequencer-memory-v2.1-eagle")
+			(part "resistor_R-US__0207_10")
+			(description "Eagle resistor:R-US_")
+			(fields
+				(field
+					(name "Reference") "R")
+				(field
+					(name "Value") "R-US_")
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle resistor:R-US_")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "sequencer-memory-v2.1-eagle")
+			(part "switch_9070-1W")
+			(description "Eagle switch:9070-1W")
+			(fields
+				(field
+					(name "Reference") "S")
+				(field
+					(name "Value") "9070-1W")
+				(field
+					(name "Footprint") "sequencer-memory-v2.1-eagle:9070-1W")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle switch:9070-1W")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "O")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "P")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B1")
+					(name "B1")
+					(type "passive")
+				)
+			)
+		)
+	)
+	(libraries
+		(library
+			(logical "sequencer-memory-v2.1-eagle")
+			(uri "${KIPRJMOD}/sequencer-memory-v2.1-eagle.kicad_sym")
+		)
+	)
+	(nets
+		(net
+			(code "1")
+			(name "-2-BYTE-OPERAND-SEL")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "7")
+				(pinfunction "GPB6_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC5")
+				(pin "12")
+				(pinfunction "I/O1_12")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "10")
+				(pinfunction "10_10")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "2")
+			(name "-AC-LD")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "2")
+				(pinfunction "GPB1_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC7")
+				(pin "18")
+				(pinfunction "I/O6_18")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "7")
+				(pinfunction "7_7")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "3")
+			(name "-AC-LD-INV")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "28")
+				(pinfunction "GPA7_28")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC8")
+				(pin "11")
+				(pinfunction "I/O0_11")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "3")
+				(pinfunction "3_3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "4")
+			(name "-AC-RD")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "1")
+				(pinfunction "GPB0_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC7")
+				(pin "19")
+				(pinfunction "I/O7_19")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "5")
+				(pinfunction "5_5")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "5")
+			(name "-ALU-FUNC")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "23")
+				(pinfunction "GPA2_23")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC8")
+				(pin "17")
+				(pinfunction "I/O5_17")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "34")
+				(pinfunction "34_34")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "6")
+			(name "-CMEMRD")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "22")
+				(pinfunction "~{OE}_22")
+				(pintype "input")
+			)
+			(node
+				(ref "IC15")
+				(pin "15")
+				(pinfunction "PB1(OC1A)_15")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "22")
+				(pinfunction "~{OE}_22")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "22")
+				(pinfunction "~{OE}_22")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "22")
+				(pinfunction "~{OE}_22")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "22")
+				(pinfunction "~{OE}_22")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "22")
+				(pinfunction "~{OE}_22")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "22")
+				(pinfunction "~{OE}_22")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "22")
+				(pinfunction "~{OE}_22")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "7")
+			(name "-CMEMSEL")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "20")
+				(pinfunction "~{CS}_20")
+				(pintype "input")
+			)
+			(node
+				(ref "IC15")
+				(pin "16")
+				(pinfunction "PB2(SS/OC1B)_16")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "20")
+				(pinfunction "~{CS}_20")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "20")
+				(pinfunction "~{CS}_20")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "20")
+				(pinfunction "~{CS}_20")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "20")
+				(pinfunction "~{CS}_20")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "20")
+				(pinfunction "~{CS}_20")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "20")
+				(pinfunction "~{CS}_20")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "20")
+				(pinfunction "~{CS}_20")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "8")
+			(name "-CMEMWR")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "27")
+				(pinfunction "~{WE}_27")
+				(pintype "input")
+			)
+			(node
+				(ref "IC15")
+				(pin "14")
+				(pinfunction "PB0(ICP)_14")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "27")
+				(pinfunction "~{WE}_27")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "27")
+				(pinfunction "~{WE}_27")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "27")
+				(pinfunction "~{WE}_27")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "27")
+				(pinfunction "~{WE}_27")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "27")
+				(pinfunction "~{WE}_27")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "27")
+				(pinfunction "~{WE}_27")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "27")
+				(pinfunction "~{WE}_27")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "9")
+			(name "-HL-SWAP")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "5")
+				(pinfunction "GPB4_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC7")
+				(pin "15")
+				(pinfunction "I/O3_15")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "13")
+				(pinfunction "13_13")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "10")
+			(name "-INT-JMP")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "5")
+				(pinfunction "GPB4_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC5")
+				(pin "15")
+				(pinfunction "I/O3_15")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "6")
+				(pinfunction "6_6")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "11")
+			(name "-INTA")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "21")
+				(pinfunction "GPA0_21")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC6")
+				(pin "19")
+				(pinfunction "I/O7_19")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "19")
+				(pinfunction "19_19")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "12")
+			(name "-IO-ADDR-LD")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "21")
+				(pinfunction "GPA0_21")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC8")
+				(pin "19")
+				(pinfunction "I/O7_19")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "30")
+				(pinfunction "30_30")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "13")
+			(name "-IO-RD")
+			(class "Default")
+			(node
+				(ref "IC13")
+				(pin "23")
+				(pinfunction "GPA2_23")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "13")
+				(pinfunction "I/O2_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "39")
+				(pinfunction "39_39")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "14")
+			(name "-IO-WR")
+			(class "Default")
+			(node
+				(ref "IC13")
+				(pin "24")
+				(pinfunction "GPA3_24")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "15")
+				(pinfunction "I/O3_15")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "4")
+				(pinfunction "4_4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "15")
+			(name "-MEM-CPU-RESET")
+			(class "Default")
+			(node
+				(ref "C19")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC10")
+				(pin "18")
+				(pinfunction "~{RESET}_18")
+				(pintype "input")
+			)
+			(node
+				(ref "IC11")
+				(pin "18")
+				(pinfunction "~{RESET}_18")
+				(pintype "input")
+			)
+			(node
+				(ref "IC12")
+				(pin "18")
+				(pinfunction "~{RESET}_18")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "18")
+				(pinfunction "~{RESET}_18")
+				(pintype "input")
+			)
+			(node
+				(ref "IC14")
+				(pin "18")
+				(pinfunction "~{RESET}_18")
+				(pintype "input")
+			)
+			(node
+				(ref "IC15")
+				(pin "1")
+				(pinfunction "PC6(/RESET)_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "JP1")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "LOCAL-CPU-RESET0")
+				(pin "3")
+				(pinfunction "B1_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "R4")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "16")
+			(name "-MEM-RD")
+			(class "Default")
+			(node
+				(ref "IC13")
+				(pin "21")
+				(pinfunction "GPA0_21")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "11")
+				(pinfunction "I/O0_11")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "35")
+				(pinfunction "35_35")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "17")
+			(name "-MEM-WR")
+			(class "Default")
+			(node
+				(ref "IC13")
+				(pin "22")
+				(pinfunction "GPA1_22")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "12")
+				(pinfunction "I/O1_12")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "37")
+				(pinfunction "37_37")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "18")
+			(name "-REG-DN")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "7")
+				(pinfunction "GPB6_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC3")
+				(pin "18")
+				(pinfunction "I/O6_18")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "31")
+				(pinfunction "31_31")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "19")
+			(name "-REG-FUNC-LD")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "22")
+				(pinfunction "GPA1_22")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC4")
+				(pin "12")
+				(pinfunction "I/O1_12")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "5")
+				(pinfunction "5_5")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "20")
+			(name "-REG-FUNC-RD")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "21")
+				(pinfunction "GPA0_21")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC4")
+				(pin "11")
+				(pinfunction "I/O0_11")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "3")
+				(pinfunction "3_3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "21")
+			(name "-REG-RD-HI")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "5")
+				(pinfunction "GPB4_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC3")
+				(pin "16")
+				(pinfunction "I/O4_16")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "27")
+				(pinfunction "27_27")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "22")
+			(name "-REG-RD-LO")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "3")
+				(pinfunction "GPB2_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC3")
+				(pin "13")
+				(pinfunction "I/O2_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "23")
+				(pinfunction "23_23")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "23")
+			(name "-REG-UP")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "8")
+				(pinfunction "GPB7_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC3")
+				(pin "19")
+				(pinfunction "I/O7_19")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "33")
+				(pinfunction "33_33")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "24")
+			(name "-SR-LD")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "3")
+				(pinfunction "GPB2_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC7")
+				(pin "17")
+				(pinfunction "I/O5_17")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "9")
+				(pinfunction "9_9")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "25")
+			(name "-TMP-REG-LD0")
+			(class "Default")
+			(node
+				(ref "IC13")
+				(pin "26")
+				(pinfunction "GPA5_26")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "17")
+				(pinfunction "I/O5_17")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "8")
+				(pinfunction "8_8")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "26")
+			(name "-TMP-REG-LD1")
+			(class "Default")
+			(node
+				(ref "IC13")
+				(pin "28")
+				(pinfunction "GPA7_28")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "19")
+				(pinfunction "I/O7_19")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "12")
+				(pinfunction "12_12")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "27")
+			(name "-TMP-REG-RD0")
+			(class "Default")
+			(node
+				(ref "IC13")
+				(pin "25")
+				(pinfunction "GPA4_25")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "16")
+				(pinfunction "I/O4_16")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "6")
+				(pinfunction "6_6")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "28")
+			(name "-TMP-REG-RD1")
+			(class "Default")
+			(node
+				(ref "IC13")
+				(pin "27")
+				(pinfunction "GPA6_27")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "18")
+				(pinfunction "I/O6_18")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "10")
+				(pinfunction "10_10")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "29")
+			(name "-VMA")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "22")
+				(pinfunction "GPA1_22")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC8")
+				(pin "18")
+				(pinfunction "I/O6_18")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "32")
+				(pinfunction "32_32")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "30")
+			(name "ADDR-REG-ID0")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "11")
+				(pinfunction "I/O0_11")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC13")
+				(pin "1")
+				(pinfunction "GPB0_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "14")
+				(pinfunction "14_14")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "31")
+			(name "ADDR-REG-ID1")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "12")
+				(pinfunction "I/O1_12")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC13")
+				(pin "2")
+				(pinfunction "GPB1_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "16")
+				(pinfunction "16_16")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "32")
+			(name "ADDR-REG-ID2")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "13")
+				(pinfunction "I/O2_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC13")
+				(pin "3")
+				(pinfunction "GPB2_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "18")
+				(pinfunction "18_18")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "33")
+			(name "ADDR-REG-ID3")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "15")
+				(pinfunction "I/O3_15")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC13")
+				(pin "4")
+				(pinfunction "GPB3_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "20")
+				(pinfunction "20_20")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "34")
+			(name "ALU0")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "24")
+				(pinfunction "GPA3_24")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC8")
+				(pin "16")
+				(pinfunction "I/O4_16")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "36")
+				(pinfunction "36_36")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "35")
+			(name "ALU1")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "25")
+				(pinfunction "GPA4_25")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC8")
+				(pin "15")
+				(pinfunction "I/O3_15")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "38")
+				(pinfunction "38_38")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "36")
+			(name "ALU2")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "26")
+				(pinfunction "GPA5_26")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC8")
+				(pin "13")
+				(pinfunction "I/O2_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "40")
+				(pinfunction "40_40")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "37")
+			(name "ALU3")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "27")
+				(pinfunction "GPA6_27")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC8")
+				(pin "12")
+				(pinfunction "I/O1_12")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "38")
+			(name "ARD-RXIN")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "2")
+				(pinfunction "PD0(RXD)_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "JP3")
+				(pin "P$3")
+				(pinfunction "RXI_P$3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "39")
+			(name "ARD-TXOUT")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "3")
+				(pinfunction "PD1(TXD)_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "JP3")
+				(pin "P$2")
+				(pinfunction "TXO_P$2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "40")
+			(name "BR-TEST")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "4")
+				(pinfunction "GPB3_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC7")
+				(pin "16")
+				(pinfunction "I/O4_16")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "11")
+				(pinfunction "11_11")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "41")
+			(name "BRANCH-LD-HI")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "4")
+				(pinfunction "GPB3_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC5")
+				(pin "16")
+				(pinfunction "I/O4_16")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "4")
+				(pinfunction "4_4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "42")
+			(name "BRANCH-LD-LO")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "2")
+				(pinfunction "GPB1_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC5")
+				(pin "18")
+				(pinfunction "I/O6_18")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "37")
+				(pinfunction "37_37")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "43")
+			(name "BRANCH-RD")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "1")
+				(pinfunction "GPB0_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC5")
+				(pin "19")
+				(pinfunction "I/O7_19")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "35")
+				(pinfunction "35_35")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "44")
+			(name "BUS-READY")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "13")
+				(pinfunction "PD7(AIN1)_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "12")
+				(pinfunction "12_12")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "45")
+			(name "CADDR0")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "10")
+				(pinfunction "A0_10")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "21")
+				(pinfunction "GPA0_21")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "10")
+				(pinfunction "A0_10")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "10")
+				(pinfunction "A0_10")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "10")
+				(pinfunction "A0_10")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "10")
+				(pinfunction "A0_10")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "10")
+				(pinfunction "A0_10")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "10")
+				(pinfunction "A0_10")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "10")
+				(pinfunction "A0_10")
+				(pintype "input")
+			)
+			(node
+				(ref "SV1")
+				(pin "14")
+				(pinfunction "14_14")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "46")
+			(name "CADDR1")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "9")
+				(pinfunction "A1_9")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "22")
+				(pinfunction "GPA1_22")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "9")
+				(pinfunction "A1_9")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "9")
+				(pinfunction "A1_9")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "9")
+				(pinfunction "A1_9")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "9")
+				(pinfunction "A1_9")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "9")
+				(pinfunction "A1_9")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "9")
+				(pinfunction "A1_9")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "9")
+				(pinfunction "A1_9")
+				(pintype "input")
+			)
+			(node
+				(ref "SV1")
+				(pin "16")
+				(pinfunction "16_16")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "47")
+			(name "CADDR2")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "8")
+				(pinfunction "A2_8")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "23")
+				(pinfunction "GPA2_23")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "8")
+				(pinfunction "A2_8")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "8")
+				(pinfunction "A2_8")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "8")
+				(pinfunction "A2_8")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "8")
+				(pinfunction "A2_8")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "8")
+				(pinfunction "A2_8")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "8")
+				(pinfunction "A2_8")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "8")
+				(pinfunction "A2_8")
+				(pintype "input")
+			)
+			(node
+				(ref "SV1")
+				(pin "18")
+				(pinfunction "18_18")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "48")
+			(name "CADDR3")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "7")
+				(pinfunction "A3_7")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "24")
+				(pinfunction "GPA3_24")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "7")
+				(pinfunction "A3_7")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "7")
+				(pinfunction "A3_7")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "7")
+				(pinfunction "A3_7")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "7")
+				(pinfunction "A3_7")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "7")
+				(pinfunction "A3_7")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "7")
+				(pinfunction "A3_7")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "7")
+				(pinfunction "A3_7")
+				(pintype "input")
+			)
+			(node
+				(ref "SV1")
+				(pin "20")
+				(pinfunction "20_20")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "49")
+			(name "CADDR4")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "6")
+				(pinfunction "A4_6")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "25")
+				(pinfunction "GPA4_25")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "6")
+				(pinfunction "A4_6")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "6")
+				(pinfunction "A4_6")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "6")
+				(pinfunction "A4_6")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "6")
+				(pinfunction "A4_6")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "6")
+				(pinfunction "A4_6")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "6")
+				(pinfunction "A4_6")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "6")
+				(pinfunction "A4_6")
+				(pintype "input")
+			)
+			(node
+				(ref "SV1")
+				(pin "22")
+				(pinfunction "22_22")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "50")
+			(name "CADDR5")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "5")
+				(pinfunction "A5_5")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "26")
+				(pinfunction "GPA5_26")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "5")
+				(pinfunction "A5_5")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "5")
+				(pinfunction "A5_5")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "5")
+				(pinfunction "A5_5")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "5")
+				(pinfunction "A5_5")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "5")
+				(pinfunction "A5_5")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "5")
+				(pinfunction "A5_5")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "5")
+				(pinfunction "A5_5")
+				(pintype "input")
+			)
+			(node
+				(ref "SV1")
+				(pin "24")
+				(pinfunction "24_24")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "51")
+			(name "CADDR6")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "4")
+				(pinfunction "A6_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "27")
+				(pinfunction "GPA6_27")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "4")
+				(pinfunction "A6_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "4")
+				(pinfunction "A6_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "4")
+				(pinfunction "A6_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "4")
+				(pinfunction "A6_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "4")
+				(pinfunction "A6_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "4")
+				(pinfunction "A6_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "4")
+				(pinfunction "A6_4")
+				(pintype "input")
+			)
+			(node
+				(ref "SV1")
+				(pin "26")
+				(pinfunction "26_26")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "52")
+			(name "CADDR7")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "3")
+				(pinfunction "A7_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "28")
+				(pinfunction "GPA7_28")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "3")
+				(pinfunction "A7_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "3")
+				(pinfunction "A7_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "3")
+				(pinfunction "A7_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "3")
+				(pinfunction "A7_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "3")
+				(pinfunction "A7_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "3")
+				(pinfunction "A7_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "3")
+				(pinfunction "A7_3")
+				(pintype "input")
+			)
+			(node
+				(ref "SV1")
+				(pin "28")
+				(pinfunction "28_28")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "53")
+			(name "CADDR8")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "25")
+				(pinfunction "A8_25")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "1")
+				(pinfunction "GPB0_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "25")
+				(pinfunction "A8_25")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "25")
+				(pinfunction "A8_25")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "25")
+				(pinfunction "A8_25")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "25")
+				(pinfunction "A8_25")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "25")
+				(pinfunction "A8_25")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "25")
+				(pinfunction "A8_25")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "25")
+				(pinfunction "A8_25")
+				(pintype "input")
+			)
+			(node
+				(ref "SV1")
+				(pin "30")
+				(pinfunction "30_30")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "54")
+			(name "CADDR9")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "24")
+				(pinfunction "A9_24")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "2")
+				(pinfunction "GPB1_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "24")
+				(pinfunction "A9_24")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "24")
+				(pinfunction "A9_24")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "24")
+				(pinfunction "A9_24")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "24")
+				(pinfunction "A9_24")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "24")
+				(pinfunction "A9_24")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "24")
+				(pinfunction "A9_24")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "24")
+				(pinfunction "A9_24")
+				(pintype "input")
+			)
+			(node
+				(ref "SV1")
+				(pin "32")
+				(pinfunction "32_32")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "55")
+			(name "CADDR10")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "21")
+				(pinfunction "A10_21")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "3")
+				(pinfunction "GPB2_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "21")
+				(pinfunction "A10_21")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "21")
+				(pinfunction "A10_21")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "21")
+				(pinfunction "A10_21")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "21")
+				(pinfunction "A10_21")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "21")
+				(pinfunction "A10_21")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "21")
+				(pinfunction "A10_21")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "21")
+				(pinfunction "A10_21")
+				(pintype "input")
+			)
+			(node
+				(ref "SV1")
+				(pin "34")
+				(pinfunction "34_34")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "56")
+			(name "CADDR11")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "23")
+				(pinfunction "A11_23")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "4")
+				(pinfunction "GPB3_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "23")
+				(pinfunction "A11_23")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "23")
+				(pinfunction "A11_23")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "23")
+				(pinfunction "A11_23")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "23")
+				(pinfunction "A11_23")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "23")
+				(pinfunction "A11_23")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "23")
+				(pinfunction "A11_23")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "23")
+				(pinfunction "A11_23")
+				(pintype "input")
+			)
+			(node
+				(ref "SV1")
+				(pin "36")
+				(pinfunction "36_36")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "57")
+			(name "CADDR12")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "2")
+				(pinfunction "A12_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "5")
+				(pinfunction "GPB4_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "2")
+				(pinfunction "A12_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "2")
+				(pinfunction "A12_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "2")
+				(pinfunction "A12_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "2")
+				(pinfunction "A12_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "2")
+				(pinfunction "A12_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "2")
+				(pinfunction "A12_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "2")
+				(pinfunction "A12_2")
+				(pintype "input")
+			)
+			(node
+				(ref "SV1")
+				(pin "38")
+				(pinfunction "38_38")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "58")
+			(name "CADDR13")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "26")
+				(pinfunction "A13_26")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "6")
+				(pinfunction "GPB5_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "26")
+				(pinfunction "A13_26")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "26")
+				(pinfunction "A13_26")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "26")
+				(pinfunction "A13_26")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "26")
+				(pinfunction "A13_26")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "26")
+				(pinfunction "A13_26")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "26")
+				(pinfunction "A13_26")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "26")
+				(pinfunction "A13_26")
+				(pintype "input")
+			)
+			(node
+				(ref "SV1")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "59")
+			(name "CADDR14")
+			(class "Default")
+			(node
+				(ref "CADDR14")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC1")
+				(pin "1")
+				(pinfunction "A14_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "1")
+				(pinfunction "A14_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "1")
+				(pinfunction "A14_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "1")
+				(pinfunction "A14_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "1")
+				(pinfunction "A14_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "1")
+				(pinfunction "A14_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "1")
+				(pinfunction "A14_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "1")
+				(pinfunction "A14_1")
+				(pintype "input")
+			)
+			(node
+				(ref "R5")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "60")
+			(name "DEST-ADDR")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "8")
+				(pinfunction "GPB7_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC5")
+				(pin "11")
+				(pinfunction "I/O0_11")
+				(pintype "passive")
+			)
+			(node
+				(ref "JP1")
+				(pin "4")
+				(pinfunction "4_4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "61")
+			(name "FAULT")
+			(class "Default")
+			(node
+				(ref "FAULT0")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC15")
+				(pin "17")
+				(pinfunction "PB3(MOSI/OC2)_17")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "62")
+			(name "GND")
+			(class "Default")
+			(node
+				(ref "C1")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C10")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C11")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C12")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C13")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C14")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C15")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C16")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C17")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C18")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C2")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C3")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C4")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C5")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C6")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C7")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C8")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C9")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "CADDR14")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC1")
+				(pin "14")
+				(pinfunction "VSS_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC10")
+				(pin "10")
+				(pinfunction "VSS_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC10")
+				(pin "15")
+				(pinfunction "A0_15")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "16")
+				(pinfunction "A1_16")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "17")
+				(pinfunction "A2_17")
+				(pintype "input")
+			)
+			(node
+				(ref "IC11")
+				(pin "10")
+				(pinfunction "VSS_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC11")
+				(pin "17")
+				(pinfunction "A2_17")
+				(pintype "input")
+			)
+			(node
+				(ref "IC12")
+				(pin "10")
+				(pinfunction "VSS_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC12")
+				(pin "15")
+				(pinfunction "A0_15")
+				(pintype "input")
+			)
+			(node
+				(ref "IC12")
+				(pin "16")
+				(pinfunction "A1_16")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "10")
+				(pinfunction "VSS_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC13")
+				(pin "15")
+				(pinfunction "A0_15")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "17")
+				(pinfunction "A2_17")
+				(pintype "input")
+			)
+			(node
+				(ref "IC14")
+				(pin "10")
+				(pinfunction "VSS_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC14")
+				(pin "16")
+				(pinfunction "A1_16")
+				(pintype "input")
+			)
+			(node
+				(ref "IC14")
+				(pin "17")
+				(pinfunction "A2_17")
+				(pintype "input")
+			)
+			(node
+				(ref "IC15")
+				(pin "22")
+				(pinfunction "GND@2_22")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC15")
+				(pin "8")
+				(pinfunction "GND@1_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "14")
+				(pinfunction "VSS_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC3")
+				(pin "14")
+				(pinfunction "VSS_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC4")
+				(pin "14")
+				(pinfunction "VSS_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC5")
+				(pin "14")
+				(pinfunction "VSS_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC6")
+				(pin "14")
+				(pinfunction "VSS_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC7")
+				(pin "14")
+				(pinfunction "VSS_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC8")
+				(pin "14")
+				(pinfunction "VSS_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC9")
+				(pin "4")
+				(pinfunction "GND_4")
+				(pintype "power_in")
+			)
+			(node
+				(ref "JP2")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "JP3")
+				(pin "P$5")
+				(pinfunction "CTS_P$5")
+				(pintype "passive")
+			)
+			(node
+				(ref "JP3")
+				(pin "P$6")
+				(pinfunction "GND_P$6")
+				(pintype "passive")
+			)
+			(node
+				(ref "LOCAL-CPU-RESET0")
+				(pin "1")
+				(pinfunction "A0_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "PWR0")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R7")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R8")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R9")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "START0")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "39")
+				(pinfunction "39_39")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "40")
+				(pinfunction "40_40")
+				(pintype "passive")
+			)
+			(node
+				(ref "UCODE0")
+				(pin "3")
+				(pinfunction "S_3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "63")
+			(name "INT-EN")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "25")
+				(pinfunction "GPA4_25")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC6")
+				(pin "15")
+				(pinfunction "I/O3_15")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "27")
+				(pinfunction "27_27")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "64")
+			(name "INT-LD-HI")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "23")
+				(pinfunction "GPA2_23")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC6")
+				(pin "17")
+				(pinfunction "I/O5_17")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "23")
+				(pinfunction "23_23")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "65")
+			(name "INT-LD-LO")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "6")
+				(pinfunction "GPB5_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC5")
+				(pin "13")
+				(pinfunction "I/O2_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "21")
+				(pinfunction "21_21")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "66")
+			(name "INT-START")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "24")
+				(pinfunction "GPA3_24")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC6")
+				(pin "16")
+				(pinfunction "I/O4_16")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "25")
+				(pinfunction "25_25")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "67")
+			(name "IO-ADDR0")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "16")
+				(pinfunction "I/O4_16")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC13")
+				(pin "5")
+				(pinfunction "GPB4_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "22")
+				(pinfunction "22_22")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "68")
+			(name "IO-ADDR1")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "17")
+				(pinfunction "I/O5_17")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC13")
+				(pin "6")
+				(pinfunction "GPB5_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "24")
+				(pinfunction "24_24")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "69")
+			(name "IO-ADDR2")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "18")
+				(pinfunction "I/O6_18")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC13")
+				(pin "7")
+				(pinfunction "GPB6_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "26")
+				(pinfunction "26_26")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "70")
+			(name "IO-ADDR3")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "19")
+				(pinfunction "I/O7_19")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC13")
+				(pin "8")
+				(pinfunction "GPB7_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "28")
+				(pinfunction "28_28")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "71")
+			(name "LD")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "19")
+				(pinfunction "PB5(SCK)_19")
+				(pintype "passive")
+			)
+			(node
+				(ref "LOADING0")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "72")
+			(name "LD-INS-REG")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "26")
+				(pinfunction "GPA5_26")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC6")
+				(pin "13")
+				(pinfunction "I/O2_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "29")
+				(pinfunction "29_29")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "73")
+			(name "LED-READY")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "18")
+				(pinfunction "PB4(MISO)_18")
+				(pintype "passive")
+			)
+			(node
+				(ref "READY0")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "74")
+			(name "N$1")
+			(class "Default")
+			(node
+				(ref "PWR0")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+			(node
+				(ref "R6")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "75")
+			(name "N$6")
+			(class "Default")
+			(node
+				(ref "C18")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC15")
+				(pin "9")
+				(pinfunction "PB6(XTAL1/TOSC1)_9")
+				(pintype "passive")
+			)
+			(node
+				(ref "Q1")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "76")
+			(name "N$7")
+			(class "Default")
+			(node
+				(ref "C16")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC15")
+				(pin "10")
+				(pinfunction "PB7(XTAL2/TOSC2)_10")
+				(pintype "passive")
+			)
+			(node
+				(ref "Q1")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "77")
+			(name "N$8")
+			(class "Default")
+			(node
+				(ref "C19")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "DTR-RESET0")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "78")
+			(name "N$17")
+			(class "Default")
+			(node
+				(ref "C15")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC15")
+				(pin "21")
+				(pinfunction "AREF_21")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "79")
+			(name "N$25")
+			(class "Default")
+			(node
+				(ref "R8")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "READY0")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "80")
+			(name "N$26")
+			(class "Default")
+			(node
+				(ref "LOADING0")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R9")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "81")
+			(name "N$27")
+			(class "Default")
+			(node
+				(ref "FAULT0")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R7")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "82")
+			(name "N$30")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "23")
+				(pinfunction "PC0(ADC0)_23")
+				(pintype "passive")
+			)
+			(node
+				(ref "UCODE0")
+				(pin "2")
+				(pinfunction "P_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "83")
+			(name "N$32")
+			(class "Default")
+			(node
+				(ref "IC9")
+				(pin "7")
+				(pinfunction "WP_7")
+				(pintype "input")
+			)
+			(node
+				(ref "JP2")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "84")
+			(name "N$33")
+			(class "Default")
+			(node
+				(ref "DTR-RESET0")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "JP3")
+				(pin "P$1")
+				(pinfunction "DTR_P$1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "85")
+			(name "N$34")
+			(class "Default")
+			(node
+				(ref "FTDI-VCC0")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "JP3")
+				(pin "P$4")
+				(pinfunction "VCC_P$4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "86")
+			(name "N$39")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "25")
+				(pinfunction "PC2(ADC2)_25")
+				(pintype "passive")
+			)
+			(node
+				(ref "R1")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "START0")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "87")
+			(name "OPERAND-CLK")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "28")
+				(pinfunction "GPA7_28")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC6")
+				(pin "11")
+				(pinfunction "I/O0_11")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "33")
+				(pinfunction "33_33")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "88")
+			(name "OUT-OFF")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "7")
+				(pinfunction "GPB6_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC7")
+				(pin "12")
+				(pinfunction "I/O1_12")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "15")
+				(pinfunction "15_15")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "89")
+			(name "OUT-ON")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "8")
+				(pinfunction "GPB7_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC7")
+				(pin "11")
+				(pinfunction "I/O0_11")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "17")
+				(pinfunction "17_17")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "90")
+			(name "REG-LD-HI")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "6")
+				(pinfunction "GPB5_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC3")
+				(pin "17")
+				(pinfunction "I/O5_17")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "29")
+				(pinfunction "29_29")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "91")
+			(name "REG-LD-ID0")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "27")
+				(pinfunction "GPA6_27")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC4")
+				(pin "18")
+				(pinfunction "I/O6_18")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "15")
+				(pinfunction "15_15")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "92")
+			(name "REG-LD-ID1")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "28")
+				(pinfunction "GPA7_28")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC4")
+				(pin "19")
+				(pinfunction "I/O7_19")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "17")
+				(pinfunction "17_17")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "93")
+			(name "REG-LD-ID2")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "1")
+				(pinfunction "GPB0_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC3")
+				(pin "11")
+				(pinfunction "I/O0_11")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "19")
+				(pinfunction "19_19")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "94")
+			(name "REG-LD-ID3")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "2")
+				(pinfunction "GPB1_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC3")
+				(pin "12")
+				(pinfunction "I/O1_12")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "21")
+				(pinfunction "21_21")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "95")
+			(name "REG-LD-LO")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "4")
+				(pinfunction "GPB3_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC3")
+				(pin "15")
+				(pinfunction "I/O3_15")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "25")
+				(pinfunction "25_25")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "96")
+			(name "REG-RD-ID0")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "23")
+				(pinfunction "GPA2_23")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC4")
+				(pin "13")
+				(pinfunction "I/O2_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "7")
+				(pinfunction "7_7")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "97")
+			(name "REG-RD-ID1")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "24")
+				(pinfunction "GPA3_24")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC4")
+				(pin "15")
+				(pinfunction "I/O3_15")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "9")
+				(pinfunction "9_9")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "98")
+			(name "REG-RD-ID2")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "25")
+				(pinfunction "GPA4_25")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC4")
+				(pin "16")
+				(pinfunction "I/O4_16")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "11")
+				(pinfunction "11_11")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "99")
+			(name "REG-RD-ID3")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "26")
+				(pinfunction "GPA5_26")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC4")
+				(pin "17")
+				(pinfunction "I/O5_17")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "13")
+				(pinfunction "13_13")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "100")
+			(name "SCL")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "12")
+				(pinfunction "SCL_12")
+				(pintype "input")
+			)
+			(node
+				(ref "IC11")
+				(pin "12")
+				(pinfunction "SCL_12")
+				(pintype "input")
+			)
+			(node
+				(ref "IC12")
+				(pin "12")
+				(pinfunction "SCL_12")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "12")
+				(pinfunction "SCL_12")
+				(pintype "input")
+			)
+			(node
+				(ref "IC14")
+				(pin "12")
+				(pinfunction "SCL_12")
+				(pintype "input")
+			)
+			(node
+				(ref "IC15")
+				(pin "28")
+				(pinfunction "PC5(ADC5/SCL)_28")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC9")
+				(pin "6")
+				(pinfunction "SCL_6")
+				(pintype "input")
+			)
+			(node
+				(ref "R3")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "101")
+			(name "SDA")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "13")
+				(pinfunction "SDA_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC11")
+				(pin "13")
+				(pinfunction "SDA_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC12")
+				(pin "13")
+				(pinfunction "SDA_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC13")
+				(pin "13")
+				(pinfunction "SDA_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC14")
+				(pin "13")
+				(pinfunction "SDA_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC15")
+				(pin "27")
+				(pinfunction "PC4(ADC4/SDA)_27")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC9")
+				(pin "5")
+				(pinfunction "SDA_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "R2")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "102")
+			(name "SOFT-HALT")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "6")
+				(pinfunction "GPB5_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC7")
+				(pin "13")
+				(pinfunction "I/O2_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "8")
+				(pinfunction "8_8")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "103")
+			(name "SPARE3")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "3")
+				(pinfunction "GPB2_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC5")
+				(pin "17")
+				(pinfunction "I/O5_17")
+				(pintype "passive")
+			)
+			(node
+				(ref "JP1")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "104")
+			(name "SRC-ADDR")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "22")
+				(pinfunction "GPA1_22")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC6")
+				(pin "18")
+				(pinfunction "I/O6_18")
+				(pintype "passive")
+			)
+			(node
+				(ref "JP1")
+				(pin "3")
+				(pinfunction "3_3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "105")
+			(name "UCODE-COUNT-RESET")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "27")
+				(pinfunction "GPA6_27")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC6")
+				(pin "12")
+				(pinfunction "I/O1_12")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV1")
+				(pin "31")
+				(pinfunction "31_31")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "106")
+			(name "VCC")
+			(class "Default")
+			(node
+				(ref "C1")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C10")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C11")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C12")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C13")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C14")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C17")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C2")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C3")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C4")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C5")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C6")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C7")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C8")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C9")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "FTDI-VCC0")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC1")
+				(pin "28")
+				(pinfunction "VCC_28")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC10")
+				(pin "9")
+				(pinfunction "VDD_9")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC11")
+				(pin "15")
+				(pinfunction "A0_15")
+				(pintype "input")
+			)
+			(node
+				(ref "IC11")
+				(pin "16")
+				(pinfunction "A1_16")
+				(pintype "input")
+			)
+			(node
+				(ref "IC11")
+				(pin "9")
+				(pinfunction "VDD_9")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC12")
+				(pin "17")
+				(pinfunction "A2_17")
+				(pintype "input")
+			)
+			(node
+				(ref "IC12")
+				(pin "9")
+				(pinfunction "VDD_9")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC13")
+				(pin "16")
+				(pinfunction "A1_16")
+				(pintype "input")
+			)
+			(node
+				(ref "IC13")
+				(pin "9")
+				(pinfunction "VDD_9")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC14")
+				(pin "15")
+				(pinfunction "A0_15")
+				(pintype "input")
+			)
+			(node
+				(ref "IC14")
+				(pin "9")
+				(pinfunction "VDD_9")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC15")
+				(pin "20")
+				(pinfunction "AVCC_20")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC15")
+				(pin "7")
+				(pinfunction "VCC_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "28")
+				(pinfunction "VCC_28")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC3")
+				(pin "28")
+				(pinfunction "VCC_28")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC4")
+				(pin "28")
+				(pinfunction "VCC_28")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC5")
+				(pin "28")
+				(pinfunction "VCC_28")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC6")
+				(pin "28")
+				(pinfunction "VCC_28")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC7")
+				(pin "28")
+				(pinfunction "VCC_28")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC8")
+				(pin "28")
+				(pinfunction "VCC_28")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC9")
+				(pin "1")
+				(pinfunction "A0_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "2")
+				(pinfunction "A1_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "3")
+				(pinfunction "A2_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "8")
+				(pinfunction "VCC_8")
+				(pintype "power_in")
+			)
+			(node
+				(ref "JP2")
+				(pin "3")
+				(pinfunction "3_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "R1")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R2")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R3")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R4")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "R5")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R6")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "SV2")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "UCODE0")
+				(pin "1")
+				(pinfunction "O_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "107")
+			(name "unconnected-(IC10-GPB6-Pad7)")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "7")
+				(pinfunction "GPB6_7")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "108")
+			(name "unconnected-(IC10-GPB7-Pad8)")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "8")
+				(pinfunction "GPB7_8")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "109")
+			(name "unconnected-(IC10-INTA-Pad20)")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "20")
+				(pinfunction "INTA_20")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "110")
+			(name "unconnected-(IC10-INTB-Pad19)")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "19")
+				(pinfunction "INTB_19")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "111")
+			(name "unconnected-(IC11-INTA-Pad20)")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "20")
+				(pinfunction "INTA_20")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "112")
+			(name "unconnected-(IC11-INTB-Pad19)")
+			(class "Default")
+			(node
+				(ref "IC11")
+				(pin "19")
+				(pinfunction "INTB_19")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "113")
+			(name "unconnected-(IC12-INTA-Pad20)")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "20")
+				(pinfunction "INTA_20")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "114")
+			(name "unconnected-(IC12-INTB-Pad19)")
+			(class "Default")
+			(node
+				(ref "IC12")
+				(pin "19")
+				(pinfunction "INTB_19")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "115")
+			(name "unconnected-(IC13-INTA-Pad20)")
+			(class "Default")
+			(node
+				(ref "IC13")
+				(pin "20")
+				(pinfunction "INTA_20")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "116")
+			(name "unconnected-(IC13-INTB-Pad19)")
+			(class "Default")
+			(node
+				(ref "IC13")
+				(pin "19")
+				(pinfunction "INTB_19")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "117")
+			(name "unconnected-(IC14-INTA-Pad20)")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "20")
+				(pinfunction "INTA_20")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "118")
+			(name "unconnected-(IC14-INTB-Pad19)")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "19")
+				(pinfunction "INTB_19")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "119")
+			(name "unconnected-(IC15-PC1(ADC1)-Pad24)")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "24")
+				(pinfunction "PC1(ADC1)_24")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "120")
+			(name "unconnected-(IC15-PC3(ADC3)-Pad26)")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "26")
+				(pinfunction "PC3(ADC3)_26")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "121")
+			(name "unconnected-(IC15-PD2(INT0)-Pad4)")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "4")
+				(pinfunction "PD2(INT0)_4")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "122")
+			(name "unconnected-(IC15-PD3(INT1)-Pad5)")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "5")
+				(pinfunction "PD3(INT1)_5")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "123")
+			(name "unconnected-(IC15-PD4(XCK{slash}T0)-Pad6)")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "6")
+				(pinfunction "PD4(XCK/T0)_6")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "124")
+			(name "unconnected-(IC15-PD5(T1)-Pad11)")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "11")
+				(pinfunction "PD5(T1)_11")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "125")
+			(name "unconnected-(IC15-PD6(AIN0)-Pad12)")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "12")
+				(pinfunction "PD6(AIN0)_12")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "126")
+			(name "unconnected-(LOCAL-CPU-RESET0-A1-Pad4)")
+			(class "Default")
+			(node
+				(ref "LOCAL-CPU-RESET0")
+				(pin "4")
+				(pinfunction "A1_4")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "127")
+			(name "unconnected-(LOCAL-CPU-RESET0-B0-Pad2)")
+			(class "Default")
+			(node
+				(ref "LOCAL-CPU-RESET0")
+				(pin "2")
+				(pinfunction "B0_2")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "128")
+			(name "unconnected-(UCODE0-PadB)")
+			(class "Default")
+			(node
+				(ref "UCODE0")
+				(pin "B")
+				(pinfunction "B_B")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "129")
+			(name "unconnected-(UCODE0-PadB1)")
+			(class "Default")
+			(node
+				(ref "UCODE0")
+				(pin "B1")
+				(pinfunction "B1_B1")
+				(pintype "passive+no_connect")
+			)
+		)
+	)
+)

@@ -1,0 +1,220 @@
+{
+    "$schema": "https://schemas.kicad.org/drc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-09-20T21:33:37",
+    "ignored_checks": [
+        {
+            "description": "Footprint has no courtyard defined",
+            "key": "missing_courtyard"
+        },
+        {
+            "description": "Track endpoint not centered on via",
+            "key": "track_not_centered_on_via"
+        },
+        {
+            "description": "Tuning profile track geometries",
+            "key": "tuning_profile_track_geometries"
+        },
+        {
+            "description": "Footprint doesn't match symbol's footprint filters",
+            "key": "footprint_filters_mismatch"
+        },
+        {
+            "description": "Footprint component type doesn't match footprint pads",
+            "key": "footprint_type_mismatch"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.6",
+    "schematic_parity": [],
+    "source": "bus-jumper-vertical-v3.0.kicad_pcb",
+    "unconnected_items": [],
+    "violations": [
+        {
+            "description": "Items not allowed (keepout area of X4)",
+            "items": [
+                {
+                    "description": "NPTH pad of X4",
+                    "pos": {
+                        "x": 78.3002,
+                        "y": 21.8451
+                    },
+                    "uuid": "4eb27b82-2a84-4602-8b03-636bc7f9a5c1"
+                }
+            ],
+            "severity": "error",
+            "type": "items_not_allowed"
+        },
+        {
+            "description": "Items not allowed (keepout area of X4)",
+            "items": [
+                {
+                    "description": "NPTH pad of X4",
+                    "pos": {
+                        "x": 78.3002,
+                        "y": 111.8449
+                    },
+                    "uuid": "9f160cbe-1c81-4f93-af44-61b64942e8a0"
+                }
+            ],
+            "severity": "error",
+            "type": "items_not_allowed"
+        },
+        {
+            "description": "Items not allowed (keepout area of X3)",
+            "items": [
+                {
+                    "description": "NPTH pad of X3",
+                    "pos": {
+                        "x": 17.3402,
+                        "y": 21.8451
+                    },
+                    "uuid": "2756ce21-5c1d-4593-9180-5751a17f15f4"
+                }
+            ],
+            "severity": "error",
+            "type": "items_not_allowed"
+        },
+        {
+            "description": "Items not allowed (keepout area of X3)",
+            "items": [
+                {
+                    "description": "NPTH pad of X3",
+                    "pos": {
+                        "x": 17.3402,
+                        "y": 111.8449
+                    },
+                    "uuid": "a74bd3fb-48af-4fde-8b9c-57b4c3a79e03"
+                }
+            ],
+            "severity": "error",
+            "type": "items_not_allowed"
+        },
+        {
+            "description": "Footprint 'MABC96R' does not match copy in library 'bus-jumper-vertical-v3.0-eagle'",
+            "items": [
+                {
+                    "description": "Footprint X4",
+                    "pos": {
+                        "x": 78.605,
+                        "y": 66.845
+                    },
+                    "uuid": "88f7a9ae-ce11-4622-b399-72e8875ae680"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Footprint 'MABC96R' does not match copy in library 'bus-jumper-vertical-v3.0-eagle'",
+            "items": [
+                {
+                    "description": "Footprint X3",
+                    "pos": {
+                        "x": 17.645,
+                        "y": 66.845
+                    },
+                    "uuid": "932ff01e-e483-4e30-b86b-537d9a7782a5"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP1 on F.Silkscreen",
+                    "pos": {
+                        "x": 45.839,
+                        "y": 112.565
+                    },
+                    "uuid": "8156b856-9a94-4905-9d52-6ec3bf62e3ee"
+                },
+                {
+                    "description": "PTH pad 2 [V1] of JP1",
+                    "pos": {
+                        "x": 46.855,
+                        "y": 113.835
+                    },
+                    "uuid": "39fa5b03-42f9-4826-b65e-5df0301aa711"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP1 on F.Silkscreen",
+                    "pos": {
+                        "x": 45.839,
+                        "y": 115.105
+                    },
+                    "uuid": "51183a0d-8c6a-41ec-b4ab-8bcad48cadcd"
+                },
+                {
+                    "description": "PTH pad 2 [V1] of JP1",
+                    "pos": {
+                        "x": 46.855,
+                        "y": 113.835
+                    },
+                    "uuid": "39fa5b03-42f9-4826-b65e-5df0301aa711"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP1 on F.Silkscreen",
+                    "pos": {
+                        "x": 48.379,
+                        "y": 112.565
+                    },
+                    "uuid": "8a01a88c-4ca3-4b75-a1a7-b02cd8cbd8ad"
+                },
+                {
+                    "description": "PTH pad 1 [V2] of JP1",
+                    "pos": {
+                        "x": 49.395,
+                        "y": 113.835
+                    },
+                    "uuid": "a1617503-7d9b-4d14-94a9-26eb901bb2fc"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP1 on F.Silkscreen",
+                    "pos": {
+                        "x": 48.379,
+                        "y": 115.105
+                    },
+                    "uuid": "6d3e771b-454f-4d28-8ffe-9f80f1e7f718"
+                },
+                {
+                    "description": "PTH pad 1 [V2] of JP1",
+                    "pos": {
+                        "x": 49.395,
+                        "y": 113.835
+                    },
+                    "uuid": "a1617503-7d9b-4d14-94a9-26eb901bb2fc"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        }
+    ]
+}

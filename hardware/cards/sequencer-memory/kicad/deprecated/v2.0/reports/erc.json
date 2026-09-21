@@ -1,0 +1,57 @@
+{
+    "$schema": "https://schemas.kicad.org/erc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-09-20T21:37:13",
+    "ignored_checks": [
+        {
+            "description": "Global label only appears once in the schematic",
+            "key": "single_global_label"
+        },
+        {
+            "description": "Four connection points are joined together",
+            "key": "four_way_junction"
+        },
+        {
+            "description": "SPICE model issue",
+            "key": "simulation_model_issue"
+        },
+        {
+            "description": "Assigned footprint doesn't match footprint filters",
+            "key": "footprint_filter"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.6",
+    "sheets": [
+        {
+            "path": "/",
+            "uuid_path": "/58c2d5ad-7bf5-f7e6-6bae-86610cdbbccb",
+            "violations": []
+        },
+        {
+            "path": "/Sheet 1/",
+            "uuid_path": "/58c2d5ad-7bf5-f7e6-6bae-86610cdbbccb/41aa32d9-095f-07ab-1aff-6836c97d1463",
+            "violations": []
+        },
+        {
+            "path": "/Sheet 2/",
+            "uuid_path": "/58c2d5ad-7bf5-f7e6-6bae-86610cdbbccb/2fb7676e-a601-6b15-0c19-dc06499eb68d",
+            "violations": []
+        },
+        {
+            "path": "/Sheet 3/",
+            "uuid_path": "/58c2d5ad-7bf5-f7e6-6bae-86610cdbbccb/e561303c-cb4c-530f-13d8-7e0b25675fa5",
+            "violations": []
+        },
+        {
+            "path": "/Sheet 4/",
+            "uuid_path": "/58c2d5ad-7bf5-f7e6-6bae-86610cdbbccb/325b4ba7-1cf7-980b-f375-1dd90ee2c74e",
+            "violations": []
+        }
+    ],
+    "source": "sequencer-memory-v2.0.kicad_sch"
+}

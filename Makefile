@@ -16,4 +16,6 @@ check:
 	$(MAKE) -s -C firmware/microcode/ucode-generator2 check
 clean:
 	@for d in $(TOOLS); do $(MAKE) -s -C "$$d" clean; done
-.PHONY: all check clean
+kicad:
+	python3 tools/eagle_to_kicad_all.py
+.PHONY: all check clean kicad

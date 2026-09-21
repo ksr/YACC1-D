@@ -1,0 +1,11663 @@
+(export
+	(version "E")
+	(design
+		(source "/Users/ksr77/Developer/YACC1-D/hardware/cards/bus-tester/kicad/v1.1/bus-tester-v1.1.kicad_sch")
+		(date "2026-09-20T21:34:36")
+		(tool "Eeschema 10.0.6")
+		(sheet
+			(number "1")
+			(name "/")
+			(tstamps "/")
+			(title_block
+				(title "bus-tester-v1.1")
+				(company)
+				(rev)
+				(date)
+				(source "bus-tester-v1.1.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle schematic; see README.md")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+		(sheet
+			(number "2")
+			(name "/Sheet 1/")
+			(tstamps "/efffe6fe-f423-0068-28ce-b161f6ba126f/")
+			(title_block
+				(title "bus-tester-v1.1 sheet 1")
+				(company)
+				(rev)
+				(date)
+				(source "bus-tester-v1.1-sheet1.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle: tester.sch sheet 1")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+		(sheet
+			(number "3")
+			(name "/Sheet 2/")
+			(tstamps "/535b88a9-cf10-246b-db9e-9fa121f898df/")
+			(title_block
+				(title "bus-tester-v1.1 sheet 2")
+				(company)
+				(rev)
+				(date)
+				(source "bus-tester-v1.1-sheet2.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle: tester.sch sheet 2")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+		(sheet
+			(number "4")
+			(name "/Sheet 3/")
+			(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			(title_block
+				(title "bus-tester-v1.1 sheet 3")
+				(company)
+				(rev)
+				(date)
+				(source "bus-tester-v1.1-sheet3.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle: tester.sch sheet 3")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+		(sheet
+			(number "5")
+			(name "/Sheet 4/")
+			(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			(title_block
+				(title "bus-tester-v1.1 sheet 4")
+				(company)
+				(rev)
+				(date)
+				(source "bus-tester-v1.1-sheet4.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle: tester.sch sheet 4")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+	)
+	(components
+		(comp
+			(ref "PWR0")
+			(value "LED")
+			(footprint "bus-tester-v1.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/efffe6fe-f423-0068-28ce-b161f6ba126f/")
+			)
+			(tstamps "997482d4-4424-de6c-5ef7-fa36773196d5")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R1")
+			(value "330")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "eagle-ltspice_R_0207_10")
+				(description "Eagle eagle-ltspice:R")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/efffe6fe-f423-0068-28ce-b161f6ba126f/")
+			)
+			(tstamps "daafd0d7-b638-7ea6-dec4-13e0ec6134f6")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "RN1")
+			(value "RNX8")
+			(footprint "bus-tester-v1.1-eagle:RN-9")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:RN-9")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor-net_RNX8")
+				(description "Eagle resistor-net:RNX8")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/efffe6fe-f423-0068-28ce-b161f6ba126f/")
+			)
+			(tstamps "dca829b3-b57e-9020-eac3-0f4a1c7e6bfd" "c20c986c-36f6-5a92-c83a-f013660f31da"
+				"6e6e8fbc-063e-4cc3-18e3-4dd18cb4e9ed" "7af63950-3a83-5d78-d750-ef65b2507510"
+				"2806647a-d49a-d87e-3973-9c26c625d618" "a56ce5ce-a8d2-ccb1-de08-0bb2d14c962c"
+				"1076b74e-2847-9ebd-1689-177ba6b6a757" "5a7e4a5e-9689-f019-60c8-aa8c25ad5e0e"
+				"06ea4c42-6626-8b68-a182-7140b07eed99"
+			)
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "2")
+						)
+					)
+				)
+				(unit
+					(name "C")
+					(pins
+						(pin
+							(num "3")
+						)
+					)
+				)
+				(unit
+					(name "D")
+					(pins
+						(pin
+							(num "4")
+						)
+					)
+				)
+				(unit
+					(name "E")
+					(pins
+						(pin
+							(num "5")
+						)
+					)
+				)
+				(unit
+					(name "F")
+					(pins
+						(pin
+							(num "6")
+						)
+					)
+				)
+				(unit
+					(name "G")
+					(pins
+						(pin
+							(num "7")
+						)
+					)
+				)
+				(unit
+					(name "H")
+					(pins
+						(pin
+							(num "8")
+						)
+					)
+				)
+				(unit
+					(name "I")
+					(pins
+						(pin
+							(num "9")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "RN2")
+			(value "RNX8")
+			(footprint "bus-tester-v1.1-eagle:RN-9")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:RN-9")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor-net_RNX8")
+				(description "Eagle resistor-net:RNX8")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/efffe6fe-f423-0068-28ce-b161f6ba126f/")
+			)
+			(tstamps "c4f7fe8c-193d-9420-fa59-76838c9137ee" "e51d0da1-1af0-d896-87a4-d3f2560bafe4"
+				"d7f54166-5651-2349-332c-30a246847be5" "1910c0e2-e80b-45f3-a419-f91d56feab09"
+				"2a6ed237-bd74-e778-d163-e9e6eebb87ba" "497a391f-a046-8644-0892-3c01d92eb694"
+				"0e50e379-cdae-9c34-ed87-6de010b1f320" "32435a44-a01c-2ba8-37d7-5ca68e743b61"
+				"0b84ce3d-0659-3cec-c170-9af7e7ffb0a6"
+			)
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "2")
+						)
+					)
+				)
+				(unit
+					(name "C")
+					(pins
+						(pin
+							(num "3")
+						)
+					)
+				)
+				(unit
+					(name "D")
+					(pins
+						(pin
+							(num "4")
+						)
+					)
+				)
+				(unit
+					(name "E")
+					(pins
+						(pin
+							(num "5")
+						)
+					)
+				)
+				(unit
+					(name "F")
+					(pins
+						(pin
+							(num "6")
+						)
+					)
+				)
+				(unit
+					(name "G")
+					(pins
+						(pin
+							(num "7")
+						)
+					)
+				)
+				(unit
+					(name "H")
+					(pins
+						(pin
+							(num "8")
+						)
+					)
+				)
+				(unit
+					(name "I")
+					(pins
+						(pin
+							(num "9")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "RN3")
+			(value "RNX8")
+			(footprint "bus-tester-v1.1-eagle:RN-9")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:RN-9")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor-net_RNX8")
+				(description "Eagle resistor-net:RNX8")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/efffe6fe-f423-0068-28ce-b161f6ba126f/")
+			)
+			(tstamps "ec3d74ab-28f1-0fc8-959e-114be78f1f59" "a8b2351f-523b-567a-0eab-43b8ed982411"
+				"323d5d37-a184-3916-8226-ee6cacc5a00e" "f5056c32-67ed-fb50-f791-e445823f7643"
+				"4ccda165-5095-9c2d-eb13-89a6fd5e3bb3" "fb76b4ee-62de-38df-3383-bf377bc193a8"
+				"da0a5ded-3f81-c41f-6f6b-2358d471fbae" "a7ddf486-3a80-9102-454c-1db51bda97dd"
+				"08daa569-70cf-cc79-74fc-b27369ef9c72"
+			)
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "2")
+						)
+					)
+				)
+				(unit
+					(name "C")
+					(pins
+						(pin
+							(num "3")
+						)
+					)
+				)
+				(unit
+					(name "D")
+					(pins
+						(pin
+							(num "4")
+						)
+					)
+				)
+				(unit
+					(name "E")
+					(pins
+						(pin
+							(num "5")
+						)
+					)
+				)
+				(unit
+					(name "F")
+					(pins
+						(pin
+							(num "6")
+						)
+					)
+				)
+				(unit
+					(name "G")
+					(pins
+						(pin
+							(num "7")
+						)
+					)
+				)
+				(unit
+					(name "H")
+					(pins
+						(pin
+							(num "8")
+						)
+					)
+				)
+				(unit
+					(name "I")
+					(pins
+						(pin
+							(num "9")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "RN4")
+			(value "RNX8")
+			(footprint "bus-tester-v1.1-eagle:RN-9")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:RN-9")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor-net_RNX8")
+				(description "Eagle resistor-net:RNX8")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/efffe6fe-f423-0068-28ce-b161f6ba126f/")
+			)
+			(tstamps "f451276f-578d-8e6d-2a5b-2730c6751e21" "7a0c08c8-d805-7aa6-68e1-5228f99c5148"
+				"8e850350-7c8f-a47d-26cb-dfa35ae4c293" "6b0e8e1b-ddb3-135c-5b1a-28befa77c770"
+				"a3404495-1b61-559c-5b42-91040bd1ee84" "15e57b14-087b-4cf3-5df9-0aa4c24d9545"
+				"66ac4a11-78da-89b2-8c85-ae0fe82920f2" "3a3c1b34-0f7b-1e22-de95-828819bd76a6"
+				"09cd71b5-bda5-a3ec-df61-d2977083cbad"
+			)
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "2")
+						)
+					)
+				)
+				(unit
+					(name "C")
+					(pins
+						(pin
+							(num "3")
+						)
+					)
+				)
+				(unit
+					(name "D")
+					(pins
+						(pin
+							(num "4")
+						)
+					)
+				)
+				(unit
+					(name "E")
+					(pins
+						(pin
+							(num "5")
+						)
+					)
+				)
+				(unit
+					(name "F")
+					(pins
+						(pin
+							(num "6")
+						)
+					)
+				)
+				(unit
+					(name "G")
+					(pins
+						(pin
+							(num "7")
+						)
+					)
+				)
+				(unit
+					(name "H")
+					(pins
+						(pin
+							(num "8")
+						)
+					)
+				)
+				(unit
+					(name "I")
+					(pins
+						(pin
+							(num "9")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "X1")
+			(value "FABC96R")
+			(footprint "bus-tester-v1.1-eagle:FABC96R")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:FABC96R")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "con-vg_FABC96R")
+				(description "Eagle con-vg:FABC96R")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/efffe6fe-f423-0068-28ce-b161f6ba126f/")
+			)
+			(tstamps "9c92b851-b510-d0ef-1d6e-5f6d43a89f6f" "94388de2-6e00-6718-4f32-80a5b69708a4"
+				"39ed8c70-a54e-c926-20e0-6d57ce34bdb9" "160bb1ca-f12f-f0f2-fa60-196705d6b42a"
+				"ca6ca621-dc61-5e5d-a3eb-b8892446a280" "f710f6a0-b2c8-2d2b-632c-152a1e8f1516"
+				"5a64466f-34fc-bb1f-b655-3cc422d4560f" "15b4ab14-6c28-850e-d3a6-af48f0d4265f"
+				"729448a5-0ef5-be3b-fe7d-7d9d5392a7f1" "42655b73-d720-e553-7b41-a8af073469c2"
+				"cf97f8cb-2424-90a7-bf1f-80f86da4a16f" "57b1cb0e-42ef-fa98-e31e-71868a8a0a02"
+				"4514e44a-771e-cbf9-f186-459566ddf930" "14a2c55e-5c83-f19e-9e12-bb2e81bed5e3"
+				"8280d523-b842-fc22-b534-d6193a1a63fe" "97713835-4dd4-7ca2-759f-b52b416c39f8"
+				"752c2d60-7139-76cb-441e-d2ba39c695cc" "2d3b25a5-e95c-20f5-0d52-08a271c18550"
+				"291e7aab-1deb-1f70-808f-995bc19ed9a1" "50ce58fb-51d5-3714-3144-2acbca17218f"
+				"adf9c601-eed9-63a3-22a0-898f66175742" "18d190f3-b8c0-547d-53fe-87a4857f77dd"
+				"abf3fdbe-39d4-c8fa-b228-1bbd4ab13b54" "5b1bbfca-1545-fd3e-3e50-fb6c33e9df32"
+				"a5ae245a-0258-8324-2e4d-d65a387a0a20" "4e1b6ebd-c4d8-3277-7ec9-5d57c8fd58b4"
+				"f67b07a1-6a96-934f-a047-686aeb8a742c" "e6531091-2b23-c698-ab55-d34b0b7e23fa"
+				"63f511b9-f437-61c4-31fd-4e4aa401b90d" "73cc3372-7ca2-f5c5-7051-490c880c4eca"
+				"9e69456a-5917-c434-dcd5-69db46c1c2b8" "147a9ff5-8510-dc8e-897a-611655547d38"
+				"f421c10d-2804-742f-16eb-f63d905482b4" "af7b0787-0488-b554-6d87-c712bbc13588"
+				"f2b96a10-a197-4d0b-f6ac-b2fb02dd726c" "61c6b93a-cd31-cd69-ed1f-e7045baded34"
+				"42b283c7-d210-1e74-64d1-60386ba1e3f7" "df89ab84-bc6b-3930-1192-0b057089614e"
+				"6632c864-ba66-7e87-9b83-b4553b4a2d9a" "eee30321-7aaa-3974-77c3-0702f4acffb8"
+				"2e92f029-3d4f-d771-a395-c0461e516dc8" "aa881e94-6ea5-158a-a6aa-42fa1c1fafd1"
+				"16183f26-fea8-af06-a398-753ed0b5cde0" "e80e50b1-783d-4081-c699-57e755868d4b"
+				"825791a9-b255-4acf-ace4-8ed5287e47a0" "f91b6fbd-c723-4806-f4b3-7e11411838bf"
+				"47c8c295-3d56-266d-b4f3-a0f84fd5bff8" "1446cd59-e4f4-dda7-185f-206c966d1576"
+				"96d661f0-5902-725a-631e-2b0de4bc2fe5" "9fa3fb05-d172-1e53-3144-dc786b0ec720"
+				"2ba6614a-dcbb-2d24-d44d-44e95c66cb82" "9b8abbd6-a9bc-a6b1-24ea-2d5c2323c693"
+				"db7c9a2e-6864-c9c1-9371-75e3bbbf3e10" "d438b2d7-944f-1c5a-734c-a7e0e1d7fd39"
+				"0d008026-e8b0-faee-7e75-8e09e9c4456d" "3ca2c275-28e2-b8e7-d1ad-f3f8fa629f2b"
+				"4ee12b37-f59f-6169-a93b-e9433cbedc76" "c6962ed2-3d2a-3507-7884-3b68de98f101"
+				"dd47bc16-8d57-4590-baed-a8f1d69de3ab" "a9fd8f1d-ad6b-40b7-e6f1-4f67317d6838"
+				"cc043709-34e0-1ab8-ac23-bd6a300e26ce" "82e1b586-db74-f02d-5855-d48369099645"
+				"c2aabcaa-5b86-f891-b3db-627ee72fa6a6" "de18ab73-9bb6-7b2b-f1bf-cf401da093ce"
+				"da56f6c4-cc7b-1521-16aa-20065381a90c" "ed4fef11-66b8-578c-5bad-7ed6fa3dfcb7"
+				"ebecd960-374f-103a-8d24-96f7af5c0ed7" "c312483f-196f-499b-7124-dfe91b747121"
+				"c20e82fc-0d3d-863d-6535-70aeddcb769b" "0b65f765-a156-3d67-b0d9-39ba82a0e634"
+				"2e7fc60a-3b75-dda1-ef4c-2c6def10cd10" "2943ab16-6964-c629-b969-f9b4fc677f49"
+				"45df334c-a19a-e19d-ad99-24c3b1c90e17" "767c1844-33dc-51c2-25db-f1e12eb03781"
+				"0459e9e2-8318-7226-543b-b772d178d11e" "2eab74e3-31dd-d7fb-a357-18991b67ca85"
+				"810f2a45-4fb6-f8a7-7683-b6b84b7cf289" "a0b03fb4-fba0-77a0-01bd-edc21a014122"
+				"ea00d50e-d256-cb1f-3ad7-e0f72bf3e9d8" "9cde1e11-2d05-27f1-7083-c7cf052ac8ec"
+				"7a5d2ca2-ac2e-03a9-9d76-6c20f18ffbba" "8cedabd6-bcd4-6b2a-3ce1-1758c9ac4dc5"
+				"4dce1b1d-3e5c-f6d9-3c8a-525408dde41a" "62df8990-a87f-d5b0-69eb-92fa6dba3918"
+				"de6086fd-d27a-87dd-fec2-b9e55db97ddd" "87fcc481-26fc-0289-5eaf-9c7eab6d3cd2"
+				"d90ebc3d-0f0f-a68e-eda2-054dc94fd4f2" "2556a025-52f2-7a35-6e52-428e84c511df"
+				"d3a01cdd-e8bc-3a87-c3ac-6416bf924a87" "0b86f9bc-05ed-8afa-e8c7-f20bd67f5ee3"
+				"4da7cde2-4544-1731-f840-a2007635bfbe" "c5de5702-3f85-61a6-285f-fb56c9dc1c6d"
+				"6f68ca8f-9806-e0c3-0a7e-960b2f9bdbd9" "5fc39d6d-1f6c-5887-c516-081f85804b14"
+				"df237127-4d69-c64e-17af-4c289ac2d718" "01556141-3a19-5927-a690-c36c72e8e3ca"
+			)
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A1")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "A2")
+						)
+					)
+				)
+				(unit
+					(name "C")
+					(pins
+						(pin
+							(num "A3")
+						)
+					)
+				)
+				(unit
+					(name "D")
+					(pins
+						(pin
+							(num "A4")
+						)
+					)
+				)
+				(unit
+					(name "E")
+					(pins
+						(pin
+							(num "A5")
+						)
+					)
+				)
+				(unit
+					(name "F")
+					(pins
+						(pin
+							(num "A6")
+						)
+					)
+				)
+				(unit
+					(name "G")
+					(pins
+						(pin
+							(num "A7")
+						)
+					)
+				)
+				(unit
+					(name "H")
+					(pins
+						(pin
+							(num "A8")
+						)
+					)
+				)
+				(unit
+					(name "I")
+					(pins
+						(pin
+							(num "A9")
+						)
+					)
+				)
+				(unit
+					(name "J")
+					(pins
+						(pin
+							(num "A10")
+						)
+					)
+				)
+				(unit
+					(name "K")
+					(pins
+						(pin
+							(num "A11")
+						)
+					)
+				)
+				(unit
+					(name "L")
+					(pins
+						(pin
+							(num "A12")
+						)
+					)
+				)
+				(unit
+					(name "M")
+					(pins
+						(pin
+							(num "A13")
+						)
+					)
+				)
+				(unit
+					(name "N")
+					(pins
+						(pin
+							(num "A14")
+						)
+					)
+				)
+				(unit
+					(name "O")
+					(pins
+						(pin
+							(num "A15")
+						)
+					)
+				)
+				(unit
+					(name "P")
+					(pins
+						(pin
+							(num "A16")
+						)
+					)
+				)
+				(unit
+					(name "Q")
+					(pins
+						(pin
+							(num "A17")
+						)
+					)
+				)
+				(unit
+					(name "R")
+					(pins
+						(pin
+							(num "A18")
+						)
+					)
+				)
+				(unit
+					(name "S")
+					(pins
+						(pin
+							(num "A19")
+						)
+					)
+				)
+				(unit
+					(name "T")
+					(pins
+						(pin
+							(num "A20")
+						)
+					)
+				)
+				(unit
+					(name "U")
+					(pins
+						(pin
+							(num "A21")
+						)
+					)
+				)
+				(unit
+					(name "V")
+					(pins
+						(pin
+							(num "A22")
+						)
+					)
+				)
+				(unit
+					(name "W")
+					(pins
+						(pin
+							(num "A23")
+						)
+					)
+				)
+				(unit
+					(name "X")
+					(pins
+						(pin
+							(num "A24")
+						)
+					)
+				)
+				(unit
+					(name "Y")
+					(pins
+						(pin
+							(num "A25")
+						)
+					)
+				)
+				(unit
+					(name "Z")
+					(pins
+						(pin
+							(num "A26")
+						)
+					)
+				)
+				(unit
+					(name "AA")
+					(pins
+						(pin
+							(num "A27")
+						)
+					)
+				)
+				(unit
+					(name "AB")
+					(pins
+						(pin
+							(num "A28")
+						)
+					)
+				)
+				(unit
+					(name "AC")
+					(pins
+						(pin
+							(num "A29")
+						)
+					)
+				)
+				(unit
+					(name "AD")
+					(pins
+						(pin
+							(num "A30")
+						)
+					)
+				)
+				(unit
+					(name "AE")
+					(pins
+						(pin
+							(num "A31")
+						)
+					)
+				)
+				(unit
+					(name "AF")
+					(pins
+						(pin
+							(num "A32")
+						)
+					)
+				)
+				(unit
+					(name "AG")
+					(pins
+						(pin
+							(num "B1")
+						)
+					)
+				)
+				(unit
+					(name "AH")
+					(pins
+						(pin
+							(num "B2")
+						)
+					)
+				)
+				(unit
+					(name "AI")
+					(pins
+						(pin
+							(num "B3")
+						)
+					)
+				)
+				(unit
+					(name "AJ")
+					(pins
+						(pin
+							(num "B4")
+						)
+					)
+				)
+				(unit
+					(name "AK")
+					(pins
+						(pin
+							(num "B5")
+						)
+					)
+				)
+				(unit
+					(name "AL")
+					(pins
+						(pin
+							(num "B6")
+						)
+					)
+				)
+				(unit
+					(name "AM")
+					(pins
+						(pin
+							(num "B7")
+						)
+					)
+				)
+				(unit
+					(name "AN")
+					(pins
+						(pin
+							(num "B8")
+						)
+					)
+				)
+				(unit
+					(name "AO")
+					(pins
+						(pin
+							(num "B9")
+						)
+					)
+				)
+				(unit
+					(name "AP")
+					(pins
+						(pin
+							(num "B10")
+						)
+					)
+				)
+				(unit
+					(name "AQ")
+					(pins
+						(pin
+							(num "B11")
+						)
+					)
+				)
+				(unit
+					(name "AR")
+					(pins
+						(pin
+							(num "B12")
+						)
+					)
+				)
+				(unit
+					(name "AS")
+					(pins
+						(pin
+							(num "B13")
+						)
+					)
+				)
+				(unit
+					(name "AT")
+					(pins
+						(pin
+							(num "B14")
+						)
+					)
+				)
+				(unit
+					(name "AU")
+					(pins
+						(pin
+							(num "B15")
+						)
+					)
+				)
+				(unit
+					(name "AV")
+					(pins
+						(pin
+							(num "B16")
+						)
+					)
+				)
+				(unit
+					(name "AW")
+					(pins
+						(pin
+							(num "B17")
+						)
+					)
+				)
+				(unit
+					(name "AX")
+					(pins
+						(pin
+							(num "B18")
+						)
+					)
+				)
+				(unit
+					(name "AY")
+					(pins
+						(pin
+							(num "B19")
+						)
+					)
+				)
+				(unit
+					(name "AZ")
+					(pins
+						(pin
+							(num "B20")
+						)
+					)
+				)
+				(unit
+					(name "BA")
+					(pins
+						(pin
+							(num "B21")
+						)
+					)
+				)
+				(unit
+					(name "BB")
+					(pins
+						(pin
+							(num "B22")
+						)
+					)
+				)
+				(unit
+					(name "BC")
+					(pins
+						(pin
+							(num "B23")
+						)
+					)
+				)
+				(unit
+					(name "BD")
+					(pins
+						(pin
+							(num "B24")
+						)
+					)
+				)
+				(unit
+					(name "BE")
+					(pins
+						(pin
+							(num "B25")
+						)
+					)
+				)
+				(unit
+					(name "BF")
+					(pins
+						(pin
+							(num "B26")
+						)
+					)
+				)
+				(unit
+					(name "BG")
+					(pins
+						(pin
+							(num "B27")
+						)
+					)
+				)
+				(unit
+					(name "BH")
+					(pins
+						(pin
+							(num "B28")
+						)
+					)
+				)
+				(unit
+					(name "BI")
+					(pins
+						(pin
+							(num "B29")
+						)
+					)
+				)
+				(unit
+					(name "BJ")
+					(pins
+						(pin
+							(num "B30")
+						)
+					)
+				)
+				(unit
+					(name "BK")
+					(pins
+						(pin
+							(num "B31")
+						)
+					)
+				)
+				(unit
+					(name "BL")
+					(pins
+						(pin
+							(num "B32")
+						)
+					)
+				)
+				(unit
+					(name "BM")
+					(pins
+						(pin
+							(num "C1")
+						)
+					)
+				)
+				(unit
+					(name "BN")
+					(pins
+						(pin
+							(num "C2")
+						)
+					)
+				)
+				(unit
+					(name "BO")
+					(pins
+						(pin
+							(num "C3")
+						)
+					)
+				)
+				(unit
+					(name "BP")
+					(pins
+						(pin
+							(num "C4")
+						)
+					)
+				)
+				(unit
+					(name "BQ")
+					(pins
+						(pin
+							(num "C5")
+						)
+					)
+				)
+				(unit
+					(name "BR")
+					(pins
+						(pin
+							(num "C6")
+						)
+					)
+				)
+				(unit
+					(name "BS")
+					(pins
+						(pin
+							(num "C7")
+						)
+					)
+				)
+				(unit
+					(name "BT")
+					(pins
+						(pin
+							(num "C8")
+						)
+					)
+				)
+				(unit
+					(name "BU")
+					(pins
+						(pin
+							(num "C9")
+						)
+					)
+				)
+				(unit
+					(name "BV")
+					(pins
+						(pin
+							(num "C10")
+						)
+					)
+				)
+				(unit
+					(name "BW")
+					(pins
+						(pin
+							(num "C11")
+						)
+					)
+				)
+				(unit
+					(name "BX")
+					(pins
+						(pin
+							(num "C12")
+						)
+					)
+				)
+				(unit
+					(name "BY")
+					(pins
+						(pin
+							(num "C13")
+						)
+					)
+				)
+				(unit
+					(name "BZ")
+					(pins
+						(pin
+							(num "C14")
+						)
+					)
+				)
+				(unit
+					(name "CA")
+					(pins
+						(pin
+							(num "C15")
+						)
+					)
+				)
+				(unit
+					(name "CB")
+					(pins
+						(pin
+							(num "C16")
+						)
+					)
+				)
+				(unit
+					(name "CC")
+					(pins
+						(pin
+							(num "C17")
+						)
+					)
+				)
+				(unit
+					(name "CD")
+					(pins
+						(pin
+							(num "C18")
+						)
+					)
+				)
+				(unit
+					(name "CE")
+					(pins
+						(pin
+							(num "C19")
+						)
+					)
+				)
+				(unit
+					(name "CF")
+					(pins
+						(pin
+							(num "C20")
+						)
+					)
+				)
+				(unit
+					(name "CG")
+					(pins
+						(pin
+							(num "C21")
+						)
+					)
+				)
+				(unit
+					(name "CH")
+					(pins
+						(pin
+							(num "C22")
+						)
+					)
+				)
+				(unit
+					(name "CI")
+					(pins
+						(pin
+							(num "C23")
+						)
+					)
+				)
+				(unit
+					(name "CJ")
+					(pins
+						(pin
+							(num "C24")
+						)
+					)
+				)
+				(unit
+					(name "CK")
+					(pins
+						(pin
+							(num "C25")
+						)
+					)
+				)
+				(unit
+					(name "CL")
+					(pins
+						(pin
+							(num "C26")
+						)
+					)
+				)
+				(unit
+					(name "CM")
+					(pins
+						(pin
+							(num "C27")
+						)
+					)
+				)
+				(unit
+					(name "CN")
+					(pins
+						(pin
+							(num "C28")
+						)
+					)
+				)
+				(unit
+					(name "CO")
+					(pins
+						(pin
+							(num "C29")
+						)
+					)
+				)
+				(unit
+					(name "CP")
+					(pins
+						(pin
+							(num "C30")
+						)
+					)
+				)
+				(unit
+					(name "CQ")
+					(pins
+						(pin
+							(num "C31")
+						)
+					)
+				)
+				(unit
+					(name "CR")
+					(pins
+						(pin
+							(num "C32")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC1")
+			(value "MCP23017")
+			(footprint "bus-tester-v1.1-eagle:DIL28-3")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:DIL28-3")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "microchip_MCP23017_SP")
+				(description "Eagle microchip:MCP23017")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/535b88a9-cf10-246b-db9e-9fa121f898df/")
+			)
+			(tstamps "08d0cdda-f278-8c1f-3b3d-95ec21592ea9")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC2")
+			(value "MCP23017")
+			(footprint "bus-tester-v1.1-eagle:DIL28-3")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:DIL28-3")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "microchip_MCP23017_SP")
+				(description "Eagle microchip:MCP23017")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/535b88a9-cf10-246b-db9e-9fa121f898df/")
+			)
+			(tstamps "483e15b2-010c-4489-24ae-2de82eb3050c")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC3")
+			(value "MCP23017")
+			(footprint "bus-tester-v1.1-eagle:DIL28-3")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:DIL28-3")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "microchip_MCP23017_SP")
+				(description "Eagle microchip:MCP23017")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/535b88a9-cf10-246b-db9e-9fa121f898df/")
+			)
+			(tstamps "7ea990ab-a50c-4988-ef3b-7e29c589dbed")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC4")
+			(value "MCP23017")
+			(footprint "bus-tester-v1.1-eagle:DIL28-3")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:DIL28-3")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "microchip_MCP23017_SP")
+				(description "Eagle microchip:MCP23017")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/535b88a9-cf10-246b-db9e-9fa121f898df/")
+			)
+			(tstamps "136fbcbc-95da-bdf4-8c27-ce853dba9222")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC5")
+			(value "MCP23017")
+			(footprint "bus-tester-v1.1-eagle:DIL28-3")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:DIL28-3")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "microchip_MCP23017_SP")
+				(description "Eagle microchip:MCP23017")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/535b88a9-cf10-246b-db9e-9fa121f898df/")
+			)
+			(tstamps "54da07c7-745c-7dd8-fba4-25af5e7b8643")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC6")
+			(value "MCP23017")
+			(footprint "bus-tester-v1.1-eagle:DIL28-3")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:DIL28-3")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "microchip_MCP23017_SP")
+				(description "Eagle microchip:MCP23017")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/535b88a9-cf10-246b-db9e-9fa121f898df/")
+			)
+			(tstamps "a099110a-e591-5576-83ba-91d42cbd40cd")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R2")
+			(value "10k")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_R-US__0207_10")
+				(description "Eagle adafruit:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/535b88a9-cf10-246b-db9e-9fa121f898df/")
+			)
+			(tstamps "41b45bb9-a206-a8a2-6464-ad866f9ae786")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R3")
+			(value "10k")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_R-US__0207_10")
+				(description "Eagle adafruit:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/535b88a9-cf10-246b-db9e-9fa121f898df/")
+			)
+			(tstamps "23e573c0-94f2-a4d1-c1c6-0ca84e1528b7")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R4")
+			(value "10k")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_R-US__0207_10")
+				(description "Eagle adafruit:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/535b88a9-cf10-246b-db9e-9fa121f898df/")
+			)
+			(tstamps "c9d45127-5485-352a-de1d-53f6790f27ca")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R5")
+			(value "10k")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_R-US__0207_10")
+				(description "Eagle adafruit:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/535b88a9-cf10-246b-db9e-9fa121f898df/")
+			)
+			(tstamps "ba6eed9c-9a13-992f-271d-50a28c860204")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R6")
+			(value "10k")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_R-US__0207_10")
+				(description "Eagle adafruit:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/535b88a9-cf10-246b-db9e-9fa121f898df/")
+			)
+			(tstamps "5e0a34de-6dc3-8d53-eb55-4c22bd61c9f1")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R7")
+			(value "10k")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_R-US__0207_10")
+				(description "Eagle adafruit:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet2.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/535b88a9-cf10-246b-db9e-9fa121f898df/")
+			)
+			(tstamps "3f0567f9-da7f-1d89-0076-d804ce36d0d6")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "BUS-RESET0")
+			(value "SWITCH-MOMENTARY-2")
+			(footprint "bus-tester-v1.1-eagle:TACTILE-PTH-SIDEEZ")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:TACTILE-PTH-SIDEEZ")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "SparkFun-Electromechanical_SWITCH-MOMENTARY-2_SIDE_EZ")
+				(description "Eagle SparkFun-Electromechanical:SWITCH-MOMENTARY-2")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "4a0f4f70-c005-4b8d-818a-c61197d42bf2")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C1")
+			(value "0.1")
+			(footprint "bus-tester-v1.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "6cf505c0-ae6e-e7e4-d4f2-ad8923790c30")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C2")
+			(value "0.1")
+			(footprint "bus-tester-v1.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "1619801e-b333-b68d-072e-a531f0331fac")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C3")
+			(value "0.1")
+			(footprint "bus-tester-v1.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "c9d76c9e-1bbe-db49-707e-e3d7a675577d")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C4")
+			(value "0.1")
+			(footprint "bus-tester-v1.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "d9568947-7727-fc27-1daf-9359942f7b59")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C5")
+			(value "0.1")
+			(footprint "bus-tester-v1.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "f473f62e-e522-6c12-14a8-59ddfbf146ce")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C6")
+			(value "20pf")
+			(footprint "bus-tester-v1.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "eaf62eda-c62d-20f9-ca4c-bd56f46df6da")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C7")
+			(value "20pf")
+			(footprint "bus-tester-v1.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "3138f4cc-18b0-8e71-5ca6-169264b0c216")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C8")
+			(value "0.1")
+			(footprint "bus-tester-v1.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "63682436-c4a5-2983-8c0f-870cc6b0844f")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C9")
+			(value "0.1")
+			(footprint "bus-tester-v1.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "5b8594c4-0f1c-4ca6-8caf-f4d9be54c1cd")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C10")
+			(value "0.1")
+			(footprint "bus-tester-v1.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "2c683b15-0976-c5ef-219e-9ac6eb945eb6")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C11")
+			(value "0.1")
+			(footprint "bus-tester-v1.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "99313b6d-65dd-8575-9e22-7478f739d6d9")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C12")
+			(value "0.1")
+			(footprint "bus-tester-v1.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "5095fd96-3873-9453-cefd-a1d792bdd95f")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C13")
+			(value "0.1")
+			(footprint "bus-tester-v1.1-eagle:C025-024X044")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "adafruit_C-US_025-024X044")
+				(description "Eagle adafruit:C-US")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "2ba9cb88-d214-78c9-0bc3-1759984ecfa2")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "CPU-RESET0")
+			(value "TS-1109-7")
+			(footprint "bus-tester-v1.1-eagle:SW4-6.2X6.2X5.0MM")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:SW4-6.2X6.2X5.0MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "Seeed-OPL-Switch_DIP-BUTTON-TOP-BLACK(4P-D6.2MM)")
+				(description "Eagle Seeed-OPL-Switch:DIP-BUTTON-TOP-BLACK(4P-D6.2MM)")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "69c05722-fc0b-a066-4059-e58014ccf887")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "DTR-RESET0")
+			(value "JP1E")
+			(footprint "bus-tester-v1.1-eagle:JP1")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:JP1")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "jumper_JP1E")
+				(description "Eagle jumper:JP1E")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "eca2ba38-f079-d74e-4fc4-8c0a2f769aca")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "FTDI-VCC0")
+			(value "JP1E")
+			(footprint "bus-tester-v1.1-eagle:JP1")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:JP1")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "jumper_JP1E")
+				(description "Eagle jumper:JP1E")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "94a0db94-928a-0554-1bb3-d85f90f5d809")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC7")
+			(value "24*")
+			(footprint "bus-tester-v1.1-eagle:DIL8")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:DIL8")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "microchip_24x_P")
+				(description "Eagle microchip:24*")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "61cb31d6-44c7-564d-9f16-c931f87865ea")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC10")
+			(value "ATMEGA328P_PDIP")
+			(footprint "bus-tester-v1.1-eagle:DIL28-3")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:DIL28-3")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "SparkFun-DigitalIC_ATMEGA328P_PDIP")
+				(description "Eagle SparkFun-DigitalIC:ATMEGA328P_PDIP")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "05c47983-86e7-08f9-38a4-8ce969555398")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "21")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "24")
+						)
+						(pin
+							(num "25")
+						)
+						(pin
+							(num "26")
+						)
+						(pin
+							(num "27")
+						)
+						(pin
+							(num "28")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "19")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "JP1")
+			(value "FTDI_DEVICE")
+			(footprint "bus-tester-v1.1-eagle:FTDI_DEVICE_SIDE")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:FTDI_DEVICE_SIDE")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "SparkFun-Connectors_FTDI_DEVICE")
+				(description "Eagle SparkFun-Connectors:FTDI_DEVICE")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "e9c4aab2-f082-5d9d-e1f3-8be65743b949")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "P$1")
+						)
+						(pin
+							(num "P$2")
+						)
+						(pin
+							(num "P$3")
+						)
+						(pin
+							(num "P$4")
+						)
+						(pin
+							(num "P$5")
+						)
+						(pin
+							(num "P$6")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "JP2")
+			(value "PINHD-1X3")
+			(footprint "bus-tester-v1.1-eagle:1X03")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:1X03")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "pinhead_PINHD-1X3")
+				(description "Eagle pinhead:PINHD-1X3")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "7434d602-b906-49a8-dc4a-13dc3a9a85ed")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "LED1")
+			(value "LED")
+			(footprint "bus-tester-v1.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "11251248-cd31-2913-c639-73725657609e")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "LED2")
+			(value "LED")
+			(footprint "bus-tester-v1.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "5b97b2c3-da1d-52de-16ec-669d31b7df80")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "LED3")
+			(value "LED")
+			(footprint "bus-tester-v1.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "f9dcaa69-f746-0b6c-1dcf-6e94e121a6a0")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "LED4")
+			(value "LED")
+			(footprint "bus-tester-v1.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "43a5c964-5d21-9f9b-684d-b846bc6d3dea")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "LED5")
+			(value "LED")
+			(footprint "bus-tester-v1.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "b16dfea4-6a67-3cc0-930a-cb33831a61b2")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "Q1")
+			(value "16Mhz")
+			(footprint "bus-tester-v1.1-eagle:HC49_S")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:HC49_S")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "crystal_CRYSTAL_HC49S")
+				(description "Eagle crystal:CRYSTAL")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "e26ba07d-1c31-a85d-1cf1-51ca0d86d470")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R8")
+			(value "10k")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "8bcf2c02-49e1-c97b-733d-41bfec0d1a61")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R9")
+			(value "330")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "5f6496c6-3c38-a9c2-7ac9-288b7a55beac")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R10")
+			(value "2.2k")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "9657eade-6ef8-c571-f701-d5fc9263036a")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R11")
+			(value "330")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "7dda8f30-b671-8af4-5930-c843516d1882")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R12")
+			(value "2.2k")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "103d5af0-b3c0-27a0-5a6b-cf686448fd1a")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R13")
+			(value "330")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "b39c253a-34b7-19de-8bf5-1a130b6fed66")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R14")
+			(value "330")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "a7bff62a-289f-134a-2297-d8c6d35b5229")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R15")
+			(value "330")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "c8556034-ebe1-a937-58fc-2675bbcf99ff")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R25")
+			(value "10k")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "976ff3fd-9399-6f6b-4de7-171186498534")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "S-A0")
+			(value "9070-1W")
+			(footprint "bus-tester-v1.1-eagle:9070-1W")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:9070-1W")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "switch_9070-1W")
+				(description "Eagle switch:9070-1W")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "10799264-9a55-71df-9f26-2cb12f8674da")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "B1")
+						)
+						(pin
+							(num "B")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "S-B0")
+			(value "9070-1W")
+			(footprint "bus-tester-v1.1-eagle:9070-1W")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:9070-1W")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "switch_9070-1W")
+				(description "Eagle switch:9070-1W")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 3")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet3.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 3/")
+				(tstamps "/e43f81e0-87ec-3a02-5662-50a6def301de/")
+			)
+			(tstamps "c28d6466-96d2-c0ff-1318-595fb05a7f73")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "B1")
+						)
+						(pin
+							(num "B")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC8")
+			(value "74*374")
+			(footprint "bus-tester-v1.1-eagle:DIL20")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:DIL20")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "74xx-us_74x374_N_pwrhidden")
+				(description "Eagle 74xx-us:74*374")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "31d2f56a-0527-889c-dec6-55effde55c07")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "19")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC9")
+			(value "74*244")
+			(footprint "bus-tester-v1.1-eagle:DIL20")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:DIL20")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "74xx-us_74x244_N_pwrhidden")
+				(description "Eagle 74xx-us:74*244")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "852ba9a4-c38f-d88a-9909-42286c9081fc" "4988f057-bb43-cd54-a32d-2057268b7238")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "12")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IN0")
+			(value "M9040P")
+			(footprint "bus-tester-v1.1-eagle:M9040P")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:M9040P")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "switch_M9040P")
+				(description "Eagle switch:M9040P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "b49461c6-56a5-a37e-d8f5-b7f4173b01af")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "L0")
+			(value "LED")
+			(footprint "bus-tester-v1.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "aada0601-ca70-ab50-0e26-b57d3a73d69d")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "L1")
+			(value "LED")
+			(footprint "bus-tester-v1.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "47f81d52-6836-546d-950d-d2898f2dfbed")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "L2")
+			(value "LED")
+			(footprint "bus-tester-v1.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "266b8149-8b09-f954-29aa-70c38b422751")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "L3")
+			(value "LED")
+			(footprint "bus-tester-v1.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "90912508-d1b4-aae3-272d-87598d38a2c9")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "L4")
+			(value "LED")
+			(footprint "bus-tester-v1.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "56264c88-0aef-94ce-b396-ca2e91bc420c")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "L5")
+			(value "LED")
+			(footprint "bus-tester-v1.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "4a76c4b5-cdef-35dc-84f9-5b3f9d878d50")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "L6")
+			(value "LED")
+			(footprint "bus-tester-v1.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "313b72e3-75d9-ea1f-7510-f70a72d92112")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "L7")
+			(value "LED")
+			(footprint "bus-tester-v1.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "f40ba873-3733-da58-09e5-ffbbd35d9252")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "OUT0")
+			(value "LED")
+			(footprint "bus-tester-v1.1-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "fdaa81d1-f6ee-bddf-f543-e4ede90a6080")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R16")
+			(value "330")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "64e844fc-2291-ce16-46c1-86902cf13cd1")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R17")
+			(value "330")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "d04fa5a7-b048-8a37-9ad9-e95803edde5a")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R18")
+			(value "330")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "430864b9-18a3-af0b-bd85-962b059f7c66")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R19")
+			(value "330")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "af21c100-77cb-8111-e910-46c927b5b2ab")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R20")
+			(value "330")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "a9ef75f6-eb53-cd5f-2966-ec4eb82d500e")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R21")
+			(value "330")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "5c0eb66f-47da-f5db-cef1-a2a73f68297e")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R22")
+			(value "330")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "3a8ba7d3-4547-a979-e063-0a23d30e3672")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R23")
+			(value "330")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "2010e3e0-7adb-d181-d57e-dab75e47ff90")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R24")
+			(value "330")
+			(footprint "bus-tester-v1.1-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "resistor_R-US__0207_10")
+				(description "Eagle resistor:R-US_")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "3ae07b34-e7d4-5564-70af-acb43a465d26")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "S0")
+			(value "M9040P")
+			(footprint "bus-tester-v1.1-eagle:M9040P")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:M9040P")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "switch_M9040P")
+				(description "Eagle switch:M9040P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "bb2afe4a-718b-b1fc-ee31-5c10156492d2")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "S1")
+			(value "M9040P")
+			(footprint "bus-tester-v1.1-eagle:M9040P")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:M9040P")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "switch_M9040P")
+				(description "Eagle switch:M9040P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "c4b0bfad-6730-d8cb-3609-77b47683eae7")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "S2")
+			(value "M9040P")
+			(footprint "bus-tester-v1.1-eagle:M9040P")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:M9040P")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "switch_M9040P")
+				(description "Eagle switch:M9040P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "fba8e9cc-8ee0-bfbf-1426-c05b04c26455")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "S3")
+			(value "M9040P")
+			(footprint "bus-tester-v1.1-eagle:M9040P")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:M9040P")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "switch_M9040P")
+				(description "Eagle switch:M9040P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "d621b74f-34f3-c63b-c405-ffce5d41ef26")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "S4")
+			(value "M9040P")
+			(footprint "bus-tester-v1.1-eagle:M9040P")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:M9040P")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "switch_M9040P")
+				(description "Eagle switch:M9040P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "64216855-b3ed-6af5-9e75-e4d72768248c")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "S5")
+			(value "M9040P")
+			(footprint "bus-tester-v1.1-eagle:M9040P")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:M9040P")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "switch_M9040P")
+				(description "Eagle switch:M9040P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "f3338f2c-4bd5-3bbe-6265-3338bb959988")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "S6")
+			(value "M9040P")
+			(footprint "bus-tester-v1.1-eagle:M9040P")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:M9040P")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "switch_M9040P")
+				(description "Eagle switch:M9040P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "136b697d-0f8d-b9d7-cd76-2f502bc1d21b")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "S7")
+			(value "M9040P")
+			(footprint "bus-tester-v1.1-eagle:M9040P")
+			(fields
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:M9040P")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-tester-v1.1-eagle")
+				(part "switch_M9040P")
+				(description "Eagle switch:M9040P")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 4")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-tester-v1.1-sheet4.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 4/")
+				(tstamps "/177204ae-a41e-25b4-3b99-fc2a3d87b47f/")
+			)
+			(tstamps "c5b1572b-0597-5ac2-1932-320be64406b3")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+			)
+		)
+	)
+	(groups)
+	(variants)
+	(libparts
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "74xx-us_74x244_N_pwrhidden")
+			(description "Eagle 74xx-us:74*244")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "74*244")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:DIL20")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle 74xx-us:74*244")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "G")
+					(type "input")
+				)
+				(pin
+					(num "2")
+					(name "A1")
+					(type "input")
+				)
+				(pin
+					(num "3")
+					(name "Y4")
+					(type "tri_state")
+				)
+				(pin
+					(num "4")
+					(name "A2")
+					(type "input")
+				)
+				(pin
+					(num "5")
+					(name "Y3")
+					(type "tri_state")
+				)
+				(pin
+					(num "6")
+					(name "A3")
+					(type "input")
+				)
+				(pin
+					(num "7")
+					(name "Y2")
+					(type "tri_state")
+				)
+				(pin
+					(num "8")
+					(name "A4")
+					(type "input")
+				)
+				(pin
+					(num "9")
+					(name "Y1")
+					(type "tri_state")
+				)
+				(pin
+					(num "10")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "11")
+					(name "A1")
+					(type "input")
+				)
+				(pin
+					(num "12")
+					(name "Y4")
+					(type "tri_state")
+				)
+				(pin
+					(num "13")
+					(name "A2")
+					(type "input")
+				)
+				(pin
+					(num "14")
+					(name "Y3")
+					(type "tri_state")
+				)
+				(pin
+					(num "15")
+					(name "A3")
+					(type "input")
+				)
+				(pin
+					(num "16")
+					(name "Y2")
+					(type "tri_state")
+				)
+				(pin
+					(num "17")
+					(name "A4")
+					(type "input")
+				)
+				(pin
+					(num "18")
+					(name "Y1")
+					(type "tri_state")
+				)
+				(pin
+					(num "19")
+					(name "G")
+					(type "input")
+				)
+				(pin
+					(num "20")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "74xx-us_74x374_N_pwrhidden")
+			(description "Eagle 74xx-us:74*374")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "74*374")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:DIL20")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle 74xx-us:74*374")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "OC")
+					(type "input")
+				)
+				(pin
+					(num "2")
+					(name "1Q")
+					(type "tri_state")
+				)
+				(pin
+					(num "3")
+					(name "1D")
+					(type "input")
+				)
+				(pin
+					(num "4")
+					(name "2D")
+					(type "input")
+				)
+				(pin
+					(num "5")
+					(name "2Q")
+					(type "tri_state")
+				)
+				(pin
+					(num "6")
+					(name "3Q")
+					(type "tri_state")
+				)
+				(pin
+					(num "7")
+					(name "3D")
+					(type "input")
+				)
+				(pin
+					(num "8")
+					(name "4D")
+					(type "input")
+				)
+				(pin
+					(num "9")
+					(name "4Q")
+					(type "tri_state")
+				)
+				(pin
+					(num "10")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "11")
+					(name "CLK")
+					(type "input")
+				)
+				(pin
+					(num "12")
+					(name "5Q")
+					(type "tri_state")
+				)
+				(pin
+					(num "13")
+					(name "5D")
+					(type "input")
+				)
+				(pin
+					(num "14")
+					(name "6D")
+					(type "input")
+				)
+				(pin
+					(num "15")
+					(name "6Q")
+					(type "tri_state")
+				)
+				(pin
+					(num "16")
+					(name "7Q")
+					(type "tri_state")
+				)
+				(pin
+					(num "17")
+					(name "7D")
+					(type "input")
+				)
+				(pin
+					(num "18")
+					(name "8D")
+					(type "input")
+				)
+				(pin
+					(num "19")
+					(name "8Q")
+					(type "tri_state")
+				)
+				(pin
+					(num "20")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "Seeed-OPL-Switch_DIP-BUTTON-TOP-BLACK(4P-D6.2MM)")
+			(description "Eagle Seeed-OPL-Switch:DIP-BUTTON-TOP-BLACK(4P-D6.2MM)")
+			(fields
+				(field
+					(name "Reference") "K")
+				(field
+					(name "Value") "DIP-BUTTON-TOP-BLACK(4P-D6.2MM)")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:SW4-6.2X6.2X5.0MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle Seeed-OPL-Switch:DIP-BUTTON-TOP-BLACK(4P-D6.2MM)")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "A0")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "B0")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "B1")
+					(type "passive")
+				)
+				(pin
+					(num "4")
+					(name "A1")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "SparkFun-Connectors_FTDI_DEVICE")
+			(description "Eagle SparkFun-Connectors:FTDI_DEVICE")
+			(fields
+				(field
+					(name "Reference") "JP")
+				(field
+					(name "Value") "FTDI_DEVICE")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:FTDI_DEVICE_SIDE")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle SparkFun-Connectors:FTDI_DEVICE")
+			)
+			(pins
+				(pin
+					(num "P$1")
+					(name "DTR")
+					(type "passive")
+				)
+				(pin
+					(num "P$2")
+					(name "TXO")
+					(type "passive")
+				)
+				(pin
+					(num "P$3")
+					(name "RXI")
+					(type "passive")
+				)
+				(pin
+					(num "P$4")
+					(name "VCC")
+					(type "passive")
+				)
+				(pin
+					(num "P$5")
+					(name "CTS")
+					(type "passive")
+				)
+				(pin
+					(num "P$6")
+					(name "GND")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "SparkFun-DigitalIC_ATMEGA328P_PDIP")
+			(description "Eagle SparkFun-DigitalIC:ATMEGA328P_PDIP")
+			(fields
+				(field
+					(name "Reference") "U")
+				(field
+					(name "Value") "ATMEGA328P_PDIP")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:DIL28-3")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle SparkFun-DigitalIC:ATMEGA328P_PDIP")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "PC6(/RESET)")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "PD0(RXD)")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "PD1(TXD)")
+					(type "passive")
+				)
+				(pin
+					(num "4")
+					(name "PD2(INT0)")
+					(type "passive")
+				)
+				(pin
+					(num "5")
+					(name "PD3(INT1)")
+					(type "passive")
+				)
+				(pin
+					(num "6")
+					(name "PD4(XCK/T0)")
+					(type "passive")
+				)
+				(pin
+					(num "7")
+					(name "VCC")
+					(type "passive")
+				)
+				(pin
+					(num "8")
+					(name "GND@1")
+					(type "passive")
+				)
+				(pin
+					(num "9")
+					(name "PB6(XTAL1/TOSC1)")
+					(type "passive")
+				)
+				(pin
+					(num "10")
+					(name "PB7(XTAL2/TOSC2)")
+					(type "passive")
+				)
+				(pin
+					(num "11")
+					(name "PD5(T1)")
+					(type "passive")
+				)
+				(pin
+					(num "12")
+					(name "PD6(AIN0)")
+					(type "passive")
+				)
+				(pin
+					(num "13")
+					(name "PD7(AIN1)")
+					(type "passive")
+				)
+				(pin
+					(num "14")
+					(name "PB0(ICP)")
+					(type "passive")
+				)
+				(pin
+					(num "15")
+					(name "PB1(OC1A)")
+					(type "passive")
+				)
+				(pin
+					(num "16")
+					(name "PB2(SS/OC1B)")
+					(type "passive")
+				)
+				(pin
+					(num "17")
+					(name "PB3(MOSI/OC2)")
+					(type "passive")
+				)
+				(pin
+					(num "18")
+					(name "PB4(MISO)")
+					(type "passive")
+				)
+				(pin
+					(num "19")
+					(name "PB5(SCK)")
+					(type "passive")
+				)
+				(pin
+					(num "20")
+					(name "AVCC")
+					(type "passive")
+				)
+				(pin
+					(num "21")
+					(name "AREF")
+					(type "passive")
+				)
+				(pin
+					(num "22")
+					(name "GND@2")
+					(type "passive")
+				)
+				(pin
+					(num "23")
+					(name "PC0(ADC0)")
+					(type "passive")
+				)
+				(pin
+					(num "24")
+					(name "PC1(ADC1)")
+					(type "passive")
+				)
+				(pin
+					(num "25")
+					(name "PC2(ADC2)")
+					(type "passive")
+				)
+				(pin
+					(num "26")
+					(name "PC3(ADC3)")
+					(type "passive")
+				)
+				(pin
+					(num "27")
+					(name "PC4(ADC4/SDA)")
+					(type "passive")
+				)
+				(pin
+					(num "28")
+					(name "PC5(ADC5/SCL)")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "SparkFun-Electromechanical_SWITCH-MOMENTARY-2_SIDE_EZ")
+			(description "Eagle SparkFun-Electromechanical:SWITCH-MOMENTARY-2")
+			(fields
+				(field
+					(name "Reference") "S")
+				(field
+					(name "Value") "SWITCH-MOMENTARY-2")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:TACTILE-PTH-SIDEEZ")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle SparkFun-Electromechanical:SWITCH-MOMENTARY-2")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "adafruit_C-US_025-024X044")
+			(description "Eagle adafruit:C-US")
+			(fields
+				(field
+					(name "Reference") "C")
+				(field
+					(name "Value") "C-US")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:C025-024X044")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle adafruit:C-US")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "adafruit_R-US__0207_10")
+			(description "Eagle adafruit:R-US_")
+			(fields
+				(field
+					(name "Reference") "R")
+				(field
+					(name "Value") "R-US_")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle adafruit:R-US_")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "con-vg_FABC96R")
+			(description "Eagle con-vg:FABC96R")
+			(fields
+				(field
+					(name "Reference") "X")
+				(field
+					(name "Value") "FABC96R")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:FABC96R")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle con-vg:FABC96R")
+			)
+			(pins
+				(pin
+					(num "A1")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A2")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A3")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A4")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A5")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A6")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A7")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A8")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A9")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A10")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A11")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A12")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A13")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A14")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A15")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A16")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A17")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A18")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A19")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A20")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A21")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A22")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A23")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A24")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A25")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A26")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A27")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A28")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A29")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A30")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A31")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "A32")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B1")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B2")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B3")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B4")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B5")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B6")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B7")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B8")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B9")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B10")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B11")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B12")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B13")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B14")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B15")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B16")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B17")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B18")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B19")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B20")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B21")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B22")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B23")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B24")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B25")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B26")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B27")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B28")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B29")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B30")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B31")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B32")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C1")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C2")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C3")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C4")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C5")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C6")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C7")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C8")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C9")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C10")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C11")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C12")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C13")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C14")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C15")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C16")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C17")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C18")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C19")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C20")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C21")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C22")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C23")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C24")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C25")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C26")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C27")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C28")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C29")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C30")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C31")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "C32")
+					(name "B")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "crystal_CRYSTAL_HC49S")
+			(description "Eagle crystal:CRYSTAL")
+			(fields
+				(field
+					(name "Reference") "Q")
+				(field
+					(name "Value") "CRYSTAL")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:HC49_S")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle crystal:CRYSTAL")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "eagle-ltspice_R_0207_10")
+			(description "Eagle eagle-ltspice:R")
+			(fields
+				(field
+					(name "Reference") "R")
+				(field
+					(name "Value") "R")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle eagle-ltspice:R")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "jumper_JP1E")
+			(description "Eagle jumper:JP1E")
+			(fields
+				(field
+					(name "Reference") "JP")
+				(field
+					(name "Value") "JP1E")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:JP1")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle jumper:JP1E")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "led_LED_5MM")
+			(description "Eagle led:LED")
+			(fields
+				(field
+					(name "Reference") "LED")
+				(field
+					(name "Value") "LED")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle led:LED")
+			)
+			(pins
+				(pin
+					(num "A")
+					(name "A")
+					(type "passive")
+				)
+				(pin
+					(num "K")
+					(name "C")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "microchip_24x_P")
+			(description "Eagle microchip:24*")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "24*")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:DIL8")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle microchip:24*")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "A0")
+					(type "input")
+				)
+				(pin
+					(num "2")
+					(name "A1")
+					(type "input")
+				)
+				(pin
+					(num "3")
+					(name "A2")
+					(type "input")
+				)
+				(pin
+					(num "4")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "5")
+					(name "SDA")
+					(type "passive")
+				)
+				(pin
+					(num "6")
+					(name "SCL")
+					(type "input")
+				)
+				(pin
+					(num "7")
+					(name "WP")
+					(type "input")
+				)
+				(pin
+					(num "8")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "microchip_MCP23017_SP")
+			(description "Eagle microchip:MCP23017")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "MCP23017")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:DIL28-3")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle microchip:MCP23017")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "GPB0")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "GPB1")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "GPB2")
+					(type "passive")
+				)
+				(pin
+					(num "4")
+					(name "GPB3")
+					(type "passive")
+				)
+				(pin
+					(num "5")
+					(name "GPB4")
+					(type "passive")
+				)
+				(pin
+					(num "6")
+					(name "GPB5")
+					(type "passive")
+				)
+				(pin
+					(num "7")
+					(name "GPB6")
+					(type "passive")
+				)
+				(pin
+					(num "8")
+					(name "GPB7")
+					(type "passive")
+				)
+				(pin
+					(num "9")
+					(name "VDD")
+					(type "power_in")
+				)
+				(pin
+					(num "10")
+					(name "VSS")
+					(type "power_in")
+				)
+				(pin
+					(num "12")
+					(name "SCL")
+					(type "input")
+				)
+				(pin
+					(num "13")
+					(name "SDA")
+					(type "passive")
+				)
+				(pin
+					(num "15")
+					(name "A0")
+					(type "input")
+				)
+				(pin
+					(num "16")
+					(name "A1")
+					(type "input")
+				)
+				(pin
+					(num "17")
+					(name "A2")
+					(type "input")
+				)
+				(pin
+					(num "18")
+					(name "~{RESET}")
+					(type "input")
+				)
+				(pin
+					(num "19")
+					(name "INTB")
+					(type "output")
+				)
+				(pin
+					(num "20")
+					(name "INTA")
+					(type "output")
+				)
+				(pin
+					(num "21")
+					(name "GPA0")
+					(type "passive")
+				)
+				(pin
+					(num "22")
+					(name "GPA1")
+					(type "passive")
+				)
+				(pin
+					(num "23")
+					(name "GPA2")
+					(type "passive")
+				)
+				(pin
+					(num "24")
+					(name "GPA3")
+					(type "passive")
+				)
+				(pin
+					(num "25")
+					(name "GPA4")
+					(type "passive")
+				)
+				(pin
+					(num "26")
+					(name "GPA5")
+					(type "passive")
+				)
+				(pin
+					(num "27")
+					(name "GPA6")
+					(type "passive")
+				)
+				(pin
+					(num "28")
+					(name "GPA7")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "pinhead_PINHD-1X3")
+			(description "Eagle pinhead:PINHD-1X3")
+			(fields
+				(field
+					(name "Reference") "JP")
+				(field
+					(name "Value") "PINHD-1X3")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:1X03")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle pinhead:PINHD-1X3")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "3")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "resistor-net_RNX8")
+			(description "Eagle resistor-net:RNX8")
+			(fields
+				(field
+					(name "Reference") "RN")
+				(field
+					(name "Value") "RNX8")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:RN-9")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle resistor-net:RNX8")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "4")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "5")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "6")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "7")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "8")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "9")
+					(name "1")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "resistor_R-US__0207_10")
+			(description "Eagle resistor:R-US_")
+			(fields
+				(field
+					(name "Reference") "R")
+				(field
+					(name "Value") "R-US_")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle resistor:R-US_")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "switch_9070-1W")
+			(description "Eagle switch:9070-1W")
+			(fields
+				(field
+					(name "Reference") "S")
+				(field
+					(name "Value") "9070-1W")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:9070-1W")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle switch:9070-1W")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "O")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "P")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B")
+					(name "B")
+					(type "passive")
+				)
+				(pin
+					(num "B1")
+					(name "B1")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-tester-v1.1-eagle")
+			(part "switch_M9040P")
+			(description "Eagle switch:M9040P")
+			(fields
+				(field
+					(name "Reference") "S")
+				(field
+					(name "Value") "M9040P")
+				(field
+					(name "Footprint") "bus-tester-v1.1-eagle:M9040P")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle switch:M9040P")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "O")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "P")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "S")
+					(type "passive")
+				)
+			)
+		)
+	)
+	(libraries
+		(library
+			(logical "bus-tester-v1.1-eagle")
+			(uri "${KIPRJMOD}/bus-tester-v1.1-eagle.kicad_sym")
+		)
+	)
+	(nets
+		(net
+			(code "1")
+			(name "-RESET")
+			(class "Default")
+			(node
+				(ref "C10")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "CPU-RESET0")
+				(pin "3")
+				(pinfunction "B1_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC1")
+				(pin "18")
+				(pinfunction "~{RESET}_18")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "1")
+				(pinfunction "PC6(/RESET)_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "18")
+				(pinfunction "~{RESET}_18")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "18")
+				(pinfunction "~{RESET}_18")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "18")
+				(pinfunction "~{RESET}_18")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "18")
+				(pinfunction "~{RESET}_18")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "18")
+				(pinfunction "~{RESET}_18")
+				(pintype "input")
+			)
+			(node
+				(ref "R2")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "R3")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "R4")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "R5")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "R6")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "R7")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "R8")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "2")
+			(name "A3")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "21")
+				(pinfunction "GPA0_21")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN3")
+				(pin "2")
+				(pinfunction "1_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A3")
+				(pinfunction "B_A3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "3")
+			(name "A4")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "22")
+				(pinfunction "GPA1_22")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN3")
+				(pin "3")
+				(pinfunction "1_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A4")
+				(pinfunction "B_A4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "4")
+			(name "A5")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "23")
+				(pinfunction "GPA2_23")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN3")
+				(pin "4")
+				(pinfunction "1_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A5")
+				(pinfunction "B_A5")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "5")
+			(name "A6")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "24")
+				(pinfunction "GPA3_24")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN3")
+				(pin "5")
+				(pinfunction "1_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A6")
+				(pinfunction "B_A6")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "6")
+			(name "A7")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "25")
+				(pinfunction "GPA4_25")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN3")
+				(pin "6")
+				(pinfunction "1_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A7")
+				(pinfunction "B_A7")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "7")
+			(name "A8")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "26")
+				(pinfunction "GPA5_26")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN3")
+				(pin "7")
+				(pinfunction "1_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A8")
+				(pinfunction "B_A8")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "8")
+			(name "A9")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "27")
+				(pinfunction "GPA6_27")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN3")
+				(pin "8")
+				(pinfunction "1_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A9")
+				(pinfunction "B_A9")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "9")
+			(name "A10")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "28")
+				(pinfunction "GPA7_28")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN3")
+				(pin "9")
+				(pinfunction "1_9")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A10")
+				(pinfunction "B_A10")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "10")
+			(name "A11")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "1")
+				(pinfunction "GPB0_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN4")
+				(pin "2")
+				(pinfunction "1_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A11")
+				(pinfunction "B_A11")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "11")
+			(name "A12")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "2")
+				(pinfunction "GPB1_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN4")
+				(pin "3")
+				(pinfunction "1_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A12")
+				(pinfunction "B_A12")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "12")
+			(name "A13")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "3")
+				(pinfunction "GPB2_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN4")
+				(pin "4")
+				(pinfunction "1_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A13")
+				(pinfunction "B_A13")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "13")
+			(name "A14")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "4")
+				(pinfunction "GPB3_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN4")
+				(pin "5")
+				(pinfunction "1_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A14")
+				(pinfunction "B_A14")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "14")
+			(name "A15")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "5")
+				(pinfunction "GPB4_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN4")
+				(pin "6")
+				(pinfunction "1_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A15")
+				(pinfunction "B_A15")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "15")
+			(name "A16")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "6")
+				(pinfunction "GPB5_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN4")
+				(pin "7")
+				(pinfunction "1_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A16")
+				(pinfunction "B_A16")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "16")
+			(name "A17")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "7")
+				(pinfunction "GPB6_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN4")
+				(pin "8")
+				(pinfunction "1_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A17")
+				(pinfunction "B_A17")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "17")
+			(name "A18")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "8")
+				(pinfunction "GPB7_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN4")
+				(pin "9")
+				(pinfunction "1_9")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A18")
+				(pinfunction "B_A18")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "18")
+			(name "A19")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "21")
+				(pinfunction "GPA0_21")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN1")
+				(pin "2")
+				(pinfunction "1_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A19")
+				(pinfunction "B_A19")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "19")
+			(name "A20")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "22")
+				(pinfunction "GPA1_22")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN1")
+				(pin "3")
+				(pinfunction "1_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A20")
+				(pinfunction "B_A20")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "20")
+			(name "A21")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "23")
+				(pinfunction "GPA2_23")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN1")
+				(pin "4")
+				(pinfunction "1_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A21")
+				(pinfunction "B_A21")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "21")
+			(name "A22")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "24")
+				(pinfunction "GPA3_24")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN1")
+				(pin "5")
+				(pinfunction "1_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A22")
+				(pinfunction "B_A22")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "22")
+			(name "A23")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "25")
+				(pinfunction "GPA4_25")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN1")
+				(pin "6")
+				(pinfunction "1_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A23")
+				(pinfunction "B_A23")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "23")
+			(name "A24")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "26")
+				(pinfunction "GPA5_26")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN1")
+				(pin "7")
+				(pinfunction "1_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A24")
+				(pinfunction "B_A24")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "24")
+			(name "A25")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "27")
+				(pinfunction "GPA6_27")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN1")
+				(pin "8")
+				(pinfunction "1_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A25")
+				(pinfunction "B_A25")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "25")
+			(name "A26")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "28")
+				(pinfunction "GPA7_28")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN1")
+				(pin "9")
+				(pinfunction "1_9")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A26")
+				(pinfunction "B_A26")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "26")
+			(name "A27")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "1")
+				(pinfunction "GPB0_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN2")
+				(pin "2")
+				(pinfunction "1_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A27")
+				(pinfunction "B_A27")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "27")
+			(name "A28")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "2")
+				(pinfunction "GPB1_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN2")
+				(pin "3")
+				(pinfunction "1_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A28")
+				(pinfunction "B_A28")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "28")
+			(name "A29")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "3")
+				(pinfunction "GPB2_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN2")
+				(pin "4")
+				(pinfunction "1_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A29")
+				(pinfunction "B_A29")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "29")
+			(name "A30")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "4")
+				(pinfunction "GPB3_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN2")
+				(pin "5")
+				(pinfunction "1_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A30")
+				(pinfunction "B_A30")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "30")
+			(name "ARD-RXIN")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "2")
+				(pinfunction "PD0(RXD)_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "JP1")
+				(pin "P$3")
+				(pinfunction "RXI_P$3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "31")
+			(name "ARD-TXOUT")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "3")
+				(pinfunction "PD1(TXD)_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "JP1")
+				(pin "P$2")
+				(pinfunction "TXO_P$2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "32")
+			(name "B3")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "5")
+				(pinfunction "GPB4_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN2")
+				(pin "6")
+				(pinfunction "1_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B3")
+				(pinfunction "B_B3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "33")
+			(name "B4")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "6")
+				(pinfunction "GPB5_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN2")
+				(pin "7")
+				(pinfunction "1_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B4")
+				(pinfunction "B_B4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "34")
+			(name "B5")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "7")
+				(pinfunction "GPB6_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN2")
+				(pin "8")
+				(pinfunction "1_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B5")
+				(pinfunction "B_B5")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "35")
+			(name "B6")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "8")
+				(pinfunction "GPB7_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN2")
+				(pin "9")
+				(pinfunction "1_9")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B6")
+				(pinfunction "B_B6")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "36")
+			(name "B7")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "21")
+				(pinfunction "GPA0_21")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B7")
+				(pinfunction "B_B7")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "37")
+			(name "B8")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "22")
+				(pinfunction "GPA1_22")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B8")
+				(pinfunction "B_B8")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "38")
+			(name "B9")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "23")
+				(pinfunction "GPA2_23")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B9")
+				(pinfunction "B_B9")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "39")
+			(name "B10")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "24")
+				(pinfunction "GPA3_24")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B10")
+				(pinfunction "B_B10")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "40")
+			(name "B11")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "25")
+				(pinfunction "GPA4_25")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B11")
+				(pinfunction "B_B11")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "41")
+			(name "B12")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "26")
+				(pinfunction "GPA5_26")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B12")
+				(pinfunction "B_B12")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "42")
+			(name "B13")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "27")
+				(pinfunction "GPA6_27")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B13")
+				(pinfunction "B_B13")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "43")
+			(name "B14")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "28")
+				(pinfunction "GPA7_28")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B14")
+				(pinfunction "B_B14")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "44")
+			(name "B15")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "1")
+				(pinfunction "GPB0_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B15")
+				(pinfunction "B_B15")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "45")
+			(name "B16")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "2")
+				(pinfunction "GPB1_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B16")
+				(pinfunction "B_B16")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "46")
+			(name "B17")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "3")
+				(pinfunction "GPB2_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B17")
+				(pinfunction "B_B17")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "47")
+			(name "B18")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "4")
+				(pinfunction "GPB3_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B18")
+				(pinfunction "B_B18")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "48")
+			(name "B19")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "5")
+				(pinfunction "GPB4_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B19")
+				(pinfunction "B_B19")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "49")
+			(name "B20")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "6")
+				(pinfunction "GPB5_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B20")
+				(pinfunction "B_B20")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "50")
+			(name "B21")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "7")
+				(pinfunction "GPB6_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B21")
+				(pinfunction "B_B21")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "51")
+			(name "B22")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "8")
+				(pinfunction "GPB7_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B22")
+				(pinfunction "B_B22")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "52")
+			(name "B23")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "21")
+				(pinfunction "GPA0_21")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B23")
+				(pinfunction "B_B23")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "53")
+			(name "B24")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "22")
+				(pinfunction "GPA1_22")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B24")
+				(pinfunction "B_B24")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "54")
+			(name "B25")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "23")
+				(pinfunction "GPA2_23")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B25")
+				(pinfunction "B_B25")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "55")
+			(name "B26")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "24")
+				(pinfunction "GPA3_24")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B26")
+				(pinfunction "B_B26")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "56")
+			(name "B27")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "25")
+				(pinfunction "GPA4_25")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B27")
+				(pinfunction "B_B27")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "57")
+			(name "B28")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "26")
+				(pinfunction "GPA5_26")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B28")
+				(pinfunction "B_B28")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "58")
+			(name "B29")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "27")
+				(pinfunction "GPA6_27")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B29")
+				(pinfunction "B_B29")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "59")
+			(name "B30")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "28")
+				(pinfunction "GPA7_28")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B30")
+				(pinfunction "B_B30")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "60")
+			(name "BIT0")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "1")
+				(pinfunction "GPB0_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC8")
+				(pin "3")
+				(pinfunction "1D_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "18")
+				(pinfunction "Y1_18")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "61")
+			(name "BIT1")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "2")
+				(pinfunction "GPB1_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC8")
+				(pin "4")
+				(pinfunction "2D_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "16")
+				(pinfunction "Y2_16")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "62")
+			(name "BIT2")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "3")
+				(pinfunction "GPB2_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC8")
+				(pin "7")
+				(pinfunction "3D_7")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "14")
+				(pinfunction "Y3_14")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "63")
+			(name "BIT3")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "4")
+				(pinfunction "GPB3_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC8")
+				(pin "8")
+				(pinfunction "4D_8")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "12")
+				(pinfunction "Y4_12")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "64")
+			(name "BIT4")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "5")
+				(pinfunction "GPB4_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC8")
+				(pin "13")
+				(pinfunction "5D_13")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "9")
+				(pinfunction "Y1_9")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "65")
+			(name "BIT5")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "6")
+				(pinfunction "GPB5_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC8")
+				(pin "14")
+				(pinfunction "6D_14")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "7")
+				(pinfunction "Y2_7")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "66")
+			(name "BIT6")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "7")
+				(pinfunction "GPB6_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC8")
+				(pin "17")
+				(pinfunction "7D_17")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "5")
+				(pinfunction "Y3_5")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "67")
+			(name "BIT7")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "8")
+				(pinfunction "GPB7_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC8")
+				(pin "18")
+				(pinfunction "8D_18")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "3")
+				(pinfunction "Y4_3")
+				(pintype "tri_state")
+			)
+		)
+		(net
+			(code "68")
+			(name "C3")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "1")
+				(pinfunction "GPB0_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C3")
+				(pinfunction "B_C3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "69")
+			(name "C4")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "2")
+				(pinfunction "GPB1_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C4")
+				(pinfunction "B_C4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "70")
+			(name "C5")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "3")
+				(pinfunction "GPB2_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C5")
+				(pinfunction "B_C5")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "71")
+			(name "C6")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "4")
+				(pinfunction "GPB3_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C6")
+				(pinfunction "B_C6")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "72")
+			(name "C7")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "5")
+				(pinfunction "GPB4_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C7")
+				(pinfunction "B_C7")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "73")
+			(name "C8")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "6")
+				(pinfunction "GPB5_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C8")
+				(pinfunction "B_C8")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "74")
+			(name "C9")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "7")
+				(pinfunction "GPB6_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C9")
+				(pinfunction "B_C9")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "75")
+			(name "C10")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "8")
+				(pinfunction "GPB7_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C10")
+				(pinfunction "B_C10")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "76")
+			(name "C11")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "21")
+				(pinfunction "GPA0_21")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C11")
+				(pinfunction "B_C11")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "77")
+			(name "C12")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "22")
+				(pinfunction "GPA1_22")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C12")
+				(pinfunction "B_C12")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "78")
+			(name "C13")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "23")
+				(pinfunction "GPA2_23")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C13")
+				(pinfunction "B_C13")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "79")
+			(name "C14")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "24")
+				(pinfunction "GPA3_24")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C14")
+				(pinfunction "B_C14")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "80")
+			(name "C15")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "25")
+				(pinfunction "GPA4_25")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C15")
+				(pinfunction "B_C15")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "81")
+			(name "C16")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "26")
+				(pinfunction "GPA5_26")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C16")
+				(pinfunction "B_C16")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "82")
+			(name "C17")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "27")
+				(pinfunction "GPA6_27")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C17")
+				(pinfunction "B_C17")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "83")
+			(name "C18")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "28")
+				(pinfunction "GPA7_28")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C18")
+				(pinfunction "B_C18")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "84")
+			(name "C19")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "1")
+				(pinfunction "GPB0_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C19")
+				(pinfunction "B_C19")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "85")
+			(name "C20")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "2")
+				(pinfunction "GPB1_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C20")
+				(pinfunction "B_C20")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "86")
+			(name "C21")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "3")
+				(pinfunction "GPB2_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C21")
+				(pinfunction "B_C21")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "87")
+			(name "C22")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "4")
+				(pinfunction "GPB3_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C22")
+				(pinfunction "B_C22")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "88")
+			(name "C23")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "5")
+				(pinfunction "GPB4_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C23")
+				(pinfunction "B_C23")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "89")
+			(name "C24")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "6")
+				(pinfunction "GPB5_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C24")
+				(pinfunction "B_C24")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "90")
+			(name "C25")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "7")
+				(pinfunction "GPB6_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C25")
+				(pinfunction "B_C25")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "91")
+			(name "C26")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "8")
+				(pinfunction "GPB7_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C26")
+				(pinfunction "B_C26")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "92")
+			(name "C27")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "21")
+				(pinfunction "GPA0_21")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C27")
+				(pinfunction "B_C27")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "93")
+			(name "C28")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "22")
+				(pinfunction "GPA1_22")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C28")
+				(pinfunction "B_C28")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "94")
+			(name "C29")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "23")
+				(pinfunction "GPA2_23")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C29")
+				(pinfunction "B_C29")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "95")
+			(name "C30")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "24")
+				(pinfunction "GPA3_24")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C30")
+				(pinfunction "B_C30")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "96")
+			(name "GND")
+			(class "Default")
+			(node
+				(ref "BUS-RESET0")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C1")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C11")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C12")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C13")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C2")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C3")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C4")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C5")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C6")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C7")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C8")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "C9")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "CPU-RESET0")
+				(pin "1")
+				(pinfunction "A0_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC1")
+				(pin "10")
+				(pinfunction "VSS_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC1")
+				(pin "15")
+				(pinfunction "A0_15")
+				(pintype "input")
+			)
+			(node
+				(ref "IC1")
+				(pin "16")
+				(pinfunction "A1_16")
+				(pintype "input")
+			)
+			(node
+				(ref "IC1")
+				(pin "17")
+				(pinfunction "A2_17")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "22")
+				(pinfunction "GND@2_22")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC10")
+				(pin "8")
+				(pinfunction "GND@1_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "10")
+				(pinfunction "VSS_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC2")
+				(pin "16")
+				(pinfunction "A1_16")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "17")
+				(pinfunction "A2_17")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "10")
+				(pinfunction "VSS_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC3")
+				(pin "15")
+				(pinfunction "A0_15")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "17")
+				(pinfunction "A2_17")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "10")
+				(pinfunction "VSS_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC4")
+				(pin "17")
+				(pinfunction "A2_17")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "10")
+				(pinfunction "VSS_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC5")
+				(pin "15")
+				(pinfunction "A0_15")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "16")
+				(pinfunction "A1_16")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "10")
+				(pinfunction "VSS_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC6")
+				(pin "16")
+				(pinfunction "A1_16")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "4")
+				(pinfunction "GND_4")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC8")
+				(pin "1")
+				(pinfunction "OC_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC8")
+				(pin "10")
+				(pinfunction "GND_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC9")
+				(pin "10")
+				(pinfunction "GND_10")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IN0")
+				(pin "3")
+				(pinfunction "S_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "JP1")
+				(pin "P$5")
+				(pinfunction "CTS_P$5")
+				(pintype "passive")
+			)
+			(node
+				(ref "JP1")
+				(pin "P$6")
+				(pinfunction "GND_P$6")
+				(pintype "passive")
+			)
+			(node
+				(ref "JP2")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "PWR0")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R11")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R13")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R14")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R15")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R16")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R17")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R18")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R19")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R20")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R21")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R22")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R23")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R24")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R9")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "S-A0")
+				(pin "3")
+				(pinfunction "S_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "S-B0")
+				(pin "3")
+				(pinfunction "S_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "S0")
+				(pin "3")
+				(pinfunction "S_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "S1")
+				(pin "3")
+				(pinfunction "S_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "S2")
+				(pin "3")
+				(pinfunction "S_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "S3")
+				(pin "3")
+				(pinfunction "S_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "S4")
+				(pin "3")
+				(pinfunction "S_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "S5")
+				(pin "3")
+				(pinfunction "S_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "S6")
+				(pin "3")
+				(pinfunction "S_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "S7")
+				(pin "3")
+				(pinfunction "S_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A1")
+				(pinfunction "B_A1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A32")
+				(pinfunction "B_A32")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B1")
+				(pinfunction "B_B1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B32")
+				(pinfunction "B_B32")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C1")
+				(pinfunction "B_C1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C32")
+				(pinfunction "B_C32")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "97")
+			(name "IN-SWITCH")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "26")
+				(pinfunction "GPA5_26")
+				(pintype "passive")
+			)
+			(node
+				(ref "IN0")
+				(pin "2")
+				(pinfunction "P_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "98")
+			(name "LEDS-LD")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "27")
+				(pinfunction "GPA6_27")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC8")
+				(pin "11")
+				(pinfunction "CLK_11")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "99")
+			(name "N$1")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "19")
+				(pinfunction "PB5(SCK)_19")
+				(pintype "passive")
+			)
+			(node
+				(ref "LED1")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "100")
+			(name "N$2")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "7")
+				(pinfunction "WP_7")
+				(pintype "input")
+			)
+			(node
+				(ref "JP2")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "101")
+			(name "N$3")
+			(class "Default")
+			(node
+				(ref "C6")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC10")
+				(pin "9")
+				(pinfunction "PB6(XTAL1/TOSC1)_9")
+				(pintype "passive")
+			)
+			(node
+				(ref "Q1")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "102")
+			(name "N$4")
+			(class "Default")
+			(node
+				(ref "C7")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC10")
+				(pin "10")
+				(pinfunction "PB7(XTAL2/TOSC2)_10")
+				(pintype "passive")
+			)
+			(node
+				(ref "Q1")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "103")
+			(name "N$5")
+			(class "Default")
+			(node
+				(ref "PWR0")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+			(node
+				(ref "R1")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "104")
+			(name "N$6")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "18")
+				(pinfunction "PB4(MISO)_18")
+				(pintype "passive")
+			)
+			(node
+				(ref "LED2")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "105")
+			(name "N$7")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "17")
+				(pinfunction "PB3(MOSI/OC2)_17")
+				(pintype "passive")
+			)
+			(node
+				(ref "LED3")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "106")
+			(name "N$8")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "16")
+				(pinfunction "PB2(SS/OC1B)_16")
+				(pintype "passive")
+			)
+			(node
+				(ref "LED4")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "107")
+			(name "N$9")
+			(class "Default")
+			(node
+				(ref "C10")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "DTR-RESET0")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "108")
+			(name "N$10")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "15")
+				(pinfunction "PB1(OC1A)_15")
+				(pintype "passive")
+			)
+			(node
+				(ref "LED5")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "109")
+			(name "N$11")
+			(class "Default")
+			(node
+				(ref "LED2")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R11")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "110")
+			(name "N$12")
+			(class "Default")
+			(node
+				(ref "LED1")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R9")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "111")
+			(name "N$13")
+			(class "Default")
+			(node
+				(ref "LED3")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R13")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "112")
+			(name "N$14")
+			(class "Default")
+			(node
+				(ref "C9")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC10")
+				(pin "21")
+				(pinfunction "AREF_21")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "113")
+			(name "N$15")
+			(class "Default")
+			(node
+				(ref "LED4")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R14")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "114")
+			(name "N$16")
+			(class "Default")
+			(node
+				(ref "LED5")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R15")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "115")
+			(name "N$17")
+			(class "Default")
+			(node
+				(ref "L7")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R24")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "116")
+			(name "N$18")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "23")
+				(pinfunction "PC0(ADC0)_23")
+				(pintype "passive")
+			)
+			(node
+				(ref "S-A0")
+				(pin "2")
+				(pinfunction "P_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "117")
+			(name "N$19")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "24")
+				(pinfunction "PC1(ADC1)_24")
+				(pintype "passive")
+			)
+			(node
+				(ref "S-B0")
+				(pin "2")
+				(pinfunction "P_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "118")
+			(name "N$20")
+			(class "Default")
+			(node
+				(ref "L6")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R23")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "119")
+			(name "N$21")
+			(class "Default")
+			(node
+				(ref "L5")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R22")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "120")
+			(name "N$22")
+			(class "Default")
+			(node
+				(ref "L4")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R21")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "121")
+			(name "N$23")
+			(class "Default")
+			(node
+				(ref "L3")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R20")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "122")
+			(name "N$24")
+			(class "Default")
+			(node
+				(ref "L2")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R19")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "123")
+			(name "N$25")
+			(class "Default")
+			(node
+				(ref "L1")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R18")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "124")
+			(name "N$26")
+			(class "Default")
+			(node
+				(ref "L0")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R17")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "125")
+			(name "N$27")
+			(class "Default")
+			(node
+				(ref "OUT0")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R16")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "126")
+			(name "N$28")
+			(class "Default")
+			(node
+				(ref "DTR-RESET0")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "JP1")
+				(pin "P$1")
+				(pinfunction "DTR_P$1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "127")
+			(name "N$29")
+			(class "Default")
+			(node
+				(ref "FTDI-VCC0")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "JP1")
+				(pin "P$4")
+				(pinfunction "VCC_P$4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "128")
+			(name "N$31")
+			(class "Default")
+			(node
+				(ref "IC8")
+				(pin "5")
+				(pinfunction "2Q_5")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "L1")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "129")
+			(name "N$32")
+			(class "Default")
+			(node
+				(ref "IC8")
+				(pin "9")
+				(pinfunction "4Q_9")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "L3")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "130")
+			(name "N$33")
+			(class "Default")
+			(node
+				(ref "IC8")
+				(pin "12")
+				(pinfunction "5Q_12")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "L4")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "131")
+			(name "N$34")
+			(class "Default")
+			(node
+				(ref "IC8")
+				(pin "15")
+				(pinfunction "6Q_15")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "L5")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "132")
+			(name "N$35")
+			(class "Default")
+			(node
+				(ref "IC8")
+				(pin "6")
+				(pinfunction "3Q_6")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "L2")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "133")
+			(name "N$36")
+			(class "Default")
+			(node
+				(ref "IC8")
+				(pin "16")
+				(pinfunction "7Q_16")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "L6")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "134")
+			(name "N$37")
+			(class "Default")
+			(node
+				(ref "IC8")
+				(pin "19")
+				(pinfunction "8Q_19")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "L7")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "135")
+			(name "N$38")
+			(class "Default")
+			(node
+				(ref "IC8")
+				(pin "2")
+				(pinfunction "1Q_2")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "L0")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "136")
+			(name "N$39")
+			(class "Default")
+			(node
+				(ref "BUS-RESET0")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC10")
+				(pin "25")
+				(pinfunction "PC2(ADC2)_25")
+				(pintype "passive")
+			)
+			(node
+				(ref "R25")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "137")
+			(name "N$40")
+			(class "Default")
+			(node
+				(ref "IC9")
+				(pin "2")
+				(pinfunction "A1_2")
+				(pintype "input")
+			)
+			(node
+				(ref "S0")
+				(pin "2")
+				(pinfunction "P_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "138")
+			(name "N$41")
+			(class "Default")
+			(node
+				(ref "IC9")
+				(pin "8")
+				(pinfunction "A4_8")
+				(pintype "input")
+			)
+			(node
+				(ref "S3")
+				(pin "2")
+				(pinfunction "P_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "139")
+			(name "N$42")
+			(class "Default")
+			(node
+				(ref "IC9")
+				(pin "6")
+				(pinfunction "A3_6")
+				(pintype "input")
+			)
+			(node
+				(ref "S2")
+				(pin "2")
+				(pinfunction "P_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "140")
+			(name "N$43")
+			(class "Default")
+			(node
+				(ref "IC9")
+				(pin "4")
+				(pinfunction "A2_4")
+				(pintype "input")
+			)
+			(node
+				(ref "S1")
+				(pin "2")
+				(pinfunction "P_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "141")
+			(name "N$44")
+			(class "Default")
+			(node
+				(ref "IC9")
+				(pin "11")
+				(pinfunction "A1_11")
+				(pintype "input")
+			)
+			(node
+				(ref "S4")
+				(pin "2")
+				(pinfunction "P_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "142")
+			(name "N$45")
+			(class "Default")
+			(node
+				(ref "IC9")
+				(pin "17")
+				(pinfunction "A4_17")
+				(pintype "input")
+			)
+			(node
+				(ref "S7")
+				(pin "2")
+				(pinfunction "P_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "143")
+			(name "N$46")
+			(class "Default")
+			(node
+				(ref "IC9")
+				(pin "13")
+				(pinfunction "A2_13")
+				(pintype "input")
+			)
+			(node
+				(ref "S5")
+				(pin "2")
+				(pinfunction "P_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "144")
+			(name "N$47")
+			(class "Default")
+			(node
+				(ref "IC9")
+				(pin "15")
+				(pinfunction "A3_15")
+				(pintype "input")
+			)
+			(node
+				(ref "S6")
+				(pin "2")
+				(pinfunction "P_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "145")
+			(name "OUT-LED")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "25")
+				(pinfunction "GPA4_25")
+				(pintype "passive")
+			)
+			(node
+				(ref "OUT0")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "146")
+			(name "SCL")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "12")
+				(pinfunction "SCL_12")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "28")
+				(pinfunction "PC5(ADC5/SCL)_28")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "12")
+				(pinfunction "SCL_12")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "12")
+				(pinfunction "SCL_12")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "12")
+				(pinfunction "SCL_12")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "12")
+				(pinfunction "SCL_12")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "12")
+				(pinfunction "SCL_12")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "6")
+				(pinfunction "SCL_6")
+				(pintype "input")
+			)
+			(node
+				(ref "R10")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "147")
+			(name "SDA")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "13")
+				(pinfunction "SDA_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC10")
+				(pin "27")
+				(pinfunction "PC4(ADC4/SDA)_27")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "13")
+				(pinfunction "SDA_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC3")
+				(pin "13")
+				(pinfunction "SDA_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC4")
+				(pin "13")
+				(pinfunction "SDA_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC5")
+				(pin "13")
+				(pinfunction "SDA_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC6")
+				(pin "13")
+				(pinfunction "SDA_13")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC7")
+				(pin "5")
+				(pinfunction "SDA_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "R12")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "148")
+			(name "SWITCHES-RD")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "28")
+				(pinfunction "GPA7_28")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC9")
+				(pin "1")
+				(pinfunction "G_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "19")
+				(pinfunction "G_19")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "149")
+			(name "VCC")
+			(class "Default")
+			(node
+				(ref "C1")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C11")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C12")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C13")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C2")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C3")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C4")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C5")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C8")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "FTDI-VCC0")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC1")
+				(pin "9")
+				(pinfunction "VDD_9")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC10")
+				(pin "20")
+				(pinfunction "AVCC_20")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC10")
+				(pin "7")
+				(pinfunction "VCC_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "15")
+				(pinfunction "A0_15")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "9")
+				(pinfunction "VDD_9")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC3")
+				(pin "16")
+				(pinfunction "A1_16")
+				(pintype "input")
+			)
+			(node
+				(ref "IC3")
+				(pin "9")
+				(pinfunction "VDD_9")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC4")
+				(pin "15")
+				(pinfunction "A0_15")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "16")
+				(pinfunction "A1_16")
+				(pintype "input")
+			)
+			(node
+				(ref "IC4")
+				(pin "9")
+				(pinfunction "VDD_9")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC5")
+				(pin "17")
+				(pinfunction "A2_17")
+				(pintype "input")
+			)
+			(node
+				(ref "IC5")
+				(pin "9")
+				(pinfunction "VDD_9")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC6")
+				(pin "15")
+				(pinfunction "A0_15")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "17")
+				(pinfunction "A2_17")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "9")
+				(pinfunction "VDD_9")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC7")
+				(pin "1")
+				(pinfunction "A0_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "2")
+				(pinfunction "A1_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "3")
+				(pinfunction "A2_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "8")
+				(pinfunction "VCC_8")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC8")
+				(pin "20")
+				(pinfunction "VCC_20")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC9")
+				(pin "20")
+				(pinfunction "VCC_20")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IN0")
+				(pin "1")
+				(pinfunction "O_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "JP2")
+				(pin "3")
+				(pinfunction "3_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "R1")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R10")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R12")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R2")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R25")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R3")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R4")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R5")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R6")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R7")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R8")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN1")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN2")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN3")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "RN4")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "S-A0")
+				(pin "1")
+				(pinfunction "O_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "S-B0")
+				(pin "1")
+				(pinfunction "O_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "S0")
+				(pin "1")
+				(pinfunction "O_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "S1")
+				(pin "1")
+				(pinfunction "O_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "S2")
+				(pin "1")
+				(pinfunction "O_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "S3")
+				(pin "1")
+				(pinfunction "O_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "S4")
+				(pin "1")
+				(pinfunction "O_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "S5")
+				(pin "1")
+				(pinfunction "O_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "S6")
+				(pin "1")
+				(pinfunction "O_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "S7")
+				(pin "1")
+				(pinfunction "O_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A2")
+				(pinfunction "B_A2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "A31")
+				(pinfunction "B_A31")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B2")
+				(pinfunction "B_B2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "B31")
+				(pinfunction "B_B31")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C2")
+				(pinfunction "B_C2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X1")
+				(pin "C31")
+				(pinfunction "B_C31")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "150")
+			(name "unconnected-(CPU-RESET0-A1-Pad4)")
+			(class "Default")
+			(node
+				(ref "CPU-RESET0")
+				(pin "4")
+				(pinfunction "A1_4")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "151")
+			(name "unconnected-(CPU-RESET0-B0-Pad2)")
+			(class "Default")
+			(node
+				(ref "CPU-RESET0")
+				(pin "2")
+				(pinfunction "B0_2")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "152")
+			(name "unconnected-(IC1-INTA-Pad20)")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "20")
+				(pinfunction "INTA_20")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "153")
+			(name "unconnected-(IC1-INTB-Pad19)")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "19")
+				(pinfunction "INTB_19")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "154")
+			(name "unconnected-(IC2-INTA-Pad20)")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "20")
+				(pinfunction "INTA_20")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "155")
+			(name "unconnected-(IC2-INTB-Pad19)")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "19")
+				(pinfunction "INTB_19")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "156")
+			(name "unconnected-(IC3-INTA-Pad20)")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "20")
+				(pinfunction "INTA_20")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "157")
+			(name "unconnected-(IC3-INTB-Pad19)")
+			(class "Default")
+			(node
+				(ref "IC3")
+				(pin "19")
+				(pinfunction "INTB_19")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "158")
+			(name "unconnected-(IC4-INTA-Pad20)")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "20")
+				(pinfunction "INTA_20")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "159")
+			(name "unconnected-(IC4-INTB-Pad19)")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "19")
+				(pinfunction "INTB_19")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "160")
+			(name "unconnected-(IC5-INTA-Pad20)")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "20")
+				(pinfunction "INTA_20")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "161")
+			(name "unconnected-(IC5-INTB-Pad19)")
+			(class "Default")
+			(node
+				(ref "IC5")
+				(pin "19")
+				(pinfunction "INTB_19")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "162")
+			(name "unconnected-(IC6-INTA-Pad20)")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "20")
+				(pinfunction "INTA_20")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "163")
+			(name "unconnected-(IC6-INTB-Pad19)")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "19")
+				(pinfunction "INTB_19")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "164")
+			(name "unconnected-(IC10-PB0(ICP)-Pad14)")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "14")
+				(pinfunction "PB0(ICP)_14")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "165")
+			(name "unconnected-(IC10-PC3(ADC3)-Pad26)")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "26")
+				(pinfunction "PC3(ADC3)_26")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "166")
+			(name "unconnected-(IC10-PD2(INT0)-Pad4)")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "4")
+				(pinfunction "PD2(INT0)_4")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "167")
+			(name "unconnected-(IC10-PD3(INT1)-Pad5)")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "5")
+				(pinfunction "PD3(INT1)_5")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "168")
+			(name "unconnected-(IC10-PD4(XCK{slash}T0)-Pad6)")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "6")
+				(pinfunction "PD4(XCK/T0)_6")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "169")
+			(name "unconnected-(IC10-PD5(T1)-Pad11)")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "11")
+				(pinfunction "PD5(T1)_11")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "170")
+			(name "unconnected-(IC10-PD6(AIN0)-Pad12)")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "12")
+				(pinfunction "PD6(AIN0)_12")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "171")
+			(name "unconnected-(IC10-PD7(AIN1)-Pad13)")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "13")
+				(pinfunction "PD7(AIN1)_13")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "172")
+			(name "unconnected-(S-A0-PadB)")
+			(class "Default")
+			(node
+				(ref "S-A0")
+				(pin "B")
+				(pinfunction "B_B")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "173")
+			(name "unconnected-(S-A0-PadB1)")
+			(class "Default")
+			(node
+				(ref "S-A0")
+				(pin "B1")
+				(pinfunction "B1_B1")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "174")
+			(name "unconnected-(S-B0-PadB)")
+			(class "Default")
+			(node
+				(ref "S-B0")
+				(pin "B")
+				(pinfunction "B_B")
+				(pintype "passive+no_connect")
+			)
+		)
+		(net
+			(code "175")
+			(name "unconnected-(S-B0-PadB1)")
+			(class "Default")
+			(node
+				(ref "S-B0")
+				(pin "B1")
+				(pinfunction "B1_B1")
+				(pintype "passive+no_connect")
+			)
+		)
+	)
+)

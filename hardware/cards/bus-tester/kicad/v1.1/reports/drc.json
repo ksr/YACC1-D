@@ -1,0 +1,5628 @@
+{
+    "$schema": "https://schemas.kicad.org/drc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-09-20T21:34:40",
+    "ignored_checks": [
+        {
+            "description": "Footprint has no courtyard defined",
+            "key": "missing_courtyard"
+        },
+        {
+            "description": "Track endpoint not centered on via",
+            "key": "track_not_centered_on_via"
+        },
+        {
+            "description": "Tuning profile track geometries",
+            "key": "tuning_profile_track_geometries"
+        },
+        {
+            "description": "Footprint doesn't match symbol's footprint filters",
+            "key": "footprint_filters_mismatch"
+        },
+        {
+            "description": "Footprint component type doesn't match footprint pads",
+            "key": "footprint_type_mismatch"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.6",
+    "schematic_parity": [],
+    "source": "bus-tester-v1.1.kicad_pcb",
+    "unconnected_items": [],
+    "violations": [
+        {
+            "description": "Items not allowed (keepout area of X1)",
+            "items": [
+                {
+                    "description": "NPTH pad of X1",
+                    "pos": {
+                        "x": 111.3014,
+                        "y": 198.1632
+                    },
+                    "uuid": "250586ab-3720-48f2-867d-75dfe92f7dc1"
+                }
+            ],
+            "severity": "error",
+            "type": "items_not_allowed"
+        },
+        {
+            "description": "Items not allowed (keepout area of X1)",
+            "items": [
+                {
+                    "description": "NPTH pad of X1",
+                    "pos": {
+                        "x": 22.3886,
+                        "y": 198.1632
+                    },
+                    "uuid": "e5642e53-0d06-4a86-ac9c-ad7ce1c1dd59"
+                }
+            ],
+            "severity": "error",
+            "type": "items_not_allowed"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 123.995,
+                        "y": 22.9232
+                    },
+                    "uuid": "8645b631-559f-4f9c-adea-f7a3e4872730"
+                },
+                {
+                    "description": "Segment of S-A0 on F.Silkscreen",
+                    "pos": {
+                        "x": 24.3,
+                        "y": 22.9032
+                    },
+                    "uuid": "e292b6eb-1a67-41e9-959c-ea6e4982181e"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 123.995,
+                        "y": 22.9232
+                    },
+                    "uuid": "8645b631-559f-4f9c-adea-f7a3e4872730"
+                },
+                {
+                    "description": "Segment of S-A0 on F.Silkscreen",
+                    "pos": {
+                        "x": 26.205,
+                        "y": 20.3632
+                    },
+                    "uuid": "112f91de-193c-4a0c-88ac-1294be50173d"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 123.995,
+                        "y": 22.9232
+                    },
+                    "uuid": "8645b631-559f-4f9c-adea-f7a3e4872730"
+                },
+                {
+                    "description": "Segment of S-A0 on F.Silkscreen",
+                    "pos": {
+                        "x": 26.205,
+                        "y": 22.9032
+                    },
+                    "uuid": "f7ed44f7-cc1c-47a6-bfab-90354ba23efb"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 123.995,
+                        "y": 22.9232
+                    },
+                    "uuid": "8645b631-559f-4f9c-adea-f7a3e4872730"
+                },
+                {
+                    "description": "Segment of S-A0 on F.Silkscreen",
+                    "pos": {
+                        "x": 31.285,
+                        "y": 20.3632
+                    },
+                    "uuid": "f3c07162-8aad-413e-a50a-203bf6a03f3a"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 123.995,
+                        "y": 22.9232
+                    },
+                    "uuid": "8645b631-559f-4f9c-adea-f7a3e4872730"
+                },
+                {
+                    "description": "Segment of S-A0 on F.Silkscreen",
+                    "pos": {
+                        "x": 31.285,
+                        "y": 22.9032
+                    },
+                    "uuid": "c6d46d4c-2861-4403-a953-ae067a0f2034"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 123.995,
+                        "y": 22.9232
+                    },
+                    "uuid": "8645b631-559f-4f9c-adea-f7a3e4872730"
+                },
+                {
+                    "description": "Segment of S-A0 on F.Silkscreen",
+                    "pos": {
+                        "x": 33.19,
+                        "y": 22.9032
+                    },
+                    "uuid": "76b4888a-0492-422a-bc76-e4880f79fb69"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 123.995,
+                        "y": 22.9232
+                    },
+                    "uuid": "8645b631-559f-4f9c-adea-f7a3e4872730"
+                },
+                {
+                    "description": "Segment of S-A0 on F.Silkscreen",
+                    "pos": {
+                        "x": 33.19,
+                        "y": 33.6982
+                    },
+                    "uuid": "4b97b20c-3df8-4e0e-9aa8-be5b172c08a5"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 123.995,
+                        "y": 22.9232
+                    },
+                    "uuid": "8645b631-559f-4f9c-adea-f7a3e4872730"
+                },
+                {
+                    "description": "Segment of S-B0 on F.Silkscreen",
+                    "pos": {
+                        "x": 34.46,
+                        "y": 22.9032
+                    },
+                    "uuid": "17108c52-adef-43c1-850c-ccf229b91b4a"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 123.995,
+                        "y": 22.9232
+                    },
+                    "uuid": "8645b631-559f-4f9c-adea-f7a3e4872730"
+                },
+                {
+                    "description": "Segment of S-B0 on F.Silkscreen",
+                    "pos": {
+                        "x": 36.365,
+                        "y": 20.3632
+                    },
+                    "uuid": "23cbc722-14a8-4982-a981-094baea0d02c"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 123.995,
+                        "y": 22.9232
+                    },
+                    "uuid": "8645b631-559f-4f9c-adea-f7a3e4872730"
+                },
+                {
+                    "description": "Segment of S-B0 on F.Silkscreen",
+                    "pos": {
+                        "x": 36.365,
+                        "y": 22.9032
+                    },
+                    "uuid": "137333a3-49da-47ec-a119-8b6299556a15"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 123.995,
+                        "y": 22.9232
+                    },
+                    "uuid": "8645b631-559f-4f9c-adea-f7a3e4872730"
+                },
+                {
+                    "description": "Segment of S-B0 on F.Silkscreen",
+                    "pos": {
+                        "x": 41.445,
+                        "y": 20.3632
+                    },
+                    "uuid": "61cde6b6-86d2-47fc-bd9e-123b4b4af000"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 123.995,
+                        "y": 22.9232
+                    },
+                    "uuid": "8645b631-559f-4f9c-adea-f7a3e4872730"
+                },
+                {
+                    "description": "Segment of S-B0 on F.Silkscreen",
+                    "pos": {
+                        "x": 41.445,
+                        "y": 22.9032
+                    },
+                    "uuid": "d243056e-03c5-45ce-9181-89db615666f3"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 123.995,
+                        "y": 22.9232
+                    },
+                    "uuid": "8645b631-559f-4f9c-adea-f7a3e4872730"
+                },
+                {
+                    "description": "Segment of S-B0 on F.Silkscreen",
+                    "pos": {
+                        "x": 43.35,
+                        "y": 22.9032
+                    },
+                    "uuid": "5302bcba-5049-4a6d-93d1-44392a6ecdd7"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 123.995,
+                        "y": 22.9232
+                    },
+                    "uuid": "8645b631-559f-4f9c-adea-f7a3e4872730"
+                },
+                {
+                    "description": "Segment of S-B0 on F.Silkscreen",
+                    "pos": {
+                        "x": 43.35,
+                        "y": 33.6982
+                    },
+                    "uuid": "235aa286-ce4c-4561-8222-0407d62958d5"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 123.995,
+                        "y": 22.9232
+                    },
+                    "uuid": "8645b631-559f-4f9c-adea-f7a3e4872730"
+                },
+                {
+                    "description": "Footprint text of JP1 (BLK)",
+                    "pos": {
+                        "x": 89.451,
+                        "y": 25.8242
+                    },
+                    "uuid": "2bf9dd3c-ef11-4697-9242-afe36b016c36"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 123.995,
+                        "y": 22.9232
+                    },
+                    "uuid": "8645b631-559f-4f9c-adea-f7a3e4872730"
+                },
+                {
+                    "description": "Footprint text of JP1 (GRN)",
+                    "pos": {
+                        "x": 106.469,
+                        "y": 25.8242
+                    },
+                    "uuid": "7b4725ff-388c-4674-897f-aab16a32a3a0"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 10.025,
+                        "y": 200.7032
+                    },
+                    "uuid": "912fb918-b7f4-4d00-9c1a-eea03fa1e5ba"
+                },
+                {
+                    "description": "Segment of X1 on F.Silkscreen",
+                    "pos": {
+                        "x": 19.855,
+                        "y": 195.6232
+                    },
+                    "uuid": "c31efb2c-14cc-40f0-aa22-b988c33f3fa8"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 10.025,
+                        "y": 200.7032
+                    },
+                    "uuid": "912fb918-b7f4-4d00-9c1a-eea03fa1e5ba"
+                },
+                {
+                    "description": "Segment of X1 on F.Silkscreen",
+                    "pos": {
+                        "x": 24.935,
+                        "y": 199.4332
+                    },
+                    "uuid": "edb25d4b-9bf2-49c8-8ca2-b8466dbf1907"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 10.025,
+                        "y": 200.7032
+                    },
+                    "uuid": "912fb918-b7f4-4d00-9c1a-eea03fa1e5ba"
+                },
+                {
+                    "description": "Segment of X1 on F.Silkscreen",
+                    "pos": {
+                        "x": 108.755,
+                        "y": 199.4332
+                    },
+                    "uuid": "aa0b83ea-afd1-47f8-bf83-1ae329a46388"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 10.025,
+                        "y": 200.7032
+                    },
+                    "uuid": "912fb918-b7f4-4d00-9c1a-eea03fa1e5ba"
+                },
+                {
+                    "description": "Segment of X1 on F.Silkscreen",
+                    "pos": {
+                        "x": 113.7951,
+                        "y": 195.6232
+                    },
+                    "uuid": "2b086fcf-8679-4b85-816c-8180022043c4"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Footprint 'HC49_S' does not match copy in library 'bus-tester-v1.1-eagle'",
+            "items": [
+                {
+                    "description": "Footprint Q1",
+                    "pos": {
+                        "x": 61.257,
+                        "y": 118.1532
+                    },
+                    "uuid": "1cb1174d-16aa-415e-bee4-718b4672d2ee"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Footprint '0207_10' does not match copy in library 'bus-tester-v1.1-eagle'",
+            "items": [
+                {
+                    "description": "Footprint R5",
+                    "pos": {
+                        "x": 18.585,
+                        "y": 138.4732
+                    },
+                    "uuid": "1eb5e738-9abe-44d8-bfef-4293348280a1"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Footprint '0207_10' does not match copy in library 'bus-tester-v1.1-eagle'",
+            "items": [
+                {
+                    "description": "Footprint R6",
+                    "pos": {
+                        "x": 84.625,
+                        "y": 138.4732
+                    },
+                    "uuid": "4074b718-3012-4541-8456-895ac5c341f4"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Footprint '0207_10' does not match copy in library 'bus-tester-v1.1-eagle'",
+            "items": [
+                {
+                    "description": "Footprint R3",
+                    "pos": {
+                        "x": 101.135,
+                        "y": 138.4732
+                    },
+                    "uuid": "cd9533b8-30e9-4bc4-ba1b-86c923ef1529"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Footprint '0207_10' does not match copy in library 'bus-tester-v1.1-eagle'",
+            "items": [
+                {
+                    "description": "Footprint R2",
+                    "pos": {
+                        "x": 68.115,
+                        "y": 138.4732
+                    },
+                    "uuid": "daf6ba0d-96f7-4a76-a2fe-395d8c466a9c"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Footprint 'DIL28-3' does not match copy in library 'bus-tester-v1.1-eagle'",
+            "items": [
+                {
+                    "description": "Footprint IC10",
+                    "pos": {
+                        "x": 38.905,
+                        "y": 118.1532
+                    },
+                    "uuid": "dd7403ad-9662-4da0-b11c-7a465002663c"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Footprint 'FABC96R' does not match copy in library 'bus-tester-v1.1-eagle'",
+            "items": [
+                {
+                    "description": "Footprint X1",
+                    "pos": {
+                        "x": 66.845,
+                        "y": 198.1632
+                    },
+                    "uuid": "dd91d03a-6a96-4455-96f1-2fc3c5956370"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Footprint '0207_10' does not match copy in library 'bus-tester-v1.1-eagle'",
+            "items": [
+                {
+                    "description": "Footprint R4",
+                    "pos": {
+                        "x": 51.605,
+                        "y": 138.4732
+                    },
+                    "uuid": "edf8da62-baec-480d-8a9f-a575b7723f89"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Footprint '0207_10' does not match copy in library 'bus-tester-v1.1-eagle'",
+            "items": [
+                {
+                    "description": "Footprint R7",
+                    "pos": {
+                        "x": 35.095,
+                        "y": 138.4732
+                    },
+                    "uuid": "fc3fdd24-7aa9-4ec1-b2fb-76457a130ab5"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6909 mm)",
+            "items": [
+                {
+                    "description": "Footprint text of JP1 (GND)",
+                    "pos": {
+                        "x": 93.261,
+                        "y": 28.2372
+                    },
+                    "uuid": "bf51cf18-064e-419d-b079-372b89e8c6ab"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6909 mm)",
+            "items": [
+                {
+                    "description": "Footprint text of JP1 (CTS)",
+                    "pos": {
+                        "x": 95.801,
+                        "y": 28.2372
+                    },
+                    "uuid": "a89d9822-7af3-43c3-9efc-b8830d91789c"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6909 mm)",
+            "items": [
+                {
+                    "description": "Footprint text of JP1 (VCC)",
+                    "pos": {
+                        "x": 98.341,
+                        "y": 28.2372
+                    },
+                    "uuid": "caf83cdb-be96-4e60-a785-817928e4b507"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6909 mm)",
+            "items": [
+                {
+                    "description": "Footprint text of JP1 (RXI)",
+                    "pos": {
+                        "x": 100.881,
+                        "y": 28.2372
+                    },
+                    "uuid": "28c6ea1a-1729-4a48-a9eb-8e99b89b4785"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6909 mm)",
+            "items": [
+                {
+                    "description": "Footprint text of JP1 (TXO)",
+                    "pos": {
+                        "x": 103.421,
+                        "y": 28.2372
+                    },
+                    "uuid": "a6b7066c-c2e3-4d0c-9a67-ef64fcc726e6"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6909 mm)",
+            "items": [
+                {
+                    "description": "Footprint text of JP1 (DTR)",
+                    "pos": {
+                        "x": 105.961,
+                        "y": 28.2372
+                    },
+                    "uuid": "916555ab-ce82-46f8-a229-e97b1a6f73cd"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text thickness out of range (board setup constraints silk text thickness min thickness 0.0800 mm; actual 0.0549 mm)",
+            "items": [
+                {
+                    "description": "Reference field of IC10",
+                    "pos": {
+                        "x": 19.347,
+                        "y": 116.3752
+                    },
+                    "uuid": "b7ae1f3e-e200-4121-a5f0-d83b74f1db6b"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_thickness"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.7315 mm)",
+            "items": [
+                {
+                    "description": "Footprint text of X1 (32)",
+                    "pos": {
+                        "x": 26.84,
+                        "y": 198.1632
+                    },
+                    "uuid": "571a1491-005e-40d0-bddf-9178774fcae7"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.7315 mm)",
+            "items": [
+                {
+                    "description": "Footprint text of X1 (1)",
+                    "pos": {
+                        "x": 105.961,
+                        "y": 198.1632
+                    },
+                    "uuid": "61b774ac-f95e-42b0-9609-e21cf0633d25"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Reference field of IC4",
+                    "pos": {
+                        "x": 45.255,
+                        "y": 167.8102
+                    },
+                    "uuid": "056ceda2-c556-4df3-a39b-d8562d0f8633"
+                },
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 43.985,
+                        "y": 167.6832
+                    },
+                    "uuid": "ca525bb4-1ccf-442a-bc52-a9c32dff9cca"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Reference field of RN4",
+                    "pos": {
+                        "x": 118.28,
+                        "y": 172.7632
+                    },
+                    "uuid": "31422766-7cb7-4b17-b616-8268313404f9"
+                },
+                {
+                    "description": "PCB text ' ADDR[0..15]' on F.Silkscreen",
+                    "pos": {
+                        "x": 117.645,
+                        "y": 182.9232
+                    },
+                    "uuid": "6114336b-d928-4e10-aa37-ae09e525e1fd"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of JP1 on F.Silkscreen",
+                    "pos": {
+                        "x": 106.215,
+                        "y": 25.4432
+                    },
+                    "uuid": "46307004-387b-4eee-a475-fcf5cc449fe8"
+                },
+                {
+                    "description": "Footprint text of JP1 (DTR)",
+                    "pos": {
+                        "x": 105.961,
+                        "y": 28.2372
+                    },
+                    "uuid": "916555ab-ce82-46f8-a229-e97b1a6f73cd"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of JP1 on F.Silkscreen",
+                    "pos": {
+                        "x": 106.215,
+                        "y": 25.4432
+                    },
+                    "uuid": "46307004-387b-4eee-a475-fcf5cc449fe8"
+                },
+                {
+                    "description": "Footprint text of JP1 (GRN)",
+                    "pos": {
+                        "x": 106.469,
+                        "y": 25.8242
+                    },
+                    "uuid": "7b4725ff-388c-4674-897f-aab16a32a3a0"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of JP1 on F.Silkscreen",
+                    "pos": {
+                        "x": 90.975,
+                        "y": 25.4432
+                    },
+                    "uuid": "6ce0d240-4c9f-465e-a820-eca6cd142a5b"
+                },
+                {
+                    "description": "Footprint text of JP1 (GRN)",
+                    "pos": {
+                        "x": 106.469,
+                        "y": 25.8242
+                    },
+                    "uuid": "7b4725ff-388c-4674-897f-aab16a32a3a0"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of JP1 on F.Silkscreen",
+                    "pos": {
+                        "x": 106.215,
+                        "y": 27.9832
+                    },
+                    "uuid": "9e37fd84-6812-459f-9c32-4737c4db0d0c"
+                },
+                {
+                    "description": "Footprint text of JP1 (CTS)",
+                    "pos": {
+                        "x": 95.801,
+                        "y": 28.2372
+                    },
+                    "uuid": "a89d9822-7af3-43c3-9efc-b8830d91789c"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of JP1 on F.Silkscreen",
+                    "pos": {
+                        "x": 106.215,
+                        "y": 27.9832
+                    },
+                    "uuid": "9e37fd84-6812-459f-9c32-4737c4db0d0c"
+                },
+                {
+                    "description": "Footprint text of JP1 (VCC)",
+                    "pos": {
+                        "x": 98.341,
+                        "y": 28.2372
+                    },
+                    "uuid": "caf83cdb-be96-4e60-a785-817928e4b507"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of JP1 on F.Silkscreen",
+                    "pos": {
+                        "x": 106.215,
+                        "y": 27.9832
+                    },
+                    "uuid": "9e37fd84-6812-459f-9c32-4737c4db0d0c"
+                },
+                {
+                    "description": "Footprint text of JP1 (GND)",
+                    "pos": {
+                        "x": 93.261,
+                        "y": 28.2372
+                    },
+                    "uuid": "bf51cf18-064e-419d-b079-372b89e8c6ab"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Footprint text of JP1 (RXI)",
+                    "pos": {
+                        "x": 100.881,
+                        "y": 28.2372
+                    },
+                    "uuid": "28c6ea1a-1729-4a48-a9eb-8e99b89b4785"
+                },
+                {
+                    "description": "Segment of JP1 on F.Silkscreen",
+                    "pos": {
+                        "x": 106.215,
+                        "y": 27.9832
+                    },
+                    "uuid": "9e37fd84-6812-459f-9c32-4737c4db0d0c"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of JP1 on F.Silkscreen",
+                    "pos": {
+                        "x": 106.215,
+                        "y": 27.9832
+                    },
+                    "uuid": "9e37fd84-6812-459f-9c32-4737c4db0d0c"
+                },
+                {
+                    "description": "Footprint text of JP1 (TXO)",
+                    "pos": {
+                        "x": 103.421,
+                        "y": 28.2372
+                    },
+                    "uuid": "a6b7066c-c2e3-4d0c-9a67-ef64fcc726e6"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Footprint text of JP1 (DTR)",
+                    "pos": {
+                        "x": 105.961,
+                        "y": 28.2372
+                    },
+                    "uuid": "916555ab-ce82-46f8-a229-e97b1a6f73cd"
+                },
+                {
+                    "description": "Segment of JP1 on F.Silkscreen",
+                    "pos": {
+                        "x": 106.215,
+                        "y": 27.9832
+                    },
+                    "uuid": "9e37fd84-6812-459f-9c32-4737c4db0d0c"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 176.5732
+                    },
+                    "uuid": "d9275b73-e2e1-445a-b25a-2130f794b389"
+                },
+                {
+                    "description": "PTH pad 2 [A19] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 195.6232
+                    },
+                    "uuid": "2245f166-13d5-4b82-940b-1afb8c1f00fc"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 176.5732
+                    },
+                    "uuid": "d9275b73-e2e1-445a-b25a-2130f794b389"
+                },
+                {
+                    "description": "PTH pad 3 [A20] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 193.0832
+                    },
+                    "uuid": "e5096431-6261-4cab-9bd8-80781eaecb78"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 176.5732
+                    },
+                    "uuid": "d9275b73-e2e1-445a-b25a-2130f794b389"
+                },
+                {
+                    "description": "PTH pad 4 [A21] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 190.5432
+                    },
+                    "uuid": "ffe0e1e6-1c27-4884-8bd3-aad37972d465"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 176.5732
+                    },
+                    "uuid": "d9275b73-e2e1-445a-b25a-2130f794b389"
+                },
+                {
+                    "description": "PTH pad 5 [A22] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 188.0032
+                    },
+                    "uuid": "c4e2ca77-ed87-408b-a21a-ecb90dfb8dd9"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 176.5732
+                    },
+                    "uuid": "d9275b73-e2e1-445a-b25a-2130f794b389"
+                },
+                {
+                    "description": "PTH pad 6 [A23] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 185.4632
+                    },
+                    "uuid": "59115114-5970-420b-9ff0-2f609af5bcc0"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 176.5732
+                    },
+                    "uuid": "d9275b73-e2e1-445a-b25a-2130f794b389"
+                },
+                {
+                    "description": "PTH pad 7 [A24] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 182.9232
+                    },
+                    "uuid": "05701b52-fee7-470a-920f-9d9f5bbdbfe6"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 176.5732
+                    },
+                    "uuid": "d9275b73-e2e1-445a-b25a-2130f794b389"
+                },
+                {
+                    "description": "PTH pad 8 [A25] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 180.3832
+                    },
+                    "uuid": "09ee0d9f-c067-4521-8b9a-1b300a4d3c7c"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 176.5732
+                    },
+                    "uuid": "d9275b73-e2e1-445a-b25a-2130f794b389"
+                },
+                {
+                    "description": "PTH pad 9 [A26] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 177.8432
+                    },
+                    "uuid": "4412e013-a3fe-4972-a0d0-d01932f99ed1"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 196.8932
+                    },
+                    "uuid": "b28943ca-d97e-44cc-aa5e-5db14a5d287b"
+                },
+                {
+                    "description": "PTH pad 2 [A19] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 195.6232
+                    },
+                    "uuid": "2245f166-13d5-4b82-940b-1afb8c1f00fc"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 196.8932
+                    },
+                    "uuid": "b28943ca-d97e-44cc-aa5e-5db14a5d287b"
+                },
+                {
+                    "description": "PTH pad 3 [A20] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 193.0832
+                    },
+                    "uuid": "e5096431-6261-4cab-9bd8-80781eaecb78"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 196.8932
+                    },
+                    "uuid": "b28943ca-d97e-44cc-aa5e-5db14a5d287b"
+                },
+                {
+                    "description": "PTH pad 4 [A21] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 190.5432
+                    },
+                    "uuid": "ffe0e1e6-1c27-4884-8bd3-aad37972d465"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 196.8932
+                    },
+                    "uuid": "b28943ca-d97e-44cc-aa5e-5db14a5d287b"
+                },
+                {
+                    "description": "PTH pad 5 [A22] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 188.0032
+                    },
+                    "uuid": "c4e2ca77-ed87-408b-a21a-ecb90dfb8dd9"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 196.8932
+                    },
+                    "uuid": "b28943ca-d97e-44cc-aa5e-5db14a5d287b"
+                },
+                {
+                    "description": "PTH pad 6 [A23] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 185.4632
+                    },
+                    "uuid": "59115114-5970-420b-9ff0-2f609af5bcc0"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 196.8932
+                    },
+                    "uuid": "b28943ca-d97e-44cc-aa5e-5db14a5d287b"
+                },
+                {
+                    "description": "PTH pad 7 [A24] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 182.9232
+                    },
+                    "uuid": "05701b52-fee7-470a-920f-9d9f5bbdbfe6"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 196.8932
+                    },
+                    "uuid": "b28943ca-d97e-44cc-aa5e-5db14a5d287b"
+                },
+                {
+                    "description": "PTH pad 8 [A25] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 180.3832
+                    },
+                    "uuid": "09ee0d9f-c067-4521-8b9a-1b300a4d3c7c"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 196.8932
+                    },
+                    "uuid": "b28943ca-d97e-44cc-aa5e-5db14a5d287b"
+                },
+                {
+                    "description": "PTH pad 9 [A26] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 177.8432
+                    },
+                    "uuid": "4412e013-a3fe-4972-a0d0-d01932f99ed1"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 172.7632
+                    },
+                    "uuid": "8a4ca300-5083-46c0-8958-ec7fe8a430db"
+                },
+                {
+                    "description": "PTH pad 1 [VCC] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 174.0332
+                    },
+                    "uuid": "226d9d47-4e2b-4599-9958-276b59dbe1fd"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 172.7632
+                    },
+                    "uuid": "71f7cc0c-108e-4eb4-a4a8-459287da4124"
+                },
+                {
+                    "description": "PTH pad 1 [VCC] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 174.0332
+                    },
+                    "uuid": "226d9d47-4e2b-4599-9958-276b59dbe1fd"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 175.3032
+                    },
+                    "uuid": "962cd077-c56d-49bd-a4a4-60ec7edcd80f"
+                },
+                {
+                    "description": "PTH pad 1 [VCC] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 174.0332
+                    },
+                    "uuid": "226d9d47-4e2b-4599-9958-276b59dbe1fd"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 172.7632
+                    },
+                    "uuid": "ffec50db-0957-4837-a7f3-2fec9f540a72"
+                },
+                {
+                    "description": "PTH pad 1 [VCC] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 174.0332
+                    },
+                    "uuid": "226d9d47-4e2b-4599-9958-276b59dbe1fd"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 175.3032
+                    },
+                    "uuid": "9d9a7ef3-b583-4926-9619-c81a9c6c2aab"
+                },
+                {
+                    "description": "PTH pad 1 [VCC] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 174.0332
+                    },
+                    "uuid": "226d9d47-4e2b-4599-9958-276b59dbe1fd"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 175.3032
+                    },
+                    "uuid": "d6f21a4a-b460-402e-99cb-85cdc48b783f"
+                },
+                {
+                    "description": "PTH pad 1 [VCC] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 174.0332
+                    },
+                    "uuid": "226d9d47-4e2b-4599-9958-276b59dbe1fd"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 196.8932
+                    },
+                    "uuid": "a361e219-a776-457a-b749-eb98d85e52d4"
+                },
+                {
+                    "description": "PTH pad 1 [VCC] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 198.1632
+                    },
+                    "uuid": "55d509d0-4be0-4912-a72b-dba68beba695"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 196.8932
+                    },
+                    "uuid": "a4eb00fd-2393-4fa5-ba57-c599b4a4ed27"
+                },
+                {
+                    "description": "PTH pad 1 [VCC] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 198.1632
+                    },
+                    "uuid": "55d509d0-4be0-4912-a72b-dba68beba695"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 199.4332
+                    },
+                    "uuid": "2e0a1deb-3618-4c55-8fa9-403162eba3c1"
+                },
+                {
+                    "description": "PTH pad 1 [VCC] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 198.1632
+                    },
+                    "uuid": "55d509d0-4be0-4912-a72b-dba68beba695"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 196.8932
+                    },
+                    "uuid": "c4575d6e-23f7-496d-b648-e63918a234c6"
+                },
+                {
+                    "description": "PTH pad 1 [VCC] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 198.1632
+                    },
+                    "uuid": "55d509d0-4be0-4912-a72b-dba68beba695"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 199.4332
+                    },
+                    "uuid": "2fbf00e7-b133-41c5-bf49-e51de02ab726"
+                },
+                {
+                    "description": "PTH pad 1 [VCC] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 198.1632
+                    },
+                    "uuid": "55d509d0-4be0-4912-a72b-dba68beba695"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN1 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 199.4332
+                    },
+                    "uuid": "c9b5704b-6463-4be3-aaf4-c46e0bf29354"
+                },
+                {
+                    "description": "PTH pad 1 [VCC] of RN1",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 198.1632
+                    },
+                    "uuid": "55d509d0-4be0-4912-a72b-dba68beba695"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 152.4432
+                    },
+                    "uuid": "59dc9d03-0d1e-4af4-89f9-a04f2774f626"
+                },
+                {
+                    "description": "PTH pad 4 [A29] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 166.4132
+                    },
+                    "uuid": "70629b7c-d956-4af9-a7e1-63de6613c911"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 152.4432
+                    },
+                    "uuid": "59dc9d03-0d1e-4af4-89f9-a04f2774f626"
+                },
+                {
+                    "description": "PTH pad 5 [A30] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 163.8732
+                    },
+                    "uuid": "47625b37-851e-4fdd-8bd6-5f3002335c82"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 152.4432
+                    },
+                    "uuid": "59dc9d03-0d1e-4af4-89f9-a04f2774f626"
+                },
+                {
+                    "description": "PTH pad 6 [B3] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 161.3332
+                    },
+                    "uuid": "7c985e3a-94dd-4c1c-9567-519d89d90cff"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 152.4432
+                    },
+                    "uuid": "59dc9d03-0d1e-4af4-89f9-a04f2774f626"
+                },
+                {
+                    "description": "PTH pad 7 [B4] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 158.7932
+                    },
+                    "uuid": "89270a78-ed41-4ae3-b683-f9cf33147ff0"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 152.4432
+                    },
+                    "uuid": "59dc9d03-0d1e-4af4-89f9-a04f2774f626"
+                },
+                {
+                    "description": "PTH pad 8 [B5] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 156.2532
+                    },
+                    "uuid": "8eee29a5-c566-490f-bf20-49f1e7b000e1"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 152.4432
+                    },
+                    "uuid": "59dc9d03-0d1e-4af4-89f9-a04f2774f626"
+                },
+                {
+                    "description": "PTH pad 9 [B6] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 153.7132
+                    },
+                    "uuid": "9e949036-c2d1-486e-b37f-57c32ad85918"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 152.4432
+                    },
+                    "uuid": "59dc9d03-0d1e-4af4-89f9-a04f2774f626"
+                },
+                {
+                    "description": "PTH pad 2 [A27] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 171.4932
+                    },
+                    "uuid": "d749032f-ec45-456b-a95a-cb85c465e973"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 12.235,
+                        "y": 152.4432
+                    },
+                    "uuid": "59dc9d03-0d1e-4af4-89f9-a04f2774f626"
+                },
+                {
+                    "description": "PTH pad 3 [A28] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 168.9532
+                    },
+                    "uuid": "dfafa228-3a42-41c8-a9b0-c47d2cb7a8ec"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 172.7632
+                    },
+                    "uuid": "0b65cb6d-f14d-4538-97c9-79ea467c8015"
+                },
+                {
+                    "description": "PTH pad 4 [A29] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 166.4132
+                    },
+                    "uuid": "70629b7c-d956-4af9-a7e1-63de6613c911"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 172.7632
+                    },
+                    "uuid": "0b65cb6d-f14d-4538-97c9-79ea467c8015"
+                },
+                {
+                    "description": "PTH pad 5 [A30] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 163.8732
+                    },
+                    "uuid": "47625b37-851e-4fdd-8bd6-5f3002335c82"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 172.7632
+                    },
+                    "uuid": "0b65cb6d-f14d-4538-97c9-79ea467c8015"
+                },
+                {
+                    "description": "PTH pad 6 [B3] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 161.3332
+                    },
+                    "uuid": "7c985e3a-94dd-4c1c-9567-519d89d90cff"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 172.7632
+                    },
+                    "uuid": "0b65cb6d-f14d-4538-97c9-79ea467c8015"
+                },
+                {
+                    "description": "PTH pad 7 [B4] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 158.7932
+                    },
+                    "uuid": "89270a78-ed41-4ae3-b683-f9cf33147ff0"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 172.7632
+                    },
+                    "uuid": "0b65cb6d-f14d-4538-97c9-79ea467c8015"
+                },
+                {
+                    "description": "PTH pad 8 [B5] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 156.2532
+                    },
+                    "uuid": "8eee29a5-c566-490f-bf20-49f1e7b000e1"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 172.7632
+                    },
+                    "uuid": "0b65cb6d-f14d-4538-97c9-79ea467c8015"
+                },
+                {
+                    "description": "PTH pad 9 [B6] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 153.7132
+                    },
+                    "uuid": "9e949036-c2d1-486e-b37f-57c32ad85918"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 172.7632
+                    },
+                    "uuid": "0b65cb6d-f14d-4538-97c9-79ea467c8015"
+                },
+                {
+                    "description": "PTH pad 2 [A27] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 171.4932
+                    },
+                    "uuid": "d749032f-ec45-456b-a95a-cb85c465e973"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of RN2 on F.Silkscreen",
+                    "pos": {
+                        "x": 14.775,
+                        "y": 172.7632
+                    },
+                    "uuid": "0b65cb6d-f14d-4538-97c9-79ea467c8015"
+                },
+                {
+                    "description": "PTH pad 3 [A28] of RN2",
+                    "pos": {
+                        "x": 13.505,
+                        "y": 168.9532
+                    },
+                    "uuid": "dfafa228-3a42-41c8-a9b0-c47d2cb7a8ec"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 23.665,
+                        "y": 167.6832
+                    },
+                    "uuid": "d7da62cd-783d-4208-9d96-9f83fbfe265e"
+                },
+                {
+                    "description": "PTH pad 16 [GND] of IC6",
+                    "pos": {
+                        "x": 22.395,
+                        "y": 135.9332
+                    },
+                    "uuid": "8b9830ef-1708-4d93-b4d1-2b13ca4d3ee8"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 23.665,
+                        "y": 167.6832
+                    },
+                    "uuid": "d7da62cd-783d-4208-9d96-9f83fbfe265e"
+                },
+                {
+                    "description": "PTH pad 19 [<no net>] of IC6",
+                    "pos": {
+                        "x": 22.395,
+                        "y": 143.5532
+                    },
+                    "uuid": "f2a6ab5f-23fb-45fe-923c-56dfd51868ce"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 23.665,
+                        "y": 167.6832
+                    },
+                    "uuid": "d7da62cd-783d-4208-9d96-9f83fbfe265e"
+                },
+                {
+                    "description": "PTH pad 17 [VCC] of IC6",
+                    "pos": {
+                        "x": 22.395,
+                        "y": 138.4732
+                    },
+                    "uuid": "bfa3f9a6-9aae-44c7-ad1e-423e0fa683ff"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 23.665,
+                        "y": 167.6832
+                    },
+                    "uuid": "d7da62cd-783d-4208-9d96-9f83fbfe265e"
+                },
+                {
+                    "description": "PTH pad 18 [-RESET] of IC6",
+                    "pos": {
+                        "x": 22.395,
+                        "y": 141.0132
+                    },
+                    "uuid": "6e23d1af-e0d5-4331-bfed-89553f7058d0"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 23.665,
+                        "y": 167.6832
+                    },
+                    "uuid": "d7da62cd-783d-4208-9d96-9f83fbfe265e"
+                },
+                {
+                    "description": "PTH pad 15 [VCC] of IC6",
+                    "pos": {
+                        "x": 22.395,
+                        "y": 133.3932
+                    },
+                    "uuid": "cddc26a9-d883-4594-8a74-bd1f40ebe00a"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 23.665,
+                        "y": 167.6832
+                    },
+                    "uuid": "d7da62cd-783d-4208-9d96-9f83fbfe265e"
+                },
+                {
+                    "description": "PTH pad 20 [<no net>] of IC6",
+                    "pos": {
+                        "x": 22.395,
+                        "y": 146.0932
+                    },
+                    "uuid": "55a040b6-ba17-4b1a-a3de-6bd47d410a39"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 23.665,
+                        "y": 167.6832
+                    },
+                    "uuid": "d7da62cd-783d-4208-9d96-9f83fbfe265e"
+                },
+                {
+                    "description": "PTH pad 21 [C27] of IC6",
+                    "pos": {
+                        "x": 22.395,
+                        "y": 148.6332
+                    },
+                    "uuid": "319858de-3401-4194-90af-fb932075ff1f"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 23.665,
+                        "y": 167.6832
+                    },
+                    "uuid": "d7da62cd-783d-4208-9d96-9f83fbfe265e"
+                },
+                {
+                    "description": "PTH pad 22 [C28] of IC6",
+                    "pos": {
+                        "x": 22.395,
+                        "y": 151.1732
+                    },
+                    "uuid": "3a2ed5c3-4d9b-4d94-8b49-cefad2a7a373"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 23.665,
+                        "y": 167.6832
+                    },
+                    "uuid": "d7da62cd-783d-4208-9d96-9f83fbfe265e"
+                },
+                {
+                    "description": "PTH pad 23 [C29] of IC6",
+                    "pos": {
+                        "x": 22.395,
+                        "y": 153.7132
+                    },
+                    "uuid": "259f6fc7-d4e8-4a11-8a1e-4b852ae6903f"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 23.665,
+                        "y": 167.6832
+                    },
+                    "uuid": "d7da62cd-783d-4208-9d96-9f83fbfe265e"
+                },
+                {
+                    "description": "PTH pad 24 [C30] of IC6",
+                    "pos": {
+                        "x": 22.395,
+                        "y": 156.2532
+                    },
+                    "uuid": "d869ac1d-218c-4e3a-aff4-e3eb6c092609"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 23.665,
+                        "y": 167.6832
+                    },
+                    "uuid": "d7da62cd-783d-4208-9d96-9f83fbfe265e"
+                },
+                {
+                    "description": "PTH pad 25 [OUT-LED] of IC6",
+                    "pos": {
+                        "x": 22.395,
+                        "y": 158.7932
+                    },
+                    "uuid": "125ee002-e615-4a96-ace9-59a86cbfcf20"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 23.665,
+                        "y": 167.6832
+                    },
+                    "uuid": "d7da62cd-783d-4208-9d96-9f83fbfe265e"
+                },
+                {
+                    "description": "PTH pad 26 [IN-SWITCH] of IC6",
+                    "pos": {
+                        "x": 22.395,
+                        "y": 161.3332
+                    },
+                    "uuid": "f913e373-9daf-4ff9-8b53-4222700bb1f4"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 23.665,
+                        "y": 167.6832
+                    },
+                    "uuid": "d7da62cd-783d-4208-9d96-9f83fbfe265e"
+                },
+                {
+                    "description": "PTH pad 27 [LEDS-LD] of IC6",
+                    "pos": {
+                        "x": 22.395,
+                        "y": 163.8732
+                    },
+                    "uuid": "ed1921e8-314f-4d9d-8628-0ea01460fca9"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 23.665,
+                        "y": 167.6832
+                    },
+                    "uuid": "d7da62cd-783d-4208-9d96-9f83fbfe265e"
+                },
+                {
+                    "description": "PTH pad 28 [SWITCHES-RD] of IC6",
+                    "pos": {
+                        "x": 22.395,
+                        "y": 166.4132
+                    },
+                    "uuid": "ee4c3d01-f2b3-40e9-b9cf-31ebd21ff59f"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 28.745,
+                        "y": 167.5562
+                    },
+                    "uuid": "69e21720-45de-4255-845f-037a92f89c5a"
+                },
+                {
+                    "description": "PTH pad 14 [<no net>] of IC6",
+                    "pos": {
+                        "x": 30.015,
+                        "y": 133.3932
+                    },
+                    "uuid": "38ab4f71-7080-4908-94a9-6165a035aa46"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 28.745,
+                        "y": 167.5562
+                    },
+                    "uuid": "69e21720-45de-4255-845f-037a92f89c5a"
+                },
+                {
+                    "description": "PTH pad 10 [GND] of IC6",
+                    "pos": {
+                        "x": 30.015,
+                        "y": 143.5532
+                    },
+                    "uuid": "0e95aea9-d633-437d-aa44-9344b87ae423"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 28.745,
+                        "y": 167.5562
+                    },
+                    "uuid": "69e21720-45de-4255-845f-037a92f89c5a"
+                },
+                {
+                    "description": "PTH pad 11 [<no net>] of IC6",
+                    "pos": {
+                        "x": 30.015,
+                        "y": 141.0132
+                    },
+                    "uuid": "be3d59ee-de0d-4f27-8420-e50748bd236e"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 28.745,
+                        "y": 167.5562
+                    },
+                    "uuid": "69e21720-45de-4255-845f-037a92f89c5a"
+                },
+                {
+                    "description": "PTH pad 12 [SCL] of IC6",
+                    "pos": {
+                        "x": 30.015,
+                        "y": 138.4732
+                    },
+                    "uuid": "560cefc8-2b5a-4b28-9577-1ae50fd5f5e2"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 28.745,
+                        "y": 167.5562
+                    },
+                    "uuid": "69e21720-45de-4255-845f-037a92f89c5a"
+                },
+                {
+                    "description": "PTH pad 13 [SDA] of IC6",
+                    "pos": {
+                        "x": 30.015,
+                        "y": 135.9332
+                    },
+                    "uuid": "68d87dd1-07ed-4d27-99d1-01bd82f3bb60"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 28.745,
+                        "y": 167.5562
+                    },
+                    "uuid": "69e21720-45de-4255-845f-037a92f89c5a"
+                },
+                {
+                    "description": "PTH pad 7 [BIT6] of IC6",
+                    "pos": {
+                        "x": 30.015,
+                        "y": 151.1732
+                    },
+                    "uuid": "550a4cc2-3247-4b63-a0f5-d6bf1b1b2f85"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 28.745,
+                        "y": 167.5562
+                    },
+                    "uuid": "69e21720-45de-4255-845f-037a92f89c5a"
+                },
+                {
+                    "description": "PTH pad 8 [BIT7] of IC6",
+                    "pos": {
+                        "x": 30.015,
+                        "y": 148.6332
+                    },
+                    "uuid": "7feb59f7-43e2-40ac-a242-4927df8246f1"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 28.745,
+                        "y": 167.5562
+                    },
+                    "uuid": "69e21720-45de-4255-845f-037a92f89c5a"
+                },
+                {
+                    "description": "PTH pad 9 [VCC] of IC6",
+                    "pos": {
+                        "x": 30.015,
+                        "y": 146.0932
+                    },
+                    "uuid": "85d313cc-5c4a-4de9-a631-c5742286d18e"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 28.745,
+                        "y": 167.5562
+                    },
+                    "uuid": "69e21720-45de-4255-845f-037a92f89c5a"
+                },
+                {
+                    "description": "PTH pad 1 [BIT0] of IC6",
+                    "pos": {
+                        "x": 30.015,
+                        "y": 166.4132
+                    },
+                    "uuid": "4510b6ad-ffed-4978-a063-0e57cae208f2"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 28.745,
+                        "y": 167.5562
+                    },
+                    "uuid": "69e21720-45de-4255-845f-037a92f89c5a"
+                },
+                {
+                    "description": "PTH pad 2 [BIT1] of IC6",
+                    "pos": {
+                        "x": 30.015,
+                        "y": 163.8732
+                    },
+                    "uuid": "94bb9146-5c12-4d9b-81d1-66910da8f9a8"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 28.745,
+                        "y": 167.5562
+                    },
+                    "uuid": "69e21720-45de-4255-845f-037a92f89c5a"
+                },
+                {
+                    "description": "PTH pad 3 [BIT2] of IC6",
+                    "pos": {
+                        "x": 30.015,
+                        "y": 161.3332
+                    },
+                    "uuid": "a2dd7bbf-a2b2-47ed-a121-94427934fba8"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 28.745,
+                        "y": 167.5562
+                    },
+                    "uuid": "69e21720-45de-4255-845f-037a92f89c5a"
+                },
+                {
+                    "description": "PTH pad 4 [BIT3] of IC6",
+                    "pos": {
+                        "x": 30.015,
+                        "y": 158.7932
+                    },
+                    "uuid": "0349217c-6959-485b-bba7-0a80bb2db150"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 28.745,
+                        "y": 167.5562
+                    },
+                    "uuid": "69e21720-45de-4255-845f-037a92f89c5a"
+                },
+                {
+                    "description": "PTH pad 5 [BIT4] of IC6",
+                    "pos": {
+                        "x": 30.015,
+                        "y": 156.2532
+                    },
+                    "uuid": "ec660f90-4575-46a1-84d4-2378a9bfcf45"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC6 on F.Silkscreen",
+                    "pos": {
+                        "x": 28.745,
+                        "y": 167.5562
+                    },
+                    "uuid": "69e21720-45de-4255-845f-037a92f89c5a"
+                },
+                {
+                    "description": "PTH pad 6 [BIT5] of IC6",
+                    "pos": {
+                        "x": 30.015,
+                        "y": 153.7132
+                    },
+                    "uuid": "002b2076-f53e-44d7-a8db-1ea2a2c6c32f"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 40.175,
+                        "y": 167.6832
+                    },
+                    "uuid": "2f2e7205-f15c-40f2-b056-3ce844a55b3d"
+                },
+                {
+                    "description": "PTH pad 15 [VCC] of IC4",
+                    "pos": {
+                        "x": 38.905,
+                        "y": 133.3932
+                    },
+                    "uuid": "11160ac9-db10-4140-9be0-d7181b442b63"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 40.175,
+                        "y": 167.6832
+                    },
+                    "uuid": "2f2e7205-f15c-40f2-b056-3ce844a55b3d"
+                },
+                {
+                    "description": "PTH pad 16 [VCC] of IC4",
+                    "pos": {
+                        "x": 38.905,
+                        "y": 135.9332
+                    },
+                    "uuid": "122408af-cb7b-4530-ad95-fdb49b25a8e9"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 40.175,
+                        "y": 167.6832
+                    },
+                    "uuid": "2f2e7205-f15c-40f2-b056-3ce844a55b3d"
+                },
+                {
+                    "description": "PTH pad 17 [GND] of IC4",
+                    "pos": {
+                        "x": 38.905,
+                        "y": 138.4732
+                    },
+                    "uuid": "d8fb69ea-3fe6-4ba3-8001-2125dbfca62d"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 40.175,
+                        "y": 167.6832
+                    },
+                    "uuid": "2f2e7205-f15c-40f2-b056-3ce844a55b3d"
+                },
+                {
+                    "description": "PTH pad 18 [-RESET] of IC4",
+                    "pos": {
+                        "x": 38.905,
+                        "y": 141.0132
+                    },
+                    "uuid": "0bb9d6e9-8177-4799-bc4b-64590c5b4327"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 40.175,
+                        "y": 167.6832
+                    },
+                    "uuid": "2f2e7205-f15c-40f2-b056-3ce844a55b3d"
+                },
+                {
+                    "description": "PTH pad 19 [<no net>] of IC4",
+                    "pos": {
+                        "x": 38.905,
+                        "y": 143.5532
+                    },
+                    "uuid": "fde7de6d-c8c2-44bf-abef-0a9c79737bb7"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 40.175,
+                        "y": 167.6832
+                    },
+                    "uuid": "2f2e7205-f15c-40f2-b056-3ce844a55b3d"
+                },
+                {
+                    "description": "PTH pad 20 [<no net>] of IC4",
+                    "pos": {
+                        "x": 38.905,
+                        "y": 146.0932
+                    },
+                    "uuid": "a5c23163-6803-4fbb-a434-b825e2e9d974"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 40.175,
+                        "y": 167.6832
+                    },
+                    "uuid": "2f2e7205-f15c-40f2-b056-3ce844a55b3d"
+                },
+                {
+                    "description": "PTH pad 21 [B23] of IC4",
+                    "pos": {
+                        "x": 38.905,
+                        "y": 148.6332
+                    },
+                    "uuid": "d58549b3-8710-4d6e-b957-d09dcc3a9c23"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 40.175,
+                        "y": 167.6832
+                    },
+                    "uuid": "2f2e7205-f15c-40f2-b056-3ce844a55b3d"
+                },
+                {
+                    "description": "PTH pad 22 [B24] of IC4",
+                    "pos": {
+                        "x": 38.905,
+                        "y": 151.1732
+                    },
+                    "uuid": "0a25f385-4025-47f6-9355-da54d4e9d034"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 40.175,
+                        "y": 167.6832
+                    },
+                    "uuid": "2f2e7205-f15c-40f2-b056-3ce844a55b3d"
+                },
+                {
+                    "description": "PTH pad 23 [B25] of IC4",
+                    "pos": {
+                        "x": 38.905,
+                        "y": 153.7132
+                    },
+                    "uuid": "f05e192c-bfdb-4d0a-bc37-81118b8bd0e9"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 40.175,
+                        "y": 167.6832
+                    },
+                    "uuid": "2f2e7205-f15c-40f2-b056-3ce844a55b3d"
+                },
+                {
+                    "description": "PTH pad 24 [B26] of IC4",
+                    "pos": {
+                        "x": 38.905,
+                        "y": 156.2532
+                    },
+                    "uuid": "09e11217-08e5-4f6b-9980-147ed6ae570a"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 40.175,
+                        "y": 167.6832
+                    },
+                    "uuid": "2f2e7205-f15c-40f2-b056-3ce844a55b3d"
+                },
+                {
+                    "description": "PTH pad 25 [B27] of IC4",
+                    "pos": {
+                        "x": 38.905,
+                        "y": 158.7932
+                    },
+                    "uuid": "7521e673-cab7-4db8-875e-f922ba1e20b0"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 40.175,
+                        "y": 167.6832
+                    },
+                    "uuid": "2f2e7205-f15c-40f2-b056-3ce844a55b3d"
+                },
+                {
+                    "description": "PTH pad 26 [B28] of IC4",
+                    "pos": {
+                        "x": 38.905,
+                        "y": 161.3332
+                    },
+                    "uuid": "c761b331-c380-4a6f-ab77-8b274f705b00"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 40.175,
+                        "y": 167.6832
+                    },
+                    "uuid": "2f2e7205-f15c-40f2-b056-3ce844a55b3d"
+                },
+                {
+                    "description": "PTH pad 27 [B29] of IC4",
+                    "pos": {
+                        "x": 38.905,
+                        "y": 163.8732
+                    },
+                    "uuid": "988ac36f-ae4d-4b34-9c30-3183d39a5d43"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 40.175,
+                        "y": 167.6832
+                    },
+                    "uuid": "2f2e7205-f15c-40f2-b056-3ce844a55b3d"
+                },
+                {
+                    "description": "PTH pad 28 [B30] of IC4",
+                    "pos": {
+                        "x": 38.905,
+                        "y": 166.4132
+                    },
+                    "uuid": "c9584f75-b569-4602-a936-e57719b3154a"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 45.255,
+                        "y": 167.5562
+                    },
+                    "uuid": "f10ac5eb-1b91-4807-ae10-7ce7c5f15ddf"
+                },
+                {
+                    "description": "PTH pad 10 [GND] of IC4",
+                    "pos": {
+                        "x": 46.525,
+                        "y": 143.5532
+                    },
+                    "uuid": "2a61d415-0ee8-4797-aa57-c24f1bb1939f"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 45.255,
+                        "y": 167.5562
+                    },
+                    "uuid": "f10ac5eb-1b91-4807-ae10-7ce7c5f15ddf"
+                },
+                {
+                    "description": "PTH pad 11 [<no net>] of IC4",
+                    "pos": {
+                        "x": 46.525,
+                        "y": 141.0132
+                    },
+                    "uuid": "f7d53150-6218-41bb-a94c-eee6110e9b6f"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 45.255,
+                        "y": 167.5562
+                    },
+                    "uuid": "f10ac5eb-1b91-4807-ae10-7ce7c5f15ddf"
+                },
+                {
+                    "description": "PTH pad 12 [SCL] of IC4",
+                    "pos": {
+                        "x": 46.525,
+                        "y": 138.4732
+                    },
+                    "uuid": "447ab76d-41c6-4951-b190-ed58ba79ee69"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 45.255,
+                        "y": 167.5562
+                    },
+                    "uuid": "f10ac5eb-1b91-4807-ae10-7ce7c5f15ddf"
+                },
+                {
+                    "description": "PTH pad 13 [SDA] of IC4",
+                    "pos": {
+                        "x": 46.525,
+                        "y": 135.9332
+                    },
+                    "uuid": "1f043f3a-f2f8-4ac3-8d95-c5c18f64a992"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 45.255,
+                        "y": 167.5562
+                    },
+                    "uuid": "f10ac5eb-1b91-4807-ae10-7ce7c5f15ddf"
+                },
+                {
+                    "description": "PTH pad 14 [<no net>] of IC4",
+                    "pos": {
+                        "x": 46.525,
+                        "y": 133.3932
+                    },
+                    "uuid": "d425a0b8-9564-4004-93eb-efb1bde79ce5"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 45.255,
+                        "y": 167.5562
+                    },
+                    "uuid": "f10ac5eb-1b91-4807-ae10-7ce7c5f15ddf"
+                },
+                {
+                    "description": "PTH pad 1 [C3] of IC4",
+                    "pos": {
+                        "x": 46.525,
+                        "y": 166.4132
+                    },
+                    "uuid": "db0a546e-ccd7-4e60-9681-118f2acca2f8"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 45.255,
+                        "y": 167.5562
+                    },
+                    "uuid": "f10ac5eb-1b91-4807-ae10-7ce7c5f15ddf"
+                },
+                {
+                    "description": "PTH pad 2 [C4] of IC4",
+                    "pos": {
+                        "x": 46.525,
+                        "y": 163.8732
+                    },
+                    "uuid": "9a805e12-a9cb-4d3b-a971-3f52732f5146"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 45.255,
+                        "y": 167.5562
+                    },
+                    "uuid": "f10ac5eb-1b91-4807-ae10-7ce7c5f15ddf"
+                },
+                {
+                    "description": "PTH pad 3 [C5] of IC4",
+                    "pos": {
+                        "x": 46.525,
+                        "y": 161.3332
+                    },
+                    "uuid": "0f0a29e0-accc-4603-bc16-47a22a78347c"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 45.255,
+                        "y": 167.5562
+                    },
+                    "uuid": "f10ac5eb-1b91-4807-ae10-7ce7c5f15ddf"
+                },
+                {
+                    "description": "PTH pad 4 [C6] of IC4",
+                    "pos": {
+                        "x": 46.525,
+                        "y": 158.7932
+                    },
+                    "uuid": "fae12174-5412-4d04-a02a-f69277bff029"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 45.255,
+                        "y": 167.5562
+                    },
+                    "uuid": "f10ac5eb-1b91-4807-ae10-7ce7c5f15ddf"
+                },
+                {
+                    "description": "PTH pad 5 [C7] of IC4",
+                    "pos": {
+                        "x": 46.525,
+                        "y": 156.2532
+                    },
+                    "uuid": "ae083bbc-1ae0-4dae-a4f5-6f339252cb71"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 45.255,
+                        "y": 167.5562
+                    },
+                    "uuid": "f10ac5eb-1b91-4807-ae10-7ce7c5f15ddf"
+                },
+                {
+                    "description": "PTH pad 6 [C8] of IC4",
+                    "pos": {
+                        "x": 46.525,
+                        "y": 153.7132
+                    },
+                    "uuid": "77c08193-f9b8-4626-b2df-c1b469fe5876"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 45.255,
+                        "y": 167.5562
+                    },
+                    "uuid": "f10ac5eb-1b91-4807-ae10-7ce7c5f15ddf"
+                },
+                {
+                    "description": "PTH pad 7 [C9] of IC4",
+                    "pos": {
+                        "x": 46.525,
+                        "y": 151.1732
+                    },
+                    "uuid": "d2546dcd-6e3b-46a7-b9da-fa7ebea599c0"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 45.255,
+                        "y": 167.5562
+                    },
+                    "uuid": "f10ac5eb-1b91-4807-ae10-7ce7c5f15ddf"
+                },
+                {
+                    "description": "PTH pad 8 [C10] of IC4",
+                    "pos": {
+                        "x": 46.525,
+                        "y": 148.6332
+                    },
+                    "uuid": "0b013792-cfcd-443e-97db-6be6a5e2b9d7"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC4 on F.Silkscreen",
+                    "pos": {
+                        "x": 45.255,
+                        "y": 167.5562
+                    },
+                    "uuid": "f10ac5eb-1b91-4807-ae10-7ce7c5f15ddf"
+                },
+                {
+                    "description": "PTH pad 9 [VCC] of IC4",
+                    "pos": {
+                        "x": 46.525,
+                        "y": 146.0932
+                    },
+                    "uuid": "7efaca8f-7ba5-4053-9796-0356e880be2b"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 56.685,
+                        "y": 167.6832
+                    },
+                    "uuid": "a736e26d-62f4-41bc-a7cf-cb901a0d6b1e"
+                },
+                {
+                    "description": "PTH pad 15 [VCC] of IC2",
+                    "pos": {
+                        "x": 55.415,
+                        "y": 133.3932
+                    },
+                    "uuid": "14b122de-dea2-472e-b4ac-ce88741ed439"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 56.685,
+                        "y": 167.6832
+                    },
+                    "uuid": "a736e26d-62f4-41bc-a7cf-cb901a0d6b1e"
+                },
+                {
+                    "description": "PTH pad 16 [GND] of IC2",
+                    "pos": {
+                        "x": 55.415,
+                        "y": 135.9332
+                    },
+                    "uuid": "630646f9-41b1-4bf1-b137-06c0c95e53e1"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 56.685,
+                        "y": 167.6832
+                    },
+                    "uuid": "a736e26d-62f4-41bc-a7cf-cb901a0d6b1e"
+                },
+                {
+                    "description": "PTH pad 17 [GND] of IC2",
+                    "pos": {
+                        "x": 55.415,
+                        "y": 138.4732
+                    },
+                    "uuid": "fe764979-7c9f-4b5e-beb5-d229467cdac2"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 56.685,
+                        "y": 167.6832
+                    },
+                    "uuid": "a736e26d-62f4-41bc-a7cf-cb901a0d6b1e"
+                },
+                {
+                    "description": "PTH pad 18 [-RESET] of IC2",
+                    "pos": {
+                        "x": 55.415,
+                        "y": 141.0132
+                    },
+                    "uuid": "3d6b4fbc-997a-42aa-b445-32c6e75f0a2f"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 56.685,
+                        "y": 167.6832
+                    },
+                    "uuid": "a736e26d-62f4-41bc-a7cf-cb901a0d6b1e"
+                },
+                {
+                    "description": "PTH pad 19 [<no net>] of IC2",
+                    "pos": {
+                        "x": 55.415,
+                        "y": 143.5532
+                    },
+                    "uuid": "5cda18d1-665d-4a18-aae4-a293d1766aa7"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 56.685,
+                        "y": 167.6832
+                    },
+                    "uuid": "a736e26d-62f4-41bc-a7cf-cb901a0d6b1e"
+                },
+                {
+                    "description": "PTH pad 20 [<no net>] of IC2",
+                    "pos": {
+                        "x": 55.415,
+                        "y": 146.0932
+                    },
+                    "uuid": "07965b88-1419-4c64-bf7a-d290327c624d"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 56.685,
+                        "y": 167.6832
+                    },
+                    "uuid": "a736e26d-62f4-41bc-a7cf-cb901a0d6b1e"
+                },
+                {
+                    "description": "PTH pad 21 [A19] of IC2",
+                    "pos": {
+                        "x": 55.415,
+                        "y": 148.6332
+                    },
+                    "uuid": "ffff637c-8caf-4491-bab5-d493df91f912"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 56.685,
+                        "y": 167.6832
+                    },
+                    "uuid": "a736e26d-62f4-41bc-a7cf-cb901a0d6b1e"
+                },
+                {
+                    "description": "PTH pad 22 [A20] of IC2",
+                    "pos": {
+                        "x": 55.415,
+                        "y": 151.1732
+                    },
+                    "uuid": "fbc24521-71d1-44db-9887-8f883f49790a"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 56.685,
+                        "y": 167.6832
+                    },
+                    "uuid": "a736e26d-62f4-41bc-a7cf-cb901a0d6b1e"
+                },
+                {
+                    "description": "PTH pad 23 [A21] of IC2",
+                    "pos": {
+                        "x": 55.415,
+                        "y": 153.7132
+                    },
+                    "uuid": "1a589243-2590-4eb9-9924-2144cb6457e7"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 56.685,
+                        "y": 167.6832
+                    },
+                    "uuid": "a736e26d-62f4-41bc-a7cf-cb901a0d6b1e"
+                },
+                {
+                    "description": "PTH pad 24 [A22] of IC2",
+                    "pos": {
+                        "x": 55.415,
+                        "y": 156.2532
+                    },
+                    "uuid": "5ec77263-2fa0-4106-abdd-40fe52c9edd8"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 56.685,
+                        "y": 167.6832
+                    },
+                    "uuid": "a736e26d-62f4-41bc-a7cf-cb901a0d6b1e"
+                },
+                {
+                    "description": "PTH pad 25 [A23] of IC2",
+                    "pos": {
+                        "x": 55.415,
+                        "y": 158.7932
+                    },
+                    "uuid": "8a232755-f06e-4f8d-b4a5-af156dbf6c2d"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 56.685,
+                        "y": 167.6832
+                    },
+                    "uuid": "a736e26d-62f4-41bc-a7cf-cb901a0d6b1e"
+                },
+                {
+                    "description": "PTH pad 26 [A24] of IC2",
+                    "pos": {
+                        "x": 55.415,
+                        "y": 161.3332
+                    },
+                    "uuid": "8c5e31fe-4ba3-4687-98e7-233fb1cc2352"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 56.685,
+                        "y": 167.6832
+                    },
+                    "uuid": "a736e26d-62f4-41bc-a7cf-cb901a0d6b1e"
+                },
+                {
+                    "description": "PTH pad 27 [A25] of IC2",
+                    "pos": {
+                        "x": 55.415,
+                        "y": 163.8732
+                    },
+                    "uuid": "fc56b929-f0eb-450d-89a9-449484bcbf4d"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 56.685,
+                        "y": 167.6832
+                    },
+                    "uuid": "a736e26d-62f4-41bc-a7cf-cb901a0d6b1e"
+                },
+                {
+                    "description": "PTH pad 28 [A26] of IC2",
+                    "pos": {
+                        "x": 55.415,
+                        "y": 166.4132
+                    },
+                    "uuid": "8b877188-99e8-4e8d-bcad-13ccca556267"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 61.765,
+                        "y": 167.5562
+                    },
+                    "uuid": "296ea510-9e4d-4f6c-ae3d-3e9619622dbc"
+                },
+                {
+                    "description": "PTH pad 9 [VCC] of IC2",
+                    "pos": {
+                        "x": 63.035,
+                        "y": 146.0932
+                    },
+                    "uuid": "26eea01f-b4a1-4405-9371-b800b0fab7d2"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 61.765,
+                        "y": 167.5562
+                    },
+                    "uuid": "296ea510-9e4d-4f6c-ae3d-3e9619622dbc"
+                },
+                {
+                    "description": "PTH pad 10 [GND] of IC2",
+                    "pos": {
+                        "x": 63.035,
+                        "y": 143.5532
+                    },
+                    "uuid": "66d5a93a-8055-4f85-acf1-00ba390ac88f"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 61.765,
+                        "y": 167.5562
+                    },
+                    "uuid": "296ea510-9e4d-4f6c-ae3d-3e9619622dbc"
+                },
+                {
+                    "description": "PTH pad 11 [<no net>] of IC2",
+                    "pos": {
+                        "x": 63.035,
+                        "y": 141.0132
+                    },
+                    "uuid": "63a61d49-238c-4c27-a972-bbc3d90739bf"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 61.765,
+                        "y": 167.5562
+                    },
+                    "uuid": "296ea510-9e4d-4f6c-ae3d-3e9619622dbc"
+                },
+                {
+                    "description": "PTH pad 12 [SCL] of IC2",
+                    "pos": {
+                        "x": 63.035,
+                        "y": 138.4732
+                    },
+                    "uuid": "0e907af5-11e8-48e3-8473-24a59be7dc1e"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 61.765,
+                        "y": 167.5562
+                    },
+                    "uuid": "296ea510-9e4d-4f6c-ae3d-3e9619622dbc"
+                },
+                {
+                    "description": "PTH pad 13 [SDA] of IC2",
+                    "pos": {
+                        "x": 63.035,
+                        "y": 135.9332
+                    },
+                    "uuid": "c8169a5a-3e78-41b4-a7c6-58654b109c1f"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 61.765,
+                        "y": 167.5562
+                    },
+                    "uuid": "296ea510-9e4d-4f6c-ae3d-3e9619622dbc"
+                },
+                {
+                    "description": "PTH pad 14 [<no net>] of IC2",
+                    "pos": {
+                        "x": 63.035,
+                        "y": 133.3932
+                    },
+                    "uuid": "69be7b3e-d97e-4ffb-8d4f-d4d66b0c63f3"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 61.765,
+                        "y": 167.5562
+                    },
+                    "uuid": "296ea510-9e4d-4f6c-ae3d-3e9619622dbc"
+                },
+                {
+                    "description": "PTH pad 1 [A27] of IC2",
+                    "pos": {
+                        "x": 63.035,
+                        "y": 166.4132
+                    },
+                    "uuid": "73afb475-b1e2-4bc0-9903-be12d6e81949"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 61.765,
+                        "y": 167.5562
+                    },
+                    "uuid": "296ea510-9e4d-4f6c-ae3d-3e9619622dbc"
+                },
+                {
+                    "description": "PTH pad 2 [A28] of IC2",
+                    "pos": {
+                        "x": 63.035,
+                        "y": 163.8732
+                    },
+                    "uuid": "ae9b3045-49fd-4a64-a14b-7d3051d6f6c8"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 61.765,
+                        "y": 167.5562
+                    },
+                    "uuid": "296ea510-9e4d-4f6c-ae3d-3e9619622dbc"
+                },
+                {
+                    "description": "PTH pad 3 [A29] of IC2",
+                    "pos": {
+                        "x": 63.035,
+                        "y": 161.3332
+                    },
+                    "uuid": "e6d0f53c-6279-4968-8987-49b0624bd746"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 61.765,
+                        "y": 167.5562
+                    },
+                    "uuid": "296ea510-9e4d-4f6c-ae3d-3e9619622dbc"
+                },
+                {
+                    "description": "PTH pad 4 [A30] of IC2",
+                    "pos": {
+                        "x": 63.035,
+                        "y": 158.7932
+                    },
+                    "uuid": "fe9b0c18-3821-4192-a30e-244413e01a26"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 61.765,
+                        "y": 167.5562
+                    },
+                    "uuid": "296ea510-9e4d-4f6c-ae3d-3e9619622dbc"
+                },
+                {
+                    "description": "PTH pad 5 [B3] of IC2",
+                    "pos": {
+                        "x": 63.035,
+                        "y": 156.2532
+                    },
+                    "uuid": "b4730e1b-36b7-420b-bae9-fb5a7b07885f"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 61.765,
+                        "y": 167.5562
+                    },
+                    "uuid": "296ea510-9e4d-4f6c-ae3d-3e9619622dbc"
+                },
+                {
+                    "description": "PTH pad 6 [B4] of IC2",
+                    "pos": {
+                        "x": 63.035,
+                        "y": 153.7132
+                    },
+                    "uuid": "7bdf76d3-c4e4-4c30-8ba8-666fa5e2b71d"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 61.765,
+                        "y": 167.5562
+                    },
+                    "uuid": "296ea510-9e4d-4f6c-ae3d-3e9619622dbc"
+                },
+                {
+                    "description": "PTH pad 7 [B5] of IC2",
+                    "pos": {
+                        "x": 63.035,
+                        "y": 151.1732
+                    },
+                    "uuid": "628904ce-3117-4d66-9e3c-f7e44fc7054e"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC2 on F.Silkscreen",
+                    "pos": {
+                        "x": 61.765,
+                        "y": 167.5562
+                    },
+                    "uuid": "296ea510-9e4d-4f6c-ae3d-3e9619622dbc"
+                },
+                {
+                    "description": "PTH pad 8 [B6] of IC2",
+                    "pos": {
+                        "x": 63.035,
+                        "y": 148.6332
+                    },
+                    "uuid": "20f650dd-fb2a-4671-a774-4306de8df7e3"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 73.195,
+                        "y": 167.6832
+                    },
+                    "uuid": "79eb59de-116c-409d-b0d5-3fe72a1fe80a"
+                },
+                {
+                    "description": "PTH pad 15 [GND] of IC5",
+                    "pos": {
+                        "x": 71.925,
+                        "y": 133.3932
+                    },
+                    "uuid": "95f3982a-a77e-4062-a382-f6f976722f42"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 73.195,
+                        "y": 167.6832
+                    },
+                    "uuid": "79eb59de-116c-409d-b0d5-3fe72a1fe80a"
+                },
+                {
+                    "description": "PTH pad 16 [GND] of IC5",
+                    "pos": {
+                        "x": 71.925,
+                        "y": 135.9332
+                    },
+                    "uuid": "36869c83-fdca-4d93-ab31-4ab3f7a041a4"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 73.195,
+                        "y": 167.6832
+                    },
+                    "uuid": "79eb59de-116c-409d-b0d5-3fe72a1fe80a"
+                },
+                {
+                    "description": "PTH pad 17 [VCC] of IC5",
+                    "pos": {
+                        "x": 71.925,
+                        "y": 138.4732
+                    },
+                    "uuid": "e85b9d85-fd75-4fb6-b3ed-91364a98fcad"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 73.195,
+                        "y": 167.6832
+                    },
+                    "uuid": "79eb59de-116c-409d-b0d5-3fe72a1fe80a"
+                },
+                {
+                    "description": "PTH pad 18 [-RESET] of IC5",
+                    "pos": {
+                        "x": 71.925,
+                        "y": 141.0132
+                    },
+                    "uuid": "371c7f6f-b0f9-4874-ba9e-cf1ee025f391"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 73.195,
+                        "y": 167.6832
+                    },
+                    "uuid": "79eb59de-116c-409d-b0d5-3fe72a1fe80a"
+                },
+                {
+                    "description": "PTH pad 19 [<no net>] of IC5",
+                    "pos": {
+                        "x": 71.925,
+                        "y": 143.5532
+                    },
+                    "uuid": "e842f2cb-a62c-4787-8558-e5e818123115"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 73.195,
+                        "y": 167.6832
+                    },
+                    "uuid": "79eb59de-116c-409d-b0d5-3fe72a1fe80a"
+                },
+                {
+                    "description": "PTH pad 20 [<no net>] of IC5",
+                    "pos": {
+                        "x": 71.925,
+                        "y": 146.0932
+                    },
+                    "uuid": "089bb375-2312-43fd-8c24-a9669d5b9dba"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 73.195,
+                        "y": 167.6832
+                    },
+                    "uuid": "79eb59de-116c-409d-b0d5-3fe72a1fe80a"
+                },
+                {
+                    "description": "PTH pad 21 [C11] of IC5",
+                    "pos": {
+                        "x": 71.925,
+                        "y": 148.6332
+                    },
+                    "uuid": "79ffe4b6-0ef6-4627-a574-9f6ba0df2c26"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 73.195,
+                        "y": 167.6832
+                    },
+                    "uuid": "79eb59de-116c-409d-b0d5-3fe72a1fe80a"
+                },
+                {
+                    "description": "PTH pad 22 [C12] of IC5",
+                    "pos": {
+                        "x": 71.925,
+                        "y": 151.1732
+                    },
+                    "uuid": "ae950848-72f9-4447-8323-20bc37ab8195"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 73.195,
+                        "y": 167.6832
+                    },
+                    "uuid": "79eb59de-116c-409d-b0d5-3fe72a1fe80a"
+                },
+                {
+                    "description": "PTH pad 23 [C13] of IC5",
+                    "pos": {
+                        "x": 71.925,
+                        "y": 153.7132
+                    },
+                    "uuid": "90f102c2-123f-4f26-95ea-b7fb5a8ed7c5"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 73.195,
+                        "y": 167.6832
+                    },
+                    "uuid": "79eb59de-116c-409d-b0d5-3fe72a1fe80a"
+                },
+                {
+                    "description": "PTH pad 24 [C14] of IC5",
+                    "pos": {
+                        "x": 71.925,
+                        "y": 156.2532
+                    },
+                    "uuid": "dbdd72b0-587a-4a46-960b-0af4c5077c5f"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 73.195,
+                        "y": 167.6832
+                    },
+                    "uuid": "79eb59de-116c-409d-b0d5-3fe72a1fe80a"
+                },
+                {
+                    "description": "PTH pad 25 [C15] of IC5",
+                    "pos": {
+                        "x": 71.925,
+                        "y": 158.7932
+                    },
+                    "uuid": "8f87bb0c-87f6-4a75-92de-1430fccb9343"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 73.195,
+                        "y": 167.6832
+                    },
+                    "uuid": "79eb59de-116c-409d-b0d5-3fe72a1fe80a"
+                },
+                {
+                    "description": "PTH pad 26 [C16] of IC5",
+                    "pos": {
+                        "x": 71.925,
+                        "y": 161.3332
+                    },
+                    "uuid": "e0941c06-b6ab-4dd1-8162-a2875945a4dd"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 73.195,
+                        "y": 167.6832
+                    },
+                    "uuid": "79eb59de-116c-409d-b0d5-3fe72a1fe80a"
+                },
+                {
+                    "description": "PTH pad 27 [C17] of IC5",
+                    "pos": {
+                        "x": 71.925,
+                        "y": 163.8732
+                    },
+                    "uuid": "a1294590-240c-4329-a7a0-1f873ebf6824"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 73.195,
+                        "y": 167.6832
+                    },
+                    "uuid": "79eb59de-116c-409d-b0d5-3fe72a1fe80a"
+                },
+                {
+                    "description": "PTH pad 28 [C18] of IC5",
+                    "pos": {
+                        "x": 71.925,
+                        "y": 166.4132
+                    },
+                    "uuid": "b70129a7-904d-4f38-8b04-15afded03de9"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 78.275,
+                        "y": 167.5562
+                    },
+                    "uuid": "21cdd895-9b7a-42b2-ab82-50e93e35e9a9"
+                },
+                {
+                    "description": "PTH pad 7 [C25] of IC5",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 151.1732
+                    },
+                    "uuid": "aa5e93fc-f9d0-474f-b3b6-d14b99f7d67c"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 78.275,
+                        "y": 167.5562
+                    },
+                    "uuid": "21cdd895-9b7a-42b2-ab82-50e93e35e9a9"
+                },
+                {
+                    "description": "PTH pad 8 [C26] of IC5",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 148.6332
+                    },
+                    "uuid": "ed34d4c9-2077-4e47-8f25-124c66f20f8a"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 78.275,
+                        "y": 167.5562
+                    },
+                    "uuid": "21cdd895-9b7a-42b2-ab82-50e93e35e9a9"
+                },
+                {
+                    "description": "PTH pad 9 [VCC] of IC5",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 146.0932
+                    },
+                    "uuid": "d6dd0ae7-8de2-467c-8e66-4b34f0447a15"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 78.275,
+                        "y": 167.5562
+                    },
+                    "uuid": "21cdd895-9b7a-42b2-ab82-50e93e35e9a9"
+                },
+                {
+                    "description": "PTH pad 10 [GND] of IC5",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 143.5532
+                    },
+                    "uuid": "5bcac8bf-af1f-49f4-8683-e99ad2f72d47"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 78.275,
+                        "y": 167.5562
+                    },
+                    "uuid": "21cdd895-9b7a-42b2-ab82-50e93e35e9a9"
+                },
+                {
+                    "description": "PTH pad 11 [<no net>] of IC5",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 141.0132
+                    },
+                    "uuid": "0206a53d-ac0a-423c-9682-52c7c2b84979"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 78.275,
+                        "y": 167.5562
+                    },
+                    "uuid": "21cdd895-9b7a-42b2-ab82-50e93e35e9a9"
+                },
+                {
+                    "description": "PTH pad 12 [SCL] of IC5",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 138.4732
+                    },
+                    "uuid": "2263da36-335e-4c2f-bed8-f7f2e09016d1"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 78.275,
+                        "y": 167.5562
+                    },
+                    "uuid": "21cdd895-9b7a-42b2-ab82-50e93e35e9a9"
+                },
+                {
+                    "description": "PTH pad 13 [SDA] of IC5",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 135.9332
+                    },
+                    "uuid": "f8e4f129-7b4f-4221-b6d4-eb7427e21c0b"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 78.275,
+                        "y": 167.5562
+                    },
+                    "uuid": "21cdd895-9b7a-42b2-ab82-50e93e35e9a9"
+                },
+                {
+                    "description": "PTH pad 14 [<no net>] of IC5",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 133.3932
+                    },
+                    "uuid": "e2e1a3ab-ac90-4e38-922d-5338aaab8032"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 78.275,
+                        "y": 167.5562
+                    },
+                    "uuid": "21cdd895-9b7a-42b2-ab82-50e93e35e9a9"
+                },
+                {
+                    "description": "PTH pad 1 [C19] of IC5",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 166.4132
+                    },
+                    "uuid": "41d62699-b2a3-4794-b80f-d6836c672f37"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 78.275,
+                        "y": 167.5562
+                    },
+                    "uuid": "21cdd895-9b7a-42b2-ab82-50e93e35e9a9"
+                },
+                {
+                    "description": "PTH pad 2 [C20] of IC5",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 163.8732
+                    },
+                    "uuid": "5afff879-a91f-4dd6-9650-10c2f26ec5f5"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 78.275,
+                        "y": 167.5562
+                    },
+                    "uuid": "21cdd895-9b7a-42b2-ab82-50e93e35e9a9"
+                },
+                {
+                    "description": "PTH pad 3 [C21] of IC5",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 161.3332
+                    },
+                    "uuid": "d0348c45-d236-4e89-81b7-4fc170d27e55"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 78.275,
+                        "y": 167.5562
+                    },
+                    "uuid": "21cdd895-9b7a-42b2-ab82-50e93e35e9a9"
+                },
+                {
+                    "description": "PTH pad 4 [C22] of IC5",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 158.7932
+                    },
+                    "uuid": "a1029953-f7f1-4a28-b50e-e3ee2e8baaea"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 78.275,
+                        "y": 167.5562
+                    },
+                    "uuid": "21cdd895-9b7a-42b2-ab82-50e93e35e9a9"
+                },
+                {
+                    "description": "PTH pad 5 [C23] of IC5",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 156.2532
+                    },
+                    "uuid": "3f0e6562-5769-4170-ab58-d53e3c7561c6"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC5 on F.Silkscreen",
+                    "pos": {
+                        "x": 78.275,
+                        "y": 167.5562
+                    },
+                    "uuid": "21cdd895-9b7a-42b2-ab82-50e93e35e9a9"
+                },
+                {
+                    "description": "PTH pad 6 [C24] of IC5",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 153.7132
+                    },
+                    "uuid": "6053c487-8747-4b49-9796-cdee294e1f99"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 42.715,
+                        "y": 104.5642
+                    },
+                    "uuid": "230d892d-82c7-4c83-a6e3-4eba3938adf5"
+                },
+                {
+                    "description": "PTH pad 2 [N$38] of IC8",
+                    "pos": {
+                        "x": 46.525,
+                        "y": 105.4532
+                    },
+                    "uuid": "cc44d745-b5d4-422d-89a7-432e2abaf8d0"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 42.715,
+                        "y": 104.5642
+                    },
+                    "uuid": "230d892d-82c7-4c83-a6e3-4eba3938adf5"
+                },
+                {
+                    "description": "PTH pad 3 [BIT0] of IC8",
+                    "pos": {
+                        "x": 49.065,
+                        "y": 105.4532
+                    },
+                    "uuid": "7c17c6bf-5762-4a07-aaa3-baf421e3274a"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 42.715,
+                        "y": 104.5642
+                    },
+                    "uuid": "230d892d-82c7-4c83-a6e3-4eba3938adf5"
+                },
+                {
+                    "description": "PTH pad 4 [BIT1] of IC8",
+                    "pos": {
+                        "x": 51.605,
+                        "y": 105.4532
+                    },
+                    "uuid": "76921ff1-7578-4eb2-8327-c8bf43010994"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 42.715,
+                        "y": 104.5642
+                    },
+                    "uuid": "230d892d-82c7-4c83-a6e3-4eba3938adf5"
+                },
+                {
+                    "description": "PTH pad 5 [N$31] of IC8",
+                    "pos": {
+                        "x": 54.145,
+                        "y": 105.4532
+                    },
+                    "uuid": "998b96fe-0b42-4bb8-a1d0-1d377d4bb064"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 42.715,
+                        "y": 104.5642
+                    },
+                    "uuid": "230d892d-82c7-4c83-a6e3-4eba3938adf5"
+                },
+                {
+                    "description": "PTH pad 6 [N$35] of IC8",
+                    "pos": {
+                        "x": 56.685,
+                        "y": 105.4532
+                    },
+                    "uuid": "a527dd81-4231-4357-b2c3-80ea23ae034e"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 42.715,
+                        "y": 104.5642
+                    },
+                    "uuid": "230d892d-82c7-4c83-a6e3-4eba3938adf5"
+                },
+                {
+                    "description": "PTH pad 7 [BIT2] of IC8",
+                    "pos": {
+                        "x": 59.225,
+                        "y": 105.4532
+                    },
+                    "uuid": "f8a86779-bf71-48dd-956d-b2f3fab242a9"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 42.715,
+                        "y": 104.5642
+                    },
+                    "uuid": "230d892d-82c7-4c83-a6e3-4eba3938adf5"
+                },
+                {
+                    "description": "PTH pad 8 [BIT3] of IC8",
+                    "pos": {
+                        "x": 61.765,
+                        "y": 105.4532
+                    },
+                    "uuid": "2216d073-9b14-4bb3-b985-1294ec527aa6"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 42.715,
+                        "y": 104.5642
+                    },
+                    "uuid": "230d892d-82c7-4c83-a6e3-4eba3938adf5"
+                },
+                {
+                    "description": "PTH pad 9 [N$32] of IC8",
+                    "pos": {
+                        "x": 64.305,
+                        "y": 105.4532
+                    },
+                    "uuid": "f2bf3824-a66f-4e20-b953-0122a366de25"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 42.715,
+                        "y": 104.5642
+                    },
+                    "uuid": "230d892d-82c7-4c83-a6e3-4eba3938adf5"
+                },
+                {
+                    "description": "PTH pad 10 [GND] of IC8",
+                    "pos": {
+                        "x": 66.845,
+                        "y": 105.4532
+                    },
+                    "uuid": "111128a3-a9b4-4e35-955b-e19b844ed9fa"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 42.715,
+                        "y": 104.5642
+                    },
+                    "uuid": "230d892d-82c7-4c83-a6e3-4eba3938adf5"
+                },
+                {
+                    "description": "PTH pad 1 [GND] of IC8",
+                    "pos": {
+                        "x": 43.985,
+                        "y": 105.4532
+                    },
+                    "uuid": "81cc7dd4-b724-4def-b729-c681e3a3c86e"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 68.115,
+                        "y": 98.7222
+                    },
+                    "uuid": "bfcb023d-d767-4225-9af4-8aa2b318be6b"
+                },
+                {
+                    "description": "PTH pad 12 [N$33] of IC8",
+                    "pos": {
+                        "x": 64.305,
+                        "y": 97.8332
+                    },
+                    "uuid": "37ee6ad2-8e4d-4dd9-82e1-56247514014e"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 68.115,
+                        "y": 98.7222
+                    },
+                    "uuid": "bfcb023d-d767-4225-9af4-8aa2b318be6b"
+                },
+                {
+                    "description": "PTH pad 13 [BIT4] of IC8",
+                    "pos": {
+                        "x": 61.765,
+                        "y": 97.8332
+                    },
+                    "uuid": "de1b7615-461e-4d41-8a4e-ad35c55e02a0"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 68.115,
+                        "y": 98.7222
+                    },
+                    "uuid": "bfcb023d-d767-4225-9af4-8aa2b318be6b"
+                },
+                {
+                    "description": "PTH pad 14 [BIT5] of IC8",
+                    "pos": {
+                        "x": 59.225,
+                        "y": 97.8332
+                    },
+                    "uuid": "21f5da64-13d0-4767-9a23-56736815120f"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 68.115,
+                        "y": 98.7222
+                    },
+                    "uuid": "bfcb023d-d767-4225-9af4-8aa2b318be6b"
+                },
+                {
+                    "description": "PTH pad 15 [N$34] of IC8",
+                    "pos": {
+                        "x": 56.685,
+                        "y": 97.8332
+                    },
+                    "uuid": "33dd32e2-1b9a-42b7-aad6-0e9ce6f7bf32"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 68.115,
+                        "y": 98.7222
+                    },
+                    "uuid": "bfcb023d-d767-4225-9af4-8aa2b318be6b"
+                },
+                {
+                    "description": "PTH pad 16 [N$36] of IC8",
+                    "pos": {
+                        "x": 54.145,
+                        "y": 97.8332
+                    },
+                    "uuid": "6458ebd1-2e44-4a80-bace-e273b5fcc69f"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 68.115,
+                        "y": 98.7222
+                    },
+                    "uuid": "bfcb023d-d767-4225-9af4-8aa2b318be6b"
+                },
+                {
+                    "description": "PTH pad 17 [BIT6] of IC8",
+                    "pos": {
+                        "x": 51.605,
+                        "y": 97.8332
+                    },
+                    "uuid": "b5c738a8-1b99-4ec4-9f91-c28957cc6bb6"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 68.115,
+                        "y": 98.7222
+                    },
+                    "uuid": "bfcb023d-d767-4225-9af4-8aa2b318be6b"
+                },
+                {
+                    "description": "PTH pad 18 [BIT7] of IC8",
+                    "pos": {
+                        "x": 49.065,
+                        "y": 97.8332
+                    },
+                    "uuid": "2e40ddd2-a248-467b-b768-41cd6c601531"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 68.115,
+                        "y": 98.7222
+                    },
+                    "uuid": "bfcb023d-d767-4225-9af4-8aa2b318be6b"
+                },
+                {
+                    "description": "PTH pad 11 [LEDS-LD] of IC8",
+                    "pos": {
+                        "x": 66.845,
+                        "y": 97.8332
+                    },
+                    "uuid": "7c2c1a4e-f1c8-462f-9607-9af375a0a27e"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 68.115,
+                        "y": 98.7222
+                    },
+                    "uuid": "bfcb023d-d767-4225-9af4-8aa2b318be6b"
+                },
+                {
+                    "description": "PTH pad 19 [N$37] of IC8",
+                    "pos": {
+                        "x": 46.525,
+                        "y": 97.8332
+                    },
+                    "uuid": "a0c50d92-4f94-4694-9d2f-38fccc03e6f7"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC8 on F.Silkscreen",
+                    "pos": {
+                        "x": 68.115,
+                        "y": 98.7222
+                    },
+                    "uuid": "bfcb023d-d767-4225-9af4-8aa2b318be6b"
+                },
+                {
+                    "description": "PTH pad 20 [VCC] of IC8",
+                    "pos": {
+                        "x": 43.985,
+                        "y": 97.8332
+                    },
+                    "uuid": "fdfaa3ca-0db3-4280-90da-9699d3e67246"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP2 on F.Silkscreen",
+                    "pos": {
+                        "x": 102.405,
+                        "y": 121.3282
+                    },
+                    "uuid": "fcc22bdc-4bd7-42d5-b641-438b67678961"
+                },
+                {
+                    "description": "PTH pad 1 [GND] of JP2",
+                    "pos": {
+                        "x": 103.675,
+                        "y": 120.6932
+                    },
+                    "uuid": "71820ee2-49d5-485e-98e9-74c5c8ee180b"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP2 on F.Silkscreen",
+                    "pos": {
+                        "x": 104.31,
+                        "y": 121.9632
+                    },
+                    "uuid": "eb8af031-cd54-42fb-b801-8820a77632e7"
+                },
+                {
+                    "description": "PTH pad 1 [GND] of JP2",
+                    "pos": {
+                        "x": 103.675,
+                        "y": 120.6932
+                    },
+                    "uuid": "71820ee2-49d5-485e-98e9-74c5c8ee180b"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP2 on F.Silkscreen",
+                    "pos": {
+                        "x": 104.945,
+                        "y": 120.0582
+                    },
+                    "uuid": "494f22af-f912-45c7-96cd-45534e5b4b18"
+                },
+                {
+                    "description": "PTH pad 1 [GND] of JP2",
+                    "pos": {
+                        "x": 103.675,
+                        "y": 120.6932
+                    },
+                    "uuid": "71820ee2-49d5-485e-98e9-74c5c8ee180b"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP2 on F.Silkscreen",
+                    "pos": {
+                        "x": 102.405,
+                        "y": 121.3282
+                    },
+                    "uuid": "8ea864a5-d614-4b97-8b07-ace5c39b9f87"
+                },
+                {
+                    "description": "PTH pad 1 [GND] of JP2",
+                    "pos": {
+                        "x": 103.675,
+                        "y": 120.6932
+                    },
+                    "uuid": "71820ee2-49d5-485e-98e9-74c5c8ee180b"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP2 on F.Silkscreen",
+                    "pos": {
+                        "x": 102.405,
+                        "y": 120.0582
+                    },
+                    "uuid": "1c9c794b-f3ee-41c1-8af0-69772893a043"
+                },
+                {
+                    "description": "PTH pad 1 [GND] of JP2",
+                    "pos": {
+                        "x": 103.675,
+                        "y": 120.6932
+                    },
+                    "uuid": "71820ee2-49d5-485e-98e9-74c5c8ee180b"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP2 on F.Silkscreen",
+                    "pos": {
+                        "x": 103.04,
+                        "y": 119.4232
+                    },
+                    "uuid": "4aab6d89-152d-455b-94a8-32bf87bdc492"
+                },
+                {
+                    "description": "PTH pad 2 [N$2] of JP2",
+                    "pos": {
+                        "x": 103.675,
+                        "y": 118.1532
+                    },
+                    "uuid": "18fbea5f-4991-4f44-bc17-7916f5ac6a92"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP2 on F.Silkscreen",
+                    "pos": {
+                        "x": 102.405,
+                        "y": 117.5182
+                    },
+                    "uuid": "9c53d239-9a82-4143-9f0e-914b996fdaf8"
+                },
+                {
+                    "description": "PTH pad 2 [N$2] of JP2",
+                    "pos": {
+                        "x": 103.675,
+                        "y": 118.1532
+                    },
+                    "uuid": "18fbea5f-4991-4f44-bc17-7916f5ac6a92"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP2 on F.Silkscreen",
+                    "pos": {
+                        "x": 102.405,
+                        "y": 118.7882
+                    },
+                    "uuid": "575322e9-8b4d-4f5c-bd82-fe9b93b80188"
+                },
+                {
+                    "description": "PTH pad 2 [N$2] of JP2",
+                    "pos": {
+                        "x": 103.675,
+                        "y": 118.1532
+                    },
+                    "uuid": "18fbea5f-4991-4f44-bc17-7916f5ac6a92"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP2 on F.Silkscreen",
+                    "pos": {
+                        "x": 104.31,
+                        "y": 116.8832
+                    },
+                    "uuid": "84ba003a-0d85-4586-a016-997e9ad57173"
+                },
+                {
+                    "description": "PTH pad 2 [N$2] of JP2",
+                    "pos": {
+                        "x": 103.675,
+                        "y": 118.1532
+                    },
+                    "uuid": "18fbea5f-4991-4f44-bc17-7916f5ac6a92"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP2 on F.Silkscreen",
+                    "pos": {
+                        "x": 104.31,
+                        "y": 119.4232
+                    },
+                    "uuid": "1428c619-93bb-4c70-a29c-164c51a26deb"
+                },
+                {
+                    "description": "PTH pad 1 [GND] of JP2",
+                    "pos": {
+                        "x": 103.675,
+                        "y": 120.6932
+                    },
+                    "uuid": "71820ee2-49d5-485e-98e9-74c5c8ee180b"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP2 on F.Silkscreen",
+                    "pos": {
+                        "x": 104.945,
+                        "y": 117.5182
+                    },
+                    "uuid": "4054b836-8e05-4620-bcb0-4c4e9f6f8820"
+                },
+                {
+                    "description": "PTH pad 2 [N$2] of JP2",
+                    "pos": {
+                        "x": 103.675,
+                        "y": 118.1532
+                    },
+                    "uuid": "18fbea5f-4991-4f44-bc17-7916f5ac6a92"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP2 on F.Silkscreen",
+                    "pos": {
+                        "x": 104.945,
+                        "y": 118.7882
+                    },
+                    "uuid": "99873f1f-180c-49a8-b7ee-02175a736d68"
+                },
+                {
+                    "description": "PTH pad 2 [N$2] of JP2",
+                    "pos": {
+                        "x": 103.675,
+                        "y": 118.1532
+                    },
+                    "uuid": "18fbea5f-4991-4f44-bc17-7916f5ac6a92"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP2 on F.Silkscreen",
+                    "pos": {
+                        "x": 102.405,
+                        "y": 114.9782
+                    },
+                    "uuid": "430b3703-3a6b-41bc-87b8-c9117f59b513"
+                },
+                {
+                    "description": "PTH pad 3 [VCC] of JP2",
+                    "pos": {
+                        "x": 103.675,
+                        "y": 115.6132
+                    },
+                    "uuid": "0bab65e5-409a-4459-96ef-74e59ea6191d"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP2 on F.Silkscreen",
+                    "pos": {
+                        "x": 102.405,
+                        "y": 116.2482
+                    },
+                    "uuid": "0ec47aee-a17a-4d4a-a028-154337f6c871"
+                },
+                {
+                    "description": "PTH pad 3 [VCC] of JP2",
+                    "pos": {
+                        "x": 103.675,
+                        "y": 115.6132
+                    },
+                    "uuid": "0bab65e5-409a-4459-96ef-74e59ea6191d"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP2 on F.Silkscreen",
+                    "pos": {
+                        "x": 103.04,
+                        "y": 116.8832
+                    },
+                    "uuid": "e7a48792-9818-456c-b1f9-0cab106b13b7"
+                },
+                {
+                    "description": "PTH pad 3 [VCC] of JP2",
+                    "pos": {
+                        "x": 103.675,
+                        "y": 115.6132
+                    },
+                    "uuid": "0bab65e5-409a-4459-96ef-74e59ea6191d"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP2 on F.Silkscreen",
+                    "pos": {
+                        "x": 104.945,
+                        "y": 114.9782
+                    },
+                    "uuid": "b3b4b3d9-4ec2-49fa-b7d1-f48197c8db3f"
+                },
+                {
+                    "description": "PTH pad 3 [VCC] of JP2",
+                    "pos": {
+                        "x": 103.675,
+                        "y": 115.6132
+                    },
+                    "uuid": "0bab65e5-409a-4459-96ef-74e59ea6191d"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP2 on F.Silkscreen",
+                    "pos": {
+                        "x": 104.945,
+                        "y": 116.2482
+                    },
+                    "uuid": "116b78cd-6ead-4402-ad57-aee50492d688"
+                },
+                {
+                    "description": "PTH pad 3 [VCC] of JP2",
+                    "pos": {
+                        "x": 103.675,
+                        "y": 115.6132
+                    },
+                    "uuid": "0bab65e5-409a-4459-96ef-74e59ea6191d"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP2 on F.Silkscreen",
+                    "pos": {
+                        "x": 104.31,
+                        "y": 114.3432
+                    },
+                    "uuid": "aedb123e-8657-46b5-a1e5-07375d4bcb8d"
+                },
+                {
+                    "description": "PTH pad 3 [VCC] of JP2",
+                    "pos": {
+                        "x": 103.675,
+                        "y": 115.6132
+                    },
+                    "uuid": "0bab65e5-409a-4459-96ef-74e59ea6191d"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC9 on F.Silkscreen",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 104.5642
+                    },
+                    "uuid": "4b98eb3f-71e3-4d0b-9a1c-caa8dd72c115"
+                },
+                {
+                    "description": "PTH pad 4 [N$43] of IC9",
+                    "pos": {
+                        "x": 88.435,
+                        "y": 105.4532
+                    },
+                    "uuid": "67ba0c9e-2e81-49fe-adc1-c075cbe75e23"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC9 on F.Silkscreen",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 104.5642
+                    },
+                    "uuid": "4b98eb3f-71e3-4d0b-9a1c-caa8dd72c115"
+                },
+                {
+                    "description": "PTH pad 5 [BIT6] of IC9",
+                    "pos": {
+                        "x": 90.975,
+                        "y": 105.4532
+                    },
+                    "uuid": "79cc3e7f-9a52-452c-9a17-2978d904460e"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC9 on F.Silkscreen",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 104.5642
+                    },
+                    "uuid": "4b98eb3f-71e3-4d0b-9a1c-caa8dd72c115"
+                },
+                {
+                    "description": "PTH pad 6 [N$42] of IC9",
+                    "pos": {
+                        "x": 93.515,
+                        "y": 105.4532
+                    },
+                    "uuid": "5de15cfd-1fb7-40af-bff7-763ad973563d"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC9 on F.Silkscreen",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 104.5642
+                    },
+                    "uuid": "4b98eb3f-71e3-4d0b-9a1c-caa8dd72c115"
+                },
+                {
+                    "description": "PTH pad 7 [BIT5] of IC9",
+                    "pos": {
+                        "x": 96.055,
+                        "y": 105.4532
+                    },
+                    "uuid": "8722711e-de09-4c34-88c7-5e9b640c0aae"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of IC9 on F.Silkscreen",
+                    "pos": {
+                        "x": 79.545,
+                        "y": 104.5642
+                    },
+                    "uuid": "4b98eb3f-71e3-4d0b-9a1c-caa8dd72c115"
+                },
+                {
+                    "description": "PTH pad 8 [N$41] of IC9",
+                    "pos": {
+                        "x": 98.595,
+                        "y": 105.4532
+                    },
+                    "uuid": "548a21d3-1237-468d-a7f4-8d8253add6c3"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        }
+    ]
+}

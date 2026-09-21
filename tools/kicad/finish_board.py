@@ -3,7 +3,7 @@
 
 Run with KiCad's bundled Python (it needs the pcbnew module):
   /Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/Current/bin/python3 \
-      tools/finish_board.py <imported.kicad_pcb> <project dir> <project name> <schematic netlist .net>
+      tools/finish_board.py <imported.kicad_pcb> <project dir> <project name> <schematic netlist .net | ->
 
 Steps:
   1. extract every embedded footprint into <project>-eagle.pretty so the schematic's
@@ -25,7 +25,15 @@ def main(src, outdir, project, netfile):
     board = pcbnew.LoadBoard(src)
     libname = project + "-eagle"
 
-    # 1. footprint library
+    # 1. stray Edge.Cuts line inside footprints -> User.Drawings
+    moved = 0
+    for fp in board.GetFootprints():
+        for item in fp.GraphicalItems():
+            if item.GetLayer() == pcbnew.Edge_Cuts:
+                item.SetLayer(pcbnew.Dwgs_User); moved += 1
+    print("footprint graphics moved off Edge.Cuts:", moved)
+
+    # 2. footprint library (after the Edge.Cuts fix, so the library copy matches the board copy)
     pretty = os.path.join(outdir, libname + ".pretty")
     os.makedirs(pretty, exist_ok=True)
     plugin = pcbnew.PCB_IO_KICAD_SEXPR()
@@ -42,14 +50,6 @@ def main(src, outdir, project, netfile):
         fpid = fp.GetFPID()
         name = fpid.GetLibItemName().wx_str() if hasattr(fpid.GetLibItemName(), "wx_str") else str(fpid.GetLibItemName())
         fp.SetFPIDAsString(libname + ":" + name)
-
-    # 2. stray Edge.Cuts line inside footprints -> User.Drawings
-    moved = 0
-    for fp in board.GetFootprints():
-        for item in fp.GraphicalItems():
-            if item.GetLayer() == pcbnew.Edge_Cuts:
-                item.SetLayer(pcbnew.Dwgs_User); moved += 1
-    print("footprint graphics moved off Edge.Cuts:", moved)
 
     # 3. design rules (OSH Park 4-layer, as in the Eagle .dru)
     ds = board.GetDesignSettings()
@@ -72,7 +72,7 @@ def main(src, outdir, project, netfile):
 
     # 4. link footprints to schematic symbols via the netlist (ref -> sheetpath + uuid)
     links = {}
-    s = open(netfile).read()
+    s = open(netfile).read() if netfile and netfile != "-" and os.path.exists(netfile) else ""   # '-' = board-only project, nothing to link
     for block in re.split(r'\n\t\t\(comp\s', s)[1:]:
         ref = re.search(r'\(ref "([^"]+)"\)', block)
         sp = re.search(r'\(sheetpath\s+\(names "[^"]*"\)\s+\(tstamps "([^"]+)"\)', block)

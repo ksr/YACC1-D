@@ -1,0 +1,2773 @@
+{
+    "$schema": "https://schemas.kicad.org/erc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-09-20T21:33:41",
+    "ignored_checks": [
+        {
+            "description": "Global label only appears once in the schematic",
+            "key": "single_global_label"
+        },
+        {
+            "description": "Four connection points are joined together",
+            "key": "four_way_junction"
+        },
+        {
+            "description": "SPICE model issue",
+            "key": "simulation_model_issue"
+        },
+        {
+            "description": "Assigned footprint doesn't match footprint filters",
+            "key": "footprint_filter"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.6",
+    "sheets": [
+        {
+            "path": "/",
+            "uuid_path": "/fc620c7f-d88a-f338-128f-ef8d8a6ddd2b",
+            "violations": [
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.254,
+                                "y": 0.7112
+                            },
+                            "uuid": "b755879d-7f50-1ba8-5f9d-daf6a810546c"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR0'",
+                            "pos": {
+                                "x": 0.254,
+                                "y": 1.0414
+                            },
+                            "uuid": "eba5c552-bb85-3ce9-5b2e-099913956401"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.2794,
+                                "y": 0.7112
+                            },
+                            "uuid": "e1e9dc6e-0840-dbbb-4ea9-d5a15937cd4c"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR1'",
+                            "pos": {
+                                "x": 0.2794,
+                                "y": 1.0414
+                            },
+                            "uuid": "fc28a0ae-34c4-ba15-6e68-06f3d9ba22fd"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.3048,
+                                "y": 0.7112
+                            },
+                            "uuid": "4c2d4ed6-70cf-fcca-0eb4-b9ae36c870af"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR2'",
+                            "pos": {
+                                "x": 0.3048,
+                                "y": 1.0414
+                            },
+                            "uuid": "651ffc75-3ff8-2e4e-a632-dc25a4e63055"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.3302,
+                                "y": 0.7112
+                            },
+                            "uuid": "1133a5cc-2fa8-3c62-d768-bc99019ad57c"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR3'",
+                            "pos": {
+                                "x": 0.3302,
+                                "y": 1.0414
+                            },
+                            "uuid": "10601c30-fe5a-7294-f372-07247426df06"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.3556,
+                                "y": 0.7112
+                            },
+                            "uuid": "fa18fcc0-d357-c06b-5ed8-529940700404"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR4'",
+                            "pos": {
+                                "x": 0.3556,
+                                "y": 1.0414
+                            },
+                            "uuid": "60b88154-d306-0439-8467-21e6344eef7b"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.381,
+                                "y": 0.7112
+                            },
+                            "uuid": "f9bd1177-c0e1-123a-ae4c-0b2e96ee0da9"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR5'",
+                            "pos": {
+                                "x": 0.381,
+                                "y": 1.0414
+                            },
+                            "uuid": "2d2e0332-d06b-db28-0bcf-f7a9737c49dd"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.4064,
+                                "y": 0.7112
+                            },
+                            "uuid": "51b34072-f48a-1284-38e6-ed84273efe1a"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR6'",
+                            "pos": {
+                                "x": 0.4064,
+                                "y": 1.0414
+                            },
+                            "uuid": "cda3ea46-b919-55fe-3964-f50d1e2fed02"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.4318,
+                                "y": 0.7112
+                            },
+                            "uuid": "9feb91ea-f628-3e45-210b-5ac48d302a37"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR7'",
+                            "pos": {
+                                "x": 0.4318,
+                                "y": 1.0414
+                            },
+                            "uuid": "c1c9156d-52c0-5491-2d4c-57eaa7c4f134"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.4572,
+                                "y": 0.7112
+                            },
+                            "uuid": "87e03844-81f1-7575-464c-675bcf784cfd"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR8'",
+                            "pos": {
+                                "x": 0.4572,
+                                "y": 1.0414
+                            },
+                            "uuid": "c6ea8ac9-7f9c-0e41-aaa6-0dbf83c87aa3"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.4826,
+                                "y": 0.7112
+                            },
+                            "uuid": "1f842462-258d-dbf7-c636-44dc9dacbbf9"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR9'",
+                            "pos": {
+                                "x": 0.4826,
+                                "y": 1.0414
+                            },
+                            "uuid": "caa54afe-bec5-77f9-c760-259b5b0e57b0"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.508,
+                                "y": 0.7112
+                            },
+                            "uuid": "26d5afc7-5372-5820-2102-0065eab34a73"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR10'",
+                            "pos": {
+                                "x": 0.508,
+                                "y": 1.0414
+                            },
+                            "uuid": "3e505cac-a9b0-9081-c359-caf4db7d778a"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.5334,
+                                "y": 0.7112
+                            },
+                            "uuid": "14e66bf5-75c5-659f-ebdf-95b97f78f329"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR11'",
+                            "pos": {
+                                "x": 0.5334,
+                                "y": 1.0414
+                            },
+                            "uuid": "976e31ac-3d73-6188-2326-fe15e224007d"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.5588,
+                                "y": 0.7112
+                            },
+                            "uuid": "7ac4f009-499b-5159-82d6-2e2f1299f8db"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR12'",
+                            "pos": {
+                                "x": 0.5588,
+                                "y": 1.0414
+                            },
+                            "uuid": "38ecb8d1-0f1a-05ad-f7a7-c1715a808902"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.5842,
+                                "y": 0.7112
+                            },
+                            "uuid": "b18c8fd9-52f2-e2a0-9023-f77bc43d76df"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR13'",
+                            "pos": {
+                                "x": 0.5842,
+                                "y": 1.0414
+                            },
+                            "uuid": "db7b1703-7936-fa3f-efc6-ca84f822b3b2"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.6096,
+                                "y": 0.7112
+                            },
+                            "uuid": "e4b7d894-a193-0f80-d6f0-986fb4a2bb3c"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR14'",
+                            "pos": {
+                                "x": 0.6096,
+                                "y": 1.0414
+                            },
+                            "uuid": "2fe70d3d-45cb-f1eb-a60c-59268f706c28"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.635,
+                                "y": 0.7112
+                            },
+                            "uuid": "0b683802-4620-c5c1-f215-3ff3aacb78f3"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR15'",
+                            "pos": {
+                                "x": 0.635,
+                                "y": 1.0414
+                            },
+                            "uuid": "4cd613d3-b001-1281-9af8-883161d28d5e"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.6604,
+                                "y": 0.7112
+                            },
+                            "uuid": "f20caa68-ba20-0fb8-32ca-6ae84fb5d9a7"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'DATA0'",
+                            "pos": {
+                                "x": 0.6604,
+                                "y": 1.0414
+                            },
+                            "uuid": "ccad62c3-bf90-b0e4-a27d-0ab6e37af158"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.6858,
+                                "y": 0.7112
+                            },
+                            "uuid": "6b0754c9-80aa-09ef-062c-5f947a040546"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'DATA1'",
+                            "pos": {
+                                "x": 0.6858,
+                                "y": 1.0414
+                            },
+                            "uuid": "948b37da-d9c0-1e2e-8346-8741a8abec34"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.7112,
+                                "y": 0.7112
+                            },
+                            "uuid": "9349f286-e99c-a5c5-7112-c4d930a4bf43"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'DATA2'",
+                            "pos": {
+                                "x": 0.7112,
+                                "y": 1.0414
+                            },
+                            "uuid": "bf1a4e89-05ce-5129-ecaf-2f91bd53f014"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.7366,
+                                "y": 0.7112
+                            },
+                            "uuid": "0b154be1-6b12-e59c-180f-c117785b8a66"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'DATA3'",
+                            "pos": {
+                                "x": 0.7366,
+                                "y": 1.0414
+                            },
+                            "uuid": "d4de61d8-30e1-588a-af0d-8d38172b7c69"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.762,
+                                "y": 0.7112
+                            },
+                            "uuid": "6e6c7c54-92e3-effe-2e9e-ea1be1651d02"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'DATA4'",
+                            "pos": {
+                                "x": 0.762,
+                                "y": 1.0414
+                            },
+                            "uuid": "ad05d8ec-0dd6-4878-04ce-9f46f5430198"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.7874,
+                                "y": 0.7112
+                            },
+                            "uuid": "9134d00a-bb7b-fd5e-8578-d4e8915cf74f"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'DATA5'",
+                            "pos": {
+                                "x": 0.7874,
+                                "y": 1.0414
+                            },
+                            "uuid": "5778b23d-c5fb-921d-72e3-585f93014b6c"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.8128,
+                                "y": 0.7112
+                            },
+                            "uuid": "86bd1fdf-4236-ed9a-891a-48edb5a4ec83"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'DATA6'",
+                            "pos": {
+                                "x": 0.8128,
+                                "y": 1.0414
+                            },
+                            "uuid": "9a6e2a9e-ada2-6cb1-40e0-7b10b6c6fe98"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.8382,
+                                "y": 0.7112
+                            },
+                            "uuid": "d9961f46-a1d5-61fe-3ba0-166f23496c87"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'DATA7'",
+                            "pos": {
+                                "x": 0.8382,
+                                "y": 1.0414
+                            },
+                            "uuid": "26aeee12-5c24-169b-7566-864a9afa9d0c"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.8636,
+                                "y": 0.7112
+                            },
+                            "uuid": "dd9aa5e6-fb40-625b-164d-77fba9d60bc9"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'DATA8'",
+                            "pos": {
+                                "x": 0.8636,
+                                "y": 1.0414
+                            },
+                            "uuid": "64d604cb-68c9-ac56-52b9-9f4dddbc0520"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.889,
+                                "y": 0.7112
+                            },
+                            "uuid": "7490a896-1bf6-d320-f7d4-cbf60745f357"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'DATA9'",
+                            "pos": {
+                                "x": 0.889,
+                                "y": 1.0414
+                            },
+                            "uuid": "8b13b3bc-83fd-815d-ef4a-832448748286"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.9144,
+                                "y": 0.7112
+                            },
+                            "uuid": "2d1526ea-8d23-0597-4a22-90d84d93bf73"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'DATA10'",
+                            "pos": {
+                                "x": 0.9144,
+                                "y": 1.0414
+                            },
+                            "uuid": "51e0ce3c-119f-e514-fb26-dc186448d590"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.9398,
+                                "y": 0.7112
+                            },
+                            "uuid": "b06ecf77-9c30-c662-b467-ce42553ae55a"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'DATA11'",
+                            "pos": {
+                                "x": 0.9398,
+                                "y": 1.0414
+                            },
+                            "uuid": "b35db7e3-31b7-11f0-7882-b1e95967f81f"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 0.9906,
+                                "y": 0.7112
+                            },
+                            "uuid": "641c05ca-1642-dc82-9b7d-63695e6c6782"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'DATA12'",
+                            "pos": {
+                                "x": 0.9906,
+                                "y": 1.0414
+                            },
+                            "uuid": "5e9e68b4-916b-b9bc-1f79-dd8c30deefa6"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.016,
+                                "y": 0.254
+                            },
+                            "uuid": "f723623c-e3c3-cf01-1df9-ef3673647431"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.016,
+                                "y": 0.7112
+                            },
+                            "uuid": "5a6c7045-d8ed-e22a-5217-ba44ac357830"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'DATA13'",
+                            "pos": {
+                                "x": 1.016,
+                                "y": 1.0414
+                            },
+                            "uuid": "b2da7cc3-1234-dcff-eed4-430848e35039"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.0414,
+                                "y": 0.254
+                            },
+                            "uuid": "ee912488-a346-28c7-6eb7-ef0e1e62a975"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.0414,
+                                "y": 0.7112
+                            },
+                            "uuid": "4758e2fa-0deb-25c6-5f9c-f7d7a5eb9184"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'DATA14'",
+                            "pos": {
+                                "x": 1.0414,
+                                "y": 1.0414
+                            },
+                            "uuid": "67490376-d37b-e2e7-173e-1c0b49f96988"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.0668,
+                                "y": 0.7112
+                            },
+                            "uuid": "0861d289-3e25-8e7b-a003-51d5816c7c84"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'DATA15'",
+                            "pos": {
+                                "x": 1.0668,
+                                "y": 1.0414
+                            },
+                            "uuid": "56ccf195-290d-8807-5791-226853bb07db"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.0922,
+                                "y": 0.7112
+                            },
+                            "uuid": "5f63ce1a-b471-cc97-020d-f3a219cb849f"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-REG-FUNC-RD'",
+                            "pos": {
+                                "x": 1.0922,
+                                "y": 1.0414
+                            },
+                            "uuid": "568da865-da3e-f6b8-00fd-ebc11c4e41bc"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 0.254
+                            },
+                            "uuid": "f8aa1992-f838-35a6-c2e4-0cf5729008f1"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 0.7112
+                            },
+                            "uuid": "d769ae1a-cd23-0b3d-dadf-0b6bddcf6374"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-REG-FUNC-LD'",
+                            "pos": {
+                                "x": 1.1176,
+                                "y": 1.0414
+                            },
+                            "uuid": "7eab410d-e0f9-0662-f59f-9c4158664a33"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.143,
+                                "y": 0.254
+                            },
+                            "uuid": "d27041aa-de3b-87b0-d4e3-e50b100a8dd3"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.143,
+                                "y": 0.7112
+                            },
+                            "uuid": "b9ffb018-caf4-c94b-a9bc-05bcc71e793e"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'REG-RD-ID0'",
+                            "pos": {
+                                "x": 1.143,
+                                "y": 1.0414
+                            },
+                            "uuid": "1de15d96-23e6-7283-07cf-455710cf4357"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.1684,
+                                "y": 0.7112
+                            },
+                            "uuid": "55b260b4-4489-fc44-c367-e8a728b36a72"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'REG-RD-ID1'",
+                            "pos": {
+                                "x": 1.1684,
+                                "y": 1.0414
+                            },
+                            "uuid": "4926d8c9-dab7-501b-4dea-fa89b0e4475b"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.1938,
+                                "y": 0.7112
+                            },
+                            "uuid": "0acc62c3-936a-ca3b-5f6e-09596a5323b4"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'REG-RD-ID2'",
+                            "pos": {
+                                "x": 1.1938,
+                                "y": 1.0414
+                            },
+                            "uuid": "e6a0af01-3721-78e5-6492-094900273f3b"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.2192,
+                                "y": 0.254
+                            },
+                            "uuid": "3e891fd2-b02e-71d0-9a85-8ae24b5277e1"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol PWR0 [led_LED_5MM]",
+                            "pos": {
+                                "x": 1.2192,
+                                "y": 0.4572
+                            },
+                            "uuid": "4d7af40e-f086-9ee8-43c4-086d1570c374"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.2192,
+                                "y": 0.7112
+                            },
+                            "uuid": "caef3f00-9f7e-6a76-7ebb-2c7410038cf5"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'REG-RD-ID3'",
+                            "pos": {
+                                "x": 1.2192,
+                                "y": 1.0414
+                            },
+                            "uuid": "e3762137-5ff5-efbb-cb7d-062257e3119d"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.2446,
+                                "y": 0.254
+                            },
+                            "uuid": "b6500750-05d1-338c-2304-8f56429a3a53"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.2446,
+                                "y": 0.7112
+                            },
+                            "uuid": "3d21eb3c-f169-8108-7c99-ccbe3a8e9020"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'REG-LD-ID0'",
+                            "pos": {
+                                "x": 1.2446,
+                                "y": 1.0414
+                            },
+                            "uuid": "bd44eb8f-c2e8-453c-b13d-88ad36e2c558"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.27,
+                                "y": 0.7112
+                            },
+                            "uuid": "f8c1f434-da0c-fb5d-b2e5-b79ddda73b9b"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'REG-LD-ID1'",
+                            "pos": {
+                                "x": 1.27,
+                                "y": 1.0414
+                            },
+                            "uuid": "1bd11440-f723-e035-7d9b-6eefcd593358"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.2954,
+                                "y": 0.7112
+                            },
+                            "uuid": "13c9ba2e-e012-5e9d-ef6d-528ba42a633f"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'REG-LD-ID2'",
+                            "pos": {
+                                "x": 1.2954,
+                                "y": 1.0414
+                            },
+                            "uuid": "fdaeae6e-0697-50bb-7529-3d130760c9b5"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol R2 [eagle-ltspice_R_0207_10]",
+                            "pos": {
+                                "x": 1.3208,
+                                "y": 0.4572
+                            },
+                            "uuid": "025cd186-6a9d-fdc8-de43-2af156bc6cde"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.3208,
+                                "y": 0.7112
+                            },
+                            "uuid": "538003dc-5614-3247-6e5a-555165eb3cb4"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'REG-LD-ID3'",
+                            "pos": {
+                                "x": 1.3208,
+                                "y": 1.0414
+                            },
+                            "uuid": "c66130b0-3b8f-3306-4451-b15aa1ec557a"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.3462,
+                                "y": 0.7112
+                            },
+                            "uuid": "bde2d965-6d44-6420-37c1-d7e48495b9a6"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-REG-RD-LO'",
+                            "pos": {
+                                "x": 1.3462,
+                                "y": 1.0414
+                            },
+                            "uuid": "dc5334e2-77e7-885a-b407-42b2090a73e9"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.3716,
+                                "y": 0.254
+                            },
+                            "uuid": "59de6c3d-d19c-188c-7280-abf0cbeca6d2"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.3716,
+                                "y": 0.7112
+                            },
+                            "uuid": "f5e8aaf8-e1dc-4405-f29e-7d1d779339b5"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-REG-LD-LO'",
+                            "pos": {
+                                "x": 1.3716,
+                                "y": 1.0414
+                            },
+                            "uuid": "79dd6c93-7a2e-e44c-bd63-1138774eb8f5"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.397,
+                                "y": 0.254
+                            },
+                            "uuid": "a0037b5d-9742-50ee-61e2-d1f84ef92cb4"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.397,
+                                "y": 0.7112
+                            },
+                            "uuid": "e2b028ea-8b2b-9224-ba9b-14ebaaf1e0af"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-REG-RD-HI'",
+                            "pos": {
+                                "x": 1.397,
+                                "y": 1.0414
+                            },
+                            "uuid": "39b1e4dd-1e43-6412-3848-45a330db76e9"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.4224,
+                                "y": 0.254
+                            },
+                            "uuid": "b412f300-d175-5bee-42e6-e40d948c96f0"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.4224,
+                                "y": 0.7112
+                            },
+                            "uuid": "7a9ce0c0-b3a9-64df-8c1f-cb6ff284a2c1"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-REG-LD-HI'",
+                            "pos": {
+                                "x": 1.4224,
+                                "y": 1.0414
+                            },
+                            "uuid": "f79a896b-d085-897c-29c8-765f28a590a2"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.4478,
+                                "y": 0.254
+                            },
+                            "uuid": "47ea756f-75cb-7289-2a93-40a4f441f0e6"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.4478,
+                                "y": 0.7112
+                            },
+                            "uuid": "2b52e0a4-4188-4dd8-4176-2ad1c149daf2"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-REG-DN'",
+                            "pos": {
+                                "x": 1.4478,
+                                "y": 1.0414
+                            },
+                            "uuid": "94f5b898-6399-1f99-d944-ba05044d2752"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.4732,
+                                "y": 0.254
+                            },
+                            "uuid": "f9fc8eb3-41bc-3676-1ea5-2c32a4bc0fcf"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.4732,
+                                "y": 0.7112
+                            },
+                            "uuid": "36c8cb06-807a-2f9d-cbd5-ed4dc4dcd81c"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-REG-UP'",
+                            "pos": {
+                                "x": 1.4732,
+                                "y": 1.0414
+                            },
+                            "uuid": "16ddfc22-2da5-36bb-bc14-72405b890891"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.4986,
+                                "y": 0.254
+                            },
+                            "uuid": "b50c3fa5-122b-5b9d-5a5c-3bda2f26de20"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.4986,
+                                "y": 0.7112
+                            },
+                            "uuid": "65496b86-60b1-248c-2e95-abdc0ea9c396"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-MEM-RD'",
+                            "pos": {
+                                "x": 1.4986,
+                                "y": 1.0414
+                            },
+                            "uuid": "2e0624a2-3d9b-2300-b341-fa339252698b"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.524,
+                                "y": 0.7112
+                            },
+                            "uuid": "d4adaa25-dac6-f22a-8216-f48f36e0ebc4"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-MEM-WR'",
+                            "pos": {
+                                "x": 1.524,
+                                "y": 1.0414
+                            },
+                            "uuid": "b40d60ba-8aba-6986-047a-4cc6646dd414"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.5494,
+                                "y": 0.7112
+                            },
+                            "uuid": "0979ca9c-d095-2ff6-adf6-affec6eb7580"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-IO-RD'",
+                            "pos": {
+                                "x": 1.5494,
+                                "y": 1.0414
+                            },
+                            "uuid": "aa723cd5-ad50-908c-ab68-37ea7e216e59"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.5748,
+                                "y": 0.7112
+                            },
+                            "uuid": "e97d3a9a-1351-ddc5-5485-480e57e45b89"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-IO-WR'",
+                            "pos": {
+                                "x": 1.5748,
+                                "y": 1.0414
+                            },
+                            "uuid": "48b3391d-2427-75a6-311e-a7a60e2827ff"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.6002,
+                                "y": 0.7112
+                            },
+                            "uuid": "9f907aa8-3ad9-f509-a129-3a4ece371bae"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-TMP-REG-RD0'",
+                            "pos": {
+                                "x": 1.6002,
+                                "y": 1.0414
+                            },
+                            "uuid": "c883ca30-0236-d8ab-e625-ff7a07a962da"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.6256,
+                                "y": 0.7112
+                            },
+                            "uuid": "58b3139a-9b67-e8db-e00c-a3ddc158e8d8"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-TMP-REG-LD0'",
+                            "pos": {
+                                "x": 1.6256,
+                                "y": 1.0414
+                            },
+                            "uuid": "3f7cd565-3af8-d9e0-64a3-a86e98fd8908"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.651,
+                                "y": 0.7112
+                            },
+                            "uuid": "07c55283-61ad-fc0d-ccb9-2bc2830e27fd"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-TMP-REG-RD1'",
+                            "pos": {
+                                "x": 1.651,
+                                "y": 1.0414
+                            },
+                            "uuid": "09a4e5d2-7b69-4148-c1e2-265b3fd9eabf"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.6764,
+                                "y": 0.7112
+                            },
+                            "uuid": "dc9c6480-eec4-3c84-4438-d5ba0d2b0ec0"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-TMP-REG-LD1'",
+                            "pos": {
+                                "x": 1.6764,
+                                "y": 1.0414
+                            },
+                            "uuid": "70f3ec89-d341-4859-9fd1-e44953462262"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.7272,
+                                "y": 0.7112
+                            },
+                            "uuid": "57b755e6-825e-d7d8-65ea-e6abc7c24df0"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR-REG-ID0'",
+                            "pos": {
+                                "x": 1.7272,
+                                "y": 1.0414
+                            },
+                            "uuid": "22e8649a-0b9b-1135-0c52-2e1805159a49"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.7526,
+                                "y": 0.7112
+                            },
+                            "uuid": "db42588c-3b7d-d4a6-108f-1b3bb2c25174"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR-REG-ID1'",
+                            "pos": {
+                                "x": 1.7526,
+                                "y": 1.0414
+                            },
+                            "uuid": "2511712b-bbeb-5b3f-c6cb-155c595d7d03"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.778,
+                                "y": 0.7112
+                            },
+                            "uuid": "995689a3-6c93-8e90-46cd-0e57ce0dec84"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR-REG-ID2'",
+                            "pos": {
+                                "x": 1.778,
+                                "y": 1.0414
+                            },
+                            "uuid": "33201d7e-01bd-036e-5f6f-6938e792fad8"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.8034,
+                                "y": 0.7112
+                            },
+                            "uuid": "333b29fc-73e0-67a8-fdce-1fce762a3d09"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ADDR-REG-ID3'",
+                            "pos": {
+                                "x": 1.8034,
+                                "y": 1.0414
+                            },
+                            "uuid": "fa1c5888-4faf-025f-8d6e-d88bc1cb7159"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.8288,
+                                "y": 0.7112
+                            },
+                            "uuid": "be663a0c-5638-ead0-6a1d-eb207d3048bb"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'IO-ADDR0'",
+                            "pos": {
+                                "x": 1.8288,
+                                "y": 1.0414
+                            },
+                            "uuid": "c6a69cdb-3cda-bcfd-50a7-59a92fc41912"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.8542,
+                                "y": 0.7112
+                            },
+                            "uuid": "5b466ca1-01e3-1238-e04b-61138467efb5"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'IO-ADDR1'",
+                            "pos": {
+                                "x": 1.8542,
+                                "y": 1.0414
+                            },
+                            "uuid": "727d17bb-be79-08c2-8b2b-8b301d93fa66"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.8796,
+                                "y": 0.7112
+                            },
+                            "uuid": "d3d8bf30-1e82-9bf1-be98-cd000ee43fb3"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'IO-ADDR2'",
+                            "pos": {
+                                "x": 1.8796,
+                                "y": 1.0414
+                            },
+                            "uuid": "5b5995d1-0a85-7637-3bac-129ad0f5b275"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.905,
+                                "y": 0.7112
+                            },
+                            "uuid": "1fa64a38-562d-bf28-d130-7f450f77b43c"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'IO-ADDR3'",
+                            "pos": {
+                                "x": 1.905,
+                                "y": 1.0414
+                            },
+                            "uuid": "8ed03ef2-6256-53c2-2085-3aee519f2cfa"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.9304,
+                                "y": 0.7112
+                            },
+                            "uuid": "d84d7d1b-3d4a-efde-2d71-7f09b30f86e3"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-IO-ADDR-LD'",
+                            "pos": {
+                                "x": 1.9304,
+                                "y": 1.0414
+                            },
+                            "uuid": "12b2c151-031f-76c2-aa62-cd5f2326cf7b"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.9558,
+                                "y": 0.7112
+                            },
+                            "uuid": "786ffe29-a673-1463-d8fe-0c8e1d7b218e"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-VMA'",
+                            "pos": {
+                                "x": 1.9558,
+                                "y": 1.0414
+                            },
+                            "uuid": "16d86f15-1e4f-bd95-e167-4506e51276a5"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 1.9812,
+                                "y": 0.7112
+                            },
+                            "uuid": "96840aac-7011-b462-10b4-b322a77639a3"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-INT'",
+                            "pos": {
+                                "x": 1.9812,
+                                "y": 1.0414
+                            },
+                            "uuid": "69e3bab4-66d2-c401-52e5-a00f3ad4b1af"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 2.0066,
+                                "y": 0.7112
+                            },
+                            "uuid": "c74076f7-9594-90aa-9346-b0ef0e13993f"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-INTA'",
+                            "pos": {
+                                "x": 2.0066,
+                                "y": 1.0414
+                            },
+                            "uuid": "2a301d5f-882e-4ff4-7c11-582c9792407a"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 2.032,
+                                "y": 0.7112
+                            },
+                            "uuid": "8aa81be1-e947-bb0f-0517-2659d3641d81"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-ALU-FUNC'",
+                            "pos": {
+                                "x": 2.032,
+                                "y": 1.0414
+                            },
+                            "uuid": "a952f427-9163-adae-fbe1-4162e69e490f"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 2.0574,
+                                "y": 0.7112
+                            },
+                            "uuid": "6519d812-7851-6540-2869-fa0d3c17d17c"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ALU0'",
+                            "pos": {
+                                "x": 2.0574,
+                                "y": 1.0414
+                            },
+                            "uuid": "71b674eb-38e0-81c4-9d9f-34e605c8d65a"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 2.0828,
+                                "y": 0.7112
+                            },
+                            "uuid": "3fa5db00-3e30-8b4f-74e9-965a6eb2b953"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ALU1'",
+                            "pos": {
+                                "x": 2.0828,
+                                "y": 1.0414
+                            },
+                            "uuid": "737a5dae-8cc5-1524-abf4-75df49c06382"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 2.1082,
+                                "y": 0.7112
+                            },
+                            "uuid": "9aa74d0f-e694-1906-b77c-139da8f9b3bc"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ALU2'",
+                            "pos": {
+                                "x": 2.1082,
+                                "y": 1.0414
+                            },
+                            "uuid": "16b0fcd9-95c0-97ac-752a-f999cac4d888"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 2.1336,
+                                "y": 0.7112
+                            },
+                            "uuid": "edfaeac4-9e3a-8791-35a5-b24aad07c595"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ALU3'",
+                            "pos": {
+                                "x": 2.1336,
+                                "y": 1.0414
+                            },
+                            "uuid": "c3496e74-b92f-41cc-1329-cf05ef9a96b7"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 2.159,
+                                "y": 0.7112
+                            },
+                            "uuid": "2b4dc373-2079-09a6-415c-1d2f23a3a0e7"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-AC-LD-INV'",
+                            "pos": {
+                                "x": 2.159,
+                                "y": 1.0414
+                            },
+                            "uuid": "dd553bc5-7460-a731-1810-984251652109"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 2.1844,
+                                "y": 0.7112
+                            },
+                            "uuid": "a31e8735-c916-5172-e295-e965d0157102"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-AC-RD'",
+                            "pos": {
+                                "x": 2.1844,
+                                "y": 1.0414
+                            },
+                            "uuid": "6d2feeb4-b12a-19b9-8281-07ac36bee15b"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 2.2098,
+                                "y": 0.7112
+                            },
+                            "uuid": "d5875ec6-7566-3f75-2ae5-3d8f2cce65fb"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-AC-LD'",
+                            "pos": {
+                                "x": 2.2098,
+                                "y": 1.0414
+                            },
+                            "uuid": "c41a1ee3-590e-effb-5ee6-c53d6f965393"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 2.2352,
+                                "y": 0.7112
+                            },
+                            "uuid": "4f3ee4c9-bb89-b037-aea7-803291c56354"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-SR-LD'",
+                            "pos": {
+                                "x": 2.2352,
+                                "y": 1.0414
+                            },
+                            "uuid": "f2ae940c-78d4-e8a7-8459-21ccd4bb5494"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 2.2606,
+                                "y": 0.7112
+                            },
+                            "uuid": "8304def6-416f-4bf2-c924-f02eaacc7034"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'BR-COND'",
+                            "pos": {
+                                "x": 2.2606,
+                                "y": 1.0414
+                            },
+                            "uuid": "b0eb7630-3e9e-59d7-8581-1a9147950349"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 2.286,
+                                "y": 0.7112
+                            },
+                            "uuid": "ce051a46-50be-bd48-8d7a-c993273be86c"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-HL-SWAP'",
+                            "pos": {
+                                "x": 2.286,
+                                "y": 1.0414
+                            },
+                            "uuid": "dc5c7036-b354-53a1-732e-dca57543265e"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 2.3114,
+                                "y": 0.7112
+                            },
+                            "uuid": "1d2cdcbe-bd0a-70ee-0177-c73f2c31b406"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'IN'",
+                            "pos": {
+                                "x": 2.3114,
+                                "y": 1.0414
+                            },
+                            "uuid": "1da3b591-e54c-a462-dd8f-be5843c7b7dc"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 2.3368,
+                                "y": 0.7112
+                            },
+                            "uuid": "5ef1714d-bcd5-205d-2d95-ea0f0d98496a"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'OUT'",
+                            "pos": {
+                                "x": 2.3368,
+                                "y": 1.0414
+                            },
+                            "uuid": "1ec4c591-5f3b-741b-59fb-8b76553465e8"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 2.3622,
+                                "y": 0.7112
+                            },
+                            "uuid": "33cbff95-559b-7847-1f29-885ba3b95ad7"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-BUS-EN'",
+                            "pos": {
+                                "x": 2.3622,
+                                "y": 1.0414
+                            },
+                            "uuid": "bf1d73d3-3448-3ed0-32cb-c23ac1c77a68"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 2.3876,
+                                "y": 0.7112
+                            },
+                            "uuid": "debb3990-6396-e8a6-2d8c-cdd054731368"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-RUN'",
+                            "pos": {
+                                "x": 2.3876,
+                                "y": 1.0414
+                            },
+                            "uuid": "c9fbeb0f-fb52-3c5a-fe65-ca8ef09a760e"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "The current configuration does not include the footprint library 'bus-template-v3.2-eagle'",
+                    "items": [
+                        {
+                            "description": "Symbol X1 [con-vg_FABC96R]",
+                            "pos": {
+                                "x": 2.413,
+                                "y": 0.7112
+                            },
+                            "uuid": "6b777369-32f7-c515-9b00-fb5c73daade1"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "footprint_link_issues"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label '-RESET'",
+                            "pos": {
+                                "x": 2.413,
+                                "y": 1.0414
+                            },
+                            "uuid": "2c6ef92f-8500-21d1-56ac-a9f1cbcf30c8"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                }
+            ]
+        },
+        {
+            "path": "/Sheet 1/",
+            "uuid_path": "/fc620c7f-d88a-f338-128f-ef8d8a6ddd2b/86508a48-0c76-3b16-cf72-dbc4c976035a",
+            "violations": []
+        }
+    ],
+    "source": "bus-template-v3.2.kicad_sch"
+}

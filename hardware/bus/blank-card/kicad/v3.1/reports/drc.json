@@ -1,0 +1,205 @@
+{
+    "$schema": "https://schemas.kicad.org/drc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-09-20T21:33:18",
+    "ignored_checks": [
+        {
+            "description": "Footprint has no courtyard defined",
+            "key": "missing_courtyard"
+        },
+        {
+            "description": "Track endpoint not centered on via",
+            "key": "track_not_centered_on_via"
+        },
+        {
+            "description": "Tuning profile track geometries",
+            "key": "tuning_profile_track_geometries"
+        },
+        {
+            "description": "Footprint doesn't match symbol's footprint filters",
+            "key": "footprint_filters_mismatch"
+        },
+        {
+            "description": "Footprint component type doesn't match footprint pads",
+            "key": "footprint_type_mismatch"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.6",
+    "schematic_parity": [],
+    "source": "blank-card-v3.1.kicad_pcb",
+    "unconnected_items": [],
+    "violations": [
+        {
+            "description": "Items not allowed (keepout area of X1)",
+            "items": [
+                {
+                    "description": "NPTH pad of X1",
+                    "pos": {
+                        "x": 20.287,
+                        "y": 111.3014
+                    },
+                    "uuid": "89b99132-12b7-4520-883b-d1e9946a153d"
+                }
+            ],
+            "severity": "error",
+            "type": "items_not_allowed"
+        },
+        {
+            "description": "Items not allowed (keepout area of X1)",
+            "items": [
+                {
+                    "description": "NPTH pad of X1",
+                    "pos": {
+                        "x": 20.287,
+                        "y": 22.3886
+                    },
+                    "uuid": "ed6b2c6d-2ab6-44fc-91cd-9bf4a7f4a411"
+                }
+            ],
+            "severity": "error",
+            "type": "items_not_allowed"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 17.747,
+                        "y": 10.025
+                    },
+                    "uuid": "75658b00-b953-4c65-ae94-8a12251f4442"
+                },
+                {
+                    "description": "Segment of X1 on F.Silkscreen",
+                    "pos": {
+                        "x": 19.017,
+                        "y": 24.935
+                    },
+                    "uuid": "470ba4be-057b-4c65-979a-ad0b38fede42"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 17.747,
+                        "y": 10.025
+                    },
+                    "uuid": "75658b00-b953-4c65-ae94-8a12251f4442"
+                },
+                {
+                    "description": "Segment of X1 on F.Silkscreen",
+                    "pos": {
+                        "x": 19.017,
+                        "y": 108.755
+                    },
+                    "uuid": "2414ec43-a3ae-4770-991c-27f708239c5a"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 17.747,
+                        "y": 10.025
+                    },
+                    "uuid": "75658b00-b953-4c65-ae94-8a12251f4442"
+                },
+                {
+                    "description": "Segment of X1 on F.Silkscreen",
+                    "pos": {
+                        "x": 22.827,
+                        "y": 19.855
+                    },
+                    "uuid": "2be33478-6643-44e8-b2af-c1c7f3cdd18c"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 17.747,
+                        "y": 10.025
+                    },
+                    "uuid": "75658b00-b953-4c65-ae94-8a12251f4442"
+                },
+                {
+                    "description": "Segment of X1 on F.Silkscreen",
+                    "pos": {
+                        "x": 22.827,
+                        "y": 113.7951
+                    },
+                    "uuid": "ab4cbe7e-b906-4071-afaf-65b5fd11270a"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Footprint 'FABC96R' does not match copy in library 'blank-card-v3.1-eagle'",
+            "items": [
+                {
+                    "description": "Footprint X1",
+                    "pos": {
+                        "x": 20.287,
+                        "y": 66.845
+                    },
+                    "uuid": "58f74590-86e0-46dd-8fcc-60be20ca7d34"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.7315 mm)",
+            "items": [
+                {
+                    "description": "Footprint text of X1 (32)",
+                    "pos": {
+                        "x": 20.287,
+                        "y": 26.84
+                    },
+                    "uuid": "8c6d763f-4748-468c-93d8-d8fa43d2b1dc"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.7315 mm)",
+            "items": [
+                {
+                    "description": "Footprint text of X1 (1)",
+                    "pos": {
+                        "x": 20.287,
+                        "y": 105.961
+                    },
+                    "uuid": "0b3e36ac-81da-4a6e-adc4-b1612fb917d5"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        }
+    ]
+}

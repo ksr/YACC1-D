@@ -18,5 +18,9 @@ Known issues (bus-driver tests 2026-09-18):
   lands in the video RAM regardless of the board-select comparator; independent of the memory card and of the
   RN2 value. Needs a logic-analyser capture on IC18 pin 6 (see the ADP2230 plan) or a 7485 swap.
 - Inherits the Blank V3.1 template's pre-V3.2 names on bus pins C3–C6 (unused by the card).
+- The Eagle schematic and board disagree on the supply of IC1 and IC2 (found by the KiCad conversion's netlist proof,
+  2026-09-20): the board feeds IC1 pin 14 and IC2 pin 20 from `+5V` (the decoupled rail behind R10/R12), the schematic's
+  implicit power pins put them on `VCC` (the bus rail). Both rails are 5 V, so the built card works; `kicad/.../README.md`
+  shows the two nets. Decide which is intended when the card is next revised.
 
 Bench state: RN2 is currently 1k (design: 10k), changed during the 2026-09-18 tests and left in (Ken 2026-09-20).

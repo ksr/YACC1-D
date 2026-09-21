@@ -12,6 +12,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Video card fixes** (`hardware/cards/video`): 6845 CS/RS both on A0; 7416 outputs need pull-ups; block-0/9
   write-through fault to be diagnosed (ADP2230 capture on IC18 pin 6). Fusion 360 is the master — decide whether the
   tree's Eagle export (or a KiCad conversion) becomes the master.
+  Also: schematic and board disagree on IC1/IC2's supply (+5V on the board, implicit VCC in the schematic; found by the
+  KiCad netlist proof 2026-09-20) — settle it in the next revision.
 - **IO V1.2 ideas** (IO notes): directional data-bus buffer driven by -IO-RD; 74138 IC5 pin 5 tied to -BUS-EN.
 - **Index Registers**: notes ask whether bus direction should follow -RD-SEL (the same question as the IO buffer).
 - **Memory v1.3 notes**: "should TMP registers move to the ALU", hard-jumper a boot-loader enable, 4K-block EEPROM select.

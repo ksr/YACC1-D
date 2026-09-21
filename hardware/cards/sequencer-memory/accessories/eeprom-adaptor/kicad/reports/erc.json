@@ -1,0 +1,88 @@
+{
+    "$schema": "https://schemas.kicad.org/erc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-09-20T21:37:07",
+    "ignored_checks": [
+        {
+            "description": "Global label only appears once in the schematic",
+            "key": "single_global_label"
+        },
+        {
+            "description": "Four connection points are joined together",
+            "key": "four_way_junction"
+        },
+        {
+            "description": "SPICE model issue",
+            "key": "simulation_model_issue"
+        },
+        {
+            "description": "Assigned footprint doesn't match footprint filters",
+            "key": "footprint_filter"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.6",
+    "sheets": [
+        {
+            "path": "/",
+            "uuid_path": "/9d5a3474-d2c2-e22d-b99d-80345a6aa216",
+            "violations": []
+        },
+        {
+            "path": "/Sheet 1/",
+            "uuid_path": "/9d5a3474-d2c2-e22d-b99d-80345a6aa216/512aaca2-047f-4c3b-d331-9168363a3336",
+            "violations": [
+                {
+                    "description": "Input Power pin not driven by any Output Power pins",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 8 [VCC, Power input, Line]",
+                            "pos": {
+                                "x": 0.3683,
+                                "y": 0.3556
+                            },
+                            "uuid": "ac08fe1c-1cfd-4485-826e-a6819c11a320"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "power_pin_not_driven"
+                },
+                {
+                    "description": "Input Power pin not driven by any Output Power pins",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 4 [GND, Power input, Line]",
+                            "pos": {
+                                "x": 0.3683,
+                                "y": 0.508
+                            },
+                            "uuid": "60720d36-6ccf-2ef8-464f-72ea6428491f"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "power_pin_not_driven"
+                },
+                {
+                    "description": "Input pin not driven by any Output pins",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 7 [WP, Input, Line]",
+                            "pos": {
+                                "x": 0.5715,
+                                "y": 0.4572
+                            },
+                            "uuid": "f5cd023a-10e2-f2d8-95ed-9adb3308ac83"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_driven"
+                }
+            ]
+        }
+    ],
+    "source": "sequencer-memory-eeprom-adaptor.kicad_sch"
+}

@@ -1,0 +1,4297 @@
+(export
+	(version "E")
+	(design
+		(source "/Users/ksr77/Developer/YACC1-D/hardware/bus/bus-jumper-horizontal/kicad/deprecated/v3.0/bus-jumper-horizontal-v3.0.kicad_sch")
+		(date "2026-09-20T21:33:24")
+		(tool "Eeschema 10.0.6")
+		(sheet
+			(number "1")
+			(name "/")
+			(tstamps "/")
+			(title_block
+				(title "bus-jumper-horizontal-v3.0")
+				(company)
+				(rev)
+				(date)
+				(source "bus-jumper-horizontal-v3.0.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle schematic; see README.md")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+		(sheet
+			(number "2")
+			(name "/Sheet 1/")
+			(tstamps "/67953ba1-569b-fe28-52a7-44d43b08ffc0/")
+			(title_block
+				(title "bus-jumper-horizontal-v3.0 sheet 1")
+				(company)
+				(rev)
+				(date)
+				(source "bus-jumper-horizontal-v3.0-sheet1.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle: Jumper Board V3.0.sch sheet 1")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+	)
+	(components
+		(comp
+			(ref "JP1")
+			(value "JP1Q")
+			(footprint "bus-jumper-horizontal-v3.0-eagle:JP1")
+			(fields
+				(field
+					(name "Footprint") "bus-jumper-horizontal-v3.0-eagle:JP1")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-jumper-horizontal-v3.0-eagle")
+				(part "jumper_JP1Q")
+				(description "Eagle jumper:JP1Q")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-jumper-horizontal-v3.0-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/67953ba1-569b-fe28-52a7-44d43b08ffc0/")
+			)
+			(tstamps "f27f0427-f215-2706-758d-793f95367a97")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "1")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "PWR1")
+			(value "LED")
+			(footprint "bus-jumper-horizontal-v3.0-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "bus-jumper-horizontal-v3.0-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-jumper-horizontal-v3.0-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-jumper-horizontal-v3.0-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/67953ba1-569b-fe28-52a7-44d43b08ffc0/")
+			)
+			(tstamps "3a3d380f-4686-aa6e-1632-67a520c3a9c2")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "PWR2")
+			(value "LED")
+			(footprint "bus-jumper-horizontal-v3.0-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "bus-jumper-horizontal-v3.0-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-jumper-horizontal-v3.0-eagle")
+				(part "led_LED_5MM")
+				(description "Eagle led:LED")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-jumper-horizontal-v3.0-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/67953ba1-569b-fe28-52a7-44d43b08ffc0/")
+			)
+			(tstamps "799ac21e-ee3c-9e9f-e773-71538e51eb66")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A")
+						)
+						(pin
+							(num "K")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R1")
+			(value "330")
+			(footprint "bus-jumper-horizontal-v3.0-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-jumper-horizontal-v3.0-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-jumper-horizontal-v3.0-eagle")
+				(part "eagle-ltspice_R_0207_10")
+				(description "Eagle eagle-ltspice:R")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-jumper-horizontal-v3.0-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/67953ba1-569b-fe28-52a7-44d43b08ffc0/")
+			)
+			(tstamps "54157ed0-8c8d-2b1c-2a4a-234aac55f873")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R2")
+			(value "330")
+			(footprint "bus-jumper-horizontal-v3.0-eagle:0207_10")
+			(fields
+				(field
+					(name "Footprint") "bus-jumper-horizontal-v3.0-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-jumper-horizontal-v3.0-eagle")
+				(part "eagle-ltspice_R_0207_10")
+				(description "Eagle eagle-ltspice:R")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-jumper-horizontal-v3.0-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/67953ba1-569b-fe28-52a7-44d43b08ffc0/")
+			)
+			(tstamps "b7eff812-4a91-e015-d4f7-c97c4f6029b5")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "X3")
+			(value "MABC96R")
+			(footprint "bus-jumper-horizontal-v3.0-eagle:MABC96R")
+			(fields
+				(field
+					(name "Footprint") "bus-jumper-horizontal-v3.0-eagle:MABC96R")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-jumper-horizontal-v3.0-eagle")
+				(part "con-vg_MABC96R")
+				(description "Eagle con-vg:MABC96R")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-jumper-horizontal-v3.0-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/67953ba1-569b-fe28-52a7-44d43b08ffc0/")
+			)
+			(tstamps "c477189e-e45d-8d39-dddf-96017be6e3d3" "b31b339e-1115-efe9-0727-ef0b7a98becd"
+				"29d57e2f-6071-27e0-d2b8-de9741bf26d7" "a1c0b10c-270c-2b86-b116-ee151b9a2b13"
+				"77433f0d-6408-497c-76fa-69d7b2bd3173" "c521bd48-0ea9-6683-31a2-0b6c5ebb8483"
+				"e5e7ed68-06f5-bf56-498a-5bc4504aedef" "f5878c36-cb1c-88da-6a9e-7968ab841aa1"
+				"5da476db-9700-bfff-48e8-764d9f326f7d" "f7b61bca-9867-c651-af57-c3ba98c0b6d9"
+				"baef280b-01bd-5e0c-2600-11768a135bf8" "4ead097b-289f-da7c-0fdf-21c420b04f4e"
+				"e9e35387-0fbb-c27c-5392-d7f792ee1435" "3f2ba626-0559-4c5f-2ac6-006912ea2ff2"
+				"db609883-2f73-4d6e-dd54-9ce947dafb8a" "893ad72e-4024-1024-7369-c5af8574f4a3"
+				"66f5ffa4-bb48-bf52-6578-f35594ce99e7" "d9f666aa-8c64-b947-cb8f-3edce71761de"
+				"c1a9ee4e-fc28-d312-de64-e35678b0ed04" "223ff818-1212-eb8b-2cf0-e0867b152078"
+				"bbce1e9f-6996-5217-bb65-f8b53a47d979" "0facc3a9-5af8-8390-6acd-793f0abc6e78"
+				"1a1aa94a-6a9e-cfba-d4e4-3e01ffdb50f4" "a230e522-d064-38d5-17f0-3f2ff05010ab"
+				"fb16a655-904e-e1d6-d183-639bb2f169d8" "64b831f5-e6bb-20cf-8f32-53f54cb90f97"
+				"898f3592-c453-41fc-2a7a-de0a2424b02b" "9b79e12a-1c39-3952-ff74-a4f0f4b07c0c"
+				"02996ba4-73a5-1f88-df63-ac4fd2be9ec2" "d7a22b5b-1737-b70f-a795-5cc3e95622a4"
+				"619f0e29-e79d-b372-d229-9e29825ab4a4" "6229f521-2c50-fbe9-d3ba-c62de187a250"
+				"f42a3176-4659-2b4d-8c55-f73add527a9c" "200cb85e-4fe1-548f-b586-47da567df00f"
+				"adfe03c0-880e-2086-7ceb-ca66daee8bb3" "aca751c4-cb17-d306-deb5-9d325ea233e6"
+				"18f6290d-8877-8e84-12a0-f7121e3abb6d" "34644d60-88dd-a04c-0bec-785703bc7d73"
+				"8dff182a-0858-44b6-4b63-a26fd4e309a1" "ade30dcc-eb3b-180d-fdb1-8fa0cef703ea"
+				"ccaf6b9b-9bf5-460c-46b9-671e726ba5c3" "8007d6ab-3c8c-92f7-5f3b-2cd4bce2355b"
+				"c3465473-b832-9d2e-2308-ac98e6828d84" "e180ee73-4b96-f1b5-6e4e-cea4a22e7c15"
+				"48268da7-43db-c998-6491-6bab391faa58" "f6416773-6ea9-584f-d573-b25cbe52eeaa"
+				"b750babe-fb75-2239-45ac-0bdc7831a674" "b798e4b6-27ce-6a99-4b81-adb1f9319e9b"
+				"b43d1d8f-843a-b649-e56e-0eec002a84d1" "1104a5f0-9b22-8c0d-c0cb-6e7457052d4c"
+				"26290a48-5ea9-50a8-dafc-7e8ba3c1bd56" "2e441893-12d3-5078-3a0f-8485c6fbd1fa"
+				"0f4928e4-11d7-bf22-3289-d40e54dce042" "c8fe6aff-d85f-6f7c-f707-ffa60ee72da8"
+				"dcf8249d-a493-4cff-8049-4d9f4de929c3" "c6f0f427-cd7f-cc0c-f2e4-ab310fc9ee49"
+				"bd6e39c6-c8b8-f0a0-959d-920e39f840a6" "05d9fd50-8693-bd70-4077-259dd519914d"
+				"71d8b3cf-a338-4c75-a08b-7d8a235d2932" "fe45d7a2-266d-d978-e831-9a460a6e8681"
+				"0701e478-5587-ec09-0e49-294596faef25" "730708c3-ca83-46f5-5be9-5d3b07698cca"
+				"591630e1-da4e-87ff-66b7-3b7dca7a7203" "3707f2f2-27c6-8935-937a-2f4bbae6b14a"
+				"2d07f891-45c0-7753-effa-fffb6fea3479" "3a6bf283-8c03-4b12-efa6-35dc82f914f0"
+				"dfdeb739-1384-3538-c282-e13c4359a616" "0943a45e-a181-d7a1-0a1c-268a5cd41d98"
+				"03cdf47e-d8a1-8e63-6fed-e65a7e3003fe" "380693d3-10fa-70bd-6f5d-bf9cfb7e4256"
+				"470baea6-42b2-61ce-f7e9-39f50b8a9340" "8fc92d97-dd9c-0a47-be7c-64daeb77de86"
+				"34e244b1-1d29-e5ea-59b5-4b73464577b7" "5e25025b-86d0-019f-cb27-6d7ef799b4f1"
+				"2b448b5d-047a-eb8f-715e-52aa4810c953" "2bf802df-65e5-155c-f8cf-2f68d731d67b"
+				"6c4ed4e0-3481-e64f-6489-ed1212ba4010" "a11ee6ed-2faf-8d2d-cf6c-445cc3a5a9ee"
+				"ae9d4630-3f75-04a7-c5cc-efda5d175417" "4a38ceec-c732-70cd-8321-cacf9482229d"
+				"efdf7165-1c54-fd77-bdea-8df2afbeadad" "5b5dbf29-14a2-554f-9692-cbb64aec1640"
+				"336faff3-da7a-c235-8d13-28c5f1ddb858" "fd47336c-dc9d-467c-16ef-f2d0ca73f4ed"
+				"91555cac-35b1-1d02-51a6-162cb8287c51" "e0a50afa-84dd-d4d2-a9a1-9597fb0e036e"
+				"99c3a99f-5744-23b0-3387-ae81a038eb3c" "4a5a6f05-b0b6-006f-dbb8-31dbc592e9af"
+				"47c8bffd-2303-5ce8-ed33-632656e746f4" "1de8530a-091b-4eea-262a-f5fbd5bd429a"
+				"6ac0fad4-572d-225c-550a-002749f07a1e" "3479b478-58cd-3b5d-b4c0-fb7789aeeab4"
+				"5d55af1c-d193-e9a1-1551-956ce5f0ddc8" "af9c7be0-cde9-ef68-d322-a8096b75f5dc"
+				"166e4c01-ab54-8a87-3e95-73a52473d477" "00c301ed-2af1-7309-df94-856bc311a43b"
+			)
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A1")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "A2")
+						)
+					)
+				)
+				(unit
+					(name "C")
+					(pins
+						(pin
+							(num "A3")
+						)
+					)
+				)
+				(unit
+					(name "D")
+					(pins
+						(pin
+							(num "A4")
+						)
+					)
+				)
+				(unit
+					(name "E")
+					(pins
+						(pin
+							(num "A5")
+						)
+					)
+				)
+				(unit
+					(name "F")
+					(pins
+						(pin
+							(num "A6")
+						)
+					)
+				)
+				(unit
+					(name "G")
+					(pins
+						(pin
+							(num "A7")
+						)
+					)
+				)
+				(unit
+					(name "H")
+					(pins
+						(pin
+							(num "A8")
+						)
+					)
+				)
+				(unit
+					(name "I")
+					(pins
+						(pin
+							(num "A9")
+						)
+					)
+				)
+				(unit
+					(name "J")
+					(pins
+						(pin
+							(num "A10")
+						)
+					)
+				)
+				(unit
+					(name "K")
+					(pins
+						(pin
+							(num "A11")
+						)
+					)
+				)
+				(unit
+					(name "L")
+					(pins
+						(pin
+							(num "A12")
+						)
+					)
+				)
+				(unit
+					(name "M")
+					(pins
+						(pin
+							(num "A13")
+						)
+					)
+				)
+				(unit
+					(name "N")
+					(pins
+						(pin
+							(num "A14")
+						)
+					)
+				)
+				(unit
+					(name "O")
+					(pins
+						(pin
+							(num "A15")
+						)
+					)
+				)
+				(unit
+					(name "P")
+					(pins
+						(pin
+							(num "A16")
+						)
+					)
+				)
+				(unit
+					(name "Q")
+					(pins
+						(pin
+							(num "A17")
+						)
+					)
+				)
+				(unit
+					(name "R")
+					(pins
+						(pin
+							(num "A18")
+						)
+					)
+				)
+				(unit
+					(name "S")
+					(pins
+						(pin
+							(num "A19")
+						)
+					)
+				)
+				(unit
+					(name "T")
+					(pins
+						(pin
+							(num "A20")
+						)
+					)
+				)
+				(unit
+					(name "U")
+					(pins
+						(pin
+							(num "A21")
+						)
+					)
+				)
+				(unit
+					(name "V")
+					(pins
+						(pin
+							(num "A22")
+						)
+					)
+				)
+				(unit
+					(name "W")
+					(pins
+						(pin
+							(num "A23")
+						)
+					)
+				)
+				(unit
+					(name "X")
+					(pins
+						(pin
+							(num "A24")
+						)
+					)
+				)
+				(unit
+					(name "Y")
+					(pins
+						(pin
+							(num "A25")
+						)
+					)
+				)
+				(unit
+					(name "Z")
+					(pins
+						(pin
+							(num "A26")
+						)
+					)
+				)
+				(unit
+					(name "AA")
+					(pins
+						(pin
+							(num "A27")
+						)
+					)
+				)
+				(unit
+					(name "AB")
+					(pins
+						(pin
+							(num "A28")
+						)
+					)
+				)
+				(unit
+					(name "AC")
+					(pins
+						(pin
+							(num "A29")
+						)
+					)
+				)
+				(unit
+					(name "AD")
+					(pins
+						(pin
+							(num "A30")
+						)
+					)
+				)
+				(unit
+					(name "AE")
+					(pins
+						(pin
+							(num "A31")
+						)
+					)
+				)
+				(unit
+					(name "AF")
+					(pins
+						(pin
+							(num "A32")
+						)
+					)
+				)
+				(unit
+					(name "AG")
+					(pins
+						(pin
+							(num "B1")
+						)
+					)
+				)
+				(unit
+					(name "AH")
+					(pins
+						(pin
+							(num "B2")
+						)
+					)
+				)
+				(unit
+					(name "AI")
+					(pins
+						(pin
+							(num "B3")
+						)
+					)
+				)
+				(unit
+					(name "AJ")
+					(pins
+						(pin
+							(num "B4")
+						)
+					)
+				)
+				(unit
+					(name "AK")
+					(pins
+						(pin
+							(num "B5")
+						)
+					)
+				)
+				(unit
+					(name "AL")
+					(pins
+						(pin
+							(num "B6")
+						)
+					)
+				)
+				(unit
+					(name "AM")
+					(pins
+						(pin
+							(num "B7")
+						)
+					)
+				)
+				(unit
+					(name "AN")
+					(pins
+						(pin
+							(num "B8")
+						)
+					)
+				)
+				(unit
+					(name "AO")
+					(pins
+						(pin
+							(num "B9")
+						)
+					)
+				)
+				(unit
+					(name "AP")
+					(pins
+						(pin
+							(num "B10")
+						)
+					)
+				)
+				(unit
+					(name "AQ")
+					(pins
+						(pin
+							(num "B11")
+						)
+					)
+				)
+				(unit
+					(name "AR")
+					(pins
+						(pin
+							(num "B12")
+						)
+					)
+				)
+				(unit
+					(name "AS")
+					(pins
+						(pin
+							(num "B13")
+						)
+					)
+				)
+				(unit
+					(name "AT")
+					(pins
+						(pin
+							(num "B14")
+						)
+					)
+				)
+				(unit
+					(name "AU")
+					(pins
+						(pin
+							(num "B15")
+						)
+					)
+				)
+				(unit
+					(name "AV")
+					(pins
+						(pin
+							(num "B16")
+						)
+					)
+				)
+				(unit
+					(name "AW")
+					(pins
+						(pin
+							(num "B17")
+						)
+					)
+				)
+				(unit
+					(name "AX")
+					(pins
+						(pin
+							(num "B18")
+						)
+					)
+				)
+				(unit
+					(name "AY")
+					(pins
+						(pin
+							(num "B19")
+						)
+					)
+				)
+				(unit
+					(name "AZ")
+					(pins
+						(pin
+							(num "B20")
+						)
+					)
+				)
+				(unit
+					(name "BA")
+					(pins
+						(pin
+							(num "B21")
+						)
+					)
+				)
+				(unit
+					(name "BB")
+					(pins
+						(pin
+							(num "B22")
+						)
+					)
+				)
+				(unit
+					(name "BC")
+					(pins
+						(pin
+							(num "B23")
+						)
+					)
+				)
+				(unit
+					(name "BD")
+					(pins
+						(pin
+							(num "B24")
+						)
+					)
+				)
+				(unit
+					(name "BE")
+					(pins
+						(pin
+							(num "B25")
+						)
+					)
+				)
+				(unit
+					(name "BF")
+					(pins
+						(pin
+							(num "B26")
+						)
+					)
+				)
+				(unit
+					(name "BG")
+					(pins
+						(pin
+							(num "B27")
+						)
+					)
+				)
+				(unit
+					(name "BH")
+					(pins
+						(pin
+							(num "B28")
+						)
+					)
+				)
+				(unit
+					(name "BI")
+					(pins
+						(pin
+							(num "B29")
+						)
+					)
+				)
+				(unit
+					(name "BJ")
+					(pins
+						(pin
+							(num "B30")
+						)
+					)
+				)
+				(unit
+					(name "BK")
+					(pins
+						(pin
+							(num "B31")
+						)
+					)
+				)
+				(unit
+					(name "BL")
+					(pins
+						(pin
+							(num "B32")
+						)
+					)
+				)
+				(unit
+					(name "BM")
+					(pins
+						(pin
+							(num "C1")
+						)
+					)
+				)
+				(unit
+					(name "BN")
+					(pins
+						(pin
+							(num "C2")
+						)
+					)
+				)
+				(unit
+					(name "BO")
+					(pins
+						(pin
+							(num "C3")
+						)
+					)
+				)
+				(unit
+					(name "BP")
+					(pins
+						(pin
+							(num "C4")
+						)
+					)
+				)
+				(unit
+					(name "BQ")
+					(pins
+						(pin
+							(num "C5")
+						)
+					)
+				)
+				(unit
+					(name "BR")
+					(pins
+						(pin
+							(num "C6")
+						)
+					)
+				)
+				(unit
+					(name "BS")
+					(pins
+						(pin
+							(num "C7")
+						)
+					)
+				)
+				(unit
+					(name "BT")
+					(pins
+						(pin
+							(num "C8")
+						)
+					)
+				)
+				(unit
+					(name "BU")
+					(pins
+						(pin
+							(num "C9")
+						)
+					)
+				)
+				(unit
+					(name "BV")
+					(pins
+						(pin
+							(num "C10")
+						)
+					)
+				)
+				(unit
+					(name "BW")
+					(pins
+						(pin
+							(num "C11")
+						)
+					)
+				)
+				(unit
+					(name "BX")
+					(pins
+						(pin
+							(num "C12")
+						)
+					)
+				)
+				(unit
+					(name "BY")
+					(pins
+						(pin
+							(num "C13")
+						)
+					)
+				)
+				(unit
+					(name "BZ")
+					(pins
+						(pin
+							(num "C14")
+						)
+					)
+				)
+				(unit
+					(name "CA")
+					(pins
+						(pin
+							(num "C15")
+						)
+					)
+				)
+				(unit
+					(name "CB")
+					(pins
+						(pin
+							(num "C16")
+						)
+					)
+				)
+				(unit
+					(name "CC")
+					(pins
+						(pin
+							(num "C17")
+						)
+					)
+				)
+				(unit
+					(name "CD")
+					(pins
+						(pin
+							(num "C18")
+						)
+					)
+				)
+				(unit
+					(name "CE")
+					(pins
+						(pin
+							(num "C19")
+						)
+					)
+				)
+				(unit
+					(name "CF")
+					(pins
+						(pin
+							(num "C20")
+						)
+					)
+				)
+				(unit
+					(name "CG")
+					(pins
+						(pin
+							(num "C21")
+						)
+					)
+				)
+				(unit
+					(name "CH")
+					(pins
+						(pin
+							(num "C22")
+						)
+					)
+				)
+				(unit
+					(name "CI")
+					(pins
+						(pin
+							(num "C23")
+						)
+					)
+				)
+				(unit
+					(name "CJ")
+					(pins
+						(pin
+							(num "C24")
+						)
+					)
+				)
+				(unit
+					(name "CK")
+					(pins
+						(pin
+							(num "C25")
+						)
+					)
+				)
+				(unit
+					(name "CL")
+					(pins
+						(pin
+							(num "C26")
+						)
+					)
+				)
+				(unit
+					(name "CM")
+					(pins
+						(pin
+							(num "C27")
+						)
+					)
+				)
+				(unit
+					(name "CN")
+					(pins
+						(pin
+							(num "C28")
+						)
+					)
+				)
+				(unit
+					(name "CO")
+					(pins
+						(pin
+							(num "C29")
+						)
+					)
+				)
+				(unit
+					(name "CP")
+					(pins
+						(pin
+							(num "C30")
+						)
+					)
+				)
+				(unit
+					(name "CQ")
+					(pins
+						(pin
+							(num "C31")
+						)
+					)
+				)
+				(unit
+					(name "CR")
+					(pins
+						(pin
+							(num "C32")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "X4")
+			(value "MABC96R")
+			(footprint "bus-jumper-horizontal-v3.0-eagle:MABC96R")
+			(fields
+				(field
+					(name "Footprint") "bus-jumper-horizontal-v3.0-eagle:MABC96R")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "bus-jumper-horizontal-v3.0-eagle")
+				(part "con-vg_MABC96R")
+				(description "Eagle con-vg:MABC96R")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "bus-jumper-horizontal-v3.0-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/67953ba1-569b-fe28-52a7-44d43b08ffc0/")
+			)
+			(tstamps "f8b682a7-71ee-4b7b-8b54-89f766a8b0a0" "b10b002d-c36d-e482-7d96-0f958906cddd"
+				"c0bcc5e3-cef5-d7ea-1d6b-5b83d3ae3a81" "db7c1ff6-d675-502b-2e69-1c4bfe60061e"
+				"772fd84f-6313-c970-c976-d68c90059ed7" "1eb73039-d1a3-c6b2-ad32-a8128916ee9b"
+				"fa5d3349-d7c1-3688-90bb-395aacc05095" "c60d56cb-5abd-ecec-7df6-f81a6954d43c"
+				"ed357711-0472-74cf-4f38-2b1c791f74e2" "15e9bbfb-5a11-8544-126d-f81ce83e3265"
+				"1533e85c-9fe0-f96f-95ce-cbe675838f5e" "9daee160-0350-0bed-f3da-c30bd6050987"
+				"4df91510-6258-554d-908a-ff04bbd4e86e" "7c3a38db-0ef6-4079-cc84-0f846b605f2a"
+				"1ea61308-fbf8-6c8a-1fef-d02349efa254" "46ea0a5f-c22e-5b6c-edd6-e48567528139"
+				"6b8e260d-d472-1a58-859d-7e36ae50c377" "a8fbbb88-3b90-539b-75f6-e73abb870f4b"
+				"5e4ed7fa-8930-7cd2-587c-32ceff9a243c" "db1b1f81-6aca-50ef-8646-51af5d9af03a"
+				"968d04e2-9d0a-7857-4e38-f227c7f33ba9" "8f7e4cac-2bd9-f941-665d-bdbdf6b34a11"
+				"34ad7688-44b8-c1f4-7833-a1d4cad28ec3" "30317d80-3d78-5501-58ce-698fa1476da6"
+				"157edd1d-ebe2-c249-ebdf-de21786dc5bd" "ac34e616-a17f-beae-a4e7-8ade335e23d8"
+				"3521ca56-18af-c970-3893-d39d8cf09be1" "2b3ecf4a-6cad-8dc9-c9ee-4d4170391df5"
+				"eaca155f-1af3-b9fb-232a-1f15b49b5276" "14dab273-50b0-5e11-581c-41d5b600b142"
+				"efc7c4ca-8d7e-385e-1c58-e9345748e2dc" "139c87bf-989c-b1e7-27a2-394b3b5bdb6b"
+				"e82bfcc8-e776-73b8-3110-fb3cac8724a2" "c1b63a80-a8b9-3116-c74e-91e0fa6809ba"
+				"a630eee6-1c1c-3871-d7bf-3fe8737d8f78" "433ee128-6a85-b129-a4b2-337bca625380"
+				"1642446d-8f03-3c54-7be0-b2ce49183118" "9ac73f85-4819-9ed5-80de-5252f930d0a0"
+				"70c2a860-40c8-f4b3-3ab3-33255706baca" "3a3b71d9-84b5-b6bf-9e1f-000c6edfe4ef"
+				"0f3b1885-1f0a-364d-fed6-db39f26eed88" "6e977100-e15e-a2ae-072d-b89eb264792f"
+				"94496245-40f2-c5c7-9215-dc86c68040aa" "7e3ed960-4bef-6937-ae97-60e14f68141d"
+				"b718bb4b-1a42-cf2a-8975-36ec4ac81765" "356475b7-9617-86a5-eb1b-2a0aa133ee86"
+				"30bb1066-4387-8544-92e9-3656fd2693c9" "210963df-c53d-135e-0f37-06c6ddd88c4f"
+				"80ca8954-3b45-76bf-ac3d-f3ddc393e6b9" "d1f460bf-738d-1b55-c5c6-1b1c83a17d67"
+				"49afcf09-0a31-4bb2-70e1-560cce989c93" "d72ab822-9d1c-1133-8558-3c0094cf1bd7"
+				"e8c5f153-94ba-9e5a-c563-bdfd7354c84b" "f3872e5e-83b4-36a2-75d4-95da30257968"
+				"c9c16e3b-73c9-7bb9-1a96-6f55d9fb4196" "ad0d9ee2-eeb9-5164-829b-5b1137a760f6"
+				"da0daf0f-5ebb-cba7-031b-ead3539dc6dc" "8c7afc37-2a01-0f55-6722-0b1d4ae8fcf5"
+				"755e68ef-27e9-b989-900a-0939ba7aa587" "55ba730f-2809-5875-8812-a4c5d6f649c5"
+				"2e3b061d-327c-d14b-583e-409fc9d2d153" "b2bc19a8-b896-94bb-2374-41d08a5ea040"
+				"93fbfb71-4f46-f4c4-682a-0fff7d594279" "186bc7f3-ee6b-d577-0033-6ebfa50174cd"
+				"1f61d5b9-8102-b7ba-7df4-60cca9a83943" "ae2e539d-dcb5-df7e-2b73-d44798fe1898"
+				"c93874c4-7c33-025f-a2eb-2b203dfcfba2" "3d37c37d-8d34-bfd5-5665-621ec3df4b26"
+				"3f1caa1f-4ffa-a005-815b-fab494fd0542" "186e0c1b-d644-bc41-ac63-90720daf370b"
+				"b2fae793-90e7-653e-fa85-cb2dccd17f8b" "9a3e1128-9df7-80c6-23b0-b4d1efe42ae0"
+				"366746b7-f12f-2bc2-b6c5-e0c4b29dc51f" "412e3091-09bf-4978-4ff2-62f48912eb9d"
+				"0ee1fbf6-4ca6-4156-2487-40b4299fe654" "19a5e97c-5dec-c3b9-825c-14105de08a08"
+				"53320bf9-1e28-fef4-30f9-9b6910c67d73" "b43ebf6f-3741-56b2-f5f4-43c087c094f0"
+				"db8dd020-9b04-1a68-cab2-55b874a7f437" "903cc8ef-0157-34e4-a84e-ceceb4954d9f"
+				"af2a892b-0382-69fc-a772-70d2c6bfd7a8" "9dd698ec-d773-a9a1-8120-b7874b59807e"
+				"b56f5ba2-992d-4b08-5967-fe8dd0829c17" "523efdb9-04d6-4b24-4ee9-3bf9b2d5746c"
+				"33d9aa0a-9468-db3e-0c6a-2f5c5770cea9" "168dae8d-a2a7-5a88-58f6-ca8a9aac193b"
+				"1505e152-54be-518c-7f79-19cca23ab1d4" "6ef77633-6e3b-56d1-91e7-9047aab7ec74"
+				"8b377658-f74f-dc8e-61c2-30989fadd562" "4c0fefcf-465d-7601-a15a-b68aeefa0e59"
+				"0a9b8726-86b1-46c5-7b7b-8490900ea4a1" "b132969d-7aa3-3eda-bceb-0b04cb94792a"
+				"ba562532-99c0-822c-a210-d10e28d705dd" "77dc1956-5086-e557-0200-b0417b01151f"
+				"a893d82a-42c2-a449-b8bd-d70fce41c8f0" "011e5b0e-70fd-2637-e80f-f2d4ea2c1da2"
+			)
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "A1")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "A2")
+						)
+					)
+				)
+				(unit
+					(name "C")
+					(pins
+						(pin
+							(num "A3")
+						)
+					)
+				)
+				(unit
+					(name "D")
+					(pins
+						(pin
+							(num "A4")
+						)
+					)
+				)
+				(unit
+					(name "E")
+					(pins
+						(pin
+							(num "A5")
+						)
+					)
+				)
+				(unit
+					(name "F")
+					(pins
+						(pin
+							(num "A6")
+						)
+					)
+				)
+				(unit
+					(name "G")
+					(pins
+						(pin
+							(num "A7")
+						)
+					)
+				)
+				(unit
+					(name "H")
+					(pins
+						(pin
+							(num "A8")
+						)
+					)
+				)
+				(unit
+					(name "I")
+					(pins
+						(pin
+							(num "A9")
+						)
+					)
+				)
+				(unit
+					(name "J")
+					(pins
+						(pin
+							(num "A10")
+						)
+					)
+				)
+				(unit
+					(name "K")
+					(pins
+						(pin
+							(num "A11")
+						)
+					)
+				)
+				(unit
+					(name "L")
+					(pins
+						(pin
+							(num "A12")
+						)
+					)
+				)
+				(unit
+					(name "M")
+					(pins
+						(pin
+							(num "A13")
+						)
+					)
+				)
+				(unit
+					(name "N")
+					(pins
+						(pin
+							(num "A14")
+						)
+					)
+				)
+				(unit
+					(name "O")
+					(pins
+						(pin
+							(num "A15")
+						)
+					)
+				)
+				(unit
+					(name "P")
+					(pins
+						(pin
+							(num "A16")
+						)
+					)
+				)
+				(unit
+					(name "Q")
+					(pins
+						(pin
+							(num "A17")
+						)
+					)
+				)
+				(unit
+					(name "R")
+					(pins
+						(pin
+							(num "A18")
+						)
+					)
+				)
+				(unit
+					(name "S")
+					(pins
+						(pin
+							(num "A19")
+						)
+					)
+				)
+				(unit
+					(name "T")
+					(pins
+						(pin
+							(num "A20")
+						)
+					)
+				)
+				(unit
+					(name "U")
+					(pins
+						(pin
+							(num "A21")
+						)
+					)
+				)
+				(unit
+					(name "V")
+					(pins
+						(pin
+							(num "A22")
+						)
+					)
+				)
+				(unit
+					(name "W")
+					(pins
+						(pin
+							(num "A23")
+						)
+					)
+				)
+				(unit
+					(name "X")
+					(pins
+						(pin
+							(num "A24")
+						)
+					)
+				)
+				(unit
+					(name "Y")
+					(pins
+						(pin
+							(num "A25")
+						)
+					)
+				)
+				(unit
+					(name "Z")
+					(pins
+						(pin
+							(num "A26")
+						)
+					)
+				)
+				(unit
+					(name "AA")
+					(pins
+						(pin
+							(num "A27")
+						)
+					)
+				)
+				(unit
+					(name "AB")
+					(pins
+						(pin
+							(num "A28")
+						)
+					)
+				)
+				(unit
+					(name "AC")
+					(pins
+						(pin
+							(num "A29")
+						)
+					)
+				)
+				(unit
+					(name "AD")
+					(pins
+						(pin
+							(num "A30")
+						)
+					)
+				)
+				(unit
+					(name "AE")
+					(pins
+						(pin
+							(num "A31")
+						)
+					)
+				)
+				(unit
+					(name "AF")
+					(pins
+						(pin
+							(num "A32")
+						)
+					)
+				)
+				(unit
+					(name "AG")
+					(pins
+						(pin
+							(num "B1")
+						)
+					)
+				)
+				(unit
+					(name "AH")
+					(pins
+						(pin
+							(num "B2")
+						)
+					)
+				)
+				(unit
+					(name "AI")
+					(pins
+						(pin
+							(num "B3")
+						)
+					)
+				)
+				(unit
+					(name "AJ")
+					(pins
+						(pin
+							(num "B4")
+						)
+					)
+				)
+				(unit
+					(name "AK")
+					(pins
+						(pin
+							(num "B5")
+						)
+					)
+				)
+				(unit
+					(name "AL")
+					(pins
+						(pin
+							(num "B6")
+						)
+					)
+				)
+				(unit
+					(name "AM")
+					(pins
+						(pin
+							(num "B7")
+						)
+					)
+				)
+				(unit
+					(name "AN")
+					(pins
+						(pin
+							(num "B8")
+						)
+					)
+				)
+				(unit
+					(name "AO")
+					(pins
+						(pin
+							(num "B9")
+						)
+					)
+				)
+				(unit
+					(name "AP")
+					(pins
+						(pin
+							(num "B10")
+						)
+					)
+				)
+				(unit
+					(name "AQ")
+					(pins
+						(pin
+							(num "B11")
+						)
+					)
+				)
+				(unit
+					(name "AR")
+					(pins
+						(pin
+							(num "B12")
+						)
+					)
+				)
+				(unit
+					(name "AS")
+					(pins
+						(pin
+							(num "B13")
+						)
+					)
+				)
+				(unit
+					(name "AT")
+					(pins
+						(pin
+							(num "B14")
+						)
+					)
+				)
+				(unit
+					(name "AU")
+					(pins
+						(pin
+							(num "B15")
+						)
+					)
+				)
+				(unit
+					(name "AV")
+					(pins
+						(pin
+							(num "B16")
+						)
+					)
+				)
+				(unit
+					(name "AW")
+					(pins
+						(pin
+							(num "B17")
+						)
+					)
+				)
+				(unit
+					(name "AX")
+					(pins
+						(pin
+							(num "B18")
+						)
+					)
+				)
+				(unit
+					(name "AY")
+					(pins
+						(pin
+							(num "B19")
+						)
+					)
+				)
+				(unit
+					(name "AZ")
+					(pins
+						(pin
+							(num "B20")
+						)
+					)
+				)
+				(unit
+					(name "BA")
+					(pins
+						(pin
+							(num "B21")
+						)
+					)
+				)
+				(unit
+					(name "BB")
+					(pins
+						(pin
+							(num "B22")
+						)
+					)
+				)
+				(unit
+					(name "BC")
+					(pins
+						(pin
+							(num "B23")
+						)
+					)
+				)
+				(unit
+					(name "BD")
+					(pins
+						(pin
+							(num "B24")
+						)
+					)
+				)
+				(unit
+					(name "BE")
+					(pins
+						(pin
+							(num "B25")
+						)
+					)
+				)
+				(unit
+					(name "BF")
+					(pins
+						(pin
+							(num "B26")
+						)
+					)
+				)
+				(unit
+					(name "BG")
+					(pins
+						(pin
+							(num "B27")
+						)
+					)
+				)
+				(unit
+					(name "BH")
+					(pins
+						(pin
+							(num "B28")
+						)
+					)
+				)
+				(unit
+					(name "BI")
+					(pins
+						(pin
+							(num "B29")
+						)
+					)
+				)
+				(unit
+					(name "BJ")
+					(pins
+						(pin
+							(num "B30")
+						)
+					)
+				)
+				(unit
+					(name "BK")
+					(pins
+						(pin
+							(num "B31")
+						)
+					)
+				)
+				(unit
+					(name "BL")
+					(pins
+						(pin
+							(num "B32")
+						)
+					)
+				)
+				(unit
+					(name "BM")
+					(pins
+						(pin
+							(num "C1")
+						)
+					)
+				)
+				(unit
+					(name "BN")
+					(pins
+						(pin
+							(num "C2")
+						)
+					)
+				)
+				(unit
+					(name "BO")
+					(pins
+						(pin
+							(num "C3")
+						)
+					)
+				)
+				(unit
+					(name "BP")
+					(pins
+						(pin
+							(num "C4")
+						)
+					)
+				)
+				(unit
+					(name "BQ")
+					(pins
+						(pin
+							(num "C5")
+						)
+					)
+				)
+				(unit
+					(name "BR")
+					(pins
+						(pin
+							(num "C6")
+						)
+					)
+				)
+				(unit
+					(name "BS")
+					(pins
+						(pin
+							(num "C7")
+						)
+					)
+				)
+				(unit
+					(name "BT")
+					(pins
+						(pin
+							(num "C8")
+						)
+					)
+				)
+				(unit
+					(name "BU")
+					(pins
+						(pin
+							(num "C9")
+						)
+					)
+				)
+				(unit
+					(name "BV")
+					(pins
+						(pin
+							(num "C10")
+						)
+					)
+				)
+				(unit
+					(name "BW")
+					(pins
+						(pin
+							(num "C11")
+						)
+					)
+				)
+				(unit
+					(name "BX")
+					(pins
+						(pin
+							(num "C12")
+						)
+					)
+				)
+				(unit
+					(name "BY")
+					(pins
+						(pin
+							(num "C13")
+						)
+					)
+				)
+				(unit
+					(name "BZ")
+					(pins
+						(pin
+							(num "C14")
+						)
+					)
+				)
+				(unit
+					(name "CA")
+					(pins
+						(pin
+							(num "C15")
+						)
+					)
+				)
+				(unit
+					(name "CB")
+					(pins
+						(pin
+							(num "C16")
+						)
+					)
+				)
+				(unit
+					(name "CC")
+					(pins
+						(pin
+							(num "C17")
+						)
+					)
+				)
+				(unit
+					(name "CD")
+					(pins
+						(pin
+							(num "C18")
+						)
+					)
+				)
+				(unit
+					(name "CE")
+					(pins
+						(pin
+							(num "C19")
+						)
+					)
+				)
+				(unit
+					(name "CF")
+					(pins
+						(pin
+							(num "C20")
+						)
+					)
+				)
+				(unit
+					(name "CG")
+					(pins
+						(pin
+							(num "C21")
+						)
+					)
+				)
+				(unit
+					(name "CH")
+					(pins
+						(pin
+							(num "C22")
+						)
+					)
+				)
+				(unit
+					(name "CI")
+					(pins
+						(pin
+							(num "C23")
+						)
+					)
+				)
+				(unit
+					(name "CJ")
+					(pins
+						(pin
+							(num "C24")
+						)
+					)
+				)
+				(unit
+					(name "CK")
+					(pins
+						(pin
+							(num "C25")
+						)
+					)
+				)
+				(unit
+					(name "CL")
+					(pins
+						(pin
+							(num "C26")
+						)
+					)
+				)
+				(unit
+					(name "CM")
+					(pins
+						(pin
+							(num "C27")
+						)
+					)
+				)
+				(unit
+					(name "CN")
+					(pins
+						(pin
+							(num "C28")
+						)
+					)
+				)
+				(unit
+					(name "CO")
+					(pins
+						(pin
+							(num "C29")
+						)
+					)
+				)
+				(unit
+					(name "CP")
+					(pins
+						(pin
+							(num "C30")
+						)
+					)
+				)
+				(unit
+					(name "CQ")
+					(pins
+						(pin
+							(num "C31")
+						)
+					)
+				)
+				(unit
+					(name "CR")
+					(pins
+						(pin
+							(num "C32")
+						)
+					)
+				)
+			)
+		)
+	)
+	(groups)
+	(variants)
+	(libparts
+		(libpart
+			(lib "bus-jumper-horizontal-v3.0-eagle")
+			(part "con-vg_MABC96R")
+			(description "Eagle con-vg:MABC96R")
+			(fields
+				(field
+					(name "Reference") "X")
+				(field
+					(name "Value") "MABC96R")
+				(field
+					(name "Footprint") "bus-jumper-horizontal-v3.0-eagle:MABC96R")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle con-vg:MABC96R")
+			)
+			(pins
+				(pin
+					(num "A1")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A2")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A3")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A4")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A5")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A6")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A7")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A8")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A9")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A10")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A11")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A12")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A13")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A14")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A15")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A16")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A17")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A18")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A19")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A20")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A21")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A22")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A23")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A24")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A25")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A26")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A27")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A28")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A29")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A30")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A31")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "A32")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B1")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B2")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B3")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B4")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B5")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B6")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B7")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B8")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B9")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B10")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B11")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B12")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B13")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B14")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B15")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B16")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B17")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B18")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B19")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B20")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B21")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B22")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B23")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B24")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B25")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B26")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B27")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B28")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B29")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B30")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B31")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "B32")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C1")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C2")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C3")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C4")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C5")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C6")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C7")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C8")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C9")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C10")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C11")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C12")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C13")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C14")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C15")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C16")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C17")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C18")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C19")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C20")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C21")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C22")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C23")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C24")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C25")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C26")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C27")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C28")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C29")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C30")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C31")
+					(name "S")
+					(type "passive")
+				)
+				(pin
+					(num "C32")
+					(name "S")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-jumper-horizontal-v3.0-eagle")
+			(part "eagle-ltspice_R_0207_10")
+			(description "Eagle eagle-ltspice:R")
+			(fields
+				(field
+					(name "Reference") "R")
+				(field
+					(name "Value") "R")
+				(field
+					(name "Footprint") "bus-jumper-horizontal-v3.0-eagle:0207_10")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle eagle-ltspice:R")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-jumper-horizontal-v3.0-eagle")
+			(part "jumper_JP1Q")
+			(description "Eagle jumper:JP1Q")
+			(fields
+				(field
+					(name "Reference") "JP")
+				(field
+					(name "Value") "JP1Q")
+				(field
+					(name "Footprint") "bus-jumper-horizontal-v3.0-eagle:JP1")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle jumper:JP1Q")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "2")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "bus-jumper-horizontal-v3.0-eagle")
+			(part "led_LED_5MM")
+			(description "Eagle led:LED")
+			(fields
+				(field
+					(name "Reference") "LED")
+				(field
+					(name "Value") "LED")
+				(field
+					(name "Footprint") "bus-jumper-horizontal-v3.0-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle led:LED")
+			)
+			(pins
+				(pin
+					(num "A")
+					(name "A")
+					(type "passive")
+				)
+				(pin
+					(num "K")
+					(name "C")
+					(type "passive")
+				)
+			)
+		)
+	)
+	(libraries
+		(library
+			(logical "bus-jumper-horizontal-v3.0-eagle")
+			(uri "${KIPRJMOD}/bus-jumper-horizontal-v3.0-eagle.kicad_sym")
+		)
+	)
+	(nets
+		(net
+			(code "1")
+			(name "GND")
+			(class "Default")
+			(node
+				(ref "PWR1")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "PWR2")
+				(pin "K")
+				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "X3")
+				(pin "A1")
+				(pinfunction "S_A1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X3")
+				(pin "A32")
+				(pinfunction "S_A32")
+				(pintype "passive")
+			)
+			(node
+				(ref "X3")
+				(pin "B1")
+				(pinfunction "S_B1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X3")
+				(pin "B32")
+				(pinfunction "S_B32")
+				(pintype "passive")
+			)
+			(node
+				(ref "X3")
+				(pin "C1")
+				(pinfunction "S_C1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X3")
+				(pin "C32")
+				(pinfunction "S_C32")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A1")
+				(pinfunction "S_A1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A32")
+				(pinfunction "S_A32")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B1")
+				(pinfunction "S_B1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B32")
+				(pinfunction "S_B32")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C1")
+				(pinfunction "S_C1")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C32")
+				(pinfunction "S_C32")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "2")
+			(name "N$4")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A3")
+				(pinfunction "S_A3")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A3")
+				(pinfunction "S_A3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "3")
+			(name "N$6")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A4")
+				(pinfunction "S_A4")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A4")
+				(pinfunction "S_A4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "4")
+			(name "N$7")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A5")
+				(pinfunction "S_A5")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A5")
+				(pinfunction "S_A5")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "5")
+			(name "N$8")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A6")
+				(pinfunction "S_A6")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A6")
+				(pinfunction "S_A6")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "6")
+			(name "N$9")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A7")
+				(pinfunction "S_A7")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A7")
+				(pinfunction "S_A7")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "7")
+			(name "N$10")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A8")
+				(pinfunction "S_A8")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A8")
+				(pinfunction "S_A8")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "8")
+			(name "N$11")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A9")
+				(pinfunction "S_A9")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A9")
+				(pinfunction "S_A9")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "9")
+			(name "N$12")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A10")
+				(pinfunction "S_A10")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A10")
+				(pinfunction "S_A10")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "10")
+			(name "N$13")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A11")
+				(pinfunction "S_A11")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A11")
+				(pinfunction "S_A11")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "11")
+			(name "N$14")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A12")
+				(pinfunction "S_A12")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A12")
+				(pinfunction "S_A12")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "12")
+			(name "N$15")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A13")
+				(pinfunction "S_A13")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A13")
+				(pinfunction "S_A13")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "13")
+			(name "N$16")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A14")
+				(pinfunction "S_A14")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A14")
+				(pinfunction "S_A14")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "14")
+			(name "N$17")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A15")
+				(pinfunction "S_A15")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A15")
+				(pinfunction "S_A15")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "15")
+			(name "N$18")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A16")
+				(pinfunction "S_A16")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A16")
+				(pinfunction "S_A16")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "16")
+			(name "N$19")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A17")
+				(pinfunction "S_A17")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A17")
+				(pinfunction "S_A17")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "17")
+			(name "N$20")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A18")
+				(pinfunction "S_A18")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A18")
+				(pinfunction "S_A18")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "18")
+			(name "N$21")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A19")
+				(pinfunction "S_A19")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A19")
+				(pinfunction "S_A19")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "19")
+			(name "N$22")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A20")
+				(pinfunction "S_A20")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A20")
+				(pinfunction "S_A20")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "20")
+			(name "N$23")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A21")
+				(pinfunction "S_A21")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A21")
+				(pinfunction "S_A21")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "21")
+			(name "N$24")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A22")
+				(pinfunction "S_A22")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A22")
+				(pinfunction "S_A22")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "22")
+			(name "N$25")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A23")
+				(pinfunction "S_A23")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A23")
+				(pinfunction "S_A23")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "23")
+			(name "N$26")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A24")
+				(pinfunction "S_A24")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A24")
+				(pinfunction "S_A24")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "24")
+			(name "N$27")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A25")
+				(pinfunction "S_A25")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A25")
+				(pinfunction "S_A25")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "25")
+			(name "N$28")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A26")
+				(pinfunction "S_A26")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A26")
+				(pinfunction "S_A26")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "26")
+			(name "N$29")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A27")
+				(pinfunction "S_A27")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A27")
+				(pinfunction "S_A27")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "27")
+			(name "N$30")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A28")
+				(pinfunction "S_A28")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A28")
+				(pinfunction "S_A28")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "28")
+			(name "N$31")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A29")
+				(pinfunction "S_A29")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A29")
+				(pinfunction "S_A29")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "29")
+			(name "N$32")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A30")
+				(pinfunction "S_A30")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A30")
+				(pinfunction "S_A30")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "30")
+			(name "N$35")
+			(class "Default")
+			(node
+				(ref "PWR1")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+			(node
+				(ref "R1")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "31")
+			(name "N$36")
+			(class "Default")
+			(node
+				(ref "PWR2")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+			(node
+				(ref "R2")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "32")
+			(name "N$37")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B3")
+				(pinfunction "S_B3")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B3")
+				(pinfunction "S_B3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "33")
+			(name "N$38")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B4")
+				(pinfunction "S_B4")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B4")
+				(pinfunction "S_B4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "34")
+			(name "N$39")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B5")
+				(pinfunction "S_B5")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B5")
+				(pinfunction "S_B5")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "35")
+			(name "N$40")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B6")
+				(pinfunction "S_B6")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B6")
+				(pinfunction "S_B6")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "36")
+			(name "N$41")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B7")
+				(pinfunction "S_B7")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B7")
+				(pinfunction "S_B7")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "37")
+			(name "N$42")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B8")
+				(pinfunction "S_B8")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B8")
+				(pinfunction "S_B8")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "38")
+			(name "N$43")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B9")
+				(pinfunction "S_B9")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B9")
+				(pinfunction "S_B9")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "39")
+			(name "N$44")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B10")
+				(pinfunction "S_B10")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B10")
+				(pinfunction "S_B10")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "40")
+			(name "N$45")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B11")
+				(pinfunction "S_B11")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B11")
+				(pinfunction "S_B11")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "41")
+			(name "N$46")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B12")
+				(pinfunction "S_B12")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B12")
+				(pinfunction "S_B12")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "42")
+			(name "N$47")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B13")
+				(pinfunction "S_B13")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B13")
+				(pinfunction "S_B13")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "43")
+			(name "N$48")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B14")
+				(pinfunction "S_B14")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B14")
+				(pinfunction "S_B14")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "44")
+			(name "N$49")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B15")
+				(pinfunction "S_B15")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B15")
+				(pinfunction "S_B15")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "45")
+			(name "N$50")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B16")
+				(pinfunction "S_B16")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B16")
+				(pinfunction "S_B16")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "46")
+			(name "N$51")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B17")
+				(pinfunction "S_B17")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B17")
+				(pinfunction "S_B17")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "47")
+			(name "N$52")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B18")
+				(pinfunction "S_B18")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B18")
+				(pinfunction "S_B18")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "48")
+			(name "N$53")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B19")
+				(pinfunction "S_B19")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B19")
+				(pinfunction "S_B19")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "49")
+			(name "N$54")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B20")
+				(pinfunction "S_B20")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B20")
+				(pinfunction "S_B20")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "50")
+			(name "N$55")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B21")
+				(pinfunction "S_B21")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B21")
+				(pinfunction "S_B21")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "51")
+			(name "N$56")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B22")
+				(pinfunction "S_B22")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B22")
+				(pinfunction "S_B22")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "52")
+			(name "N$57")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B23")
+				(pinfunction "S_B23")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B23")
+				(pinfunction "S_B23")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "53")
+			(name "N$58")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B24")
+				(pinfunction "S_B24")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B24")
+				(pinfunction "S_B24")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "54")
+			(name "N$59")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B25")
+				(pinfunction "S_B25")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B25")
+				(pinfunction "S_B25")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "55")
+			(name "N$60")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B26")
+				(pinfunction "S_B26")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B26")
+				(pinfunction "S_B26")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "56")
+			(name "N$61")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B27")
+				(pinfunction "S_B27")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B27")
+				(pinfunction "S_B27")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "57")
+			(name "N$62")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B28")
+				(pinfunction "S_B28")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B28")
+				(pinfunction "S_B28")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "58")
+			(name "N$63")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B29")
+				(pinfunction "S_B29")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B29")
+				(pinfunction "S_B29")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "59")
+			(name "N$64")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B30")
+				(pinfunction "S_B30")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B30")
+				(pinfunction "S_B30")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "60")
+			(name "N$69")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C3")
+				(pinfunction "S_C3")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C3")
+				(pinfunction "S_C3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "61")
+			(name "N$70")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C4")
+				(pinfunction "S_C4")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C4")
+				(pinfunction "S_C4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "62")
+			(name "N$71")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C5")
+				(pinfunction "S_C5")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C5")
+				(pinfunction "S_C5")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "63")
+			(name "N$72")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C6")
+				(pinfunction "S_C6")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C6")
+				(pinfunction "S_C6")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "64")
+			(name "N$73")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C7")
+				(pinfunction "S_C7")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C7")
+				(pinfunction "S_C7")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "65")
+			(name "N$74")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C8")
+				(pinfunction "S_C8")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C8")
+				(pinfunction "S_C8")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "66")
+			(name "N$75")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C9")
+				(pinfunction "S_C9")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C9")
+				(pinfunction "S_C9")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "67")
+			(name "N$76")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C10")
+				(pinfunction "S_C10")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C10")
+				(pinfunction "S_C10")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "68")
+			(name "N$77")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C11")
+				(pinfunction "S_C11")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C11")
+				(pinfunction "S_C11")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "69")
+			(name "N$78")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C12")
+				(pinfunction "S_C12")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C12")
+				(pinfunction "S_C12")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "70")
+			(name "N$79")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C13")
+				(pinfunction "S_C13")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C13")
+				(pinfunction "S_C13")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "71")
+			(name "N$80")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C14")
+				(pinfunction "S_C14")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C14")
+				(pinfunction "S_C14")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "72")
+			(name "N$81")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C15")
+				(pinfunction "S_C15")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C15")
+				(pinfunction "S_C15")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "73")
+			(name "N$82")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C16")
+				(pinfunction "S_C16")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C16")
+				(pinfunction "S_C16")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "74")
+			(name "N$83")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C17")
+				(pinfunction "S_C17")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C17")
+				(pinfunction "S_C17")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "75")
+			(name "N$84")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C18")
+				(pinfunction "S_C18")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C18")
+				(pinfunction "S_C18")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "76")
+			(name "N$85")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C19")
+				(pinfunction "S_C19")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C19")
+				(pinfunction "S_C19")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "77")
+			(name "N$86")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C20")
+				(pinfunction "S_C20")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C20")
+				(pinfunction "S_C20")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "78")
+			(name "N$87")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C21")
+				(pinfunction "S_C21")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C21")
+				(pinfunction "S_C21")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "79")
+			(name "N$88")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C22")
+				(pinfunction "S_C22")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C22")
+				(pinfunction "S_C22")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "80")
+			(name "N$89")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C23")
+				(pinfunction "S_C23")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C23")
+				(pinfunction "S_C23")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "81")
+			(name "N$90")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C24")
+				(pinfunction "S_C24")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C24")
+				(pinfunction "S_C24")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "82")
+			(name "N$91")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C25")
+				(pinfunction "S_C25")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C25")
+				(pinfunction "S_C25")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "83")
+			(name "N$92")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C26")
+				(pinfunction "S_C26")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C26")
+				(pinfunction "S_C26")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "84")
+			(name "N$93")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C27")
+				(pinfunction "S_C27")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C27")
+				(pinfunction "S_C27")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "85")
+			(name "N$94")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C28")
+				(pinfunction "S_C28")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C28")
+				(pinfunction "S_C28")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "86")
+			(name "N$95")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C29")
+				(pinfunction "S_C29")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C29")
+				(pinfunction "S_C29")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "87")
+			(name "N$96")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "C30")
+				(pinfunction "S_C30")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C30")
+				(pinfunction "S_C30")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "88")
+			(name "V1")
+			(class "Default")
+			(node
+				(ref "JP1")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R1")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X3")
+				(pin "A2")
+				(pinfunction "S_A2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X3")
+				(pin "A31")
+				(pinfunction "S_A31")
+				(pintype "passive")
+			)
+			(node
+				(ref "X3")
+				(pin "B2")
+				(pinfunction "S_B2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X3")
+				(pin "B31")
+				(pinfunction "S_B31")
+				(pintype "passive")
+			)
+			(node
+				(ref "X3")
+				(pin "C2")
+				(pinfunction "S_C2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X3")
+				(pin "C31")
+				(pinfunction "S_C31")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "89")
+			(name "V2")
+			(class "Default")
+			(node
+				(ref "JP1")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "R2")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A2")
+				(pinfunction "S_A2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A31")
+				(pinfunction "S_A31")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B2")
+				(pinfunction "S_B2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B31")
+				(pinfunction "S_B31")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C2")
+				(pinfunction "S_C2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C31")
+				(pinfunction "S_C31")
+				(pintype "passive")
+			)
+		)
+	)
+)

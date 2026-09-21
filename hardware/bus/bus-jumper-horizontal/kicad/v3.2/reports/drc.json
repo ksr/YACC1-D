@@ -1,0 +1,673 @@
+{
+    "$schema": "https://schemas.kicad.org/drc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-09-20T21:33:32",
+    "ignored_checks": [
+        {
+            "description": "Footprint has no courtyard defined",
+            "key": "missing_courtyard"
+        },
+        {
+            "description": "Track endpoint not centered on via",
+            "key": "track_not_centered_on_via"
+        },
+        {
+            "description": "Tuning profile track geometries",
+            "key": "tuning_profile_track_geometries"
+        },
+        {
+            "description": "Footprint doesn't match symbol's footprint filters",
+            "key": "footprint_filters_mismatch"
+        },
+        {
+            "description": "Footprint component type doesn't match footprint pads",
+            "key": "footprint_type_mismatch"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.6",
+    "schematic_parity": [],
+    "source": "bus-jumper-horizontal-v3.2.kicad_pcb",
+    "unconnected_items": [
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
+                    "description": "PTH pad A1 [GND] of X3",
+                    "pos": {
+                        "x": 106.5962,
+                        "y": 111.295
+                    },
+                    "uuid": "97447240-1167-499b-8f7f-f85fefdc7bfc"
+                },
+                {
+                    "description": "Zone [GND] on In1.Cu, priority 6",
+                    "pos": {
+                        "x": 241.2924,
+                        "y": 125.3412
+                    },
+                    "uuid": "5f7dd6c1-8cd4-45cf-a213-ddfa9e01d777"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        }
+    ],
+    "violations": [
+        {
+            "description": "Items not allowed (keepout area of X4)",
+            "items": [
+                {
+                    "description": "NPTH pad of X4",
+                    "pos": {
+                        "x": 229.0661,
+                        "y": 113.5302
+                    },
+                    "uuid": "2d0a5c7d-c377-44a3-997b-4a0bd8fb063f"
+                }
+            ],
+            "severity": "error",
+            "type": "items_not_allowed"
+        },
+        {
+            "description": "Items not allowed (keepout area of X4)",
+            "items": [
+                {
+                    "description": "NPTH pad of X4",
+                    "pos": {
+                        "x": 139.0663,
+                        "y": 113.5302
+                    },
+                    "uuid": "354b0b23-cf57-4147-9257-3ddf55c3432a"
+                }
+            ],
+            "severity": "error",
+            "type": "items_not_allowed"
+        },
+        {
+            "description": "Items not allowed (keepout area of X3)",
+            "items": [
+                {
+                    "description": "NPTH pad of X3",
+                    "pos": {
+                        "x": 112.2261,
+                        "y": 113.5302
+                    },
+                    "uuid": "30318f11-bc12-4683-83af-5ad83aa20790"
+                }
+            ],
+            "severity": "error",
+            "type": "items_not_allowed"
+        },
+        {
+            "description": "Items not allowed (keepout area of X3)",
+            "items": [
+                {
+                    "description": "NPTH pad of X3",
+                    "pos": {
+                        "x": 22.2263,
+                        "y": 113.5302
+                    },
+                    "uuid": "8b1f1f14-ad5f-46c9-8a3b-eac15deefc29"
+                }
+            ],
+            "severity": "error",
+            "type": "items_not_allowed"
+        },
+        {
+            "description": "Isolated copper fill",
+            "items": [
+                {
+                    "description": "Zone [<no net>] on In2.Cu, priority 6",
+                    "pos": {
+                        "x": 241.2924,
+                        "y": 125.3412
+                    },
+                    "uuid": "8656e1e2-97c5-45e9-9ea5-51592a802d3c"
+                }
+            ],
+            "severity": "warning",
+            "type": "isolated_copper"
+        },
+        {
+            "description": "Footprint 'MABC96R' does not match copy in library 'bus-jumper-horizontal-v3.2-eagle'",
+            "items": [
+                {
+                    "description": "Footprint X4",
+                    "pos": {
+                        "x": 184.0662,
+                        "y": 113.835
+                    },
+                    "uuid": "279edc66-44c8-49d0-bd0c-3d73b9a10809"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Footprint 'MABC96R' does not match copy in library 'bus-jumper-horizontal-v3.2-eagle'",
+            "items": [
+                {
+                    "description": "Footprint X3",
+                    "pos": {
+                        "x": 67.2262,
+                        "y": 113.835
+                    },
+                    "uuid": "4e1bbc12-c5ac-4720-bc61-f4b9116b4f22"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of X4 on F.Silkscreen",
+                    "pos": {
+                        "x": 141.9022,
+                        "y": 114.978
+                    },
+                    "uuid": "52be1c2b-0099-45c0-867c-8ef8164c97a2"
+                },
+                {
+                    "description": "Footprint text of X4 ( c )",
+                    "pos": {
+                        "x": 142.4102,
+                        "y": 115.994
+                    },
+                    "uuid": "d66b6e8e-a7ab-40b2-865f-d22283e43905"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of X4 on F.Silkscreen",
+                    "pos": {
+                        "x": 141.9022,
+                        "y": 114.978
+                    },
+                    "uuid": "3c4eab85-0668-41d0-a23b-c6645a6c27d8"
+                },
+                {
+                    "description": "Footprint text of X4 ( c )",
+                    "pos": {
+                        "x": 142.4102,
+                        "y": 115.994
+                    },
+                    "uuid": "d66b6e8e-a7ab-40b2-865f-d22283e43905"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of X4 on F.Silkscreen",
+                    "pos": {
+                        "x": 227.2462,
+                        "y": 109.39
+                    },
+                    "uuid": "082a1aff-2059-48d3-985a-9f638183cd15"
+                },
+                {
+                    "description": "Footprint text of X4 ( a )",
+                    "pos": {
+                        "x": 142.2832,
+                        "y": 110.66
+                    },
+                    "uuid": "10963c8e-eed2-4402-98ac-d30ccf0edead"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Footprint text of X4 (32)",
+                    "pos": {
+                        "x": 142.2832,
+                        "y": 112.692
+                    },
+                    "uuid": "9ae40ec5-a693-4c55-ae91-f947593f38c0"
+                },
+                {
+                    "description": "Segment of X4 on F.Silkscreen",
+                    "pos": {
+                        "x": 141.9022,
+                        "y": 112.184
+                    },
+                    "uuid": "a29dffe8-d4f4-47bf-be4f-158cd066bff6"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of X4 on F.Silkscreen",
+                    "pos": {
+                        "x": 141.9022,
+                        "y": 112.184
+                    },
+                    "uuid": "a29dffe8-d4f4-47bf-be4f-158cd066bff6"
+                },
+                {
+                    "description": "Footprint text of X4 ( c )",
+                    "pos": {
+                        "x": 142.4102,
+                        "y": 115.994
+                    },
+                    "uuid": "d66b6e8e-a7ab-40b2-865f-d22283e43905"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Footprint text of X4 (32)",
+                    "pos": {
+                        "x": 142.2832,
+                        "y": 112.692
+                    },
+                    "uuid": "9ae40ec5-a693-4c55-ae91-f947593f38c0"
+                },
+                {
+                    "description": "Segment of X4 on F.Silkscreen",
+                    "pos": {
+                        "x": 140.8862,
+                        "y": 110.914
+                    },
+                    "uuid": "c8eb7418-d770-4dac-a3b3-60b088100195"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of X4 on F.Silkscreen",
+                    "pos": {
+                        "x": 141.9022,
+                        "y": 112.184
+                    },
+                    "uuid": "3071684a-802c-4d8d-aca8-1fdf1ced8606"
+                },
+                {
+                    "description": "Footprint text of X4 (32)",
+                    "pos": {
+                        "x": 142.2832,
+                        "y": 112.692
+                    },
+                    "uuid": "9ae40ec5-a693-4c55-ae91-f947593f38c0"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of X4 on F.Silkscreen",
+                    "pos": {
+                        "x": 140.8862,
+                        "y": 109.39
+                    },
+                    "uuid": "0b10b8d4-e05f-4325-85e7-184720931538"
+                },
+                {
+                    "description": "Footprint text of X4 (32)",
+                    "pos": {
+                        "x": 142.2832,
+                        "y": 112.692
+                    },
+                    "uuid": "9ae40ec5-a693-4c55-ae91-f947593f38c0"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Footprint text of X3 (32)",
+                    "pos": {
+                        "x": 25.4432,
+                        "y": 112.692
+                    },
+                    "uuid": "703f4cc0-d6bb-4cf0-aa30-91ea1fcd1348"
+                },
+                {
+                    "description": "Segment of X3 on F.Silkscreen",
+                    "pos": {
+                        "x": 24.0462,
+                        "y": 109.39
+                    },
+                    "uuid": "c13ec47a-5bb4-4150-ac02-30bbb19de45d"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Footprint text of X3 (32)",
+                    "pos": {
+                        "x": 25.4432,
+                        "y": 112.692
+                    },
+                    "uuid": "703f4cc0-d6bb-4cf0-aa30-91ea1fcd1348"
+                },
+                {
+                    "description": "Segment of X3 on F.Silkscreen",
+                    "pos": {
+                        "x": 24.0462,
+                        "y": 110.914
+                    },
+                    "uuid": "79eae6b3-d559-4b46-ad50-b60103370136"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of X3 on F.Silkscreen",
+                    "pos": {
+                        "x": 110.4062,
+                        "y": 109.39
+                    },
+                    "uuid": "317c0e20-f30f-49a2-b31b-534372e6a8ac"
+                },
+                {
+                    "description": "Footprint text of X3 ( a )",
+                    "pos": {
+                        "x": 25.4432,
+                        "y": 110.66
+                    },
+                    "uuid": "7be3ee1d-b628-4aa9-bbf3-d9f902e042d1"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of X3 on F.Silkscreen",
+                    "pos": {
+                        "x": 25.0622,
+                        "y": 114.978
+                    },
+                    "uuid": "4b1cb4c4-e65b-46ef-b875-65b53082fb75"
+                },
+                {
+                    "description": "Footprint text of X3 ( c )",
+                    "pos": {
+                        "x": 25.5702,
+                        "y": 115.994
+                    },
+                    "uuid": "63c56d84-f365-479b-aac8-56ea122406cc"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Footprint text of X3 ( c )",
+                    "pos": {
+                        "x": 25.5702,
+                        "y": 115.994
+                    },
+                    "uuid": "63c56d84-f365-479b-aac8-56ea122406cc"
+                },
+                {
+                    "description": "Segment of X3 on F.Silkscreen",
+                    "pos": {
+                        "x": 25.0622,
+                        "y": 112.184
+                    },
+                    "uuid": "b372093f-14c4-4455-afd4-f9818ca67073"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of X3 on F.Silkscreen",
+                    "pos": {
+                        "x": 25.0622,
+                        "y": 114.978
+                    },
+                    "uuid": "618c2a7a-d153-4621-a28b-5f1f127b61c7"
+                },
+                {
+                    "description": "Footprint text of X3 ( c )",
+                    "pos": {
+                        "x": 25.5702,
+                        "y": 115.994
+                    },
+                    "uuid": "63c56d84-f365-479b-aac8-56ea122406cc"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of X3 on F.Silkscreen",
+                    "pos": {
+                        "x": 25.0622,
+                        "y": 112.184
+                    },
+                    "uuid": "5317c707-6dd4-4024-97c9-acbc811830e3"
+                },
+                {
+                    "description": "Footprint text of X3 (32)",
+                    "pos": {
+                        "x": 25.4432,
+                        "y": 112.692
+                    },
+                    "uuid": "703f4cc0-d6bb-4cf0-aa30-91ea1fcd1348"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Footprint text of X3 (32)",
+                    "pos": {
+                        "x": 25.4432,
+                        "y": 112.692
+                    },
+                    "uuid": "703f4cc0-d6bb-4cf0-aa30-91ea1fcd1348"
+                },
+                {
+                    "description": "Segment of X3 on F.Silkscreen",
+                    "pos": {
+                        "x": 25.0622,
+                        "y": 112.184
+                    },
+                    "uuid": "b372093f-14c4-4455-afd4-f9818ca67073"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP1 on F.Silkscreen",
+                    "pos": {
+                        "x": 125.9002,
+                        "y": 120.185
+                    },
+                    "uuid": "d5ccc0b6-b4ef-476e-946c-88ed6c8f9a8e"
+                },
+                {
+                    "description": "PTH pad 1 [V2] of JP1",
+                    "pos": {
+                        "x": 126.9162,
+                        "y": 121.455
+                    },
+                    "uuid": "e4ef407e-b1b9-4132-bfb7-e23b1af23d66"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP1 on F.Silkscreen",
+                    "pos": {
+                        "x": 125.9002,
+                        "y": 122.725
+                    },
+                    "uuid": "c009b605-9b69-4e1a-825c-8207edc28245"
+                },
+                {
+                    "description": "PTH pad 1 [V2] of JP1",
+                    "pos": {
+                        "x": 126.9162,
+                        "y": 121.455
+                    },
+                    "uuid": "e4ef407e-b1b9-4132-bfb7-e23b1af23d66"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Footprint text of X3 (1)",
+                    "pos": {
+                        "x": 107.8662,
+                        "y": 113.454
+                    },
+                    "uuid": "36314dfa-fa2a-4fbd-aa06-f0708e27674d"
+                },
+                {
+                    "description": "PTH pad B1 [GND] of X3",
+                    "pos": {
+                        "x": 106.5962,
+                        "y": 113.835
+                    },
+                    "uuid": "4f1afbb2-0658-4a73-9ee7-bb3ecf01e95c"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP1 on F.Silkscreen",
+                    "pos": {
+                        "x": 123.3602,
+                        "y": 120.185
+                    },
+                    "uuid": "bf9d46d4-8e16-4a26-b681-020563a65b75"
+                },
+                {
+                    "description": "PTH pad 2 [V1] of JP1",
+                    "pos": {
+                        "x": 124.3762,
+                        "y": 121.455
+                    },
+                    "uuid": "32719b38-d71a-48ce-8140-9160123086fe"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of JP1 on F.Silkscreen",
+                    "pos": {
+                        "x": 123.3602,
+                        "y": 122.725
+                    },
+                    "uuid": "4ec9cba6-843f-47c2-bbdd-b91b9ba5c7fe"
+                },
+                {
+                    "description": "PTH pad 2 [V1] of JP1",
+                    "pos": {
+                        "x": 124.3762,
+                        "y": 121.455
+                    },
+                    "uuid": "32719b38-d71a-48ce-8140-9160123086fe"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Footprint text of X4 (1)",
+                    "pos": {
+                        "x": 224.7062,
+                        "y": 113.454
+                    },
+                    "uuid": "5f9aa9c0-8d01-41a1-b675-0216ad9a9d99"
+                },
+                {
+                    "description": "PTH pad B1 [GND] of X4",
+                    "pos": {
+                        "x": 223.4362,
+                        "y": 113.835
+                    },
+                    "uuid": "d726bc20-fbb6-46de-b949-2906f66ff91a"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        }
+    ]
+}

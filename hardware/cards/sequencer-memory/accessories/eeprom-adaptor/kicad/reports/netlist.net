@@ -1,0 +1,427 @@
+(export
+	(version "E")
+	(design
+		(source "/Users/ksr77/Developer/YACC1-D/hardware/cards/sequencer-memory/accessories/eeprom-adaptor/kicad/sequencer-memory-eeprom-adaptor.kicad_sch")
+		(date "2026-09-20T21:37:06")
+		(tool "Eeschema 10.0.6")
+		(sheet
+			(number "1")
+			(name "/")
+			(tstamps "/")
+			(title_block
+				(title "sequencer-memory-eeprom-adaptor")
+				(company)
+				(rev)
+				(date)
+				(source "sequencer-memory-eeprom-adaptor.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle schematic; see README.md")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+		(sheet
+			(number "2")
+			(name "/Sheet 1/")
+			(tstamps "/512aaca2-047f-4c3b-d331-9168363a3336/")
+			(title_block
+				(title "sequencer-memory-eeprom-adaptor sheet 1")
+				(company)
+				(rev)
+				(date)
+				(source "sequencer-memory-eeprom-adaptor-sheet1.kicad_sch")
+				(comment
+					(number "1")
+					(value "Converted from Eagle: eeprom adaptor.sch sheet 1")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+	)
+	(components
+		(comp
+			(ref "IC1")
+			(value "AT24C*")
+			(footprint "sequencer-memory-eeprom-adaptor-eagle:DIL08")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-eeprom-adaptor-eagle:DIL08")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-eeprom-adaptor-eagle")
+				(part "atmel_AT24Cx_P")
+				(description "Eagle atmel:AT24C*")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-eeprom-adaptor-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/512aaca2-047f-4c3b-d331-9168363a3336/")
+			)
+			(tstamps "73dc99a0-b70d-0c3b-ab37-8233292a3c13")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "5")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "IC2")
+			(value "AT24C*")
+			(footprint "sequencer-memory-eeprom-adaptor-eagle:DIL08")
+			(fields
+				(field
+					(name "Footprint") "sequencer-memory-eeprom-adaptor-eagle:DIL08")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "sequencer-memory-eeprom-adaptor-eagle")
+				(part "atmel_AT24Cx_P")
+				(description "Eagle atmel:AT24C*")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "sequencer-memory-eeprom-adaptor-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/512aaca2-047f-4c3b-d331-9168363a3336/")
+			)
+			(tstamps "f557713f-621c-b6a4-7677-b3d9211f4417")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "5")
+						)
+					)
+				)
+			)
+		)
+	)
+	(groups)
+	(variants)
+	(libparts
+		(libpart
+			(lib "sequencer-memory-eeprom-adaptor-eagle")
+			(part "atmel_AT24Cx_P")
+			(description "Eagle atmel:AT24C*")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "AT24C*")
+				(field
+					(name "Footprint") "sequencer-memory-eeprom-adaptor-eagle:DIL08")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle atmel:AT24C*")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "A0")
+					(type "input")
+				)
+				(pin
+					(num "2")
+					(name "A1")
+					(type "input")
+				)
+				(pin
+					(num "3")
+					(name "A2")
+					(type "input")
+				)
+				(pin
+					(num "4")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "5")
+					(name "SDA")
+					(type "passive")
+				)
+				(pin
+					(num "6")
+					(name "SCL")
+					(type "passive")
+				)
+				(pin
+					(num "7")
+					(name "WP")
+					(type "input")
+				)
+				(pin
+					(num "8")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+	)
+	(libraries
+		(library
+			(logical "sequencer-memory-eeprom-adaptor-eagle")
+			(uri "${KIPRJMOD}/sequencer-memory-eeprom-adaptor-eagle.kicad_sym")
+		)
+	)
+	(nets
+		(net
+			(code "1")
+			(name "GND")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "4")
+				(pinfunction "GND_4")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC2")
+				(pin "1")
+				(pinfunction "A0_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "4")
+				(pinfunction "GND_4")
+				(pintype "power_in")
+			)
+		)
+		(net
+			(code "2")
+			(name "SCL")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "6")
+				(pinfunction "SCL_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "6")
+				(pinfunction "SCL_6")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "3")
+			(name "SDA")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "5")
+				(pinfunction "SDA_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "5")
+				(pinfunction "SDA_5")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "4")
+			(name "VCC")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "1")
+				(pinfunction "A0_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC1")
+				(pin "2")
+				(pinfunction "A1_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC1")
+				(pin "3")
+				(pinfunction "A2_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC1")
+				(pin "8")
+				(pinfunction "VCC_8")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC2")
+				(pin "2")
+				(pinfunction "A1_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "3")
+				(pinfunction "A2_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "8")
+				(pinfunction "VCC_8")
+				(pintype "power_in")
+			)
+		)
+		(net
+			(code "5")
+			(name "WP")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "7")
+				(pinfunction "WP_7")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "7")
+				(pinfunction "WP_7")
+				(pintype "input")
+			)
+		)
+	)
+)

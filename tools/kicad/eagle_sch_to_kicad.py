@@ -18,7 +18,8 @@ Written for the YACC1 Memory card v1.3 conversion (YACCS/kicad). Behaviour:
   * pin numbers come from the device's <connect> table (gate/pin -> pad)
 
 Geometry: Eagle symbol coordinates and rotations map 1:1 onto KiCad's (both are
-y-up, CCW in symbol space); the sheet is flipped to KiCad's y-down page. Eagle's
+y-up, CCW in symbol space); the sheet is flipped to KiCad's y-down page. An Eagle mirrored
+placement (rot="MRnn", flip x then rotate) is KiCad `(at x y nn) (mirror y)`. Eagle's
 per-gate offsets in a deviceset are placement hints only and are ignored.
 
 Correctness is verified separately by comparing KiCad's extracted netlist with the
@@ -50,7 +51,12 @@ def rot_of(s):
 PIN_LEN = {"point": 0.0, "short": 2.54, "middle": 5.08, "long": 7.62, None: 5.08}
 PIN_TYPE = {"in": "input", "out": "output", "io": "bidirectional", "oc": "open_collector",
             "pwr": "power_in", "sup": "power_in", "pas": "passive", "hiz": "tri_state",
-            "nc": "no_connect", None: "passive"}
+            "nc": "passive", None: "passive"}   # Eagle designs do wire "nc" pins (a 2764 VPP labelled NC); KiCad drops no_connect pins from nets
+
+def fp_name(package):
+    """Footprint name as KiCad's Eagle board importer spells it: '/' and ':' are illegal in a LIB_ID item name and become '_'
+    (Eagle '0207/10' -> '0207_10'), so the schematic's Footprint field resolves in the extracted .pretty."""
+    return package.replace("/", "_").replace(":", "_")
 
 def pin_name(n):
     out, bar = "", False
@@ -112,7 +118,11 @@ class Eagle:
     def is_power_gate(self, lib, gate):
         sym = self.symbol(lib, gate.get("symbol"))
         pins = sym.findall("pin")
-        return bool(pins) and all(p.get("direction") == "pwr" for p in pins)
+        if not pins: return False
+        if all(p.get("direction") == "pwr" for p in pins): return True
+        # Eagle's power gates are 'request' gates; some carry a stray non-power pin (display-hp HTIL311A's PWR gate has
+        # GND, VCC and an 'in' pin LEDSUP). Unplaced, Eagle still connects the pwr pins by name and leaves the rest open.
+        return gate.get("addlevel") == "request" and any(p.get("direction") == "pwr" for p in pins)
 
 # ----------------------------------------------------------------------------- symbol conversion
 class SymbolBuilder:
@@ -148,6 +158,7 @@ class SymbolBuilder:
             if hidden_power and gname in power_gates:
                 sym = self.e.symbol(lib, g.get("symbol"))
                 for p in sym.findall("pin"):
+                    if p.get("direction") != "pwr": continue   # a non-power pin of an unplaced power gate stays open, as in Eagle
                     for i, pad in enumerate(padmap.get((gname, p.get("name")), [])):
                         shared.append(self.pin_sexpr(p, pad, hidden=True))
                 continue
@@ -168,7 +179,7 @@ class SymbolBuilder:
             "#PWR" if is_power else esc(prefix), " (hide yes)" if is_power else ""))
         body.append("\t(property \"Value\" \"%s\" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))" % esc(ds))
         body.append("\t(property \"Footprint\" \"%s\" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))" % (
-            esc(self.fplib + ":" + package) if package else ""))
+            esc(self.fplib + ":" + fp_name(package)) if package else ""))
         body.append("\t(property \"Datasheet\" \"\" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))")
         body.append("\t(property \"Description\" \"Eagle %s:%s\" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))" % (esc(lib), esc(ds)))
         if shared:
@@ -244,6 +255,11 @@ class SymbolBuilder:
         x, y = float(p.get("x")), float(p.get("y"))
         _, a = rot_of(p.get("rot"))
         length = PIN_LEN.get(p.get("length"), 5.08)
+        if hidden:
+            # KiCad connects a hidden power pin by NAME, but also by POSITION if a wire end or label happens to sit exactly
+            # on it (the video card's +5V label landed on IC15's hidden VCC pin and merged the two supplies). Park hidden
+            # pins off-grid next to the symbol origin, where no Eagle wire (1 mil grid at worst) can ever end.
+            x, y, length = 0.037, 0.053 + 0.011 * (sum(ord(c) for c in str(number)) % 40), 0
         etype = PIN_TYPE.get(p.get("direction"), "passive")
         shape = {"dot": "inverted", "clk": "clock", "dotclk": "inverted_clock"}.get(p.get("function"), "line")
         vis = p.get("visible")
@@ -368,6 +384,7 @@ class Converter:
     def write_sheet(self, idx, sheet, path):
         X, Y, (pw, ph) = self.transform_for(sheet)
         self._inst = {(i.get("part"), i.get("gate")): i for i in sheet.findall("instances/instance")}
+        supply_net = {pr.get("part"): net.get("name") for net in sheet.findall("nets/net") for seg in net.findall("segment") for pr in seg.findall("pinref")}
         su = self.sheet_uuids[idx]
         sheet_path = "/%s/%s" % (self.root_uuid, su)
         body, used_symbols = [], {}
@@ -394,6 +411,9 @@ class Converter:
             x, y = X(float(inst.get("x"))), Y(float(inst.get("y")))
             mirror, ang = rot_of(inst.get("rot"))
             ref = ("#" + pname) if entry["is_power"] else pname
+            if not entry["is_power"] and ref[:1].isdigit():
+                ref = "UNK" + ref   # KiCad's Eagle board importer prefixes references that start with a digit (Eagle "5V" -> "UNK5V0"; "-RESET" stays)
+                self.stats.setdefault("renamed", set()).add((pname, ref))
             if not re.search(r"[0-9]$", ref):
                 ref += "0"   # KiCad references must end in a number; KiCad's own Eagle board importer appends 0
                 self.stats.setdefault("renamed", set()).add((pname, ref))
@@ -401,6 +421,9 @@ class Converter:
             if entry["is_power"]:
                 sym = self.e.symbol(lib, dset.find("gates/gate").get("symbol"))
                 value = sym.find("pin").get("name")
+                # a KiCad power symbol names its net after its Value. In Eagle the NET name wins: the video card has a VCC
+                # supply symbol sitting on a net Eagle calls +5V (and a separate implicit VCC net), so use the Eagle net name.
+                value = supply_net.get(pname, value)
             attrs = {a.get("name"): a for a in inst.findall("attribute")}
             def prop_pos(nm, ddx, ddy):
                 a = attrs.get(nm)
@@ -412,14 +435,14 @@ class Converter:
             vx, vy, va = prop_pos("VALUE", 2.54, 2.54)
             suid = det_uuid(self.project, idx, pname, gname)
             s = ["\t(symbol (lib_id \"%s:%s\") (at %s %s %d)%s (unit %d)" % (
-                self.libname, entry["name"], f(x), f(y), (ROTSIGN * ang) % 360, " (mirror x)" if mirror else "", unit)]
+                self.libname, entry["name"], f(x), f(y), (ROTSIGN * ang) % 360, " (mirror y)" if mirror else "", unit)]   # Eagle MRnn = flip x then rotate = KiCad rotate then (mirror y); proven on the protocard 2026-09-20
             s.append("\t\t(exclude_from_sim no) (in_bom %s) (on_board %s) (dnp no) (uuid \"%s\")" % (
                 "no" if entry["is_power"] else "yes", "no" if entry["is_power"] else "yes", suid))
             s.append("\t\t(property \"Reference\" \"%s\" (at %s %s %d) (effects (font (size 1.27 1.27))%s))" % (
                 esc(ref), f(rx), f(ry), ra, " (hide yes)" if entry["is_power"] else ""))
             s.append("\t\t(property \"Value\" \"%s\" (at %s %s %d) (effects (font (size 1.27 1.27))))" % (esc(value), f(vx), f(vy), va))
             s.append("\t\t(property \"Footprint\" \"%s\" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))" % (
-                esc(self.libname + ":" + entry["package"]) if entry["package"] else "", f(x), f(y)))
+                esc(self.libname + ":" + fp_name(entry["package"])) if entry["package"] else "", f(x), f(y)))
             s.append("\t\t(property \"Datasheet\" \"\" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))" % (f(x), f(y)))
             for g, pins in entry["pins"].items():
                 if entry["units"].get(g) == unit or (entry["hidden_power"] and g in entry["power_gates"]):
@@ -455,28 +478,68 @@ class Converter:
                 for pe in sym.findall("pin"):
                     if (pname, gname, pe.get("name")) in used_pins:
                         continue
-                    if pe.get("direction") == "pwr":
-                        continue
                     lx, ly = float(pe.get("x")), float(pe.get("y"))
                     a = math.radians(ang)
                     if mirror:
                         lx = -lx
                     wx = float(inst.get("x")) + lx * math.cos(a) - ly * math.sin(a)
                     wy = float(inst.get("y")) + lx * math.sin(a) + ly * math.cos(a)
+                    if pe.get("direction") == "pwr":
+                        # Eagle connects an unwired 'pwr' pin of a PLACED gate implicitly to the supply net named like the pin
+                        # (e.g. VPGM on a 2764's pin 1): give it a global label with that name so KiCad does the same
+                        body.append(self.global_label(pe.get("name"), X(wx), Y(wy), 0, idx, "pwrpin", pname, pe.get("name")))
+                        self.stats["pwrpins"] = self.stats.get("pwrpins", 0) + 1
+                        continue
                     body.append("\t(no_connect (at %s %s) (uuid \"%s\"))" % (f(X(wx)), f(Y(wy)), det_uuid(suid, "nc", pe.get("name"))))
                     self.stats["noconnects"] += 1
         # ---- nets
+        # Eagle lets wires of DIFFERENT nets end at the same point (typically two bus stubs meeting on the bus line, e.g.
+        # BDATA2/BDATA3 on the ALU) or end on another net's wire; KiCad would join them. Find those points first and pull
+        # every net but the first back by 0.635 mm there.
+        allw = {}
+        for net in sheet.findall("nets/net"):
+            for w in net.iter("wire"):
+                allw.setdefault(net.get("name"), []).append(((float(w.get("x1")), float(w.get("y1"))), (float(w.get("x2")), float(w.get("y2")))))
+        def on_seg(p, w):
+            (x1, y1), (x2, y2) = w; x, y = p
+            if abs((x2 - x1) * (y - y1) - (y2 - y1) * (x - x1)) > 1e-3: return False
+            return min(x1, x2) - 1e-3 <= x <= max(x1, x2) + 1e-3 and min(y1, y2) - 1e-3 <= y <= max(y1, y2) + 1e-3
+        trim = set()   # (net name, rounded point) whose wire ends must be pulled back
+        names = sorted(allw)
+        for i, na in enumerate(names):
+            for wa in allw[na]:
+                for p in wa:
+                    for nb in names:
+                        if nb == na: continue
+                        if any(on_seg(p, wb) for wb in allw[nb]):
+                            loser = nb if nb > na else na   # the alphabetically later net gives way; only its ends move
+                            if loser == na: trim.add((na, (round(p[0], 3), round(p[1], 3))))
+                            elif any(abs(q[0] - p[0]) < 1e-3 and abs(q[1] - p[1]) < 1e-3 for wb in allw[nb] for q in wb):
+                                trim.add((nb, (round(p[0], 3), round(p[1], 3))))
+        if trim: self.stats["trimmed"] = self.stats.get("trimmed", 0) + len(trim)
+        def pull(p, q):
+            """endpoint p of wire p-q moved 0.635 mm towards q (or to the middle of a very short wire)"""
+            d = math.hypot(q[0] - p[0], q[1] - p[1]); t = min(0.635, d / 2) / d if d else 0
+            return (p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t)
         for net in sheet.findall("nets/net"):
             nname = net.get("name")
             for si, seg in enumerate(net.findall("segment")):
                 wires = seg.findall("wire")
                 ends = []
+                moved = {}   # collision point -> new endpoints of this net's wires there (re-joined below)
                 for w in wires:
                     p1 = (float(w.get("x1")), float(w.get("y1"))); p2 = (float(w.get("x2")), float(w.get("y2")))
+                    k1, k2 = (round(p1[0], 3), round(p1[1], 3)), (round(p2[0], 3), round(p2[1], 3))
+                    if (nname, k1) in trim: n1 = pull(p1, p2); moved.setdefault(k1, []).append(n1); p1 = n1
+                    if (nname, k2) in trim: n2 = pull(p2, p1); moved.setdefault(k2, []).append(n2); p2 = n2
                     ends += [p1, p2]
                     body.append("\t(wire (pts (xy %s %s) (xy %s %s)) (stroke (width 0) (type default)) (uuid \"%s\"))" % (
                         f(X(p1[0])), f(Y(p1[1])), f(X(p2[0])), f(Y(p2[1])), det_uuid(self.project, idx, "w", nname, si, p1, p2)))
                     self.stats["wires"] += 1
+                for k, pts in moved.items():
+                    for a, b in zip(pts, pts[1:]):   # two or more of this net's wires met at the point: keep them joined
+                        body.append("\t(wire (pts (xy %s %s) (xy %s %s)) (stroke (width 0) (type default)) (uuid \"%s\"))" % (
+                            f(X(a[0])), f(Y(a[1])), f(X(b[0])), f(Y(b[1])), det_uuid(self.project, idx, "wj", nname, si, k, a, b)))
                 for j in seg.findall("junction"):
                     body.append("\t(junction (at %s %s) (diameter 0) (color 0 0 0 0) (uuid \"%s\"))" % (
                         f(X(float(j.get("x")))), f(Y(float(j.get("y")))), det_uuid(self.project, idx, "j", nname, j.get("x"), j.get("y"))))
@@ -514,7 +577,16 @@ class Converter:
                 if not placed_lbl and ends:
                     body.append(self.global_label(nname, X(ends[0][0]), Y(ends[0][1]), 0, idx, si, "auto", "auto"))
                 if not wires and not labels:
-                    self.stats["skipped"].append(("segment without wires", nname))
+                    # a supply symbol dropped straight onto a pin: Eagle joins the two pins with no wire at all. Give every
+                    # pin of the segment a global label with the net name so KiCad connects them the same way.
+                    done = 0
+                    for pr in seg.findall("pinref"):
+                        pp = self.pin_world(pr.get("part"), pr.get("gate"), pr.get("pin"))
+                        if pp:
+                            body.append(self.global_label(nname, X(pp[0]), Y(pp[1]), 0, idx, si, "pinonly", (pr.get("part"), pr.get("gate"), pr.get("pin"))))
+                            done += 1
+                    self.stats["pinonly"] = self.stats.get("pinonly", 0) + done
+                    if not done: self.stats["skipped"].append(("segment without wires", nname))
         # ---- buses (cosmetic)
         for bus in sheet.findall("busses/bus"):
             for w in bus.iter("wire"):

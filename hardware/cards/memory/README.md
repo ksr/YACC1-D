@@ -8,7 +8,7 @@ Verified on hardware 2026-09-18 with the bus tester; the burned EEPROM is `firmw
 
 - `eagle/v1.3/` – **the card in the machine** (design 2021-03-17, ordered 2025-06-27: zip + CAM in `fab/`).
   `Notes.rtf` = the full change history 1.0→1.3 plus open ideas. `ROM ZSelect.circ` = Logisim model of the
-  ROM-select logic. The KiCad conversion of this revision (proven, netlist 115/115) is in `../kicad/`.
+  ROM-select logic. The KiCad conversion of this revision (proven, netlist 115/115) is in `../kicad/v1.3/` (generated, see `hardware/KICAD.md`).
   The old Working folder also held V1.0 and V1.2 files; they were duplicates of the revisions below and were
   removed 2026-09-20.
 - `eagle/deprecated/v1.2/` – Production 2020-11-29 (built): -VMA gating of all chip selects, 7400 LOW-RAM -CS.

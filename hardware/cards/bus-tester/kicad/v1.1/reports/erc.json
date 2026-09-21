@@ -1,0 +1,103 @@
+{
+    "$schema": "https://schemas.kicad.org/erc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-09-20T21:34:38",
+    "ignored_checks": [
+        {
+            "description": "Global label only appears once in the schematic",
+            "key": "single_global_label"
+        },
+        {
+            "description": "Four connection points are joined together",
+            "key": "four_way_junction"
+        },
+        {
+            "description": "SPICE model issue",
+            "key": "simulation_model_issue"
+        },
+        {
+            "description": "Assigned footprint doesn't match footprint filters",
+            "key": "footprint_filter"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.6",
+    "sheets": [
+        {
+            "path": "/",
+            "uuid_path": "/b1806897-9ffe-2c65-99e5-8daf900ba9de",
+            "violations": [
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Symbol IC8 Hidden pin 10 [GND, Power input, Line]",
+                            "pos": {
+                                "x": 0.62267,
+                                "y": 1.0009
+                            },
+                            "uuid": "3acb85b3-6e6c-6d7a-4740-158b3074089f"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Symbol IC9 Hidden pin 10 [GND, Power input, Line]",
+                            "pos": {
+                                "x": 1.81647,
+                                "y": 1.1279
+                            },
+                            "uuid": "4885b7d0-5ed0-4da6-7dcd-ebe933ce7f5c"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Symbol IC9 Hidden pin 10 [GND, Power input, Line]",
+                            "pos": {
+                                "x": 1.84187,
+                                "y": 0.5691
+                            },
+                            "uuid": "bb71e52b-60b0-0ce6-5323-ee492c7aa948"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                }
+            ]
+        },
+        {
+            "path": "/Sheet 1/",
+            "uuid_path": "/b1806897-9ffe-2c65-99e5-8daf900ba9de/efffe6fe-f423-0068-28ce-b161f6ba126f",
+            "violations": []
+        },
+        {
+            "path": "/Sheet 2/",
+            "uuid_path": "/b1806897-9ffe-2c65-99e5-8daf900ba9de/535b88a9-cf10-246b-db9e-9fa121f898df",
+            "violations": []
+        },
+        {
+            "path": "/Sheet 3/",
+            "uuid_path": "/b1806897-9ffe-2c65-99e5-8daf900ba9de/e43f81e0-87ec-3a02-5662-50a6def301de",
+            "violations": []
+        },
+        {
+            "path": "/Sheet 4/",
+            "uuid_path": "/b1806897-9ffe-2c65-99e5-8daf900ba9de/177204ae-a41e-25b4-3b99-fc2a3d87b47f",
+            "violations": []
+        }
+    ],
+    "source": "bus-tester-v1.1.kicad_sch"
+}

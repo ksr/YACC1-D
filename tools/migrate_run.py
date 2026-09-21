@@ -21,7 +21,8 @@ DST = os.path.expanduser("~/Developer/YACC1-D")
 JUNK = ("*.b#?", "*.s#?", "*.l#?", ".DS_Store", "*.pyc", "__pycache__")
 EXTRA = [   # (absolute source dir, destination dir, mode)
     # the pilot's tools/ subfolder is NOT copied: the maintained converter/prover/finisher live in tools/kicad (newer than the pilot copy)
-    (os.path.expanduser("~/Documents/YACCS/kicad/memory-card-v1.3"), "hardware/cards/memory/kicad", "copy"),
+    # the 2026-09-19 memory-card pilot (~/Documents/YACCS/kicad/memory-card-v1.3) is no longer copied: since 2026-09-20 every
+    # design is converted by tools/eagle_to_kicad_all.py into <item>/kicad/<rev>/ with the same tools
     (os.path.expanduser("~/Documents/Arduino/libraries/YACC"), "embedded/libraries/YACC", "copy"),
     (os.path.expanduser("~/Documents/Arduino/old-libraries/Adafruit_MCP23017_Arduino_Library"),
      "embedded/libraries/Adafruit_MCP23017_Arduino_Library", "copy"),
