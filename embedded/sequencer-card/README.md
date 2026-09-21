@@ -12,9 +12,10 @@
   `YACC_Common_headera.h` = the signal subset it needs.
 - `microcode-loader/simple_microcode_sender_64/` — the Processing sender that feeds it (115200 baud): reads
   `firmware/microcode/ucode-generator2/test.hexz`, compares with `cache` (what was sent last) and sends the differences.
-- `dumpram/` — dumps the microcode RAM back over serial; `test-eeprom/` — Dec-2020 test of the card's I2C EEPROM
-  (address $57, the socket the EEPROM adaptor plugs into).
-- `deprecated/` — also `sequencer1` (Aug 2020, for the V2.0 cards; its `download.ino` tab was filed in a subfolder in the old tree and is now beside the sketch) and `sequencer2` (Dec 2020), the 19200-baud senders for
+- `dumpram/` — diagnostic: dumps the whole microcode RAM (then the EEPROM) over serial, all 256 instructions; a 2024
+  copy of the sequencer3 sources with a different `loop()`. Sequencer4's verify pass covers its usual purpose.
+- `deprecated/` — also `test-eeprom-2020-12` (Dec-2020 bench test of the card's I2C EEPROM at $57, the socket the EEPROM
+  adaptor plugs into), `sequencer1` (Aug 2020, for the V2.0 cards; its `download.ino` tab was filed in a subfolder in the old tree and is now beside the sketch) and `sequencer2` (Dec 2020), the 19200-baud senders for
   the v1 generator's 32-step format, and the Sept-2020 EEPROM test that was filed under the bus tester.
 
 Flash read-out of the card's ATmega328P, 2026-09-21 (`readback/`, with the restore command): a Sequencer3 build (identical

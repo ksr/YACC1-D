@@ -291,7 +291,7 @@ RULES = [
     (C24, "Software pre vs/Sequencer Card/Sequencer/download/download.ino", "embedded/sequencer-card/deprecated/sequencer1/", "copy"),   # a tab of the sketch that was filed in a subfolder; Arduino needs it beside Sequencer.ino
     (C24, "Software pre vs/Sequencer Card/Sequencer/", "embedded/sequencer-card/deprecated/sequencer1/", "copy"),
     (C24, "Software/Sequencer Card/Microcode loader send to sequencer/", "embedded/sequencer-card/microcode-loader/", "copy"),
-    (C24, "Software/Sequencer Card/Test EEPROM/", "embedded/sequencer-card/test-eeprom/", "copy"),
+    (C24, "Software/Sequencer Card/Test EEPROM/", "embedded/sequencer-card/deprecated/test-eeprom-2020-12/", "copy"),   # bench test of the I2C EEPROM; Sequencer4 verifies it on every boot (2026-09-21)
     (C24, "Software/Sequencer Card/dumpram/", "embedded/sequencer-card/dumpram/", "copy"),
     (GV, "Utilities/clocker/", "embedded/clocker/", "copy"),
     (GV, "Utilities/arduino/", "embedded/libraries/", "copy"),
