@@ -220,7 +220,6 @@ void dumpCntlMemory() {
 }
 
 void showCntlMemory(int instruction) {
-    int lineStart;
 
     if (showDetail) {
 #ifdef DEBUG        
@@ -246,7 +245,6 @@ unsigned char outAsciiHex(unsigned char c) {
 
 void writeAsciiByte(FILE *f, unsigned char c) {
     unsigned char hi, lo;
-    char outData[1];
 
     hi = (c & 0xf0) >> 4;
     lo = c & 0x0f;

@@ -42,8 +42,8 @@ void initCurrentLine();
 void putMemAtRegOnBus(int reg);
 void putBustoRegMem(int,char *);
 void cmd(char *str, int reg);
-void bitOn();
-void bitOff();
+void bitOn(int signalNum);   /* YACC1-D 2026-09-20: prototype */
+void bitOff(int signalNum);   /* YACC1-D 2026-09-20: prototype */
 void writeCurrentLine();
 void dumpCntlMemory();
 void startInstruction(int instruction);
