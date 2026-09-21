@@ -172,8 +172,13 @@ def asm_forms():
             out.setdefault(m.group(1), ((m.group(2) or "").replace("\\{regs}", "Rn").replace("\\{ports}", "Pn").replace("\\B", "byte").replace("\\W", "addr"), len(lines[i + 1].split())))
     return out
 
-def render(op, out, sig, recs, names):
-    d = diagram(op, sig, recs, names); base = os.path.join(out, names.get(op, "OP%02X" % op))
+FAMILY_REG = 2   # register-indexed families (opcode base + Rn) are drawn for this register: R0 is the PC and would show it being overwritten
+
+def render(op, out, sig, recs, names, forms=None):
+    syn = (forms or {}).get(names.get(op, ""), ("", 0))[0]
+    draw = op + FAMILY_REG if ("Rn" in syn and op % 8 == 0 and any(recs.get(op + FAMILY_REG, []))) else op
+    d = diagram(draw, sig, recs, names); base = os.path.join(out, names.get(op, "OP%02X" % op))
+    if draw != op: d["head"]["text"] = "%s Rn  (opcodes $%02X-$%02X, drawn for R%d = $%02X)  -  %d microcode steps" % (names[op], op, op + 7, FAMILY_REG, draw, len(d["signal"][0]["wave"]))
     json.dump(d, open(base + ".json", "w"), indent=1)
     r = subprocess.run(["npx", "-y", "wavedrom-cli", "-i", base + ".json", "-s", base + ".svg"], capture_output=True, text=True)
     if r.returncode == 0: add_notes(base + ".svg", NOTES)
@@ -188,7 +193,7 @@ def main():
         forms = asm_forms(); rows = []
         for op in sorted(names):
             if not any(recs.get(op, [])): rows.append((op, names[op], "", "", 0, None, "no microcode")); continue
-            steps, ok = render(op, out, sig, recs, names)
+            steps, ok = render(op, out, sig, recs, names, forms)
             syn, nbytes = forms.get(names[op], ("", ""))
             rows.append((op, names[op], syn, nbytes, steps, names[op] + ".svg" if ok else None, "" if ok else "render failed"))
             print("%-8s $%02X %2s steps %s" % (names[op], op, steps, "ok" if ok else "FAILED"), flush=True)
@@ -197,7 +202,7 @@ def main():
                     "`firmware/microcode/ucode-generator2/test.hex` and the signal table `firmware/microcode/yaccsignaldata2.h`: one WaveDrom "
                     "diagram per opcode defined in `firmware/opcodes.h`, control levels per microcode step plus the bus behaviour from an "
                     "ASSUMED typical-LS timing model (constants `TIMING` in the tool; every diagram says so in its notes). Register-indexed "
-                    "families (e.g. MVIB $10-$17 = R0-R7) are drawn once, for the base opcode. `.json` = WaveDrom source, `.svg` = picture.\n\n"
+                    "families (e.g. MVIB $10-$17 = R0-R7) are drawn once, for R2 (R0 is the PC and would show it being overwritten). `.json` = WaveDrom source, `.svg` = picture.\n\n"
                     "| Opcode | Mnemonic | Operands | Bytes | Microcode steps | Diagram |\n|---|---|---|---|---|---|\n")
             for op, nm, syn, nb, steps, svg, note in rows:
                 f.write("| $%02X | %s | %s | %s | %s | %s |\n" % (op, nm, syn, nb, steps or "", ("[%s](%s)" % (svg, svg)) if svg else note))
@@ -206,7 +211,7 @@ def main():
     for a in args:
         op = byname.get(a.upper(), None) if not a.lower().startswith("0x") else int(a, 16)
         if op is None: op = int(a, 0)
-        steps, ok = render(op, out, sig, recs, names)
+        steps, ok = render(op, out, sig, recs, names, asm_forms())
         print("%s: %d steps -> %s%s" % (names.get(op, "?"), steps, os.path.join(out, names.get(op, "OP%02X" % op) + ".svg"), "" if ok else "  RENDER FAILED"))
 
 if __name__ == "__main__": main()

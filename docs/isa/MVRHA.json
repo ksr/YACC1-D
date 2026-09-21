@@ -75,6 +75,15 @@
    "phase": -0.05
   },
   {},
+  {
+   "name": "REG-RD-ID[3:0]",
+   "wave": "=.....=...",
+   "phase": -0.05,
+   "data": [
+    "0",
+    "2"
+   ]
+  },
   {},
   {
    "name": "ADDRESS BUS",
@@ -92,7 +101,7 @@
    "data": [
     "M[PC]",
     "M[PC+1]",
-    "PC+1.hi"
+    "R2.hi"
    ]
   },
   {
@@ -101,7 +110,7 @@
    "phase": -0.05,
    "data": [
     "IR",
-    "MVRHA ($28)"
+    "? ($2A)"
    ]
   },
   {
@@ -110,7 +119,7 @@
    "phase": -0.05,
    "data": [
     "ACC",
-    "ALU0(ACC,PC+1.hi)"
+    "ALU0(ACC,R2.hi)"
    ]
   },
   {
@@ -124,7 +133,7 @@
   }
  ],
  "head": {
-  "text": "MVRHA  (opcode $28)  -  10 microcode steps",
+  "text": "MVRHA Rn  (opcodes $28-$2F, drawn for R2 = $2A)  -  10 microcode steps",
   "tick": 0
  },
  "config": {

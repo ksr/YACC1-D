@@ -77,15 +77,23 @@
    "phase": -0.05
   },
   {},
+  {
+   "name": "REG-LD-ID[3:0]",
+   "wave": "=......=....",
+   "phase": -0.05,
+   "data": [
+    "0",
+    "2"
+   ]
+  },
   {},
   {
    "name": "ADDRESS BUS",
-   "wave": "=....=...=..",
+   "wave": "=....=......",
    "phase": -0.16999999999999998,
    "data": [
     "PC",
-    "PC+1",
-    "target"
+    "PC+1"
    ]
   },
   {
@@ -104,7 +112,7 @@
    "phase": -0.05,
    "data": [
     "IR",
-    "MVARL ($30)"
+    "? ($32)"
    ]
   },
   {
@@ -117,17 +125,16 @@
   },
   {
    "name": "PC (R0)",
-   "wave": "=....=...=..",
+   "wave": "=....=......",
    "phase": -0.05,
    "data": [
     "PC",
-    "PC+1",
-    "target"
+    "PC+1"
    ]
   }
  ],
  "head": {
-  "text": "MVARL  (opcode $30)  -  12 microcode steps",
+  "text": "MVARL Rn  (opcodes $30-$37, drawn for R2 = $32)  -  12 microcode steps",
   "tick": 0
  },
  "config": {

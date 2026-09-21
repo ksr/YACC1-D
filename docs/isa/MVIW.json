@@ -82,25 +82,36 @@
    "phase": -0.05
   },
   {},
+  {
+   "name": "REG-LD-ID[3:0]",
+   "wave": "=.....=..........",
+   "phase": -0.05,
+   "data": [
+    "0",
+    "2"
+   ]
+  },
   {},
   {
    "name": "ADDRESS BUS",
-   "wave": "=....=..=........",
+   "wave": "=....=....=....=.",
    "phase": -0.16999999999999998,
    "data": [
     "PC",
     "PC+1",
-    "target"
+    "PC+2",
+    "PC+3"
    ]
   },
   {
    "name": "DATA BUS",
-   "wave": "z=...=..=........",
+   "wave": "z=...=....=....=.",
    "phase": -0.47,
    "data": [
     "M[PC]",
     "M[PC+1]",
-    "M[target]"
+    "M[PC+2]",
+    "M[PC+3]"
    ]
   },
   {
@@ -109,7 +120,7 @@
    "phase": -0.05,
    "data": [
     "IR",
-    "MVIW ($18)"
+    "? ($1A)"
    ]
   },
   {
@@ -122,17 +133,18 @@
   },
   {
    "name": "PC (R0)",
-   "wave": "=....=..=........",
+   "wave": "=....=....=....=.",
    "phase": -0.05,
    "data": [
     "PC",
     "PC+1",
-    "target"
+    "PC+2",
+    "PC+3"
    ]
   }
  ],
  "head": {
-  "text": "MVIW  (opcode $18)  -  17 microcode steps",
+  "text": "MVIW Rn  (opcodes $18-$1F, drawn for R2 = $1A)  -  17 microcode steps",
   "tick": 0
  },
  "config": {

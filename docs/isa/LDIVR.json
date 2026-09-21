@@ -74,15 +74,24 @@
    "phase": -0.05
   },
   {},
+  {
+   "name": "ADDR-REG-ID[3:0]",
+   "wave": "=.......=......",
+   "phase": -0.05,
+   "data": [
+    "0",
+    "2"
+   ]
+  },
   {},
   {
    "name": "ADDRESS BUS",
-   "wave": "=....=.......=.",
+   "wave": "=....=..=......",
    "phase": -0.16999999999999998,
    "data": [
     "PC",
     "PC+1",
-    "PC+2"
+    "R2"
    ]
   },
   {
@@ -101,7 +110,7 @@
    "phase": -0.05,
    "data": [
     "IR",
-    "LDIVR ($D0)"
+    "? ($D2)"
    ]
   },
   {
@@ -133,7 +142,7 @@
   }
  ],
  "head": {
-  "text": "LDIVR  (opcode $D0)  -  15 microcode steps",
+  "text": "LDIVR Rn  (opcodes $D0-$D7, drawn for R2 = $D2)  -  15 microcode steps",
   "tick": 0
  },
  "config": {

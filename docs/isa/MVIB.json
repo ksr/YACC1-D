@@ -66,25 +66,34 @@
    "phase": -0.05
   },
   {},
+  {
+   "name": "REG-LD-ID[3:0]",
+   "wave": "=.....=.....",
+   "phase": -0.05,
+   "data": [
+    "0",
+    "2"
+   ]
+  },
   {},
   {
    "name": "ADDRESS BUS",
-   "wave": "=....=..=...",
+   "wave": "=....=....=.",
    "phase": -0.16999999999999998,
    "data": [
     "PC",
     "PC+1",
-    "target"
+    "PC+2"
    ]
   },
   {
    "name": "DATA BUS",
-   "wave": "z=...=..=...",
+   "wave": "z=...=....=.",
    "phase": -0.47,
    "data": [
     "M[PC]",
     "M[PC+1]",
-    "M[target]"
+    "M[PC+2]"
    ]
   },
   {
@@ -93,7 +102,7 @@
    "phase": -0.05,
    "data": [
     "IR",
-    "MVIB ($10)"
+    "? ($12)"
    ]
   },
   {
@@ -106,17 +115,17 @@
   },
   {
    "name": "PC (R0)",
-   "wave": "=....=..=...",
+   "wave": "=....=....=.",
    "phase": -0.05,
    "data": [
     "PC",
     "PC+1",
-    "target"
+    "PC+2"
    ]
   }
  ],
  "head": {
-  "text": "MVIB  (opcode $10)  -  12 microcode steps",
+  "text": "MVIB Rn  (opcodes $10-$17, drawn for R2 = $12)  -  12 microcode steps",
   "tick": 0
  },
  "config": {
