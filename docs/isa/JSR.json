@@ -44,101 +44,101 @@
   {},
   {
    "name": "-VMA",
-   "wave": "lllllllllllllllllllllllllllllll",
+   "wave": "l..............................",
    "phase": -0.05
   },
   {
    "name": "-MEM-RD",
-   "wave": "hlllllllllhhhhhhhhhhhhhhhhhhhhh",
+   "wave": "hl........h....................",
    "phase": -0.05
   },
   {
    "name": "-MEM-WR",
-   "wave": "hhhhhhhhhhhhhlhhhhhhlhhhhhhhhhh",
+   "wave": "h............lh.....lh.........",
    "phase": -0.05
   },
   {},
   {
    "name": "-REG-FUNC-RD",
-   "wave": "hhhhlhhlhhlhllllllhllllllhhhhhh",
+   "wave": "h...lh.lh.lhl.....hl.....h.....",
    "phase": -0.05
   },
   {
    "name": "-REG-FUNC-LD",
-   "wave": "hhhhhhhhhhhhhhhhhhhhhhhhhhlllll",
+   "wave": "h.........................l....",
    "phase": -0.05
   },
   {
    "name": "-REG-UP",
-   "wave": "hhhhlhhlhhlhhhhhhhhhhhhhhhhhhhh",
+   "wave": "h...lh.lh.lh...................",
    "phase": -0.05
   },
   {
    "name": "-REG-DN",
-   "wave": "hhhhhhhhhhhhhhhhhlhhhhhhlhhhhhh",
+   "wave": "h................lh.....lh.....",
    "phase": -0.05
   },
   {
    "name": "-REG-RD-LO",
-   "wave": "hhhhhhhhhhhhhhhhhhhlllhhhhhhhhh",
+   "wave": "h..................l..h........",
    "phase": -0.05
   },
   {
    "name": "-REG-RD-HI",
-   "wave": "hhhhhhhhhhhhlllhhhhhhhhhhhhhhhh",
+   "wave": "h...........l..h...............",
    "phase": -0.05
   },
   {
    "name": "REG-LD-LO",
-   "wave": "llllllllllllllllllllllllllllhll",
+   "wave": "l...........................hl.",
    "phase": -0.05
   },
   {
    "name": "REG-LD-HI",
-   "wave": "llllllllllllllllllllllllllllhll",
+   "wave": "l...........................hl.",
    "phase": -0.05
   },
   {},
   {
    "name": "-ALU-FUNC",
-   "wave": "hhhhhhhhhhhhhhhhhhhhhhhhhhlllll",
+   "wave": "h.........................l....",
    "phase": -0.05
   },
   {
    "name": "-HL-SWAP",
-   "wave": "hhhhhhhhhhhhlllllllhhhhhhhhhhhh",
+   "wave": "h...........l......h...........",
    "phase": -0.05
   },
   {},
   {
    "name": "BRANCH-LD-LO",
-   "wave": "lllllllllhlllllllllllllllllllll",
+   "wave": "l........hl....................",
    "phase": -0.05
   },
   {
    "name": "BRANCH-LD-HI",
-   "wave": "llllllhllllllllllllllllllllllll",
+   "wave": "l.....hl.......................",
    "phase": -0.05
   },
   {
    "name": "-BRANCH-RD",
-   "wave": "hhhhhhhhhhhhhhhhhhhhhhhhhhlllll",
+   "wave": "h.........................l....",
    "phase": -0.05
   },
   {
    "name": "BR-TEST",
-   "wave": "llllllllllllllllllllllllllhllll",
+   "wave": "l.........................hl...",
    "phase": -0.05
   },
   {},
   {
    "name": "LD-INS-REG",
-   "wave": "llhllllllllllllllllllllllllllll",
+   "wave": "l.hl...........................",
    "phase": -0.05
   },
   {
    "name": "UCODE-COUNT-RESET",
-   "wave": "llllllllllllllllllllllllllllllh",
+   "wave": "l.............................h",
    "phase": -0.05
   },
   {},

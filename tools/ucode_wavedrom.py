@@ -49,7 +49,8 @@ def active(word, byte, bit, name):
 
 def level_wave(levels, name, phase):
     """control line: high/low per step, shifted right by 'phase' of a period (pipeline delay)"""
-    w = "".join(("l" if name.startswith("-") else "h") if a else ("h" if name.startswith("-") else "l") for a in levels)
+    chars = [("l" if name.startswith("-") else "h") if a else ("h" if name.startswith("-") else "l") for a in levels]
+    w = "".join(c if i == 0 or c != chars[i - 1] else "." for i, c in enumerate(chars))   # '.' = level continues (a repeated letter draws a false edge)
     return {"name": name, "wave": w, "phase": -phase}
 
 def bus_wave(vals, name, phase, hiz=None):

@@ -25,55 +25,55 @@
   {},
   {
    "name": "-VMA",
-   "wave": "llllllllllll",
+   "wave": "l...........",
    "phase": -0.05
   },
   {
    "name": "-MEM-RD",
-   "wave": "hlllllhhhhhh",
+   "wave": "hl....h.....",
    "phase": -0.05
   },
   {
    "name": "-IO-WR",
-   "wave": "hhhhhhhhhlhh",
+   "wave": "h........lh.",
    "phase": -0.05
   },
   {},
   {
    "name": "-REG-FUNC-RD",
-   "wave": "hhhhlhhhhhhh",
+   "wave": "h...lh......",
    "phase": -0.05
   },
   {
    "name": "-REG-UP",
-   "wave": "hhhhlhhhhhhh",
+   "wave": "h...lh......",
    "phase": -0.05
   },
   {},
   {
    "name": "-ALU-FUNC",
-   "wave": "hhhhhhllllll",
+   "wave": "h.....l.....",
    "phase": -0.05
   },
   {
    "name": "-AC-RD",
-   "wave": "hhhhhhllllll",
+   "wave": "h.....l.....",
    "phase": -0.05
   },
   {},
   {
    "name": "LD-INS-REG",
-   "wave": "llhlllllllll",
+   "wave": "l.hl........",
    "phase": -0.05
   },
   {
    "name": "-IO-ADDR-LD",
-   "wave": "hhhhhhhlhhhh",
+   "wave": "h......lh...",
    "phase": -0.05
   },
   {
    "name": "UCODE-COUNT-RESET",
-   "wave": "lllllllllllh",
+   "wave": "l..........h",
    "phase": -0.05
   },
   {},

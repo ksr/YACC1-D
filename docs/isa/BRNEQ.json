@@ -34,86 +34,86 @@
   {},
   {
    "name": "-VMA",
-   "wave": "lllllllllllllllllllll",
+   "wave": "l....................",
    "phase": -0.05
   },
   {
    "name": "-MEM-RD",
-   "wave": "hlllllllllllhhhhhhhhh",
+   "wave": "hl..........h........",
    "phase": -0.05
   },
   {},
   {
    "name": "-REG-FUNC-RD",
-   "wave": "hhhhlhhlhhlhhhhhhhhhh",
+   "wave": "h...lh.lh.lh.........",
    "phase": -0.05
   },
   {
    "name": "-REG-FUNC-LD",
-   "wave": "hhhhhhhhhhhhhhhhhllll",
+   "wave": "h................l...",
    "phase": -0.05
   },
   {
    "name": "-REG-UP",
-   "wave": "hhhhlhhlhhlhhhhhhhhhh",
+   "wave": "h...lh.lh.lh.........",
    "phase": -0.05
   },
   {
    "name": "REG-LD-LO",
-   "wave": "llllllllllllllllllhll",
+   "wave": "l.................hl.",
    "phase": -0.05
   },
   {
    "name": "REG-LD-HI",
-   "wave": "llllllllllllllllllhll",
+   "wave": "l.................hl.",
    "phase": -0.05
   },
   {
    "name": "-TMP-REG-RD0",
-   "wave": "hhhhhhhhhhhhhllhhhhhh",
+   "wave": "h............l.h.....",
    "phase": -0.05
   },
   {},
   {
    "name": "-ALU-FUNC",
-   "wave": "hhhhhhhhhhhhhllllllll",
+   "wave": "h............l.......",
    "phase": -0.05
   },
   {
    "name": "-AC-LD-INV",
-   "wave": "hhhhhhhhhhhhhllllllll",
+   "wave": "h............l.......",
    "phase": -0.05
   },
   {},
   {
    "name": "BRANCH-LD-LO",
-   "wave": "lllllllllhlllllllllll",
+   "wave": "l........hl..........",
    "phase": -0.05
   },
   {
    "name": "BRANCH-LD-HI",
-   "wave": "llllllhllllllllllllll",
+   "wave": "l.....hl.............",
    "phase": -0.05
   },
   {
    "name": "-BRANCH-RD",
-   "wave": "hhhhhhhhhhhhhhhhlllll",
+   "wave": "h...............l....",
    "phase": -0.05
   },
   {
    "name": "BR-TEST",
-   "wave": "llllllllllllllhllllll",
+   "wave": "l.............hl.....",
    "phase": -0.05
   },
   {},
   {
    "name": "LD-INS-REG",
-   "wave": "llhllllllllllllllllll",
+   "wave": "l.hl.................",
    "phase": -0.05
   },
   {
    "name": "UCODE-COUNT-RESET",
-   "wave": "llllllllllllllllllllh",
+   "wave": "l...................h",
    "phase": -0.05
   },
   {},

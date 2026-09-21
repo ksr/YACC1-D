@@ -45,70 +45,70 @@
   {},
   {
    "name": "-VMA",
-   "wave": "llllllllllllllllllllllllllllllll",
+   "wave": "l...............................",
    "phase": -0.05
   },
   {
    "name": "-MEM-RD",
-   "wave": "hllllllllllllllhhhhhhhhhhhhhhhhh",
+   "wave": "hl.............h................",
    "phase": -0.05
   },
   {
    "name": "-MEM-WR",
-   "wave": "hhhhhhhhhhhhhhhhhhhhlhhhhhhhlhhh",
+   "wave": "h...................lh......lh..",
    "phase": -0.05
   },
   {},
   {
    "name": "-REG-FUNC-RD",
-   "wave": "hhhhlhhhhhlhhhhhlhlllllllhllllll",
+   "wave": "h...lh....lh....lhl......hl.....",
    "phase": -0.05
   },
   {
    "name": "-REG-FUNC-LD",
-   "wave": "hhhhhhlllhhhlllhhhhhhhhhhhhhhhhh",
+   "wave": "h.....l..h..l..h................",
    "phase": -0.05
   },
   {
    "name": "-REG-UP",
-   "wave": "hhhhlhhhhhlhhhhhlhhhhhhhlhhhhhhh",
+   "wave": "h...lh....lh....lh......lh......",
    "phase": -0.05
   },
   {
    "name": "-REG-RD-LO",
-   "wave": "hhhhhhhhhhhhhhhhhhhhhhhhhhhlllhh",
+   "wave": "h..........................l..h.",
    "phase": -0.05
   },
   {
    "name": "-REG-RD-HI",
-   "wave": "hhhhhhhhhhhhhhhhhhhlllhhhhhhhhhh",
+   "wave": "h..................l..h.........",
    "phase": -0.05
   },
   {
    "name": "REG-LD-LO",
-   "wave": "lllllllllllllhllllllllllllllllll",
+   "wave": "l............hl.................",
    "phase": -0.05
   },
   {
    "name": "REG-LD-HI",
-   "wave": "lllllllhllllllllllllllllllllllll",
+   "wave": "l......hl.......................",
    "phase": -0.05
   },
   {},
   {
    "name": "-HL-SWAP",
-   "wave": "hhhhhhlllhhhhhhhhhllllllllhhhhhh",
+   "wave": "h.....l..h........l.......h.....",
    "phase": -0.05
   },
   {},
   {
    "name": "LD-INS-REG",
-   "wave": "llhlllllllllllllllllllllllllllll",
+   "wave": "l.hl............................",
    "phase": -0.05
   },
   {
    "name": "UCODE-COUNT-RESET",
-   "wave": "lllllllllllllllllllllllllllllllh",
+   "wave": "l..............................h",
    "phase": -0.05
   },
   {},

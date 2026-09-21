@@ -36,70 +36,70 @@
   {},
   {
    "name": "-VMA",
-   "wave": "lllllllllllllllllllllll",
+   "wave": "l......................",
    "phase": -0.05
   },
   {
    "name": "-MEM-RD",
-   "wave": "hlllllllllllllhhhhhhhhh",
+   "wave": "hl............h........",
    "phase": -0.05
   },
   {
    "name": "-MEM-WR",
-   "wave": "hhhhhhhhhhhhhhhhhhhlhhh",
+   "wave": "h..................lh..",
    "phase": -0.05
   },
   {},
   {
    "name": "-REG-FUNC-RD",
-   "wave": "hhhhlhhhhlhhhhhlhhhhhhh",
+   "wave": "h...lh...lh....lh......",
    "phase": -0.05
   },
   {
    "name": "-REG-FUNC-LD",
-   "wave": "hhhhhhllhhhlllhhhhhhhhh",
+   "wave": "h.....l.h..l..h........",
    "phase": -0.05
   },
   {
    "name": "-REG-UP",
-   "wave": "hhhhlhhhhlhhhhhlhhhhhhh",
+   "wave": "h...lh...lh....lh......",
    "phase": -0.05
   },
   {
    "name": "REG-LD-LO",
-   "wave": "llllllllllllhllllllllll",
+   "wave": "l...........hl.........",
    "phase": -0.05
   },
   {
    "name": "REG-LD-HI",
-   "wave": "llllllhllllllllllllllll",
+   "wave": "l.....hl...............",
    "phase": -0.05
   },
   {},
   {
    "name": "-ALU-FUNC",
-   "wave": "hhhhhhhhhhhhhhhhhllllll",
+   "wave": "h................l.....",
    "phase": -0.05
   },
   {
    "name": "-AC-RD",
-   "wave": "hhhhhhhhhhhhhhhhhhlllhh",
+   "wave": "h.................l..h.",
    "phase": -0.05
   },
   {
    "name": "-HL-SWAP",
-   "wave": "hhhhhhllhhhhhhhhhhhhhhh",
+   "wave": "h.....l.h..............",
    "phase": -0.05
   },
   {},
   {
    "name": "LD-INS-REG",
-   "wave": "llhllllllllllllllllllll",
+   "wave": "l.hl...................",
    "phase": -0.05
   },
   {
    "name": "UCODE-COUNT-RESET",
-   "wave": "llllllllllllllllllllllh",
+   "wave": "l.....................h",
    "phase": -0.05
   },
   {},
