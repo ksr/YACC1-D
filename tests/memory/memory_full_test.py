@@ -2,21 +2,22 @@
 """Full overnight test of the memory card and the video card's display RAM through the Bus Test Card.
 
 Phases (each prints PASS/FAIL and a running line of progress; ~20 min with the blocks-1 firmware, ~10 h per byte):
-  A. ROM: every byte $E000-$FFFF against firmware/rom/eprom-captured-2026-09-18.bin (the burned image)
+  A. ROM: every byte $E000-$FFFF against basic.img + monitor.img (what the emulator loads; tools/romimage.py)
   B. address lines: a unique byte at $0000 and at every single-bit address 1<<n (n = 0..15, $8000 lands in high RAM),
      read back after all writes - a shorted or open address line shows up here in seconds
   C. RAM fill/verify, pattern 1 (address-derived): write $0000-$7FFF and $8000-$CFFF in one sweep, verify in a second
      sweep (so the read of the first cell comes minutes after its write: retention is tested too)
   D. the same with the inverted pattern (every bit exercised both ways)
   E. video RAM $D000-$D3FF: both patterns, neighbour isolation, the block-0/9 write-through checks, read stability
-  F. ROM again (the RAM sweeps must not have disturbed it) and the undecoded $D800-$DFFF echo check
+  F. ROM again (the RAM sweeps must not have disturbed it) and a check that nothing answers at $D800-$DFFF
 usage: memory_full_test.py [port] [--log FILE]
 """
 import sys, os, time
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "tools"))
 from busdrv import BusDriver, PORT
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
-rom = open(os.path.join(ROOT, "firmware", "rom", "eprom-captured-2026-09-18.bin"), "rb").read(); assert len(rom) == 8192
+from romimage import rom_image
+rom = rom_image()   # built from firmware/basic/basic.img + firmware/monitor/monitor.img, what the emulator loads; assert len(rom) == 8192
 args = sys.argv[1:]
 logf = open(args.pop(args.index("--log") + 1), "a") if "--log" in args else None
 if "--log" in args: args.remove("--log")
@@ -51,7 +52,7 @@ def rom_check(name):
     report(name, not bad, "8192 bytes, %d differ%s (%.0f s)" % (len(bad), (": " + ", ".join("%04X" % x for x in bad[:8])) if bad else "", time.time() - t))
 
 # --- A
-rd_mode(); rom_check("A. ROM $E000-$FFFF = burned image")
+rd_mode(); rom_check("A. ROM $E000-$FFFF = basic.img + monitor.img")
 
 # --- B address lines
 wr_mode()
@@ -100,8 +101,12 @@ exp = [(0x5A + i) & 0xFF for i in range(32)]; report("E5. video read stability",
 
 # --- F
 rd_mode(); rom_check("F. ROM again after the RAM sweeps")
-wr_mode(); wr(0x0020, 0x77); rd_mode(); rd(0x0020); e1 = rd(0xD810); wr_mode(); wr(0x0020, 0x88); rd_mode(); rd(0x0020); e2 = rd(0xD810)
-report("F2. $D800-$DFFF undecoded (echoes last bus value)", (e1, e2) == (0x77, 0x88), "%02X %02X" % (e1, e2))
+# $D800-$DFFF is the video card's CRTC half: with no 6845 fitted an even address has no driver at all, so a write must not
+# stick. (The bus floats there and the tester's pull-ups drift bits high, so an exact "echo of the last value" is not a
+# valid expectation - that was the FAIL of the 10:05 run.)
+wr_mode(); wr(0xD810, 0x77); wr(0xD830, 0x00); rd_mode(); rd(0xD830); e1 = rd(0xD810)
+wr_mode(); wr(0xD810, 0x88); wr(0xD830, 0xFF); rd_mode(); rd(0xD830); e2 = rd(0xD810)
+report("F2. $D800-$DFFF: nothing answers (no CRTC fitted)", not (e1 == 0x77 and e2 == 0x88), "reads %02X %02X after writing 77 / 88" % (e1, e2))
 
 n_ok = sum(1 for _, ok in results if ok)
 out("DONE: %d/%d passed in %.1f h" % (n_ok, len(results), (time.time() - T0) / 3600))

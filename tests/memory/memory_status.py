@@ -3,7 +3,7 @@
 
 What it reports, in order:
   boot remap   after -RESET the ROM must appear at $0000 (FORCE-ROM) until the first access with A15 high
-  ROM          every byte of $E000-$FFFF against firmware/rom/eprom-captured-2026-09-18.bin (= shipped/rom)
+  ROM          every byte of $E000-$FFFF against basic.img + monitor.img (what the emulator loads; tools/romimage.py)
   low RAM      write/read at 8 spots in $0000-$7FFF
   block map    every 4K block $8000-$FFFF classified as RAM (write/read works), ROM (matches the image, writes ignored),
                VIDEO ($D000-$D7FF if a video card answers) or undecoded (reads echo the last bus value)
@@ -14,7 +14,8 @@ import sys, os, time
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "tools"))
 from busdrv import BusDriver, PORT
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
-rom = open(os.path.join(ROOT, "firmware", "rom", "eprom-captured-2026-09-18.bin"), "rb").read()   # binary twin of shipped/rom (Intel hex), byte-identical to the chip
+from romimage import rom_image
+rom = rom_image()   # built from firmware/basic/basic.img + firmware/monitor/monitor.img, what the emulator loads
 assert len(rom) == 8192
 port = next((a for a in sys.argv[1:] if not a.startswith("--")), PORT)
 ok_all = True
@@ -44,7 +45,7 @@ def rw_ok(a):
 
 # --- ROM
 got = bd.read_block(0xE000, 8192); bad = ["%04X=%02X(exp %02X)" % (0xE000 + i, got[i], rom[i]) for i in range(8192) if got[i] != rom[i]]
-line("ROM", not bad, "all 8192 bytes $E000-$FFFF = the burned image" if not bad else "%d mismatches: %s" % (len(bad), bad[:5]))
+line("ROM", not bad, "all 8192 bytes $E000-$FFFF = basic.img + monitor.img" if not bad else "%d mismatches: %s" % (len(bad), bad[:5]))
 
 # --- low RAM
 res = [(a,) + rw_ok(a) for a in (0x0000, 0x0010, 0x00FF, 0x0F00, 0x1000, 0x3FFF, 0x4000, 0x7FF0)]
