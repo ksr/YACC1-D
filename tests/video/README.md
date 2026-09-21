@@ -8,3 +8,4 @@ a good read). `--quick` = first 64 cells (~1 min); full run ~14 min.
 
 Results: 2026-09-21, after Ken joined the card's +5V and VCC rails — 8/8 PASS (quick and full). Before the join the
 write-through fault reproduced (see `hardware/cards/video/README.md`).
+Same day, RN2 restored to the design's 10k (from 1k): quick test 8/8 again.

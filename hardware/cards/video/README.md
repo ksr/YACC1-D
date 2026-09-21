@@ -30,5 +30,5 @@ Known issues and findings:
 - 7416 open-collector outputs (IC27) drive IC1, IC2 and IC26 with no pull-ups; N$5 above only reads high when floating.
 - Inherits the Blank V3.1 template's pre-V3.2 names on bus pins C3–C6 (unused by the card).
 
-Bench state: RN2 is currently 1k (design: 10k), changed during the 2026-09-18 tests and left in (Ken 2026-09-20);
-+5V and VCC joined by a wire (Ken 2026-09-21). No 6845 fitted.
+Bench state: RN2 back to the design's 10k (Ken 2026-09-21; it had been 1k since the 2026-09-18 tests — with the rail
+unpowered the value never mattered; quick RAM test 8/8 with 10k); +5V and VCC joined by a wire (Ken 2026-09-21). No 6845 fitted.

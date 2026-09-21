@@ -8,7 +8,6 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   Open it in Eagle/Fusion, re-save, use as the template for every new card.
 - **Bus Tester V3.1** (`hardware/cards/bus-tester/eagle/v3.1`, 2020-07): latches drive the bus, soft bus-enable/reset,
   bypass caps; routed, CAM run, never ordered. Decide: build it, or keep the 2016 v1.1 for good.
-- **Video card**: RN2 is currently 1k (design says 10k, changed during the 2026-09-18 tests) — decide which value stays.
 - **Video card fixes** (`hardware/cards/video`, next revision): join +5V and VCC in the design (the +5V rail had no source;
   bench wire since 2026-09-21 — this was the cause of the block-0/9 write-through fault, resolved); drop the /A0 term from
   the 6845 -CS decode (data register unreachable as drawn; bench fix = IC1 pin 13 high); pull-ups on the 7416 outputs.
