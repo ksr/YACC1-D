@@ -14,7 +14,7 @@ firmware/microcode/ucode-generator2/code.h	2026-09-20: bitOn/bitOff prototypes (
 software/ubasic-c/ubasic-master/tokenizer.c	2026-09-20: (const char *)/(char *) casts on the unsigned-char token buffers passed to strlen/strcpy/memcpy (no behaviour change); unused locals removed; debug-only src/dest marked used
 software/ubasic-c/ubasic-master/ubasic.c	2026-09-20: dangling index_free() declaration commented out (never defined; calls sit under #ifdef unused)
 firmware/microcode/yaccsignaldata2.h	2026-09-20: every table entry wrapped in braces (identical data; silences -Wmissing-braces in the tools that include it)
-embedded/bus-tester/bus-driver/bus-driver.ino	2026-09-20: compiler-warning cleanup (arduino-cli --warnings all, 0 warnings): writeDataLo/setCntlPin void, return after doError in opLookUp, (int) casts on the char chip index, unused tmp buffers removed
+embedded/bus-tester/bus-driver/bus-driver.ino	2026-09-20: compiler-warning cleanup (arduino-cli --warnings all, 0 warnings): writeDataLo/setCntlPin void, return after doError in opLookUp, (int) casts on the char chip index, unused tmp buffers removed; 2026-09-21: RDBLK/WRBLK block memory commands, startup banner "bus-driver blocks-1", BAUD define
 embedded/bus-tester/bus-monitor/bus-monitor.ino	2026-09-20: compiler-warning cleanup (arduino-cli --warnings all, 0 warnings): unused locals chip/pin/tmp removed
 embedded/bus-tester/bus-test/bus-test.ino	2026-09-20: compiler-warning cleanup (arduino-cli --warnings all, 0 warnings): unused local mask removed
 embedded/bus-tester/led-switch-test/led-switch-test.ino	2026-09-20: compiler-warning cleanup (arduino-cli --warnings all, 0 warnings): unused locals tmp/mask/j removed

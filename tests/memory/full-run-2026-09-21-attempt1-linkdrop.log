@@ -1,0 +1,31 @@
+02:02:12  start: port /dev/cu.usbserial-AB6WZCQX
+02:04:55     ROM E3FF ... 0 bad so far
+02:07:38     ROM E7FF ... 0 bad so far
+02:10:20     ROM EBFF ... 0 bad so far
+02:13:03     ROM EFFF ... 0 bad so far
+02:15:46     ROM F3FF ... 0 bad so far
+02:18:29     ROM F7FF ... 0 bad so far
+02:21:12     ROM FBFF ... 0 bad so far
+02:23:54     ROM FFFF ... 0 bad so far
+02:23:54  A. ROM $E000-$FFFF = burned image              PASS  8192 bytes, 0 differ (1302 s)
+02:24:00  B. address lines A0-A15 independent            PASS  17 cells
+02:29:25     write 07FF  (5 min)
+02:34:51     write 0FFF  (11 min)
+02:40:16     write 17FF  (16 min)
+02:45:42     write 1FFF  (22 min)
+02:51:07     write 27FF  (27 min)
+02:56:33     write 2FFF  (33 min)
+03:01:59     write 37FF  (38 min)
+03:07:24     write 3FFF  (43 min)
+03:12:50     write 47FF  (49 min)
+03:18:15     write 4FFF  (54 min)
+03:23:41     write 57FF  (60 min)
+03:29:06     write 5FFF  (65 min)
+03:34:32     write 67FF  (71 min)
+03:39:57     write 6FFF  (76 min)
+03:45:23     write 77FF  (81 min)
+03:50:48     write 7FFF  (87 min)
+03:56:14     write 87FF  (92 min)
+04:01:39     write 8FFF  (98 min)
+04:07:05     write 97FF  (103 min)
+04:12:30     write 9FFF  (109 min)
