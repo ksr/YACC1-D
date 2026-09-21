@@ -51,6 +51,14 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   after writing it and refuse to raise READY (blink FAULT) on a mismatch. On 2026-09-21 a bus tester left asserting -BUS-EN
   made the logic card drive the microcode address lines during the copy; every write landed on address 0 and READY was
   raised over an empty RAM. A read-back would have caught it in seconds. Also drop the test-pattern fill from every boot.
+- **Monitor loader `tools/monload.py`** — push an assembled program into RAM through the ROM monitor's `E` command over the
+  serial console (the monitor has no hex loader; `L` lists BASIC). Protocol from `firmware/monitor/monitor.asm` (`examine:`):
+  send `E` + 4 hex address; the monitor prints `AAAA XX ` and waits; two hex characters replace the byte and advance to the
+  next address (no CR); CR advances without change; `-` or Esc ends. Loader: open the IO-card UART (38400, the FTDI on the
+  card's TTL header), send `E<addr>`, feed the bytes pacing on the echoed address, send `-`, optionally `G<addr>` to run.
+  Input = the assembler's `.prg` (`:AAAA b b b ...` lines, `*START`). TEST FIRST ON THE EMULATOR: `software/emulator` runs
+  the same monitor on stdin/stdout (raw tty, blocking uartin), so the loader needs a pty/subprocess mode. Load above $1000
+  (monitor variables at $0F00, stack down from $0EFF). Sample program: `tests/assembler/ledcount`.
 - Port of the P8X work (OS, monitor, BASIC, compilers) onto YACC1 — the reason this repo exists; not started.
 
 ## Verification still to do
