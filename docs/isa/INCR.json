@@ -1,0 +1,111 @@
+{
+ "signal": [
+  {
+   "name": "uCODE CLK",
+   "wave": "p........"
+  },
+  {
+   "name": "step",
+   "wave": "=========",
+   "data": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8"
+   ]
+  },
+  {},
+  {
+   "name": "-VMA",
+   "wave": "lllllllll",
+   "phase": -0.05
+  },
+  {
+   "name": "-MEM-RD",
+   "wave": "hlllllhhh",
+   "phase": -0.05
+  },
+  {},
+  {
+   "name": "-REG-FUNC-RD",
+   "wave": "hhhhlhlhh",
+   "phase": -0.05
+  },
+  {
+   "name": "-REG-UP",
+   "wave": "hhhhlhlhh",
+   "phase": -0.05
+  },
+  {},
+  {
+   "name": "LD-INS-REG",
+   "wave": "llhllllll",
+   "phase": -0.05
+  },
+  {
+   "name": "UCODE-COUNT-RESET",
+   "wave": "llllllllh",
+   "phase": -0.05
+  },
+  {},
+  {},
+  {
+   "name": "ADDRESS BUS",
+   "wave": "=....=.=.",
+   "phase": -0.16999999999999998,
+   "data": [
+    "PC",
+    "PC+1",
+    "PC+2"
+   ]
+  },
+  {
+   "name": "DATA BUS",
+   "wave": "z=...=z..",
+   "phase": -0.47,
+   "data": [
+    "M[PC]",
+    "M[PC+1]"
+   ]
+  },
+  {
+   "name": "IR",
+   "wave": "=.=......",
+   "phase": -0.05,
+   "data": [
+    "IR",
+    "INCR ($50)"
+   ]
+  },
+  {
+   "name": "ACC",
+   "wave": "=........",
+   "phase": -0.05,
+   "data": [
+    "ACC"
+   ]
+  },
+  {
+   "name": "PC (R0)",
+   "wave": "=....=.=.",
+   "phase": -0.05,
+   "data": [
+    "PC",
+    "PC+1",
+    "PC+2"
+   ]
+  }
+ ],
+ "head": {
+  "text": "INCR  (opcode $50)  -  9 microcode steps",
+  "tick": 0
+ },
+ "config": {
+  "hscale": 2
+ }
+}

@@ -18,4 +18,6 @@ clean:
 	@for d in $(TOOLS); do $(MAKE) -s -C "$$d" clean; done
 kicad:
 	python3 tools/eagle_to_kicad_all.py
-.PHONY: all check clean kicad
+isa:
+	python3 tools/ucode_wavedrom.py --all
+.PHONY: all check clean kicad isa

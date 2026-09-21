@@ -1,0 +1,122 @@
+{
+ "signal": [
+  {
+   "name": "uCODE CLK",
+   "wave": "p........."
+  },
+  {
+   "name": "step",
+   "wave": "==========",
+   "data": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9"
+   ]
+  },
+  {},
+  {
+   "name": "-VMA",
+   "wave": "llllllllll",
+   "phase": -0.05
+  },
+  {
+   "name": "-MEM-RD",
+   "wave": "hlllllllll",
+   "phase": -0.05
+  },
+  {},
+  {
+   "name": "-REG-FUNC-RD",
+   "wave": "hhhhlhhhhh",
+   "phase": -0.05
+  },
+  {
+   "name": "-REG-UP",
+   "wave": "hhhhlhhhhh",
+   "phase": -0.05
+  },
+  {},
+  {
+   "name": "-ALU-FUNC",
+   "wave": "hhhhhhllll",
+   "phase": -0.05
+  },
+  {
+   "name": "-AC-LD",
+   "wave": "hhhhhhhlhh",
+   "phase": -0.05
+  },
+  {},
+  {
+   "name": "LD-INS-REG",
+   "wave": "llhlllllll",
+   "phase": -0.05
+  },
+  {
+   "name": "UCODE-COUNT-RESET",
+   "wave": "lllllllllh",
+   "phase": -0.05
+  },
+  {},
+  {},
+  {
+   "name": "ADDRESS BUS",
+   "wave": "=....=....",
+   "phase": -0.16999999999999998,
+   "data": [
+    "PC",
+    "PC+1"
+   ]
+  },
+  {
+   "name": "DATA BUS",
+   "wave": "z=...=....",
+   "phase": -0.47,
+   "data": [
+    "M[PC]",
+    "M[PC+1]"
+   ]
+  },
+  {
+   "name": "IR",
+   "wave": "=.=.......",
+   "phase": -0.05,
+   "data": [
+    "IR",
+    "LDAVR ($40)"
+   ]
+  },
+  {
+   "name": "ACC",
+   "wave": "=......=..",
+   "phase": -0.05,
+   "data": [
+    "ACC",
+    "ALU0(ACC,M[PC+1])"
+   ]
+  },
+  {
+   "name": "PC (R0)",
+   "wave": "=....=....",
+   "phase": -0.05,
+   "data": [
+    "PC",
+    "PC+1"
+   ]
+  }
+ ],
+ "head": {
+  "text": "LDAVR  (opcode $40)  -  10 microcode steps",
+  "tick": 0
+ },
+ "config": {
+  "hscale": 2
+ }
+}

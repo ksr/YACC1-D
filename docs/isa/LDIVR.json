@@ -1,0 +1,142 @@
+{
+ "signal": [
+  {
+   "name": "uCODE CLK",
+   "wave": "p.............."
+  },
+  {
+   "name": "step",
+   "wave": "===============",
+   "data": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14"
+   ]
+  },
+  {},
+  {
+   "name": "-VMA",
+   "wave": "lllllllllllllll",
+   "phase": -0.05
+  },
+  {
+   "name": "-MEM-RD",
+   "wave": "hlllllllhhhhhhh",
+   "phase": -0.05
+  },
+  {
+   "name": "-MEM-WR",
+   "wave": "hhhhhhhhhlhhhhh",
+   "phase": -0.05
+  },
+  {},
+  {
+   "name": "-REG-FUNC-RD",
+   "wave": "hhhhlhhhhhhhlhh",
+   "phase": -0.05
+  },
+  {
+   "name": "-REG-UP",
+   "wave": "hhhhlhhhhhhhlhh",
+   "phase": -0.05
+  },
+  {
+   "name": "-TMP-REG-RD1",
+   "wave": "hhhhhhhhlllhhhh",
+   "phase": -0.05
+  },
+  {
+   "name": "-TMP-REG-LD1",
+   "wave": "hhhhhhlhhhhhhhh",
+   "phase": -0.05
+  },
+  {},
+  {
+   "name": "LD-INS-REG",
+   "wave": "llhllllllllllll",
+   "phase": -0.05
+  },
+  {
+   "name": "UCODE-COUNT-RESET",
+   "wave": "llllllllllllllh",
+   "phase": -0.05
+  },
+  {},
+  {},
+  {
+   "name": "ADDRESS BUS",
+   "wave": "=....=.......=.",
+   "phase": -0.16999999999999998,
+   "data": [
+    "PC",
+    "PC+1",
+    "PC+2"
+   ]
+  },
+  {
+   "name": "DATA BUS",
+   "wave": "z=...=..=..z...",
+   "phase": -0.47,
+   "data": [
+    "M[PC]",
+    "M[PC+1]",
+    "TMP1"
+   ]
+  },
+  {
+   "name": "IR",
+   "wave": "=.=............",
+   "phase": -0.05,
+   "data": [
+    "IR",
+    "LDIVR ($D0)"
+   ]
+  },
+  {
+   "name": "ACC",
+   "wave": "=..............",
+   "phase": -0.05,
+   "data": [
+    "ACC"
+   ]
+  },
+  {
+   "name": "TMP",
+   "wave": "=.....=........",
+   "phase": -0.05,
+   "data": [
+    "TMP",
+    "M[PC+1]"
+   ]
+  },
+  {
+   "name": "PC (R0)",
+   "wave": "=....=.......=.",
+   "phase": -0.05,
+   "data": [
+    "PC",
+    "PC+1",
+    "PC+2"
+   ]
+  }
+ ],
+ "head": {
+  "text": "LDIVR  (opcode $D0)  -  15 microcode steps",
+  "tick": 0
+ },
+ "config": {
+  "hscale": 2
+ }
+}

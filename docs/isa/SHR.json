@@ -1,0 +1,144 @@
+{
+ "signal": [
+  {
+   "name": "uCODE CLK",
+   "wave": "p..............."
+  },
+  {
+   "name": "step",
+   "wave": "================",
+   "data": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15"
+   ]
+  },
+  {},
+  {
+   "name": "-VMA",
+   "wave": "llllllllllllllll",
+   "phase": -0.05
+  },
+  {
+   "name": "-MEM-RD",
+   "wave": "hlllllhhhhhhhhhh",
+   "phase": -0.05
+  },
+  {},
+  {
+   "name": "-REG-FUNC-RD",
+   "wave": "hhhhlhhhhhhhhhhh",
+   "phase": -0.05
+  },
+  {
+   "name": "-REG-UP",
+   "wave": "hhhhlhhhhhhhhhhh",
+   "phase": -0.05
+  },
+  {},
+  {
+   "name": "-ALU-FUNC",
+   "wave": "hhhhhhllllllllll",
+   "phase": -0.05
+  },
+  {
+   "name": "-AC-LD",
+   "wave": "hhhhhhhhhhhhhlhh",
+   "phase": -0.05
+  },
+  {
+   "name": "-SR-LD",
+   "wave": "hhhhhhhlhhlhhhhh",
+   "phase": -0.05
+  },
+  {},
+  {
+   "name": "LD-INS-REG",
+   "wave": "llhlllllllllllll",
+   "phase": -0.05
+  },
+  {
+   "name": "UCODE-COUNT-RESET",
+   "wave": "lllllllllllllllh",
+   "phase": -0.05
+  },
+  {},
+  {
+   "name": "ALU-FUNC[3:0]",
+   "wave": "=.....=..=..=...",
+   "phase": -0.05,
+   "data": [
+    "0",
+    "3",
+    "2",
+    "5"
+   ]
+  },
+  {},
+  {
+   "name": "ADDRESS BUS",
+   "wave": "=....=..........",
+   "phase": -0.16999999999999998,
+   "data": [
+    "PC",
+    "PC+1"
+   ]
+  },
+  {
+   "name": "DATA BUS",
+   "wave": "z=...=z.........",
+   "phase": -0.47,
+   "data": [
+    "M[PC]",
+    "M[PC+1]"
+   ]
+  },
+  {
+   "name": "IR",
+   "wave": "=.=.............",
+   "phase": -0.05,
+   "data": [
+    "IR",
+    "SHR ($B7)"
+   ]
+  },
+  {
+   "name": "ACC",
+   "wave": "=............=..",
+   "phase": -0.05,
+   "data": [
+    "ACC",
+    "ALU5(ACC,?)"
+   ]
+  },
+  {
+   "name": "PC (R0)",
+   "wave": "=....=..........",
+   "phase": -0.05,
+   "data": [
+    "PC",
+    "PC+1"
+   ]
+  }
+ ],
+ "head": {
+  "text": "SHR  (opcode $B7)  -  16 microcode steps",
+  "tick": 0
+ },
+ "config": {
+  "hscale": 2
+ }
+}

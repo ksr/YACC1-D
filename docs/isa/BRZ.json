@@ -1,0 +1,186 @@
+{
+ "signal": [
+  {
+   "name": "uCODE CLK",
+   "wave": "p...................."
+  },
+  {
+   "name": "step",
+   "wave": "=====================",
+   "data": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20"
+   ]
+  },
+  {},
+  {
+   "name": "-VMA",
+   "wave": "lllllllllllllllllllll",
+   "phase": -0.05
+  },
+  {
+   "name": "-MEM-RD",
+   "wave": "hlllllllllllhhhhhhhhh",
+   "phase": -0.05
+  },
+  {},
+  {
+   "name": "-REG-FUNC-RD",
+   "wave": "hhhhlhhlhhlhhhhhhhhhh",
+   "phase": -0.05
+  },
+  {
+   "name": "-REG-FUNC-LD",
+   "wave": "hhhhhhhhhhhhhhhhhllll",
+   "phase": -0.05
+  },
+  {
+   "name": "-REG-UP",
+   "wave": "hhhhlhhlhhlhhhhhhhhhh",
+   "phase": -0.05
+  },
+  {
+   "name": "REG-LD-LO",
+   "wave": "llllllllllllllllllhll",
+   "phase": -0.05
+  },
+  {
+   "name": "REG-LD-HI",
+   "wave": "llllllllllllllllllhll",
+   "phase": -0.05
+  },
+  {},
+  {
+   "name": "-ALU-FUNC",
+   "wave": "hhhhhhhhhhhhhllllllll",
+   "phase": -0.05
+  },
+  {
+   "name": "-AC-RD",
+   "wave": "hhhhhhhhhhhhhllllllll",
+   "phase": -0.05
+  },
+  {},
+  {
+   "name": "BRANCH-LD-LO",
+   "wave": "lllllllllhlllllllllll",
+   "phase": -0.05
+  },
+  {
+   "name": "BRANCH-LD-HI",
+   "wave": "llllllhllllllllllllll",
+   "phase": -0.05
+  },
+  {
+   "name": "-BRANCH-RD",
+   "wave": "hhhhhhhhhhhhhhhhlllll",
+   "phase": -0.05
+  },
+  {
+   "name": "BR-TEST",
+   "wave": "llllllllllllllhllllll",
+   "phase": -0.05
+  },
+  {},
+  {
+   "name": "LD-INS-REG",
+   "wave": "llhllllllllllllllllll",
+   "phase": -0.05
+  },
+  {
+   "name": "UCODE-COUNT-RESET",
+   "wave": "llllllllllllllllllllh",
+   "phase": -0.05
+  },
+  {},
+  {
+   "name": "ALU-FUNC[3:0]",
+   "wave": "=............=.......",
+   "phase": -0.05,
+   "data": [
+    "0",
+    "4"
+   ]
+  },
+  {},
+  {
+   "name": "ADDRESS BUS",
+   "wave": "=....=..=..=.......=.",
+   "phase": -0.16999999999999998,
+   "data": [
+    "PC",
+    "PC+1",
+    "PC+2",
+    "PC+3",
+    "target"
+   ]
+  },
+  {
+   "name": "DATA BUS",
+   "wave": "z=...=..=..=z=.......",
+   "phase": -0.47,
+   "data": [
+    "M[PC]",
+    "M[PC+1]",
+    "M[PC+2]",
+    "M[PC+3]",
+    "ACC"
+   ]
+  },
+  {
+   "name": "IR",
+   "wave": "=.=..................",
+   "phase": -0.05,
+   "data": [
+    "IR",
+    "BRZ ($A1)"
+   ]
+  },
+  {
+   "name": "ACC",
+   "wave": "=....................",
+   "phase": -0.05,
+   "data": [
+    "ACC"
+   ]
+  },
+  {
+   "name": "PC (R0)",
+   "wave": "=....=..=..=.......=.",
+   "phase": -0.05,
+   "data": [
+    "PC",
+    "PC+1",
+    "PC+2",
+    "PC+3",
+    "target"
+   ]
+  }
+ ],
+ "head": {
+  "text": "BRZ  (opcode $A1)  -  21 microcode steps",
+  "tick": 0
+ },
+ "config": {
+  "hscale": 2
+ }
+}
