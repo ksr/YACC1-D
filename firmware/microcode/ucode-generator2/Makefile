@@ -4,7 +4,7 @@
 #   make regen    run ./ucodegen here: rewrites test.123 / test.hex / test.hexz beside it (what the loader sends)
 #   make clean
 CC     ?= cc
-CFLAGS ?= -O2 -w
+CFLAGS ?= -O2 -Wall
 SRC     = $(wildcard *.c)
 all: ucodegen
 ucodegen: $(SRC) $(wildcard *.h) ../yaccsignaldefine.h ../yaccsignaldata2.h ../../../software/opcodes.h

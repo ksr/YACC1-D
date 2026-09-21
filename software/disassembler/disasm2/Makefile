@@ -3,7 +3,7 @@
 #   make run        disassemble every opcode of firmware/microcode/ucode-generator2/test.123 (found relative to the binary)
 #   ./disasm2 04 05 selected opcodes (hex)
 CC     ?= cc
-CFLAGS ?= -O2 -w
+CFLAGS ?= -O2 -Wall
 all: disasm2
 disasm2: main.c code.h ../yaccsignaldefine.h ../yaccsignaldata2.h
 	$(CC) $(CFLAGS) -o $@ main.c

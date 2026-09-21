@@ -36,7 +36,7 @@
 
 unsigned char cntlMemory[MEMORY_SIZE] = {}; // RAM Image
 
-char signalHistory[LINES_PER_INSTRUCTION][SIGNALS] = {' ',};
+char signalHistory[LINES_PER_INSTRUCTION][SIGNALS] = {{' '}};   /* YACC1-D 2026-09-20: same initializer, explicit braces */
 
 char * getSignalName(int instruction) {
 
@@ -201,8 +201,6 @@ bool processInstruction(int instruction) {
     unsigned char workingInstruction[INSTRUCTION_SIZE];
     bool activeSignals[SIGNALS];
     bool validLine[LINES_PER_INSTRUCTION];
-    int start;
-    int pos;
     bool validInstruction = false;
 
     printf("\nProcess instruction [%d]\n", instruction);
