@@ -4,7 +4,7 @@
 #   make run ROM=path/to/other.img   (any Intel-hex file; .img from the assembler, or rom from makerom)
 #   make clean
 CC      ?= cc
-CFLAGS  ?= -O2 -Wall
+CFLAGS  ?= -O2 -Wall -fno-common
 ROM     ?= ../../firmware/rom/shipped/rom
 
 all: emulator

@@ -276,8 +276,8 @@ tokenizer_next(void) {
                 break;
             case TOKENIZER_STRING:
                 DEBUG_PRINTF("-ptr = %d\n", tokenBufferPtr);
-                // oct 21 tokenBufferPtr += (strlen(&tokenBuffer[tokenBufferPtr]) + 1);
-                tokenBufferPtr += (strlen(&tokenBuffer[tokenBufferPtr]) + 1); // + 2 null and token_string
+                // oct 21 tokenBufferPtr += (strlen((const char *)&tokenBuffer[tokenBufferPtr]) + 1);
+                tokenBufferPtr += (strlen((const char *)&tokenBuffer[tokenBufferPtr]) + 1); // + 2 null and token_string
                 DEBUG_PRINTF("--ptr = %d\n", tokenBufferPtr);
                 break;
             case TOKENIZER_VARIABLE:
@@ -332,8 +332,8 @@ tokenizer_string(char *dest, int len) {
         dest[string_len] = 0;
     } else {
         // orig oct 21 memcpy(dest, &tokenBuffer[tokenBufferPtr], strlen(&tokenBuffer[tokenBufferPtr]));
-        memcpy(dest, &tokenBuffer[tokenBufferPtr+1], strlen(&tokenBuffer[tokenBufferPtr+1])); //added +1 to skip over token_string
-        dest[strlen(&tokenBuffer[tokenBufferPtr])] = 0;
+        memcpy(dest, &tokenBuffer[tokenBufferPtr+1], strlen((const char *)&tokenBuffer[tokenBufferPtr+1])); //added +1 to skip over token_string
+        dest[strlen((const char *)&tokenBuffer[tokenBufferPtr])] = 0;
     }
 }
 
@@ -394,7 +394,6 @@ const char *tokenize11(char *program) {
     int tokencounter;
     char string[50];
     int bufferptr = 0;
-    int firstLine = 1;
     VARIABLE_TYPE tmp;
     char newLine[20];
 
@@ -420,7 +419,7 @@ const char *tokenize11(char *program) {
                     break;
                 case TOKENIZER_STRING:
                     tokenizer_string(string, sizeof (string));
-                    strcpy(&workLine.lineTokens[tokencounter], string);
+                    strcpy((char *)&workLine.lineTokens[tokencounter], string);
                     tokencounter += (strlen(string));
                     workLine.lineTokens[tokencounter++] = 0;
                     break;
@@ -447,7 +446,7 @@ const char *tokenize11(char *program) {
                     break;
                 case TOKENIZER_STRING:
                     DEBUG_PRINTF("string=[%s] ", &workLine.lineTokens[i]);
-                    i += (strlen(&workLine.lineTokens[i]));
+                    i += (strlen((const char *)&workLine.lineTokens[i]));
                     break;
                 case TOKENIZER_VARIABLE:
                     memcpy(&tmp, &workLine.lineTokens[i], 2);
@@ -510,16 +509,14 @@ const char *tokenize11(char *program) {
 #endif
 
     //dumpBuffer(0, bufferptr + 5);
-    return (tokenBuffer);
+    return ((const char *)tokenBuffer);
 }
 
 const char *tokenizeLine(char *line) {
     int tokencounter;
     char string[50];
     int bufferptr = 0;
-    int firstLine = 1;
     VARIABLE_TYPE tmp;
-    char newLine[20];
     char buff[100];
 
     DEBUG_PRINTF("tl start[%s]\n", line);
@@ -539,7 +536,7 @@ const char *tokenizeLine(char *line) {
                 break;
             case TOKENIZER_STRING:
                 tokenizer_string(string, sizeof (string));
-                strcpy(&workLine.lineTokens[tokencounter], string);
+                strcpy((char *)&workLine.lineTokens[tokencounter], string);
                 tokencounter += (strlen(string));
                 workLine.lineTokens[tokencounter++] = 0;
                 break;
@@ -566,7 +563,7 @@ const char *tokenizeLine(char *line) {
                 break;
             case TOKENIZER_STRING:
                 DEBUG_PRINTF("string=[%s] ", &workLine.lineTokens[i]);
-                i += (strlen(&workLine.lineTokens[i]));
+                i += (strlen((const char *)&workLine.lineTokens[i]));
                 break;
             case TOKENIZER_VARIABLE:
                 memcpy(&tmp, &workLine.lineTokens[i], 2);
@@ -610,7 +607,7 @@ const char *tokenizeLine(char *line) {
 #if DEBUG
     dumpBuffer(0, 350);
 #endif
-    return (tokenBuffer);
+    return ((const char *)tokenBuffer);
 }
 int line = 0;
 
@@ -691,7 +688,7 @@ void addLine(char *buff) {
 
         // make room
         src = insertPtr;
-        dest = insertPtr + newLineLen;
+        dest = insertPtr + newLineLen; (void)dest;   /* YACC1-D 2026-09-20: only DEBUG_PRINTF reads it */
         DEBUG_PRINTF("src=%d dest=%d len=%d\n", src, dest, newLineLen);
 
         for (int i = TOKEN_BUFFER_SIZE; i >= src; i--)
@@ -729,7 +726,7 @@ void removeLine(int lineNumber) {
 
     dest = ptr;
     memcpy(&removeLength, &tokenBuffer[ptr + 3], 2);
-    src = dest + removeLength;
+    src = dest + removeLength; (void)src;   /* YACC1-D 2026-09-20: only DEBUG_PRINTF reads it */
     DEBUG_PRINTF("dest=%d src=%d length=%d\n", dest, src, removeLength);
     for (i = dest; i < TOKEN_BUFFER_SIZE; i++)
         tokenBuffer[i] = tokenBuffer[i + removeLength];

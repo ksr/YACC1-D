@@ -1,7 +1,7 @@
 # bus-tester test-vector generator — plain make (NetBeans one: Makefile.netbeans).
 #   make        build ./gen ;  make run   print the generated script to stdout (redirect into a script file)
 CC     ?= cc
-CFLAGS ?= -O2 -Wall
+CFLAGS ?= -O2 -Wall -fno-common
 all: gen
 gen: main.c
 	$(CC) $(CFLAGS) -o $@ main.c

@@ -75,7 +75,7 @@ static int ended;
 static VARIABLE_TYPE expr(void);
 static void line_statement(void);
 static void statement(void);
-static void index_free(void);
+/* static void index_free(void); -- YACC1-D 2026-09-20: never defined; its calls sit under #ifdef unused */
 
 peek_func peek_function = NULL;
 poke_func poke_function = NULL;

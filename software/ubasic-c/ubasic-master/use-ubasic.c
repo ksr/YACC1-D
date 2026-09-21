@@ -43,6 +43,7 @@
 #endif
 
 
+#ifdef OLD   /* YACC1-D 2026-09-20: only the OLD main() uses this */
 static const char program[] =
         "1 print \"start\"\n\
 10 gosub 100\n\
@@ -58,6 +59,7 @@ static const char program[] =
 107 print ( 2 + 3 ) * ( 4 + 5 ) \n\
 108 print 3\n\
 110 return\n";
+#endif
 
 #ifdef OLD
 
@@ -79,13 +81,12 @@ main(void) {
 
 int main(int argc, char *argv[]) {
 
-    char *input, *filename;
+    char *filename;
     FILE *fptr;
     char linebuff[1000];
     int i;
     char c;
 
-    char source[MAX_FILE_SIZE + 1];
 
     if (argc == 2) {
         filename = argv[1];

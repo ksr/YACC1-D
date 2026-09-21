@@ -3,7 +3,7 @@
 #   make run      interactive session (type lines, `run`, `list`; end of input quits)
 #   ./ubasic FILE run a program file (e.g. ../../../tests/basic/test)
 CC     ?= cc
-CFLAGS ?= -O2 -Wall
+CFLAGS ?= -O2 -Wall -fno-common
 all: ubasic
 ubasic: ubasic.c tokenizer.c use-ubasic.c ubasic.h tokenizer.h vartype.h
 	$(CC) $(CFLAGS) -o $@ ubasic.c tokenizer.c use-ubasic.c
