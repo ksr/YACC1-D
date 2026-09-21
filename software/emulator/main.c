@@ -425,13 +425,12 @@ void print_usage(const char *progname) {
 }
 
 int main(int argc, char** argv) {
-    int i, ins;
+    int ins;
     int reg;
     int portaddr;
     unsigned char hi, lo;
     int src, dest;
     bool tmpCarry;
-    char c;
     bool load_standard = false;
     char *load_filename = NULL;
 
@@ -461,7 +460,6 @@ int main(int argc, char** argv) {
     }
 
     enableRawMode();
-    int cc;
 
     /* ech testwhile (1) {
         myputchar(mygetchar());
@@ -471,11 +469,8 @@ int main(int argc, char** argv) {
 
     in = 0;
     registers[PC].word = 0xf000;
-    int singleStep = 0;
-    int breakAddress = 0;
     pushpopdepth = 0;
     pushpoprdepth = 0;
-    int regtrigger = 0;
 
     if (load_standard) {
         char img[4096];                                  /* YACC1-D 2026-09-20: images found relative to the executable */

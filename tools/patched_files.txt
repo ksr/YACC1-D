@@ -2,7 +2,7 @@
 # One path per line, then a tab and the reason. tools/audit_tree.py accepts a differing hash for these;
 # tools/migrate_purge.py never reverts them; tools/migrate_run.py never overwrites them.
 software/disassembler/disasm2/main.c	2026-09-20: re-enabled the yaccsignaldata2.h include, printWave() void; test.123 found relative to the executable; optional opcode arguments; two debug calls removed
-software/emulator/main.c	2026-09-20: -m (and the no-argument default) load firmware/basic/basic.img + firmware/monitor/monitor.img, located relative to the executable (works from Finder / any cwd)
+software/emulator/main.c	2026-09-20: -m (and the no-argument default) load firmware/basic/basic.img + firmware/monitor/monitor.img, located relative to the executable (works from Finder / any cwd); six unused locals removed
 firmware/microcode/ucode-generator2/controlLine.c	2026-09-20: outputs (test.123/.hex/.hexz) written beside the executable, not in the cwd (Finder double-click)
 firmware/microcode/ucode-generator2/main.c	2026-09-20: keeps argv[0] for controlLine.c's exe_relative()
 software/ubasic-c/ubasic-master/use-ubasic.c	2026-09-20: interactive mode exits at end of input instead of looping forever
