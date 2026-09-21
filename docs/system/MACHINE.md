@@ -43,7 +43,7 @@ Not in the machine: the two bring-up cards (Mem Switch, Mem Register), the two b
 
 ## Software that talks to it (Mac)
 
-- `tools/busdrv.py` — drives the bus tester (`CMD:OPERAND#`, `>>` prompt); `tools/alias_min.py` reproduces the (now resolved) video-card fault; `tests/video/video_ram_test.py` is the video RAM test.
+- `tools/busdrv.py` — drives the bus tester (`CMD:OPERAND#`, `>>` prompt); `tools/alias_min.py` reproduces the (now resolved) video-card fault; `tests/video/video_ram_test.py` is the video RAM test; `tests/memory/memory_status.py` the memory-card status check (boot remap, ROM image, RAM, block map).
 - `embedded/command-sender/command_sender_8` (Processing) — sends `tests/bus-tester-scripts/`.
 - `embedded/sequencer-card/microcode-loader/simple_microcode_sender_64` (Processing, 115200) — loads `test.hexz`.
 - `software/assembler` (`asm file -d=yacc1`), `software/emulator`, `software/ubasic-c`, `software/disassembler/disasm2` (needs its include restored).
