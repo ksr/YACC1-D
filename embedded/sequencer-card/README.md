@@ -13,3 +13,8 @@
 Flash read-out of the card's ATmega328P, 2026-09-21 (`readback/`, with the restore command): a Sequencer3 build (identical
 message strings to a build of this folder; older compiler, 13,290 vs 11,186 bytes today). **Re-flashed from this folder the
 same day; the flash reads back byte-identical to the tree build.**
+
+Run-mode boots captured 2026-09-21 (`tests/sequencer/`): with the bus tester still asserting -BUS-EN the RAM dumps were all
+zero (the logic card drove the address lines; every write hit address 0); with bus-monitor on the tester and the bus quiet,
+RAM == EEPROM == `firmware/microcode/ucode-generator2/test.hex` for every dumped instruction. The EEPROM holds the tree's
+microcode.
