@@ -50,7 +50,7 @@ Not in the machine: the two bring-up cards (Mem Switch, Mem Register), the two b
 
 ## Known faults / open on the hardware
 
-1. Video card: 6845 data register unreachable as drawn (-CS includes /A0 while RS = A0); bench fix = IC1 pin 13 tied high.
+1. Video card: 6845 data register unreachable as drawn (-CS includes /A0 while RS = A0); bench fix = RS to A1, see `hardware/cards/video/docs/fix-6845-register-select.md`.
 2. Video card: 7416 open-collector outputs with no pull-ups.
 3. Video card: the block-0/9 write-through fault of 2026-09-18 is RESOLVED (2026-09-21): its cause was the unpowered +5V
    rail (IC1, IC2, RN2 and all decoupling on a net with no source); joined to VCC by a wire, 1K RAM test passes 8/8.
