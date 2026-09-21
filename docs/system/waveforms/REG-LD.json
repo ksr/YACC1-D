@@ -1,0 +1,12 @@
+{ "signal" : [
+  
+  { "name": "-RESET(B)", "wave": "h...........", "node": "...."},
+  { "name":  "REG-LD-ID(B)", "wave": "..x3.....x..", data: ["VALID REG LD ID 0-F"]},
+  { "name": "-REG-FUNC-LD(B)", "wave": "h..l.....h..", "node": "....."},
+  { "name": "-RX-LDSEL(I)", "wave": "h..0.....h..", "node": "....."},
+  { "name": "-REG-LD-LO(B)", "wave": "h.....lh....", "node": "......."},
+  { "name": "VALID BUS DATA", "wave": "x....0..x...", "node": "......."},
+], 
+ 
+ foot:{text:'INDEX REGISTER LOAD LOW'}
+}

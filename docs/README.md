@@ -2,7 +2,7 @@
 
 | Folder | Contents |
 |---|---|
-| `system/` | the bus connector specs (`connector/`), the opcode table PDF (2023-11), UART register waveforms (`waveforms/`). Architecture / memory map / microcode format write-ups are still to be written; the facts are in the card READMEs, `firmware/`, and `software/opcodes.h` |
+| `system/` | the bus connector specs (`connector/`), the opcode table PDF (2023-11), index-register timing diagrams (`waveforms/`). Architecture / memory map / microcode format write-ups are still to be written; the facts are in the card READMEs, `firmware/`, and `software/opcodes.h` |
 | `cards/` | placeholder for per-card theory-of-operation write-ups; today each card's README under `hardware/cards/<card>/` is the write-up |
 | `procedures/` | bus tester command reference (PDF), system build notes; bring-up sequences are in the card folders' `Build Notes.rtf` |
 | `history/` | the 2021 repo front page and status, the PCB folder readme, 2017–2020 design notes, verbatim |

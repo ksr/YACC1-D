@@ -1,10 +1,10 @@
-DRY RUN 2026-09-20 20:07  (nothing written)
+DRY RUN 2026-09-21 12:26  (nothing written)
 
-planned files by mode: {'copy': 1027, 'manifest': 7, 'archive': 1288, 'drop': 209, 'skip': 1337}
-planned bytes by mode: {'copy': '153.3 MB', 'manifest': '967.4 MB', 'archive': '191.0 MB', 'drop': '30.8 MB', 'skip': '122.2 MB'}
+planned files by mode: {'copy': 1025, 'manifest': 7, 'archive': 1288, 'drop': 209, 'skip': 1345}
+planned bytes by mode: {'copy': '152.1 MB', 'manifest': '967.4 MB', 'archive': '191.0 MB', 'drop': '30.8 MB', 'skip': '127.0 MB'}
 
 planned files by destination area:
-   1149  
+   1155  
       7  ALU V3.1.pro
       7  ALU V3.2.pro
       7  ALU V3.3.brd
@@ -41,6 +41,8 @@ planned files by destination area:
       1  Jumper Board Vertical V3.1.sch
       6  Makefile
       9  Notes.rtf
+      1  REG-LD.webarchive
+      1  REG-RD.webarchive
       3  Sequencer-Logic-Prod-V1.0-1_03.job
       3  Sequencer-Logic-Prod-V1.0-3 2.pdf
       3  Sequencer-Logic-Prod-V1.0-3-BOM.txt
@@ -74,7 +76,7 @@ planned files by destination area:
       8  docs/history
       2  docs/procedures
       2  docs/references
-      7  docs/system
+      5  docs/system
       6  embedded/bus-tester
       1  embedded/clocker
       9  embedded/command-sender
@@ -147,11 +149,11 @@ planned files by destination area:
       1  yacc2buss.brd
       1  yacc2buss.sch
 
-dedup: 3270 archive files NOT copied because identical bytes already go elsewhere (907.2 MB saved; 325 of them are .sch/.brd)
+dedup: 3264 archive files NOT copied because identical bytes already go elsewhere (903.6 MB saved; 325 of them are .sch/.brd)
 dedup: 1 Eagle .sch/.brd files restored so no archive project folder loses half its pair
 dedup: 97 distinct contents appear at more than one copy destination (kept, see copy-duplicates.txt)
 fab output / BOM files routed into <rev>/fab and <rev>/bom: 804
-archive files dropped because their bytes were deliberately skipped in the live copies: 626
+archive files dropped because their bytes were deliberately skipped in the live copies: 630
 fab files dropped because a zip in the same fab/ folder already contains them: 46
 
 unclassified files in the four current copies: 0

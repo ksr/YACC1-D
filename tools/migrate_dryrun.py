@@ -301,7 +301,7 @@ RULES = [
     (GV, "General Notes/", "docs/history/general-notes/", "copy"),
     (C20, "Other-do-not-git/NOTES Jan 2:17 orig.rtf", "docs/history/", "copy"),
     (C20, "Other-do-not-git/", "docs/references/", "copy"),
-    (GV, "Utilities/Waveforms/", "docs/system/waveforms/", "copy"),
+    (GV, "Utilities/Waveforms/", "", "skip"),   # Safari webarchives of the WaveDrom editor (600 KB of site JS each, incl. a Google public API key that GitHub flagged); the two diagrams live on as docs/system/waveforms/*.json + .svg, extracted 2026-09-21
     (None, "*Data Sheets/1802 Microprocessor Instructions-1.pdf", "", "drop"),   # second download of the same 5-page sheet
     (GV, "Data Sheets/", "docs/datasheets/", "copy"),
     (GV, "Photos & Videos/", "media/", "copy"),

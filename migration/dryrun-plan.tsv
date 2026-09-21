@@ -571,6 +571,8 @@ drop		YACCS-OLD/YACC1-2020 July 2021 backup/Software/Sequencer Card/uCode-Genera
 skip		YACCS-OLD/YACC1-2020 July 2021 backup/Software/emulator/Makefile	a9ed26ab7eaad2726af7a610a26eb390
 skip		YACCS-OLD/YACC1-2020 July 2021 backup/Software/emulator/emulator.old	a178b4825c82ca5b6058cae2d399b81a
 skip		YACCS-OLD/YACC1-2020 July 2021 backup/Software/emulator/nbproject/configurations.xml	59598bd2d44e9e2c57433e7d5d333046
+skip		YACCS-OLD/YACC1-2020 July 2021 backup/Utilities/Waveforms/REG-LD.webarchive	e8050e00472a9c8adb043489c597530b
+skip		YACCS-OLD/YACC1-2020 July 2021 backup/Utilities/Waveforms/REG-RD.webarchive	81aafc98eae7b3308640b4091e54e8bb
 drop		YACCS-OLD/YACC1-2020-ORIG/Data Sheets/1802 Microprocessor Instructions-1.pdf	fb4bad2a670cae453802591ea33c3a79
 skip		YACCS-OLD/YACC1-2020-ORIG/PCB/Production/BUS-PROD-V1.1/gerbers/yacc2buss.cmp	59283c90f89f8e680b35149c2bd5256c
 skip		YACCS-OLD/YACC1-2020-ORIG/PCB/Production/BUS-PROD-V1.1/gerbers/yacc2buss.drd	927bafe18b63d022a620e0daa28f1018
@@ -806,6 +808,8 @@ skip		YACCS-OLD/YACC1-2020-ORIG/Software/TinyBasicC/Makefile	a9ed26ab7eaad2726af
 skip		YACCS-OLD/YACC1-2020-ORIG/Software/TinyBasicC/old/tb/tb/Makefile	a9ed26ab7eaad2726af7a610a26eb390
 skip		YACCS-OLD/YACC1-2020-ORIG/Software/TinyBasicC/old/tb/tb/TBout.txt	d41d8cd98f00b204e9800998ecf8427e
 skip		YACCS-OLD/YACC1-2020-ORIG/Software/disasm/Makefile	a9ed26ab7eaad2726af7a610a26eb390
+skip		YACCS-OLD/YACC1-2020-ORIG/Waveforms/REG-LD.webarchive	e8050e00472a9c8adb043489c597530b
+skip		YACCS-OLD/YACC1-2020-ORIG/Waveforms/REG-RD.webarchive	81aafc98eae7b3308640b4091e54e8bb
 skip		YACCS-OLD/YACC1-2020-backup-pre-git-backup/YACC1-2020/PCB/Unsure - see notes/Bus Tester orig/Notes.rtf	47ecff448cb2c3f2b2d12876aeae289d
 skip		YACCS-OLD/YACC1-2020-backup-pre-git-backup/YACC1-2020/PCB/Unsure - see notes/Bus Tester orig/gerbers/tester.cmp	b016b37c32162f7e301dc3cfa58c759b
 skip		YACCS-OLD/YACC1-2020-backup-pre-git-backup/YACC1-2020/PCB/Unsure - see notes/Bus Tester orig/gerbers/tester.drd	b33db64cc6f75f0403faf9be64cdc5ef
@@ -959,6 +963,8 @@ drop		YACCS-OLD/YACC1-2020-backup-pre-git-backup/YACC1-2020/Software/Bus Test Ca
 drop		YACCS-OLD/YACC1-2020-backup-pre-git-backup/YACC1-2020/Software/Bus Test Card/Command sender/tests/Test Vectors/SP-PC/commands2.txt	ac505cb5eff84ee8c1af072cf3f028a4
 skip		YACCS-OLD/YACC1-2020-backup-pre-git-backup/YACC1-2020/Software/Emulator/Makefile	a9ed26ab7eaad2726af7a610a26eb390
 skip		YACCS-OLD/YACC1-2020-backup-pre-git-backup/YACC1-2020/Software/Memory Card/test EPROM/Makefile	a9ed26ab7eaad2726af7a610a26eb390
+skip		YACCS-OLD/YACC1-2020-backup-pre-git-backup/YACC1-2020/Waveforms/REG-LD.webarchive	e8050e00472a9c8adb043489c597530b
+skip		YACCS-OLD/YACC1-2020-backup-pre-git-backup/YACC1-2020/Waveforms/REG-RD.webarchive	81aafc98eae7b3308640b4091e54e8bb
 skip		YACCS-OLD/YACC1-BACKUP/Old/NewFolder/CppApplication_1/Makefile	a9ed26ab7eaad2726af7a610a26eb390
 skip		YACCS-OLD/YACC1-BACKUP/Old/NewFolder/test EPROM/Makefile	a9ed26ab7eaad2726af7a610a26eb390
 skip		YACCS-OLD/YACC1-BACKUP/PCB-PRODUCTION/BUS-PROD-V1.1/gerbers/yacc2buss.cmp	59283c90f89f8e680b35149c2bd5256c
@@ -1354,6 +1360,8 @@ skip	Notes.rtf	YACC1-2020/PCB/Working - Under Develolpment/ALU-V3.3-16/Notes.rtf
 skip	Notes.rtf	YACC1-2024/PCB/Working - Under Develolpment/ALU-V3.3-16 copy/Notes.rtf	0596ab1e59706d6a3848d4751c76f114
 skip	Notes.rtf	YACC1-2024/PCB/Working - Under Develolpment/ALU-V3.3-16 ok/Notes.rtf	0596ab1e59706d6a3848d4751c76f114
 skip	Notes.rtf	YACC1-2024/PCB/Working - Under Develolpment/ALU-V3.3-16/Notes.rtf	0596ab1e59706d6a3848d4751c76f114
+skip	REG-LD.webarchive	YACC gitversion/YACC1-2020/Utilities/Waveforms/REG-LD.webarchive	e8050e00472a9c8adb043489c597530b
+skip	REG-RD.webarchive	YACC gitversion/YACC1-2020/Utilities/Waveforms/REG-RD.webarchive	81aafc98eae7b3308640b4091e54e8bb
 drop	Sequencer-Logic-Prod-V1.0-1_03.job	YACC gitversion/YACC1-2020/PCB/Working - Under Develolpment/Sequencer-Logic-v2.1/old-YACC1/Sequencer-Logic-Prod-V1.0-1_03.job	b13899e2fbfc4a19982cdd37bb1a15c3
 drop	Sequencer-Logic-Prod-V1.0-1_03.job	YACCS-OLD/YACC1-2020-OLD/PCB/Production/Old & obsolete/Sequencer-Logic-v2.0/old-YACC1/Sequencer-Logic-Prod-V1.0-1_03.job	b13899e2fbfc4a19982cdd37bb1a15c3
 drop	Sequencer-Logic-Prod-V1.0-1_03.job	YACCS-OLD/YACC1-2020-ORIG/PCB/Production/Sequencer-Logic-v2.0/old-YACC1/Sequencer-Logic-Prod-V1.0-1_03.job	b13899e2fbfc4a19982cdd37bb1a15c3
@@ -2770,8 +2778,6 @@ copy	docs/system/connector/YACC1 Connector - V3 - June-18-2020.pdf	YACC gitversi
 copy	docs/system/connector/YACC1 Connector - V3.1.pdf	YACC gitversion/YACC1-2020/PCB/Production/IO-V-1.1/YACC1 Connector - V3.1.pdf	a8ffbc25664aba5edf21c86c6a84d67e
 copy	docs/system/connector/YACC1 Connector - V3.2.pdf	YACC gitversion/YACC1-2020/YACC1 Connector - V3.2.pdf	cc53001f541c44542f4ed05505123099
 copy	docs/system/connector/YACC1 Connector - YACC 3.0-old.pdf	YACCS-OLD/YACC1-2020-OLD/PCB/Production/Old & obsolete/ALU-V3.0-2 layer/YACC1 Connector - YACC 3.0-old.pdf	8364569796d62f4bccddef17f891fcff
-copy	docs/system/waveforms/REG-LD.webarchive	YACC gitversion/YACC1-2020/Utilities/Waveforms/REG-LD.webarchive	e8050e00472a9c8adb043489c597530b
-copy	docs/system/waveforms/REG-RD.webarchive	YACC gitversion/YACC1-2020/Utilities/Waveforms/REG-RD.webarchive	81aafc98eae7b3308640b4091e54e8bb
 copy	embedded/bus-tester/Readme.md	YACC1-2024/Software-vs/Bus Test Card/Readme.md	ea9d03fb71691c4d0981e3712335feb1
 copy	embedded/bus-tester/bus-driver-mcp23x17-wip/bus-driver.ino	YACC1-2020/Software-vs/Bus Test Card/bus-driver/bus-driver.ino	a72a4ed0627a0edaf9855463bac3a483
 copy	embedded/bus-tester/bus-driver/bus-driver.ino	YACC1-2024/Software-vs/Bus Test Card/bus-driver/bus-driver.ino	2ece697dc7d21a57652121492ffdb8b6

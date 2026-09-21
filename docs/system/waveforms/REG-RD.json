@@ -1,0 +1,13 @@
+{ "signal" : [
+  
+  { "name": "-RESET", "wave": "h.........", "node": "..a."},
+  { "name": "-BUS-EN", "wave": "h|l.|.....", "node": "..a."},
+  { "name":  "REG-RD-ID", "wave": "..x3...x..", data: ["VALID REG RD ID 0-F"]},
+  { "name": "-REG-FUNC-RD", "wave": "h|.l.|...", "node": "...b."},
+  { "name": "-RX-RDSEL", "wave": "h..0.|...", "node": "...c."},
+  { "name": "-REG-RD-LO", "wave": "h....l|h.", "node": ".....d."},
+  { "name": "READ (DATA OUT to BUS)", "wave": "x....0|x", "node": ".....e."},
+], 
+  edge:['a->c', 'b->c','c->e','d->e'],
+ foot:{text:'INDEX REGISTER READ'}
+}
