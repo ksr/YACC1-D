@@ -251,7 +251,6 @@ void Translate(int Entry)
   word w;
   char flag;
   char noout;
-  char buffer[20];
   char temp[1024];
   char *pTemp;
   Ptr=&DefFile.Dest[Entry][0];
