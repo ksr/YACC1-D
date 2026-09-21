@@ -13,6 +13,7 @@ For each Eagle .sch/.brd pair (or a lone .sch / .brd) this makes, next to the Ea
         reports/erc.json, drc.json, <project>-schematic.pdf, <project>-top.png, -bottom.png
         README.md                          what was converted, the proof result, residual ERC/DRC counts
 and an index hardware/KICAD.md.  Designs listed in a folder's pdf/SKIP.txt (label-only duplicates) are skipped.
+A kicad/<rev>/ folder holding a MASTER marker file is hand-maintained: never written by this tool, listed separately in the index.
 The Eagle files are never touched. Output is regenerated from scratch on every run (deterministic converter).
 usage: eagle_to_kicad_all.py [--only <substring>]   (any python3; re-executes itself under KiCad's python for pcbnew)
 """
@@ -92,6 +93,7 @@ def count_by(items, key="type"):
 def convert(rel, base, sch, brd, dest, project):
     """-> dict for the README/index"""
     r = dict(rel=rel, base=base, dest=dest, project=project, sch=bool(sch), brd=bool(brd), notes=[], proof="n/a", status="ok")
+    if os.path.exists(os.path.join(dest, "MASTER")): raise RuntimeError("%s is a hand-maintained master (MASTER marker); refusing to regenerate" % dest)
     if os.path.isdir(dest): shutil.rmtree(dest)
     os.makedirs(os.path.join(dest, "reports"))
     rep = os.path.join(dest, "reports"); tmp = tempfile.mkdtemp(prefix="e2k-")
@@ -235,6 +237,11 @@ def main():
                 f.write("| `%s` | [`%s`](%s/) | %s | %s | %s | %s | %s |\n" % (
                     os.path.join(r["rel"], r["base"]), r["project"], os.path.relpath(r["dest"], HW), "yes" if r["fabricated"] else "no",
                     r["proof"], erc, drc, "ok" if r["status"] == "ok" else "**" + r["status"] + "**"))
+        masters = sorted(os.path.relpath(r_, HW) for r_, d_, f_ in os.walk(HW) if "MASTER" in f_ and "/kicad/" in r_ + "/")
+        if masters:
+            with open(os.path.join(HW, "KICAD.md"), "a") as f:
+                f.write("\n## Hand-maintained masters (not generated; `MASTER` marker file)\n\n")
+                for m in masters: f.write("- [`%s`](%s/) — see its README\n" % (m, m))
     ok = sum(1 for r in results if r["status"] == "ok"); match = sum(1 for r in results if r["proof"].startswith("MATCH"))
     mism = [r for r in results if r["proof"].startswith("MISMATCH")]; bad = [r for r in results if r["status"] != "ok"]
     print("\n%d designs: %d converted, %d proofs MATCH, %d MISMATCH, %d failed  (%.0f min)" % (len(results), ok, match, len(mism), len(bad), (time.time() - t0) / 60))

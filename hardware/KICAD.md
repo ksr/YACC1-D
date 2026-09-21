@@ -41,3 +41,7 @@ Generated 2026-09-20 by `tools/eagle_to_kicad_all.py`: every Eagle design under 
 | `cards/sequencer-memory/eagle/deprecated/v2.0/Sequencer-Memory-V2.0` | [`sequencer-memory-v2.0`](cards/sequencer-memory/kicad/deprecated/v2.0/) | yes | MATCH (105/105 nets) | - | 497 + 0 unconnected | ok |
 | `cards/sequencer-memory/eagle/v2.1/Sequencer-Memory-V2.1` | [`sequencer-memory-v2.1`](cards/sequencer-memory/kicad/v2.1/) | yes | MATCH (106/106 nets) | - | 461 + 0 unconnected | ok |
 | `cards/video/eagle/v1.0-fusion-export-2026-09-18/Video_1.0` | [`video-v1.0-fusion-export-2026-09-18`](cards/video/kicad/v1.0-fusion-export-2026-09-18/) | yes | MISMATCH (115/117 nets) | 101 | 229 + 0 unconnected | ok |
+
+## Hand-maintained masters (not generated; `MASTER` marker file)
+
+- [`cards/video/kicad/v1.1`](cards/video/kicad/v1.1/) — see its README

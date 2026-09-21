@@ -6,10 +6,11 @@ only SV3 5–6), cascaded from -VMA, into the memory card's undecoded $D000 bloc
 and sync on the card; the LM1881 sync-converter Eagle project in `archive/eagle-projects/` is the related
 composite-video experiment.
 
-**Fusion 360 is the master design.** `eagle/v1.0-fusion-export-2026-09-18/` is the Eagle export taken that day:
-`Video_1.0.sch` and `Video_1.0.brd` (exported by Fusion as "Blank V3.1.brd" because the design was started from the
-blank card template; stored here under the matching name so Eagle links the pair). One version, built, in the
-machine for bring-up without a CRTC fitted.
+**KiCad is the master design (Ken, 2026-09-21): `kicad/v1.1/` — hand-maintained, Fusion 360 abandoned for this card.**
+`eagle/v1.0-fusion-export-2026-09-18/` is the Fusion export of the BUILT card (`Video_1.0.sch/.brd`, exported by Fusion as
+"Blank V3.1.brd" because the design started from the blank template) and `kicad/v1.0-fusion-export-2026-09-18/` its
+generated, proven conversion; both are the record of what was built. One version built, in the machine for bring-up
+without a CRTC fitted. v1.1 so far: the two 5 V nets merged into `VCC` with a joining track (see its README).
 
 Known issues and findings:
 - **+5V rail unpowered as designed (found 2026-09-20 by the KiCad netlist proof, confirmed on the bench 2026-09-21).**

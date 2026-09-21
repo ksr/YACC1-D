@@ -90,7 +90,7 @@ YACC1-D/
 ├── README.md        what the card is, current revision, what is built/in the machine, open issues
 ├── kicad/           KiCad 10 projects, one per revision (v1.3/, deprecated/v1.2/ ...), GENERATED from the Eagle
 │                    files by tools/eagle_to_kicad_all.py with a schematic-vs-board netlist proof (hardware/KICAD.md);
-│                    once a card is edited in KiCad it leaves the generator's list and this becomes the design
+│                    a kicad/<rev>/ with a MASTER marker is hand-maintained and IS the design (video v1.1 since 2026-09-21)
 ├── eagle/           the Eagle originals (frozen)
 │   ├── v1.3/            the ACTIVE version (the card in the machine) + any newer design never ordered
 │   │   ├── fab/         what was sent to the board house (gerber zips, CAM jobs, invoices)

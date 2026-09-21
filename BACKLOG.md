@@ -8,10 +8,9 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   Open it in Eagle/Fusion, re-save, use as the template for every new card.
 - **Bus Tester V3.1** (`hardware/cards/bus-tester/eagle/v3.1`, 2020-07): latches drive the bus, soft bus-enable/reset,
   bypass caps; routed, CAM run, never ordered. Decide: build it, or keep the 2016 v1.1 for good.
-- **Video card fixes** (`hardware/cards/video`, next revision): join +5V and VCC in the design (the +5V rail had no source;
-  bench wire since 2026-09-21 — this was the cause of the block-0/9 write-through fault, resolved); move the 6845 RS from A0 to A1
-  (data register unreachable as drawn; bench procedure in `hardware/cards/video/docs/fix-6845-register-select.md`); pull-ups on the 7416 outputs.
-  Fusion 360 is the master — decide whether the tree's Eagle export (or the KiCad conversion) becomes the master.
+- **Video card v1.1** (`hardware/cards/video/kicad/v1.1`, the KiCad master since 2026-09-21; Fusion abandoned): DONE in the
+  design — one 5 V rail (`+5V` folded into `VCC`, joining track added; proof 116/116). TO DO — move the 6845 RS from A0 to A1
+  (`hardware/cards/video/docs/fix-6845-register-select.md`; bench job first), pull-ups on the 7416 outputs; then order.
 - **IO V1.2 ideas** (IO notes): directional data-bus buffer driven by -IO-RD; 74138 IC5 pin 5 tied to -BUS-EN.
 - **Index Registers**: notes ask whether bus direction should follow -RD-SEL (the same question as the IO buffer).
 - **Memory v1.3 notes**: "should TMP registers move to the ALU", hard-jumper a boot-loader enable, 4K-block EEPROM select.
