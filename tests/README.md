@@ -12,6 +12,8 @@
   undecoded). `memory_full_test.py` (~16 min with the blocks-1 bus-tester firmware): ROM, address lines, two full RAM
   patterns over $0000-$CFFF written then verified in separate sweeps, the video RAM, ROM again. Logs beside them:
   2026-09-21 all RAM cells good, ROM = sources, video RAM good.
+- `sequencer/` — run-mode boot transcripts of the sequencer-memory ATmega (2026-09-21): the clobbered copy with -BUS-EN
+  asserted, the clean copy with the bus quiet, and the Sequencer4 boot (16 s copy, 29 s verify, RAM == EEPROM).
 - `video/` — `video_ram_test.py`, the video card's display-RAM test over the bus tester (patterns, inverse, neighbour
   isolation, the block-0/9 write-through check, read stability); 8/8 on 2026-09-21 after the +5V/VCC join.
 - `basic/` — `test`, a small BASIC program (LET/FOR loops) used to exercise the interpreter.

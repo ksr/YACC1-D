@@ -2810,16 +2810,16 @@ copy	embedded/sequencer-card/deprecated/sequencer2/download/YACC_Common_headera.
 copy	embedded/sequencer-card/deprecated/sequencer2/download/download.ino	YACC1-2024/Software/Sequencer Card/Sequencer2/download/download.ino	3aa6c9b9ac700b54a6965d8e74633bf1
 copy	embedded/sequencer-card/deprecated/sequencer2/download/uCodeRAM.ino	YACC1-2024/Software/Sequencer Card/Sequencer2/download/uCodeRAM.ino	cce60de9ccafe5533e4c758ab82b8e6f
 copy	embedded/sequencer-card/deprecated/sequencer2/download/uCodeROM.ino	YACC1-2024/Software/Sequencer Card/Sequencer2/download/uCodeROM.ino	d89a182436f983c20f9f5199473e8744
+copy	embedded/sequencer-card/deprecated/sequencer3/EEPROM.ino	YACC1-2024/Software/Sequencer Card/Sequencer3/EEPROM.ino	56d837ceaa8081454be0deef9024e94b
+copy	embedded/sequencer-card/deprecated/sequencer3/IO.ino	YACC1-2024/Software/Sequencer Card/Sequencer3/IO.ino	9401a7b545f6e91dc48c17d9e928315c
+copy	embedded/sequencer-card/deprecated/sequencer3/Sequencer3.ino	YACC1-2024/Software/Sequencer Card/Sequencer3/Sequencer3.ino	a1a8c0f9625fffefc5afefc9314882a2
+copy	embedded/sequencer-card/deprecated/sequencer3/YACC_Common_headera.h	YACC1-2024/Software/Sequencer Card/Sequencer3/YACC_Common_headera.h	7540d65e720dbaa9b78eb226173663fb
+copy	embedded/sequencer-card/deprecated/sequencer3/download.ino	YACC1-2024/Software/Sequencer Card/Sequencer3/download.ino	d2bb964a5361347485db0e638e7ce2b1
+copy	embedded/sequencer-card/deprecated/sequencer3/uCodeRAM.ino	YACC1-2024/Software/Sequencer Card/Sequencer3/uCodeRAM.ino	39a9df77975e4413cb36fea0a9c5d32f
+copy	embedded/sequencer-card/deprecated/sequencer3/uCodeROM.ino	YACC1-2024/Software/Sequencer Card/Sequencer3/uCodeROM.ino	99b06ae8ef7fbbf2b636971861528597
 copy	embedded/sequencer-card/deprecated/test-eeprom-2020-09/mem/mem.ino	YACC1-2024/Software-vs/Bus Test Card/Test EEPROM/mem/mem.ino	b637dfff8f687caafb028031bf84a554
 copy	embedded/sequencer-card/dumpram/dumpram.ino	YACC1-2024/Software/Sequencer Card/dumpram/dumpram.ino	352047db55e7ff9c3d10f1449a79f070
 copy	embedded/sequencer-card/microcode-loader/simple_microcode_sender_64/simple_microcode_sender_64.pde	YACC1-2024/Software/Sequencer Card/Microcode loader send to sequencer/simple_microcode_sender_64/simple_microcode_sender_64.pde	094361c4ecff8ff747486fc8d587e1d0
-copy	embedded/sequencer-card/sequencer3/EEPROM.ino	YACC1-2024/Software/Sequencer Card/Sequencer3/EEPROM.ino	56d837ceaa8081454be0deef9024e94b
-copy	embedded/sequencer-card/sequencer3/IO.ino	YACC1-2024/Software/Sequencer Card/Sequencer3/IO.ino	9401a7b545f6e91dc48c17d9e928315c
-copy	embedded/sequencer-card/sequencer3/Sequencer3.ino	YACC1-2024/Software/Sequencer Card/Sequencer3/Sequencer3.ino	a1a8c0f9625fffefc5afefc9314882a2
-copy	embedded/sequencer-card/sequencer3/YACC_Common_headera.h	YACC1-2024/Software/Sequencer Card/Sequencer3/YACC_Common_headera.h	7540d65e720dbaa9b78eb226173663fb
-copy	embedded/sequencer-card/sequencer3/download.ino	YACC1-2024/Software/Sequencer Card/Sequencer3/download.ino	d2bb964a5361347485db0e638e7ce2b1
-copy	embedded/sequencer-card/sequencer3/uCodeRAM.ino	YACC1-2024/Software/Sequencer Card/Sequencer3/uCodeRAM.ino	39a9df77975e4413cb36fea0a9c5d32f
-copy	embedded/sequencer-card/sequencer3/uCodeROM.ino	YACC1-2024/Software/Sequencer Card/Sequencer3/uCodeROM.ino	99b06ae8ef7fbbf2b636971861528597
 copy	embedded/sequencer-card/test-eeprom/mem/mem.ino	YACC1-2024/Software/Sequencer Card/Test EEPROM/mem/mem.ino	a2516a03bc81ad3c0f56326997518801
 skip	emulator	YACC1-2020/Software/emulator-16/emulator	f33e2a9cb522e58f0c7b82272eded5f3
 skip	emulator	YACC1-2024/Software/emulator-16/emulator	f33e2a9cb522e58f0c7b82272eded5f3

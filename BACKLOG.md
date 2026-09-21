@@ -47,10 +47,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   `LET`, `FOR`/`NEXT`, `DUMP start end`, `WAIT`, `DUMPVARS`/`DUMPLABELS`, and `CMD:OP#EXPECTED!VAR` return-value matching
   and capture (hex in the scripts, decimal on the wire). Retire the sketch to `deprecated/` once the Python version runs the
   scripts in `tests/bus-tester-scripts/` on the bench.
-- **Sequencer3 firmware: verify the EEPROM-to-RAM copy** (`embedded/sequencer-card/sequencer3`): read each instruction back
-  after writing it and refuse to raise READY (blink FAULT) on a mismatch. On 2026-09-21 a bus tester left asserting -BUS-EN
-  made the logic card drive the microcode address lines during the copy; every write landed on address 0 and READY was
-  raised over an empty RAM. A read-back would have caught it in seconds. Also drop the test-pattern fill from every boot.
+- (done 2026-09-21: `embedded/sequencer-card/sequencer4` reads the copy back before READY and refuses on a mismatch; copy 16 s
+  + verify 29 s instead of 156 s; sequencer3 deprecated)
 - **Monitor loader `tools/monload.py`** — push an assembled program into RAM through the ROM monitor's `E` command over the
   serial console (the monitor has no hex loader; `L` lists BASIC). Protocol from `firmware/monitor/monitor.asm` (`examine:`):
   send `E` + 4 hex address; the monitor prints `AAAA XX ` and waits; two hex characters replace the byte and advance to the
