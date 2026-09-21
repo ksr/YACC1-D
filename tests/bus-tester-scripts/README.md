@@ -10,7 +10,7 @@ before driving memory. Sent by the command sender GUI (file dialog) or `tools/bu
 | `IO/` | `basic-out serialin serialout` (2020-07/08) | IO card, UART |
 | `Index Register/` | `commands-1 copy.txt` (2020-10-09, 372 lines) | Index Registers 1.1 |
 | `Memory Card Tests/` | low/hi RAM + EPROM tests, dumps (2020-07/08) | memory card |
-| `Gen Test Vectors/` | C generator (2020-06-30): `make run` prints a register load/read script — in the pre-V3.2 signal names (REG-FUNC-LD, BUS-WR, WDATA), so pipe it through `deprecated/gen1-2016/fix` before use | producing vector scripts |
+| `Gen Test Vectors/` | C generator (2020-06-30): `make run` prints a register load/read script for the **2016 register card** — REG-FUNC-LD, REG-BRD-LD-ID, WDATA/RDATAL are not in the 2020 signal table (the `fix` converter maps only BUS-WR), and the card-select scheme changed (REG-LD-ID2..3 now) | gen-1 tester; kept with its NetBeans project as a template for writing a 2020 generator |
 | `deprecated/gen1-2016/` | `ALU/*` originals, `commands-1/2.txt`, `Test Vectors/` + `fix` | the 2016 gen-1 machine (old signal names) |
 | `deprecated/address-register-2020-07/` | `address registers.txt` | the retired Address+TMP card |
 
