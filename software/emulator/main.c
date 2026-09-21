@@ -398,10 +398,29 @@ void myputchar(char c) {
     //printf("me\n");
 }
 
+/* YACC1-D 2026-09-20: the default images live in the tree relative to this program, not to the current directory
+   (a Finder double-click starts us in $HOME). Resolve "rel" against the folder the executable is in. */
+#include <libgen.h>
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
+static void exe_relative(char *out, size_t outlen, const char *rel, const char *argv0) {
+    char exe[4096], dir[4096];
+#ifdef __APPLE__
+    uint32_t n = sizeof(exe);
+    if (_NSGetExecutablePath(exe, &n) != 0) strncpy(exe, argv0, sizeof(exe) - 1);
+#else
+    strncpy(exe, argv0, sizeof(exe) - 1);
+#endif
+    exe[sizeof(exe) - 1] = 0;
+    if (realpath(exe, dir) == NULL) strncpy(dir, exe, sizeof(dir) - 1);
+    snprintf(out, outlen, "%s/%s", dirname(dir), rel);
+}
+
 void print_usage(const char *progname) {
     printf("Usage: %s [-h] [-m] [-f filename]\n", progname);
     printf("  -h           Show this help message\n");
-    printf("  -m           Load ../../firmware/basic/basic.img and ../../firmware/monitor/monitor.img (the burned ROM; default)\n");
+    printf("  -m           Load firmware/basic/basic.img and firmware/monitor/monitor.img from the tree (found relative to this program; default)\n");
     printf("  -f filename  Load the specified file using load_file\n");
 }
 
@@ -459,8 +478,9 @@ int main(int argc, char** argv) {
     int regtrigger = 0;
 
     if (load_standard) {
-        load_file("../../firmware/basic/basic.img");     /* YACC1-D 2026-09-20: was ../Assembler/ (old tree layout) */
-        load_file("../../firmware/monitor/monitor.img");
+        char img[4096];                                  /* YACC1-D 2026-09-20: images found relative to the executable */
+        exe_relative(img, sizeof img, "../../firmware/basic/basic.img", argv[0]);   load_file(img);
+        exe_relative(img, sizeof img, "../../firmware/monitor/monitor.img", argv[0]); load_file(img);
     }
     if (load_filename) {
         load_file(load_filename);
