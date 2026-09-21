@@ -13,3 +13,4 @@ software/assembler/mstrings.c	2026-09-20: unused locals tmpr/dest removed
 firmware/microcode/ucode-generator2/code.h	2026-09-20: bitOn/bitOff prototypes (were K&R declarations)
 software/ubasic-c/ubasic-master/tokenizer.c	2026-09-20: (const char *)/(char *) casts on the unsigned-char token buffers passed to strlen/strcpy/memcpy (no behaviour change); unused locals removed; debug-only src/dest marked used
 software/ubasic-c/ubasic-master/ubasic.c	2026-09-20: dangling index_free() declaration commented out (never defined; calls sit under #ifdef unused)
+firmware/microcode/yaccsignaldata2.h	2026-09-20: every table entry wrapped in braces (identical data; silences -Wmissing-braces in the tools that include it)
