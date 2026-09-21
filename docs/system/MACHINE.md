@@ -19,7 +19,7 @@ only a rebuild-and-reflash from the tree can settle.
 | Memory | v1.3 (design 2021-03, boards ordered 2025-06) | `hardware/cards/memory/eagle/v1.3` (+ KiCad) | see jumpers below |
 | Video | V1.0 (Fusion, export 2026-09-18); design master now `kicad/v1.1` (KiCad, 2026-09-21) | `hardware/cards/video/eagle/v1.0-fusion-export-2026-09-18` | installed for bring-up, **no 6845 fitted**; two bent pins straightened 2026-09-18; RN2 = 10k as designed (was 1k from the 2026-09-18 tests until 2026-09-21); **+5V and VCC joined by a wire (Ken 2026-09-21)** — the design left the +5V rail unfed |
 | Bus tester | v1.1 (2016 board, 2020 rework) | `hardware/cards/bus-tester/eagle/v1.1` | plugged in for bring-up sessions, FTDI 19200 |
-| Mem Switch / Mem Register | not fitted | `hardware/cards/mem-switch`, `mem-register` | the bring-up cards (switch ROM at $0000, 16-byte RAM at $0010); removed once the memory card worked (Ken 2026-09-20) |
+| Mem Switch / Mem Register | **re-fitted 2026-09-21** for CPU bring-up | `hardware/cards/mem-switch`, `mem-register` | the bring-up cards (switch ROM at $0000, 16-byte RAM at $0010); removed once the memory card worked (Ken 2026-09-20), back in 2026-09-21 with the ALU and one index card: **the CPU executes the 16-byte switch-ROM program as expected** on a function-generator TTL clock in the logic card's oscillator socket (pin 8 clock, pin 7 GND), with the tree's microcode in the sequencer RAM (Ken 2026-09-21) |
 
 Not in the machine: the two bring-up cards (Mem Switch, Mem Register), the two bus jumper boards (obsolete), Address+TMP (retired 2021), all `deprecated/` revisions, Bus Tester V3.1/V3.11 (never built), Blank V3.2 (design only).
 
