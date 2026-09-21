@@ -38,5 +38,4 @@ digits each): one round trip per block, the same -MEM-RD / -MEM-WR pulses as bef
 card. It prints `bus-driver blocks-1 2026-09-21` before its first prompt; `tools/busdrv.py` looks for `blocks-` in that
 banner and uses `read_block()` / `write_block()` (falling back to the per-byte commands on the older firmware, which
 would HALT on an unknown opcode - never send RDBLK to it). Block errors reply `Error: ...` without halting. Baud is the
-`BAUD` define (19200; busdrv.py and the Processing sender must match). **The card in use still runs the older firmware
-until it is re-flashed from this folder** (BACKLOG).
+`BAUD` define (19200; busdrv.py and the Processing sender must match). **Flashed to the card 2026-09-21** (arduino-cli, Uno, 115200 through the FTDI); the previous flash - the 2020 bus-driver - was read out first to `readback/`.

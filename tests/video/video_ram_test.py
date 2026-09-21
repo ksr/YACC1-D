@@ -34,15 +34,10 @@ bd.pulse("-RESET"); bd.cmd("-BUS-EN", 1); bd.cmd("-VMA", 1)
 bd.cmd("ADDRBUS-WR-MODE", 1); bd.cmd("DATABUS-RD-MODE", 1)
 bd.readmem(0xF000)   # release the memory card's boot remap
 
-def fill(fn):
-    bd.cmd("DATABUS-WR-MODE", 1)
-    for i in range(size): bd.writemem(RAM_BASE + i, fn(i) & 0xFF)
+def fill(fn): bd.write_block(RAM_BASE, [fn(i) & 0xFF for i in range(size)])
 def verify(fn, name):
-    bd.cmd("DATABUS-RD-MODE", 1)
-    bad = []
-    for i in range(size):
-        v = bd.readmem(RAM_BASE + i)
-        if v != (fn(i) & 0xFF): bad.append((RAM_BASE + i, fn(i) & 0xFF, v))
+    got = bd.read_block(RAM_BASE, size)
+    bad = [(RAM_BASE + i, fn(i) & 0xFF, got[i]) for i in range(size) if got[i] != (fn(i) & 0xFF)]
     report(name, not bad, ("%d bad, first: %s" % (len(bad), ["%04X exp %02X got %02X" % b for b in bad[:4]])) if bad else "%d cells" % size)
     return bad
 

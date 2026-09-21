@@ -3,7 +3,7 @@
 
 What it reports, in order:
   boot remap   after -RESET the ROM must appear at $0000 (FORCE-ROM) until the first access with A15 high
-  ROM          $E000-$FFFF sampled (first 32 bytes of each 1K, plus the BIOS vectors at $FFC0) against firmware/rom/eprom-captured-2026-09-18.bin (= shipped/rom)
+  ROM          every byte of $E000-$FFFF against firmware/rom/eprom-captured-2026-09-18.bin (= shipped/rom)
   low RAM      write/read at 8 spots in $0000-$7FFF
   block map    every 4K block $8000-$FFFF classified as RAM (write/read works), ROM (matches the image, writes ignored),
                VIDEO ($D000-$D7FF if a video card answers) or undecoded (reads echo the last bus value)
@@ -43,12 +43,8 @@ def rw_ok(a):
     return v1 == 0x5A and v2 == 0xA5, (v1, v2)
 
 # --- ROM
-bad = []
-for base in list(range(0xE000, 0x10000, 0x400)) + [0xFFC0, 0xFFE0]:
-    for a in range(base, min(base + 32, 0x10000)):
-        v = rd(a)
-        if v != rom[a - 0xE000]: bad.append("%04X=%02X(exp %02X)" % (a, v, rom[a - 0xE000]))
-line("ROM", not bad, "%d bytes sampled over $E000-$FFFF = the burned image" % (8 * 32 + 64) if not bad else "%d mismatches: %s" % (len(bad), bad[:5]))
+got = bd.read_block(0xE000, 8192); bad = ["%04X=%02X(exp %02X)" % (0xE000 + i, got[i], rom[i]) for i in range(8192) if got[i] != rom[i]]
+line("ROM", not bad, "all 8192 bytes $E000-$FFFF = the burned image" if not bad else "%d mismatches: %s" % (len(bad), bad[:5]))
 
 # --- low RAM
 res = [(a,) + rw_ok(a) for a in (0x0000, 0x0010, 0x00FF, 0x0F00, 0x1000, 0x3FFF, 0x4000, 0x7FF0)]

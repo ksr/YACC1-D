@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Full overnight test of the memory card and the video card's display RAM through the Bus Test Card.
 
-Phases (each prints PASS/FAIL and a running line of progress; ~4-5 h at 19200 baud):
+Phases (each prints PASS/FAIL and a running line of progress; ~20 min with the blocks-1 firmware, ~10 h per byte):
   A. ROM: every byte $E000-$FFFF against firmware/rom/eprom-captured-2026-09-18.bin (the burned image)
   B. address lines: a unique byte at $0000 and at every single-bit address 1<<n (n = 0..15, $8000 lands in high RAM),
      read back after all writes - a shorted or open address line shows up here in seconds
   C. RAM fill/verify, pattern 1 (address-derived): write $0000-$7FFF and $8000-$CFFF in one sweep, verify in a second
-     sweep (so the read of the first cell comes ~1 h after its write: retention is tested too)
+     sweep (so the read of the first cell comes minutes after its write: retention is tested too)
   D. the same with the inverted pattern (every bit exercised both ways)
   E. video RAM $D000-$D3FF: both patterns, neighbour isolation, the block-0/9 write-through checks, read stability
   F. ROM again (the RAM sweeps must not have disturbed it) and the undecoded $D800-$DFFF echo check
@@ -46,10 +46,8 @@ def rd_mode(): MODE[0] = "DATABUS-RD-MODE"; bd.cmd("DATABUS-RD-MODE", 1)
 def wr_mode(): MODE[0] = "DATABUS-WR-MODE"; bd.cmd("DATABUS-WR-MODE", 1)
 
 def rom_check(name):
-    bad = []; t = time.time()
-    for a in range(0xE000, 0x10000):
-        if rd(a) != rom[a - 0xE000]: bad.append(a)
-        if (a & 0x3FF) == 0x3FF: out("   ROM %04X ... %d bad so far" % (a, len(bad)))
+    t = time.time(); got = bd.read_block(0xE000, 8192)
+    bad = [0xE000 + i for i in range(8192) if got[i] != rom[i]]
     report(name, not bad, "8192 bytes, %d differ%s (%.0f s)" % (len(bad), (": " + ", ".join("%04X" % x for x in bad[:8])) if bad else "", time.time() - t))
 
 # --- A
@@ -63,30 +61,30 @@ rd_mode(); bad = [(a, rd(a), (0x11 * (i + 1)) & 0xFF) for i, a in enumerate(cell
 report("B. address lines A0-A15 independent", not bad, "%d cells" % len(cells) if not bad else "bad: %s" % ["%04X got %02X exp %02X" % b for b in bad[:6]])
 
 # --- C / D full RAM
+CHUNK = 0x800
 def sweep(pat, name):
-    t = time.time(); wr_mode(); n = 0
+    """write every RAM cell in one sweep, verify in a second (block transfers: ~5 ms/byte write, ~3 ms/byte read)"""
+    t = time.time(); n = 0
     for base, size in RAM:
-        for a in range(base, base + size):
-            wr(a, pat(a)); n += 1
-            if (a & 0x7FF) == 0x7FF: out("   write %04X  (%.0f min)" % (a, (time.time() - t) / 60))
-    rd_mode(); bad = []
+        for a in range(base, base + size, CHUNK):
+            bd.write_block(a, [pat(x) for x in range(a, a + CHUNK)]); n += CHUNK
+            if (a & 0x1FFF) == 0x1800: out("   write %04X  (%.1f min)" % (a + CHUNK - 1, (time.time() - t) / 60))
+    bad = []
     for base, size in RAM:
-        for a in range(base, base + size):
-            v = rd(a)
-            if v != pat(a): bad.append((a, v, pat(a)))
-            if (a & 0x7FF) == 0x7FF: out("   verify %04X  %d bad so far  (%.0f min)" % (a, len(bad), (time.time() - t) / 60))
-    report(name, not bad, "%d cells, %d bad%s (%.0f min)" % (n, len(bad), (": " + ", ".join("%04X got %02X exp %02X" % b for b in bad[:6])) if bad else "", (time.time() - t) / 60))
+        for a in range(base, base + size, CHUNK):
+            got = bd.read_block(a, CHUNK)
+            bad += [(a + i, got[i], pat(a + i)) for i in range(CHUNK) if got[i] != pat(a + i)]
+            if (a & 0x1FFF) == 0x1800: out("   verify %04X  %d bad so far  (%.1f min)" % (a + CHUNK - 1, len(bad), (time.time() - t) / 60))
+    report(name, not bad, "%d cells, %d bad%s (%.1f min)" % (n, len(bad), (": " + ", ".join("%04X got %02X exp %02X" % b for b in bad[:6])) if bad else "", (time.time() - t) / 60))
 pat1 = lambda a: ((a * 7 + 3) ^ (a >> 5) ^ (a >> 11)) & 0xFF
 sweep(pat1, "C. RAM $0000-$7FFF + $8000-$CFFF pattern 1")
 sweep(lambda a: ~pat1(a) & 0xFF, "D. RAM inverted pattern")
 
 # --- E video RAM (as tests/video/video_ram_test.py, full 1K)
 VB, VS = 0xD000, 0x400
-def vfill(fn):
-    wr_mode()
-    for i in range(VS): wr(VB + i, fn(i) & 0xFF)
+def vfill(fn): bd.write_block(VB, [fn(i) & 0xFF for i in range(VS)])
 def vverify(fn, name):
-    rd_mode(); bad = [(VB + i, rd(VB + i)) for i in range(VS) if rd(VB + i) != (fn(i) & 0xFF)]
+    got = bd.read_block(VB, VS); bad = [(VB + i, got[i]) for i in range(VS) if got[i] != (fn(i) & 0xFF)]
     report(name, not bad, "%d cells" % VS if not bad else "%d bad: %s" % (len(bad), ["%04X=%02X" % b for b in bad[:6]]))
 vp = lambda i: (i * 7 + 3) ^ (i >> 4)
 vfill(vp); vverify(vp, "E1. video RAM pattern"); vfill(lambda i: ~vp(i)); vverify(lambda i: ~vp(i), "E2. video RAM inverted")

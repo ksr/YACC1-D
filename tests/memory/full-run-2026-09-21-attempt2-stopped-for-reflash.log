@@ -1,0 +1,37 @@
+06:32:09  start: port /dev/cu.usbserial-AB6WZCQX
+06:34:52     ROM E3FF ... 0 bad so far
+06:37:35     ROM E7FF ... 0 bad so far
+06:40:18     ROM EBFF ... 0 bad so far
+06:43:01     ROM EFFF ... 0 bad so far
+06:45:43     ROM F3FF ... 0 bad so far
+06:48:26     ROM F7FF ... 0 bad so far
+06:51:09     ROM FBFF ... 0 bad so far
+06:53:52     ROM FFFF ... 0 bad so far
+06:53:52  A. ROM $E000-$FFFF = burned image              PASS  8192 bytes, 0 differ (1302 s)
+06:53:57  B. address lines A0-A15 independent            PASS  17 cells
+06:59:23     write 07FF  (5 min)
+07:04:48     write 0FFF  (11 min)
+07:10:14     write 17FF  (16 min)
+07:15:39     write 1FFF  (22 min)
+07:21:05     write 27FF  (27 min)
+07:26:30     write 2FFF  (33 min)
+07:31:56     write 37FF  (38 min)
+07:37:21     write 3FFF  (43 min)
+07:42:47     write 47FF  (49 min)
+07:48:13     write 4FFF  (54 min)
+07:53:38     write 57FF  (60 min)
+07:59:04     write 5FFF  (65 min)
+08:04:29     write 67FF  (71 min)
+08:09:55     write 6FFF  (76 min)
+08:15:20     write 77FF  (81 min)
+08:20:46     write 7FFF  (87 min)
+08:26:11     write 87FF  (92 min)
+08:31:37     write 8FFF  (98 min)
+08:53:27     write 97FF  (119 min)
+09:04:06     write 9FFF  (130 min)
+09:09:32     write A7FF  (136 min)
+09:14:57     write AFFF  (141 min)
+09:20:23     write B7FF  (146 min)
+09:25:48     write BFFF  (152 min)
+09:31:14     write C7FF  (157 min)
+09:33:48  STOPPED by Ken to re-flash the bus tester (firmware blocks-1); RAM pattern 1 write sweep was in progress
