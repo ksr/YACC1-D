@@ -131,8 +131,9 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   (it restarts the monitor: BASIC cold start, banners). A `cmdloop` BIOS vector would be cleaner than the restart.
 - Stack-frame mode (`--frames`) for recursion/reentrancy, at ~4x the cost per local access; or overlaying the static
   frames of functions that are never live together (cheap, no semantic change).
-- `switch` (a jump table is now one `BRUR` after the table fetch), function pointers (`BRUR`/`JSRUR`), signed `int`
-  (BRLT/BRGT are unsigned comparators: signed compare = flip bit 15 first), `long`, `goto`.
+- (done 2026-09-22: `switch`, compare chain or BRUR jump table by size, `--no-brur` until the microcode is reloaded.)
+- Function pointers (`BRUR`/`JSRUR`), signed `int` (BRLT/BRGT are unsigned comparators: signed compare = flip bit 15
+  first), `long`, `goto`.
 - Code size: peephole over R3/R4 traffic (store-then-reload across labels, `MVIW R3,k / MVRLA R3` → `LDAI`), 8-bit paths
   for char arithmetic (`c + 1` still goes through 16-bit add), constant compares with a zero high byte, `for` loops
   counting down to 0. Measure with `run.py` (bytes + instruction counts per test).

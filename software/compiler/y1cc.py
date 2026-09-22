@@ -17,7 +17,8 @@ The C subset
                `unsigned`, `const`, `static`, `void` accepted where they make sense
   top level    struct/union definitions, function definitions and prototypes, globals with constant initializers
                (scalars, strings, {lists}, char[] and pointer tables; [] length inferred from the initializer)
-  statements   { }  decl (with initializer)  if/else  while  for(e;e;e)  break  continue  return [e]  expr;  ;
+  statements   { }  decl (with initializer)  if/else  while  for(e;e;e)  switch/case/default  break  continue
+               return [e]  expr;  ;
   expressions  =  += -= *= /= %= &= |= ^= <<= >>=   ++ -- (pre/post)   || &&  | ^ &  == != < > <= >=  << >>
                + - * / %   unary - ! ~ & *   a[i]  s.m  p->m   f(args)   sizeof(type)/sizeof(expr) (constant)
                literals: decimal, 0x hex, 'c', "string"; #define NAME value; #include "file" (textual, once)
@@ -29,7 +30,7 @@ The C subset
   limits       NO recursion: every function's parameters and locals live at fixed addresses (static frames), so a
                function that can call itself, even indirectly, is rejected at compile time. Compound assignment and
                ++/-- evaluate their lvalue twice (keep the lvalue side-effect free). No floating point, no long,
-               no signed arithmetic (comparisons and division are unsigned), no function pointers, no switch.
+               no signed arithmetic (comparisons and division are unsigned), no function pointers.
 
 Execution model (the part that is YACC1-specific)
   * R3 is the 16-bit expression accumulator: every expression leaves its value there (chars zero-extended).
@@ -51,13 +52,15 @@ Execution model (the part that is YACC1-specific)
   * The carry flag is used only inside ADDT/ADDTC pairs with nothing but register moves between them (the idiom
     the monitor's do_add16 proved on the hardware); plain shifts and subtracts never feed a following carry op.
 
-Usage:  y1cc.py prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [-l]
+Usage:  y1cc.py prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [-l]
   --org     load address (default $3000: $1000-$1FFF is BASIC's token buffer, which the monitor's boot clears,
             and the monitor's T tests scribble at $2000). main is first: the monitor's `G3000` calls it (JSRUR R7,
             monitor of 2026-09-22) and its RET returns to the command loop.
   --vector  layout for the monitor burned in 2021, whose G was BRVR R7 (an indirect jump through the word at the
             address, no return address): a 2-byte vector, a stub that JSRs main and restarts the monitor (BR $F000)
   --boot    append a boot stub at $F000 (SP=$0EFF, JSR main, HALT) so `emulator -x -f prog.img` runs it stand-alone
+  --no-brur never emit BRUR ($AD, added 2026-09-22): a switch is always a compare chain. For the machine until its
+            sequencer EEPROM holds the microcode with BRUR.
   -l        print the line count / a summary
 """
 import sys, os, re, time
@@ -73,7 +76,7 @@ LABEL_MAX = 29              # RC/asm: labels[][30]; a 30+ character label crashe
 # Lexer (p8cc's, plus #include, sizeof, break/continue, ++ -- and op=)
 # --------------------------------------------------------------------------- #
 KEYWORDS = {"int", "char", "void", "struct", "union", "unsigned", "const", "static",
-            "if", "else", "while", "for", "return", "break", "continue", "sizeof"}
+            "if", "else", "while", "for", "return", "break", "continue", "sizeof", "switch", "case", "default"}
 PUNCT = ["<<=", ">>=", "==", "!=", "<=", ">=", "<<", ">>", "&&", "||", "->", "++", "--",
          "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=",
          "{", "}", "(", ")", "[", "]", ";", ",", "=", ".", "?", ":",
@@ -336,6 +339,13 @@ class P:
         if v == "return":
             self.next(); e = None if self.val() == ";" else self.expr()
             self.eat(";"); return ("return", e)
+        if v == "switch":
+            self.next(); self.eat("("); e = self.expr(); self.eat(")")
+            if self.val() != "{": self.err("switch body must be a { block }")
+            return ("switch", e, self.block())
+        if v == "case":
+            self.next(); k = self.const_expr(); self.eat(":"); return ("case", k)
+        if v == "default": self.next(); self.eat(":"); return ("default",)
         if v == "break": self.next(); self.eat(";"); return ("break",)
         if v == "continue": self.next(); self.eat(";"); return ("continue",)
         if v == ";": self.next(); return ("empty",)
@@ -487,8 +497,8 @@ class Var:
 
 
 class Gen:
-    def __init__(self, org=ORG_DEFAULT, boot=False, vector=False):
-        self.org, self.boot, self.vector = org, boot, vector
+    def __init__(self, org=ORG_DEFAULT, boot=False, vector=False, brur=True):
+        self.org, self.boot, self.vector, self.brur = org, boot, vector, brur
         self.code = []; self.data = []; self.bss = []
         self.globals = {}     # name -> Var
         self.frames = {}      # func -> {name: Var}
@@ -1188,12 +1198,76 @@ class Gen:
             if post is not None: self.gen_stmt(("expr", post))
             self.ins("BR", top); self.emit("%s:" % end)
         elif k == "break":
-            if not self.loops: sys.exit("y1cc: break outside a loop")
+            if not self.loops: sys.exit("y1cc: break outside a loop or switch")
             self.ins("BR", self.loops[-1][0])
         elif k == "continue":
-            if not self.loops: sys.exit("y1cc: continue outside a loop")
-            self.ins("BR", self.loops[-1][1])
+            cont = next((c for _, c in reversed(self.loops) if c is not None), None)
+            if cont is None: sys.exit("y1cc: continue outside a loop")
+            self.ins("BR", cont)
+        elif k == "switch": self.gen_switch(s[1], s[2])
+        elif k == "label": self.emit("%s:" % s[1])
+        elif k in ("case", "default"): sys.exit("y1cc: case/default outside a switch (or nested inside a statement)")
         else: sys.exit("y1cc: cannot generate stmt %r" % (k,))
+
+    # ---- switch: a BRUR jump table when it is smaller than the compare chain ----------------------------
+    def gen_switch(self, e, body):
+        """switch (e) { case k: ... default: ... }. Case labels must be direct statements of the switch block (or
+        of plain nested blocks). Dispatch: the compare chain (5 bytes/case when every case fits a byte, 13
+        otherwise) or, with BRUR allowed, a jump table (about 49 bytes + 2 per slot of the case range) - whichever
+        is smaller. Fall-through, break and default work as in C; continue reaches the enclosing loop."""
+        end = self.lbl("Lsw"); cases = []; default = None
+        def relabel(block):
+            out = []
+            for st in block[1]:
+                if st[0] == "case":
+                    lab = self.lbl("Lc"); k = st[1] & 0xFFFF
+                    if any(v == k for v, _ in cases): sys.exit("y1cc: duplicate case %d" % k)
+                    cases.append((k, lab)); out.append(("label", lab))
+                elif st[0] == "default":
+                    nonlocal default
+                    if default: sys.exit("y1cc: two defaults in a switch")
+                    default = self.lbl("Ld"); out.append(("label", default))
+                elif st[0] == "block": out.append(relabel(st))
+                else: out.append(st)
+            return ("block", out)
+        body = relabel(body)
+        miss = default or end
+        self.gen_expr(e)
+        if cases:
+            lo, hi = min(v for v, _ in cases), max(v for v, _ in cases)
+            byte_cases = hi <= 255
+            chain = (3 + 5 * len(cases) + (0 if self.is_narrow(e) else 4)) if byte_cases else (13 * len(cases) + 3)
+            table = 49 + 2 * (hi - lo + 1)
+            if self.brur and table < chain: self.switch_table(cases, lo, hi, miss)
+            elif byte_cases:
+                if not self.is_narrow(e): self.ins("MVRHA", "R3"); self.ins("BRNZ", miss)
+                self.ins("MVRLA", "R3")
+                for v, lab in cases: self.ins("LDTI", str(v)); self.ins("BREQ", lab)
+                self.ins("BR", miss)
+            else:
+                for v, lab in cases:
+                    skip = self.lbl("Ls")
+                    self.ins("MVRHA", "R3"); self.ins("LDTI", str(v >> 8)); self.ins("BRNEQ", skip)
+                    self.ins("MVRLA", "R3"); self.ins("LDTI", str(v & 0xFF)); self.ins("BREQ", lab)
+                    self.emit("%s:" % skip)
+                self.ins("BR", miss)
+        else: self.ins("BR", miss)
+        self.loops.append((end, None)); self.gen_stmt(body); self.loops.pop()
+        self.emit("%s:" % end)
+
+    def switch_table(self, cases, lo, hi, miss):
+        """R3 = switch value: subtract lo, range-check against the table size, index the table of addresses,
+        BRUR through it. Holes in the range jump to miss (default or the end)."""
+        tab = self.lbl("Lt"); n = hi - lo + 1
+        self.add_const(-lo)
+        self.ins("MVRHA", "R3"); self.ins("LDTI", str(n >> 8))
+        self.branch_rel(">=", miss, lambda: (self.ins("MVRLA", "R3"), self.ins("LDTI", str(n & 0xFF))))
+        self.shl1(); self.add_const(tab)
+        self.deref_r3("int", 0)
+        self.ins("BRUR", "R3")
+        slots = {v: lab for v, lab in cases}
+        self.data.append("%s:" % tab)
+        for v in range(lo, hi + 1): self.data.append("        DW %s" % slots.get(v, miss))
 
     # ---- strings, data ------------------------------------------------------
     def string(self, bs):
@@ -1450,8 +1524,8 @@ class Gen:
                 self.emit("; runtime " + h); self.emit(*R[h])
 
 
-def compile_src(src, path, org=ORG_DEFAULT, boot=False, vector=False):
-    g = Gen(org, boot, vector)
+def compile_src(src, path, org=ORG_DEFAULT, boot=False, vector=False, brur=True):
+    g = Gen(org, boot, vector, brur)
     g.gen_program(P(lex(src, path)).program(), os.path.basename(path))
     return "\n".join(g.code) + "\n", g
 
@@ -1463,7 +1537,7 @@ def main():
     if "-o" in a: out = a[a.index("-o") + 1]
     if "--org" in a: org = int(a[a.index("--org") + 1], 0)
     if "--boot" in a: boot = True
-    text, g = compile_src(open(src).read(), src, org, boot, "--vector" in a)
+    text, g = compile_src(open(src).read(), src, org, boot, "--vector" in a, "--no-brur" not in a)
     open(out, "w").write(text)
     if "-l" in a:
         print("y1cc: %s -> %s: %d lines; functions: %s" % (src, out, len(text.splitlines()),

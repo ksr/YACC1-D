@@ -20,12 +20,12 @@ python3 tests/compiler/run.py                                    # the test suit
 |---|---|
 | types | `int` (16-bit **unsigned**, as in p8cc), `char` (8-bit unsigned), pointers, arrays `T a[N]`, `struct`/`union` (by pointer or member: no by-value struct params, returns or assignment); `unsigned`, `const`, `static`, `void` accepted |
 | top level | struct/union definitions, function definitions and prototypes, globals with constant initializers (numbers, strings, `{lists}`, `&var` / array addresses, `[]` length inferred) |
-| statements | `{}` decl (with initializer, several per line) `if/else` `while` `for(e;e;e)` `break` `continue` `return` expr `;` |
+| statements | `{}` decl (with initializer, several per line) `if/else` `while` `for(e;e;e)` `switch/case/default` `break` `continue` `return` expr `;` |
 | expressions | `=` `+= -= *= /= %= &= \|= ^= <<= >>=` `++ --` (pre/post) `?:` `\|\| &&` `\| ^ &` `== != < > <= >=` `<< >>` `+ - * / %` unary `- ! ~ & *` `a[i]` `s.m` `p->m` `f(args)` `sizeof` |
 | preprocessor | `#define NAME value` (integer or char), `#include "file"` (textual, each file once, searched beside the source then in `lib/`) |
 | builtins | `putchar(c)` `getchar()` `puts(s)` (console), `peek(a)` `poke(a,v)` `peekw(a)` `pokew(a,v)` (memory), `inp(port)` `outp(port,v)` (I/O ports, constant 0..15), `halt()`, `bios(addr, r7, acc)` (JSR a monitor routine with R7 and ACC set; returns ACC) |
 | library | `lib/y1lib.c`: `putstr putnum puthex puthex2 strlen strcmp strcpy memset` — `#include "y1lib.c"`; unused functions cost nothing (dead-function elimination) |
-| not there | **recursion** (rejected at compile time), signed arithmetic, `long`/float, `switch`, function pointers, `goto`, bit fields |
+| not there | **recursion** (rejected at compile time), signed arithmetic, `long`/float, function pointers, `goto`, bit fields |
 
 Console I/O: on the emulator `putchar` is `OUTA P2` and `getchar` is `INP P2` (returns 0 at end of input); on the
 machine they call the monitor's BIOS vectors `charout` ($FFC4) and `uartin` ($FFE8). The runtime chooses at run
@@ -76,18 +76,23 @@ and big-endian words in memory. There is no 16-bit ALU and no indexed addressing
   The default `--org` is $3000 because $1000-$1FFF is BASIC's token buffer, which the monitor's boot (and the
   restart after main) clears, and the monitor's T tests use $2000 as scratch; a program at $1000 lost its first
   byte before it ran (found on the emulator 2026-09-22).
-- Never emitted: `LDTVR STTVR OUTVR BR16Z BR16NZ BRNC` (no microcode), `BRVR JSRUR BRUR` (not needed yet; BRUR $AD =
-  PC ← Rn was added 2026-09-22 for jump tables and function pointers later),
+- **`switch`** (2026-09-22): the case labels must be direct statements of the switch block. Dispatch is whichever is
+  smaller: a compare chain (`LDTI k / BREQ` per case when every case fits a byte, 5 bytes each; a two-level compare,
+  13 bytes, otherwise) or a jump table through `BRUR` ($AD, PC ← Rn): subtract the lowest case, range-check, index
+  a table of `DW` addresses, load the word into R3, `BRUR R3` (about 49 bytes plus 2 per slot; holes go to default).
+  `--no-brur` forbids the table, for the machine until its sequencer EEPROM holds the microcode with BRUR; the
+  same test program passes both ways (`switch.c` / `switchnb.c`).
+- Never emitted: `LDTVR STTVR OUTVR BR16Z BR16NZ BRNC` (no microcode), `BRVR JSRUR` (not needed yet),
   negative numbers (the assembler silently drops the sign), labels over 29 characters (crash the assembler), or
   two labels differing only in case (the assembler folds case; the compiler mangles and uniquifies).
 
 ## Tests
 
 `tests/compiler/*.c` with the expected output beside each (`.out`, `.in` for stdin, `.err` for an expected
-compile error); `tests/compiler/run.py` compiles, assembles, runs each on `emulator -x` and diffs. `--oracle`
+compile error, `// y1cc: flags` on a line for per-test compiler flags); `tests/compiler/run.py` compiles, assembles, runs each on `emulator -x` and diffs. `--oracle`
 regenerates the `.out` files with the HOST C compiler through `host_shim.h` (`int` = `unsigned short`, unsigned
 char), so the expectations are independent of this compiler; tests marked `no-oracle` (peek/poke, struct layout,
-byte order) carry hand-written expectations. 12 programs, 12/12 on 2026-09-22 (~1 s). `make check` runs them.
+byte order) carry hand-written expectations. 14 programs, 14/14 on 2026-09-22 (~1 s). `make check` runs them.
 The same images also run under the monitor on the emulator (`emulator -m -f prog.img`, then `G3000`): the program's
 output appears after `GO ADDRESS:` and the monitor's banner follows when main returns (hello and fib tried 2026-09-22).
 

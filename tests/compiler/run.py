@@ -42,7 +42,8 @@ def run_one(src, want_oracle):
     d = os.path.join(BUILD, name); os.makedirs(d, exist_ok=True)
     shutil.copy(DEF, d); open(os.path.join(d, "rcasm.rc"), "w").write("-h\n")
     err_file, out_file, in_file = src[:-2] + ".err", src[:-2] + ".out", src[:-2] + ".in"
-    r = sh([sys.executable, CC, src, "-o", os.path.join(d, name + ".asm"), "--boot"])
+    flags = re.search(r"//\s*y1cc:\s*(.*)", open(src).read())         # per-test compiler flags, e.g. // y1cc: --no-brur
+    r = sh([sys.executable, CC, src, "-o", os.path.join(d, name + ".asm"), "--boot"] + (flags.group(1).split() if flags else []))
     if os.path.exists(err_file):
         want = open(err_file).read().strip()
         ok = r.returncode != 0 and want in (r.stderr + r.stdout)
