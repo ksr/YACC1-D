@@ -92,7 +92,7 @@ and big-endian words in memory. There is no 16-bit ALU and no indexed addressing
 compile error, `// y1cc: flags` on a line for per-test compiler flags); `tests/compiler/run.py` compiles, assembles, runs each on `emulator -x` and diffs. `--oracle`
 regenerates the `.out` files with the HOST C compiler through `host_shim.h` (`int` = `unsigned short`, unsigned
 char), so the expectations are independent of this compiler; tests marked `no-oracle` (peek/poke, struct layout,
-byte order) carry hand-written expectations. 14 programs, 14/14 on 2026-09-22 (~1 s). `make check` runs them.
+byte order) carry hand-written expectations. 15 programs, 15/15 on 2026-09-22 (~1 s). `make check` runs them.
 The same images also run under the monitor on the emulator (`emulator -m -f prog.img`, then `G3000`): the program's
 output appears after `GO ADDRESS:` and the monitor's banner follows when main returns (hello and fib tried 2026-09-22).
 
@@ -104,3 +104,23 @@ globals 966, fib 1045, structs 1398, arrays 1446, control 2356, arith 2339.
 Running a compiled program on the real machine needs a way to load RAM (the monitor's E-command loader on the
 backlog, or the bus tester with the CPU off); a stack-frame mode for recursion; `switch`; signed types; peephole
 work (the code is straightforward, roughly 2-3x what hand assembly would be); the P8X-side libraries.
+
+## Size against the P8X compiler
+
+`bench/sizecmp.sh` compiles the same four programs (written in the subset both compilers accept) with p8cc + p8xasm
+and with y1cc + asm and compares the binaries, uninitialised data included on both sides (2026-09-22):
+
+| program | P8X bytes | YACC1 bytes | ratio |
+|---|---|---|---|
+| fib | 1075 | 790 | 0.73 |
+| sieve | 760 | 644 | 0.85 |
+| sort | 1114 | 873 | 0.78 |
+| strings | 1030 | 759 | 0.74 |
+
+The YACC1 binaries are 15-27% smaller for the same source. The reasons are in the instruction sets rather than in
+the compilers: y1cc keeps every scalar at a fixed address, so a load or store is one 3-byte `LDR`/`STR` and a
+16-bit constant is one 3-byte `MVIW`, while p8cc's frame-relative `LDW/STW (P3+d)` and `LDW __ax,#n` (4-5 bytes)
+plus its memory-word arithmetic helpers cost more per operation; the YACC1's register `INCR`/`DECR` and the
+comparator branches are 1-3 bytes where the P8X needs a memory word op. Speed is another matter: a YACC1 step is
+two clocks and an instruction 8-30 steps, so the emulator's instruction counts above translate to roughly 10x the
+clock cycles of the same work on the P8X. Integer literals over 65535 are a compile error (int is 16-bit).

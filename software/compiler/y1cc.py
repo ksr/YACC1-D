@@ -135,9 +135,12 @@ def lex(src, path="<src>", included=None, macros=None):
             if c == "0" and i + 1 < n and src[i + 1] in "xX":
                 j = i + 2
                 while j < n and src[j] in "0123456789abcdefABCDEF": j += 1
-                toks.append(("num", int(src[i + 2:j], 16), line)); i = j; continue
-            while j < n and src[j].isdigit(): j += 1
-            toks.append(("num", int(src[i:j]), line)); i = j; continue
+                v = int(src[i + 2:j], 16)
+            else:
+                while j < n and src[j].isdigit(): j += 1
+                v = int(src[i:j])
+            if v > 0xFFFF: err("integer constant %s does not fit 16 bits" % src[i:j])   # int is 16-bit: no silent truncation
+            toks.append(("num", v, line)); i = j; continue
         if c == "'":
             if src[i + 1] == "\\":
                 if src[i + 2] not in ESC: err("bad escape \\%s" % src[i + 2])

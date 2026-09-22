@@ -20,5 +20,5 @@
 - `basic/` — `test`, a small BASIC program (LET/FOR loops) used to exercise the interpreter.
 - `compiler/` — the C compiler's test programs (`*.c` + expected `.out`/`.in`/`.err`) and `run.py`, which compiles each with
   `software/compiler/y1cc.py --boot`, assembles it and runs it on `emulator -x`; `--oracle` regenerates the expectations with
-  the host C compiler through `host_shim.h`. 14/14 on 2026-09-22 (switch.c also compiled with `--no-brur` as switchnb.c); `make cc-test`.
+  the host C compiler through `host_shim.h`. 15/15 on 2026-09-22 (switch.c also compiled with `--no-brur` as switchnb.c); `make cc-test`.
 - Hardware findings of 2026-09 (memory-card block map, EPROM identity, video-card write-through) are in the card READMEs.
