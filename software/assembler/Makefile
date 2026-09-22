@@ -33,7 +33,7 @@ check: $(foreach t,$(TARGETS),build/$(t)/$(t).img)
 	  if cmp -s build/$$t/$$t.lst $(FW)/$$t/$$t.lst; then echo "$$t.lst: identical"; else echo "$$t.lst: differs (listing only)"; fi; \
 	done; \
 	awk 'n>=1 { print a[n%1] } { a[n%1]=$$0; n=n+1 }' build/basic/basic.img > build/tmprom && cat build/tmprom build/monitor/monitor.img > build/rom; \
-	if cmp -s build/rom $(FW)/rom/shipped/rom; then echo "rom: IDENTICAL to the burned EEPROM image"; else echo "rom: DIFFERS from firmware/rom/shipped/rom"; ok=0; fi; \
+	if cmp -s build/rom $(FW)/rom/shipped/rom; then echo "rom: IDENTICAL to firmware/rom/shipped/rom (the image to burn)"; else echo "rom: DIFFERS from firmware/rom/shipped/rom"; ok=0; fi; \
 	[ $$ok = 1 ]
 
 install: check

@@ -2,7 +2,7 @@
 """Rebuild the firmware from the migrated sources in a scratch dir and diff against the committed images.
 Proves the tree can reproduce what is in the machine. Never writes into the tree.
   1. software/assembler  -> asm ; assemble firmware/monitor/monitor.asm + firmware/basic/basic.asm with yacc1.def
-     -> compare monitor.img / basic.img ; makerom -> compare firmware/rom/shipped/rom (== the burned EEPROM)
+     -> compare monitor.img / basic.img ; makerom -> compare firmware/rom/shipped/rom (the image to burn; the chip capture is eprom-captured-2026-09-18.*)
   2. firmware/microcode/ucode-generator2 -> regenerate test.hex -> compare the committed test.hex
 Exit 1 on any mismatch."""
 import os, sys, subprocess, tempfile, shutil, hashlib, glob
@@ -20,7 +20,7 @@ try:
         same = os.path.exists(os.path.join(B, name + ".img")) and md5(os.path.join(B, name + ".img")) == md5(os.path.join(ROOT, "firmware", name, name + ".img"))
         print("%-32s %s" % (name + ".img", "IDENTICAL" if same else "MISMATCH")); ok &= same
     r = sh("awk 'n>=1 { print a[n%1] } { a[n%1]=$0; n=n+1 }' basic.img > tmprom && cat tmprom monitor.img > rom", B)   # = firmware/rom/makerom
-    same = md5(os.path.join(B, "rom")) == md5(os.path.join(ROOT, "firmware/rom/shipped/rom")); print("%-32s %s" % ("rom (shipped = burned EEPROM)", "IDENTICAL" if same else "MISMATCH")); ok &= same
+    same = md5(os.path.join(B, "rom")) == md5(os.path.join(ROOT, "firmware/rom/shipped/rom")); print("%-32s %s" % ("rom (shipped = image to burn)", "IDENTICAL" if same else "MISMATCH")); ok &= same
     G = os.path.join(ROOT, "firmware/microcode/ucode-generator2"); GT = os.path.join(tmp, "ucode"); shutil.copytree(G, GT, ignore=shutil.ignore_patterns("nbproject"))
     # the generator uses ../../opcodes.h and ../yaccsignal*.h relative to its folder: reproduce that layout in tmp
     os.makedirs(os.path.join(tmp, "u", "gen")); shutil.rmtree(GT); shutil.copytree(G, os.path.join(tmp, "u", "gen", "g"), ignore=shutil.ignore_patterns("nbproject"))
