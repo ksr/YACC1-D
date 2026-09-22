@@ -32,7 +32,9 @@
  *   -F   how a bus fight resolves: "and" (default) = a low output wins, the lane is the AND of its drivers (the
  *        usual TTL outcome, and what makes review finding H-2 fatal: a taken BRZ lands on offset $00); "src" = the
  *        ALU's -AC-RD drive loses to any other driver (what the hardware must be doing if the monitor ever ran)
- *   -s   the byte the I/O card's switches read as (default 0); -l N stop after N steps
+ *   -s   the byte the I/O card's switches read as (default 0); -i 0|1 the level of the input-switch line that
+ *        BRINH/BRINL test (default 0); -L report writes to the LED board, the TIL311 displays and the ON/OFF LED on
+ *        stderr as they change; -l N stop after N steps
  * Console: the I/O card's UART (P0 = UARTCS|register, P1 = data) is stdin/stdout, as on the machine; reading with
  * nothing left returns 0 with "data ready" set so a program's EOF test sees 0. Port 2 is also a console (the old
  * emulator's shortcut), so hand-written programs that OUTA P2 still print.
@@ -155,7 +157,7 @@ static uint16_t tmp0, tmp1, branch, intvec;
 static int carry, shift_out, cond_latch, force_rom = 1, out_led, in_line, int_enabled, int_pending, halted;
 static int step;
 static uint8_t port[16];
-static int switches;
+static int switches, show_leds;
 
 /* the combinational state of a step (what the latches see at the next leading edge) */
 struct comb {
@@ -225,7 +227,11 @@ static void io_write(int p, uint8_t v) {
             default: break;
         }
     }
-    /* SWITCHLED/LCD/TIL311 writes: latched in port[1]; nothing to show on a terminal */
+    if (show_leds) {                              /* the LED board / TIL311 displays: reported on stderr */
+        static int led = -1, til = -1;
+        if ((ctl & 0x01) && v != led) { led = v; fprintf(stderr, "LED=%02X\n", v); }
+        if ((ctl & 0x80) && v != til) { til = v; fprintf(stderr, "TIL=%02X\n", v); }
+    }
 }
 
 /* ---- bus fights --------------------------------------------------------------------------------------------- */
@@ -381,8 +387,8 @@ static void do_step(void) {
     }
     if (on(w, s_int_en)) int_enabled = 1;
     if (on(w, s_int_start)) { int_enabled = 0; int_pending = 0; }
-    if (on(w, s_out_on)) out_led = 1;
-    if (on(w, s_out_off)) out_led = 0;
+    if (on(w, s_out_on)) { if (show_leds && !out_led) fprintf(stderr, "ON\n"); out_led = 1; }
+    if (on(w, s_out_off)) { if (show_leds && out_led) fprintf(stderr, "OFF\n"); out_led = 0; }
     if (on(w, s_soft_halt)) halted = 1;
     /* ---- the step itself: what drives what ---- */
     compute(w, &cur);
@@ -478,8 +484,10 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "-w")) warn_fights = 1;
         else if (!strcmp(argv[i], "-F") && i + 1 < argc) { i++; fight_src = !strcmp(argv[i], "src"); if (!fight_src && strcmp(argv[i], "and")) { fprintf(stderr, "y1ucemu: -F and|src\n"); return 1; } }
         else if (!strcmp(argv[i], "-s") && i + 1 < argc) switches = (int)strtol(argv[++i], NULL, 0);
+        else if (!strcmp(argv[i], "-i") && i + 1 < argc) in_line = (int)strtol(argv[++i], NULL, 0) & 1;
+        else if (!strcmp(argv[i], "-L")) show_leds = 1;
         else if (!strcmp(argv[i], "-l") && i + 1 < argc) limit = strtoul(argv[++i], NULL, 0);
-        else { fprintf(stderr, "usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-l N]\n"); return 1; }
+        else { fprintf(stderr, "usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-i 0|1] [-L] [-l N]\n"); return 1; }
     }
     resolve_signals();
     load_opnames(exe_dir);

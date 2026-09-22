@@ -5,7 +5,7 @@ generated FABRICATED marker/index. Prints buckets, hash mismatches, unexplained 
 from disk. Run from anywhere. Exit code 1 if anything is unexplained/mismatched/missing."""
 import csv, os, hashlib, glob, collections, sys
 DST = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HAND_MADE = ("firmware/rom/eprom-captured-", "tests/video/", "tests/memory/", "hardware/cards/video/docs/", "embedded/bus-tester/readback/", "embedded/sequencer-card/readback/", "tests/sequencer/", "tests/assembler/ledcount/", "tests/assembler/brur/", "docs/system/waveforms/", "embedded/sequencer-card/sequencer4/", "hardware/DESIGN-REVIEW", "software/compiler/", "tests/compiler/", "software/ucemu/", "tests/ucemu/", "mk/", "os/", "tests/os/", "software/cfmodel.h", "firmware/abi/README.md")   # session artefacts / bench tests written in YACC1-D, not from YACCS      # session artefacts that are not from YACCS
+HAND_MADE = ("firmware/rom/eprom-captured-", "tests/video/", "tests/memory/", "hardware/cards/video/docs/", "embedded/bus-tester/readback/", "embedded/sequencer-card/readback/", "tests/sequencer/", "tests/assembler/ledcount/", "tests/assembler/brur/", "tests/assembler/romcount/", "docs/system/waveforms/", "embedded/sequencer-card/sequencer4/", "hardware/DESIGN-REVIEW", "software/compiler/", "tests/compiler/", "software/ucemu/", "tests/ucemu/", "mk/", "os/", "tests/os/", "software/cfmodel.h", "firmware/abi/README.md")   # session artefacts / bench tests written in YACC1-D, not from YACCS      # session artefacts that are not from YACCS
 PATCHED = {l.split("\t")[0].strip() for l in open(os.path.join(DST, "tools/patched_files.txt")) if l.strip() and not l.startswith("#")}
 def h(p):
     m = hashlib.md5()

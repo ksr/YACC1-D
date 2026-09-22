@@ -91,3 +91,5 @@ Interrupts beyond the enable/pending latches (no source raises one); IRET/IADDR/
 card (ports P8/P9, `docs/system/OS-PLAN.md` phase 1) and the video card; a clock-cycle cost model per instruction
 is one step-count away (the status line has steps and clocks); comparing the interpreter's and this emulator's
 instruction traces automatically.
+
+- **2026-09-22 (evening):** `-i 0|1` sets the level of the input-switch line that `BRINH`/`BRINL` test (fixed for the run), and `-L` reports writes to the LED board, the TIL311 displays and the ON/OFF LED on stderr as they change (`tests/assembler/romcount/` uses both).
