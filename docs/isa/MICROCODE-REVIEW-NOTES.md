@@ -17,6 +17,11 @@ Contents: 1 hardware model · 2 findings (HIGH / MED / LOW) · 3 per-opcode chec
 
 ---
 
+**Status 2026-09-22 (evening):** H-1 and H-2 were reproduced on the microcode-level emulator `software/ucemu` (PUSHR $ABCD
+pushed $21CC; a taken BRZ landed on offset $00 and the monitor could not print a string) and FIXED in the generator
+(`branch.c`); the regenerated `test.hex` runs the monitor, the compiler suite and `tests/ucemu/isa.asm` with 0 bus fights.
+The sequencer EEPROM still holds the old image until reloaded. H-3 (BR16Z/NZ) stands; the emulator reproduces it too.
+
 ## 1. What the hardware actually does (the model behind every finding)
 
 ### 1.1 Sequencer: one microcode step = two clock periods, and step 0 is shared with the previous opcode

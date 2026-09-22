@@ -21,4 +21,7 @@
 - `compiler/` — the C compiler's test programs (`*.c` + expected `.out`/`.in`/`.err`) and `run.py`, which compiles each with
   `software/compiler/y1cc.py --boot`, assembles it and runs it on `emulator -x`; `--oracle` regenerates the expectations with
   the host C compiler through `host_shim.h`. 15/15 on 2026-09-22 (switch.c also compiled with `--no-brur` as switchnb.c); `make cc-test`.
+- `ucemu/` — the same programs (and `assembler/brur`) on the MICROCODE-level emulator `software/ucemu` with the monitor ROM
+  loaded (`run.py`, 14/14 on 2026-09-22, `chars.ucout` = the expectation with the monitor's input echo), and `isa.asm`, a
+  differential test of every instruction whose port-2 byte stream must be identical on both emulators (it is, BRDEV aside).
 - Hardware findings of 2026-09 (memory-card block map, EPROM identity, video-card write-through) are in the card READMEs.

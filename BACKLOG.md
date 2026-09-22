@@ -121,9 +121,11 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - **Burn the rebuilt ROM** (`firmware/rom/shipped/rom`, 2026-09-22: monitor G = `JSRUR R7`, was the indirect `BRVR R7`; BASIC
   unchanged), then re-capture and `tests/memory/rom_verify.py` (until then it reports the monitor half as different).
   Until burned, compile for the machine with `--vector`.
-- **Reload the sequencer microcode** with the regenerated `test.hex`/`test.hexz` (BRUR at $AD, 2026-09-22; only record $AD
-  differs) and bench-check BRUR (`tests/assembler/brur/`, expects `ABC0123`): it is the first instruction to route a
-  register through `-REG-RD-HI/LO` + `-HL-SWAP` into the branch register without a stack push (JSRUR does it with one).
+- **Reload the sequencer microcode** with the regenerated `test.hex`/`test.hexz` (2026-09-22: BRUR at $AD, the H-2 fix in
+  BRZ/BRNZ/BR16Z/BR16NZ, the H-1 fix in PUSHR — 14 records differ) and bench-check: BRUR (`tests/assembler/brur/`, `ABC0123`),
+  `tests/ucemu/isa.asm` (every instruction; the port-2 byte stream must equal `tests/ucemu/run.py`'s), then the monitor from
+  ROM. Before reloading, one scope look settles how a bus fight falls on this machine (DATA0 during a taken `BRZ` with the
+  old image: $00 = low wins, as the emulator assumes).
 - **Run a compiled program on the machine.** Needs RAM loading: the monitor E-command loader (`tools/monload.py`, above) or
   the bus tester with the CPU held off (v2.2 CPU-off switch). Then `G3000` (the image starts with the vector BRVR needs; $1000 is BASIC's buffer).
   First hardware checks: `rt_sub` (INVA/moves between ADDTC), `rt_divmod` (SUBT/SUBI after a comparator branch), the
@@ -137,8 +139,9 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Code size: peephole over R3/R4 traffic (store-then-reload across labels, `MVIW R3,k / MVRLA R3` → `LDAI`), 8-bit paths
   for char arithmetic (`c + 1` still goes through 16-bit add), constant compares with a zero high byte, `for` loops
   counting down to 0. Measure with `run.py` (bytes + instruction counts per test).
-- Cycle-accurate cost model: the emulator counts instructions; weighting by the microcode step counts (`docs/isa/README.md`)
-  would give clock cycles.
+- (done 2026-09-22: `software/ucemu` counts steps and clocks; a per-opcode cost table from it is a one-liner away.)
+- Microcode emulator follow-ups: interrupts (a source, INT/IRET/IADDR checked against the generator), the CF ports P8/P9
+  and a disk image (OS-PLAN phase 1), automatic trace comparison against the interpreter, the video card.
 - Port the P8X libraries/programs that fit the subset (the P8X OS itself needs the stack-frame mode and its syscalls).
 - Emulator (done 2026-09-22, `tools/patched_files.txt`): `-x` scripted mode; BRVR and JSRUR now follow the microcode, so the
   monitor's `G` and `T` commands work on the emulator (they never had). Still stubs vs the hardware: IRET/INT/IADDR, SUB

@@ -30,9 +30,9 @@ firmware/monitor/monitor.asm	2026-09-22: G command uses JSRUR R7 + BR cmdloop in
 firmware/monitor/monitor.img	2026-09-22: rebuilt from the edited monitor.asm (make install); the 2021 build that is on the chip = firmware/rom/eprom-captured-2026-09-18.* ($F000 half) and git history
 firmware/monitor/monitor.lst	2026-09-22: listing of that rebuild
 firmware/rom/shipped/rom	2026-09-22: basic.img (unchanged) + the rebuilt monitor.img = the image TO BURN; the chip still holds the 2021 build (eprom-captured-2026-09-18.bin/.hex) until it is reburned
-firmware/microcode/ucode-generator2/branch.c	2026-09-22: BRUR Rn added (opcode $AD, 2 bytes, register in the operand byte): JSRUR's operand/register-to-branch-register steps without the stack push, then the BR-family PC load
+firmware/microcode/ucode-generator2/branch.c	2026-09-22: BRUR Rn added (opcode $AD, 2 bytes, register in the operand byte): JSRUR's operand/register-to-branch-register steps without the stack push, then the BR-family PC load; H-2 fix: branch() clears -AC-RD before -BRANCH-RD for the AC-sourced conditions; H-1 fix: PUSHR releases -REG-RD-HI/LO, -REG-FUNC-RD and -HL-SWAP before each stack write (both reproduced and verified on software/ucemu)
 software/opcodes.h	2026-09-22: OPCODE_AD -> BRUR 0xAD
 software/assembler/yacc1.def	2026-09-22: BRUR \{regs} -> AD \1; P8=9 typo fixed to P8=8 (no firmware uses P8)
-firmware/microcode/ucode-generator2/test.hex	2026-09-22: regenerated with BRUR at $AD (512 bytes of record $AD, everything else byte-identical); the sequencer EEPROM still holds the previous image until reloaded
+firmware/microcode/ucode-generator2/test.hex	2026-09-22: regenerated with BRUR at $AD, the H-2 fix ($A1 $A2 $AB $AC) and the H-1 fix ($07..$0F); 14 records differ from the image the sequencer EEPROM holds until it is reloaded
 firmware/microcode/ucode-generator2/test.hexz	2026-09-22: regenerated (loader format) with BRUR
 firmware/microcode/ucode-generator2/test.123	2026-09-22: regenerated (listing) with BRUR
