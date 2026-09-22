@@ -51,13 +51,14 @@ Execution model (the part that is YACC1-specific)
   * The carry flag is used only inside ADDT/ADDTC pairs with nothing but register moves between them (the idiom
     the monitor's do_add16 proved on the hardware); plain shifts and subtracts never feed a following carry op.
 
-Usage:  y1cc.py prog.c [-o prog.asm] [--org 0x1000] [--boot] [-l]
-  --org   load address (default $3000: $1000-$1FFF is BASIC's token buffer, which the monitor's boot clears, and
-          the monitor's T tests scribble at $2000). The image starts with a 2-byte VECTOR to the entry stub because
-          the monitor's G command (`G3000`) is BRVR R7, an indirect jump through the word at that address; the stub
-          JSRs main and then restarts the monitor with BR $F000 (BRVR pushes no return address).
-  --boot  append a boot stub at $F000 (SP=$0EFF, JSR main, HALT) so `emulator -x -f prog.img` runs it stand-alone
-  -l      print the line count / a summary
+Usage:  y1cc.py prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [-l]
+  --org     load address (default $3000: $1000-$1FFF is BASIC's token buffer, which the monitor's boot clears,
+            and the monitor's T tests scribble at $2000). main is first: the monitor's `G3000` calls it (JSRUR R7,
+            monitor of 2026-09-22) and its RET returns to the command loop.
+  --vector  layout for the monitor burned in 2021, whose G was BRVR R7 (an indirect jump through the word at the
+            address, no return address): a 2-byte vector, a stub that JSRs main and restarts the monitor (BR $F000)
+  --boot    append a boot stub at $F000 (SP=$0EFF, JSR main, HALT) so `emulator -x -f prog.img` runs it stand-alone
+  -l        print the line count / a summary
 """
 import sys, os, re, time
 
@@ -486,8 +487,8 @@ class Var:
 
 
 class Gen:
-    def __init__(self, org=ORG_DEFAULT, boot=False):
-        self.org, self.boot = org, boot
+    def __init__(self, org=ORG_DEFAULT, boot=False, vector=False):
+        self.org, self.boot, self.vector = org, boot, vector
         self.code = []; self.data = []; self.bss = []
         self.globals = {}     # name -> Var
         self.frames = {}      # func -> {name: Var}
@@ -1337,15 +1338,18 @@ class Gen:
         order = ["main"] + [d[2] for d in decls if d[0] == "func" and d[2] != "main" and d[2] in live]
         for d in decls:
             if d[0] == "func" and d[2] in live: self.layout_func(d[2], d[3], d[4])
-        # Image layout: a 2-byte vector first, because the monitor's G command is `BRVR R7` = an indirect jump
-        # through the word AT the address given (PC <- [AAAA], see docs/isa/steps.txt), then a stub that calls
-        # main and restarts the monitor (BR $F000: BRVR pushes no return address, so main cannot RET to it).
+        # Image layout: main first, so the monitor's `G AAAA` (JSRUR R7 since the 2026-09-22 monitor: a call)
+        # enters it directly and its RET returns to the command loop. --vector emits the layout for the
+        # monitor as burned in 2021, whose G was `BRVR R7` = an indirect jump through the word AT the address
+        # (PC <- [AAAA], docs/isa/steps.txt) that pushes no return address: a 2-byte vector, then a stub that
+        # calls main and restarts the monitor with BR $F000.
         self.emit("; y1cc: %s  (%s)" % (src_name, time.strftime("%Y-%m-%d %H:%M")),
                   "; R3 = expression accumulator, R4 = operand, R5-R7 runtime scratch, R2 never used (hardware IR)",
-                  "        ORG %d" % self.org,
-                  "        DW start                ; vector for the monitor's G command (BRVR = PC <- [org])",
-                  "start:  JSR %s" % self.flabel["main"],
-                  "        BR %d                 ; back to the monitor" % MONITOR_RESTART)
+                  "        ORG %d" % self.org)
+        if self.vector:
+            self.emit("        DW start                ; vector for the 2021 monitor's G command (BRVR = PC <- [org])",
+                      "start:  JSR %s" % self.flabel["main"],
+                      "        BR %d                 ; back to the monitor (restart)" % MONITOR_RESTART)
         fdefs = {d[2]: d for d in decls if d[0] == "func"}
         for name in order:
             d = fdefs[name]; self.compile_func(name, d[3], d[4])
@@ -1446,8 +1450,8 @@ class Gen:
                 self.emit("; runtime " + h); self.emit(*R[h])
 
 
-def compile_src(src, path, org=ORG_DEFAULT, boot=False):
-    g = Gen(org, boot)
+def compile_src(src, path, org=ORG_DEFAULT, boot=False, vector=False):
+    g = Gen(org, boot, vector)
     g.gen_program(P(lex(src, path)).program(), os.path.basename(path))
     return "\n".join(g.code) + "\n", g
 
@@ -1459,7 +1463,7 @@ def main():
     if "-o" in a: out = a[a.index("-o") + 1]
     if "--org" in a: org = int(a[a.index("--org") + 1], 0)
     if "--boot" in a: boot = True
-    text, g = compile_src(open(src).read(), src, org, boot)
+    text, g = compile_src(open(src).read(), src, org, boot, "--vector" in a)
     open(out, "w").write(text)
     if "-l" in a:
         print("y1cc: %s -> %s: %d lines; functions: %s" % (src, out, len(text.splitlines()),

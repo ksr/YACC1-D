@@ -6,7 +6,8 @@ parser, the C subset) is the one of the P8X compiler `p8x/compiler/p8cc.py`, so 
 source unchanged as far as the subset goes; the back end is new, written for what the YACC1 actually has.
 
 ```
-python3 software/compiler/y1cc.py prog.c -o prog.asm            # for the machine (monitor: G3000)
+python3 software/compiler/y1cc.py prog.c -o prog.asm            # for the machine (monitor: G3000 calls main)
+python3 software/compiler/y1cc.py prog.c -o prog.asm --vector   # for the monitor as burned in 2021 (G = BRVR)
 python3 software/compiler/y1cc.py prog.c -o prog.asm --boot     # for the emulator, stand-alone
 cd <dir with rcasm.rc + yacc1.def> && ../software/assembler/asm prog -d=yacc1 > prog.lst   # -> prog.img (Intel hex)
 software/emulator/emulator -x -f prog.img                       # runs it, exits at HALT (--boot images)
@@ -63,13 +64,15 @@ and big-endian words in memory. There is no 16-bit ALU and no indexed addressing
   between them, and inside a `CSHL/CSHR` pair after an explicit clear (`LDAI 0 / CSHL`). Plain shifts and
   subtracts never feed a following carry op, because the hardware loads the carry flip-flop on every shift and on
   SUB and the emulator does not (review item L-7).
-- **Image layout**: `ORG` → a 2-byte vector → `start: JSR f_main / BR $F000` → main → the other live functions →
+- **Image layout**: `ORG` → main → the other live functions →
   the runtime helpers actually used → initialised data and strings (`DB` as numbers: the assembler upper-cases
   every source line, so `DB "text"` would be shouted) → uninitialised variables (`DS`, kept last) → with
-  `--boot` a stub at $F000 (`MVIW R1,$0EFF / JSR f_main / HALT`). The vector is there because the monitor's
-  `G AAAA` command is `BRVR R7`: on the hardware that is an indirect jump through the word at AAAA (the microcode
-  reads `[R7]`,`[R7+1]` into the branch register, `docs/isa/steps.txt`), and it pushes no return address, hence
-  the `BR $F000` (monitor restart) after main returns. So on the machine: load the image at $3000, type `G3000`.
+  `--boot` a stub at $F000 (`MVIW R1,$0EFF / JSR f_main / HALT`). The monitor's `G AAAA` (rebuilt 2026-09-22) is
+  `JSRUR R7`, a call: `G3000` enters main and main's RET returns to the command loop. `--vector` is the layout for
+  the monitor as burned in 2021, whose G was `BRVR R7`: on the hardware that is an indirect jump through the word at
+  AAAA (the microcode reads `[R7]`,`[R7+1]` into the branch register, `docs/isa/steps.txt`) that pushes no return
+  address, so that image starts with a 2-byte vector to a stub `JSR f_main / BR $F000` (monitor restart). Both were
+  run on the emulator against the respective monitor image (the 2021 one from the chip capture).
   The default `--org` is $3000 because $1000-$1FFF is BASIC's token buffer, which the monitor's boot (and the
   restart after main) clears, and the monitor's T tests use $2000 as scratch; a program at $1000 lost its first
   byte before it ran (found on the emulator 2026-09-22).

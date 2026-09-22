@@ -1164,7 +1164,14 @@ go:
       MVIW R7,GOMSG
       JSR stringout
       jsr getaddress
-      BRVR R7
+;
+; YACC1-D 2026-09-22: was BRVR R7, which is an INDIRECT jump (PC <- the word AT the address, see the
+; microcode: branch() fetches the target through R7 like BR fetches its operand through the PC), so G jumped
+; through whatever was stored at AAAA. JSRUR R7 jumps TO AAAA and pushes a return address: the program ends
+; with RET and lands back in the command loop.
+;
+      JSRUR R7
+      BR cmdloop
 
 dumpreg:
       JSR showregs
@@ -1753,7 +1760,7 @@ DB "        if followed by CR display next location",0ah,0dh
 DB "F AAAA  Fill contents 256 bytes of memory at address AAAA with 0(16 byte aligned) with 0",0ah,0dh
 DB "        if followed by CR fill next 256 bytes",0ah,0dh
 DB "G AAAA- Jump to (and execute) starting at AAAA",0ah,0dh
-DB "        code could end in BR to 0xf000h to restart monitor or RET if called via JSR",0ah,0dh
+DB "        Program ends with RET (it is called with JSRUR R7)",0ah,0dh
 DB "I     - BASIC",0ah,0dh
 DB "L     - List BASIC",0ah,0dh
 DB "P     - Enter program line to BASIC",0ah,0dh

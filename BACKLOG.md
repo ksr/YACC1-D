@@ -111,6 +111,9 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 ## C compiler (y1cc, 2026-09-22)
 `software/compiler/y1cc.py` compiles p8cc's C subset to YACC1 assembly (static frames, R3 accumulator, see its README);
 12 test programs pass on the emulator (`make cc-test`), 9 of them checked against the host C compiler as an oracle.
+- **Burn the rebuilt ROM** (`firmware/rom/shipped/rom`, 2026-09-22: monitor G = `JSRUR R7`, was the indirect `BRVR R7`; BASIC
+  unchanged), then re-capture and `tests/memory/rom_verify.py` (until then it reports the monitor half as different).
+  Until burned, compile for the machine with `--vector`.
 - **Run a compiled program on the machine.** Needs RAM loading: the monitor E-command loader (`tools/monload.py`, above) or
   the bus tester with the CPU held off (v2.2 CPU-off switch). Then `G3000` (the image starts with the vector BRVR needs; $1000 is BASIC's buffer).
   First hardware checks: `rt_sub` (INVA/moves between ADDTC), `rt_divmod` (SUBT/SUBI after a comparator branch), the
