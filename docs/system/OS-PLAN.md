@@ -18,9 +18,24 @@ are the order of work. Nothing here is built yet.
 2. **Video card v2 puts the 6845 registers on ports too** (PA = address register, PB = data register: RS is
    IO-ADDR0, no latch), so the card needs only its 2K of display RAM in the memory map. Until then the built card
    stays as it is: 2K block, RS-to-A1 fix pending (`hardware/cards/video/docs/fix-6845-register-select.md`).
-3. **Port map**: P0/P1 the I/O card (UART, switches/LEDs, LCD, TIL311) as now; P8/P9 CF; PA/PB reserved for the
-   6845; PC-PF free (PS/2 keyboard controller, RTC, a second CF, sound) — each follows the select+data pattern if
-   it needs more than one register. Note: `yacc1.def` had `P8=9` (typo, fixed 2026-09-22; nothing used P8).
+3. **Port map** (16 ports, IO-ADDR0..3, strobes -IO-RD/-IO-WR; `yacc1.def` had `P8=9`, fixed 2026-09-22):
+
+   | Port | Today | Proposed |
+   |---|---|---|
+   | P0 | I/O card select latch (write): UART = `UARTCS` $40 + register 0/8/…/$38, `SWITCHLED` $01, `LCDENABLE` $02, `LCDREGISTER` $04, `TIL311` $80 | unchanged |
+   | P1 | I/O card data port for the device selected in P0 (UART registers, switches in / LEDs out, LCD, TIL311) | unchanged |
+   | P2 | -IO-SEL2 on the I/O card's header, nothing wired; the emulator's console (`OUTA P2`/`INP P2`) | stays the emulator console; reserved to the I/O card |
+   | P3-P7 | -IO-SEL3..7 on the I/O card's header (its 74138 decodes all eight, the card wires two) | reserved to the I/O card (a second UART, a printer port…) |
+   | P8 | free | **CF register select** (write-only latch): bits 0-2 = ATA register 0-7, bit 3 = CS1 block (alternate status / device control, optional), bits 4-7 spare |
+   | P9 | free | **CF data**: reading/writing it strobes -IOR/-IOW on the selected register |
+   | PA | free | video card v2: 6845 address register (RS = 0) |
+   | PB | free | video card v2: 6845 data register (RS = 1) |
+   | PC | free | PS/2 keyboard controller data (or on the video v2 card as a terminal card) |
+   | PD | free | PS/2 keyboard status/control |
+   | PE, PF | free | free (RTC, second CF select+data, sound) |
+
+   The I/O card's IO-ADDR3 strap puts it in P0-P7 or P8-P15; it stays in the low half. Every new device follows
+   the select+data pattern when it has more than one register, so the port space lasts.
 4. **Memory map** — two variants, both jumper-only on the hardware (memory card block jumpers, video 7485 SV3):
 
    | Range | A: video stays at $D000 (no card change today) | B: video moved to $E000 |
