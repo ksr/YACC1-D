@@ -17,4 +17,7 @@
 - `video/` — `video_ram_test.py`, the video card's display-RAM test over the bus tester (patterns, inverse, neighbour
   isolation, the block-0/9 write-through check, read stability); 8/8 on 2026-09-21 after the +5V/VCC join.
 - `basic/` — `test`, a small BASIC program (LET/FOR loops) used to exercise the interpreter.
+- `compiler/` — the C compiler's test programs (`*.c` + expected `.out`/`.in`/`.err`) and `run.py`, which compiles each with
+  `software/compiler/y1cc.py --boot`, assembles it and runs it on `emulator -x`; `--oracle` regenerates the expectations with
+  the host C compiler through `host_shim.h`. 12/12 on 2026-09-22; `make cc-test`.
 - Hardware findings of 2026-09 (memory-card block map, EPROM identity, video-card write-through) are in the card READMEs.

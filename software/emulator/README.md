@@ -4,5 +4,5 @@
 UART on P0=$40,P1, refuses writes above $DFFF, `-m`/`-f` options. Uses `../opcodes.h`. Build: `make` (plain Makefile, 2026-09-20); `make run` loads `firmware/rom/shipped/rom`, i.e. what the
 machine runs, via `-f` (Intel hex; the assembler's `.img` files are the same format). `-m`, also the default with no arguments, loads
 `firmware/basic/basic.img` + `firmware/monitor/monitor.img` found relative to the executable, so it also works from a Finder double-click or any
-working directory (2026-09-20, see `tools/patched_files.txt`). `-f FILE` is relative to the current directory as before.
+working directory (2026-09-20, see `tools/patched_files.txt`). `-f FILE` is relative to the current directory as before. `-x` (2026-09-22) is the scripted mode the compiler tests use: no load/dump chatter, no raw tty mode, stdout flushed, and `HALT` exits with `HALT at aaaa after N instructions, R3=xxxx` on stderr (`emulator -x -f prog.img < input`). Same day: `BRVR` and `JSRUR` now do what the microcode does (indirect jump through the word at Rn, and PC ← Rn), so the monitor's `G AAAA` (BRVR R7) and `T` menu (JSRUR R7) work on the emulator; `G AAAA` jumps THROUGH the word at AAAA, which a program must therefore start with (the C compiler emits that vector).
 Load `firmware/rom/shipped/rom` (BASIC at $E000, monitor at $F000) to run what the machine runs.

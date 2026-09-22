@@ -1,0 +1,97 @@
+# software/compiler — y1cc, a C cross-compiler for the YACC1
+
+`y1cc.py` (Python 3, no dependencies) compiles a small C subset to YACC1 assembly for `software/assembler`
+(RC/asm with `yacc1.def`). Written 2026-09-22; the first C compiler the machine has had. The front end (lexer,
+parser, the C subset) is the one of the P8X compiler `p8x/compiler/p8cc.py`, so P8X C programs port with their
+source unchanged as far as the subset goes; the back end is new, written for what the YACC1 actually has.
+
+```
+python3 software/compiler/y1cc.py prog.c -o prog.asm            # for the machine (monitor: G3000)
+python3 software/compiler/y1cc.py prog.c -o prog.asm --boot     # for the emulator, stand-alone
+cd <dir with rcasm.rc + yacc1.def> && ../software/assembler/asm prog -d=yacc1 > prog.lst   # -> prog.img (Intel hex)
+software/emulator/emulator -x -f prog.img                       # runs it, exits at HALT (--boot images)
+python3 tests/compiler/run.py                                    # the test suite (make cc-test)
+```
+
+## The C subset
+
+| | |
+|---|---|
+| types | `int` (16-bit **unsigned**, as in p8cc), `char` (8-bit unsigned), pointers, arrays `T a[N]`, `struct`/`union` (by pointer or member: no by-value struct params, returns or assignment); `unsigned`, `const`, `static`, `void` accepted |
+| top level | struct/union definitions, function definitions and prototypes, globals with constant initializers (numbers, strings, `{lists}`, `&var` / array addresses, `[]` length inferred) |
+| statements | `{}` decl (with initializer, several per line) `if/else` `while` `for(e;e;e)` `break` `continue` `return` expr `;` |
+| expressions | `=` `+= -= *= /= %= &= \|= ^= <<= >>=` `++ --` (pre/post) `?:` `\|\| &&` `\| ^ &` `== != < > <= >=` `<< >>` `+ - * / %` unary `- ! ~ & *` `a[i]` `s.m` `p->m` `f(args)` `sizeof` |
+| preprocessor | `#define NAME value` (integer or char), `#include "file"` (textual, each file once, searched beside the source then in `lib/`) |
+| builtins | `putchar(c)` `getchar()` `puts(s)` (console), `peek(a)` `poke(a,v)` `peekw(a)` `pokew(a,v)` (memory), `inp(port)` `outp(port,v)` (I/O ports, constant 0..15), `halt()`, `bios(addr, r7, acc)` (JSR a monitor routine with R7 and ACC set; returns ACC) |
+| library | `lib/y1lib.c`: `putstr putnum puthex puthex2 strlen strcmp strcpy memset` — `#include "y1lib.c"`; unused functions cost nothing (dead-function elimination) |
+| not there | **recursion** (rejected at compile time), signed arithmetic, `long`/float, `switch`, function pointers, `goto`, bit fields |
+
+Console I/O: on the emulator `putchar` is `OUTA P2` and `getchar` is `INP P2` (returns 0 at end of input); on the
+machine they call the monitor's BIOS vectors `charout` ($FFC4) and `uartin` ($FFE8). The runtime chooses at run
+time with `BRDEV`, which never branches on the emulator and always branches on the hardware, so one image serves
+both. `puts` appends `\n` (10) only.
+
+## How the generated code works (the YACC1-specific part)
+
+The YACC1 has an 8-bit accumulator ACC and an 8-bit TMP, eight 16-bit registers R0-R7 (R0 = PC, R1 = SP), byte
+loads/stores through any register (`LDAVR`/`STAVR`), absolute 16-bit register loads/stores (`LDR`/`STR`, 3 bytes),
+and big-endian words in memory. There is no 16-bit ALU and no indexed addressing, which drove every choice below.
+
+- **R3 is the expression accumulator**: every expression leaves its 16-bit value in R3 (chars zero-extended).
+  R4 is the second operand, R5-R7 are runtime scratch (R7 also carries the string for the monitor's `stringout`).
+  **R2 is never touched**: on the hardware `LDA/STA/LDT/STT/LDR/STR` use R2 as the hidden operand-address register
+  (`docs/isa/MICROCODE-REVIEW-NOTES.md` L-9); the emulator uses a ninth register for that, so a program that
+  relied on R2 would only fail on the real machine.
+- **Static frames, no recursion.** A global is a labelled word or byte; a function's parameters and locals are
+  labelled slots of their own (`main_i: DS 2`). Loading or storing a scalar is one 3-byte `LDR R3,label` /
+  `STR R3,label`; a frame-relative access would have cost a 16-bit add per variable (about 12 bytes) because the
+  ISA has no `(Rn+d)` addressing. The price: a function that can call itself, even through another function, is
+  a compile error (the call graph is checked). A char scalar occupies a 2-byte slot whose high byte is kept zero,
+  so it loads with one `LDR` too; char arrays and struct members are true bytes.
+- **Calls**: the caller evaluates each argument into R3 and stores it straight into the callee's parameter slot,
+  then `JSR`. When a later argument's evaluation could itself run the callee (`f(x, g())` where `g` calls `f`)
+  the earlier ones are parked on the stack meanwhile. The result comes back in R3; `return` is `RET`.
+- **Arithmetic** is byte-wise through ACC/TMP. `+ & | ^` are inline (`MVRLA R4 / MVAT / MVRLA R3 / ADDT /
+  MVARL R3 / ... ADDTC ...`, the `do_add16` idiom the monitor proved on the hardware; 8-10 bytes), constants fold
+  into `ADDI`/`ADDIC` immediates, `+1`/`-1` are `INCR`/`DECR`. `-` is a runtime call (two's-complement add: the
+  emulator and the hardware disagree about SUB's borrow, so it is never used). `* / % << >>` are runtime loops
+  (`rt_mul`, `rt_divmod`, `rt_shl`, `rt_shr`); shifts by small constants, `*2 *4 *8 *256`, `/2^k`, `%2^k` are inline.
+- **Comparisons** in conditions branch straight on the comparator instructions (`BRLT/BRGT/BREQ/BRNEQ` compare
+  ACC with TMP): high bytes first, low bytes only if they are equal. Two char operands need one compare; `x == 0`
+  ORs the two bytes. Unsigned, like p8cc's int. A relation used as a value becomes 0/1 through the same path.
+- **The carry flag** is used only inside an `ADDT/ADDTC` (or `ADDI/ADDIC`) pair with nothing but register moves
+  between them, and inside a `CSHL/CSHR` pair after an explicit clear (`LDAI 0 / CSHL`). Plain shifts and
+  subtracts never feed a following carry op, because the hardware loads the carry flip-flop on every shift and on
+  SUB and the emulator does not (review item L-7).
+- **Image layout**: `ORG` → a 2-byte vector → `start: JSR f_main / BR $F000` → main → the other live functions →
+  the runtime helpers actually used → initialised data and strings (`DB` as numbers: the assembler upper-cases
+  every source line, so `DB "text"` would be shouted) → uninitialised variables (`DS`, kept last) → with
+  `--boot` a stub at $F000 (`MVIW R1,$0EFF / JSR f_main / HALT`). The vector is there because the monitor's
+  `G AAAA` command is `BRVR R7`: on the hardware that is an indirect jump through the word at AAAA (the microcode
+  reads `[R7]`,`[R7+1]` into the branch register, `docs/isa/steps.txt`), and it pushes no return address, hence
+  the `BR $F000` (monitor restart) after main returns. So on the machine: load the image at $3000, type `G3000`.
+  The default `--org` is $3000 because $1000-$1FFF is BASIC's token buffer, which the monitor's boot (and the
+  restart after main) clears, and the monitor's T tests use $2000 as scratch; a program at $1000 lost its first
+  byte before it ran (found on the emulator 2026-09-22).
+- Never emitted: `LDTVR STTVR OUTVR BR16Z BR16NZ BRNC` (no microcode), `BRVR JSRUR` (emulator/hardware differ),
+  negative numbers (the assembler silently drops the sign), labels over 29 characters (crash the assembler), or
+  two labels differing only in case (the assembler folds case; the compiler mangles and uniquifies).
+
+## Tests
+
+`tests/compiler/*.c` with the expected output beside each (`.out`, `.in` for stdin, `.err` for an expected
+compile error); `tests/compiler/run.py` compiles, assembles, runs each on `emulator -x` and diffs. `--oracle`
+regenerates the `.out` files with the HOST C compiler through `host_shim.h` (`int` = `unsigned short`, unsigned
+char), so the expectations are independent of this compiler; tests marked `no-oracle` (peek/poke, struct layout,
+byte order) carry hand-written expectations. 12 programs, 12/12 on 2026-09-22 (~1 s). `make check` runs them.
+The same images also run under the monitor on the emulator (`emulator -m -f prog.img`, then `G3000`): the program's
+output appears after `GO ADDRESS:` and the monitor's banner follows when main returns (hello and fib tried 2026-09-22).
+
+Sizes on 2026-09-22 (code + data + runtime, bytes): hello 111, io 722, sieve 862, chars 893, calls 948,
+globals 966, fib 1045, structs 1398, arrays 1446, control 2356, arith 2339.
+
+## Not done yet (BACKLOG "C compiler")
+
+Running a compiled program on the real machine needs a way to load RAM (the monitor's E-command loader on the
+backlog, or the bus tester with the CPU off); a stack-frame mode for recursion; `switch`; signed types; peephole
+work (the code is straightforward, roughly 2-3x what hand assembly would be); the P8X-side libraries.

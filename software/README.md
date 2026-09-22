@@ -7,6 +7,7 @@
 | `emulator/` | the C emulator, reference model of the ISA (`-m/-f` options added 2026-06) | `make`; double-click runs the burned ROM |
 | `disassembler/disasm2/` | microcode disassembler for the 64-step Generator2 format | `make`; `./disasm2 [opcode…]`, finds the image relative to itself |
 | `ubasic-c/` | the C uBASIC (Adam Dunkels) the assembly BASIC was ported from; `ubasic-master-orig/` = upstream | `make`; `./ubasic [FILE]`, interactive without a file |
+| `compiler/` | **y1cc** (2026-09-22), a C cross-compiler (Python): p8cc's C subset → YACC1 assembly for `assembler/`; `lib/y1lib.c`; its README explains the code model | `python3 y1cc.py prog.c`; `make cc-test` runs `tests/compiler/` on the emulator (12/12) |
 
 Every tool has a plain `Makefile` (2026-09-20; the NetBeans-generated one is kept as `Makefile.netbeans`, `nbproject/` too) and
 the top-level `Makefile` builds them all (`make`) and runs every proof (`make check`). All six binaries can be started by a

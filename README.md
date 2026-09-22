@@ -61,6 +61,7 @@ YACC1-D/
 │   ├── emulator/             emulator (the reference model of the ISA)
 │   ├── disassembler/         disasm2 (and disasm)
 │   ├── ubasic-c/             the C uBASIC the asm BASIC was ported from
+│   ├── compiler/             y1cc, the C cross-compiler (2026-09-22) + lib/y1lib.c; tests in tests/compiler/
 ├── embedded/                 Arduino/Processing code for the support cards
 │   ├── bus-tester/           bus-driver, bus-monitor, bus-test, led-switch-test, test-eeprom
 │   ├── sequencer-card/       Sequencer3 (current), Sequencer2, Sequencer, downloader, RAM/ROM tests

@@ -107,3 +107,26 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - KiCad conversion of the remaining cards with the memory-card toolchain (`tools/kicad/`); Eagle then frozen.
 - `git init` (no LFS), first commit, GitHub repo; decide whether `archive/` (190 MB) is committed or kept as a separate repo.
 - Move off NetBeans (README decision 7).
+
+## C compiler (y1cc, 2026-09-22)
+`software/compiler/y1cc.py` compiles p8cc's C subset to YACC1 assembly (static frames, R3 accumulator, see its README);
+12 test programs pass on the emulator (`make cc-test`), 9 of them checked against the host C compiler as an oracle.
+- **Run a compiled program on the machine.** Needs RAM loading: the monitor E-command loader (`tools/monload.py`, above) or
+  the bus tester with the CPU held off (v2.2 CPU-off switch). Then `G3000` (the image starts with the vector BRVR needs; $1000 is BASIC's buffer).
+  First hardware checks: `rt_sub` (INVA/moves between ADDTC), `rt_divmod` (SUBT/SUBI after a comparator branch), the
+  shifts (`LDAI 0 / CSHL` carry clear), `BRDEV` selecting the BIOS path, and that `BR $F000` after main is acceptable
+  (it restarts the monitor: BASIC cold start, banners). A `cmdloop` BIOS vector would be cleaner than the restart.
+- Stack-frame mode (`--frames`) for recursion/reentrancy, at ~4x the cost per local access; or overlaying the static
+  frames of functions that are never live together (cheap, no semantic change).
+- `switch`, signed `int` (BRLT/BRGT are unsigned comparators: signed compare = flip bit 15 first), `long`, `goto`.
+- Code size: peephole over R3/R4 traffic (store-then-reload across labels, `MVIW R3,k / MVRLA R3` → `LDAI`), 8-bit paths
+  for char arithmetic (`c + 1` still goes through 16-bit add), constant compares with a zero high byte, `for` loops
+  counting down to 0. Measure with `run.py` (bytes + instruction counts per test).
+- Cycle-accurate cost model: the emulator counts instructions; weighting by the microcode step counts (`docs/isa/README.md`)
+  would give clock cycles.
+- Port the P8X libraries/programs that fit the subset (the P8X OS itself needs the stack-frame mode and its syscalls).
+- Emulator (done 2026-09-22, `tools/patched_files.txt`): `-x` scripted mode; BRVR and JSRUR now follow the microcode, so the
+  monitor's `G` and `T` commands work on the emulator (they never had). Still stubs vs the hardware: IRET/INT/IADDR, SUB
+  borrow into carry, shifts loading carry, opcode $00, LDTVR/STTVR (emulator runs them, hardware has no microcode).
+- Assembler (done 2026-09-22): `DS` flushes the hex record. Still open: negative numbers silently mis-assemble, labels
+  over 29 chars crash it, source lines are upper-cased (strings in `DB "..."` come out upper-case).

@@ -80,6 +80,8 @@ int pushpopdepth;
 int pushpoprdepth;
 bool carry;
 int firstSwitchRead = 1; // What is this
+int exit_on_halt = 0;           /* YACC1-D 2026-09-22: -x, for scripted runs (compiler tests): quiet load, exit at HALT */
+unsigned long icount = 0;       /* instructions executed (reported at a -x HALT) */
 
 /* Intel HEX read/write functions, Paul Stoffregen, paul@ece.orst.edu */
 /* This code is in the public domain.  Please retain my name and */
@@ -179,8 +181,10 @@ void load_file(char *filename)
             }
             if (status == 1) { /* end of file */
                 fclose(fin);
-                printf("   Loaded %d bytes between:", total);
-                printf(" %04X to %04X\n", minaddr, maxaddr);
+                if (!exit_on_halt) {
+                    printf("   Loaded %d bytes between:", total);
+                    printf(" %04X to %04X\n", minaddr, maxaddr);
+                }
                 return;
             }
             if (status == 2)
@@ -422,6 +426,7 @@ void print_usage(const char *progname) {
     printf("  -h           Show this help message\n");
     printf("  -m           Load firmware/basic/basic.img and firmware/monitor/monitor.img from the tree (found relative to this program; default)\n");
     printf("  -f filename  Load the specified file using load_file\n");
+    printf("  -x           Scripted run: no load/dump chatter, HALT exits (instruction count on stderr)\n");
 }
 
 int main(int argc, char** argv) {
@@ -440,6 +445,8 @@ int main(int argc, char** argv) {
             return EXIT_SUCCESS;
         } else if (strcmp(argv[arg], "-m") == 0) {
             load_standard = true;
+        } else if (strcmp(argv[arg], "-x") == 0) {
+            exit_on_halt = 1;
         } else if (strcmp(argv[arg], "-f") == 0) {
             if (arg + 1 < argc) {
                 load_filename = argv[++arg];
@@ -459,7 +466,7 @@ int main(int argc, char** argv) {
         load_standard = true;
     }
 
-    enableRawMode();
+    if (!exit_on_halt) enableRawMode();
 
     /* ech testwhile (1) {
         myputchar(mygetchar());
@@ -480,11 +487,13 @@ int main(int argc, char** argv) {
     if (load_filename) {
         load_file(load_filename);
     }
-    dump(0xf700, 0xf7ff);
+    if (!exit_on_halt) dump(0xf700, 0xf7ff);
+    fflush(stdout);
 
     while (1) {
 
         ins = memory_read(register_read_word(PC));
+        icount++;
 
         // trigger condition, for instance test PC value or a reg value
         if (registers[PC].word == 0x0000) {
@@ -529,6 +538,11 @@ int main(int argc, char** argv) {
                 break;
 
             case HALT:
+                if (exit_on_halt) {
+                    fflush(stdout);
+                    fprintf(stderr, "HALT at %04x after %lu instructions, R3=%04x\n", registers[PC].word - 1, icount, register_read_word(3));
+                    exit(0);
+                }
                 printf("\nHalt[%02x] at [%04x] acc=[%02x] tmp=[%02x] R3=[%04x] R7=[%04x]\n", ins, registers[PC].word - 1, acc, treg, register_read_word(3), register_read_word(7));
                 dump(0x0200, 0x021f);
                 dump(0x0f80, 0x0f8f);
@@ -583,8 +597,9 @@ int main(int argc, char** argv) {
                 memory_write(register_read_word(SP), register_read_lo(PC));
                 register_dec(SP);
 
-                register_write_hi(PC, register_read_lo(reg));
-                register_write_lo(PC, register_read_hi(reg));
+                /* YACC1-D 2026-09-22: PC <- Rn (the bytes were swapped here; the microcode copies hi to hi) */
+                register_write_hi(PC, register_read_hi(reg));
+                register_write_lo(PC, register_read_lo(reg));
 
                 //printf("jsr opcode pc[%04x]\n", registers[PC].word);
                 //printf("bad opcode [%02x] pc[%04x]\n", ins, register_read_word(PC));
@@ -1148,10 +1163,15 @@ int main(int argc, char** argv) {
             case BRVR + REG6:
             case BRVR + REG7:
                 reg = ins & 0x07;
-                register_write_hi(reg, memory_read(register_read_word(reg)));
+                /* YACC1-D 2026-09-22: as the microcode does it (docs/isa/steps.txt): the word AT Rn goes into the
+                   branch register, Rn += 2, then PC <- branch register = an indirect jump through a vector.
+                   (This loaded Rn itself from [Rn] and never branched.) */
+                hi = memory_read(register_read_word(reg));
                 register_inc(reg);
-                register_write_lo(reg, memory_read(register_read_word(reg)));
+                lo = memory_read(register_read_word(reg));
                 register_inc(reg);
+                register_write_hi(PC, hi);
+                register_write_lo(PC, lo);
                 break;
             case CSHL:
                 if (acc & 0x80)

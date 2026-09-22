@@ -275,6 +275,7 @@ void Translate(int Entry)
       i=*Ptr-49;
       Ptr++;
       address+=args[i];
+      write_line();   /* YACC1-D 2026-09-22: flush the pending hex record so bytes after a DS start a new record at the new address (they were appended to the old one) */
       valid=1;
       column=-1;
       noout='Y';

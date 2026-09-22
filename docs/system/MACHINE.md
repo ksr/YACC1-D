@@ -47,6 +47,7 @@ Not in the machine: the two bring-up cards (Mem Switch, Mem Register), the two b
 - `embedded/command-sender/command_sender_8` (Processing) — sends `tests/bus-tester-scripts/`.
 - `embedded/sequencer-card/microcode-loader/simple_microcode_sender_64` (Processing, 115200) — loads `test.hexz`.
 - `software/assembler` (`asm file -d=yacc1`), `software/emulator`, `software/ubasic-c`, `software/disassembler/disasm2` (needs its include restored).
+- `software/compiler/y1cc.py` (2026-09-22) — the C cross-compiler: `prog.c` → YACC1 assembly → `.img`; images load at $3000 (BASIC's token buffer is $1000-$1FFF) and start with a vector for the monitor's `G3000` (BRVR is an indirect jump on the hardware) and return to the monitor with `BR $F000`. Not yet run on the machine: loading RAM needs the E-command loader (BACKLOG).
 
 ## Known faults / open on the hardware
 
