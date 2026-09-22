@@ -19,6 +19,8 @@
 #include <unistd.h>
 #include <ctype.h>
 #include "../opcodes.h"
+#include <stdint.h>
+#include "../cfmodel.h"        /* YACC1-D 2026-09-22: the CompactFlash card on ports P8 (select) / P9 (data), -c image */
 
 #define DEBUG 0
 
@@ -427,6 +429,7 @@ void print_usage(const char *progname) {
     printf("  -m           Load firmware/basic/basic.img and firmware/monitor/monitor.img from the tree (found relative to this program; default)\n");
     printf("  -f filename  Load the specified file using load_file\n");
     printf("  -x           Scripted run: no load/dump chatter, HALT exits (instruction count on stderr)\n");
+    printf("  -c image     Attach a CompactFlash image on ports P8/P9 (created zero-filled if missing)\n");
 }
 
 int main(int argc, char** argv) {
@@ -447,6 +450,8 @@ int main(int argc, char** argv) {
             load_standard = true;
         } else if (strcmp(argv[arg], "-x") == 0) {
             exit_on_halt = 1;
+        } else if (strcmp(argv[arg], "-c") == 0 && arg + 1 < argc) {
+            if (!cf_attach(argv[++arg])) { fprintf(stderr, "cannot open CF image %s\n", argv[arg]); return EXIT_FAILURE; }
         } else if (strcmp(argv[arg], "-f") == 0) {
             if (arg + 1 < argc) {
                 load_filename = argv[++arg];
@@ -811,6 +816,7 @@ int main(int argc, char** argv) {
                     myputchar(port[portaddr]);
                     DEBUG_PRINTF(" ");
                 }
+                if (portaddr == CF_PORT_SEL || portaddr == CF_PORT_DATA) cf_io_write(portaddr, acc);
                 break;
 
             case OUTI + PORT0:
@@ -836,6 +842,7 @@ int main(int argc, char** argv) {
 
                 if ((port[0] == 0x40) && (portaddr == 1))
                     myputchar(port[portaddr]);
+                if (portaddr == CF_PORT_SEL || portaddr == CF_PORT_DATA) cf_io_write(portaddr, port[portaddr]);
                 break;
 
             case OUTVR + PORT0:
@@ -883,6 +890,7 @@ int main(int argc, char** argv) {
                     
                     //printf("in char %x\n", acc);
                 }
+                if (portaddr == CF_PORT_DATA || portaddr == CF_PORT_SEL) acc = cf_io_read(portaddr);
                 break;
                 
             case OPCODE_A5:

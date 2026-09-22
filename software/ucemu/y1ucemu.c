@@ -21,7 +21,8 @@
  * register counts) use the values at the end of the step that asserts the strobe. A count on -REG-UP/-REG-DN
  * happens when the strobe goes away or the selection changes (the OR with the register select on the card).
  *
- * usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-l N]
+ * usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-l N]
+ *   -c   attach a CompactFlash image (software/cfmodel.h: P8 = register select, P9 = data; created if missing)
  *   -u   control store (default: firmware/microcode/ucode-generator2/test.hex relative to the executable)
  *   -m   load firmware/basic/basic.img + firmware/monitor/monitor.img (the ROM), as the other emulator does
  *   -f   load an Intel-hex image (repeatable; later files overwrite earlier ones)
@@ -50,6 +51,7 @@
 
 struct signal { char *name; int chip; int port; int bit; };
 #include "../../firmware/microcode/yaccsignaldata2.h"
+#include "../cfmodel.h"          /* the CompactFlash card on ports P8 (select) / P9 (data), -c image */
 
 /* ---- control store ------------------------------------------------------------------------------------------ */
 static uint8_t ucode[256][64][8];
@@ -187,6 +189,7 @@ static int input_byte(void) {
 static void console_out(int c) { char ch = (char)c; if (write(STDOUT_FILENO, &ch, 1) < 0) exit(3); }
 
 static uint8_t io_read(int p) {
+    if (p == CF_PORT_SEL || p == CF_PORT_DATA) return cf_io_read(p);
     if (p == 2) return (uint8_t)input_byte();
     if (p != 1) return 0xFF;
     uint8_t ctl = port[0];
@@ -207,6 +210,7 @@ static uint8_t io_read(int p) {
 }
 static void io_write(int p, uint8_t v) {
     port[p] = v;
+    if (p == CF_PORT_SEL || p == CF_PORT_DATA) { cf_io_write(p, v); return; }
     if (p == 2) { console_out(v); return; }
     if (p != 1) return;
     uint8_t ctl = port[0];
@@ -468,13 +472,14 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "-m")) load_std = 1;
         else if (!strcmp(argv[i], "-f") && i + 1 < argc) images[nimages++] = argv[++i];
         else if (!strcmp(argv[i], "-x")) scripted = 1;
+        else if (!strcmp(argv[i], "-c") && i + 1 < argc) { if (!cf_attach(argv[++i])) { fprintf(stderr, "y1ucemu: cannot open CF image %s\n", argv[i]); return 2; } }
         else if (!strcmp(argv[i], "-t")) trace = 1;
         else if (!strcmp(argv[i], "-T")) trace_steps = 1;
         else if (!strcmp(argv[i], "-w")) warn_fights = 1;
         else if (!strcmp(argv[i], "-F") && i + 1 < argc) { i++; fight_src = !strcmp(argv[i], "src"); if (!fight_src && strcmp(argv[i], "and")) { fprintf(stderr, "y1ucemu: -F and|src\n"); return 1; } }
         else if (!strcmp(argv[i], "-s") && i + 1 < argc) switches = (int)strtol(argv[++i], NULL, 0);
         else if (!strcmp(argv[i], "-l") && i + 1 < argc) limit = strtoul(argv[++i], NULL, 0);
-        else { fprintf(stderr, "usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-l N]\n"); return 1; }
+        else { fprintf(stderr, "usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-l N]\n"); return 1; }
     }
     resolve_signals();
     load_opnames(exe_dir);

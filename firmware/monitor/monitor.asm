@@ -44,6 +44,14 @@ FILLMODE:     EQU 4
 monmode:        EQU 0f00h
 continue_addr:  EQU 0f02h
 interupt_cnt:   EQU 0f04h
+;
+; CompactFlash driver variables (YACC1-D 2026-09-22) and the OS/program argument buffer
+;
+CFLBA0:         EQU 0f10h    ; sector number for CFREAD/CFWRITE, low byte
+CFLBA1:         EQU 0f11h
+CFLBA2:         EQU 0f12h    ; high byte (24-bit LBA)
+ARGBUF:         EQU 0f40h    ; 64 bytes: the OS leaves a program's command tail here (NUL-terminated)
+OSBASE:         EQU 1000h    ; where the boot command loads the OS image (LBA 1..OSCNT) and calls it
 line_buffer:    EQU 0f80h    ; 128 bytes long max
 
 
@@ -136,727 +144,9 @@ tttt:
 ;
 ;
 ;
-alltests:
-;         jsr shltest
-;         JSR shrtest
-;         jsr rshltest
-;         jsr rshrtest
-;         jsr cshltest
-;         JSR cshrtest
-;         JSR pshrtest
-;         JSR additest
-;         JSR addictest
-;         JSR subtest
-;         JSR cmptest
-;         JSR shrtest
-;         JSR shltest
-;         JSR rshrtest
-;         JSR rshltest
-;         JSR cshltest
-;         JSR cshrtest
-;         JSR accumtest
-;         JSR pushpoptest
-;         JSR ortest
-;         JSR orttest
-;         JSR additest
-;         JSR movrrtest
-;         JSR add16tests
-;         jsr mem_indirect_tests
-;         jsr mul16
-;         jsr pushr_popr_tests
-;         jsr sub16tests
-
-alltestsdone:
-          JSR lblink
-          BR alltestsdone
-
-;
-; Individual Tests
-;
-
-;
-; 16 x 16 bit multiply test
-;
-mul16:
-      mviw r4,0FFFAh
-      mviw r5,0002h
-
-;
-; test new memory based load/store instructions
-;
-mem_indirect_tests:
-
-        MVIW R3,02000h
-clearmem:
-        LDAI 0
-        STAVR R3
-        INCR R3
-        MVRLA R3
-        ANDI  0FFH
-        BRNZ clearmem
-
-; initial dump
-
-;
-; step 10
-;
-        ldai 010h       ;counter
-        jsr mem_indirect_util
-
-; str 0x5544 into 0x2000-1 with tested opcodes
-
-        MVIW R4,02000h
-        LDAI 055h
-        STAVR R4
-        INCR R4
-        LDAI 044h
-        STAVR R4
-
-; step 11
-
-        ldai 011h
-        jsr mem_indirect_util
-
-; load register R5 from memory 0x2000
-
-        LDR R5,02000h
-        movrr r2,r6       ;move r2 to r6 for output purposes
-                          ;R2 is used by LDR/STR instuctions
-
-; step 12
-
-        ldai 012h
-        jsr mem_indirect_util
-
-; store info in R5 into 0x2004-5
-; step 13
-
-        STR R5,2004h
-        movrr r2,r6
-
-        ldai 013h
-        jsr mem_indirect_util
-
-; load 0x66 into accumulator and store in 0x2006
-; Save R2 into R6 for display
-; step 14
-
-        LDAI 066h
-        STA  02006h
-        movrr r2,r6
-        ldai 014h
-        jsr mem_indirect_util
-
-; load accumulator from 0xf000
-; save R2 in R6 for display
-; store value in accumulator into 0x2008
-; step 15
-
-        lda 0f000h
-
-; store value from 0f000h to 2008h
-
-        sta 02008h
-        movrr r2,r6
-        ldai 015h
-        jsr mem_indirect_util
-;
-;  load 88 into tmp register and store t 200a
-;  step 16
-;
-        ldti 088h
-        stt 0200ah
-        movrr r2,r6
-        ldai 016h
-        jsr mem_indirect_util
-;
-; load tmp from memory f001 and store to 200c
-; step 17
-;
-        ldt 0f001h
-        stt 0200ch
-        movrr r2,r6
-        ldai 017h
-        jsr mem_indirect_util
-        ret
-
-mem_indirect_util:
-        push
-        MVIW R7,02000h
-        JSR showaddr
-        JSR show16
-        JSR showregs
-        pop
-        JSR showbytea
-        MVIW R7,CRLF
-        JSR stringout
-        ret
-;
-; 16 bit add carry tests
-;
-add16tests:
-;
-; add r4 and r5
-;
-
-      mviw r4,01234h
-      mviw r5,05678h
-      jsr do_add16_util
-
-      mviw r4,01288h
-      mviw r5,05699h
-      jsr do_add16_util
-
-      mviw r4,0FFFAh
-      mviw r5,0FFFCh
-      jsr do_add16_util
-
-      mviw r4,05689h
-      mviw r5,0abcdh
-      jsr do_add16_util
-
-      mviw r4,0FFFAh
-      mviw r5,0FFFEh
-      jsr do_add16_util
-      ret
-
-do_add16_util:
-      jsr showregs
-      jsr do_add16
-      jsr showregs
-      ret
-
-do_add16:
-      ldai 0      ;clear carry
-      cshl
-;      addi 0
-      MVRLA R4
-      MVAT
-      mvrla r5
-      ADDT
-      mvarl r4
-      mvrha r4
-      MVAT
-      mvrha r5
-      addtc
-      mvarh r4
-      ret
-
-;
-; 16 bit sub  tests
-;
-sub16tests:
-;
-; sub r4 from r5
-;
-
-      mviw r4,0001h
-      mviw r5,0009h
-      jsr do_sub16_util
-
-      mviw r4,0001h
-      mviw r5,0100h
-      jsr do_sub16_util
-
-      mviw r4,0009h
-      mviw r5,0001h
-      jsr do_sub16_util
-
-
-      mviw r4,0220h
-      mviw r5,0110h
-      jsr do_sub16_util
-
-      mviw r4,0001h
-      mviw r5,0FFFCh
-      jsr do_sub16_util
-
-      ret
-
-do_sub16_util:
-      jsr showregs
-      jsr do_sub16
-      jsr showregs
-      ret
-;
-; 16 bit subtract of r4 from r5, return result in r5
-;
-do_sub16:
-      mvrha r4
-      inva
-      mvarh r4
-      mvrla r4
-      inva
-      mvarl r4
-      incr r4
-      jsr showregs
-      br do_add16
-;
-; pushr popr test
-;
-; requires testing changing r6 to r4
-;
-pushr_popr_tests:
-         MVIW R3,0ff0h  ;setup to show stack
-         movrr r1,r5    ;put a copy of stack ptr into r5
-         JSR showaddr
-         JSR show16
-         JSR showregs
-         MVIW R7,CRLF
-         JSR stringout
-
-         mviw R4,01234h ;put a value into R4
-         movrr r1,r5
-         MVIW R3,0ff0h
-         JSR showaddr
-         JSR show16
-         JSR showregs
-         MVIW R7,CRLF
-         JSR stringout
-
-         pushr r4
-         movrr r1,r5
-         MVIW R3,0ff0h
-         JSR showaddr
-         JSR show16
-         JSR showregs
-         MVIW R7,CRLF
-         JSR stringout
-
-         mviw r4,0h
-         movrr r1,r5
-         MVIW R3,0ff0h
-         JSR showaddr
-         JSR show16
-         JSR showregs
-         MVIW R7,CRLF
-         JSR stringout
-
-         popr r4
-         movrr r1,r5
-         MVIW R3,0ff0h
-         JSR showaddr
-         JSR show16
-         JSR showregs
-         MVIW R7,CRLF
-         JSR stringout
-         ret
-
-;
-; Register to Register move test
-;
-movrrtest:
-        MVIW   R7,MOVRRHELP
-        JSR    stringout
-
-        MVIW R3,1234h
-        MVIW R4,5678h
-
-        jsr showreg34
-
-        MOVRR R3,R4
-
-        jsr showreg34
-
-        MVIW R3,4321h
-
-        jsr SHOWREG34
-
-        MVIW R4,1234h
-        MVIW R5,5678h
-
-        jsr showreg45
-
-        MOVRR R4,R5
-
-        jsr showreg45
-
-        MVIW R4,4321h
-
-        jsr showreg45
-
-        ret
-
-;
-; sho registers (hard coded)
-;
-showreg34:              ; registers across two boards
-        LDAI 0h
-        JSR ledout
-        MVRHA r3
-        JSR TIL311out
-        JSR switchtoggle
-        LDAI 1h
-        JSR ledout
-        MVRLA r3
-        JSR TIL311out
-        JSR switchtoggle
-        LDAI 2h
-        JSR ledout
-        MVRHA r4
-        JSR TIL311out
-        JSR switchtoggle
-        LDAI 3h
-        JSR ledout
-        MVRLA r4
-        JSR TIL311out
-        JSR switchtoggle
-        ret
-
-showreg45:             ;register on same board
-        LDAI 0h
-        JSR ledout
-        MVRHA r4
-        JSR TIL311out
-        JSR switchtoggle
-        LDAI 1h
-        JSR ledout
-        MVRLA r4
-        JSR TIL311out
-        JSR switchtoggle
-        LDAI 2h
-        JSR ledout
-        MVRHA r5
-        JSR TIL311out
-        JSR switchtoggle
-        LDAI 3h
-        JSR ledout
-        MVRLA r5
-        JSR TIL311out
-        JSR switchtoggle
-        ret
-
-;
-; OR - OR accumulator immediate
-;
-ORHELP: DB "OR tests - or input switches with 0x55 (5x)",0ah,0dh,0
-ortest:
-         MVIW   R7,ORHELP
-         JSR    stringout
-         MVIB   R3,5
-orloop:
-         JSR switchtoggle
-         OUTI P0,(SWITCHLED)
-         INP P1
-         ORI  055H
-         OUTA  P1
-
-         DECR R3
-         MVRLA R3
-         BRNZ orloop
-         RET
-
-;
-; ADDI - ADD accumulator with immediate
-;
-additest:
-       MVIW   R7,ADDIHELP
-       JSR    stringout
-       MVIB   R3,5
-addiloop:
-       JSR switchtoggle
-       OUTI P0,(SWITCHLED)
-       INP P1
-       ADDI 02h
-       OUTA  P1
-
-       DECR R3
-       MVRLA R3
-       BRNZ addiloop
-       RET
-
-;
-; ADDIC - ADD accumulator with immediate with carry
-;
-addictest:
-      MVIW   R7,ADDICHELP
-      JSR    stringout
-      MVIB   R3,5
-addicloop:
-      JSR switchtoggle
-      OUTI P0,(SWITCHLED)
-      INP P1
-      ADDIC 02h
-      OUTA  P1
-
-      DECR R3
-      MVRLA R3
-      BRNZ addicloop
-      RET
-
-;
-; ORT - OR accumulator with tmp register
-;
-orttest:
-        MVIW   R7,ORTHELP
-        JSR    stringout
-        MVIB   R3,5
-ortloop:
-        JSR switchtoggle
-        OUTI P0,(SWITCHLED)
-        INP P1
-        MVAT
-        JSR switchtoggle
-        OUTI P0,(SWITCHLED)
-        INP P1
-        ORT
-        OUTA  P1
-
-        DECR R3
-        MVRLA R3
-        BRNZ ortloop
-        RET
-;
-; push pop tests - push 3 values onto stack, pop 3values from stack
-;
-pushpoptest:
-         MVIW   R7,PUSHPOPHELP
-         JSR    stringout
-
-         MVIB   R3,3
-ppenterloop:
-         JSR switchtoggle
-         OUTI P0,(SWITCHLED)
-         INP P1
-         push
-
-         DECR R3
-         MVRLA R3
-         BRNZ ppenterloop
-
-         MVIB   R3,3
-ppdisloop:
-        JSR switchtoggle
-        OUTI P0,(SWITCHLED)
-        POP
-        OUTA  P1
-        DECR R3
-        MVRLA R3
-        BRNZ ppdisloop
-
-        RET
-;
-; accumulator register Tests - move values between accumulator and register HI 8 bits
-;                              move values between accumulator and register LO 8 bits
-;
-accumtest:
-         MVIW   R7,accumhelp
-         JSR    stringout
-         MVIB   R3,10
-accloop:
-         JSR switchtoggle
-         OUTI P0,(SWITCHLED)
-         INP P1
-         MVARH R3
-         INCR R3
-         MVRHA R3
-         OUTA P1
-         JSR switchtoggle
-         OUTI P0,(SWITCHLED)
-         INP P1
-         MVARL R3
-         INCR R3
-         MVRLA R3
-         OUTA P1
-
-         DECR R3
-         MVRLA R3
-         BRNZ accloop
-         RET
-;
-; shift tests
-;
-; Shift left
-;
-SHIFT_LEFTHELP: DB "Shift Left - shift input switches (5x)",0ah,0dh,0
-shltest:
-         MVIW   R7,SHIFT_LEFTHELP
-         JSR    stringout
-         MVIB   R3,5
-shlloop:
-         JSR switchtoggle
-         OUTI P0,(SWITCHLED)
-         INP P1
-         SHL
-         OUTA  P1
-
-         DECR R3
-         MVRLA R3
-         BRNZ shlloop
-         RET
-;
-; shift Right
-;
-SHIFT_RIGHTHELP: DB "Shift Right - shift input switches (5x)",0ah,0dh,0
-shrtest:
-          MVIW   R7,SHIFT_RIGHTHELP
-          JSR    stringout
-          MVIB   R3,5
-shrloop:
-          JSR switchtoggle
-          OUTI P0,(SWITCHLED)
-          INP P1
-          SHR
-          OUTA  P1
-
-          DECR R3
-          MVRLA R3
-          BRNZ shrloop
-          RET
-;
-; ring shift left
-;
-rshltest:
-         MVIW   R7,RSHIFT_LEFTHELP
-         JSR    stringout
-         MVIB   R3,10
-rshlloop:
-         JSR switchtoggle
-         OUTI P0,(SWITCHLED)
-         INP P1
-         RSHL
-         OUTA  P1
-
-         DECR R3
-         MVRLA R3
-         BRNZ rshlloop
-         RET
-;
-; ring shift right
-;
-rshrtest:
-          MVIW   R7,RSHIFT_RIGHTHELP
-          JSR    stringout
-          MVIB   R3,10
-rshrloop:
-          JSR switchtoggle
-          OUTI P0,(SWITCHLED)
-          INP P1
-          RSHR
-          OUTA  P1
-
-          DECR R3
-          MVRLA R3
-          BRNZ rshrloop
-          RET
-;
-; shift right and propagate sign bit
-;
-pshrtest:
-          MVIW   R7,PSHIFT_RIGHTHELP
-          JSR    stringout
-          MVIB   R3,10
-pshrloop:
-          JSR switchtoggle
-          OUTI P0,(SWITCHLED)
-          INP P1
-          PSHR
-          OUTA  P1
-
-          DECR R3
-          MVRLA R3
-          BRNZ pshrloop
-          RET
-;
-; ring shift left through carry bit
-;
-cshltest:
-          MVIW   R7,CSHIFT_LEFTHELP
-          JSR    stringout
-          MVIB   R3,10
-cshlloop:
-          JSR switchtoggle
-          OUTI P0,(SWITCHLED)
-          INP P1
-          CSHL
-          OUTA  P1
-
-          DECR R3
-          MVRLA R3
-          BRNZ cshlloop
-          RET
-;
-; ring shift right through carry bit
-;
-cshrtest:
-          MVIW   R7,CSHIFT_RIGHTHELP
-          JSR    stringout
-          MVIB   R3,10
-cshrloop:
-          JSR switchtoggle
-          OUTI P0,(SWITCHLED)
-          INP P1
-          CSHR
-          OUTA  P1
-
-          DECR R3
-          MVRLA R3
-          BRNZ cshrloop
-          RET
-;
-; subtraction tests
-;
-subtest:
-          MVIW   R7,SUBHELP
-          JSR    stringout
-          MVIB   R3,10
-subloop:
-          JSR switchtoggle
-          OUTI P0,(SWITCHLED)
-          INP P1
-          SUBI  1
-          OUTA  P1
-
-          DECR R3
-          MVRLA R3
-          BRNZ subloop
-          RET
-;
-; Compare Tests/compare input switches to 0x55 10 times
-;
-cmptest:
-          MVIW   R7,COMPAREHELP
-          JSR    stringout
-          MVIB   R3,10
-          LDTI   055H
-cmploop:
-          JSR switchtoggle
-          OUTI P0,(SWITCHLED)
-          INP P1
-          BRGT OUTGT
-          BREQ OUTEQ
-          BRLT OUTLT
-;Should not happen
-          LDAI '?'
-          BR cmpres
-OUTGT:
-          LDAI 'G'
-          BR cmpres
-OUTEQ:
-          LDAI 'E'
-          BR cmpres
-OUTLT:
-          LDAI 'L'
-          BR cmpres
-
-cmpres:
-          JSR uartout
-          DECR R3
-          MVRLA R3
-          BRNZ cmploop
-          RET
-
-;
-; Monitor
-;
-; See help code below
-
-;
-; eumaltor eat 0x0a
-;
-;
+; (the T-menu bench tests, 1,062 bytes, were removed 2026-09-22 to make room for the CF driver and the boot command;
+;  they are in git history and in tests/assembler/history-2020/)
 ; added for emulator eat cr
-;
 eat_nl:
 ;1      BRDEV eat_nl_done
 ;1      PUSH
@@ -912,6 +202,8 @@ testexamine:
       BREQ fillblock
       LDTI 'G'
       BREQ go
+      LDTI 'O'
+      BREQ boot
       ldti 'I'
       BREQ interpreter
       LDTI 'L'
@@ -920,8 +212,6 @@ testexamine:
       BREQ cmd_basicparse
       LDTI 'R'
       BREQ dumpreg
-      LDTI 'T'
-      BREQ tests
       LDTI 'Y'
       BREQ cmd_basic_test
       LDTI 'Z'
@@ -1181,81 +471,198 @@ dumpreg:
 
       BR cmdloop
 
-tests:
-;      MVIB R6,NOMODE
-      LDTI NOMODE
-      STT monmode
-      MVIW R7,CRLF
-      JSR stringout
-      MVIW R3,testmenu
-      MVIW R4,0000h  ; counter
-
-testsloop:
-
-      INCR R3
-      INCR R3
-      LDAVR R3
-      MVARH R7
-      INCR  R3
-      LDAVR R3
-      MVARL R7
-      INCR R3
-      LDAVR R7
-      LDTI '-'
-      BREQ testsloopdone
-      MVRLA R4
-      JSR showbytea
-      LDAI  '-'
-      JSR uartout
-      JSR stringout
-      MVIW R7,CRLF
-      JSR stringout
-      INCR R4
-      BR testsloop
-
-testsloopdone:
-; get test number
-; multiple by 4 and add to test list base
-; JSR via register holding info
 ;
-      MVIW R7,gettestpromopt
-      JSR stringout
-
-      JSR getnibble
-      SHL
-      SHL
-      SHL
-      SHL
-      push
-      jsr getnibble
-      MVAT
-      Pop
-      ORT
-; calculate test address
-      shl
-      shl
-      JSR TIL311out
-      MVAT
-      MVIW R3,testmenu
-      MVRLA R3
-      ADDT
-      MVARL R3
-      JSR TIL311out
-      BRC menucarry
-      BR dotest
-
-menucarry:
-      incr r3
-
-dotest:
-      LDAVR R3
-      MVARH R7
-      INCR  R3
-      LDAVR R3
-      MVARL R7
-      JSRUR R7
-      BR cmdloop
-
+; ---- CompactFlash driver (YACC1-D 2026-09-22) -----------------------------------------------------------
+; The card sits on two ports: P8 = register-select latch (ATA task-file register 0-7), P9 = data.
+; 8-bit True IDE mode. Registers: 0 data, 1 error/feature, 2 sector count, 3-5 LBA0-2, 6 drive/head, 7 status/cmd.
+; Entry points (also BIOS vectors at 0FFECh..): cfinit  ACC = 0 ok / 1 error (absent card times out);
+;   cfread   sector CFLBA0..2 -> (R7), R7 += 512, ACC = 0 ok / 1 error;   cfwrite  (R7) -> sector, R7 += 512, same;
+;   R6 and TMP are clobbered. const  ACC = 1 when a console byte waits (0 otherwise).
+;
+CFSEL_DATA:  EQU 0
+CFSEL_FEAT:  EQU 1
+CFSEL_SCNT:  EQU 2
+CFSEL_LBA0:  EQU 3
+CFSEL_LBA1:  EQU 4
+CFSEL_LBA2:  EQU 5
+CFSEL_HEAD:  EQU 6
+CFSEL_CMD:   EQU 7
+;
+; wait while BSY (bit 7), bounded to 65536 polls; returns the status in ACC
+cfwait:
+        MVIW R6,0
+cfwaitl:
+        OUTI P8,CFSEL_CMD
+        INP P9
+        ANDI 080H
+        BRZ cfwaitd
+        DECR R6
+        MVRLA R6
+        BRNZ cfwaitl
+        MVRHA R6
+        BRNZ cfwaitl
+cfwaitd:
+        OUTI P8,CFSEL_CMD
+        INP P9
+        RET
+;
+; wait until DRQ (bit 3), bounded; returns the status in ACC
+cfdrq:
+        MVIW R6,0
+cfdrql:
+        OUTI P8,CFSEL_CMD
+        INP P9
+        ANDI 008H
+        BRNZ cfdrqd
+        DECR R6
+        MVRLA R6
+        BRNZ cfdrql
+        MVRHA R6
+        BRNZ cfdrql
+cfdrqd:
+        OUTI P8,CFSEL_CMD
+        INP P9
+        RET
+;
+cfinit:
+        JSR cfwait
+        OUTI P8,CFSEL_HEAD
+        OUTI P9,0E0H            ; LBA mode, drive 0
+        OUTI P8,CFSEL_FEAT
+        OUTI P9,001H            ; feature 1: 8-bit transfers
+        OUTI P8,CFSEL_CMD
+        OUTI P9,0EFH            ; SET FEATURES
+        JSR cfwait
+        ANDI 001H               ; ERR bit; an absent card reads FFh and times out -> 1
+        RET
+;
+; task file <- CFLBA0..2, LBA mode, one sector
+cfsetl:
+        OUTI P8,CFSEL_LBA0
+        LDA CFLBA0
+        OUTA P9
+        OUTI P8,CFSEL_LBA1
+        LDA CFLBA1
+        OUTA P9
+        OUTI P8,CFSEL_LBA2
+        LDA CFLBA2
+        OUTA P9
+        OUTI P8,CFSEL_HEAD
+        OUTI P9,0E0H
+        OUTI P8,CFSEL_SCNT
+        OUTI P9,1
+        RET
+;
+cfread:
+        JSR cfwait
+        JSR cfsetl
+        OUTI P8,CFSEL_CMD
+        OUTI P9,020H            ; READ SECTORS
+        JSR cfdrq
+        ANDI 008H
+        BRZ cferr
+        OUTI P8,CFSEL_DATA
+        MVIW R6,512
+cfrdl:
+        INP P9
+        STAVR R7
+        INCR R7
+        DECR R6
+        MVRLA R6
+        BRNZ cfrdl
+        MVRHA R6
+        BRNZ cfrdl
+        LDAI 0
+        RET
+cferr:
+        LDAI 1
+        RET
+;
+cfwrite:
+        JSR cfwait
+        JSR cfsetl
+        OUTI P8,CFSEL_CMD
+        OUTI P9,030H            ; WRITE SECTORS
+        JSR cfdrq
+        ANDI 008H
+        BRZ cferr
+        OUTI P8,CFSEL_DATA
+        MVIW R6,512
+cfwrl:
+        LDAVR R7
+        OUTA P9
+        INCR R7
+        DECR R6
+        MVRLA R6
+        BRNZ cfwrl
+        MVRHA R6
+        BRNZ cfwrl
+        JSR cfwait
+        ANDI 001H
+        RET
+;
+; const: ACC = 1 when a console byte is waiting. The emulator's port-2 console has no status: always ready.
+const:
+        BRDEV consthw
+        LDAI 1
+        RET
+consthw:
+        OUTI P0,(UARTCS!UARTA5)
+        INP P1
+        ANDI 001H
+        RET
+;
+; O command: boot. Read the boot block (LBA 0) to OSBASE, check 'P8' and OSCNT, read OSCNT sectors from LBA 1
+; to OSBASE and call it; the OS returns with RET.
+;
+boot:
+        MVIW R7,MSGBOOT
+        JSR stringout
+        JSR cfinit
+        BRNZ bootfail
+        LDAI 0
+        STA CFLBA0
+        STA CFLBA1
+        STA CFLBA2
+        MVIW R7,OSBASE
+        JSR cfread
+        BRNZ bootfail
+        LDA OSBASE
+        LDTI 'P'
+        BRNEQ bootnos
+        LDA OSBASE+1
+        LDTI '8'
+        BRNEQ bootnos
+        LDA OSBASE+3            ; OSCNT
+        BRZ bootnos
+        MVARL R5
+        MVIW R7,OSBASE
+        LDAI 1
+        STA CFLBA0
+bootl:
+        JSR cfread
+        BRNZ bootfail
+        LDA CFLBA0
+        ADDI 1
+        STA CFLBA0
+        DECR R5
+        MVRLA R5
+        BRNZ bootl
+        MVIW R7,OSBASE
+        JSRUR R7
+        BR cmdloop
+bootfail:
+        MVIW R7,MSGCFERR
+        JSR stringout
+        BR cmdloop
+bootnos:
+        MVIW R7,MSGNOOS
+        JSR stringout
+        BR cmdloop
+MSGBOOT: DB 0ah,0dh,"BOOT FROM CF",0ah,0dh,0
+MSGCFERR: DB "CF ERROR",0ah,0dh,0
+MSGNOOS: DB "NO OS ON THE CARD",0ah,0dh,0
+;
 getaddress:
 ;
 ; Read 4 char address and return in R7
@@ -1743,7 +1150,6 @@ FILLMSG: DB 0ah,0dh,"FILL BLOCK ADDR:",0
 GOMSG: DB 0ah,0dh,"GO ADDRESS:",0
 EXAMINEMSG: DB 0ah,0Dh,"EXAMINE ADDRESS:",0
 CONTMSG: DB "CONTINUE MODE",0
-gettestpromopt: DB "Enter Test number:",0
 BASIC_PARSEMSG: DB 0ah,0dh,"Enter Line:",0
 ;
 helpmenu:
@@ -1765,7 +1171,7 @@ DB "I     - BASIC",0ah,0dh
 DB "L     - List BASIC",0ah,0dh
 DB "P     - Enter program line to BASIC",0ah,0dh
 DB "R     - Show registers",0ah,0dh
-DB "T     - Test menu",0ah,0DH
+DB "O     - bOot the OS from the CF card (LBA 1.., OSCNT sectors, to 1000h)",0ah,0DH
 DB "Y     - run BASIC test code",0ah,0DH
 DB "Z     - Run program with Basic interpreter",0ah,0DH
 DB 0
@@ -1783,62 +1189,9 @@ accumhelp: DB "accumulator test",0ah,0dh,0
 PUSHPOPHELP: DB "Push Pop enter 3 numbers",0ah,0dh,0
 ORTHELP: DB "OR Tmp register tests",0ah,0dh,0
 ADDIHELP: DB "Add immediate 02h to input number",0ah,0dh,0
-ADDICHELP: DB "Add immediate with carry 02h to input number",0ah,0dh,0
-MOVRRHELP: DB "MOVERR TEST",0ah,0dh,0
 TESTMSG: DB "Run test code",0ah,0dh,0
 
 
-;
-; TEST MENU
-;
-testmenu:
-      DW ortest,ormenu
-      DW orttest,ortmenu
-      DW pushpoptest,pushpopmenu
-      DW accumtest,accummenu
-      DW shltest,shlmenu
-      DW shrtest,shrmenu
-      DW rshltest,rshlmenu
-      DW rshrtest,rshrmenu
-      DW cshltest,cshlmenu
-      DW cshrtest,cshrmenu
-      DW pshrtest,pshrmenu
-      DW subtest,submenu
-      DW cmptest,cmpmenu
-      DW additest,addimenu
-      DW addictest,addicmenu
-      DW movrrtest,movrrmenu
-      DW add16tests,add16menu
-      DW mem_indirect_tests,mem_indirect_menu
-      DW mul16,mul16menu
-      DW pushr_popr_tests,pushr_popr_menu
-      DW endmenu,endmenu
-
-;
-; TEST MENU STRINGS
-;
-testmenustrings:
-ormenu: DB "OR",0
-ortmenu: DB "ORT",0
-pushpopmenu: DB "PUSH/POP",0
-accummenu: DB "Accumulator <-> Register",0
-shlmenu: DB "SHL",0
-shrmenu: DB "SHR",0
-rshlmenu: DB "RSHL",0
-rshrmenu: DB "RSHR",0
-cshlmenu: DB "CSHL",0
-cshrmenu: DB "CSHR",0
-pshrmenu: DB "PSHR",0
-submenu: DB "SUB",0
-cmpmenu: DB "Compare Branch",0
-addimenu: DB "ADDI",0
-addicmenu: DB "ADDI",0
-movrrmenu: DB "MOVRR",0
-add16menu: DB "add16",0
-mem_indirect_menu: DB "mem indirect",0
-mul16menu: DB "mul16",0
-pushr_popr_menu: DB "pushr popr",0
-endmenu: DB "-",0
 
 ;
 ; OLD
@@ -1971,6 +1324,18 @@ e_showcarry:
     ret
 e_uartin:
     jsr uartin
+    ret
+e_cfinit:
+    jsr cfinit
+    ret
+e_cfread:
+    jsr cfread
+    ret
+e_cfwrite:
+    jsr cfwrite
+    ret
+e_const:
+    jsr const
     ret
 ;
 ; The End

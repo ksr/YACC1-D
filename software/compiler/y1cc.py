@@ -27,6 +27,8 @@ The C subset
                peek(addr) poke(addr,v)  peekw(addr) pokew(addr,v)   (byte / big-endian word memory access)
                inp(port) outp(port,v)   (INP/OUTA/OUTI: port is a constant 0..15)
                halt()  (HALT)   bios(addr, r7, acc) -> ACC   (JSR a monitor routine with R7 and ACC set up)
+               call(addr) -> int  (JSRUR to an address in a variable: the OS running a program; returns its R3)
+               argstr() -> char*  (the command tail the OS left for the program at $0F40)
   limits       NO recursion: every function's parameters and locals live at fixed addresses (static frames), so a
                function that can call itself, even indirectly, is rejected at compile time. Compound assignment and
                ++/-- evaluate their lvalue twice (keep the lvalue side-effect free). No floating point, no long,
@@ -68,6 +70,7 @@ import sys, os, re, time
 ORG_DEFAULT = 0x3000        # $1000-$1FFF is BASIC's token buffer (cleared at every monitor boot), $2000.. the monitor's test scratch
 STACK_TOP = 0x0EFF          # the monitor's stack (monitor.asm: STACK EQU 0EFFh)
 MONITOR_RESTART = 0xF000    # where a program goes when main returns on the machine (the monitor's reset entry)
+ARGBUF = 0x0F40             # the OS's 64-byte command-tail buffer for programs (monitor.asm ARGBUF); argstr() returns it
 BIOS_CHAROUT = 0xFFC4       # monitor BIOS vectors (monitor.asm, org 0ffc0h: 4 bytes per entry)
 BIOS_UARTIN = 0xFFE8
 LABEL_MAX = 29              # RC/asm: labels[][30]; a 30+ character label crashes the assembler
@@ -549,7 +552,8 @@ class Gen:
 
     BUILTIN_TYPES = {"getchar": ("int", 0), "peek": ("int", 0), "peekw": ("int", 0), "inp": ("int", 0),
                      "bios": ("int", 0), "putchar": ("void", 0), "puts": ("void", 0), "poke": ("void", 0),
-                     "pokew": ("void", 0), "outp": ("void", 0), "halt": ("void", 0)}
+                     "pokew": ("void", 0), "outp": ("void", 0), "halt": ("void", 0),
+                     "call": ("int", 0), "argstr": ("char", 1)}
     def typeof(self, e):                      # -> (base, ptr) of e's VALUE (arrays decay)
         k = e[0]
         if k == "num": return ("int", 0)
@@ -1123,6 +1127,10 @@ class Gen:
             else: self.gen_expr(args[1]); self.ins("MVRLA", "R3")
             self.ins("OUTA", self.port(args[0])); return
         if name == "halt": self.ins("HALT"); return
+        if name == "call":                                 # call(addr): JSRUR to a computed address; R3 = what it returns
+            self.gen_expr(args[0]); self.ins("MOVRR", "R3,R7"); self.ins("JSRUR", "R7"); return
+        if name == "argstr":                               # the OS leaves a program's command tail at ARGBUF
+            self.ins("MVIW", "R3,%d" % ARGBUF); return
         if name == "bios":                                 # bios(addr, r7, acc) -> ACC
             addr = fold(args[0])
             if addr is None: sys.exit("y1cc: bios() address must be a constant")
