@@ -33,7 +33,9 @@
  *        usual TTL outcome, and what makes review finding H-2 fatal: a taken BRZ lands on offset $00); "src" = the
  *        ALU's -AC-RD drive loses to any other driver (what the hardware must be doing if the monitor ever ran)
  *   -s   the byte the I/O card's switches read as (default 0); -i 0|1 the level of the input-switch line that
- *        BRINH/BRINL test (default 0), -I N flips that line every N steps (a bench hand on the switch); -L report writes to the LED board, the TIL311 displays and the ON/OFF LED on
+ *        BRINH/BRINL test (default 0), -R 1|2 the index-register cards fitted (default 2; with 1, R4..R7 are absent:
+ *        a read of them leaves the bus to its pull-ups = $FF, loads and counts are lost, as on the 2026-09-22 bench),
+ *        -I N flips that line every N steps (a bench hand on the switch); -L report writes to the LED board, the TIL311 displays and the ON/OFF LED on
  *        stderr as they change; -l N stop after N steps
  * Console: the I/O card's UART (P0 = UARTCS|register, P1 = data) is stdin/stdout, as on the machine; reading with
  * nothing left returns 0 with "data ready" set so a program's EOF test sees 0. Port 2 is also a console (the old
@@ -152,6 +154,8 @@ static void load_opnames(const char *exe_dir) {
 /* ---- machine state ------------------------------------------------------------------------------------------ */
 static uint8_t mem[65536];
 static uint16_t reg[8];
+static int reg_cards = 2;                          /* -R: card 0 = R0..R3, card 1 = R4..R7 */
+#define REG_PRESENT(r) (((r) >> 2) < reg_cards)
 static uint8_t acc, sreg, ir, operand;
 static uint16_t tmp0, tmp1, branch, intvec;
 static int carry, shift_out, cond_latch, force_rom = 1, out_led, in_line, int_enabled, int_pending, halted;
@@ -256,7 +260,7 @@ static void compute(const uint8_t *w, struct comb *c) {
     c->alu = field(w, s_alu);
     int addr_id = field(w, s_addr_id) & 7;
     int vma = on(w, s_vma);
-    uint16_t a = reg[addr_id];
+    uint16_t a = REG_PRESENT(addr_id) ? reg[addr_id] : 0xFFFF;
     c->addr = force_rom ? (a | 0xF000) : a;                                     /* FORCE-ROM: BADDR12..15 high */
     if (vma && (a & 0x8000)) force_rom = 0;
     /* data bus: collect the drivers of each byte lane */
@@ -282,7 +286,8 @@ static void compute(const uint8_t *w, struct comb *c) {
     int func_rd = on(w, s_reg_func_rd), func_ld = on(w, s_reg_func_ld), swap = on(w, s_hl_swap);
     int rd_card = c->rd_id >> 2, ld_card = c->ld_id >> 2;
     uint16_t adata = 0xFFFF;
-    if (func_rd) {
+    if (func_rd && !REG_PRESENT(c->rd_id & 7)) { c->adata = 0xFFFF; c->adata_valid = 1; }   /* no card: nothing drives */
+    else if (func_rd) {
         int r = c->rd_id & 7;
         if (on(w, s_reg_rd_lo)) adata = (adata & 0xFF00) | (reg[r] & 0xFF);
         if (on(w, s_reg_rd_hi)) adata = (adata & 0x00FF) | (reg[r] & 0xFF00);
@@ -406,7 +411,7 @@ static void do_step(void) {
     if (on(w, s_reg_func_ld)) {                                /* 74LS192 LOAD, level-sensitive: value at the end of the step */
         int r = cur.ld_id & 7;
         int allowed = (cur.ld_id != 0) || cond_latch;          /* N$53: loads of R0 need the branch-taken latch */
-        if (allowed && cur.adata_valid) {
+        if (allowed && cur.adata_valid && REG_PRESENT(r)) {
             if (on(w, s_reg_ld_lo)) reg[r] = (uint16_t)((reg[r] & 0xFF00) | (cur.adata & 0xFF));
             if (on(w, s_reg_ld_hi)) reg[r] = (uint16_t)((reg[r] & 0x00FF) | (cur.adata & 0xFF00));
         }
@@ -416,6 +421,7 @@ static void do_step(void) {
     if (on(w, s_reg_func_rd)) {
         int r = cur.rd_id & 7;
         int same_next = on(nw, s_reg_func_rd) && (next_rd & 7) == r;
+        if (!REG_PRESENT(r)) same_next = 1;                    /* no card: nothing to count */
         if (on(w, s_reg_up) && !(same_next && on(nw, s_reg_up))) reg[r]++;
         if (on(w, s_reg_dn) && !(same_next && on(nw, s_reg_dn))) reg[r]--;
     }
@@ -488,8 +494,9 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "-i") && i + 1 < argc) in_line = (int)strtol(argv[++i], NULL, 0) & 1;
         else if (!strcmp(argv[i], "-L")) show_leds = 1;
         else if (!strcmp(argv[i], "-I") && i + 1 < argc) in_flip = strtoul(argv[++i], NULL, 0);
+        else if (!strcmp(argv[i], "-R") && i + 1 < argc) { reg_cards = atoi(argv[++i]); if (reg_cards < 1 || reg_cards > 2) { fprintf(stderr, "y1ucemu: -R 1|2\n"); return 1; } }
         else if (!strcmp(argv[i], "-l") && i + 1 < argc) limit = strtoul(argv[++i], NULL, 0);
-        else { fprintf(stderr, "usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-i 0|1] [-I N] [-L] [-l N]\n"); return 1; }
+        else { fprintf(stderr, "usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-i 0|1] [-I N] [-R 1|2] [-L] [-l N]\n"); return 1; }
     }
     resolve_signals();
     load_opnames(exe_dir);

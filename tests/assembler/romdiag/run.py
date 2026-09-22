@@ -7,7 +7,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
 ASM = os.path.join(ROOT, "software/assembler/asm"); DEF = os.path.join(ROOT, "software/assembler/yacc1.def")
 UCEMU = os.path.join(ROOT, "software/ucemu/y1ucemu"); IMG2BIN = os.path.join(ROOT, "tools/img2bin.py")
-EXPECT = ["LED=25", "ON", "LED=AA", "LED=20", "LED=11", "LED=03", "LED=01", "LED=02", "LED=FF", "LED=55", "LED=00", "LED=01", "LED=02"]
+EXPECT = ["LED=25", "ON", "LED=AA", "LED=20", "LED=11", "LED=03", "LED=01", "LED=02", "LED=FF", "LED=33", "LED=20", "LED=55", "LED=00", "LED=01", "LED=02"]
+EXPECT1 = [e if i != 10 else "LED=FF" for i, e in enumerate(EXPECT)]      # one register card: stage 9 (R7) reads FF
 
 
 def main():
@@ -21,12 +22,13 @@ def main():
                     "--end", "0x10000", "--fill", "0xFF", "--size", "8192"], capture_output=True)
     if open(os.path.join(d, "romdiag.bin"), "rb").read() != open(os.path.join(HERE, "romdiag.bin"), "rb").read(): print("FAIL romdiag.bin differs"); failed += 1
     else: print("PASS romdiag.bin == img2bin of the image")
-    r = subprocess.run([UCEMU, "-x", "-f", os.path.join(HERE, "romdiag.img"), "-s", "0x25", "-i", "0", "-I", "100000", "-L", "-l", "2200000"],
-                       capture_output=True, text=True)
-    got = [l for l in r.stderr.splitlines() if l.startswith(("LED=", "ON", "OFF"))]
-    clean = "bus fights: 0 in 0" in r.stderr
-    if got[:len(EXPECT)] == EXPECT and clean: print("PASS stages on the microcode emulator: %s" % " ".join(g[4:] if g.startswith("LED=") else g for g in got[:len(EXPECT)]))
-    else: print("FAIL stages: %s clean=%s" % (got[:len(EXPECT)], clean)); failed += 1
+    for cards, exp in ((2, EXPECT), (1, EXPECT1)):
+        r = subprocess.run([UCEMU, "-x", "-f", os.path.join(HERE, "romdiag.img"), "-s", "0x25", "-i", "0", "-I", "100000", "-R", str(cards), "-L", "-l", "2600000"],
+                           capture_output=True, text=True)
+        got = [l for l in r.stderr.splitlines() if l.startswith(("LED=", "ON", "OFF"))]
+        clean = "bus fights: 0 in 0" in r.stderr
+        if got[:len(exp)] == exp and clean: print("PASS stages, %d register card%s: %s" % (cards, "s" if cards > 1 else "", " ".join(g[4:] if g.startswith("LED=") else g for g in got[:len(exp)])))
+        else: print("FAIL stages with %d cards: %s clean=%s" % (cards, got[:len(exp)], clean)); failed += 1
     print("%d failed" % failed); sys.exit(1 if failed else 0)
 
 

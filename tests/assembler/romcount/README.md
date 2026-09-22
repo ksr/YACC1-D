@@ -7,10 +7,18 @@ Burn `romcount.bin` into the 28C64 instead of the monitor, reset the machine, an
 2. **Flip the input switch high**: the ON/OFF LED lights and the machine counts up from the switch value on the LEDs
    and the TIL311s, wrapping $FF → $00. Reset to go again (the input switch back low first).
 
-`romcount.asm` is 41 bytes at $F000 (`software/assembler`, `asm romcount -d=yacc1` with `yacc1.def` and a `-h`
+`romcount.asm` is 41 bytes at $F000 and uses only R1, R3 and TMP (see **Registers** below) (`software/assembler`, `asm romcount -d=yacc1` with `yacc1.def` and a `-h`
 `rcasm.rc` beside it). `romcount.img` is its Intel-hex output; `romcount.bin` the 8,192-byte 28C64 image (offset 0 =
 $E000, the program at offset $1000, everything else $FF) built with
 `python3 tools/img2bin.py romcount.img romcount.bin --base 0xE000 --end 0x10000 --fill 0xFF --size 8192`.
+
+## Registers
+
+The first build (commit 4658481) kept the count in R6 and the delay in R7. On the bench (2026-09-22 evening) it mirrored
+the switches and then lit every LED: the bring-up machine had **one index-register card**, R0..R3, and R4..R7 read as
+the bus pull-ups ($FF) while loads to them vanish, so the count was FF and the delay loop never ended. `../romdiag/`
+found it (stage 2 read FF); `y1ucemu -R 1` reproduces it. This build uses R3 for the delay and TMP for the count, and
+runs with one card or two.
 
 ## The bytes
 
@@ -25,17 +33,17 @@ F00B  70 80        OUTI P0,TIL311
 F00D  61           OUTA P1            TIL311 = ACC
 F00E  A4 F0 07     BRINL mirror       input line low: keep mirroring
 F011  01           ON
-F012  36           MVARL R6           count = the switches
-F013  26           MVRLA R6           count: ACC = count
+F012  0C           MVAT               count (TMP) = the switches
+F013  0D           MVTA               count: ACC = count
 F014  70 01 61     OUTI P0,SWITCHLED / OUTA P1
 F017  70 80 61     OUTI P0,TIL311 / OUTA P1
-F01A  1F 20 00     MVIW R7,2000H      the DELAY word is at F01B-F01C
-F01D  5F           DECR R7            delay: 3 instructions per turn
-F01E  2F           MVRHA R7
-F01F  A2 F0 1D     BRNZ delay         until the high byte of R7 is zero
-F022  26           MVRLA R6
+F01A  1B 20 00     MVIW R3,2000H      the DELAY word is at F01B-F01C
+F01D  5B           DECR R3            delay: 3 instructions per turn
+F01E  2B           MVRHA R3
+F01F  A2 F0 1D     BRNZ delay         until the high byte of R3 is zero
+F022  0D           MVTA
 F023  B0 01        ADDI 1
-F025  36           MVARL R6
+F025  0C           MVAT
 F026  A0 F0 13     BR count
 ```
 

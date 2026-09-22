@@ -14,7 +14,7 @@ only a rebuild-and-reflash from the tree can settle.
 | Sequencer logic | v2.1 (2020-12) | `hardware/cards/sequencer-logic/eagle/v2.1` | the 218 mm "V2.1l" board |
 | Sequencer memory | V2.1 (2020-12) + EEPROM adaptor | `hardware/cards/sequencer-memory/eagle/v2.1`, `accessories/eeprom-adaptor` | adaptor fitted in IC9, carries two 24Cxx at I2C 6 and 7 (Ken 2026-09-20) |
 | ALU | V3.2 (2020-11) | `hardware/cards/alu/eagle/v3.2` | |
-| Index registers | 1.1 (2020-08) | `hardware/cards/register/eagle/v1.1` | two cards: R0–R3 and R4–R7, selected by ADDR-REG-ID2..3 via each card's J3 (Ken 2026-09-20) |
+| Index registers | 1.1 (2020-08) | `hardware/cards/register/eagle/v1.1` | two cards: R0–R3 and R4–R7, selected by ADDR-REG-ID2..3 via each card's J3 (Ken 2026-09-20). **Only card 0 was in the bring-up build until 2026-09-22 evening**: `tests/assembler/romdiag` read R7 as $FF, and the monitor ROM needs both (R7 = every string pointer); Ken fitting card 1 (2026-09-22) |
 | I/O | V1.1 (2020-11) | `hardware/cards/io/eagle/v1.1` | UART behind P0/P1 at 38400, switch/LED port, TIL311s |
 | Memory | v1.3 (design 2021-03, boards ordered 2025-06) | `hardware/cards/memory/eagle/v1.3` (+ KiCad) | see jumpers below |
 | Video | V1.0 (Fusion, export 2026-09-18); design master now `kicad/v1.1` (KiCad, 2026-09-21) | `hardware/cards/video/eagle/v1.0-fusion-export-2026-09-18` | installed for bring-up, **no 6845 fitted**; two bent pins straightened 2026-09-18; RN2 = 10k as designed (was 1k from the 2026-09-18 tests until 2026-09-21); **+5V and VCC joined by a wire (Ken 2026-09-21)** — the design left the +5V rail unfed |

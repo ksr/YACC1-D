@@ -6,10 +6,12 @@
 ;   2. Flip the input switch high: the ON/OFF LED lights and the count starts from the switch value, on the LEDs and
 ;      the TIL311s, one count per delay loop, wrapping at $FF.  Reset to go again.
 ;
-; The delay is the word after MVIW R7 at `dlyw` (see the listing / README: two bytes in ROM you can patch in the
-; programmer for a faster or slower count).  $2000 = 8,192 turns of a 3-instruction loop, about a quarter second at
+; The delay is the word after MVIW R3 at `dlyw` (see the listing / README: two bytes in ROM you can patch in the
+; programmer for a faster or slower count).  $2000 = 8,192 turns of a 3-instruction loop, about 0.6 s at
 ; a 1 MHz clock; with the function generator at a few Hz make it $0010.
-; Registers: R1 = a stack (unused), R6 low = the count, R7 = the delay counter, ACC/TMP scratch.  Never R2.
+; Registers: R1 = a stack (unused), R3 = the delay counter, TMP = the count.  Only R0..R3 (register card 0): the
+; bring-up machine has one index card, so R4..R7 read as a floating bus ($FF) - the first build used R6/R7 and lit
+; every LED (2026-09-22 evening).  Never R2 (the hardware's operand-address register).
 SWITCHLED:  EQU 001H
 TIL311:     EQU 080H
         ORG 0F000H
@@ -23,17 +25,17 @@ mirror: OUTI P0,SWITCHLED       ; LEDs = switches, TIL311 = switches, until the 
         OUTA P1
         BRINL mirror
         ON                      ; counting
-        MVARL R6                ; count = the switches
-count:  MVRLA R6
+        MVAT                    ; count (TMP) = the switches
+count:  MVTA
         OUTI P0,SWITCHLED
         OUTA P1
         OUTI P0,TIL311
         OUTA P1
-dlyw:   MVIW R7,2000H           ; the delay word (patch the two bytes after the opcode)
-delay:  DECR R7
-        MVRHA R7
+dlyw:   MVIW R3,2000H           ; the delay word (patch the two bytes after the opcode)
+delay:  DECR R3
+        MVRHA R3
         BRNZ delay
-        MVRLA R6
+        MVTA
         ADDI 1
-        MVARL R6
+        MVAT
         BR count
