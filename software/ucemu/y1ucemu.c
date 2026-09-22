@@ -33,7 +33,7 @@
  *        usual TTL outcome, and what makes review finding H-2 fatal: a taken BRZ lands on offset $00); "src" = the
  *        ALU's -AC-RD drive loses to any other driver (what the hardware must be doing if the monitor ever ran)
  *   -s   the byte the I/O card's switches read as (default 0); -i 0|1 the level of the input-switch line that
- *        BRINH/BRINL test (default 0); -L report writes to the LED board, the TIL311 displays and the ON/OFF LED on
+ *        BRINH/BRINL test (default 0), -I N flips that line every N steps (a bench hand on the switch); -L report writes to the LED board, the TIL311 displays and the ON/OFF LED on
  *        stderr as they change; -l N stop after N steps
  * Console: the I/O card's UART (P0 = UARTCS|register, P1 = data) is stdin/stdout, as on the machine; reading with
  * nothing left returns 0 with "data ready" set so a program's EOF test sees 0. Port 2 is also a console (the old
@@ -157,7 +157,7 @@ static uint16_t tmp0, tmp1, branch, intvec;
 static int carry, shift_out, cond_latch, force_rom = 1, out_led, in_line, int_enabled, int_pending, halted;
 static int step;
 static uint8_t port[16];
-static int switches, show_leds;
+static int switches, show_leds; static unsigned long in_flip;
 
 /* the combinational state of a step (what the latches see at the next leading edge) */
 struct comb {
@@ -420,6 +420,7 @@ static void do_step(void) {
         if (on(w, s_reg_dn) && !(same_next && on(nw, s_reg_dn))) reg[r]--;
     }
     nsteps++; nclocks += reset ? 1 : 2;
+    if (in_flip && nsteps % in_flip == 0) in_line ^= 1;         /* -I N: the input switch flipped every N steps */
     prev = cur;
     if (reset) { step = 0; cond_latch = 0; }
     else step = (step + 1) & 63;
@@ -486,8 +487,9 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "-s") && i + 1 < argc) switches = (int)strtol(argv[++i], NULL, 0);
         else if (!strcmp(argv[i], "-i") && i + 1 < argc) in_line = (int)strtol(argv[++i], NULL, 0) & 1;
         else if (!strcmp(argv[i], "-L")) show_leds = 1;
+        else if (!strcmp(argv[i], "-I") && i + 1 < argc) in_flip = strtoul(argv[++i], NULL, 0);
         else if (!strcmp(argv[i], "-l") && i + 1 < argc) limit = strtoul(argv[++i], NULL, 0);
-        else { fprintf(stderr, "usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-i 0|1] [-L] [-l N]\n"); return 1; }
+        else { fprintf(stderr, "usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-i 0|1] [-I N] [-L] [-l N]\n"); return 1; }
     }
     resolve_signals();
     load_opnames(exe_dir);

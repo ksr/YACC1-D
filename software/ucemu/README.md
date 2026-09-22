@@ -92,4 +92,4 @@ card (ports P8/P9, `docs/system/OS-PLAN.md` phase 1) and the video card; a clock
 is one step-count away (the status line has steps and clocks); comparing the interpreter's and this emulator's
 instruction traces automatically.
 
-- **2026-09-22 (evening):** `-i 0|1` sets the level of the input-switch line that `BRINH`/`BRINL` test (fixed for the run), and `-L` reports writes to the LED board, the TIL311 displays and the ON/OFF LED on stderr as they change (`tests/assembler/romcount/` uses both).
+- **2026-09-22 (evening):** `-i 0|1` sets the level of the input-switch line that `BRINH`/`BRINL` test (fixed for the run), and `-L` reports writes to the LED board, the TIL311 displays and the ON/OFF LED on stderr as they change (`tests/assembler/romcount/` uses both); `-I N` flips the input line every N steps, a bench hand on the switch (`tests/assembler/romdiag/`).
