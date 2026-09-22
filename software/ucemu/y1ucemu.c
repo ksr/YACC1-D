@@ -43,6 +43,7 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <libgen.h>
+#include <termios.h>
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
 #endif
@@ -417,6 +418,18 @@ static void do_step(void) {
     }
 }
 
+/* ---- terminal: raw, no echo (the monitor's uartin echoes itself, as on the machine); Ctrl-C still quits ---- */
+static struct termios saved_tty; static int tty_raw;
+static void tty_restore(void) { if (tty_raw) tcsetattr(STDIN_FILENO, TCSAFLUSH, &saved_tty); }
+static void tty_setup(void) {
+    if (scripted || !isatty(STDIN_FILENO) || tcgetattr(STDIN_FILENO, &saved_tty) != 0) return;
+    struct termios raw = saved_tty;
+    raw.c_lflag &= ~(ECHO | ICANON | IEXTEN);
+    raw.c_iflag &= ~(ICRNL | IXON);
+    raw.c_cc[VMIN] = 1; raw.c_cc[VTIME] = 0;
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == 0) { tty_raw = 1; atexit(tty_restore); }
+}
+
 /* ---- Intel hex loader (same as the other emulator) ---------------------------------------------------------- */
 static int load_hex(const char *fn) {
     FILE *f = fopen(fn, "r"); if (!f) { fprintf(stderr, "y1ucemu: cannot open %s\n", fn); return 0; }
@@ -476,7 +489,9 @@ int main(int argc, char **argv) {
         exe_relative(img, sizeof img, "../../firmware/monitor/monitor.img", argv[0]); load_hex(img);
     }
     for (int i = 0; i < nimages; i++) if (!load_hex(images[i])) return 2;
+    if (!scripted) printf("   Interactive: the monitor's console is this terminal (raw mode, the monitor echoes); Ctrl-C quits.\n");
     fflush(stdout);
+    tty_setup();
     /* reset: everything cleared, FORCE-ROM set, record 0 (START) fetches from $0000 -> ROM $F000 */
     memset(&prev, 0, sizeof prev); prev.data = 0xFFFF;
     while (!halted) {
@@ -484,6 +499,7 @@ int main(int argc, char **argv) {
         if (limit && nsteps >= limit) { fprintf(stderr, "y1ucemu: step limit reached\n"); break; }
     }
     fflush(stdout);
+    tty_restore();
     if (scripted || halted) {
         fprintf(stderr, "%s at %04X after %lu instructions, %lu steps, %lu clocks, R3=%04X; bus fights: %ld in %ld (opcode,step) pairs; weak pull-up drives: %ld\n",
                 halted == 2 ? "COUNT-FAULT" : "HALT", last_fetch_pc, ninstr, nsteps, nclocks, reg[3], fights_total, fights_kinds, weak_drives);
