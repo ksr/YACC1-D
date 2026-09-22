@@ -41,6 +41,8 @@ Not in the machine: the two bring-up cards (Mem Switch, Mem Register), the two b
 | Bus tester ATmega328P | `embedded/bus-tester/bus-driver` **blocks-1 (2026-09-21)**, flashed by arduino-cli as an Uno at 115200 through the FTDI | Before the flash the chip held the 2020 bus-driver (same strings and signal table, older toolchain build; read out to `embedded/bus-tester/readback/`), so the MCP23X17 port was never loaded. Banner `bus-driver blocks-1 2026-09-21` |
 | Video card | nothing loaded; 6845 socket empty | dual-port RAM tested via the bus: `tests/video/video_ram_test.py` 8/8 on 2026-09-21 |
 
+Plan for the disk operating system, CF card and the port/memory maps: `OS-PLAN.md` (2026-09-22).
+
 ## Software that talks to it (Mac)
 
 - `tools/busdrv.py` — drives the bus tester (`CMD:OPERAND#`, `>>` prompt); `tools/alias_min.py` reproduces the (now resolved) video-card fault; `tests/video/video_ram_test.py` is the video RAM test; `tests/memory/memory_status.py` the memory-card status check (boot remap, ROM image, RAM, block map).

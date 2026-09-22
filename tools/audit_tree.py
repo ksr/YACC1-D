@@ -26,7 +26,7 @@ for root, dirs, files in os.walk(DST):
             r = plan[rel]; buckets["plan: " + r["mode"]] += 1
             if r["mode"] in ("copy", "archive") and not rel.endswith("Readme.md") and h(p) != r["md5"]: bad.append(rel)
         elif rel in logged: buckets["extra sources (kicad pilot, Arduino libs, eagle conv)"] += 1
-        elif rel.startswith(("tools/", "migration/")) or rel in ("README.md", "MIGRATION.md", ".gitignore", ".gitattributes", "BACKLOG.md", "docs/system/MACHINE.md"): buckets["mine: tools/migration/front-page docs"] += 1
+        elif rel.startswith(("tools/", "migration/")) or rel in ("README.md", "MIGRATION.md", ".gitignore", ".gitattributes", "BACKLOG.md", "docs/system/MACHINE.md", "docs/system/OS-PLAN.md"): buckets["mine: tools/migration/front-page docs"] += 1
         elif f == "README.md": buckets["mine: placeholder README.md"] += 1
         elif f == "Makefile": buckets["mine: hand-written Makefile (2026-09)"] += 1
         elif rel.startswith(HAND_MADE): buckets["mine: session captures"] += 1

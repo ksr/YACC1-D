@@ -108,6 +108,13 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - `git init` (no LFS), first commit, GitHub repo; decide whether `archive/` (190 MB) is committed or kept as a separate repo.
 - Move off NetBeans (README decision 7).
 
+## Disk operating system (plan `docs/system/OS-PLAN.md`, decisions 2026-09-22)
+- Phase 1: emulator CF model (ports P8 select / P9 data, disk image); monitor: CF driver, B command, tests removed,
+  vectors; CF card in KiCad (two ports, 74245 + select latch, True IDE 8-bit), bench test with the bus tester.
+- Phase 2: OS kernel in C (y1cc) over P8XFS v2, loaded from LBA 1 to $1000. Phase 3: lib_abi + the P8X C commands,
+  BASIC as /bin/basic. Phase 4: video card v2 (6845 on ports PA/PB, 2K RAM) + PS/2 keyboard behind the console vectors.
+- (done 2026-09-22: `yacc1.def` P8=9 typo -> P8=8.)
+
 ## C compiler (y1cc, 2026-09-22)
 `software/compiler/y1cc.py` compiles p8cc's C subset to YACC1 assembly (static frames, R3 accumulator, see its README);
 12 test programs pass on the emulator (`make cc-test`), 9 of them checked against the host C compiler as an oracle.
