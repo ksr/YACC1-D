@@ -76,7 +76,8 @@ and big-endian words in memory. There is no 16-bit ALU and no indexed addressing
   The default `--org` is $3000 because $1000-$1FFF is BASIC's token buffer, which the monitor's boot (and the
   restart after main) clears, and the monitor's T tests use $2000 as scratch; a program at $1000 lost its first
   byte before it ran (found on the emulator 2026-09-22).
-- Never emitted: `LDTVR STTVR OUTVR BR16Z BR16NZ BRNC` (no microcode), `BRVR JSRUR` (emulator/hardware differ),
+- Never emitted: `LDTVR STTVR OUTVR BR16Z BR16NZ BRNC` (no microcode), `BRVR JSRUR BRUR` (not needed yet; BRUR $AD =
+  PC ← Rn was added 2026-09-22 for jump tables and function pointers later),
   negative numbers (the assembler silently drops the sign), labels over 29 characters (crash the assembler), or
   two labels differing only in case (the assembler folds case; the compiler mangles and uniquifies).
 

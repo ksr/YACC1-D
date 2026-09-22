@@ -3,7 +3,7 @@
 | Folder | What | Status |
 |---|---|---|
 | `assembler/` | RC/asm v2.2 (Michael H. Riley), YACC1 port: `asm.c asmcmds.c support.c mstrings.*`, `yacc1.def` (the ISA table), `rcasm.rc`, manual `asm.txt/asm.doc`; `upstream/rcasm-2.2/` = the unmodified upstream | `make`; `make check` reproduces the burned firmware |
-| `opcodes.h` | the opcode table shared by the emulator, the disassembler and the microcode generator | 2024-06-19 |
+| `opcodes.h` | the opcode table shared by the emulator, the disassembler and the microcode generator | 2024-06-19; BRUR $AD added 2026-09-22 |
 | `emulator/` | the C emulator, reference model of the ISA (`-m/-f` options added 2026-06) | `make`; double-click runs the burned ROM |
 | `disassembler/disasm2/` | microcode disassembler for the 64-step Generator2 format | `make`; `./disasm2 [opcode…]`, finds the image relative to itself |
 | `ubasic-c/` | the C uBASIC (Adam Dunkels) the assembly BASIC was ported from; `ubasic-master-orig/` = upstream | `make`; `./ubasic [FILE]`, interactive without a file |

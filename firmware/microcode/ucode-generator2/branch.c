@@ -524,6 +524,73 @@ void branchInstructions() {
 #endif
 
     //
+    // BRUR Rn  (YACC1-D 2026-09-22, opcode $AD): branch to the ADDRESS IN Rn, PC <- Rn.
+    // Two bytes like JSRUR: the register number is the operand byte, selected through the operand register
+    // with -2-BYTE-OPERAND-SEL. This is JSRUR without the "save pc to stack" block: fetch the operand, PC past it,
+    // Rn.hi -> branch register (via the swap transceiver, as JSRUR does), Rn.lo -> branch register, then the
+    // BR-family PC load (BR-TEST with ALUBR = always). BRVR is the INDIRECT form (target read from memory at Rn).
+    //
+    startInstruction(BRUR);
+    loadNextInstruction();
+
+    setSignal("-MEM-RD");
+    writeCurrentLine();
+    setSignal("OPERAND-CLK");
+    writeCurrentLine();
+    setSignal("-REG-FUNC-RD");
+    clearSignal("OPERAND-CLK");
+    writeCurrentLine();
+    clearSignal("-MEM-RD");
+
+    // increment PC past the operand
+    setSignal("-REG-UP");
+    writeCurrentLine();
+    clearSignal("-REG-UP");
+
+    setSignal("-2-BYTE-OPERAND-SEL");
+    setSignal("-REG-FUNC-RD");
+    setSignal("-REG-RD-HI");
+    setSignal("-HL-SWAP");
+    writeCurrentLine();
+
+    setSignal("BRANCH-LD-HI");
+    writeCurrentLine();
+    clearSignal("BRANCH-LD-HI");
+    writeCurrentLine();
+
+    clearSignal("-REG-RD-HI");
+    clearSignal("-HL-SWAP");
+    setSignal("-REG-RD-LO");
+    writeCurrentLine();
+    setSignal("BRANCH-LD-LO");
+    writeCurrentLine();
+    clearSignal("BRANCH-LD-LO");
+    writeCurrentLine();
+    clearSignal("-REG-RD-LO");
+    clearSignal("-2-BYTE-OPERAND-SEL");
+    clearSignal("-REG-FUNC-RD");
+    writeCurrentLine();
+
+    setSignal("-BRANCH-RD"); //output branch register
+    setSignal("-ALU-FUNC");
+    setAlu(ALUBR);
+    setSignal("BR-TEST");
+    setLdId(PC);
+    setSignal("-REG-FUNC-LD");
+    writeCurrentLine();
+
+    clearSignal("BR-TEST");
+
+    setSignal("REG-LD-LO"); //load PC from the branch register
+    setSignal("REG-LD-HI");
+    writeCurrentLine();
+    clearSignal("REG-LD-LO");
+    clearSignal("REG-LD-HI");
+
+    endInstruction();
+    showCntlMemory(BRUR);
+
+    //
     //RET
     //
     startInstruction(RET); //try as one instruction

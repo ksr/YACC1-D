@@ -114,6 +114,9 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - **Burn the rebuilt ROM** (`firmware/rom/shipped/rom`, 2026-09-22: monitor G = `JSRUR R7`, was the indirect `BRVR R7`; BASIC
   unchanged), then re-capture and `tests/memory/rom_verify.py` (until then it reports the monitor half as different).
   Until burned, compile for the machine with `--vector`.
+- **Reload the sequencer microcode** with the regenerated `test.hex`/`test.hexz` (BRUR at $AD, 2026-09-22; only record $AD
+  differs) and bench-check BRUR (`tests/assembler/brur/`, expects `ABC0123`): it is the first instruction to route a
+  register through `-REG-RD-HI/LO` + `-HL-SWAP` into the branch register without a stack push (JSRUR does it with one).
 - **Run a compiled program on the machine.** Needs RAM loading: the monitor E-command loader (`tools/monload.py`, above) or
   the bus tester with the CPU held off (v2.2 CPU-off switch). Then `G3000` (the image starts with the vector BRVR needs; $1000 is BASIC's buffer).
   First hardware checks: `rt_sub` (INVA/moves between ADDTC), `rt_divmod` (SUBT/SUBI after a comparator branch), the
@@ -121,7 +124,8 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   (it restarts the monitor: BASIC cold start, banners). A `cmdloop` BIOS vector would be cleaner than the restart.
 - Stack-frame mode (`--frames`) for recursion/reentrancy, at ~4x the cost per local access; or overlaying the static
   frames of functions that are never live together (cheap, no semantic change).
-- `switch`, signed `int` (BRLT/BRGT are unsigned comparators: signed compare = flip bit 15 first), `long`, `goto`.
+- `switch` (a jump table is now one `BRUR` after the table fetch), function pointers (`BRUR`/`JSRUR`), signed `int`
+  (BRLT/BRGT are unsigned comparators: signed compare = flip bit 15 first), `long`, `goto`.
 - Code size: peephole over R3/R4 traffic (store-then-reload across labels, `MVIW R3,k / MVRLA R3` → `LDAI`), 8-bit paths
   for char arithmetic (`c + 1` still goes through 16-bit add), constant compares with a zero high byte, `for` loops
   counting down to 0. Measure with `run.py` (bytes + instruction counts per test).

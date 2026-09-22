@@ -888,8 +888,9 @@ int main(int argc, char** argv) {
             case OPCODE_A5:
                 badOpcode(ins);
                 break;
-            case OPCODE_AD:
-                badOpcode(ins);
+            case BRUR:      /* YACC1-D 2026-09-22: BRUR Rn = PC <- Rn (2 bytes, register in the operand byte) */
+                reg = memory_read(register_read_word(PC)) & 0x07;
+                register_write_word(PC, register_read_word(reg));
                 break;
                 
             case OPCODE_AE:    
@@ -1003,9 +1004,6 @@ int main(int argc, char** argv) {
                         break;
 
 
-                    case 0xad:
-                        badOpcode(ins);
-                        break;
 
                     case 0xae:
                         badOpcode(ins);

@@ -86,6 +86,8 @@ BR16Z \W
 AB  hi(1) lo(1)
 BR16NZ \W
 AC  hi(1) lo(1)
+BRUR \{regs}
+AD \1
 BRDEV \W
 AF  hi(1) lo(1)
 ADDI \B

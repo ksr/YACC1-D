@@ -72,8 +72,7 @@ extern "C" {
 #define        BR16Z    0xAB
 #define        BR16NZ   0xAC
 
-//#define      0xad
-#define        OPCODE_AD 0xAD
+#define        BRUR     0xAD   /* YACC1-D 2026-09-22: BRUR Rn = PC <- Rn (2 bytes, register in the operand byte like JSRUR) */
 //#define      0xae
 #define        OPCODE_AE 0xAE
 
