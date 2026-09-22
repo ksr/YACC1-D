@@ -117,7 +117,12 @@ and with y1cc + asm and compares the binaries, uninitialised data included on bo
 | sort | 1114 | 873 | 0.78 |
 | strings | 1030 | 759 | 0.74 |
 
-The YACC1 binaries are 15-27% smaller for the same source. The reasons are in the instruction sets rather than in
+The YACC1 binaries are 15-27% smaller for the same source.
+The same four programs rewritten with everything y1cc accepts (`bench/full/`: the library's putnum, `++`, `+=`,
+`?:`, `continue`, pointer loops, `char` loop counters) come out only a little smaller — sieve 633, fib 769, strings
+713, sort 865 bytes (1-6%) — because `i++` and `i = i + 1` are the same code; what saved bytes was `char` counters
+(one-byte compares) and pointer walks. The size is in the code model, not the syntax.
+ The reasons are in the instruction sets rather than in
 the compilers: y1cc keeps every scalar at a fixed address, so a load or store is one 3-byte `LDR`/`STR` and a
 16-bit constant is one 3-byte `MVIW`, while p8cc's frame-relative `LDW/STW (P3+d)` and `LDW __ax,#n` (4-5 bytes)
 plus its memory-word arithmetic helpers cost more per operation; the YACC1's register `INCR`/`DECR` and the
