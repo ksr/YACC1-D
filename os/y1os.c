@@ -218,10 +218,13 @@ void cmd_run(char *rest) {              /* run path [args] */
     run_prog(args);
 }
 
-int try_bin(char *name, char *args) {   /* /BIN/name, then name in the current directory */
+void upper(char *s) { while (*s) { if (*s >= 'a' && *s <= 'z') *s -= 32; s++; } }
+
+int try_bin(char *name, char *args) {   /* /BIN/NAME (programs are upper case), then NAME in the current directory */
     char p[20]; int n;
     n = strlen(name);
     if (n > 12) return 0;
+    upper(name);
     strcpy(p, "/BIN/"); strcpy(p + 5, name);
     if (resolve(p) && e_flags == F_FILE) { if (load_file(p)) run_prog(args); return 1; }
     if (resolve(name) && e_flags == F_FILE) { if (load_file(name)) run_prog(args); return 1; }

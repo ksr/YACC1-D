@@ -7,6 +7,7 @@
 | `emulator/` | the C emulator, reference model of the ISA (`-m/-f` options added 2026-06) | `make`; double-click runs the burned ROM |
 | `disassembler/disasm2/` | microcode disassembler for the 64-step Generator2 format | `make`; `./disasm2 [opcode…]`, finds the image relative to itself |
 | `ubasic-c/` | the C uBASIC (Adam Dunkels) the assembly BASIC was ported from; `ubasic-master-orig/` = upstream | `make`; `./ubasic [FILE]`, interactive without a file |
+| `cfmodel.h` | the CompactFlash card model both emulators share (ports P8 select / P9 data, 8-bit True IDE, `-c disk.img`) | 2026-09-22 |
 | `ucemu/` | **y1ucemu** (2026-09-22), the microcode-level emulator: steps the control store the sequencer holds through a model of every card (like P8X's p8xemu); bus-fight detection; its README lists what it found (H-1, H-2 real; two compiler bugs) | `make`; `python3 tests/ucemu/run.py` (14/14) |
 | `compiler/` | **y1cc** (2026-09-22), a C cross-compiler (Python): p8cc's C subset → YACC1 assembly for `assembler/`; `lib/y1lib.c`; its README explains the code model | `python3 y1cc.py prog.c`; `make cc-test` runs `tests/compiler/` on the emulator (12/12) |
 

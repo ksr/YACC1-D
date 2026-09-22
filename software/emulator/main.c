@@ -84,6 +84,7 @@ bool carry;
 int firstSwitchRead = 1; // What is this
 int exit_on_halt = 0;           /* YACC1-D 2026-09-22: -x, for scripted runs (compiler tests): quiet load, exit at HALT */
 unsigned long icount = 0;       /* instructions executed (reported at a -x HALT) */
+unsigned long ilimit = 0;       /* -l N: stop after N instructions (scripted runs of code that never HALTs) */
 
 /* Intel HEX read/write functions, Paul Stoffregen, paul@ece.orst.edu */
 /* This code is in the public domain.  Please retain my name and */
@@ -430,6 +431,7 @@ void print_usage(const char *progname) {
     printf("  -f filename  Load the specified file using load_file\n");
     printf("  -x           Scripted run: no load/dump chatter, HALT exits (instruction count on stderr)\n");
     printf("  -c image     Attach a CompactFlash image on ports P8/P9 (created zero-filled if missing)\n");
+    printf("  -l N         Stop after N instructions (with -x: status on stderr)\n");
 }
 
 int main(int argc, char** argv) {
@@ -450,6 +452,8 @@ int main(int argc, char** argv) {
             load_standard = true;
         } else if (strcmp(argv[arg], "-x") == 0) {
             exit_on_halt = 1;
+        } else if (strcmp(argv[arg], "-l") == 0 && arg + 1 < argc) {
+            ilimit = strtoul(argv[++arg], NULL, 0);
         } else if (strcmp(argv[arg], "-c") == 0 && arg + 1 < argc) {
             if (!cf_attach(argv[++arg])) { fprintf(stderr, "cannot open CF image %s\n", argv[arg]); return EXIT_FAILURE; }
         } else if (strcmp(argv[arg], "-f") == 0) {
@@ -499,6 +503,11 @@ int main(int argc, char** argv) {
 
         ins = memory_read(register_read_word(PC));
         icount++;
+        if (ilimit && icount > ilimit) {
+            fflush(stdout);
+            fprintf(stderr, "instruction limit reached at %04x after %lu instructions, R3=%04x\n", registers[PC].word, icount - 1, register_read_word(3));
+            exit(0);
+        }
 
         // trigger condition, for instance test PC value or a reg value
         if (registers[PC].word == 0x0000) {

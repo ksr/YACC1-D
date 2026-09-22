@@ -109,10 +109,14 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Move off NetBeans (README decision 7).
 
 ## Disk operating system (plan `docs/system/OS-PLAN.md`, decisions 2026-09-22)
-- Phase 1: emulator CF model (ports P8 select / P9 data, disk image); monitor: CF driver, B command, tests removed,
-  vectors; CF card in KiCad (two ports, 74245 + select latch, True IDE 8-bit), bench test with the bus tester.
-- Phase 2: OS kernel in C (y1cc) over P8XFS v2, loaded from LBA 1 to $1000. Phase 3: lib_abi + the P8X C commands,
-  BASIC as /bin/basic. Phase 4: video card v2 (6845 on ports PA/PB, 2K RAM) + PS/2 keyboard behind the console vectors.
+- (done 2026-09-22 evening: phase 1 — CF model in both emulators, ROM driver + `O` boot + vectors, p8xfs/img2bin; phase 2
+  read-only — `os/y1os.c` shell with dir/cd/pwd/cat/load/run and /BIN programs, `tests/os/` sessions on both emulators.)
+- **The CF card in hardware**: KiCad, two ports (P8 select latch, P9 data), 74245 + 74LS174 + decode + strobe gating,
+  True IDE 8-bit, rails and pull-ups checked; bench-test with the bus tester (OUTI P8 / INP P9 through the ROM driver).
+- Y1/OS write support: save, del, mkdir, rmdir, pack, format, fsck (`p8xfs.py fsck` verifies from the host).
+- A file API for programs: an OS jump table at $1000+ (open/read/close/argstr), then the P8X C commands that fit
+  (cat, wc, head, grep ... rewritten for the YACC1's lib_abi; recursion-free), BASIC as /BIN/BASIC.
+- Phase 4: video card v2 (6845 on ports PA/PB, 2K RAM) + PS/2 keyboard behind the console vectors.
 - (done 2026-09-22: `yacc1.def` P8=9 typo -> P8=8.)
 
 ## C compiler (y1cc, 2026-09-22)

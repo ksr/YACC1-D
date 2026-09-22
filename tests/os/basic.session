@@ -1,0 +1,17 @@
+dir
+cat README.TXT
+cd BIN
+dir
+pwd
+cd ..
+hello a b c
+run /BIN/ECHO hi there
+wc 45 1
+dir /BIN
+cd /BIN/../BIN
+pwd
+nothere
+cd /
+load /BIN/HELLO
+help
+exit

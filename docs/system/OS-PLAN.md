@@ -62,6 +62,13 @@ are the order of work. Nothing here is built yet.
 8. **Console = two BIOS vectors** (charout/uartin today). The video card and PS/2 keyboard replace them later
    without the OS or the commands knowing.
 
+## Status 2026-09-22 (evening)
+
+Phases 1 and 2 (read-only) are done on both emulators: the CF model (`software/cfmodel.h`, `-c disk.img`), the ROM's
+CF driver and `O` boot command (`firmware/abi/README.md`), `tools/p8xfs.py` + `tools/img2bin.py`, and `os/y1os.c`
+(5.1K: dir/cd/pwd/cat/load/run, implicit /BIN programs with arguments; `os/README.md`). `tests/os/run.py` replays a
+session on both emulators. Not started: write support, the file API for programs, the card itself.
+
 ## Phases
 
 1. **Emulator CF model** on ports P8/P9 backed by a disk image (`-d disk.img`, like p8xemu's `-c`), ~150 lines of

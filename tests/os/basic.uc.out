@@ -1,0 +1,69 @@
+BOOT FROM CF
+Y1/OS v0 (2026-09-22)  P8XFS v2
+/> 
+
+/> dir
+
+.            <DIR>
+..           <DIR>
+BIN          <DIR>
+README.TXT   156  @B000
+4 entries
+/> cat README.TXT
+
+Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
+LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
+/> cd BIN
+
+/BIN> dir
+
+.            <DIR>
+..           <DIR>
+ECHO         55  @5000
+HELLO        132  @5000
+WC           886  @5000
+5 entries
+/BIN> pwd
+
+/BIN
+/BIN> cd ..
+
+/> hello a b c
+
+hello from /BIN/HELLO
+args: a b c
+/> run /BIN/ECHO hi there
+
+hi there
+/> wc 45 1
+
+2 29 156
+/> dir /BIN
+
+.            <DIR>
+..           <DIR>
+ECHO         55  @5000
+HELLO        132  @5000
+WC           886  @5000
+5 entries
+/> cd /BIN/../BIN
+
+/BIN> pwd
+
+/BIN
+/BIN> nothere
+
+what?
+/BIN> cd /
+
+/> load /BIN/HELLO
+
+loaded 132 bytes at $5000
+/> help
+
+Y1/OS: dir [path]  cd path  pwd  cat path  load path  run path [args]  help  exit
+       or the name of a program in /BIN (or here), followed by its arguments
+/> exit
+
+bye
+>

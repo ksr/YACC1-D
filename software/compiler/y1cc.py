@@ -270,9 +270,8 @@ class P:
             if self.accept("="): init = self.initializer()
             decls.append(("gvar", base, ptr, arr, count, name, init))
             if not self.accept(","): break
-            p = 0
-            while self.accept("*"): p += 1
-            ptr = p if p else (0 if arr else ptr)          # a new declarator starts from the base type
+            ptr = 0                                     # a new declarator starts from the base type (int *p, q)
+            while self.accept("*"): ptr += 1
             name = self.next()[1]
         self.eat(";")
         return decls[0] if len(decls) == 1 else ("gvars", decls)
@@ -315,10 +314,10 @@ class P:
         v = self.val()
         if v == "{": return self.block()
         if self.is_type_start():
-            base, ptr = self.base_and_ptr()
+            base, ptr = self.base_and_ptr()           # the stars consumed here belong to the FIRST declarator
             decls = []
             while True:
-                p = ptr
+                p = ptr; ptr = 0                        # later declarators start from the base type (int *p, q)
                 while self.accept("*"): p += 1
                 name = self.next()[1]; count = 0
                 if self.accept("["):

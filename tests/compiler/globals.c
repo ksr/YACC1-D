@@ -18,6 +18,8 @@ char *strs[] = {"x", "yy", "zzz"};
 int neg = -1;
 int expr = LIMIT * 2 + 1;
 
+void decls();
+
 void main() {
     int *p;
     int i;
@@ -31,5 +33,10 @@ void main() {
     putnum(neg); putchar(' '); putnum(expr); putchar(' '); putchar(CH); putchar('\n');
     p = tab; p++; putnum(*p); putchar(' '); p += 1; putnum(*p); putchar(' '); putnum(p - tab); putchar('\n');   /* 512 768 2 */
     p = &arr[4]; *p = 99; putnum(arr[4]); putchar('\n');
-    gu++; putnum(gu); putchar('\n');                                        /* 0 */
+    gu++; putnum(gu); putchar(10);
+    decls();
 }
+/* 2026-09-22: several declarators with different pointer depths (int *p, q; char *a, b, *c) */
+int *dp, dq, *dr;
+void decls() { char *a, b, *c; int *ip, iq; a = "xy"; b = 'B'; c = a + 1; ip = &iq; iq = 7; dp = &dq; dq = 3; dr = dp;
+    putchar(*a); putchar(b); putchar(*c); putnum(*ip); putnum(*dr); putchar('\n'); }

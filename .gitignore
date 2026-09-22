@@ -27,4 +27,7 @@ fp-info-cache
 /tests/bus-tester-scripts/Gen Test Vectors/gen test vectors/gen
 tests/compiler/build/
 tests/ucemu/build/
+tests/os/*.got
+os/build/
+os/disk.img
 software/ucemu/y1ucemu
