@@ -4,6 +4,8 @@
 #   ./ubasic FILE run a program file (e.g. ../../../tests/basic/test)
 CC     ?= cc
 CFLAGS ?= -O2 -Wall -fno-common
+include ../../../mk/sdk.mk
+CFLAGS += $(SDKFLAGS)
 all: ubasic
 ubasic: ubasic.c tokenizer.c use-ubasic.c ubasic.h tokenizer.h vartype.h
 	$(CC) $(CFLAGS) -o $@ ubasic.c tokenizer.c use-ubasic.c

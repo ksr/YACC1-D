@@ -1311,10 +1311,23 @@ class Gen:
         self.func = name; self.locals = self.frames[name]; self.loops = []
         start = len(self.code)
         self.emit("%s:" % self.flabel[name])
+        if name == "main": self.emit_bss_clear()
         self.gen_stmt(body)
         if not self.code[-1].strip() == "RET": self.ins("RET")
         for v in self.locals.values(): self.bss.append("%s: DS %d" % (v.label, v.size()))
         self.stats[name] = len(self.code) - start
+
+    def emit_bss_clear(self):
+        """C promises zero-initialised globals; the image carries no bytes for them (DS), and RAM powers up random
+        (the microcode emulator fills it with $FF, which caught this 2026-09-22). main starts by clearing every DS
+        slot (bss_start..bss_end): 20 bytes, a few thousand steps."""
+        loop = self.lbl("Lz"); go = self.lbl("Lzg"); done = self.lbl("Lzd")
+        self.ins("MVIW", "R3,bss_start")
+        self.emit("%s:" % loop); self.ins("MVRHA", "R3"); self.ins("LDTI", "(bss_end).1"); self.ins("BRNEQ", go)
+        self.ins("MVRLA", "R3"); self.ins("LDTI", "(bss_end).0"); self.ins("BREQ", done)
+        self.emit("%s:" % go); self.ins("LDAI", "0"); self.ins("STAVR", "R3"); self.ins("INCR", "R3"); self.ins("BR", loop)
+        self.emit("%s:" % done)
+        self.labels.update(("bss_start", "bss_end"))
 
     def declare_global(self, base, ptr, arr, count, name, init):
         if arr and count is None:
@@ -1368,7 +1381,7 @@ class Gen:
             else: sys.exit("y1cc: nested brace initializer not supported")
         if bytes_: out.extend(self.db_lines(bytes_))
         rem = count - len(items)
-        if rem: out.append("        DS %d" % (rem * esz))
+        if rem: out.extend(self.db_lines([0] * (rem * esz)))   # REAL zeros in the image: DS would leave RAM as it powers up
         return out
 
     def register_struct(self, kind, tag, members):
@@ -1435,10 +1448,15 @@ class Gen:
         self.code = self.peephole(self.code)
         self.emit_runtime()
         self.code.extend(self.data)
+        self.emit("bss_start:")
         self.code.extend(self.bss)
+        self.emit("bss_end: DS 1")       # a byte so the label is a real address even for an empty BSS
         if self.boot:
-            self.emit("; boot stub for `emulator -x -f prog.img`: stack, main, HALT",
-                      "        ORG %d" % 0xF000, "        MVIW R1,%d" % STACK_TOP,
+            # The first BR is what the monitor does too: after reset the memory card's FORCE-ROM maps every fetch into
+            # $F000-$FFFF until an address with A15 high is presented; a branch to $F003 presents one. Without it
+            # `JSR main` would land in the ROM window (seen on the microcode emulator 2026-09-22).
+            self.emit("; boot stub for `emulator -x -f prog.img` / `y1ucemu -x -m -f prog.img`: release FORCE-ROM, stack, main, HALT",
+                      "        ORG %d" % 0xF000, "        BR %d" % 0xF003, "        MVIW R1,%d" % STACK_TOP,
                       "        JSR %s" % self.flabel["main"], "        HALT", "        END %d" % 0xF000)
         else:
             self.emit("        END %d" % self.org)

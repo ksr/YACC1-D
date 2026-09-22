@@ -67,7 +67,9 @@ and big-endian words in memory. There is no 16-bit ALU and no indexed addressing
 - **Image layout**: `ORG` → main → the other live functions →
   the runtime helpers actually used → initialised data and strings (`DB` as numbers: the assembler upper-cases
   every source line, so `DB "text"` would be shouted) → uninitialised variables (`DS`, kept last) → with
-  `--boot` a stub at $F000 (`MVIW R1,$0EFF / JSR f_main / HALT`). The monitor's `G AAAA` (rebuilt 2026-09-22) is
+  `--boot` a stub at $F000 (`BR $F003 / MVIW R1,$0EFF / JSR f_main / HALT`; the first branch presents an A15-high
+  address, which releases the memory card's FORCE-ROM boot remap exactly as the monitor's first instruction does —
+  without it every fetch stays inside $F000-$FFFF, seen on the microcode emulator). The monitor's `G AAAA` (rebuilt 2026-09-22) is
   `JSRUR R7`, a call: `G3000` enters main and main's RET returns to the command loop. `--vector` is the layout for
   the monitor as burned in 2021, whose G was `BRVR R7`: on the hardware that is an indirect jump through the word at
   AAAA (the microcode reads `[R7]`,`[R7+1]` into the branch register, `docs/isa/steps.txt`) that pushes no return
@@ -76,6 +78,9 @@ and big-endian words in memory. There is no 16-bit ALU and no indexed addressing
   The default `--org` is $3000 because $1000-$1FFF is BASIC's token buffer, which the monitor's boot (and the
   restart after main) clears, and the monitor's T tests use $2000 as scratch; a program at $1000 lost its first
   byte before it ran (found on the emulator 2026-09-22).
+- **Zero-initialised data** (2026-09-22, found by the microcode emulator's $FF-filled RAM): main starts by clearing
+  every `DS` slot between `bss_start` and `bss_end` (20 bytes of code), and a partially initialised array's tail is
+  real zero bytes in the image, not `DS`. The interpreter's zeroed memory had hidden both.
 - **`switch`** (2026-09-22): the case labels must be direct statements of the switch block. Dispatch is whichever is
   smaller: a compare chain (`LDTI k / BREQ` per case when every case fits a byte, 5 bytes each; a two-level compare,
   13 bytes, otherwise) or a jump table through `BRUR` ($AD, PC ← Rn): subtract the lowest case, range-check, index
@@ -112,12 +117,12 @@ and with y1cc + asm and compares the binaries, uninitialised data included on bo
 
 | program | P8X bytes | YACC1 bytes | ratio |
 |---|---|---|---|
-| fib | 1075 | 790 | 0.73 |
-| sieve | 760 | 644 | 0.85 |
-| sort | 1114 | 873 | 0.78 |
-| strings | 1030 | 759 | 0.74 |
+| fib | 1075 | 813 | 0.76 |
+| sieve | 760 | 667 | 0.88 |
+| sort | 1114 | 896 | 0.80 |
+| strings | 1030 | 782 | 0.76 |
 
-The YACC1 binaries are 15-27% smaller for the same source.
+The YACC1 binaries are 14-26% smaller for the same source (2026-09-22 evening, after main gained its 20-byte BSS clear).
 The same four programs rewritten with everything y1cc accepts (`bench/full/`: the library's putnum, `++`, `+=`,
 `?:`, `continue`, pointer loops, `char` loop counters) come out only a little smaller — sieve 633, fib 769, strings
 713, sort 865 bytes (1-6%) — because `i++` and `i = i + 1` are the same code; what saved bytes was `char` counters

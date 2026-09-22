@@ -2,9 +2,9 @@
 #   make            build emulator, assembler, microcode generator, disassembler, uBASIC, vector generator
 #   make check      audit the tree + rebuild firmware/microcode/sketches and diff against the committed images,
 #                   then run the C compiler's test programs on the emulator (tests/compiler/run.py)
-#   make cc-test    just the compiler tests
+#   make cc-test    just the compiler tests (on both emulators)
 #   make clean
-TOOLS = software/emulator software/assembler firmware/microcode/ucode-generator2 software/disassembler/disasm2 \
+TOOLS = software/emulator software/ucemu software/assembler firmware/microcode/ucode-generator2 software/disassembler/disasm2 \
         software/ubasic-c/ubasic-master "tests/bus-tester-scripts/Gen Test Vectors/gen test vectors"
 all:
 	@python3 tools/layout_links.py
@@ -17,8 +17,10 @@ check:
 	$(MAKE) -s -C software/assembler check
 	$(MAKE) -s -C firmware/microcode/ucode-generator2 check
 	python3 tests/compiler/run.py
+	python3 tests/ucemu/run.py
 cc-test:
 	python3 tests/compiler/run.py
+	python3 tests/ucemu/run.py
 clean:
 	@for d in $(TOOLS); do $(MAKE) -s -C "$$d" clean; done
 kicad:

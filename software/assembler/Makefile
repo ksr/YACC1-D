@@ -8,6 +8,8 @@
 # handler skips the following argument. The assembler wants rcasm.rc, yacc1.def and NAME.asm in the current dir.
 CC      ?= cc
 CFLAGS  ?= -O2 -Wall -fno-common
+include ../../mk/sdk.mk
+CFLAGS += $(SDKFLAGS)
 SRC      = asm.c asmcmds.c support.c mstrings.c
 FW       = ../../firmware
 TARGETS  = monitor basic

@@ -2,6 +2,8 @@
 #   make        build ./gen ;  make run   print the generated script to stdout (redirect into a script file)
 CC     ?= cc
 CFLAGS ?= -O2 -Wall -fno-common
+include ../../../../mk/sdk.mk
+CFLAGS += $(SDKFLAGS)
 all: gen
 gen: main.c
 	$(CC) $(CFLAGS) -o $@ main.c

@@ -15,7 +15,7 @@ for src in "$here"/*.c; do
   p8=$(wc -c < p8_$t.bin | tr -d ' ')
   python3 "$root/software/compiler/y1cc.py" $t.c -o $t.asm --boot && "$root/software/assembler/asm" $t -d=yacc1 > $t.lst
   obj=$(grep -o "Object Code:[0-9]*" $t.lst | grep -o "[0-9]*"); ds=$(awk '/ DS /{s+=$NF} END{print s+0}' $t.asm)
-  y1=$((obj - 8 + ds))      # minus the 8-byte --boot stub, plus the DS bytes (p8xasm's .fill is inside its .bin)
+  y1=$((obj - 11 + ds))     # minus the 11-byte --boot stub, plus the DS bytes (p8xasm's .fill is inside its .bin)
   out=$("$root/software/emulator/emulator" -x -f $t.img < /dev/null 2> err.txt | md5); inst=$(grep -o "after [0-9]* instructions" err.txt)
   host=$(cc -w -funsigned-char -include "$root/tests/compiler/host_shim.h" -o host_$t $t.c && ./host_$t | md5)
   printf '%-9s %8s %8s %6.2f   %s  %s\n' $t $p8 $y1 $(echo "$y1 / $p8" | bc -l) "$inst" "$([ "$out" = "$host" ] && echo yes || echo NO)"

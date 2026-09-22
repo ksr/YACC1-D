@@ -5,7 +5,7 @@ the hardware model behind them is the one used for `docs/isa/` (pipeline registe
 memory writes happen while -MEM-WR is low, the address bus follows the register selected by ADDR-REG-ID).
 Register families are checked on every member (all 256 records that hold microcode).
 
-Totals by rule: L1 8, R2 37, S1 353
+Totals by rule: L1 8, R2 3, S1 359
 
 | Opcode | Mnemonic | Steps | Findings |
 |---|---|---|---|
@@ -16,7 +16,7 @@ Totals by rule: L1 8, R2 37, S1 353
 | $04 | JSR | 31 | S1 x3 |
 | $05 | RET | 20 | S1 x3 |
 | $06 | JSRUR | 32 | S1 x2 |
-| $07 | PUSHR | 32 | R2 x14, S1 x2 |
+| $07 | PUSHR | 33 | S1 x8 |
 | $08 | POPR | 28 | S1 x4 |
 | $09 | PUSH | 15 | S1 x1 |
 | $0A | POP | 13 | S1 x2 |
@@ -154,8 +154,8 @@ Totals by rule: L1 8, R2 37, S1 353
 | $9E | OP9E | 12 | S1 x1 |
 | $9F | OP9F | 12 | S1 x1 |
 | $A0 | BR | 21 | S1 x2 |
-| $A1 | BRZ | 21 | R2 x5, S1 x2 |
-| $A2 | BRNZ | 21 | R2 x5, S1 x2 |
+| $A1 | BRZ | 21 | S1 x2 |
+| $A2 | BRNZ | 21 | S1 x2 |
 | $A3 | BRINH | 21 | S1 x2 |
 | $A4 | BRINL | 21 | S1 x2 |
 | $A6 | BRC | 21 | S1 x2 |
@@ -163,8 +163,8 @@ Totals by rule: L1 8, R2 37, S1 353
 | $A8 | BREQ | 21 | S1 x2 |
 | $A9 | BRGT | 21 | S1 x2 |
 | $AA | BRNEQ | 21 | S1 x2 |
-| $AB | BR16Z | 21 | R2 x5, S1 x2 |
-| $AC | BR16NZ | 21 | R2 x5, S1 x2 |
+| $AB | BR16Z | 21 | S1 x2 |
+| $AC | BR16NZ | 21 | S1 x2 |
 | $AD | BRUR | 20 | S1 x2 |
 | $AF | BRDEV | 21 | S1 x2 |
 | $B0 | ADDI | 12 | S1 x1 |
@@ -245,21 +245,7 @@ Totals by rule: L1 8, R2 37, S1 353
 
 ### $06 JSRUR (32 steps)  idle steps: [0, 27]
 
-### $07 PUSHR (32 steps)  idle steps: [0, 9]
-- R2 step 14: several data-bus drivers at once: ['-REG-RD-HI', '-TMP-REG-RD1']
-- R2 step 15: several data-bus drivers at once: ['-REG-RD-HI', '-TMP-REG-RD1']
-- R2 step 16: several data-bus drivers at once: ['-REG-RD-HI', '-TMP-REG-RD1']
-- R2 step 21: several data-bus drivers at once: ['-REG-RD-LO', '-REG-RD-HI']
-- R2 step 22: several data-bus drivers at once: ['-REG-RD-LO', '-REG-RD-HI']
-- R2 step 23: several data-bus drivers at once: ['-REG-RD-LO', '-REG-RD-HI']
-- R2 step 24: several data-bus drivers at once: ['-REG-RD-LO', '-REG-RD-HI']
-- R2 step 25: several data-bus drivers at once: ['-REG-RD-LO', '-REG-RD-HI', '-TMP-REG-RD1']
-- R2 step 26: several data-bus drivers at once: ['-REG-RD-LO', '-REG-RD-HI', '-TMP-REG-RD1']
-- R2 step 27: several data-bus drivers at once: ['-REG-RD-LO', '-REG-RD-HI', '-TMP-REG-RD1']
-- R2 step 28: several data-bus drivers at once: ['-REG-RD-LO', '-REG-RD-HI']
-- R2 step 29: several data-bus drivers at once: ['-REG-RD-LO', '-REG-RD-HI']
-- R2 step 30: several data-bus drivers at once: ['-REG-RD-LO', '-REG-RD-HI']
-- R2 step 31: several data-bus drivers at once: ['-REG-RD-LO', '-REG-RD-HI']
+### $07 PUSHR (33 steps)  idle steps: [0, 9, 13, 17, 20, 24, 28, 31]
 
 ### $08 POPR (28 steps)  idle steps: [0, 8, 10, 12]
 
@@ -539,18 +525,8 @@ Totals by rule: L1 8, R2 37, S1 353
 ### $A0 BR (21 steps)  idle steps: [0, 12]
 
 ### $A1 BRZ (21 steps)  idle steps: [0, 12]
-- R2 step 16: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
-- R2 step 17: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
-- R2 step 18: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
-- R2 step 19: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
-- R2 step 20: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
 
 ### $A2 BRNZ (21 steps)  idle steps: [0, 12]
-- R2 step 16: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
-- R2 step 17: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
-- R2 step 18: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
-- R2 step 19: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
-- R2 step 20: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
 
 ### $A3 BRINH (21 steps)  idle steps: [0, 12]
 
@@ -567,18 +543,8 @@ Totals by rule: L1 8, R2 37, S1 353
 ### $AA BRNEQ (21 steps)  idle steps: [0, 12]
 
 ### $AB BR16Z (21 steps)  idle steps: [0, 12]
-- R2 step 16: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
-- R2 step 17: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
-- R2 step 18: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
-- R2 step 19: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
-- R2 step 20: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
 
 ### $AC BR16NZ (21 steps)  idle steps: [0, 12]
-- R2 step 16: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
-- R2 step 17: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
-- R2 step 18: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
-- R2 step 19: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
-- R2 step 20: several data-bus drivers at once: ['-AC-RD', '-BRANCH-RD']
 
 ### $AD BRUR (20 steps)  idle steps: [0, 15]
 

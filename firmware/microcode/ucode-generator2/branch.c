@@ -71,6 +71,12 @@ void branch(int reg, int mode, int invert, int source) {
     clearSignal("BR-TEST"); // added 10
     if (source == SOURCE_TMP) // problem will conflict with data transfer of branch reg to PC added 10
         clearSignal("-TMP-REG-RD0"); //added 10
+    // YACC1-D 2026-09-22 (review finding H-2, reproduced on software/ucemu): for the AC-sourced conditions -AC-RD
+    // stayed asserted with -ALU-FUNC through the -BRANCH-RD steps, so the ALU drove DATA0..7 = AC against the branch
+    // register while the PC loaded (a taken BRZ, AC = 0, would land on offset $00). The condition latch is already
+    // set at BR-TEST, so the ALU can let go here exactly as TMP does.
+    if (source == SOURCE_AC)
+        clearSignal("-AC-RD");
     writeCurrentLine(); // added 10
     setSignal("-BRANCH-RD"); //output branch register maybe move down after brtest sr set
     //setSignal("-BRANCH-RD-HI");
@@ -697,11 +703,17 @@ void branchInstructions() {
     clearSignal("-TMP-REG-LD1");
     writeCurrentLine();
     clearSignal("-2-BYTE-OPERAND-SEL");
+    // YACC1-D 2026-09-22 (review finding H-1, reproduced on software/ucemu): the register card kept driving the bus
+    // (PC.hi through the swap transceiver once -2-BYTE-OPERAND-SEL was released) while TMP1 drove the byte being
+    // written, so both stack writes happened during a bus fight and the pushed word was corrupted ($ABCD -> $21CC on
+    // the model). TMP1 holds the byte from step 11 on; release the card before the write.
+    clearSignal("-REG-RD-HI");
+    clearSignal("-REG-FUNC-RD");
+    clearSignal("-HL-SWAP");
     writeCurrentLine();
     putBustoRegMem(SP, "-TMP-REG-RD1");
     decrementReg(SP);
 
-    clearSignal("-HL-SWAP");
     setSignal("-2-BYTE-OPERAND-SEL");
     setSignal("-REG-FUNC-RD");
     setSignal("-REG-RD-LO");
@@ -711,6 +723,8 @@ void branchInstructions() {
     clearSignal("-TMP-REG-LD1");
     writeCurrentLine();
     clearSignal("-2-BYTE-OPERAND-SEL");
+    clearSignal("-REG-RD-LO");           // H-1: same for the low byte (SP would drive DATA0..15 otherwise)
+    clearSignal("-REG-FUNC-RD");
     writeCurrentLine();
     putBustoRegMem(SP, "-TMP-REG-RD1");
     decrementReg(SP);

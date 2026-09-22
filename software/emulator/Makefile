@@ -5,6 +5,8 @@
 #   make clean
 CC      ?= cc
 CFLAGS  ?= -O2 -Wall -fno-common
+include ../../mk/sdk.mk
+CFLAGS += $(SDKFLAGS)
 ROM     ?= ../../firmware/rom/shipped/rom
 
 all: emulator

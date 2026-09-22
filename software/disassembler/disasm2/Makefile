@@ -4,6 +4,8 @@
 #   ./disasm2 04 05 selected opcodes (hex)
 CC     ?= cc
 CFLAGS ?= -O2 -Wall -fno-common
+include ../../../mk/sdk.mk
+CFLAGS += $(SDKFLAGS)
 all: disasm2
 disasm2: main.c code.h ../yaccsignaldefine.h ../yaccsignaldata2.h
 	$(CC) $(CFLAGS) -o $@ main.c

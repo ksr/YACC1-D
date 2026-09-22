@@ -53,6 +53,7 @@ next:   OUTA P2
 table:  DW two,three,sayC
 digits: DW d0,d1,d2,d3
         ORG 0F000H
+        BR 0F003H               ; release the memory card's FORCE-ROM boot remap (an A15-high address)
         MVIW R1,0EFFH
         JSR main
         HALT

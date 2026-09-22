@@ -5,6 +5,8 @@
 #   make clean
 CC     ?= cc
 CFLAGS ?= -O2 -Wall -fno-common
+include ../../../mk/sdk.mk
+CFLAGS += $(SDKFLAGS)
 SRC     = $(wildcard *.c)
 all: ucodegen
 ucodegen: $(SRC) $(wildcard *.h) ../yaccsignaldefine.h ../yaccsignaldata2.h ../../../software/opcodes.h
