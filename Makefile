@@ -20,6 +20,7 @@ check:
 	python3 tests/compiler/run.py
 	python3 tests/ucemu/run.py
 	python3 tests/os/run.py
+	python3 tests/sequencer/run.py
 cc-test:
 	python3 tests/compiler/run.py
 	python3 tests/ucemu/run.py

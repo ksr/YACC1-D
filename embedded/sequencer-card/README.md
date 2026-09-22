@@ -12,6 +12,12 @@
   `YACC_Common_headera.h` = the signal subset it needs.
 - `microcode-loader/simple_microcode_sender_64/` — the Processing sender that feeds it (115200 baud): reads
   `firmware/microcode/ucode-generator2/test.hexz`, compares with `cache` (what was sent last) and sends the differences.
+  **Since 2026-09-22 `tools/ucode_send.py` does the same job from the command line** (same protocol, same cache file;
+  `--all` ignores the cache, `--dry-run` lists what would go, `--boot-check` captures the run-mode boot and compares its
+  five instruction dumps with `test.hex`; `tests/sequencer/run.py` exercises it against `mock_card.py` on a pty). Two
+  things the protocol needs that the Processing sketch met by its 25 ms/char pace: opening the FTDI port resets the
+  ATmega (DTR), so run the sender first and press START after it says it is waiting; and after each `>>` the card
+  flashes a LED for 100 ms before reading with a 64-byte buffer, so the sender pauses 250 ms after every prompt.
 - `dumpram/` — diagnostic: dumps the whole microcode RAM (then the EEPROM) over serial, all 256 instructions; a 2024
   copy of the sequencer3 sources with a different `loop()`. Sequencer4's verify pass covers its usual purpose.
 - `deprecated/` — also `test-eeprom-2020-12` (Dec-2020 bench test of the card's I2C EEPROM at $57, the socket the EEPROM

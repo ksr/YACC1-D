@@ -125,11 +125,11 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - **Burn the rebuilt ROM** (`firmware/rom/shipped/rom`, 2026-09-22: monitor G = `JSRUR R7`, was the indirect `BRVR R7`; BASIC
   unchanged), then re-capture and `tests/memory/rom_verify.py` (until then it reports the monitor half as different).
   Until burned, compile for the machine with `--vector`.
-- **Reload the sequencer microcode** with the regenerated `test.hex`/`test.hexz` (2026-09-22: BRUR at $AD, the H-2 fix in
-  BRZ/BRNZ/BR16Z/BR16NZ, the H-1 fix in PUSHR — 14 records differ) and bench-check: BRUR (`tests/assembler/brur/`, `ABC0123`),
+- (done 2026-09-22: the sequencer EEPROM holds the regenerated image — BRUR at $AD, the H-2 fix in BRZ/BRNZ/BR16Z/BR16NZ, the
+  H-1 fix in PUSHR; six records differed, all 256 sent with `tools/ucode_send.py --all`; the scope look at the old image's
+  bus fight was skipped.) **Bench-check the reloaded microcode**: BRUR (`tests/assembler/brur/`, `ABC0123`),
   `tests/ucemu/isa.asm` (every instruction; the port-2 byte stream must equal `tests/ucemu/run.py`'s), then the monitor from
-  ROM. Before reloading, one scope look settles how a bus fight falls on this machine (DATA0 during a taken `BRZ` with the
-  old image: $00 = low wins, as the emulator assumes).
+  ROM.
 - **Run a compiled program on the machine.** Needs RAM loading: the monitor E-command loader (`tools/monload.py`, above) or
   the bus tester with the CPU held off (v2.2 CPU-off switch). Then `G3000` (the image starts with the vector BRVR needs; $1000 is BASIC's buffer).
   First hardware checks: `rt_sub` (INVA/moves between ADDTC), `rt_divmod` (SUBT/SUBI after a comparator branch), the

@@ -10,8 +10,10 @@
   (`embedded/sequencer-card/microcode-loader/`) reads, so both names are kept. `cache` — the loader's record of what it
   last sent to the sequencer card (= `test.hex` without the final `!` sentinel): **the card holds this image**.
   `cache.old` (identical) dropped 2026-09-20.
-- **2026-09-22: `test.hex`/`test.hexz`/`test.123` regenerated with `BRUR Rn` at $AD** (PC ← Rn, 2 bytes, `branch.c`);
-  only record $AD changed. `cache` is untouched and is still what the card holds — reload the EEPROM (Sequencer4 download
-  mode / the Processing loader) and bench-check with `tests/assembler/brur/`.
+- **2026-09-22: `test.hex`/`test.hexz`/`test.123` regenerated with `BRUR Rn` at $AD** (PC ← Rn, 2 bytes, `branch.c`) and
+  the H-1 (PUSHR, $07) and H-2 (BRZ/BRNZ/BR16Z/BR16NZ, $A1/$A2/$AB/$AC) release fixes from `docs/isa/MICROCODE-REVIEW-NOTES.md`:
+  six records differ from the 2026-09-21 image. Loaded into the card's EEPROM the same evening with `tools/ucode_send.py --all`
+  (every record, Ken's choice), so `cache` == `test.hex`. Bench checks to come: `tests/assembler/brur/` (`ABC0123`) and
+  `tests/ucemu/isa.asm`.
 - The v1 generator, its 32-step format and its signal table `yaccsignaldata.h` are in
   `archive/superseded-revisions/ucode-generator-v1/` (moved 2026-09-20); `software/disassembler/disasm2` decodes the v2 image.
