@@ -1,7 +1,7 @@
 /* help.c - the Y1/OS command reference: the shell's built-ins and the /BIN programs, one line each.
      help       the list (man NAME for the page of any of them)
    Ported from P8X os/commands/help.c 2026-09-23, changes: the text is rewritten for Y1/OS (no /d1, graphics,
-   kermit, make, sh; the built-ins are Y1/OS's; redirection and pipes since the same evening: man shell). Keep it
+   kermit, make, sh; the built-ins are Y1/OS's; redirection and pipes since the same evening: man shell; pack added 2026-09-23). Keep it
    in step with os/README.md. */
 #include "y1lib.c"
 
@@ -28,9 +28,10 @@ void main() {
     puts("  head first lines                         help this list");
     puts("  ls   plain directory list                man  a manual page (/MAN)");
     puts("  md   render Markdown (/DOCS)             more page a file");
-    puts("  mv   move/rename files                   pwd  the working directory");
-    puts("  sed  s/re/new/[g]                        sort sort lines");
-    puts("  tail last lines                          touch create empty files");
-    puts("  tree the directory tree                  uniq drop adjacent repeats");
-    puts("  vi   the screen editor                   wc   lines words bytes");
+    puts("  mv   move/rename files                   pack compact the disk: reclaim dead sectors");
+    puts("  pwd  the working directory               sed  s/re/new/[g]");
+    puts("  sort sort lines                          tail last lines");
+    puts("  touch create empty files                 tree the directory tree");
+    puts("  uniq drop adjacent repeats               vi   the screen editor");
+    puts("  wc   lines words bytes");
 }

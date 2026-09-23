@@ -123,9 +123,26 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   getcwd/chdir/frename/conin/constat), four handles with their own buffers; CONIN through a new ROM vector UARTINNE
   $FFFC (no echo; ROM rebuilt, still unburned); ARGBUF 128 bytes; first commands on the API: CAT2 (retired the same day for the ported cat), WC, LS, CP;
   OS image 12,183 bytes = 24 sectors; `os/README.md`.)
-- Y1/OS still to write: PACK (reclaim tombstones; every pipe and every `>>` that copies now leaves dead sectors, so it
-  matters more), FORMAT and FSCK on the target, seek, more than one write handle (needs allocation away from the single
-  free pointer; it would let `cp`/`touch`/`save`/`mkdir`/`vi :w` work inside a `>` or a pipe).
+- (done 2026-09-23: **PACK** — `/BIN/PACK` (`os/commands/pack.c`, 4,358 bytes + 9.3K tables; a program, the OS image
+  did not grow): iterative tree walk into a record table, sort by start LBA, layout check, slide each extent down
+  sector by sector, entries rewritten where their directory is now, '.'/'..' fixed; refused under `<`/`>`/`>>`/`|`;
+  keeps the current directory (GETCWD/CHDIR). The OS re-reads the free pointer after every program (`read_free()`),
+  zeroes its state through main's BSS clear only, and `save` closes its handle after a failed write (a leaked write
+  handle was the one open file STDIO could not show). `p8xfs.py fsck` checks '.'. `tests/os/pack.session` with host
+  checks (no dead sector, every pristine file byte-identical, the next file at the new free pointer); `os/man/pack`.
+  OS image 14,624 bytes, image + data 16,048.)
+- PACK, what is left: it is not safe against a reset in the middle (no journal): the extent being copied is lost when
+  its hole is smaller than itself (the man page says so; cutting pack off on the emulator at 16 points, 2026-09-23:
+  fsck always passed and a second pack always finished, 8 cuts lost the extent in flight, one of them the /PK
+  directory with its whole subtree, which then reads as empty and fsck does not see). A safe variant copies such an
+  extent above the free pointer first (raise the on-disk free pointer over that bounce area before, so an interrupted
+  run stays consistent), repoints the entry, then copies it down: twice the I/O for those, and room above the free
+  pointer (the volume size is not in the boot block). Cheapest useful step: do that for directories only (4 sectors
+  each), so a reset loses at most one file, never a subtree. Tombstones are not squeezed out of directories (the OS
+  reuses them, so nothing is lost). 800 files and directories at most; every sector past the first hole is copied, one
+  at a time.
+- Y1/OS still to write: FORMAT and FSCK on the target, seek, more than one write handle (needs allocation away from
+  the single free pointer; it would let `cp`/`touch`/`save`/`mkdir`/`vi :w` work inside a `>` or a pipe).
 - (done 2026-09-23: **the P8X commands, waves 0-2 of `os/PORT-PLAN.md`** — shared libs `os/lib_*.c` (stdin, rdline,
   glob/globx with an iterative gmatch, regex with a backtrack stack, walk = a recursion-free tree walker on one
   directory handle, apath, more = the pager, num, err); /BIN pwd help dep dump examine man cat wc head tail more sort

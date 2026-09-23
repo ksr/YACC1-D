@@ -17,13 +17,15 @@ from the host side with tools/p8xfs.py (fsck, ls, get + compare), which proves t
 tool would have written. The per-emulator step limits (LIMITS) end a run: after `exit` the monitor spins on an
 empty console until the limit, so a limit is a wall-clock budget, not a pass/fail line.
 """
-import os, sys, glob, subprocess, shutil
+import os, sys, glob, subprocess, shutil, re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 OS = os.path.join(ROOT, "os")
 FS = os.path.join(ROOT, "tools/p8xfs.py")
 BUILD = os.path.join(HERE, "build")
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+import p8xfs as P                                # the format's helpers, for the checks that walk the image
 EMUS = [("int", os.path.join(ROOT, "software/emulator/emulator")),
         ("uc", os.path.join(ROOT, "software/ucemu/y1ucemu"))]
 LIMITS = {"basic": (8000000, 120000000),         # instructions (int) / microcode steps (uc): the session must finish
@@ -32,12 +34,16 @@ LIMITS = {"basic": (8000000, 120000000),         # instructions (int) / microcod
           "wave1": (8000000, 110000000),         # 4.5M / 62M needed (2026-09-23); 4.9M / 73M with --os output
           "wave2": (9000000, 130000000),         # 5.7M / 79M needed; 5.9M / 49M with --os
           "redirect": (4000000, 60000000),       # 1.9M / 27M needed (2026-09-23)
-          "pipe": (13000000, 180000000)}         # 9.8M / 136M needed: every byte crosses CONOUT, then CONIN
+          "pipe": (13000000, 180000000),         # 9.8M / 136M needed: every byte crosses CONOUT, then CONIN
+          "pack": (34000000, 480000000)}         # 26-28M / 360-420M needed (2026-09-23): pack copies ~420 sectors
 DEFAULT_LIMIT = (12000000, 200000000)
 
 # host-side checks on the disk image a session leaves behind: ("fsck",) must pass; ("ls", path, present, absent)
 # lists a directory and checks names; ("get", path, hostfile, nbytes) fetches a file and compares it with the first
-# nbytes (0 = all) of a host file; ("data", path, bytes) fetches a file and compares it with the bytes given
+# nbytes (0 = all) of a host file; ("data", path, bytes) fetches a file and compares it with the bytes given;
+# ("packed",) = no dead sector: the free pointer is DATA_V2 + the sectors of every live extent (files and
+# subdirectories), computed from the image; ("same", gone) = every file of the pristine os/disk.img is still there
+# with the same bytes, load and exec address, except the paths in gone, which must be absent (2026-09-23, pack)
 HOST = {
     "api": [("fsck",), ("get", "/COPY.TXT", "os/disk/README.TXT", 0)],
     "write": [("fsck",),
@@ -57,6 +63,18 @@ HOST = {
     "pipe": [("fsck",),                        # 2026-09-23: pipes; the temp files are gone afterwards
              ("ls", "/", ["P1.TXT"], ["PIPE0.TMP", "PIPE1.TMP"]),
              ("data", "/P1.TXT", b"5 15 69\n")],
+    "pack": [("fsck",), ("packed",), ("same", ["/FRUIT2.TXT"]),   # 2026-09-23: the hole of /FRUIT2.TXT moves /MAN, /DOCS...
+             ("ls", "/", ["PK"], ["FRUIT2.TXT", "X.TXT", "PIPE0.TMP", "PIPE1.TMP"]),
+             ("ls", "/PK", ["A.TXT", "LOG", "U.TXT", "NEW.TXT", "SUB"], ["G.TXT", "EMPTY"]),
+             ("data", "/PK/LOG", b"one\ntwo\n"),
+             ("data", "/PK/A.TXT", b"alpha2\n"),
+             ("data", "/PK/NEW.TXT", b"new\n"),
+             ("data", "/PK/SUB/DEEP/LAST.TXT", b"last\n"),
+             ("data", "/PK/SUB/DEEP/MID.TXT", b"mid\n"),
+             ("data", "/PK/U.TXT", b"apple 3 red\nbanana 12 yellow\ncherry 40 red\nfig 7 purple\npear 5 green\n"),
+             ("get", "/PK/SUB/Y1CC.MD", "software/compiler/README.md", 0),
+             ("get", "/PK/SUB/DEEP/MD.MD", "os/docs/mddemo.md", 0),
+             ("get", "/PK/SUB/H", "os/build/bin/hello.bin", 0)],
     "wave2": [("fsck",),
               ("ls", "/T", ["E1", "E2", "FRUIT.TXT", "H", "S"], []),
               ("ls", "/U", ["E3", "S"], ["E1", "E2", "FRUIT.TXT", "H"]),
@@ -66,6 +84,19 @@ HOST = {
               ("get", "/U/S/F1.TXT", "os/disk/FRUIT.TXT", 0),
               ("get", "/U/S/H", "os/build/bin/hello.bin", 0)],
 }
+
+
+# numbers in a transcript that follow the disk's contents rather than the session: pack's summary lines give the free
+# pointer and how many files moved, and every man page or /DOCS edit changes both. Numbers of two or more digits on
+# those lines become N (the one-digit counts the session itself makes stay checked; the "packed" host check
+# verifies the free pointer from the image)
+MASK = {"pack": (re.compile(r"^(pack: .*)$", re.M), re.compile(r"\d\d+"))}
+
+
+def mask(name, s):
+    if name not in MASK: return s
+    line, num = MASK[name]
+    return line.sub(lambda m: num.sub("N", m.group(1)), s)
 
 
 def transcript(emu, limit, img, script):
@@ -86,11 +117,42 @@ def p8xfs(*args):
     return r.returncode, r.stdout + r.stderr
 
 
+def tree_files(img):
+    """Walk a volume (iteratively): {path: (bytes, load, exec)} of every live file, and the sectors of every live
+    extent (files and subdirectories; the root's own extent is not in the data area)."""
+    files = {}; nsec = 0
+    todo = [(P.ROOT_LBA, P.ROOT_SECS, "")]
+    while todo:
+        dlba, dsecs, path = todo.pop()
+        for e in P.iter_dir(img, dlba, dsecs):
+            nm = e["name"].decode("latin1").rstrip()
+            if e["flags"] not in (P.F_FILE, P.F_DIR) or nm in (".", ".."): continue
+            if e["flags"] == P.F_DIR:
+                nsec += P.dir_secs(e); todo.append((e["start"], P.dir_secs(e), path + "/" + nm))
+            else:
+                nsec += max(1, (e["length"] + P.SEC - 1) // P.SEC)
+                files[path + "/" + nm] = (bytes(img[e["start"] * P.SEC: e["start"] * P.SEC + e["length"]]),
+                                          e["load"], e["exec"])
+    return files, nsec
+
+
 def host_check(name, img):
     """Run the HOST checks for a session on its disk image; returns a list of failure strings."""
     fails = []
     for chk in HOST.get(name, []):
-        if chk[0] == "fsck":
+        if chk[0] == "packed":
+            vol = P.read_img(img); _, nsec = tree_files(vol)
+            if P.get_free(vol) != P.DATA_V2 + nsec:
+                fails.append("not packed: free pointer %d, live extents end at %d" % (P.get_free(vol), P.DATA_V2 + nsec))
+        elif chk[0] == "same":
+            want, _ = tree_files(P.read_img(os.path.join(OS, "disk.img")))
+            got, _ = tree_files(P.read_img(img))
+            for path, v in sorted(want.items()):
+                if path in chk[1]:
+                    if path in got: fails.append("%s should be gone" % path)
+                elif path not in got: fails.append("%s is missing" % path)
+                elif got[path] != v: fails.append("%s differs from the pristine image" % path)
+        elif chk[0] == "fsck":
             rc, out = p8xfs("fsck", img)
             if rc: fails.append("fsck failed:\n" + out.strip())
         elif chk[0] == "ls":
@@ -132,6 +194,7 @@ def main():
             img = os.path.join(BUILD, "%s.%s.img" % (name, tag))
             shutil.copy(os.path.join(OS, "disk.img"), img)
             got, status = transcript(emu, limit, img, script)
+            if got is not None: got = mask(name, got)
             exp_file = os.path.join(HERE, "%s.%s.out" % (name, tag))
             if got is None: print("%-12s %-4s FAIL  %s" % (name, tag, status)); failed += 1; continue
             if update: open(exp_file, "w", newline="").write(got)

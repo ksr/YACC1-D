@@ -205,12 +205,25 @@ A volume is a sequence of 512-byte sectors (LBAs). All multi-byte fields are **l
 | 0 | boot block: bytes 0–1 `P8`, byte 2 version = 2, byte 3 OSCNT (sectors of OS image, 0 = none), bytes 4–5 the free pointer (first unallocated LBA); the rest zero |
 | 1–32 | the OS image, `OSCNT` sectors used (max 32 = 16 KB; `p8xfs.py boot` refuses more); loaded to $1000 by the `O` command |
 | 33–36 | the root directory: a 4-sector extent = 64 entries; entry 0 = `.` (itself), entry 1 = `..` (itself for the root) |
-| 37… | files and subdirectory extents, contiguous, allocated at the free pointer (`alloc` / `fs_create`), never moved |
+| 37… | files and subdirectory extents, contiguous, allocated at the free pointer (`alloc` / `fs_create`), moved only by `pack` |
 
 A directory is a file whose extent holds 32-byte entries; a subdirectory's extent is 4 sectors by default
 (`mkdir --secs` changes it on the host; the OS always makes 4; the OS reads the size from the entry). Entries are
 used in order; the first entry with flag `$00` ends the scan, and a deleted entry is a tombstone `$FF` that a new
-entry may reuse. Space is never reclaimed by either side today (no `pack`).
+entry may reuse. Neither the OS nor the host tool frees space when it deletes or replaces; `/BIN/PACK` does it in
+one pass (below).
+
+**Compaction (`pack`, 2026-09-23).** `os/commands/pack.c` reads the tree from the root without recursion (its
+record table is the work list: start LBA, sectors, the record of the holding directory, the entry's byte offset),
+sorts the live extents by start LBA, refuses a volume whose extents overlap or pass the free pointer, then slides
+each extent down to the lowest free sector at or above LBA 37, sector by sector with CFREAD/CFWRITE. Ascending order
+is the whole safety argument: every extent still to move lies above the current one and the copy only writes below
+the current one's end. Each moved entry is rewritten in its directory where that directory is at that moment; a
+moved directory's '.' and its subdirectories' '..' follow, and every '.'/'..' is re-checked. It writes the new free
+pointer, re-enters the current directory by path (the OS caches its LBA) and returns; the shell re-reads the free
+pointer after every program (`read_free()`), since the OS caches that too. Refused under `<`/`>`/`>>`/`|` (STDIO).
+No journal: an interruption leaves a sound structure that a second `pack` completes, but the extent in flight is
+lost when its hole was smaller than itself (`man pack`). `p8xfs.py fsck` checks '.' as well as '..' since then.
 
 The 32-byte directory entry (`pack_at`/`unpack_at`, `take_entry`/`set_entry`):
 
@@ -225,8 +238,8 @@ The 32-byte directory entry (`pack_at`/`unpack_at`, `take_entry`/`set_entry`):
 | 25 | 7 | spare, zero |
 
 Sector count of an entry = ⌈length / 512⌉ (`take_entry`: `(e_len + 511) / 512 + e_lenhi * 128`, minimum 1); a
-directory's sector count comes from its length field (`dir_secs`). `p8xfs.py fsck` checks the signature, the `..`
-links, the extents and reports reclaimable space.
+directory's sector count comes from its length field (`dir_secs`). `p8xfs.py fsck` checks the signature, the `.` and
+`..` links, the extents and reports reclaimable space.
 
 Host tool summary (`p8xfs.py --help`): `create img [--sectors N]` (default 256; the Makefile uses 2048), `boot img
 os.bin`, `mkdir img /BIN [--secs N]`, `put img file [--name /BIN/F] [--load A] [--exec A] [--replace] [--strict]`,
@@ -239,7 +252,7 @@ image with `-c disk.img` and create a zero-filled 256-sector one if the file is 
 |---|---|
 | $0000–$0EFF | system page: BASIC's areas (unused while the OS runs); the OS's four 512-byte handle buffers at $0400–$0BFF (since 2026-09-23); the stack from $0EFF down, not below $0C00 |
 | $0F00–$0FFF | the ROM's variables, and the OS's syscall block inside their free space: `SYSARG0..2` $0F06–$0F0B, `SYSRES` $0F0C, `CFLBA0..2` $0F10, `SYSTAB` $0F14–$0F3F, `ARGBUF` $0F40–$0FBF (over the monitor's idle line buffer) |
-| $1000–$4FFF | the OS image (5.1K for v0; 14,673 bytes = 29 sectors with redirection and pipes, 2026-09-23) and its data (1,424 bytes: the OS sector buffer, line, path, directory, handle and pipeline state); image + data must end below $5000 (the Makefile checks; 16,097 of 16,384 today) |
+| $1000–$4FFF | the OS image (5.1K for v0; 14,624 bytes = 29 sectors with redirection and pipes, 2026-09-23) and its data (1,424 bytes: the OS sector buffer, line, path, directory, handle and pipeline state); image + data must end below $5000 (the Makefile checks; 16,048 of 16,384 today) |
 | $5000–$CFFF | the transient program area (`TPA`..`TPATOP`), 32 K |
 | $D000–$DFFF | video (map A: $D000–$D7FF the 2K display RAM, $D800–$DFFF unused) — not RAM |
 | $E000–$FFFF | ROM |
@@ -271,7 +284,7 @@ the start of phase 3). Still to do, in the plan's order:
 1. **The CF card in hardware**: KiCad, two ports, 74245 + 74LS174/273 select latch + decode + strobe gating, True
    IDE 8-bit, status pull-ups, activity LED; the first KiCad-native card; bench-tested with the bus tester
    (`OUTI P8 / INP P9` through the ROM driver) before the CPU touches it.
-2. `fsck`/`pack` on the OS side; `os/lib_fs.c` (the C wrappers over `sys()`); updated `os/README.md`, `disk.img`
+2. `fsck` on the OS side (`pack` done 2026-09-23, `/BIN/PACK`); `os/lib_fs.c` (the C wrappers over `sys()`); updated `os/README.md`, `disk.img`
    and `tests/os` transcripts for v0.1.
 3. **Porting the P8X commands** (`os/PORT-PLAN.md`, survey of 46 commands + 18 libraries): wave 0 the shared
    libraries (`lib_stdin`, `lib_glob`/`lib_regex` made iterative…) and the mechanical recipe (`//#use X` →

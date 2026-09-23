@@ -80,7 +80,6 @@ int h_lba[5], h_len[5], h_pos[5], h_cur[5];   /* start LBA; length (dir: extent 
 int wh;                         /* the write handle in use, 0 none: CREATE/MKDIR allocate at free_lba, so one at a time */
 int w_dlba, w_dsecs, w_load, w_exec;          /* the write handle's directory and header */
 char w_name[13];
-int oscnt;
 int w_oslba, w_ooff;            /* the live same-named file a CREATE replaces: its entry's sector/offset (0 = none) */
 int si_h, so_h;                 /* the shell's redirection: 0 = the console, else the handle of the < file / pipe
                                    (SI_EMPTY: a pipe stage after one that wrote its own > file: empty input) and of
@@ -232,6 +231,13 @@ void tombstone() {              /* flag the entry at e_slba/e_off deleted */
     if (cfread(e_slba, sbuf)) return;
     sbuf[e_off + 24] = F_DEL;
     cfwrite(e_slba, sbuf);
+}
+
+int read_free() {               /* free_lba <- the boot block's free pointer; 1 = read error. At boot and after every
+                                   program (run_prog): a program may move it behind the OS's back (/BIN/PACK) */
+    if (cfread(0, sbuf)) return 1;
+    free_lba = le16(sbuf + 4);
+    return 0;
 }
 
 void write_free() {             /* the boot block's free pointer <- free_lba */
@@ -680,6 +686,7 @@ void run_prog(char *args) {             /* e_* = the program (already loaded): a
     a[i] = 0;
     call(e_exec);
     close_all();                        /* what the program left open (a pending write is registered) */
+    read_free();                        /* the free pointer as the program left it: pack lowers it (2026-09-23) */
 }
 
 char *word(char *s) {                   /* NUL-terminate the word at s, return what follows it */
@@ -710,14 +717,16 @@ int hexnum(char *s) {                   /* hex digits -> int (stops at the first
 }
 
 void cmd_save(char *rest) {             /* save path addr len: memory -> a file with that load/exec address */
-    char *a, *l; int h, addr, len;
+    char *a, *l; int h, addr, len, n;
     a = word(rest); l = word(a);
     if (!*a || !*l) { eputs("usage: save path addr len (hex)"); return; }
     addr = hexnum(a); len = hexnum(l);
     h = fs_create(rest, addr, addr);
     if (!h) { eputs("cannot create"); return; }
     a = addr;
-    if (fs_write(h, a, len) != len || !fs_close(h)) { eputs("write error"); return; }
+    n = fs_write(h, a, len);            /* closed even after a short write (2026-09-23): a handle left open here kept
+                                           wh set with no program running, which /BIN/PACK could not see */
+    if (!fs_close(h) || n != len) { eputs("write error"); return; }
     putstr("saved "); putnum(len); puts(" bytes");
 }
 
@@ -858,11 +867,8 @@ void io_reset() {                       /* back to the console; closing a writte
 void main() {
     int n, k, quit;
     cwd_lba = ROOT_LBA; cwd_secs = ROOT_SECS; strcpy(cwdpath, "/");
-    wh = 0; si_h = 0; so_h = 0;
-    for (n = 0; n <= NH; n++) h_mode[n] = M_FREE;
-    install();
-    if (cfread(0, sbuf)) { puts("CF read error"); return; }
-    oscnt = sbuf[3]; free_lba = le16(sbuf + 4);
+    install();                          /* (wh, si_h, so_h = 0 and every h_mode M_FREE: main's BSS clear did it) */
+    if (read_free()) { puts("CF read error"); return; }
     puts("Y1/OS v0.1 (2026-09-23)  P8XFS v2");
     quit = 0;
     while (!quit) {

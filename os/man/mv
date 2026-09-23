@@ -30,8 +30,8 @@ LIMITS
     directory (a copy) fails with "mv: cannot copy to X"; a rename in
     place still works (see shell).
     A glob moves at most 24 files. src and dst are cut at 63
-    characters. The sectors of a file moved to another directory are
-    not reclaimed (no PACK yet).
+    characters. The sectors of a file moved to another directory come
+    back with pack.
 
 EXAMPLES
     mv /F.TXT /G.TXT          rename

@@ -57,11 +57,12 @@ in /BIN:
   head first lines                         help this list
   ls   plain directory list                man  a manual page (/MAN)
   md   render Markdown (/DOCS)             more page a file
-  mv   move/rename files                   pwd  the working directory
-  sed  s/re/new/[g]                        sort sort lines
-  tail last lines                          touch create empty files
-  tree the directory tree                  uniq drop adjacent repeats
-  vi   the screen editor                   wc   lines words bytes
+  mv   move/rename files                   pack compact the disk: reclaim dead sectors
+  pwd  the working directory               sed  s/re/new/[g]
+  sort sort lines                          tail last lines
+  touch create empty files                 tree the directory tree
+  uniq drop adjacent repeats               vi   the screen editor
+  wc   lines words bytes
 /> 
 bye
 >

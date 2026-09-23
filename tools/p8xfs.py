@@ -380,6 +380,11 @@ def fsck_v2(img, imgname):
     def visit(dlba, dsecs, parent_lba, path):
         nonlocal ndirs, nfiles, ndel
         extents.append((dlba, dsecs, path + "/"))
+        # '.' must point at the directory itself (pack rewrites it when a directory moves; 2026-09-23)
+        dot = find_in_dir(img, dlba, dsecs, ".")
+        if dot and dot["start"] != dlba:
+            errs.append("%s/.: points at LBA %d, the directory is at %d" %
+                        (path, dot["start"], dlba))
         # '..' must point at the parent
         up = find_in_dir(img, dlba, dsecs, "..")
         if up and up["start"] != parent_lba:

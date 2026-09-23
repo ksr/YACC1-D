@@ -1,0 +1,45 @@
+mkdir /PK
+echo gone > /PK/G.TXT
+mkdir /PK/SUB
+cp /DOCS/Y1CC.MD /PK/SUB/Y1CC.MD
+echo one > /PK/LOG
+mkdir /PK/SUB/DEEP
+cp /DOCS/MDDEMO.MD /PK/SUB/DEEP/MD.MD
+cp /BIN/HELLO /PK/SUB/H
+mkdir /PK/EMPTY
+echo alpha > /PK/A.TXT
+echo two >> /PK/LOG
+del /PK/G.TXT
+rmdir /PK/EMPTY
+echo alpha2 > /PK/A.TXT
+sort /FRUIT.TXT | UNIQ > /PK/U.TXT
+del /FRUIT2.TXT
+cd /PK/SUB
+pack
+pwd
+dir
+cd DEEP
+dir
+cd ..
+cd ..
+pwd
+dir
+cat LOG
+cat A.TXT
+cat U.TXT
+cmp /PK/SUB/Y1CC.MD /DOCS/Y1CC.MD
+cmp /PK/SUB/DEEP/MD.MD /DOCS/MDDEMO.MD
+run /PK/SUB/H 1 2
+head -3 /MAN/PACK
+echo new > /PK/NEW.TXT
+cat /PK/NEW.TXT
+pack > /X.TXT
+cat /FRUIT.TXT | pack
+pack < /FRUIT.TXT
+del /X.TXT
+echo mid > /PK/SUB/DEEP/MID.TXT
+cd /
+pack
+echo last > /PK/SUB/DEEP/LAST.TXT
+dir /PK/SUB/DEEP
+exit

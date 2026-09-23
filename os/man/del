@@ -7,8 +7,8 @@ SYNOPSIS
 DESCRIPTION
     Deletes each file named. A glob (* or ? in the last component, case
     folded) deletes every matching file in that directory. The file's
-    directory entry is tombstoned; its sectors are not reclaimed
-    (Y1/OS has no PACK yet). A name that is not a file reports
+    directory entry is tombstoned; its sectors come back with pack.
+    A name that is not a file reports
     "del: not a file: NAME" and the others are still deleted; a glob
     that matches nothing reports "del: no match: GLOB". Files only:
     remove a directory with rmdir. del is /BIN/DEL.
@@ -25,9 +25,9 @@ EXAMPLES
     del /T/*.BAK
 
 NOTES
-    Removed from the P8X version: pack (to get the space back) and the
-    /d1 mount. New: globs.
+    Removed from the P8X version: the /d1 mount (pack, which the P8X
+    had as a shell built-in, is /BIN/PACK). New: globs.
     Ported from P8X os/commands/del.c 2026-09-23.
 
 SEE ALSO
-    rmdir, mv, touch, globx
+    rmdir, mv, touch, globx, pack

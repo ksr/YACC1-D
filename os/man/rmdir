@@ -9,7 +9,7 @@ DESCRIPTION
     files do not count, so a directory emptied with del can go). Quiet
     on success; "not an empty directory" on any failure: not empty, but
     also not found, not a directory, or ".", ".." or the root. Its
-    sectors are not reclaimed (no PACK yet). rmdir is a shell built-in
+    sectors come back with pack. rmdir is a shell built-in
     (the RMDIR syscall, 9).
 
 EXAMPLES
@@ -17,7 +17,7 @@ EXAMPLES
     rmdir SUB
 
 NOTES
-    Removed from the P8X version: pack.
+    The P8X's pack is /BIN/PACK here (see pack).
     The command is the Y1/OS shell's own (os/y1os.c); the page is
     ported from P8X os/man/rmdir 2026-09-23.
 

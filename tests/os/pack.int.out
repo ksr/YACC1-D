@@ -1,0 +1,84 @@
+BOOT FROM CF
+Y1/OS v0.1 (2026-09-23)  P8XFS v2
+/> 
+/> 
+/> 
+/> 
+/> 
+/> 
+/> 
+/> 
+/> 
+/> 
+/> 
+/> 
+/> 
+/> 
+/> 
+/> 
+/> 
+/> 
+/PK/SUB> 
+pack: 9 sectors reclaimed, free pointer N (was N)
+pack: N files and 5 directories moved
+/PK/SUB> 
+/PK/SUB
+/PK/SUB> 
+         DEEP/
+    144  H  @5000
+  14993  Y1CC.MD  @B000
+/PK/SUB> 
+/PK/SUB/DEEP> 
+    549  MD.MD  @B000
+/PK/SUB/DEEP> 
+/PK/SUB> 
+/PK> 
+/PK
+/PK> 
+      7  A.TXT
+      8  LOG
+         SUB/
+     69  U.TXT
+/PK> 
+one
+two
+/PK> 
+alpha2
+/PK> 
+apple 3 red
+banana 12 yellow
+cherry 40 red
+fig 7 purple
+pear 5 green
+/PK> 
+/PK> 
+/PK> 
+hello from /BIN/HELLO
+args: 1 2
+/PK> 
+NAME
+    pack - compact the volume, reclaiming dead sectors
+
+/PK> 
+/PK> 
+new
+/PK> 
+pack: not with < > >> or a pipe (a redirect file is open)
+/PK> 
+pack: not with < > >> or a pipe (a redirect file is open)
+/PK> 
+pack: not with < > >> or a pipe (a redirect file is open)
+/PK> 
+/PK> 
+/PK> 
+/> 
+pack: 2 sectors reclaimed, free pointer N (was N)
+pack: 1 files and 0 directories moved
+/> 
+/> 
+      5  LAST.TXT
+    549  MD.MD  @B000
+      4  MID.TXT
+/> 
+bye
+>

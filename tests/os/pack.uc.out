@@ -1,0 +1,130 @@
+BOOT FROM CF
+Y1/OS v0.1 (2026-09-23)  P8XFS v2
+/> 
+
+/> mkdir /PK
+
+/> echo gone > /PK/G.TXT
+
+/> mkdir /PK/SUB
+
+/> cp /DOCS/Y1CC.MD /PK/SUB/Y1CC.MD
+
+/> echo one > /PK/LOG
+
+/> mkdir /PK/SUB/DEEP
+
+/> cp /DOCS/MDDEMO.MD /PK/SUB/DEEP/MD.MD
+
+/> cp /BIN/HELLO /PK/SUB/H
+
+/> mkdir /PK/EMPTY
+
+/> echo alpha > /PK/A.TXT
+
+/> echo two >> /PK/LOG
+
+/> del /PK/G.TXT
+
+/> rmdir /PK/EMPTY
+
+/> echo alpha2 > /PK/A.TXT
+
+/> sort /FRUIT.TXT | UNIQ > /PK/U.TXT
+
+/> del /FRUIT2.TXT
+
+/> cd /PK/SUB
+
+/PK/SUB> pack
+
+pack: 9 sectors reclaimed, free pointer N (was N)
+pack: N files and 5 directories moved
+/PK/SUB> pwd
+
+/PK/SUB
+/PK/SUB> dir
+
+         DEEP/
+    144  H  @5000
+  14993  Y1CC.MD  @B000
+/PK/SUB> cd DEEP
+
+/PK/SUB/DEEP> dir
+
+    549  MD.MD  @B000
+/PK/SUB/DEEP> cd ..
+
+/PK/SUB> cd ..
+
+/PK> pwd
+
+/PK
+/PK> dir
+
+      7  A.TXT
+      8  LOG
+         SUB/
+     69  U.TXT
+/PK> cat LOG
+
+one
+two
+/PK> cat A.TXT
+
+alpha2
+/PK> cat U.TXT
+
+apple 3 red
+banana 12 yellow
+cherry 40 red
+fig 7 purple
+pear 5 green
+/PK> cmp /PK/SUB/Y1CC.MD /DOCS/Y1CC.MD
+
+/PK> cmp /PK/SUB/DEEP/MD.MD /DOCS/MDDEMO.MD
+
+/PK> run /PK/SUB/H 1 2
+
+hello from /BIN/HELLO
+args: 1 2
+/PK> head -3 /MAN/PACK
+
+NAME
+    pack - compact the volume, reclaiming dead sectors
+
+/PK> echo new > /PK/NEW.TXT
+
+/PK> cat /PK/NEW.TXT
+
+new
+/PK> pack > /X.TXT
+
+pack: not with < > >> or a pipe (a redirect file is open)
+/PK> cat /FRUIT.TXT | pack
+
+pack: not with < > >> or a pipe (a redirect file is open)
+/PK> pack < /FRUIT.TXT
+
+pack: not with < > >> or a pipe (a redirect file is open)
+/PK> del /X.TXT
+
+/PK> echo mid > /PK/SUB/DEEP/MID.TXT
+
+/PK> cd /
+
+/> pack
+
+pack: 2 sectors reclaimed, free pointer N (was N)
+pack: 1 files and 0 directories moved
+/> echo last > /PK/SUB/DEEP/LAST.TXT
+
+/> dir /PK/SUB/DEEP
+
+      5  LAST.TXT
+    549  MD.MD  @B000
+      4  MID.TXT
+/> exit
+
+bye
+>

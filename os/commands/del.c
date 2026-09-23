@@ -1,5 +1,5 @@
 /* del.c - delete files: del name [name ...]
-     del A.TXT /T/B.TXT   tombstone each file (the sectors come back only when PACK exists)
+     del A.TXT /T/B.TXT   tombstone each file (the sectors come back with /BIN/PACK)
      del *.BAK            a glob deletes every matching file in that directory
    Files only: a directory is removed with the shell's rmdir.
    Ported from P8X os/commands/del.c 2026-09-23, changes: fdelete() (the P8X FRESOLVE + FDELETE and its carry

@@ -1,0 +1,77 @@
+NAME
+    pack - compact the volume, reclaiming dead sectors
+
+SYNOPSIS
+    pack
+    pack -h
+
+DESCRIPTION
+    Files and directories are single contiguous extents, and new ones
+    are only ever allocated at the volume's free pointer, so a sector
+    that stops being used stays dead: a deleted or replaced file, the
+    pipes' /PIPE0.TMP and /PIPE1.TMP, the old copy a >> append leaves
+    when the file was not the last one written, a removed directory.
+    pack slides every live file and directory down over those holes,
+    in disk order, updates each directory entry to the new place, and
+    lowers the free pointer in the boot block. It then prints:
+
+        pack: 9 sectors reclaimed, free pointer 645 (was 654)
+        pack: 64 files and 5 directories moved
+
+    The current directory stays current (pack re-enters it by its
+    path, since the directory itself may have moved), and the shell
+    re-reads the free pointer when pack returns, so the next file is
+    written at the new free pointer. Each directory's '.' and '..'
+    are checked and rewritten where they are wrong. Deleted entries
+    stay in their directories as tombstones: the OS reuses them for
+    new entries, so no room is lost there.
+
+    pack refuses to run with a < or > or >> or inside a pipe: those
+    are files the shell holds open, and a file open for writing grows
+    at the old free pointer. It refuses a volume whose extents
+    overlap or reach past the free pointer, before writing anything
+    (check such a card with tools/p8xfs.py fsck on the host).
+    pack is /BIN/PACK.
+
+LIMITS
+    800 files and directories on the volume. Only sectors behind the
+    first hole are copied, one sector at a time: a pack after deleting
+    a file near the start of the disk moves nearly everything.
+
+WARNINGS
+    There is no journal. Do not reset or switch off while pack runs.
+    What an interruption leaves behind:
+      - The volume's structure stays sound: every entry points at a
+        whole extent in the data area, no two extents overlap, the
+        free pointer is above them all. So running pack again after
+        an interrupted run is safe; it finishes the job and repairs
+        any '.' or '..' the interrupted run had not fixed yet.
+      - The one file or directory being copied when the power went
+        can be lost. If its hole was at least as big as itself, its
+        old copy is untouched and its entry still points there: no
+        harm. If the hole was smaller, the copy had already written
+        over the start of its own old place, and the entry still
+        points there: that file is garbage, and for a directory the
+        files under it are lost with it (it usually reads as empty,
+        and p8xfs.py fsck does not notice). pack cannot tell
+        afterwards and cannot repair it. After deleting a small file
+        that is most moves: any extent bigger than the hole before it.
+      - As with any write, a sector half-written when the power drops
+        (a directory sector, or the boot block at the very end) can
+        be damaged.
+    Before packing a card that matters, copy it (dd on the host), and
+    after an interrupted pack check it with p8xfs.py fsck and look at
+    the files that were being moved.
+
+EXAMPLES
+    del /OLD.TXT
+    pack
+    dir
+
+NOTES
+    New in Y1/OS (2026-09-23). On the P8X, PACK was a shell built-in;
+    here it is a program, working on raw sectors through the ROM's
+    CFREAD/CFWRITE, so it costs the OS nothing.
+
+SEE ALSO
+    del, rmdir, fs

@@ -38,8 +38,8 @@ HOW PIPES RUN
     There is no multitasking. a | b runs a with its output to the file
     /PIPE0.TMP, then b with its input from it; a third command reads
     /PIPE1.TMP, a fourth /PIPE0.TMP again. The temp files are deleted
-    when the line is done; their sectors come back only with a PACK
-    (not written yet), like those of every deleted file.
+    when the line is done; their sectors come back with pack, like
+    those of every deleted file.
 
 LIMITS
     One file open for writing at a time: while a command's output goes
