@@ -5,6 +5,7 @@
     name       run only these sessions
     --update   rewrite the expected transcripts from this run (after checking them by eye)
     --keep     leave the per-run disk images in tests/os/build/
+  run.py --cuts [N]   the reset-safety proof of pack (instruction-level emulator only, ~N x 0.3 s): N cuts, see cuts()
 
 Sessions live in tests/os/*.session (one console line per line, sent after the monitor's O command boots the
 OS; a Ctrl-D byte ends a program's console input). The expected transcript is NAME.int.out for the instruction-level
@@ -35,7 +36,7 @@ LIMITS = {"basic": (8000000, 120000000),         # instructions (int) / microcod
           "wave2": (9000000, 130000000),         # 5.7M / 79M needed; 5.9M / 49M with --os
           "redirect": (4000000, 60000000),       # 1.9M / 27M needed (2026-09-23)
           "pipe": (13000000, 180000000),         # 9.8M / 136M needed: every byte crosses CONOUT, then CONIN
-          "pack": (34000000, 480000000)}         # 26-28M / 360-420M needed (2026-09-23): pack copies ~420 sectors
+          "pack": (34000000, 480000000)}         # <= 30M / <= 420M needed (2026-09-23, two-step pack): ~430 sectors moved
 DEFAULT_LIMIT = (12000000, 200000000)
 
 # host-side checks on the disk image a session leaves behind: ("fsck",) must pass; ("ls", path, present, absent)
@@ -179,8 +180,87 @@ def host_check(name, img):
     return fails
 
 
+def cuts(n):
+    """Cut `pack -v` off at n points spread over its run (the emulator's instruction limit is the reset) and prove it
+    reset-safe: after EVERY cut fsck passes and every file of the fragmented volume is still there, byte-identical
+    with the same load/exec; then a fresh boot runs pack again, which must finish, leave no dead sector and keep
+    every file. The fragmented volume is pack.session up to its first `pack` (scenario A: a 1-sector hole early,
+    so nearly every move takes two steps), and the same plus `del /DOCS/PORT.MD` (scenario B: a 91-sector hole,
+    so what follows it moves in one step); n cuts each. Each cut is classified by the last
+    line pack -v printed ("from>to [via scratch]: " + a letter per step done: c e C E), so the report shows that the
+    cuts hit the scratch copy, the two entry rewrites and the one-step moves (2026-09-23)."""
+    bad = 0
+    for tag, extra in (("A", ""), ("B", "del /DOCS/PORT.MD\n")):
+        bad += cut_scenario(tag, extra, n)
+    print("all: %d cuts, %d failed" % (2 * n, bad))
+    sys.exit(1 if bad else 0)
+
+
+def cut_scenario(tag, extra, n):
+    emu = EMUS[0][1]
+    pre = open(os.path.join(HERE, "pack.session")).read().split("\npack\n")[0] + "\n" + extra
+    img = os.path.join(BUILD, "cut.img")
+    def boot(script, limit):
+        shutil.copy(os.path.join(OS, "disk.img"), img) if script is not None else None
+        p = subprocess.run([emu, "-x", "-m", "-c", img, "-l", str(limit)], capture_output=True,
+                           input=b"O\n" + (script if script is not None else "pack\nexit\n").encode())
+        return p.stdout.decode("latin1").replace("\r", "")
+    boot(pre + "exit\n", 40000000)                      # the reference: the fragmented volume, no pack
+    ref, _ = tree_files(P.read_img(img))
+    def started(limit):                                  # has pack -v printed its first move / its summary?
+        out = boot(pre + "pack -v\n", limit)
+        return (re.search(r"^\d+>\d+", out, re.M) is not None), ("sectors reclaimed" in out), out
+    def first(pred, lo, hi):                             # smallest limit in (lo, hi] where pred holds (to 1K)
+        while hi - lo > 1000:
+            mid = (lo + hi) // 2
+            if pred(mid): hi = mid
+            else: lo = mid
+        return hi
+    lo = first(lambda l: started(l)[0], 1000000, 40000000)
+    hi = first(lambda l: started(l)[1], lo, 60000000)
+    print("scenario %s: pack -v runs from ~%d to ~%d instructions; %d cuts" % (tag, lo, hi, n))
+    kinds = {}; bad = 0
+    for k in range(n):
+        limit = lo - 20000 + (hi - lo + 40000) * k // (n - 1)
+        out = started(limit)[2]
+        moves = re.findall(r"^(\d+)>(\d+)( via \d+)?: ?([ceCE]*)", out, re.M)
+        if "sectors reclaimed" in out: kind = "after the last write"
+        elif not moves: kind = "before the first move"
+        else:
+            via, st = moves[-1][2], moves[-1][3]
+            kind = {("v", ""): "2-step: copying to scratch", ("v", "c"): "2-step: scratch copied, entry not yet",
+                    ("v", "ce"): "2-step: entry on scratch, copying down", ("v", "ceC"): "2-step: copied down, entry still on scratch",
+                    ("v", "ceCE"): "2-step: done (next step not started)", ("", ""): "1-step: copying",
+                    ("", "C"): "1-step: copied, entry not yet", ("", "CE"): "1-step: done"}[("v" if via else "", st)]
+        rc, fs = p8xfs("fsck", img)
+        got, _ = tree_files(P.read_img(img))
+        lost = [q for q, v in ref.items() if got.get(q) != v]
+        boot(None, 12000000)                             # a fresh boot of the same image: pack again
+        rc2, fs2 = p8xfs("fsck", img)
+        vol = P.read_img(img); got2, nsec = tree_files(vol)
+        lost2 = [q for q, v in ref.items() if got2.get(q) != v]
+        packed = P.get_free(vol) == P.DATA_V2 + nsec
+        ok = rc == 0 and not lost and rc2 == 0 and not lost2 and packed
+        kinds[kind] = kinds.get(kind, 0) + 1
+        if not ok:
+            bad += 1
+            print("  cut at %d (%s): fsck %s, lost %s; rerun: fsck %s, lost %s, %s" % (limit, kind,
+                  "ok" if rc == 0 else "FAIL", lost[:4], "ok" if rc2 == 0 else "FAIL", lost2[:4],
+                  "packed" if packed else "NOT packed"))
+    for kind, c in sorted(kinds.items()): print("  %3d cuts %s" % (c, kind))
+    print("  %d cuts, %d failed (a failure = fsck, a lost or changed file, or a rerun that does not finish)" % (n, bad))
+    os.remove(img)
+    return bad
+
+
 def main():
     update = "--update" in sys.argv; keep = "--keep" in sys.argv
+    if "--cuts" in sys.argv:
+        r = subprocess.run(["make", "-s", "-C", OS], capture_output=True, text=True)
+        if r.returncode: sys.exit("os build failed")
+        os.makedirs(BUILD, exist_ok=True)
+        i = sys.argv.index("--cuts")
+        cuts(int(sys.argv[i + 1]) if i + 1 < len(sys.argv) and sys.argv[i + 1].isdigit() else 60)
     only = [a for a in sys.argv[1:] if not a.startswith("--")]
     r = subprocess.run(["make", "-s", "-C", OS], capture_output=True, text=True)
     if r.returncode: sys.exit("os build failed:\n" + r.stdout[-800:] + r.stderr[-800:])

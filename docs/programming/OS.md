@@ -215,15 +215,20 @@ one pass (below).
 
 **Compaction (`pack`, 2026-09-23).** `os/commands/pack.c` reads the tree from the root without recursion (its
 record table is the work list: start LBA, sectors, the record of the holding directory, the entry's byte offset),
-sorts the live extents by start LBA, refuses a volume whose extents overlap or pass the free pointer, then slides
+sorts the live extents by start LBA, refuses a volume whose extents overlap or pass the free pointer, then moves
 each extent down to the lowest free sector at or above LBA 37, sector by sector with CFREAD/CFWRITE. Ascending order
-is the whole safety argument: every extent still to move lies above the current one and the copy only writes below
-the current one's end. Each moved entry is rewritten in its directory where that directory is at that moment; a
-moved directory's '.' and its subdirectories' '..' follow, and every '.'/'..' is re-checked. It writes the new free
-pointer, re-enters the current directory by path (the OS caches its LBA) and returns; the shell re-reads the free
-pointer after every program (`read_free()`), since the OS caches that too. Refused under `<`/`>`/`>>`/`|` (STDIO).
-No journal: an interruption leaves a sound structure that a second `pack` completes, but the extent in flight is
-lost when its hole was smaller than itself (`man pack`). `p8xfs.py fsck` checks '.' as well as '..' since then.
+means every extent still to move lies above the current one, and a copy down only writes below the current one's
+end. An extent whose hole is at least its size is copied in one step and its entry then rewritten (one sector
+write); a bigger one would overwrite the start of its own old copy, so it goes in two steps through a scratch area
+at the old free pointer (copy there, entry there, copy down, entry down), with the boot block's free pointer raised
+over the scratch area before the first move. So at every moment every entry points at a complete copy of its
+extent: pack is **reset-safe**, and a rerun finishes an interrupted one (a '.' or '..' that lags one step is fixed
+by the repair pass every run makes). `tests/os/run.py --cuts 60` proves it on the emulator: 120 cuts in every
+phase, fsck clean, every file byte-identical, rerun complete. Entries are rewritten in their directory where that
+directory is at that moment; pack then writes the final free pointer and re-enters the current directory by path
+(the OS caches its LBA); the shell re-reads the free pointer after every program (`read_free()`), since the OS
+caches that too. Refused under `<`/`>`/`>>`/`|` (STDIO), and when the card has no room for the scratch area (the
+last scratch sector must read; nothing lies past LBA 65535). `p8xfs.py fsck` checks '.' as well as '..' since then.
 
 The 32-byte directory entry (`pack_at`/`unpack_at`, `take_entry`/`set_entry`):
 
@@ -237,9 +242,10 @@ The 32-byte directory entry (`pack_at`/`unpack_at`, `take_entry`/`set_entry`):
 | 24 | 1 | flags: `$00` end of directory, `$01` file, `$02` directory, `$FF` deleted |
 | 25 | 7 | spare, zero |
 
-Sector count of an entry = ⌈length / 512⌉ (`take_entry`: `(e_len + 511) / 512 + e_lenhi * 128`, minimum 1); a
-directory's sector count comes from its length field (`dir_secs`). `p8xfs.py fsck` checks the signature, the `.` and
-`..` links, the extents and reports reclaimable space.
+Sector count of an entry = ⌈length / 512⌉ (`take_entry`: `(e_len >> 9) + e_lenhi * 128`, plus 1 when `e_len & 511`,
+minimum 1; not `(e_len + 511) / 512`, which wraps at 16 bits); a directory's sector count comes from its length
+field (`dir_secs`). `p8xfs.py fsck` checks the signature, the `.` and `..` links, the extents and reports
+reclaimable space.
 
 Host tool summary (`p8xfs.py --help`): `create img [--sectors N]` (default 256; the Makefile uses 2048), `boot img
 os.bin`, `mkdir img /BIN [--secs N]`, `put img file [--name /BIN/F] [--load A] [--exec A] [--replace] [--strict]`,
@@ -252,7 +258,7 @@ image with `-c disk.img` and create a zero-filled 256-sector one if the file is 
 |---|---|
 | $0000–$0EFF | system page: BASIC's areas (unused while the OS runs); the OS's four 512-byte handle buffers at $0400–$0BFF (since 2026-09-23); the stack from $0EFF down, not below $0C00 |
 | $0F00–$0FFF | the ROM's variables, and the OS's syscall block inside their free space: `SYSARG0..2` $0F06–$0F0B, `SYSRES` $0F0C, `CFLBA0..2` $0F10, `SYSTAB` $0F14–$0F3F, `ARGBUF` $0F40–$0FBF (over the monitor's idle line buffer) |
-| $1000–$4FFF | the OS image (5.1K for v0; 14,624 bytes = 29 sectors with redirection and pipes, 2026-09-23) and its data (1,424 bytes: the OS sector buffer, line, path, directory, handle and pipeline state); image + data must end below $5000 (the Makefile checks; 16,048 of 16,384 today) |
+| $1000–$4FFF | the OS image (5.1K for v0; 14,619 bytes = 29 sectors with redirection and pipes, 2026-09-23) and its data (1,424 bytes: the OS sector buffer, line, path, directory, handle and pipeline state); image + data must end below $5000 (the Makefile checks; 16,043 of 16,384 today) |
 | $5000–$CFFF | the transient program area (`TPA`..`TPATOP`), 32 K |
 | $D000–$DFFF | video (map A: $D000–$D7FF the 2K display RAM, $D800–$DFFF unused) — not RAM |
 | $E000–$FFFF | ROM |

@@ -3,6 +3,7 @@ NAME
 
 SYNOPSIS
     pack
+    pack -v
     pack -h
 
 DESCRIPTION
@@ -11,7 +12,7 @@ DESCRIPTION
     that stops being used stays dead: a deleted or replaced file, the
     pipes' /PIPE0.TMP and /PIPE1.TMP, the old copy a >> append leaves
     when the file was not the last one written, a removed directory.
-    pack slides every live file and directory down over those holes,
+    pack moves every live file and directory down over those holes,
     in disk order, updates each directory entry to the new place, and
     lowers the free pointer in the boot block. It then prints:
 
@@ -33,35 +34,47 @@ DESCRIPTION
     (check such a card with tools/p8xfs.py fsck on the host).
     pack is /BIN/PACK.
 
+OPTIONS
+    -v  one line per moved extent: "from>to", or "from>to via S" for
+        a two-step move through the scratch area at LBA S, then a
+        letter as each step is done: c copied to the scratch area,
+        e entry on the scratch copy, C copied to its place, E entry
+        on the final copy.
+
+RESET-SAFE
+    A reset or power loss while pack runs loses nothing, and running
+    pack again finishes the job. At every moment every directory
+    entry points at a complete copy of its file or directory:
+      - An extent whose hole is at least its own size is copied into
+        the hole, and only then is its entry pointed at the copy (one
+        sector write); until then the old copy is untouched.
+      - An extent whose hole is smaller would overwrite the start of
+        its own old copy, so it moves in two steps: copied whole to a
+        scratch area right above the free pointer, its entry pointed
+        there, copied down to its place, its entry pointed there.
+        Before the first move the free pointer on the card is raised
+        over the scratch area, so a copy parked there is part of the
+        volume if pack stops.
+      - A directory's '.' and its subdirectories' '..' follow at once,
+        and every '.' and '..' is checked and repaired on each run.
+    An interrupted pack leaves a volume that passes p8xfs.py fsck
+    with every file intact; the next pack reclaims what is left,
+    the scratch area included. (Tested on the emulator by cutting
+    pack off at 120 points in every phase: nothing was lost.) The
+    one thing no program can guard against is a sector half-written
+    when the power drops, as with any write.
+
 LIMITS
     800 files and directories on the volume. Only sectors behind the
-    first hole are copied, one sector at a time: a pack after deleting
-    a file near the start of the disk moves nearly everything.
-
-WARNINGS
-    There is no journal. Do not reset or switch off while pack runs.
-    What an interruption leaves behind:
-      - The volume's structure stays sound: every entry points at a
-        whole extent in the data area, no two extents overlap, the
-        free pointer is above them all. So running pack again after
-        an interrupted run is safe; it finishes the job and repairs
-        any '.' or '..' the interrupted run had not fixed yet.
-      - The one file or directory being copied when the power went
-        can be lost. If its hole was at least as big as itself, its
-        old copy is untouched and its entry still points there: no
-        harm. If the hole was smaller, the copy had already written
-        over the start of its own old place, and the entry still
-        points there: that file is garbage, and for a directory the
-        files under it are lost with it (it usually reads as empty,
-        and p8xfs.py fsck does not notice). pack cannot tell
-        afterwards and cannot repair it. After deleting a small file
-        that is most moves: any extent bigger than the hole before it.
-      - As with any write, a sector half-written when the power drops
-        (a directory sector, or the boot block at the very end) can
-        be damaged.
-    Before packing a card that matters, copy it (dd on the host), and
-    after an interrupted pack check it with p8xfs.py fsck and look at
-    the files that were being moved.
+    first hole are copied, one sector at a time, and a two-step move
+    copies twice: a pack after deleting a small file near the start
+    of the disk moves nearly everything, mostly in two steps.
+    The scratch area needs as many free sectors above the free pointer
+    as the largest two-step file or directory. The volume does not
+    record its size, so pack reads the last scratch sector first: a
+    card refuses a sector past its end, and pack then stops with
+    "no room on the card above the free pointer" before writing
+    anything. Nothing on the volume can lie past LBA 65535 (32 MB).
 
 EXAMPLES
     del /OLD.TXT

@@ -21,9 +21,9 @@ make -C os test         # tests/os/run.py: scripted sessions on both emulators a
 The monitor's `O` command (ROM, `firmware/monitor/monitor.asm`) initialises the card (SET FEATURES, 8-bit mode),
 reads the boot block (LBA 0) to $1000, checks the `P8` signature and OSCNT, reads LBA 1..OSCNT to $1000 and JSRURs
 it. `y1os.c` is compiled with `--org 0x1000`, so `main` is the first byte of the image; `exit` makes main return,
-and the monitor's prompt is back. `tools/p8xfs.py boot disk.img build/y1os.bin` installs it (14,624 bytes = 29 of
+and the monitor's prompt is back. `tools/p8xfs.py boot disk.img build/y1os.bin` installs it (14,619 bytes = 29 of
 the 32 reserved sectors since redirection and pipes, 2026-09-23; 12,204 bytes = 24 sectors before; v0 was 5,136
-bytes). Its image plus its data must end below $5000, where the programs start: 16,048 of the 16,384 bytes today,
+bytes). Its image plus its data must end below $5000, where the programs start: 16,043 of the 16,384 bytes today,
 which the Makefile checks and prints. At boot main() clears its BSS (which is also what zeroes the handle table and
 the redirect state), fills the syscall table (below), and reads the boot block again for the free-sector pointer;
 it keeps that pointer in RAM and reads it again after every program returns (`read_free()` in `run_prog()`, since
@@ -256,7 +256,7 @@ sample data for trying the filters (`sort`, `uniq`, `awk`, `diff` ... the man pa
 ### `pack` (2026-09-23)
 
 Only the free pointer allocates and nothing is freed, so every deleted or replaced file, every pipe temp file, every
-copied `>>` and every removed directory leaves dead sectors. `/BIN/PACK` (`commands/pack.c`, 4,358 bytes) gets them
+copied `>>` and every removed directory leaves dead sectors. `/BIN/PACK` (`commands/pack.c`, 5,397 bytes) gets them
 back. It is a program, not a built-in, so the OS image did not grow; it reads and writes raw sectors through the ROM's
 CFREAD/CFWRITE (the syscalls hide where an entry sits) and uses the OS only for STDIO, GETCWD and CHDIR.
 
@@ -264,28 +264,49 @@ CFREAD/CFWRITE (the syscalls hide where an entry sits) and uses the OS only for 
    directory holding the entry, the entry's byte offset in that directory) is itself the work list, breadth first.
 2. It sorts the records by start LBA and checks the layout: all at or above LBA 37, none overlapping, none past the
    free pointer. A bad volume is refused before anything is written.
-3. In that order each extent slides down to the lowest free sector, one sector at a time, lowest first. Taking the
+3. In that order each extent moves down to the lowest free sector, one sector at a time, lowest first. Taking the
    extents in ascending order is what makes this safe: every extent still to move lies above the current one, and
-   the copy only writes below the current extent's end, so it never overwrites anything not yet moved.
-4. After each copy the entry gets the new start LBA, found in its directory **as that directory is now** (a record
-   points at its directory's record, whose start is updated when it moves). A moved directory also gets its '.' and
-   the '..' of each subdirectory; afterwards every directory's '.' and '..' are checked and fixed where wrong.
+   a copy down only writes below the current extent's end, so it never overwrites anything not yet moved.
+   **One step** when the hole below the extent is at least its size: copy, then point the entry at the copy.
+   **Two steps** when it is smaller (the copy would overwrite the start of the old copy while the entry still points
+   there): copy it whole to a **scratch area** at the old free pointer, point the entry there, copy it down, point
+   the entry at the final copy. Before the first move the boot block's free pointer is raised over the scratch area
+   (old free pointer + the largest two-step extent), so an extent parked there is inside the volume if the run
+   stops. Only the next two-step move reuses the scratch area, after the previous one has left it.
+4. Each entry is rewritten in its directory **as that directory is now** (a record points at its directory's
+   record, whose start is updated when it moves). A directory's '.' is set while its first sector is copied, its
+   subdirectories' '..' right after its entry moves; afterwards every directory's '.' and '..' are checked and fixed
+   where wrong.
 5. The boot block gets the new free pointer; the current directory is re-entered by its path (the OS caches its LBA),
    and the shell re-reads the free pointer when the program returns (the OS caches that too).
 
 `pack` refuses to run with `<`, `>`, `>>` or in a pipe (STDIO): those are the shell's open files, and a file open
 for writing grows at the old free pointer. They are also the only files open when a command starts: the shell closes
 what a program leaves open, and its built-ins close their own (`save` did not after a failed write; fixed the same
-day). **There is no journal.** A reset or power loss in the middle leaves the structure sound (every entry points at a
-whole extent, none overlap, the free pointer lies above them all), so running `pack` again is safe and finishes the job,
-repairing any '.'/'..' left stale. But the one file or directory being copied at that moment is lost if its hole was
-smaller than itself: the copy had already written over the start of its own old place, where its entry still points
-(a directory takes the files below it along, and usually reads as empty, which `p8xfs.py fsck` does not notice).
-Tried on the emulator 2026-09-23 by cutting a pack off at 16 points: fsck passed every time and a second pack always
-finished, but 8 of the cuts lost the file or directory in flight. `man pack` says so, and to copy the card first. `tests/os/pack.session`
-fragments a disk (deletes, replaces, a pipe, a copied `>>`, `rmdir`, a hole just after /BIN that moves /MAN, /DOCS and a
-three-level tree), packs from inside a subdirectory, and checks from the host that nothing is dead any more, that
-every file of the pristine image is byte-identical, and that the next file lands at the new free pointer.
+day).
+
+**Reset-safe.** There is no journal, and none is needed: at every moment every directory entry points at a complete
+copy of its extent (the old one until the entry's single-sector rewrite, then the new one), and a '.' or '..' that
+lags one step points at a copy that is complete and identical at that moment and is fixed by the repair pass. So a
+reset or power loss at any point loses nothing, the volume passes fsck, and the next `pack` finishes the job
+(reclaiming the scratch area with the rest). **Proved on the emulator** by `tests/os/run.py --cuts 60`: `pack -v` is
+cut off at 60 points in each of two fragmented volumes (a 1-sector hole early, so nearly every move takes two steps;
+and a 91-sector hole, so many take one), 120 cuts that land in every phase (copying to the scratch area, between
+that copy and the entry rewrite, with the entry on the scratch copy during the copy down and before the final
+rewrite, inside and after one-step moves); after each, fsck passes, every file of the volume is present and
+byte-identical, and a fresh boot's `pack` completes with no dead sector: 120 of 120. The same run against a
+one-step-only build loses a file in 16 of 40 cuts, so the check has teeth. What remains is a sector torn by the power
+going mid-write (the CF card's business, as for any write the OS makes).
+
+The scratch area needs room right above the free pointer (the largest two-step extent: 91 sectors for `/DOCS/PORT.MD`
+today). The volume has no size field; the bound is LBA 65535 (the free pointer and every LBA are 16 bits, 32 MB), and
+the card itself: `pack` reads the last scratch sector first, and a real card refuses an LBA past its end, so `pack`
+stops with "no room on the card" before writing anything. (The emulators' CF model reads zeros past the image and
+grows it on a write, so that refusal has only been reasoned, not run.) Each move costs up to twice the sector copies
+it did with one step. `pack -v` prints each move and its steps. `tests/os/pack.session` fragments a disk (deletes,
+replaces, a pipe, a copied `>>`, `rmdir`, a hole just after /BIN that moves /MAN, /DOCS and a three-level tree), packs
+from inside a subdirectory, and checks from the host that nothing is dead any more, that every file of the pristine
+image is byte-identical, and that the next file lands at the new free pointer.
 
 ## Memory
 
@@ -330,7 +351,7 @@ every file of the pristine image is byte-identical, and that the next file lands
 ## Not there yet
 
 FORMAT and FSCK on the target (the host
-tool has them), a pack that survives a reset in the middle (see `pack` above), seek, a second write handle (so `cp` works inside a `>` or a pipe), concurrent pipes (they run one
+tool has them), seek, a second write handle (so `cp` works inside a `>` or a pipe), concurrent pipes (they run one
 after the other through temp files), `2>` (errors always go to the screen), the command history, the P8X development
 tools (`asm`, a YACC1 `disasm`; `os/PORT-PLAN.md` wave 3), BASIC as `/BIN/BASIC`, and the CF card in hardware, all in
 BACKLOG.md.

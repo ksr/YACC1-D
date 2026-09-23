@@ -48,7 +48,7 @@ Sources: `docs/system/MACHINE.md` (the memory card's jumper settings, verified w
 | $0F40–$0FBF | 128 | `ARGBUF`: a program's command tail from Y1/OS, NUL-terminated (`ARGMAX` 127); `argstr()`. The monitor's equate says 64 bytes; the upper 64 overlay `line_buffer` | `monitor.asm`, `os/lib_abi.c`, `y1cc.py` |
 | $0F80–$0FFF | 128 | `line_buffer`: the monitor's line buffer (`P` command), idle while the OS runs | `monitor.asm` |
 | $1000–$1FFF | 4K | BASIC's token buffer (`bas_tok_buf_start`..`_end` = $2000), cleared by `basic_cold` at every monitor boot — **and** `OSBASE`: where the `O` command loads Y1/OS. The two are never used together | `basic.asm`, `monitor.asm` |
-| $1000–$4FFF | 16K | Y1/OS image and data when the OS is running (LBA 1–32 reserve; v0 was 5.1K; 2026-09-23 with redirection and pipes: a 14,624-byte image = 29 sectors + 1,424 bytes of data = 16,048 of 16,384, the Makefile checks it) | `os/README.md`, `os/y1os.c` |
+| $1000–$4FFF | 16K | Y1/OS image and data when the OS is running (LBA 1–32 reserve; v0 was 5.1K; 2026-09-23 with redirection and pipes: a 14,619-byte image = 29 sectors + 1,424 bytes of data = 16,043 of 16,384, the Makefile checks it) | `os/README.md`, `os/y1os.c` |
 | $2000 | | scratch of the removed monitor T-menu tests (nothing now) | `y1cc.py` comment |
 | $3000 | | default `ORG` of a compiled program run from the monitor (`G3000`) | `y1cc.py` `ORG_DEFAULT` |
 | $5000–$CFFF | 32K | Y1/OS transient program area (`TPA`..`TPATOP`); `/BIN` programs are compiled `--org 0x5000` | `os/lib_abi.c` |

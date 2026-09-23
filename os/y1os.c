@@ -120,7 +120,8 @@ void take_entry(int o) {        /* the e_* globals <- the 32-byte entry at sbuf[
     e_exec = le16(sbuf + o + 22);
     e_flags = sbuf[o + 24];
     e_off = o;
-    e_secs = (e_len + 511) / 512 + e_lenhi * 128;
+    e_secs = (e_len >> 9) + e_lenhi * 128;     /* ceil(length / 512); not (e_len + 511) / 512, which wraps at 16 bits */
+    if (e_len & 511) e_secs++;                  /* for 65,025..65,535 bytes: 1 sector instead of 128 (fixed 2026-09-23) */
     if (e_secs == 0) e_secs = 1;
 }
 
@@ -665,7 +666,8 @@ int load_file(char *path) {             /* file -> its load address; 1 ok */
     int h; char *dst;
     h = file_of(path);
     if (!h) return 0;
-    if (e_load < TPA || e_load + e_secs * 512 > TPATOP || e_load + e_secs * 512 < e_load) {   /* whole sectors land */
+    if (e_load < TPA || e_load >= TPATOP || e_secs > (TPATOP - e_load) >> 9) {  /* whole sectors land below TPATOP;
+                                  not e_load + e_secs * 512: that wraps to e_load at 128 sectors (fixed 2026-09-23) */
         fs_close(h); eputs("bad load address or size"); return 0;
     }
     dst = e_load;
