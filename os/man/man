@@ -1,0 +1,35 @@
+NAME
+    man - show a manual page
+
+SYNOPSIS
+    man [name]
+
+DESCRIPTION
+    Shows the manual page for a command, a shell built-in or a library:
+    the plain-text file /MAN/NAME, the name upper-cased (the pages are
+    installed in upper case, so man cat reads /MAN/CAT). The page goes
+    through the --More-- pager (see pager): after 23 lines a key, read
+    without echo: space or any other key = the next page, Enter = one
+    more line, q or Q (or Ctrl-D) = quit.
+
+    With no name man lists the pages in /MAN, six to a row, in lower
+    case. An unknown name prints "no manual entry for NAME". man is
+    /BIN/MAN.
+
+EXAMPLES
+    man             the list of pages
+    man dir         the page for dir
+    man man         this page
+    man regex       the regex dialect of grep, sed and awk
+    man mon         the ROM monitor
+
+NOTES
+    On the instruction-level emulator a lower-case q is read as end of
+    input, which quits as well.
+    Changed from the P8X version: /MAN instead of /man with the name
+    upper-cased, the pager (the P8X streamed the page whole), and the
+    list when no name is given.
+    Ported from P8X os/commands/man.c 2026-09-23.
+
+SEE ALSO
+    help, more, md, pager

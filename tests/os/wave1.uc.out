@@ -1,0 +1,265 @@
+BOOT FROM CF
+Y1/OS v0.1 (2026-09-23)  P8XFS v2
+/> 
+
+/> pwd
+
+/
+/> cat FRUIT.TXT - README.TXT
+
+apple 3 red
+pear 5 green
+apple 3 red
+banana 12 yellow
+banana 12 yellow
+cherry 40 red
+fig 7 purple
+typed line
+Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
+LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
+/> 
+
+/> cat *2.TXT
+
+apple 3 red
+pear 5 green
+apple 3 red
+banana 12 yellow
+kiwi 9 brown
+cherry 40 red
+fig 7 purple
+/> cat NOPE
+
+cat: not found: NOPE
+/> wc FRUIT.TXT FRUIT2.TXT
+
+14 42 192
+/> wc
+
+2 3 14
+/> 
+
+/> head -2 FRUIT.TXT
+
+apple 3 red
+pear 5 green
+/> tail -3 FRUIT.TXT FRUIT2.TXT
+
+kiwi 9 brown
+cherry 40 red
+fig 7 purple
+/> sort FRUIT2.TXT
+
+apple 3 red
+apple 3 red
+banana 12 yellow
+cherry 40 red
+fig 7 purple
+kiwi 9 brown
+pear 5 green
+/> UNIQ FRUIT.TXT
+
+apple 3 red
+pear 5 green
+apple 3 red
+banana 12 yellow
+cherry 40 red
+fig 7 purple
+/> sed s/an+/AN/g FRUIT.TXT
+
+apple 3 red
+pear 5 green
+apple 3 red
+bANANa 12 yellow
+bANANa 12 yellow
+cherry 40 red
+fig 7 purple
+/> sed s/^.*e/X/ FRUIT2.TXT
+
+X 3 red
+Xar 5 green
+X 3 red
+Xllow
+kiwi 9 brown
+Xrry 40 red
+X
+/> awk '{print $3, $1, NF}' FRUIT.TXT
+
+red apple 3
+green pear 3
+red apple 3
+yellow banana 3
+yellow banana 3
+red cherry 3
+purple fig 3
+/> awk -F e '/red/ {print NR ":" $2}' FRUIT2.TXT
+
+1 :  3 r
+3 :  3 r
+6 : rry 40 r
+/> cmp FRUIT.TXT FRUIT2.TXT
+
+cmp: files differ: byte 55, line 5
+/> cmp FRUIT.TXT /FRUIT.TXT
+
+/> diff FRUIT.TXT FRUIT2.TXT
+
+< banana 12 yellow
+> kiwi 9 brown
+/> dep 6000 48 49 0A
+
+/> dump 6000
+
+6000: 48 49 0A 00 00 00 00 00 00 00 00 00 00 00 00 00  HI..............
+6010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+6020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+6030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+6040: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+6050: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+6060: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+6070: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+6080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+6090: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+60A0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+60B0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+60C0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+60D0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+60E0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+60F0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+/> 
+
+/> examine 6000
+
+6000: 48 
+6001: 49 4A
+6002: 0A 
+6003: 00 
+/> 
+
+/> dump 6000
+
+6000: 48 4A 0A 00 00 00 00 00 00 00 00 00 00 00 00 00  HJ..............
+6010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+6020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+6030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+6040: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+6050: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+6060: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+6070: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+6080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+6090: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+60A0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+60B0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+60C0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+60D0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+60E0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+60F0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+/> 
+
+/> more FRUIT.TXT FRUIT2.TXT FRUIT.TXT FRUIT2.TXT
+
+apple 3 red
+pear 5 green
+apple 3 red
+banana 12 yellow
+banana 12 yellow
+cherry 40 red
+fig 7 purple
+apple 3 red
+pear 5 green
+apple 3 red
+banana 12 yellow
+kiwi 9 brown
+cherry 40 red
+fig 7 purple
+apple 3 red
+pear 5 green
+apple 3 red
+banana 12 yellow
+banana 12 yellow
+cherry 40 red
+fig 7 purple
+apple 3 red
+pear 5 green
+--More--        /> 
+
+/> md -p MDDEMO.MD
+
+
+md, the Markdown reader
+=======================
+
+What md renders, one example of each (see man md). Lines of prose that follow 
+each other are one paragraph, wrapped at 78 columns.
+
+
+Lists and quotes
+----------------
+
+  - a bullet item, whose continuation line joins the item
+  - a second item with code and a link (/MAN/MD)
+
+  1. a numbered item
+  2. and another
+
+  | a quoted line
+
+
+Code and tables
+---------------
+
+--More--          dir -R /BIN     a code block: verbatim, indented
+
+
+  command        what it shows     
+  -------------  ----------------  
+  md FILE.MD     the file, styled  
+  md -p FILE.MD  the same, plain   
+
+------------------------------------------------------------------------------
+The end.
+/> 
+
+/> md
+
+usage: md [-p] FILE.MD    render markdown (-p: no ANSI styling); md with no file lists /DOCS
+  MDDEMO.MD
+  OS.MD
+  Y1CC.MD
+  OSPLAN.MD
+  PORT.MD
+/> man pwd
+
+NAME
+    pwd - print the working directory
+
+SYNOPSIS
+    pwd
+
+DESCRIPTION
+    Prints the absolute path of the current directory (the one the
+    prompt shows), from the OS's GETCWD syscall. pwd is /BIN/PWD.
+
+    The shell also has a built-in pwd, used only when /BIN/PWD is
+    missing; it prints the same path.
+
+LIMITS
+    The OS keeps the path in 64 bytes.
+
+EXAMPLES
+    pwd              e.g.  /BIN
+
+NOTES
+    Ported from P8X os/commands/pwd.c 2026-09-23.
+
+SEE ALSO
+--More--            cd, dir, ls
+/> 
+
+/> man NOPE
+
+no manual entry for NOPE
+/> exit
+
+bye
+>

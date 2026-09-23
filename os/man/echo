@@ -1,0 +1,25 @@
+NAME
+    echo - print the arguments
+
+SYNOPSIS
+    echo [text]
+
+DESCRIPTION
+    Prints the rest of the command line as the shell passed it (the
+    spaces after the command word are dropped, everything else is
+    kept) and a line feed. Nothing is interpreted: no quotes, escapes,
+    variables or globs. echo is /BIN/ECHO.
+
+LIMITS
+    The argument tail is 127 characters.
+
+EXAMPLES
+    echo hello world        hello world
+    echo *.TXT              *.TXT (globs are each command's business)
+
+NOTES
+    Y1/OS has no output redirection yet, so echo cannot write a file.
+    New in Y1/OS 2026-09-23.
+
+SEE ALSO
+    run, help

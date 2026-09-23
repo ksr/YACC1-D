@@ -1,0 +1,64 @@
+NAME
+    fs - the Y1/OS file API for programs (#include "../lib_fs.c")
+
+SYNOPSIS
+    #include "../lib_fs.c"        (includes lib_abi.c)
+    #include "y1lib.c"
+
+DESCRIPTION
+    C wrappers, one sys() call each, around the Y1/OS syscalls, so a
+    command never sees a number or an address; y1cc drops the ones a
+    command does not call. Every result is a full 16-bit word: a
+    handle 1..4 or 0, 1/0 for done/cannot, a count, or a byte with
+    65535 for none (the end of a file, Ctrl-D). There are four
+    handles, each with its own 512-byte buffer.
+
+    Reading
+        fopen(path)             a read handle; 0 = not found, a
+                                directory, 64K or more, none free
+        fgetc(h)                the next byte, 65535 at the end
+        fread(h, buf)           the next whole sector into buf (512),
+                                the byte count, 0 at the end; mix with
+                                fgetc only at sector boundaries
+        fclose(h)
+    Writing (one file open for writing at a time)
+        fcreate(path, load, exec)   a handle; a same-named file is
+                                    replaced
+        fputc(h, c)  fwrite(h, buf, n)  fputs(h, s)
+        fclose(h)               registers the file; 1 = ok
+    Names
+        fdelete(path)  fmkdir(path)  frmdir(path)  chdir(path)
+        frename(path, newname)  a bare name, same directory
+        getcwd(buf)             the current path (64 bytes); its length
+    Entries
+        opendir(path)           a directory handle ("" = current)
+        readdir(h, ent)         1 with the next live 32-byte entry
+        fresolve(path, ent)     1 found, the entry in ent (or ent 0)
+        fentry(ent)             the entry the last call found
+        ent_isfile ent_isdir ent_lba ent_load ent_exec (e)
+        ent_len(e)              the low 16 bits; e[18] counts 64Ks
+        ent_name(e, out)        the name, unpadded (out: 13 bytes)
+    Console
+        conin()                 a byte without echo; 65535 at Ctrl-D
+        constat()               1 when a byte is waiting
+    Arguments
+        argword(tail, out, max) the next word of a command tail into
+                                out (max characters); returns the rest
+
+    Paths are absolute or relative to the current directory; names are
+    1..12 characters, case-sensitive. What a program leaves open the
+    shell closes when it returns (a pending write is registered).
+
+EXAMPLES
+    h = fopen(argstr());                       a one-file cat
+    if (!h) { puts("not found"); return; }
+    while ((c = fgetc(h)) != 65535) putchar(c);
+    fclose(h);
+
+NOTES
+    New in Y1/OS 2026-09-23. It replaces the P8X BIOS file calls
+    (FRESOLVE, FOPEN, FGETB, FWOPEN, FPUTB, FNEXT...) with their carry
+    tests, the RDBUF page, and P8X os/commands/lib_dirent.c.
+
+SEE ALSO
+    abi, apath, walk, stdin, ls

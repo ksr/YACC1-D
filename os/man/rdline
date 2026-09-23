@@ -1,0 +1,29 @@
+NAME
+    rdline - read one line of the input (#include "../lib_rdline.c")
+
+SYNOPSIS
+    #include "../lib_rdline.c"    (includes lib_stdin.c)
+    char buf[256];
+    while (readline(buf)) ...
+
+DESCRIPTION
+    readline(buf) reads the next line of the lib_stdin stream (see
+    stdin) through nextc() into buf, NUL-terminated, and returns 1, or
+    0 when the input had already ended. LF ends the line and is not
+    stored; CR is dropped, so CR LF and LF sources read alike. A last
+    line with no LF still returns 1.
+
+LIMITS
+    255 characters are kept; the rest of a longer line is read and
+    dropped, so the next call starts at the next line. buf must hold
+    256 bytes.
+
+NOTES
+    Used by grep, sed and uniq (awk has a reader of its own).
+    Unchanged from the P8X version but for the #include: lib_rdline.c
+    includes lib_stdin.c itself, so there is no order of //#use lines
+    to keep.
+    Ported from P8X os/commands/lib_rdline.c 2026-09-23.
+
+SEE ALSO
+    stdin, grep, sed, uniq

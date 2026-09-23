@@ -1,0 +1,28 @@
+mkdir /T
+touch /T/E1 /T/E2 FRUIT.TXT
+cp FRUIT.TXT /T
+cp /BIN/HELLO /T/H
+mkdir /T/S
+cp FRUIT2.TXT /T/S/F2.TXT
+tree /T
+dir -R /T
+dir -S /T
+dir /T/*.TXT
+find F /T
+find *2* /T
+grep -r kiwi /T
+grep an FRUIT.TXT FRUIT2.TXT
+cp -r /T /U
+cp -r /T /T/S
+cp *.TXT /U/S
+mv /U/E1 /U/E3
+mv /U/H /U/S
+mv /U/FRUIT.TXT /U/S/F1.TXT
+mv /U /T
+del /U/E2 /U/NONE /U/S/R*.TXT
+tree /U
+cd /U/S
+H x y
+cd /
+dir -R /U
+exit

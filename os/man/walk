@@ -1,0 +1,52 @@
+NAME
+    walk - walk a directory tree without recursion
+           (#include "../lib_walk.c")
+
+SYNOPSIS
+    #include "../lib_walk.c"      (includes lib_apath.c and lib_fs.c)
+    if (!walk_open(dir)) { ... not a directory ... }
+    while (walk_next()) { ... went, wname, wlev, wpath, wdown ... }
+
+DESCRIPTION
+    The tree walker of tree, find, dir -R, grep -r and cp -r.
+    walk_open(path)  start at a directory (relative or absolute; "" is
+                     the current one); 1 ok, 0 not a directory
+    walk_next()      the next entry, depth first in directory order,
+                     "." and ".." skipped; 1 with
+                         went    the 32-byte entry
+                         wname   its name
+                         wlev    its depth (0 = in the start directory)
+                         wpath   the directory holding it (absolute)
+                     0 when the walk is over
+    wdown            1 after walk_next returned a directory, which the
+                     NEXT walk_next enters; clear it to skip that
+                     subtree
+    walk_full(out)   out <- wpath + "/" + wname (WFLEN = 144 bytes)
+    walk_close()     stop early (closes the directory handle)
+    wtrunc           1 when a directory was not entered because WMAX
+                     (8) levels or the APLEN (128) path bytes ran out
+
+    An explicit level stack does the work of the recursion y1cc
+    rejects. Each level keeps the length of wpath and how many entries
+    of its directory were read; ONE directory handle is open at a time:
+    entering a subdirectory closes the parent's handle, and leaving it
+    reopens the parent by path and skips the entries already read. So a
+    walk costs one of the four handles, and a command can open files
+    (grep -r) or create them (cp -r) along the way. The order is plain
+    pre-order: a directory's contents follow it directly.
+
+EXAMPLES
+    walk_open(argstr());                    tree, in short
+    while (walk_next()) {
+        for (i = 0; i < wlev; i++) putstr("  ");
+        putstr(wname); if (wdown) putchar('/'); putchar(10);
+    }
+
+NOTES
+    New in Y1/OS 2026-09-23. It replaces the recursive walk(),
+    collect() and copy_tree() of the P8X tree, find, dir, grep and cp,
+    which also had to record each level's entries before descending
+    because the P8X BIOS FNEXT cursor was global.
+
+SEE ALSO
+    tree, find, dir, grep, cp, apath

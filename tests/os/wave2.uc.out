@@ -1,0 +1,111 @@
+BOOT FROM CF
+Y1/OS v0.1 (2026-09-23)  P8XFS v2
+/> 
+
+/> mkdir /T
+
+/> touch /T/E1 /T/E2 FRUIT.TXT
+
+/> cp FRUIT.TXT /T
+
+/> cp /BIN/HELLO /T/H
+
+/> mkdir /T/S
+
+/> cp FRUIT2.TXT /T/S/F2.TXT
+
+/> tree /T
+
+E1
+E2
+FRUIT.TXT
+H
+S/
+  F2.TXT
+/> dir -R /T
+
+      0  E1
+      0  E2
+     98  FRUIT.TXT  @B000
+    132  H  @5000
+         S/
+
+/T/S:
+     94  F2.TXT  @B000
+/> dir -S /T
+
+    132  H  @5000
+     98  FRUIT.TXT  @B000
+      0  E1
+      0  E2
+         S/
+/> dir /T/*.TXT
+
+     98  FRUIT.TXT  @B000
+/> find F /T
+
+/T/FRUIT.TXT
+/T/S/F2.TXT
+/> find *2* /T
+
+/T/E2
+/T/S/F2.TXT
+/> grep -r kiwi /T
+
+/T/S/F2.TXT:kiwi 9 brown
+/> grep an FRUIT.TXT FRUIT2.TXT
+
+FRUIT.TXT:banana 12 yellow
+FRUIT.TXT:banana 12 yellow
+FRUIT2.TXT:banana 12 yellow
+/> cp -r /T /U
+
+/> cp -r /T /T/S
+
+cp: cannot copy a directory into itself
+/> cp *.TXT /U/S
+
+/> mv /U/E1 /U/E3
+
+/> mv /U/H /U/S
+
+/> mv /U/FRUIT.TXT /U/S/F1.TXT
+
+/> mv /U /T
+
+mv: a directory moves only within its directory: /U
+/> del /U/E2 /U/NONE /U/S/R*.TXT
+
+del: not a file: /U/NONE
+/> tree /U
+
+E3
+S/
+  F2.TXT
+  FRUIT.TXT
+  FRUIT2.TXT
+  H
+  F1.TXT
+/> cd /U/S
+
+/U/S> H x y
+
+hello from /BIN/HELLO
+args: x y
+/U/S> cd /
+
+/> dir -R /U
+
+      0  E3
+         S/
+
+/U/S:
+     98  F1.TXT  @B000
+     94  F2.TXT  @B000
+     98  FRUIT.TXT  @B000
+     94  FRUIT2.TXT  @B000
+    132  H  @5000
+/> exit
+
+bye
+>

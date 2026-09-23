@@ -1,0 +1,34 @@
+NAME
+    save - write memory to a file
+
+SYNOPSIS
+    save path addr len
+
+DESCRIPTION
+    Writes len bytes of memory from addr (both hexadecimal) to the file
+    path, whose load and exec addresses become addr, and says how many
+    bytes it wrote, in decimal: "saved 32 bytes". A file of that name is
+    replaced; a directory of that name is not. save is a shell
+    built-in.
+
+    Errors: "usage: save path addr len (hex)", "cannot create" (the
+    directory is missing, the name is not valid, or it names a
+    directory), "write error".
+
+LIMITS
+    load and run accept only files inside $5000..$CFFF: memory saved
+    from elsewhere (the OS, the monitor's page) can be kept and looked
+    at with cat or dump, but not loaded back. At most 65535 bytes.
+
+EXAMPLES
+    save H.BIN 5000 20      32 bytes from $5000, load and exec $5000
+    save /HELLO2 5000 84    after load /BIN/HELLO: a copy that runs
+
+NOTES
+    Changed from the P8X version: the arguments are a start and a
+    length (P8X: a start and an end), and the file keeps its address.
+    The command is the Y1/OS shell's own (os/y1os.c); the page is
+    ported from P8X os/man/save 2026-09-23.
+
+SEE ALSO
+    load, run, dep, dump

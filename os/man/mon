@@ -1,0 +1,55 @@
+NAME
+    mon - the YACC1 ROM monitor
+
+SYNOPSIS
+    exit                 from the Y1/OS shell
+    >                    the monitor's prompt
+
+DESCRIPTION
+    The monitor in ROM at $F000 is where the YACC1 starts and where
+    Y1/OS's exit returns. It reads one-letter commands, upper or lower
+    case, at its ">" prompt; an address is four hex digits. After B, D,
+    E and F a bare Enter carries on where the command left off.
+
+    The commands (H prints this list):
+        0          leave (the emulators only)
+        H          the help list
+        B AAAA     show 256 bytes from AAAA (16-byte aligned)
+        D AAAA     show 16 bytes from AAAA (16-byte aligned)
+        E AAAA     show the byte at AAAA as AAAA:XX; two hex digits
+                   store a new value, Enter goes to the next byte
+        F AAAA     fill 256 bytes from AAAA with 0
+        G AAAA     call the program at AAAA (JSRUR R7); it returns
+                   with RET
+        R          show the registers
+        O          boot Y1/OS from the CompactFlash card
+        I          BASIC
+        L          list the BASIC program
+        P          enter a BASIC program line
+        C          copy the BASIC test program into the buffer
+        Y          run the BASIC test code
+        Z          run the program with the BASIC interpreter
+
+    O prints "BOOT FROM CF", initialises the card, reads the boot block
+    (LBA 0), checks its P8 signature and sector count, reads the OS
+    from LBA 1 to $1000 and calls it; "CF ERROR" or "NO OS ON THE CARD"
+    when that fails.
+
+    The monitor's BIOS vectors ($FFC0..$FFFC: console, CF sectors) and
+    its variable page ($0F00: the syscall block, ARGBUF) are what Y1/OS
+    and every program build on; see abi.
+
+EXAMPLES
+    O               boot Y1/OS
+    B 5000          after exit: the program area as the last program
+                    left it
+
+NOTES
+    BASIC's token buffer ($1000..$1FFF) is where the OS lives: after
+    BASIC, boot again with O (which always reloads the OS anyway).
+    Removed from the P8X version: mon as a shell command (type exit).
+    The page is rewritten for the YACC1 monitor
+    (firmware/monitor/monitor.asm) from P8X os/man/mon 2026-09-23.
+
+SEE ALSO
+    exit, dump, examine, abi

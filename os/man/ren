@@ -1,0 +1,26 @@
+NAME
+    ren - rename a file or directory in place
+
+SYNOPSIS
+    ren path newname
+
+DESCRIPTION
+    Gives the file or directory at path a new name in the same
+    directory; nothing is copied or moved. newname is a bare name:
+    1..12 characters, no "/", not starting with ".", case-sensitive.
+    "cannot rename" when path is not found or is ".", ".." or the root,
+    when newname is not valid, or when it is taken (ren never replaces
+    anything); "usage: ren path newname" when newname is missing. ren
+    is a shell built-in (the RENAME syscall, 15).
+
+EXAMPLES
+    ren /T/COPY.TXT KEEP.TXT
+    ren /T TMP                 a directory
+
+NOTES
+    mv does the same and more: it replaces an existing file of the new
+    name and moves files between directories.
+    New in Y1/OS 2026-09-23.
+
+SEE ALSO
+    mv, cp, del, fs

@@ -1,0 +1,40 @@
+pwd
+cat FRUIT.TXT - README.TXT
+typed line
+
+cat *2.TXT
+cat NOPE
+wc FRUIT.TXT FRUIT2.TXT
+wc
+one two
+three
+
+head -2 FRUIT.TXT
+tail -3 FRUIT.TXT FRUIT2.TXT
+sort FRUIT2.TXT
+UNIQ FRUIT.TXT
+sed s/an+/AN/g FRUIT.TXT
+sed s/^.*e/X/ FRUIT2.TXT
+awk '{print $3, $1, NF}' FRUIT.TXT
+awk -F e '/red/ {print NR ":" $2}' FRUIT2.TXT
+cmp FRUIT.TXT FRUIT2.TXT
+cmp FRUIT.TXT /FRUIT.TXT
+diff FRUIT.TXT FRUIT2.TXT
+dep 6000 48 49 0A
+dump 6000
+.
+examine 6000
+
+4A
+.
+dump 6000
+.
+more FRUIT.TXT FRUIT2.TXT FRUIT.TXT FRUIT2.TXT
+Q
+md -p MDDEMO.MD
+ 
+md
+man pwd
+ 
+man NOPE
+exit

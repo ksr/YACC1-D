@@ -1,0 +1,34 @@
+NAME
+    dump - display memory as hex, a page at a time
+
+SYNOPSIS
+    dump addr
+
+DESCRIPTION
+    Shows 256 bytes from the hexadecimal address addr as 16 rows of
+
+        AAAA: bb bb ... bb  cccccccccccccccc
+
+    (the address, 16 bytes in hex, then the same bytes as text with
+    anything unprintable shown as "."), then waits for a key, read
+    without echo: ".", q or Q, or Ctrl-D returns to the shell; any
+    other key shows the next 256 bytes. "dump: bad address" when addr
+    is not hex. dump is /BIN/DUMP.
+
+EXAMPLES
+    dump 6000      the program area, above dump itself
+    dump 1000      the start of the OS
+    dump 0F40      ARGBUF: this very command's argument tail, "0F40"
+
+NOTES
+    dump only reads memory; dep and examine change it. It runs from
+    $5000, so dump 5000 shows dump's own code (look at a loaded program
+    there from the monitor instead: exit, then B 5000). On the
+    instruction-level emulator a lower-case q is read as end of input,
+    which quits as well.
+    Changed from the P8X version: q and Ctrl-D quit as well as ".";
+    rows end in LF only.
+    Ported from P8X os/commands/dump.c 2026-09-23.
+
+SEE ALSO
+    dep, examine, load, mon

@@ -1,0 +1,64 @@
+NAME
+    awk - pattern-directed field processing (a small subset)
+
+SYNOPSIS
+    awk [-F c] 'program' [file ...]
+
+DESCRIPTION
+    Reads its input a line (record) at a time, splits each record into
+    fields and runs a one-rule program against it. The input is the
+    files named, read one after the other as one stream (globs expand,
+    "-" is the console), or the console up to Ctrl-D when none is
+    given. awk is /BIN/AWK.
+
+    The program is one argument in single or double quotes; awk strips
+    them itself (the shell does not). An unquoted program ends at the
+    first space. It has the form
+
+        [/regex/] [{ print items }]
+
+    pattern    /regex/ selects the lines matching a basic regular
+               expression (. * + ? ^ $, see regex); no pattern selects
+               every line. A pattern with no action prints the line.
+    action     { print items } prints one line; {} or {print} prints
+               the whole record.
+
+    Items are separated by commas or spaces; either way one space is
+    printed between two items:
+        $0          the whole record
+        $1 .. $N    a field by number (a missing field is empty)
+        $NF         the last field
+        NF          the number of fields in the record
+        NR          the record number, counting from 1 over all files
+        "text"      a string, printed as it is
+    Anything else in the action is skipped.
+
+    Fields split on runs of spaces and tabs. With -F c they split on
+    every c instead, so empty fields are kept.
+
+OPTIONS
+    -F c    the single character c separates fields (-F: or -F :)
+
+LIMITS
+    One rule, print only: no BEGIN/END, printf, variables or
+    expressions. 40 fields per record; records are cut at 255
+    characters, the program at 127, the regex at 79, the action at 119.
+    The whole argument tail is 127 characters.
+
+EXAMPLES
+    awk '{print $2}' /FRUIT.TXT        the second field of each line
+    awk '/red/' /FRUIT.TXT             the lines containing "red"
+    awk '{print $1, $NF}' /FRUIT.TXT   the first and the last field
+    awk '{print NR ":" $0}' /FRUIT.TXT numbered: "1 : apple 3 red"
+    awk -F e '/red/ {print $2}' /FRUIT2.TXT
+                                       split on the letter e
+
+NOTES
+    Each file ends a line, so the last line of one file never joins the
+    first line of the next.
+    Removed from the P8X version: input from a pipe or a < redirect
+    (Y1/OS has neither yet). New: several files, globs and "-".
+    Ported from P8X os/commands/awk.c 2026-09-23.
+
+SEE ALSO
+    grep, sed, regex, stdin, cat

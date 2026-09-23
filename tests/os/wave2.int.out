@@ -1,0 +1,82 @@
+BOOT FROM CF
+Y1/OS v0.1 (2026-09-23)  P8XFS v2
+/> 
+/> 
+/> 
+/> 
+/> 
+/> 
+/> 
+/> 
+E1
+E2
+FRUIT.TXT
+H
+S/
+  F2.TXT
+/> 
+      0  E1
+      0  E2
+     98  FRUIT.TXT  @B000
+    132  H  @5000
+         S/
+
+/T/S:
+     94  F2.TXT  @B000
+/> 
+    132  H  @5000
+     98  FRUIT.TXT  @B000
+      0  E1
+      0  E2
+         S/
+/> 
+     98  FRUIT.TXT  @B000
+/> 
+/T/FRUIT.TXT
+/T/S/F2.TXT
+/> 
+/T/E2
+/T/S/F2.TXT
+/> 
+/T/S/F2.TXT:kiwi 9 brown
+/> 
+FRUIT.TXT:banana 12 yellow
+FRUIT.TXT:banana 12 yellow
+FRUIT2.TXT:banana 12 yellow
+/> 
+/> 
+cp: cannot copy a directory into itself
+/> 
+/> 
+/> 
+/> 
+/> 
+mv: a directory moves only within its directory: /U
+/> 
+del: not a file: /U/NONE
+/> 
+E3
+S/
+  F2.TXT
+  FRUIT.TXT
+  FRUIT2.TXT
+  H
+  F1.TXT
+/> 
+/U/S> 
+hello from /BIN/HELLO
+args: x y
+/U/S> 
+/> 
+      0  E3
+         S/
+
+/U/S:
+     98  F1.TXT  @B000
+     94  F2.TXT  @B000
+     98  FRUIT.TXT  @B000
+     94  FRUIT2.TXT  @B000
+    132  H  @5000
+/> 
+bye
+>

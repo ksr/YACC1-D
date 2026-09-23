@@ -1,0 +1,34 @@
+NAME
+    apath - make a path absolute (#include "../lib_apath.c")
+
+SYNOPSIS
+    #include "../lib_apath.c"     (includes lib_fs.c)
+    char out[APLEN];              APLEN = 128
+    used = abspath(out, word);
+
+DESCRIPTION
+    abspath(out, a) builds the absolute form of the path word a: the
+    current directory (getcwd) + "/" + a when a is relative, then "."
+    components dropped and ".." folded into their parent, so
+    "/BIN/../MAN/" comes out "/MAN". There is no trailing "/" except on
+    the root itself. The word ends at NUL or a space, so a whole
+    command tail may be passed; the result is how many characters of a
+    were used. Nothing is opened or checked: it only builds a string.
+
+    Y1/OS resolves relative paths itself, so a command needs this only
+    where it shows or compares paths: find and grep -r (the printed
+    paths), mv (the same file? the same directory?), cp -r (into
+    itself?) and the tree walker.
+
+LIMITS
+    out must hold APLEN (128) bytes; a longer path is cut.
+
+NOTES
+    Changed from the P8X version: getcwd() for SYS_GETCWD; the . and ..
+    folding and the bound are new (the P8X only put the current
+    directory in front, because its BIOS resolved every path from the
+    root).
+    Ported from P8X os/commands/lib_apath.c 2026-09-23.
+
+SEE ALSO
+    fs, walk, mv, cp

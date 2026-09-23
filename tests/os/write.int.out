@@ -5,33 +5,27 @@ BOOT FROM CF
 loaded 132 bytes at $5000
 /> 
 /> 
-.            <DIR>
-..           <DIR>
-BIN          <DIR>
-README.TXT   156  @B000
-T            <DIR>
-5 entries
+         BIN/
+         DOCS/
+     98  FRUIT.TXT  @B000
+     94  FRUIT2.TXT  @B000
+         MAN/
+    156  README.TXT  @B000
+         T/
 /> 
 /T> 
 saved 32 bytes
 /T> 
-.            <DIR>
-..           <DIR>
-H.BIN        32  @5000
-3 entries
+     32  H.BIN  @5000
 /T> 
 /T> 
-.            <DIR>
-..           <DIR>
-H.BIN        32  @5000
-SUB          <DIR>
-4 entries
+     32  H.BIN  @5000
+         SUB/
 /T> 
 not an empty directory
 /T> 
 /T> 
 /> 
-copied 156 bytes
 /> 
 Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
 LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
@@ -39,31 +33,25 @@ LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN hold
 /> 
 cannot rename
 /> 
-.            <DIR>
-..           <DIR>
-H.BIN        32  @5000
-KEEP.TXT     156  @B000
-4 entries
+     32  H.BIN  @5000
+    156  KEEP.TXT  @B000
 /> 
 /> 
-not a file
+del: not a file: /T/H.BIN
 /> 
-.            <DIR>
-..           <DIR>
-KEEP.TXT     156  @B000
-3 entries
+    156  KEEP.TXT  @B000
 /> 
 not an empty directory
 /> 
 /> 
-.            <DIR>
-..           <DIR>
-BIN          <DIR>
-T            <DIR>
-4 entries
+         BIN/
+         DOCS/
+     98  FRUIT.TXT  @B000
+     94  FRUIT2.TXT  @B000
+         MAN/
+         T/
 /> 
 /> 
-copied 132 bytes
 /> 
 /T2> 
 hello from /BIN/HELLO
@@ -79,10 +67,7 @@ cannot mkdir
 /> 
 saved 16 bytes
 /> 
-.            <DIR>
-..           <DIR>
-HELLO        16  @5000
-3 entries
+     16  HELLO  @5000
 /> 
 bye
 >

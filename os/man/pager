@@ -1,0 +1,33 @@
+NAME
+    pager - the --More-- pager of more, man and md
+            (#include "../lib_more.c")
+
+SYNOPSIS
+    #include "../lib_more.c"      (includes lib_fs.c)
+    while (!pgquit && (c = fgetc(h)) != 65535) pgc(c);
+
+DESCRIPTION
+    pgc(c)   prints c; after every PGLINES (23) line feeds it shows
+             "--More--", waits for a key from conin() (no echo) and
+             wipes the prompt line (CR, spaces, CR):
+                 space, other   the next page
+                 Enter          one more line (CR or LF)
+                 q, Q, Ctrl-D   quit: pgquit becomes 1 and pgc prints
+                                nothing more
+    pgs(s)   pgc() over a string
+    pgquit   1 once the reader quit: stop producing output
+    pgrows   the lines shown since the last prompt
+
+    A screen is 24 lines: 23 of text and the prompt line. Everything a
+    command prints must go through pgc(), or the count goes wrong.
+
+NOTES
+    On the instruction-level emulator a lower-case q is read as end of
+    input (conin() returns 65535), which quits as well.
+    The page is named pager because `more` is the command's page.
+    Ported from the prompt() of P8X os/commands/more.c 2026-09-23 (the
+    P8X md had its own copy at 22 lines); Enter is CR or LF here,
+    since the emulators deliver a session's line ends as LF.
+
+SEE ALSO
+    more, man, md

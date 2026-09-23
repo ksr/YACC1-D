@@ -28,7 +28,9 @@ EMUS = [("int", os.path.join(ROOT, "software/emulator/emulator")),
         ("uc", os.path.join(ROOT, "software/ucemu/y1ucemu"))]
 LIMITS = {"basic": (8000000, 120000000),         # instructions (int) / microcode steps (uc): the session must finish
           "api": (12000000, 200000000),          # inside them; a program-heavy session needs more (2026-09-23)
-          "write": (14000000, 220000000)}
+          "write": (14000000, 220000000),
+          "wave1": (8000000, 110000000),         # 4.5M / 62M needed (2026-09-23)
+          "wave2": (9000000, 130000000)}         # 5.7M / 79M needed
 DEFAULT_LIMIT = (12000000, 200000000)
 
 # host-side checks on the disk image a session leaves behind: ("fsck",) must pass; ("ls", path, present, absent)
@@ -42,6 +44,15 @@ HOST = {
               ("get", "/T/KEEP.TXT", "os/disk/README.TXT", 0),
               ("get", "/T2/HELLO", "os/build/bin/hello.bin", 16),
               ("get", "/SAVED.BIN", "os/build/bin/hello.bin", 0x84)],
+    "vi": [("fsck",), ("ls", "/", ["T.TXT"], [])],
+    "wave2": [("fsck",),
+              ("ls", "/T", ["E1", "E2", "FRUIT.TXT", "H", "S"], []),
+              ("ls", "/U", ["E3", "S"], ["E1", "E2", "FRUIT.TXT", "H"]),
+              ("ls", "/U/S", ["F2.TXT", "FRUIT.TXT", "FRUIT2.TXT", "H", "F1.TXT"], ["README.TXT"]),
+              ("get", "/FRUIT.TXT", "os/disk/FRUIT.TXT", 0),
+              ("get", "/T/S/F2.TXT", "os/disk/FRUIT2.TXT", 0),
+              ("get", "/U/S/F1.TXT", "os/disk/FRUIT.TXT", 0),
+              ("get", "/U/S/H", "os/build/bin/hello.bin", 0)],
 }
 
 

@@ -1,0 +1,49 @@
+NAME
+    stdin - the files named, else the console, for the /BIN filters
+            (#include "../lib_stdin.c")
+
+SYNOPSIS
+    #include "../lib_stdin.c"     (includes lib_globx.c and lib_fs.c)
+    if (openarg(argstr()) == 2) { notfound("cmd"); return; }
+    while ((c = nextc()) != 65535) ...
+
+DESCRIPTION
+    The input side of cat, wc, head, tail, more, sort, uniq, sed, awk
+    and grep.
+
+    openarg(tail)  0 = no file named (the console), 1 = ready, 2 = a
+                   name was not found (gbad points at it). Every word
+                   of tail is a file, a glob (expanded by globx), or
+                   "-" for the console, read one after the other as ONE
+                   stream. All the names are checked before anything is
+                   read.
+    nextc()        the next byte of that stream, 65535 at its end. The
+                   console is conin(): no echo, Ctrl-D ends it.
+    notfound(cmd)  prints "cmd: not found: WORD" after a 2.
+
+    Globals:
+        sepfiles   set it to 1 before the first nextc() to end every
+                   file with a line feed (a line tool must not glue the
+                   last line of one file to the first of the next);
+                   leave it 0 for the byte-exact tools (cat, wc)
+        curname    the name being read ("-" for the console): grep's
+                   "NAME:" prefix
+        gnf        how many names openarg found
+        gfiles     the names, GSLOT (64) bytes each
+
+LIMITS
+    GMAX (24) names in all, after glob expansion; more are dropped.
+    One read handle is open at a time (opened as the stream reaches the
+    file, closed at its end).
+
+NOTES
+    Changed from the P8X version: every word of the tail, not just the
+    first; "-" for the console; sepfiles and curname; Y1/OS fopen and
+    fgetc (relative names resolve in the OS, so RDBUF, FRESOLVE, the
+    absolute-path building and the carry tests are gone); the console
+    is conin() with 65535 at Ctrl-D, where the P8X read getchar(),
+    which could be a < redirect (Y1/OS has no redirection yet).
+    Ported from P8X os/commands/lib_stdin.c 2026-09-23.
+
+SEE ALSO
+    rdline, globx, glob, cat, grep, sort, wc

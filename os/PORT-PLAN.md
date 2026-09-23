@@ -1,6 +1,6 @@
 # PORT-PLAN — bringing the P8X/OS commands to Y1/OS
 
-Survey date 2026-09-23. Read-only survey of `~/Developer/p8x/os/commands/*.c` (46 commands + 18 shared
+Survey date 2026-09-23; **waves 0-2 done the same day (section 8, and the Status column of section 2)**. Read-only survey of `~/Developer/p8x/os/commands/*.c` (46 commands + 18 shared
 `lib_*.c` helpers), `p8x/os/man/` (86 pages), the P8X shell's built-in dispatch (`p8x/os/p8xos.asm`
 `DISPATCH:`/`KWTAB`), `p8x/os/run.sh` (what lands on the disk), and the development tools under `p8x/apps/`,
 `p8x/basic/`, `p8x/compiler/`. Target: Y1/OS (`os/y1os.c`, programs at `$5000..$CFFF` = 32K, y1cc static
@@ -70,7 +70,9 @@ These apply to the whole set and are what "PORT AS-IS" means below: nothing comm
 Columns: **Src** = lines in `p8x/os/commands/<name>.c`; **p8cc B** = P8X binary; **Cat** = category;
 **Calls** = BIOS/OS entry points used, via `//#use abi` names (plus the libs it splices);
 **Rec** = recursion (own functions / through a spliced lib); **P8X-specific** = what ties it to the P8X;
-**Verdict** = PORT AS-IS (mechanical pass only) / PORT WITH CHANGES / DEFER / SKIP.
+**Verdict** = PORT AS-IS (mechanical pass only) / PORT WITH CHANGES / DEFER / SKIP (the survey);
+**Status** = what the port did (2026-09-23, section 8): DONE (the mechanical pass, maybe a small extra) / CHANGED (and why) /
+DEFERRED / SKIPPED / DROPPED.
 
 Every command below also has a hand-assembled twin in `p8x/os/commands-asm/*.asm` (P8X ISA) for the 28 names
 `dir pwd cat wc grep cp mv head tail more sort uniq sed find diff tree vi touch man dep dump examine disasm
@@ -80,59 +82,59 @@ the only build.
 
 ### 2.1 Console-only (5)
 
-| Name | Src | p8cc B | Purpose | Calls | Rec | P8X-specific | Verdict |
-|---|---|---|---|---|---|---|---|
-| pwd | 29 | 282 | print the CWD | SYS_GETCWD | none | none | **PORT AS-IS** (needs `getcwd`) |
-| help | 44 | 2,148 | the shell command reference (static text) | puts | none | text names P8X built-ins, `/d1`, graphics, kermit, `$5900` | **PORT WITH CHANGES**: rewrite the text for the Y1/OS built-ins + ported /BIN set |
-| dep | 80 | 893 | deposit hex bytes: `dep addr b b ...` | poke; lib_err | none | warns about the `$5900` TPA | **PORT AS-IS** (ARGBUF 64 B caps the byte list; text `$5000`) |
-| dump | 101 | 1,127 | hex-dump 256 bytes from `addr`, key pages, `.` quits | peek, CONIN | none | none | **PORT AS-IS** (CONIN -> raw key; needs the no-echo read, item F) |
-| examine | 96 | 1,175 | interactive examine/modify from `addr` | peek, poke, getchar | none | relies on SYS_GETC echo behaviour | **PORT AS-IS** (getchar echo differs: check the Enter handling, ~5 lines) |
+| Name | Src | p8cc B | Purpose | Calls | Rec | P8X-specific | Verdict | Status |
+|---|---|---|---|---|---|---|---|---|
+| pwd | 29 | 282 | print the CWD | SYS_GETCWD | none | none | **PORT AS-IS** (needs `getcwd`) | DONE (getcwd) |
+| help | 44 | 2,148 | the shell command reference (static text) | puts | none | text names P8X built-ins, `/d1`, graphics, kermit, `$5900` | **PORT WITH CHANGES**: rewrite the text for the Y1/OS built-ins + ported /BIN set | CHANGED: text rewritten for the Y1/OS built-ins and /BIN set |
+| dep | 80 | 893 | deposit hex bytes: `dep addr b b ...` | poke; lib_err | none | warns about the `$5900` TPA | **PORT AS-IS** (ARGBUF 64 B caps the byte list; text `$5000`) | DONE |
+| dump | 101 | 1,127 | hex-dump 256 bytes from `addr`, key pages, `.` quits | peek, CONIN | none | none | **PORT AS-IS** (CONIN -> raw key; needs the no-echo read, item F) | CHANGED: key = conin (no echo), q or Ctrl-D quit too, LF line ends |
+| examine | 96 | 1,175 | interactive examine/modify from `addr` | peek, poke, getchar | none | relies on SYS_GETC echo behaviour | **PORT AS-IS** (getchar echo differs: check the Enter handling, ~5 lines) | CHANGED: conin without echo, examine echoes the digits; Enter = CR or LF |
 
 ### 2.2 File readers and stdin filters (14)
 
 All of these use `lib_stdin.c` (file-or-stdin, glob expansion) unless noted; the file side is
 FRESOLVE + FOPEN + FGETB + SYS_GETCWD, the glob side adds FOPENDIR/FNEXT/SYS_OPENCWD/SYS_DIRENTRY/FSDIRBUF.
 
-| Name | Src | p8cc B | Purpose | Calls | Rec | P8X-specific | Verdict |
-|---|---|---|---|---|---|---|---|
-| cat | 120 | 4,498 | print file(s)/glob, or stdin -> stdout | FRESOLVE FOPEN FGETB SYS_GETCWD FSDIRBUF; libs glob globx dirent err | lib: gmatch | `FSDIRBUF` page `$FA` dance so a glob walk does not clobber the open `>` write stream | **PORT AS-IS** once wave 0 libs exist; drop the FSDIRBUF call if the Y1 API separates dir and write buffers |
-| wc | 134 | 5,715 | lines/words/bytes (24-bit) of file/glob/stdin | stdin lib | lib: gmatch | none | **PORT AS-IS** (replaces the current raw-sector `os/commands/wc.c`) |
-| head | 55 | 4,711 | first N lines | stdin lib | lib: gmatch | none | **PORT AS-IS** |
-| tail | 93 | 15,450 | last N lines (N<=40, 10K ring buffer) | stdin lib | lib: gmatch | none | **PORT AS-IS** (10,240 B buffer is inside the image: ~13K on Y1, fits) |
-| more | 78 | 4,760 | page 23 lines, key from the *console* not stdin | stdin lib + CONIN | lib: gmatch | none | **PORT AS-IS** (raw key, item F) |
-| sort | 108 | 15,619 | sort <=128 lines of <=79 chars, in memory | stdin lib | lib: gmatch | none | **PORT AS-IS** (10K buffer) |
-| uniq | 64 | 5,475 | collapse adjacent duplicates | stdin rdline streq | lib: gmatch | none | **PORT AS-IS** |
-| sed | 116 | 7,031 | `s/re/new/[g]` on file/stdin | stdin rdline regex | lib: gmatch, matchhere | none | **PORT AS-IS** after the regex de-recursion (wave 0) |
-| awk | 242 | 9,092 | one-rule awk: fields, `/re/ {print $N ...}`, NR/NF | stdin regex | lib: gmatch, matchhere | none | **PORT AS-IS** after wave 0 (program is one quoted arg: ARGBUF 64 B) |
-| cmp | 125 | 10,228 | byte compare, file1 in an 8K buffer, file2 streamed (single read stream) | FRESOLVE FOPEN FGETB; apath err | none | the ONE-read-stream BIOS forces the buffer | **PORT AS-IS**; if the Y1 API gives two read handles it can stream both (optional simplification, -8K) |
-| diff | 147 | 17,516 | prefix/suffix line diff, <=96 lines x 79 per file (15K buffers) | FRESOLVE FOPEN FGETB; apath err | none | same single-stream shape | **PORT AS-IS** (~15K image on Y1; fits) |
-| man | 78 | 804 | stream `/man/<name>` | FRESOLVE FOPEN FGETB PUTS | none | `/man` prefix, error via raw PUTS | **PORT AS-IS** (`/MAN` + case rule, item 8) |
-| md | 417 | 9,801 | render Markdown on the console with a `--More--` pager | FRESOLVE FOPEN FGETB CONIN; apath | none | none (pure text: headings, lists, code, emphasis) | **PORT AS-IS** (raw key) — needed for `/DOCS/*.MD` |
-| grep | 225 | 10,953 | basic-regex line filter; `-r` walks the CWD tree | stdin regex globx dirent + FNEXT SYS_OPENCWD FSDIRBUF SYS_GETCWD | **own: collect** (the `-r` walk); lib: gmatch, matchhere | `FNEXT` cursor is global BIOS state -> two-phase record-then-descend; 48 x 96 path list | **PORT WITH CHANGES**: `collect()` iterative (explicit dir stack, ~40 lines); listed again under directory tools because of `-r` |
+| Name | Src | p8cc B | Purpose | Calls | Rec | P8X-specific | Verdict | Status |
+|---|---|---|---|---|---|---|---|---|
+| cat | 120 | 4,498 | print file(s)/glob, or stdin -> stdout | FRESOLVE FOPEN FGETB SYS_GETCWD FSDIRBUF; libs glob globx dirent err | lib: gmatch | `FSDIRBUF` page `$FA` dance so a glob walk does not clobber the open `>` write stream | **PORT AS-IS** once wave 0 libs exist; drop the FSDIRBUF call if the Y1 API separates dir and write buffers | CHANGED: several names, globs and `-` (console) via lib_stdin; replaced `cat2`; replaces the built-in (/BIN first) |
+| wc | 134 | 5,715 | lines/words/bytes (24-bit) of file/glob/stdin | stdin lib | lib: gmatch | none | **PORT AS-IS** (replaces the current raw-sector `os/commands/wc.c`) | CHANGED: several names; 32-bit counters (lib_num) for the 24-bit byte arrays |
+| head | 55 | 4,711 | first N lines | stdin lib | lib: gmatch | none | **PORT AS-IS** | DONE (+ several names) |
+| tail | 93 | 15,450 | last N lines (N<=40, 10K ring buffer) | stdin lib | lib: gmatch | none | **PORT AS-IS** (10,240 B buffer is inside the image: ~13K on Y1, fits) | DONE (+ several names) |
+| more | 78 | 4,760 | page 23 lines, key from the *console* not stdin | stdin lib + CONIN | lib: gmatch | none | **PORT AS-IS** (raw key, item F) | CHANGED: the pager moved to lib_more.c (shared with man, md) |
+| sort | 108 | 15,619 | sort <=128 lines of <=79 chars, in memory | stdin lib | lib: gmatch | none | **PORT AS-IS** (10K buffer) | CHANGED: 200 lines (was 128), insertion sort of an index, a warning when lines are dropped |
+| uniq | 64 | 5,475 | collapse adjacent duplicates | stdin rdline streq | lib: gmatch | none | **PORT AS-IS** | DONE (strcmp for streq) |
+| sed | 116 | 7,031 | `s/re/new/[g]` on file/stdin | stdin rdline regex | lib: gmatch, matchhere | none | **PORT AS-IS** after the regex de-recursion (wave 0) | DONE (iterative lib_regex) |
+| awk | 242 | 9,092 | one-rule awk: fields, `/re/ {print $N ...}`, NR/NF | stdin regex | lib: gmatch, matchhere | none | **PORT AS-IS** after wave 0 (program is one quoted arg: ARGBUF 64 B) | DONE (iterative lib_regex; several input names) |
+| cmp | 125 | 10,228 | byte compare, file1 in an 8K buffer, file2 streamed (single read stream) | FRESOLVE FOPEN FGETB; apath err | none | the ONE-read-stream BIOS forces the buffer | **PORT AS-IS**; if the Y1 API gives two read handles it can stream both (optional simplification, -8K) | CHANGED: both files streamed through two handles (no 8K limit) |
+| diff | 147 | 17,516 | prefix/suffix line diff, <=96 lines x 79 per file (15K buffers) | FRESOLVE FOPEN FGETB; apath err | none | same single-stream shape | **PORT AS-IS** (~15K image on Y1; fits) | CHANGED: 150 lines per file (was 96), a warning past that |
+| man | 78 | 804 | stream `/man/<name>` | FRESOLVE FOPEN FGETB PUTS | none | `/man` prefix, error via raw PUTS | **PORT AS-IS** (`/MAN` + case rule, item 8) | CHANGED: /MAN + upper-cased name, through the lib_more pager; no argument = the page list |
+| md | 417 | 9,801 | render Markdown on the console with a `--More--` pager | FRESOLVE FOPEN FGETB CONIN; apath | none | none (pure text: headings, lists, code, emphasis) | **PORT AS-IS** (raw key) — needed for `/DOCS/*.MD` | CHANGED: lib_more pager; consecutive lines join into one paragraph (the Y1 docs are hard-wrapped); indented tables/fences; /DOCS fallback and list |
+| grep | 225 | 10,953 | basic-regex line filter; `-r` walks the CWD tree | stdin regex globx dirent + FNEXT SYS_OPENCWD FSDIRBUF SYS_GETCWD | **own: collect** (the `-r` walk); lib: gmatch, matchhere | `FNEXT` cursor is global BIOS state -> two-phase record-then-descend; 48 x 96 path list | **PORT WITH CHANGES**: `collect()` iterative (explicit dir stack, ~40 lines); listed again under directory tools because of `-r` | CHANGED: `-r` walks with lib_walk and searches as it goes (no 36-file cap), takes a start dir; `NAME:` prefix with several files |
 
 ### 2.3 File writers (4)
 
-| Name | Src | p8cc B | Purpose | Calls | Rec | P8X-specific | Verdict |
-|---|---|---|---|---|---|---|---|
-| touch | 69 | 877 | create empty files if missing (exists-test = open for read) | FRESOLVE FOPEN FWOPEN FCLOSE; apath | none | "resolve before FWOPEN" ordering (SBUF sharing) | **PORT AS-IS** (`create` + `close`; the ordering note vanishes if handles have their own buffers) |
-| del | 48 | 794 | tombstone file(s) | FRESOLVE FDELETE; apath | none | none | **PORT AS-IS** (`delete(path)`) |
-| mv | 132 | 5,678 | move/rename = copy + delete; glob source into a dir | FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE FDELETE FOPENDIR; apath streq globx dirent err | lib: gmatch | no rename primitive in P8XFS; SBUF ordering | **PORT AS-IS**; becomes ~40 lines if the Y1 API adds `rename` (section 5, item C) |
-| cp | 209 | 6,556 | copy file / glob / `-r` subtree, makes dirs via SYS_MKDIR | FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE FOPENDIR FNEXT FSDIRBUF SYS_MKDIR; apath dirent globx glob err | **own: copy_tree**; lib: gmatch | record-then-descend (global FNEXT cursor) | **PORT WITH CHANGES**: `copy_tree()` iterative (explicit stack of (src,dst,dir-LBA), ~60 lines) |
+| Name | Src | p8cc B | Purpose | Calls | Rec | P8X-specific | Verdict | Status |
+|---|---|---|---|---|---|---|---|---|
+| touch | 69 | 877 | create empty files if missing (exists-test = open for read) | FRESOLVE FOPEN FWOPEN FCLOSE; apath | none | "resolve before FWOPEN" ordering (SBUF sharing) | **PORT AS-IS** (`create` + `close`; the ordering note vanishes if handles have their own buffers) | DONE (fresolve + fcreate/fclose) |
+| del | 48 | 794 | tombstone file(s) | FRESOLVE FDELETE; apath | none | none | **PORT AS-IS** (`delete(path)`) | CHANGED: globs added; the message names the file; replaces the built-in |
+| mv | 132 | 5,678 | move/rename = copy + delete; glob source into a dir | FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE FDELETE FOPENDIR; apath streq globx dirent err | lib: gmatch | no rename primitive in P8XFS; SBUF ordering | **PORT AS-IS**; becomes ~40 lines if the Y1 API adds `rename` (section 5, item C) | CHANGED: RENAME syscall within a directory (item C); copy + delete across directories keeps load/exec; directories rename in place; one file can go into a directory |
+| cp | 209 | 6,556 | copy file / glob / `-r` subtree, makes dirs via SYS_MKDIR | FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE FOPENDIR FNEXT FSDIRBUF SYS_MKDIR; apath dirent globx glob err | **own: copy_tree**; lib: gmatch | record-then-descend (global FNEXT cursor) | **PORT WITH CHANGES**: `copy_tree()` iterative (explicit stack of (src,dst,dir-LBA), ~60 lines) | CHANGED: `-r` via lib_walk (one dir handle + read + write handle); load/exec kept (item E); a file into a directory; quiet |
 
 ### 2.4 Directory tools (3)
 
-| Name | Src | p8cc B | Purpose | Calls | Rec | P8X-specific | Verdict |
-|---|---|---|---|---|---|---|---|
-| dir | 406 | 7,339 | list a dir/glob, sorted by name or `-S` size, `-R` recursive; 24-bit sizes | FOPENDIR FNEXT FSDIRBUF SYS_OPENCWD + dirent (SYS_DIRENTRY, SYS_OPENDIR); glob apath err | **own: walk** | descends by 16-bit dir LBA (pokes `LBA1` on the P8X side historically); FSDIRBUF | **PORT WITH CHANGES**: `walk()` iterative (per-level child-LBA arrays already exist; turn the recursion into a level stack, ~50 lines). Y1/OS's built-in `dir` shows load addresses: add that column (readdir must expose load/exec) |
-| find | 158 | 3,001 | recursive name match (glob or substring) under the CWD | FNEXT FSDIRBUF SYS_GETCWD SYS_OPENCWD; glob dirent | **own: walk** | same record-then-descend | **PORT WITH CHANGES**: iterative walk (~40 lines) |
-| tree | 87 | 1,031 | depth-first indented tree of the CWD | FNEXT FSDIRBUF SYS_OPENCWD; dirent | **own: walk** | same | **PORT WITH CHANGES**: iterative walk (~30 lines; the simplest of the three — do it first and reuse the shape) |
+| Name | Src | p8cc B | Purpose | Calls | Rec | P8X-specific | Verdict | Status |
+|---|---|---|---|---|---|---|---|---|
+| dir | 406 | 7,339 | list a dir/glob, sorted by name or `-S` size, `-R` recursive; 24-bit sizes | FOPENDIR FNEXT FSDIRBUF SYS_OPENCWD + dirent (SYS_DIRENTRY, SYS_OPENDIR); glob apath err | **own: walk** | descends by 16-bit dir LBA (pokes `LBA1` on the P8X side historically); FSDIRBUF | **PORT WITH CHANGES**: `walk()` iterative (per-level child-LBA arrays already exist; turn the recursion into a level stack, ~50 lines). Y1/OS's built-in `dir` shows load addresses: add that column (readdir must expose load/exec) | CHANGED: `-R` via lib_walk as `ls -R` blocks with headers; load-address column; replaces the built-in |
+| find | 158 | 3,001 | recursive name match (glob or substring) under the CWD | FNEXT FSDIRBUF SYS_GETCWD SYS_OPENCWD; glob dirent | **own: walk** | same record-then-descend | **PORT WITH CHANGES**: iterative walk (~40 lines) | CHANGED: lib_walk (true pre-order), optional start dir |
+| tree | 87 | 1,031 | depth-first indented tree of the CWD | FNEXT FSDIRBUF SYS_OPENCWD; dirent | **own: walk** | same | **PORT WITH CHANGES**: iterative walk (~30 lines; the simplest of the three — do it first and reuse the shape) | CHANGED: lib_walk (true pre-order), optional start dir |
 
 ### 2.5 System / P8X-specific (2)
 
-| Name | Src | p8cc B | Purpose | Calls | Rec | P8X-specific | Verdict |
-|---|---|---|---|---|---|---|---|
-| disasm | 164 | 3,990 | disassemble `[start,end)` from memory | peek; lib_distab (143 P8X opcodes, generated from `genucode.OPC`) | none | the entire opcode table is the P8X ISA | **SKIP**. A YACC1 `disasm` is a new ~200-line tool whose table is generated from `software/assembler/yacc1.def` (the same generator idea as `gen_p8xdis.py`); the driver loop in `disasm.c` (hex parse, `AAAA: bb bb MNEMONIC`) is reusable |
-| kermit | 98 | 1,597 | file transfer over the SECOND ACIA (`$FF08/$FF09`) | FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE FDELETE + peek/poke of the ACIA | none | the 2nd serial port | **SKIP for now** (single UART on the YACC1). Revisit as DEFER if the IO card's UART becomes a second port: the packet logic is 60 lines and port-agnostic behind `a2put`/`a2get` |
+| Name | Src | p8cc B | Purpose | Calls | Rec | P8X-specific | Verdict | Status |
+|---|---|---|---|---|---|---|---|---|
+| disasm | 164 | 3,990 | disassemble `[start,end)` from memory | peek; lib_distab (143 P8X opcodes, generated from `genucode.OPC`) | none | the entire opcode table is the P8X ISA | **SKIP**. A YACC1 `disasm` is a new ~200-line tool whose table is generated from `software/assembler/yacc1.def` (the same generator idea as `gen_p8xdis.py`); the driver loop in `disasm.c` (hex parse, `AAAA: bb bb MNEMONIC`) is reusable | SKIPPED (as the verdict) |
+| kermit | 98 | 1,597 | file transfer over the SECOND ACIA (`$FF08/$FF09`) | FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE FDELETE + peek/poke of the ACIA | none | the 2nd serial port | **SKIP for now** (single UART on the YACC1). Revisit as DEFER if the IO card's UART becomes a second port: the packet logic is 60 lines and port-agnostic behind `a2put`/`a2get` | SKIPPED (as the verdict) |
 
 ### 2.6 Graphics or window manager (17)
 
@@ -140,57 +142,57 @@ All drive the GL port `$FF50..$FF57` through `lib_gfx.c`/`lib_g3d.c` or the resi
 `$2027..$2051`; the YACC1 has no graphics card, and OS-PLAN phase 4 is a text-mode 6845 video card, so
 none of these will ever run as written.
 
-| Name | Src | p8cc B | Purpose | Calls | Rec | Verdict |
-|---|---|---|---|---|---|---|
-| camera | 98 | 10,741 | look-at camera, redraw scene | gfx g3d g3cam, GL regs | lib: glbyt/glwrd | **SKIP** (GL engine) |
-| clsave | 92 | 2,165 | save a GL command list to a file | FRESOLVE FWOPEN FPUTB FCLOSE + GL | lib | **SKIP** |
-| cube | 207 | 19,115 | spinning wireframe cube | gfx g3d | lib | **SKIP** |
-| gl | 116 | 2,396 | send a GL script file to the card | FRESOLVE FOPEN FGETB + GL | lib | **SKIP** |
-| house | 147 | 2,337 | the animated house demo | gfx | lib | **SKIP** |
-| image | 202 | 4,033 | view/grab P8I pictures | file API + GL + CONIN | lib | **SKIP** |
-| page | 42 | 917 | framebuffer page sync/flip | gfx | lib | **SKIP** |
-| rotate | 75 | 1,447 | set rotation matrix, redraw | gfx | lib | **SKIP** |
-| tri | 151 | 15,948 | one 3D triangle from the shell | gfx g3d | lib | **SKIP** |
-| screen | 49 | 464 | glass-TTY on/off (`GCONEN`, `GCLS $014E`) | peek/poke OS flag | none | **SKIP** (no glass TTY) |
-| paint | 436 | 10,186 | vector paint, mouse via lib_ptr | GL + SYS_EXEC + ptr | none | **SKIP** |
-| desk | 420 | 15,528 | the client-side window-system demo (lib_wm) | file API + SYS_EXEC + wm + ptr | none | **SKIP** |
-| wdesk | 533 | 9,347 | desktop client on the resident WM kernel (`SYS_WK*`, `SYS_RUNSH`) | 11 WM syscalls + file API | none | **SKIP** |
-| sheet | 552 | 16,323 | spreadsheet for the graphics desktop | file API + GL + SYS_EXEC | **own: eval** (expression parser) | **DEFER**: the cell model + `eval` (precedence climbing, ~100 lines) are console-portable; the grid drawing is GL. A VT100 version is a rewrite of ~200 lines, only if wanted |
-| finder | 590 | 12,762 | full-screen file browser + app launcher (two-mode P4) | FOPENDIR FNEXT FRESOLVE FWOPEN FPUTB FCLOSE FDELETE SYS_GETCWD SYS_RUNSH + GL | none | **DEFER** until a text console exists; also needs `SYS_EXEC`/`SYS_RUNSH` (chain to another program) which Y1/OS does not have |
-| term | 87 | 1,493 | on-screen shell in the app frame | SYS_EXEC SYS_RUNSH GCLS GTRESUME | none | **SKIP** (it is the glass TTY + exec chaining; the serial console is already a terminal) |
-| write | 222 | 5,853 | full-screen text editor for the GL display (2K buffer) | file API + GL + ptr + SYS_EXEC | none | **DEFER**: `vi` covers the serial console; `write` only makes sense on the phase-4 video card |
+| Name | Src | p8cc B | Purpose | Calls | Rec | Verdict | Status |
+|---|---|---|---|---|---|---|---|
+| camera | 98 | 10,741 | look-at camera, redraw scene | gfx g3d g3cam, GL regs | lib: glbyt/glwrd | **SKIP** (GL engine) | SKIPPED (as the verdict) |
+| clsave | 92 | 2,165 | save a GL command list to a file | FRESOLVE FWOPEN FPUTB FCLOSE + GL | lib | **SKIP** | SKIPPED (as the verdict) |
+| cube | 207 | 19,115 | spinning wireframe cube | gfx g3d | lib | **SKIP** | SKIPPED (as the verdict) |
+| gl | 116 | 2,396 | send a GL script file to the card | FRESOLVE FOPEN FGETB + GL | lib | **SKIP** | SKIPPED (as the verdict) |
+| house | 147 | 2,337 | the animated house demo | gfx | lib | **SKIP** | SKIPPED (as the verdict) |
+| image | 202 | 4,033 | view/grab P8I pictures | file API + GL + CONIN | lib | **SKIP** | SKIPPED (as the verdict) |
+| page | 42 | 917 | framebuffer page sync/flip | gfx | lib | **SKIP** | SKIPPED (as the verdict) |
+| rotate | 75 | 1,447 | set rotation matrix, redraw | gfx | lib | **SKIP** | SKIPPED (as the verdict) |
+| tri | 151 | 15,948 | one 3D triangle from the shell | gfx g3d | lib | **SKIP** | SKIPPED (as the verdict) |
+| screen | 49 | 464 | glass-TTY on/off (`GCONEN`, `GCLS $014E`) | peek/poke OS flag | none | **SKIP** (no glass TTY) | SKIPPED (as the verdict) |
+| paint | 436 | 10,186 | vector paint, mouse via lib_ptr | GL + SYS_EXEC + ptr | none | **SKIP** | SKIPPED (as the verdict) |
+| desk | 420 | 15,528 | the client-side window-system demo (lib_wm) | file API + SYS_EXEC + wm + ptr | none | **SKIP** | SKIPPED (as the verdict) |
+| wdesk | 533 | 9,347 | desktop client on the resident WM kernel (`SYS_WK*`, `SYS_RUNSH`) | 11 WM syscalls + file API | none | **SKIP** | SKIPPED (as the verdict) |
+| sheet | 552 | 16,323 | spreadsheet for the graphics desktop | file API + GL + SYS_EXEC | **own: eval** (expression parser) | **DEFER**: the cell model + `eval` (precedence climbing, ~100 lines) are console-portable; the grid drawing is GL. A VT100 version is a rewrite of ~200 lines, only if wanted | DEFERRED (as the verdict) |
+| finder | 590 | 12,762 | full-screen file browser + app launcher (two-mode P4) | FOPENDIR FNEXT FRESOLVE FWOPEN FPUTB FCLOSE FDELETE SYS_GETCWD SYS_RUNSH + GL | none | **DEFER** until a text console exists; also needs `SYS_EXEC`/`SYS_RUNSH` (chain to another program) which Y1/OS does not have | DEFERRED (as the verdict) |
+| term | 87 | 1,493 | on-screen shell in the app frame | SYS_EXEC SYS_RUNSH GCLS GTRESUME | none | **SKIP** (it is the glass TTY + exec chaining; the serial console is already a terminal) | SKIPPED (as the verdict) |
+| write | 222 | 5,853 | full-screen text editor for the GL display (2K buffer) | file API + GL + ptr + SYS_EXEC | none | **DEFER**: `vi` covers the serial console; `write` only makes sense on the phase-4 video card | DEFERRED (as the verdict) |
 
 ### 2.7 Development tools (1 in os/commands + 4 elsewhere)
 
-| Name | Source | Lines | P8X binary | Purpose | Calls | Rec | P8X-specific | Verdict |
-|---|---|---|---|---|---|---|---|---|
-| vi | `os/commands/vi.c` | 442 | 15,837 (9,040 of it the text buffer) | modal VT100 editor: hjkl, i/a/A/o, x, dd, u, /pat, :w :q :wq | CONIN CONOUT FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE; apath | **own: outn** (decimal printer for ANSI args) | raw key without echo; `RDBUF` | **PORT WITH CHANGES**: `outn` iterative (10 lines); key read = no-echo vector (item F); ~13K on Y1, fits with room for a bigger buffer |
-| edit | `apps/p8xedit.asm` | 783 asm | 1,602 | line editor (L/A/I/D/W/Q), 12K buffer, root dir only | BIOS file calls | — | P8X assembly only, no C source | **PORT WITH CHANGES = rewrite in C** (~250 new lines: the command loop is trivial once `vi`'s file load/save code exists) — or skip it, `vi` supersedes it. Recommend: skip unless a non-VT100 terminal is in use |
-| asm | `apps/asm.c` + `apps/opctab.c` (generated) | 542 + 141 | 9,945 (C); asm twin 4,065 | two-pass P8X assembler on-target; hashed symbol table at `$A800..$D140` (1,664 symbols), `;#use` includes | FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE FDELETE FFIND FSDIRBUF SYS_GETCWD CONOUT PUTS | none | the P8X ISA table, the P8X source syntax (`.org/.byte/.word`, `LDP1 #`, `(P3+d)`), symbol-table addresses above `$D000` | **PORT WITH CHANGES (major)**: keep the two-pass driver, symbol hash and file plumbing; replace the opcode table with one generated from `yacc1.def` and the operand parser with the RC/asm dialect y1cc emits (`ORG/DB/DW/DS`, `MVIW Rn,imm`, `LDR R3,label`, case-folded labels <=29 chars). Tables must move under `$D000`: with ~8K of code there is room for ~1,000 symbols at `$A000..$CFFF`. Output must be a load-address-tagged /BIN file (item E). ~400 lines changed + a ~100-line generator |
-| cc | `apps/cc.c` (twin of `apps/p8xcc.asm` 10,182 B; host `compiler/p8cc.c` 2,174 lines) | 1,178 | 21,306 + ~11K of tables at `$D400..$F000` | native C compiler emitting P8X assembly | FRESOLVE FOPEN FGETB FSDIRBUF SYS_GETCWD | **21 recursive functions** (recursive-descent parser: `gexpr gterm gfact gunary stmt st_if st_while st_for funcdef ...`) | P8X back end; tables above `$D000`; ~32K total | **DEFER**. Blocked twice: y1cc has no stack-frame mode (the parser cannot compile) and the back end would have to be y1cc.py's (R3 accumulator, static frames) rewritten in C. That is the self-hosting milestone, not a port; expect ~1,500 new lines and a fit problem against 32K (P8X needed 39.8K of TPA plus tables) |
-| basic | `basic/basic.c` (+ `glkwtab.c`); asm `basic/p8xbasic.asm` 9,347 B | 1,166 | 21,775 (C) | P8X BASIC with GL graphics keywords | CONIN CONOUT FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE FCREATE FFIND FLOADAT SYS_GETCWD + GL | **9 recursive functions** (`expr term factor stmt stmtline st_if st_run parget rgbtail`) | GL keyword table, P8X file calls, `PROG` at fixed addresses | **SKIP the P8X BASIC.** OS-PLAN phase 3 already decides: the YACC1's *own* ROM BASIC is re-assembled at a TPA address as `/BIN/BASIC`. `basic.c` only becomes interesting if that BASIC is ever replaced; it would need the parser de-recursed or y1cc stack frames, and the GL half (`T_LINE`, `T_GL`, `IMAGE`...) stripped |
+| Name | Source | Lines | P8X binary | Purpose | Calls | Rec | P8X-specific | Verdict | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| vi | `os/commands/vi.c` | 442 | 15,837 (9,040 of it the text buffer) | modal VT100 editor: hjkl, i/a/A/o, x, dd, u, /pat, :w :q :wq | CONIN CONOUT FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE; apath | **own: outn** (decimal printer for ANSI args) | raw key without echo; `RDBUF` | **PORT WITH CHANGES**: `outn` iterative (10 lines); key read = no-echo vector (item F); ~13K on Y1, fits with room for a bigger buffer | IN PROGRESS in a separate session (2026-09-23): os/commands/vi.c |
+| edit | `apps/p8xedit.asm` | 783 asm | 1,602 | line editor (L/A/I/D/W/Q), 12K buffer, root dir only | BIOS file calls | — | P8X assembly only, no C source | **PORT WITH CHANGES = rewrite in C** (~250 new lines: the command loop is trivial once `vi`'s file load/save code exists) — or skip it, `vi` supersedes it. Recommend: skip unless a non-VT100 terminal is in use | DEFERRED (wave 3; vi covers it) |
+| asm | `apps/asm.c` + `apps/opctab.c` (generated) | 542 + 141 | 9,945 (C); asm twin 4,065 | two-pass P8X assembler on-target; hashed symbol table at `$A800..$D140` (1,664 symbols), `;#use` includes | FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE FDELETE FFIND FSDIRBUF SYS_GETCWD CONOUT PUTS | none | the P8X ISA table, the P8X source syntax (`.org/.byte/.word`, `LDP1 #`, `(P3+d)`), symbol-table addresses above `$D000` | **PORT WITH CHANGES (major)**: keep the two-pass driver, symbol hash and file plumbing; replace the opcode table with one generated from `yacc1.def` and the operand parser with the RC/asm dialect y1cc emits (`ORG/DB/DW/DS`, `MVIW Rn,imm`, `LDR R3,label`, case-folded labels <=29 chars). Tables must move under `$D000`: with ~8K of code there is room for ~1,000 symbols at `$A000..$CFFF`. Output must be a load-address-tagged /BIN file (item E). ~400 lines changed + a ~100-line generator | DEFERRED (wave 3) |
+| cc | `apps/cc.c` (twin of `apps/p8xcc.asm` 10,182 B; host `compiler/p8cc.c` 2,174 lines) | 1,178 | 21,306 + ~11K of tables at `$D400..$F000` | native C compiler emitting P8X assembly | FRESOLVE FOPEN FGETB FSDIRBUF SYS_GETCWD | **21 recursive functions** (recursive-descent parser: `gexpr gterm gfact gunary stmt st_if st_while st_for funcdef ...`) | P8X back end; tables above `$D000`; ~32K total | **DEFER**. Blocked twice: y1cc has no stack-frame mode (the parser cannot compile) and the back end would have to be y1cc.py's (R3 accumulator, static frames) rewritten in C. That is the self-hosting milestone, not a port; expect ~1,500 new lines and a fit problem against 32K (P8X needed 39.8K of TPA plus tables) | DEFERRED (as the verdict) |
+| basic | `basic/basic.c` (+ `glkwtab.c`); asm `basic/p8xbasic.asm` 9,347 B | 1,166 | 21,775 (C) | P8X BASIC with GL graphics keywords | CONIN CONOUT FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE FCREATE FFIND FLOADAT SYS_GETCWD + GL | **9 recursive functions** (`expr term factor stmt stmtline st_if st_run parget rgbtail`) | GL keyword table, P8X file calls, `PROG` at fixed addresses | **SKIP the P8X BASIC.** OS-PLAN phase 3 already decides: the YACC1's *own* ROM BASIC is re-assembled at a TPA address as `/BIN/BASIC`. `basic.c` only becomes interesting if that BASIC is ever replaced; it would need the parser de-recursed or y1cc stack frames, and the GL half (`T_LINE`, `T_GL`, `IMAGE`...) stripped | SKIPPED (as the verdict) |
 
 `compiler/p8cc.c` (the host-sized self-hosting compiler, 265K of tables) is not a target program on either
 machine and is out of scope.
 
 ### 2.8 Shared libraries (18) — what each becomes
 
-| Lib | Lines | Used by | Recursion | Verdict |
-|---|---|---|---|---|
-| lib_abi | 67 | everything | — | **REPLACE** with `os/lib_abi.c` + the file-API names (concurrent work) |
-| lib_mem | 21 (generated) | graphics + screen + asm/cc/basic | — | **REPLACE**: Y1 needs only `TPA $5000`, `TPATOP $D000`, `ARGBUF` (already in `os/lib_abi.c`) |
-| lib_apath | 49 | del touch cp mv cmp diff md vi clsave gl image | none | **PORT AS-IS** (`getcwd`) |
-| lib_stdin | 113 | cat wc grep head tail more sort uniq sed awk | lib: gmatch | **PORT WITH CHANGES**: API names, drop `RDBUF`, keep the 65535 EOF sentinel; `getchar()` EOF depends on item B |
-| lib_dirent | 50 | dir find tree cp grep cat globx desk finder wdesk | none | **PORT WITH CHANGES**: it is a veneer over `SYS_DIRENTRY` (18-byte snapshot: name[12], flag, len24, lba16) and `SYS_OPENDIR` (by LBA). If the Y1 `readdir` fills a struct, `de_*()` become one-line accessors |
-| lib_glob | 44 | cat wc grep head tail more sort uniq sed awk cp mv dir find | **gmatch is recursive** (`*` tries every suffix) | **PORT WITH CHANGES**: the classic iterative wildcard match (remember the last `*` position and backtrack there; ~35 lines, no stack) |
-| lib_globx | 106 | the same + lib_stdin | lib: gmatch | **PORT WITH CHANGES**: opendir/readdir names; drop `FSDIRBUF` if handles own their buffers |
-| lib_regex | 86 | grep sed awk | **matchhere is recursive** (tail recursion on `c*`, `c+`, `c?`, and on the literal case) | **PORT WITH CHANGES**: with only single-character quantifiers the matcher can be made iterative with a small explicit backtrack stack of `(re, t)` pairs (depth <= pattern length; ~70 lines). Keep the P8X test cases (`grep`/`sed` c_*_test.sh inputs) as the oracle |
-| lib_rdline | 35 | uniq sed | none | **PORT AS-IS** |
-| lib_streq | 17 | uniq mv | none | **PORT AS-IS** (or use `y1lib.c`'s `strcmp`) |
-| lib_err | 29 | most commands | none | **PORT WITH CHANGES**: `eputs()` writes to the *console* (raw `PUTS`/`CONOUT`) so `?errors` never land in a `>` file; on the Y1 that is `bios(CHAROUT, ...)` per byte — 10 lines. Matters only once redirection exists |
-| lib_distab | 8 (generated) | disasm | — | **SKIP** (P8X opcodes) |
-| lib_gfx, lib_g3d, lib_g3cam | 187 / 603 / 100 | graphics | glbyt/glwrd (mutual) | **SKIP** |
-| lib_wm, lib_ptr, lib_ps2 | 297 / 158 / 153 | desk paint finder sheet term write | none | **SKIP** (WM, xterm mouse reports, PS/2 window `$FF58`) |
+| Lib | Lines | Used by | Recursion | Verdict | Status |
+|---|---|---|---|---|---|
+| lib_abi | 67 | everything | — | **REPLACE** with `os/lib_abi.c` + the file-API names (concurrent work) | DONE: os/lib_abi.c (+ os/lib_fs.c wrappers) |
+| lib_mem | 21 (generated) | graphics + screen + asm/cc/basic | — | **REPLACE**: Y1 needs only `TPA $5000`, `TPATOP $D000`, `ARGBUF` (already in `os/lib_abi.c`) | DROPPED: TPA/TPATOP/ARGBUF are in lib_abi.c |
+| lib_apath | 49 | del touch cp mv cmp diff md vi clsave gl image | none | **PORT AS-IS** (`getcwd`) | CHANGED: . and .. folded, output bounded (APLEN 128) |
+| lib_stdin | 113 | cat wc grep head tail more sort uniq sed awk | lib: gmatch | **PORT WITH CHANGES**: API names, drop `RDBUF`, keep the 65535 EOF sentinel; `getchar()` EOF depends on item B | CHANGED: every word of the tail (files, globs, `-`), sepfiles, curname, notfound(); one handle at a time |
+| lib_dirent | 50 | dir find tree cp grep cat globx desk finder wdesk | none | **PORT WITH CHANGES**: it is a veneer over `SYS_DIRENTRY` (18-byte snapshot: name[12], flag, len24, lba16) and `SYS_OPENDIR` (by LBA). If the Y1 `readdir` fills a struct, `de_*()` become one-line accessors | DROPPED: lib_fs.c readdir() fills a 32-byte entry, the ent_* accessors read it |
+| lib_glob | 44 | cat wc grep head tail more sort uniq sed awk cp mv dir find | **gmatch is recursive** (`*` tries every suffix) | **PORT WITH CHANGES**: the classic iterative wildcard match (remember the last `*` position and backtrack there; ~35 lines, no stack) | CHANGED: iterative gmatch (one backtrack point) |
+| lib_globx | 106 | the same + lib_stdin | lib: gmatch | **PORT WITH CHANGES**: opendir/readdir names; drop `FSDIRBUF` if handles own their buffers | CHANGED: its own opendir handle (no FSDIRBUF), isglob() |
+| lib_regex | 86 | grep sed awk | **matchhere is recursive** (tail recursion on `c*`, `c+`, `c?`, and on the literal case) | **PORT WITH CHANGES**: with only single-character quantifiers the matcher can be made iterative with a small explicit backtrack stack of `(re, t)` pairs (depth <= pattern length; ~70 lines). Keep the P8X test cases (`grep`/`sed` c_*_test.sh inputs) as the oracle | CHANGED: matchhere with an explicit backtrack stack (32 points) |
+| lib_rdline | 35 | uniq sed | none | **PORT AS-IS** | DONE |
+| lib_streq | 17 | uniq mv | none | **PORT AS-IS** (or use `y1lib.c`'s `strcmp`) | DROPPED: y1lib.c strcmp |
+| lib_err | 29 | most commands | none | **PORT WITH CHANGES**: `eputs()` writes to the *console* (raw `PUTS`/`CONOUT`) so `?errors` never land in a `>` file; on the Y1 that is `bios(CHAROUT, ...)` per byte — 10 lines. Matters only once redirection exists | CHANGED: putchar-based (no redirection yet); kept as the one place to change |
+| lib_distab | 8 (generated) | disasm | — | **SKIP** (P8X opcodes) | SKIPPED |
+| lib_gfx, lib_g3d, lib_g3cam | 187 / 603 / 100 | graphics | glbyt/glwrd (mutual) | **SKIP** | SKIPPED |
+| lib_wm, lib_ptr, lib_ps2 | 297 / 158 / 153 | desk paint finder sheet term write | none | **SKIP** (WM, xterm mouse reports, PS/2 window `$FF58`) | SKIPPED |
 
 ### 2.9 The P8X shell built-ins (for the OS side, not the command port)
 
@@ -372,3 +374,93 @@ are pure text-in/text-out and their P8X expectations transfer verbatim).
 Effort in lines of C to touch: wave 0 ~400, wave 1 ~300 (+40 help text), wave 2 ~350, wave 3 ~550–800
 (vi 80, asm ~500, edit 250 optional). About 1,600–1,900 lines of C over ~5,500 lines of ported source, most
 of it the mechanical pass; the only design work is the iterative matchers/walkers and the assembler's front end.
+
+---
+
+## 8. What was done (2026-09-23: waves 0, 1 and 2)
+
+The API questions of section 5 were settled by Y1/OS v0.1 before the port began (`os/README.md`): every syscall
+returns a full 16-bit word, 65535 = end of file / end of console input (item A: the 69 `& 256` tests became
+`== 65535` or 0 tests); `conin()` is Ctrl-D-terminated and echo-free (items B, F); `RENAME` exists (item C); four
+handles, each with its own 512-byte buffer (item D, so every `FSDIRBUF` call and the "resolve DST before FWOPEN"
+folklore went away); `fcreate(path, load, exec)` (item E: cp and mv keep load/exec); ARGBUF is 127 characters
+(item 5).
+
+**Wave 0 - the libraries** (`os/lib_*.c`, each `#include`s what it needs; y1cc includes a file once):
+`lib_stdin.c` (every word of the tail: files, globs, `-` for the console, read as one stream; `sepfiles` ends each
+file with a line feed for the line tools; `curname` for grep's prefix), `lib_rdline.c`, `lib_glob.c` (iterative
+`gmatch`: one backtrack point), `lib_globx.c` (`glob_expand` on its own directory handle, `isglob`), `lib_regex.c`
+(`matchhere` with an explicit stack of choice points: `*`/`+` resume with one more repetition, `?` with none; same
+match order as the recursive P8X one, checked on 18 cases), `lib_apath.c` (absolute path, `.`/`..` folded),
+`lib_err.c`, and three new ones: **`lib_walk.c`** (the recursion-free tree walker every recursive command now uses:
+a level stack of path length + entries read, ONE directory handle, closed on the way down and reopened and skipped
+forward on the way up, 8 levels; true pre-order), **`lib_more.c`** (the `--More--` pager of more, man and md),
+**`lib_num.c`** (32-bit counts as two ints). Dropped: `lib_mem`, `lib_dirent` (the `ent_*` accessors of lib_fs.c),
+`lib_streq` (y1lib `strcmp`).
+
+**Wave 1** pwd help dep dump examine man cat wc head tail more sort uniq sed awk cmp diff md; **wave 2** touch del
+mv tree find dir grep cp. `cat2` (the v0.1 API test) is gone, `cat` replaces it; the v0.1 `wc` and `cp` were
+replaced by the ports. Every command's header comment says what it does, its options, and "ported from P8X ...,
+changes: ...".
+
+Sizes (image + uninitialised data, against the 32,768-byte program area $5000..$CFFF; `make -C os sizes`, and the
+build fails a program over 32K):
+
+| Wave | Command | Image | Data | Total |
+|---|---|---|---|---|
+| 1 | pwd | 186 | 69 | 255 |
+| 1 | help | 1,739 | 1 | 1,740 |
+| 1 | dep | 665 | 21 | 686 |
+| 1 | dump | 1,119 | 29 | 1,148 |
+| 1 | examine | 1,039 | 27 | 1,066 |
+| 1 | man | 1,411 | 130 | 1,541 |
+| 1 | cat | 2,530 | 1,794 | 4,324 |
+| 1 | wc | 3,163 | 1,836 | 4,999 |
+| 1 | head | 2,704 | 1,798 | 4,502 |
+| 1 | tail | 3,136 | 12,048 | 15,184 |
+| 1 | more | 2,793 | 1,804 | 4,597 |
+| 1 | sort | 3,326 | 18,212 | 21,538 |
+| 1 | uniq | 2,748 | 2,312 | 5,060 |
+| 1 | sed | 4,285 | 2,636 | 6,921 |
+| 1 | awk | 5,552 | 2,768 | 8,320 |
+| 1 | cmp | 1,142 | 171 | 1,313 |
+| 1 | diff | 1,613 | 24,185 | 25,798 |
+| 1 | md | 5,725 | 4,350 | 10,075 |
+| 2 | touch | 603 | 127 | 730 |
+| 2 | del | 1,940 | 1,806 | 3,746 |
+| 2 | mv | 4,172 | 3,004 | 7,176 |
+| 2 | tree | 2,138 | 398 | 2,536 |
+| 2 | find | 2,823 | 628 | 3,451 |
+| 2 | dir | 5,255 | 2,113 | 7,368 |
+| 2 | grep | 5,749 | 2,823 | 8,572 |
+| 2 | cp | 5,399 | 3,515 | 8,914 |
+
+The largest are `diff` (two 12,000-byte line buffers), `sort` (16,000) and `tail` (10,240): data, not code; the
+biggest code is grep, awk, md, cp and dir at 5.2-5.8K. Every one leaves at least 6.9K of the 32K free.
+
+Decisions made on the way:
+- **The shell runs `/BIN/NAME` before its built-ins** (`os/y1os.c` main, `try_prog`): otherwise the ported `dir`,
+  `cat`, `pwd`, `del` and `help` could never be reached (the built-ins matched first). The built-ins stay for a card
+  without `/BIN`; `type` is always the built-in cat. The v0.1 sessions (`basic`, `api`, `write`) now exercise the
+  /BIN versions; their expected transcripts were regenerated and read line by line.
+- **Man pages**: `os/man/NAME` (plain text, 72 columns) -> `/MAN/NAME` in upper case; `man` upper-cases the word and
+  pages through lib_more; `man` alone lists the pages. The pages cover the /BIN commands, the shell built-ins
+  (cd load run save ren mkdir rmdir exit type, and mon = the ROM monitor) and the libraries (abi fs apath err glob
+  globx regex stdin rdline walk num, and pager = lib_more.c).
+- **`/DOCS`** for `md`: `os/README.md` (OS.MD), the compiler README (Y1CC.MD), OS-PLAN.md (OSPLAN.MD), this file
+  (PORT.MD) and `os/docs/mddemo.md` (MDDEMO.MD, one example of everything md renders). md now joins consecutive
+  lines into one paragraph: the Y1 documents are hard-wrapped at ~115 columns, which the line-per-paragraph P8X
+  renderer broke into ragged fragments.
+- **Sample data** `/FRUIT.TXT` and `/FRUIT2.TXT` (7 lines each, one line different) so the filters can be tried, and
+  tested, without redirection.
+- The instruction-level emulator ends console input at a lower-case `q` (an old quit key in `mygetchar()`), which
+  cut `uniq` to `uni`: the sessions type `UNIQ` and `Q`; BACKLOG has the item. The microcode emulator is unaffected.
+
+Tests: `tests/os/wave1.session` (every wave-1 command, the pager with a `Q`, examine/dep/dump on $6000) and
+`tests/os/wave2.session` (a tree built with mkdir/touch/cp, then tree, dir -R/-S/glob, find, grep -r, cp -r (and
+its refusal to copy into itself), cp of a glob, mv rename/into/across, del with a glob, a moved program run from
+its new directory), both on both emulators, wave2 with host-side p8xfs checks (fsck, ls of three directories, four
+files fetched and compared).
+
+Not done here: `vi` (a separate session), wave 3 (`asm`, a YACC1 `disasm`), redirection/pipes (the shell: until
+then a filter reads files or the console), and everything section 2 marks DEFERRED or SKIPPED.

@@ -5,7 +5,9 @@
 
    Shell:  dir [path]  cd path  pwd  cat path  load path  run path [args]  save path addr len  del path
            mkdir path  rmdir path  ren path newname  help  exit
-           anything else: run /BIN/<name> (then <name> in the current directory) with the rest of the line as args.
+           a /BIN/<NAME> program comes FIRST, even over a built-in of that name (since 2026-09-23: the ported /BIN dir,
+           cat, pwd, del, help replace the built-ins, which stay for a card without /BIN); an unknown word runs <NAME>
+           in the current directory; the rest of the line is the program's argument tail.
    Paths: absolute /A/B or relative, '.' and '..' are the directory's own entries. Names are case-sensitive, as the
    host tool writes them (tools/p8xfs.py), 1..12 characters, stored space-padded. Programs are compiled with
    `y1cc --org 0x5000` and put with `--load 0x5000 --exec 0x5000`; they return with RET (main returns) and find
@@ -558,7 +560,7 @@ int load_file(char *path) {             /* file -> its load address; 1 ok */
     int h; char *dst;
     h = file_of(path);
     if (!h) return 0;
-    if (e_load < TPA || e_load + e_len > TPATOP || e_load + e_len < e_load) {
+    if (e_load < TPA || e_load + e_secs * 512 > TPATOP || e_load + e_secs * 512 < e_load) {   /* whole sectors land */
         fs_close(h); puts("bad load address or size"); return 0;
     }
     dst = e_load;
@@ -632,15 +634,14 @@ void cmd_rmdir(char *path) { if (!fs_rmdir(path)) puts("not an empty directory")
 
 void upper(char *s) { while (*s) { if (*s >= 'a' && *s <= 'z') *s -= 32; s++; } }
 
-int try_bin(char *name, char *args) {   /* /BIN/NAME (programs are upper case), then NAME in the current directory */
-    char p[20]; int n;
-    n = strlen(name);
-    if (n > 12) return 0;
-    upper(name);
-    strcpy(p, "/BIN/"); strcpy(p + 5, name);
-    if (resolve(p) && e_flags == F_FILE) { if (load_file(p)) run_prog(args); return 1; }
-    if (resolve(name) && e_flags == F_FILE) { if (load_file(name)) run_prog(args); return 1; }
-    return 0;
+int try_prog(char *name, char *args, int bin) {  /* /BIN/NAME (bin = 1) or NAME here, upper case (as the Makefile puts programs) */
+    char p[20];
+    if (strlen(name) > 12) return 0;
+    if (bin) { strcpy(p, "/BIN/"); strcpy(p + 5, name); } else strcpy(p, name);
+    upper(p);
+    if (!resolve(p) || e_flags != F_FILE) return 0;
+    if (load_file(p)) run_prog(args);
+    return 1;
 }
 
 void cmd_help() {
@@ -684,6 +685,7 @@ void main() {
         rest = word(cmd);
         lower(cmd);
         if (strcmp(cmd, "exit") == 0) { puts("bye"); return; }
+        if (try_prog(cmd, rest, 1)) continue;   /* a /BIN program wins over a built-in of the same name (2026-09-23) */
         if (strcmp(cmd, "dir") == 0) cmd_dir(rest);
         else if (strcmp(cmd, "cd") == 0) cmd_cd(rest);
         else if (strcmp(cmd, "pwd") == 0) puts(cwdpath);
@@ -696,6 +698,6 @@ void main() {
         else if (strcmp(cmd, "mkdir") == 0) cmd_mkdir(rest);
         else if (strcmp(cmd, "rmdir") == 0) cmd_rmdir(rest);
         else if (strcmp(cmd, "help") == 0 || strcmp(cmd, "?") == 0) cmd_help();
-        else if (!try_bin(cmd, rest)) puts("what?");
+        else if (!try_prog(cmd, rest, 0)) puts("what?");
     }
 }

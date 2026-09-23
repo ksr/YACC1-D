@@ -1,0 +1,41 @@
+NAME
+    sed - stream editor (substitution only)
+
+SYNOPSIS
+    sed s/regex/replacement/[g] [file ...]
+
+DESCRIPTION
+    Applies one substitution to each line of the files named (read as
+    one stream; globs expand, "-" is the console), or of the console up
+    to Ctrl-D, and prints the result. Only the s command exists. The
+    left side is a basic regex (. * + ? ^ $, see regex); the
+    replacement is literal text. Without g only the first match of each
+    line is replaced, with g (or G) every one. sed is /BIN/SED.
+
+    The match replaced is the shortest one: * and + are not greedy, so
+    s/a.*e/X/ stops at the first e after the a. An empty match is
+    skipped, so s/x*/Y/ changes nothing. The s command runs from s/ to
+    its third /, so the regex and the replacement may hold spaces but
+    not a /.
+
+    Errors: "sed: only s/re/new/[g]", "sed: bad s/// (no second /)".
+
+LIMITS
+    The regex and the replacement are cut at 63 characters; input and
+    output lines at 255.
+
+EXAMPLES
+    sed s/red/RED/ /FRUIT.TXT      the first "red" of each line
+    sed s/an+/AN/g /FRUIT.TXT      banana becomes bANANa
+    sed s/^.*e/X/ /FRUIT2.TXT      apple 3 red becomes X 3 red
+    sed s/ 12 / twelve / /FRUIT.TXT
+                                   spaces in the s command
+
+NOTES
+    Each file ends a line.
+    Removed from the P8X version: input from a pipe or a < redirect.
+    New: several files, globs and "-".
+    Ported from P8X os/commands/sed.c 2026-09-23.
+
+SEE ALSO
+    grep, awk, regex, stdin

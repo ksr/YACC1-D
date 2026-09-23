@@ -1,0 +1,68 @@
+NAME
+    md - render a Markdown file on the console
+
+SYNOPSIS
+    md [-p] file.md
+    md
+
+DESCRIPTION
+    Renders a Markdown file as styled, paged console text, so the
+    documents in /DOCS read well at the machine itself. A name that is
+    not found as given (and does not start with /) is looked for in
+    /DOCS, so md OS.MD reads /DOCS/OS.MD. With no argument md prints
+    its usage and lists the documents in /DOCS. "md: not found" when
+    neither exists. md is /BIN/MD.
+
+    The subset, one classification per source line:
+        # .. ######   headings, bold; levels 1 and 2 also underlined
+        - * +  1.     list items, with a hanging indent
+        >             quotes, behind a "  | " gutter
+        ```           code fences: verbatim, indented, dim
+        | a | b |     tables: columns measured and aligned, the ---
+                      row drawn as dashes
+        --- *** ___   a rule across the screen
+    Everything else is prose, word-wrapped at 78 columns; consecutive
+    lines (and a list item's indented continuation lines) join into
+    one paragraph. Inline **bold** and `code` become attributes, and
+    [text](url) prints as text (url). Anything outside the subset
+    passes through as prose, so rendering never fails.
+
+    Styling is plain ANSI SGR escapes, which any terminal emulator
+    shows. -p leaves every escape out and underlines headings with a
+    row of = or - instead; the layout is otherwise the same.
+
+    Output goes through the --More-- pager (see pager): after 23 lines
+    a key, read without echo: space = the next page, Enter = one more
+    line, q or Q (or Ctrl-D) = quit.
+
+OPTIONS
+    -p    plain: no escape sequences (dumb terminals, tests)
+
+LIMITS
+    Source lines are cut at 238 characters; a table holds 20 rows of
+    178 characters and 10 columns.
+
+EXAMPLES
+    md                   the usage and the list of /DOCS
+    md OS.MD             Y1/OS: the shell, the file API, memory
+    md -p /DOCS/Y1CC.MD  the C compiler, plain
+    md PORT.MD           the plan behind the /BIN commands
+
+FILES
+    /DOCS/OS.MD       os/README.md: Y1/OS itself
+    /DOCS/Y1CC.MD     the y1cc C compiler
+    /DOCS/OSPLAN.MD   the plan for the disk OS
+    /DOCS/PORT.MD     the port of the P8X commands
+    /DOCS/MDDEMO.MD   one example of everything md renders
+
+NOTES
+    On the instruction-level emulator a lower-case q is read as end of
+    input, which quits as well.
+    Changed from the P8X version: the shared pager (23 lines, was 22,
+    with a plain prompt), the /DOCS fallback and list, and paragraphs
+    that join the lines of a hard-wrapped source (the P8X rendered
+    every source line as a paragraph of its own).
+    Ported from P8X os/commands/md.c 2026-09-23.
+
+SEE ALSO
+    more, man, pager, cat

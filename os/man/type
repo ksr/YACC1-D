@@ -1,0 +1,27 @@
+NAME
+    type - print a file (the shell's built-in cat)
+
+SYNOPSIS
+    type path
+
+DESCRIPTION
+    Prints one file as it is, straight from the card: the shell's own
+    cat, which needs nothing in /BIN. type always runs the built-in
+    (there is no /BIN/TYPE), while cat runs /BIN/CAT when it exists and
+    this built-in only when it does not. Errors: "not found", "is a
+    directory", "too big" (64K or more). type is a shell built-in.
+
+LIMITS
+    One file: no globs, no "-", no console input.
+
+EXAMPLES
+    type /README.TXT
+    type /MAN/TYPE
+
+NOTES
+    The shell's other stand-ins (dir, pwd, del, help) likewise answer
+    only when /BIN lacks the program, as on a freshly made card.
+    New in Y1/OS 2026-09-23.
+
+SEE ALSO
+    cat, more, dir

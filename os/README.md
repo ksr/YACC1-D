@@ -44,6 +44,10 @@ the 32 reserved sectors on 2026-09-23; v0 was 5,136 bytes). At boot main() clear
 | `exit` | back to the monitor |
 | anything else | `/BIN/NAME` (upper-cased), then `NAME` in the current directory, run with the rest of the line as arguments |
 
+**A `/BIN` program comes first** (since 2026-09-23): the shell looks for `/BIN/NAME` before its own words (only
+`exit` is never looked up), so the ported `/BIN` `dir`, `cat`, `pwd`, `del` and `help` replace the built-ins of the
+same name. The built-ins stay for a card that has no `/BIN` yet; `type` is always the built-in `cat`.
+
 Names are case-sensitive and stored as `p8xfs.py put` writes them; the Makefile puts programs in `/BIN` in upper
 case, which is why the implicit lookup upper-cases the command word. Every shell command goes through the `fs_*`
 functions that the syscalls expose (`cat` is `fs_open` + `fs_read`, `dir` is `fs_opendir` + `fs_readdir`, `save` is
@@ -124,9 +128,65 @@ void main() {                                   /* print a file, sector-wise */
 fentry getcwd chdir frename conin constat`, the `ent_*` accessors, and `argword(tail, out, max)` to take the next
 word of the command tail. Reading the console: `conin()` returns 65535 at Ctrl-D, so a filter is
 `while ((c = conin()) != 65535) ...` (`getchar()` still works but echoes on the machine, as the ROM's UARTIN does).
-The rules of the compiler apply: no recursion, `int` is unsigned (`>= 0` loops for ever), 16-bit literals only. In
-`/BIN` today: `HELLO`, `ECHO`, `CAT2` (files or the console, sector reads), `WC` (byte reads, a file or the console),
-`LS` (opendir/readdir), `CP` (copy, keeping load/exec: the P8X `cp` shape).
+The rules of the compiler apply: no recursion, `int` is unsigned (`>= 0` loops for ever), 16-bit literals only.
+`make sizes` prints each program's image + uninitialised data against the 32K area (the build fails over it).
+
+The shared libraries (`#include "../lib_NAME.c"`; each includes what it needs, each file once; `man NAME` for each):
+
+| Library | For |
+|---|---|
+| `lib_abi.c` / `lib_fs.c` | the ROM vectors and syscall numbers / the file API wrappers, `ent_*`, `argword` |
+| `lib_stdin.c` | `openarg(tail)` + `nextc()`: every word a file, a glob or `-` (the console), read as one stream; `sepfiles`, `curname`, `notfound()` |
+| `lib_rdline.c` | `readline(buf)` on top of `nextc()` |
+| `lib_glob.c` / `lib_globx.c` | `gmatch` (`*` `?`, case folded, iterative) / `glob_expand` a pattern into matching file paths, `isglob` |
+| `lib_regex.c` | `match`/`matchhere`: `.` `*` `+` `?` `^` `$`, an explicit backtrack stack instead of recursion |
+| `lib_walk.c` | `walk_open`/`walk_next`: a directory tree depth first, 8 levels, ONE directory handle (closed on the way down, reopened and skipped to on the way up) |
+| `lib_apath.c` | `abspath(out, word)`: absolute, `.`/`..` folded |
+| `lib_more.c` | `pgc`/`pgs`: the `--More--` pager (23 lines, space/Enter/q) |
+| `lib_num.c` | `inc32`/`put32`: 32-bit counts and sizes on 16-bit ints |
+| `lib_err.c` | `eputs`: error messages (one place to move them to the raw console once `>` exists) |
+
+## The commands (`/BIN`, 2026-09-23)
+
+Most were ported from the P8X (`os/PORT-PLAN.md` has the table: what changed and why, what was left out); each
+source file's header says the same, and `/MAN/NAME` is its page (`man NAME`, `man` alone lists them). Several file
+names, globs and `-` (the console until Ctrl-D) work wherever a command reads text.
+
+| Command | Does |
+|---|---|
+| `awk [-F c] 'prog' [file...]` | one rule: `/re/ {print $1, $NF, NR, NF, "text"}` |
+| `cat [file\|glob\|-]...` | print files byte-exact, or the console |
+| `cmp f1 f2` | the first differing byte and line, or silence |
+| `cp [-r] src dst` | copy a file, a glob into a directory, or (`-r`) a tree; load/exec kept |
+| `del name\|glob...` | delete files |
+| `dep addr b b...` | store hex bytes |
+| `diff f1 f2` | the differing block: `< ` lines of f1, `> ` lines of f2 (150 lines per file) |
+| `dir [-R] [-S] [path\|glob]` | sorted listing with sizes and load addresses; `-S` by size; `-R` every directory below, `ls -R` style |
+| `dump addr` | hex + ASCII, 256 bytes a key |
+| `echo text` | print the argument tail |
+| `examine addr` | show and change bytes one at a time |
+| `find pattern [dir]` | paths whose name contains the text, or matches the glob |
+| `grep [-r] re [file...\|dir]` | matching lines; `NAME:` with several files; `-r` a tree |
+| `head [-N] [file...]` / `tail [-N] [file...]` | the first / last N lines (10; tail up to 40) |
+| `hello [args]` | the first /BIN program |
+| `help` | the command list |
+| `ls [path]` | a plain listing through opendir/readdir |
+| `man [name]` | `/MAN/NAME` through the pager; alone: the page names |
+| `md [-p] [file]` | Markdown rendered (ANSI, or plain with `-p`), paged; names are looked up in `/DOCS` too; alone: the list |
+| `more [file...]` | page text: space, Enter, q |
+| `mv src dst` | rename in place (RENAME), or move to another directory (copy + delete), globs into a directory |
+| `pwd` | the current directory |
+| `sed s/re/new/[g] [file...]` | substitute (shortest match) |
+| `sort [file...]` | lines in byte order (200 lines of 79) |
+| `touch name...` | empty files for the names that do not exist |
+| `tree [dir]` | the tree, indented, depth first |
+| `uniq [file...]` | drop adjacent repeats |
+| `vi [file]` | the screen editor (VT100) |
+| `wc [file...]` | lines, words, bytes (32-bit) |
+
+Also on the disk: `/MAN` (the pages, from `os/man/`), `/DOCS` (this README as `OS.MD`, the compiler README as
+`Y1CC.MD`, `OSPLAN.MD`, `PORT.MD` and `MDDEMO.MD`, md's own sample), and `/FRUIT.TXT` + `/FRUIT2.TXT`, seven lines of
+sample data for trying the filters (`sort`, `uniq`, `awk`, `diff` ... the man pages' examples use them).
 
 ## Memory
 
@@ -162,5 +222,6 @@ The rules of the compiler apply: no recursion, `int` is unsigned (`>= 0` loops f
 ## Not there yet
 
 PACK (reclaim tombstoned sectors), FORMAT and FSCK on the target (the host tool has them), seek/append, output
-redirection, the command history, the rest of the P8X commands worth porting (`os/PORT-PLAN.md`), BASIC as
-`/BIN/BASIC`, and the CF card in hardware, all in BACKLOG.md.
+redirection and pipes (the filters read files or the console until then), the command history, the P8X development
+tools (`asm`, a YACC1 `disasm`; `os/PORT-PLAN.md` wave 3), BASIC as `/BIN/BASIC`, and the CF card in hardware, all in
+BACKLOG.md.

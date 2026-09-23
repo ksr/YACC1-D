@@ -1,0 +1,36 @@
+NAME
+    tree - print the directory tree
+
+SYNOPSIS
+    tree [dir]
+
+DESCRIPTION
+    Prints an indented, depth-first listing of everything under the
+    current directory (or dir): two spaces of indent per level, a "/"
+    after each directory, and a directory's contents right under it.
+    Entries come in the order they are stored; "." and ".." are left
+    out. "tree: not a directory" when dir is not one. tree is
+    /BIN/TREE.
+
+LIMITS
+    8 levels: a deeper directory is shown but not entered, and tree
+    says "tree: deeper than 8 levels, not all shown" at the end.
+
+EXAMPLES
+    tree            from the current directory
+    tree /          the whole disk:
+                        BIN/
+                          AWK
+                          ...
+                        FRUIT.TXT
+                        ...
+
+NOTES
+    Changed from the P8X version: true pre-order (the P8X listed a
+    whole level before any subdirectory), an optional start directory,
+    no limit of 24 subdirectories per level, and a note when the walk
+    stopped short.
+    Ported from P8X os/commands/tree.c 2026-09-23.
+
+SEE ALSO
+    dir, find, ls, cd, walk

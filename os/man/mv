@@ -1,0 +1,47 @@
+NAME
+    mv - move or rename files
+
+SYNOPSIS
+    mv src dst
+    mv glob dir
+
+DESCRIPTION
+    Moves or renames src:
+        mv OLD.TXT NEW.TXT   the same directory: the entry is renamed
+                             in place, nothing is copied
+        mv A.TXT /T          into an existing directory: /T/A.TXT
+        mv A.TXT /T/B.TXT    another directory: the file is copied
+                             (load and exec kept) and src deleted
+        mv DIR NEWNAME       a directory is renamed in place; it cannot
+                             move to another directory
+    A glob source (* or ? in the last component) moves every matching
+    file into dst, which must be an existing directory. A file of the
+    target name is replaced. mv X X is refused ("mv: same file: X"): it
+    would delete the only copy. mv is /BIN/MV.
+
+    Messages: "mv: not found: X", "mv: cannot rename X", "mv: cannot
+    replace X" (the new name is a directory), "mv: cannot copy to X",
+    "mv: a directory moves only within its directory: X",
+    "mv: the target of a glob must be a directory", "mv: no match: X".
+
+LIMITS
+    A glob moves at most 24 files. src and dst are cut at 63
+    characters. The sectors of a file moved to another directory are
+    not reclaimed (no PACK yet).
+
+EXAMPLES
+    mv /F.TXT /G.TXT          rename
+    mv /G.TXT /T              move into /T
+    mv /T/*.TXT /             every .TXT file of /T back to /
+    mv /T /TMP                rename a directory
+
+NOTES
+    The shell's built-in ren renames too, but never replaces a file.
+    Changed from the P8X version: a move within one directory renames
+    the entry (P8XFS on the P8X had no rename, so mv always copied and
+    deleted); load and exec are kept; directories can be renamed; a
+    single file can go into a directory.
+    Ported from P8X os/commands/mv.c 2026-09-23.
+
+SEE ALSO
+    ren, cp, del, apath

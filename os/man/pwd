@@ -1,0 +1,24 @@
+NAME
+    pwd - print the working directory
+
+SYNOPSIS
+    pwd
+
+DESCRIPTION
+    Prints the absolute path of the current directory (the one the
+    prompt shows), from the OS's GETCWD syscall. pwd is /BIN/PWD.
+
+    The shell also has a built-in pwd, used only when /BIN/PWD is
+    missing; it prints the same path.
+
+LIMITS
+    The OS keeps the path in 64 bytes.
+
+EXAMPLES
+    pwd              e.g.  /BIN
+
+NOTES
+    Ported from P8X os/commands/pwd.c 2026-09-23.
+
+SEE ALSO
+    cd, dir, ls

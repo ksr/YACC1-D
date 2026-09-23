@@ -1,0 +1,39 @@
+NAME
+    more - page through text a screenful at a time
+
+SYNOPSIS
+    more [file ...]
+
+DESCRIPTION
+    Shows the files named, as one stream (globs expand, "-" is the
+    console), 23 lines at a time. After each 23 lines it prints
+    --More-- and waits for a key, read from the console without echo;
+    the prompt is wiped once the key comes. more is /BIN/MORE.
+
+    Keys at the --More-- prompt:
+        space   the next page
+        Enter   one more line
+        q, Q    quit (so does Ctrl-D, the end of console input)
+        other   the next page
+
+    With no file both the text and the keys come from the console, so
+    `more` alone is only a curiosity until Y1/OS has pipes.
+
+LIMITS
+    Up to 24 names in all, after glob expansion.
+
+EXAMPLES
+    more /DOCS/PORT.MD       a long file (md renders it better)
+    more /MAN/C*             the pages starting with C, one after
+                             another
+
+NOTES
+    On the instruction-level emulator a lower-case q is read as end of
+    input, which quits as well.
+    Removed from the P8X version: paging a pipe (dir -R | more).
+    New: several files, globs and "-". The pager itself is shared with
+    man and md (see pager).
+    Ported from P8X os/commands/more.c 2026-09-23.
+
+SEE ALSO
+    pager, man, md, cat, head, tail

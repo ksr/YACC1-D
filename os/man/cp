@@ -1,0 +1,53 @@
+NAME
+    cp - copy files and directory trees
+
+SYNOPSIS
+    cp src dst
+    cp glob dir
+    cp -r srcdir dstdir
+
+DESCRIPTION
+    Copies the file src to dst. When dst is an existing directory the
+    copy goes into it under the source's name (cp A.TXT /T makes
+    /T/A.TXT). A file of the target name is replaced. The load and exec
+    addresses are kept, so a copied program runs from its new place.
+    cp is quiet when it works. cp is /BIN/CP.
+
+    A glob source (* or ? in the last component, case folded) copies
+    every matching file into dst, which must be an existing directory.
+
+    With -r the directory srcdir and everything below it is copied as
+    dstdir, which is made if it does not exist; files are replaced,
+    directories that exist are reused. Copying a directory into itself
+    (or below itself) is refused.
+
+    Messages: "cp: not found: X", "cp: a directory (use -r): X",
+    "cp: not a file: X", "cp: cannot open X", "cp: cannot create X",
+    "cp: cannot make X", "cp: write error: X", "cp: no match: X",
+    "cp: the target of a glob must be a directory",
+    "cp: cannot copy a directory into itself".
+
+OPTIONS
+    -r    copy a directory tree (-R works too)
+
+LIMITS
+    A glob copies at most 24 files. -r descends 8 levels: a deeper
+    directory is made but not filled, and cp says "cp: deeper than 8
+    levels, not all copied". src and dst are cut at 63 characters.
+
+EXAMPLES
+    cp /FRUIT.TXT /F.TXT      copy one file
+    cp /FRUIT.TXT /T          into the directory /T: /T/FRUIT.TXT
+    cp /*.TXT /T              every .TXT file of / into /T
+    cp /BIN/HELLO /HI         a program: `hi` typed in / runs it
+    cp -r /MAN /MANBAK        a whole directory
+
+NOTES
+    Removed from the P8X version: the /d1 mount. Changed: load and exec
+    are copied (the P8X wrote 0/0), a single file can go into a
+    directory, -r has no limit of 24 entries per level, and cp no
+    longer prints the byte count (the first Y1/OS cp did).
+    Ported from P8X os/commands/cp.c 2026-09-23.
+
+SEE ALSO
+    mv, del, touch, mkdir, walk, globx

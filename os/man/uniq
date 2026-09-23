@@ -1,0 +1,26 @@
+NAME
+    uniq - drop adjacent repeated lines
+
+SYNOPSIS
+    uniq [file ...]
+
+DESCRIPTION
+    Prints the files named (as one stream; globs expand, "-" is the
+    console), or the console up to Ctrl-D, leaving out every line that
+    equals the line before it. Only adjacent repeats go: sort first to
+    drop every repeat. Each file ends a line. uniq is /BIN/UNIQ.
+
+LIMITS
+    Lines are cut at 255 characters (CR is dropped).
+
+EXAMPLES
+    uniq /FRUIT.TXT      the second "banana 12 yellow" goes; the
+                         second "apple 3 red" stays (not adjacent)
+
+NOTES
+    Removed from the P8X version: input from a pipe (sort f | uniq).
+    New: several files, globs and "-".
+    Ported from P8X os/commands/uniq.c 2026-09-23.
+
+SEE ALSO
+    sort, wc, rdline

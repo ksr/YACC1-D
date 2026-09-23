@@ -1,0 +1,31 @@
+NAME
+    mkdir - make a directory
+
+SYNOPSIS
+    mkdir path
+
+DESCRIPTION
+    Makes a new, empty directory: 4 sectors, room for 62 entries
+    besides "." and "..". Quiet on success; "cannot mkdir" when the
+    name exists, the parent is missing or full, or the name is not
+    valid. mkdir is a shell built-in; the MKDIR syscall (8), which
+    cp -r uses, does the same work.
+
+    It stays in the shell because it is a bootstrap primitive: a fresh
+    card needs it to make /BIN before any /BIN program exists.
+
+LIMITS
+    Names are 1..12 characters; the path at most 62.
+
+EXAMPLES
+    mkdir /T
+    mkdir SUB           in the current directory
+
+NOTES
+    Changed from the P8X version: nothing is printed on success (the
+    P8X said "DIR CREATED").
+    The command is the Y1/OS shell's own (os/y1os.c); the page is
+    ported from P8X os/man/mkdir 2026-09-23.
+
+SEE ALSO
+    rmdir, cd, dir, cp

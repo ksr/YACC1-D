@@ -3,7 +3,8 @@
    lib_fs.c). Use with y1cc's bios(addr, r7, acc): R7 and ACC are set, the routine is JSRed, ACC comes back.
    Console: CHAROUT (ACC = byte), UARTIN (-> ACC, echoes on the machine), CONST (-> 1 when a byte waits).
    CompactFlash: set CFLBA0..2 with poke(), then CFREAD/CFWRITE with R7 = a 512-byte buffer (R7 advances); ACC = 0 ok.
-   ARGBUF: 64 bytes where the OS leaves a program's command tail; argstr() returns its address.
+   ARGBUF: 128 bytes ($0F40..$0FBF, ARGMAX = 127 characters + NUL) where the OS leaves a program's command tail;
+   argstr() returns its address.
    Syscalls: sys(SYS_x, a, b, c) evaluates a, b, c into SYSARG0..2, JSRURs the word at SYSTAB + 2*SYS_x and returns
    SYSRES, always a full 16-bit word: 1/0 for yes/no, a handle or 0, a count, a byte or 65535 for none/end of file
    (all in the monitor's free variable space $0F06..$0F0F and $0F14..$0F3F; firmware/abi/README.md). Y1/OS fills

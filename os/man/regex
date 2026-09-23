@@ -1,0 +1,43 @@
+NAME
+    regex - the basic regular expressions of grep, sed and awk
+            (#include "../lib_regex.c")
+
+SYNOPSIS
+    #include "../lib_regex.c"
+    if (match(re, line)) ...
+
+DESCRIPTION
+    The dialect:
+        .         any single character
+        c* c+ c?  zero or more / one or more / zero or one of the
+                  character (or .) before it
+        ^         the start of the line (only as the first character)
+        $         the end of the line (only as the last character)
+    Everything else is a literal: no classes [..], no \ escapes, no
+    alternation.
+
+    match(re, t)      1 when re matches anywhere in t (a leading ^
+                      tries only the start)
+    matchhere(re, t)  1 when re matches a PREFIX of t; the global rend
+                      then points just past the match, so sed gets the
+                      length of a match as rend - start
+
+    * and + try the fewest repetitions first, ? tries one before none:
+    the P8X semantics, which make sed replace the shortest match.
+
+LIMITS
+    32 backtrack points (RSTK). At most one per quantifier is live, so
+    that covers any 63-character pattern; past it the extra
+    alternatives are dropped: a possible miss, never a crash.
+
+NOTES
+    Changed from the P8X version: the P8X matchhere was self-recursive,
+    which y1cc rejects; it is now a loop with an explicit backtrack
+    stack. A quantifier leaves one choice point (the pattern position,
+    the text position of the next try, the kind); a mismatch pops the
+    newest one and resumes there, with one more repetition for * and +,
+    with none for ?.
+    Ported from P8X os/commands/lib_regex.c 2026-09-23.
+
+SEE ALSO
+    grep, sed, awk, glob

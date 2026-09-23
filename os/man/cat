@@ -1,0 +1,39 @@
+NAME
+    cat - print files, or copy the console to the output
+
+SYNOPSIS
+    cat [file | glob | -] ...
+
+DESCRIPTION
+    Prints each file named in turn, byte for byte: nothing is added or
+    dropped. A glob (* or ? in the last component, case folded) expands
+    to the matching files of that directory; "-" is the console, read
+    without echo up to Ctrl-D. With no argument cat copies the console
+    to the output until Ctrl-D. cat is /BIN/CAT.
+
+    Every name is checked before anything is printed: one that is not
+    found (or a glob that matches nothing) stops cat with
+    "cat: not found: NAME".
+
+    The shell also has a built-in cat, used only when /BIN/CAT is
+    missing; it prints one file, with no globs and no "-". `type` is
+    always that built-in.
+
+LIMITS
+    Up to 24 names in all, after glob expansion; more are dropped.
+
+EXAMPLES
+    cat /README.TXT                print a file
+    cat /FRUIT.TXT /FRUIT2.TXT     two files, one after the other
+    cat /MAN/C*                    every page whose name starts with C
+    cat /FRUIT.TXT - /README.TXT   a file, typed lines up to Ctrl-D,
+                                   then another file
+
+NOTES
+    Removed from the P8X version: > and >> redirection and | pipes
+    (Y1/OS has none yet), so cat cannot join files into a new one.
+    New: several names in any mix, and "-" for the console.
+    Ported from P8X os/commands/cat.c 2026-09-23.
+
+SEE ALSO
+    type, more, head, tail, stdin, man

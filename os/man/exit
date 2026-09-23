@@ -1,0 +1,24 @@
+NAME
+    exit - leave Y1/OS for the ROM monitor
+
+SYNOPSIS
+    exit
+
+DESCRIPTION
+    Prints "bye" and returns to the ROM monitor's ">" prompt. Memory is
+    left as it was, so a program loaded at $5000 can still be looked at
+    with the monitor's B and D. The monitor's O boots Y1/OS again from
+    the card: a fresh start in /. exit is a shell built-in, and the one
+    word a /BIN program cannot replace (the shell checks it first).
+
+EXAMPLES
+    exit            then O at the monitor prompt to come back
+
+NOTES
+    Removed from the P8X version: the synonym mon (on Y1/OS, man mon
+    describes the monitor itself).
+    The command is the Y1/OS shell's own (os/y1os.c); the page is
+    ported from P8X os/man/exit 2026-09-23.
+
+SEE ALSO
+    mon

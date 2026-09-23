@@ -1,0 +1,33 @@
+NAME
+    ls - plain directory listing
+
+SYNOPSIS
+    ls [path]
+
+DESCRIPTION
+    Lists a directory (the current one with no path) in the order its
+    entries are stored, one line each: the name, a space, then <DIR>
+    for a directory or the size in bytes for a file, and "  @AAAA" when
+    the file has a load address. The last line is the count
+    ("7 entries"). Names starting with "." are left out, "." and ".."
+    among them. ls is /BIN/LS.
+
+    Errors: "ls: not found", "ls: not a directory" (a file was named).
+
+    ls is a small, direct user of the file API (opendir, readdir and
+    the ent_* accessors, see fs); dir is the full lister: sorted,
+    globs, -R and -S.
+
+LIMITS
+    Sizes are the low 16 bits: a file of 64K or more shows its size
+    modulo 65536.
+
+EXAMPLES
+    ls
+    ls /BIN
+
+NOTES
+    New in Y1/OS 2026-09-23.
+
+SEE ALSO
+    dir, tree, fs

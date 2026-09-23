@@ -1,0 +1,29 @@
+NAME
+    glob - filename wildcard match (#include "../lib_glob.c")
+
+SYNOPSIS
+    #include "../lib_glob.c"
+    if (gmatch(pattern, name)) ...
+
+DESCRIPTION
+    gmatch(p, s) is 1 when the pattern p matches the WHOLE name s, else
+    0:
+        *    any run of characters, none included
+        ?    exactly one character
+    Any other character matches itself with the case folded, so *.txt
+    finds README.TXT (Y1/OS names are case-sensitive, a pattern is
+    not). No I/O and no globals; gfold(c) is the upper-casing it uses.
+
+    To turn a pattern into the list of matching files of a directory,
+    use globx on top of it.
+
+NOTES
+    Changed from the P8X version: the P8X gmatch recursed on every
+    suffix after a *, which y1cc rejects (static frames, no recursion).
+    This is the classic iterative match with one backtrack point:
+    remember the last * and how much of s it has eaten, and on a
+    mismatch let it eat one more character. Same results, no stack.
+    Ported from P8X os/commands/lib_glob.c 2026-09-23.
+
+SEE ALSO
+    globx, stdin, find, dir

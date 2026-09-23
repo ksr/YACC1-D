@@ -4,28 +4,21 @@ BOOT FROM CF
 
 /> dir
 
-.            <DIR>
-..           <DIR>
-BIN          <DIR>
-README.TXT   156  @B000
-4 entries
+         BIN/
+         DOCS/
+     98  FRUIT.TXT  @B000
+     94  FRUIT2.TXT  @B000
+         MAN/
+    156  README.TXT  @B000
 /> cat README.TXT
 
 Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
 LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
 /> cd BIN
 
-/BIN> dir
+/BIN> dir HELLO
 
-.            <DIR>
-..           <DIR>
-CAT2         540  @5000
-CP           1174  @5000
-ECHO         55  @5000
-HELLO        132  @5000
-LS           1112  @5000
-WC           619  @5000
-8 entries
+    132  HELLO  @5000
 /BIN> pwd
 
 /BIN
@@ -41,17 +34,9 @@ hi there
 /> wc README.TXT
 
 2 29 156
-/> dir /BIN
+/> dir /BIN/EC*
 
-.            <DIR>
-..           <DIR>
-CAT2         540  @5000
-CP           1174  @5000
-ECHO         55  @5000
-HELLO        132  @5000
-LS           1112  @5000
-WC           619  @5000
-8 entries
+     55  ECHO  @5000
 /> cd /BIN/../BIN
 
 /BIN> pwd
@@ -67,9 +52,32 @@ what?
 loaded 132 bytes at $5000
 /> help
 
-Y1/OS: dir [path]  cd path  pwd  cat path  load path  run path [args]  help  exit
-       save path addr len (hex)  del path  ren path newname  mkdir path  rmdir path
-       or the name of a program in /BIN (or here), followed by its arguments
+Y1/OS commands (man NAME for more; a /BIN program wins over a built-in of the same name)
+built into the shell:
+  cd path        change directory (/abs, rel, ., ..)
+  load path      read a program to its load address
+  run path args  load and call a program with an argument tail
+  save p a l     write memory a..a+l (hex) to a new file
+  ren path name  rename a file or directory in place
+  mkdir / rmdir  make / remove (an empty) directory
+  type path      print a file (the built-in cat)
+  exit           back to the ROM monitor
+in /BIN:
+  awk  one-rule awk: fields, /re/ {print $N ...}, NR NF
+  cat  print files (globs, - = console)   cmp  first differing byte
+  cp   copy files, -r a tree               del  delete files (globs)
+  dep  deposit hex bytes into memory       diff line differences
+  dir  list, sorted; -R -S, globs          dump hex dump, a page a key
+  echo print the arguments                 examine view/change memory
+  find names matching a pattern (tree)     grep lines matching a regex; -r
+  head first lines                         help this list
+  ls   plain directory list                man  a manual page (/MAN)
+  md   render Markdown (/DOCS)             more page a file
+  mv   move/rename files                   pwd  the working directory
+  sed  s/re/new/[g]                        sort sort lines
+  tail last lines                          touch create empty files
+  tree the directory tree                  uniq drop adjacent repeats
+  vi   the screen editor                   wc   lines words bytes
 /> exit
 
 bye

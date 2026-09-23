@@ -1,0 +1,39 @@
+NAME
+    run - load and run a program
+
+SYNOPSIS
+    run path [args]
+
+DESCRIPTION
+    Loads the file to its load address (as load does) and calls its
+    exec address, with the rest of the line in ARGBUF ($0F40) as the
+    program's argument tail (argstr() in C). The program returns to the
+    shell with RET (main returns); the files it left open are closed
+    then, and a file it was writing is registered, not lost. run is a
+    shell built-in.
+
+    A command word that is not run itself is looked up in this order:
+    exit; /BIN/NAME (the word upper-cased); the other built-ins (the
+    word in any case); NAME in the current directory (upper-cased);
+    else "what?". So a /BIN program wins over a built-in of the same
+    name, and `hello x` is short for `run /BIN/HELLO x`. run itself
+    takes any path, exactly as typed.
+
+LIMITS
+    The program must load inside $5000..$CFFF ("bad load address or
+    size"). The argument tail is 127 characters; the whole command line
+    128.
+
+EXAMPLES
+    run /BIN/HELLO a b       hello from /BIN/HELLO, args: a b
+    run /T2/HELLO 1 2 3      a program outside /BIN
+    hello a b                the same as the first line
+
+NOTES
+    Removed from the P8X version: the PATH search (Y1/OS looks in /BIN
+    and the current directory only) and the .bin suffix.
+    The command is the Y1/OS shell's own (os/y1os.c); the page is
+    ported from P8X os/man/run 2026-09-23.
+
+SEE ALSO
+    load, save, echo, abi

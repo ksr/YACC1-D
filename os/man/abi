@@ -1,0 +1,52 @@
+NAME
+    abi - the ROM vectors, the OS addresses and the syscall numbers
+          (#include "../lib_abi.c")
+
+SYNOPSIS
+    #include "../lib_abi.c"       from a command in os/commands/
+    (lib_fs.c includes it: most commands include lib_fs.c instead)
+
+DESCRIPTION
+    #defines that name every address a program or the OS relies on, so
+    a command writes bios(CHAROUT, 0, c) or sys(SYS_OPEN, path), never
+    a raw number. A #define costs no code.
+
+    ROM vectors (firmware/abi/README.md), for y1cc's bios(addr, r7,
+    acc): R7 and ACC are set, the routine is called, ACC comes back.
+        STRINGOUT $FFC0  print the string at R7
+        CHAROUT   $FFC4  print the byte in ACC  (UARTOUT $FFC8: same)
+        SHOWADDR  $FFCC  print R7 as four hex digits and ": "
+        UARTIN    $FFE8  a console byte (waits; echoes on the machine)
+        CFINIT    $FFEC  initialise the CF card; ACC 0 = ok
+        CFREAD    $FFF0  sector CFLBA0..2 into the 512 bytes at R7
+        CFWRITE   $FFF4  sector CFLBA0..2 from R7; ACC 0 = ok
+        CONST     $FFF8  1 when a console byte is waiting
+        UARTINNE  $FFFC  a console byte without echo
+
+    RAM: SYSARG0..2 $0F06/$0F08/$0F0A and SYSRES $0F0C (the syscall
+    block), CFLBA0..2 $0F10..$0F12, SYSTAB $0F14 (22 word entries),
+    ARGBUF $0F40 (ARGMAX = 127 characters + NUL: argstr()), OSBASE
+    $1000, TPA $5000 and TPATOP $D000 (the program area).
+
+    Syscalls: sys(n, a, b, c) puts a, b, c in SYSARG0..2, calls the
+    word at SYSTAB + 2n and returns SYSRES, a full 16-bit word:
+         0 SYS_OPEN      8 SYS_MKDIR    16 SYS_ENTRY
+         1 SYS_READ      9 SYS_RMDIR    17 SYS_CONIN
+         2 SYS_GETC     10 SYS_OPENDIR  18 SYS_CONST
+         3 SYS_CLOSE    11 SYS_READDIR  19..21 SYS_SPARE (0)
+         4 SYS_CREATE   12 SYS_RESOLVE
+         5 SYS_WRITE    13 SYS_GETCWD
+         6 SYS_PUTC     14 SYS_CHDIR
+         7 SYS_DELETE   15 SYS_RENAME
+    Their arguments and results are in os/README.md (md OS.MD); the C
+    wrappers are in lib_fs.c (see fs). Y1/OS fills SYSTAB at boot; the
+    handlers read SYSARGn with peekw() and write SYSRES with pokew().
+
+NOTES
+    There is no carry bit: every result is a word, 65535 meaning none.
+    New in Y1/OS 2026-09-23 (the ROM names date from 2026-09-22). It
+    replaces P8X os/commands/lib_abi.c, whose BIOS jump table, OS
+    syscall vector and & 256 carry tests do not exist here.
+
+SEE ALSO
+    fs, mon, run

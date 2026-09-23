@@ -1,0 +1,40 @@
+NAME
+    examine - view and change memory a byte at a time
+
+SYNOPSIS
+    examine addr
+
+DESCRIPTION
+    Shows the byte at the hexadecimal address addr as
+
+        AAAA: vv
+
+    and waits for a key, read without echo (examine echoes the digits
+    it uses):
+
+        Enter            keep the byte, go to the next address
+        two hex digits   store that byte, go to the next address
+        .  or Ctrl-D     quit to the shell
+
+    Any other key shows the same address again, as does a hex digit
+    followed by anything but a second one. "examine: bad address" when
+    addr is not hex. The shell's counterpart of the monitor's E
+    command. examine is /BIN/EXAMINE.
+
+    There are no guard rails: it writes over the OS ($1000..$4FFF) or
+    over itself ($5000 up) as readily as anywhere else. dump views a
+    block without the risk of a stray key; dep writes a run of bytes.
+
+EXAMPLES
+    examine 6000      Enter steps through memory, . quits
+    examine 6000      then 4A stores $4A at $6000
+
+NOTES
+    On the instruction-level emulator a lower-case q is read as end of
+    input, which quits.
+    Changed from the P8X version: the keys are read without echo and
+    Enter may be CR or LF.
+    Ported from P8X os/commands/examine.c 2026-09-23.
+
+SEE ALSO
+    dump, dep, mon

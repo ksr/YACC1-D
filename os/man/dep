@@ -1,0 +1,29 @@
+NAME
+    dep - deposit bytes into memory
+
+SYNOPSIS
+    dep addr byte [byte ...]
+
+DESCRIPTION
+    Stores the hexadecimal byte values into memory from the hexadecimal
+    address addr up. Quiet on success; "dep: bad address" when addr is
+    not hex. The list ends at the end of the line or at the first word
+    that is not hex; a value of more than two digits stores its low
+    byte. The counterpart of dump. dep is /BIN/DEP.
+
+LIMITS
+    About 40 bytes per command (the 127-character argument tail).
+
+EXAMPLES
+    dep 6000 48 49 0A      "HI" and a line feed at $6000
+    dep 6000 A9 01 60      three bytes of code
+
+NOTES
+    dep writes anywhere in the 64K space, with no guard rails: over the
+    OS ($1000..$4FFF), the monitor's variables ($0F00 page) and over
+    dep itself, which runs from $5000. Deposit well above it, from
+    $6000 up, unless you mean it.
+    Ported from P8X os/commands/dep.c 2026-09-23.
+
+SEE ALSO
+    dump, examine, save, load, mon

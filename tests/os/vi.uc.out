@@ -1,0 +1,15 @@
+BOOT FROM CF
+Y1/OS v0.1 (2026-09-23)  P8XFS v2
+/> 
+
+/> vi /README.TXT
+
+[2J[1;1HY1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.[K[2;1HLBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN hol[K[3;1H~[K[4;1H~[K[5;1H~[K[6;1H~[K[7;1H~[K[8;1H~[K[9;1H~[K[10;1H~[K[11;1H~[K[12;1H~[K[13;1H~[K[14;1H~[K[15;1H~[K[16;1H~[K[17;1H~[K[18;1H~[K[19;1H~[K[20;1H~[K[21;1H~[K[22;1H~[K[23;1H~[K[24;1H              /README.TXT [cut][K[1;1H[2;1H[2J[1;1HY1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.[K[2;1HLBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN hol[K[3;1H[K[4;1H~[K[5;1H~[K[6;1H~[K[7;1H~[K[8;1H~[K[9;1H~[K[10;1H~[K[11;1H~[K[12;1H~[K[13;1H~[K[14;1H~[K[15;1H~[K[16;1H~[K[17;1H~[K[18;1H~[K[19;1H~[K[20;1H~[K[21;1H~[K[22;1H~[K[23;1H~[K[24;1H-- INSERT --  /README.TXT [+] [cut][K[3;1H[3;1HA[K[3;2H[3;1HAd[K[3;3H[3;1HAdd[K[3;4H[3;1HAdde[K[3;5H[3;1HAdded[K[3;6H[3;1HAdded [K[3;7H[3;1HAdded b[K[3;8H[3;1HAdded by[K[3;9H[3;1HAdded by [K[3;10H[3;1HAdded by v[K[3;11H[3;1HAdded by vi[K[3;12H[3;1HAdded by vi [K[3;13H[3;1HAdded by vi o[K[3;14H[3;1HAdded by vi on[K[3;15H[3;1HAdded by vi on [K[3;16H[3;1HAdded by vi on t[K[3;17H[3;1HAdded by vi on th[K[3;18H[3;1HAdded by vi on the[K[3;19H[3;1HAdded by vi on the [K[3;20H[3;1HAdded by vi on the Y[K[3;21H[3;1HAdded by vi on the YA[K[3;22H[3;1HAdded by vi on the YAC[K[3;23H[3;1HAdded by vi on the YACC[K[3;24H[3;1HAdded by vi on the YACC1[K[3;25H[3;1HAdded by vi on the YACC1.[K[3;26H[24;1H              /README.TXT [+] [cut][K[3;25H[24;1H:[Kx /T.TXT[2J[1;1H/> cat /T.TXT
+
+Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
+LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN hol
+Added by vi on the YACC1.
+/> exit
+
+bye
+>

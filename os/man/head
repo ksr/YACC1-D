@@ -1,0 +1,27 @@
+NAME
+    head - print the first lines
+
+SYNOPSIS
+    head [-N] [file ...]
+
+DESCRIPTION
+    Prints the first N lines (default 10) of the files named, read as
+    one stream just as cat would print them (globs expand, "-" is the
+    console), or of the console up to Ctrl-D. head is /BIN/HEAD.
+
+OPTIONS
+    -N    the first N lines (e.g. -5)
+
+EXAMPLES
+    head /FRUIT.TXT          the first 10 lines (all 7 of them)
+    head -2 /FRUIT.TXT       apple 3 red, pear 5 green
+    head -3 /MAN/C*          the first 3 lines of the lot
+
+NOTES
+    The count is over the whole stream, not per file.
+    Removed from the P8X version: input from a pipe or a < redirect.
+    New: several files, globs and "-".
+    Ported from P8X os/commands/head.c 2026-09-23.
+
+SEE ALSO
+    tail, more, cat, stdin

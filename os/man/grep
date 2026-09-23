@@ -1,0 +1,52 @@
+NAME
+    grep - print the lines that match a regular expression
+
+SYNOPSIS
+    grep regex [file ...]
+    grep -r regex [dir]
+
+DESCRIPTION
+    Prints the lines that match a basic regular expression. The input
+    is the files named, read as one stream (globs expand, "-" is the
+    console), or the console up to Ctrl-D. With more than one file each
+    matching line is prefixed "NAME:". grep is /BIN/GREP.
+
+    With -r grep searches every file under the current directory (or
+    dir), depth first, and prefixes each match with the file's absolute
+    path: "PATH:line".
+
+    The regex is the first word: a space ends it, and no quotes are
+    stripped. The dialect (see regex):
+        .         any single character
+        c* c+ c?  zero or more / one or more / zero or one of the
+                  character (or .) before it
+        ^         the start of the line (only as the first character)
+        $         the end of the line (only as the last character)
+    Everything else is a literal: no classes, escapes or alternation.
+
+OPTIONS
+    -r    search a directory tree (lower-case r only)
+
+LIMITS
+    The regex is cut at 63 characters and lines at 255. Up to 24 file
+    names, after glob expansion. -r descends 8 levels and says "grep:
+    deeper than 8 levels, not all searched" when it stopped short; a
+    file whose path is 64 characters or longer is skipped.
+
+EXAMPLES
+    grep ^a /FRUIT.TXT        the lines starting with "a"
+    grep e.l /FRUIT.TXT       e, any character, l: "yellow"
+    grep red$ /FRUIT*.TXT     both files, "/FRUIT.TXT:apple 3 red"...
+    grep -r grep /MAN         every page that mentions grep
+    grep apple                the console, up to Ctrl-D
+
+NOTES
+    Each file ends a line, so the last line of one file never joins the
+    first line of the next.
+    Removed from the P8X version: input from a pipe or a < redirect.
+    Changed: -r takes a start directory and has no 36-file limit; any
+    number of files (up to 24), with the NAME: prefix.
+    Ported from P8X os/commands/grep.c 2026-09-23.
+
+SEE ALSO
+    regex, sed, awk, find, stdin, walk

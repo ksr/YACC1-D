@@ -1,7 +1,7 @@
 # Y1/OS — the YACC1 disk operating system
 
 User guide, programmer guide (commands and the syscall/file API), the on-disk format, the memory layout and the
-plan for Y1/OS. Written 2026-09-23 from the YACC1-D tree.
+plan for Y1/OS. Written 2026-09-23 from the YACC1-D tree. Later the same day the P8X commands were ported (26 programs in /BIN, ten shared libraries, 50 man pages in /MAN, `vi`): `os/README.md` carries the current command table and `os/PORT-PLAN.md` the per-command status; the API described here is unchanged.
 
 Sources: `os/y1os.c` (v0.1, read as of 2026-09-23 09:43 — **it was being edited while this was written**),
 `os/lib_abi.c` (09:37), `os/README.md` (the v0 text of 2026-09-22), `os/commands/{hello,echo,wc}.c`, `os/Makefile`,

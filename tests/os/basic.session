@@ -1,13 +1,13 @@
 dir
 cat README.TXT
 cd BIN
-dir
+dir HELLO
 pwd
 cd ..
 hello a b c
 run /BIN/ECHO hi there
 wc README.TXT
-dir /BIN
+dir /BIN/EC*
 cd /BIN/../BIN
 pwd
 nothere

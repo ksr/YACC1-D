@@ -1,0 +1,29 @@
+NAME
+    cd - change the working directory
+
+SYNOPSIS
+    cd [path]
+
+DESCRIPTION
+    Makes path the current directory. The path may be absolute (/BIN),
+    relative (T/SUB), or use . and .. (every directory's own first two
+    entries); cd / is the root. The prompt shows the new path. cd with
+    no path changes nothing. Names are case-sensitive. Errors: "not
+    found", "not a directory" (the current directory stays as it was).
+    cd is a shell built-in.
+
+LIMITS
+    The path the prompt and pwd show is kept in 64 bytes.
+
+EXAMPLES
+    cd /BIN
+    cd ..
+    cd /MAN
+
+NOTES
+    Removed from the P8X version: the drive-1 mount (cd /d1).
+    The command is the Y1/OS shell's own (os/y1os.c); the page is
+    ported from P8X os/man/cd 2026-09-23.
+
+SEE ALSO
+    pwd, dir, mkdir, ls

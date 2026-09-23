@@ -1,0 +1,31 @@
+NAME
+    sort - sort lines of text
+
+SYNOPSIS
+    sort [file ...]
+
+DESCRIPTION
+    Reads the files named (as one stream; globs expand, "-" is the
+    console), or the console up to Ctrl-D, into memory, sorts the lines
+    in ascending byte order (A-Z before a-z; equal lines keep their
+    order) and prints them. CR is dropped; each file ends a line. sort
+    is /BIN/SORT.
+
+LIMITS
+    200 lines of 79 characters: longer lines are cut, and the lines
+    past the 200th are dropped, with "sort: more than 200 lines, the
+    rest dropped" at the end.
+
+EXAMPLES
+    sort /FRUIT2.TXT               the fruit in alphabetical order
+    sort /FRUIT.TXT /FRUIT2.TXT    the lines of both, merged
+    sort                           typed lines, sorted at Ctrl-D
+
+NOTES
+    Removed from the P8X version: input from a pipe or a < redirect,
+    so sort f | uniq cannot be typed yet. Changed: 200 lines (was 128),
+    several files, and the note when lines were dropped.
+    Ported from P8X os/commands/sort.c 2026-09-23.
+
+SEE ALSO
+    uniq, wc, cat, stdin

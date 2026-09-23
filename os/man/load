@@ -1,0 +1,33 @@
+NAME
+    load - read a file into memory at its load address
+
+SYNOPSIS
+    load path
+
+DESCRIPTION
+    Reads a file into memory at the load address stored in its
+    directory entry, without running it, and says where:
+
+        loaded 132 bytes at $5000
+
+    load is a shell built-in.
+
+    The file must fit the program area: a load address below $5000, or
+    an end past $CFFF, is refused with "bad load address or size", so
+    the OS ($1000..$4FFF) and the monitor are never overwritten. Other
+    errors: "not found", "is a directory", "too big" (64K or more).
+
+EXAMPLES
+    load /BIN/HELLO        loaded 132 bytes at $5000
+    load /FRUIT.TXT        a text file (the host tool gives $B000)
+
+NOTES
+    Every /BIN program also runs from $5000, dump and examine included,
+    so they overwrite a program loaded there; to look at it, leave the
+    OS (exit) and use the monitor's B or D.
+    Removed from the P8X version: the .bin suffix.
+    The command is the Y1/OS shell's own (os/y1os.c); the page is
+    ported from P8X os/man/load 2026-09-23.
+
+SEE ALSO
+    run, save, dump, mon

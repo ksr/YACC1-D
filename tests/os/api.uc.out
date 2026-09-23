@@ -2,39 +2,34 @@ BOOT FROM CF
 Y1/OS v0.1 (2026-09-23)  P8XFS v2
 /> 
 
-/> cat2 README.TXT
+/> cat README.TXT
 
 Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
 LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
 /> ls
 
 BIN <DIR>
+FRUIT.TXT 98  @B000
+FRUIT2.TXT 94  @B000
 README.TXT 156  @B000
-2 entries
-/> ls /BIN
-
-CAT2 540  @5000
-CP 1174  @5000
-ECHO 55  @5000
-HELLO 132  @5000
-LS 1112  @5000
-WC 619  @5000
+MAN <DIR>
+DOCS <DIR>
 6 entries
 /> ls /NOPE
 
 ls: not found
 /> cd BIN
 
-/BIN> ls
+/BIN> ls ..
 
-CAT2 540  @5000
-CP 1174  @5000
-ECHO 55  @5000
-HELLO 132  @5000
-LS 1112  @5000
-WC 619  @5000
+BIN <DIR>
+FRUIT.TXT 98  @B000
+FRUIT2.TXT 94  @B000
+README.TXT 156  @B000
+MAN <DIR>
+DOCS <DIR>
 6 entries
-/BIN> cat2 /README.TXT ../README.TXT
+/BIN> cat /README.TXT ../README.TXT
 
 Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
 LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
@@ -50,28 +45,34 @@ LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN hold
 2 3 18
 /> 
 
-/> cat2
+/> cat
 
 filter line
 /> 
 
 /> cp /README.TXT /COPY.TXT
 
-copied 156 bytes
-/> cat2 COPY.TXT
+/> cat - COPY.TXT
 
+typed first
 Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
 LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
-/> cat COPY.TXT
+/> 
+
+/> type COPY.TXT
 
 Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
 LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
 /> ls
 
 BIN <DIR>
+FRUIT.TXT 98  @B000
+FRUIT2.TXT 94  @B000
 README.TXT 156  @B000
+MAN <DIR>
+DOCS <DIR>
 COPY.TXT 156  @B000
-3 entries
+7 entries
 /> exit
 
 bye

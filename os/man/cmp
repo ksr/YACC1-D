@@ -1,0 +1,36 @@
+NAME
+    cmp - compare two files byte for byte
+
+SYNOPSIS
+    cmp file1 file2
+
+DESCRIPTION
+    Compares the two files. When they are identical cmp prints nothing.
+    Otherwise it reports the first difference (N and M count from 1):
+
+        cmp: files differ: byte N, line M
+
+    or, when one file is a prefix of the other, the one that ended
+    first:
+
+        cmp: EOF on file1        (file2 is longer)
+        cmp: EOF on file2        (file1 is longer)
+
+    Both files are streamed side by side through two read handles.
+    Errors: "cmp: file1 not found", "cmp: file2 not found". cmp is
+    /BIN/CMP.
+
+LIMITS
+    None beyond the OS's: a file over 64K cannot be opened.
+
+EXAMPLES
+    cmp /FRUIT.TXT /FRUIT2.TXT   cmp: files differ: byte 55, line 5
+    cmp /FRUIT.TXT FRUIT.TXT     silent (in /, the same file)
+
+NOTES
+    Removed from the P8X version: the 8K limit on file1, which the P8X
+    read into memory because its BIOS had one read stream.
+    Ported from P8X os/commands/cmp.c 2026-09-23.
+
+SEE ALSO
+    diff, dump, cat

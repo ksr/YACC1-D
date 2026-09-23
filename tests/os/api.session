@@ -1,21 +1,22 @@
-cat2 README.TXT
+cat README.TXT
 ls
-ls /BIN
 ls /NOPE
 cd BIN
-ls
-cat2 /README.TXT ../README.TXT
+ls ..
+cat /README.TXT ../README.TXT
 cd ..
 wc /README.TXT
 wc
 hello there
 world
 
-cat2
+cat
 filter line
 
 cp /README.TXT /COPY.TXT
-cat2 COPY.TXT
-cat COPY.TXT
+cat - COPY.TXT
+typed first
+
+type COPY.TXT
 ls
 exit

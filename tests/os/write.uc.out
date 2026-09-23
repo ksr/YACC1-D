@@ -9,12 +9,13 @@ loaded 132 bytes at $5000
 
 /> dir
 
-.            <DIR>
-..           <DIR>
-BIN          <DIR>
-README.TXT   156  @B000
-T            <DIR>
-5 entries
+         BIN/
+         DOCS/
+     98  FRUIT.TXT  @B000
+     94  FRUIT2.TXT  @B000
+         MAN/
+    156  README.TXT  @B000
+         T/
 /> cd T
 
 /T> save H.BIN 5000 20
@@ -22,19 +23,13 @@ T            <DIR>
 saved 32 bytes
 /T> dir
 
-.            <DIR>
-..           <DIR>
-H.BIN        32  @5000
-3 entries
+     32  H.BIN  @5000
 /T> mkdir SUB
 
 /T> dir
 
-.            <DIR>
-..           <DIR>
-H.BIN        32  @5000
-SUB          <DIR>
-4 entries
+     32  H.BIN  @5000
+         SUB/
 /T> rmdir /T
 
 not an empty directory
@@ -44,7 +39,6 @@ not an empty directory
 
 /> cp /README.TXT /T/COPY.TXT
 
-copied 156 bytes
 /> cat /T/COPY.TXT
 
 Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
@@ -56,22 +50,16 @@ LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN hold
 cannot rename
 /> dir /T
 
-.            <DIR>
-..           <DIR>
-H.BIN        32  @5000
-KEEP.TXT     156  @B000
-4 entries
+     32  H.BIN  @5000
+    156  KEEP.TXT  @B000
 /> del /T/H.BIN
 
 /> del /T/H.BIN
 
-not a file
+del: not a file: /T/H.BIN
 /> dir /T
 
-.            <DIR>
-..           <DIR>
-KEEP.TXT     156  @B000
-3 entries
+    156  KEEP.TXT  @B000
 /> rmdir /T
 
 not an empty directory
@@ -79,16 +67,16 @@ not an empty directory
 
 /> dir
 
-.            <DIR>
-..           <DIR>
-BIN          <DIR>
-T            <DIR>
-4 entries
+         BIN/
+         DOCS/
+     98  FRUIT.TXT  @B000
+     94  FRUIT2.TXT  @B000
+         MAN/
+         T/
 /> mkdir /T2
 
 /> cp /BIN/HELLO /T2/HELLO
 
-copied 132 bytes
 /> cd /T2
 
 /T2> hello x y
@@ -112,10 +100,7 @@ cannot mkdir
 saved 16 bytes
 /> dir /T2
 
-.            <DIR>
-..           <DIR>
-HELLO        16  @5000
-3 entries
+     16  HELLO  @5000
 /> exit
 
 bye

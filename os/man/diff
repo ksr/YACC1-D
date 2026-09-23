@@ -1,0 +1,33 @@
+NAME
+    diff - show the lines that differ between two files
+
+SYNOPSIS
+    diff file1 file2
+
+DESCRIPTION
+    Skips the lines the files share at the start and at the end and
+    prints the block between: the lines only in file1 prefixed "< ",
+    then those only in file2 prefixed "> ". Identical files print
+    nothing. One changed, inserted or deleted block comes out exact;
+    several changes come out as one block spanning them (this is not a
+    minimal diff). diff is /BIN/DIFF.
+
+    Errors: "diff: file1 not found", "diff: file2 not found".
+
+LIMITS
+    Each file is held in memory: 150 lines of 79 characters (CR is
+    dropped, longer lines are cut). A longer file is compared on its
+    first 150 lines, and diff says "diff: only the first 150 lines were
+    compared".
+
+EXAMPLES
+    diff /FRUIT.TXT /FRUIT2.TXT    < banana 12 yellow
+                                   > kiwi 9 brown
+
+NOTES
+    Changed from the P8X version: 150 lines per file (was 96) and the
+    warning for a longer file.
+    Ported from P8X os/commands/diff.c 2026-09-23.
+
+SEE ALSO
+    cmp, cat, grep

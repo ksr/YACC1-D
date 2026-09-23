@@ -1,0 +1,26 @@
+NAME
+    err - an error message on the console (#include "../lib_err.c")
+
+SYNOPSIS
+    #include "../lib_err.c"
+    eputs("cmd: not found");
+
+DESCRIPTION
+    eputs(s) prints s and a line feed on the console. Today that is
+    what puts() does: Y1/OS has no output redirection, so the output IS
+    the console. It stays a function of its own so that when the shell
+    gets > and pipes, every command's diagnostics move to the raw
+    console in one place, as the P8X eputs does: a "not found" must
+    never land in an output file or a pipe.
+
+    Convention: eputs for failures, including a usage message printed
+    because the arguments were wrong; puts for output, including the
+    usage asked for with -h.
+
+NOTES
+    Changed from the P8X version: putchar instead of the PUTS and
+    CONOUT BIOS calls.
+    Ported from P8X os/commands/lib_err.c 2026-09-23.
+
+SEE ALSO
+    abi, fs, cat

@@ -1,0 +1,40 @@
+NAME
+    globx - expand a filename glob into a list of files
+            (#include "../lib_globx.c")
+
+SYNOPSIS
+    #include "../lib_globx.c"     (includes lib_fs.c and lib_glob.c)
+    char out[24 * GSLOT];         GSLOT = 64
+    n = glob_expand(pattern, out, 24);
+
+DESCRIPTION
+    glob_expand(pat, out, maxn) -> the number of matches
+      pat    the pattern word (ends at NUL or a space), * and ? in its
+             last component only: "*.TXT" (the current directory) or
+             "/MAN/C*"
+      out    maxn slots of GSLOT (64) bytes; slot i = the directory
+             part of pat + the i-th matching name, NUL-ended, so it
+             opens the way the bare word would (a relative prefix stays
+             relative to the current directory)
+      maxn   the slot count; matches past it are dropped
+    isglob(w) is 1 when the word w (ends at NUL or a space) holds * or
+    ?.
+
+    Only FILES match (not directories, not . and ..), in the order the
+    directory stores them. The directory is read on a handle of
+    glob_expand's own, closed again before it returns.
+
+LIMITS
+    The directory part must leave room in a slot for a 12-character
+    name (about 50 characters), or nothing matches. The name pattern
+    is cut at 15 characters.
+
+NOTES
+    Changed from the P8X version: opendir, readdir and fclose on its
+    own handle instead of FOPENDIR/SYS_OPENCWD, FNEXT and SYS_DIRENTRY,
+    so the FSDIRBUF page juggling is gone (every Y1/OS handle owns its
+    buffer); the names come from ent_name().
+    Ported from P8X os/commands/lib_globx.c 2026-09-23.
+
+SEE ALSO
+    glob, stdin, cat, cp, mv, del

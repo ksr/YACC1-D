@@ -1,0 +1,33 @@
+NAME
+    find - search a directory tree for names
+
+SYNOPSIS
+    find pattern [dir]
+
+DESCRIPTION
+    Walks the tree under the current directory (or dir) depth first and
+    prints the absolute path of every file or directory whose name
+    matches. A pattern with * or ? is a glob matched against the whole
+    name, case folded; any other pattern matches the names that CONTAIN
+    it, case-sensitively. A directory's contents follow it directly.
+    "find: not a directory" when dir is not one. find is /BIN/FIND.
+
+LIMITS
+    8 levels below the start directory: a deeper directory is printed
+    but not entered, and find says "find: deeper than 8 levels, not all
+    searched". The pattern is cut at 63 characters.
+
+EXAMPLES
+    find .TXT            names containing ".TXT", from here down
+    find *.txt /         every name ending in .TXT, from the root
+    find C* /MAN         the pages whose names start with C
+    find BIN /           where BIN is
+
+NOTES
+    Changed from the P8X version: an optional start directory, no limit
+    of 24 subdirectories per level, and a note when the walk stopped
+    short (the P8X was silent).
+    Ported from P8X os/commands/find.c 2026-09-23.
+
+SEE ALSO
+    tree, dir, grep, glob, walk

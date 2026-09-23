@@ -1,0 +1,60 @@
+NAME
+    dir - list a directory, sorted
+
+SYNOPSIS
+    dir [-R] [-S] [path | glob | file]
+
+DESCRIPTION
+    Lists a directory: the current one with no argument, or the one a
+    path names. A glob (* or ? in the last component, case folded)
+    lists the matching entries of that directory, files and
+    directories alike; a file lists just that file's line. "dir: not
+    found" when the name does not exist. dir is /BIN/DIR.
+
+    A line is the size right-justified in 7 columns (blank for a
+    directory), two spaces, the name ("/" after a directory), and
+    "  @AAAA" when the file has a load address (a program, a file
+    saved from memory; the host tool gives its files $B000):
+
+             98  FRUIT.TXT  @B000
+                 MAN/
+
+    "." and ".." are left out. Entries are sorted by name in byte
+    order, so A-Z come before a-z. -S sorts by size, largest first,
+    ties by name; a directory counts as size 0.
+
+    -R lists the directory, then every directory below it, depth
+    first, as a block of its own headed by a blank line and "/PATH:"
+    (as ls -R does); a glob filters every level.
+
+    The shell also has a built-in dir, used only when /BIN/DIR is
+    missing: unsorted, with "." and "..", <DIR> for a directory, and
+    the count at the end.
+
+OPTIONS
+    -R    also list every directory below, a block each (or -r)
+    -S    sort by size, largest first (or -s)
+
+LIMITS
+    64 entries per directory are sorted and shown (a new directory
+    holds 62); past that dir says "dir: over 64 entries in a directory,
+    the rest not shown". -R descends 8 levels ("dir: deeper than 8
+    levels, not all shown"). A glob pattern is at most 15 characters.
+    Sizes are 32-bit (see num).
+
+EXAMPLES
+    dir                  the current directory
+    dir /BIN             by path
+    dir -S /BIN          the largest programs first
+    dir /*.TXT           the .TXT files of the root
+    dir /FRUIT.TXT       one file's line
+    dir -R /             the whole disk, a block per directory
+
+NOTES
+    Changed from the P8X version: -R prints a block per directory (the
+    P8X indented the levels into one listing), 8 levels instead of 16,
+    and the load-address column of the Y1/OS built-in dir.
+    Ported from P8X os/commands/dir.c 2026-09-23.
+
+SEE ALSO
+    ls, tree, find, cd, pwd, walk, num
