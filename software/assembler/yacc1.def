@@ -157,7 +157,7 @@ FC
 IRET
 FD
 IADDR \W
-FE|1  hi(1) lo(1)
+FE  hi(1) lo(1)
 ORG     \W
 \O1
 END     \W

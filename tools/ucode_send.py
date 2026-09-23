@@ -16,7 +16,9 @@ lost and the card waits forever for the rest (seen 2026-09-22 at 1 ms/char). The
 firmware/microcode/ucode-generator2/cache (what the card holds) are sent, and the cache is rewritten as they go, so an
 interrupted load can be resumed by running the command again.
 
-On the card, before running this:  UCODESWITCH to DOWNLOAD, reset the card (LOADING on), press STARTSWITCH.
+Bench order (2026-09-22): UCODESWITCH to DOWNLOAD, then RUN THIS TOOL FIRST - opening the FTDI port resets the ATmega
+through DTR - and only then press STARTSWITCH (LOADING on); pressing START before the tool opens the port is undone by
+that reset, so START must be pressed again.
 Afterwards:  UCODESWITCH back to run, reset: Sequencer4 copies the EEPROM to the microcode RAM and verifies it
 (READY after ~54 s). `--boot-check` captures that transcript and compares the five instructions it dumps with test.hex.
 
