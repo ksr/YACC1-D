@@ -218,11 +218,11 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   Until burned, compile for the machine with `--vector`.
 - (done 2026-09-22: the sequencer EEPROM holds the regenerated image — BRUR at $AD, the H-2 fix in BRZ/BRNZ/BR16Z/BR16NZ, the
   H-1 fix in PUSHR; six records differed, all 256 sent with `tools/ucode_send.py --all`; the scope look at the old image's
-  bus fight was skipped.) **Bench-check the reloaded microcode** (first evidence 2026-09-22/23: `tests/assembler/romcount` ran overnight from ROM — BRNZ, DECR, MVRHA, MVAT/MVTA, ADDI, OUTA/INP, BRINL — after `romdiag` had shown the bring-up machine lacked register card 1; card fitted, R7 reads correctly). The rest is ONE command since 2026-09-23: burn the ROM, then
+  bus fight was skipped.) (done 2026-09-23 evening: `tests/bench/run.py --port` 14/14 on the machine after the SHIFT-OUT carry fix; first run found the fault.) **Bench-check the reloaded microcode** (first evidence 2026-09-22/23: `tests/assembler/romcount` ran overnight from ROM — BRNZ, DECR, MVRHA, MVAT/MVTA, ADDI, OUTA/INP, BRINL — after `romdiag` had shown the bring-up machine lacked register card 1; card fitted, R7 reads correctly). The rest is ONE command since 2026-09-23: burn the ROM, then
   `python3 tests/bench/run.py --port /dev/cu.usbserial-X` loads and runs hello, BRUR (`ABC0123`), the ISA sweep (every
   instruction, one hex byte each) and 12 compiled C programs through the `:` loader and diffs each against the microcode
   emulator's transcript; the log lands in `tests/bench/logs/` (`docs/procedures/BRING-UP.md` section 6b).
-- **Run a compiled program on the machine.** Burn the 2026-09-23 ROM, then `tools/monload.py prog.img --go 3000` (the `:` loader); the compiler suite is in `tests/bench/`.
+- (done 2026-09-23: **compiled C runs on the machine** — eleven y1cc programs in `tests/bench/` pass through the `:` loader.)
   First hardware checks: `rt_sub` (INVA/moves between ADDTC), `rt_divmod` (SUBT/SUBI after a comparator branch), the
   shifts (`LDAI 0 / CSHL` carry clear), `BRDEV` selecting the BIOS path, and that `BR $F000` after main is acceptable
   (it restarts the monitor: BASIC cold start, banners). A `cmdloop` BIOS vector would be cleaner than the restart.
