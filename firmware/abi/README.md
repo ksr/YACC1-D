@@ -35,6 +35,7 @@ on the instruction-level emulator; the microcode emulator takes the UART path li
 | Address | Name | Use |
 |---|---|---|
 | $0F00 | monmode | monitor mode |
+| $0F01 | lderr | the `:` loader's error flag (2026-09-23) |
 | $0F02 | continue_addr | |
 | $0F04 | interupt_cnt | |
 | $0F06–$0F0D | SYSARG0..2, SYSRES | Y1/OS syscall arguments and result (big-endian words); y1cc's `sys()` (2026-09-23) |

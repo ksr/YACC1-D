@@ -60,13 +60,12 @@ Details: [ASSEMBLER.md](ASSEMBLER.md) (the invocation gotcha: source name before
    (default the lowest in the file), `--end` stop before this address (default `$F000`, so a compiler `--boot` stub is
    left out — hence the explicit `--end 0x10000` for a ROM), `--fill` the byte for holes (default 0), `--size` pad or
    truncate to a whole chip.
+3. Or, without burning anything, send a RAM program to a running machine: `python3 tools/monload.py prog.img --go 3000`
+   through the monitor's `:` loader (`docs/programming/MONITOR.md`, `docs/procedures/BRING-UP.md` section 6a).
 3. Burn with Visual Minipro / `minipro`, device 28C64 (`firmware/rom/README.md`). A program lands at offset `$1000`
    of the chip when assembled at `$F000`.
-4. Tell builds apart: `rom.bin`'s MD5 (a42ea1ef4537d0b974f38643091fef00 for the tree's build of 2026-09-23 09:36,
-   which added the `UARTINNE` vector; `firmware/rom/README.md` still quotes 33efa63dbd9e141f739888f139f86bc9 for the
-   2026-09-22 build); the bytes at `$FFC0..$FFFF` (the vector table — the 2021 chip has eleven vectors, then `00` at
-   `$FFEC` and `FF` to the end; the tree's build has sixteen, filling the ROM), `$F25C` (`go:`, `06 07` = `JSRUR R7`
-   in the rebuild, `DF` = `BRVR R7` on the 2021 chip). The chip currently holds the 2021 build
+4. Tell builds apart: the power-up banner ends `ROM 2026-09-23` on the current build; otherwise `rom.bin`'s MD5
+   (d2d7b027e7c6951d7dd93412a8fd9cd8, `firmware/rom/README.md`) or the two check bytes in `docs/procedures/BRING-UP.md` section 5. The chip currently holds the 2021 build
    (`eprom-captured-2026-09-18.bin/.hex`); the rebuild is pending (`MACHINE.md`).
 5. After burning: `tests/memory/rom_verify.py` (~30 s, through the bus tester) compares every byte with
    `tools/romimage.py`'s image of `basic.img` + `monitor.img`; `memory_status.py` (~1 min) also checks the boot remap

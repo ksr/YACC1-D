@@ -47,6 +47,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <poll.h>
 #include <libgen.h>
 #include <termios.h>
 #ifdef __APPLE__
@@ -179,20 +180,32 @@ static uint8_t uart_lcr, uart_ier, uart_fcr, uart_mcr, uart_scr, uart_dll, uart_
 static int in_buf = -1;   /* one byte of look-ahead from stdin, -1 = none */
 static int in_eof;
 
+/* 2026-09-23: the UART's data-ready bit (LSR) is a NON-blocking poll. It used to call a blocking read(), so every
+   LSR read - including the transmit-empty check before each output character - stalled the emulator until the next
+   input byte arrived: invisible with a scripted input file (all input present, then end of input), but a live
+   sender (tools/monload.py through a pty, tests/monload) saw no answer until it sent more. The data read (RBR, port
+   2) still blocks. After a long run of empty polls with no output either, each poll waits 1 ms, so a monitor idling
+   at its prompt does not spin the host CPU; any input or output resets that. */
+static long idle_polls;
+static int stdin_fill(int wait_ms) {              /* try to buffer one byte; 1 = something buffered or end of input */
+    struct pollfd pf = { STDIN_FILENO, POLLIN, 0 };
+    if (poll(&pf, 1, wait_ms) <= 0) return 0;
+    unsigned char c;
+    ssize_t n = read(STDIN_FILENO, &c, 1);
+    if (n == 1) { in_buf = c; if (c == 0x0d) in_buf = 0x0a; idle_polls = 0; return 1; }
+    in_eof = 1; return 1;
+}
 static int input_ready(void) {
     if (in_buf >= 0) return 1;
     if (in_eof) return 1;                         /* "ready" with 0: programs see end of input as 0 */
-    unsigned char c;
-    ssize_t n = read(STDIN_FILENO, &c, 1);
-    if (n == 1) { in_buf = c; if (c == 0x0d) in_buf = 0x0a; return 1; }
-    in_eof = 1; return 1;
+    return stdin_fill(++idle_polls > 20000 ? 1 : 0);
 }
 static int input_byte(void) {
-    input_ready();
+    if (in_buf < 0 && !in_eof) stdin_fill(-1);    /* a data read waits for the byte */
     if (in_buf >= 0) { int c = in_buf; in_buf = -1; return c; }
     return 0;
 }
-static void console_out(int c) { char ch = (char)c; if (write(STDOUT_FILENO, &ch, 1) < 0) exit(3); }
+static void console_out(int c) { char ch = (char)c; idle_polls = 0; if (write(STDOUT_FILENO, &ch, 1) < 0) exit(3); }
 
 static uint8_t io_read(int p) {
     if (p == CF_PORT_SEL || p == CF_PORT_DATA) return cf_io_read(p);

@@ -86,14 +86,9 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   scripts in `tests/bus-tester-scripts/` on the bench.
 - (done 2026-09-21: `embedded/sequencer-card/sequencer4` reads the copy back before READY and refuses on a mismatch; copy 16 s
   + verify 29 s instead of 156 s; sequencer3 deprecated)
-- **Monitor loader `tools/monload.py`** — push an assembled program into RAM through the ROM monitor's `E` command over the
-  serial console (the monitor has no hex loader; `L` lists BASIC). Protocol from `firmware/monitor/monitor.asm` (`examine:`):
-  send `E` + 4 hex address; the monitor prints `AAAA XX ` and waits; two hex characters replace the byte and advance to the
-  next address (no CR); CR advances without change; `-` or Esc ends. Loader: open the IO-card UART (38400, the FTDI on the
-  card's TTL header), send `E<addr>`, feed the bytes pacing on the echoed address, send `-`, optionally `G<addr>` to run.
-  Input = the assembler's `.prg` (`:AAAA b b b ...` lines, `*START`). TEST FIRST ON THE EMULATOR: `software/emulator` runs
-  the same monitor on stdin/stdout (raw tty, blocking uartin), so the loader needs a pty/subprocess mode. Load above $1000
-  (monitor variables at $0F00, stack down from $0EFF). Sample program: `tests/assembler/ledcount`.
+- (done 2026-09-23: **the monitor's `:` Intel-hex loader and `tools/monload.py`** — records answered `.`/`?`/`!`, $1000-$DFFF only,
+  read-back verify, ESC abandons; host tool paces 3 ms/char and waits per record, `--go`, `--listen`, `--term`; tested on both
+  emulators and over a pty (`tests/monload/`); in the ROM image, NOT yet burned. The E-command scheme planned here was dropped.)
 - Port of the P8X work (OS, monitor, BASIC, compilers) onto YACC1 — the reason this repo exists; not started.
 
 ## Verification still to do
@@ -158,8 +153,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   bus fight was skipped.) **Bench-check the reloaded microcode** (first evidence 2026-09-22/23: `tests/assembler/romcount` ran overnight from ROM — BRNZ, DECR, MVRHA, MVAT/MVTA, ADDI, OUTA/INP, BRINL — after `romdiag` had shown the bring-up machine lacked register card 1; card fitted, R7 reads correctly): BRUR (`tests/assembler/brur/`, `ABC0123`),
   `tests/ucemu/isa.asm` (every instruction; the port-2 byte stream must equal `tests/ucemu/run.py`'s), then the monitor from
   ROM.
-- **Run a compiled program on the machine.** Needs RAM loading: the monitor E-command loader (`tools/monload.py`, above) or
-  the bus tester with the CPU held off (v2.2 CPU-off switch). Then `G3000` (the image starts with the vector BRVR needs; $1000 is BASIC's buffer).
+- **Run a compiled program on the machine.** Burn the 2026-09-23 ROM, then `tools/monload.py prog.img --go 3000` (the `:` loader).
   First hardware checks: `rt_sub` (INVA/moves between ADDTC), `rt_divmod` (SUBT/SUBI after a comparator branch), the
   shifts (`LDAI 0 / CSHL` carry clear), `BRDEV` selecting the BIOS path, and that `BR $F000` after main is acceptable
   (it restarts the monitor: BASIC cold start, banners). A `cmdloop` BIOS vector would be cleaner than the restart.

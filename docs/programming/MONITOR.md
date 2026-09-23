@@ -68,6 +68,7 @@ from its code:
 | `L` | list | `cmd_basiclist`: `JSR basic_list` ($E000) |
 | `P` | parse | `cmd_basicparse`: prints `Enter Line:`, reads a line into `line_buffer` ($0F80) until LF, shows it, `JSR BASIC_PARSE` ($E050) — enters one program line into BASIC's token buffer |
 | `R` | registers | `dumpreg`: `showregs` — R0..R7 as four hex digits each, then `C`/`X` for the carry flip-flop |
+| `:` | Intel-hex load | `hexload` (2026-09-23): the rest of the record is read without echo and stored; `.` good, `?` bad digit or checksum, `!` address outside $1000-$DFFF or read back wrong; records up to the end record (`LOADED` / `LOADED WITH ERRORS`); ESC or NUL abandons anywhere; CR/LF at the prompt afterwards do nothing (`LOADMODE`); error flag `lderr` at $0F01. Host side `tools/monload.py`; about 39 instructions per received character |
 | `O` | boot | `boot` ($F333): boot Y1/OS from the CompactFlash card (section 6) |
 | `Y` | BASIC test | `cmd_basic_test`: `JSR basic_test` ($E030) |
 | `Z` | run | `cmd_basic`: `JSR basic_run` ($E010) — run the BASIC program in the buffer |
@@ -206,13 +207,10 @@ asserted, `docs/isa/MICROCODE-REVIEW-NOTES.md` L-8), so the ISR path has not bee
   reproduce its two shell lines.)
 - **`shipped/rom.bin`** = the same as a flat 8,192-byte file for the programmer: `python3 tools/img2bin.py
   firmware/rom/shipped/rom firmware/rom/shipped/rom.bin --base 0xE000 --end 0x10000 --fill 0xFF --size 8192`. Offset
-  0 = $E000; bytes the sources never write are $FF like a blank part; MD5 of the tree's `rom.bin` on 2026-09-23 09:36:
-  a42ea1ef4537d0b974f38643091fef00 (`firmware/rom/README.md` still quotes the 2026-09-22 build's
-  33efa63dbd9e141f739888f139f86bc9). Device: 28C64, Visual Minipro / `minipro`.
-- **Telling builds apart**: the BASIC half of `rom.bin` is byte-identical to the chip capture; the monitor half
-  differs (G fix, CF driver, O, five vectors). Check bytes: `$FFEC..$FFFF` — on the 2021 chip `00 FF FF …`
-  (its end byte then blank, `eprom-captured-2026-09-18.hex` record `:10FFE0…`), in the tree five `04 hi lo 05`
-  vectors ending at `$FFFF`; `$F25C` (`go:`): `06 07` = `JSRUR R7` in the rebuild, `DF` = `BRVR R7` on the chip.
+  0 = $E000; bytes the sources never write are $FF like a blank part; MD5 in `firmware/rom/README.md`. Device: 28C64, Visual Minipro / `minipro`.
+- **Telling builds apart**: the banner ends `ROM 2026-09-23` on the current build (MD5 d2d7b027e7c6951d7dd93412a8fd9cd8); the 2021 chip
+  prints the banner alone and has `00` at $FFEC; the 2026-09-22 build has `04` at $FFEC and `00` at $FFFC. Vector targets
+  move with every monitor edit, so compare whole images by MD5.
 - **`tools/verify_firmware.py`** rebuilds everything from source in a scratch directory — the assembler from its C
   sources, both images, `rom` via the `makerom` lines, and the microcode `test.hex` via the generator — and diffs
   against the committed files: `FIRMWARE VERIFIED` or exit 1. Part of `make check` at the root.

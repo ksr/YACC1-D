@@ -21,6 +21,7 @@ check:
 	python3 tests/compiler/run.py
 	python3 tests/ucemu/run.py
 	python3 tests/os/run.py
+	python3 tests/monload/run.py
 	python3 tests/sequencer/run.py
 	python3 tests/assembler/romcount/run.py
 	python3 tests/assembler/romdiag/run.py

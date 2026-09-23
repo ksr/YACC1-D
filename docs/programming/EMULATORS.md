@@ -186,3 +186,9 @@ adding a case means adding files, not code:
   bound the run since `0` loops there.
 
 Exit codes: every runner exits 1 on any failure, so they chain in `make check` ([TOOLCHAIN.md](TOOLCHAIN.md)).
+
+## Live console connections (2026-09-23)
+
+The microcode emulator can now be driven by a live program on a pseudo-terminal, not only by a finished input file: its
+UART status read no longer blocks waiting for input (see `software/ucemu/README.md`). `tests/monload/run.py` relays a pty
+to `y1ucemu -x -m` and runs `tools/monload.py` against it, the same way it would talk to the machine's UART.

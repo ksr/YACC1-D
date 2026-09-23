@@ -223,7 +223,7 @@ From `firmware/rom/README.md`, `firmware/abi/README.md`, and a byte comparison o
 
 - The image to burn is **`firmware/rom/shipped/rom.bin`**: 8,192 bytes, offset 0 = $E000; BASIC (`firmware/basic/basic.img`) at
   $E000, the monitor (`firmware/monitor/monitor.img`) at $F000; bytes the sources never write are $FF like a blank part.
-  MD5 `33efa63dbd9e141f739888f139f86bc9`. Programmer: Visual Minipro / `minipro`, device 28C64. It is built from `shipped/rom`
+  MD5 `d2d7b027e7c6951d7dd93412a8fd9cd8` (the 2026-09-23 afternoon build, with the `:` loader). Programmer: Visual Minipro / `minipro`, device 28C64. It is built from `shipped/rom`
   (Intel hex) by `python3 tools/img2bin.py firmware/rom/shipped/rom firmware/rom/shipped/rom.bin --base 0xE000 --end 0x10000 --fill 0xFF --size 8192`.
 - `tools/verify_firmware.py` (or `make -C software/assembler check`) proves the image reproduces from `firmware/monitor/monitor.asm`
   and `firmware/basic/basic.asm` before you burn it.
@@ -231,14 +231,19 @@ From `firmware/rom/README.md`, `firmware/abi/README.md`, and a byte comparison o
   `firmware/rom/eprom-captured-2026-09-18.bin`). The 2026 image differs in the monitor half only ($F021..$FFFF);
   the BASIC half is identical. The differences that matter: the `G` command is now `JSRUR R7` (a call; the program returns
   with `RET`) instead of `BRVR R7` (an indirect jump through the word at the address, so `G AAAA` never ran the code at AAAA);
-  the `T` menu tests are gone; the CompactFlash driver and the `O` boot command are in.
-- **How to tell which build a chip holds** (read $FFEC-$FFFF back with the programmer or `busdrv.py --dump FFC0 FFFF`):
+  the `T` menu tests are gone; the CompactFlash driver and the `O` boot command are in; the `:` Intel-hex loader
+  (section 6a) and a no-echo console vector are in; the banner ends with the build date, `ROM 2026-09-23`.
+- **How to tell which build a chip holds**: the banner at power-up ends with `ROM 2026-09-23` on the current build (the
+  2021 chip and the 2026-09-22 build print `YACC 2020: HELLO WORLD` alone). Without a console, read back two bytes with
+  the programmer or `busdrv.py`:
 
-  | Address | 2021 chip (captured) | 2026 `shipped/rom.bin` | Meaning |
+  | Address | 2021 chip (captured) | 2026 builds | Meaning |
   |---|---|---|---|
-  | $FFC0-$FFEB | `04 F8 59 05 04 F8 67 05 ...` | `04 F5 28 05 04 F5 36 05 ...` | the eleven original BIOS vectors, `JSR routine / RET`; same shape, different targets because the monitor moved |
-  | $FFEC-$FFFB | `00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF` | `04 F2 A5 05 04 F2 D5 05 04 F2 FE 05 04 F3 27 05` | the four new vectors CFINIT $FFEC, CFREAD $FFF0, CFWRITE $FFF4, CONST $FFF8 (`firmware/abi/README.md`) - a `04` (JSR) at $FFEC is the 2026 build, `00` is 2021 |
-  | $FFFC-$FFFF | `FF FF FF FF` | `04 F5 69 05` | UARTINNE (console byte without echo), the sixteenth vector, added 2026-09-23 for Y1/OS v0.1 (the 2026-09-22 build had a `00` end-label byte here instead) |
+  | $FFEC | `00` | `04` | the CFINIT vector (`JSR` = `04`) exists from the 2026-09-22 build on |
+  | $FFFC | `FF` | `04` from 2026-09-23 | UARTINNE, the sixteenth vector (2026-09-22 had a `00` end byte here) |
+
+  The other vector bytes are `04 hi lo 05` (`JSR routine / RET`) with targets that move whenever the monitor changes,
+  so compare the whole image by MD5 (`firmware/rom/README.md`) or with `tests/memory/rom_verify.py` below.
 
 - After burning: re-capture and compare with `python3 tests/memory/rom_verify.py [port] --save` (~30 s with the blocks-1
   tester firmware): it reads $E000-$FFFF through the bus tester and diffs against the image `tools/romimage.py` assembles from
@@ -252,6 +257,24 @@ From `firmware/rom/README.md`, `firmware/abi/README.md`, and a byte comparison o
   FORCE-ROM. A scratch chip is the right one for the M2 bench experiment.
 
 ---
+
+## 6a. Loading programs into RAM over the console (`:`, `tools/monload.py`)
+
+From the 2026-09-23 ROM on, the monitor takes Intel-hex records at its prompt: a `:` starts load mode, each record is
+stored and answered with `.` (good), `?` (bad digit or checksum) or `!` (address outside $1000-$DFFF, or it read back
+differently: the second is a RAM fault worth chasing), and the end record prints `LOADED`. ESC abandons.
+
+```
+python3 tools/monload.py prog.img --port /dev/cu.usbserial-XXXX --go 3000 --listen 5
+```
+
+sends a y1cc or assembler image (compile without `--boot`; programs start at $3000 and return with RET), runs it and
+prints its output; `--term` then leaves a plain terminal open (Ctrl-] quits). The console is the I/O card's UART at 38400
+8N1 through a USB-RS232 adapter on the DB9; the sequencer card's FTDI is excluded from the automatic port choice.
+**Pacing**: the monitor needs about 1,600 CPU clocks per received character and the UART FIFO is off, so the default
+3 ms between characters assumes a clock of 1 MHz or more; slower clocks need `--delay` raised in proportion
+(delay_ms >= 3.2 / clock_MHz). A `?` on a record that is right on disk means characters are being lost: raise
+`--delay`. Checked on both emulators and through a pseudo-terminal (`tests/monload/run.py`), not yet on the machine.
 
 ## 6. The ROM test programs (proving the CPU without the monitor)
 

@@ -37,12 +37,14 @@ EXAMINEMODE:  EQU 1
 DUMPMODE:     EQU 2
 BLOCKMODE:    EQU 3
 FILLMODE:     EQU 4
+LOADMODE:     EQU 5         ; 2026-09-23: after a ':' load, CR/LF at the prompt do nothing
 
 ;
 ; Monitor variables 0x0f00 - 0x0fff
 ;
 monmode:        EQU 0f00h
 continue_addr:  EQU 0f02h
+lderr:          EQU 0f01h    ; 2026-09-23: nonzero when a record of the current ':' load failed
 interupt_cnt:   EQU 0f04h
 ;
 ; CompactFlash driver variables (YACC1-D 2026-09-22) and the OS/program argument buffer
@@ -188,6 +190,8 @@ cmdloop:
       BR cmdloop
 
 testexamine:
+      LDTI ':'          ; 2026-09-23: an Intel-hex record starts load mode
+      BREQ hexload
       LDTI '0'
       BREQ cmd_exit
       LDTI 'B'
@@ -614,6 +618,170 @@ consthw:
 ;
 ; O command: boot. Read the boot block (LBA 0) to OSBASE, check 'P8' and OSCNT, read OSCNT sectors from LBA 1
 ; to OSBASE and call it; the OS returns with RET.
+;
+;
+; ':' - Intel-hex loader (YACC1-D 2026-09-23). A ':' at the prompt starts load mode: the rest of the record is read
+; without echo (uartinne), its bytes stored from its address on, and the record acknowledged with one character:
+;   .  stored and the checksum is right
+;   ?  a bad hex digit or a bad checksum
+;   !  refused or not verified: an address outside $1000-$DFFF (the monitor's page, the stack and the ROM are
+;      protected; any write to $E000-$FFFF would reach the 28C64, review M2), or the byte read back differently
+; Between records everything up to the next ':' is skipped (CR, LF, blanks), so an assembler .img can be pasted into
+; a terminal or sent as is; ESC (or a NUL, the emulators' end of input) abandons, between records or inside one. The end record (type 01) prints
+; LOADED, or LOADED WITH ERRORS when any record failed, and returns to the prompt. Records of other types are read
+; and checked but not stored. Host side: tools/monload.py paces the characters (the UART has no FIFO enabled: one
+; character of buffering) and waits for each acknowledgement. Registers: R3 checksum, R4 count, R5 type,
+; R6 record status (0 ok, 1 bad hex, 2 refused/unverified), R7 the address; never R2.
+;
+hexload:
+        LDTI  LOADMODE
+        STT   monmode
+        LDTI  0
+        STT   lderr
+ldrec:
+        MVIW  R3,0
+        MVIW  R4,0
+        MVIW  R6,0
+        JSR   ldbyte            ; byte count
+        MVARL R4
+        JSR   ldbyte            ; address high
+        MVARH R7
+        JSR   ldbyte            ; address low
+        MVARL R7
+        JSR   ldbyte            ; record type
+        MVARL R5
+ldloop:
+        MVRLA R4
+        BRZ   ldsum
+        JSR   ldbyte
+        PUSH
+        MVRLA R5
+        BRNZ  ldskip            ; not a data record: check only
+        MVRHA R7                ; protect everything outside $1000-$DFFF
+        LDTI  00fh
+        BRGT  ldlowok
+        BR    ldref
+ldlowok:
+        LDTI  0dfh
+        BRGT  ldref
+        POP
+        STAVR R7
+        MVAT
+        LDAVR R7                ; read it back
+        BREQ  ldnext
+        MVIW  R6,2
+        BR    ldnext
+ldref:
+        MVIW  R6,2
+ldskip:
+        POP
+ldnext:
+        INCR  R7
+        DECR  R4
+        BR    ldloop
+ldsum:
+        JSR   ldbyte            ; the checksum: the record's bytes now sum to zero
+        MVRLA R6
+        LDTI  1
+        BREQ  ldbadrec
+        MVRLA R3
+        BRNZ  ldbadrec
+        MVRLA R6
+        BRNZ  ldrefrec
+        MVRLA R5
+        LDTI  1
+        BREQ  ldeof
+        LDAI  '.'
+        JSR   uartout
+        BR    ldwait
+ldbadrec:
+        LDAI  '?'
+        BR    ldflag
+ldrefrec:
+        LDAI  '!'
+ldflag:
+        JSR   uartout
+        LDTI  1
+        STT   lderr
+        MVRLA R5
+        LDTI  1
+        BREQ  ldeof
+ldwait:
+        JSR   uartinne          ; skip to the next ':'
+        BRZ   ldabort
+        LDTI  ':'
+        BREQ  ldrec
+        LDTI  01bh
+        BREQ  ldabort
+        BR    ldwait
+ldeof:
+        LDA   lderr
+        BRNZ  ldeofbad
+        MVIW  R7,MSGLOADED
+        JSR   stringout
+        BR    cmdloop
+ldeofbad:
+        MVIW  R7,MSGLOADERR
+        JSR   stringout
+        BR    cmdloop
+ldabort:
+        MVIW  R7,MSGLOADAB
+        JSR   stringout
+        BR    cmdloop
+;
+; ldbyte: two hex digits (no echo) -> ACC, added into the checksum R3; a bad digit sets R6 = 1 and gives 0
+;
+ldbyte:
+        JSR   ldhex
+        SHL
+        SHL
+        SHL
+        SHL
+        ANDI  0f0h
+        PUSH
+        JSR   ldhex
+        MVAT
+        POP
+        ORT
+        PUSH
+        MVAT
+        MVRLA R3
+        ADDT
+        MVARL R3
+        POP
+        RET
+;
+; ldhex: one hex digit (no echo) -> ACC 0..15; anything else sets R6 = 1 and gives 0
+;
+ldhex:
+        JSR   uartinne
+        BRZ   ldhexab           ; NUL (the emulators' end of input) or ESC abandon, even inside a record
+        LDTI  01bh
+        BREQ  ldhexab
+        JSR   toupper
+        LDTI  '0'
+        BRLT  ldhexbad
+        LDTI  '9'
+        BRGT  ldhexaf
+        SUBI  '0'
+        RET
+ldhexaf:
+        LDTI  'A'
+        BRLT  ldhexbad
+        LDTI  'F'
+        BRGT  ldhexbad
+        SUBI  037h
+        RET
+ldhexbad:
+        MVIW  R6,1
+        LDAI  0
+        RET
+ldhexab:                        ; out of any depth of ldbyte/ldhex: the loader runs from the command loop, whose
+        MVIW  R1,STACK          ; stack is empty, so resetting it drops the return addresses and pushed bytes
+        BR    ldabort
+MSGLOADED: DB 0ah,0dh,"LOADED",0ah,0dh,0
+MSGLOADERR: DB 0ah,0dh,"LOADED WITH ERRORS",0ah,0dh,0
+MSGLOADAB: DB 0ah,0dh,"LOAD ABANDONED",0ah,0dh,0
 ;
 boot:
         MVIW R7,MSGBOOT
@@ -1160,7 +1328,7 @@ nblinkdone:
 ;
 ; MONITOR STRINGS
 ;
-hello:  DB 0ah,0dh,"YACC 2020: hello world  ",0ah,0dh,0
+hello:  DB 0ah,0dh,"YACC 2020: hello world  ROM 2026-09-23",0ah,0dh,0    ; the build date tells ROMs apart at a glance
 PROMPT: DB ">",0
 CRLF: DB 0ah,0dh,0
 ERROR: DB "UNRECOGINIZED COMMAND",0ah,0dh,0
@@ -1194,6 +1362,7 @@ DB "P     - Enter program line to BASIC",0ah,0dh
 DB "R     - Show registers",0ah,0dh
 DB "O     - bOot the OS from the CF card (LBA 1.., OSCNT sectors, to 1000h)",0ah,0DH
 DB "Y     - run BASIC test code",0ah,0DH
+DB ":     - Intel-hex load (send a .img; . per record, ? bad record, ! refused address)",0ah,0DH
 DB "Z     - Run program with Basic interpreter",0ah,0DH
 DB 0
 ;
