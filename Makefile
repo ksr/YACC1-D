@@ -4,6 +4,7 @@
 #                   then run the C compiler's test programs on the emulator (tests/compiler/run.py)
 #   make cc-test    just the compiler tests (on both emulators)
 #   make os-test    Y1/OS sessions on both emulators (tests/os/run.py)
+#   make bom        regenerate docs/bom/ (bills of material per card + consolidated) from the active Eagle schematics (tools/gen_bom.py)
 #   make clean
 TOOLS = software/emulator software/ucemu software/assembler firmware/microcode/ucode-generator2 software/disassembler/disasm2 \
         software/ubasic-c/ubasic-master "tests/bus-tester-scripts/Gen Test Vectors/gen test vectors"
@@ -34,4 +35,6 @@ kicad:
 	python3 tools/eagle_to_kicad_all.py
 isa:
 	python3 tools/ucode_wavedrom.py --all
-.PHONY: all check clean kicad isa cc-test os-test
+bom:
+	python3 tools/gen_bom.py
+.PHONY: all check clean kicad isa bom cc-test os-test

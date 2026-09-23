@@ -5,7 +5,7 @@ generated FABRICATED marker/index. Prints buckets, hash mismatches, unexplained 
 from disk. Run from anywhere. Exit code 1 if anything is unexplained/mismatched/missing."""
 import csv, os, hashlib, glob, collections, sys
 DST = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HAND_MADE = ("firmware/rom/eprom-captured-", "tests/video/", "tests/memory/", "hardware/cards/video/docs/", "embedded/bus-tester/readback/", "embedded/sequencer-card/readback/", "tests/sequencer/", "tests/assembler/ledcount/", "tests/assembler/brur/", "tests/assembler/romcount/", "tests/assembler/romdiag/", "docs/system/waveforms/", "embedded/sequencer-card/sequencer4/", "hardware/DESIGN-REVIEW", "software/compiler/", "tests/compiler/", "software/ucemu/", "tests/ucemu/", "mk/", "os/", "tests/os/", "software/cfmodel.h", "firmware/abi/README.md")   # session artefacts / bench tests written in YACC1-D, not from YACCS      # session artefacts that are not from YACCS
+HAND_MADE = ("firmware/rom/eprom-captured-", "tests/video/", "tests/memory/", "hardware/cards/video/docs/", "embedded/bus-tester/readback/", "embedded/sequencer-card/readback/", "tests/sequencer/", "tests/assembler/ledcount/", "tests/assembler/brur/", "tests/assembler/romcount/", "tests/assembler/romdiag/", "docs/system/waveforms/", "embedded/sequencer-card/sequencer4/", "hardware/DESIGN-REVIEW", "software/compiler/", "tests/compiler/", "software/ucemu/", "tests/ucemu/", "mk/", "os/", "tests/os/", "software/cfmodel.h", "firmware/abi/README.md", "docs/cards/", "docs/programming/", "docs/procedures/", "docs/system/ARCHITECTURE.md", "docs/system/MICROCODE.md", "docs/system/BUS.md", "docs/DOC-PLAN.md")   # session artefacts / bench tests written in YACC1-D, not from YACCS      # session artefacts that are not from YACCS
 PATCHED = {l.split("\t")[0].strip() for l in open(os.path.join(DST, "tools/patched_files.txt")) if l.strip() and not l.startswith("#")}
 def h(p):
     m = hashlib.md5()
@@ -38,6 +38,7 @@ for root, dirs, files in os.walk(DST):
         elif rel == "hardware/NEWER-DESIGNS-vs-ACTIVE.txt": buckets["generated: design comparison report (tools/compare_eagle.py)"] += 1
         elif f == "SKIP.txt" and os.path.basename(root) == "pdf": buckets["mine: pdf/SKIP.txt lists"] += 1
         elif rel.startswith("hardware/cards/video/kicad/v1.1/"): buckets["mine: KiCad design masters (MASTER marker)"] += 1
+        elif rel.startswith("docs/bom/"): buckets["generated: bills of material (tools/gen_bom.py)"] += 1
         elif rel.startswith("docs/isa/"): buckets["generated: ISA timing diagrams (tools/ucode_wavedrom.py)"] += 1
         elif (rel.startswith("hardware/") and "/kicad/" in rel) or rel == "hardware/KICAD.md": buckets["generated: KiCad conversions (tools/eagle_to_kicad_all.py)"] += 1
         elif (f.endswith("-board.pdf") and os.path.basename(root) == "pdf") or rel == "hardware/BOARDS.md": buckets["generated: board PDFs (tools/brd_to_pdf.py)"] += 1

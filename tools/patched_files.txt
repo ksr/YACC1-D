@@ -36,3 +36,4 @@ software/assembler/yacc1.def	2026-09-22: BRUR \{regs} -> AD \1; P8=9 typo fixed 
 firmware/microcode/ucode-generator2/test.hex	2026-09-22: regenerated with BRUR at $AD, the H-2 fix ($A1 $A2 $AB $AC) and the H-1 fix ($07..$0F); 14 records differ from the image the sequencer EEPROM holds until it is reloaded
 firmware/microcode/ucode-generator2/test.hexz	2026-09-22: regenerated (loader format) with BRUR
 firmware/microcode/ucode-generator2/test.123	2026-09-22: regenerated (listing) with BRUR
+firmware/microcode/ucode-generator2/cache	2026-09-22: rewritten by tools/ucode_send.py --all (the loader's record of what the sequencer EEPROM holds = test.hex with BRUR + H-1/H-2)
