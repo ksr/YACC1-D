@@ -37,3 +37,4 @@ firmware/microcode/ucode-generator2/test.hex	2026-09-22: regenerated with BRUR a
 firmware/microcode/ucode-generator2/test.hexz	2026-09-22: regenerated (loader format) with BRUR
 firmware/microcode/ucode-generator2/test.123	2026-09-22: regenerated (listing) with BRUR
 firmware/microcode/ucode-generator2/cache	2026-09-22: rewritten by tools/ucode_send.py --all (the loader's record of what the sequencer EEPROM holds = test.hex with BRUR + H-1/H-2)
+firmware/microcode/ucode-generator2/accumulator.c	2026-09-23: aluOp() clears the ALU's SHIFT-OUT flip-flop (SHIFT_LOAD + -SR-LD) before every add/subtract (the carry latches CO/BO OR SHIFT-OUT; a stale shift-out corrupted multi-byte arithmetic on the machine)
