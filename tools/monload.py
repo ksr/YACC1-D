@@ -46,14 +46,17 @@ def records(path):
 
 
 class Link:
-    def __init__(self, port, baud):
+    def __init__(self, port, baud, drain=True):
         import serial
         self.s = serial.Serial(port, baud, timeout=0.05)
         self.seen = b""
+        self.drain = drain          # tcdrain after each character; off only for a pty read by this same process
+                                    # (tests/bench/run.py's self-test), where tcdrain blocks
 
     def write(self, data, delay):
         for ch in data:
-            self.s.write(bytes([ch])); self.s.flush()
+            self.s.write(bytes([ch]))
+            if self.drain: self.s.flush()
             if delay: time.sleep(delay / 1000.0)
 
     def wait_for(self, wanted, timeout):

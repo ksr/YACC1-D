@@ -35,6 +35,7 @@
  *   -s   the byte the I/O card's switches read as (default 0); -i 0|1 the level of the input-switch line that
  *        BRINH/BRINL test (default 0), -R 1|2 the index-register cards fitted (default 2; with 1, R4..R7 are absent:
  *        a read of them leaves the bus to its pull-ups = $FF, loads and counts are lost, as on the 2026-09-22 bench),
+ *        -E ADDR (hex) stops the run when an instruction is fetched from ADDR (e.g. the monitor's `stop` loop);
  *        -I N flips that line every N steps (a bench hand on the switch); -L report writes to the LED board, the TIL311 displays and the ON/OFF LED on
  *        stderr as they change; -l N stop after N steps
  * Console: the I/O card's UART (P0 = UARTCS|register, P1 = data) is stdin/stdout, as on the machine; reading with
@@ -162,7 +163,7 @@ static uint16_t tmp0, tmp1, branch, intvec;
 static int carry, shift_out, cond_latch, force_rom = 1, out_led, in_line, int_enabled, int_pending, halted;
 static int step;
 static uint8_t port[16];
-static int switches, show_leds; static unsigned long in_flip;
+static int switches, show_leds; static long exit_pc = -1; static unsigned long in_flip;
 
 /* the combinational state of a step (what the latches see at the next leading edge) */
 struct comb {
@@ -377,6 +378,7 @@ static void do_step(void) {
         ir = do_int ? 0xFF : (uint8_t)(prev.data & 0xFF);
         w = ucode[ir][step];                                   /* this step's word really came from the old record; the generator makes steps 0..5 identical in every record, so the new one serves */
         ninstr++; last_fetch_pc = prev.addr;
+        if (exit_pc >= 0 && last_fetch_pc == exit_pc) halted = 1;     /* -E: stop when execution reaches this address */
         if (trace) fprintf(stderr, "%04X %-6s($%02X) ACC=%02X TMP=%04X C=%d R1=%04X R2=%04X R3=%04X R4=%04X R5=%04X R6=%04X R7=%04X\n",
                            prev.addr, opname[ir] ? opname[ir] : "?", ir, acc, tmp0, carry, reg[1], reg[2], reg[3], reg[4], reg[5], reg[6], reg[7]);
     }
@@ -506,10 +508,11 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "-s") && i + 1 < argc) switches = (int)strtol(argv[++i], NULL, 0);
         else if (!strcmp(argv[i], "-i") && i + 1 < argc) in_line = (int)strtol(argv[++i], NULL, 0) & 1;
         else if (!strcmp(argv[i], "-L")) show_leds = 1;
+        else if (!strcmp(argv[i], "-E") && i + 1 < argc) exit_pc = strtol(argv[++i], NULL, 16);
         else if (!strcmp(argv[i], "-I") && i + 1 < argc) in_flip = strtoul(argv[++i], NULL, 0);
         else if (!strcmp(argv[i], "-R") && i + 1 < argc) { reg_cards = atoi(argv[++i]); if (reg_cards < 1 || reg_cards > 2) { fprintf(stderr, "y1ucemu: -R 1|2\n"); return 1; } }
         else if (!strcmp(argv[i], "-l") && i + 1 < argc) limit = strtoul(argv[++i], NULL, 0);
-        else { fprintf(stderr, "usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-i 0|1] [-I N] [-R 1|2] [-L] [-l N]\n"); return 1; }
+        else { fprintf(stderr, "usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-i 0|1] [-I N] [-R 1|2] [-L] [-E ADDR] [-l N]\n"); return 1; }
     }
     resolve_signals();
     load_opnames(exe_dir);
