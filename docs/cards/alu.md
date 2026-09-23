@@ -142,6 +142,14 @@ comparators, the XOR array and the zero detectors always see a level) and are th
   "Ic6 pin 10 - -ac-ld or ac-ld - added jumper - should be ac-ld". **To verify:** JP2 position — the photo shows the cap on
   the pair nearest the `-AC-LD` silk, which would clock the carry at the *trailing* edge of the strobe (still while the
   operand and function are held, so it works, but one step later than the accumulator).
+- **Found on the machine 2026-09-23: SHIFT-OUT is not gated off for add/subtract.** IC7A ORs `SHIFT-OUT` (IC9B, which
+  keeps the last bit shifted out until the next `SR-LD`) into the carry flip-flop's `D` for every add/sub/shift clock, so
+  a 1 left by an earlier shift became the carry of the next ADD/SUB. `tests/bench/diag/div.c` showed it (300-1000 =
+  $FE44, divisions after a hex print = $FFFF, 300*7 = $0A34); `software/ucemu` with the ALU modelled as drawn (now its
+  default; `-K` = the old model) reproduced every wrong value. Fixed in the microcode, not the card: `aluOp()`
+  (`firmware/microcode/ucode-generator2/accumulator.c`) parallel-loads the shift register before every add/subtract,
+  which clocks IC9B with 0 (IC32 selects 0 in load mode); six records change (ADDI, SUBI, ADDT, SUBT, ADDIC, ADDTC).
+  A card revision could AND `SHIFT-OUT` with the shift function instead.
 - `CO/BO` (IC1E) = `N$15` AND `N$10`, `N$15` = ADD/SUB active, `N$10` = IC27B = `N$1` XOR `SUB`, `N$1` = IC36 C4 (the
   adder's carry out): the carry for an add, the borrow (carry inverted) for a subtract, and 0 for any other function —
   the V3.2 change "Added gating so CO/BO is anded with -ADD/SUB so CO/BO only can go high during add/sub".

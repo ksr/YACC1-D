@@ -13,6 +13,19 @@
 
 void aluOp(int func) {
     setSignal("-ALU-FUNC");
+    /* YACC1-D 2026-09-23: clear the shift-out flip-flop before every add/subtract. The carry flip-flop IC9A latches
+       CO/BO OR SHIFT-OUT (IC7A) on every add/sub/shift AC-LD, so a 1 left in IC9B by an earlier shift set the carry
+       of the next add/subtract (found on the machine: 300-1000 gave $FE44, divisions after a puthex gave $FFFF;
+       tests/bench/diag/div.c). A parallel load of the shift register (SHIFT_LOAD, -SR-LD) clocks IC9B with D = 0
+       (IC32 selects 0 in load mode) and touches neither the accumulator nor the carry. Mode set one step before the
+       strobe, as shiftOp() does. */
+    if ((func & 7) == ALUADD || (func & 7) == ALUSUB) {
+        setAlu(SHIFT_LOAD);
+        writeCurrentLine();
+        setSignal("-SR-LD");
+        writeCurrentLine();
+        clearSignal("-SR-LD");
+    }
     setAlu(func);
     writeCurrentLine();
     setSignal("-AC-LD");

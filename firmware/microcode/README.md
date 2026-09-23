@@ -17,3 +17,6 @@
   `tests/ucemu/isa.asm`.
 - The v1 generator, its 32-step format and its signal table `yaccsignaldata.h` are in
   `archive/superseded-revisions/ucode-generator-v1/` (moved 2026-09-20); `software/disassembler/disasm2` decodes the v2 image.
+- **2026-09-23 (evening): `aluOp()` clears SHIFT-OUT before every add/subtract** (the carry fix found with
+  `tests/bench/diag/div.c` on the machine; `docs/cards/alu.md`). Records $B0 $B1 $B8 $B9 $E2 $E3 change (+2 steps each).
+  **To load**: `tools/ucode_send.py --all`, then `--boot-check`; until then the card holds the 2026-09-22 image.

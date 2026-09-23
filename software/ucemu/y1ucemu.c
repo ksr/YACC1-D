@@ -163,7 +163,7 @@ static uint16_t tmp0, tmp1, branch, intvec;
 static int carry, shift_out, cond_latch, force_rom = 1, out_led, in_line, int_enabled, int_pending, halted;
 static int step;
 static uint8_t port[16];
-static int switches, show_leds; static long exit_pc = -1; static unsigned long in_flip;
+static int switches, show_leds, stale_so = 1;   /* 2026-09-23: the ALU as built (CO/BO OR SHIFT-OUT); -K = the old model */ static long exit_pc = -1; static unsigned long in_flip;
 
 /* the combinational state of a step (what the latches see at the next leading edge) */
 struct comb {
@@ -391,7 +391,7 @@ static void do_step(void) {
     if (on(w, s_tmp_ld1)) tmp1 = prev.data;
     if (on(w, s_ac_ld)) {
         acc = prev.ac_input;
-        if (prev.fn_addsub) carry = prev.co_bo;                 /* IC9A: clocked with AC-LD for add/sub and shift functions */
+        if (prev.fn_addsub) carry = prev.co_bo | (stale_so ? shift_out : 0);   /* IC9A: clocked with AC-LD for add/sub and shift; -S: D = CO/BO OR SHIFT-OUT as the ALU V3.2 schematic draws it */
         else if (prev.fn_shift) carry = shift_out;
     }
     if (on(w, s_sr_ld)) {                                      /* 74LS194 pair, mode S1S0 = ALU1,ALU0; serial input by ALU3,ALU2 */
@@ -508,6 +508,8 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "-s") && i + 1 < argc) switches = (int)strtol(argv[++i], NULL, 0);
         else if (!strcmp(argv[i], "-i") && i + 1 < argc) in_line = (int)strtol(argv[++i], NULL, 0) & 1;
         else if (!strcmp(argv[i], "-L")) show_leds = 1;
+        else if (!strcmp(argv[i], "-S")) stale_so = 1;
+        else if (!strcmp(argv[i], "-K")) stale_so = 0;
         else if (!strcmp(argv[i], "-E") && i + 1 < argc) exit_pc = strtol(argv[++i], NULL, 16);
         else if (!strcmp(argv[i], "-I") && i + 1 < argc) in_flip = strtoul(argv[++i], NULL, 0);
         else if (!strcmp(argv[i], "-R") && i + 1 < argc) { reg_cards = atoi(argv[++i]); if (reg_cards < 1 || reg_cards > 2) { fprintf(stderr, "y1ucemu: -R 1|2\n"); return 1; } }

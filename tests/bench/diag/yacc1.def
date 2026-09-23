@@ -1,0 +1,197 @@
+yacc1 -> Native
+CLASS regs
+R0=0,R1=1,R2=2,R3=3,R4=4,R5=5,R6=6,R7=7,R8=8,R9=9
+CLASS ports
+P0=0,P1=1,P2=2,P3=3,P4=4,P5=5,P6=6,P7=7,P8=8,P9=9,PA=10,PB=11,PC=12,PD=13,PE=14,PF=15
+*
+ON
+01
+OFF
+02
+HALT
+03
+JSR \W
+04 hi(1) lo(1)
+RET
+05
+JSRUR \{regs}
+06 \1
+PUSHR \{regs}
+07 \1
+POPR \{regs}
+08 \1<4&f0
+PUSH
+09
+POP
+0A
+MVAT
+0B
+MVTA
+0C
+LDTI \B
+0D \1
+LDAI \B
+0E \1
+MOVRR \{regs},\{regs}
+0F |2<4|1
+MVIB \{regs},\B
+10|1 \2
+MVIW \{regs},\W
+18|1  hi(2) lo(2)
+MVRLA \{regs} 
+20|1
+MVRHA \{regs}
+28|1
+MVARL \{regs}
+30|1
+MVARH \{regs}
+38|1
+LDAVR \{regs}
+40|1
+STAVR \{regs}
+48|1
+INCR \{regs}
+50|1
+DECR \{regs}
+58|1
+OUTA \{ports}
+60|1
+OUTI \{ports},\B
+70|1 \2
+OUTVR \{ports},\{regs}
+80|1 \2
+INP \{ports}
+90|1
+BR \W
+A0 hi(1) lo(1)
+BRZ \W
+A1 hi(1) lo(1)
+BRNZ \W
+A2 hi(1) lo(1)
+BRINH \W
+A3 hi(1) lo(1)
+BRINL \W
+A4 hi(1) lo(1)
+BRC \W
+A6 hi(1) lo(1)
+BRLT \W
+A7  hi(1) lo(1)
+BREQ \W
+A8  hi(1) lo(1)
+BRGT \W
+A9  hi(1) lo(1)
+BRNEQ \W
+AA  hi(1) lo(1)
+BR16Z \W
+AB  hi(1) lo(1)
+BR16NZ \W
+AC  hi(1) lo(1)
+BRUR \{regs}
+AD \1
+BRDEV \W
+AF  hi(1) lo(1)
+ADDI \B
+B0 \1
+SUBI \B
+B1 \1
+ORI \B
+B2 \1
+ANDI \B
+B3 \1
+XORI \B
+B4 \1
+INVA
+B5
+SHL
+B6
+SHR
+B7
+ADDT
+B8
+SUBT
+B9
+ORT
+BA
+ANDT
+BB
+XORT
+BC
+RSHL
+BD
+RSHR
+BE
+PSHR
+BF
+LDTVR \{regs}
+C0|1
+STTVR \{regs}
+C8|1
+LDIVR \{regs},\B
+D0|1 \2
+BRVR \{regs}
+D8|1
+CSHL
+E0
+CSHR
+E1
+ADDIC \B
+E2 \1
+ADDTC
+E3
+LDA \W
+E4  hi(1) lo(1)
+STA \W
+E5  hi(1) lo(1)
+LDT \W
+E6  hi(1) lo(1)
+STT \W
+E7  hi(1) lo(1)
+STR \{regs},\W
+E8|1  hi(2) lo(2)
+LDR \{regs},\W
+F0|1  hi(2) lo(2)
+INTE
+FB
+INTD
+FC
+IRET
+FD
+IADDR \W
+FE  hi(1) lo(1)
+ORG     \W
+\O1
+END     \W
+\S1
+DB      HIGH \W
+hi(1)
+DB      \L
+\1
+DW      \W
+hi(1) lo(1)
+DW      \M
+\1
+DS      \W
+\B1
+EQU     \{regs}
+\E1
+.EQU     \{regs}
+\E1
+EQU     \W
+\E1
+.EQU     \W
+\E1
+equ     \W
+\E1
+.equ    \W
+\E1
+PUBLIC
+\P
+LIB PROC
+\R
+LIB ENDP
+\Q
+PUBLIC EQU
+\P\E1
+EXTERN
+\X
+*

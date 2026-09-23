@@ -188,6 +188,9 @@ card's `ALU0..2` (`CodeGen.h`: 0 DATA, 1 SUB, 2 AND, 3 OR, 4 XOR, 5 SHIFT, 6 ZER
 
 Notes:
 
+- **2026-09-23:** the carry of every ADD/SUB is now clean on the machine: the microcode clears the ALU's SHIFT-OUT
+  flip-flop first (it was ORed into the carry, so a 1 left by any earlier shift corrupted multi-byte arithmetic;
+  `docs/cards/alu.md` section 3.3). Before that fix, shifts before an add gave wrong high bytes on the machine only.
 - **Which carry values a program may rely on.** The flip-flop is clocked at every `-AC-LD` whose function is ADD, SUB
   or SHIFT, and loads `CO/BO OR SHIFT-OUT` (review 1.4). So on the hardware every shift and every subtract writes it,
   while the interpreter writes it only for `ADDI/ADDT/ADDIC/ADDTC/CSHL/CSHR` (`main.c`: `SUBI`, `SUBT`, `SHL`, `SHR`,

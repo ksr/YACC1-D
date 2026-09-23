@@ -230,8 +230,21 @@ def bench(port, av, only, logdir=LOGS, drain=True):
     baud = int(av[av.index("--baud") + 1]) if "--baud" in av else 38400
     link = ml.Link(port, baud, drain)
     os.makedirs(logdir, exist_ok=True)
-    log = open(os.path.join(logdir, "bench-%s.log" % time.strftime("%Y-%m-%d-%H%M")), "w", newline="")
+    log = open(os.path.join(logdir, "bench-%s.log" % time.strftime("%Y-%m-%d-%H%M")), "w", newline="", buffering=1)
     log.write("tests/bench on the machine, %s, port %s, %g ms/char\n" % (time.strftime("%Y-%m-%d %H:%M"), port, delay))
+    # 2026-09-23: first make sure the monitor answers. A CR at the prompt is the "continue" command, which after a
+    # reset (NOMODE) or a load (LOADMODE) does nothing but print the prompt again.
+    link.s.reset_input_buffer(); prompt = None
+    for attempt in range(3):
+        link.write(b"\r", 0)
+        prompt = link.wait_for([b">"], 3)
+        if prompt: break
+    if not prompt:
+        log.write("no '>' from the monitor after 3 CRs\n"); log.close()
+        print("no answer from the monitor on %s at %d baud: is the machine reset and at its '>' prompt, the cable on the"
+              " I/O card's DB9, nothing else holding the port?" % (port, baud))
+        return 0, 1
+    print("monitor answers on %s; loading at %g ms per character" % (port, delay)); sys.stdout.flush()
     passed = failed = 0
     for name in ORDER:
         if only and name not in only: continue
@@ -245,6 +258,7 @@ def bench(port, av, only, logdir=LOGS, drain=True):
                 if got != b"LOADED\r" and got != b"LOADED\n": err = "load: %s" % (got or b"no LOADED").decode()
                 break
             got = link.wait_for([b".", b"?", b"!"], 5)
+            sys.stdout.write("\r%-9s record %d/%d " % (name, n, len(recs))); sys.stdout.flush()
             if got != b".":
                 err = "load: record %d answered %s" % (n, got.decode() if got else "nothing"); link.write(b"\x1b", 0); break
         if not err:
@@ -264,7 +278,7 @@ def bench(port, av, only, logdir=LOGS, drain=True):
         log.write("\n==== %s: %s\n%s\n" % (name, "PASS" if not err else "FAIL " + err, link.seen.decode("latin1")))
         if err and err == "output differs":
             log.write("---- expected (microcode emulator) ----\n%s\n" % exp)
-        print("%-9s %s" % (name, "PASS" if not err else "FAIL  " + err)); sys.stdout.flush()
+        print("\r%-9s %s          " % (name, "PASS" if not err else "FAIL  " + err)); sys.stdout.flush()
         passed += not err; failed += bool(err)
         if err and err.startswith("load"): link.write(b"\x1b", 0); time.sleep(0.5)
     log.close()

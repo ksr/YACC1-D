@@ -246,6 +246,24 @@ tgt2:   LDAI 'U'
         OUTA P2
 dev:    LDAI 'D'                ; the microcode prints D only (BRDEV = BR)
         OUTA P2
+; 2026-09-23: a stale SHIFT-OUT must not reach the carry of a later add or subtract. The ALU's carry flip-flop
+; latches CO/BO OR SHIFT-OUT; the microcode clears SHIFT-OUT before every ADD/SUB (aluOp). Found on the machine.
+        LDAI 80H
+        SHL                     ; shifts a 1 out: SHIFT-OUT = 1, carry = 1
+        LDAI 1
+        LDTI 1
+        ADDT                    ; 1 + 1 = 2, no carry out: the carry must now be 0
+        LDAI 0
+        LDTI 0
+        ADDTC
+        OUTA P2                 ; 00 (the old microcode on the machine: 01)
+        LDAI 80H
+        SHL
+        LDAI 10H
+        ADDI 20H                ; no carry
+        LDAI 0
+        ADDIC 0
+        OUTA P2                 ; 00
         HALT
 sub:    LDAI 'B'
         RET
