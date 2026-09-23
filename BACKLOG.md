@@ -47,7 +47,10 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   operand-select pipeline bits; -REG-LD-LO/HI, -RESET, OUT from plain gate outputs). The v2.2 "CPU off" switch must cover these
   too, and bus-driver on the tester fights them whenever the logic card is fitted.
 - **HIGH, BOM: step counters and all 16 register counters are 74LS192 (BCD)** in schematic/board/BOM (`sequencer-logic` IC33/34,
-  `register` x16); the machine runs 32-step binary microcode, so 74LS193 must be fitted. Read a chip label; fix the design files.
+  `register` x16); the machine runs 32-step binary microcode, so 74LS193 must be fitted. (2026-09-23: the board photos in
+  `media/` read **SN74HC193N** at IC33/IC34 and on the register counters, and 74HC parts through much of the sequencer, ALU
+  and register cards, so the machine is right and the DESIGN FILES are wrong; `docs/cards/sequencer-logic.md` / `register.md`.
+  Still to do: confirm the markings on the second register card, then fix schematic/BOM.)
 - **HIGH (masked), memory v1.3: FORCE-ROM race** - IC12 (74LS74) is clocked by ADDR15·-VMA·-BUS-EN while the register card puts the
   address up ~40 ns after -VMA and the address bus floats high between cycles; masked since 2020 by asserting -VMA in EVERY
   microcode step (`main.c:103,115` "Hack prevent ROM mapping from triggering"), which removes -VMA from all memory chip selects.
