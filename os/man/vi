@@ -1,0 +1,65 @@
+NAME
+    vi - a minimal screen editor
+
+SYNOPSIS
+    vi name
+
+DESCRIPTION
+    A modal, vi-flavoured screen editor for a VT100/ANSI terminal on the
+    serial console (it positions the cursor with ANSI escapes and reads
+    keys raw, without echo). The file is a flat buffer of fixed-width
+    lines: up to 320 lines of up to 79 characters. A file that does not
+    exist starts as an empty buffer ("[new file]"). Longer lines, or
+    lines past the 320th, are cut when the file is read; the status row
+    then says [cut], and writing the buffer back writes the cut text.
+    Files are written with LF line ends. vi is /BIN/VI.
+
+    The screen is 24 x 80: 23 text rows (~ marks rows past the end of
+    the file) and a status row showing the mode, the file name, [+] when
+    there are unsaved changes, and one-off messages.
+
+NORMAL MODE
+        h j k l    move left / down / up / right (the arrow keys too)
+        0  $       start / end of line
+        G          last line
+        i a A      insert before / after the cursor / at end of line
+        o          open a new line below and insert there
+        x          delete the character under the cursor
+        dd         delete the line
+        u          undo the last change (one level: x, dd, o, or the
+                   text typed in one insert on one line)
+        /pat       search forward for the literal text pat (wraps once);
+                   an empty pattern repeats the last one
+        n          repeat the search
+        Ctrl-L     repaint the screen
+
+    Commands (type : then the command and Enter; Esc cancels):
+        :w         write the file
+        :w name    write the buffer to another file (the buffer keeps
+                   its own name, and [+] stays)
+        :wq  :x    write and quit (either may name a file: :x name)
+        :q         quit (refused while there are unsaved changes)
+        :q!        quit without saving
+
+INSERT MODE
+        Printable characters are inserted; Enter splits the line;
+        Backspace or DEL deletes to the left; Esc returns to NORMAL.
+        A line stops growing at 78 characters.
+
+END OF INPUT
+    Ctrl-D (end of console input) acts as Esc in INSERT mode and as :q
+    in NORMAL mode. Sixteen in a row abandon the edit without saving;
+    that only happens when the input is gone for good (a scripted run
+    on the emulators).
+
+    On the instruction-level emulator a q byte is read as end of input
+    (docs/programming/EMULATORS.md), so :q, :wq and text containing q
+    cannot be typed there: use :x to save and quit. The microcode
+    emulator and the machine have no such quirk.
+
+EXAMPLES
+    vi notes.txt
+    vi /README.TXT        then  jo  some text  Esc  :x /T.TXT
+
+SEE ALSO
+    cat
