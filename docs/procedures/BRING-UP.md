@@ -227,7 +227,7 @@ From `firmware/rom/README.md`, `firmware/abi/README.md`, and a byte comparison o
   (Intel hex) by `python3 tools/img2bin.py firmware/rom/shipped/rom firmware/rom/shipped/rom.bin --base 0xE000 --end 0x10000 --fill 0xFF --size 8192`.
 - `tools/verify_firmware.py` (or `make -C software/assembler check`) proves the image reproduces from `firmware/monitor/monitor.asm`
   and `firmware/basic/basic.asm` before you burn it.
-- **The chip in the machine still holds the 2021 build** (captured 2026-09-18 through the bus tester as
+- **The chip in the machine holds the 2026-09-23 build since that day** (burned by Ken, first boot the same afternoon). Before, it held the 2021 build (captured 2026-09-18 through the bus tester as
   `firmware/rom/eprom-captured-2026-09-18.bin`). The 2026 image differs in the monitor half only ($F021..$FFFF);
   the BASIC half is identical. The differences that matter: the `G` command is now `JSRUR R7` (a call; the program returns
   with `RET`) instead of `BRVR R7` (an indirect jump through the word at the address, so `G AAAA` never ran the code at AAAA);

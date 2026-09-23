@@ -88,7 +88,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   + verify 29 s instead of 156 s; sequencer3 deprecated)
 - (done 2026-09-23: **the monitor's `:` Intel-hex loader and `tools/monload.py`** — records answered `.`/`?`/`!`, $1000-$DFFF only,
   read-back verify, ESC abandons; host tool paces 3 ms/char and waits per record, `--go`, `--listen`, `--term`; tested on both
-  emulators and over a pty (`tests/monload/`); in the ROM image, NOT yet burned. The E-command scheme planned here was dropped.)
+  emulators and over a pty (`tests/monload/`); burned 2026-09-23 and the monitor boots on the machine. The E-command scheme planned here was dropped.)
 - Port of the P8X work (OS, monitor, BASIC, compilers) onto YACC1 — the reason this repo exists; not started.
 
 ## Verification still to do
