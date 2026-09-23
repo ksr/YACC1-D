@@ -145,16 +145,30 @@ class LibSym:
         sym = sparse(block)[0]
         if sfind(sym, "extends"):
             raise SystemExit("%s: derived symbols are not handled" % libid)
-        self.props = {}
+        self.props, self.just = {}, {}
         for p in sfind(sym, "property"):
             at = sfind(p, "at")[0]
             self.props[unq(p[1])] = (float(at[1]), float(at[2]), float(at[3]))
+            eff = sfind(p, "effects")
+            j = sfind(eff[0], "justify") if eff else []
+            self.just[unq(p[1])] = " ".join(j[0][1:]) if j else ""
         self.pins = collections.defaultdict(list)          # unit -> [pin dict]  (unit 0 = common to all units)
+        self.body = collections.defaultdict(list)          # unit -> body outline points (library coords, y up)
         for sub in sfind(sym, "symbol"):
             m = re.match(r'"(.*)_(\d+)_(\d+)"$', sub[1])
             unit, style = int(m.group(2)), int(m.group(3))
             if style > 1:
                 continue                                    # De Morgan alternates: same pins
+            for g in sub[2:]:
+                if not isinstance(g, list) or not g:
+                    continue
+                if g[0] in ("rectangle", "arc"):
+                    self.body[unit] += [(float(k[1]), float(k[2])) for k in g if isinstance(k, list) and k[0] in ("start", "mid", "end")]
+                elif g[0] in ("polyline", "bezier"):
+                    self.body[unit] += [(float(k[1]), float(k[2])) for k in sfind(sfind(g, "pts")[0], "xy")]
+                elif g[0] == "circle":
+                    c, r = sfind(g, "center")[0], float(sfind(g, "radius")[0][1])
+                    self.body[unit] += [(float(c[1]) - r, float(c[2]) - r), (float(c[1]) + r, float(c[2]) + r)]
             for p in sfind(sub, "pin"):
                 at = sfind(p, "at")[0]
                 self.pins[unit].append(dict(num=unq(sfind(p, "number")[0][1]), x=float(at[1]), y=float(at[2]),
@@ -163,6 +177,13 @@ class LibSym:
 
     def unit_pins(self, unit):
         return self.pins.get(0, []) + (self.pins.get(unit, []) if unit else [])
+
+    def unit_body(self, unit):
+        """(x0, y0, x1, y1) of the unit's graphics, library coords (y up), or None"""
+        pts = self.body.get(0, []) + (self.body.get(unit, []) if unit else [])
+        if not pts:
+            return None
+        return min(p[0] for p in pts), min(p[1] for p in pts), max(p[0] for p in pts), max(p[1] for p in pts)
 
 
 _libtext = {}
@@ -191,8 +212,8 @@ def write_local_libs():
     out = ['(kicad_symbol_lib', '\t(version 20251024)', '\t(generator "gen_cf")', '\t(generator_version "1.0")',
            '\t(symbol "FABC96R"', '\t\t(pin_names (offset 0.762))',
            '\t\t(exclude_from_sim no) (in_bom yes) (on_board yes)',
-           '\t\t(property "Reference" "X" (at 11.43 6.35 0) %s)' % eff,
-           '\t\t(property "Value" "FABC96R" (at 11.43 3.81 0) %s)' % eff,
+           '\t\t(property "Reference" "X" (at 8.89 6.35 0) %s)' % eff,
+           '\t\t(property "Value" "FABC96R" (at 8.89 3.81 0) %s)' % eff,
            '\t\t(property "Footprint" "%s:FABC96R" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))' % LIB,
            '\t\t(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))',
            '\t\t(property "Description" %s (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))'
@@ -201,12 +222,12 @@ def write_local_libs():
            '\t\t(property "ki_keywords" "DIN41612 bus YACC1" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))']
     for ui, row in enumerate("ABC", 1):
         out.append('\t\t(symbol "FABC96R_%d_1"' % ui)
-        out.append('\t\t\t(rectangle (start 0 2.54) (end 22.86 -81.28) (stroke (width 0.254) (type default)) '
+        out.append('\t\t\t(rectangle (start 0 2.54) (end 17.78 -81.28) (stroke (width 0.254) (type default)) '
                    '(fill (type background)))')
-        out.append('\t\t\t(text "row %s" (at 11.43 -83.82 0) %s)' % (row.lower(), eff))
+        out.append('\t\t\t(text "row %s" (at 8.89 -83.82 0) %s)' % (row.lower(), eff))
         for k in range(1, 33):
             pn = "%s%d" % (row, k)
-            out.append('\t\t\t(pin passive line (at 25.4 %s 180) (length 2.54) (name %s %s) (number %s %s))'
+            out.append('\t\t\t(pin passive line (at 22.86 %s 180) (length 5.08) (name %s %s) (number %s %s))'
                        % (f(-(k - 1) * G), q(names[pn]), eff, q(pn), eff))
         out.append('\t\t)')
     out += ['\t\t(embedded_fonts no)', '\t)', ')', '']
@@ -314,9 +335,44 @@ class Sheet:
             % (q(libid), f(x), f(y), rot, uid, q(ref), f(x), f(y), q(value), f(x + ox), f(y + oy), fa, f(x), f(y),
                f(x), f(y), U("pp", ref), PROJ, ROOT_UUID, q(ref)))
 
-    def part(self, ref, unit, x, y, rot=0, stub=STUB, fields=None, skip=()):
+    @staticmethod
+    def auto_fields(s, unit, rot, pins):
+        """Reference/Value positions (sheet offsets + justify) that keep the text off the symbol body, for symbols whose
+        library fields sit inside the body (KiCad's 74xx gates) or are drawn rotated (Device:R/C/LED; this sheet draws
+        every field horizontal): pins only above/below the body -> both fields to its right, one line each side of the
+        centre; otherwise Reference above the body and Value below it, left-aligned with the body. The field angle is
+        written as (360 - rot), so the justify below acts in sheet terms."""
+        b = s.unit_body(unit)
+        if b is None:
+            return {}
+        corners = [rot_pt(u, -v, rot) for u in (b[0], b[2]) for v in (b[1], b[3])]
+        x0, x1 = min(c[0] for c in corners), max(c[0] for c in corners)
+        y0, y1 = min(c[1] for c in corners), max(c[1] for c in corners)       # sheet offsets, y down
+        out = {}
+        for key in ("Reference", "Value"):
+            lx, ly, la = s.props.get(key, (0, 0, 0))
+            inside = b[0] - 0.2 <= lx <= b[2] + 0.2 and b[1] - 0.2 <= ly <= b[3] + 0.2
+            if not inside and la % 180 == (rot % 180):
+                continue                                    # library placement is already clear and horizontal
+            out[key] = None
+        if not out:
+            return {}
+        dirs = set()
+        for p in pins:
+            dx, dy = {0: (1, 0), 90: (0, -1), 180: (-1, 0), 270: (0, 1)}[(p["ang"] + 180) % 360]
+            dirs.add(rot_pt(dx, dy, rot))
+        side = bool(dirs) and all(d[0] == 0 for d in dirs)
+        if side:
+            cy = (y0 + y1) / 2
+            place = {"Reference": (x1 + 0.9, cy - 0.3, "left bottom"), "Value": (x1 + 0.9, cy + 0.3, "left top")}
+        else:
+            place = {"Reference": (x0, y0 - 0.6, "left bottom"), "Value": (x0, y1 + 0.6, "left top")}
+        return {k: place[k] for k in out}
+
+    def part(self, ref, unit, x, y, rot=0, stub=STUB, fields=None, skip=(), pstub=None):
         """place one unit of a PARTS symbol and draw every one of its pins: stub+label, stub+power symbol, or NC.
-        fields: {'Reference': (dx, dy), 'Value': (dx, dy)} overrides of the property offsets (sheet mm)."""
+        fields: {'Reference': (dx, dy[, justify]), 'Value': ...} overrides of the property offsets (sheet mm); fields not
+        given use the library position, or auto_fields() where that would put the text on the body."""
         value, symid, fpid, note = N.PARTS[ref]
         libid = SYM_SUB.get(symid, symid)
         s = self.lib(libid)
@@ -327,15 +383,22 @@ class Sheet:
         self.placed[ref].add(unit)
         pins = s.unit_pins(unit)
         props = []
+        auto = self.auto_fields(s, unit, rot, pins)
         for key, val, hide in (("Reference", ref, False), ("Value", value, False), ("Footprint", fpid, True),
                                ("Datasheet", "", True), ("Description", note, True)):
+            just = ""
             if fields and key in fields:
-                px, py = fields[key]
+                px, py = fields[key][:2]
+                just = fields[key][2] if len(fields[key]) > 2 else ""
+            elif key in auto:
+                px, py, just = auto[key]
             else:
                 lx, ly, _ = s.props.get(key, (0, 0, 0))
                 px, py = rot_pt(lx, -ly, rot)
-            props.append('\t\t(property "%s" %s (at %s %s %d) (effects (font (size 1.27 1.27))%s))'
-                         % (key, q(val), f(x + px), f(y + py), (360 - rot) % 360, " (hide yes)" if hide else ""))
+                just = s.just.get(key, "") if rot == 0 else ""   # the library's own justify holds in its own frame
+            props.append('\t\t(property "%s" %s (at %s %s %d) (effects (font (size 1.27 1.27))%s%s))'
+                         % (key, q(val), f(x + px), f(y + py), (360 - rot) % 360,
+                            (" (justify %s)" % just) if just else "", " (hide yes)" if hide else ""))
         self.out.append(
             '\t(symbol (lib_id %s) (at %s %s %d) (unit %d) (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no) '
             '(uuid "%s")\n%s\n%s\n\t\t(instances (project "%s" (path "/%s" (reference %s) (unit %d))))\n\t)'
@@ -360,7 +423,8 @@ class Sheet:
                     self.noconn(wx, wy)
                     continue
                 raise SystemExit("schematic: %s.%s is neither on a net nor a no-connect" % key)
-            ex, ey = wx + dx * stub, wy + dy * stub
+            st = pstub if (pstub and net in POWER_NETS) else stub
+            ex, ey = wx + dx * st, wy + dy * st
             self.wire(wx, wy, ex, ey)
             d = dir_name(dx, dy)
             if net in POWER_NETS:
@@ -391,10 +455,10 @@ def gx(n):
 def build_schematic():
     S = Sheet()
     # --- bus connector: three rows side by side, top left --------------------------------------------------------
-    S.box(gx(4), gx(11), gx(57), gx(52.5), "BUS  X1  DIN 41612 (YACC1 V3.2)")
+    S.box(gx(5), gx(11), gx(57), gx(52.5), "BUS  X1  DIN 41612 (YACC1 V3.2)")
     for i, u in enumerate((1, 2, 3)):
-        S.part("X1", u, gx(6 + 17 * i), gx(16), fields={"Reference": (11.43, -5.08), "Value": (11.43, -3.0)})
-    S.text(gx(5), gx(50), "Unused bus pins carry no-connect flags. The card uses DATA0-7, IO-ADDR0-3, -IO-RD,\n"
+        S.part("X1", u, gx(6 + 17 * i), gx(16), fields={"Reference": (8.89, -5.6), "Value": (8.89, -3.6)})
+    S.text(gx(5.5), gx(50), "Unused bus pins carry no-connect flags. The card uses DATA0-7, IO-ADDR0-3, -IO-RD,\n"
            "-IO-WR, -RESET and the six VCC / six GND pins.", size=1.27)
 
     # --- decode + strobe gating ------------------------------------------------------------------------------------
@@ -406,8 +470,8 @@ def build_schematic():
            "U2 gate 2: CF -IOR\nU2 gate 3: CF -IOW\nU2 gate 4: unused", size=1.27)
 
     # --- latch + CF reset ------------------------------------------------------------------------------------------
-    S.box(gx(58), gx(43), gx(105), gx(66), "P8 LATCH: DA0-2 + CF RESET")
-    S.part("U3", 1, gx(72), gx(54))
+    S.box(gx(58), gx(43), gx(105), gx(68), "P8 LATCH: DA0-2 + CF RESET")
+    S.part("U3", 1, gx(72), gx(56))          # low enough that its VCC arrow clears the group title
     S.part("U4", 2, gx(95), gx(52))
     S.text(gx(86), gx(57), "U4 gate 2: -CFRESET =\n-RESET AND -SRST\n(bus reset or latch bit 3)", size=1.27)
 
@@ -421,13 +485,14 @@ def build_schematic():
 
     # --- IDE header, pull-ups, adapter power -----------------------------------------------------------------------
     S.box(gx(132), gx(5), gx(160.5), gx(63), "IDE HEADER J1 (CF-TO-IDE ADAPTER)")
-    S.part("J1", 1, gx(142), gx(18), fields={"Reference": (-1.27, -27.94), "Value": (3.81, -27.94)})
+    S.part("J1", 1, gx(142), gx(18), fields={"Reference": (-1.27, -27.94), "Value": (3.81, -27.94)},
+           pstub=G)   # short power stubs: a sideways ground clears the label on the next pin (39 -DASP under 37 GND)
     S.part("RN1", 1, gx(142), gx(37))
     for i, r in enumerate(("R1", "R2", "R3", "R4")):
-        S.part(r, 1, gx(136 + 3 * i), gx(50), fields={"Reference": (1.9, -1.0), "Value": (1.9, 1.3)})
+        S.part(r, 1, gx(136 + 3 * i), gx(50))
     S.part("JP1", 1, gx(155), gx(47))
     S.part("J2", 1, gx(155), gx(55))
-    S.part("C6", 1, gx(158.5), gx(56), fields={"Reference": (2.4, -1.2), "Value": (2.4, 1.4)})
+    S.part("C6", 1, gx(157.5), gx(56))
     S.text(gx(133), gx(59), "CSEL = GND (master)\n-CS0 = GND, -CS1 = VCC", size=1.27)
 
     # --- LEDs (right, as on the board) -------------------------------------------------------------------------------
@@ -435,16 +500,16 @@ def build_schematic():
     for i, (r, led, cap) in enumerate((("R7", "LED1", "PWR"), ("R5", "LED2", "ACT: any P9 access"),
                                        ("R6", "LED3", "DASP: CF busy"))):
         x = gx(115 + 16 * i)
-        S.part(r, 1, x, gx(73), fields={"Reference": (1.9, -1.0), "Value": (1.9, 1.3)})
-        S.part(led, 1, x, gx(80), rot=90, fields={"Reference": (4.6, -1.0), "Value": (4.6, 1.3)})
+        S.part(r, 1, x, gx(73))
+        S.part(led, 1, x, gx(80), rot=90)
         S.text(x - gx(3), gx(90), cap, size=1.27)
 
     # --- power + decoupling ------------------------------------------------------------------------------------------
-    S.box(gx(4), gx(54), gx(57), gx(76), "POWER + DECOUPLING (one 100 nF per IC, at its VCC pin)")
+    S.box(gx(5), gx(54), gx(57), gx(76), "POWER + DECOUPLING (one 100 nF per IC, at its VCC pin)")
     for i, c in enumerate(("C1", "C2", "C3", "C4", "C5")):
-        S.part(c, 1, gx(8 + 5 * i), gx(65), fields={"Reference": (1.9, -1.0), "Value": (1.9, 1.3)})
+        S.part(c, 1, gx(8 + 5 * i), gx(65))
     S.part("U2", 5, gx(35), gx(65))
-    S.part("U4", 5, gx(42), gx(65))
+    S.part("U4", 5, gx(43), gx(65))
     for kind, y in (("VCC", gx(61)), ("GND", gx(69))):
         S.wire(gx(48), y, gx(52), y)
         S.power(kind, gx(48), y, "U" if kind == "VCC" else "D")
@@ -452,8 +517,8 @@ def build_schematic():
     S.text(gx(46), gx(71.5), "PWR_FLAGs: the bus\nsupplies VCC and GND", size=1.27)
 
     # --- notes -------------------------------------------------------------------------------------------------------
-    S.box(gx(4), gx(78), gx(105), gx(112), "DESIGN NOTES")
-    S.text(gx(5), gx(81), "\n".join([
+    S.box(gx(5), gx(78), gx(105), gx(112), "DESIGN NOTES")
+    S.text(gx(5.5), gx(81), "\n".join([
         "1. Two I/O ports. P8 (write): 74LS175 latch U3 - bits 0-2 = the ATA task-file register (CF DA0-2), bit 3 = CF reset",
         "   (1 = held in reset). P9 (read/write): the selected ATA register, 8-bit True IDE, through the 74LS245 U5.",
         "2. Decode: 74LS138 U1 on IO-ADDR0-2, enabled by IO-ADDR3 (Y0 = port 8, Y1 = port 9). 74LS32 U2 ORs each port select",

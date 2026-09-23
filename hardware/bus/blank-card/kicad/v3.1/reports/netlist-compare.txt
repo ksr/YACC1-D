@@ -1,3 +1,4 @@
 schematic: 3 components, 3 multi-pin nets; board: 3 multi-pin nets
 identical net groups: 3 of 3
+  same connectivity, different net name: [('Net-(PWR0-PadA)', 'N$11')]
 RESULT: MATCH

@@ -8,7 +8,7 @@
 		(at -5.2578 2.54 90)
 		(unlocked yes)
 		(layer "F.SilkS")
-		(uuid "6d093ece-ae1b-4087-9a48-bfd2eb05905b")
+		(uuid "38e5e115-f74e-494c-8417-ed83445a6355")
 		(effects
 			(font
 				(size 1.61798 1.61798)
@@ -21,7 +21,7 @@
 		(at 7.239 5.08 90)
 		(unlocked yes)
 		(layer "F.Fab")
-		(uuid "d1d22e81-d28d-4691-8c31-a7644a4e9f0f")
+		(uuid "e935d9be-7762-46a8-a489-6b3391fe6cea")
 		(effects
 			(font
 				(size 1.61798 1.61798)
@@ -35,7 +35,7 @@
 		(unlocked yes)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "c4fb45c4-e1c1-4b15-a304-f0d329b177e7")
+		(uuid "3cc016f8-33f2-4f15-a9e5-98b77dcaeac5")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -47,7 +47,7 @@
 		(unlocked yes)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "d37d227f-a067-43e0-847d-73c9c4c9de96")
+		(uuid "796c73da-7ceb-4efa-a6ce-cdd8e51e3773")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -63,7 +63,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "c3ec4a6c-20e2-45db-b2f9-2ef02995475f")
+		(uuid "44ef2d37-9cf6-460c-827f-443a1624f9af")
 	)
 	(fp_line
 		(start -5.08 -2.54)
@@ -73,7 +73,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "32d5a08c-7bb0-4fc7-bb8f-fb1c63c6834b")
+		(uuid "97e838cd-3bda-4e63-9180-37b5bdd7864e")
 	)
 	(fp_line
 		(start -5.08 0.635)
@@ -83,7 +83,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "d4f526b1-8c4a-41e8-86f0-83d3f09d66a7")
+		(uuid "e9e180c7-1a39-42de-9dc3-016800e286ca")
 	)
 	(fp_line
 		(start 5.08 2.54)
@@ -93,7 +93,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "d36fc73c-5700-4599-bd0b-350938777324")
+		(uuid "3b8abf75-93ea-4de3-9ca6-eeb37de2ee53")
 	)
 	(fp_line
 		(start 5.08 2.54)
@@ -103,7 +103,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "d4424088-28a0-41b0-9fdc-6c188d61a208")
+		(uuid "c59b82bf-0f6c-4233-a319-e5ede12c0d6e")
 	)
 	(fp_arc
 		(start -5.08 -0.635)
@@ -114,7 +114,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "98bc02a7-798e-4c17-8bf0-e30aafd92e9f")
+		(uuid "de1d05b1-8d3d-4ab1-9e97-0c508a88afa5")
 	)
 	(pad "1" thru_hole oval
 		(at -3.81 3.81 90)
@@ -124,7 +124,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "97f239c7-d7e6-4f6e-898f-bdb347a39053")
+		(uuid "dff54748-2e40-4a3a-9694-488e39c00183")
 	)
 	(pad "2" thru_hole oval
 		(at -1.27 3.81 90)
@@ -134,7 +134,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "0e1adf44-038a-4dd4-bd0c-5ee280df5da4")
+		(uuid "224928a0-eee7-49fd-85c3-e524ee99dfd4")
 	)
 	(pad "3" thru_hole oval
 		(at 1.27 3.81 90)
@@ -144,7 +144,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "3d0a7f28-a648-47e5-845b-60609dbe0f13")
+		(uuid "5716b5ac-86c3-4c46-926a-242100215d08")
 	)
 	(pad "4" thru_hole oval
 		(at 3.81 3.81 90)
@@ -154,7 +154,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "d9db71c3-9b56-482a-bf41-362123600cc7")
+		(uuid "54f65ea6-c3a5-4d72-b178-eeefda33c8fe")
 	)
 	(pad "5" thru_hole oval
 		(at 3.81 -3.81 90)
@@ -164,7 +164,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "da3891a4-6805-496c-877b-be026b18b3b1")
+		(uuid "de197d2e-4112-46bf-93d2-bd74fdc9af97")
 	)
 	(pad "6" thru_hole oval
 		(at 1.27 -3.81 90)
@@ -174,7 +174,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "b5270f71-7f8b-43a4-b4c7-9f9f7b644e93")
+		(uuid "14e398f7-9db4-4c19-b501-5c4b82e2454c")
 	)
 	(pad "7" thru_hole oval
 		(at -1.27 -3.81 90)
@@ -184,7 +184,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "f5d03f8c-e765-45bf-920e-634e9e8d69ff")
+		(uuid "cb648388-0f49-4377-8b75-2bef1bef9dc1")
 	)
 	(pad "8" thru_hole oval
 		(at -3.81 -3.81 90)
@@ -194,7 +194,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "aabd6ef0-8600-423a-bbb3-34f029f163a4")
+		(uuid "e6d6262a-218e-4d82-8936-333d51b166c0")
 	)
 	(embedded_fonts no)
 )

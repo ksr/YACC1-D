@@ -2,7 +2,7 @@
 	(version "E")
 	(design
 		(source "/Users/ksr77/Developer/YACC1-D/hardware/cards/alu/kicad/deprecated/v3.1-buried-vias/alu-v3.1-buried-vias.kicad_sch")
-		(date "2026-09-20T21:34:04")
+		(date "2026-09-23T17:37:22")
 		(tool "Eeschema 10.0.6")
 		(sheet
 			(number "1")
@@ -3271,6 +3271,8 @@
 			(footprint "alu-v3.1-buried-vias-eagle:RN-9")
 			(fields
 				(field
+					(name "Eagle name") "RN1_")
+				(field
 					(name "Footprint") "alu-v3.1-buried-vias-eagle:RN-9")
 				(field
 					(name "Datasheet")
@@ -3285,6 +3287,10 @@
 				(description "Eagle resistor-net:RNX8")
 			)
 			(property
+				(name "Eagle name")
+				(value "RN1-8")
+			)
+			(property
 				(name "Sheetname")
 				(value "Sheet 2")
 			)
@@ -3296,10 +3302,10 @@
 				(names "/Sheet 2/")
 				(tstamps "/d95d306c-7cff-cd56-f9d4-04c5c2831594/")
 			)
-			(tstamps "72b235b4-7419-0106-aaa5-1c953a296c9a" "a8c6125f-4e96-b3a5-59c1-ac1e17d12ebe"
-				"ab8aff4f-ecd8-bfec-3567-51779e5a6f56" "588b201b-1148-54ed-1006-485ce7a989f5"
-				"31adeda3-b9bc-d196-86e4-7943e576ee7e" "bd4bb02e-be39-3bc0-a8dd-9931514a3522"
-				"830c35c4-5701-f94c-5da0-d93545a0b00d" "7aa8adfe-1cd7-8689-ab0f-9a64acc742b6"
+			(tstamps "bd4bb02e-be39-3bc0-a8dd-9931514a3522" "a8c6125f-4e96-b3a5-59c1-ac1e17d12ebe"
+				"72b235b4-7419-0106-aaa5-1c953a296c9a" "588b201b-1148-54ed-1006-485ce7a989f5"
+				"7aa8adfe-1cd7-8689-ab0f-9a64acc742b6" "830c35c4-5701-f94c-5da0-d93545a0b00d"
+				"ab8aff4f-ecd8-bfec-3567-51779e5a6f56" "31adeda3-b9bc-d196-86e4-7943e576ee7e"
 				"0d187e6e-5568-c69c-fbf2-2f407a5542d1"
 			)
 			(units
@@ -3383,6 +3389,8 @@
 			(footprint "alu-v3.1-buried-vias-eagle:RN-9")
 			(fields
 				(field
+					(name "Eagle name") "RN2-2")
+				(field
 					(name "Footprint") "alu-v3.1-buried-vias-eagle:RN-9")
 				(field
 					(name "Datasheet")
@@ -3397,6 +3405,10 @@
 				(description "Eagle resistor-net:RNX8")
 			)
 			(property
+				(name "Eagle name")
+				(value "RN2_")
+			)
+			(property
 				(name "Sheetname")
 				(value "Sheet 2")
 			)
@@ -3408,10 +3420,10 @@
 				(names "/Sheet 2/")
 				(tstamps "/d95d306c-7cff-cd56-f9d4-04c5c2831594/")
 			)
-			(tstamps "9fdff464-e59c-3c9c-9067-745b40ecb039" "d093af00-845a-6f2c-447b-f36dc9673aaf"
-				"fd409499-42ae-8588-809e-c8027955f274" "9b008997-88fd-ff13-fa64-774c4ebfa96e"
-				"e2cef6a7-6e25-e4c8-aa8f-0ee741d41d50" "41f81aa8-d667-8698-9782-1954a6dffe3f"
-				"2b7b37a9-0493-ae10-9453-b5db99b2a120" "283e480a-4042-0e23-e441-835d61877267"
+			(tstamps "41f81aa8-d667-8698-9782-1954a6dffe3f" "2b7b37a9-0493-ae10-9453-b5db99b2a120"
+				"283e480a-4042-0e23-e441-835d61877267" "e2cef6a7-6e25-e4c8-aa8f-0ee741d41d50"
+				"fd409499-42ae-8588-809e-c8027955f274" "9fdff464-e59c-3c9c-9067-745b40ecb039"
+				"9b008997-88fd-ff13-fa64-774c4ebfa96e" "d093af00-845a-6f2c-447b-f36dc9673aaf"
 				"17eb1ece-7abc-6ed3-ab59-95ebe1fee7d4"
 			)
 			(units
@@ -3942,7 +3954,7 @@
 				(names "/Sheet 4/")
 				(tstamps "/f7eab7ac-c629-5d10-9166-07c51c2fae48/")
 			)
-			(tstamps "f74e34c5-f593-a5cb-28ec-4e229f738a02" "e5d6535f-456a-dbf1-2b43-1c40b8cf9042"
+			(tstamps "e5d6535f-456a-dbf1-2b43-1c40b8cf9042" "f74e34c5-f593-a5cb-28ec-4e229f738a02"
 				"ad0f3364-6591-ffc2-0887-3ae865e07732" "3c5a1f47-6f29-0c50-4ae3-44450353836e"
 			)
 			(units
@@ -4059,8 +4071,8 @@
 				(names "/Sheet 4/")
 				(tstamps "/f7eab7ac-c629-5d10-9166-07c51c2fae48/")
 			)
-			(tstamps "b6ff9d01-68f7-11f2-56ac-bd9d0946ddcd" "e2bdb3d7-e5c3-052f-2ce2-eef28e6a4dec"
-				"c4a63d7b-10e7-3b82-3e02-f3a450bd1b75" "38779fba-34b2-4cc1-8317-b6d8c617d3aa"
+			(tstamps "e2bdb3d7-e5c3-052f-2ce2-eef28e6a4dec" "c4a63d7b-10e7-3b82-3e02-f3a450bd1b75"
+				"b6ff9d01-68f7-11f2-56ac-bd9d0946ddcd" "38779fba-34b2-4cc1-8317-b6d8c617d3aa"
 			)
 			(units
 				(unit
@@ -4743,8 +4755,8 @@
 				(names "/Sheet 4/")
 				(tstamps "/f7eab7ac-c629-5d10-9166-07c51c2fae48/")
 			)
-			(tstamps "ab4d9429-a6d3-8455-7bd6-323522321de5" "60027d80-2892-4f84-d53b-39e9e616a9a9"
-				"7aabc97f-8973-552e-1024-fec79a7a4825" "5b1c0585-df58-bc53-5963-2f8f204ae028"
+			(tstamps "7aabc97f-8973-552e-1024-fec79a7a4825" "ab4d9429-a6d3-8455-7bd6-323522321de5"
+				"60027d80-2892-4f84-d53b-39e9e616a9a9" "5b1c0585-df58-bc53-5963-2f8f204ae028"
 			)
 			(units
 				(unit
@@ -5491,6 +5503,8 @@
 			(footprint "alu-v3.1-buried-vias-eagle:DIL14")
 			(fields
 				(field
+					(name "Eagle name") "V1/-UB")
+				(field
 					(name "Footprint") "alu-v3.1-buried-vias-eagle:DIL14")
 				(field
 					(name "Datasheet")
@@ -5505,6 +5519,10 @@
 				(description "Eagle 74ttl-din:74*4078")
 			)
 			(property
+				(name "Eagle name")
+				(value "V1/+UB")
+			)
+			(property
 				(name "Sheetname")
 				(value "Sheet 5")
 			)
@@ -5516,7 +5534,7 @@
 				(names "/Sheet 5/")
 				(tstamps "/a984e58c-fa06-c819-8800-bb70162e1d7b/")
 			)
-			(tstamps "56cbd843-659a-d255-513d-8e516203d66b" "ccc808aa-6b4d-fc94-0153-8629aaf10741"
+			(tstamps "ccc808aa-6b4d-fc94-0153-8629aaf10741" "56cbd843-659a-d255-513d-8e516203d66b"
 				"0a10d777-71b5-d1de-8f69-56680a34a968"
 			)
 			(units
@@ -5579,6 +5597,8 @@
 			(footprint "alu-v3.1-buried-vias-eagle:DIL14")
 			(fields
 				(field
+					(name "Eagle name") "V2/+UB")
+				(field
 					(name "Footprint") "alu-v3.1-buried-vias-eagle:DIL14")
 				(field
 					(name "Datasheet")
@@ -5591,6 +5611,10 @@
 				(lib "alu-v3.1-buried-vias-eagle")
 				(part "74ttl-din_74x4078_N")
 				(description "Eagle 74ttl-din:74*4078")
+			)
+			(property
+				(name "Eagle name")
+				(value "V2/-UB")
 			)
 			(property
 				(name "Sheetname")
@@ -6155,7 +6179,7 @@
 				(names "/Sheet 7/")
 				(tstamps "/95251a85-fbe2-3165-e5df-ebcc77316187/")
 			)
-			(tstamps "630d8d5b-c9af-2c62-9cb6-9ce32dc4e433" "7c438c7e-7394-6d4d-07b8-9bae0a16ed53"
+			(tstamps "7c438c7e-7394-6d4d-07b8-9bae0a16ed53" "630d8d5b-c9af-2c62-9cb6-9ce32dc4e433"
 				"c12cd4e2-644c-ef2c-51aa-6cf897fadbae" "60e0f208-9500-754d-7885-eb080acc1763"
 			)
 			(units
@@ -6272,8 +6296,8 @@
 				(names "/Sheet 7/")
 				(tstamps "/95251a85-fbe2-3165-e5df-ebcc77316187/")
 			)
-			(tstamps "45371c72-f045-24c4-7280-40fa18cec6de" "2e12ccc5-2f59-b688-a2c1-a887d9c690b9"
-				"04ef5570-38ea-352f-594a-3ce49c238365" "01a0ee62-5dd5-0bf5-8972-7700400c5dc0"
+			(tstamps "45371c72-f045-24c4-7280-40fa18cec6de" "04ef5570-38ea-352f-594a-3ce49c238365"
+				"2e12ccc5-2f59-b688-a2c1-a887d9c690b9" "01a0ee62-5dd5-0bf5-8972-7700400c5dc0"
 			)
 			(units
 				(unit
@@ -6813,6 +6837,8 @@
 			(footprint "alu-v3.1-buried-vias-eagle:FABC96R")
 			(fields
 				(field
+					(name "Eagle name") "X1-A1")
+				(field
 					(name "Footprint") "alu-v3.1-buried-vias-eagle:FABC96R")
 				(field
 					(name "Datasheet")
@@ -6827,6 +6853,10 @@
 				(description "Eagle con-vg:FABC96R")
 			)
 			(property
+				(name "Eagle name")
+				(value "X1-B14")
+			)
+			(property
 				(name "Sheetname")
 				(value "Sheet 9")
 			)
@@ -6838,54 +6868,54 @@
 				(names "/Sheet 9/")
 				(tstamps "/98d6ad76-a4c7-a442-18dc-20e83f88d700/")
 			)
-			(tstamps "b0d293df-e361-117d-ee2e-e93a5fc9e9f6" "a248f847-bc5f-b31a-5dbd-d7014516e87a"
-				"73a701cf-0998-cbf4-ee75-ff6a3b1f0b60" "509d08ed-f0ad-f179-9ff4-ffb7e5cfdf6a"
-				"6656fcb8-e5ad-7716-0e6f-7826209ca1b7" "bb54c107-e31b-690a-6cab-b9c5a3fee5c9"
-				"f249dd5b-f019-9433-f8f3-37899667185e" "acd294a9-49a2-66b9-f6ce-45e46e78a0f0"
-				"802f021a-7738-ad4f-cbce-9aaf9f34179d" "20fd57b8-8b39-a4e2-b754-bb9bd6959d70"
-				"e862e0a1-2573-a6eb-9390-d2dda94b0100" "bb8b6bb1-54a7-6f43-2b0f-2922a1849d62"
-				"c95fa5fb-e896-f945-cb4e-4e729ca5b3aa" "d83f4286-a648-6702-9e45-8ea4f629b42b"
-				"346c4ee7-4ee5-d294-2bfb-abc7dcdba2c1" "32686685-ebc4-5b19-9a30-7f996a765a5e"
-				"17f3bd52-3472-42fb-d51f-677439d62f86" "f8a617b9-2c81-8421-17f3-8fe0175b86eb"
-				"2812c36e-af32-0901-d91c-f5ee12bc6ba3" "a1db1907-6a18-ca04-1828-c9a7a0658df9"
-				"d4138019-b8a3-d15b-ad0e-08ace1792ada" "e6635692-fc12-15e1-1220-68588c2c517a"
-				"b4421df9-6337-4154-840b-5b6e33380534" "a46925e4-5128-0745-4655-c7eb95a3e7a7"
-				"7bf3caae-419e-1da3-8e4e-9f358676a79c" "35930265-9b39-0596-7269-cd627fa8f2c9"
-				"2ff9b07f-9aa9-3c0b-f433-1c7ac4699295" "6b699c9b-dd71-b910-6f65-c1f230a78553"
-				"52055feb-4e60-0f95-7825-909d4d1a30e3" "a6910c57-edca-27ed-533a-1bbc84bc4327"
-				"8670c09e-243c-b6a4-9699-e2f484f59a1e" "97a6f564-cf64-4e4f-8f95-abbc94f25725"
-				"940e8e01-0e86-baab-7e05-cc2f0a360a3c" "682c21cd-b3bd-ad6f-dccf-9e9ea08c9935"
-				"db84e12c-1109-9510-817b-a4828b494396" "ae3fc75f-e7c7-f302-798b-cbcbb20e0bb6"
-				"7ce76bde-44d0-ec1d-f2dc-691009db05b5" "c417e50c-e20f-a3cc-ef16-b84e73fb89e5"
-				"c228312a-06ca-117b-89d4-29d49d6ae02d" "12f7a507-bd32-9b8f-a40f-a5c7ef6ea87a"
-				"8a0ed2a5-1422-ae09-7a4d-28ffcbf84859" "5340b488-911c-571c-53f4-8d16fe242dba"
-				"8b10b56f-e1aa-a7e8-1d5d-40e03aed131a" "fc44efd6-d25b-c805-6c11-50ef34c983f9"
-				"68db3e78-7eb1-fe91-d95f-8e2a08f2e663" "fc5a2571-1deb-85f7-36d3-e5be2b71c51e"
-				"99fb6b93-7070-6d87-748b-65bba31ba40b" "47e4e770-2c9e-eb4d-8c7d-be702cbb7ca5"
-				"57496256-0f40-5e4e-3476-100668f30ad3" "fd894938-d96d-a1ce-2b8d-d27659d064ad"
-				"377e70e7-343d-d4e4-e7c9-8da0d3a045e8" "c37620d8-3047-4fc2-076d-8a8c50799d54"
-				"ea19b78b-730c-63d5-84e9-5b27c907086f" "11c4ca36-91d8-9537-e907-e2e82374402b"
-				"77402139-9184-4ccc-95e7-fc5354829a1e" "10ae8352-9eed-c32d-c3c2-84a65860315a"
-				"6965d9c0-1f21-1876-9764-02266f618147" "e5068d92-ef1b-89d9-cae7-ac3a1b6c05b1"
-				"bed3d770-0124-92d1-bdf7-925af29dfc66" "d2e73b67-9116-6138-c4de-b9f0514440c1"
-				"e437048c-7041-856b-9920-1248f21079d1" "5f93bb3f-0133-5cc9-c858-9a777d133545"
-				"1d12ee26-9291-cb98-83f2-87ce97413858" "f2ff0e44-b126-ef61-5232-fc6bfd922809"
-				"76fdd8ae-0558-d4a5-30ed-d65fbdcb4b94" "34ab5a28-0ad3-26d0-dd4c-4a1ccbffdcbe"
-				"b0a025f6-5735-8dfe-bf9c-59eb6b97bfed" "b822f566-107e-58a9-2274-b35c28f6ffd7"
-				"1a5885c9-9fe1-960a-27d3-199e2abff454" "f981ae33-6ea3-271a-01f1-9b86b807f922"
-				"bee8ef01-ba58-a348-3c41-ab32cd84d781" "858ef9ea-f2dd-3307-c263-daca275a8d3a"
-				"28963933-755d-6b6e-b434-2c362707ced3" "6067fdef-d600-245f-2583-92e8537ff760"
-				"6a303f5f-666b-5424-dcb3-da0e02ece0fb" "bbd0fe3e-281b-9ba8-22c7-5cfef6601b42"
-				"f1e4622b-0e96-d624-0885-54d4f54cecd2" "42f64e4b-f570-8967-0d65-098a98aacb98"
-				"6d5956fa-eab9-c15c-00c0-e231717ecba1" "2ca95af1-d4c1-e51d-11df-6db3b30ca64c"
+			(tstamps "76fdd8ae-0558-d4a5-30ed-d65fbdcb4b94" "b0a025f6-5735-8dfe-bf9c-59eb6b97bfed"
+				"5f93bb3f-0133-5cc9-c858-9a777d133545" "f2ff0e44-b126-ef61-5232-fc6bfd922809"
+				"e5068d92-ef1b-89d9-cae7-ac3a1b6c05b1" "34ab5a28-0ad3-26d0-dd4c-4a1ccbffdcbe"
+				"d2e73b67-9116-6138-c4de-b9f0514440c1" "6965d9c0-1f21-1876-9764-02266f618147"
+				"bed3d770-0124-92d1-bdf7-925af29dfc66" "e437048c-7041-856b-9920-1248f21079d1"
+				"8b10b56f-e1aa-a7e8-1d5d-40e03aed131a" "12f7a507-bd32-9b8f-a40f-a5c7ef6ea87a"
+				"4e424249-df96-6082-879d-e6aca28e1f51" "10ae8352-9eed-c32d-c3c2-84a65860315a"
+				"5340b488-911c-571c-53f4-8d16fe242dba" "fc44efd6-d25b-c805-6c11-50ef34c983f9"
+				"788dcac7-042d-b82b-a37e-e8510afd8e7f" "f1e4622b-0e96-d624-0885-54d4f54cecd2"
 				"6214f229-9955-8572-2087-2e1633df870c" "c531581a-e916-a23c-87fc-f3ec07d02759"
-				"788dcac7-042d-b82b-a37e-e8510afd8e7f" "4b61e167-f136-6d39-710e-71afdbba305b"
-				"199187db-bc97-2046-0903-1d2fbccf187d" "468a66b2-c761-ad36-b156-a44c9eab7658"
-				"e1b64548-7691-4d0f-1628-68cfd3ac03e4" "0c0e4e90-7c9d-b27d-b9c9-08704093493b"
-				"4a443f03-01fc-55dd-63e6-1ad439c3ae2c" "0f80f987-148d-b282-5697-93c8cebbf952"
-				"4e424249-df96-6082-879d-e6aca28e1f51" "1e485575-728e-f686-90e4-db36496ec2f2"
-				"ce88fc01-a53d-d62c-7f25-776f077af5b7" "6d4621d8-f0da-a494-c0d5-a58f26272452"
-				"0981a563-76bc-b56b-0bb9-0805eb9462eb" "07a970e6-47aa-a9c8-3c78-8c00638db00b"
+				"0c0e4e90-7c9d-b27d-b9c9-08704093493b" "4b61e167-f136-6d39-710e-71afdbba305b"
+				"468a66b2-c761-ad36-b156-a44c9eab7658" "e1b64548-7691-4d0f-1628-68cfd3ac03e4"
+				"199187db-bc97-2046-0903-1d2fbccf187d" "6d4621d8-f0da-a494-c0d5-a58f26272452"
+				"0f80f987-148d-b282-5697-93c8cebbf952" "4a443f03-01fc-55dd-63e6-1ad439c3ae2c"
+				"ce88fc01-a53d-d62c-7f25-776f077af5b7" "1e485575-728e-f686-90e4-db36496ec2f2"
+				"6d5956fa-eab9-c15c-00c0-e231717ecba1" "2ca95af1-d4c1-e51d-11df-6db3b30ca64c"
+				"6067fdef-d600-245f-2583-92e8537ff760" "1a5885c9-9fe1-960a-27d3-199e2abff454"
+				"bbd0fe3e-281b-9ba8-22c7-5cfef6601b42" "42f64e4b-f570-8967-0d65-098a98aacb98"
+				"6a303f5f-666b-5424-dcb3-da0e02ece0fb" "28963933-755d-6b6e-b434-2c362707ced3"
+				"b822f566-107e-58a9-2274-b35c28f6ffd7" "bee8ef01-ba58-a348-3c41-ab32cd84d781"
+				"858ef9ea-f2dd-3307-c263-daca275a8d3a" "1d12ee26-9291-cb98-83f2-87ce97413858"
+				"f981ae33-6ea3-271a-01f1-9b86b807f922" "57496256-0f40-5e4e-3476-100668f30ad3"
+				"fc5a2571-1deb-85f7-36d3-e5be2b71c51e" "47e4e770-2c9e-eb4d-8c7d-be702cbb7ca5"
+				"8a0ed2a5-1422-ae09-7a4d-28ffcbf84859" "68db3e78-7eb1-fe91-d95f-8e2a08f2e663"
+				"99fb6b93-7070-6d87-748b-65bba31ba40b" "c417e50c-e20f-a3cc-ef16-b84e73fb89e5"
+				"7ce76bde-44d0-ec1d-f2dc-691009db05b5" "db84e12c-1109-9510-817b-a4828b494396"
+				"ae3fc75f-e7c7-f302-798b-cbcbb20e0bb6" "682c21cd-b3bd-ad6f-dccf-9e9ea08c9935"
+				"c228312a-06ca-117b-89d4-29d49d6ae02d" "940e8e01-0e86-baab-7e05-cc2f0a360a3c"
+				"a6910c57-edca-27ed-533a-1bbc84bc4327" "8670c09e-243c-b6a4-9699-e2f484f59a1e"
+				"97a6f564-cf64-4e4f-8f95-abbc94f25725" "52055feb-4e60-0f95-7825-909d4d1a30e3"
+				"17f3bd52-3472-42fb-d51f-677439d62f86" "f8a617b9-2c81-8421-17f3-8fe0175b86eb"
+				"d4138019-b8a3-d15b-ad0e-08ace1792ada" "e6635692-fc12-15e1-1220-68588c2c517a"
+				"a1db1907-6a18-ca04-1828-c9a7a0658df9" "2812c36e-af32-0901-d91c-f5ee12bc6ba3"
+				"acd294a9-49a2-66b9-f6ce-45e46e78a0f0" "bb8b6bb1-54a7-6f43-2b0f-2922a1849d62"
+				"11c4ca36-91d8-9537-e907-e2e82374402b" "e862e0a1-2573-a6eb-9390-d2dda94b0100"
+				"346c4ee7-4ee5-d294-2bfb-abc7dcdba2c1" "bb54c107-e31b-690a-6cab-b9c5a3fee5c9"
+				"f249dd5b-f019-9433-f8f3-37899667185e" "c95fa5fb-e896-f945-cb4e-4e729ca5b3aa"
+				"d83f4286-a648-6702-9e45-8ea4f629b42b" "32686685-ebc4-5b19-9a30-7f996a765a5e"
+				"77402139-9184-4ccc-95e7-fc5354829a1e" "fd894938-d96d-a1ce-2b8d-d27659d064ad"
+				"377e70e7-343d-d4e4-e7c9-8da0d3a045e8" "c37620d8-3047-4fc2-076d-8a8c50799d54"
+				"ea19b78b-730c-63d5-84e9-5b27c907086f" "0981a563-76bc-b56b-0bb9-0805eb9462eb"
+				"b4421df9-6337-4154-840b-5b6e33380534" "7bf3caae-419e-1da3-8e4e-9f358676a79c"
+				"a46925e4-5128-0745-4655-c7eb95a3e7a7" "35930265-9b39-0596-7269-cd627fa8f2c9"
+				"2ff9b07f-9aa9-3c0b-f433-1c7ac4699295" "6b699c9b-dd71-b910-6f65-c1f230a78553"
+				"509d08ed-f0ad-f179-9ff4-ffb7e5cfdf6a" "73a701cf-0998-cbf4-ee75-ff6a3b1f0b60"
+				"b0d293df-e361-117d-ee2e-e93a5fc9e9f6" "6656fcb8-e5ad-7716-0e6f-7826209ca1b7"
+				"a248f847-bc5f-b31a-5dbd-d7014516e87a" "20fd57b8-8b39-a4e2-b754-bb9bd6959d70"
+				"802f021a-7738-ad4f-cbce-9aaf9f34179d" "07a970e6-47aa-a9c8-3c78-8c00638db00b"
 			)
 			(units
 				(unit
@@ -10224,50 +10254,6 @@
 		)
 		(net
 			(code "5")
-			(name "-ADDR-REG-LD0")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "C4")
-				(pinfunction "B_C4")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "6")
-			(name "-ADDR-REG-LD1")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "C6")
-				(pinfunction "B_C6")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "7")
-			(name "-ADDR-REG-RD0")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "C3")
-				(pinfunction "B_C3")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "8")
-			(name "-ADDR-REG-RD1")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "C5")
-				(pinfunction "B_C5")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "9")
 			(name "-ADD{slash}SUB")
 			(class "Default")
 			(node
@@ -10296,7 +10282,7 @@
 			)
 		)
 		(net
-			(code "10")
+			(code "6")
 			(name "-ALU-FUNC")
 			(class "Default")
 			(node
@@ -10319,30 +10305,7 @@
 			)
 		)
 		(net
-			(code "11")
-			(name "-ALU-IO-EN")
-			(class "Default")
-			(node
-				(ref "IC10")
-				(pin "19")
-				(pinfunction "G_19")
-				(pintype "input")
-			)
-			(node
-				(ref "IC11")
-				(pin "19")
-				(pinfunction "G_19")
-				(pintype "input")
-			)
-			(node
-				(ref "IC7")
-				(pin "11")
-				(pinfunction "O_11")
-				(pintype "output")
-			)
-		)
-		(net
-			(code "12")
+			(code "7")
 			(name "-AND")
 			(class "Default")
 			(node
@@ -10365,7 +10328,7 @@
 			)
 		)
 		(net
-			(code "13")
+			(code "8")
 			(name "-BUS-EN")
 			(class "Default")
 			(node
@@ -10382,30 +10345,7 @@
 			)
 		)
 		(net
-			(code "14")
-			(name "-BUS-OUT")
-			(class "Default")
-			(node
-				(ref "IC1")
-				(pin "8")
-				(pinfunction "O_8")
-				(pintype "output")
-			)
-			(node
-				(ref "IC10")
-				(pin "1")
-				(pinfunction "DIR_1")
-				(pintype "input")
-			)
-			(node
-				(ref "IC11")
-				(pin "1")
-				(pinfunction "DIR_1")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "15")
+			(code "9")
 			(name "-DATA")
 			(class "Default")
 			(node
@@ -10428,95 +10368,7 @@
 			)
 		)
 		(net
-			(code "16")
-			(name "-HL-SWAP")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "C25")
-				(pinfunction "B_C25")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "17")
-			(name "-INT")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "C13")
-				(pinfunction "B_C13")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "18")
-			(name "-INTA")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "C14")
-				(pinfunction "B_C14")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "19")
-			(name "-IO-ADDR-LD")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "C11")
-				(pinfunction "B_C11")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "20")
-			(name "-IO-RD")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B25")
-				(pinfunction "B_B25")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "21")
-			(name "-IO-WR")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B26")
-				(pinfunction "B_B26")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "22")
-			(name "-MEM-RD")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B23")
-				(pinfunction "B_B23")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "23")
-			(name "-MEM-WR")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B24")
-				(pinfunction "B_B24")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "24")
+			(code "10")
 			(name "-OR")
 			(class "Default")
 			(node
@@ -10539,95 +10391,7 @@
 			)
 		)
 		(net
-			(code "25")
-			(name "-REG-DN")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B21")
-				(pinfunction "B_B21")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "26")
-			(name "-REG-FUNC-LD")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B8")
-				(pinfunction "B_B8")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "27")
-			(name "-REG-FUNC-RD")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B7")
-				(pinfunction "B_B7")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "28")
-			(name "-REG-LD-HI")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B20")
-				(pinfunction "B_B20")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "29")
-			(name "-REG-LD-LO")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B18")
-				(pinfunction "B_B18")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "30")
-			(name "-REG-RD-HI")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B19")
-				(pinfunction "B_B19")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "31")
-			(name "-REG-RD-LO")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B17")
-				(pinfunction "B_B17")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "32")
-			(name "-REG-UP")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B22")
-				(pinfunction "B_B22")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "33")
+			(code "11")
 			(name "-RESET")
 			(class "Default")
 			(node
@@ -10650,18 +10414,7 @@
 			)
 		)
 		(net
-			(code "34")
-			(name "-RUN")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "C29")
-				(pinfunction "B_C29")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "35")
+			(code "12")
 			(name "-SHIFT")
 			(class "Default")
 			(node
@@ -10690,7 +10443,7 @@
 			)
 		)
 		(net
-			(code "36")
+			(code "13")
 			(name "-SR-LD")
 			(class "Default")
 			(node
@@ -10707,7 +10460,7 @@
 			)
 		)
 		(net
-			(code "37")
+			(code "14")
 			(name "-SUB")
 			(class "Default")
 			(node
@@ -10730,62 +10483,7 @@
 			)
 		)
 		(net
-			(code "38")
-			(name "-TMP-REG-LD0")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B28")
-				(pinfunction "B_B28")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "39")
-			(name "-TMP-REG-LD1")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B30")
-				(pinfunction "B_B30")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "40")
-			(name "-TMP-REG-RD0")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B27")
-				(pinfunction "B_B27")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "41")
-			(name "-TMP-REG-RD1")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B29")
-				(pinfunction "B_B29")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "42")
-			(name "-VMA")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "C12")
-				(pinfunction "B_C12")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "43")
+			(code "15")
 			(name "-XOR")
 			(class "Default")
 			(node
@@ -10808,7 +10506,7 @@
 			)
 		)
 		(net
-			(code "44")
+			(code "16")
 			(name "-ZERO")
 			(class "Default")
 			(node
@@ -10831,8 +10529,8 @@
 			)
 		)
 		(net
-			(code "45")
-			(name "AC-LD")
+			(code "17")
+			(name "/Sheet 1/AC-LD")
 			(class "Default")
 			(node
 				(ref "IC1")
@@ -10854,7 +10552,871 @@
 			)
 		)
 		(net
+			(code "18")
+			(name "/Sheet 1/ACI-DATA0")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "18")
+				(pinfunction "Y1_18")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC3")
+				(pin "18")
+				(pinfunction "Y1_18")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC5")
+				(pin "3")
+				(pinfunction "1D_3")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "19")
+			(name "/Sheet 1/ACI-DATA1")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "16")
+				(pinfunction "Y2_16")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC3")
+				(pin "16")
+				(pinfunction "Y2_16")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC5")
+				(pin "4")
+				(pinfunction "2D_4")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "20")
+			(name "/Sheet 1/ACI-DATA2")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "14")
+				(pinfunction "Y3_14")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC3")
+				(pin "14")
+				(pinfunction "Y3_14")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC5")
+				(pin "7")
+				(pinfunction "3D_7")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "21")
+			(name "/Sheet 1/ACI-DATA3")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "12")
+				(pinfunction "Y4_12")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC3")
+				(pin "12")
+				(pinfunction "Y4_12")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC5")
+				(pin "8")
+				(pinfunction "4D_8")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "22")
+			(name "/Sheet 1/ACI-DATA4")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "9")
+				(pinfunction "Y1_9")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC3")
+				(pin "9")
+				(pinfunction "Y1_9")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC5")
+				(pin "13")
+				(pinfunction "5D_13")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "23")
+			(name "/Sheet 1/ACI-DATA5")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "7")
+				(pinfunction "Y2_7")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC3")
+				(pin "7")
+				(pinfunction "Y2_7")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC5")
+				(pin "14")
+				(pinfunction "6D_14")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "24")
+			(name "/Sheet 1/ACI-DATA6")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "5")
+				(pinfunction "Y3_5")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC3")
+				(pin "5")
+				(pinfunction "Y3_5")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC5")
+				(pin "17")
+				(pinfunction "7D_17")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "25")
+			(name "/Sheet 1/ACI-DATA7")
+			(class "Default")
+			(node
+				(ref "IC2")
+				(pin "3")
+				(pinfunction "Y4_3")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC3")
+				(pin "3")
+				(pinfunction "Y4_3")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC5")
+				(pin "18")
+				(pinfunction "8D_18")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "26")
+			(name "/Sheet 3/-ALU-IO-EN")
+			(class "Default")
+			(node
+				(ref "IC10")
+				(pin "19")
+				(pinfunction "G_19")
+				(pintype "input")
+			)
+			(node
+				(ref "IC11")
+				(pin "19")
+				(pinfunction "G_19")
+				(pintype "input")
+			)
+			(node
+				(ref "IC7")
+				(pin "11")
+				(pinfunction "O_11")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "27")
+			(name "/Sheet 3/-BUS-OUT")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "8")
+				(pinfunction "O_8")
+				(pintype "output")
+			)
+			(node
+				(ref "IC10")
+				(pin "1")
+				(pinfunction "DIR_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC11")
+				(pin "1")
+				(pinfunction "DIR_1")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "28")
+			(name "/Sheet 6/SR-LD")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "6")
+				(pinfunction "O_6")
+				(pintype "output")
+			)
+			(node
+				(ref "IC29")
+				(pin "11")
+				(pinfunction "CLK_11")
+				(pintype "input")
+			)
+			(node
+				(ref "IC30")
+				(pin "11")
+				(pinfunction "CLK_11")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "11")
+				(pinfunction "CLK_11")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "29")
+			(name "/Sheet 9/-ADDR-REG-LD0")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C4")
+				(pinfunction "B_C4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "30")
+			(name "/Sheet 9/-ADDR-REG-LD1")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C6")
+				(pinfunction "B_C6")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "31")
+			(name "/Sheet 9/-ADDR-REG-RD0")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C3")
+				(pinfunction "B_C3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "32")
+			(name "/Sheet 9/-ADDR-REG-RD1")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C5")
+				(pinfunction "B_C5")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "33")
+			(name "/Sheet 9/-HL-SWAP")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C25")
+				(pinfunction "B_C25")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "34")
+			(name "/Sheet 9/-INT")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C13")
+				(pinfunction "B_C13")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "35")
+			(name "/Sheet 9/-INTA")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C14")
+				(pinfunction "B_C14")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "36")
+			(name "/Sheet 9/-IO-ADDR-LD")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C11")
+				(pinfunction "B_C11")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "37")
+			(name "/Sheet 9/-IO-RD")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B25")
+				(pinfunction "B_B25")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "38")
+			(name "/Sheet 9/-IO-WR")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B26")
+				(pinfunction "B_B26")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "39")
+			(name "/Sheet 9/-MEM-RD")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B23")
+				(pinfunction "B_B23")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "40")
+			(name "/Sheet 9/-MEM-WR")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B24")
+				(pinfunction "B_B24")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "41")
+			(name "/Sheet 9/-REG-DN")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B21")
+				(pinfunction "B_B21")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "42")
+			(name "/Sheet 9/-REG-FUNC-LD")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B8")
+				(pinfunction "B_B8")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "43")
+			(name "/Sheet 9/-REG-FUNC-RD")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B7")
+				(pinfunction "B_B7")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "44")
+			(name "/Sheet 9/-REG-LD-HI")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B20")
+				(pinfunction "B_B20")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "45")
+			(name "/Sheet 9/-REG-LD-LO")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B18")
+				(pinfunction "B_B18")
+				(pintype "passive")
+			)
+		)
+		(net
 			(code "46")
+			(name "/Sheet 9/-REG-RD-HI")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B19")
+				(pinfunction "B_B19")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "47")
+			(name "/Sheet 9/-REG-RD-LO")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B17")
+				(pinfunction "B_B17")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "48")
+			(name "/Sheet 9/-REG-UP")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B22")
+				(pinfunction "B_B22")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "49")
+			(name "/Sheet 9/-RUN")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C29")
+				(pinfunction "B_C29")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "50")
+			(name "/Sheet 9/-TMP-REG-LD0")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B28")
+				(pinfunction "B_B28")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "51")
+			(name "/Sheet 9/-TMP-REG-LD1")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B30")
+				(pinfunction "B_B30")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "52")
+			(name "/Sheet 9/-TMP-REG-RD0")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B27")
+				(pinfunction "B_B27")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "53")
+			(name "/Sheet 9/-TMP-REG-RD1")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B29")
+				(pinfunction "B_B29")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "54")
+			(name "/Sheet 9/-VMA")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C12")
+				(pinfunction "B_C12")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "55")
+			(name "/Sheet 9/ADDR0")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "A3")
+				(pinfunction "B_A3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "56")
+			(name "/Sheet 9/ADDR1")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "A4")
+				(pinfunction "B_A4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "57")
+			(name "/Sheet 9/ADDR2")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "A5")
+				(pinfunction "B_A5")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "58")
+			(name "/Sheet 9/ADDR3")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "A6")
+				(pinfunction "B_A6")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "59")
+			(name "/Sheet 9/ADDR4")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "A7")
+				(pinfunction "B_A7")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "60")
+			(name "/Sheet 9/ADDR5")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "A8")
+				(pinfunction "B_A8")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "61")
+			(name "/Sheet 9/ADDR6")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "A9")
+				(pinfunction "B_A9")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "62")
+			(name "/Sheet 9/ADDR7")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "A10")
+				(pinfunction "B_A10")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "63")
+			(name "/Sheet 9/ADDR8")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "A11")
+				(pinfunction "B_A11")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "64")
+			(name "/Sheet 9/ADDR9")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "A12")
+				(pinfunction "B_A12")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "65")
+			(name "/Sheet 9/ADDR10")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "A13")
+				(pinfunction "B_A13")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "66")
+			(name "/Sheet 9/ADDR11")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "A14")
+				(pinfunction "B_A14")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "67")
+			(name "/Sheet 9/ADDR12")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "A15")
+				(pinfunction "B_A15")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "68")
+			(name "/Sheet 9/ADDR13")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "A16")
+				(pinfunction "B_A16")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "69")
+			(name "/Sheet 9/ADDR14")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "A17")
+				(pinfunction "B_A17")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "70")
+			(name "/Sheet 9/ADDR15")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "A18")
+				(pinfunction "B_A18")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "71")
+			(name "/Sheet 9/IO-ADDR0")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C7")
+				(pinfunction "B_C7")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "72")
+			(name "/Sheet 9/IO-ADDR1")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C8")
+				(pinfunction "B_C8")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "73")
+			(name "/Sheet 9/IO-ADDR2")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C9")
+				(pinfunction "B_C9")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "74")
+			(name "/Sheet 9/IO-ADDR3")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C10")
+				(pinfunction "B_C10")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "75")
+			(name "/Sheet 9/OUT")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "C27")
+				(pinfunction "B_C27")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "76")
+			(name "/Sheet 9/REG-LD-ID0")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B13")
+				(pinfunction "B_B13")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "77")
+			(name "/Sheet 9/REG-LD-ID1")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B14")
+				(pinfunction "B_B14")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "78")
+			(name "/Sheet 9/REG-LD-ID2")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B15")
+				(pinfunction "B_B15")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "79")
+			(name "/Sheet 9/REG-LD-ID3")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B16")
+				(pinfunction "B_B16")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "80")
+			(name "/Sheet 9/REG-RD-ID0")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B9")
+				(pinfunction "B_B9")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "81")
+			(name "/Sheet 9/REG-RD-ID1")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B10")
+				(pinfunction "B_B10")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "82")
+			(name "/Sheet 9/REG-RD-ID2")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B11")
+				(pinfunction "B_B11")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "83")
+			(name "/Sheet 9/REG-RD-ID3")
+			(class "Default")
+			(node
+				(ref "X1")
+				(pin "B12")
+				(pinfunction "B_B12")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "84")
 			(name "AC-LD-INV")
 			(class "Default")
 			(node
@@ -10883,191 +11445,7 @@
 			)
 		)
 		(net
-			(code "47")
-			(name "ACI-DATA0")
-			(class "Default")
-			(node
-				(ref "IC2")
-				(pin "18")
-				(pinfunction "Y1_18")
-				(pintype "tri_state")
-			)
-			(node
-				(ref "IC3")
-				(pin "18")
-				(pinfunction "Y1_18")
-				(pintype "tri_state")
-			)
-			(node
-				(ref "IC5")
-				(pin "3")
-				(pinfunction "1D_3")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "48")
-			(name "ACI-DATA1")
-			(class "Default")
-			(node
-				(ref "IC2")
-				(pin "16")
-				(pinfunction "Y2_16")
-				(pintype "tri_state")
-			)
-			(node
-				(ref "IC3")
-				(pin "16")
-				(pinfunction "Y2_16")
-				(pintype "tri_state")
-			)
-			(node
-				(ref "IC5")
-				(pin "4")
-				(pinfunction "2D_4")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "49")
-			(name "ACI-DATA2")
-			(class "Default")
-			(node
-				(ref "IC2")
-				(pin "14")
-				(pinfunction "Y3_14")
-				(pintype "tri_state")
-			)
-			(node
-				(ref "IC3")
-				(pin "14")
-				(pinfunction "Y3_14")
-				(pintype "tri_state")
-			)
-			(node
-				(ref "IC5")
-				(pin "7")
-				(pinfunction "3D_7")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "50")
-			(name "ACI-DATA3")
-			(class "Default")
-			(node
-				(ref "IC2")
-				(pin "12")
-				(pinfunction "Y4_12")
-				(pintype "tri_state")
-			)
-			(node
-				(ref "IC3")
-				(pin "12")
-				(pinfunction "Y4_12")
-				(pintype "tri_state")
-			)
-			(node
-				(ref "IC5")
-				(pin "8")
-				(pinfunction "4D_8")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "51")
-			(name "ACI-DATA4")
-			(class "Default")
-			(node
-				(ref "IC2")
-				(pin "9")
-				(pinfunction "Y1_9")
-				(pintype "tri_state")
-			)
-			(node
-				(ref "IC3")
-				(pin "9")
-				(pinfunction "Y1_9")
-				(pintype "tri_state")
-			)
-			(node
-				(ref "IC5")
-				(pin "13")
-				(pinfunction "5D_13")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "52")
-			(name "ACI-DATA5")
-			(class "Default")
-			(node
-				(ref "IC2")
-				(pin "7")
-				(pinfunction "Y2_7")
-				(pintype "tri_state")
-			)
-			(node
-				(ref "IC3")
-				(pin "7")
-				(pinfunction "Y2_7")
-				(pintype "tri_state")
-			)
-			(node
-				(ref "IC5")
-				(pin "14")
-				(pinfunction "6D_14")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "53")
-			(name "ACI-DATA6")
-			(class "Default")
-			(node
-				(ref "IC2")
-				(pin "5")
-				(pinfunction "Y3_5")
-				(pintype "tri_state")
-			)
-			(node
-				(ref "IC3")
-				(pin "5")
-				(pinfunction "Y3_5")
-				(pintype "tri_state")
-			)
-			(node
-				(ref "IC5")
-				(pin "17")
-				(pinfunction "7D_17")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "54")
-			(name "ACI-DATA7")
-			(class "Default")
-			(node
-				(ref "IC2")
-				(pin "3")
-				(pinfunction "Y4_3")
-				(pintype "tri_state")
-			)
-			(node
-				(ref "IC3")
-				(pin "3")
-				(pinfunction "Y4_3")
-				(pintype "tri_state")
-			)
-			(node
-				(ref "IC5")
-				(pin "18")
-				(pinfunction "8D_18")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "55")
+			(code "85")
 			(name "ACO-DATA0")
 			(class "Default")
 			(node
@@ -11132,7 +11510,7 @@
 			)
 		)
 		(net
-			(code "56")
+			(code "86")
 			(name "ACO-DATA1")
 			(class "Default")
 			(node
@@ -11191,7 +11569,7 @@
 			)
 		)
 		(net
-			(code "57")
+			(code "87")
 			(name "ACO-DATA2")
 			(class "Default")
 			(node
@@ -11250,7 +11628,7 @@
 			)
 		)
 		(net
-			(code "58")
+			(code "88")
 			(name "ACO-DATA3")
 			(class "Default")
 			(node
@@ -11315,7 +11693,7 @@
 			)
 		)
 		(net
-			(code "59")
+			(code "89")
 			(name "ACO-DATA4")
 			(class "Default")
 			(node
@@ -11380,7 +11758,7 @@
 			)
 		)
 		(net
-			(code "60")
+			(code "90")
 			(name "ACO-DATA5")
 			(class "Default")
 			(node
@@ -11439,7 +11817,7 @@
 			)
 		)
 		(net
-			(code "61")
+			(code "91")
 			(name "ACO-DATA6")
 			(class "Default")
 			(node
@@ -11498,7 +11876,7 @@
 			)
 		)
 		(net
-			(code "62")
+			(code "92")
 			(name "ACO-DATA7")
 			(class "Default")
 			(node
@@ -11569,183 +11947,7 @@
 			)
 		)
 		(net
-			(code "63")
-			(name "ADDR0")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "A3")
-				(pinfunction "B_A3")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "64")
-			(name "ADDR1")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "A4")
-				(pinfunction "B_A4")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "65")
-			(name "ADDR2")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "A5")
-				(pinfunction "B_A5")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "66")
-			(name "ADDR3")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "A6")
-				(pinfunction "B_A6")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "67")
-			(name "ADDR4")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "A7")
-				(pinfunction "B_A7")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "68")
-			(name "ADDR5")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "A8")
-				(pinfunction "B_A8")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "69")
-			(name "ADDR6")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "A9")
-				(pinfunction "B_A9")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "70")
-			(name "ADDR7")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "A10")
-				(pinfunction "B_A10")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "71")
-			(name "ADDR8")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "A11")
-				(pinfunction "B_A11")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "72")
-			(name "ADDR9")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "A12")
-				(pinfunction "B_A12")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "73")
-			(name "ADDR10")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "A13")
-				(pinfunction "B_A13")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "74")
-			(name "ADDR11")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "A14")
-				(pinfunction "B_A14")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "75")
-			(name "ADDR12")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "A15")
-				(pinfunction "B_A15")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "76")
-			(name "ADDR13")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "A16")
-				(pinfunction "B_A16")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "77")
-			(name "ADDR14")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "A17")
-				(pinfunction "B_A17")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "78")
-			(name "ADDR15")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "A18")
-				(pinfunction "B_A18")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "79")
+			(code "93")
 			(name "ALU0")
 			(class "Default")
 			(node
@@ -11786,7 +11988,7 @@
 			)
 		)
 		(net
-			(code "80")
+			(code "94")
 			(name "ALU1")
 			(class "Default")
 			(node
@@ -11827,7 +12029,7 @@
 			)
 		)
 		(net
-			(code "81")
+			(code "95")
 			(name "ALU2")
 			(class "Default")
 			(node
@@ -11856,7 +12058,7 @@
 			)
 		)
 		(net
-			(code "82")
+			(code "96")
 			(name "ALU3")
 			(class "Default")
 			(node
@@ -11879,7 +12081,7 @@
 			)
 		)
 		(net
-			(code "83")
+			(code "97")
 			(name "BDATA0")
 			(class "Default")
 			(node
@@ -11944,7 +12146,7 @@
 			)
 		)
 		(net
-			(code "84")
+			(code "98")
 			(name "BDATA1")
 			(class "Default")
 			(node
@@ -12009,7 +12211,7 @@
 			)
 		)
 		(net
-			(code "85")
+			(code "99")
 			(name "BDATA2")
 			(class "Default")
 			(node
@@ -12074,7 +12276,7 @@
 			)
 		)
 		(net
-			(code "86")
+			(code "100")
 			(name "BDATA3")
 			(class "Default")
 			(node
@@ -12139,7 +12341,7 @@
 			)
 		)
 		(net
-			(code "87")
+			(code "101")
 			(name "BDATA4")
 			(class "Default")
 			(node
@@ -12204,7 +12406,7 @@
 			)
 		)
 		(net
-			(code "88")
+			(code "102")
 			(name "BDATA5")
 			(class "Default")
 			(node
@@ -12269,7 +12471,7 @@
 			)
 		)
 		(net
-			(code "89")
+			(code "103")
 			(name "BDATA6")
 			(class "Default")
 			(node
@@ -12334,7 +12536,7 @@
 			)
 		)
 		(net
-			(code "90")
+			(code "104")
 			(name "BDATA7")
 			(class "Default")
 			(node
@@ -12399,7 +12601,7 @@
 			)
 		)
 		(net
-			(code "91")
+			(code "105")
 			(name "BDATA8")
 			(class "Default")
 			(node
@@ -12422,7 +12624,7 @@
 			)
 		)
 		(net
-			(code "92")
+			(code "106")
 			(name "BDATA9")
 			(class "Default")
 			(node
@@ -12445,7 +12647,7 @@
 			)
 		)
 		(net
-			(code "93")
+			(code "107")
 			(name "BDATA10")
 			(class "Default")
 			(node
@@ -12468,7 +12670,7 @@
 			)
 		)
 		(net
-			(code "94")
+			(code "108")
 			(name "BDATA11")
 			(class "Default")
 			(node
@@ -12491,7 +12693,7 @@
 			)
 		)
 		(net
-			(code "95")
+			(code "109")
 			(name "BDATA12")
 			(class "Default")
 			(node
@@ -12514,7 +12716,7 @@
 			)
 		)
 		(net
-			(code "96")
+			(code "110")
 			(name "BDATA13")
 			(class "Default")
 			(node
@@ -12537,7 +12739,7 @@
 			)
 		)
 		(net
-			(code "97")
+			(code "111")
 			(name "BDATA14")
 			(class "Default")
 			(node
@@ -12560,7 +12762,7 @@
 			)
 		)
 		(net
-			(code "98")
+			(code "112")
 			(name "BDATA15")
 			(class "Default")
 			(node
@@ -12583,7 +12785,7 @@
 			)
 		)
 		(net
-			(code "99")
+			(code "113")
 			(name "BR-COND")
 			(class "Default")
 			(node
@@ -12600,7 +12802,7 @@
 			)
 		)
 		(net
-			(code "100")
+			(code "114")
 			(name "CO{slash}BO")
 			(class "Default")
 			(node
@@ -12617,7 +12819,7 @@
 			)
 		)
 		(net
-			(code "101")
+			(code "115")
 			(name "C{slash}SHIFT")
 			(class "Default")
 			(node
@@ -12658,7 +12860,7 @@
 			)
 		)
 		(net
-			(code "102")
+			(code "116")
 			(name "DATA0")
 			(class "Default")
 			(node
@@ -12675,7 +12877,7 @@
 			)
 		)
 		(net
-			(code "103")
+			(code "117")
 			(name "DATA1")
 			(class "Default")
 			(node
@@ -12692,7 +12894,7 @@
 			)
 		)
 		(net
-			(code "104")
+			(code "118")
 			(name "DATA2")
 			(class "Default")
 			(node
@@ -12709,7 +12911,7 @@
 			)
 		)
 		(net
-			(code "105")
+			(code "119")
 			(name "DATA3")
 			(class "Default")
 			(node
@@ -12726,7 +12928,7 @@
 			)
 		)
 		(net
-			(code "106")
+			(code "120")
 			(name "DATA4")
 			(class "Default")
 			(node
@@ -12743,7 +12945,7 @@
 			)
 		)
 		(net
-			(code "107")
+			(code "121")
 			(name "DATA5")
 			(class "Default")
 			(node
@@ -12760,7 +12962,7 @@
 			)
 		)
 		(net
-			(code "108")
+			(code "122")
 			(name "DATA6")
 			(class "Default")
 			(node
@@ -12777,7 +12979,7 @@
 			)
 		)
 		(net
-			(code "109")
+			(code "123")
 			(name "DATA7")
 			(class "Default")
 			(node
@@ -12794,7 +12996,7 @@
 			)
 		)
 		(net
-			(code "110")
+			(code "124")
 			(name "DATA8")
 			(class "Default")
 			(node
@@ -12811,7 +13013,7 @@
 			)
 		)
 		(net
-			(code "111")
+			(code "125")
 			(name "DATA9")
 			(class "Default")
 			(node
@@ -12828,7 +13030,7 @@
 			)
 		)
 		(net
-			(code "112")
+			(code "126")
 			(name "DATA10")
 			(class "Default")
 			(node
@@ -12845,7 +13047,7 @@
 			)
 		)
 		(net
-			(code "113")
+			(code "127")
 			(name "DATA11")
 			(class "Default")
 			(node
@@ -12862,7 +13064,7 @@
 			)
 		)
 		(net
-			(code "114")
+			(code "128")
 			(name "DATA12")
 			(class "Default")
 			(node
@@ -12879,7 +13081,7 @@
 			)
 		)
 		(net
-			(code "115")
+			(code "129")
 			(name "DATA13")
 			(class "Default")
 			(node
@@ -12896,7 +13098,7 @@
 			)
 		)
 		(net
-			(code "116")
+			(code "130")
 			(name "DATA14")
 			(class "Default")
 			(node
@@ -12913,7 +13115,7 @@
 			)
 		)
 		(net
-			(code "117")
+			(code "131")
 			(name "DATA15")
 			(class "Default")
 			(node
@@ -12930,7 +13132,7 @@
 			)
 		)
 		(net
-			(code "118")
+			(code "132")
 			(name "GND")
 			(class "Default")
 			(node
@@ -13691,7 +13893,7 @@
 			)
 		)
 		(net
-			(code "119")
+			(code "133")
 			(name "IN")
 			(class "Default")
 			(node
@@ -13708,7 +13910,7 @@
 			)
 		)
 		(net
-			(code "120")
+			(code "134")
 			(name "INV-IN0")
 			(class "Default")
 			(node
@@ -13767,7 +13969,7 @@
 			)
 		)
 		(net
-			(code "121")
+			(code "135")
 			(name "INV-IN1")
 			(class "Default")
 			(node
@@ -13826,7 +14028,7 @@
 			)
 		)
 		(net
-			(code "122")
+			(code "136")
 			(name "INV-IN2")
 			(class "Default")
 			(node
@@ -13885,7 +14087,7 @@
 			)
 		)
 		(net
-			(code "123")
+			(code "137")
 			(name "INV-IN3")
 			(class "Default")
 			(node
@@ -13944,7 +14146,7 @@
 			)
 		)
 		(net
-			(code "124")
+			(code "138")
 			(name "INV-IN4")
 			(class "Default")
 			(node
@@ -14003,7 +14205,7 @@
 			)
 		)
 		(net
-			(code "125")
+			(code "139")
 			(name "INV-IN5")
 			(class "Default")
 			(node
@@ -14062,7 +14264,7 @@
 			)
 		)
 		(net
-			(code "126")
+			(code "140")
 			(name "INV-IN6")
 			(class "Default")
 			(node
@@ -14121,7 +14323,7 @@
 			)
 		)
 		(net
-			(code "127")
+			(code "141")
 			(name "INV-IN7")
 			(class "Default")
 			(node
@@ -14180,1405 +14382,8 @@
 			)
 		)
 		(net
-			(code "128")
-			(name "IO-ADDR0")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "C7")
-				(pinfunction "B_C7")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "129")
-			(name "IO-ADDR1")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "C8")
-				(pinfunction "B_C8")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "130")
-			(name "IO-ADDR2")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "C9")
-				(pinfunction "B_C9")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "131")
-			(name "IO-ADDR3")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "C10")
-				(pinfunction "B_C10")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "132")
-			(name "N$1")
-			(class "Default")
-			(node
-				(ref "IC27")
-				(pin "4")
-				(pinfunction "I0_4")
-				(pintype "input")
-			)
-			(node
-				(ref "IC36")
-				(pin "9")
-				(pinfunction "C4_9")
-				(pintype "output")
-			)
-		)
-		(net
-			(code "133")
-			(name "N$2")
-			(class "Default")
-			(node
-				(ref "IC27")
-				(pin "3")
-				(pinfunction "O_3")
-				(pintype "output")
-			)
-			(node
-				(ref "IC35")
-				(pin "7")
-				(pinfunction "C0_7")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "134")
-			(name "N$3")
-			(class "Default")
-			(node
-				(ref "IC4")
-				(pin "3")
-				(pinfunction "O_3")
-				(pintype "output")
-			)
-			(node
-				(ref "IC6")
-				(pin "9")
-				(pinfunction "I0_9")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "135")
-			(name "N$4")
-			(class "Default")
-			(node
-				(ref "IC26")
-				(pin "7")
-				(pinfunction "G_7")
-				(pintype "input")
-			)
-			(node
-				(ref "JP1")
-				(pin "2")
-				(pinfunction "2_2")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "136")
-			(name "N$5")
-			(class "Default")
-			(node
-				(ref "IC6")
-				(pin "8")
-				(pinfunction "O_8")
-				(pintype "output")
-			)
-			(node
-				(ref "IC9")
-				(pin "3")
-				(pinfunction "CLK_3")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "137")
-			(name "N$6")
-			(class "Default")
-			(node
-				(ref "IC26")
-				(pin "15")
-				(pinfunction "D4_15")
-				(pintype "input")
-			)
-			(node
-				(ref "IC6")
-				(pin "4")
-				(pinfunction "I0_4")
-				(pintype "input")
-			)
-			(node
-				(ref "V2")
-				(pin "13")
-				(pinfunction "W_13")
-				(pintype "output")
-			)
-		)
-		(net
-			(code "138")
-			(name "N$7")
-			(class "Default")
-			(node
-				(ref "IC7")
-				(pin "3")
-				(pinfunction "O_3")
-				(pintype "output")
-			)
-			(node
-				(ref "IC9")
-				(pin "2")
-				(pinfunction "D_2")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "139")
-			(name "N$8")
-			(class "Default")
-			(node
-				(ref "IC27")
-				(pin "1")
-				(pinfunction "I0_1")
-				(pintype "input")
-			)
-			(node
-				(ref "IC6")
-				(pin "11")
-				(pinfunction "O_11")
-				(pintype "output")
-			)
-		)
-		(net
-			(code "140")
-			(name "N$11")
-			(class "Default")
-			(node
-				(ref "IC32")
-				(pin "7")
-				(pinfunction "1Y_7")
-				(pintype "output")
-			)
-			(node
-				(ref "IC9")
-				(pin "12")
-				(pinfunction "D_12")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "141")
-			(name "N$12")
-			(class "Default")
-			(node
-				(ref "IC33")
-				(pin "6")
-				(pinfunction "O_6")
-				(pintype "output")
-			)
-			(node
-				(ref "IC35")
-				(pin "2")
-				(pinfunction "B2_2")
-				(pintype "input")
-			)
-		)
-		(net
 			(code "142")
-			(name "N$13")
-			(class "Default")
-			(node
-				(ref "IC34")
-				(pin "6")
-				(pinfunction "O_6")
-				(pintype "output")
-			)
-			(node
-				(ref "IC36")
-				(pin "2")
-				(pinfunction "B2_2")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "143")
-			(name "N$14")
-			(class "Default")
-			(node
-				(ref "PWR0")
-				(pin "A")
-				(pinfunction "A_A")
-				(pintype "passive")
-			)
-			(node
-				(ref "R1")
-				(pin "1")
-				(pinfunction "1_1")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "144")
-			(name "N$26")
-			(class "Default")
-			(node
-				(ref "IC33")
-				(pin "8")
-				(pinfunction "O_8")
-				(pintype "output")
-			)
-			(node
-				(ref "IC35")
-				(pin "15")
-				(pinfunction "B3_15")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "145")
-			(name "N$27")
-			(class "Default")
-			(node
-				(ref "IC33")
-				(pin "11")
-				(pinfunction "O_11")
-				(pintype "output")
-			)
-			(node
-				(ref "IC35")
-				(pin "11")
-				(pinfunction "B4_11")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "146")
-			(name "N$28")
-			(class "Default")
-			(node
-				(ref "IC33")
-				(pin "3")
-				(pinfunction "O_3")
-				(pintype "output")
-			)
-			(node
-				(ref "IC35")
-				(pin "6")
-				(pinfunction "B1_6")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "147")
-			(name "N$29")
-			(class "Default")
-			(node
-				(ref "IC34")
-				(pin "3")
-				(pinfunction "O_3")
-				(pintype "output")
-			)
-			(node
-				(ref "IC36")
-				(pin "6")
-				(pinfunction "B1_6")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "148")
-			(name "N$31")
-			(class "Default")
-			(node
-				(ref "IC34")
-				(pin "8")
-				(pinfunction "O_8")
-				(pintype "output")
-			)
-			(node
-				(ref "IC36")
-				(pin "15")
-				(pinfunction "B3_15")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "149")
-			(name "N$32")
-			(class "Default")
-			(node
-				(ref "IC34")
-				(pin "11")
-				(pinfunction "O_11")
-				(pintype "output")
-			)
-			(node
-				(ref "IC36")
-				(pin "11")
-				(pinfunction "B4_11")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "150")
-			(name "N$33")
-			(class "Default")
-			(node
-				(ref "IC35")
-				(pin "4")
-				(pinfunction "S1_4")
-				(pintype "output")
-			)
-			(node
-				(ref "IC37")
-				(pin "2")
-				(pinfunction "A1_2")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "151")
-			(name "N$34")
-			(class "Default")
-			(node
-				(ref "IC35")
-				(pin "1")
-				(pinfunction "S2_1")
-				(pintype "output")
-			)
-			(node
-				(ref "IC37")
-				(pin "4")
-				(pinfunction "A2_4")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "152")
-			(name "N$35")
-			(class "Default")
-			(node
-				(ref "IC35")
-				(pin "13")
-				(pinfunction "S3_13")
-				(pintype "output")
-			)
-			(node
-				(ref "IC37")
-				(pin "6")
-				(pinfunction "A3_6")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "153")
-			(name "N$36")
-			(class "Default")
-			(node
-				(ref "IC35")
-				(pin "10")
-				(pinfunction "S4_10")
-				(pintype "output")
-			)
-			(node
-				(ref "IC37")
-				(pin "8")
-				(pinfunction "A4_8")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "154")
-			(name "N$37")
-			(class "Default")
-			(node
-				(ref "IC36")
-				(pin "4")
-				(pinfunction "S1_4")
-				(pintype "output")
-			)
-			(node
-				(ref "IC37")
-				(pin "11")
-				(pinfunction "A1_11")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "155")
-			(name "N$38")
-			(class "Default")
-			(node
-				(ref "IC36")
-				(pin "1")
-				(pinfunction "S2_1")
-				(pintype "output")
-			)
-			(node
-				(ref "IC37")
-				(pin "13")
-				(pinfunction "A2_13")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "156")
-			(name "N$39")
-			(class "Default")
-			(node
-				(ref "IC36")
-				(pin "13")
-				(pinfunction "S3_13")
-				(pintype "output")
-			)
-			(node
-				(ref "IC37")
-				(pin "15")
-				(pinfunction "A3_15")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "157")
-			(name "N$40")
-			(class "Default")
-			(node
-				(ref "IC36")
-				(pin "10")
-				(pinfunction "S4_10")
-				(pintype "output")
-			)
-			(node
-				(ref "IC37")
-				(pin "17")
-				(pinfunction "A4_17")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "158")
-			(name "N$41")
-			(class "Default")
-			(node
-				(ref "IC35")
-				(pin "9")
-				(pinfunction "C4_9")
-				(pintype "output")
-			)
-			(node
-				(ref "IC36")
-				(pin "7")
-				(pinfunction "C0_7")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "159")
-			(name "N$43")
-			(class "Default")
-			(node
-				(ref "IC24")
-				(pin "5")
-				(pinfunction "A>B_O_5")
-				(pintype "output")
-			)
-			(node
-				(ref "IC25")
-				(pin "4")
-				(pinfunction "A>B_I_4")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "160")
-			(name "N$45")
-			(class "Default")
-			(node
-				(ref "IC24")
-				(pin "6")
-				(pinfunction "A=B_O_6")
-				(pintype "output")
-			)
-			(node
-				(ref "IC25")
-				(pin "3")
-				(pinfunction "A=B_I_3")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "161")
-			(name "N$46")
-			(class "Default")
-			(node
-				(ref "IC24")
-				(pin "7")
-				(pinfunction "A<B_O_7")
-				(pintype "output")
-			)
-			(node
-				(ref "IC25")
-				(pin "2")
-				(pinfunction "A<B_I_2")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "162")
-			(name "N$47")
-			(class "Default")
-			(node
-				(ref "IC25")
-				(pin "7")
-				(pinfunction "A<B_O_7")
-				(pintype "output")
-			)
-			(node
-				(ref "IC26")
-				(pin "3")
-				(pinfunction "D1_3")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "163")
-			(name "N$48")
-			(class "Default")
-			(node
-				(ref "IC25")
-				(pin "6")
-				(pinfunction "A=B_O_6")
-				(pintype "output")
-			)
-			(node
-				(ref "IC26")
-				(pin "2")
-				(pinfunction "D2_2")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "164")
-			(name "N$49")
-			(class "Default")
-			(node
-				(ref "IC25")
-				(pin "5")
-				(pinfunction "A>B_O_5")
-				(pintype "output")
-			)
-			(node
-				(ref "IC26")
-				(pin "1")
-				(pinfunction "D3_1")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "165")
-			(name "N$52")
-			(class "Default")
-			(node
-				(ref "IC6")
-				(pin "5")
-				(pinfunction "I1_5")
-				(pintype "input")
-			)
-			(node
-				(ref "V1")
-				(pin "13")
-				(pinfunction "W_13")
-				(pintype "output")
-			)
-		)
-		(net
-			(code "166")
-			(name "N$55")
-			(class "Default")
-			(node
-				(ref "IC26")
-				(pin "13")
-				(pinfunction "D6_13")
-				(pintype "input")
-			)
-			(node
-				(ref "IC6")
-				(pin "6")
-				(pinfunction "O_6")
-				(pintype "output")
-			)
-		)
-		(net
-			(code "167")
-			(name "N$56")
-			(class "Default")
-			(node
-				(ref "IC26")
-				(pin "5")
-				(pinfunction "Y_5")
-				(pintype "tri_state")
-			)
-			(node
-				(ref "IC27")
-				(pin "10")
-				(pinfunction "I1_10")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "168")
-			(name "N$57")
-			(class "Default")
-			(node
-				(ref "IC29")
-				(pin "15")
-				(pinfunction "QA_15")
-				(pintype "output")
-			)
-			(node
-				(ref "IC31")
-				(pin "2")
-				(pinfunction "A1_2")
-				(pintype "input")
-			)
-			(node
-				(ref "IC32")
-				(pin "5")
-				(pinfunction "1C1_5")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "169")
-			(name "N$66")
-			(class "Default")
-			(node
-				(ref "IC29")
-				(pin "14")
-				(pinfunction "QB_14")
-				(pintype "output")
-			)
-			(node
-				(ref "IC31")
-				(pin "4")
-				(pinfunction "A2_4")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "170")
-			(name "N$69")
-			(class "Default")
-			(node
-				(ref "IC29")
-				(pin "13")
-				(pinfunction "QC_13")
-				(pintype "output")
-			)
-			(node
-				(ref "IC31")
-				(pin "6")
-				(pinfunction "A3_6")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "171")
-			(name "N$70")
-			(class "Default")
-			(node
-				(ref "IC29")
-				(pin "12")
-				(pinfunction "QD_12")
-				(pintype "output")
-			)
-			(node
-				(ref "IC31")
-				(pin "8")
-				(pinfunction "A4_8")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "172")
-			(name "N$71")
-			(class "Default")
-			(node
-				(ref "IC30")
-				(pin "15")
-				(pinfunction "QA_15")
-				(pintype "output")
-			)
-			(node
-				(ref "IC31")
-				(pin "11")
-				(pinfunction "A1_11")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "173")
-			(name "N$72")
-			(class "Default")
-			(node
-				(ref "IC30")
-				(pin "14")
-				(pinfunction "QB_14")
-				(pintype "output")
-			)
-			(node
-				(ref "IC31")
-				(pin "13")
-				(pinfunction "A2_13")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "174")
-			(name "N$73")
-			(class "Default")
-			(node
-				(ref "IC30")
-				(pin "13")
-				(pinfunction "QC_13")
-				(pintype "output")
-			)
-			(node
-				(ref "IC31")
-				(pin "15")
-				(pinfunction "A3_15")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "175")
-			(name "N$74")
-			(class "Default")
-			(node
-				(ref "IC30")
-				(pin "12")
-				(pinfunction "QD_12")
-				(pintype "output")
-			)
-			(node
-				(ref "IC31")
-				(pin "17")
-				(pinfunction "A4_17")
-				(pintype "input")
-			)
-			(node
-				(ref "IC32")
-				(pin "4")
-				(pinfunction "1C2_4")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "176")
-			(name "N$75")
-			(class "Default")
-			(node
-				(ref "IC28")
-				(pin "7")
-				(pinfunction "1Y_7")
-				(pintype "output")
-			)
-			(node
-				(ref "IC29")
-				(pin "2")
-				(pinfunction "SR_2")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "177")
-			(name "N$76")
-			(class "Default")
-			(node
-				(ref "IC28")
-				(pin "9")
-				(pinfunction "2Y_9")
-				(pintype "output")
-			)
-			(node
-				(ref "IC30")
-				(pin "7")
-				(pinfunction "SL_7")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "178")
-			(name "N$77")
-			(class "Default")
-			(node
-				(ref "IC21")
-				(pin "3")
-				(pinfunction "O_3")
-				(pintype "output")
-			)
-			(node
-				(ref "IC23")
-				(pin "2")
-				(pinfunction "A1_2")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "179")
-			(name "N$78")
-			(class "Default")
-			(node
-				(ref "IC21")
-				(pin "6")
-				(pinfunction "O_6")
-				(pintype "output")
-			)
-			(node
-				(ref "IC23")
-				(pin "4")
-				(pinfunction "A2_4")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "180")
-			(name "N$79")
-			(class "Default")
-			(node
-				(ref "IC21")
-				(pin "8")
-				(pinfunction "O_8")
-				(pintype "output")
-			)
-			(node
-				(ref "IC23")
-				(pin "6")
-				(pinfunction "A3_6")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "181")
-			(name "N$81")
-			(class "Default")
-			(node
-				(ref "IC21")
-				(pin "11")
-				(pinfunction "O_11")
-				(pintype "output")
-			)
-			(node
-				(ref "IC23")
-				(pin "8")
-				(pinfunction "A4_8")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "182")
-			(name "N$82")
-			(class "Default")
-			(node
-				(ref "IC22")
-				(pin "3")
-				(pinfunction "O_3")
-				(pintype "output")
-			)
-			(node
-				(ref "IC23")
-				(pin "11")
-				(pinfunction "A1_11")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "183")
-			(name "N$83")
-			(class "Default")
-			(node
-				(ref "IC22")
-				(pin "6")
-				(pinfunction "O_6")
-				(pintype "output")
-			)
-			(node
-				(ref "IC23")
-				(pin "13")
-				(pinfunction "A2_13")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "184")
-			(name "N$84")
-			(class "Default")
-			(node
-				(ref "IC22")
-				(pin "8")
-				(pinfunction "O_8")
-				(pintype "output")
-			)
-			(node
-				(ref "IC23")
-				(pin "15")
-				(pinfunction "A3_15")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "185")
-			(name "N$85")
-			(class "Default")
-			(node
-				(ref "IC22")
-				(pin "11")
-				(pinfunction "O_11")
-				(pintype "output")
-			)
-			(node
-				(ref "IC23")
-				(pin "17")
-				(pinfunction "A4_17")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "186")
-			(name "N$86")
-			(class "Default")
-			(node
-				(ref "IC18")
-				(pin "3")
-				(pinfunction "O_3")
-				(pintype "output")
-			)
-			(node
-				(ref "IC20")
-				(pin "2")
-				(pinfunction "A1_2")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "187")
-			(name "N$87")
-			(class "Default")
-			(node
-				(ref "IC18")
-				(pin "6")
-				(pinfunction "O_6")
-				(pintype "output")
-			)
-			(node
-				(ref "IC20")
-				(pin "4")
-				(pinfunction "A2_4")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "188")
-			(name "N$88")
-			(class "Default")
-			(node
-				(ref "IC18")
-				(pin "8")
-				(pinfunction "O_8")
-				(pintype "output")
-			)
-			(node
-				(ref "IC20")
-				(pin "6")
-				(pinfunction "A3_6")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "189")
-			(name "N$89")
-			(class "Default")
-			(node
-				(ref "IC18")
-				(pin "11")
-				(pinfunction "O_11")
-				(pintype "output")
-			)
-			(node
-				(ref "IC20")
-				(pin "8")
-				(pinfunction "A4_8")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "190")
-			(name "N$90")
-			(class "Default")
-			(node
-				(ref "IC19")
-				(pin "11")
-				(pinfunction "O_11")
-				(pintype "output")
-			)
-			(node
-				(ref "IC20")
-				(pin "11")
-				(pinfunction "A1_11")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "191")
-			(name "N$91")
-			(class "Default")
-			(node
-				(ref "IC19")
-				(pin "3")
-				(pinfunction "O_3")
-				(pintype "output")
-			)
-			(node
-				(ref "IC20")
-				(pin "13")
-				(pinfunction "A2_13")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "192")
-			(name "N$92")
-			(class "Default")
-			(node
-				(ref "IC19")
-				(pin "6")
-				(pinfunction "O_6")
-				(pintype "output")
-			)
-			(node
-				(ref "IC20")
-				(pin "15")
-				(pinfunction "A3_15")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "193")
-			(name "N$93")
-			(class "Default")
-			(node
-				(ref "IC19")
-				(pin "8")
-				(pinfunction "O_8")
-				(pintype "output")
-			)
-			(node
-				(ref "IC20")
-				(pin "17")
-				(pinfunction "A4_17")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "194")
-			(name "N$94")
-			(class "Default")
-			(node
-				(ref "IC14")
-				(pin "3")
-				(pinfunction "O_3")
-				(pintype "output")
-			)
-			(node
-				(ref "IC17")
-				(pin "2")
-				(pinfunction "A1_2")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "195")
-			(name "N$95")
-			(class "Default")
-			(node
-				(ref "IC14")
-				(pin "6")
-				(pinfunction "O_6")
-				(pintype "output")
-			)
-			(node
-				(ref "IC17")
-				(pin "4")
-				(pinfunction "A2_4")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "196")
-			(name "N$96")
-			(class "Default")
-			(node
-				(ref "IC14")
-				(pin "8")
-				(pinfunction "O_8")
-				(pintype "output")
-			)
-			(node
-				(ref "IC17")
-				(pin "6")
-				(pinfunction "A3_6")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "197")
-			(name "N$97")
-			(class "Default")
-			(node
-				(ref "IC14")
-				(pin "11")
-				(pinfunction "O_11")
-				(pintype "output")
-			)
-			(node
-				(ref "IC17")
-				(pin "8")
-				(pinfunction "A4_8")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "198")
-			(name "N$98")
-			(class "Default")
-			(node
-				(ref "IC15")
-				(pin "11")
-				(pinfunction "O_11")
-				(pintype "output")
-			)
-			(node
-				(ref "IC17")
-				(pin "11")
-				(pinfunction "A1_11")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "199")
-			(name "N$99")
-			(class "Default")
-			(node
-				(ref "IC15")
-				(pin "3")
-				(pinfunction "O_3")
-				(pintype "output")
-			)
-			(node
-				(ref "IC17")
-				(pin "13")
-				(pinfunction "A2_13")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "200")
-			(name "N$100")
-			(class "Default")
-			(node
-				(ref "IC15")
-				(pin "6")
-				(pinfunction "O_6")
-				(pintype "output")
-			)
-			(node
-				(ref "IC17")
-				(pin "15")
-				(pinfunction "A3_15")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "201")
-			(name "N$101")
-			(class "Default")
-			(node
-				(ref "IC15")
-				(pin "8")
-				(pinfunction "O_8")
-				(pintype "output")
-			)
-			(node
-				(ref "IC17")
-				(pin "17")
-				(pinfunction "A4_17")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "202")
-			(name "OUT")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "C27")
-				(pinfunction "B_C27")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "203")
-			(name "REG-LD-ID0")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B13")
-				(pinfunction "B_B13")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "204")
-			(name "REG-LD-ID1")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B14")
-				(pinfunction "B_B14")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "205")
-			(name "REG-LD-ID2")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B15")
-				(pinfunction "B_B15")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "206")
-			(name "REG-LD-ID3")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B16")
-				(pinfunction "B_B16")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "207")
-			(name "REG-RD-ID0")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B9")
-				(pinfunction "B_B9")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "208")
-			(name "REG-RD-ID1")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B10")
-				(pinfunction "B_B10")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "209")
-			(name "REG-RD-ID2")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B11")
-				(pinfunction "B_B11")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "210")
-			(name "REG-RD-ID3")
-			(class "Default")
-			(node
-				(ref "X1")
-				(pin "B12")
-				(pinfunction "B_B12")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "211")
-			(name "SHIFT-OUT")
-			(class "Default")
-			(node
-				(ref "IC7")
-				(pin "2")
-				(pinfunction "I1_2")
-				(pintype "input")
-			)
-			(node
-				(ref "IC9")
-				(pin "9")
-				(pinfunction "Q_9")
-				(pintype "output")
-			)
-		)
-		(net
-			(code "212")
-			(name "SR-LD")
-			(class "Default")
-			(node
-				(ref "IC1")
-				(pin "6")
-				(pinfunction "O_6")
-				(pintype "output")
-			)
-			(node
-				(ref "IC29")
-				(pin "11")
-				(pinfunction "CLK_11")
-				(pintype "input")
-			)
-			(node
-				(ref "IC30")
-				(pin "11")
-				(pinfunction "CLK_11")
-				(pintype "input")
-			)
-			(node
-				(ref "IC9")
-				(pin "11")
-				(pinfunction "CLK_11")
-				(pintype "input")
-			)
-		)
-		(net
-			(code "213")
-			(name "SUB")
+			(name "Net-(IC1B-O)")
 			(class "Default")
 			(node
 				(ref "IC1")
@@ -15645,6 +14450,1231 @@
 				(pin "5")
 				(pinfunction "I1_5")
 				(pintype "input")
+			)
+		)
+		(net
+			(code "143")
+			(name "Net-(IC4A-O)")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "3")
+				(pinfunction "O_3")
+				(pintype "output")
+			)
+			(node
+				(ref "IC6")
+				(pin "9")
+				(pinfunction "I0_9")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "144")
+			(name "Net-(IC6B-I1)")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "5")
+				(pinfunction "I1_5")
+				(pintype "input")
+			)
+			(node
+				(ref "V1")
+				(pin "13")
+				(pinfunction "W_13")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "145")
+			(name "Net-(IC6C-O)")
+			(class "Default")
+			(node
+				(ref "IC6")
+				(pin "8")
+				(pinfunction "O_8")
+				(pintype "output")
+			)
+			(node
+				(ref "IC9")
+				(pin "3")
+				(pinfunction "CLK_3")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "146")
+			(name "Net-(IC7A-O)")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "3")
+				(pinfunction "O_3")
+				(pintype "output")
+			)
+			(node
+				(ref "IC9")
+				(pin "2")
+				(pinfunction "D_2")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "147")
+			(name "Net-(IC14A-O)")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "3")
+				(pinfunction "O_3")
+				(pintype "output")
+			)
+			(node
+				(ref "IC17")
+				(pin "2")
+				(pinfunction "A1_2")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "148")
+			(name "Net-(IC14B-O)")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "6")
+				(pinfunction "O_6")
+				(pintype "output")
+			)
+			(node
+				(ref "IC17")
+				(pin "4")
+				(pinfunction "A2_4")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "149")
+			(name "Net-(IC14C-O)")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "8")
+				(pinfunction "O_8")
+				(pintype "output")
+			)
+			(node
+				(ref "IC17")
+				(pin "6")
+				(pinfunction "A3_6")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "150")
+			(name "Net-(IC14D-O)")
+			(class "Default")
+			(node
+				(ref "IC14")
+				(pin "11")
+				(pinfunction "O_11")
+				(pintype "output")
+			)
+			(node
+				(ref "IC17")
+				(pin "8")
+				(pinfunction "A4_8")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "151")
+			(name "Net-(IC15A-O)")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "3")
+				(pinfunction "O_3")
+				(pintype "output")
+			)
+			(node
+				(ref "IC17")
+				(pin "13")
+				(pinfunction "A2_13")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "152")
+			(name "Net-(IC15B-O)")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "6")
+				(pinfunction "O_6")
+				(pintype "output")
+			)
+			(node
+				(ref "IC17")
+				(pin "15")
+				(pinfunction "A3_15")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "153")
+			(name "Net-(IC15C-O)")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "8")
+				(pinfunction "O_8")
+				(pintype "output")
+			)
+			(node
+				(ref "IC17")
+				(pin "17")
+				(pinfunction "A4_17")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "154")
+			(name "Net-(IC15D-O)")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "11")
+				(pinfunction "O_11")
+				(pintype "output")
+			)
+			(node
+				(ref "IC17")
+				(pin "11")
+				(pinfunction "A1_11")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "155")
+			(name "Net-(IC18A-O)")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "3")
+				(pinfunction "O_3")
+				(pintype "output")
+			)
+			(node
+				(ref "IC20")
+				(pin "2")
+				(pinfunction "A1_2")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "156")
+			(name "Net-(IC18B-O)")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "6")
+				(pinfunction "O_6")
+				(pintype "output")
+			)
+			(node
+				(ref "IC20")
+				(pin "4")
+				(pinfunction "A2_4")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "157")
+			(name "Net-(IC18C-O)")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "8")
+				(pinfunction "O_8")
+				(pintype "output")
+			)
+			(node
+				(ref "IC20")
+				(pin "6")
+				(pinfunction "A3_6")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "158")
+			(name "Net-(IC18D-O)")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "11")
+				(pinfunction "O_11")
+				(pintype "output")
+			)
+			(node
+				(ref "IC20")
+				(pin "8")
+				(pinfunction "A4_8")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "159")
+			(name "Net-(IC19A-O)")
+			(class "Default")
+			(node
+				(ref "IC19")
+				(pin "3")
+				(pinfunction "O_3")
+				(pintype "output")
+			)
+			(node
+				(ref "IC20")
+				(pin "13")
+				(pinfunction "A2_13")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "160")
+			(name "Net-(IC19B-O)")
+			(class "Default")
+			(node
+				(ref "IC19")
+				(pin "6")
+				(pinfunction "O_6")
+				(pintype "output")
+			)
+			(node
+				(ref "IC20")
+				(pin "15")
+				(pinfunction "A3_15")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "161")
+			(name "Net-(IC19C-O)")
+			(class "Default")
+			(node
+				(ref "IC19")
+				(pin "8")
+				(pinfunction "O_8")
+				(pintype "output")
+			)
+			(node
+				(ref "IC20")
+				(pin "17")
+				(pinfunction "A4_17")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "162")
+			(name "Net-(IC19D-O)")
+			(class "Default")
+			(node
+				(ref "IC19")
+				(pin "11")
+				(pinfunction "O_11")
+				(pintype "output")
+			)
+			(node
+				(ref "IC20")
+				(pin "11")
+				(pinfunction "A1_11")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "163")
+			(name "Net-(IC21A-O)")
+			(class "Default")
+			(node
+				(ref "IC21")
+				(pin "3")
+				(pinfunction "O_3")
+				(pintype "output")
+			)
+			(node
+				(ref "IC23")
+				(pin "2")
+				(pinfunction "A1_2")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "164")
+			(name "Net-(IC21B-O)")
+			(class "Default")
+			(node
+				(ref "IC21")
+				(pin "6")
+				(pinfunction "O_6")
+				(pintype "output")
+			)
+			(node
+				(ref "IC23")
+				(pin "4")
+				(pinfunction "A2_4")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "165")
+			(name "Net-(IC21C-O)")
+			(class "Default")
+			(node
+				(ref "IC21")
+				(pin "8")
+				(pinfunction "O_8")
+				(pintype "output")
+			)
+			(node
+				(ref "IC23")
+				(pin "6")
+				(pinfunction "A3_6")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "166")
+			(name "Net-(IC21D-O)")
+			(class "Default")
+			(node
+				(ref "IC21")
+				(pin "11")
+				(pinfunction "O_11")
+				(pintype "output")
+			)
+			(node
+				(ref "IC23")
+				(pin "8")
+				(pinfunction "A4_8")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "167")
+			(name "Net-(IC22A-O)")
+			(class "Default")
+			(node
+				(ref "IC22")
+				(pin "3")
+				(pinfunction "O_3")
+				(pintype "output")
+			)
+			(node
+				(ref "IC23")
+				(pin "11")
+				(pinfunction "A1_11")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "168")
+			(name "Net-(IC22B-O)")
+			(class "Default")
+			(node
+				(ref "IC22")
+				(pin "6")
+				(pinfunction "O_6")
+				(pintype "output")
+			)
+			(node
+				(ref "IC23")
+				(pin "13")
+				(pinfunction "A2_13")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "169")
+			(name "Net-(IC22C-O)")
+			(class "Default")
+			(node
+				(ref "IC22")
+				(pin "8")
+				(pinfunction "O_8")
+				(pintype "output")
+			)
+			(node
+				(ref "IC23")
+				(pin "15")
+				(pinfunction "A3_15")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "170")
+			(name "Net-(IC22D-O)")
+			(class "Default")
+			(node
+				(ref "IC22")
+				(pin "11")
+				(pinfunction "O_11")
+				(pintype "output")
+			)
+			(node
+				(ref "IC23")
+				(pin "17")
+				(pinfunction "A4_17")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "171")
+			(name "Net-(IC24-A<B_O)")
+			(class "Default")
+			(node
+				(ref "IC24")
+				(pin "7")
+				(pinfunction "A<B_O_7")
+				(pintype "output")
+			)
+			(node
+				(ref "IC25")
+				(pin "2")
+				(pinfunction "A<B_I_2")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "172")
+			(name "Net-(IC24-A=B_O)")
+			(class "Default")
+			(node
+				(ref "IC24")
+				(pin "6")
+				(pinfunction "A=B_O_6")
+				(pintype "output")
+			)
+			(node
+				(ref "IC25")
+				(pin "3")
+				(pinfunction "A=B_I_3")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "173")
+			(name "Net-(IC24-A>B_O)")
+			(class "Default")
+			(node
+				(ref "IC24")
+				(pin "5")
+				(pinfunction "A>B_O_5")
+				(pintype "output")
+			)
+			(node
+				(ref "IC25")
+				(pin "4")
+				(pinfunction "A>B_I_4")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "174")
+			(name "Net-(IC25-A<B_O)")
+			(class "Default")
+			(node
+				(ref "IC25")
+				(pin "7")
+				(pinfunction "A<B_O_7")
+				(pintype "output")
+			)
+			(node
+				(ref "IC26")
+				(pin "3")
+				(pinfunction "D1_3")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "175")
+			(name "Net-(IC25-A=B_O)")
+			(class "Default")
+			(node
+				(ref "IC25")
+				(pin "6")
+				(pinfunction "A=B_O_6")
+				(pintype "output")
+			)
+			(node
+				(ref "IC26")
+				(pin "2")
+				(pinfunction "D2_2")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "176")
+			(name "Net-(IC25-A>B_O)")
+			(class "Default")
+			(node
+				(ref "IC25")
+				(pin "5")
+				(pinfunction "A>B_O_5")
+				(pintype "output")
+			)
+			(node
+				(ref "IC26")
+				(pin "1")
+				(pinfunction "D3_1")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "177")
+			(name "Net-(IC26-D4)")
+			(class "Default")
+			(node
+				(ref "IC26")
+				(pin "15")
+				(pinfunction "D4_15")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "4")
+				(pinfunction "I0_4")
+				(pintype "input")
+			)
+			(node
+				(ref "V2")
+				(pin "13")
+				(pinfunction "W_13")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "178")
+			(name "Net-(IC26-D6)")
+			(class "Default")
+			(node
+				(ref "IC26")
+				(pin "13")
+				(pinfunction "D6_13")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "6")
+				(pinfunction "O_6")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "179")
+			(name "Net-(IC26-G)")
+			(class "Default")
+			(node
+				(ref "IC26")
+				(pin "7")
+				(pinfunction "G_7")
+				(pintype "input")
+			)
+			(node
+				(ref "JP1")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "180")
+			(name "Net-(IC26-Y)")
+			(class "Default")
+			(node
+				(ref "IC26")
+				(pin "5")
+				(pinfunction "Y_5")
+				(pintype "tri_state")
+			)
+			(node
+				(ref "IC27")
+				(pin "10")
+				(pinfunction "I1_10")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "181")
+			(name "Net-(IC27A-I0)")
+			(class "Default")
+			(node
+				(ref "IC27")
+				(pin "1")
+				(pinfunction "I0_1")
+				(pintype "input")
+			)
+			(node
+				(ref "IC6")
+				(pin "11")
+				(pinfunction "O_11")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "182")
+			(name "Net-(IC27A-O)")
+			(class "Default")
+			(node
+				(ref "IC27")
+				(pin "3")
+				(pinfunction "O_3")
+				(pintype "output")
+			)
+			(node
+				(ref "IC35")
+				(pin "7")
+				(pinfunction "C0_7")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "183")
+			(name "Net-(IC27B-I0)")
+			(class "Default")
+			(node
+				(ref "IC27")
+				(pin "4")
+				(pinfunction "I0_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC36")
+				(pin "9")
+				(pinfunction "C4_9")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "184")
+			(name "Net-(IC28-1Y)")
+			(class "Default")
+			(node
+				(ref "IC28")
+				(pin "7")
+				(pinfunction "1Y_7")
+				(pintype "output")
+			)
+			(node
+				(ref "IC29")
+				(pin "2")
+				(pinfunction "SR_2")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "185")
+			(name "Net-(IC28-2Y)")
+			(class "Default")
+			(node
+				(ref "IC28")
+				(pin "9")
+				(pinfunction "2Y_9")
+				(pintype "output")
+			)
+			(node
+				(ref "IC30")
+				(pin "7")
+				(pinfunction "SL_7")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "186")
+			(name "Net-(IC29-QA)")
+			(class "Default")
+			(node
+				(ref "IC29")
+				(pin "15")
+				(pinfunction "QA_15")
+				(pintype "output")
+			)
+			(node
+				(ref "IC31")
+				(pin "2")
+				(pinfunction "A1_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC32")
+				(pin "5")
+				(pinfunction "1C1_5")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "187")
+			(name "Net-(IC29-QB)")
+			(class "Default")
+			(node
+				(ref "IC29")
+				(pin "14")
+				(pinfunction "QB_14")
+				(pintype "output")
+			)
+			(node
+				(ref "IC31")
+				(pin "4")
+				(pinfunction "A2_4")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "188")
+			(name "Net-(IC29-QC)")
+			(class "Default")
+			(node
+				(ref "IC29")
+				(pin "13")
+				(pinfunction "QC_13")
+				(pintype "output")
+			)
+			(node
+				(ref "IC31")
+				(pin "6")
+				(pinfunction "A3_6")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "189")
+			(name "Net-(IC29-QD)")
+			(class "Default")
+			(node
+				(ref "IC29")
+				(pin "12")
+				(pinfunction "QD_12")
+				(pintype "output")
+			)
+			(node
+				(ref "IC31")
+				(pin "8")
+				(pinfunction "A4_8")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "190")
+			(name "Net-(IC30-QA)")
+			(class "Default")
+			(node
+				(ref "IC30")
+				(pin "15")
+				(pinfunction "QA_15")
+				(pintype "output")
+			)
+			(node
+				(ref "IC31")
+				(pin "11")
+				(pinfunction "A1_11")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "191")
+			(name "Net-(IC30-QB)")
+			(class "Default")
+			(node
+				(ref "IC30")
+				(pin "14")
+				(pinfunction "QB_14")
+				(pintype "output")
+			)
+			(node
+				(ref "IC31")
+				(pin "13")
+				(pinfunction "A2_13")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "192")
+			(name "Net-(IC30-QC)")
+			(class "Default")
+			(node
+				(ref "IC30")
+				(pin "13")
+				(pinfunction "QC_13")
+				(pintype "output")
+			)
+			(node
+				(ref "IC31")
+				(pin "15")
+				(pinfunction "A3_15")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "193")
+			(name "Net-(IC30-QD)")
+			(class "Default")
+			(node
+				(ref "IC30")
+				(pin "12")
+				(pinfunction "QD_12")
+				(pintype "output")
+			)
+			(node
+				(ref "IC31")
+				(pin "17")
+				(pinfunction "A4_17")
+				(pintype "input")
+			)
+			(node
+				(ref "IC32")
+				(pin "4")
+				(pinfunction "1C2_4")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "194")
+			(name "Net-(IC32-1Y)")
+			(class "Default")
+			(node
+				(ref "IC32")
+				(pin "7")
+				(pinfunction "1Y_7")
+				(pintype "output")
+			)
+			(node
+				(ref "IC9")
+				(pin "12")
+				(pinfunction "D_12")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "195")
+			(name "Net-(IC33A-O)")
+			(class "Default")
+			(node
+				(ref "IC33")
+				(pin "3")
+				(pinfunction "O_3")
+				(pintype "output")
+			)
+			(node
+				(ref "IC35")
+				(pin "6")
+				(pinfunction "B1_6")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "196")
+			(name "Net-(IC33B-O)")
+			(class "Default")
+			(node
+				(ref "IC33")
+				(pin "6")
+				(pinfunction "O_6")
+				(pintype "output")
+			)
+			(node
+				(ref "IC35")
+				(pin "2")
+				(pinfunction "B2_2")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "197")
+			(name "Net-(IC33C-O)")
+			(class "Default")
+			(node
+				(ref "IC33")
+				(pin "8")
+				(pinfunction "O_8")
+				(pintype "output")
+			)
+			(node
+				(ref "IC35")
+				(pin "15")
+				(pinfunction "B3_15")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "198")
+			(name "Net-(IC33D-O)")
+			(class "Default")
+			(node
+				(ref "IC33")
+				(pin "11")
+				(pinfunction "O_11")
+				(pintype "output")
+			)
+			(node
+				(ref "IC35")
+				(pin "11")
+				(pinfunction "B4_11")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "199")
+			(name "Net-(IC34A-O)")
+			(class "Default")
+			(node
+				(ref "IC34")
+				(pin "3")
+				(pinfunction "O_3")
+				(pintype "output")
+			)
+			(node
+				(ref "IC36")
+				(pin "6")
+				(pinfunction "B1_6")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "200")
+			(name "Net-(IC34B-O)")
+			(class "Default")
+			(node
+				(ref "IC34")
+				(pin "6")
+				(pinfunction "O_6")
+				(pintype "output")
+			)
+			(node
+				(ref "IC36")
+				(pin "2")
+				(pinfunction "B2_2")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "201")
+			(name "Net-(IC34C-O)")
+			(class "Default")
+			(node
+				(ref "IC34")
+				(pin "8")
+				(pinfunction "O_8")
+				(pintype "output")
+			)
+			(node
+				(ref "IC36")
+				(pin "15")
+				(pinfunction "B3_15")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "202")
+			(name "Net-(IC34D-O)")
+			(class "Default")
+			(node
+				(ref "IC34")
+				(pin "11")
+				(pinfunction "O_11")
+				(pintype "output")
+			)
+			(node
+				(ref "IC36")
+				(pin "11")
+				(pinfunction "B4_11")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "203")
+			(name "Net-(IC35-C4)")
+			(class "Default")
+			(node
+				(ref "IC35")
+				(pin "9")
+				(pinfunction "C4_9")
+				(pintype "output")
+			)
+			(node
+				(ref "IC36")
+				(pin "7")
+				(pinfunction "C0_7")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "204")
+			(name "Net-(IC35-S1)")
+			(class "Default")
+			(node
+				(ref "IC35")
+				(pin "4")
+				(pinfunction "S1_4")
+				(pintype "output")
+			)
+			(node
+				(ref "IC37")
+				(pin "2")
+				(pinfunction "A1_2")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "205")
+			(name "Net-(IC35-S2)")
+			(class "Default")
+			(node
+				(ref "IC35")
+				(pin "1")
+				(pinfunction "S2_1")
+				(pintype "output")
+			)
+			(node
+				(ref "IC37")
+				(pin "4")
+				(pinfunction "A2_4")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "206")
+			(name "Net-(IC35-S3)")
+			(class "Default")
+			(node
+				(ref "IC35")
+				(pin "13")
+				(pinfunction "S3_13")
+				(pintype "output")
+			)
+			(node
+				(ref "IC37")
+				(pin "6")
+				(pinfunction "A3_6")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "207")
+			(name "Net-(IC35-S4)")
+			(class "Default")
+			(node
+				(ref "IC35")
+				(pin "10")
+				(pinfunction "S4_10")
+				(pintype "output")
+			)
+			(node
+				(ref "IC37")
+				(pin "8")
+				(pinfunction "A4_8")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "208")
+			(name "Net-(IC36-S1)")
+			(class "Default")
+			(node
+				(ref "IC36")
+				(pin "4")
+				(pinfunction "S1_4")
+				(pintype "output")
+			)
+			(node
+				(ref "IC37")
+				(pin "11")
+				(pinfunction "A1_11")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "209")
+			(name "Net-(IC36-S2)")
+			(class "Default")
+			(node
+				(ref "IC36")
+				(pin "1")
+				(pinfunction "S2_1")
+				(pintype "output")
+			)
+			(node
+				(ref "IC37")
+				(pin "13")
+				(pinfunction "A2_13")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "210")
+			(name "Net-(IC36-S3)")
+			(class "Default")
+			(node
+				(ref "IC36")
+				(pin "13")
+				(pinfunction "S3_13")
+				(pintype "output")
+			)
+			(node
+				(ref "IC37")
+				(pin "15")
+				(pinfunction "A3_15")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "211")
+			(name "Net-(IC36-S4)")
+			(class "Default")
+			(node
+				(ref "IC36")
+				(pin "10")
+				(pinfunction "S4_10")
+				(pintype "output")
+			)
+			(node
+				(ref "IC37")
+				(pin "17")
+				(pinfunction "A4_17")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "212")
+			(name "Net-(PWR0-PadA)")
+			(class "Default")
+			(node
+				(ref "PWR0")
+				(pin "A")
+				(pinfunction "A_A")
+				(pintype "passive")
+			)
+			(node
+				(ref "R1")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "213")
+			(name "SHIFT-OUT")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "2")
+				(pinfunction "I1_2")
+				(pintype "input")
+			)
+			(node
+				(ref "IC9")
+				(pin "9")
+				(pinfunction "Q_9")
+				(pintype "output")
 			)
 		)
 		(net

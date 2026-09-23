@@ -7,6 +7,11 @@ the PDF generators, and the KiCad conversion:
   writes `hardware/KICAD.md`; per design it runs the three tools in `kicad/` (`eagle_sch_to_kicad.py` schematic converter,
   `finish_board.py` board finisher on KiCad's Eagle board import, `compare_netlists.py` schematic-vs-board proof), then ERC,
   DRC, a schematic PDF and board renders into `reports/`. `kicad/project-template.kicad_pro` carries the OSH Park rules.
+- `kicad/sch_overlaps.py` — readability check for any `.kicad_sch` (or a folder of them): text over text, text over a
+  symbol body, text crossed by a wire/pin/graphic line, and anything off the drawing frame or on the title block, with
+  the worst offenders per sheet (`--summary`, `--detail N`, `--pairs N`, `--json`; `--calibrate SVG` checks its text
+  boxes against a `kicad-cli sch export svg` render). `eagle_to_kicad_all.py` puts its counts in each README and in
+  `hardware/KICAD.md`.
 - `verify_processing.py` — builds the Processing command sender with the Processing 4 CLI and re-compiles it with warnings on.
 
 _Contents migrated 2026-09-19; MIGRATION.md at the repo root says which copy each item came from._

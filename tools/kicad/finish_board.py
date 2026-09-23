@@ -37,14 +37,28 @@ def main(src, outdir, project, netfile):
     pretty = os.path.join(outdir, libname + ".pretty")
     os.makedirs(pretty, exist_ok=True)
     plugin = pcbnew.PCB_IO_KICAD_SEXPR()
-    seen = set()
-    for fp in board.GetFootprints():
+    # The library copy of a package is its MOST COMMON variant on the board (instances of one Eagle package can differ,
+    # e.g. by where their texts sit), ties broken by reference order: DRC's lib_footprint_mismatch then flags only the
+    # odd ones out. (Taking "the first footprint" was not stable: KiCad's Eagle importer does not return footprints in
+    # a fixed order, and under load the same board gave 2, 10, then 2 mismatches.)
+    import tempfile, shutil, collections
+    key = lambda fp: [int(t) if t.isdigit() else t for t in re.split(r"(\d+)", fp.GetReference())]
+    tmp = tempfile.mkdtemp(prefix="fplib-")
+    variants = collections.OrderedDict()          # package name -> {signature: [footprints]}
+    for i, fp in enumerate(sorted(board.GetFootprints(), key=key)):
         fpid = fp.GetFPID()
         name = fpid.GetLibItemName().wx_str() if hasattr(fpid.GetLibItemName(), "wx_str") else str(fpid.GetLibItemName())
-        if name in seen:
-            continue
+        d = os.path.join(tmp, str(i)); os.makedirs(d)
+        plugin.FootprintSave(d, fp)
+        txt = "".join(open(os.path.join(d, f)).read() for f in os.listdir(d))
+        sig = re.sub(r'\(uuid "[^"]*"\)|\(property "(Reference|Value)" "[^"]*"', "", txt)
+        variants.setdefault(name, collections.OrderedDict()).setdefault(sig, []).append(fp)
+    shutil.rmtree(tmp, ignore_errors=True)
+    seen = set()
+    for name, sigs in variants.items():
+        best = max(sigs.values(), key=len)       # max() keeps the first of equal counts = reference order
         seen.add(name)
-        plugin.FootprintSave(pretty, fp)   # KiCad normalises position/orientation on save
+        plugin.FootprintSave(pretty, best[0])   # KiCad normalises position/orientation on save
     print("footprints saved to %s: %d" % (pretty, len(seen)))
     for fp in board.GetFootprints():
         fpid = fp.GetFPID()

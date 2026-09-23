@@ -2,7 +2,7 @@
 	(version "E")
 	(design
 		(source "/Users/ksr77/Developer/YACC1-D/hardware/bus/bus-jumper-horizontal/kicad/v3.2/bus-jumper-horizontal-v3.2.kicad_sch")
-		(date "2026-09-20T21:33:28")
+		(date "2026-09-23T17:36:39")
 		(tool "Eeschema 10.0.6")
 		(sheet
 			(number "1")
@@ -338,6 +338,8 @@
 			(footprint "bus-jumper-horizontal-v3.2-eagle:MABC96R")
 			(fields
 				(field
+					(name "Eagle name") "X3-A1")
+				(field
 					(name "Footprint") "bus-jumper-horizontal-v3.2-eagle:MABC96R")
 				(field
 					(name "Datasheet")
@@ -352,6 +354,10 @@
 				(description "Eagle con-vg:MABC96R")
 			)
 			(property
+				(name "Eagle name")
+				(value "X3-A7")
+			)
+			(property
 				(name "Sheetname")
 				(value "Sheet 1")
 			)
@@ -363,54 +369,54 @@
 				(names "/Sheet 1/")
 				(tstamps "/2eba0785-1abc-e92e-c943-d935f46f73e8/")
 			)
-			(tstamps "e0084f1f-6cb7-84cc-1208-d22c65ab258b" "c80440f6-c7a6-9f3a-4246-06aff56e937c"
-				"eea2f385-23d0-79bb-cbd9-b63c3a286dc5" "ae2d3d1b-091c-13c4-5f06-abc52b8cc38f"
-				"54197a4e-a5ec-d05f-428e-5602a01f8a32" "484cbdf0-460e-5e8a-bdb4-b0db162c8596"
-				"a30be0d5-97fe-38b9-1ef5-8814dd1f10fc" "d6274291-a8d2-a278-44b9-fc82dc897588"
-				"be6bfd0c-e23f-249c-8074-b0828faa09f2" "3f2686cc-bcbe-30b3-a1b0-f3e7534c2842"
-				"ec8a671e-7dcc-3097-937a-d889c4182d23" "90920bbf-fe10-f1af-13fe-7be2ce9fb8cd"
-				"9db31b37-7f87-00c8-56af-4ce76a112641" "3976d6fd-566f-e9b7-a369-f3ed5b0aebee"
-				"dc958d22-48c2-4e9a-788b-f53e6f7b6215" "ef81f94f-689f-2a5e-bb1b-51689c8b1498"
+			(tstamps "be6bfd0c-e23f-249c-8074-b0828faa09f2" "d6274291-a8d2-a278-44b9-fc82dc897588"
+				"54197a4e-a5ec-d05f-428e-5602a01f8a32" "ae2d3d1b-091c-13c4-5f06-abc52b8cc38f"
+				"eea2f385-23d0-79bb-cbd9-b63c3a286dc5" "c80440f6-c7a6-9f3a-4246-06aff56e937c"
+				"484cbdf0-460e-5e8a-bdb4-b0db162c8596" "ec8a671e-7dcc-3097-937a-d889c4182d23"
+				"a30be0d5-97fe-38b9-1ef5-8814dd1f10fc" "90920bbf-fe10-f1af-13fe-7be2ce9fb8cd"
+				"3976d6fd-566f-e9b7-a369-f3ed5b0aebee" "dc958d22-48c2-4e9a-788b-f53e6f7b6215"
+				"ef81f94f-689f-2a5e-bb1b-51689c8b1498" "3f2686cc-bcbe-30b3-a1b0-f3e7534c2842"
+				"9db31b37-7f87-00c8-56af-4ce76a112641" "61c42331-e9d1-7e63-75df-6454b96350fd"
+				"8c199c7b-f36c-c491-0e40-339ecaa4c9f3" "54382cb5-b993-7294-eefa-c373638cf219"
+				"40901b31-373c-041f-ff69-7f41afb1d6b3" "e280b593-51f0-7f01-8a60-02075adb4184"
+				"6dfdf395-afce-582c-1d1d-8e3d0e59c4d6" "be8e73de-6a63-4864-12a7-cc843d05b17b"
+				"a167fee3-d093-9c79-4c91-a10280fa3b04" "c03bad15-dbb4-f20a-691d-986a33202d29"
+				"1eee9736-58d5-c4d9-9dfb-aad4649041f3" "2a9c2c1b-4d04-2329-4c40-fcb28324bd82"
+				"e57ff058-d934-37d2-315b-7d47a5614e47" "de871109-13d5-6b28-313c-97a9b3a1caf5"
+				"38648efe-1194-953c-d750-d0bb2b45ed97" "c2c8106f-e172-d559-03a2-d6a103036e47"
+				"e4e156c6-facb-fd0d-3fa2-af252f4ceaf5" "40ff217b-95a8-6154-a8a2-3f599e6f5063"
 				"e0f701fc-f47f-c845-5a13-cb15bc4a76e4" "4e8a814a-32e9-1742-73c2-bec0af9dd1e7"
-				"31c6b9bc-6dde-4cdb-55f2-cb427924f8a2" "2f195592-8d8c-9995-b150-2202e8bf09e6"
-				"4c048d0e-9b36-cde8-29ca-4399aec9c081" "1eee9736-58d5-c4d9-9dfb-aad4649041f3"
 				"805ef836-2548-dc47-1084-2754f8fcb48a" "662eb4f5-7709-853c-76ca-40c8af67c9f6"
-				"e513a2e3-2348-f7fd-5cd6-ac6942a64026" "8b754807-0d72-01f7-a0b9-e84102e937af"
-				"b9c36ea7-9b45-bf7c-ee2b-70d7c27b5de7" "7e648c78-edf9-1831-867d-b354fbf23aaa"
-				"ec11816f-ed77-c780-548a-3d634097c384" "0f9f6fa6-2a8d-453b-4e67-871bdddbdf30"
-				"67bc9926-7475-01a1-bf1e-476e79a61abc" "aacc3d93-1ee5-6b1d-919a-c66e5efb09e0"
-				"8a8f2876-fa2a-39ab-7959-c4b04c1703e9" "1ba3c429-3efb-368f-b11a-7c7c653d7825"
-				"38648efe-1194-953c-d750-d0bb2b45ed97" "de871109-13d5-6b28-313c-97a9b3a1caf5"
-				"be8e73de-6a63-4864-12a7-cc843d05b17b" "2a9c2c1b-4d04-2329-4c40-fcb28324bd82"
-				"6dfdf395-afce-582c-1d1d-8e3d0e59c4d6" "e57ff058-d934-37d2-315b-7d47a5614e47"
-				"40ff217b-95a8-6154-a8a2-3f599e6f5063" "c2c8106f-e172-d559-03a2-d6a103036e47"
-				"e4e156c6-facb-fd0d-3fa2-af252f4ceaf5" "54382cb5-b993-7294-eefa-c373638cf219"
-				"40901b31-373c-041f-ff69-7f41afb1d6b3" "8c199c7b-f36c-c491-0e40-339ecaa4c9f3"
-				"61c42331-e9d1-7e63-75df-6454b96350fd" "1866f946-d514-0164-ae21-15ae9b46a5dc"
-				"a167fee3-d093-9c79-4c91-a10280fa3b04" "e280b593-51f0-7f01-8a60-02075adb4184"
-				"c03bad15-dbb4-f20a-691d-986a33202d29" "b2ec5bed-3a0a-934f-c6df-d68ddab72aeb"
-				"8a140a49-ad74-df77-7dcd-445fc807318a" "fdc60679-21f8-7c7c-6ed9-a7bb91bcd91d"
-				"59308779-83e4-827d-b6de-fdc7491bca40" "15e93fc1-1db2-cf8b-8c56-b2fd7360de70"
-				"7f98744d-27b1-875d-4dae-2d30c1bf6db6" "d4142fa3-6b8d-bac3-87b6-95178d7e1947"
-				"ceddd912-273d-cc1b-6536-d8355351da67" "3ab674b0-a5b6-17a4-655b-fd23b399406a"
+				"7e648c78-edf9-1831-867d-b354fbf23aaa" "b9c36ea7-9b45-bf7c-ee2b-70d7c27b5de7"
+				"8b754807-0d72-01f7-a0b9-e84102e937af" "ec11816f-ed77-c780-548a-3d634097c384"
+				"8a8f2876-fa2a-39ab-7959-c4b04c1703e9" "67bc9926-7475-01a1-bf1e-476e79a61abc"
+				"1866f946-d514-0164-ae21-15ae9b46a5dc" "aacc3d93-1ee5-6b1d-919a-c66e5efb09e0"
+				"1ba3c429-3efb-368f-b11a-7c7c653d7825" "e513a2e3-2348-f7fd-5cd6-ac6942a64026"
+				"2f195592-8d8c-9995-b150-2202e8bf09e6" "0f9f6fa6-2a8d-453b-4e67-871bdddbdf30"
+				"31c6b9bc-6dde-4cdb-55f2-cb427924f8a2" "4c048d0e-9b36-cde8-29ca-4399aec9c081"
+				"4b1a391a-a2dd-8763-08c4-1122a3f3d3ef" "7f98744d-27b1-875d-4dae-2d30c1bf6db6"
+				"fdc60679-21f8-7c7c-6ed9-a7bb91bcd91d" "59308779-83e4-827d-b6de-fdc7491bca40"
+				"15e93fc1-1db2-cf8b-8c56-b2fd7360de70" "b2ec5bed-3a0a-934f-c6df-d68ddab72aeb"
+				"8a140a49-ad74-df77-7dcd-445fc807318a" "07aebf87-2a5d-cea0-9afc-3b86c6a9fefe"
+				"ceddd912-273d-cc1b-6536-d8355351da67" "d4142fa3-6b8d-bac3-87b6-95178d7e1947"
 				"c94f196f-3115-db0c-7753-6ca457a7dd45" "a711d605-1b0f-52af-5e3f-730d4e4b92c6"
-				"63b15eff-1e4f-cbe3-524b-d5e9c4bf5f2a" "e8106770-4da1-df71-f99d-2a7e446ccd43"
-				"dc1a7d8d-dd6f-886c-bc4e-7534ee20e88e" "4b1a391a-a2dd-8763-08c4-1122a3f3d3ef"
-				"7cf7258b-c1ff-6052-eb40-1f5139ecc0b5" "0741af69-3b57-5642-1a03-4c1f783f17f2"
-				"134f8ced-c587-115a-36e5-e2e50d9885a2" "07aebf87-2a5d-cea0-9afc-3b86c6a9fefe"
-				"5027328b-554d-83ca-75f9-4b9f2aeb36c3" "2713adfd-97fb-f86b-8179-2539ec7c6d88"
-				"0d1c5ff6-8488-3b71-da8c-7f08e3be5259" "450abcc2-ff99-8a31-4955-1a82235a9c8b"
-				"0a61e6d9-c3d4-4dc8-11b2-3197734b7824" "8c4bd03f-9d01-80e1-8793-adf1397a037b"
-				"34dea2e7-3a9c-d304-093f-8430783cf5a4" "f0911869-f501-d8ab-81d7-f2f3c4136048"
-				"f57b75ed-fc62-e9e4-6193-67a009bc3599" "8188a4ab-7a21-5428-0eec-e78d2dd89a07"
-				"b81b826b-47f4-b069-20f0-43de74de7218" "6a3e13b6-3bd7-ae64-07dc-29cf86ca78ec"
-				"eea3fa1c-b367-78f4-a7cd-977acc4ca0da" "f1726832-9c91-0447-5807-fb06c2e9ccd2"
-				"65560243-c3d6-c4a7-3da2-adfd334e4507" "4b19221e-70bb-203a-ca3e-18fe6d0b7fd5"
-				"268d5b1e-a20d-8b92-0240-b6d5d3c01599" "b2f39b5a-c38f-b2de-899f-967a9eed2d6c"
-				"64474ab1-6ae6-d10c-5f89-ef8301c2d812" "fd9def34-b94f-289a-c7c9-3b4791db05d1"
-				"9f31451a-23b4-4bb4-cf4c-c81d212c37b8" "caa7c760-d027-049b-2e45-96473332f953"
-				"671271a2-9e17-f7c8-5592-b3036021c0ee" "f2000253-c754-4c46-ef51-00096075d2c8"
-				"543f433b-6e1f-b421-8daa-c76e77e3df4c" "066bcab7-dc90-6850-8946-c3f215d39ee1"
+				"63b15eff-1e4f-cbe3-524b-d5e9c4bf5f2a" "3ab674b0-a5b6-17a4-655b-fd23b399406a"
+				"e8106770-4da1-df71-f99d-2a7e446ccd43" "f0911869-f501-d8ab-81d7-f2f3c4136048"
+				"6a3e13b6-3bd7-ae64-07dc-29cf86ca78ec" "f1726832-9c91-0447-5807-fb06c2e9ccd2"
+				"34dea2e7-3a9c-d304-093f-8430783cf5a4" "eea3fa1c-b367-78f4-a7cd-977acc4ca0da"
+				"f57b75ed-fc62-e9e4-6193-67a009bc3599" "e0084f1f-6cb7-84cc-1208-d22c65ab258b"
+				"8188a4ab-7a21-5428-0eec-e78d2dd89a07" "b81b826b-47f4-b069-20f0-43de74de7218"
+				"8c4bd03f-9d01-80e1-8793-adf1397a037b" "b2f39b5a-c38f-b2de-899f-967a9eed2d6c"
+				"fd9def34-b94f-289a-c7c9-3b4791db05d1" "64474ab1-6ae6-d10c-5f89-ef8301c2d812"
+				"9f31451a-23b4-4bb4-cf4c-c81d212c37b8" "268d5b1e-a20d-8b92-0240-b6d5d3c01599"
+				"caa7c760-d027-049b-2e45-96473332f953" "671271a2-9e17-f7c8-5592-b3036021c0ee"
+				"4b19221e-70bb-203a-ca3e-18fe6d0b7fd5" "f2000253-c754-4c46-ef51-00096075d2c8"
+				"65560243-c3d6-c4a7-3da2-adfd334e4507" "543f433b-6e1f-b421-8daa-c76e77e3df4c"
+				"5027328b-554d-83ca-75f9-4b9f2aeb36c3" "134f8ced-c587-115a-36e5-e2e50d9885a2"
+				"0741af69-3b57-5642-1a03-4c1f783f17f2" "7cf7258b-c1ff-6052-eb40-1f5139ecc0b5"
+				"dc1a7d8d-dd6f-886c-bc4e-7534ee20e88e" "0d1c5ff6-8488-3b71-da8c-7f08e3be5259"
+				"450abcc2-ff99-8a31-4955-1a82235a9c8b" "2713adfd-97fb-f86b-8179-2539ec7c6d88"
+				"0a61e6d9-c3d4-4dc8-11b2-3197734b7824" "066bcab7-dc90-6850-8946-c3f215d39ee1"
 			)
 			(units
 				(unit
@@ -1189,6 +1195,8 @@
 			(footprint "bus-jumper-horizontal-v3.2-eagle:MABC96R")
 			(fields
 				(field
+					(name "Eagle name") "X4-A1")
+				(field
 					(name "Footprint") "bus-jumper-horizontal-v3.2-eagle:MABC96R")
 				(field
 					(name "Datasheet")
@@ -1203,6 +1211,10 @@
 				(description "Eagle con-vg:MABC96R")
 			)
 			(property
+				(name "Eagle name")
+				(value "X4-A22")
+			)
+			(property
 				(name "Sheetname")
 				(value "Sheet 1")
 			)
@@ -1214,54 +1226,54 @@
 				(names "/Sheet 1/")
 				(tstamps "/2eba0785-1abc-e92e-c943-d935f46f73e8/")
 			)
-			(tstamps "8d0f1d70-73d2-4d20-062d-65d0797c98fe" "929ea6d8-bc74-3eb7-ed2a-a996ccd16acc"
-				"e27284a4-fa39-e521-2933-55fb939efae7" "5cafdb30-e5ea-102c-ae71-7efcfc21300b"
-				"d778b7a9-03c5-2efe-20e3-624f18712ae6" "b09b6970-434b-208a-b625-f14613fe1cd4"
-				"c419ced2-3c5a-1042-1386-e78ac6fd05ef" "3f9e15c9-a6c1-caa1-8f36-ab3dbd5c7ba9"
-				"5811e1e5-4538-3e07-35a8-0185bb04a972" "d43bcb3b-f88e-4c93-d420-39f759e6d0d9"
-				"d29b24be-b60a-a1ec-106c-c050215c3cb9" "9ff95e6e-fdc0-a0bd-f973-7a9b72c170c4"
-				"b611e0c4-ba91-a9e5-0203-8cf83daa80ef" "559eaa8a-9ad1-8950-95d0-40a2824f5e41"
-				"cb9bbc1b-8379-9b8f-c1f5-ce07fd5e49b7" "654fa1d9-d24c-62ea-9aaf-281bd01a0f6e"
-				"973aae15-73ee-03f5-f4a0-bcc783cff7e6" "43ab19d4-5c6c-68b8-7d1e-293abd942348"
-				"95107f1b-8021-309a-254c-18afbbddb8da" "5484f82c-21ec-5e70-2210-4b1d7cf47906"
-				"ef45902e-97d2-8617-08d6-3c21b993e7f2" "3356cc0f-9147-c682-1095-2d8509ffc73c"
-				"9e47941d-a623-eb93-3c32-c9b3b8dc0d5c" "1db07ba3-c819-55d9-763a-115d3b46dd26"
-				"d9f6c02b-3163-929b-9541-14cce7461996" "54375d18-e08d-9a76-d1cb-88bef01cbd83"
-				"89f00390-c24d-ce6c-8284-02fa56add43f" "638d3f0e-33ec-de92-7c99-408131fcf3b9"
-				"1134f370-be1e-4885-7c42-d2386d65b43c" "cb62bcbd-3c6f-f3d6-2ecf-74e4e3adb630"
+			(tstamps "54375d18-e08d-9a76-d1cb-88bef01cbd83" "cb62bcbd-3c6f-f3d6-2ecf-74e4e3adb630"
 				"9ecad55f-5e53-5e0e-1063-8abc52e5828d" "3e4e34cd-dc4e-540c-4eb4-5251a4d38733"
-				"74da23a9-87d5-6bac-10d0-724d70e09f6c" "88e4a7c2-864d-d73f-257f-d06a5886b98d"
-				"db6d3977-5d23-529b-52bd-6522a5d0fbdd" "e6566dc0-ec1a-9d8d-774e-5b9ff112a698"
-				"c4f6a0d8-86fe-1c9a-350a-7f07193f7955" "2ec020ad-e5df-02ce-17c6-c45616f4c317"
-				"b7349493-58f2-4cbc-aad3-39ee7be98c61" "e60b917a-d70a-a973-72a1-db1f3329f57f"
-				"4c87e28e-0453-0997-5ac3-f0625ad243ff" "47298e1e-7ff2-fb0d-90b7-a5a40a79f181"
-				"0f0c931a-9839-cabe-63bc-3e0a07bcf935" "90aeb8bf-25c3-ca93-cb67-81dd5e4ded8b"
-				"39dc952a-02d0-69dd-83c4-db891b2ed9eb" "71f33521-d806-bb87-72b1-ca6f162406df"
-				"58ac5521-5e11-16e3-2c4e-abd49af5a290" "76aebea5-0324-544a-9a56-aa5ee8a8844d"
-				"b6dfc23e-9fb5-a910-164a-d760bbd8448e" "e1d26bdb-cb48-00a9-bebe-125b2ad8b020"
-				"ef080396-4ff2-2cf1-c7e9-8a405f0ebc1d" "84897726-f02a-65af-3223-e16c39a183a1"
-				"e5732a80-e231-1170-2aab-ece95c75108b" "4b4f2d5c-4474-1dd8-a511-91b2c82c6170"
-				"501e51d1-365f-a5a3-c4e1-a47a41c0cdd5" "b0188b40-a9f9-1791-3698-1c0541e6151e"
-				"78b774f8-6f87-47a8-b230-d39b0f29f8a7" "56dcee45-5a36-e5c2-58a7-25f8f653ba06"
-				"bf3f610d-c5c6-5758-aa6c-232663c43c2a" "0abf9d23-4daf-d90f-297e-85b06b4ef6fe"
-				"6ce9d2b3-3075-bde4-e68c-55f30e614185" "963b12ed-2ab2-d151-2e2b-7422b8750179"
-				"c74a3d0c-a2cb-f406-b2df-303c00abb7a6" "d461feb1-eca9-fdb0-83a7-05a9c84a60d4"
-				"0bfce698-d861-a1fd-fe71-9820062ee995" "711c3081-6218-0ec3-6f5e-233d44063ee1"
-				"514cac75-b556-a363-23a3-85ddac6ed8fe" "3eaf6206-10cb-3533-a2f4-c0802396df77"
-				"ac1c4bc2-007c-07c1-1007-fd83b81f196e" "e7506817-15f1-a07a-6cf9-45f107726a60"
-				"5aa8b668-b93a-1656-4733-1eca7aff9408" "4ffc5683-cf66-b8c5-3194-38158c39370b"
+				"89f00390-c24d-ce6c-8284-02fa56add43f" "638d3f0e-33ec-de92-7c99-408131fcf3b9"
+				"95107f1b-8021-309a-254c-18afbbddb8da" "5484f82c-21ec-5e70-2210-4b1d7cf47906"
+				"ef45902e-97d2-8617-08d6-3c21b993e7f2" "43ab19d4-5c6c-68b8-7d1e-293abd942348"
+				"973aae15-73ee-03f5-f4a0-bcc783cff7e6" "1db07ba3-c819-55d9-763a-115d3b46dd26"
+				"5cafdb30-e5ea-102c-ae71-7efcfc21300b" "3f9e15c9-a6c1-caa1-8f36-ab3dbd5c7ba9"
+				"c419ced2-3c5a-1042-1386-e78ac6fd05ef" "b09b6970-434b-208a-b625-f14613fe1cd4"
+				"8d0f1d70-73d2-4d20-062d-65d0797c98fe" "88e4a7c2-864d-d73f-257f-d06a5886b98d"
+				"3356cc0f-9147-c682-1095-2d8509ffc73c" "929ea6d8-bc74-3eb7-ed2a-a996ccd16acc"
+				"74da23a9-87d5-6bac-10d0-724d70e09f6c" "9e47941d-a623-eb93-3c32-c9b3b8dc0d5c"
+				"1134f370-be1e-4885-7c42-d2386d65b43c" "d9f6c02b-3163-929b-9541-14cce7461996"
+				"47298e1e-7ff2-fb0d-90b7-a5a40a79f181" "0f0c931a-9839-cabe-63bc-3e0a07bcf935"
+				"90aeb8bf-25c3-ca93-cb67-81dd5e4ded8b" "b7349493-58f2-4cbc-aad3-39ee7be98c61"
+				"e60b917a-d70a-a973-72a1-db1f3329f57f" "b6dfc23e-9fb5-a910-164a-d760bbd8448e"
+				"e1d26bdb-cb48-00a9-bebe-125b2ad8b020" "76aebea5-0324-544a-9a56-aa5ee8a8844d"
+				"58ac5521-5e11-16e3-2c4e-abd49af5a290" "39dc952a-02d0-69dd-83c4-db891b2ed9eb"
+				"e6566dc0-ec1a-9d8d-774e-5b9ff112a698" "71f33521-d806-bb87-72b1-ca6f162406df"
+				"db6d3977-5d23-529b-52bd-6522a5d0fbdd" "2ec020ad-e5df-02ce-17c6-c45616f4c317"
+				"c4f6a0d8-86fe-1c9a-350a-7f07193f7955" "e27284a4-fa39-e521-2933-55fb939efae7"
+				"d43bcb3b-f88e-4c93-d420-39f759e6d0d9" "b611e0c4-ba91-a9e5-0203-8cf83daa80ef"
+				"9ff95e6e-fdc0-a0bd-f973-7a9b72c170c4" "d778b7a9-03c5-2efe-20e3-624f18712ae6"
+				"d29b24be-b60a-a1ec-106c-c050215c3cb9" "5811e1e5-4538-3e07-35a8-0185bb04a972"
+				"559eaa8a-9ad1-8950-95d0-40a2824f5e41" "ef080396-4ff2-2cf1-c7e9-8a405f0ebc1d"
+				"654fa1d9-d24c-62ea-9aaf-281bd01a0f6e" "cb9bbc1b-8379-9b8f-c1f5-ce07fd5e49b7"
+				"963b12ed-2ab2-d151-2e2b-7422b8750179" "ac1c4bc2-007c-07c1-1007-fd83b81f196e"
+				"0bfce698-d861-a1fd-fe71-9820062ee995" "c74a3d0c-a2cb-f406-b2df-303c00abb7a6"
+				"0abf9d23-4daf-d90f-297e-85b06b4ef6fe" "3eaf6206-10cb-3533-a2f4-c0802396df77"
+				"d461feb1-eca9-fdb0-83a7-05a9c84a60d4" "514cac75-b556-a363-23a3-85ddac6ed8fe"
+				"711c3081-6218-0ec3-6f5e-233d44063ee1" "4c87e28e-0453-0997-5ac3-f0625ad243ff"
+				"78b774f8-6f87-47a8-b230-d39b0f29f8a7" "84897726-f02a-65af-3223-e16c39a183a1"
+				"501e51d1-365f-a5a3-c4e1-a47a41c0cdd5" "56dcee45-5a36-e5c2-58a7-25f8f653ba06"
+				"b0188b40-a9f9-1791-3698-1c0541e6151e" "39726288-fc4d-1754-98e0-41f48d82359c"
+				"fe9e9689-7e16-f98e-7853-a92593c3e7d0" "06f41a99-e71e-2366-3e3e-5033bc625576"
+				"1c9bfdea-3bb1-43fa-8a13-3394aa92b3fe" "c3c488c0-4386-e398-4d63-af574d912f40"
+				"c6615a9f-c7ac-e4d4-769a-fc9b828d54e1" "e5732a80-e231-1170-2aab-ece95c75108b"
+				"918897e9-1c5b-4690-b292-9b80f1e1bc67" "83ee1aec-30f0-47d7-f429-dd672c8de67a"
+				"4b4f2d5c-4474-1dd8-a511-91b2c82c6170" "7dcaa799-1b6f-25b6-d58d-ecf49c9a3ee7"
+				"ae4dde4a-e4fc-4580-4b1c-93c76a8d13c3" "c15d5924-727f-48e8-078a-cafb6062fdd2"
+				"8f7cbe29-b8c9-987f-d764-516855292e1d" "6b598368-ed62-9205-4320-b6b861a1c79e"
+				"833514f1-0506-05ca-53d7-5b028465c2be" "d39eca72-69ce-48cb-9460-16c8c4dbc608"
+				"6662acf4-2001-5556-aefb-d2bd42e69814" "dc70c27f-e3f9-b2d8-075b-51cc06e9f22f"
+				"6ce9d2b3-3075-bde4-e68c-55f30e614185" "bf3f610d-c5c6-5758-aa6c-232663c43c2a"
+				"4ffc5683-cf66-b8c5-3194-38158c39370b" "5aa8b668-b93a-1656-4733-1eca7aff9408"
+				"2b037719-6b6d-cb9e-5c8d-2926fa5f2c2e" "e7506817-15f1-a07a-6cf9-45f107726a60"
 				"c2c043cb-6e60-f5c1-aa51-af5407b2ebf9" "2ed11732-60db-0221-0f55-9560abbfeefb"
-				"83ee1aec-30f0-47d7-f429-dd672c8de67a" "918897e9-1c5b-4690-b292-9b80f1e1bc67"
 				"ee171e19-3c78-7138-2c96-b0c5ad1ef22d" "0bae2d3c-78cc-04d0-2f07-8a76e316432a"
-				"2b037719-6b6d-cb9e-5c8d-2926fa5f2c2e" "fa63b0d6-48f1-4be5-71e6-2b5e721e20cd"
-				"fe9e9689-7e16-f98e-7853-a92593c3e7d0" "8f7cbe29-b8c9-987f-d764-516855292e1d"
-				"6b598368-ed62-9205-4320-b6b861a1c79e" "c6615a9f-c7ac-e4d4-769a-fc9b828d54e1"
-				"39726288-fc4d-1754-98e0-41f48d82359c" "06f41a99-e71e-2366-3e3e-5033bc625576"
-				"c3c488c0-4386-e398-4d63-af574d912f40" "1c9bfdea-3bb1-43fa-8a13-3394aa92b3fe"
-				"ae4dde4a-e4fc-4580-4b1c-93c76a8d13c3" "7dcaa799-1b6f-25b6-d58d-ecf49c9a3ee7"
-				"c15d5924-727f-48e8-078a-cafb6062fdd2" "d39eca72-69ce-48cb-9460-16c8c4dbc608"
-				"833514f1-0506-05ca-53d7-5b028465c2be" "dc70c27f-e3f9-b2d8-075b-51cc06e9f22f"
-				"6662acf4-2001-5556-aefb-d2bd42e69814" "014948eb-7b2e-e0a0-f2d0-c46e70a7f960"
+				"fa63b0d6-48f1-4be5-71e6-2b5e721e20cd" "014948eb-7b2e-e0a0-f2d0-c46e70a7f960"
 			)
 			(units
 				(unit
@@ -2638,7 +2650,7 @@
 	(nets
 		(net
 			(code "1")
-			(name "GND")
+			(name "/Sheet 1/GND")
 			(class "Default")
 			(node
 				(ref "PWR1")
@@ -2727,483 +2739,113 @@
 		)
 		(net
 			(code "2")
-			(name "N$4")
+			(name "/Sheet 1/V1")
 			(class "Default")
 			(node
-				(ref "X3")
-				(pin "A3")
-				(pinfunction "S_A3")
+				(ref "JP1")
+				(pin "2")
+				(pinfunction "2_2")
 				(pintype "passive")
 			)
 			(node
-				(ref "X4")
-				(pin "A3")
-				(pinfunction "S_A3")
+				(ref "R1")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X3")
+				(pin "A2")
+				(pinfunction "S_A2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X3")
+				(pin "A31")
+				(pinfunction "S_A31")
+				(pintype "passive")
+			)
+			(node
+				(ref "X3")
+				(pin "B2")
+				(pinfunction "S_B2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X3")
+				(pin "B31")
+				(pinfunction "S_B31")
+				(pintype "passive")
+			)
+			(node
+				(ref "X3")
+				(pin "C2")
+				(pinfunction "S_C2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X3")
+				(pin "C31")
+				(pinfunction "S_C31")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "3")
-			(name "N$6")
+			(name "/Sheet 1/V2")
 			(class "Default")
 			(node
-				(ref "X3")
-				(pin "A4")
-				(pinfunction "S_A4")
+				(ref "JP1")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "R2")
+				(pin "2")
+				(pinfunction "2_2")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "A4")
-				(pinfunction "S_A4")
+				(pin "A2")
+				(pinfunction "S_A2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A31")
+				(pinfunction "S_A31")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B2")
+				(pinfunction "S_B2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B31")
+				(pinfunction "S_B31")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C2")
+				(pinfunction "S_C2")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "C31")
+				(pinfunction "S_C31")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "4")
-			(name "N$7")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A5")
-				(pinfunction "S_A5")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A5")
-				(pinfunction "S_A5")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "5")
-			(name "N$8")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A6")
-				(pinfunction "S_A6")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A6")
-				(pinfunction "S_A6")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "6")
-			(name "N$9")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A7")
-				(pinfunction "S_A7")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A7")
-				(pinfunction "S_A7")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "7")
-			(name "N$10")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A8")
-				(pinfunction "S_A8")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A8")
-				(pinfunction "S_A8")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "8")
-			(name "N$11")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A9")
-				(pinfunction "S_A9")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A9")
-				(pinfunction "S_A9")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "9")
-			(name "N$12")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A10")
-				(pinfunction "S_A10")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A10")
-				(pinfunction "S_A10")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "10")
-			(name "N$13")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A11")
-				(pinfunction "S_A11")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A11")
-				(pinfunction "S_A11")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "11")
-			(name "N$14")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A12")
-				(pinfunction "S_A12")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A12")
-				(pinfunction "S_A12")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "12")
-			(name "N$15")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A13")
-				(pinfunction "S_A13")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A13")
-				(pinfunction "S_A13")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "13")
-			(name "N$16")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A14")
-				(pinfunction "S_A14")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A14")
-				(pinfunction "S_A14")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "14")
-			(name "N$17")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A15")
-				(pinfunction "S_A15")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A15")
-				(pinfunction "S_A15")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "15")
-			(name "N$18")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A16")
-				(pinfunction "S_A16")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A16")
-				(pinfunction "S_A16")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "16")
-			(name "N$19")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A17")
-				(pinfunction "S_A17")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A17")
-				(pinfunction "S_A17")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "17")
-			(name "N$20")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A18")
-				(pinfunction "S_A18")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A18")
-				(pinfunction "S_A18")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "18")
-			(name "N$21")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A19")
-				(pinfunction "S_A19")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A19")
-				(pinfunction "S_A19")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "19")
-			(name "N$22")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A20")
-				(pinfunction "S_A20")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A20")
-				(pinfunction "S_A20")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "20")
-			(name "N$23")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A21")
-				(pinfunction "S_A21")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A21")
-				(pinfunction "S_A21")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "21")
-			(name "N$24")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A22")
-				(pinfunction "S_A22")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A22")
-				(pinfunction "S_A22")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "22")
-			(name "N$25")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A23")
-				(pinfunction "S_A23")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A23")
-				(pinfunction "S_A23")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "23")
-			(name "N$26")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A24")
-				(pinfunction "S_A24")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A24")
-				(pinfunction "S_A24")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "24")
-			(name "N$27")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A25")
-				(pinfunction "S_A25")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A25")
-				(pinfunction "S_A25")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "25")
-			(name "N$28")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A26")
-				(pinfunction "S_A26")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A26")
-				(pinfunction "S_A26")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "26")
-			(name "N$29")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A27")
-				(pinfunction "S_A27")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A27")
-				(pinfunction "S_A27")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "27")
-			(name "N$30")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A28")
-				(pinfunction "S_A28")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A28")
-				(pinfunction "S_A28")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "28")
-			(name "N$31")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A29")
-				(pinfunction "S_A29")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A29")
-				(pinfunction "S_A29")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "29")
-			(name "N$32")
-			(class "Default")
-			(node
-				(ref "X3")
-				(pin "A30")
-				(pinfunction "S_A30")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A30")
-				(pinfunction "S_A30")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "30")
-			(name "N$35")
+			(name "Net-(PWR1-PadA)")
 			(class "Default")
 			(node
 				(ref "PWR1")
@@ -3219,8 +2861,8 @@
 			)
 		)
 		(net
-			(code "31")
-			(name "N$36")
+			(code "5")
+			(name "Net-(PWR2-PadA)")
 			(class "Default")
 			(node
 				(ref "PWR2")
@@ -3236,8 +2878,76 @@
 			)
 		)
 		(net
-			(code "32")
-			(name "N$37")
+			(code "6")
+			(name "Net-(X3AA-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A27")
+				(pinfunction "S_A27")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A27")
+				(pinfunction "S_A27")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "7")
+			(name "Net-(X3AB-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A28")
+				(pinfunction "S_A28")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A28")
+				(pinfunction "S_A28")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "8")
+			(name "Net-(X3AC-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A29")
+				(pinfunction "S_A29")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A29")
+				(pinfunction "S_A29")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "9")
+			(name "Net-(X3AD-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "A30")
+				(pinfunction "S_A30")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "A30")
+				(pinfunction "S_A30")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "10")
+			(name "Net-(X3AI-S)")
 			(class "Default")
 			(node
 				(ref "X3")
@@ -3249,1047 +2959,1349 @@
 				(ref "X4")
 				(pin "B3")
 				(pinfunction "S_B3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "11")
+			(name "Net-(X3AJ-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B4")
+				(pinfunction "S_B4")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B4")
+				(pinfunction "S_B4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "12")
+			(name "Net-(X3AK-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B5")
+				(pinfunction "S_B5")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B5")
+				(pinfunction "S_B5")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "13")
+			(name "Net-(X3AL-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B6")
+				(pinfunction "S_B6")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B6")
+				(pinfunction "S_B6")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "14")
+			(name "Net-(X3AM-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B7")
+				(pinfunction "S_B7")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B7")
+				(pinfunction "S_B7")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "15")
+			(name "Net-(X3AN-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B8")
+				(pinfunction "S_B8")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B8")
+				(pinfunction "S_B8")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "16")
+			(name "Net-(X3AO-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B9")
+				(pinfunction "S_B9")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B9")
+				(pinfunction "S_B9")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "17")
+			(name "Net-(X3AP-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B10")
+				(pinfunction "S_B10")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B10")
+				(pinfunction "S_B10")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "18")
+			(name "Net-(X3AQ-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B11")
+				(pinfunction "S_B11")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B11")
+				(pinfunction "S_B11")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "19")
+			(name "Net-(X3AR-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B12")
+				(pinfunction "S_B12")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B12")
+				(pinfunction "S_B12")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "20")
+			(name "Net-(X3AS-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B13")
+				(pinfunction "S_B13")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B13")
+				(pinfunction "S_B13")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "21")
+			(name "Net-(X3AT-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B14")
+				(pinfunction "S_B14")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B14")
+				(pinfunction "S_B14")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "22")
+			(name "Net-(X3AU-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B15")
+				(pinfunction "S_B15")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B15")
+				(pinfunction "S_B15")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "23")
+			(name "Net-(X3AV-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B16")
+				(pinfunction "S_B16")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B16")
+				(pinfunction "S_B16")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "24")
+			(name "Net-(X3AW-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B17")
+				(pinfunction "S_B17")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B17")
+				(pinfunction "S_B17")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "25")
+			(name "Net-(X3AX-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B18")
+				(pinfunction "S_B18")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B18")
+				(pinfunction "S_B18")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "26")
+			(name "Net-(X3AY-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B19")
+				(pinfunction "S_B19")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B19")
+				(pinfunction "S_B19")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "27")
+			(name "Net-(X3AZ-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B20")
+				(pinfunction "S_B20")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B20")
+				(pinfunction "S_B20")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "28")
+			(name "Net-(X3BA-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B21")
+				(pinfunction "S_B21")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B21")
+				(pinfunction "S_B21")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "29")
+			(name "Net-(X3BB-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B22")
+				(pinfunction "S_B22")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B22")
+				(pinfunction "S_B22")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "30")
+			(name "Net-(X3BC-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B23")
+				(pinfunction "S_B23")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B23")
+				(pinfunction "S_B23")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "31")
+			(name "Net-(X3BD-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B24")
+				(pinfunction "S_B24")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B24")
+				(pinfunction "S_B24")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "32")
+			(name "Net-(X3BE-S)")
+			(class "Default")
+			(node
+				(ref "X3")
+				(pin "B25")
+				(pinfunction "S_B25")
+				(pintype "passive")
+			)
+			(node
+				(ref "X4")
+				(pin "B25")
+				(pinfunction "S_B25")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "33")
-			(name "N$38")
+			(name "Net-(X3BF-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B4")
-				(pinfunction "S_B4")
+				(pin "B26")
+				(pinfunction "S_B26")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B4")
-				(pinfunction "S_B4")
+				(pin "B26")
+				(pinfunction "S_B26")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "34")
-			(name "N$39")
+			(name "Net-(X3BG-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B5")
-				(pinfunction "S_B5")
+				(pin "B27")
+				(pinfunction "S_B27")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B5")
-				(pinfunction "S_B5")
+				(pin "B27")
+				(pinfunction "S_B27")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "35")
-			(name "N$40")
+			(name "Net-(X3BH-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B6")
-				(pinfunction "S_B6")
+				(pin "B28")
+				(pinfunction "S_B28")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B6")
-				(pinfunction "S_B6")
+				(pin "B28")
+				(pinfunction "S_B28")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "36")
-			(name "N$41")
+			(name "Net-(X3BI-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B7")
-				(pinfunction "S_B7")
+				(pin "B29")
+				(pinfunction "S_B29")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B7")
-				(pinfunction "S_B7")
+				(pin "B29")
+				(pinfunction "S_B29")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "37")
-			(name "N$42")
+			(name "Net-(X3BJ-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B8")
-				(pinfunction "S_B8")
+				(pin "B30")
+				(pinfunction "S_B30")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B8")
-				(pinfunction "S_B8")
+				(pin "B30")
+				(pinfunction "S_B30")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "38")
-			(name "N$43")
+			(name "Net-(X3BO-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B9")
-				(pinfunction "S_B9")
+				(pin "C3")
+				(pinfunction "S_C3")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B9")
-				(pinfunction "S_B9")
+				(pin "C3")
+				(pinfunction "S_C3")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "39")
-			(name "N$44")
+			(name "Net-(X3BP-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B10")
-				(pinfunction "S_B10")
+				(pin "C4")
+				(pinfunction "S_C4")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B10")
-				(pinfunction "S_B10")
+				(pin "C4")
+				(pinfunction "S_C4")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "40")
-			(name "N$45")
+			(name "Net-(X3BQ-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B11")
-				(pinfunction "S_B11")
+				(pin "C5")
+				(pinfunction "S_C5")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B11")
-				(pinfunction "S_B11")
+				(pin "C5")
+				(pinfunction "S_C5")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "41")
-			(name "N$46")
+			(name "Net-(X3BR-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B12")
-				(pinfunction "S_B12")
+				(pin "C6")
+				(pinfunction "S_C6")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B12")
-				(pinfunction "S_B12")
+				(pin "C6")
+				(pinfunction "S_C6")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "42")
-			(name "N$47")
+			(name "Net-(X3BS-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B13")
-				(pinfunction "S_B13")
+				(pin "C7")
+				(pinfunction "S_C7")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B13")
-				(pinfunction "S_B13")
+				(pin "C7")
+				(pinfunction "S_C7")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "43")
-			(name "N$48")
+			(name "Net-(X3BT-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B14")
-				(pinfunction "S_B14")
+				(pin "C8")
+				(pinfunction "S_C8")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B14")
-				(pinfunction "S_B14")
+				(pin "C8")
+				(pinfunction "S_C8")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "44")
-			(name "N$49")
+			(name "Net-(X3BU-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B15")
-				(pinfunction "S_B15")
+				(pin "C9")
+				(pinfunction "S_C9")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B15")
-				(pinfunction "S_B15")
+				(pin "C9")
+				(pinfunction "S_C9")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "45")
-			(name "N$50")
+			(name "Net-(X3BV-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B16")
-				(pinfunction "S_B16")
+				(pin "C10")
+				(pinfunction "S_C10")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B16")
-				(pinfunction "S_B16")
+				(pin "C10")
+				(pinfunction "S_C10")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "46")
-			(name "N$51")
+			(name "Net-(X3BW-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B17")
-				(pinfunction "S_B17")
+				(pin "C11")
+				(pinfunction "S_C11")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B17")
-				(pinfunction "S_B17")
+				(pin "C11")
+				(pinfunction "S_C11")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "47")
-			(name "N$52")
+			(name "Net-(X3BX-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B18")
-				(pinfunction "S_B18")
+				(pin "C12")
+				(pinfunction "S_C12")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B18")
-				(pinfunction "S_B18")
+				(pin "C12")
+				(pinfunction "S_C12")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "48")
-			(name "N$53")
+			(name "Net-(X3BY-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B19")
-				(pinfunction "S_B19")
+				(pin "C13")
+				(pinfunction "S_C13")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B19")
-				(pinfunction "S_B19")
+				(pin "C13")
+				(pinfunction "S_C13")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "49")
-			(name "N$54")
+			(name "Net-(X3BZ-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B20")
-				(pinfunction "S_B20")
+				(pin "C14")
+				(pinfunction "S_C14")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B20")
-				(pinfunction "S_B20")
+				(pin "C14")
+				(pinfunction "S_C14")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "50")
-			(name "N$55")
+			(name "Net-(X3C-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B21")
-				(pinfunction "S_B21")
+				(pin "A3")
+				(pinfunction "S_A3")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B21")
-				(pinfunction "S_B21")
+				(pin "A3")
+				(pinfunction "S_A3")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "51")
-			(name "N$56")
+			(name "Net-(X3CA-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B22")
-				(pinfunction "S_B22")
+				(pin "C15")
+				(pinfunction "S_C15")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B22")
-				(pinfunction "S_B22")
+				(pin "C15")
+				(pinfunction "S_C15")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "52")
-			(name "N$57")
+			(name "Net-(X3CB-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B23")
-				(pinfunction "S_B23")
+				(pin "C16")
+				(pinfunction "S_C16")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B23")
-				(pinfunction "S_B23")
+				(pin "C16")
+				(pinfunction "S_C16")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "53")
-			(name "N$58")
+			(name "Net-(X3CC-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B24")
-				(pinfunction "S_B24")
+				(pin "C17")
+				(pinfunction "S_C17")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B24")
-				(pinfunction "S_B24")
+				(pin "C17")
+				(pinfunction "S_C17")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "54")
-			(name "N$59")
+			(name "Net-(X3CD-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B25")
-				(pinfunction "S_B25")
+				(pin "C18")
+				(pinfunction "S_C18")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B25")
-				(pinfunction "S_B25")
+				(pin "C18")
+				(pinfunction "S_C18")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "55")
-			(name "N$60")
+			(name "Net-(X3CE-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B26")
-				(pinfunction "S_B26")
+				(pin "C19")
+				(pinfunction "S_C19")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B26")
-				(pinfunction "S_B26")
+				(pin "C19")
+				(pinfunction "S_C19")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "56")
-			(name "N$61")
+			(name "Net-(X3CF-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B27")
-				(pinfunction "S_B27")
+				(pin "C20")
+				(pinfunction "S_C20")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B27")
-				(pinfunction "S_B27")
+				(pin "C20")
+				(pinfunction "S_C20")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "57")
-			(name "N$62")
+			(name "Net-(X3CG-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B28")
-				(pinfunction "S_B28")
+				(pin "C21")
+				(pinfunction "S_C21")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B28")
-				(pinfunction "S_B28")
+				(pin "C21")
+				(pinfunction "S_C21")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "58")
-			(name "N$63")
+			(name "Net-(X3CH-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B29")
-				(pinfunction "S_B29")
+				(pin "C22")
+				(pinfunction "S_C22")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B29")
-				(pinfunction "S_B29")
+				(pin "C22")
+				(pinfunction "S_C22")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "59")
-			(name "N$64")
+			(name "Net-(X3CI-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "B30")
-				(pinfunction "S_B30")
+				(pin "C23")
+				(pinfunction "S_C23")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "B30")
-				(pinfunction "S_B30")
+				(pin "C23")
+				(pinfunction "S_C23")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "60")
-			(name "N$69")
+			(name "Net-(X3CJ-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C3")
-				(pinfunction "S_C3")
+				(pin "C24")
+				(pinfunction "S_C24")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C3")
-				(pinfunction "S_C3")
+				(pin "C24")
+				(pinfunction "S_C24")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "61")
-			(name "N$70")
+			(name "Net-(X3CK-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C4")
-				(pinfunction "S_C4")
+				(pin "C25")
+				(pinfunction "S_C25")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C4")
-				(pinfunction "S_C4")
+				(pin "C25")
+				(pinfunction "S_C25")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "62")
-			(name "N$71")
+			(name "Net-(X3CL-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C5")
-				(pinfunction "S_C5")
+				(pin "C26")
+				(pinfunction "S_C26")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C5")
-				(pinfunction "S_C5")
+				(pin "C26")
+				(pinfunction "S_C26")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "63")
-			(name "N$72")
+			(name "Net-(X3CM-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C6")
-				(pinfunction "S_C6")
+				(pin "C27")
+				(pinfunction "S_C27")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C6")
-				(pinfunction "S_C6")
+				(pin "C27")
+				(pinfunction "S_C27")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "64")
-			(name "N$73")
+			(name "Net-(X3CN-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C7")
-				(pinfunction "S_C7")
+				(pin "C28")
+				(pinfunction "S_C28")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C7")
-				(pinfunction "S_C7")
+				(pin "C28")
+				(pinfunction "S_C28")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "65")
-			(name "N$74")
+			(name "Net-(X3CO-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C8")
-				(pinfunction "S_C8")
+				(pin "C29")
+				(pinfunction "S_C29")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C8")
-				(pinfunction "S_C8")
+				(pin "C29")
+				(pinfunction "S_C29")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "66")
-			(name "N$75")
+			(name "Net-(X3CP-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C9")
-				(pinfunction "S_C9")
+				(pin "C30")
+				(pinfunction "S_C30")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C9")
-				(pinfunction "S_C9")
+				(pin "C30")
+				(pinfunction "S_C30")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "67")
-			(name "N$76")
+			(name "Net-(X3D-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C10")
-				(pinfunction "S_C10")
+				(pin "A4")
+				(pinfunction "S_A4")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C10")
-				(pinfunction "S_C10")
+				(pin "A4")
+				(pinfunction "S_A4")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "68")
-			(name "N$77")
+			(name "Net-(X3E-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C11")
-				(pinfunction "S_C11")
+				(pin "A5")
+				(pinfunction "S_A5")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C11")
-				(pinfunction "S_C11")
+				(pin "A5")
+				(pinfunction "S_A5")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "69")
-			(name "N$78")
+			(name "Net-(X3F-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C12")
-				(pinfunction "S_C12")
+				(pin "A6")
+				(pinfunction "S_A6")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C12")
-				(pinfunction "S_C12")
+				(pin "A6")
+				(pinfunction "S_A6")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "70")
-			(name "N$79")
+			(name "Net-(X3G-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C13")
-				(pinfunction "S_C13")
+				(pin "A7")
+				(pinfunction "S_A7")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C13")
-				(pinfunction "S_C13")
+				(pin "A7")
+				(pinfunction "S_A7")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "71")
-			(name "N$80")
+			(name "Net-(X3H-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C14")
-				(pinfunction "S_C14")
+				(pin "A8")
+				(pinfunction "S_A8")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C14")
-				(pinfunction "S_C14")
+				(pin "A8")
+				(pinfunction "S_A8")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "72")
-			(name "N$81")
+			(name "Net-(X3I-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C15")
-				(pinfunction "S_C15")
+				(pin "A9")
+				(pinfunction "S_A9")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C15")
-				(pinfunction "S_C15")
+				(pin "A9")
+				(pinfunction "S_A9")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "73")
-			(name "N$82")
+			(name "Net-(X3J-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C16")
-				(pinfunction "S_C16")
+				(pin "A10")
+				(pinfunction "S_A10")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C16")
-				(pinfunction "S_C16")
+				(pin "A10")
+				(pinfunction "S_A10")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "74")
-			(name "N$83")
+			(name "Net-(X3K-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C17")
-				(pinfunction "S_C17")
+				(pin "A11")
+				(pinfunction "S_A11")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C17")
-				(pinfunction "S_C17")
+				(pin "A11")
+				(pinfunction "S_A11")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "75")
-			(name "N$84")
+			(name "Net-(X3L-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C18")
-				(pinfunction "S_C18")
+				(pin "A12")
+				(pinfunction "S_A12")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C18")
-				(pinfunction "S_C18")
+				(pin "A12")
+				(pinfunction "S_A12")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "76")
-			(name "N$85")
+			(name "Net-(X3M-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C19")
-				(pinfunction "S_C19")
+				(pin "A13")
+				(pinfunction "S_A13")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C19")
-				(pinfunction "S_C19")
+				(pin "A13")
+				(pinfunction "S_A13")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "77")
-			(name "N$86")
+			(name "Net-(X3N-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C20")
-				(pinfunction "S_C20")
+				(pin "A14")
+				(pinfunction "S_A14")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C20")
-				(pinfunction "S_C20")
+				(pin "A14")
+				(pinfunction "S_A14")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "78")
-			(name "N$87")
+			(name "Net-(X3O-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C21")
-				(pinfunction "S_C21")
+				(pin "A15")
+				(pinfunction "S_A15")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C21")
-				(pinfunction "S_C21")
+				(pin "A15")
+				(pinfunction "S_A15")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "79")
-			(name "N$88")
+			(name "Net-(X3P-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C22")
-				(pinfunction "S_C22")
+				(pin "A16")
+				(pinfunction "S_A16")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C22")
-				(pinfunction "S_C22")
+				(pin "A16")
+				(pinfunction "S_A16")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "80")
-			(name "N$89")
+			(name "Net-(X3Q-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C23")
-				(pinfunction "S_C23")
+				(pin "A17")
+				(pinfunction "S_A17")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C23")
-				(pinfunction "S_C23")
+				(pin "A17")
+				(pinfunction "S_A17")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "81")
-			(name "N$90")
+			(name "Net-(X3R-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C24")
-				(pinfunction "S_C24")
+				(pin "A18")
+				(pinfunction "S_A18")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C24")
-				(pinfunction "S_C24")
+				(pin "A18")
+				(pinfunction "S_A18")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "82")
-			(name "N$91")
+			(name "Net-(X3S-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C25")
-				(pinfunction "S_C25")
+				(pin "A19")
+				(pinfunction "S_A19")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C25")
-				(pinfunction "S_C25")
+				(pin "A19")
+				(pinfunction "S_A19")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "83")
-			(name "N$92")
+			(name "Net-(X3T-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C26")
-				(pinfunction "S_C26")
+				(pin "A20")
+				(pinfunction "S_A20")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C26")
-				(pinfunction "S_C26")
+				(pin "A20")
+				(pinfunction "S_A20")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "84")
-			(name "N$93")
+			(name "Net-(X3U-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C27")
-				(pinfunction "S_C27")
+				(pin "A21")
+				(pinfunction "S_A21")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C27")
-				(pinfunction "S_C27")
+				(pin "A21")
+				(pinfunction "S_A21")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "85")
-			(name "N$94")
+			(name "Net-(X3V-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C28")
-				(pinfunction "S_C28")
+				(pin "A22")
+				(pinfunction "S_A22")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C28")
-				(pinfunction "S_C28")
+				(pin "A22")
+				(pinfunction "S_A22")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "86")
-			(name "N$95")
+			(name "Net-(X3W-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C29")
-				(pinfunction "S_C29")
+				(pin "A23")
+				(pinfunction "S_A23")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C29")
-				(pinfunction "S_C29")
+				(pin "A23")
+				(pinfunction "S_A23")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "87")
-			(name "N$96")
+			(name "Net-(X3X-S)")
 			(class "Default")
 			(node
 				(ref "X3")
-				(pin "C30")
-				(pinfunction "S_C30")
+				(pin "A24")
+				(pinfunction "S_A24")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "C30")
-				(pinfunction "S_C30")
+				(pin "A24")
+				(pinfunction "S_A24")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "88")
-			(name "V1")
+			(name "Net-(X3Y-S)")
 			(class "Default")
 			(node
-				(ref "JP1")
-				(pin "2")
-				(pinfunction "2_2")
-				(pintype "passive")
-			)
-			(node
-				(ref "R1")
-				(pin "2")
-				(pinfunction "2_2")
-				(pintype "passive")
-			)
-			(node
 				(ref "X3")
-				(pin "A2")
-				(pinfunction "S_A2")
+				(pin "A25")
+				(pinfunction "S_A25")
 				(pintype "passive")
 			)
 			(node
-				(ref "X3")
-				(pin "A31")
-				(pinfunction "S_A31")
-				(pintype "passive")
-			)
-			(node
-				(ref "X3")
-				(pin "B2")
-				(pinfunction "S_B2")
-				(pintype "passive")
-			)
-			(node
-				(ref "X3")
-				(pin "B31")
-				(pinfunction "S_B31")
-				(pintype "passive")
-			)
-			(node
-				(ref "X3")
-				(pin "C2")
-				(pinfunction "S_C2")
-				(pintype "passive")
-			)
-			(node
-				(ref "X3")
-				(pin "C31")
-				(pinfunction "S_C31")
+				(ref "X4")
+				(pin "A25")
+				(pinfunction "S_A25")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "89")
-			(name "V2")
+			(name "Net-(X3Z-S)")
 			(class "Default")
 			(node
-				(ref "JP1")
-				(pin "1")
-				(pinfunction "1_1")
-				(pintype "passive")
-			)
-			(node
-				(ref "R2")
-				(pin "2")
-				(pinfunction "2_2")
+				(ref "X3")
+				(pin "A26")
+				(pinfunction "S_A26")
 				(pintype "passive")
 			)
 			(node
 				(ref "X4")
-				(pin "A2")
-				(pinfunction "S_A2")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "A31")
-				(pinfunction "S_A31")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "B2")
-				(pinfunction "S_B2")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "B31")
-				(pinfunction "S_B31")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "C2")
-				(pinfunction "S_C2")
-				(pintype "passive")
-			)
-			(node
-				(ref "X4")
-				(pin "C31")
-				(pinfunction "S_C31")
+				(pin "A26")
+				(pinfunction "S_A26")
 				(pintype "passive")
 			)
 		)

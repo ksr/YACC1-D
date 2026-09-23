@@ -35,6 +35,7 @@
 		)
 	)
 	(symbol "74xx-us_74x00_N_pwrhidden"
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "IC" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "74*00" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -83,6 +84,7 @@
 		)
 	)
 	(symbol "74xx-us_74x04_N_pwrhidden"
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "IC" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "74*04" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -137,6 +139,7 @@
 		)
 	)
 	(symbol "74xx-us_74x08_N_pwrhidden"
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "IC" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "74*08" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -217,6 +220,7 @@
 		)
 	)
 	(symbol "74xx-us_74x16_N_pwrhidden"
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "IC" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "74*16" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -403,6 +407,7 @@
 		)
 	)
 	(symbol "74xx-us_74x86_N_pwrhidden"
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "IC" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "74*86" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -495,6 +500,7 @@
 		)
 	)
 	(symbol "Connector_PINHD-2X7"
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "JP" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "PINHD-2X7" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -545,6 +551,7 @@
 		)
 	)
 	(symbol "con-lstb_MA03-1"
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "SV" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "MA03-1" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -565,6 +572,7 @@
 		)
 	)
 	(symbol "con-lstb_MA04-2"
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "SV" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "MA04-2" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -595,6 +603,8 @@
 		)
 	)
 	(symbol "con-subd_F09?S_HP"
+		(pin_numbers (hide yes))
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "X" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "F09?S" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -639,6 +649,8 @@
 		)
 	)
 	(symbol "con-vg_FABC96R"
+		(pin_numbers (hide yes))
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "X" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "FABC96R" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -1031,6 +1043,8 @@
 		)
 	)
 	(symbol "crystal_CRYTAL_HC49U-V"
+		(pin_numbers (hide yes))
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "Q" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "CRYTAL" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -1046,13 +1060,13 @@
 			(polyline (pts (xy 0.381 1.524) (xy -0.381 1.524)) (stroke (width 0.254) (type default)) (fill (type none)))
 			(polyline (pts (xy 1.016 1.778) (xy 1.016 -1.778)) (stroke (width 0.254) (type default)) (fill (type none)))
 			(polyline (pts (xy -1.016 1.778) (xy -1.016 -1.778)) (stroke (width 0.254) (type default)) (fill (type none)))
-			(text "1" (at -2.159 -1.143 0) (effects (font (size 0.6909 0.6909)) (justify left bottom)))
-			(text "2" (at 1.524 -1.143 0) (effects (font (size 0.6909 0.6909)) (justify left bottom)))
 			(pin passive line (at 2.54 0 180) (length 0) (name "2" (effects (font (size 1.27 1.27)) (hide yes))) (number "2" (effects (font (size 1.27 1.27)) (hide yes))))
 			(pin passive line (at -2.54 0 0) (length 0) (name "1" (effects (font (size 1.27 1.27)) (hide yes))) (number "1" (effects (font (size 1.27 1.27)) (hide yes))))
 		)
 	)
 	(symbol "eagle-ltspice_R_0207_10"
+		(pin_numbers (hide yes))
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "R" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "R" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -1066,11 +1080,11 @@
 			(polyline (pts (xy -2.54 -0.889) (xy -2.54 0.889)) (stroke (width 0.254) (type default)) (fill (type none)))
 			(pin passive line (at -5.08 0 0) (length 2.54) (name "1" (effects (font (size 1.27 1.27)) (hide yes))) (number "1" (effects (font (size 1.27 1.27)) (hide yes))))
 			(pin passive line (at 5.08 0 180) (length 2.54) (name "2" (effects (font (size 1.27 1.27)) (hide yes))) (number "2" (effects (font (size 1.27 1.27)) (hide yes))))
-			(text "SpiceOrder 1" (at -5.08 0 0) (effects (font (size 0.3251 0.3251)) (justify left bottom)))
-			(text "SpiceOrder 2" (at 5.08 0 0) (effects (font (size 0.3251 0.3251)) (justify left bottom)))
 		)
 	)
 	(symbol "led_LED_5MM"
+		(pin_numbers (hide yes))
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "LED" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "LED" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -1271,6 +1285,8 @@
 		)
 	)
 	(symbol "rcl_C-US_025-050X050"
+		(pin_numbers (hide yes))
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "C" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "C-US" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -1287,6 +1303,8 @@
 		)
 	)
 	(symbol "rcl_CPOL-US_E2.5-7"
+		(pin_numbers (hide yes))
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "C" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "CPOL-US" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -1305,6 +1323,8 @@
 		)
 	)
 	(symbol "rcl_R-US__0207_7"
+		(pin_numbers (hide yes))
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "R" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "R-US_" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -1326,6 +1346,7 @@
 		)
 	)
 	(symbol "resistor-net_RNX4"
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "RN" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "RNX4" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))

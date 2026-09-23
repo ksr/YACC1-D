@@ -2,7 +2,7 @@
 	(version "E")
 	(design
 		(source "/Users/ksr77/Developer/YACC1-D/hardware/cards/sequencer-memory/accessories/eeprom-adaptor/kicad/sequencer-memory-eeprom-adaptor.kicad_sch")
-		(date "2026-09-20T21:37:06")
+		(date "2026-09-23T17:41:07")
 		(tool "Eeschema 10.0.6")
 		(sheet
 			(number "1")
@@ -304,6 +304,57 @@
 	(nets
 		(net
 			(code "1")
+			(name "/Sheet 1/SCL")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "6")
+				(pinfunction "SCL_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "6")
+				(pinfunction "SCL_6")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "2")
+			(name "/Sheet 1/SDA")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "5")
+				(pinfunction "SDA_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "IC2")
+				(pin "5")
+				(pinfunction "SDA_5")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "3")
+			(name "/Sheet 1/WP")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "7")
+				(pinfunction "WP_7")
+				(pintype "input")
+			)
+			(node
+				(ref "IC2")
+				(pin "7")
+				(pinfunction "WP_7")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "4")
 			(name "GND")
 			(class "Default")
 			(node
@@ -326,41 +377,7 @@
 			)
 		)
 		(net
-			(code "2")
-			(name "SCL")
-			(class "Default")
-			(node
-				(ref "IC1")
-				(pin "6")
-				(pinfunction "SCL_6")
-				(pintype "passive")
-			)
-			(node
-				(ref "IC2")
-				(pin "6")
-				(pinfunction "SCL_6")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "3")
-			(name "SDA")
-			(class "Default")
-			(node
-				(ref "IC1")
-				(pin "5")
-				(pinfunction "SDA_5")
-				(pintype "passive")
-			)
-			(node
-				(ref "IC2")
-				(pin "5")
-				(pinfunction "SDA_5")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "4")
+			(code "5")
 			(name "VCC")
 			(class "Default")
 			(node
@@ -404,23 +421,6 @@
 				(pin "8")
 				(pinfunction "VCC_8")
 				(pintype "power_in")
-			)
-		)
-		(net
-			(code "5")
-			(name "WP")
-			(class "Default")
-			(node
-				(ref "IC1")
-				(pin "7")
-				(pinfunction "WP_7")
-				(pintype "input")
-			)
-			(node
-				(ref "IC2")
-				(pin "7")
-				(pinfunction "WP_7")
-				(pintype "input")
 			)
 		)
 	)

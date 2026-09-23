@@ -4,11 +4,11 @@
 	(generator_version "10.0")
 	(layer "F.Cu")
 	(descr "Dual In Line Package")
-	(property "Reference" "IC22"
-		(at 11.049 1.778 90)
+	(property "Reference" "IC10"
+		(at -11.811 1.778 90)
 		(unlocked yes)
 		(layer "F.SilkS")
-		(uuid "6eefe84d-0d0f-4939-b20c-b3585682803c")
+		(uuid "d8926a0e-92b4-4f00-8326-73967df38681")
 		(effects
 			(font
 				(size 1.1557 1.1557)
@@ -17,11 +17,11 @@
 			(justify left bottom)
 		)
 	)
-	(property "Value" "74LS74N"
+	(property "Value" "74LS32N"
 		(at -6.731 0.635 0)
 		(unlocked yes)
 		(layer "F.Fab")
-		(uuid "937b8739-14b6-4d9e-8e50-bcdfcbea0dcf")
+		(uuid "6f860c13-a149-4c43-8ec3-04c9f6c49b1a")
 		(effects
 			(font
 				(size 1.1557 1.1557)
@@ -35,7 +35,7 @@
 		(unlocked yes)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "f5c5fc6e-46b7-459b-b6ea-82429e884788")
+		(uuid "8d454c17-a4c9-46ee-a866-f6fc99038ea3")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -47,7 +47,7 @@
 		(unlocked yes)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "60bf4bdb-6f13-4c82-88fb-ebf206987666")
+		(uuid "643697a0-2bda-4d73-b0dd-6123de9055a1")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -63,7 +63,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "624a642e-5bab-4524-84c3-ebc1cf050927")
+		(uuid "1cf3dc52-ced6-4378-aead-4c8e3925a447")
 	)
 	(fp_line
 		(start -8.89 2.921)
@@ -73,7 +73,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "d9cc1999-72ab-40b7-b58f-60e07c4d58f9")
+		(uuid "08b64b8e-122e-46cd-8111-439e9befa12d")
 	)
 	(fp_line
 		(start -8.89 2.921)
@@ -83,7 +83,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "3874bf15-967c-41fa-acad-676466a71131")
+		(uuid "e0428885-78c0-48ee-9f4c-f71ad0d62186")
 	)
 	(fp_line
 		(start 8.89 -2.921)
@@ -93,7 +93,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "3dfc321d-16ab-4f5e-868b-094622c2647d")
+		(uuid "5cff1f60-d38b-400d-a2d1-9d277da1359d")
 	)
 	(fp_line
 		(start 8.89 -2.921)
@@ -103,7 +103,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "2d314636-7e6b-47f7-a01a-46ca89726a3e")
+		(uuid "2a04ff82-793f-4dcd-a8b7-22cc5c4d7312")
 	)
 	(fp_arc
 		(start -8.89 -1.016)
@@ -114,7 +114,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "c328706b-9851-41cf-b23e-da83ca2edab4")
+		(uuid "bf9689a3-0bd6-47ae-aa1f-798deff27d3e")
 	)
 	(pad "1" thru_hole oval
 		(at -7.62 3.81 90)
@@ -124,7 +124,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "6245bd0e-7d40-4d21-bdc9-2abf6fd33c8c")
+		(uuid "6dc1e8e0-fe33-4508-a303-faa73bd53b01")
 	)
 	(pad "2" thru_hole oval
 		(at -5.08 3.81 90)
@@ -134,7 +134,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "921ee09c-394e-4cd6-bb7a-961d781c9725")
+		(uuid "9be015d2-f1ba-454b-ae57-07483af258f6")
 	)
 	(pad "3" thru_hole oval
 		(at -2.54 3.81 90)
@@ -144,7 +144,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "2f28fb80-eb8a-490a-9c82-9d631d91faa4")
+		(uuid "be08119d-01be-4f22-8b3b-ee35a9b7e2ba")
 	)
 	(pad "4" thru_hole oval
 		(at 0 3.81 90)
@@ -154,7 +154,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "e8070888-f083-4663-8037-b5d390856844")
+		(uuid "795746f8-6009-4a7c-9e65-360fe969fbef")
 	)
 	(pad "5" thru_hole oval
 		(at 2.54 3.81 90)
@@ -164,7 +164,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "37bbb770-6613-43bf-bf48-a5dfa3cfa9ff")
+		(uuid "10ef25fd-250e-4a17-886d-0dcb6c92b930")
 	)
 	(pad "6" thru_hole oval
 		(at 5.08 3.81 90)
@@ -174,7 +174,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "b097d010-e87d-4b7f-ac03-ebd2e71c0d60")
+		(uuid "b63376ab-b721-478e-9888-cb89943e3902")
 	)
 	(pad "7" thru_hole oval
 		(at 7.62 3.81 90)
@@ -184,7 +184,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "d13d0301-d8b1-4a4f-8bd2-a773d91cb3e4")
+		(uuid "5066f0cc-5f76-412f-92b1-e96b0b9ac1fd")
 	)
 	(pad "8" thru_hole oval
 		(at 7.62 -3.81 90)
@@ -194,7 +194,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "f904727a-380b-486a-a187-fece68999942")
+		(uuid "12ed17ac-2da4-486b-9892-6e7734796b2f")
 	)
 	(pad "9" thru_hole oval
 		(at 5.08 -3.81 90)
@@ -204,7 +204,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "f8cf2744-4278-4bc4-a6e7-4356b9b995e7")
+		(uuid "71f26aa8-1347-460e-9e24-e7213ad66f04")
 	)
 	(pad "10" thru_hole oval
 		(at 2.54 -3.81 90)
@@ -214,7 +214,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "89de26f0-6891-421f-8c68-fbb2ed05152b")
+		(uuid "bc8896ed-1877-4ef9-858f-1b97ac5f052f")
 	)
 	(pad "11" thru_hole oval
 		(at 0 -3.81 90)
@@ -224,7 +224,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "b9cd64ab-1470-436b-b976-10c42c35b8dd")
+		(uuid "a1d88fa6-6c15-40ac-b624-a65c0edc042e")
 	)
 	(pad "12" thru_hole oval
 		(at -2.54 -3.81 90)
@@ -234,7 +234,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "007577e5-130d-4ef6-8b4c-9dcbd79d410a")
+		(uuid "28644c42-94b0-4d6f-ab8b-666fb7b81507")
 	)
 	(pad "13" thru_hole oval
 		(at -5.08 -3.81 90)
@@ -244,7 +244,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "aa7660f1-1273-4f96-a1ce-3164b785bcfb")
+		(uuid "ed825a77-831e-4b1d-a05c-0130521680ef")
 	)
 	(pad "14" thru_hole oval
 		(at -7.62 -3.81 90)
@@ -254,7 +254,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "1da2ad3f-e4d8-430f-8029-586c0eb8e782")
+		(uuid "f250f443-b8de-40fe-a8c6-9342ea246664")
 	)
 	(embedded_fonts no)
 )

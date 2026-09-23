@@ -34,6 +34,7 @@
 		)
 	)
 	(symbol "con-vg_FABC96S"
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "X" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "FABC96S" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -304,6 +305,8 @@
 		)
 	)
 	(symbol "eagle-ltspice_R_0207_10"
+		(pin_numbers (hide yes))
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "R" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "R" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -317,11 +320,11 @@
 			(polyline (pts (xy -2.54 -0.889) (xy -2.54 0.889)) (stroke (width 0.254) (type default)) (fill (type none)))
 			(pin passive line (at -5.08 0 0) (length 2.54) (name "1" (effects (font (size 1.27 1.27)) (hide yes))) (number "1" (effects (font (size 1.27 1.27)) (hide yes))))
 			(pin passive line (at 5.08 0 180) (length 2.54) (name "2" (effects (font (size 1.27 1.27)) (hide yes))) (number "2" (effects (font (size 1.27 1.27)) (hide yes))))
-			(text "SpiceOrder 1" (at -5.08 0 0) (effects (font (size 0.3251 0.3251)) (justify left bottom)))
-			(text "SpiceOrder 2" (at 5.08 0 0) (effects (font (size 0.3251 0.3251)) (justify left bottom)))
 		)
 	)
 	(symbol "led_LED_5MM"
+		(pin_numbers (hide yes))
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "LED" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "LED" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -345,6 +348,8 @@
 		)
 	)
 	(symbol "rcl_CPOL-US_E5-6"
+		(pin_numbers (hide yes))
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "C" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "CPOL-US" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
@@ -363,6 +368,8 @@
 		)
 	)
 	(symbol "wirepad_WIREPAD_4,16O1,6"
+		(pin_numbers (hide yes))
+		(pin_names (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "PAD" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "WIREPAD" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))

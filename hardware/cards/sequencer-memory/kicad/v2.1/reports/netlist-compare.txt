@@ -1,3 +1,4 @@
 schematic: 59 components, 106 multi-pin nets; board: 106 multi-pin nets
 identical net groups: 106 of 106
+  same connectivity, different net name: [('/Sheet 3/ARD-RXIN', 'ARD-RXIN'), ('/Sheet 3/ARD-TXOUT', 'ARD-TXOUT'), ('/Sheet 3/FAULT', 'FAULT'), ('/Sheet 3/LD', 'LD'), ('/Sheet 3/LED-READY', 'LED-READY'), ('Net-(C19-Pad1)', 'N$8'), ('Net-(FAULT0-C)', 'N$27'), ('Net-(IC9-WP)', 'N$32'), ('Net-(IC15-AREF)', 'N$17'), ('Net-(IC15-PB6(XTAL1{slash}TOSC1))', 'N$6'), ('Net-(IC15-PB7(XTAL2{slash}TOSC2))', 'N$7'), ('Net-(IC15-PC0(ADC0))', 'N$30'), ('Net-(IC15-PC2(ADC2))', 'N$39'), ('Net-(JP3-DTR)', 'N$33'), ('Net-(JP3-VCC)', 'N$34'), ('Net-(LOADING0-C)', 'N$26'), ('Net-(PWR0-PadA)', 'N$1'), ('Net-(READY0-C)', 'N$25')]
 RESULT: MATCH

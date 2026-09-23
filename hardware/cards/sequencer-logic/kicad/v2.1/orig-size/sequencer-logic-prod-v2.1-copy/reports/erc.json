@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.kicad.org/erc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-09-20T21:37:06",
+    "date": "2026-09-23T17:41:06",
     "ignored_checks": [
         {
             "description": "Global label only appears once in the schematic",
@@ -37,8 +37,8 @@
                         {
                             "description": "Symbol IC11 [74xx-us_74x04_N_pwrhidden]",
                             "pos": {
-                                "x": 0.4953,
-                                "y": 1.6256
+                                "x": 1.3208,
+                                "y": 2.4257
                             },
                             "uuid": "354d0fb3-aa7d-7967-bb8a-2635ec68c9a6"
                         }
@@ -52,8 +52,8 @@
                         {
                             "description": "Symbol IC11 [74xx-us_74x04_N_pwrhidden]",
                             "pos": {
-                                "x": 0.4953,
-                                "y": 2.032
+                                "x": 1.3208,
+                                "y": 2.8321
                             },
                             "uuid": "f6df2fd3-8890-4167-3e06-c202d6876a5e"
                         }
@@ -67,8 +67,8 @@
                         {
                             "description": "Symbol IC11 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.49567,
-                                "y": 1.62342
+                                "x": 1.32117,
+                                "y": 2.42352
                             },
                             "uuid": "0468270e-479d-2c66-125b-7a1399515f7a"
                         }
@@ -82,8 +82,8 @@
                         {
                             "description": "Symbol IC11 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.49567,
-                                "y": 2.02982
+                                "x": 1.32117,
+                                "y": 2.82992
                             },
                             "uuid": "ae06e9c1-16fd-ec65-9044-aa98a06d0de2"
                         }
@@ -97,8 +97,8 @@
                         {
                             "description": "Symbol IC12 [74xx-us_74x08_N_pwrhidden]",
                             "pos": {
-                                "x": 0.5207,
-                                "y": 1.8542
+                                "x": 1.3462,
+                                "y": 2.6543
                             },
                             "uuid": "8d35ae12-c537-c418-4598-065a8a97e672"
                         }
@@ -112,8 +112,8 @@
                         {
                             "description": "Symbol IC12 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.52107,
-                                "y": 1.85202
+                                "x": 1.34657,
+                                "y": 2.65212
                             },
                             "uuid": "8938798e-828e-9ca8-e58e-6bc281ac22cd"
                         }
@@ -127,8 +127,8 @@
                         {
                             "description": "Symbol IC11 [74xx-us_74x04_N_pwrhidden]",
                             "pos": {
-                                "x": 0.6477,
-                                "y": 0.9652
+                                "x": 1.4732,
+                                "y": 1.7653
                             },
                             "uuid": "2766d817-f1b1-13f9-fcc4-091c262a98c2"
                         }
@@ -142,8 +142,8 @@
                         {
                             "description": "Symbol IC11 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.64807,
-                                "y": 0.96302
+                                "x": 1.47357,
+                                "y": 1.76312
                             },
                             "uuid": "1f1a6dfa-dcda-a74a-896b-9b6af3a13675"
                         }
@@ -157,8 +157,8 @@
                         {
                             "description": "Symbol IC12 [74xx-us_74x08_N_pwrhidden]",
                             "pos": {
-                                "x": 0.9271,
-                                "y": 0.2794
+                                "x": 1.7526,
+                                "y": 1.0795
                             },
                             "uuid": "6f493f41-0476-479e-e3f6-44799a36ae19"
                         }
@@ -172,8 +172,8 @@
                         {
                             "description": "Symbol IC12 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.92747,
-                                "y": 0.27722
+                                "x": 1.75297,
+                                "y": 1.07732
                             },
                             "uuid": "76a9006a-30d8-1307-6d09-303e1b9aa00e"
                         }
@@ -187,8 +187,8 @@
                         {
                             "description": "Symbol IC23 [74xx-us_74x02_N_pwrhidden]",
                             "pos": {
-                                "x": 0.9779,
-                                "y": 0.7112
+                                "x": 1.8034,
+                                "y": 1.5113
                             },
                             "uuid": "799807fa-600b-8410-6be4-f5035cb44a1d"
                         }
@@ -202,8 +202,8 @@
                         {
                             "description": "Symbol IC23 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.97827,
-                                "y": 0.70902
+                                "x": 1.80377,
+                                "y": 1.50912
                             },
                             "uuid": "ce5b4e6c-400e-8bfe-2a8f-38beeb926b92"
                         }
@@ -217,8 +217,8 @@
                         {
                             "description": "Symbol IC9 [74xx-us_74x244_N_pwrhidden]",
                             "pos": {
-                                "x": 1.0287,
-                                "y": 1.0922
+                                "x": 1.8542,
+                                "y": 1.8923
                             },
                             "uuid": "516faa55-d3d7-2092-cee0-90a406b94d7f"
                         }
@@ -232,8 +232,8 @@
                         {
                             "description": "Symbol IC9 [74xx-us_74x244_N_pwrhidden]",
                             "pos": {
-                                "x": 1.0287,
-                                "y": 1.8796
+                                "x": 1.8542,
+                                "y": 2.6797
                             },
                             "uuid": "c3117b03-b174-8afb-91b1-b650ae4ccb03"
                         }
@@ -247,8 +247,8 @@
                         {
                             "description": "Symbol IC9 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.02907,
-                                "y": 1.0898
+                                "x": 1.85457,
+                                "y": 1.8899
                             },
                             "uuid": "80df832c-0080-5c4c-2e9c-8e31b92d4f69"
                         }
@@ -262,8 +262,8 @@
                         {
                             "description": "Symbol IC9 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.02907,
-                                "y": 1.8772
+                                "x": 1.85457,
+                                "y": 2.6773
                             },
                             "uuid": "2d50011e-2aa1-d652-5db4-13ae000dafb9"
                         }
@@ -277,8 +277,8 @@
                         {
                             "description": "Symbol IC8 [74xx-us_74x244_N_pwrhidden]",
                             "pos": {
-                                "x": 1.0541,
-                                "y": 1.397
+                                "x": 1.8796,
+                                "y": 2.1971
                             },
                             "uuid": "04fac11d-fddf-8676-c6e5-7043da126bcc"
                         }
@@ -292,8 +292,8 @@
                         {
                             "description": "Symbol IC8 [74xx-us_74x244_N_pwrhidden]",
                             "pos": {
-                                "x": 1.0541,
-                                "y": 1.651
+                                "x": 1.8796,
+                                "y": 2.4511
                             },
                             "uuid": "d6cb2ae5-cb9d-73fc-a383-a494d84523a9"
                         }
@@ -307,8 +307,8 @@
                         {
                             "description": "Symbol IC8 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.05447,
-                                "y": 1.3946
+                                "x": 1.87997,
+                                "y": 2.1947
                             },
                             "uuid": "c07f5dee-6ec7-416a-95e5-5daed3a570ca"
                         }
@@ -322,8 +322,8 @@
                         {
                             "description": "Symbol IC8 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.05447,
-                                "y": 1.6486
+                                "x": 1.87997,
+                                "y": 2.4487
                             },
                             "uuid": "aa334ccb-e396-8aa6-6788-c590ef246d0c"
                         }
@@ -337,8 +337,8 @@
                         {
                             "description": "Symbol IC35 [74xx-us_74x32_N_pwrhidden]",
                             "pos": {
-                                "x": 1.1811,
-                                "y": 0.4826
+                                "x": 2.0066,
+                                "y": 1.2827
                             },
                             "uuid": "fe14f356-04e7-4312-de11-8ec3b5c931d7"
                         }
@@ -352,8 +352,8 @@
                         {
                             "description": "Symbol IC35 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.18147,
-                                "y": 0.48042
+                                "x": 2.00697,
+                                "y": 1.28052
                             },
                             "uuid": "888d8c2f-a23a-4de2-9b6f-ba4fdc0d1476"
                         }
@@ -367,8 +367,8 @@
                         {
                             "description": "Symbol IC4 [74xx-us_74x175_N_pwrhidden]",
                             "pos": {
-                                "x": 1.4859,
-                                "y": 1.143
+                                "x": 2.3114,
+                                "y": 1.9431
                             },
                             "uuid": "aa0b3696-ad75-1d1f-4200-f80df1993e65"
                         }
@@ -382,8 +382,8 @@
                         {
                             "description": "Symbol IC3 [74xx-us_74x175_N_pwrhidden]",
                             "pos": {
-                                "x": 1.4859,
-                                "y": 1.905
+                                "x": 2.3114,
+                                "y": 2.7051
                             },
                             "uuid": "3417e668-abd0-1d9a-fbb0-3b029c2a249a"
                         }
@@ -397,8 +397,8 @@
                         {
                             "description": "Symbol IC4 Hidden pin 8 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.48627,
-                                "y": 1.14071
+                                "x": 2.31177,
+                                "y": 1.94081
                             },
                             "uuid": "5caaa4bd-30b3-4063-77a1-532a0ea39adf"
                         }
@@ -412,8 +412,8 @@
                         {
                             "description": "Symbol IC3 Hidden pin 8 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.48627,
-                                "y": 1.90271
+                                "x": 2.31177,
+                                "y": 2.70281
                             },
                             "uuid": "0b62015f-42e7-5143-7552-031fc6029d47"
                         }
@@ -427,8 +427,8 @@
                         {
                             "description": "Symbol IC22 [74xx-us_74x74_N_pwrhidden]",
                             "pos": {
-                                "x": 1.6383,
-                                "y": 0.6096
+                                "x": 2.4638,
+                                "y": 1.4097
                             },
                             "uuid": "a8162462-0d14-8f6f-bccf-70b4906f1577"
                         }
@@ -442,8 +442,8 @@
                         {
                             "description": "Symbol IC22 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.63867,
-                                "y": 0.60742
+                                "x": 2.46417,
+                                "y": 1.40752
                             },
                             "uuid": "9c214043-64b0-fe87-6e83-9efa79828920"
                         }
@@ -457,8 +457,8 @@
                         {
                             "description": "Symbol IC1 [74xx-us_74x244_N_pwrhidden]",
                             "pos": {
-                                "x": 1.8161,
-                                "y": 1.0922
+                                "x": 2.6416,
+                                "y": 1.8923
                             },
                             "uuid": "10f82e5f-efc1-4d93-2d81-441e19f07e3a"
                         }
@@ -472,8 +472,8 @@
                         {
                             "description": "Symbol IC1 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.81647,
-                                "y": 1.0898
+                                "x": 2.64197,
+                                "y": 1.8899
                             },
                             "uuid": "1a47bc9d-9e7b-bcd2-2986-2bac9bebc097"
                         }
@@ -487,8 +487,8 @@
                         {
                             "description": "Symbol IC1 [74xx-us_74x244_N_pwrhidden]",
                             "pos": {
-                                "x": 1.8415,
-                                "y": 1.8542
+                                "x": 2.667,
+                                "y": 2.6543
                             },
                             "uuid": "74fbfd63-3fb6-4652-f534-112cbfc8cc2f"
                         }
@@ -502,8 +502,8 @@
                         {
                             "description": "Symbol IC1 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.84187,
-                                "y": 1.8518
+                                "x": 2.66737,
+                                "y": 2.6519
                             },
                             "uuid": "9cbfa99c-19f4-2e4b-dd11-0684fe703cf4"
                         }
@@ -512,13 +512,73 @@
                     "type": "endpoint_off_grid"
                 },
                 {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1270 mm",
+                            "pos": {
+                                "x": 2.7686,
+                                "y": 1.8415
+                            },
+                            "uuid": "6b85b9f7-b574-03c7-98cf-a4c0c7f94d03"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1270 mm",
+                            "pos": {
+                                "x": 2.7686,
+                                "y": 1.9177
+                            },
+                            "uuid": "62540d54-fcac-f18f-d1f2-e73385bbdce4"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1016 mm",
+                            "pos": {
+                                "x": 2.794,
+                                "y": 2.6035
+                            },
+                            "uuid": "5e0349a0-aa2a-9f96-2c68-4dc9d3856122"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1016 mm",
+                            "pos": {
+                                "x": 2.794,
+                                "y": 2.6797
+                            },
+                            "uuid": "e7b4de4a-050e-9465-8a00-5ff50056b3e5"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
                     "description": "The current configuration does not include the footprint library 'sequencer-logic-v2.1-orig-size-sequencer-logic-prod-v2.1-copy-eagle'",
                     "items": [
                         {
                             "description": "Symbol QG1 [crystal_XO-_14]",
                             "pos": {
-                                "x": 2.3495,
-                                "y": 1.1176
+                                "x": 3.175,
+                                "y": 1.9177
                             },
                             "uuid": "803003b7-966a-4b43-3ff5-8a5841b2daa8"
                         }
@@ -532,8 +592,8 @@
                         {
                             "description": "Symbol IC30 [74xx-us_74x04_N_pwrhidden]",
                             "pos": {
-                                "x": 2.4003,
-                                "y": 0.4826
+                                "x": 3.2258,
+                                "y": 1.2827
                             },
                             "uuid": "b72a6c3c-ae32-7286-e8d2-c2327d0454ce"
                         }
@@ -547,8 +607,8 @@
                         {
                             "description": "Symbol IC30 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.40067,
-                                "y": 0.48042
+                                "x": 3.22617,
+                                "y": 1.28052
                             },
                             "uuid": "27e3a7e0-1854-b6a9-ce57-706ab2232b9c"
                         }
@@ -562,8 +622,8 @@
                         {
                             "description": "Symbol IC30 [74xx-us_74x04_N_pwrhidden]",
                             "pos": {
-                                "x": 2.6035,
-                                "y": 0.4826
+                                "x": 3.429,
+                                "y": 1.2827
                             },
                             "uuid": "2c25d7ae-f95f-eb46-6f24-bb5a40d199ff"
                         }
@@ -577,8 +637,8 @@
                         {
                             "description": "Symbol IC30 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.60387,
-                                "y": 0.48042
+                                "x": 3.42937,
+                                "y": 1.28052
                             },
                             "uuid": "e687ba2a-5556-946c-a17a-5c0884354b0b"
                         }
@@ -592,8 +652,8 @@
                         {
                             "description": "Symbol IC10 [74xx-us_74x32_N_pwrhidden]",
                             "pos": {
-                                "x": 2.6289,
-                                "y": 0.9144
+                                "x": 3.4544,
+                                "y": 1.7145
                             },
                             "uuid": "7e8a7189-d011-3b3e-474f-99346ebe7d75"
                         }
@@ -607,8 +667,8 @@
                         {
                             "description": "Symbol IC7 [74xx-us_74x08_N_pwrhidden]",
                             "pos": {
-                                "x": 2.6289,
-                                "y": 1.27
+                                "x": 3.4544,
+                                "y": 2.0701
                             },
                             "uuid": "dd207a5d-1fc5-b47b-0cfc-8b0bff1cd615"
                         }
@@ -622,8 +682,8 @@
                         {
                             "description": "Symbol IC7 [74xx-us_74x08_N_pwrhidden]",
                             "pos": {
-                                "x": 2.6289,
-                                "y": 1.4224
+                                "x": 3.4544,
+                                "y": 2.2225
                             },
                             "uuid": "edcdd92b-452a-73cd-fb1d-3e1dbced8c5d"
                         }
@@ -637,8 +697,8 @@
                         {
                             "description": "Symbol IC10 [74xx-us_74x32_N_pwrhidden]",
                             "pos": {
-                                "x": 2.6289,
-                                "y": 1.6002
+                                "x": 3.4544,
+                                "y": 2.4003
                             },
                             "uuid": "0b037d96-acda-ddeb-bced-78ccb35a3b30"
                         }
@@ -652,8 +712,8 @@
                         {
                             "description": "Symbol IC29 [74xx-us_74x08_N_pwrhidden]",
                             "pos": {
-                                "x": 2.6289,
-                                "y": 1.8034
+                                "x": 3.4544,
+                                "y": 2.6035
                             },
                             "uuid": "5d87c877-596c-b007-33f6-1d125d5d833e"
                         }
@@ -667,8 +727,8 @@
                         {
                             "description": "Symbol IC10 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.62927,
-                                "y": 0.91222
+                                "x": 3.45477,
+                                "y": 1.71232
                             },
                             "uuid": "85afb902-370c-e816-c6d0-f1640b61af77"
                         }
@@ -682,8 +742,8 @@
                         {
                             "description": "Symbol IC7 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.62927,
-                                "y": 1.26782
+                                "x": 3.45477,
+                                "y": 2.06792
                             },
                             "uuid": "bc2a17f9-dc58-d824-4543-bc333707862f"
                         }
@@ -697,8 +757,8 @@
                         {
                             "description": "Symbol IC7 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.62927,
-                                "y": 1.42022
+                                "x": 3.45477,
+                                "y": 2.22032
                             },
                             "uuid": "d99727b0-709f-d033-b617-b0900ac5f07a"
                         }
@@ -712,8 +772,8 @@
                         {
                             "description": "Symbol IC10 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.62927,
-                                "y": 1.59802
+                                "x": 3.45477,
+                                "y": 2.39812
                             },
                             "uuid": "c5db892b-4617-5ee8-3e7c-ffc4e98e4fb1"
                         }
@@ -727,8 +787,8 @@
                         {
                             "description": "Symbol IC29 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.62927,
-                                "y": 1.80122
+                                "x": 3.45477,
+                                "y": 2.60132
                             },
                             "uuid": "2b2e43e3-96ce-8b56-3bd5-b594f82bcc04"
                         }
@@ -742,8 +802,8 @@
                         {
                             "description": "Symbol IC11 [74xx-us_74x04_N_pwrhidden]",
                             "pos": {
-                                "x": 2.8067,
-                                "y": 0.4826
+                                "x": 3.6322,
+                                "y": 1.2827
                             },
                             "uuid": "7006dba6-a435-12fd-49cc-d729611ab84b"
                         }
@@ -757,8 +817,8 @@
                         {
                             "description": "Symbol IC11 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.80707,
-                                "y": 0.48042
+                                "x": 3.63257,
+                                "y": 1.28052
                             },
                             "uuid": "a1e36d99-a767-efcc-b5be-94d4442ddae0"
                         }
@@ -772,8 +832,8 @@
                         {
                             "description": "Symbol IC36 [74xx-us_74x04_N_pwrhidden]",
                             "pos": {
-                                "x": 2.8575,
-                                "y": 1.0922
+                                "x": 3.683,
+                                "y": 1.8923
                             },
                             "uuid": "e29b2be9-4532-5854-27eb-0d92d547fd3a"
                         }
@@ -787,8 +847,8 @@
                         {
                             "description": "Symbol IC36 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.85787,
-                                "y": 1.09002
+                                "x": 3.68337,
+                                "y": 1.89012
                             },
                             "uuid": "ad7bb40a-99ca-6599-49c8-9a9489ed0af7"
                         }
@@ -802,8 +862,8 @@
                         {
                             "description": "Symbol IC10 [74xx-us_74x32_N_pwrhidden]",
                             "pos": {
-                                "x": 2.9083,
-                                "y": 1.3462
+                                "x": 3.7338,
+                                "y": 2.1463
                             },
                             "uuid": "c0bcda12-fcf0-01c7-a232-87e4597efa52"
                         }
@@ -817,8 +877,8 @@
                         {
                             "description": "Symbol IC10 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.90867,
-                                "y": 1.34402
+                                "x": 3.73417,
+                                "y": 2.14412
                             },
                             "uuid": "49db3b5e-d24b-f493-742f-a43158ca181a"
                         }
@@ -832,8 +892,8 @@
                         {
                             "description": "Symbol IC23 [74xx-us_74x02_N_pwrhidden]",
                             "pos": {
-                                "x": 3.1115,
-                                "y": 0.4318
+                                "x": 3.937,
+                                "y": 1.2319
                             },
                             "uuid": "377ea032-61d2-d130-fe8d-551aeee1b8e4"
                         }
@@ -847,8 +907,8 @@
                         {
                             "description": "Symbol IC23 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 3.11187,
-                                "y": 0.42962
+                                "x": 3.93737,
+                                "y": 1.22972
                             },
                             "uuid": "fe40b156-87d9-9688-1e26-463c61fa6f23"
                         }
@@ -862,8 +922,8 @@
                         {
                             "description": "Symbol IC7 [74xx-us_74x08_N_pwrhidden]",
                             "pos": {
-                                "x": 3.1369,
-                                "y": 1.143
+                                "x": 3.9624,
+                                "y": 1.9431
                             },
                             "uuid": "fd92b1d5-ea48-8f10-4b72-a94dcf1563e6"
                         }
@@ -877,8 +937,8 @@
                         {
                             "description": "Symbol IC7 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 3.13727,
-                                "y": 1.14082
+                                "x": 3.96277,
+                                "y": 1.94092
                             },
                             "uuid": "50f04800-24b6-6342-be1a-c2adde1c2ca6"
                         }
@@ -892,8 +952,8 @@
                         {
                             "description": "Symbol IC6 [74xx-us_74x192_N_pwrhidden]",
                             "pos": {
-                                "x": 3.3401,
-                                "y": 1.4224
+                                "x": 4.1656,
+                                "y": 2.2225
                             },
                             "uuid": "17cfae90-ac6e-b15d-3b61-a755716d0256"
                         }
@@ -907,8 +967,8 @@
                         {
                             "description": "Symbol IC5 [74xx-us_74x192_N_pwrhidden]",
                             "pos": {
-                                "x": 3.3401,
-                                "y": 1.7526
+                                "x": 4.1656,
+                                "y": 2.5527
                             },
                             "uuid": "7f950cf5-79a4-6bc0-7daa-4474d5b1bc06"
                         }
@@ -922,8 +982,8 @@
                         {
                             "description": "Symbol IC6 Hidden pin 8 [GND, Power input, Line]",
                             "pos": {
-                                "x": 3.34047,
-                                "y": 1.42011
+                                "x": 4.16597,
+                                "y": 2.22021
                             },
                             "uuid": "d1b06a61-3874-bac5-0f1a-949a99ed5d58"
                         }
@@ -937,8 +997,8 @@
                         {
                             "description": "Symbol IC5 Hidden pin 8 [GND, Power input, Line]",
                             "pos": {
-                                "x": 3.34047,
-                                "y": 1.75031
+                                "x": 4.16597,
+                                "y": 2.55041
                             },
                             "uuid": "de2040b6-1a53-e5ee-1178-d421559f5ea2"
                         }
@@ -952,8 +1012,8 @@
                         {
                             "description": "Symbol IC35 [74xx-us_74x32_N_pwrhidden]",
                             "pos": {
-                                "x": 3.3655,
-                                "y": 0.4572
+                                "x": 4.191,
+                                "y": 1.2573
                             },
                             "uuid": "b2b37766-c163-603a-f84f-5ec8f0711d92"
                         }
@@ -967,8 +1027,8 @@
                         {
                             "description": "Symbol IC35 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 3.36587,
-                                "y": 0.45502
+                                "x": 4.19137,
+                                "y": 1.25512
                             },
                             "uuid": "8b01382d-ce86-3133-497d-7293dc6d554d"
                         }
@@ -982,8 +1042,8 @@
                         {
                             "description": "Symbol IC7 [74xx-us_74x08_N_pwrhidden]",
                             "pos": {
-                                "x": 3.3909,
-                                "y": 1.1684
+                                "x": 4.2164,
+                                "y": 1.9685
                             },
                             "uuid": "4b95c62a-f43b-3d22-1bc6-d3ae14ae3842"
                         }
@@ -997,8 +1057,8 @@
                         {
                             "description": "Symbol IC7 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 3.39127,
-                                "y": 1.16622
+                                "x": 4.21677,
+                                "y": 1.96632
                             },
                             "uuid": "ae69b51d-bb8a-9b29-0d0b-4b17be1e3976"
                         }
@@ -1012,8 +1072,8 @@
                         {
                             "description": "Symbol IC2 [74xx-us_74x244_N_pwrhidden]",
                             "pos": {
-                                "x": 3.6703,
-                                "y": 1.3716
+                                "x": 4.4958,
+                                "y": 2.1717
                             },
                             "uuid": "ce0dc22f-1cbe-d2fb-d6fe-3ac13f04cf37"
                         }
@@ -1027,8 +1087,8 @@
                         {
                             "description": "Symbol IC2 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 3.67067,
-                                "y": 1.3692
+                                "x": 4.49617,
+                                "y": 2.1693
                             },
                             "uuid": "cc37dc9b-a172-b49d-8abc-1550e3d7a4cb"
                         }
@@ -1042,8 +1102,8 @@
                         {
                             "description": "Symbol IC2 [74xx-us_74x244_N_pwrhidden]",
                             "pos": {
-                                "x": 3.6957,
-                                "y": 1.7018
+                                "x": 4.5212,
+                                "y": 2.5019
                             },
                             "uuid": "5222fe1e-7ad1-4c07-81ad-4c9087d79eca"
                         }
@@ -1057,8 +1117,8 @@
                         {
                             "description": "Symbol IC2 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 3.69607,
-                                "y": 1.6994
+                                "x": 4.52157,
+                                "y": 2.4995
                             },
                             "uuid": "2afa52b1-d8d5-605e-bd21-101e5bc37a55"
                         }
@@ -1067,13 +1127,28 @@
                     "type": "endpoint_off_grid"
                 },
                 {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1778 mm",
+                            "pos": {
+                                "x": 4.6482,
+                                "y": 2.5019
+                            },
+                            "uuid": "619bc6cf-94a0-5bdc-2f11-bf6955b55d0d"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
                     "description": "The current configuration does not include the footprint library 'sequencer-logic-v2.1-orig-size-sequencer-logic-prod-v2.1-copy-eagle'",
                     "items": [
                         {
                             "description": "Symbol IC20 [74xx-us_74x374_N_pwrhidden]",
                             "pos": {
-                                "x": 1.016,
-                                "y": 0.381
+                                "x": 1.778,
+                                "y": 0.7493
                             },
                             "uuid": "50f63585-ca35-619b-a149-b70bd25e6b68"
                         }
@@ -1087,8 +1162,8 @@
                         {
                             "description": "Symbol IC19 [74xx-us_74x374_N_pwrhidden]",
                             "pos": {
-                                "x": 1.016,
-                                "y": 0.7874
+                                "x": 1.778,
+                                "y": 1.1557
                             },
                             "uuid": "507dbde8-c7d3-c7bc-2641-850e5ab98a4b"
                         }
@@ -1102,8 +1177,8 @@
                         {
                             "description": "Symbol IC18 [74xx-us_74x374_N_pwrhidden]",
                             "pos": {
-                                "x": 1.016,
-                                "y": 1.1938
+                                "x": 1.778,
+                                "y": 1.5621
                             },
                             "uuid": "3bb2c2fb-7dd1-7db4-3380-153cb2d5a091"
                         }
@@ -1117,8 +1192,8 @@
                         {
                             "description": "Symbol IC17 [74xx-us_74x374_N_pwrhidden]",
                             "pos": {
-                                "x": 1.016,
-                                "y": 1.5748
+                                "x": 1.778,
+                                "y": 1.9431
                             },
                             "uuid": "b2c85b98-a09a-1229-3c8f-fedadf0bf930"
                         }
@@ -1132,8 +1207,8 @@
                         {
                             "description": "Symbol IC20 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.01637,
-                                "y": 0.3786
+                                "x": 1.77837,
+                                "y": 0.7469
                             },
                             "uuid": "b388955a-cace-f798-49c0-bfc06545d83c"
                         }
@@ -1147,8 +1222,8 @@
                         {
                             "description": "Symbol IC19 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.01637,
-                                "y": 0.785
+                                "x": 1.77837,
+                                "y": 1.1533
                             },
                             "uuid": "e906522b-05b2-a6ec-9b90-f84417c32167"
                         }
@@ -1162,8 +1237,8 @@
                         {
                             "description": "Symbol IC18 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.01637,
-                                "y": 1.1914
+                                "x": 1.77837,
+                                "y": 1.5597
                             },
                             "uuid": "0207151c-3326-8321-9cff-e79a88348db4"
                         }
@@ -1177,8 +1252,8 @@
                         {
                             "description": "Symbol IC17 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.01637,
-                                "y": 1.5724
+                                "x": 1.77837,
+                                "y": 1.9407
                             },
                             "uuid": "af51959b-2beb-9959-cbed-7b11aa2be1b9"
                         }
@@ -1187,13 +1262,43 @@
                     "type": "endpoint_off_grid"
                 },
                 {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1778 mm",
+                            "pos": {
+                                "x": 1.905,
+                                "y": 0.6223
+                            },
+                            "uuid": "82586acd-f26b-7936-f6f2-1219550e47c7"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1778 mm",
+                            "pos": {
+                                "x": 1.905,
+                                "y": 1.9685
+                            },
+                            "uuid": "8eb26859-4748-bf81-e908-d769fdcfd4c7"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
                     "description": "The current configuration does not include the footprint library 'sequencer-logic-v2.1-orig-size-sequencer-logic-prod-v2.1-copy-eagle'",
                     "items": [
                         {
                             "description": "Symbol IC16 [74xx-us_74x374_N_pwrhidden]",
                             "pos": {
-                                "x": 2.0066,
-                                "y": 0.381
+                                "x": 2.7686,
+                                "y": 0.7493
                             },
                             "uuid": "9200aaf2-9948-6251-3f38-98cd48880691"
                         }
@@ -1207,8 +1312,8 @@
                         {
                             "description": "Symbol IC15 [74xx-us_74x374_N_pwrhidden]",
                             "pos": {
-                                "x": 2.0066,
-                                "y": 0.7874
+                                "x": 2.7686,
+                                "y": 1.1557
                             },
                             "uuid": "45441074-d980-72be-9325-8968f1cd441f"
                         }
@@ -1222,8 +1327,8 @@
                         {
                             "description": "Symbol IC14 [74xx-us_74x374_N_pwrhidden]",
                             "pos": {
-                                "x": 2.0066,
-                                "y": 1.1938
+                                "x": 2.7686,
+                                "y": 1.5621
                             },
                             "uuid": "ee509f61-2c7b-3233-3e5a-cab033e92793"
                         }
@@ -1237,8 +1342,8 @@
                         {
                             "description": "Symbol IC13 [74xx-us_74x374_N_pwrhidden]",
                             "pos": {
-                                "x": 2.0066,
-                                "y": 1.5748
+                                "x": 2.7686,
+                                "y": 1.9431
                             },
                             "uuid": "e1ec3c91-bed4-c525-f9d0-60fed6597e3f"
                         }
@@ -1252,8 +1357,8 @@
                         {
                             "description": "Symbol IC16 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.00697,
-                                "y": 0.3786
+                                "x": 2.76897,
+                                "y": 0.7469
                             },
                             "uuid": "7ad8b5f8-8c6a-454e-d0d4-e69f5951221f"
                         }
@@ -1267,8 +1372,8 @@
                         {
                             "description": "Symbol IC15 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.00697,
-                                "y": 0.785
+                                "x": 2.76897,
+                                "y": 1.1533
                             },
                             "uuid": "eed7615c-9eef-fd60-cabd-6d8d76b5faef"
                         }
@@ -1282,8 +1387,8 @@
                         {
                             "description": "Symbol IC14 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.00697,
-                                "y": 1.1914
+                                "x": 2.76897,
+                                "y": 1.5597
                             },
                             "uuid": "fea031d5-404c-1afe-6c77-61145d9f1907"
                         }
@@ -1297,8 +1402,8 @@
                         {
                             "description": "Symbol IC13 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.00697,
-                                "y": 1.5724
+                                "x": 2.76897,
+                                "y": 1.9407
                             },
                             "uuid": "0746eefc-bb97-b1ab-8e59-fc778ee21425"
                         }
@@ -1307,13 +1412,43 @@
                     "type": "endpoint_off_grid"
                 },
                 {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1778 mm",
+                            "pos": {
+                                "x": 2.8956,
+                                "y": 1.8923
+                            },
+                            "uuid": "acbc4d0e-8819-1932-60a4-cd41baf8459e"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1778 mm",
+                            "pos": {
+                                "x": 2.8956,
+                                "y": 1.9685
+                            },
+                            "uuid": "3a1bd149-0fc1-fa74-1438-a17fe5cab1f2"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
                     "description": "The current configuration does not include the footprint library 'sequencer-logic-v2.1-orig-size-sequencer-logic-prod-v2.1-copy-eagle'",
                     "items": [
                         {
                             "description": "Symbol JP2 [Connector_PINHD-1X2]",
                             "pos": {
-                                "x": 2.5146,
-                                "y": 1.5494
+                                "x": 3.2766,
+                                "y": 1.9177
                             },
                             "uuid": "a177b786-a5b9-b60e-1818-91f37423d200"
                         }
@@ -1327,8 +1462,8 @@
                         {
                             "description": "Symbol JP1 [pinhead_PINHD-1X5]",
                             "pos": {
-                                "x": 0.254,
-                                "y": 0.6858
+                                "x": 0.7239,
+                                "y": 0.8636
                             },
                             "uuid": "4b054e43-d2b8-63af-4576-6d092e4fc70a"
                         }
@@ -1342,8 +1477,8 @@
                         {
                             "description": "Symbol R16 [adafruit_R-US__0207_10]",
                             "pos": {
-                                "x": 0.508,
-                                "y": 0.3556
+                                "x": 0.9779,
+                                "y": 0.5334
                             },
                             "uuid": "b16a184d-a72b-99b6-9d79-e18547a1c653"
                         }
@@ -1357,8 +1492,8 @@
                         {
                             "description": "Symbol -INT-PULLUP0 [pinhead_PINHD-1X2]",
                             "pos": {
-                                "x": 0.6096,
-                                "y": 0.5334
+                                "x": 1.0795,
+                                "y": 0.7112
                             },
                             "uuid": "5ab9b2da-2da0-acba-ae39-b300dcea47ee"
                         }
@@ -1372,8 +1507,8 @@
                         {
                             "description": "Symbol IC11 [74xx-us_74x04_N_pwrhidden]",
                             "pos": {
-                                "x": 0.7874,
-                                "y": 0.635
+                                "x": 1.2573,
+                                "y": 0.8128
                             },
                             "uuid": "c4c657b5-f3b9-4cce-dd40-f1e20983d82f"
                         }
@@ -1387,8 +1522,8 @@
                         {
                             "description": "Symbol IC11 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.78777,
-                                "y": 0.63282
+                                "x": 1.25767,
+                                "y": 0.81062
                             },
                             "uuid": "59b96a01-587e-4679-788a-2d761263a4b9"
                         }
@@ -1402,8 +1537,8 @@
                         {
                             "description": "Symbol IC11 [74xx-us_74x04_N_pwrhidden]",
                             "pos": {
-                                "x": 0.8382,
-                                "y": 0.8382
+                                "x": 1.3081,
+                                "y": 1.016
                             },
                             "uuid": "579b7d71-7ea5-d75b-76a8-a92101dfd500"
                         }
@@ -1417,8 +1552,8 @@
                         {
                             "description": "Symbol IC11 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.83857,
-                                "y": 0.83602
+                                "x": 1.30847,
+                                "y": 1.01382
                             },
                             "uuid": "25fdc413-d3a9-b52d-991b-d56696555575"
                         }
@@ -1432,8 +1567,8 @@
                         {
                             "description": "Symbol IC24 [74xx-us_74x32_N_pwrhidden]",
                             "pos": {
-                                "x": 0.889,
-                                "y": 0.9906
+                                "x": 1.3589,
+                                "y": 1.1684
                             },
                             "uuid": "729775af-06f5-73c7-b1cc-27efb5d556fa"
                         }
@@ -1447,8 +1582,8 @@
                         {
                             "description": "Symbol IC24 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.88937,
-                                "y": 0.98842
+                                "x": 1.35927,
+                                "y": 1.16622
                             },
                             "uuid": "defbb4f6-6a64-6877-0109-9a2c88ac2dca"
                         }
@@ -1462,8 +1597,8 @@
                         {
                             "description": "Symbol IC22 [74xx-us_74x74_N_pwrhidden]",
                             "pos": {
-                                "x": 1.1938,
-                                "y": 0.7874
+                                "x": 1.6637,
+                                "y": 0.9652
                             },
                             "uuid": "7c46e292-d3bc-6c92-49df-b2a14e28c794"
                         }
@@ -1477,8 +1612,8 @@
                         {
                             "description": "Symbol IC22 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.19417,
-                                "y": 0.78522
+                                "x": 1.66407,
+                                "y": 0.96302
                             },
                             "uuid": "bb2f81ba-d0c6-1240-2aae-96001ba7ba06"
                         }
@@ -1492,8 +1627,8 @@
                         {
                             "description": "Symbol IC21 [74xx-us_74x02_N_pwrhidden]",
                             "pos": {
-                                "x": 1.2192,
-                                "y": 0.2794
+                                "x": 1.6891,
+                                "y": 0.4572
                             },
                             "uuid": "966c3f87-ca52-0280-ec1f-173250c43749"
                         }
@@ -1507,8 +1642,8 @@
                         {
                             "description": "Symbol IC21 [74xx-us_74x02_N_pwrhidden]",
                             "pos": {
-                                "x": 1.2192,
-                                "y": 0.4572
+                                "x": 1.6891,
+                                "y": 0.635
                             },
                             "uuid": "d43af273-ddaf-9c27-a917-ca41063dc42b"
                         }
@@ -1522,8 +1657,8 @@
                         {
                             "description": "Symbol IC21 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.21957,
-                                "y": 0.27722
+                                "x": 1.68947,
+                                "y": 0.45502
                             },
                             "uuid": "cf785c0c-c7cb-7dc1-e65e-c7b115b68dfc"
                         }
@@ -1537,8 +1672,8 @@
                         {
                             "description": "Symbol IC21 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.21957,
-                                "y": 0.45502
+                                "x": 1.68947,
+                                "y": 0.63282
                             },
                             "uuid": "97c6a354-0d0c-f24f-b2ad-3cf7f3269ae3"
                         }
@@ -1552,8 +1687,8 @@
                         {
                             "description": "Symbol IC21 [74xx-us_74x02_N_pwrhidden]",
                             "pos": {
-                                "x": 1.2446,
-                                "y": 1.016
+                                "x": 1.7145,
+                                "y": 1.1938
                             },
                             "uuid": "d871ac4f-684c-2343-fa90-5d2da5f2551a"
                         }
@@ -1567,8 +1702,8 @@
                         {
                             "description": "Symbol IC21 [74xx-us_74x02_N_pwrhidden]",
                             "pos": {
-                                "x": 1.2446,
-                                "y": 1.1938
+                                "x": 1.7145,
+                                "y": 1.3716
                             },
                             "uuid": "8ee0f2ec-22eb-4c88-c16a-9ba2b5c596c2"
                         }
@@ -1582,8 +1717,8 @@
                         {
                             "description": "Symbol IC21 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.24497,
-                                "y": 1.01382
+                                "x": 1.71487,
+                                "y": 1.19162
                             },
                             "uuid": "fa08e338-cc6d-90bd-811c-d550c2136ca0"
                         }
@@ -1597,8 +1732,8 @@
                         {
                             "description": "Symbol IC21 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.24497,
-                                "y": 1.19162
+                                "x": 1.71487,
+                                "y": 1.36942
                             },
                             "uuid": "9d57ce35-f258-208b-e3ec-0f26cb25a6aa"
                         }
@@ -1612,8 +1747,8 @@
                         {
                             "description": "Symbol IC12 [74xx-us_74x08_N_pwrhidden]",
                             "pos": {
-                                "x": 1.5494,
-                                "y": 0.9906
+                                "x": 2.0193,
+                                "y": 1.1684
                             },
                             "uuid": "ac85804c-ce65-11a2-aa31-caa8226782b4"
                         }
@@ -1627,8 +1762,8 @@
                         {
                             "description": "Symbol IC12 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.54977,
-                                "y": 0.98842
+                                "x": 2.01967,
+                                "y": 1.16622
                             },
                             "uuid": "8ac38e84-a4b1-17ea-f22c-e5c04df5ab0c"
                         }
@@ -1642,8 +1777,8 @@
                         {
                             "description": "Symbol IC35 [74xx-us_74x32_N_pwrhidden]",
                             "pos": {
-                                "x": 0.6096,
-                                "y": 0.3556
+                                "x": 0.7112,
+                                "y": 0.3302
                             },
                             "uuid": "e989c4e6-139b-a2c8-4bb1-be697141fe92"
                         }
@@ -1657,8 +1792,8 @@
                         {
                             "description": "Symbol IC24 [74xx-us_74x32_N_pwrhidden]",
                             "pos": {
-                                "x": 0.6096,
-                                "y": 0.5588
+                                "x": 0.7112,
+                                "y": 0.5334
                             },
                             "uuid": "61e4309a-34ca-9b91-34d3-4a98ddeabc96"
                         }
@@ -1672,8 +1807,8 @@
                         {
                             "description": "Symbol IC35 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.60997,
-                                "y": 0.35342
+                                "x": 0.71157,
+                                "y": 0.32802
                             },
                             "uuid": "f64ad5b1-bf87-3eaf-12f8-4aa5a3f81022"
                         }
@@ -1687,8 +1822,8 @@
                         {
                             "description": "Symbol IC24 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.60997,
-                                "y": 0.55662
+                                "x": 0.71157,
+                                "y": 0.53122
                             },
                             "uuid": "64b68d97-0f17-106f-f7ee-cd8699af88d7"
                         }
@@ -1702,8 +1837,8 @@
                         {
                             "description": "Symbol IC29 [74xx-us_74x08_N_pwrhidden]",
                             "pos": {
-                                "x": 0.9144,
-                                "y": 0.8382
+                                "x": 1.016,
+                                "y": 0.8128
                             },
                             "uuid": "6f4fe3a1-cf01-2a4b-3935-99a2805c8809"
                         }
@@ -1717,8 +1852,8 @@
                         {
                             "description": "Symbol IC29 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.91477,
-                                "y": 0.83602
+                                "x": 1.01637,
+                                "y": 0.81062
                             },
                             "uuid": "8ce37f28-1799-0477-ab3d-b9b27ecd41d5"
                         }
@@ -1732,8 +1867,8 @@
                         {
                             "description": "Symbol IC35 [74xx-us_74x32_N_pwrhidden]",
                             "pos": {
-                                "x": 0.9398,
-                                "y": 0.4318
+                                "x": 1.0414,
+                                "y": 0.4064
                             },
                             "uuid": "9653335a-81cf-c8dd-f642-7deadc8195ba"
                         }
@@ -1747,8 +1882,8 @@
                         {
                             "description": "Symbol IC29 [74xx-us_74x08_N_pwrhidden]",
                             "pos": {
-                                "x": 0.9398,
-                                "y": 1.3208
+                                "x": 1.0414,
+                                "y": 1.2954
                             },
                             "uuid": "c62c3580-f8ac-00d3-b3e0-84fbef018b2b"
                         }
@@ -1762,8 +1897,8 @@
                         {
                             "description": "Symbol IC12 [74xx-us_74x08_N_pwrhidden]",
                             "pos": {
-                                "x": 0.9398,
-                                "y": 1.524
+                                "x": 1.0414,
+                                "y": 1.4986
                             },
                             "uuid": "b9962416-36b0-901d-ec20-fd569fd2d7c2"
                         }
@@ -1777,8 +1912,8 @@
                         {
                             "description": "Symbol IC35 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.94017,
-                                "y": 0.42962
+                                "x": 1.04177,
+                                "y": 0.40422
                             },
                             "uuid": "8693e85d-e2fe-281e-7c63-d6e78e6860fc"
                         }
@@ -1792,8 +1927,8 @@
                         {
                             "description": "Symbol IC29 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.94017,
-                                "y": 1.31862
+                                "x": 1.04177,
+                                "y": 1.29322
                             },
                             "uuid": "9c9c0276-00e6-8584-14d6-350f68835524"
                         }
@@ -1807,8 +1942,8 @@
                         {
                             "description": "Symbol IC12 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.94017,
-                                "y": 1.52182
+                                "x": 1.04177,
+                                "y": 1.49642
                             },
                             "uuid": "992cee2b-0115-c7e8-e0e6-79b82a6e987e"
                         }
@@ -1822,8 +1957,8 @@
                         {
                             "description": "Symbol IC30 [74xx-us_74x04_N_pwrhidden]",
                             "pos": {
-                                "x": 1.1938,
-                                "y": 0.635
+                                "x": 1.2954,
+                                "y": 0.6096
                             },
                             "uuid": "bb8fb292-137f-ad86-3276-dad84fe097da"
                         }
@@ -1837,8 +1972,8 @@
                         {
                             "description": "Symbol IC36 [74xx-us_74x04_N_pwrhidden]",
                             "pos": {
-                                "x": 1.1938,
-                                "y": 1.3208
+                                "x": 1.2954,
+                                "y": 1.2954
                             },
                             "uuid": "79e2751c-262c-51ed-898d-65d4046b1dd4"
                         }
@@ -1852,8 +1987,8 @@
                         {
                             "description": "Symbol IC36 [74xx-us_74x04_N_pwrhidden]",
                             "pos": {
-                                "x": 1.1938,
-                                "y": 1.524
+                                "x": 1.2954,
+                                "y": 1.4986
                             },
                             "uuid": "e62e42f9-b73b-a2cc-bd29-76d0516f48a7"
                         }
@@ -1867,8 +2002,8 @@
                         {
                             "description": "Symbol IC30 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.19417,
-                                "y": 0.63282
+                                "x": 1.29577,
+                                "y": 0.60742
                             },
                             "uuid": "28734529-ed7b-5ad5-077e-2b30bc9fdc24"
                         }
@@ -1882,8 +2017,8 @@
                         {
                             "description": "Symbol IC36 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.19417,
-                                "y": 1.31862
+                                "x": 1.29577,
+                                "y": 1.29322
                             },
                             "uuid": "3fc29d8c-9765-38f5-ca96-4c23528042c0"
                         }
@@ -1897,8 +2032,8 @@
                         {
                             "description": "Symbol IC36 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.19417,
-                                "y": 1.52182
+                                "x": 1.29577,
+                                "y": 1.49642
                             },
                             "uuid": "16387503-da8d-e59b-5160-ce3c2bfe8945"
                         }
@@ -1912,8 +2047,8 @@
                         {
                             "description": "Symbol IC29 [74xx-us_74x08_N_pwrhidden]",
                             "pos": {
-                                "x": 1.4478,
-                                "y": 0.9144
+                                "x": 1.5494,
+                                "y": 0.889
                             },
                             "uuid": "55a85192-394b-46e6-d096-90530249814d"
                         }
@@ -1927,8 +2062,8 @@
                         {
                             "description": "Symbol IC29 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.44817,
-                                "y": 0.91222
+                                "x": 1.54977,
+                                "y": 0.88682
                             },
                             "uuid": "27fdbf32-befa-0c46-6ac4-dd506cfe374a"
                         }
@@ -1942,8 +2077,8 @@
                         {
                             "description": "Symbol IC24 [74xx-us_74x32_N_pwrhidden]",
                             "pos": {
-                                "x": 1.7272,
-                                "y": 0.889
+                                "x": 1.8288,
+                                "y": 0.8636
                             },
                             "uuid": "ee8b12de-efba-a728-96b0-2995a2d748d6"
                         }
@@ -1957,8 +2092,8 @@
                         {
                             "description": "Symbol IC24 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.72757,
-                                "y": 0.88682
+                                "x": 1.82917,
+                                "y": 0.86142
                             },
                             "uuid": "21b68415-06e3-1d56-0684-5c78c36ca92c"
                         }
@@ -1972,8 +2107,8 @@
                         {
                             "description": "Symbol IC28 [74xx-us_74x374_N_pwrhidden]",
                             "pos": {
-                                "x": 2.3114,
-                                "y": 0.381
+                                "x": 2.413,
+                                "y": 0.3556
                             },
                             "uuid": "0d3a5aae-bc8c-6a08-7afc-d96ae4c09348"
                         }
@@ -1987,8 +2122,8 @@
                         {
                             "description": "Symbol IC25 [74xx-us_74x374_N_pwrhidden]",
                             "pos": {
-                                "x": 2.3114,
-                                "y": 0.762
+                                "x": 2.413,
+                                "y": 0.7366
                             },
                             "uuid": "76ce25de-5ef9-bd2f-f418-71d497fa0499"
                         }
@@ -2002,8 +2137,8 @@
                         {
                             "description": "Symbol IC27 [74xx-us_74x374_N_pwrhidden]",
                             "pos": {
-                                "x": 2.3114,
-                                "y": 1.1176
+                                "x": 2.413,
+                                "y": 1.0922
                             },
                             "uuid": "e854efc1-d4d2-12bb-3767-11125112fdff"
                         }
@@ -2017,8 +2152,8 @@
                         {
                             "description": "Symbol IC26 [74xx-us_74x374_N_pwrhidden]",
                             "pos": {
-                                "x": 2.3114,
-                                "y": 1.4986
+                                "x": 2.413,
+                                "y": 1.4732
                             },
                             "uuid": "a5b1d1c7-0642-31d6-9d64-ab6f75689b4e"
                         }
@@ -2032,8 +2167,8 @@
                         {
                             "description": "Symbol IC28 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.31177,
-                                "y": 0.3786
+                                "x": 2.41337,
+                                "y": 0.3532
                             },
                             "uuid": "9c8e64e0-306c-f8b1-ecf3-e352ecdbf07d"
                         }
@@ -2047,8 +2182,8 @@
                         {
                             "description": "Symbol IC25 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.31177,
-                                "y": 0.7596
+                                "x": 2.41337,
+                                "y": 0.7342
                             },
                             "uuid": "8097c3b4-a56b-0d20-792e-dd7b379935d6"
                         }
@@ -2062,8 +2197,8 @@
                         {
                             "description": "Symbol IC27 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.31177,
-                                "y": 1.1152
+                                "x": 2.41337,
+                                "y": 1.0898
                             },
                             "uuid": "ea608c3f-a575-5c37-9920-0e6840d283ce"
                         }
@@ -2077,8 +2212,8 @@
                         {
                             "description": "Symbol IC26 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.31177,
-                                "y": 1.4962
+                                "x": 2.41337,
+                                "y": 1.4708
                             },
                             "uuid": "2ab2ad2d-01fd-37a6-0f96-a0720bb6c988"
                         }
@@ -2092,8 +2227,8 @@
                         {
                             "description": "Symbol STEP-CLK0 [switch_9070-1W]",
                             "pos": {
-                                "x": 0.3175,
-                                "y": 0.8255
+                                "x": 1.0795,
+                                "y": 1.1684
                             },
                             "uuid": "d81bc78b-3959-3c03-4d2a-aa882104cc9a"
                         }
@@ -2107,8 +2242,8 @@
                         {
                             "description": "Symbol RESET0 [switch_9070-1W]",
                             "pos": {
-                                "x": 0.3683,
-                                "y": 0.3937
+                                "x": 1.1303,
+                                "y": 0.7366
                             },
                             "uuid": "664f8d24-4152-1aa5-bb9c-885f4a984524"
                         }
@@ -2122,8 +2257,8 @@
                         {
                             "description": "Symbol SS/WAIT0 [switch_9070-1W]",
                             "pos": {
-                                "x": 0.3683,
-                                "y": 1.2573
+                                "x": 1.1303,
+                                "y": 1.6002
                             },
                             "uuid": "f6389a4a-169c-c860-deee-898f8702b7c7"
                         }
@@ -2137,8 +2272,8 @@
                         {
                             "description": "Symbol R5 [adafruit_R-US__0207_10]",
                             "pos": {
-                                "x": 0.5207,
-                                "y": 0.7493
+                                "x": 1.2827,
+                                "y": 1.0922
                             },
                             "uuid": "059028e5-e7d2-bbeb-aaf1-354fc9685701"
                         }
@@ -2152,8 +2287,8 @@
                         {
                             "description": "Symbol R4 [adafruit_R-US__0207_10]",
                             "pos": {
-                                "x": 0.5207,
-                                "y": 0.9271
+                                "x": 1.2827,
+                                "y": 1.27
                             },
                             "uuid": "ec962c08-1384-718c-5fed-5e1e9f7e77db"
                         }
@@ -2167,8 +2302,8 @@
                         {
                             "description": "Symbol HALT0 [SparkFun-Electromechanical_SWITCH-...]",
                             "pos": {
-                                "x": 0.5207,
-                                "y": 1.7399
+                                "x": 1.2827,
+                                "y": 2.0828
                             },
                             "uuid": "f31ed929-40fd-4b45-4606-b04cfd90afdc"
                         }
@@ -2182,8 +2317,8 @@
                         {
                             "description": "Symbol CONT0 [SparkFun-Electromechanical_SWITCH-...]",
                             "pos": {
-                                "x": 0.5461,
-                                "y": 1.5621
+                                "x": 1.3081,
+                                "y": 1.905
                             },
                             "uuid": "5738a087-310d-5ea1-3d02-0fd7e3b1c8a7"
                         }
@@ -2197,8 +2332,8 @@
                         {
                             "description": "Symbol R7 [adafruit_R-US__0207_10]",
                             "pos": {
-                                "x": 0.5715,
-                                "y": 0.3175
+                                "x": 1.3335,
+                                "y": 0.6604
                             },
                             "uuid": "6c9e95ca-b4a7-68dd-e524-e2f0eff69e71"
                         }
@@ -2212,8 +2347,8 @@
                         {
                             "description": "Symbol R6 [adafruit_R-US__0207_10]",
                             "pos": {
-                                "x": 0.5715,
-                                "y": 0.4953
+                                "x": 1.3335,
+                                "y": 0.8382
                             },
                             "uuid": "18b6982e-20bd-8f85-8bc8-41e1a835529f"
                         }
@@ -2227,8 +2362,8 @@
                         {
                             "description": "Symbol R3 [adafruit_R-US__0207_10]",
                             "pos": {
-                                "x": 0.5715,
-                                "y": 1.1811
+                                "x": 1.3335,
+                                "y": 1.524
                             },
                             "uuid": "c6e36f42-45b3-d0df-7199-231f0098ab3f"
                         }
@@ -2242,8 +2377,8 @@
                         {
                             "description": "Symbol R2 [adafruit_R-US__0207_10]",
                             "pos": {
-                                "x": 0.5715,
-                                "y": 1.3589
+                                "x": 1.3335,
+                                "y": 1.7018
                             },
                             "uuid": "17462e2b-3a75-b505-e13f-20193a0b543b"
                         }
@@ -2257,8 +2392,8 @@
                         {
                             "description": "Symbol IC23 [74xx-us_74x02_N_pwrhidden]",
                             "pos": {
-                                "x": 0.9271,
-                                "y": 0.2921
+                                "x": 1.6891,
+                                "y": 0.635
                             },
                             "uuid": "883b7444-7e5b-90fd-0461-a2f12eedb025"
                         }
@@ -2272,8 +2407,8 @@
                         {
                             "description": "Symbol IC23 [74xx-us_74x02_N_pwrhidden]",
                             "pos": {
-                                "x": 0.9271,
-                                "y": 0.5207
+                                "x": 1.6891,
+                                "y": 0.8636
                             },
                             "uuid": "e5cfb648-de29-ccb2-74f7-97022045895f"
                         }
@@ -2287,8 +2422,8 @@
                         {
                             "description": "Symbol IC31 [74xx-us_74x02_N_pwrhidden]",
                             "pos": {
-                                "x": 0.9271,
-                                "y": 0.7239
+                                "x": 1.6891,
+                                "y": 1.0668
                             },
                             "uuid": "734f7d17-557d-a469-a5f7-beaf96ae90fe"
                         }
@@ -2302,8 +2437,8 @@
                         {
                             "description": "Symbol IC31 [74xx-us_74x02_N_pwrhidden]",
                             "pos": {
-                                "x": 0.9271,
-                                "y": 0.9525
+                                "x": 1.6891,
+                                "y": 1.2954
                             },
                             "uuid": "d4653714-7bd1-cc0f-6c23-d1064945b3b6"
                         }
@@ -2317,8 +2452,8 @@
                         {
                             "description": "Symbol IC31 [74xx-us_74x02_N_pwrhidden]",
                             "pos": {
-                                "x": 0.9271,
-                                "y": 1.1557
+                                "x": 1.6891,
+                                "y": 1.4986
                             },
                             "uuid": "593fbc8b-c7ae-b26d-a0cf-4d50856e02f5"
                         }
@@ -2332,8 +2467,8 @@
                         {
                             "description": "Symbol IC31 [74xx-us_74x02_N_pwrhidden]",
                             "pos": {
-                                "x": 0.9271,
-                                "y": 1.3843
+                                "x": 1.6891,
+                                "y": 1.7272
                             },
                             "uuid": "7073021a-536d-e015-514a-8c1cddac2203"
                         }
@@ -2347,8 +2482,8 @@
                         {
                             "description": "Symbol IC23 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.92747,
-                                "y": 0.28992
+                                "x": 1.68947,
+                                "y": 0.63282
                             },
                             "uuid": "f807d2a4-390c-5dba-db9a-a6b9f0929356"
                         }
@@ -2362,8 +2497,8 @@
                         {
                             "description": "Symbol IC23 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.92747,
-                                "y": 0.51852
+                                "x": 1.68947,
+                                "y": 0.86142
                             },
                             "uuid": "71f006ec-21bb-623e-2c61-b8b67fd2c770"
                         }
@@ -2377,8 +2512,8 @@
                         {
                             "description": "Symbol IC31 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.92747,
-                                "y": 0.72172
+                                "x": 1.68947,
+                                "y": 1.06462
                             },
                             "uuid": "6bb17436-c57d-ce09-021b-cab1c6059624"
                         }
@@ -2392,8 +2527,8 @@
                         {
                             "description": "Symbol IC31 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.92747,
-                                "y": 0.95032
+                                "x": 1.68947,
+                                "y": 1.29322
                             },
                             "uuid": "92a8e149-990f-83c5-1e62-ebdc1c8e3a9e"
                         }
@@ -2407,8 +2542,8 @@
                         {
                             "description": "Symbol IC31 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.92747,
-                                "y": 1.15352
+                                "x": 1.68947,
+                                "y": 1.49642
                             },
                             "uuid": "c965ffb3-2c38-6efe-98ec-0203f7e34df5"
                         }
@@ -2422,8 +2557,8 @@
                         {
                             "description": "Symbol IC31 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.92747,
-                                "y": 1.38212
+                                "x": 1.68947,
+                                "y": 1.72502
                             },
                             "uuid": "862eadaa-890f-7939-9432-78b87b3b759c"
                         }
@@ -2437,8 +2572,8 @@
                         {
                             "description": "Symbol R9 [adafruit_R-US__0207_10]",
                             "pos": {
-                                "x": 1.2573,
-                                "y": 1.5113
+                                "x": 2.0193,
+                                "y": 1.8542
                             },
                             "uuid": "e79fd975-a34c-4a22-cc3d-930f551b47fe"
                         }
@@ -2452,8 +2587,8 @@
                         {
                             "description": "Symbol R8 [adafruit_R-US__0207_10]",
                             "pos": {
-                                "x": 1.2573,
-                                "y": 1.6891
+                                "x": 2.0193,
+                                "y": 2.032
                             },
                             "uuid": "c52c1e09-c2c6-28a9-e6d7-660b8a537b25"
                         }
@@ -2467,8 +2602,8 @@
                         {
                             "description": "Symbol IC36 [74xx-us_74x04_N_pwrhidden]",
                             "pos": {
-                                "x": 1.5113,
-                                "y": 1.5621
+                                "x": 2.2733,
+                                "y": 1.905
                             },
                             "uuid": "9b1cc234-38f4-f0ee-e042-dc7193635266"
                         }
@@ -2482,8 +2617,8 @@
                         {
                             "description": "Symbol IC36 [74xx-us_74x04_N_pwrhidden]",
                             "pos": {
-                                "x": 1.5113,
-                                "y": 1.7399
+                                "x": 2.2733,
+                                "y": 2.0828
                             },
                             "uuid": "ba45d17a-5201-ce5d-0793-7b09a5507fed"
                         }
@@ -2497,8 +2632,8 @@
                         {
                             "description": "Symbol IC36 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.51167,
-                                "y": 1.55992
+                                "x": 2.27367,
+                                "y": 1.90282
                             },
                             "uuid": "77bc1f14-77cd-b0e2-cddf-3dfd4d86a724"
                         }
@@ -2512,8 +2647,8 @@
                         {
                             "description": "Symbol IC36 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.51167,
-                                "y": 1.73772
+                                "x": 2.27367,
+                                "y": 2.08062
                             },
                             "uuid": "3dacddeb-d7a8-3a47-a3d5-7663e7a265df"
                         }
@@ -2527,8 +2662,8 @@
                         {
                             "description": "Symbol .0 [led_LED_5MM]",
                             "pos": {
-                                "x": 1.5367,
-                                "y": 0.9017
+                                "x": 2.2987,
+                                "y": 1.2446
                             },
                             "uuid": "d7ea46b9-d9a9-eebc-346d-1f6e4030d8b4"
                         }
@@ -2542,8 +2677,8 @@
                         {
                             "description": "Symbol SS-SEL0 [pinhead_PINHD-1X3]",
                             "pos": {
-                                "x": 1.6129,
-                                "y": 0.6223
+                                "x": 2.3749,
+                                "y": 0.9652
                             },
                             "uuid": "ad941dbf-cf08-834a-ac7b-10be6d41a024"
                         }
@@ -2557,8 +2692,8 @@
                         {
                             "description": "Symbol R10 [eagle-ltspice_R_0207_10]",
                             "pos": {
-                                "x": 1.6383,
-                                "y": 0.9017
+                                "x": 2.4003,
+                                "y": 1.2446
                             },
                             "uuid": "275129ac-0c57-01e5-3f44-83cb3106a5c7"
                         }
@@ -2572,8 +2707,8 @@
                         {
                             "description": "Symbol EXT-SS-CLK0 [pinhead_PINHD-1X3]",
                             "pos": {
-                                "x": 2.1209,
-                                "y": 0.7239
+                                "x": 2.8829,
+                                "y": 1.0668
                             },
                             "uuid": "def18c6c-7b63-e25f-de4d-20371d6a4ba3"
                         }
@@ -2587,8 +2722,8 @@
                         {
                             "description": "Symbol IC34 [74xx-us_74x374_N_pwrhidden]",
                             "pos": {
-                                "x": 0.5969,
-                                "y": 0.9144
+                                "x": 0.9017,
+                                "y": 1.143
                             },
                             "uuid": "1192c7a7-c7aa-a47d-760b-9dbe0f01c60f"
                         }
@@ -2602,8 +2737,8 @@
                         {
                             "description": "Symbol IC34 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.59727,
-                                "y": 0.912
+                                "x": 0.90207,
+                                "y": 1.1406
                             },
                             "uuid": "eef9f4d5-cfcd-6546-2375-ac8ea33799be"
                         }
@@ -2617,8 +2752,8 @@
                         {
                             "description": "Symbol IC36 [74xx-us_74x04_N_pwrhidden]",
                             "pos": {
-                                "x": 0.8001,
-                                "y": 1.2954
+                                "x": 1.1049,
+                                "y": 1.524
                             },
                             "uuid": "c02e5602-6b2c-40dc-a5c2-ef9d8d8d84cc"
                         }
@@ -2632,8 +2767,8 @@
                         {
                             "description": "Symbol IC36 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.80047,
-                                "y": 1.29322
+                                "x": 1.10527,
+                                "y": 1.52182
                             },
                             "uuid": "210e4a9a-d474-9d4d-0615-7557e2fee7af"
                         }
@@ -2647,8 +2782,8 @@
                         {
                             "description": "Symbol IC39 [74xx-us_74x244_N_pwrhidden]",
                             "pos": {
-                                "x": 1.1049,
-                                "y": 0.3048
+                                "x": 1.4097,
+                                "y": 0.5334
                             },
                             "uuid": "200d67e1-a839-36ee-8e80-1cf5ba83093a"
                         }
@@ -2662,8 +2797,8 @@
                         {
                             "description": "Symbol IC37 [74xx-us_74x244_N_pwrhidden]",
                             "pos": {
-                                "x": 1.1049,
-                                "y": 0.5588
+                                "x": 1.4097,
+                                "y": 0.7874
                             },
                             "uuid": "ea7672ac-7af7-7dfb-74e8-ecdb48dbb7ba"
                         }
@@ -2677,8 +2812,8 @@
                         {
                             "description": "Symbol IC39 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.10527,
-                                "y": 0.3024
+                                "x": 1.41007,
+                                "y": 0.531
                             },
                             "uuid": "d4579e77-030f-a239-7a80-a44f27636c01"
                         }
@@ -2692,8 +2827,8 @@
                         {
                             "description": "Symbol IC37 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.10527,
-                                "y": 0.5564
+                                "x": 1.41007,
+                                "y": 0.785
                             },
                             "uuid": "62d238e8-35cb-38d4-df80-c7e3592ea5ba"
                         }
@@ -2707,8 +2842,8 @@
                         {
                             "description": "Symbol IC33 [74xx-us_74x244_N_pwrhidden]",
                             "pos": {
-                                "x": 1.1557,
-                                "y": 0.8382
+                                "x": 1.4605,
+                                "y": 1.0668
                             },
                             "uuid": "f4b3fe1d-1380-2936-2260-a5482e4de515"
                         }
@@ -2722,8 +2857,8 @@
                         {
                             "description": "Symbol IC33 [74xx-us_74x244_N_pwrhidden]",
                             "pos": {
-                                "x": 1.1557,
-                                "y": 1.0922
+                                "x": 1.4605,
+                                "y": 1.3208
                             },
                             "uuid": "77e8ed47-446f-f6a1-1c60-9731447a3976"
                         }
@@ -2737,8 +2872,8 @@
                         {
                             "description": "Symbol IC33 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.15607,
-                                "y": 0.8358
+                                "x": 1.46087,
+                                "y": 1.0644
                             },
                             "uuid": "06828e80-ca05-1b4f-66ad-4e9530e833f1"
                         }
@@ -2752,8 +2887,8 @@
                         {
                             "description": "Symbol IC33 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.15607,
-                                "y": 1.0898
+                                "x": 1.46087,
+                                "y": 1.3184
                             },
                             "uuid": "b587a52d-1147-40d4-a136-a3c35ff4fea5"
                         }
@@ -2762,13 +2897,118 @@
                     "type": "endpoint_off_grid"
                 },
                 {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.2032 mm",
+                            "pos": {
+                                "x": 1.5367,
+                                "y": 0.4826
+                            },
+                            "uuid": "216fbdcc-be86-fc8d-09cc-b613b568794f"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.2032 mm",
+                            "pos": {
+                                "x": 1.5367,
+                                "y": 0.5334
+                            },
+                            "uuid": "97fa3762-d04b-37c2-3ad1-8cccf74dc97e"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.2032 mm",
+                            "pos": {
+                                "x": 1.5367,
+                                "y": 0.5588
+                            },
+                            "uuid": "8608f771-19ea-849d-0e15-ad151a168d2d"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1524 mm",
+                            "pos": {
+                                "x": 1.5875,
+                                "y": 1.016
+                            },
+                            "uuid": "4360ccb9-9319-2577-7c67-32176f3d20b0"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1524 mm",
+                            "pos": {
+                                "x": 1.5875,
+                                "y": 1.0922
+                            },
+                            "uuid": "af1e7fc1-7a90-023a-3e27-4a3c509c8189"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1524 mm",
+                            "pos": {
+                                "x": 1.5875,
+                                "y": 1.27
+                            },
+                            "uuid": "caaf09d6-cedc-544d-fb7f-b2124d605ba3"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1524 mm",
+                            "pos": {
+                                "x": 1.5875,
+                                "y": 1.3462
+                            },
+                            "uuid": "e319a247-88ac-24ab-c97c-9e51024e999d"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
                     "description": "The current configuration does not include the footprint library 'sequencer-logic-v2.1-orig-size-sequencer-logic-prod-v2.1-copy-eagle'",
                     "items": [
                         {
                             "description": "Symbol IC39 [74xx-us_74x244_N_pwrhidden]",
                             "pos": {
-                                "x": 1.8415,
-                                "y": 0.3048
+                                "x": 2.1463,
+                                "y": 0.5334
                             },
                             "uuid": "e41d8790-eeeb-da8f-b8f1-fe3cf827d9bd"
                         }
@@ -2782,8 +3022,8 @@
                         {
                             "description": "Symbol IC32 [74xx-us_74x244_N_pwrhidden]",
                             "pos": {
-                                "x": 1.8415,
-                                "y": 0.8382
+                                "x": 2.1463,
+                                "y": 1.0668
                             },
                             "uuid": "99bbd4f1-4ddf-9981-0a50-e1a698bbadc3"
                         }
@@ -2797,8 +3037,8 @@
                         {
                             "description": "Symbol IC32 [74xx-us_74x244_N_pwrhidden]",
                             "pos": {
-                                "x": 1.8415,
-                                "y": 1.0922
+                                "x": 2.1463,
+                                "y": 1.3208
                             },
                             "uuid": "777c369d-56ca-fba3-af28-94d1baa3ca4b"
                         }
@@ -2812,8 +3052,8 @@
                         {
                             "description": "Symbol IC39 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.84187,
-                                "y": 0.3024
+                                "x": 2.14667,
+                                "y": 0.531
                             },
                             "uuid": "5873c3d7-64e7-a910-3daa-575309b9ef6f"
                         }
@@ -2827,8 +3067,8 @@
                         {
                             "description": "Symbol IC32 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.84187,
-                                "y": 0.8358
+                                "x": 2.14667,
+                                "y": 1.0644
                             },
                             "uuid": "8065615e-3147-1b5b-ebff-b42a0d23cce7"
                         }
@@ -2842,8 +3082,8 @@
                         {
                             "description": "Symbol IC32 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.84187,
-                                "y": 1.0898
+                                "x": 2.14667,
+                                "y": 1.3184
                             },
                             "uuid": "aa207c99-5981-c4c3-3c41-b0fd1c72bdec"
                         }
@@ -2857,8 +3097,8 @@
                         {
                             "description": "Symbol C18 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.254,
-                                "y": 0.3302
+                                "x": 0.7874,
+                                "y": 0.8636
                             },
                             "uuid": "1eafd633-a1dd-3bf0-2be0-c711f5d3e6db"
                         }
@@ -2872,8 +3112,8 @@
                         {
                             "description": "Symbol C25 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.254,
-                                "y": 0.4826
+                                "x": 0.7874,
+                                "y": 1.016
                             },
                             "uuid": "784a086f-8f74-1fda-f5ad-09d5af66b822"
                         }
@@ -2887,8 +3127,8 @@
                         {
                             "description": "Symbol C26 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.3302,
-                                "y": 0.3302
+                                "x": 0.8636,
+                                "y": 0.8636
                             },
                             "uuid": "b1975bd8-b329-8f18-725e-5ed646a10bcb"
                         }
@@ -2902,8 +3142,8 @@
                         {
                             "description": "Symbol C15 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.3302,
-                                "y": 0.4826
+                                "x": 0.8636,
+                                "y": 1.016
                             },
                             "uuid": "dd8e9148-8d24-4a62-9465-c6cb37a9ec5e"
                         }
@@ -2917,8 +3157,8 @@
                         {
                             "description": "Symbol C17 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.4064,
-                                "y": 0.3302
+                                "x": 0.9398,
+                                "y": 0.8636
                             },
                             "uuid": "56da1f1c-c125-68e6-f1e8-210fae49e982"
                         }
@@ -2932,8 +3172,8 @@
                         {
                             "description": "Symbol C14 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.4064,
-                                "y": 0.4826
+                                "x": 0.9398,
+                                "y": 1.016
                             },
                             "uuid": "bdfbc5a3-bf5d-51a4-4d44-e7c326c27263"
                         }
@@ -2947,8 +3187,8 @@
                         {
                             "description": "Symbol C8 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.4826,
-                                "y": 0.3302
+                                "x": 1.016,
+                                "y": 0.8636
                             },
                             "uuid": "9ad8ad66-33e4-faee-3a29-cd734563ff6b"
                         }
@@ -2962,8 +3202,8 @@
                         {
                             "description": "Symbol C34 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.4826,
-                                "y": 0.4826
+                                "x": 1.016,
+                                "y": 1.016
                             },
                             "uuid": "3741e545-9983-8071-3ca9-9d9c20dfe2a7"
                         }
@@ -2977,8 +3217,8 @@
                         {
                             "description": "Symbol C16 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.5588,
-                                "y": 0.3302
+                                "x": 1.0922,
+                                "y": 0.8636
                             },
                             "uuid": "f5922441-2b18-b58b-9efc-fd23838dd1e0"
                         }
@@ -2992,8 +3232,8 @@
                         {
                             "description": "Symbol C6 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.5588,
-                                "y": 0.4826
+                                "x": 1.0922,
+                                "y": 1.016
                             },
                             "uuid": "3a7c2bd5-8844-6eb4-5d63-04792d8e4f23"
                         }
@@ -3007,8 +3247,8 @@
                         {
                             "description": "Symbol C7 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.635,
-                                "y": 0.3302
+                                "x": 1.1684,
+                                "y": 0.8636
                             },
                             "uuid": "81a86d8b-6275-dbed-8e51-1ab4d6e6d154"
                         }
@@ -3022,8 +3262,8 @@
                         {
                             "description": "Symbol C23 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.635,
-                                "y": 0.4826
+                                "x": 1.1684,
+                                "y": 1.016
                             },
                             "uuid": "0a60581e-bb10-e6f6-7c29-f09e44974988"
                         }
@@ -3037,8 +3277,8 @@
                         {
                             "description": "Symbol C24 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.7112,
-                                "y": 0.3302
+                                "x": 1.2446,
+                                "y": 0.8636
                             },
                             "uuid": "f2cb75a1-3f79-a47a-8aaa-4bb6dbfba0ce"
                         }
@@ -3052,8 +3292,8 @@
                         {
                             "description": "Symbol C5 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.7112,
-                                "y": 0.4826
+                                "x": 1.2446,
+                                "y": 1.016
                             },
                             "uuid": "7e207444-d1ce-d4da-585d-499cf6dcc3f2"
                         }
@@ -3067,8 +3307,8 @@
                         {
                             "description": "Symbol C33 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.7874,
-                                "y": 0.3302
+                                "x": 1.3208,
+                                "y": 0.8636
                             },
                             "uuid": "2c30cab7-5064-e149-fdb0-0d0189f4f0be"
                         }
@@ -3082,8 +3322,8 @@
                         {
                             "description": "Symbol C32 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.7874,
-                                "y": 0.4826
+                                "x": 1.3208,
+                                "y": 1.016
                             },
                             "uuid": "eb88f14f-5d79-fa25-f8eb-1e214b35a9df"
                         }
@@ -3097,8 +3337,8 @@
                         {
                             "description": "Symbol C13 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.8636,
-                                "y": 0.3302
+                                "x": 1.397,
+                                "y": 0.8636
                             },
                             "uuid": "0a567153-fb74-5bbe-adb8-00a9e9963d87"
                         }
@@ -3112,8 +3352,8 @@
                         {
                             "description": "Symbol C4 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.8636,
-                                "y": 0.4826
+                                "x": 1.397,
+                                "y": 1.016
                             },
                             "uuid": "cc0ebed0-add7-dfce-1d93-d51dc6282e93"
                         }
@@ -3127,8 +3367,8 @@
                         {
                             "description": "Symbol C22 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.9398,
-                                "y": 0.3302
+                                "x": 1.4732,
+                                "y": 0.8636
                             },
                             "uuid": "b1db3aa4-9a9c-98c6-e8b8-bf31b375faea"
                         }
@@ -3142,8 +3382,8 @@
                         {
                             "description": "Symbol C21 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 0.9398,
-                                "y": 0.4826
+                                "x": 1.4732,
+                                "y": 1.016
                             },
                             "uuid": "7d45996b-aa99-8ebe-84b7-9d9c769484e3"
                         }
@@ -3157,8 +3397,8 @@
                         {
                             "description": "Symbol C12 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 1.016,
-                                "y": 0.3302
+                                "x": 1.5494,
+                                "y": 0.8636
                             },
                             "uuid": "6ac7b8f6-ff1e-05bf-48b5-1cdf53048b31"
                         }
@@ -3172,8 +3412,8 @@
                         {
                             "description": "Symbol C3 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 1.016,
-                                "y": 0.4826
+                                "x": 1.5494,
+                                "y": 1.016
                             },
                             "uuid": "f78e7b1e-9daf-75ad-ebb1-18480df57ba6"
                         }
@@ -3187,8 +3427,8 @@
                         {
                             "description": "Symbol C31 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 1.0922,
-                                "y": 0.3302
+                                "x": 1.6256,
+                                "y": 0.8636
                             },
                             "uuid": "05810ec5-24a0-4fb9-4c42-7fc0f020b173"
                         }
@@ -3202,8 +3442,8 @@
                         {
                             "description": "Symbol C30 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 1.0922,
-                                "y": 0.4826
+                                "x": 1.6256,
+                                "y": 1.016
                             },
                             "uuid": "05cd4d02-723a-5060-09d0-d65036b324d3"
                         }
@@ -3217,8 +3457,8 @@
                         {
                             "description": "Symbol C20 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 1.1684,
-                                "y": 0.3302
+                                "x": 1.7018,
+                                "y": 0.8636
                             },
                             "uuid": "a4540322-5b81-952b-8110-e08eacc26b8f"
                         }
@@ -3232,8 +3472,8 @@
                         {
                             "description": "Symbol C11 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 1.1684,
-                                "y": 0.4826
+                                "x": 1.7018,
+                                "y": 1.016
                             },
                             "uuid": "2a27dd1a-77f9-5d65-db03-49a97e7a73a6"
                         }
@@ -3247,8 +3487,8 @@
                         {
                             "description": "Symbol C2 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 1.2446,
-                                "y": 0.3302
+                                "x": 1.778,
+                                "y": 0.8636
                             },
                             "uuid": "74657377-af37-6938-fce2-2b4ba199526e"
                         }
@@ -3262,8 +3502,8 @@
                         {
                             "description": "Symbol C1 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 1.2446,
-                                "y": 0.4826
+                                "x": 1.778,
+                                "y": 1.016
                             },
                             "uuid": "c57e0075-ccd5-e1b3-f883-330c1a6d6e7a"
                         }
@@ -3277,8 +3517,8 @@
                         {
                             "description": "Symbol C19 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 1.3208,
-                                "y": 0.3302
+                                "x": 1.8542,
+                                "y": 0.8636
                             },
                             "uuid": "a9a0e47c-0724-4a1d-a5fa-31b4c1ad0e56"
                         }
@@ -3292,8 +3532,8 @@
                         {
                             "description": "Symbol C10 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 1.3208,
-                                "y": 0.4826
+                                "x": 1.8542,
+                                "y": 1.016
                             },
                             "uuid": "391e5853-2d82-f93f-8bae-91048bd4143c"
                         }
@@ -3307,8 +3547,8 @@
                         {
                             "description": "Symbol C29 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 1.397,
-                                "y": 0.3302
+                                "x": 1.9304,
+                                "y": 0.8636
                             },
                             "uuid": "cfb168c1-18c8-7fdc-3551-692b5020aad6"
                         }
@@ -3322,8 +3562,8 @@
                         {
                             "description": "Symbol C27 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 1.397,
-                                "y": 0.4826
+                                "x": 1.9304,
+                                "y": 1.016
                             },
                             "uuid": "1b46dfda-3949-e71d-7791-70e6911f33c5"
                         }
@@ -3337,8 +3577,8 @@
                         {
                             "description": "Symbol C28 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 1.4732,
-                                "y": 0.3302
+                                "x": 2.0066,
+                                "y": 0.8636
                             },
                             "uuid": "e08cc959-410e-7fc2-341b-0ed9f20b3890"
                         }
@@ -3352,8 +3592,8 @@
                         {
                             "description": "Symbol C35 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 1.4732,
-                                "y": 0.4826
+                                "x": 2.0066,
+                                "y": 1.016
                             },
                             "uuid": "991b58d9-ae9a-2e49-0823-cea11196f04e"
                         }
@@ -3367,8 +3607,8 @@
                         {
                             "description": "Symbol C9 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 1.5494,
-                                "y": 0.3302
+                                "x": 2.0828,
+                                "y": 0.8636
                             },
                             "uuid": "6e54d1af-ff5a-77e3-1879-c52f6b2f8bdb"
                         }
@@ -3382,8 +3622,8 @@
                         {
                             "description": "Symbol C36 [SparkFun-Capacitors_CAP_EZ]",
                             "pos": {
-                                "x": 1.5494,
-                                "y": 0.4826
+                                "x": 2.0828,
+                                "y": 1.016
                             },
                             "uuid": "487a0e16-9fcf-fa53-eccf-d3651cac42d2"
                         }
@@ -3397,8 +3637,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.254,
-                                "y": 1.0795
+                                "x": 0.4064,
+                                "y": 1.0668
                             },
                             "uuid": "a78156d9-b932-eb22-f2fd-6c6ceacec910"
                         }
@@ -3410,10 +3650,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR0'",
+                            "description": "Label 'ADDR0'",
                             "pos": {
-                                "x": 0.254,
-                                "y": 1.4097
+                                "x": 0.4064,
+                                "y": 1.397
                             },
                             "uuid": "66086c7a-b890-00f1-2688-3a80c77c5d5f"
                         }
@@ -3427,8 +3667,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.2794,
-                                "y": 1.0795
+                                "x": 0.4318,
+                                "y": 1.0668
                             },
                             "uuid": "b7db030b-c927-5d08-e2a6-edd847b182a5"
                         }
@@ -3440,10 +3680,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR1'",
+                            "description": "Label 'ADDR1'",
                             "pos": {
-                                "x": 0.2794,
-                                "y": 1.4097
+                                "x": 0.4318,
+                                "y": 1.397
                             },
                             "uuid": "2d86565a-0198-f940-3a48-128c4d1f4c80"
                         }
@@ -3457,8 +3697,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.3048,
-                                "y": 1.0795
+                                "x": 0.4572,
+                                "y": 1.0668
                             },
                             "uuid": "17693f72-813f-70da-19e3-d2de7b965058"
                         }
@@ -3470,10 +3710,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR2'",
+                            "description": "Label 'ADDR2'",
                             "pos": {
-                                "x": 0.3048,
-                                "y": 1.4097
+                                "x": 0.4572,
+                                "y": 1.397
                             },
                             "uuid": "01b8646d-f878-e7bc-4850-98e3aed78ce6"
                         }
@@ -3487,8 +3727,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.3302,
-                                "y": 1.0795
+                                "x": 0.4826,
+                                "y": 1.0668
                             },
                             "uuid": "9a0312c5-3c42-3d0d-2dba-4964ea7e2e8e"
                         }
@@ -3500,10 +3740,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR3'",
+                            "description": "Label 'ADDR3'",
                             "pos": {
-                                "x": 0.3302,
-                                "y": 1.4097
+                                "x": 0.4826,
+                                "y": 1.397
                             },
                             "uuid": "f3e9cb67-30f1-6ead-0c6f-9118b0dee586"
                         }
@@ -3517,8 +3757,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.3556,
-                                "y": 1.0795
+                                "x": 0.508,
+                                "y": 1.0668
                             },
                             "uuid": "25e18491-cb6f-e749-5763-6435d875c1fa"
                         }
@@ -3530,10 +3770,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR4'",
+                            "description": "Label 'ADDR4'",
                             "pos": {
-                                "x": 0.3556,
-                                "y": 1.4097
+                                "x": 0.508,
+                                "y": 1.397
                             },
                             "uuid": "25c6a6e6-04b9-a3e4-7be0-480b5feecb63"
                         }
@@ -3547,8 +3787,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.381,
-                                "y": 1.0795
+                                "x": 0.5334,
+                                "y": 1.0668
                             },
                             "uuid": "08144543-7c7a-001a-f7e7-21e0e21df105"
                         }
@@ -3560,10 +3800,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR5'",
+                            "description": "Label 'ADDR5'",
                             "pos": {
-                                "x": 0.381,
-                                "y": 1.4097
+                                "x": 0.5334,
+                                "y": 1.397
                             },
                             "uuid": "53d5a9fa-5654-0e71-2de0-040bfab0a0c5"
                         }
@@ -3577,8 +3817,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.4064,
-                                "y": 1.0795
+                                "x": 0.5588,
+                                "y": 1.0668
                             },
                             "uuid": "f5951b68-7838-4cf5-bcbc-8619766361e0"
                         }
@@ -3590,10 +3830,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR6'",
+                            "description": "Label 'ADDR6'",
                             "pos": {
-                                "x": 0.4064,
-                                "y": 1.4097
+                                "x": 0.5588,
+                                "y": 1.397
                             },
                             "uuid": "4e552b2a-7d8d-989d-fd79-f3d1ba9999b5"
                         }
@@ -3607,8 +3847,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.4318,
-                                "y": 1.0795
+                                "x": 0.5842,
+                                "y": 1.0668
                             },
                             "uuid": "ecbd9949-b03a-2973-edc1-8d7c03b381ca"
                         }
@@ -3620,10 +3860,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR7'",
+                            "description": "Label 'ADDR7'",
                             "pos": {
-                                "x": 0.4318,
-                                "y": 1.4097
+                                "x": 0.5842,
+                                "y": 1.397
                             },
                             "uuid": "98394762-defd-017d-c226-c76f4d6eed98"
                         }
@@ -3637,8 +3877,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.4572,
-                                "y": 1.0795
+                                "x": 0.6096,
+                                "y": 1.0668
                             },
                             "uuid": "14e91c35-5af1-0e0c-0ea2-303691d94053"
                         }
@@ -3650,10 +3890,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR8'",
+                            "description": "Label 'ADDR8'",
                             "pos": {
-                                "x": 0.4572,
-                                "y": 1.4097
+                                "x": 0.6096,
+                                "y": 1.397
                             },
                             "uuid": "b0110724-c419-258c-4c53-136ab5b2e601"
                         }
@@ -3667,8 +3907,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.4826,
-                                "y": 1.0795
+                                "x": 0.635,
+                                "y": 1.0668
                             },
                             "uuid": "9dd80e9a-9f39-f670-be20-c3e6dfb18afe"
                         }
@@ -3680,10 +3920,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR9'",
+                            "description": "Label 'ADDR9'",
                             "pos": {
-                                "x": 0.4826,
-                                "y": 1.4097
+                                "x": 0.635,
+                                "y": 1.397
                             },
                             "uuid": "b234ae63-d826-e725-d0ad-7f32e2dc4401"
                         }
@@ -3697,8 +3937,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.508,
-                                "y": 1.0795
+                                "x": 0.6604,
+                                "y": 1.0668
                             },
                             "uuid": "dddc2797-3985-6752-8d05-cdaeab842c7e"
                         }
@@ -3710,10 +3950,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR10'",
+                            "description": "Label 'ADDR10'",
                             "pos": {
-                                "x": 0.508,
-                                "y": 1.4097
+                                "x": 0.6604,
+                                "y": 1.397
                             },
                             "uuid": "90682da8-b7b9-67b0-83a6-0a8b83af293f"
                         }
@@ -3727,8 +3967,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.5334,
-                                "y": 1.0795
+                                "x": 0.6858,
+                                "y": 1.0668
                             },
                             "uuid": "ab8f2f4c-afcf-3a72-3a0d-fecf00af59e6"
                         }
@@ -3740,10 +3980,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR11'",
+                            "description": "Label 'ADDR11'",
                             "pos": {
-                                "x": 0.5334,
-                                "y": 1.4097
+                                "x": 0.6858,
+                                "y": 1.397
                             },
                             "uuid": "130dc349-3824-0774-6ef9-f1e20c52c544"
                         }
@@ -3757,8 +3997,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.5588,
-                                "y": 1.0795
+                                "x": 0.7112,
+                                "y": 1.0668
                             },
                             "uuid": "62199332-2af1-5931-98a9-d2a3b4ddc000"
                         }
@@ -3770,10 +4010,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR12'",
+                            "description": "Label 'ADDR12'",
                             "pos": {
-                                "x": 0.5588,
-                                "y": 1.4097
+                                "x": 0.7112,
+                                "y": 1.397
                             },
                             "uuid": "c65c0851-b97b-648c-e628-9f58e20a1225"
                         }
@@ -3787,8 +4027,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.5842,
-                                "y": 1.0795
+                                "x": 0.7366,
+                                "y": 1.0668
                             },
                             "uuid": "60728bfa-f0b0-f518-e445-d9c4c0513c81"
                         }
@@ -3800,10 +4040,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR13'",
+                            "description": "Label 'ADDR13'",
                             "pos": {
-                                "x": 0.5842,
-                                "y": 1.4097
+                                "x": 0.7366,
+                                "y": 1.397
                             },
                             "uuid": "765f7003-10bb-f101-89fe-9e6de25b32e4"
                         }
@@ -3817,8 +4057,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.6096,
-                                "y": 1.0795
+                                "x": 0.762,
+                                "y": 1.0668
                             },
                             "uuid": "e924168c-130f-fffe-5b3a-eb814bb6a140"
                         }
@@ -3830,10 +4070,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR14'",
+                            "description": "Label 'ADDR14'",
                             "pos": {
-                                "x": 0.6096,
-                                "y": 1.4097
+                                "x": 0.762,
+                                "y": 1.397
                             },
                             "uuid": "68e43711-8866-2bb9-4847-6f76c69749fa"
                         }
@@ -3847,8 +4087,8 @@
                         {
                             "description": "Symbol IC30 [74xx-us_74x04_N_pwrhidden]",
                             "pos": {
-                                "x": 0.635,
-                                "y": 0.8128
+                                "x": 0.7874,
+                                "y": 0.8001
                             },
                             "uuid": "e799b7a5-e000-bf09-9984-09670ddb552f"
                         }
@@ -3862,8 +4102,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.635,
-                                "y": 1.0795
+                                "x": 0.7874,
+                                "y": 1.0668
                             },
                             "uuid": "eab65e3a-980b-2c8a-68c5-abb2ece2f1c0"
                         }
@@ -3875,10 +4115,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR15'",
+                            "description": "Label 'ADDR15'",
                             "pos": {
-                                "x": 0.635,
-                                "y": 1.4097
+                                "x": 0.7874,
+                                "y": 1.397
                             },
                             "uuid": "60ef5c9b-3382-e270-01ae-b73ea380cb62"
                         }
@@ -3892,8 +4132,8 @@
                         {
                             "description": "Symbol IC30 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.63537,
-                                "y": 0.81062
+                                "x": 0.78777,
+                                "y": 0.79792
                             },
                             "uuid": "cc222a16-80cb-717a-59c0-9029da34f767"
                         }
@@ -3907,8 +4147,8 @@
                         {
                             "description": "Symbol IC10 [74xx-us_74x32_N_pwrhidden]",
                             "pos": {
-                                "x": 0.6604,
-                                "y": 0.3556
+                                "x": 0.8128,
+                                "y": 0.3429
                             },
                             "uuid": "c5017e44-46ad-b9a5-b2bb-36829d4e5118"
                         }
@@ -3922,8 +4162,8 @@
                         {
                             "description": "Symbol IC24 [74xx-us_74x32_N_pwrhidden]",
                             "pos": {
-                                "x": 0.6604,
-                                "y": 0.508
+                                "x": 0.8128,
+                                "y": 0.4953
                             },
                             "uuid": "d792597a-30dc-b7a6-6c9c-31d7f5429cd8"
                         }
@@ -3937,8 +4177,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.6604,
-                                "y": 1.0795
+                                "x": 0.8128,
+                                "y": 1.0668
                             },
                             "uuid": "f6495c7f-365d-5595-b0b8-206c5e7ce251"
                         }
@@ -3952,8 +4192,8 @@
                         {
                             "description": "Symbol IC10 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.66077,
-                                "y": 0.35342
+                                "x": 0.81317,
+                                "y": 0.34072
                             },
                             "uuid": "531a87b8-8b30-2ad9-a9ea-65b1f3b9290e"
                         }
@@ -3967,8 +4207,8 @@
                         {
                             "description": "Symbol IC24 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.66077,
-                                "y": 0.50582
+                                "x": 0.81317,
+                                "y": 0.49312
                             },
                             "uuid": "38a192c5-6162-232d-0110-a530f6ce0083"
                         }
@@ -3982,8 +4222,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.6858,
-                                "y": 1.0795
+                                "x": 0.8382,
+                                "y": 1.0668
                             },
                             "uuid": "9df2fe52-9660-b05a-c13e-5b089a829846"
                         }
@@ -3997,8 +4237,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.7112,
-                                "y": 1.0795
+                                "x": 0.8636,
+                                "y": 1.0668
                             },
                             "uuid": "41560cea-9cb0-fcf9-840d-8ccf64703aad"
                         }
@@ -4012,8 +4252,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.7366,
-                                "y": 1.0795
+                                "x": 0.889,
+                                "y": 1.0668
                             },
                             "uuid": "0f24502a-cee1-421c-1e5a-4d15c063ab59"
                         }
@@ -4027,8 +4267,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.762,
-                                "y": 1.0795
+                                "x": 0.9144,
+                                "y": 1.0668
                             },
                             "uuid": "6fb7299c-9695-1f17-bcc1-1b0a502f72d4"
                         }
@@ -4042,8 +4282,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.7874,
-                                "y": 1.0795
+                                "x": 0.9398,
+                                "y": 1.0668
                             },
                             "uuid": "c0ab5428-0287-f54d-0c5f-183eda8c12f4"
                         }
@@ -4057,8 +4297,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.8128,
-                                "y": 1.0795
+                                "x": 0.9652,
+                                "y": 1.0668
                             },
                             "uuid": "c47362a4-8463-be47-04e7-5c13edd55a6f"
                         }
@@ -4072,8 +4312,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.8382,
-                                "y": 1.0795
+                                "x": 0.9906,
+                                "y": 1.0668
                             },
                             "uuid": "ca9b349c-b468-39da-c2b8-311252c5014e"
                         }
@@ -4087,8 +4327,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.8636,
-                                "y": 1.0795
+                                "x": 1.016,
+                                "y": 1.0668
                             },
                             "uuid": "5238f4e1-b1a7-6c53-b7db-ef0f57e71d88"
                         }
@@ -4102,8 +4342,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.889,
-                                "y": 1.0795
+                                "x": 1.0414,
+                                "y": 1.0668
                             },
                             "uuid": "f6f8d24b-a7da-02a3-cb32-581b4fd3e559"
                         }
@@ -4117,8 +4357,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.9144,
-                                "y": 1.0795
+                                "x": 1.0668,
+                                "y": 1.0668
                             },
                             "uuid": "4e3d88af-7e97-6f71-aabd-12dd2ab5b25d"
                         }
@@ -4132,8 +4372,8 @@
                         {
                             "description": "Symbol IC30 [74xx-us_74x04_N_pwrhidden]",
                             "pos": {
-                                "x": 0.9398,
-                                "y": 0.3556
+                                "x": 1.0922,
+                                "y": 0.3429
                             },
                             "uuid": "d4f3e4fa-72f1-f32b-90bd-d9cebfe2f7cf"
                         }
@@ -4147,8 +4387,8 @@
                         {
                             "description": "Symbol IC30 [74xx-us_74x04_N_pwrhidden]",
                             "pos": {
-                                "x": 0.9398,
-                                "y": 0.4826
+                                "x": 1.0922,
+                                "y": 0.4699
                             },
                             "uuid": "f26fd525-88bc-36e6-4604-ecbc0f408785"
                         }
@@ -4162,8 +4402,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.9398,
-                                "y": 1.0795
+                                "x": 1.0922,
+                                "y": 1.0668
                             },
                             "uuid": "41c89b02-4ddf-a7ac-bf2b-c0bd79a5af0f"
                         }
@@ -4177,8 +4417,8 @@
                         {
                             "description": "Symbol IC30 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.94017,
-                                "y": 0.35342
+                                "x": 1.09257,
+                                "y": 0.34072
                             },
                             "uuid": "a1476c55-53a4-4fe1-8f76-a0e650f50c57"
                         }
@@ -4192,8 +4432,8 @@
                         {
                             "description": "Symbol IC30 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.94017,
-                                "y": 0.48042
+                                "x": 1.09257,
+                                "y": 0.46772
                             },
                             "uuid": "3704740a-8ece-a4b7-dd57-fcc8bf0e1509"
                         }
@@ -4207,8 +4447,8 @@
                         {
                             "description": "Symbol IC37 [74xx-us_74x244_N_pwrhidden]",
                             "pos": {
-                                "x": 0.9652,
-                                "y": 0.6604
+                                "x": 1.1176,
+                                "y": 0.6477
                             },
                             "uuid": "64442763-f643-426a-4f73-8bcab1d6a2af"
                         }
@@ -4222,8 +4462,8 @@
                         {
                             "description": "Symbol IC37 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.96557,
-                                "y": 0.658
+                                "x": 1.11797,
+                                "y": 0.6453
                             },
                             "uuid": "35a0a1a6-3ca0-6ff4-11bc-641f9786375f"
                         }
@@ -4237,8 +4477,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.9906,
-                                "y": 1.0795
+                                "x": 1.143,
+                                "y": 1.0668
                             },
                             "uuid": "d9a60c1f-572c-dda2-83d3-4867d5f38f58"
                         }
@@ -4252,8 +4492,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.016,
-                                "y": 1.0795
+                                "x": 1.1684,
+                                "y": 1.0668
                             },
                             "uuid": "92c2a607-5bae-3ea3-aed0-38deddde7fbb"
                         }
@@ -4267,8 +4507,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.0414,
-                                "y": 1.0795
+                                "x": 1.1938,
+                                "y": 1.0668
                             },
                             "uuid": "fe727d8c-dda7-e909-dd32-e9aed8351031"
                         }
@@ -4282,8 +4522,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.0668,
-                                "y": 1.0795
+                                "x": 1.2192,
+                                "y": 1.0668
                             },
                             "uuid": "c5702c80-f6bd-e312-3f62-6a2a8762d1af"
                         }
@@ -4297,8 +4537,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.0922,
-                                "y": 1.0795
+                                "x": 1.2446,
+                                "y": 1.0668
                             },
                             "uuid": "a29fdc35-5f3e-8f09-3a21-679797179227"
                         }
@@ -4312,8 +4552,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.1176,
-                                "y": 1.0795
+                                "x": 1.27,
+                                "y": 1.0668
                             },
                             "uuid": "ee5ab59e-7110-b217-b93b-445b734b783d"
                         }
@@ -4327,8 +4567,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.143,
-                                "y": 1.0795
+                                "x": 1.2954,
+                                "y": 1.0668
                             },
                             "uuid": "9883ff2a-e20b-951b-97fa-a202721ebfb3"
                         }
@@ -4342,8 +4582,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.1684,
-                                "y": 1.0795
+                                "x": 1.3208,
+                                "y": 1.0668
                             },
                             "uuid": "f62d6705-0d77-00f3-294f-737bed9565b1"
                         }
@@ -4357,8 +4597,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.1938,
-                                "y": 1.0795
+                                "x": 1.3462,
+                                "y": 1.0668
                             },
                             "uuid": "edb49f82-4da2-a9e9-96b3-9ca63a38bdda"
                         }
@@ -4372,8 +4612,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.2192,
-                                "y": 1.0795
+                                "x": 1.3716,
+                                "y": 1.0668
                             },
                             "uuid": "8d6b393f-8d48-e144-0bad-58ac6358c178"
                         }
@@ -4387,8 +4627,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.2446,
-                                "y": 1.0795
+                                "x": 1.397,
+                                "y": 1.0668
                             },
                             "uuid": "04d51865-026a-0f16-01e7-07760ce14f66"
                         }
@@ -4402,8 +4642,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.27,
-                                "y": 1.0795
+                                "x": 1.4224,
+                                "y": 1.0668
                             },
                             "uuid": "c5144011-dec0-e286-9fd1-d669ebc5b65e"
                         }
@@ -4417,8 +4657,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.2954,
-                                "y": 1.0795
+                                "x": 1.4478,
+                                "y": 1.0668
                             },
                             "uuid": "64b3155b-cf00-5a6b-35e1-804cfb9d0ced"
                         }
@@ -4432,8 +4672,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.3208,
-                                "y": 1.0795
+                                "x": 1.4732,
+                                "y": 1.0668
                             },
                             "uuid": "8f66e1b5-d3ff-f763-011f-6de78a790bfb"
                         }
@@ -4447,8 +4687,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.3462,
-                                "y": 1.0795
+                                "x": 1.4986,
+                                "y": 1.0668
                             },
                             "uuid": "08d0e781-8323-e322-7eb9-031d5dd7902f"
                         }
@@ -4462,8 +4702,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.3716,
-                                "y": 1.0795
+                                "x": 1.524,
+                                "y": 1.0668
                             },
                             "uuid": "ff2f1635-5823-fba5-3f0b-1611cc722f10"
                         }
@@ -4477,8 +4717,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.397,
-                                "y": 1.0795
+                                "x": 1.5494,
+                                "y": 1.0668
                             },
                             "uuid": "c8c8dcc5-2098-1ece-2099-30c8e909d537"
                         }
@@ -4492,8 +4732,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.4224,
-                                "y": 1.0795
+                                "x": 1.5748,
+                                "y": 1.0668
                             },
                             "uuid": "871a3ab2-cf81-490b-d74c-eaa1e9363b5f"
                         }
@@ -4507,8 +4747,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.4478,
-                                "y": 1.0795
+                                "x": 1.6002,
+                                "y": 1.0668
                             },
                             "uuid": "09a73f6e-2c40-31ff-00b2-58c8f0f97189"
                         }
@@ -4522,8 +4762,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.4732,
-                                "y": 1.0795
+                                "x": 1.6256,
+                                "y": 1.0668
                             },
                             "uuid": "0d65348a-9752-2d77-649e-2173ac956b6b"
                         }
@@ -4537,8 +4777,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.4986,
-                                "y": 1.0795
+                                "x": 1.651,
+                                "y": 1.0668
                             },
                             "uuid": "62d85beb-10c5-7dfd-5e5a-37a27aeb8ed6"
                         }
@@ -4552,8 +4792,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.524,
-                                "y": 1.0795
+                                "x": 1.6764,
+                                "y": 1.0668
                             },
                             "uuid": "f8881b8a-cfcb-02fe-6132-10dca13537b9"
                         }
@@ -4567,8 +4807,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.5494,
-                                "y": 1.0795
+                                "x": 1.7018,
+                                "y": 1.0668
                             },
                             "uuid": "59a8cb00-0c11-6a11-40b1-bf602ecbe451"
                         }
@@ -4582,8 +4822,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.5748,
-                                "y": 1.0795
+                                "x": 1.7272,
+                                "y": 1.0668
                             },
                             "uuid": "8df7812f-76b6-e899-006c-b491c48434d0"
                         }
@@ -4597,8 +4837,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.6002,
-                                "y": 1.0795
+                                "x": 1.7526,
+                                "y": 1.0668
                             },
                             "uuid": "5ba590a3-b136-d331-7c6d-f68afdc97c01"
                         }
@@ -4612,8 +4852,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.6256,
-                                "y": 1.0795
+                                "x": 1.778,
+                                "y": 1.0668
                             },
                             "uuid": "f4d8196b-0b5a-5046-d597-4bdf9ad8e887"
                         }
@@ -4627,8 +4867,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.651,
-                                "y": 1.0795
+                                "x": 1.8034,
+                                "y": 1.0668
                             },
                             "uuid": "5ee3edfa-3456-a757-ffee-771b264b2d3a"
                         }
@@ -4642,8 +4882,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.6764,
-                                "y": 1.0795
+                                "x": 1.8288,
+                                "y": 1.0668
                             },
                             "uuid": "405672a7-17d1-d5c5-8187-4084306a597c"
                         }
@@ -4657,8 +4897,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.7272,
-                                "y": 1.0795
+                                "x": 1.8796,
+                                "y": 1.0668
                             },
                             "uuid": "a43365ed-4c3f-db39-fbdd-b006799f2fa6"
                         }
@@ -4672,8 +4912,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.7526,
-                                "y": 1.0795
+                                "x": 1.905,
+                                "y": 1.0668
                             },
                             "uuid": "3587d42c-3d0b-b3b6-7d5c-4504a68605cc"
                         }
@@ -4687,8 +4927,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.778,
-                                "y": 1.0795
+                                "x": 1.9304,
+                                "y": 1.0668
                             },
                             "uuid": "7804e2b4-15cc-6008-3440-8f17df72ab09"
                         }
@@ -4702,8 +4942,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.8034,
-                                "y": 1.0795
+                                "x": 1.9558,
+                                "y": 1.0668
                             },
                             "uuid": "5dd9efb1-9500-a6d1-ed1a-9109ab3ea2a1"
                         }
@@ -4717,8 +4957,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.8288,
-                                "y": 1.0795
+                                "x": 1.9812,
+                                "y": 1.0668
                             },
                             "uuid": "b6fa1fad-c86a-e337-8b3e-ef92b236312b"
                         }
@@ -4732,8 +4972,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.8542,
-                                "y": 1.0795
+                                "x": 2.0066,
+                                "y": 1.0668
                             },
                             "uuid": "691433cb-4963-a169-e49a-a08c78e52db8"
                         }
@@ -4747,8 +4987,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.8796,
-                                "y": 1.0795
+                                "x": 2.032,
+                                "y": 1.0668
                             },
                             "uuid": "6e5fac81-35b5-e152-cd3f-a20c23455fcd"
                         }
@@ -4762,8 +5002,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.905,
-                                "y": 1.0795
+                                "x": 2.0574,
+                                "y": 1.0668
                             },
                             "uuid": "455bc0ab-e6e1-eff5-49b4-06b80bbc38f5"
                         }
@@ -4777,8 +5017,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.9304,
-                                "y": 1.0795
+                                "x": 2.0828,
+                                "y": 1.0668
                             },
                             "uuid": "2b102fe8-bceb-0efd-051c-37d6335b57dc"
                         }
@@ -4792,8 +5032,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.9558,
-                                "y": 1.0795
+                                "x": 2.1082,
+                                "y": 1.0668
                             },
                             "uuid": "56a7f417-8931-deb4-b62d-54a5c2e11ef5"
                         }
@@ -4807,8 +5047,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 1.9812,
-                                "y": 1.0795
+                                "x": 2.1336,
+                                "y": 1.0668
                             },
                             "uuid": "aa5a6a3e-4042-4b45-f250-95faac4f7e97"
                         }
@@ -4822,8 +5062,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 2.0066,
-                                "y": 1.0795
+                                "x": 2.159,
+                                "y": 1.0668
                             },
                             "uuid": "a988af89-eea8-3a1b-295a-165cfb162d4f"
                         }
@@ -4837,8 +5077,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 2.032,
-                                "y": 1.0795
+                                "x": 2.1844,
+                                "y": 1.0668
                             },
                             "uuid": "c06d6a9f-dfe2-30c6-a7a6-1d733cddbecc"
                         }
@@ -4852,8 +5092,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 2.0574,
-                                "y": 1.0795
+                                "x": 2.2098,
+                                "y": 1.0668
                             },
                             "uuid": "32f61953-65ec-88fb-57a2-d5ffb29d313f"
                         }
@@ -4867,8 +5107,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 2.0828,
-                                "y": 1.0795
+                                "x": 2.2352,
+                                "y": 1.0668
                             },
                             "uuid": "8dfeb251-6971-b8b3-467e-cf8183e923bc"
                         }
@@ -4882,8 +5122,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 2.1082,
-                                "y": 1.0795
+                                "x": 2.2606,
+                                "y": 1.0668
                             },
                             "uuid": "fad49ece-da71-4502-c6cd-5ecdb9bcbde0"
                         }
@@ -4897,8 +5137,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 2.1336,
-                                "y": 1.0795
+                                "x": 2.286,
+                                "y": 1.0668
                             },
                             "uuid": "3a72396e-85d9-acc2-f488-f358e9c50c6b"
                         }
@@ -4912,8 +5152,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 2.159,
-                                "y": 1.0795
+                                "x": 2.3114,
+                                "y": 1.0668
                             },
                             "uuid": "b78b33b0-5fba-9525-c252-a24dfbee252f"
                         }
@@ -4927,8 +5167,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 2.1844,
-                                "y": 1.0795
+                                "x": 2.3368,
+                                "y": 1.0668
                             },
                             "uuid": "1cdbc6c9-7c01-5cf7-abb2-dfabd2e5a0d0"
                         }
@@ -4942,8 +5182,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 2.2098,
-                                "y": 1.0795
+                                "x": 2.3622,
+                                "y": 1.0668
                             },
                             "uuid": "85c346cc-0db0-108d-4abe-b0e59d12bde7"
                         }
@@ -4957,8 +5197,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 2.2352,
-                                "y": 1.0795
+                                "x": 2.3876,
+                                "y": 1.0668
                             },
                             "uuid": "c465a3d7-b129-59b8-d6ad-b47e93da5c0f"
                         }
@@ -4972,8 +5212,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 2.2606,
-                                "y": 1.0795
+                                "x": 2.413,
+                                "y": 1.0668
                             },
                             "uuid": "b2a1f201-65bf-b33e-3d90-9da9c85d720f"
                         }
@@ -4987,8 +5227,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 2.286,
-                                "y": 1.0795
+                                "x": 2.4384,
+                                "y": 1.0668
                             },
                             "uuid": "b9d256d7-93ae-a5be-9edd-91474df9e48c"
                         }
@@ -5002,8 +5242,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 2.3114,
-                                "y": 1.0795
+                                "x": 2.4638,
+                                "y": 1.0668
                             },
                             "uuid": "ddfc2ae5-2d02-b7a3-aaf5-af0552dc1b9b"
                         }
@@ -5015,10 +5255,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'IN'",
+                            "description": "Label 'IN'",
                             "pos": {
-                                "x": 2.3114,
-                                "y": 1.4097
+                                "x": 2.4638,
+                                "y": 1.397
                             },
                             "uuid": "2da1481f-0a63-7114-ebb8-1d16efa31a06"
                         }
@@ -5032,8 +5272,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 2.3368,
-                                "y": 1.0795
+                                "x": 2.4892,
+                                "y": 1.0668
                             },
                             "uuid": "956d0fa2-fd19-0772-218f-6f16898e5f07"
                         }
@@ -5047,8 +5287,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 2.3622,
-                                "y": 1.0795
+                                "x": 2.5146,
+                                "y": 1.0668
                             },
                             "uuid": "556e0c9e-8792-c8c8-37e5-a99965664c18"
                         }
@@ -5062,8 +5302,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 2.3876,
-                                "y": 1.0795
+                                "x": 2.54,
+                                "y": 1.0668
                             },
                             "uuid": "2da97bea-aecd-78bc-113a-4cf8323aa573"
                         }
@@ -5075,10 +5315,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-RUN'",
+                            "description": "Label '-RUN'",
                             "pos": {
-                                "x": 2.3876,
-                                "y": 1.4097
+                                "x": 2.54,
+                                "y": 1.397
                             },
                             "uuid": "e914d8e7-a0e6-be58-4bf7-16cfec2f85b2"
                         }
@@ -5092,8 +5332,8 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 2.413,
-                                "y": 1.0795
+                                "x": 2.5654,
+                                "y": 1.0668
                             },
                             "uuid": "abfa0900-0673-82b8-5e7f-8cfe497a8fb5"
                         }
@@ -5107,8 +5347,8 @@
                         {
                             "description": "Symbol SV3 [con-lstb_MA20-2]",
                             "pos": {
-                                "x": 0.5969,
-                                "y": 0.5842
+                                "x": 1.4732,
+                                "y": 0.5715
                             },
                             "uuid": "da535b6e-3639-2531-6559-9ab64e467ede"
                         }
@@ -5122,8 +5362,8 @@
                         {
                             "description": "Symbol SV4 [con-lstb_MA20-2]",
                             "pos": {
-                                "x": 0.5969,
-                                "y": 1.27
+                                "x": 1.4732,
+                                "y": 1.2573
                             },
                             "uuid": "867a045f-2493-8dd9-63c7-537245c34a2e"
                         }
@@ -5137,8 +5377,8 @@
                         {
                             "description": "Symbol JP5 [pinhead_PINHD-2X2]",
                             "pos": {
-                                "x": 0.6223,
-                                "y": 0.9398
+                                "x": 1.4986,
+                                "y": 0.9271
                             },
                             "uuid": "55318912-fb55-64e8-d1f4-c084f9140950"
                         }
@@ -5193,10 +5433,10 @@
                         {
                             "description": "Symbol X3 [con-vg_FABC96R]",
                             "pos": {
-                                "x": 0.7874,
-                                "y": 1.0795
+                                "x": 2.4638,
+                                "y": 1.0668
                             },
-                            "uuid": "c0ab5428-0287-f54d-0c5f-183eda8c12f4"
+                            "uuid": "ddfc2ae5-2d02-b7a3-aaf5-af0552dc1b9b"
                         }
                     ],
                     "severity": "warning",

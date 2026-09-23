@@ -114,6 +114,12 @@ def convert(rel, base, sch, brd, dest, project):
             if k.returncode != 0: r["notes"].append("netlist export failed: " + (k.stderr or k.stdout).strip()[-200:]); net = None
             k = run([KICAD, "sch", "export", "pdf", "-o", os.path.join(rep, project + "-schematic.pdf"), root_sch])
             if k.returncode != 0: r["notes"].append("schematic PDF failed")
+            # readability: overlapping text and anything off the drawing frame (tools/kicad/sch_overlaps.py)
+            import sch_overlaps
+            ov = collections.Counter()
+            for fn in sorted(os.listdir(dest)):
+                if fn.endswith(".kicad_sch"): ov.update(sch_overlaps.analyse(os.path.join(dest, fn))["counts"])
+            r["overlaps"] = dict(ov)
         # ---- board
         if brd:
             import io, contextlib
@@ -193,10 +199,18 @@ def write_readme(r, fabricated):
               "board renders (`-top.png`, `-bottom.png`)" if r["brd"] else "", "netlist + `netlist-compare.txt`" if r["sch"] and r["brd"] else ""] if x), ""]
     L += ["## Proof", "", "Schematic-vs-board netlist comparison (`tools/kicad/compare_netlists.py`: every (reference, pad) partition must be identical): **%s**" % r["proof"]]
     if r.get("proof_detail"): L += ["", "```"] + r["proof_detail"] + ["```"]
+    if r.get("overlaps") is not None:
+        o = r["overlaps"]
+        L += ["", "## Readability", "", "`tools/kicad/sch_overlaps.py` over every sheet: text over text %d, text over a symbol body %d, text "
+              "crossed by a line %d, items off the drawing frame or on the title block %d. What is left is mostly the Eagle "
+              "drawing itself (parts placed that close in Eagle) or KiCad drawing pin numbers centred on short pins." % (
+                  o.get("text/text", 0), o.get("text/body", 0), o.get("text/line", 0), o.get("frame", 0))]
     L += ["", "## Residual ERC / DRC", ""]
     if r.get("erc") is not None:
         L += ["ERC by type: " + (", ".join("%s %d" % (k, v) for k, v in r["erc"].items()) or "none") + ".",
-              "`isolated_pin_label` = the converter's per-net global labels (cosmetic); `power_pin_not_driven` / unused-unit notes are the same ones KiCad's own Eagle importer leaves.", ""]
+              "`isolated_pin_label` = the converter's per-net global labels (cosmetic); `power_pin_not_driven` / unused-unit notes are the same ones KiCad's own Eagle importer leaves. "
+              "`unconnected_wire_endpoint` / `pin_not_connected` = wire stubs Eagle leaves bare (mostly net wires ending on a bus, which is drawn as graphics here); "
+              "since 2026-09-23 the converter no longer hangs a label on every such end (that was most of the label clutter), so they show as KiCad warnings.", ""]
     if r.get("drc") is not None:
         d = r["drc"]
         L += ["DRC by type: " + (", ".join("%s %d" % (k, v) for k, v in d["violations"].items()) or "none") + "; unconnected items %d; schematic parity %d." % (d["unconnected"], d["parity"]),
@@ -230,13 +244,18 @@ def main():
                     "these projects are derived and regenerated from scratch by the tool. **Proof** = the schematic netlist extracted by KiCad "
                     "compared pad-for-pad with the netlist embedded in the imported Eagle board (`tools/kicad/compare_netlists.py`). "
                     "Each project's README has the details and the residual ERC/DRC counts.\n\n"
-                    "| Eagle design | KiCad project | Built | Proof | ERC | DRC | Status |\n|---|---|---|---|---|---|---|\n" % time.strftime("%Y-%m-%d"))
+                    "**Overlaps** = `tools/kicad/sch_overlaps.py` over all sheets: text/text + text/body + text/line collisions, "
+                    "and items off the drawing frame.\n\n"
+                    "| Eagle design | KiCad project | Built | Proof | ERC | DRC | Overlaps | Off frame | Status |\n|---|---|---|---|---|---|---|---|---|\n" % time.strftime("%Y-%m-%d"))
             for r in results:
                 erc = sum(r["erc"].values()) if r.get("erc") else "-"
                 drc = ("%d + %d unconnected" % (sum(r["drc"]["violations"].values()), r["drc"]["unconnected"])) if r.get("drc") else "-"
-                f.write("| `%s` | [`%s`](%s/) | %s | %s | %s | %s | %s |\n" % (
+                o = r.get("overlaps")
+                ovl = ("%d" % (o.get("text/text", 0) + o.get("text/body", 0) + o.get("text/line", 0))) if o is not None else "-"
+                off = ("%d" % o.get("frame", 0)) if o is not None else "-"
+                f.write("| `%s` | [`%s`](%s/) | %s | %s | %s | %s | %s | %s | %s |\n" % (
                     os.path.join(r["rel"], r["base"]), r["project"], os.path.relpath(r["dest"], HW), "yes" if r["fabricated"] else "no",
-                    r["proof"], erc, drc, "ok" if r["status"] == "ok" else "**" + r["status"] + "**"))
+                    r["proof"], erc, drc, ovl, off, "ok" if r["status"] == "ok" else "**" + r["status"] + "**"))
         masters = sorted(os.path.relpath(r_, HW) for r_, d_, f_ in os.walk(HW) if "MASTER" in f_ and "/kicad/" in r_ + "/")
         if masters:
             with open(os.path.join(HW, "KICAD.md"), "a") as f:

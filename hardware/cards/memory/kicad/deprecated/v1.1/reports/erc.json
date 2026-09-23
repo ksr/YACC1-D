@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.kicad.org/erc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-09-20T21:35:32",
+    "date": "2026-09-23T17:39:11",
     "ignored_checks": [
         {
             "description": "Global label only appears once in the schematic",
@@ -37,8 +37,8 @@
                         {
                             "description": "Symbol IC6 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.55917,
-                                "y": 0.48042
+                                "x": 0.71157,
+                                "y": 0.45502
                             },
                             "uuid": "10e630d8-4006-a51a-162c-ea7c77e0871c"
                         }
@@ -52,8 +52,8 @@
                         {
                             "description": "Symbol IC12 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.58457,
-                                "y": 0.30262
+                                "x": 0.73697,
+                                "y": 0.27722
                             },
                             "uuid": "ea3d8142-88c7-972f-2591-c7295b0b7c3e"
                         }
@@ -67,8 +67,8 @@
                         {
                             "description": "Symbol IC10 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.58457,
-                                "y": 0.63282
+                                "x": 0.73697,
+                                "y": 0.60742
                             },
                             "uuid": "0a76bc78-8401-29e0-9c42-83656296065a"
                         }
@@ -82,8 +82,8 @@
                         {
                             "description": "Symbol IC10 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.58457,
-                                "y": 0.83602
+                                "x": 0.73697,
+                                "y": 0.81062
                             },
                             "uuid": "56cfc3c9-0f31-d1f4-665c-98f221975411"
                         }
@@ -95,10 +95,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'DATA8'",
+                            "description": "Label 'DATA8'",
                             "pos": {
-                                "x": 0.8636,
-                                "y": 1.5621
+                                "x": 1.016,
+                                "y": 1.5367
                             },
                             "uuid": "e1b5a772-4a28-3e55-1aaa-0c2addb0ec5c"
                         }
@@ -110,10 +110,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'DATA9'",
+                            "description": "Label 'DATA9'",
                             "pos": {
-                                "x": 0.889,
-                                "y": 1.5621
+                                "x": 1.0414,
+                                "y": 1.5367
                             },
                             "uuid": "c7db37c5-8f0e-c369-559d-d34aac6b283f"
                         }
@@ -125,10 +125,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'DATA10'",
+                            "description": "Label 'DATA10'",
                             "pos": {
-                                "x": 0.9144,
-                                "y": 1.5621
+                                "x": 1.0668,
+                                "y": 1.5367
                             },
                             "uuid": "a30012da-caaf-eed3-b2ef-e4d7e3d3ffb3"
                         }
@@ -140,10 +140,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'DATA11'",
+                            "description": "Label 'DATA11'",
                             "pos": {
-                                "x": 0.9398,
-                                "y": 1.5621
+                                "x": 1.0922,
+                                "y": 1.5367
                             },
                             "uuid": "c1b7cb22-0480-d9f4-1e5b-59ec287154ee"
                         }
@@ -155,10 +155,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'DATA12'",
+                            "description": "Label 'DATA12'",
                             "pos": {
-                                "x": 0.9906,
-                                "y": 1.5621
+                                "x": 1.143,
+                                "y": 1.5367
                             },
                             "uuid": "8f818a39-ed85-75a2-8b08-896a937f5e58"
                         }
@@ -170,10 +170,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'DATA13'",
+                            "description": "Label 'DATA13'",
                             "pos": {
-                                "x": 1.016,
-                                "y": 1.5621
+                                "x": 1.1684,
+                                "y": 1.5367
                             },
                             "uuid": "7af1b46e-a76f-85a8-79fd-c00021e39e9d"
                         }
@@ -185,10 +185,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'DATA14'",
+                            "description": "Label 'DATA14'",
                             "pos": {
-                                "x": 1.0414,
-                                "y": 1.5621
+                                "x": 1.1938,
+                                "y": 1.5367
                             },
                             "uuid": "a4eb7eaf-b523-4f4d-9215-1f18e837c8d5"
                         }
@@ -200,10 +200,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'DATA15'",
+                            "description": "Label 'DATA15'",
                             "pos": {
-                                "x": 1.0668,
-                                "y": 1.5621
+                                "x": 1.2192,
+                                "y": 1.5367
                             },
                             "uuid": "49d8deab-98be-b558-a162-63e23415755b"
                         }
@@ -215,10 +215,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-REG-FUNC-RD'",
+                            "description": "Label '-REG-FUNC-RD'",
                             "pos": {
-                                "x": 1.0922,
-                                "y": 1.5621
+                                "x": 1.2446,
+                                "y": 1.5367
                             },
                             "uuid": "876fd321-a3a3-90e4-582b-c776fc4b2004"
                         }
@@ -230,10 +230,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-REG-FUNC-LD'",
+                            "description": "Label '-REG-FUNC-LD'",
                             "pos": {
-                                "x": 1.1176,
-                                "y": 1.5621
+                                "x": 1.27,
+                                "y": 1.5367
                             },
                             "uuid": "033f24a9-ad24-3983-acbe-b0913d4a7df6"
                         }
@@ -245,10 +245,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'REG-RD-ID0'",
+                            "description": "Label 'REG-RD-ID0'",
                             "pos": {
-                                "x": 1.143,
-                                "y": 1.5621
+                                "x": 1.2954,
+                                "y": 1.5367
                             },
                             "uuid": "08481a59-4a11-2620-4788-6a085c5fef58"
                         }
@@ -260,10 +260,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'REG-RD-ID1'",
+                            "description": "Label 'REG-RD-ID1'",
                             "pos": {
-                                "x": 1.1684,
-                                "y": 1.5621
+                                "x": 1.3208,
+                                "y": 1.5367
                             },
                             "uuid": "573f9c77-a04e-64c7-311d-24e50b83cedd"
                         }
@@ -275,10 +275,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'REG-RD-ID2'",
+                            "description": "Label 'REG-RD-ID2'",
                             "pos": {
-                                "x": 1.1938,
-                                "y": 1.5621
+                                "x": 1.3462,
+                                "y": 1.5367
                             },
                             "uuid": "928d5a96-eda8-ca87-683c-8343cc047ea8"
                         }
@@ -290,10 +290,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'REG-RD-ID3'",
+                            "description": "Label 'REG-RD-ID3'",
                             "pos": {
-                                "x": 1.2192,
-                                "y": 1.5621
+                                "x": 1.3716,
+                                "y": 1.5367
                             },
                             "uuid": "8a54770c-8727-d891-4207-e046d1d74cb5"
                         }
@@ -305,10 +305,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'REG-LD-ID0'",
+                            "description": "Label 'REG-LD-ID0'",
                             "pos": {
-                                "x": 1.2446,
-                                "y": 1.5621
+                                "x": 1.397,
+                                "y": 1.5367
                             },
                             "uuid": "a345d6fc-7106-a220-55b5-1b03e077b8fa"
                         }
@@ -320,10 +320,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'REG-LD-ID1'",
+                            "description": "Label 'REG-LD-ID1'",
                             "pos": {
-                                "x": 1.27,
-                                "y": 1.5621
+                                "x": 1.4224,
+                                "y": 1.5367
                             },
                             "uuid": "fe014a8b-f418-264d-2858-a9cf03a2a941"
                         }
@@ -335,10 +335,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'REG-LD-ID2'",
+                            "description": "Label 'REG-LD-ID2'",
                             "pos": {
-                                "x": 1.2954,
-                                "y": 1.5621
+                                "x": 1.4478,
+                                "y": 1.5367
                             },
                             "uuid": "25ef1360-c809-eecc-b212-eaa2164d8e82"
                         }
@@ -350,10 +350,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'REG-LD-ID3'",
+                            "description": "Label 'REG-LD-ID3'",
                             "pos": {
-                                "x": 1.3208,
-                                "y": 1.5621
+                                "x": 1.4732,
+                                "y": 1.5367
                             },
                             "uuid": "84b82e43-82f3-971c-ab46-418df04d80ca"
                         }
@@ -365,10 +365,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-REG-RD-LO'",
+                            "description": "Label '-REG-RD-LO'",
                             "pos": {
-                                "x": 1.3462,
-                                "y": 1.5621
+                                "x": 1.4986,
+                                "y": 1.5367
                             },
                             "uuid": "9bc50806-6788-d0d8-4df1-6b78695b91da"
                         }
@@ -380,10 +380,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-REG-LD-LO'",
+                            "description": "Label '-REG-LD-LO'",
                             "pos": {
-                                "x": 1.3716,
-                                "y": 1.5621
+                                "x": 1.524,
+                                "y": 1.5367
                             },
                             "uuid": "ed8db47d-1bf3-8b49-1290-694624c649b0"
                         }
@@ -395,10 +395,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-REG-RD-HI'",
+                            "description": "Label '-REG-RD-HI'",
                             "pos": {
-                                "x": 1.397,
-                                "y": 1.5621
+                                "x": 1.5494,
+                                "y": 1.5367
                             },
                             "uuid": "8c9cb77d-7ab2-3c01-eb16-8d91a995522a"
                         }
@@ -410,10 +410,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-REG-LD-HI'",
+                            "description": "Label '-REG-LD-HI'",
                             "pos": {
-                                "x": 1.4224,
-                                "y": 1.5621
+                                "x": 1.5748,
+                                "y": 1.5367
                             },
                             "uuid": "9a4646c1-febd-350c-5f5f-c708df5bf985"
                         }
@@ -425,10 +425,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-REG-DN'",
+                            "description": "Label '-REG-DN'",
                             "pos": {
-                                "x": 1.4478,
-                                "y": 1.5621
+                                "x": 1.6002,
+                                "y": 1.5367
                             },
                             "uuid": "d039cd20-3512-360b-d8fc-2bebb4845675"
                         }
@@ -440,10 +440,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-REG-UP'",
+                            "description": "Label '-REG-UP'",
                             "pos": {
-                                "x": 1.4732,
-                                "y": 1.5621
+                                "x": 1.6256,
+                                "y": 1.5367
                             },
                             "uuid": "02d423f0-dac4-3766-a3df-77bab66af92d"
                         }
@@ -455,10 +455,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-IO-RD'",
+                            "description": "Label '-IO-RD'",
                             "pos": {
-                                "x": 1.5494,
-                                "y": 1.5621
+                                "x": 1.7018,
+                                "y": 1.5367
                             },
                             "uuid": "4bce27be-4393-adb2-87ef-768ee291830e"
                         }
@@ -470,10 +470,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-IO-WR'",
+                            "description": "Label '-IO-WR'",
                             "pos": {
-                                "x": 1.5748,
-                                "y": 1.5621
+                                "x": 1.7272,
+                                "y": 1.5367
                             },
                             "uuid": "f8ae8907-34f8-f06c-f7dd-018fe2f6e452"
                         }
@@ -485,10 +485,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-TMP-REG-RD0'",
+                            "description": "Label '-TMP-REG-RD0'",
                             "pos": {
-                                "x": 1.6002,
-                                "y": 1.5621
+                                "x": 1.7526,
+                                "y": 1.5367
                             },
                             "uuid": "45e3fc17-d27e-991c-bbb7-774cf193cf1f"
                         }
@@ -500,10 +500,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-TMP-REG-LD0'",
+                            "description": "Label '-TMP-REG-LD0'",
                             "pos": {
-                                "x": 1.6256,
-                                "y": 1.5621
+                                "x": 1.778,
+                                "y": 1.5367
                             },
                             "uuid": "27184ba5-17ff-59be-c6bd-e5a0b430c524"
                         }
@@ -515,10 +515,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-TMP-REG-RD1'",
+                            "description": "Label '-TMP-REG-RD1'",
                             "pos": {
-                                "x": 1.651,
-                                "y": 1.5621
+                                "x": 1.8034,
+                                "y": 1.5367
                             },
                             "uuid": "d0c9c775-af24-7d96-8514-fdac8d49b794"
                         }
@@ -530,10 +530,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-TMP-REG-LD1'",
+                            "description": "Label '-TMP-REG-LD1'",
                             "pos": {
-                                "x": 1.6764,
-                                "y": 1.5621
+                                "x": 1.8288,
+                                "y": 1.5367
                             },
                             "uuid": "e26aae63-5794-7b5c-bde6-c4759b6cc13a"
                         }
@@ -545,10 +545,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-ADDR-REG-RD0'",
+                            "description": "Label '-ADDR-REG-RD0'",
                             "pos": {
-                                "x": 1.7272,
-                                "y": 1.5621
+                                "x": 1.8796,
+                                "y": 1.5367
                             },
                             "uuid": "74bb4f58-4ca6-a0ed-0bcc-4de5c67f16fa"
                         }
@@ -560,10 +560,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-ADDR-REG-LD0'",
+                            "description": "Label '-ADDR-REG-LD0'",
                             "pos": {
-                                "x": 1.7526,
-                                "y": 1.5621
+                                "x": 1.905,
+                                "y": 1.5367
                             },
                             "uuid": "676cee2a-8925-4bec-fca1-a6128e2a5f73"
                         }
@@ -575,10 +575,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-ADDR-REG-RD1'",
+                            "description": "Label '-ADDR-REG-RD1'",
                             "pos": {
-                                "x": 1.778,
-                                "y": 1.5621
+                                "x": 1.9304,
+                                "y": 1.5367
                             },
                             "uuid": "b8f5f48d-9922-c903-f641-aa83603c9cce"
                         }
@@ -590,10 +590,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-ADDR-REG-LD1'",
+                            "description": "Label '-ADDR-REG-LD1'",
                             "pos": {
-                                "x": 1.8034,
-                                "y": 1.5621
+                                "x": 1.9558,
+                                "y": 1.5367
                             },
                             "uuid": "54336c89-d974-3b18-0d1b-77d43a332fbc"
                         }
@@ -605,10 +605,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'IO-ADDR0'",
+                            "description": "Label 'IO-ADDR0'",
                             "pos": {
-                                "x": 1.8288,
-                                "y": 1.5621
+                                "x": 1.9812,
+                                "y": 1.5367
                             },
                             "uuid": "e4145dee-49c1-43d3-db89-d98500e51652"
                         }
@@ -620,10 +620,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'IO-ADDR1'",
+                            "description": "Label 'IO-ADDR1'",
                             "pos": {
-                                "x": 1.8542,
-                                "y": 1.5621
+                                "x": 2.0066,
+                                "y": 1.5367
                             },
                             "uuid": "58a1aad4-8ffc-0f8a-357a-5d790f36b113"
                         }
@@ -635,10 +635,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'IO-ADDR2'",
+                            "description": "Label 'IO-ADDR2'",
                             "pos": {
-                                "x": 1.8796,
-                                "y": 1.5621
+                                "x": 2.032,
+                                "y": 1.5367
                             },
                             "uuid": "d03ef331-ee74-fcd2-9e20-0f8508df8e51"
                         }
@@ -650,10 +650,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'IO-ADDR3'",
+                            "description": "Label 'IO-ADDR3'",
                             "pos": {
-                                "x": 1.905,
-                                "y": 1.5621
+                                "x": 2.0574,
+                                "y": 1.5367
                             },
                             "uuid": "199bbe44-1203-8e04-f41f-a29e1832e237"
                         }
@@ -665,10 +665,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-IO-ADDR-LD'",
+                            "description": "Label '-IO-ADDR-LD'",
                             "pos": {
-                                "x": 1.9304,
-                                "y": 1.5621
+                                "x": 2.0828,
+                                "y": 1.5367
                             },
                             "uuid": "ac043b3d-edf1-b1a1-53c9-082afc9d6401"
                         }
@@ -680,10 +680,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'UNUSED0'",
+                            "description": "Label 'UNUSED0'",
                             "pos": {
-                                "x": 1.9558,
-                                "y": 1.5621
+                                "x": 2.1082,
+                                "y": 1.5367
                             },
                             "uuid": "1b5ce1c8-5ce8-a4dc-05a3-f62b8184ad04"
                         }
@@ -695,10 +695,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-INT'",
+                            "description": "Label '-INT'",
                             "pos": {
-                                "x": 1.9812,
-                                "y": 1.5621
+                                "x": 2.1336,
+                                "y": 1.5367
                             },
                             "uuid": "1e5ecdb5-2cbe-cbec-8e4f-dece201e6d06"
                         }
@@ -710,10 +710,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-INTA'",
+                            "description": "Label '-INTA'",
                             "pos": {
-                                "x": 2.0066,
-                                "y": 1.5621
+                                "x": 2.159,
+                                "y": 1.5367
                             },
                             "uuid": "b7441b02-be15-6e5d-dda0-b0b98099223a"
                         }
@@ -725,10 +725,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-ALU-FUNC'",
+                            "description": "Label '-ALU-FUNC'",
                             "pos": {
-                                "x": 2.032,
-                                "y": 1.5621
+                                "x": 2.1844,
+                                "y": 1.5367
                             },
                             "uuid": "6d193b0c-88b9-5e88-6d8b-ce06a1f1cc24"
                         }
@@ -740,10 +740,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ALU0'",
+                            "description": "Label 'ALU0'",
                             "pos": {
-                                "x": 2.0574,
-                                "y": 1.5621
+                                "x": 2.2098,
+                                "y": 1.5367
                             },
                             "uuid": "7afb96c8-a15a-a00d-fe3f-e8d74c6c73d0"
                         }
@@ -755,10 +755,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ALU1'",
+                            "description": "Label 'ALU1'",
                             "pos": {
-                                "x": 2.0828,
-                                "y": 1.5621
+                                "x": 2.2352,
+                                "y": 1.5367
                             },
                             "uuid": "5a539a17-6ea4-68d5-6668-2f4924c640c0"
                         }
@@ -770,10 +770,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ALU2'",
+                            "description": "Label 'ALU2'",
                             "pos": {
-                                "x": 2.1082,
-                                "y": 1.5621
+                                "x": 2.2606,
+                                "y": 1.5367
                             },
                             "uuid": "f78bb4ac-54cd-cac5-d0f8-05ff80265c9c"
                         }
@@ -785,10 +785,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ALU3'",
+                            "description": "Label 'ALU3'",
                             "pos": {
-                                "x": 2.1336,
-                                "y": 1.5621
+                                "x": 2.286,
+                                "y": 1.5367
                             },
                             "uuid": "d8ff145f-8390-34e9-70d9-603bcdea7c79"
                         }
@@ -800,10 +800,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-AC-LD-INV'",
+                            "description": "Label '-AC-LD-INV'",
                             "pos": {
-                                "x": 2.159,
-                                "y": 1.5621
+                                "x": 2.3114,
+                                "y": 1.5367
                             },
                             "uuid": "744dd9fc-6ef1-56f5-ba2e-c26213906920"
                         }
@@ -815,10 +815,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-AC-RD'",
+                            "description": "Label '-AC-RD'",
                             "pos": {
-                                "x": 2.1844,
-                                "y": 1.5621
+                                "x": 2.3368,
+                                "y": 1.5367
                             },
                             "uuid": "3ef45085-5dd6-097e-56e0-6c09f7fb22b2"
                         }
@@ -830,10 +830,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-AC-LD'",
+                            "description": "Label '-AC-LD'",
                             "pos": {
-                                "x": 2.2098,
-                                "y": 1.5621
+                                "x": 2.3622,
+                                "y": 1.5367
                             },
                             "uuid": "b6a966b8-6584-dbdd-2084-e87a4b4b1431"
                         }
@@ -845,10 +845,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-SR-LD'",
+                            "description": "Label '-SR-LD'",
                             "pos": {
-                                "x": 2.2352,
-                                "y": 1.5621
+                                "x": 2.3876,
+                                "y": 1.5367
                             },
                             "uuid": "c572c2ba-6099-995d-8301-4b3e0074ba7d"
                         }
@@ -860,10 +860,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'BR-COND'",
+                            "description": "Label 'BR-COND'",
                             "pos": {
-                                "x": 2.2606,
-                                "y": 1.5621
+                                "x": 2.413,
+                                "y": 1.5367
                             },
                             "uuid": "aa59bf57-cf4f-6bcc-1427-0248fa8095e9"
                         }
@@ -875,10 +875,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-HL-SWAP'",
+                            "description": "Label '-HL-SWAP'",
                             "pos": {
-                                "x": 2.286,
-                                "y": 1.5621
+                                "x": 2.4384,
+                                "y": 1.5367
                             },
                             "uuid": "fec2fa62-471a-4fab-ea13-55992d59f087"
                         }
@@ -890,10 +890,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-IN'",
+                            "description": "Label '-IN'",
                             "pos": {
-                                "x": 2.3114,
-                                "y": 1.5621
+                                "x": 2.4638,
+                                "y": 1.5367
                             },
                             "uuid": "c0e40bf2-507b-7c0b-f243-5dbcc08bd3bf"
                         }
@@ -905,10 +905,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-OUT'",
+                            "description": "Label '-OUT'",
                             "pos": {
-                                "x": 2.3368,
-                                "y": 1.5621
+                                "x": 2.4892,
+                                "y": 1.5367
                             },
                             "uuid": "23a603d1-3d67-f931-80a7-a590206ccaa5"
                         }
@@ -920,10 +920,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-BUS-EN'",
+                            "description": "Label '-BUS-EN'",
                             "pos": {
-                                "x": 2.3622,
-                                "y": 1.5621
+                                "x": 2.5146,
+                                "y": 1.5367
                             },
                             "uuid": "7f1cb9d2-7de4-5459-1249-8fbc5722acb6"
                         }
@@ -935,10 +935,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-RUN'",
+                            "description": "Label '-RUN'",
                             "pos": {
-                                "x": 2.3876,
-                                "y": 1.5621
+                                "x": 2.54,
+                                "y": 1.5367
                             },
                             "uuid": "70626af7-e3e3-7e4f-b427-a7b865c3203d"
                         }
@@ -952,8 +952,8 @@
                         {
                             "description": "Symbol IC12 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.64807,
-                                "y": 0.42962
+                                "x": 1.25767,
+                                "y": 0.70902
                             },
                             "uuid": "af785001-4c61-c7bf-4bcc-aa20f45c6838"
                         }
@@ -967,8 +967,8 @@
                         {
                             "description": "Symbol IC7 Hidden pin 8 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.67347,
-                                "y": 0.75971
+                                "x": 1.28307,
+                                "y": 1.03911
                             },
                             "uuid": "8574ae38-5bdb-9ce4-f49c-950e68fe7d6e"
                         }
@@ -982,8 +982,8 @@
                         {
                             "description": "Symbol IC4 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.07987,
-                                "y": 0.73442
+                                "x": 1.68947,
+                                "y": 1.01382
                             },
                             "uuid": "79c123cb-511a-60af-aee7-72c839b8cac4"
                         }
@@ -997,8 +997,8 @@
                         {
                             "description": "Symbol IC6 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.3338699999999999,
-                                "y": 0.73442
+                                "x": 1.94347,
+                                "y": 1.01382
                             },
                             "uuid": "19b0cf9f-e446-2db9-a9e5-168f9d99f091"
                         }
@@ -1012,8 +1012,8 @@
                         {
                             "description": "Symbol IC6 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.55917,
-                                "y": 0.68362
+                                "x": 1.46087,
+                                "y": 0.96302
                             },
                             "uuid": "2e5d4ae8-22ef-d393-ffab-5b216e7bf775"
                         }
@@ -1027,8 +1027,8 @@
                         {
                             "description": "Symbol IC6 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.55917,
-                                "y": 1.31862
+                                "x": 1.46087,
+                                "y": 1.59802
                             },
                             "uuid": "cb9ff234-1857-dce5-447c-b2dd3b019066"
                         }
@@ -1042,8 +1042,8 @@
                         {
                             "description": "Symbol IC6 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.78777,
-                                "y": 1.31862
+                                "x": 1.68947,
+                                "y": 1.59802
                             },
                             "uuid": "08d0b3ec-2259-1d70-c125-9a5769d7b18c"
                         }
@@ -1057,8 +1057,8 @@
                         {
                             "description": "Symbol IC6 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.81317,
-                                "y": 0.68362
+                                "x": 1.71487,
+                                "y": 0.96302
                             },
                             "uuid": "bf0064cd-3998-ed16-758c-1434d49ee7b4"
                         }
@@ -1067,13 +1067,28 @@
                     "type": "endpoint_off_grid"
                 },
                 {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.2286 mm",
+                            "pos": {
+                                "x": 2.4257,
+                                "y": 1.651
+                            },
+                            "uuid": "f1b59069-863f-c7df-1e7f-fe20641e8d09"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
                     "description": "Symbol pin or wire end off connection grid",
                     "items": [
                         {
                             "description": "Symbol IC3 Hidden pin 12 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.70217,
-                                "y": 1.72458
+                                "x": 2.60387,
+                                "y": 2.00398
                             },
                             "uuid": "b1cc9e6f-bc85-11df-e75d-f59bfdd963cf"
                         }
@@ -1082,13 +1097,103 @@
                     "type": "endpoint_off_grid"
                 },
                 {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.3810 mm",
+                            "pos": {
+                                "x": 3.0861,
+                                "y": 0.5334
+                            },
+                            "uuid": "75d2d935-4e62-d675-7817-1c83b3172456"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.3810 mm",
+                            "pos": {
+                                "x": 3.0861,
+                                "y": 0.7112
+                            },
+                            "uuid": "e32afa50-8443-a50a-938f-9129facf5f83"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.3810 mm",
+                            "pos": {
+                                "x": 3.0861,
+                                "y": 1.1938
+                            },
+                            "uuid": "566ce913-57ef-d37d-ac22-90fe1daf4df1"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.3810 mm",
+                            "pos": {
+                                "x": 3.0861,
+                                "y": 1.3716
+                            },
+                            "uuid": "56a5d486-8319-18c3-ad97-2bca9e459d62"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.3810 mm",
+                            "pos": {
+                                "x": 3.0861,
+                                "y": 1.8288
+                            },
+                            "uuid": "dd356533-0ebc-f7b4-89c3-066f791c3318"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.3810 mm",
+                            "pos": {
+                                "x": 3.0861,
+                                "y": 2.0066
+                            },
+                            "uuid": "4cc2d8fb-8eee-66af-0b6f-5bc0f2c7fafa"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
                     "description": "Symbol pin or wire end off connection grid",
                     "items": [
                         {
                             "description": "Symbol IC8 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.62267,
-                                "y": 0.5056
+                                "x": 0.94017,
+                                "y": 0.531
                             },
                             "uuid": "65ae2f7d-6db9-8924-9a55-2986d2f301b4"
                         }
@@ -1102,8 +1207,8 @@
                         {
                             "description": "Symbol IC8 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.62267,
-                                "y": 0.7596
+                                "x": 0.94017,
+                                "y": 0.785
                             },
                             "uuid": "8c1ad36d-e046-a6f5-179b-ffac76b2a9fb"
                         }
@@ -1117,8 +1222,8 @@
                         {
                             "description": "Symbol IC9 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.62267,
-                                "y": 1.039
+                                "x": 0.94017,
+                                "y": 1.0644
                             },
                             "uuid": "d71c2b0a-5849-bd1d-f775-7382fc8e2c3e"
                         }
@@ -1132,8 +1237,8 @@
                         {
                             "description": "Symbol IC9 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.62267,
-                                "y": 1.293
+                                "x": 0.94017,
+                                "y": 1.3184
                             },
                             "uuid": "b859016e-ae5e-f3a2-d36b-d5a897dfe218"
                         }
@@ -1147,8 +1252,8 @@
                         {
                             "description": "Symbol IC11 Hidden pin 8 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.18147,
-                                "y": 1.36931
+                                "x": 1.49897,
+                                "y": 1.39471
                             },
                             "uuid": "9dbc6aa8-7f11-934a-6480-b0129a942c81"
                         }
@@ -1157,13 +1262,238 @@
                     "type": "endpoint_off_grid"
                 },
                 {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.9144 mm",
+                            "pos": {
+                                "x": 2.3876,
+                                "y": 0.4826
+                            },
+                            "uuid": "c13bf006-b730-3772-54b2-675195ffdbe1"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.8636 mm",
+                            "pos": {
+                                "x": 2.3876,
+                                "y": 0.508
+                            },
+                            "uuid": "04c1d2a6-132b-d254-bcce-eea242ff3a58"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.8128 mm",
+                            "pos": {
+                                "x": 2.3876,
+                                "y": 0.5334
+                            },
+                            "uuid": "ee4ab0dc-c779-4bbe-7397-4fd91d950a41"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.7620 mm",
+                            "pos": {
+                                "x": 2.3876,
+                                "y": 0.5588
+                            },
+                            "uuid": "383f395e-a531-a7cb-688f-c54f0153703b"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.7112 mm",
+                            "pos": {
+                                "x": 2.3876,
+                                "y": 0.7366
+                            },
+                            "uuid": "87b2d76b-9e30-c64e-3b66-0a4da96d3bf9"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.6604 mm",
+                            "pos": {
+                                "x": 2.3876,
+                                "y": 0.762
+                            },
+                            "uuid": "f351eba6-d8b4-5d80-a51e-652d2b5eb652"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.6096 mm",
+                            "pos": {
+                                "x": 2.3876,
+                                "y": 0.7874
+                            },
+                            "uuid": "7a062139-4c82-bf26-e690-6d3391e1296f"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.5588 mm",
+                            "pos": {
+                                "x": 2.3876,
+                                "y": 0.8128
+                            },
+                            "uuid": "3e2a3873-b34e-d76e-e788-83c686420dfd"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.4318 mm",
+                            "pos": {
+                                "x": 2.3876,
+                                "y": 1.016
+                            },
+                            "uuid": "4f068980-6d69-65f4-2642-1a670ee43f2a"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.3810 mm",
+                            "pos": {
+                                "x": 2.3876,
+                                "y": 1.0414
+                            },
+                            "uuid": "41a91c2a-cf44-84dc-47ac-0a41e87de0a1"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.3302 mm",
+                            "pos": {
+                                "x": 2.3876,
+                                "y": 1.0668
+                            },
+                            "uuid": "ffebbbde-8d2e-06b6-fc3e-ebd5a1b8bd10"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.2794 mm",
+                            "pos": {
+                                "x": 2.3876,
+                                "y": 1.0922
+                            },
+                            "uuid": "028ee5aa-f9b1-df07-fe41-79c60a2ca82a"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.2286 mm",
+                            "pos": {
+                                "x": 2.3876,
+                                "y": 1.27
+                            },
+                            "uuid": "e39d984a-a137-72a4-3c97-66501badee49"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.0762 mm",
+                            "pos": {
+                                "x": 2.3876,
+                                "y": 1.3462
+                            },
+                            "uuid": "49934a16-2984-7af5-3181-36db905b640e"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.0762 mm",
+                            "pos": {
+                                "x": 0.8509,
+                                "y": 0.7747
+                            },
+                            "uuid": "2be458d3-e05c-18c7-b4b6-7ec54fd2429d"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
                     "description": "Symbol pin or wire end off connection grid",
                     "items": [
                         {
                             "description": "Symbol IC10 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.58457,
-                                "y": 0.78522
+                                "x": 1.02907,
+                                "y": 1.15352
                             },
                             "uuid": "7fa3f3a0-b70c-31a5-cdee-6cc56d4d99c9"
                         }
@@ -1177,8 +1507,8 @@
                         {
                             "description": "Symbol IC10 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.83857,
-                                "y": 0.78522
+                                "x": 1.28307,
+                                "y": 1.15352
                             },
                             "uuid": "429fb29c-6201-70b2-e150-a4de8733a8fe"
                         }
@@ -1192,14 +1522,44 @@
                         {
                             "description": "Symbol IC5 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.11797,
-                                "y": 0.531
+                                "x": 1.56247,
+                                "y": 0.8993
                             },
                             "uuid": "059f2bb9-7cfa-7764-a0fc-4e471fe87928"
                         }
                     ],
                     "severity": "warning",
                     "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.3810 mm",
+                            "pos": {
+                                "x": 1.9177,
+                                "y": 0.7747
+                            },
+                            "uuid": "4be94529-fa82-75c3-4af5-0dd29bcf3e49"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.0254 mm",
+                            "pos": {
+                                "x": 2.2733,
+                                "y": 0.9525
+                            },
+                            "uuid": "d853b55e-23c1-4d36-bb9a-fd1d98fb58d0"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
                 }
             ]
         },

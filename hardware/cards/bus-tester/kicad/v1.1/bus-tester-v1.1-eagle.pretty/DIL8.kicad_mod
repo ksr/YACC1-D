@@ -8,7 +8,7 @@
 		(at -5.2578 2.54 90)
 		(unlocked yes)
 		(layer "F.SilkS")
-		(uuid "72c07c24-09ea-40ea-8afe-62fb1d7c7e3a")
+		(uuid "92ffad2d-4b8a-4806-ae91-4a2cd00a3fd9")
 		(effects
 			(font
 				(size 1.6002 1.6002)
@@ -21,7 +21,7 @@
 		(at 7.239 2.54 90)
 		(unlocked yes)
 		(layer "F.Fab")
-		(uuid "0723f98b-d36b-457e-848d-9c0d7fb77723")
+		(uuid "7587d74c-0512-4dd4-b07b-3293daa1967c")
 		(effects
 			(font
 				(size 1.6002 1.6002)
@@ -35,7 +35,7 @@
 		(unlocked yes)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "c1a36bdf-3897-4433-a281-63a0fef7d2bc")
+		(uuid "1644f61d-ef15-41dc-a6a5-243d27431163")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -47,7 +47,7 @@
 		(unlocked yes)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "f029b6f3-f532-41cc-bf54-dec111b1e79e")
+		(uuid "995dbca9-54bd-4233-b4ac-6163a9562208")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -63,7 +63,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "004ed690-956c-4d7f-8cfc-98d1d76cad04")
+		(uuid "96192243-b56e-4aaa-861e-c1623b33fae1")
 	)
 	(fp_line
 		(start -5.08 -2.54)
@@ -73,7 +73,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "bec74a9c-15a4-4ae9-a85d-34ce967bae89")
+		(uuid "5fc6c7f7-7d36-487a-91ea-a77f25715e5f")
 	)
 	(fp_line
 		(start -5.08 0.635)
@@ -83,7 +83,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "5d05048a-38da-43d4-b4a8-ef1bf1bdc0b9")
+		(uuid "ab32c76d-0952-4282-bd03-73e8887f66c9")
 	)
 	(fp_line
 		(start 5.08 2.54)
@@ -93,7 +93,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "a325ede5-ea4c-4ea9-8dd1-fdf3ef3703fe")
+		(uuid "69961f94-d181-4484-b501-0ac151eb6ef4")
 	)
 	(fp_line
 		(start 5.08 2.54)
@@ -103,7 +103,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "74d4561b-ea0d-4a31-b4f6-751e6f220657")
+		(uuid "dd0dee1a-07b0-41a2-a63f-5b34f6ed1495")
 	)
 	(fp_arc
 		(start -5.08 -0.635)
@@ -114,7 +114,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "2152a16c-7715-460e-89d3-4cb4b17a7af7")
+		(uuid "f3b44d62-d3a4-4c2a-8861-d0d5385f10aa")
 	)
 	(pad "1" thru_hole oval
 		(at -3.81 3.81 90)
@@ -124,7 +124,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "afca6b1a-3b51-4440-870a-d279f9513f21")
+		(uuid "fb54d8d9-49d6-48a2-a62a-e0118b7a6d04")
 	)
 	(pad "2" thru_hole oval
 		(at -1.27 3.81 90)
@@ -134,7 +134,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "70474ebf-5fb7-4134-a2af-47c598c04717")
+		(uuid "cdbb01be-e126-4f4d-91b8-18afa66e3b81")
 	)
 	(pad "3" thru_hole oval
 		(at 1.27 3.81 90)
@@ -144,7 +144,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "681ed83f-226d-4353-bc2f-41264d652966")
+		(uuid "ec49f189-4200-4cb3-abb6-a27883f645f9")
 	)
 	(pad "4" thru_hole oval
 		(at 3.81 3.81 90)
@@ -154,7 +154,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "390a2a66-ceb7-4963-a982-0c41080304aa")
+		(uuid "7ad693a8-fcec-4a4f-b9ca-ea2ab8218560")
 	)
 	(pad "5" thru_hole oval
 		(at 3.81 -3.81 90)
@@ -164,7 +164,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "32e737da-6e44-4537-8b6f-43d816a4e07b")
+		(uuid "66b3c8cc-cb35-4f94-87c5-d6a9538794e2")
 	)
 	(pad "6" thru_hole oval
 		(at 1.27 -3.81 90)
@@ -174,7 +174,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "b2db5d72-8a10-41e0-85fc-26df131a2f88")
+		(uuid "970698a3-4a08-4777-b0fe-13426a078508")
 	)
 	(pad "7" thru_hole oval
 		(at -1.27 -3.81 90)
@@ -184,7 +184,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "c6d9cf1d-2fcd-4205-a0df-83e848fe3db1")
+		(uuid "651ab62a-0ad7-4382-bb45-92c887a4b88b")
 	)
 	(pad "8" thru_hole oval
 		(at -3.81 -3.81 90)
@@ -194,7 +194,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "876015b1-654d-4956-afc3-c72e4602125a")
+		(uuid "838cc2d8-4299-496d-9214-32070b49b379")
 	)
 	(embedded_fonts no)
 )

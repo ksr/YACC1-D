@@ -1,3 +1,4 @@
 schematic: 2 components, 5 multi-pin nets; board: 5 multi-pin nets
 identical net groups: 5 of 5
+  same connectivity, different net name: [('/Sheet 1/SCL', 'SCL'), ('/Sheet 1/SDA', 'SDA'), ('/Sheet 1/WP', 'WP')]
 RESULT: MATCH

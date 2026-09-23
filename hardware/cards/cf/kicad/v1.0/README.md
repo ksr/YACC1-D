@@ -22,10 +22,10 @@ still match `cf_netlist.py`.
 | `build.sh` | the whole pipeline, below; exit status 0 = every gate passed |
 | `compare_netlist.py` | the netlist proof: schematic and board vs `cf_netlist.py`, pin for pin |
 | `yacc1-cf-card.kicad_pro` | project: design rules (0.25 mm min track/clearance; net class Default 0.3 mm track / 0.25 mm clearance, via 0.8/0.4; class Power = VCC, GND, PIN20: 0.6 mm track / 0.3 mm clearance, via 1.0/0.5; 0.5 mm copper-to-edge) |
-| `yacc1-cf-card.kicad_sch` | schematic, one A3 sheet in functional groups (bus connector, decode + strobe gating, P8 latch, data buffer, IDE header + pull-ups + adapter power, LEDs, power + decoupling, design notes) |
+| `yacc1-cf-card.kicad_sch` | schematic, one A3 sheet in functional groups (bus connector, decode + strobe gating, P8 latch, data buffer, IDE header + pull-ups + adapter power, LEDs, power + decoupling, design notes); no text overlaps anything and nothing leaves the frame (`tools/kicad/sch_overlaps.py`: 0 / 0 / 0, frame 0) |
 | `yacc1-cf-card.kicad_pcb` | the routed 2-layer board |
 | `yacc1-cf-card.ses` | the Freerouting result imported into the board |
-| `blank-card-v3.2-eagle.kicad_sym` | local symbol `FABC96R`: the bus connector as three 32-pin units (rows a/b/c), pin numbers A1..C32, pin names = the V3.2 bus signals (from the blank card's pads) |
+| `blank-card-v3.2-eagle.kicad_sym` | local symbol `FABC96R`: the bus connector as three 32-pin units (rows a/b/c), pin numbers A1..C32, pin names = the V3.2 bus signals (from the blank card's pads); 5.08 mm pins so the three-character pin numbers clear the body and the no-connect flags |
 | `blank-card-v3.2-eagle.pretty/FABC96R.kicad_mod` | the bus connector footprint, copied unchanged from `hardware/bus/blank-card/kicad/v3.2/` |
 | `sym-lib-table`, `fp-lib-table` | the two local libraries (`${KIPRJMOD}`, nothing outside this folder) |
 | `yacc1-cf-card-schematic.pdf` | schematic plot |
@@ -41,7 +41,9 @@ still match `cf_netlist.py`.
 
 1. `gen_cf.py`: local libraries; the schematic (KiCad standard symbols from `74xx`, `Device`, `Connector_Generic`,
    `power`, embedded in `lib_symbols`; every pin gets a short wire stub to a net label or a power symbol, no-connect
-   flags on the `NO_CONNECT` pins and the 69 bus pins the card does not use; KiCad re-saves it with
+   flags on the `NO_CONNECT` pins and the 69 bus pins the card does not use; Reference/Value go where the library puts
+   them unless that is on the body (the 74xx gates) or drawn rotated (R, C, LED): then above/below the body, or beside
+   it for parts with pins only top and bottom (`auto_fields()`); KiCad re-saves it with
    `kicad-cli sch upgrade`); the board, started from a copy of the blank V3.2 card (outline, X1 at its place, the
    site text; its own power LED and 330R removed because their footprints and values differ from the netlist's
    LED1/R7), every footprint from `PARTS`, every pad on its net, GND pours on both layers, 4 mm copper keepouts

@@ -4,11 +4,11 @@
 	(generator_version "10.0")
 	(layer "F.Cu")
 	(descr "CONNECTOR\n\nmale, 96 pins, type R, rows ABC, grid 2.54 mm")
-	(property "Reference" "X4"
+	(property "Reference" "X3"
 		(at -5.842 46.99 90)
 		(unlocked yes)
 		(layer "F.SilkS")
-		(uuid "5cd08d0b-493e-4c60-aac2-da95c2cee363")
+		(uuid "47a393f7-34fd-4e67-89b2-5c09230a0753")
 		(effects
 			(font
 				(size 1.1557 1.1557)
@@ -21,7 +21,7 @@
 		(at -5.842 22.86 90)
 		(unlocked yes)
 		(layer "F.Fab")
-		(uuid "bd88e0d0-01f9-42e1-8ba1-0d1b0eb5229e")
+		(uuid "9d424241-1499-4f1c-bec4-291cb3716e8c")
 		(effects
 			(font
 				(size 1.1557 1.1557)
@@ -35,7 +35,7 @@
 		(unlocked yes)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "cc3939f9-033b-40c4-aa47-dd0314c647a2")
+		(uuid "279bf616-be85-4184-9193-8a8dd7dc9879")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -47,7 +47,7 @@
 		(unlocked yes)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "3ee2b2c6-34d1-428f-b04a-19e1f93e95e0")
+		(uuid "f9ce760f-4517-4539-8761-b5c49bc74c97")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -63,7 +63,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "c445e08d-6004-4711-bc27-808c2964e3dc")
+		(uuid "9da6bbaf-5d36-4f46-b8fe-f5b723676c21")
 	)
 	(fp_line
 		(start -5.334 -44.069)
@@ -73,7 +73,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "f0d4c280-c477-4800-82d9-613732ddfb5e")
+		(uuid "7055fc41-e05e-4a28-a49e-61d0bd3d7f40")
 	)
 	(fp_line
 		(start -5.334 44.069)
@@ -83,7 +83,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "1f4cbd54-4380-4fb9-8afe-231e9fb3995b")
+		(uuid "4e214c08-f914-4a8f-b472-5b57ecef98dd")
 	)
 	(fp_line
 		(start -5.334 44.069)
@@ -93,7 +93,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "4919b319-6a32-403f-9850-ecaac8660e37")
+		(uuid "f02cc6ec-5fb9-4339-865f-6360e935af70")
 	)
 	(fp_line
 		(start -5.334 46.736)
@@ -103,7 +103,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "3a94d104-79a8-4b58-82eb-56271028328c")
+		(uuid "01a42b84-6f7a-41fe-a036-8d0689394556")
 	)
 	(fp_line
 		(start -4.826 -47.244)
@@ -113,7 +113,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "d6a499d9-6008-40cf-8a10-c996dce963dd")
+		(uuid "e3bc36ae-fc52-48d3-a9cf-460148ed7843")
 	)
 	(fp_line
 		(start -4.826 47.244)
@@ -123,7 +123,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "36e19299-25bf-488c-841b-4a19edbbb596")
+		(uuid "d9e53819-9e66-47c0-97e9-3703dc3cd067")
 	)
 	(fp_line
 		(start -4.445 -43.18)
@@ -133,7 +133,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "34eb7b6f-ab11-4022-a0d1-44b62ddea7c5")
+		(uuid "bb88f5f0-442d-45e5-8ccb-1c86ae795108")
 	)
 	(fp_line
 		(start -4.445 43.18)
@@ -143,7 +143,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "c008a05b-9d45-4d13-ad73-ac353b6b01f9")
+		(uuid "f34234c3-33c7-49fe-8aab-dfb23fe49b86")
 	)
 	(fp_line
 		(start -3.175 -47.244)
@@ -153,7 +153,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "c8ebcf0c-382c-4a8f-8731-2bb0df24aafd")
+		(uuid "8ad88f41-47b0-4724-9c31-b0620054c457")
 	)
 	(fp_line
 		(start -3.175 47.244)
@@ -163,7 +163,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "8c03d58f-13b0-44df-93aa-b2d221f6bd00")
+		(uuid "c216894d-c810-4025-b3aa-e0abfe095742")
 	)
 	(fp_line
 		(start -3.175 47.244)
@@ -173,7 +173,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "b3b17c42-1774-4e9b-a8a5-6c083ea78d19")
+		(uuid "58c02798-86d3-4bed-9134-795db308e89b")
 	)
 	(fp_line
 		(start -2.921 -43.688)
@@ -183,7 +183,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "6295180e-d2d5-4297-81ea-74d0002eace3")
+		(uuid "1a5fb52a-5fff-41b9-971d-7a651045a7f2")
 	)
 	(fp_line
 		(start -2.921 -43.18)
@@ -193,7 +193,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "41e95979-ddc0-4c42-88b8-f9d47d9ece67")
+		(uuid "aa9ee007-50fc-408a-9b63-9c53e4c600f2")
 	)
 	(fp_line
 		(start -2.921 43.18)
@@ -203,7 +203,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "de80da08-cd2c-4de7-9ca6-67b333517410")
+		(uuid "7611f766-5959-43be-b02e-2693bc17afa8")
 	)
 	(fp_line
 		(start -1.651 -42.164)
@@ -213,7 +213,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "9bc90a0b-bb5a-4033-b237-df712e6391fe")
+		(uuid "cd558983-0cda-4514-a7e6-06b95bbc9282")
 	)
 	(fp_line
 		(start -1.651 42.164)
@@ -223,7 +223,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "10b8cd46-ed75-43cb-bfac-982e66923dd7")
+		(uuid "98dfeda1-9aa7-4038-91de-9300660e13d8")
 	)
 	(fp_line
 		(start -1.651 42.164)
@@ -233,7 +233,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "3a7e6219-72b7-4ba4-8048-e2ecedc31403")
+		(uuid "2edf03d9-16ce-44b4-95bb-2862f77b1d15")
 	)
 	(fp_line
 		(start 1.143 -42.164)
@@ -243,7 +243,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "d9bf9e77-89b1-42d2-978f-203df2261ec9")
+		(uuid "e75c0b0a-e8f9-4464-8950-d7d92770cb1b")
 	)
 	(fp_line
 		(start 1.143 -42.164)
@@ -253,7 +253,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "d3cf462b-ccd8-40af-872d-fd17eb8e42d1")
+		(uuid "f44dbfc0-d5da-4ba7-91ed-7514dd4436e3")
 	)
 	(fp_line
 		(start 1.143 42.164)
@@ -263,7 +263,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "ae145579-ca59-4e1c-8910-e4eca7ec3258")
+		(uuid "8e77a58b-fe37-4b54-8b45-e25704b1f365")
 	)
 	(fp_line
 		(start 1.143 42.164)
@@ -273,7 +273,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "1a38b81a-e856-4db0-8422-274406934958")
+		(uuid "1c9ef236-69e7-47b5-93ae-547532921341")
 	)
 	(fp_line
 		(start 1.397 -41.91)
@@ -283,7 +283,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "0fd3f56b-a123-4c56-ad53-b76414f66c31")
+		(uuid "36c476a7-ca05-45b9-a096-aa6e14bf08ed")
 	)
 	(fp_line
 		(start 1.397 41.91)
@@ -293,7 +293,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "e9acc2a7-4323-458f-807b-f2bda7b90764")
+		(uuid "5d4c759d-32cd-41b7-8476-27bd194c5e0a")
 	)
 	(fp_line
 		(start 1.397 42.545)
@@ -303,7 +303,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "bdab8fd7-6af6-40b0-b085-0e1fe2bcf721")
+		(uuid "c116abf8-2e92-4322-99c6-580955ea5017")
 	)
 	(fp_line
 		(start 2.286 -42.799)
@@ -313,7 +313,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "a7b13c99-9a72-414b-a4eb-30c607c873ea")
+		(uuid "7e377294-b4e0-46ba-a750-51ac4e7f5c2b")
 	)
 	(fp_line
 		(start 2.286 42.799)
@@ -323,7 +323,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "050aca83-d4f9-4bb3-9072-9c47c4735c38")
+		(uuid "50f041b6-5616-46af-994b-347d813a8e0e")
 	)
 	(fp_line
 		(start 2.286 42.799)
@@ -333,7 +333,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "2874ed38-0082-447a-8b1d-cd1f346603d2")
+		(uuid "30883a19-8fd6-4c4a-91d4-4d7d255416dd")
 	)
 	(fp_line
 		(start 2.667 -47.244)
@@ -343,7 +343,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "6df1e079-9b72-4afa-be1c-de1bc8816f99")
+		(uuid "c77bb493-7969-4f25-8845-1f313b269df6")
 	)
 	(fp_line
 		(start 2.667 -47.244)
@@ -353,7 +353,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "0130c98b-96b3-4abd-a637-d1c60777f476")
+		(uuid "f128cc86-103a-40ad-96e0-d5729f688d7e")
 	)
 	(fp_line
 		(start 2.667 47.244)
@@ -363,7 +363,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "7ca62f44-3372-41e6-9ffd-5cc5296aa689")
+		(uuid "e423270e-487c-4ff8-bb81-bb1c3f09ffce")
 	)
 	(fp_line
 		(start 2.667 47.244)
@@ -373,7 +373,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "d7320c51-86af-498e-ba6e-5212412ca014")
+		(uuid "9ad5b941-9f97-4270-a52e-151566bf0652")
 	)
 	(fp_line
 		(start 4.445 -41.91)
@@ -383,7 +383,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "75d2a0b5-d157-45f7-b728-c0bdfb6939e0")
+		(uuid "38c19684-4d2c-444e-a6d9-2560360884df")
 	)
 	(fp_line
 		(start 4.445 41.91)
@@ -393,7 +393,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "94658629-16f8-4479-82eb-de7cd4d3a15f")
+		(uuid "90c146d5-93ea-4378-9331-e28f4567823c")
 	)
 	(fp_line
 		(start 4.826 -47.244)
@@ -403,7 +403,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "3543e7fb-099e-4229-9dfc-5c632239fe92")
+		(uuid "cc1c6395-e123-4c1c-bde5-1c9243ddcaed")
 	)
 	(fp_line
 		(start 5.334 -42.799)
@@ -413,7 +413,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "a7a4df23-4566-4cbb-a4a2-3dbbe584c122")
+		(uuid "94c972a9-2214-4616-b595-93b5982e78ba")
 	)
 	(fp_line
 		(start 5.334 -42.799)
@@ -423,7 +423,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "fff2b773-bb3a-4b99-820d-4c7a030d1733")
+		(uuid "2b918f25-d5bc-4d9e-9b80-4708b4bad03c")
 	)
 	(fp_line
 		(start 5.334 42.799)
@@ -433,7 +433,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "4dc6679b-d94a-446d-bbce-fe13c6e269f5")
+		(uuid "3268a4ca-24cf-430c-ab1f-f9794eac01c3")
 	)
 	(fp_line
 		(start 5.334 46.736)
@@ -443,7 +443,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "1430df07-a45b-47d1-a412-26e3f893ccdf")
+		(uuid "44c5747e-6775-4793-a191-3ab92518efa4")
 	)
 	(fp_arc
 		(start -5.334 -46.736)
@@ -454,7 +454,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "d904d614-1a24-4efd-8570-64706a04b864")
+		(uuid "49db229f-70a2-4427-acc8-5fd2f6395e32")
 	)
 	(fp_arc
 		(start -4.826 47.244)
@@ -465,7 +465,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "50638566-760f-410f-834d-647516a20c6b")
+		(uuid "43bf2fc0-870a-4ae3-b23b-db746eb4d0fb")
 	)
 	(fp_arc
 		(start 4.826 -47.244)
@@ -476,7 +476,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "98161d93-31b0-4175-b0b8-ea7cdeef2565")
+		(uuid "1b068e78-7a42-4584-96a9-122f345bdc9f")
 	)
 	(fp_arc
 		(start 5.334 46.736)
@@ -487,7 +487,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "5454256f-3c52-437a-aed6-814bc2e66c9b")
+		(uuid "e989391a-34c9-469b-aafc-6e4bfff277d8")
 	)
 	(fp_circle
 		(center -0.3048 -44.9999)
@@ -498,7 +498,7 @@
 		)
 		(fill no)
 		(layer "F.SilkS")
-		(uuid "d883d2bd-fbc9-444f-b7de-611c7f9e3cdd")
+		(uuid "4ace0c7d-2dda-41a1-8732-11f2aa23cefe")
 	)
 	(fp_circle
 		(center -0.3048 44.9999)
@@ -509,12 +509,12 @@
 		)
 		(fill no)
 		(layer "F.SilkS")
-		(uuid "4a15752b-a794-41f8-9033-bda11251a62b")
+		(uuid "23eb7c0e-107e-49b4-90c4-5747a4705b37")
 	)
 	(fp_text user "DIN41612-R"
 		(at -5.715 -17.78 90)
 		(layer "F.SilkS")
-		(uuid "3f75c931-e502-4a0a-b3ae-f94413389e80")
+		(uuid "e22c67c6-5303-4393-a1a8-beeba44ea309")
 		(effects
 			(font
 				(size 1.143 1.143)
@@ -526,7 +526,7 @@
 	(fp_text user " a "
 		(at -3.175 41.783 0)
 		(layer "F.SilkS")
-		(uuid "b4032823-f67b-4911-bc0e-c3f47e5d4526")
+		(uuid "65a7e8fd-57d7-419d-a06d-4de7e3e11191")
 		(effects
 			(font
 				(size 1.143 1.143)
@@ -538,7 +538,7 @@
 	(fp_text user "a"
 		(at -3.048 -40.513 0)
 		(layer "F.SilkS")
-		(uuid "c9413fed-a48a-4a60-90d0-2a58a20e5d99")
+		(uuid "b8485693-761a-4456-9467-f431988c1243")
 		(effects
 			(font
 				(size 1.143 1.143)
@@ -550,7 +550,7 @@
 	(fp_text user "32"
 		(at -1.143 41.783 0)
 		(layer "F.SilkS")
-		(uuid "c7b935cf-d4dc-4ef5-8f7b-3a654a39134b")
+		(uuid "6958e5f8-aa0e-4b65-b1bb-518f4a593314")
 		(effects
 			(font
 				(size 1.143 1.143)
@@ -562,7 +562,7 @@
 	(fp_text user "1"
 		(at -0.381 -40.64 0)
 		(layer "F.SilkS")
-		(uuid "ef90c886-1b63-4635-8394-b7924d9917eb")
+		(uuid "5512b726-f327-4eb0-afcd-3351f990b694")
 		(effects
 			(font
 				(size 1.143 1.143)
@@ -574,7 +574,7 @@
 	(fp_text user "c"
 		(at 2.032 -40.513 0)
 		(layer "F.SilkS")
-		(uuid "e5b1f24a-fd39-4254-89be-a24ab8f0201d")
+		(uuid "20ad80a2-6d52-4ad5-9f2c-82f532e5195b")
 		(effects
 			(font
 				(size 1.143 1.143)
@@ -586,7 +586,7 @@
 	(fp_text user " c "
 		(at 2.159 41.656 0)
 		(layer "F.SilkS")
-		(uuid "8d629026-a50b-4017-8b9c-a46514940e2f")
+		(uuid "096dd167-49fe-4a00-b93a-dd6444f5d25a")
 		(effects
 			(font
 				(size 1.143 1.143)
@@ -600,14 +600,14 @@
 		(size 3.1496 3.1496)
 		(drill 2.794)
 		(layers "*.Cu" "*.Mask")
-		(uuid "ce426fbe-f7df-448b-b639-d67929d78c6d")
+		(uuid "f5b62158-1518-4852-b60e-91ef0e29f5ea")
 	)
 	(pad "" np_thru_hole circle
 		(at -0.3048 44.9999)
 		(size 3.1496 3.1496)
 		(drill 2.794)
 		(layers "*.Cu" "*.Mask")
-		(uuid "f6a16e9f-9548-4620-b35d-693beb4c58f8")
+		(uuid "050436fa-c516-4464-b67d-4fea944a504e")
 	)
 	(pad "A1" thru_hole roundrect
 		(at -2.54 -39.37)
@@ -620,7 +620,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "1c2736a1-2de3-4ecb-b34f-ed44899ac4fa")
+		(uuid "2f5473ef-39c0-4ec2-b7e2-a8b229368977")
 	)
 	(pad "A2" thru_hole roundrect
 		(at -2.54 -36.83)
@@ -633,7 +633,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "3bc6abde-15cd-4f18-b4e4-e4d5ac23517a")
+		(uuid "80e393f8-a14f-47b7-a766-e51b5027a59b")
 	)
 	(pad "A3" thru_hole roundrect
 		(at -2.54 -34.29)
@@ -646,7 +646,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "b3734475-bbe3-4404-848b-5e9377657e8a")
+		(uuid "57a93dc6-7e5a-43b3-b3c6-d2d3714f9ce2")
 	)
 	(pad "A4" thru_hole roundrect
 		(at -2.54 -31.75)
@@ -659,7 +659,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "69b29ee3-b087-4b7d-9371-a4c5c24e80ba")
+		(uuid "e250e9b6-1f83-475b-934b-60cc52907755")
 	)
 	(pad "A5" thru_hole roundrect
 		(at -2.54 -29.21)
@@ -672,7 +672,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "db2be82f-31cb-47ea-9f27-bbf75ea108d4")
+		(uuid "a8dece65-c8c9-467d-9368-f1210f8bc9ed")
 	)
 	(pad "A6" thru_hole roundrect
 		(at -2.54 -26.67)
@@ -685,7 +685,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "69a2dfaa-6b01-4d2f-8200-797cf0808346")
+		(uuid "17a4e90e-0f26-4f14-b795-84e668c282bc")
 	)
 	(pad "A7" thru_hole roundrect
 		(at -2.54 -24.13)
@@ -698,7 +698,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "533079a7-20bc-45a4-b4b4-f377a5fa9bcd")
+		(uuid "9a06a5ab-2a5a-4d94-8fc4-469047a7ea61")
 	)
 	(pad "A8" thru_hole roundrect
 		(at -2.54 -21.59)
@@ -711,7 +711,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "cbc23f74-2435-4f80-a53a-b5ec13bfc173")
+		(uuid "78a00420-ac16-4b7b-9fbc-688d547967d2")
 	)
 	(pad "A9" thru_hole roundrect
 		(at -2.54 -19.05)
@@ -724,7 +724,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "f2064529-5e82-43af-817f-62026433e3fb")
+		(uuid "911db0fc-2cee-45b1-887b-95862612a9bd")
 	)
 	(pad "A10" thru_hole roundrect
 		(at -2.54 -16.51)
@@ -737,7 +737,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "fd49dace-bbfd-4f50-a5f1-00b411935821")
+		(uuid "c421757a-5656-4baa-8655-968f5a48f61f")
 	)
 	(pad "A11" thru_hole roundrect
 		(at -2.54 -13.97)
@@ -750,7 +750,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "1e378ba9-7386-44b9-a495-be6230bf47e6")
+		(uuid "bd8f5031-9a70-41d4-91d0-64f94316b3a5")
 	)
 	(pad "A12" thru_hole roundrect
 		(at -2.54 -11.43)
@@ -763,7 +763,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "73359752-8264-4b4e-875f-3026996ad180")
+		(uuid "26d73131-ee23-4c0a-a78d-87ac18181203")
 	)
 	(pad "A13" thru_hole roundrect
 		(at -2.54 -8.89)
@@ -776,7 +776,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "665148d7-403b-46f4-8a39-0798059282bc")
+		(uuid "fdf42fca-f65f-4a8e-a7f8-5bfaaa569e58")
 	)
 	(pad "A14" thru_hole roundrect
 		(at -2.54 -6.35)
@@ -789,7 +789,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "f89b042d-56c4-4c83-91b0-81857fe1ef8b")
+		(uuid "5584c303-7a37-42e5-ab91-eb868880d351")
 	)
 	(pad "A15" thru_hole roundrect
 		(at -2.54 -3.81)
@@ -802,7 +802,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "8bc05a6c-b30e-4a47-bc9c-2ebded28bf78")
+		(uuid "2d21871c-baa6-447b-966f-d6ccae39204d")
 	)
 	(pad "A16" thru_hole roundrect
 		(at -2.54 -1.27)
@@ -815,7 +815,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "6a0573ec-1ba7-4a78-a8c0-6900de27b075")
+		(uuid "c7ec9cba-ade4-40f5-862e-70f78699b458")
 	)
 	(pad "A17" thru_hole roundrect
 		(at -2.54 1.27)
@@ -828,7 +828,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "c13eef07-eb58-416e-898b-5c0e4d81b324")
+		(uuid "ebffe0a6-ad22-4451-b471-f3123bc1b500")
 	)
 	(pad "A18" thru_hole roundrect
 		(at -2.54 3.81)
@@ -841,7 +841,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "7d949b23-53ec-4fa9-9d99-b7f0ca198e87")
+		(uuid "03b05d00-48da-4a37-9c16-1729a10ee84c")
 	)
 	(pad "A19" thru_hole roundrect
 		(at -2.54 6.35)
@@ -854,7 +854,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "5cbc5279-4df7-47b2-9736-7771443f9e19")
+		(uuid "87c4ff7c-7e17-4aaa-bbe0-099ed3706208")
 	)
 	(pad "A20" thru_hole roundrect
 		(at -2.54 8.89)
@@ -867,7 +867,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "6d30c472-98c7-41ee-8088-3cb4b54b974e")
+		(uuid "e1fd69c7-b9a9-4eef-ab1e-f228abd29318")
 	)
 	(pad "A21" thru_hole roundrect
 		(at -2.54 11.43)
@@ -880,7 +880,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "6f34cfc0-1222-4618-b5ef-57535e18fae9")
+		(uuid "5e618e09-01c9-478e-8819-379843e29f82")
 	)
 	(pad "A22" thru_hole roundrect
 		(at -2.54 13.97)
@@ -893,7 +893,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "9dae5539-95ce-4672-af2a-3aa4ea3ac970")
+		(uuid "d7845468-d441-49f4-a54d-706aab39bdd2")
 	)
 	(pad "A23" thru_hole roundrect
 		(at -2.54 16.51)
@@ -906,7 +906,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "c482de37-f904-43e9-9965-6facf43fa000")
+		(uuid "b1db2cd1-b2a1-46d6-8b30-6cde1733baa4")
 	)
 	(pad "A24" thru_hole roundrect
 		(at -2.54 19.05)
@@ -919,7 +919,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "56aecc9a-d040-4430-ba20-cefdc77328bc")
+		(uuid "72372422-4b51-433d-8f85-286ade3c8e8e")
 	)
 	(pad "A25" thru_hole roundrect
 		(at -2.54 21.59)
@@ -932,7 +932,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "4ed7c7e1-7d26-4aa7-ac1c-f2fbc769ab17")
+		(uuid "02d37437-c9a1-4373-89f7-4f50f12329a3")
 	)
 	(pad "A26" thru_hole roundrect
 		(at -2.54 24.13)
@@ -945,7 +945,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "55955b24-6843-45d2-ad89-1d01750a1741")
+		(uuid "9395fdd8-c270-452c-9de7-e76e68bedb7d")
 	)
 	(pad "A27" thru_hole roundrect
 		(at -2.54 26.67)
@@ -958,7 +958,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "56e97a12-256a-4e6a-a4ed-e927a9e52ae8")
+		(uuid "10c14441-596a-4bdb-a60d-ce8b6ba1203b")
 	)
 	(pad "A28" thru_hole roundrect
 		(at -2.54 29.21)
@@ -971,7 +971,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "7c4777e1-b2db-40ed-88c6-0e3da9283026")
+		(uuid "885eec86-c3a8-4f5b-884b-419a23dbc51c")
 	)
 	(pad "A29" thru_hole roundrect
 		(at -2.54 31.75)
@@ -984,7 +984,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "ef24a24d-db56-4d38-bc37-f8fad96ab8e6")
+		(uuid "9e85b441-32a2-442f-bc4e-c10afc03f829")
 	)
 	(pad "A30" thru_hole roundrect
 		(at -2.54 34.29)
@@ -997,7 +997,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "1dfc07dd-71b1-4404-b6ca-3a864a68f2bb")
+		(uuid "2d053334-24a1-4f33-abc0-befb09f08c9d")
 	)
 	(pad "A31" thru_hole roundrect
 		(at -2.54 36.83)
@@ -1010,7 +1010,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "0b5d61af-9185-488f-bfbe-5aac7a174bf1")
+		(uuid "81405070-6342-48e0-b924-4315e45be290")
 	)
 	(pad "A32" thru_hole roundrect
 		(at -2.54 39.37)
@@ -1023,7 +1023,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "9d58bfa6-9e74-4c4a-9733-7d2cf401eeee")
+		(uuid "0051126b-76cd-44ca-a7cb-17b6e1f96d10")
 	)
 	(pad "B1" thru_hole roundrect
 		(at 0 -39.37)
@@ -1036,7 +1036,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "9294ea8c-0b99-4712-907d-faf195318365")
+		(uuid "d6309d57-41e4-4168-8c3b-6e13e1fc6f4e")
 	)
 	(pad "B2" thru_hole roundrect
 		(at 0 -36.83)
@@ -1049,7 +1049,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "79780f92-0887-4c64-bbfe-fc9e5e4ccafa")
+		(uuid "fec2af23-405d-41aa-8236-52cc9e5c168c")
 	)
 	(pad "B3" thru_hole roundrect
 		(at 0 -34.29)
@@ -1062,7 +1062,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "a3a68ed6-a89e-4e05-8720-b3e1cc454048")
+		(uuid "b652ca31-02d1-48d6-96a7-ef6c87e0a962")
 	)
 	(pad "B4" thru_hole roundrect
 		(at 0 -31.75)
@@ -1075,7 +1075,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "39dc18c6-2759-47a8-b281-82fdf896e478")
+		(uuid "c14d0df7-13dd-448c-be34-917ec7c24121")
 	)
 	(pad "B5" thru_hole roundrect
 		(at 0 -29.21)
@@ -1088,7 +1088,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "53148cc9-23bc-4e50-b1fc-f892d612e5da")
+		(uuid "a76b14ff-7574-431f-b291-201ad71f83f8")
 	)
 	(pad "B6" thru_hole roundrect
 		(at 0 -26.67)
@@ -1101,7 +1101,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "4253ea7f-08f7-4f66-a517-586f8febda9e")
+		(uuid "6f7e0638-505f-4c6c-9fbc-dd459525e760")
 	)
 	(pad "B7" thru_hole roundrect
 		(at 0 -24.13)
@@ -1114,7 +1114,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "8ed1ba00-dffb-47b0-a1fe-b52db19c9128")
+		(uuid "654bcaea-c356-4dd4-ac3c-1e66943580cc")
 	)
 	(pad "B8" thru_hole roundrect
 		(at 0 -21.59)
@@ -1127,7 +1127,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "1df3f86e-2d96-4c3e-bab4-0c1aff4c836b")
+		(uuid "25c134b4-8cbb-4359-b676-751bd376f749")
 	)
 	(pad "B9" thru_hole roundrect
 		(at 0 -19.05)
@@ -1140,7 +1140,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "7480a397-123c-4971-a57c-059ddb4f5ff7")
+		(uuid "daf2828b-5485-4823-b50c-ef2343aed0cd")
 	)
 	(pad "B10" thru_hole roundrect
 		(at 0 -16.51)
@@ -1153,7 +1153,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "0cf18c84-2a1d-4e3f-b25a-a8d411bff81b")
+		(uuid "a9de9681-5604-4d77-ac3b-67f9d114eb2e")
 	)
 	(pad "B11" thru_hole roundrect
 		(at 0 -13.97)
@@ -1166,7 +1166,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "5057a0b5-46ae-42c2-acd8-3fe1b51b0ee4")
+		(uuid "6128d3c9-52ea-4fe0-bd25-466ddca9a10d")
 	)
 	(pad "B12" thru_hole roundrect
 		(at 0 -11.43)
@@ -1179,7 +1179,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "02be81db-a436-476b-93d3-8312a8bbf99d")
+		(uuid "08fe7ca7-83f0-4cf3-a479-4ac85581d5c6")
 	)
 	(pad "B13" thru_hole roundrect
 		(at 0 -8.89)
@@ -1192,7 +1192,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "49fe6857-3ead-441f-bd7d-826212b5313b")
+		(uuid "4b2bebfc-93c0-4386-a0e9-92ac8f951c7a")
 	)
 	(pad "B14" thru_hole roundrect
 		(at 0 -6.35)
@@ -1205,7 +1205,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "dc1213d4-820e-4fa4-9762-1536ee5ba85a")
+		(uuid "66690434-745e-492c-ad02-a71d415594ec")
 	)
 	(pad "B15" thru_hole roundrect
 		(at 0 -3.81)
@@ -1218,7 +1218,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "cc9af25d-7a61-4250-9367-a7d585c04faf")
+		(uuid "cad7c603-b21e-45d8-a592-27abc95dddc2")
 	)
 	(pad "B16" thru_hole roundrect
 		(at 0 -1.27)
@@ -1231,7 +1231,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "a66da032-c965-4dc6-8888-f6ca516e3e41")
+		(uuid "fbe2d4b2-a234-4d5c-af7d-85c71ad6e61b")
 	)
 	(pad "B17" thru_hole roundrect
 		(at 0 1.27)
@@ -1244,7 +1244,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "569d13b9-a3f1-4049-a3d2-9ae84245fe34")
+		(uuid "f715d583-0914-4572-b9c9-eb6b243b4809")
 	)
 	(pad "B18" thru_hole roundrect
 		(at 0 3.81)
@@ -1257,7 +1257,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "174ed330-263b-488c-8c8b-0c43e8f7b022")
+		(uuid "dd6601a2-a537-42c7-8243-3d1726a33fa1")
 	)
 	(pad "B19" thru_hole roundrect
 		(at 0 6.35)
@@ -1270,7 +1270,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "fd2e3af5-edbe-4a38-9fed-3249f66cf5bc")
+		(uuid "c4782727-b784-4e48-bd15-52db9c965e19")
 	)
 	(pad "B20" thru_hole roundrect
 		(at 0 8.89)
@@ -1283,7 +1283,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "dd11ab09-0a2c-4a97-9893-6bbbb25ef7a6")
+		(uuid "2e123598-7231-4b32-aa92-367f2de044f8")
 	)
 	(pad "B21" thru_hole roundrect
 		(at 0 11.43)
@@ -1296,7 +1296,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "ac21713c-77c6-44ce-9f0f-238757300bcf")
+		(uuid "bcfdf7b0-b241-4b95-bec9-c7694ddd7772")
 	)
 	(pad "B22" thru_hole roundrect
 		(at 0 13.97)
@@ -1309,7 +1309,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "486a4b68-d3ef-4ea7-bfc1-0e39849c4e1d")
+		(uuid "6a4eb8c2-0865-473a-9f36-e645b25ef42b")
 	)
 	(pad "B23" thru_hole roundrect
 		(at 0 16.51)
@@ -1322,7 +1322,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "2a3979b9-686e-40e1-9d6a-67a7d09c2e25")
+		(uuid "2588690b-56dc-4ab2-8926-b077313f459e")
 	)
 	(pad "B24" thru_hole roundrect
 		(at 0 19.05)
@@ -1335,7 +1335,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "9d9149aa-9bce-44b8-b2ef-87268f786038")
+		(uuid "6a781b27-ce78-4396-b769-b13745fe1e5a")
 	)
 	(pad "B25" thru_hole roundrect
 		(at 0 21.59)
@@ -1348,7 +1348,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "4fe42e70-71cd-402b-8f53-4886f0a7bc81")
+		(uuid "8e2fa7cb-ed3c-48d0-a0f1-d004a4825498")
 	)
 	(pad "B26" thru_hole roundrect
 		(at 0 24.13)
@@ -1361,7 +1361,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "dd989735-b123-41be-8510-a7af7fb3db75")
+		(uuid "c41a8df4-8822-418f-b614-4a9aad265182")
 	)
 	(pad "B27" thru_hole roundrect
 		(at 0 26.67)
@@ -1374,7 +1374,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "0f7facb1-6b1c-48fd-9d22-f68723a61364")
+		(uuid "bfeb92c3-d14e-45eb-b223-6e3a37f54ab0")
 	)
 	(pad "B28" thru_hole roundrect
 		(at 0 29.21)
@@ -1387,7 +1387,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "e50006eb-08e5-4569-b765-8c1095eb8d84")
+		(uuid "7d368caf-f8c4-499c-be40-77f1227b112b")
 	)
 	(pad "B29" thru_hole roundrect
 		(at 0 31.75)
@@ -1400,7 +1400,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "b0500abf-03f0-4141-8aaa-3fea3fcc3ad9")
+		(uuid "8a87e758-e184-4556-b27a-909465a90a83")
 	)
 	(pad "B30" thru_hole roundrect
 		(at 0 34.29)
@@ -1413,7 +1413,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "ef387282-a664-4149-b4c8-7086d1ef60cf")
+		(uuid "e3a831f4-bf50-4e24-98d2-d1493a3c20c1")
 	)
 	(pad "B31" thru_hole roundrect
 		(at 0 36.83)
@@ -1426,7 +1426,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "bb8d62cd-2b9c-4c1c-9000-c1d8aaf2cc92")
+		(uuid "721c664b-fc04-4feb-bef8-cd832140f15a")
 	)
 	(pad "B32" thru_hole roundrect
 		(at 0 39.37)
@@ -1439,7 +1439,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "72c4488c-36b4-4266-a798-5fd14f4830a1")
+		(uuid "813fbd0f-d398-4b7b-b5c9-8ff1bf374ca3")
 	)
 	(pad "C1" thru_hole roundrect
 		(at 2.54 -39.37)
@@ -1452,7 +1452,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "01efc791-53ef-425f-a17a-b619b1e96487")
+		(uuid "33859130-279f-443c-b1c8-861b6f0449fe")
 	)
 	(pad "C2" thru_hole roundrect
 		(at 2.54 -36.83)
@@ -1465,7 +1465,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "04b6e922-006e-4922-bac1-45e8cbeb43c7")
+		(uuid "4ce1b555-25db-415f-9d7a-80cd0badb42f")
 	)
 	(pad "C3" thru_hole roundrect
 		(at 2.54 -34.29)
@@ -1478,7 +1478,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "76320b5c-3a14-4dec-8f95-a06bb2fca97f")
+		(uuid "26a6510f-715e-4480-a7e6-531e1a7a323d")
 	)
 	(pad "C4" thru_hole roundrect
 		(at 2.54 -31.75)
@@ -1491,7 +1491,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "eb18cc01-2be4-4e40-88e3-6e01d5b40c17")
+		(uuid "420c9e0b-3fc5-4920-9d0f-05bfb9403996")
 	)
 	(pad "C5" thru_hole roundrect
 		(at 2.54 -29.21)
@@ -1504,7 +1504,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "668c8085-25ef-4eac-92b1-1686a0a74d0c")
+		(uuid "6c2b62a5-da6b-484f-9904-628027500f45")
 	)
 	(pad "C6" thru_hole roundrect
 		(at 2.54 -26.67)
@@ -1517,7 +1517,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "d2eab7e0-fc6f-49de-ae74-690f7c7a72b9")
+		(uuid "568ae72b-8b6a-46d8-b055-5ba780d7663b")
 	)
 	(pad "C7" thru_hole roundrect
 		(at 2.54 -24.13)
@@ -1530,7 +1530,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "e828525b-f113-4e16-ac94-7f21c1f687b9")
+		(uuid "2fe5eb7b-41bc-4bfe-88d1-173d537fd24c")
 	)
 	(pad "C8" thru_hole roundrect
 		(at 2.54 -21.59)
@@ -1543,7 +1543,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "4b7d4f52-ccc4-4d96-9517-b455660c08ca")
+		(uuid "40c1b6c9-f39d-403a-b2fe-61a35570b463")
 	)
 	(pad "C9" thru_hole roundrect
 		(at 2.54 -19.05)
@@ -1556,7 +1556,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "6c978a43-1364-4b1a-bd37-902092224c1d")
+		(uuid "b2fa169b-90fc-4ae9-a741-0b493aae2563")
 	)
 	(pad "C10" thru_hole roundrect
 		(at 2.54 -16.51)
@@ -1569,7 +1569,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "8ca2c59d-cf32-4445-9df1-08939bf8e58c")
+		(uuid "44a7ac2a-6161-45eb-9365-f451de843dad")
 	)
 	(pad "C11" thru_hole roundrect
 		(at 2.54 -13.97)
@@ -1582,7 +1582,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "0b7986b0-b234-4e7e-af5e-97e47ec2fc04")
+		(uuid "55299e84-7943-44ba-9d22-0e887795d98f")
 	)
 	(pad "C12" thru_hole roundrect
 		(at 2.54 -11.43)
@@ -1595,7 +1595,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "06c81ae0-86fe-4f82-90f1-0fdcc4865073")
+		(uuid "7b1f2ba5-fff7-4187-baf7-13d92928ab6e")
 	)
 	(pad "C13" thru_hole roundrect
 		(at 2.54 -8.89)
@@ -1608,7 +1608,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "ed003fd9-09f3-4467-a4bb-835c74c9eb84")
+		(uuid "fd70cd1f-d9a8-4e9b-b8bd-fbb7dd93eea8")
 	)
 	(pad "C14" thru_hole roundrect
 		(at 2.54 -6.35)
@@ -1621,7 +1621,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "f63be2dc-3939-4c55-8d8c-1b368b1cef54")
+		(uuid "5af6bad3-978f-4e56-9cff-9e3c890becbd")
 	)
 	(pad "C15" thru_hole roundrect
 		(at 2.54 -3.81)
@@ -1634,7 +1634,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "10286164-6424-49ff-87d2-22c56c5af730")
+		(uuid "96e80a5a-40f5-4055-8933-70cfe3c23574")
 	)
 	(pad "C16" thru_hole roundrect
 		(at 2.54 -1.27)
@@ -1647,7 +1647,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "dcbb2a2c-0d80-446b-97e6-242dc538693c")
+		(uuid "4b30f231-20f6-4f97-a5cf-7f2c8381d558")
 	)
 	(pad "C17" thru_hole roundrect
 		(at 2.54 1.27)
@@ -1660,7 +1660,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "ff6a1b35-1c85-4f70-9c79-c6560db34e30")
+		(uuid "7e4d31c9-3b9b-48ad-9f26-c4a7b3503bec")
 	)
 	(pad "C18" thru_hole roundrect
 		(at 2.54 3.81)
@@ -1673,7 +1673,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "ffb03191-eada-4561-bb9a-7d7fbd2aefeb")
+		(uuid "bfd45eb4-1f5f-465f-ab58-52277226d051")
 	)
 	(pad "C19" thru_hole roundrect
 		(at 2.54 6.35)
@@ -1686,7 +1686,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "6869001f-03b2-42e5-bb83-f9491b0c5a2d")
+		(uuid "e608f0e2-4fe3-4453-9c10-722dd6b0fc71")
 	)
 	(pad "C20" thru_hole roundrect
 		(at 2.54 8.89)
@@ -1699,7 +1699,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "b360ad09-0181-4930-963e-50b5830d6aab")
+		(uuid "e14bba60-07cc-45dc-9dc5-c82be5039542")
 	)
 	(pad "C21" thru_hole roundrect
 		(at 2.54 11.43)
@@ -1712,7 +1712,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "911cab24-3a73-45a9-890d-ce7fbdd7c619")
+		(uuid "5d36b1ee-6909-4b9c-a7d4-694ca26d5196")
 	)
 	(pad "C22" thru_hole roundrect
 		(at 2.54 13.97)
@@ -1725,7 +1725,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "cbf56b5c-ee83-4809-a300-b893354144f8")
+		(uuid "6a696535-8eef-4695-9b38-0f3ccf680372")
 	)
 	(pad "C23" thru_hole roundrect
 		(at 2.54 16.51)
@@ -1738,7 +1738,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "d181eb40-0c50-421b-9343-3de81f1985a9")
+		(uuid "2b27a1ee-f424-4d89-91d4-16a28b483a57")
 	)
 	(pad "C24" thru_hole roundrect
 		(at 2.54 19.05)
@@ -1751,7 +1751,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "e0606dd4-7487-47a3-8856-7142fdf53b2c")
+		(uuid "fad688d0-b162-478c-a174-c2b8e9361041")
 	)
 	(pad "C25" thru_hole roundrect
 		(at 2.54 21.59)
@@ -1764,7 +1764,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "ae976d75-662f-4e5e-9e20-35b51ac65c59")
+		(uuid "a7e950f0-312b-4b35-b65a-c5b81bf73e9e")
 	)
 	(pad "C26" thru_hole roundrect
 		(at 2.54 24.13)
@@ -1777,7 +1777,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "4bcfddb9-57d5-43d8-8c37-f312e1043843")
+		(uuid "19203d44-b29c-4f0f-a3e6-3009e646ea31")
 	)
 	(pad "C27" thru_hole roundrect
 		(at 2.54 26.67)
@@ -1790,7 +1790,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "dd38d846-52e6-47e6-b87f-f5916e229904")
+		(uuid "23661251-4215-4278-96d9-5b312dc9c3e9")
 	)
 	(pad "C28" thru_hole roundrect
 		(at 2.54 29.21)
@@ -1803,7 +1803,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "1daa9573-b42b-4b19-87a5-fcd3ca491029")
+		(uuid "514a0c58-30c8-43be-89ec-e92fbd6c895d")
 	)
 	(pad "C29" thru_hole roundrect
 		(at 2.54 31.75)
@@ -1816,7 +1816,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "c6b29247-b6e3-4a44-a229-14893d193af4")
+		(uuid "47cc0aab-4e08-42a2-addc-d489ad558fb2")
 	)
 	(pad "C30" thru_hole roundrect
 		(at 2.54 34.29)
@@ -1829,7 +1829,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "1152c80b-2488-44e6-822e-15e00f249419")
+		(uuid "e4f82e62-1d06-4275-8584-bf81ecb386e9")
 	)
 	(pad "C31" thru_hole roundrect
 		(at 2.54 36.83)
@@ -1842,7 +1842,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "9939eed2-aef7-4fd9-ba48-d9db41e83b0b")
+		(uuid "12ed4034-c158-480a-a7e3-8bc32e983ac9")
 	)
 	(pad "C32" thru_hole roundrect
 		(at 2.54 39.37)
@@ -1855,11 +1855,11 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "c59c0093-94c0-4d90-bbc6-d48b68657dc2")
+		(uuid "80f97930-2fed-499a-98a7-274c6aa35a29")
 	)
 	(zone
 		(layers "F.Cu" "B.Cu")
-		(uuid "3755f564-1cea-47a0-ab29-b18839a502ab")
+		(uuid "acb088bf-c19a-4492-810c-a11a1e69ae96")
 		(hatch edge 0.5)
 		(connect_pads
 			(clearance 0)
@@ -1883,40 +1883,39 @@
 		)
 		(polygon
 			(pts
-				(xy 186.8852 23.1151) (xy 186.865236 22.759613) (xy 186.805596 22.408596) (xy 186.70703 22.066464)
-				(xy 186.570776 21.737519) (xy 186.398549 21.425898) (xy 186.192515 21.13552) (xy 185.955264 20.870036)
-				(xy 185.68978 20.632785) (xy 185.399402 20.426751) (xy 185.087781 20.254524) (xy 184.758836 20.11827)
-				(xy 184.416704 20.019704) (xy 184.065687 19.960064) (xy 183.7102 19.9401) (xy 183.354713 19.960064)
-				(xy 183.003696 20.019704) (xy 182.661564 20.11827) (xy 182.332619 20.254524) (xy 182.020998 20.426751)
-				(xy 181.73062 20.632785) (xy 181.465136 20.870036) (xy 181.227885 21.13552) (xy 181.021851 21.425898)
-				(xy 180.849624 21.737519) (xy 180.71337 22.066464) (xy 180.614804 22.408596) (xy 180.555164 22.759613)
-				(xy 180.5352 23.1151) (xy 180.555164 23.470587) (xy 180.614804 23.821604) (xy 180.71337 24.163736)
-				(xy 180.849624 24.492681) (xy 181.021851 24.804302) (xy 181.227885 25.09468) (xy 181.465136 25.360164)
-				(xy 181.73062 25.597415) (xy 182.020998 25.803449) (xy 182.332619 25.975676) (xy 182.661564 26.11193)
-				(xy 183.003696 26.210496) (xy 183.354713 26.270136) (xy 183.7102 26.2901) (xy 184.065687 26.270136)
-				(xy 184.416704 26.210496) (xy 184.758836 26.11193) (xy 185.087781 25.975676) (xy 185.399402 25.803449)
-				(xy 185.68978 25.597415) (xy 185.955264 25.360164) (xy 186.192515 25.09468) (xy 186.398549 24.804302)
-				(xy 186.570776 24.492681) (xy 186.70703 24.163736) (xy 186.805596 23.821604) (xy 186.865236 23.470587)
+				(xy 70.0452 23.1151) (xy 70.025236 22.759613) (xy 69.965596 22.408596) (xy 69.86703 22.066464) (xy 69.730776 21.737519)
+				(xy 69.558549 21.425898) (xy 69.352515 21.13552) (xy 69.115264 20.870036) (xy 68.84978 20.632785)
+				(xy 68.559402 20.426751) (xy 68.247781 20.254524) (xy 67.918836 20.11827) (xy 67.576704 20.019704)
+				(xy 67.225687 19.960064) (xy 66.8702 19.9401) (xy 66.514713 19.960064) (xy 66.163696 20.019704)
+				(xy 65.821564 20.11827) (xy 65.492619 20.254524) (xy 65.180998 20.426751) (xy 64.89062 20.632785)
+				(xy 64.625136 20.870036) (xy 64.387885 21.13552) (xy 64.181851 21.425898) (xy 64.009624 21.737519)
+				(xy 63.87337 22.066464) (xy 63.774804 22.408596) (xy 63.715164 22.759613) (xy 63.6952 23.1151) (xy 63.715164 23.470587)
+				(xy 63.774804 23.821604) (xy 63.87337 24.163736) (xy 64.009624 24.492681) (xy 64.181851 24.804302)
+				(xy 64.387885 25.09468) (xy 64.625136 25.360164) (xy 64.89062 25.597415) (xy 65.180998 25.803449)
+				(xy 65.492619 25.975676) (xy 65.821564 26.11193) (xy 66.163696 26.210496) (xy 66.514713 26.270136)
+				(xy 66.8702 26.2901) (xy 67.225687 26.270136) (xy 67.576704 26.210496) (xy 67.918836 26.11193) (xy 68.247781 25.975676)
+				(xy 68.559402 25.803449) (xy 68.84978 25.597415) (xy 69.115264 25.360164) (xy 69.352515 25.09468)
+				(xy 69.558549 24.804302) (xy 69.730776 24.492681) (xy 69.86703 24.163736) (xy 69.965596 23.821604)
+				(xy 70.025236 23.470587)
 			)
 		)
 		(polygon
 			(pts
-				(xy 185.1072 23.1151) (xy 185.087105 22.879006) (xy 185.0274 22.649704) (xy 184.929801 22.43379)
-				(xy 184.797116 22.237477) (xy 184.633163 22.066411) (xy 184.442657 21.925514) (xy 184.23108 21.818839)
-				(xy 184.004519 21.749455) (xy 183.76949 21.719359) (xy 183.532756 21.729415) (xy 183.301127 21.779335)
-				(xy 183.081265 21.867683) (xy 182.879497 21.991916) (xy 182.701627 22.148461) (xy 182.552772 22.332815)
-				(xy 182.437214 22.539674) (xy 182.358277 22.763087) (xy 182.318233 22.996626) (xy 182.318233 23.233574)
-				(xy 182.358277 23.467113) (xy 182.437214 23.690526) (xy 182.552772 23.897385) (xy 182.701627 24.081739)
-				(xy 182.879497 24.238284) (xy 183.081265 24.362517) (xy 183.301127 24.450865) (xy 183.532756 24.500785)
-				(xy 183.76949 24.510841) (xy 184.004519 24.480745) (xy 184.23108 24.411361) (xy 184.442657 24.304686)
-				(xy 184.633163 24.163789) (xy 184.797116 23.992723) (xy 184.929801 23.79641) (xy 185.0274 23.580496)
-				(xy 185.087105 23.351194)
+				(xy 68.2672 23.1151) (xy 68.247105 22.879006) (xy 68.1874 22.649704) (xy 68.089801 22.43379) (xy 67.957116 22.237477)
+				(xy 67.793163 22.066411) (xy 67.602657 21.925514) (xy 67.39108 21.818839) (xy 67.164519 21.749455)
+				(xy 66.92949 21.719359) (xy 66.692756 21.729415) (xy 66.461127 21.779335) (xy 66.241265 21.867683)
+				(xy 66.039497 21.991916) (xy 65.861627 22.148461) (xy 65.712772 22.332815) (xy 65.597214 22.539674)
+				(xy 65.518277 22.763087) (xy 65.478233 22.996626) (xy 65.478233 23.233574) (xy 65.518277 23.467113)
+				(xy 65.597214 23.690526) (xy 65.712772 23.897385) (xy 65.861627 24.081739) (xy 66.039497 24.238284)
+				(xy 66.241265 24.362517) (xy 66.461127 24.450865) (xy 66.692756 24.500785) (xy 66.92949 24.510841)
+				(xy 67.164519 24.480745) (xy 67.39108 24.411361) (xy 67.602657 24.304686) (xy 67.793163 24.163789)
+				(xy 67.957116 23.992723) (xy 68.089801 23.79641) (xy 68.1874 23.580496) (xy 68.247105 23.351194)
 			)
 		)
 	)
 	(zone
 		(layers "F.Cu" "B.Cu")
-		(uuid "64bd29dc-9117-4482-959a-2070b7845be8")
+		(uuid "ac2f110d-a66e-477a-b39c-ea21950b2b8c")
 		(hatch edge 0.5)
 		(connect_pads
 			(clearance 0)
@@ -1940,40 +1939,40 @@
 		)
 		(polygon
 			(pts
-				(xy 186.8852 113.1149) (xy 186.865236 112.759413) (xy 186.805596 112.408396) (xy 186.70703 112.066264)
-				(xy 186.570776 111.737319) (xy 186.398549 111.425698) (xy 186.192515 111.13532) (xy 185.955264 110.869836)
-				(xy 185.68978 110.632585) (xy 185.399402 110.426551) (xy 185.087781 110.254324) (xy 184.758836 110.11807)
-				(xy 184.416704 110.019504) (xy 184.065687 109.959864) (xy 183.7102 109.9399) (xy 183.354713 109.959864)
-				(xy 183.003696 110.019504) (xy 182.661564 110.11807) (xy 182.332619 110.254324) (xy 182.020998 110.426551)
-				(xy 181.73062 110.632585) (xy 181.465136 110.869836) (xy 181.227885 111.13532) (xy 181.021851 111.425698)
-				(xy 180.849624 111.737319) (xy 180.71337 112.066264) (xy 180.614804 112.408396) (xy 180.555164 112.759413)
-				(xy 180.5352 113.1149) (xy 180.555164 113.470387) (xy 180.614804 113.821404) (xy 180.71337 114.163536)
-				(xy 180.849624 114.492481) (xy 181.021851 114.804102) (xy 181.227885 115.09448) (xy 181.465136 115.359964)
-				(xy 181.73062 115.597215) (xy 182.020998 115.803249) (xy 182.332619 115.975476) (xy 182.661564 116.11173)
-				(xy 183.003696 116.210296) (xy 183.354713 116.269936) (xy 183.7102 116.2899) (xy 184.065687 116.269936)
-				(xy 184.416704 116.210296) (xy 184.758836 116.11173) (xy 185.087781 115.975476) (xy 185.399402 115.803249)
-				(xy 185.68978 115.597215) (xy 185.955264 115.359964) (xy 186.192515 115.09448) (xy 186.398549 114.804102)
-				(xy 186.570776 114.492481) (xy 186.70703 114.163536) (xy 186.805596 113.821404) (xy 186.865236 113.470387)
+				(xy 70.0452 113.1149) (xy 70.025236 112.759413) (xy 69.965596 112.408396) (xy 69.86703 112.066264)
+				(xy 69.730776 111.737319) (xy 69.558549 111.425698) (xy 69.352515 111.13532) (xy 69.115264 110.869836)
+				(xy 68.84978 110.632585) (xy 68.559402 110.426551) (xy 68.247781 110.254324) (xy 67.918836 110.11807)
+				(xy 67.576704 110.019504) (xy 67.225687 109.959864) (xy 66.8702 109.9399) (xy 66.514713 109.959864)
+				(xy 66.163696 110.019504) (xy 65.821564 110.11807) (xy 65.492619 110.254324) (xy 65.180998 110.426551)
+				(xy 64.89062 110.632585) (xy 64.625136 110.869836) (xy 64.387885 111.13532) (xy 64.181851 111.425698)
+				(xy 64.009624 111.737319) (xy 63.87337 112.066264) (xy 63.774804 112.408396) (xy 63.715164 112.759413)
+				(xy 63.6952 113.1149) (xy 63.715164 113.470387) (xy 63.774804 113.821404) (xy 63.87337 114.163536)
+				(xy 64.009624 114.492481) (xy 64.181851 114.804102) (xy 64.387885 115.09448) (xy 64.625136 115.359964)
+				(xy 64.89062 115.597215) (xy 65.180998 115.803249) (xy 65.492619 115.975476) (xy 65.821564 116.11173)
+				(xy 66.163696 116.210296) (xy 66.514713 116.269936) (xy 66.8702 116.2899) (xy 67.225687 116.269936)
+				(xy 67.576704 116.210296) (xy 67.918836 116.11173) (xy 68.247781 115.975476) (xy 68.559402 115.803249)
+				(xy 68.84978 115.597215) (xy 69.115264 115.359964) (xy 69.352515 115.09448) (xy 69.558549 114.804102)
+				(xy 69.730776 114.492481) (xy 69.86703 114.163536) (xy 69.965596 113.821404) (xy 70.025236 113.470387)
 			)
 		)
 		(polygon
 			(pts
-				(xy 185.1072 113.1149) (xy 185.087105 112.878806) (xy 185.0274 112.649504) (xy 184.929801 112.43359)
-				(xy 184.797116 112.237277) (xy 184.633163 112.066211) (xy 184.442657 111.925314) (xy 184.23108 111.818639)
-				(xy 184.004519 111.749255) (xy 183.76949 111.719159) (xy 183.532756 111.729215) (xy 183.301127 111.779135)
-				(xy 183.081265 111.867483) (xy 182.879497 111.991716) (xy 182.701627 112.148261) (xy 182.552772 112.332615)
-				(xy 182.437214 112.539474) (xy 182.358277 112.762887) (xy 182.318233 112.996426) (xy 182.318233 113.233374)
-				(xy 182.358277 113.466913) (xy 182.437214 113.690326) (xy 182.552772 113.897185) (xy 182.701627 114.081539)
-				(xy 182.879497 114.238084) (xy 183.081265 114.362317) (xy 183.301127 114.450665) (xy 183.532756 114.500585)
-				(xy 183.76949 114.510641) (xy 184.004519 114.480545) (xy 184.23108 114.411161) (xy 184.442657 114.304486)
-				(xy 184.633163 114.163589) (xy 184.797116 113.992523) (xy 184.929801 113.79621) (xy 185.0274 113.580296)
-				(xy 185.087105 113.350994)
+				(xy 68.2672 113.1149) (xy 68.247105 112.878806) (xy 68.1874 112.649504) (xy 68.089801 112.43359)
+				(xy 67.957116 112.237277) (xy 67.793163 112.066211) (xy 67.602657 111.925314) (xy 67.39108 111.818639)
+				(xy 67.164519 111.749255) (xy 66.92949 111.719159) (xy 66.692756 111.729215) (xy 66.461127 111.779135)
+				(xy 66.241265 111.867483) (xy 66.039497 111.991716) (xy 65.861627 112.148261) (xy 65.712772 112.332615)
+				(xy 65.597214 112.539474) (xy 65.518277 112.762887) (xy 65.478233 112.996426) (xy 65.478233 113.233374)
+				(xy 65.518277 113.466913) (xy 65.597214 113.690326) (xy 65.712772 113.897185) (xy 65.861627 114.081539)
+				(xy 66.039497 114.238084) (xy 66.241265 114.362317) (xy 66.461127 114.450665) (xy 66.692756 114.500585)
+				(xy 66.92949 114.510641) (xy 67.164519 114.480545) (xy 67.39108 114.411161) (xy 67.602657 114.304486)
+				(xy 67.793163 114.163589) (xy 67.957116 113.992523) (xy 68.089801 113.79621) (xy 68.1874 113.580296)
+				(xy 68.247105 113.350994)
 			)
 		)
 	)
 	(zone
 		(layer "B.Cu")
-		(uuid "2f0a26b5-e789-4b0f-8f2c-e3413b1d7d09")
+		(uuid "f744652a-4789-4b66-b30f-76f07adb83a9")
 		(hatch edge 0.5)
 		(connect_pads
 			(clearance 0)
@@ -1997,40 +1996,39 @@
 		)
 		(polygon
 			(pts
-				(xy 186.8852 23.1151) (xy 186.865236 22.759613) (xy 186.805596 22.408596) (xy 186.70703 22.066464)
-				(xy 186.570776 21.737519) (xy 186.398549 21.425898) (xy 186.192515 21.13552) (xy 185.955264 20.870036)
-				(xy 185.68978 20.632785) (xy 185.399402 20.426751) (xy 185.087781 20.254524) (xy 184.758836 20.11827)
-				(xy 184.416704 20.019704) (xy 184.065687 19.960064) (xy 183.7102 19.9401) (xy 183.354713 19.960064)
-				(xy 183.003696 20.019704) (xy 182.661564 20.11827) (xy 182.332619 20.254524) (xy 182.020998 20.426751)
-				(xy 181.73062 20.632785) (xy 181.465136 20.870036) (xy 181.227885 21.13552) (xy 181.021851 21.425898)
-				(xy 180.849624 21.737519) (xy 180.71337 22.066464) (xy 180.614804 22.408596) (xy 180.555164 22.759613)
-				(xy 180.5352 23.1151) (xy 180.555164 23.470587) (xy 180.614804 23.821604) (xy 180.71337 24.163736)
-				(xy 180.849624 24.492681) (xy 181.021851 24.804302) (xy 181.227885 25.09468) (xy 181.465136 25.360164)
-				(xy 181.73062 25.597415) (xy 182.020998 25.803449) (xy 182.332619 25.975676) (xy 182.661564 26.11193)
-				(xy 183.003696 26.210496) (xy 183.354713 26.270136) (xy 183.7102 26.2901) (xy 184.065687 26.270136)
-				(xy 184.416704 26.210496) (xy 184.758836 26.11193) (xy 185.087781 25.975676) (xy 185.399402 25.803449)
-				(xy 185.68978 25.597415) (xy 185.955264 25.360164) (xy 186.192515 25.09468) (xy 186.398549 24.804302)
-				(xy 186.570776 24.492681) (xy 186.70703 24.163736) (xy 186.805596 23.821604) (xy 186.865236 23.470587)
+				(xy 70.0452 23.1151) (xy 70.025236 22.759613) (xy 69.965596 22.408596) (xy 69.86703 22.066464) (xy 69.730776 21.737519)
+				(xy 69.558549 21.425898) (xy 69.352515 21.13552) (xy 69.115264 20.870036) (xy 68.84978 20.632785)
+				(xy 68.559402 20.426751) (xy 68.247781 20.254524) (xy 67.918836 20.11827) (xy 67.576704 20.019704)
+				(xy 67.225687 19.960064) (xy 66.8702 19.9401) (xy 66.514713 19.960064) (xy 66.163696 20.019704)
+				(xy 65.821564 20.11827) (xy 65.492619 20.254524) (xy 65.180998 20.426751) (xy 64.89062 20.632785)
+				(xy 64.625136 20.870036) (xy 64.387885 21.13552) (xy 64.181851 21.425898) (xy 64.009624 21.737519)
+				(xy 63.87337 22.066464) (xy 63.774804 22.408596) (xy 63.715164 22.759613) (xy 63.6952 23.1151) (xy 63.715164 23.470587)
+				(xy 63.774804 23.821604) (xy 63.87337 24.163736) (xy 64.009624 24.492681) (xy 64.181851 24.804302)
+				(xy 64.387885 25.09468) (xy 64.625136 25.360164) (xy 64.89062 25.597415) (xy 65.180998 25.803449)
+				(xy 65.492619 25.975676) (xy 65.821564 26.11193) (xy 66.163696 26.210496) (xy 66.514713 26.270136)
+				(xy 66.8702 26.2901) (xy 67.225687 26.270136) (xy 67.576704 26.210496) (xy 67.918836 26.11193) (xy 68.247781 25.975676)
+				(xy 68.559402 25.803449) (xy 68.84978 25.597415) (xy 69.115264 25.360164) (xy 69.352515 25.09468)
+				(xy 69.558549 24.804302) (xy 69.730776 24.492681) (xy 69.86703 24.163736) (xy 69.965596 23.821604)
+				(xy 70.025236 23.470587)
 			)
 		)
 		(polygon
 			(pts
-				(xy 185.1072 23.1151) (xy 185.087105 22.879006) (xy 185.0274 22.649704) (xy 184.929801 22.43379)
-				(xy 184.797116 22.237477) (xy 184.633163 22.066411) (xy 184.442657 21.925514) (xy 184.23108 21.818839)
-				(xy 184.004519 21.749455) (xy 183.76949 21.719359) (xy 183.532756 21.729415) (xy 183.301127 21.779335)
-				(xy 183.081265 21.867683) (xy 182.879497 21.991916) (xy 182.701627 22.148461) (xy 182.552772 22.332815)
-				(xy 182.437214 22.539674) (xy 182.358277 22.763087) (xy 182.318233 22.996626) (xy 182.318233 23.233574)
-				(xy 182.358277 23.467113) (xy 182.437214 23.690526) (xy 182.552772 23.897385) (xy 182.701627 24.081739)
-				(xy 182.879497 24.238284) (xy 183.081265 24.362517) (xy 183.301127 24.450865) (xy 183.532756 24.500785)
-				(xy 183.76949 24.510841) (xy 184.004519 24.480745) (xy 184.23108 24.411361) (xy 184.442657 24.304686)
-				(xy 184.633163 24.163789) (xy 184.797116 23.992723) (xy 184.929801 23.79641) (xy 185.0274 23.580496)
-				(xy 185.087105 23.351194)
+				(xy 68.2672 23.1151) (xy 68.247105 22.879006) (xy 68.1874 22.649704) (xy 68.089801 22.43379) (xy 67.957116 22.237477)
+				(xy 67.793163 22.066411) (xy 67.602657 21.925514) (xy 67.39108 21.818839) (xy 67.164519 21.749455)
+				(xy 66.92949 21.719359) (xy 66.692756 21.729415) (xy 66.461127 21.779335) (xy 66.241265 21.867683)
+				(xy 66.039497 21.991916) (xy 65.861627 22.148461) (xy 65.712772 22.332815) (xy 65.597214 22.539674)
+				(xy 65.518277 22.763087) (xy 65.478233 22.996626) (xy 65.478233 23.233574) (xy 65.518277 23.467113)
+				(xy 65.597214 23.690526) (xy 65.712772 23.897385) (xy 65.861627 24.081739) (xy 66.039497 24.238284)
+				(xy 66.241265 24.362517) (xy 66.461127 24.450865) (xy 66.692756 24.500785) (xy 66.92949 24.510841)
+				(xy 67.164519 24.480745) (xy 67.39108 24.411361) (xy 67.602657 24.304686) (xy 67.793163 24.163789)
+				(xy 67.957116 23.992723) (xy 68.089801 23.79641) (xy 68.1874 23.580496) (xy 68.247105 23.351194)
 			)
 		)
 	)
 	(zone
 		(layer "B.Cu")
-		(uuid "42d58c51-f0d9-4e91-8671-038fc061f356")
+		(uuid "13085e42-6eec-4681-babe-fd3f47086067")
 		(hatch edge 0.5)
 		(connect_pads
 			(clearance 0)
@@ -2054,34 +2052,34 @@
 		)
 		(polygon
 			(pts
-				(xy 186.8852 113.1149) (xy 186.865236 112.759413) (xy 186.805596 112.408396) (xy 186.70703 112.066264)
-				(xy 186.570776 111.737319) (xy 186.398549 111.425698) (xy 186.192515 111.13532) (xy 185.955264 110.869836)
-				(xy 185.68978 110.632585) (xy 185.399402 110.426551) (xy 185.087781 110.254324) (xy 184.758836 110.11807)
-				(xy 184.416704 110.019504) (xy 184.065687 109.959864) (xy 183.7102 109.9399) (xy 183.354713 109.959864)
-				(xy 183.003696 110.019504) (xy 182.661564 110.11807) (xy 182.332619 110.254324) (xy 182.020998 110.426551)
-				(xy 181.73062 110.632585) (xy 181.465136 110.869836) (xy 181.227885 111.13532) (xy 181.021851 111.425698)
-				(xy 180.849624 111.737319) (xy 180.71337 112.066264) (xy 180.614804 112.408396) (xy 180.555164 112.759413)
-				(xy 180.5352 113.1149) (xy 180.555164 113.470387) (xy 180.614804 113.821404) (xy 180.71337 114.163536)
-				(xy 180.849624 114.492481) (xy 181.021851 114.804102) (xy 181.227885 115.09448) (xy 181.465136 115.359964)
-				(xy 181.73062 115.597215) (xy 182.020998 115.803249) (xy 182.332619 115.975476) (xy 182.661564 116.11173)
-				(xy 183.003696 116.210296) (xy 183.354713 116.269936) (xy 183.7102 116.2899) (xy 184.065687 116.269936)
-				(xy 184.416704 116.210296) (xy 184.758836 116.11173) (xy 185.087781 115.975476) (xy 185.399402 115.803249)
-				(xy 185.68978 115.597215) (xy 185.955264 115.359964) (xy 186.192515 115.09448) (xy 186.398549 114.804102)
-				(xy 186.570776 114.492481) (xy 186.70703 114.163536) (xy 186.805596 113.821404) (xy 186.865236 113.470387)
+				(xy 70.0452 113.1149) (xy 70.025236 112.759413) (xy 69.965596 112.408396) (xy 69.86703 112.066264)
+				(xy 69.730776 111.737319) (xy 69.558549 111.425698) (xy 69.352515 111.13532) (xy 69.115264 110.869836)
+				(xy 68.84978 110.632585) (xy 68.559402 110.426551) (xy 68.247781 110.254324) (xy 67.918836 110.11807)
+				(xy 67.576704 110.019504) (xy 67.225687 109.959864) (xy 66.8702 109.9399) (xy 66.514713 109.959864)
+				(xy 66.163696 110.019504) (xy 65.821564 110.11807) (xy 65.492619 110.254324) (xy 65.180998 110.426551)
+				(xy 64.89062 110.632585) (xy 64.625136 110.869836) (xy 64.387885 111.13532) (xy 64.181851 111.425698)
+				(xy 64.009624 111.737319) (xy 63.87337 112.066264) (xy 63.774804 112.408396) (xy 63.715164 112.759413)
+				(xy 63.6952 113.1149) (xy 63.715164 113.470387) (xy 63.774804 113.821404) (xy 63.87337 114.163536)
+				(xy 64.009624 114.492481) (xy 64.181851 114.804102) (xy 64.387885 115.09448) (xy 64.625136 115.359964)
+				(xy 64.89062 115.597215) (xy 65.180998 115.803249) (xy 65.492619 115.975476) (xy 65.821564 116.11173)
+				(xy 66.163696 116.210296) (xy 66.514713 116.269936) (xy 66.8702 116.2899) (xy 67.225687 116.269936)
+				(xy 67.576704 116.210296) (xy 67.918836 116.11173) (xy 68.247781 115.975476) (xy 68.559402 115.803249)
+				(xy 68.84978 115.597215) (xy 69.115264 115.359964) (xy 69.352515 115.09448) (xy 69.558549 114.804102)
+				(xy 69.730776 114.492481) (xy 69.86703 114.163536) (xy 69.965596 113.821404) (xy 70.025236 113.470387)
 			)
 		)
 		(polygon
 			(pts
-				(xy 185.1072 113.1149) (xy 185.087105 112.878806) (xy 185.0274 112.649504) (xy 184.929801 112.43359)
-				(xy 184.797116 112.237277) (xy 184.633163 112.066211) (xy 184.442657 111.925314) (xy 184.23108 111.818639)
-				(xy 184.004519 111.749255) (xy 183.76949 111.719159) (xy 183.532756 111.729215) (xy 183.301127 111.779135)
-				(xy 183.081265 111.867483) (xy 182.879497 111.991716) (xy 182.701627 112.148261) (xy 182.552772 112.332615)
-				(xy 182.437214 112.539474) (xy 182.358277 112.762887) (xy 182.318233 112.996426) (xy 182.318233 113.233374)
-				(xy 182.358277 113.466913) (xy 182.437214 113.690326) (xy 182.552772 113.897185) (xy 182.701627 114.081539)
-				(xy 182.879497 114.238084) (xy 183.081265 114.362317) (xy 183.301127 114.450665) (xy 183.532756 114.500585)
-				(xy 183.76949 114.510641) (xy 184.004519 114.480545) (xy 184.23108 114.411161) (xy 184.442657 114.304486)
-				(xy 184.633163 114.163589) (xy 184.797116 113.992523) (xy 184.929801 113.79621) (xy 185.0274 113.580296)
-				(xy 185.087105 113.350994)
+				(xy 68.2672 113.1149) (xy 68.247105 112.878806) (xy 68.1874 112.649504) (xy 68.089801 112.43359)
+				(xy 67.957116 112.237277) (xy 67.793163 112.066211) (xy 67.602657 111.925314) (xy 67.39108 111.818639)
+				(xy 67.164519 111.749255) (xy 66.92949 111.719159) (xy 66.692756 111.729215) (xy 66.461127 111.779135)
+				(xy 66.241265 111.867483) (xy 66.039497 111.991716) (xy 65.861627 112.148261) (xy 65.712772 112.332615)
+				(xy 65.597214 112.539474) (xy 65.518277 112.762887) (xy 65.478233 112.996426) (xy 65.478233 113.233374)
+				(xy 65.518277 113.466913) (xy 65.597214 113.690326) (xy 65.712772 113.897185) (xy 65.861627 114.081539)
+				(xy 66.039497 114.238084) (xy 66.241265 114.362317) (xy 66.461127 114.450665) (xy 66.692756 114.500585)
+				(xy 66.92949 114.510641) (xy 67.164519 114.480545) (xy 67.39108 114.411161) (xy 67.602657 114.304486)
+				(xy 67.793163 114.163589) (xy 67.957116 113.992523) (xy 68.089801 113.79621) (xy 68.1874 113.580296)
+				(xy 68.247105 113.350994)
 			)
 		)
 	)

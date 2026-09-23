@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.kicad.org/erc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-09-20T21:36:28",
+    "date": "2026-09-23T17:40:20",
     "ignored_checks": [
         {
             "description": "Global label only appears once in the schematic",
@@ -37,8 +37,8 @@
                         {
                             "description": "Symbol IC11 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.49567,
-                                "y": 1.62342
+                                "x": 1.30847,
+                                "y": 2.42352
                             },
                             "uuid": "8e411ac3-fe8d-1a6a-ca19-992faef01338"
                         }
@@ -52,8 +52,8 @@
                         {
                             "description": "Symbol IC11 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.49567,
-                                "y": 2.02982
+                                "x": 1.30847,
+                                "y": 2.82992
                             },
                             "uuid": "4acb4fc3-8797-0f21-d98c-97c5cec247b5"
                         }
@@ -67,8 +67,8 @@
                         {
                             "description": "Symbol IC12 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.52107,
-                                "y": 1.85202
+                                "x": 1.3338699999999999,
+                                "y": 2.65212
                             },
                             "uuid": "5dfcbbf0-6cc2-1b17-ad6e-0e2ff2043369"
                         }
@@ -82,8 +82,8 @@
                         {
                             "description": "Symbol IC11 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.64807,
-                                "y": 0.96302
+                                "x": 1.46087,
+                                "y": 1.76312
                             },
                             "uuid": "b6ac0183-eb16-2955-858a-bd1815c51bb2"
                         }
@@ -97,8 +97,8 @@
                         {
                             "description": "Symbol IC12 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.92747,
-                                "y": 0.27722
+                                "x": 1.74027,
+                                "y": 1.07732
                             },
                             "uuid": "251fa022-80c9-dcc2-ae19-9ad9ffbf80e0"
                         }
@@ -112,8 +112,8 @@
                         {
                             "description": "Symbol IC23 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.97827,
-                                "y": 0.70902
+                                "x": 1.79107,
+                                "y": 1.50912
                             },
                             "uuid": "cd3c88f4-dea4-1b13-35a8-5fd6b9e2d2f0"
                         }
@@ -127,8 +127,8 @@
                         {
                             "description": "Symbol IC9 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.02907,
-                                "y": 1.0898
+                                "x": 1.84187,
+                                "y": 1.8899
                             },
                             "uuid": "8b31520c-4d3e-cfc7-06f4-322bc549d06a"
                         }
@@ -142,8 +142,8 @@
                         {
                             "description": "Symbol IC9 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.02907,
-                                "y": 1.8772
+                                "x": 1.84187,
+                                "y": 2.6773
                             },
                             "uuid": "0247f8ad-29b9-ae03-3611-6b0355dfce14"
                         }
@@ -157,8 +157,8 @@
                         {
                             "description": "Symbol IC8 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.05447,
-                                "y": 1.3946
+                                "x": 1.86727,
+                                "y": 2.1947
                             },
                             "uuid": "0c8a8b75-7013-8238-b20e-2b5ff182dff2"
                         }
@@ -172,8 +172,8 @@
                         {
                             "description": "Symbol IC8 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.05447,
-                                "y": 1.6486
+                                "x": 1.86727,
+                                "y": 2.4487
                             },
                             "uuid": "f8ce048b-4b94-e7cf-6c12-e675dea8c5ed"
                         }
@@ -187,8 +187,8 @@
                         {
                             "description": "Symbol IC35 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.18147,
-                                "y": 0.48042
+                                "x": 1.99427,
+                                "y": 1.28052
                             },
                             "uuid": "bc6cc1ff-55a0-56ce-273d-febacaa190e2"
                         }
@@ -202,8 +202,8 @@
                         {
                             "description": "Symbol IC4 Hidden pin 8 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.48627,
-                                "y": 1.14071
+                                "x": 2.29907,
+                                "y": 1.94081
                             },
                             "uuid": "0f48a631-5f38-77a5-0fcc-baa9e1365b02"
                         }
@@ -217,8 +217,8 @@
                         {
                             "description": "Symbol IC3 Hidden pin 8 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.48627,
-                                "y": 1.90271
+                                "x": 2.29907,
+                                "y": 2.70281
                             },
                             "uuid": "e52ad5a4-4a8d-5992-156a-1e5b442c566e"
                         }
@@ -232,8 +232,8 @@
                         {
                             "description": "Symbol IC22 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.63867,
-                                "y": 0.60742
+                                "x": 2.45147,
+                                "y": 1.40752
                             },
                             "uuid": "f34f9b4b-d559-5bb7-25aa-0a3821175fe7"
                         }
@@ -247,8 +247,8 @@
                         {
                             "description": "Symbol IC1 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.81647,
-                                "y": 1.0898
+                                "x": 2.62927,
+                                "y": 1.8899
                             },
                             "uuid": "df79c49f-5923-c3ad-39f7-e4d1434e8830"
                         }
@@ -262,8 +262,8 @@
                         {
                             "description": "Symbol IC1 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.84187,
-                                "y": 1.8518
+                                "x": 2.65467,
+                                "y": 2.6519
                             },
                             "uuid": "629d4ca0-4a51-6a5e-0182-4e0cc172ffde"
                         }
@@ -272,13 +272,73 @@
                     "type": "endpoint_off_grid"
                 },
                 {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1270 mm",
+                            "pos": {
+                                "x": 2.7559,
+                                "y": 1.8415
+                            },
+                            "uuid": "dc87ec7a-bed0-9af0-feda-11d7bd1cf721"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1270 mm",
+                            "pos": {
+                                "x": 2.7559,
+                                "y": 1.9177
+                            },
+                            "uuid": "ab74d7e9-9af0-6cae-0cf9-5dddb62eb2c5"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1270 mm",
+                            "pos": {
+                                "x": 2.7813,
+                                "y": 2.6035
+                            },
+                            "uuid": "d07716b2-a894-c3c2-dc7e-3d1f543d9670"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1270 mm",
+                            "pos": {
+                                "x": 2.7813,
+                                "y": 2.6797
+                            },
+                            "uuid": "3db80831-7aa3-682a-3e5d-6920cb9998c9"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
                     "description": "Symbol pin or wire end off connection grid",
                     "items": [
                         {
                             "description": "Symbol IC30 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.40067,
-                                "y": 0.48042
+                                "x": 3.21347,
+                                "y": 1.28052
                             },
                             "uuid": "1a4c9b07-8198-dd59-bbea-0eb853826684"
                         }
@@ -292,8 +352,8 @@
                         {
                             "description": "Symbol IC30 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.60387,
-                                "y": 0.48042
+                                "x": 3.41667,
+                                "y": 1.28052
                             },
                             "uuid": "3377e6ef-8b3b-c114-342d-328a63480e8e"
                         }
@@ -307,8 +367,8 @@
                         {
                             "description": "Symbol IC10 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.62927,
-                                "y": 0.91222
+                                "x": 3.44207,
+                                "y": 1.71232
                             },
                             "uuid": "89a1e3bc-1759-b179-8037-c5c57ec2d3f6"
                         }
@@ -322,8 +382,8 @@
                         {
                             "description": "Symbol IC7 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.62927,
-                                "y": 1.26782
+                                "x": 3.44207,
+                                "y": 2.06792
                             },
                             "uuid": "e83bad86-e889-7d52-abae-7b3dd547c525"
                         }
@@ -337,8 +397,8 @@
                         {
                             "description": "Symbol IC7 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.62927,
-                                "y": 1.42022
+                                "x": 3.44207,
+                                "y": 2.22032
                             },
                             "uuid": "11f5be60-327b-91de-6eb6-753a6fdcbe44"
                         }
@@ -352,8 +412,8 @@
                         {
                             "description": "Symbol IC10 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.62927,
-                                "y": 1.59802
+                                "x": 3.44207,
+                                "y": 2.39812
                             },
                             "uuid": "03d63fed-a81e-bc79-c5c6-ac6497c8d465"
                         }
@@ -367,8 +427,8 @@
                         {
                             "description": "Symbol IC29 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.62927,
-                                "y": 1.80122
+                                "x": 3.44207,
+                                "y": 2.60132
                             },
                             "uuid": "4978d562-a877-7680-032d-9d3361286f9e"
                         }
@@ -382,8 +442,8 @@
                         {
                             "description": "Symbol IC11 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.80707,
-                                "y": 0.48042
+                                "x": 3.61987,
+                                "y": 1.28052
                             },
                             "uuid": "9d4bccc3-8009-0425-c6ef-2f389b3720bf"
                         }
@@ -397,8 +457,8 @@
                         {
                             "description": "Symbol IC36 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.85787,
-                                "y": 1.09002
+                                "x": 3.67067,
+                                "y": 1.89012
                             },
                             "uuid": "ef33d2ee-d026-6573-1edd-baf3517f1f69"
                         }
@@ -412,8 +472,8 @@
                         {
                             "description": "Symbol IC10 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.90867,
-                                "y": 1.34402
+                                "x": 3.72147,
+                                "y": 2.14412
                             },
                             "uuid": "f3dba673-71ff-436e-5363-1e02aa1c373b"
                         }
@@ -427,8 +487,8 @@
                         {
                             "description": "Symbol IC23 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 3.11187,
-                                "y": 0.42962
+                                "x": 3.92467,
+                                "y": 1.22972
                             },
                             "uuid": "c72e01e1-d8c3-012b-25d4-5bd87dfd520c"
                         }
@@ -442,8 +502,8 @@
                         {
                             "description": "Symbol IC7 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 3.13727,
-                                "y": 1.14082
+                                "x": 3.95007,
+                                "y": 1.94092
                             },
                             "uuid": "5481d6fd-3f95-21b0-1891-3680c842410f"
                         }
@@ -457,8 +517,8 @@
                         {
                             "description": "Symbol IC6 Hidden pin 8 [GND, Power input, Line]",
                             "pos": {
-                                "x": 3.34047,
-                                "y": 1.42011
+                                "x": 4.15327,
+                                "y": 2.22021
                             },
                             "uuid": "cd2d3d91-89f5-662c-d52f-781cd173a021"
                         }
@@ -472,8 +532,8 @@
                         {
                             "description": "Symbol IC5 Hidden pin 8 [GND, Power input, Line]",
                             "pos": {
-                                "x": 3.34047,
-                                "y": 1.75031
+                                "x": 4.15327,
+                                "y": 2.55041
                             },
                             "uuid": "bd2f20a8-25b7-de56-c3f6-16cdb5124e97"
                         }
@@ -487,8 +547,8 @@
                         {
                             "description": "Symbol IC35 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 3.36587,
-                                "y": 0.45502
+                                "x": 4.17867,
+                                "y": 1.25512
                             },
                             "uuid": "eb2b67d4-356a-b4ee-3ac0-36a5ae127e69"
                         }
@@ -502,8 +562,8 @@
                         {
                             "description": "Symbol IC7 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 3.39127,
-                                "y": 1.16622
+                                "x": 4.20407,
+                                "y": 1.96632
                             },
                             "uuid": "8e501bd3-37c8-6614-d5b0-63fe885339e3"
                         }
@@ -517,8 +577,8 @@
                         {
                             "description": "Symbol IC2 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 3.67067,
-                                "y": 1.3692
+                                "x": 4.48347,
+                                "y": 2.1693
                             },
                             "uuid": "11861930-5397-8168-4260-cfc676858ed1"
                         }
@@ -532,8 +592,8 @@
                         {
                             "description": "Symbol IC2 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 3.69607,
-                                "y": 1.6994
+                                "x": 4.50887,
+                                "y": 2.4995
                             },
                             "uuid": "987a03ee-cd50-12d0-27e3-38912f902f95"
                         }
@@ -542,13 +602,28 @@
                     "type": "endpoint_off_grid"
                 },
                 {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1270 mm",
+                            "pos": {
+                                "x": 4.6355,
+                                "y": 2.4765
+                            },
+                            "uuid": "494d555d-4000-c187-bf2b-7ea0acd3634b"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
                     "description": "Symbol pin or wire end off connection grid",
                     "items": [
                         {
                             "description": "Symbol IC20 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.01637,
-                                "y": 0.3786
+                                "x": 1.77837,
+                                "y": 0.7469
                             },
                             "uuid": "ccdba778-de60-6b38-b807-1c8bf6acf4d4"
                         }
@@ -562,8 +637,8 @@
                         {
                             "description": "Symbol IC19 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.01637,
-                                "y": 0.785
+                                "x": 1.77837,
+                                "y": 1.1533
                             },
                             "uuid": "3b3a5128-deaa-fb9a-aae3-f81f6f4c63c1"
                         }
@@ -577,8 +652,8 @@
                         {
                             "description": "Symbol IC18 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.01637,
-                                "y": 1.1914
+                                "x": 1.77837,
+                                "y": 1.5597
                             },
                             "uuid": "de3b8df3-3155-dc0e-1009-012a5498447b"
                         }
@@ -592,8 +667,8 @@
                         {
                             "description": "Symbol IC17 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.01637,
-                                "y": 1.5724
+                                "x": 1.77837,
+                                "y": 1.9407
                             },
                             "uuid": "dae263b5-706b-4985-b3b9-4cf60016946d"
                         }
@@ -602,13 +677,58 @@
                     "type": "endpoint_off_grid"
                 },
                 {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1778 mm",
+                            "pos": {
+                                "x": 1.905,
+                                "y": 0.6223
+                            },
+                            "uuid": "9559a315-273d-7dbf-298d-12aebc619ae8"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1778 mm",
+                            "pos": {
+                                "x": 1.905,
+                                "y": 1.1557
+                            },
+                            "uuid": "d803367b-c17a-df7d-bee0-56c8938e48a7"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.1778 mm",
+                            "pos": {
+                                "x": 1.905,
+                                "y": 1.9685
+                            },
+                            "uuid": "efda758f-2562-6017-6e6a-8587565ecee0"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'USOFT-HALT'",
+                            "description": "Label 'USOFT-HALT'",
                             "pos": {
-                                "x": 1.6256,
-                                "y": 0.7874
+                                "x": 2.3876,
+                                "y": 1.1557
                             },
                             "uuid": "1b5db400-1370-9c2b-dbc7-e0bb31c72c2d"
                         }
@@ -622,8 +742,8 @@
                         {
                             "description": "Symbol IC16 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.00697,
-                                "y": 0.3786
+                                "x": 2.76897,
+                                "y": 0.7469
                             },
                             "uuid": "33dd9f46-de60-f8bb-9f76-f7979e16b29f"
                         }
@@ -637,8 +757,8 @@
                         {
                             "description": "Symbol IC15 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.00697,
-                                "y": 0.785
+                                "x": 2.76897,
+                                "y": 1.1533
                             },
                             "uuid": "9f4a6d1a-b688-3dd7-b3d4-510b17df7ae7"
                         }
@@ -652,8 +772,8 @@
                         {
                             "description": "Symbol IC14 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.00697,
-                                "y": 1.1914
+                                "x": 2.76897,
+                                "y": 1.5597
                             },
                             "uuid": "d48b9799-99b0-1a88-8290-f4f344b1c97c"
                         }
@@ -667,8 +787,8 @@
                         {
                             "description": "Symbol IC13 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.00697,
-                                "y": 1.5724
+                                "x": 2.76897,
+                                "y": 1.9407
                             },
                             "uuid": "ef4e6986-3bed-5f5e-3e6c-0ab9778d96f4"
                         }
@@ -682,8 +802,8 @@
                         {
                             "description": "Symbol IC11 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.78777,
-                                "y": 0.63282
+                                "x": 1.25767,
+                                "y": 0.81062
                             },
                             "uuid": "46f66438-4127-0ba3-496c-e9983ffda080"
                         }
@@ -697,8 +817,8 @@
                         {
                             "description": "Symbol IC11 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.83857,
-                                "y": 0.83602
+                                "x": 1.30847,
+                                "y": 1.01382
                             },
                             "uuid": "ef49f797-7b9e-176b-a5a3-e31ed25e5ac6"
                         }
@@ -712,8 +832,8 @@
                         {
                             "description": "Symbol IC24 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.88937,
-                                "y": 0.98842
+                                "x": 1.35927,
+                                "y": 1.16622
                             },
                             "uuid": "1d724ca5-500e-62be-e20f-20ae1d0fd972"
                         }
@@ -727,8 +847,8 @@
                         {
                             "description": "Symbol IC22 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.19417,
-                                "y": 0.78522
+                                "x": 1.66407,
+                                "y": 0.96302
                             },
                             "uuid": "52303f12-a8dc-e36f-5e00-3246a3588446"
                         }
@@ -742,8 +862,8 @@
                         {
                             "description": "Symbol IC21 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.21957,
-                                "y": 0.27722
+                                "x": 1.68947,
+                                "y": 0.45502
                             },
                             "uuid": "157c9abf-ee25-fc4b-3d77-0702be66c0b7"
                         }
@@ -757,8 +877,8 @@
                         {
                             "description": "Symbol IC21 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.21957,
-                                "y": 0.45502
+                                "x": 1.68947,
+                                "y": 0.63282
                             },
                             "uuid": "b68f84ae-c299-08f5-bf60-4cf1af118578"
                         }
@@ -772,8 +892,8 @@
                         {
                             "description": "Symbol IC21 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.24497,
-                                "y": 1.01382
+                                "x": 1.71487,
+                                "y": 1.19162
                             },
                             "uuid": "11e8aaf1-c260-dd4b-0e27-092b0cd783cf"
                         }
@@ -787,8 +907,8 @@
                         {
                             "description": "Symbol IC21 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.24497,
-                                "y": 1.19162
+                                "x": 1.71487,
+                                "y": 1.36942
                             },
                             "uuid": "cfae055d-2b0e-a617-ade9-4848553a7aac"
                         }
@@ -802,8 +922,8 @@
                         {
                             "description": "Symbol IC12 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.54977,
-                                "y": 0.98842
+                                "x": 2.01967,
+                                "y": 1.16622
                             },
                             "uuid": "916baac5-0a24-b7fe-431e-bd520e8a360c"
                         }
@@ -817,8 +937,8 @@
                         {
                             "description": "Symbol IC35 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.60997,
-                                "y": 0.35342
+                                "x": 0.72427,
+                                "y": 0.32802
                             },
                             "uuid": "298797cb-87fb-4f35-9b0f-27ea2fc301d9"
                         }
@@ -832,8 +952,8 @@
                         {
                             "description": "Symbol IC24 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.60997,
-                                "y": 0.55662
+                                "x": 0.72427,
+                                "y": 0.53122
                             },
                             "uuid": "675bc255-12b5-aeff-ef9b-40e8c00c395b"
                         }
@@ -847,8 +967,8 @@
                         {
                             "description": "Symbol IC29 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.91477,
-                                "y": 0.83602
+                                "x": 1.02907,
+                                "y": 0.81062
                             },
                             "uuid": "74649077-3668-7315-ada5-b86b1f7e5e54"
                         }
@@ -862,8 +982,8 @@
                         {
                             "description": "Symbol IC35 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.94017,
-                                "y": 0.42962
+                                "x": 1.05447,
+                                "y": 0.40422
                             },
                             "uuid": "83696728-64fb-708a-cd09-67616439ed19"
                         }
@@ -877,8 +997,8 @@
                         {
                             "description": "Symbol IC29 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.94017,
-                                "y": 1.31862
+                                "x": 1.05447,
+                                "y": 1.29322
                             },
                             "uuid": "29ab0b4f-2e8f-d25a-38ad-523c50b63736"
                         }
@@ -892,8 +1012,8 @@
                         {
                             "description": "Symbol IC12 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.94017,
-                                "y": 1.52182
+                                "x": 1.05447,
+                                "y": 1.49642
                             },
                             "uuid": "47eaae08-ebc0-0922-d4d4-789be3de1b7c"
                         }
@@ -907,8 +1027,8 @@
                         {
                             "description": "Symbol IC30 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.19417,
-                                "y": 0.63282
+                                "x": 1.30847,
+                                "y": 0.60742
                             },
                             "uuid": "623a0cca-87eb-1a91-eab0-afd3213bff7b"
                         }
@@ -922,8 +1042,8 @@
                         {
                             "description": "Symbol IC29 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.44817,
-                                "y": 0.91222
+                                "x": 1.56247,
+                                "y": 0.88682
                             },
                             "uuid": "918d2aa7-64e4-acb8-0a9c-05fc485fd4a9"
                         }
@@ -937,8 +1057,8 @@
                         {
                             "description": "Symbol IC24 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.72757,
-                                "y": 0.88682
+                                "x": 1.84187,
+                                "y": 0.86142
                             },
                             "uuid": "4d127ba9-0814-7fe4-137a-931a73aec49d"
                         }
@@ -952,8 +1072,8 @@
                         {
                             "description": "Symbol IC28 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.31177,
-                                "y": 0.3786
+                                "x": 2.42607,
+                                "y": 0.3532
                             },
                             "uuid": "3a3ea382-6751-c623-22f1-8043eb025db2"
                         }
@@ -967,8 +1087,8 @@
                         {
                             "description": "Symbol IC25 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.31177,
-                                "y": 0.7596
+                                "x": 2.42607,
+                                "y": 0.7342
                             },
                             "uuid": "cf743947-f3da-ad45-5649-1c5d0f0d6328"
                         }
@@ -982,8 +1102,8 @@
                         {
                             "description": "Symbol IC27 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.31177,
-                                "y": 1.1152
+                                "x": 2.42607,
+                                "y": 1.0898
                             },
                             "uuid": "a5a25e1f-3e57-461f-9a13-fc7b4f024c38"
                         }
@@ -997,8 +1117,8 @@
                         {
                             "description": "Symbol IC26 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 2.31177,
-                                "y": 1.4962
+                                "x": 2.42607,
+                                "y": 1.4708
                             },
                             "uuid": "0bb1900f-6119-738c-e895-019f712e3a60"
                         }
@@ -1012,8 +1132,8 @@
                         {
                             "description": "Symbol IC23 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.92747,
-                                "y": 0.28992
+                                "x": 1.80377,
+                                "y": 0.63282
                             },
                             "uuid": "eb16129b-4e3c-a23e-111b-334ae678e85c"
                         }
@@ -1027,8 +1147,8 @@
                         {
                             "description": "Symbol IC23 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.92747,
-                                "y": 0.51852
+                                "x": 1.80377,
+                                "y": 0.86142
                             },
                             "uuid": "c91338c3-8fc5-f60e-2b43-9e8a7123a5ab"
                         }
@@ -1042,8 +1162,8 @@
                         {
                             "description": "Symbol IC31 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.92747,
-                                "y": 0.72172
+                                "x": 1.80377,
+                                "y": 1.06462
                             },
                             "uuid": "af70dd4f-5f7e-e2d0-64fc-b29a970554f4"
                         }
@@ -1057,8 +1177,8 @@
                         {
                             "description": "Symbol IC31 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.92747,
-                                "y": 0.95032
+                                "x": 1.80377,
+                                "y": 1.29322
                             },
                             "uuid": "8fbc37bb-b0f9-f1ff-87ca-c928411423a9"
                         }
@@ -1072,8 +1192,8 @@
                         {
                             "description": "Symbol IC31 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.92747,
-                                "y": 1.15352
+                                "x": 1.80377,
+                                "y": 1.49642
                             },
                             "uuid": "4ca4aff1-576e-ead8-7d02-3217c792a27b"
                         }
@@ -1087,8 +1207,8 @@
                         {
                             "description": "Symbol IC31 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.92747,
-                                "y": 1.38212
+                                "x": 1.80377,
+                                "y": 1.72502
                             },
                             "uuid": "cca79235-f10c-b761-e929-b35ea980b7e3"
                         }
@@ -1102,8 +1222,8 @@
                         {
                             "description": "Symbol IC36 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.51167,
-                                "y": 1.55992
+                                "x": 2.38797,
+                                "y": 1.90282
                             },
                             "uuid": "16d41bfd-e75d-599f-0cb9-836dcd309802"
                         }
@@ -1117,8 +1237,8 @@
                         {
                             "description": "Symbol IC36 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.51167,
-                                "y": 1.73772
+                                "x": 2.38797,
+                                "y": 2.08062
                             },
                             "uuid": "7def5108-47a4-d5c5-38ec-ad957f01ef47"
                         }
@@ -1132,8 +1252,8 @@
                         {
                             "description": "Symbol IC34 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.59727,
-                                "y": 0.912
+                                "x": 0.90207,
+                                "y": 1.1406
                             },
                             "uuid": "8eba2f51-8a92-df8b-04ec-02fafe95886c"
                         }
@@ -1147,8 +1267,8 @@
                         {
                             "description": "Symbol IC36 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.80047,
-                                "y": 1.29322
+                                "x": 1.10527,
+                                "y": 1.52182
                             },
                             "uuid": "1f29ee1a-78d4-b19c-32fd-c4707387288d"
                         }
@@ -1162,8 +1282,8 @@
                         {
                             "description": "Symbol IC39 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.05447,
-                                "y": 0.3024
+                                "x": 1.35927,
+                                "y": 0.531
                             },
                             "uuid": "b0396ee9-cc02-fa0c-770e-210ce5913b91"
                         }
@@ -1177,8 +1297,8 @@
                         {
                             "description": "Symbol IC33 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.05447,
-                                "y": 0.8358
+                                "x": 1.35927,
+                                "y": 1.0644
                             },
                             "uuid": "11adf8de-80ee-4137-af10-e9e5274a7888"
                         }
@@ -1192,8 +1312,8 @@
                         {
                             "description": "Symbol IC33 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.05447,
-                                "y": 1.0898
+                                "x": 1.35927,
+                                "y": 1.3184
                             },
                             "uuid": "8133ab72-e786-9bd2-353a-d11bebfcbe71"
                         }
@@ -1202,13 +1322,133 @@
                     "type": "endpoint_off_grid"
                 },
                 {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.2286 mm",
+                            "pos": {
+                                "x": 1.4859,
+                                "y": 1.016
+                            },
+                            "uuid": "bd13d5b0-715b-0934-15e9-8e81462de315"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.2286 mm",
+                            "pos": {
+                                "x": 1.4859,
+                                "y": 1.0414
+                            },
+                            "uuid": "6bd2e2cd-51cb-ff6f-fd50-b4067dfd3474"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.2286 mm",
+                            "pos": {
+                                "x": 1.4859,
+                                "y": 1.0668
+                            },
+                            "uuid": "3e9b2193-076e-16d9-446b-3572f308554b"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.2286 mm",
+                            "pos": {
+                                "x": 1.4859,
+                                "y": 1.0922
+                            },
+                            "uuid": "2381134f-e3ac-07e4-8a79-9ccf12920d9f"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.2286 mm",
+                            "pos": {
+                                "x": 1.4859,
+                                "y": 1.27
+                            },
+                            "uuid": "d7f42429-68a9-f2f8-2196-2674bde5203e"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.2286 mm",
+                            "pos": {
+                                "x": 1.4859,
+                                "y": 1.2954
+                            },
+                            "uuid": "81f59712-d683-e91f-9728-e507033ee786"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.2286 mm",
+                            "pos": {
+                                "x": 1.4859,
+                                "y": 1.3208
+                            },
+                            "uuid": "3933e2e7-2989-8051-9de3-40ef7e4aefdd"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.2286 mm",
+                            "pos": {
+                                "x": 1.4859,
+                                "y": 1.3462
+                            },
+                            "uuid": "25b8e99b-ef66-25bd-db6a-72dd41344571"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
                     "description": "Symbol pin or wire end off connection grid",
                     "items": [
                         {
                             "description": "Symbol IC39 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.84187,
-                                "y": 0.3024
+                                "x": 2.14667,
+                                "y": 0.531
                             },
                             "uuid": "7d7a6bf8-fed0-c4f8-3dcb-b0309988dd1d"
                         }
@@ -1222,8 +1462,8 @@
                         {
                             "description": "Symbol IC32 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.84187,
-                                "y": 0.8358
+                                "x": 2.14667,
+                                "y": 1.0644
                             },
                             "uuid": "9e940d4d-3fcc-3a76-3280-c11a232e2a3c"
                         }
@@ -1237,8 +1477,8 @@
                         {
                             "description": "Symbol IC32 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.84187,
-                                "y": 1.0898
+                                "x": 2.14667,
+                                "y": 1.3184
                             },
                             "uuid": "0e29b9b7-6674-7bf3-5e68-252f16d7c190"
                         }
@@ -1250,10 +1490,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR0'",
+                            "description": "Label 'ADDR0'",
                             "pos": {
-                                "x": 0.254,
-                                "y": 1.3589
+                                "x": 0.4064,
+                                "y": 1.3716
                             },
                             "uuid": "9a620395-41a5-137b-edd8-ae0b41e2a753"
                         }
@@ -1265,10 +1505,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR1'",
+                            "description": "Label 'ADDR1'",
                             "pos": {
-                                "x": 0.2794,
-                                "y": 1.3589
+                                "x": 0.4318,
+                                "y": 1.3716
                             },
                             "uuid": "8bdd2a8f-37e8-ba50-8451-2960003a4bcb"
                         }
@@ -1280,10 +1520,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR2'",
+                            "description": "Label 'ADDR2'",
                             "pos": {
-                                "x": 0.3048,
-                                "y": 1.3589
+                                "x": 0.4572,
+                                "y": 1.3716
                             },
                             "uuid": "202a6d54-5b55-cbc4-b868-c92c490d1865"
                         }
@@ -1295,10 +1535,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR3'",
+                            "description": "Label 'ADDR3'",
                             "pos": {
-                                "x": 0.3302,
-                                "y": 1.3589
+                                "x": 0.4826,
+                                "y": 1.3716
                             },
                             "uuid": "6c845032-7a55-3ddb-c53d-d62f47b89b12"
                         }
@@ -1310,10 +1550,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR4'",
+                            "description": "Label 'ADDR4'",
                             "pos": {
-                                "x": 0.3556,
-                                "y": 1.3589
+                                "x": 0.508,
+                                "y": 1.3716
                             },
                             "uuid": "658b41d9-59b8-16cd-aaa9-ecad4b400efb"
                         }
@@ -1325,10 +1565,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR5'",
+                            "description": "Label 'ADDR5'",
                             "pos": {
-                                "x": 0.381,
-                                "y": 1.3589
+                                "x": 0.5334,
+                                "y": 1.3716
                             },
                             "uuid": "c19d3e14-6c7a-ef04-76ce-be293c8e901f"
                         }
@@ -1340,10 +1580,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR6'",
+                            "description": "Label 'ADDR6'",
                             "pos": {
-                                "x": 0.4064,
-                                "y": 1.3589
+                                "x": 0.5588,
+                                "y": 1.3716
                             },
                             "uuid": "534151ec-e05a-30f2-fa36-d0ab3b353e26"
                         }
@@ -1357,8 +1597,8 @@
                         {
                             "description": "Symbol IC30 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.40677,
-                                "y": 0.81062
+                                "x": 0.55917,
+                                "y": 0.82332
                             },
                             "uuid": "242fa948-7ee0-c010-2893-150738773ee1"
                         }
@@ -1370,10 +1610,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR7'",
+                            "description": "Label 'ADDR7'",
                             "pos": {
-                                "x": 0.4318,
-                                "y": 1.3589
+                                "x": 0.5842,
+                                "y": 1.3716
                             },
                             "uuid": "4b25fe59-4c51-a550-b79c-ed403d732d7f"
                         }
@@ -1387,8 +1627,8 @@
                         {
                             "description": "Symbol IC10 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.43217,
-                                "y": 0.35342
+                                "x": 0.58457,
+                                "y": 0.36612
                             },
                             "uuid": "05c6fa91-b415-a305-18c9-5c6b7898a9aa"
                         }
@@ -1402,8 +1642,8 @@
                         {
                             "description": "Symbol IC24 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.43217,
-                                "y": 0.50582
+                                "x": 0.58457,
+                                "y": 0.51852
                             },
                             "uuid": "b1beee22-e2ba-e259-3c05-c465cebf1825"
                         }
@@ -1415,10 +1655,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR8'",
+                            "description": "Label 'ADDR8'",
                             "pos": {
-                                "x": 0.4572,
-                                "y": 1.3589
+                                "x": 0.6096,
+                                "y": 1.3716
                             },
                             "uuid": "f56af322-3aaf-b5d5-1113-c35ee7a9a3c0"
                         }
@@ -1430,10 +1670,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR9'",
+                            "description": "Label 'ADDR9'",
                             "pos": {
-                                "x": 0.4826,
-                                "y": 1.3589
+                                "x": 0.635,
+                                "y": 1.3716
                             },
                             "uuid": "47828673-8ab3-8565-4a57-d9e079765892"
                         }
@@ -1445,10 +1685,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR10'",
+                            "description": "Label 'ADDR10'",
                             "pos": {
-                                "x": 0.508,
-                                "y": 1.3589
+                                "x": 0.6604,
+                                "y": 1.3716
                             },
                             "uuid": "2b25780e-0a88-1a5e-567d-5f5f2d83ab5d"
                         }
@@ -1460,10 +1700,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR11'",
+                            "description": "Label 'ADDR11'",
                             "pos": {
-                                "x": 0.5334,
-                                "y": 1.3589
+                                "x": 0.6858,
+                                "y": 1.3716
                             },
                             "uuid": "cfb87259-43ad-b105-d6a2-c3cc7fe6576b"
                         }
@@ -1475,10 +1715,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR12'",
+                            "description": "Label 'ADDR12'",
                             "pos": {
-                                "x": 0.5588,
-                                "y": 1.3589
+                                "x": 0.7112,
+                                "y": 1.3716
                             },
                             "uuid": "6f118604-4d41-f268-ae5b-4b17ac9620fe"
                         }
@@ -1490,10 +1730,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR13'",
+                            "description": "Label 'ADDR13'",
                             "pos": {
-                                "x": 0.5842,
-                                "y": 1.3589
+                                "x": 0.7366,
+                                "y": 1.3716
                             },
                             "uuid": "c1f3b08a-0023-0552-b833-b44e9e0262a7"
                         }
@@ -1502,13 +1742,28 @@
                     "type": "isolated_pin_label"
                 },
                 {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Vertical Wire, length 0.0381 mm",
+                            "pos": {
+                                "x": 0.762,
+                                "y": 0.8128
+                            },
+                            "uuid": "47d35dbc-5be5-9478-2d90-8f8e35ceb40e"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR14'",
+                            "description": "Label 'ADDR14'",
                             "pos": {
-                                "x": 0.6096,
-                                "y": 1.3589
+                                "x": 0.762,
+                                "y": 1.3716
                             },
                             "uuid": "bbe144dc-c5b7-6143-3e54-809066de3c03"
                         }
@@ -1520,10 +1775,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'ADDR15'",
+                            "description": "Label 'ADDR15'",
                             "pos": {
-                                "x": 0.635,
-                                "y": 1.3589
+                                "x": 0.7874,
+                                "y": 1.3716
                             },
                             "uuid": "690db950-fc2f-fccb-acef-d168b72db048"
                         }
@@ -1537,8 +1792,8 @@
                         {
                             "description": "Symbol IC30 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.71157,
-                                "y": 0.35342
+                                "x": 0.86397,
+                                "y": 0.36612
                             },
                             "uuid": "9009d4ee-a155-91ba-ae20-3ed9b4079a7e"
                         }
@@ -1552,8 +1807,8 @@
                         {
                             "description": "Symbol IC30 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.71157,
-                                "y": 0.48042
+                                "x": 0.86397,
+                                "y": 0.49312
                             },
                             "uuid": "c4c8112f-132d-3332-7c57-f67a28562833"
                         }
@@ -1567,8 +1822,8 @@
                         {
                             "description": "Symbol IC36 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.71157,
-                                "y": 0.60742
+                                "x": 0.86397,
+                                "y": 0.62012
                             },
                             "uuid": "f4c268ec-afea-9535-bd05-a18bb45f66e8"
                         }
@@ -1582,8 +1837,8 @@
                         {
                             "description": "Symbol IC36 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
-                                "x": 0.71157,
-                                "y": 0.73442
+                                "x": 0.86397,
+                                "y": 0.74712
                             },
                             "uuid": "330513f8-e862-d2eb-06db-c54f0ca4dc4d"
                         }
@@ -1595,10 +1850,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'IN'",
+                            "description": "Label 'IN'",
                             "pos": {
-                                "x": 2.3114,
-                                "y": 1.3589
+                                "x": 2.4638,
+                                "y": 1.3716
                             },
                             "uuid": "46174e00-762a-a7ad-f458-79515b58e553"
                         }
@@ -1610,10 +1865,10 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-RUN'",
+                            "description": "Label '-RUN'",
                             "pos": {
-                                "x": 2.3876,
-                                "y": 1.3589
+                                "x": 2.54,
+                                "y": 1.3716
                             },
                             "uuid": "4b578a87-bc2f-48fa-8d0b-af7bff1387b7"
                         }
@@ -1625,12 +1880,12 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label '-MEM-CPU-RESET'",
+                            "description": "Label 'U-SOFT-HALT'",
                             "pos": {
-                                "x": 0.9525,
-                                "y": 0.9398
+                                "x": 1.5748,
+                                "y": 1.0795
                             },
-                            "uuid": "38fc52bf-92a7-700c-b629-b2a8cb873ecf"
+                            "uuid": "b3d145f2-db1e-a1c6-1fea-d20e0aef7dc6"
                         }
                     ],
                     "severity": "warning",
@@ -1640,16 +1895,46 @@
                     "description": "Label connected to only one pin",
                     "items": [
                         {
-                            "description": "Global Label 'U-SOFT-HALT'",
+                            "description": "Label '-MEM-CPU-RESET'",
                             "pos": {
-                                "x": 0.9525,
-                                "y": 1.0922
+                                "x": 1.6256,
+                                "y": 0.9271
                             },
-                            "uuid": "b3d145f2-db1e-a1c6-1fea-d20e0aef7dc6"
+                            "uuid": "38fc52bf-92a7-700c-b629-b2a8cb873ecf"
                         }
                     ],
                     "severity": "warning",
                     "type": "isolated_pin_label"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.3048 mm",
+                            "pos": {
+                                "x": 1.524,
+                                "y": 0.9271
+                            },
+                            "uuid": "5e8ee987-904d-ee83-5b99-7ffeac08d247"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.2794 mm",
+                            "pos": {
+                                "x": 1.5494,
+                                "y": 1.0795
+                            },
+                            "uuid": "df585132-5d46-7f73-9801-597b4bc15a4a"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
                 }
             ]
         },
@@ -1668,8 +1953,8 @@
                         {
                             "description": "Symbol IC15 Pin 14 [6D, Input, Line]",
                             "pos": {
-                                "x": 1.8796,
-                                "y": 0.7874
+                                "x": 2.6416,
+                                "y": 1.1557
                             },
                             "uuid": "540aab5b-d7c6-a99b-c004-36f39777caa5"
                         }

@@ -4,11 +4,11 @@
 	(generator_version "10.0")
 	(layer "F.Cu")
 	(descr "This is the \"EZ\" version of the .1\" spaced ceramic thru-hole cap.\nIt has reduced top mask to make it harder to put the component on the wrong side of the board.")
-	(property "Reference" "C29"
+	(property "Reference" "C1"
 		(at -3.81 0.635 180)
 		(unlocked yes)
 		(layer "F.SilkS")
-		(uuid "e1fd9969-ff4e-4cfb-864d-e615bca61fc2")
+		(uuid "71799f1d-2ca1-4577-b62d-07cd494cbe02")
 		(effects
 			(font
 				(size 0.564733 0.564733)
@@ -22,7 +22,7 @@
 		(unlocked yes)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "39478917-ecc6-4cf2-a3d7-1a3941d587f6")
+		(uuid "2b727a13-03c5-498b-a934-1c33a3a34c14")
 		(effects
 			(font
 				(size 0.560832 0.560832)
@@ -36,7 +36,7 @@
 		(unlocked yes)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "efa8d54f-dac5-4afe-9237-1345f2bbf31e")
+		(uuid "b272738d-9a65-433e-a383-09283fa9ded8")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -48,7 +48,7 @@
 		(unlocked yes)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "f1afade6-590b-4bbe-a95a-3d95e2a7255f")
+		(uuid "fec2d24f-a7b4-405e-b56a-fabf665237ec")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -65,7 +65,7 @@
 		)
 		(fill yes)
 		(layer "F.Mask")
-		(uuid "1face8dc-aca7-437f-a5b9-9d6a57dde8fa")
+		(uuid "13650881-2066-45cc-ab42-9588b36a581a")
 	)
 	(fp_circle
 		(center 2.54 0)
@@ -76,7 +76,7 @@
 		)
 		(fill yes)
 		(layer "F.Mask")
-		(uuid "9adce476-7f26-420a-b541-48a4099e5e21")
+		(uuid "d402ffd3-0703-4916-81ee-e994ec11192d")
 	)
 	(fp_circle
 		(center 0 0)
@@ -87,7 +87,7 @@
 		)
 		(fill yes)
 		(layer "B.Mask")
-		(uuid "c8d8f278-6e28-4441-b45a-9710406cb5fb")
+		(uuid "cbf40367-e72e-4925-8ecd-4ac249a43c87")
 	)
 	(fp_circle
 		(center 2.54 0)
@@ -98,7 +98,7 @@
 		)
 		(fill yes)
 		(layer "B.Mask")
-		(uuid "c7678b6f-bba9-4015-ba99-f96cb34a792b")
+		(uuid "8cf519b4-6773-42bf-9455-b5b1ef1ef568")
 	)
 	(fp_line
 		(start -1.27 -1.27)
@@ -108,7 +108,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "b1cb35d6-cc1b-49b9-969e-f27a884980a9")
+		(uuid "0931609a-9a64-46b5-b564-423530149c74")
 	)
 	(fp_line
 		(start -1.27 1.27)
@@ -118,7 +118,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "6e29c8bb-077e-42a6-b8f2-5c8b5b015ba3")
+		(uuid "c49a8669-a066-4c75-870f-3aa5f812a306")
 	)
 	(fp_line
 		(start 1.27 -0.635)
@@ -128,7 +128,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "79f7e52b-0785-4167-802a-d91ee0d61731")
+		(uuid "1c964d56-f05a-45ba-b799-a980eaf2487b")
 	)
 	(fp_line
 		(start 3.81 -1.27)
@@ -138,7 +138,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "9f8a8360-8fbe-4226-9967-68876104a35c")
+		(uuid "98ba4644-1b92-49e3-a86b-c5ae8293464d")
 	)
 	(fp_line
 		(start 3.81 1.27)
@@ -148,7 +148,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "8406d777-f78a-4cab-9991-81a09a7b165c")
+		(uuid "6eea290f-ffbc-4269-805b-234ec16125fc")
 	)
 	(pad "1" thru_hole circle
 		(at 0 0)
@@ -158,7 +158,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "853d1abb-a2c5-44be-8332-e307f0165823")
+		(uuid "ca2df6d9-a5e4-4ff1-abcb-8012a61e7308")
 	)
 	(pad "2" thru_hole circle
 		(at 2.54 0)
@@ -168,7 +168,7 @@
 		(remove_unused_layers no)
 		(solder_mask_margin 0.0635)
 		(thermal_bridge_angle 0)
-		(uuid "f87e9af3-e3c6-4d4b-a781-016b305118f8")
+		(uuid "f5187e7a-4445-4c2c-a39a-8efb5db7f2b7")
 	)
 	(embedded_fonts no)
 )

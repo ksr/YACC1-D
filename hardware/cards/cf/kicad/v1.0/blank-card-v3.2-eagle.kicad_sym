@@ -12,7 +12,7 @@
 		(in_pos_files yes)
 		(duplicate_pin_numbers_are_jumpers no)
 		(property "Reference" "X"
-			(at 11.43 6.35 0)
+			(at 8.89 6.35 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -22,7 +22,7 @@
 			)
 		)
 		(property "Value" "FABC96R"
-			(at 11.43 3.81 0)
+			(at 8.89 3.81 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -78,7 +78,7 @@
 		(symbol "FABC96R_1_1"
 			(rectangle
 				(start 0 2.54)
-				(end 22.86 -81.28)
+				(end 17.78 -81.28)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -88,7 +88,7 @@
 				)
 			)
 			(text "row a"
-				(at 11.43 -83.82 0)
+				(at 8.89 -83.82 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -96,8 +96,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 0 180)
-				(length 2.54)
+				(at 22.86 0 180)
+				(length 5.08)
 				(name "GND"
 					(effects
 						(font
@@ -114,8 +114,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -2.54 180)
-				(length 2.54)
+				(at 22.86 -2.54 180)
+				(length 5.08)
 				(name "VCC"
 					(effects
 						(font
@@ -132,8 +132,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -5.08 180)
-				(length 2.54)
+				(at 22.86 -5.08 180)
+				(length 5.08)
 				(name "ADDR0"
 					(effects
 						(font
@@ -150,8 +150,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -7.62 180)
-				(length 2.54)
+				(at 22.86 -7.62 180)
+				(length 5.08)
 				(name "ADDR1"
 					(effects
 						(font
@@ -168,8 +168,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -10.16 180)
-				(length 2.54)
+				(at 22.86 -10.16 180)
+				(length 5.08)
 				(name "ADDR2"
 					(effects
 						(font
@@ -186,8 +186,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -12.7 180)
-				(length 2.54)
+				(at 22.86 -12.7 180)
+				(length 5.08)
 				(name "ADDR3"
 					(effects
 						(font
@@ -204,8 +204,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -15.24 180)
-				(length 2.54)
+				(at 22.86 -15.24 180)
+				(length 5.08)
 				(name "ADDR4"
 					(effects
 						(font
@@ -222,8 +222,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -17.78 180)
-				(length 2.54)
+				(at 22.86 -17.78 180)
+				(length 5.08)
 				(name "ADDR5"
 					(effects
 						(font
@@ -240,8 +240,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -20.32 180)
-				(length 2.54)
+				(at 22.86 -20.32 180)
+				(length 5.08)
 				(name "ADDR6"
 					(effects
 						(font
@@ -258,8 +258,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -22.86 180)
-				(length 2.54)
+				(at 22.86 -22.86 180)
+				(length 5.08)
 				(name "ADDR7"
 					(effects
 						(font
@@ -276,8 +276,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -25.4 180)
-				(length 2.54)
+				(at 22.86 -25.4 180)
+				(length 5.08)
 				(name "ADDR8"
 					(effects
 						(font
@@ -294,8 +294,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -27.94 180)
-				(length 2.54)
+				(at 22.86 -27.94 180)
+				(length 5.08)
 				(name "ADDR9"
 					(effects
 						(font
@@ -312,8 +312,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -30.48 180)
-				(length 2.54)
+				(at 22.86 -30.48 180)
+				(length 5.08)
 				(name "ADDR10"
 					(effects
 						(font
@@ -330,8 +330,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -33.02 180)
-				(length 2.54)
+				(at 22.86 -33.02 180)
+				(length 5.08)
 				(name "ADDR11"
 					(effects
 						(font
@@ -348,8 +348,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -35.56 180)
-				(length 2.54)
+				(at 22.86 -35.56 180)
+				(length 5.08)
 				(name "ADDR12"
 					(effects
 						(font
@@ -366,8 +366,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -38.1 180)
-				(length 2.54)
+				(at 22.86 -38.1 180)
+				(length 5.08)
 				(name "ADDR13"
 					(effects
 						(font
@@ -384,8 +384,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -40.64 180)
-				(length 2.54)
+				(at 22.86 -40.64 180)
+				(length 5.08)
 				(name "ADDR14"
 					(effects
 						(font
@@ -402,8 +402,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -43.18 180)
-				(length 2.54)
+				(at 22.86 -43.18 180)
+				(length 5.08)
 				(name "ADDR15"
 					(effects
 						(font
@@ -420,8 +420,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -45.72 180)
-				(length 2.54)
+				(at 22.86 -45.72 180)
+				(length 5.08)
 				(name "DATA0"
 					(effects
 						(font
@@ -438,8 +438,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -48.26 180)
-				(length 2.54)
+				(at 22.86 -48.26 180)
+				(length 5.08)
 				(name "DATA1"
 					(effects
 						(font
@@ -456,8 +456,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -50.8 180)
-				(length 2.54)
+				(at 22.86 -50.8 180)
+				(length 5.08)
 				(name "DATA2"
 					(effects
 						(font
@@ -474,8 +474,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -53.34 180)
-				(length 2.54)
+				(at 22.86 -53.34 180)
+				(length 5.08)
 				(name "DATA3"
 					(effects
 						(font
@@ -492,8 +492,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -55.88 180)
-				(length 2.54)
+				(at 22.86 -55.88 180)
+				(length 5.08)
 				(name "DATA4"
 					(effects
 						(font
@@ -510,8 +510,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -58.42 180)
-				(length 2.54)
+				(at 22.86 -58.42 180)
+				(length 5.08)
 				(name "DATA5"
 					(effects
 						(font
@@ -528,8 +528,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -60.96 180)
-				(length 2.54)
+				(at 22.86 -60.96 180)
+				(length 5.08)
 				(name "DATA6"
 					(effects
 						(font
@@ -546,8 +546,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -63.5 180)
-				(length 2.54)
+				(at 22.86 -63.5 180)
+				(length 5.08)
 				(name "DATA7"
 					(effects
 						(font
@@ -564,8 +564,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -66.04 180)
-				(length 2.54)
+				(at 22.86 -66.04 180)
+				(length 5.08)
 				(name "DATA8"
 					(effects
 						(font
@@ -582,8 +582,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -68.58 180)
-				(length 2.54)
+				(at 22.86 -68.58 180)
+				(length 5.08)
 				(name "DATA9"
 					(effects
 						(font
@@ -600,8 +600,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -71.12 180)
-				(length 2.54)
+				(at 22.86 -71.12 180)
+				(length 5.08)
 				(name "DATA10"
 					(effects
 						(font
@@ -618,8 +618,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -73.66 180)
-				(length 2.54)
+				(at 22.86 -73.66 180)
+				(length 5.08)
 				(name "DATA11"
 					(effects
 						(font
@@ -636,8 +636,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -76.2 180)
-				(length 2.54)
+				(at 22.86 -76.2 180)
+				(length 5.08)
 				(name "VCC"
 					(effects
 						(font
@@ -654,8 +654,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -78.74 180)
-				(length 2.54)
+				(at 22.86 -78.74 180)
+				(length 5.08)
 				(name "GND"
 					(effects
 						(font
@@ -675,7 +675,7 @@
 		(symbol "FABC96R_2_1"
 			(rectangle
 				(start 0 2.54)
-				(end 22.86 -81.28)
+				(end 17.78 -81.28)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -685,7 +685,7 @@
 				)
 			)
 			(text "row b"
-				(at 11.43 -83.82 0)
+				(at 8.89 -83.82 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -693,8 +693,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 0 180)
-				(length 2.54)
+				(at 22.86 0 180)
+				(length 5.08)
 				(name "GND"
 					(effects
 						(font
@@ -711,8 +711,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -2.54 180)
-				(length 2.54)
+				(at 22.86 -2.54 180)
+				(length 5.08)
 				(name "VCC"
 					(effects
 						(font
@@ -729,8 +729,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -5.08 180)
-				(length 2.54)
+				(at 22.86 -5.08 180)
+				(length 5.08)
 				(name "DATA12"
 					(effects
 						(font
@@ -747,8 +747,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -7.62 180)
-				(length 2.54)
+				(at 22.86 -7.62 180)
+				(length 5.08)
 				(name "DATA13"
 					(effects
 						(font
@@ -765,8 +765,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -10.16 180)
-				(length 2.54)
+				(at 22.86 -10.16 180)
+				(length 5.08)
 				(name "DATA14"
 					(effects
 						(font
@@ -783,8 +783,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -12.7 180)
-				(length 2.54)
+				(at 22.86 -12.7 180)
+				(length 5.08)
 				(name "DATA15"
 					(effects
 						(font
@@ -801,8 +801,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -15.24 180)
-				(length 2.54)
+				(at 22.86 -15.24 180)
+				(length 5.08)
 				(name "-REG-FUNC-RD"
 					(effects
 						(font
@@ -819,8 +819,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -17.78 180)
-				(length 2.54)
+				(at 22.86 -17.78 180)
+				(length 5.08)
 				(name "-REG-FUNC-LD"
 					(effects
 						(font
@@ -837,8 +837,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -20.32 180)
-				(length 2.54)
+				(at 22.86 -20.32 180)
+				(length 5.08)
 				(name "REG-RD-ID0"
 					(effects
 						(font
@@ -855,8 +855,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -22.86 180)
-				(length 2.54)
+				(at 22.86 -22.86 180)
+				(length 5.08)
 				(name "REG-RD-ID1"
 					(effects
 						(font
@@ -873,8 +873,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -25.4 180)
-				(length 2.54)
+				(at 22.86 -25.4 180)
+				(length 5.08)
 				(name "REG-RD-ID2"
 					(effects
 						(font
@@ -891,8 +891,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -27.94 180)
-				(length 2.54)
+				(at 22.86 -27.94 180)
+				(length 5.08)
 				(name "REG-RD-ID3"
 					(effects
 						(font
@@ -909,8 +909,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -30.48 180)
-				(length 2.54)
+				(at 22.86 -30.48 180)
+				(length 5.08)
 				(name "REG-LD-ID0"
 					(effects
 						(font
@@ -927,8 +927,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -33.02 180)
-				(length 2.54)
+				(at 22.86 -33.02 180)
+				(length 5.08)
 				(name "REG-LD-ID1"
 					(effects
 						(font
@@ -945,8 +945,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -35.56 180)
-				(length 2.54)
+				(at 22.86 -35.56 180)
+				(length 5.08)
 				(name "REG-LD-ID2"
 					(effects
 						(font
@@ -963,8 +963,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -38.1 180)
-				(length 2.54)
+				(at 22.86 -38.1 180)
+				(length 5.08)
 				(name "REG-LD-ID3"
 					(effects
 						(font
@@ -981,8 +981,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -40.64 180)
-				(length 2.54)
+				(at 22.86 -40.64 180)
+				(length 5.08)
 				(name "-REG-RD-LO"
 					(effects
 						(font
@@ -999,8 +999,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -43.18 180)
-				(length 2.54)
+				(at 22.86 -43.18 180)
+				(length 5.08)
 				(name "-REG-LD-LO"
 					(effects
 						(font
@@ -1017,8 +1017,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -45.72 180)
-				(length 2.54)
+				(at 22.86 -45.72 180)
+				(length 5.08)
 				(name "-REG-RD-HI"
 					(effects
 						(font
@@ -1035,8 +1035,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -48.26 180)
-				(length 2.54)
+				(at 22.86 -48.26 180)
+				(length 5.08)
 				(name "-REG-LD-HI"
 					(effects
 						(font
@@ -1053,8 +1053,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -50.8 180)
-				(length 2.54)
+				(at 22.86 -50.8 180)
+				(length 5.08)
 				(name "-REG-DN"
 					(effects
 						(font
@@ -1071,8 +1071,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -53.34 180)
-				(length 2.54)
+				(at 22.86 -53.34 180)
+				(length 5.08)
 				(name "-REG-UP"
 					(effects
 						(font
@@ -1089,8 +1089,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -55.88 180)
-				(length 2.54)
+				(at 22.86 -55.88 180)
+				(length 5.08)
 				(name "-MEM-RD"
 					(effects
 						(font
@@ -1107,8 +1107,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -58.42 180)
-				(length 2.54)
+				(at 22.86 -58.42 180)
+				(length 5.08)
 				(name "-MEM-WR"
 					(effects
 						(font
@@ -1125,8 +1125,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -60.96 180)
-				(length 2.54)
+				(at 22.86 -60.96 180)
+				(length 5.08)
 				(name "-IO-RD"
 					(effects
 						(font
@@ -1143,8 +1143,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -63.5 180)
-				(length 2.54)
+				(at 22.86 -63.5 180)
+				(length 5.08)
 				(name "-IO-WR"
 					(effects
 						(font
@@ -1161,8 +1161,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -66.04 180)
-				(length 2.54)
+				(at 22.86 -66.04 180)
+				(length 5.08)
 				(name "-TMP-REG-RD0"
 					(effects
 						(font
@@ -1179,8 +1179,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -68.58 180)
-				(length 2.54)
+				(at 22.86 -68.58 180)
+				(length 5.08)
 				(name "-TMP-REG-LD0"
 					(effects
 						(font
@@ -1197,8 +1197,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -71.12 180)
-				(length 2.54)
+				(at 22.86 -71.12 180)
+				(length 5.08)
 				(name "-TMP-REG-RD1"
 					(effects
 						(font
@@ -1215,8 +1215,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -73.66 180)
-				(length 2.54)
+				(at 22.86 -73.66 180)
+				(length 5.08)
 				(name "-TMP-REG-LD1"
 					(effects
 						(font
@@ -1233,8 +1233,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -76.2 180)
-				(length 2.54)
+				(at 22.86 -76.2 180)
+				(length 5.08)
 				(name "VCC"
 					(effects
 						(font
@@ -1251,8 +1251,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -78.74 180)
-				(length 2.54)
+				(at 22.86 -78.74 180)
+				(length 5.08)
 				(name "GND"
 					(effects
 						(font
@@ -1272,7 +1272,7 @@
 		(symbol "FABC96R_3_1"
 			(rectangle
 				(start 0 2.54)
-				(end 22.86 -81.28)
+				(end 17.78 -81.28)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -1282,7 +1282,7 @@
 				)
 			)
 			(text "row c"
-				(at 11.43 -83.82 0)
+				(at 8.89 -83.82 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -1290,8 +1290,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 0 180)
-				(length 2.54)
+				(at 22.86 0 180)
+				(length 5.08)
 				(name "GND"
 					(effects
 						(font
@@ -1308,8 +1308,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -2.54 180)
-				(length 2.54)
+				(at 22.86 -2.54 180)
+				(length 5.08)
 				(name "VCC"
 					(effects
 						(font
@@ -1326,8 +1326,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -5.08 180)
-				(length 2.54)
+				(at 22.86 -5.08 180)
+				(length 5.08)
 				(name "ADDR-REG-ID0"
 					(effects
 						(font
@@ -1344,8 +1344,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -7.62 180)
-				(length 2.54)
+				(at 22.86 -7.62 180)
+				(length 5.08)
 				(name "ADDR-REG-ID1"
 					(effects
 						(font
@@ -1362,8 +1362,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -10.16 180)
-				(length 2.54)
+				(at 22.86 -10.16 180)
+				(length 5.08)
 				(name "ADDR-REG-ID2"
 					(effects
 						(font
@@ -1380,8 +1380,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -12.7 180)
-				(length 2.54)
+				(at 22.86 -12.7 180)
+				(length 5.08)
 				(name "ADDR-REG-ID3"
 					(effects
 						(font
@@ -1398,8 +1398,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -15.24 180)
-				(length 2.54)
+				(at 22.86 -15.24 180)
+				(length 5.08)
 				(name "IO-ADDR0"
 					(effects
 						(font
@@ -1416,8 +1416,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -17.78 180)
-				(length 2.54)
+				(at 22.86 -17.78 180)
+				(length 5.08)
 				(name "IO-ADDR1"
 					(effects
 						(font
@@ -1434,8 +1434,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -20.32 180)
-				(length 2.54)
+				(at 22.86 -20.32 180)
+				(length 5.08)
 				(name "IO-ADDR2"
 					(effects
 						(font
@@ -1452,8 +1452,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -22.86 180)
-				(length 2.54)
+				(at 22.86 -22.86 180)
+				(length 5.08)
 				(name "IO-ADDR3"
 					(effects
 						(font
@@ -1470,8 +1470,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -25.4 180)
-				(length 2.54)
+				(at 22.86 -25.4 180)
+				(length 5.08)
 				(name "-IO-ADDR-LD"
 					(effects
 						(font
@@ -1488,8 +1488,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -27.94 180)
-				(length 2.54)
+				(at 22.86 -27.94 180)
+				(length 5.08)
 				(name "-VMA"
 					(effects
 						(font
@@ -1506,8 +1506,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -30.48 180)
-				(length 2.54)
+				(at 22.86 -30.48 180)
+				(length 5.08)
 				(name "-INT"
 					(effects
 						(font
@@ -1524,8 +1524,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -33.02 180)
-				(length 2.54)
+				(at 22.86 -33.02 180)
+				(length 5.08)
 				(name "-INTA"
 					(effects
 						(font
@@ -1542,8 +1542,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -35.56 180)
-				(length 2.54)
+				(at 22.86 -35.56 180)
+				(length 5.08)
 				(name "-ALU-FUNC"
 					(effects
 						(font
@@ -1560,8 +1560,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -38.1 180)
-				(length 2.54)
+				(at 22.86 -38.1 180)
+				(length 5.08)
 				(name "ALU0"
 					(effects
 						(font
@@ -1578,8 +1578,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -40.64 180)
-				(length 2.54)
+				(at 22.86 -40.64 180)
+				(length 5.08)
 				(name "ALU1"
 					(effects
 						(font
@@ -1596,8 +1596,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -43.18 180)
-				(length 2.54)
+				(at 22.86 -43.18 180)
+				(length 5.08)
 				(name "ALU2"
 					(effects
 						(font
@@ -1614,8 +1614,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -45.72 180)
-				(length 2.54)
+				(at 22.86 -45.72 180)
+				(length 5.08)
 				(name "ALU3"
 					(effects
 						(font
@@ -1632,8 +1632,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -48.26 180)
-				(length 2.54)
+				(at 22.86 -48.26 180)
+				(length 5.08)
 				(name "-AC-LD-INV"
 					(effects
 						(font
@@ -1650,8 +1650,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -50.8 180)
-				(length 2.54)
+				(at 22.86 -50.8 180)
+				(length 5.08)
 				(name "-AC-RD"
 					(effects
 						(font
@@ -1668,8 +1668,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -53.34 180)
-				(length 2.54)
+				(at 22.86 -53.34 180)
+				(length 5.08)
 				(name "-AC-LD"
 					(effects
 						(font
@@ -1686,8 +1686,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -55.88 180)
-				(length 2.54)
+				(at 22.86 -55.88 180)
+				(length 5.08)
 				(name "-SR-LD"
 					(effects
 						(font
@@ -1704,8 +1704,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -58.42 180)
-				(length 2.54)
+				(at 22.86 -58.42 180)
+				(length 5.08)
 				(name "BR-COND"
 					(effects
 						(font
@@ -1722,8 +1722,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -60.96 180)
-				(length 2.54)
+				(at 22.86 -60.96 180)
+				(length 5.08)
 				(name "-HL-SWAP"
 					(effects
 						(font
@@ -1740,8 +1740,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -63.5 180)
-				(length 2.54)
+				(at 22.86 -63.5 180)
+				(length 5.08)
 				(name "IN"
 					(effects
 						(font
@@ -1758,8 +1758,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -66.04 180)
-				(length 2.54)
+				(at 22.86 -66.04 180)
+				(length 5.08)
 				(name "OUT"
 					(effects
 						(font
@@ -1776,8 +1776,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -68.58 180)
-				(length 2.54)
+				(at 22.86 -68.58 180)
+				(length 5.08)
 				(name "-BUS-EN"
 					(effects
 						(font
@@ -1794,8 +1794,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -71.12 180)
-				(length 2.54)
+				(at 22.86 -71.12 180)
+				(length 5.08)
 				(name "-RUN"
 					(effects
 						(font
@@ -1812,8 +1812,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -73.66 180)
-				(length 2.54)
+				(at 22.86 -73.66 180)
+				(length 5.08)
 				(name "-RESET"
 					(effects
 						(font
@@ -1830,8 +1830,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -76.2 180)
-				(length 2.54)
+				(at 22.86 -76.2 180)
+				(length 5.08)
 				(name "VCC"
 					(effects
 						(font
@@ -1848,8 +1848,8 @@
 				)
 			)
 			(pin passive line
-				(at 25.4 -78.74 180)
-				(length 2.54)
+				(at 22.86 -78.74 180)
+				(length 5.08)
 				(name "GND"
 					(effects
 						(font

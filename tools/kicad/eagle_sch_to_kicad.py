@@ -19,14 +19,34 @@ Written for the YACC1 Memory card v1.3 conversion (YACCS/kicad). Behaviour:
 
 Geometry: Eagle symbol coordinates and rotations map 1:1 onto KiCad's (both are
 y-up, CCW in symbol space); the sheet is flipped to KiCad's y-down page. An Eagle mirrored
-placement (rot="MRnn", flip x then rotate) is KiCad `(at x y nn) (mirror y)`. Eagle's
-per-gate offsets in a deviceset are placement hints only and are ignored.
+placement (rot="MRnn": rotate, THEN flip x) is KiCad `(at x y nn) (mirror y)`, which KiCad also applies as
+rotate-then-mirror (checked on MR90 wire ends and against kicad-cli renders). Eagle's per-gate offsets in a
+deviceset are placement hints only and are ignored.
+
+Text (2026-09-23, readability pass; measured with tools/kicad/sch_overlaps.py):
+  * NAME/VALUE come from where Eagle draws them: the smashed instance's <attribute>, else the symbol's >NAME/>VALUE
+    text carried through the instance transform; Eagle size, ratio (-> thickness), align and layer. A symbol without
+    that text (con-vg FEM has no >VALUE), a hidden layer or display="off" -> the field is hidden, as in Eagle.
+  * Eagle draws a rotated/mirrored text readable inside the box the rotated text would cover; KiCad draws a field
+    the same way, so each field gets the angle (0/90) and justify that reproduce Eagle's box (kicad_just()).
+  * Where Eagle's gate name differs from KiCad's reference + unit letter ("X1-A3" vs "X1C"), the Reference is hidden
+    and an "Eagle name" field shows Eagle's text.
+  * Pin numbers/names are hidden per SYMBOL (KiCad ignores a per-pin hide) when every pin hides them in Eagle.
+  * Texts and graphics on layers Eagle does not display (99 SpiceOrder) are dropped.
+  * Net labels: each Eagle <label> is drawn on its own wire (or the nearest free end), running Eagle's way; a segment
+    without one gets a converter label only when KiCad needs the name (net drawn in several segments, or an implicit
+    power name), placed where it covers least; never on another net's wire (a label joins every wire through it).
+    Nets on one sheet get local labels (Eagle's look), multi-sheet and power nets global labels (capped at 1.27 mm).
+  * Page: each sheet is drawn once to measure it, then again on the smallest A4..A0 page (landscape, else portrait,
+    else User) that holds it inside KiCad's frame, centred clear of the title block.
 
 Correctness is verified separately by comparing KiCad's extracted netlist with the
 netlist embedded in the imported board.
 """
-import sys, os, math, uuid, re, hashlib
+import sys, os, math, uuid, re, hashlib, copy
 import xml.etree.ElementTree as ET
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import sch_overlaps as SO   # KiCad text metrics and box model (the same one the overlap checker measures with)
 
 ROTSIGN = int(os.environ.get("ROTSIGN", "1"))
 
@@ -47,6 +67,71 @@ def rot_of(s):
     if not s:
         return False, 0
     return s.startswith("M"), int(re.sub(r"[^0-9]", "", s) or 0)
+
+def evec(x, y, mirror, ang):
+    """Eagle placement of a local vector: rotate by ang (CCW), THEN mirror x (proven against wire ends on MR90 parts)"""
+    x, y = SO.rot(x, y, ang)
+    return (-x if mirror else x), y
+
+def kvec(x, y, mirror, ang):
+    """KiCad symbol transform of a local vector, (at .. ang) (mirror y): the same rotate-then-mirror"""
+    return evec(x, y, mirror, ang)
+
+ALIGN = {"bottom-left": ("left", "bottom"), "bottom-center": ("center", "bottom"), "bottom-right": ("right", "bottom"),
+         "center-left": ("left", "center"), "center": ("center", "center"), "center-right": ("right", "center"),
+         "top-left": ("left", "top"), "top-center": ("center", "top"), "top-right": ("right", "top")}
+
+class TSpec:
+    """an Eagle <text> or <attribute>: anchor, size, ratio, rotation (M = mirrored, S = spin), align, layer.
+    A missing rot/align/ratio means Eagle's default (R0, bottom-left, 8 %), never the symbol text's: a smashed attribute
+    carries its own absolute rotation. Only a missing size/layer falls back to `default` (the symbol's text)."""
+    def __init__(self, el, default=None):
+        d = default
+        self.x, self.y = float(el.get("x") or 0), float(el.get("y") or 0)
+        self.size = float(el.get("size") or (d.size if d is not None else 1.778))
+        self.ratio = float(el.get("ratio") or 8)
+        self.rot = r = el.get("rot") or "R0"
+        self.mirror = "M" in r
+        self.ang = int(round(float(re.sub(r"[^0-9.]", "", r) or 0) / 90.0)) * 90 % 360
+        self.align = el.get("align") or "bottom-left"
+        self.layer = el.get("layer") or (d.layer if d is not None else "94")
+
+def eagle_rel(spec, imirror=False, iang=0):
+    """Eagle text box relative to its anchor (y up, W=3 H=1 probe) after the text's own and the instance's transform,
+    and whether it ends up horizontal. Eagle draws text readable INSIDE this box (a 180-degree text is flipped about its
+    box, not left upside down), which is exactly how KiCad draws a field or text, so matching boxes = matching look."""
+    h, v = ALIGN.get(spec.align, ("left", "bottom"))
+    x0, y0, x1, y1 = SO.jbox(3.0, 1.0, {h, v})
+    pts = []
+    for u in (x0, x1):
+        for w in (y0, y1):
+            a, b = evec(u, w, spec.mirror, spec.ang)
+            pts.append(evec(a, b, imirror, iang))
+    box = (min(p[0] for p in pts), min(p[1] for p in pts), max(p[0] for p in pts), max(p[1] for p in pts))
+    return box, (spec.ang + iang) % 180 == 0
+
+def kicad_just(target, horiz, imirror=False, iang=0, field=True):
+    """-> (angle, justify tokens) that make KiCad draw a text in the target box. For a symbol field the box goes
+    through the symbol transform (imirror, iang); free text uses identity. Angles are 0 or 90 only (readable)."""
+    for a in (0, 90):
+        for h in ("left", "center", "right"):
+            for v in ("bottom", "center", "top"):
+                r = SO.rbox(*SO.jbox(3.0, 1.0, {h, v}), a)
+                pts = [kvec(u, w, imirror, iang) for u in (r[0], r[2]) for w in (r[1], r[3])]
+                box = (min(p[0] for p in pts), min(p[1] for p in pts), max(p[0] for p in pts), max(p[1] for p in pts))
+                hz = (a + (iang if field else 0)) % 180 == 0
+                if hz == horiz and all(abs(box[i] - target[i]) < 1e-6 for i in range(4)):
+                    return a, " ".join(t for t in (h, v) if t != "center")
+    return 0, ""
+
+def font_sexpr(spec):
+    sz = f(spec.size); th = f(max(spec.size * spec.ratio / 100.0, 0.1))
+    return "(font (size %s %s) (thickness %s))" % (sz, sz, th)
+
+def unit_letters(n):
+    return SO.unit_suffix(n)
+
+SYMTEXT_SCALE = float(os.environ.get("SYMTEXT_SCALE", "1.0"))   # symbol-internal text size vs Eagle's (was 0.8)
 
 PIN_LEN = {"point": 0.0, "short": 2.54, "middle": 5.08, "long": 7.62, None: 5.08}
 PIN_TYPE = {"in": "input", "out": "output", "io": "bidirectional", "oc": "open_collector",
@@ -101,6 +186,19 @@ class Eagle:
         for sh in self.sheets:
             for i in sh.findall("instances/instance"):
                 self.placed.setdefault(i.get("part"), set()).add(i.get("gate"))
+        # layers Eagle displays (a text on a hidden layer, e.g. 99 SpiceOrder, is not drawn)
+        self.layer_on = {l.get("number"): l.get("visible", "yes") == "yes" for l in self.root.iter("layer")}
+        # how many segments (on all sheets) each net has, and on how many sheets it appears: a net drawn as ONE
+        # segment needs no name label to hold together; a net on one sheet can use local labels
+        self.net_segs, self.net_sheets = {}, {}
+        for i, sh in enumerate(self.sheets):
+            for net in sh.findall("nets/net"):
+                n = net.get("name")
+                self.net_segs[n] = self.net_segs.get(n, 0) + len(net.findall("segment"))
+                self.net_sheets.setdefault(n, set()).add(i)
+
+    def visible_layer(self, layer):
+        return self.layer_on.get(str(layer), True)
 
     def symbol(self, lib, name):
         return self.libs[lib].find("symbols/symbol[@name='%s']" % name)
@@ -174,6 +272,16 @@ class SymbolBuilder:
             body.append("\t(power global)")
             body.append("\t(pin_numbers (hide yes))")
             body.append("\t(pin_names (offset 0) (hide yes))")
+        else:
+            # KiCad shows or hides pin numbers / names per SYMBOL (a per-pin hide inside a pin's name/number effects is
+            # ignored when drawing). Eagle's per-pin visible= (both, pad, pin, off; default both) is almost always the
+            # same for every pin of a device (rcl/led parts: off), so: hide when every drawn pin hides it.
+            vis = [p.get("visible") or "both" for g in gates if not (hidden_power and g.get("name") in power_gates)
+                   for p in self.e.symbol(lib, g.get("symbol")).findall("pin")]
+            if vis and all(v in ("off", "pin") for v in vis):
+                body.append("\t(pin_numbers (hide yes))")
+            if vis and all(v in ("off", "pad") for v in vis):
+                body.append("\t(pin_names (hide yes))")
         body.append("\t(exclude_from_sim no) (in_bom %s) (on_board %s)" % ("no" if is_power else "yes", "no" if is_power else "yes"))
         body.append("\t(property \"Reference\" \"%s\" (at 0 2.54 0) (effects (font (size 1.27 1.27))%s))" % (
             "#PWR" if is_power else esc(prefix), " (hide yes)" if is_power else ""))
@@ -189,7 +297,8 @@ class SymbolBuilder:
         body.extend(unit_sexprs)
         body.append(")")
         entry = dict(sexpr="\n".join(body), units=units, power_gates=power_gates, is_power=is_power,
-                     name=name, pins=pins_out, prefix=prefix, package=package, hidden_power=hidden_power)
+                     name=name, pins=pins_out, prefix=prefix, package=package, hidden_power=hidden_power,
+                     ngates=len(gates))
         self.cache[k] = entry
         return entry
 
@@ -199,6 +308,8 @@ class SymbolBuilder:
         out = ["\t(symbol \"%s_%d_1\"" % (name, unitno)]
         for el in sym:
             t = el.tag
+            if t in ("wire", "rectangle", "circle", "polygon", "text") and not self.e.visible_layer(el.get("layer")):
+                continue   # e.g. rcl's "SpiceOrder 1/2" texts on layer 99, which Eagle does not display
             if t == "wire":
                 out.append("\t\t" + self.wire_sexpr(el))
             elif t == "rectangle":
@@ -215,10 +326,12 @@ class SymbolBuilder:
                 txt = (el.text or "").strip()
                 if txt.upper() in (">NAME", ">VALUE", ">PART", ">GATE"):
                     continue
-                _, a = rot_of(el.get("rot"))
-                sz = float(el.get("size") or 1.27) * 0.8
-                out.append("\t\t(text \"%s\" (at %s %s %d) (effects (font (size %s %s)) (justify left bottom)))" % (
-                    esc(txt), f(float(el.get("x"))), f(float(el.get("y"))), a % 360, f(sz), f(sz)))
+                sp = TSpec(el)
+                sp.size *= SYMTEXT_SCALE
+                box, horiz = eagle_rel(sp)
+                a, jus = kicad_just(box, horiz, field=False)
+                out.append("\t\t(text \"%s\" (at %s %s %d) (effects %s%s))" % (
+                    esc(txt), f(sp.x), f(sp.y), a, font_sexpr(sp), (" (justify %s)" % jus) if jus else ""))
             elif t == "pin":
                 pads = padmap.get((gname, el.get("name")), [])
                 if is_power:
@@ -301,30 +414,19 @@ class Converter:
         self.flagged = set()
         self.stats = dict(symbols=0, wires=0, labels=0, junctions=0, buses=0, noconnects=0, skipped=[])
 
-    def transform_for(self, sheet):
-        xs, ys = [], []
-        for w in sheet.iter("wire"):
-            xs += [float(w.get("x1")), float(w.get("x2"))]; ys += [float(w.get("y1")), float(w.get("y2"))]
-        for i in sheet.findall("instances/instance"):
-            xs.append(float(i.get("x"))); ys.append(float(i.get("y")))
-        for l in sheet.iter("label"):
-            xs.append(float(l.get("x"))); ys.append(float(l.get("y")))
-        if not xs:
-            xs, ys = [0.0], [0.0]
-        minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
-        margin = 25.4
-        ox = math.floor((margin - minx) / 1.27) * 1.27
-        oy = math.ceil((maxy + margin) / 1.27) * 1.27
-        w = math.ceil((maxx - minx + 2 * margin + 50) / 10) * 10
-        h = math.ceil((maxy - miny + 2 * margin + 50) / 10) * 10
-        return (lambda x: x + ox), (lambda y: oy - y), (w, h)
-
     def convert(self):
         os.makedirs(self.outdir, exist_ok=True)
         sheet_files = []
         for idx, sheet in enumerate(self.e.sheets):
             fn = "%s-sheet%d.kicad_sch" % (self.project, idx + 1)
-            self.write_sheet(idx, sheet, os.path.join(self.outdir, fn))
+            path = os.path.join(self.outdir, fn)
+            # pass 1 draws the sheet unplaced, only to measure everything KiCad will draw (symbol bodies, field and label
+            # text included); pass 2 draws it again on the smallest page that holds it, centred clear of the title block
+            snap = (copy.deepcopy(self.stats), set(self.flagged))
+            self.write_sheet(idx, sheet, path, ((lambda x: x), (lambda y: -y), '"User" 2000 2000'))
+            self.stats, self.flagged = snap
+            X, Y, paper = self.layout(path)
+            self.write_sheet(idx, sheet, path, (X, Y, paper))
             sheet_files.append(fn)
         self.write_root(sheet_files)
         self.write_library()
@@ -348,20 +450,108 @@ class Converter:
                "\t(uuid \"%s\")" % self.root_uuid, "\t(paper \"A4\")",
                "\t(title_block (title \"%s\") (comment 1 \"Converted from Eagle schematic; see README.md\"))" % esc(self.project),
                "\t(lib_symbols)"]
-        y = 25.4
         for i, fn in enumerate(sheet_files):
+            # sheet symbols in columns of five, left to right, clear of the A4 frame and title block (20 fit)
+            x, y = 25.4 + (i // 5) * 76.2, 25.4 + (i % 5) * 25.4
             su = self.sheet_uuids[i]
-            out.append("\t(sheet (at 25.4 %s) (size 50.8 15.24) (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced yes)" % f(y))
+            out.append("\t(sheet (at %s %s) (size 50.8 15.24) (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced yes)" % (f(x), f(y)))
             out.append("\t\t(stroke (width 0.1524) (type solid)) (fill (color 0 0 0 0.0)) (uuid \"%s\")" % su)
-            out.append("\t\t(property \"Sheetname\" \"Sheet %d\" (at 25.4 %s 0) (effects (font (size 1.27 1.27)) (justify left bottom)))" % (i + 1, f(y - 0.7)))
-            out.append("\t\t(property \"Sheetfile\" \"%s\" (at 25.4 %s 0) (effects (font (size 1.27 1.27)) (justify left top)))" % (fn, f(y + 15.9)))
+            out.append("\t\t(property \"Sheetname\" \"Sheet %d\" (at %s %s 0) (effects (font (size 1.27 1.27)) (justify left bottom)))" % (i + 1, f(x), f(y - 0.7)))
+            out.append("\t\t(property \"Sheetfile\" \"%s\" (at %s %s 0) (effects (font (size 1.27 1.27)) (justify left top)))" % (fn, f(x), f(y + 15.9)))
             out.append("\t\t(instances (project \"%s\" (path \"/%s\" (page \"%d\"))))" % (self.project, self.root_uuid, i + 2))
             out.append("\t)")
-            y += 25.4
         out.append("\t(sheet_instances (path \"/\" (page \"1\")))")
         out.append(")")
         with open(os.path.join(self.outdir, self.project + ".kicad_sch"), "w") as fh:
             fh.write("\n".join(out) + "\n")
+
+    def sym_texts(self, lib, symname):
+        """-> {'NAME': TSpec|None, 'VALUE': TSpec|None}: the symbol's first >NAME / >VALUE text on a displayed layer"""
+        out = {"NAME": None, "VALUE": None}
+        for t in self.e.symbol(lib, symname).findall("text"):
+            k = (t.text or "").strip().upper()[1:]
+            if (t.text or "").strip().startswith(">") and k in out and out[k] is None and self.e.visible_layer(t.get("layer")):
+                out[k] = TSpec(t)
+        return out
+
+    def fields_for(self, inst, lib, symname, mirror, ang, kang, X, Y):
+        """where and how Eagle draws this instance's NAME and VALUE -> {'NAME': (x, y, angle, effects, hidden), ...}
+        smashed: the instance's own <attribute> (absolute); not smashed: the symbol's >NAME / >VALUE text carried
+        through the instance transform. No text at all (e.g. con-vg FEM has no >VALUE) = Eagle shows nothing = hidden."""
+        st = self.sym_texts(lib, symname)
+        attrs = {a.get("name"): a for a in inst.findall("attribute")}
+        ix, iy = float(inst.get("x")), float(inst.get("y"))
+        out = {}
+        for k in ("NAME", "VALUE"):
+            a_ = attrs.get(k)
+            if a_ is not None and a_.get("x") is not None:
+                sp = TSpec(a_, default=st[k])
+                box, horiz = eagle_rel(sp)
+                ax, ay = sp.x, sp.y
+                hide = a_.get("display") == "off" or not self.e.visible_layer(sp.layer)
+            elif st[k] is not None and inst.get("smashed") != "yes":
+                sp = st[k]
+                box, horiz = eagle_rel(sp, mirror, ang)
+                dx, dy = evec(sp.x, sp.y, mirror, ang)
+                ax, ay = ix + dx, iy + dy
+                hide = False
+            else:
+                out[k] = (X(ix), Y(iy), 0, "(font (size 1.27 1.27))", True, 1.27, ""); continue
+            fa, jus = kicad_just(box, horiz, mirror, kang, field=True)
+            out[k] = (X(ax), Y(ay), fa, font_sexpr(sp) + ((" (justify %s)" % jus) if jus else ""), hide, sp.size, jus)
+        return out
+
+    @staticmethod
+    def prop_sexpr(name, value, fld, force_hide=False):
+        x, y, a, eff, hide = fld[:5]
+        return "\t\t(property \"%s\" \"%s\" (at %s %s %d) (effects %s%s))" % (
+            esc(name), esc(value), f(x), f(y), a, eff, " (hide yes)" if (hide or force_hide) else "")
+
+    @staticmethod
+    def field_box(fld, text, kmirror, kang):
+        """KiCad sheet box of a symbol field (same model as tools/kicad/sch_overlaps.py)"""
+        x, y, a, eff, hide, size, jus = fld
+        tw, th = SO.text_wh(text, size, size)
+        r = SO.rbox(*SO.jbox(tw, th, set(jus.split())), a)
+        pts = [kvec(u, w, kmirror, kang) for u in (r[0], r[2]) for w in (r[1], r[3])]
+        return (x + min(p[0] for p in pts), y - max(p[1] for p in pts), x + max(p[0] for p in pts), y - min(p[1] for p in pts))
+
+    def occupy_symbol(self, inst, lib, symname, mirror, ang, X, Y):
+        """record a placed symbol's body box, pin lines and pin-text areas (KiCad sheet coords) for label placement"""
+        ix, iy = float(inst.get("x")), float(inst.get("y"))
+        W = lambda lx, ly: (lambda d: (X(ix + d[0]), Y(iy + d[1])))(evec(lx, ly, mirror, ang))
+        pts = []
+        for el in self.e.symbol(lib, symname):
+            if el.tag == "wire":
+                pts += [W(float(el.get("x1")), float(el.get("y1"))), W(float(el.get("x2")), float(el.get("y2")))]
+            elif el.tag == "rectangle":
+                pts += [W(float(el.get("x1")), float(el.get("y1"))), W(float(el.get("x2")), float(el.get("y2")))]
+            elif el.tag == "circle":
+                r = float(el.get("radius")); c = W(float(el.get("x")), float(el.get("y")))
+                pts += [(c[0] - r, c[1] - r), (c[0] + r, c[1] + r)]
+            elif el.tag == "polygon":
+                pts += [W(float(v.get("x")), float(v.get("y"))) for v in el.findall("vertex")]
+            elif el.tag == "pin":
+                L = PIN_LEN.get(el.get("length"), 5.08)
+                _, pa = rot_of(el.get("rot"))
+                dx, dy = SO.rot(L, 0, pa)
+                a_ = W(float(el.get("x")), float(el.get("y"))); b_ = W(float(el.get("x")) + dx, float(el.get("y")) + dy)
+                self._occseg.append((a_[0], a_[1], b_[0], b_[1]))
+                if L > 0 and el.get("visible") not in ("off",):
+                    m = 1.4   # pin number above / pin name beside: keep labels off the pin's text band
+                    self._occ.append((min(a_[0], b_[0]) - (m if a_[0] == b_[0] else 0), min(a_[1], b_[1]) - (m if a_[1] == b_[1] else 0),
+                                      max(a_[0], b_[0]) + (m if a_[0] == b_[0] else 0), max(a_[1], b_[1]) + (m if a_[1] == b_[1] else 0)))
+        if pts:
+            self._occ.append((min(p[0] for p in pts), min(p[1] for p in pts), max(p[0] for p in pts), max(p[1] for p in pts)))
+
+    def pin_outward(self, part, gate, pin):
+        """KiCad direction letter pointing from a placed pin's end away from its symbol"""
+        inst = self._inst.get((part, gate)); p = self.e.parts.get(part)
+        g = self.e.deviceset(p.get("library"), p.get("deviceset")).find("gates/gate[@name='%s']" % gate)
+        pe = self.e.symbol(p.get("library"), g.get("symbol")).find("pin[@name='%s']" % pin)
+        mirror, ang = rot_of(inst.get("rot")); _, pa = rot_of(pe.get("rot"))
+        ox, oy = evec(*SO.rot(-1, 0, pa), mirror, ang)
+        return ("R" if ox > 0 else "L") if abs(ox) >= abs(oy) else ("U" if oy > 0 else "D")
 
     def pin_world(self, part, gate, pin):
         """Eagle-sheet coordinates of a pin of a placed instance, or None."""
@@ -375,19 +565,52 @@ class Converter:
         if pe is None:
             return None
         mirror, ang = rot_of(inst.get("rot"))
-        lx, ly = float(pe.get("x")), float(pe.get("y"))
-        if mirror:
-            lx = -lx
-        a = math.radians(ang)
-        return float(inst.get("x")) + lx * math.cos(a) - ly * math.sin(a), float(inst.get("y")) + lx * math.sin(a) + ly * math.cos(a)
+        dx, dy = evec(float(pe.get("x")), float(pe.get("y")), mirror, ang)
+        return float(inst.get("x")) + dx, float(inst.get("y")) + dy
 
-    def write_sheet(self, idx, sheet, path):
-        X, Y, (pw, ph) = self.transform_for(sheet)
+    PAGES = [("A4", 297, 210), ("A3", 420, 297), ("A2", 594, 420), ("A1", 841, 594), ("A0", 1189, 841)]
+    PAGE_PAD = 5.0
+
+    def layout(self, path):
+        """-> (X, Y, paper) for the final pass: the smallest A-size page (landscape, else portrait) whose drawing area
+        holds everything on the sheet, either above the title block or beside it, with the drawing centred there;
+        a sheet too big for A0 gets a User page. Offsets stay on the 1.27 mm grid (wire ends keep their grid)."""
+        texts, bodies, lines = SO.sheet_items(path)
+        xs, ys = [], []
+        for b in [t.box for t in texts] + [bd[:4] for bd in bodies] + [(min(l[0], l[2]), min(l[1], l[3]), max(l[0], l[2]), max(l[1], l[3])) for l in lines]:
+            xs += [b[0], b[2]]; ys += [b[1], b[3]]
+        if not xs: xs, ys = [0.0], [0.0]
+        x0, y0, x1, y1 = min(xs), min(ys), max(xs), max(ys)
+        w, h = x1 - x0, y1 - y0
+        m = SO.FRAME_IN + self.PAGE_PAD
+        region = paper = None
+        for name, W, H in self.PAGES:
+            for pw, ph, tag in ((W, H, ""), (H, W, " portrait")):
+                if w <= pw - 2 * m and h <= ph - 2 * m - SO.TB_H:          # above the title block, full width
+                    region = (m, m, pw - m, ph - m - SO.TB_H)
+                elif w <= pw - 2 * m - SO.TB_W and h <= ph - 2 * m:        # beside it, full height
+                    region = (m, m, pw - m - SO.TB_W, ph - m)
+                if region:
+                    paper = '"%s"%s' % (name, tag); break
+            if region: break
+        if region is None:
+            pw, ph = math.ceil(w + 2 * m), math.ceil(h + 2 * m + SO.TB_H)
+            region = (m, m, pw - m, ph - m - SO.TB_H)
+            paper = '"User" %d %d' % (pw, ph)
+        g = 1.27
+        dx = round(((region[0] + region[2]) / 2 - (x0 + x1) / 2) / g) * g
+        dy = round(((region[1] + region[3]) / 2 - (y0 + y1) / 2) / g) * g
+        return (lambda x: x + dx), (lambda y: dy - y), paper
+
+    def write_sheet(self, idx, sheet, path, xform):
+        X, Y, paper = xform
+        self._XY = (X, Y)
         self._inst = {(i.get("part"), i.get("gate")): i for i in sheet.findall("instances/instance")}
         supply_net = {pr.get("part"): net.get("name") for net in sheet.findall("nets/net") for seg in net.findall("segment") for pr in seg.findall("pinref")}
         su = self.sheet_uuids[idx]
         sheet_path = "/%s/%s" % (self.root_uuid, su)
         body, used_symbols = [], {}
+        self._occ, self._occseg, self._supply_parts = [], [], set()   # KiCad-sheet boxes / lines already drawn (label placement)
         # pins referenced by nets on this sheet: (part, gate, pin)
         used_pins = set()
         for net in sheet.findall("nets/net"):
@@ -424,23 +647,28 @@ class Converter:
                 # a KiCad power symbol names its net after its Value. In Eagle the NET name wins: the video card has a VCC
                 # supply symbol sitting on a net Eagle calls +5V (and a separate implicit VCC net), so use the Eagle net name.
                 value = supply_net.get(pname, value)
-            attrs = {a.get("name"): a for a in inst.findall("attribute")}
-            def prop_pos(nm, ddx, ddy):
-                a = attrs.get(nm)
-                if a is not None:
-                    _, ar = rot_of(a.get("rot"))
-                    return X(float(a.get("x"))), Y(float(a.get("y"))), ar % 360
-                return x + ddx, y + ddy, 0
-            rx, ry, ra = prop_pos("NAME", 2.54, -2.54)
-            vx, vy, va = prop_pos("VALUE", 2.54, 2.54)
+            kang = (ROTSIGN * ang) % 360
+            fields = self.fields_for(inst, lib, dset.find("gates/gate[@name='%s']" % gname).get("symbol"), mirror, ang, kang, X, Y)
+            # the Eagle name of a gate is part + gate ("X1-A3", "IC5P"); KiCad shows reference + unit letter ("X1C",
+            # "IC5E"). Where they differ, the Reference is hidden and an "Eagle name" field shows Eagle's text instead.
+            eagle_name = None
+            if not entry["is_power"] and entry["ngates"] > 1 and len(entry["units"]) > 1 and unit_letters(unit) != gname:
+                eagle_name = pname + gname
+            if entry["is_power"]: self._supply_parts.add(pname)
+            self.occupy_symbol(inst, lib, dset.find("gates/gate[@name='%s']" % gname).get("symbol"), mirror, ang, X, Y)
+            for k, txt in (("NAME", None if (entry["is_power"] or eagle_name) else ref + (unit_letters(unit) if len(entry["units"]) > 1 else "")),
+                           ("VALUE", value), ("NAME", eagle_name)):
+                if txt and not fields[k][4]:
+                    self._occ.append(self.field_box(fields[k], txt, mirror, kang))
             suid = det_uuid(self.project, idx, pname, gname)
             s = ["\t(symbol (lib_id \"%s:%s\") (at %s %s %d)%s (unit %d)" % (
-                self.libname, entry["name"], f(x), f(y), (ROTSIGN * ang) % 360, " (mirror y)" if mirror else "", unit)]   # Eagle MRnn = flip x then rotate = KiCad rotate then (mirror y); proven on the protocard 2026-09-20
+                self.libname, entry["name"], f(x), f(y), kang, " (mirror y)" if mirror else "", unit)]   # Eagle MRnn = rotate, then flip x = KiCad (at nn) (mirror y); proven on the protocard 2026-09-20
             s.append("\t\t(exclude_from_sim no) (in_bom %s) (on_board %s) (dnp no) (uuid \"%s\")" % (
                 "no" if entry["is_power"] else "yes", "no" if entry["is_power"] else "yes", suid))
-            s.append("\t\t(property \"Reference\" \"%s\" (at %s %s %d) (effects (font (size 1.27 1.27))%s))" % (
-                esc(ref), f(rx), f(ry), ra, " (hide yes)" if entry["is_power"] else ""))
-            s.append("\t\t(property \"Value\" \"%s\" (at %s %s %d) (effects (font (size 1.27 1.27))))" % (esc(value), f(vx), f(vy), va))
+            s.append(self.prop_sexpr("Reference", ref, fields["NAME"], force_hide=entry["is_power"] or eagle_name is not None))
+            s.append(self.prop_sexpr("Value", value, fields["VALUE"]))
+            if eagle_name:
+                s.append(self.prop_sexpr("Eagle name", eagle_name, fields["NAME"]))
             s.append("\t\t(property \"Footprint\" \"%s\" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))" % (
                 esc(self.libname + ":" + fp_name(entry["package"])) if entry["package"] else "", f(x), f(y)))
             s.append("\t\t(property \"Datasheet\" \"\" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))" % (f(x), f(y)))
@@ -464,7 +692,7 @@ class Converter:
                 used_symbols["PWR_FLAG"] = PWR_FLAG_SYMBOL
                 body.append("\t(symbol (lib_id \"%s:PWR_FLAG\") (at %s %s 0) (unit 1)\n\t\t(exclude_from_sim no) (in_bom no) (on_board no) (dnp no) (uuid \"%s\")\n"
                             "\t\t(property \"Reference\" \"#FLG%d\" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))\n"
-                            "\t\t(property \"Value\" \"PWR_FLAG\" (at %s %s 0) (effects (font (size 1.27 1.27))))\n"
+                            "\t\t(property \"Value\" \"PWR_FLAG\" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))\n"
                             "\t\t(property \"Footprint\" \"\" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))\n"
                             "\t\t(property \"Datasheet\" \"\" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))\n"
                             "\t\t(pin \"1\" (uuid \"%s\"))\n"
@@ -478,16 +706,15 @@ class Converter:
                 for pe in sym.findall("pin"):
                     if (pname, gname, pe.get("name")) in used_pins:
                         continue
-                    lx, ly = float(pe.get("x")), float(pe.get("y"))
-                    a = math.radians(ang)
-                    if mirror:
-                        lx = -lx
-                    wx = float(inst.get("x")) + lx * math.cos(a) - ly * math.sin(a)
-                    wy = float(inst.get("y")) + lx * math.sin(a) + ly * math.cos(a)
+                    dx, dy = evec(float(pe.get("x")), float(pe.get("y")), mirror, ang)
+                    wx, wy = float(inst.get("x")) + dx, float(inst.get("y")) + dy
                     if pe.get("direction") == "pwr":
                         # Eagle connects an unwired 'pwr' pin of a PLACED gate implicitly to the supply net named like the pin
                         # (e.g. VPGM on a 2764's pin 1): give it a global label with that name so KiCad does the same
-                        body.append(self.global_label(pe.get("name"), X(wx), Y(wy), 0, idx, "pwrpin", pname, pe.get("name")))
+                        _, pa = rot_of(pe.get("rot"))
+                        ox, oy = evec(*SO.rot(-1, 0, pa), mirror, ang)   # from the pin's end away from the body
+                        d = ("R" if ox > 0 else "L") if abs(ox) >= abs(oy) else ("U" if oy > 0 else "D")
+                        body.append(self.global_label(pe.get("name"), X(wx), Y(wy), d, idx, "pwrpin", pname, pe.get("name")))
                         self.stats["pwrpins"] = self.stats.get("pwrpins", 0) + 1
                         continue
                     body.append("\t(no_connect (at %s %s) (uuid \"%s\"))" % (f(X(wx)), f(Y(wy)), det_uuid(suid, "nc", pe.get("name"))))
@@ -517,6 +744,7 @@ class Converter:
                             elif any(abs(q[0] - p[0]) < 1e-3 and abs(q[1] - p[1]) < 1e-3 for wb in allw[nb] for q in wb):
                                 trim.add((nb, (round(p[0], 3), round(p[1], 3))))
         if trim: self.stats["trimmed"] = self.stats.get("trimmed", 0) + len(trim)
+        reqs = []   # per net segment: what its labels need (placed after every wire is known)
         def pull(p, q):
             """endpoint p of wire p-q moved 0.635 mm towards q (or to the middle of a very short wire)"""
             d = math.hypot(q[0] - p[0], q[1] - p[1]); t = min(0.635, d / 2) / d if d else 0
@@ -525,14 +753,14 @@ class Converter:
             nname = net.get("name")
             for si, seg in enumerate(net.findall("segment")):
                 wires = seg.findall("wire")
-                ends = []
+                ends, segw = [], []
                 moved = {}   # collision point -> new endpoints of this net's wires there (re-joined below)
                 for w in wires:
                     p1 = (float(w.get("x1")), float(w.get("y1"))); p2 = (float(w.get("x2")), float(w.get("y2")))
                     k1, k2 = (round(p1[0], 3), round(p1[1], 3)), (round(p2[0], 3), round(p2[1], 3))
                     if (nname, k1) in trim: n1 = pull(p1, p2); moved.setdefault(k1, []).append(n1); p1 = n1
                     if (nname, k2) in trim: n2 = pull(p2, p1); moved.setdefault(k2, []).append(n2); p2 = n2
-                    ends += [p1, p2]
+                    ends += [p1, p2]; segw.append((p1, p2))
                     body.append("\t(wire (pts (xy %s %s) (xy %s %s)) (stroke (width 0) (type default)) (uuid \"%s\"))" % (
                         f(X(p1[0])), f(Y(p1[1])), f(X(p2[0])), f(Y(p2[1])), det_uuid(self.project, idx, "w", nname, si, p1, p2)))
                     self.stats["wires"] += 1
@@ -556,37 +784,35 @@ class Converter:
                 for e in ends:
                     cnt[(round(e[0], 3), round(e[1], 3))] = cnt.get((round(e[0], 3), round(e[1], 3)), 0) + 1
                 free = [e for e in ends if (round(e[0], 3), round(e[1], 3)) not in pinpts and cnt[(round(e[0], 3), round(e[1], 3))] == 1]
-                placed_lbl = False
-                used_ends = set()
-                for l in labels:
-                    _, lr = rot_of(l.get("rot"))
-                    lx, ly = float(l.get("x")), float(l.get("y"))
-                    cands = [e for e in free if e not in used_ends] or [e for e in ends if e not in used_ends] or ends
-                    if cands:
-                        ex, ey = min(cands, key=lambda p: (p[0] - lx) ** 2 + (p[1] - ly) ** 2)
-                        lx, ly = ex, ey
-                        used_ends.add((ex, ey))
-                    body.append(self.global_label(nname, X(lx), Y(ly), lr, idx, si, l.get("x"), l.get("y")))
-                    placed_lbl = True
-                # every remaining free end gets a label too: it is where Eagle joined a bus or left a stub
-                for e in free:
-                    if e in used_ends:
-                        continue
-                    body.append(self.global_label(nname, X(e[0]), Y(e[1]), 0, idx, si, "free", e))
-                    used_ends.add(e); placed_lbl = True
-                if not placed_lbl and ends:
-                    body.append(self.global_label(nname, X(ends[0][0]), Y(ends[0][1]), 0, idx, si, "auto", "auto"))
+                segw += [(a, b) for k, pts in moved.items() for a, b in zip(pts, pts[1:])]
+                reqs.append(dict(net=nname, si=si, wires=segw, ends=ends, free=free, cnt=cnt, pinpts=pinpts, labels=labels,
+                                 supply=any(pr.get("part") in self._supply_parts for pr in seg.findall("pinref"))))
                 if not wires and not labels:
-                    # a supply symbol dropped straight onto a pin: Eagle joins the two pins with no wire at all. Give every
-                    # pin of the segment a global label with the net name so KiCad connects them the same way.
+                    # pins that touch with no wire (an LED dropped straight onto a resistor, a supply symbol onto a pin):
+                    # KiCad joins coincident pins itself, so a name label is only needed where the name must reach other
+                    # segments or an implicit power net - one label, running out from the first pin
+                    n_ = nname
+                    need = not reqs[-1]["supply"] and (self.e.net_segs.get(n_, 0) > 1 or n_ in self.power_names())
                     done = 0
-                    for pr in seg.findall("pinref"):
+                    for pr in seg.findall("pinref")[:1] if need else []:
                         pp = self.pin_world(pr.get("part"), pr.get("gate"), pr.get("pin"))
                         if pp:
-                            body.append(self.global_label(nname, X(pp[0]), Y(pp[1]), 0, idx, si, "pinonly", (pr.get("part"), pr.get("gate"), pr.get("pin"))))
+                            d = self.pin_outward(pr.get("part"), pr.get("gate"), pr.get("pin"))
+                            glob = len(self.e.net_sheets.get(n_, ())) > 1 or n_ in self.power_names()
+                            body.append((self.global_label if glob else self.local_label)(
+                                n_, X(pp[0]), Y(pp[1]), d, idx, si, "pinonly", (pr.get("part"), pr.get("gate"), pr.get("pin"))))
                             done += 1
                     self.stats["pinonly"] = self.stats.get("pinonly", 0) + done
-                    if not done: self.stats["skipped"].append(("segment without wires", nname))
+        # ---- net labels
+        for bus in sheet.findall("busses/bus"):
+            for w in bus.iter("wire"):
+                self._occseg.append((X(float(w.get("x1"))), Y(float(w.get("y1"))), X(float(w.get("x2"))), Y(float(w.get("y2")))))
+        for r in reqs:
+            for p1, p2 in r["wires"]:
+                self._occseg.append((X(p1[0]), Y(p1[1]), X(p2[0]), Y(p2[1])))
+        self._netwires = [(r["net"], p1, p2) for r in reqs for p1, p2 in r["wires"]]
+        for r in reqs:
+            body.extend(self.place_labels(r, idx, X, Y))
         # ---- buses (cosmetic)
         for bus in sheet.findall("busses/bus"):
             for w in bus.iter("wire"):
@@ -594,21 +820,20 @@ class Converter:
                     f(X(float(w.get("x1")))), f(Y(float(w.get("y1")))), f(X(float(w.get("x2")))), f(Y(float(w.get("y2")))),
                     det_uuid(self.project, idx, "bus", bus.get("name"), w.get("x1"), w.get("y1"), w.get("x2"), w.get("y2"))))
                 self.stats["buses"] += 1
-            seg = bus.find("segment/wire")
-            if seg is not None:
-                nm = bus.get("name").split(":")[0] if ":" in bus.get("name") else bus.get("name")
-                body.append("\t(text \"%s\" (exclude_from_sim no) (at %s %s 0) (effects (font (size 1.27 1.27)) (justify left bottom)) (uuid \"%s\"))" % (
-                    esc(nm), f(X(float(seg.get("x1")))), f(Y(float(seg.get("y1"))) - 1.0), det_uuid(self.project, idx, "bustext", bus.get("name"))))
+            # Eagle shows a bus's name only where the bus has a <label>: one text per label, as Eagle places it
+            nm = bus.get("name").split(":")[0] if ":" in bus.get("name") else bus.get("name")
+            for l in bus.iter("label"):
+                if self.e.visible_layer(l.get("layer")):
+                    body.append(self.free_text(nm, l, idx, "bustext", bus.get("name")))
         # ---- plain texts
         plain = sheet.find("plain")
         if plain is not None:
             for t in plain.findall("text"):
-                _, tr = rot_of(t.get("rot"))
-                body.append("\t(text \"%s\" (exclude_from_sim no) (at %s %s %d) (effects (font (size 1.27 1.27)) (justify left bottom)) (uuid \"%s\"))" % (
-                    esc((t.text or "").strip()), f(X(float(t.get("x")))), f(Y(float(t.get("y")))), tr % 360, det_uuid(self.project, idx, "text", t.get("x"), t.get("y"))))
+                if self.e.visible_layer(t.get("layer")):
+                    body.append(self.free_text((t.text or "").strip(), t, idx, "text"))
         # ---- assemble
         out = ["(kicad_sch", "\t(version 20250114)", "\t(generator \"eagle_sch_to_kicad\")", "\t(generator_version \"1.0\")",
-               "\t(uuid \"%s\")" % su, "\t(paper \"User\" %s %s)" % (f(pw), f(ph)),
+               "\t(uuid \"%s\")" % su, "\t(paper %s)" % paper,
                "\t(title_block (title \"%s sheet %d\") (comment 1 \"Converted from Eagle: %s sheet %d\"))" % (esc(self.project), idx + 1, esc(os.path.basename(self.e.path)), idx + 1),
                "\t(lib_symbols"]
         for nm in sorted(used_symbols):
@@ -621,11 +846,160 @@ class Converter:
         with open(path, "w") as fh:
             fh.write("\n".join(out) + "\n")
 
-    def global_label(self, name, x, y, rot, idx, si, lx, ly):
+    def free_text(self, txt, el, idx, *key):
+        """a sheet text drawn where and how Eagle draws it (size, ratio, align; 180/270 kept readable like Eagle)"""
+        sp = TSpec(el)
+        box, horiz = eagle_rel(sp)
+        a, jus = kicad_just(box, horiz, field=False)
+        X, Y = self._XY
+        return "\t(text \"%s\" (exclude_from_sim no) (at %s %s %d) (effects %s%s) (uuid \"%s\"))" % (
+            esc(txt), f(X(sp.x)), f(Y(sp.y)), a, font_sexpr(sp), (" (justify %s)" % jus) if jus else "",
+            det_uuid(self.project, idx, *(key + (el.get("x"), el.get("y")))))
+
+    # KiCad label direction (sheet coords, y down) -> (angle, justify of a global label)
+    DIRS = {"R": (0, "left"), "L": (180, "right"), "U": (90, "left"), "D": (270, "right")}
+
+    def global_label(self, name, x, y, d, idx, si, lx, ly, size=1.27):
+        """a global label at (x, y) whose flag runs in direction d (R/L/U/D) away from its wire"""
         self.stats["labels"] += 1
-        return "\t(global_label \"%s\" (shape passive) (at %s %s %d) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid \"%s\")" \
+        a, j = self.DIRS[d]
+        return "\t(global_label \"%s\" (shape passive) (at %s %s %d) (fields_autoplaced yes) (effects (font (size %s %s)) (justify %s)) (uuid \"%s\")" \
                "\n\t\t(property \"Intersheetrefs\" \"${INTERSHEET_REFS}\" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))\n\t)" % (
-                   esc(name), f(x), f(y), rot % 360, det_uuid(self.project, idx, "lbl", name, si, lx, ly), f(x), f(y))
+                   esc(name), f(x), f(y), a, f(size), f(size), j, det_uuid(self.project, idx, "lbl", name, si, lx, ly), f(x), f(y))
+
+    def local_label(self, name, x, y, d, idx, si, lx, ly, size=1.27):
+        """a sheet-local label (plain text just above / left of its wire, like an Eagle label) running in direction d"""
+        self.stats["labels"] += 1
+        a, j = self.DIRS[d]
+        return "\t(label \"%s\" (at %s %s %d) (fields_autoplaced yes) (effects (font (size %s %s)) (justify %s bottom)) (uuid \"%s\"))" % (
+            esc(name), f(x), f(y), a, f(size), f(size), j, det_uuid(self.project, idx, "lbl", name, si, lx, ly))
+
+    def power_names(self):
+        """net names KiCad also creates implicitly (hidden power pins, supply symbols): labels on them must be global"""
+        if not hasattr(self, "_pwr_names"):
+            self._pwr_names = {p.get("name") for lib in self.e.sch.find("libraries") for p in lib.iter("pin")
+                               if p.get("direction") in ("pwr", "sup")}
+        return self._pwr_names
+
+    def label_score(self, kind, name, size, x, y, d, cost):
+        """lower is better: preference cost + area over drawn things + wires/pins crossed (KiCad sheet coords)"""
+        a, j = self.DIRS[d]
+        b = SO.label_box("glabel" if kind == "g" else "label", name, size, size, x, y, a, j)
+        b = SO.shrink(b, 0.1)
+        sc = cost
+        for o in self._occ:
+            w = min(b[2], o[2]) - max(b[0], o[0]); h = min(b[3], o[3]) - max(b[1], o[1])
+            if w > 0 and h > 0: sc += 4 * w * h + 2
+        for (x1, y1, x2, y2) in self._occseg:
+            # the box starts AT the anchor, so a wire merely ending there (or crossing there) only touches its shrunk
+            # edge; a wire running INTO the box - its own wire included - counts
+            if SO.seg_hits(b, x1, y1, x2, y2): sc += 3
+        return sc, b
+
+    def place_labels(self, r, idx, X, Y):
+        """labels for one Eagle net segment. Every Eagle <label> is drawn (at its own spot on the wire, running the way
+        Eagle's text runs). A segment with no Eagle label gets one converter label only if KiCad needs the name to join it
+        to other segments or to an implicit power net; its spot is the free wire end / corner / wire middle that covers
+        the least of what is already drawn. Nets on one sheet get local labels (Eagle's look), multi-sheet nets and
+        power names get global labels."""
+        n, si = r["net"], r["si"]
+        glob = len(self.e.net_sheets.get(n, ())) > 1 or n in self.power_names() or any(l.get("xref") == "yes" for l in r["labels"])
+        kind = "g" if glob else "l"
+        emit = self.global_label if glob else self.local_label
+        K = lambda p: (round(p[0], 3), round(p[1], 3))
+        def kdir(vx, vy):   # Eagle vector (y up) -> KiCad direction letter
+            return ("R" if vx > 0 else "L") if abs(vx) >= abs(vy) else ("U" if vy > 0 else "D")
+        def outward(e):
+            for p1, p2 in r["wires"]:
+                if K(p1) == K(e): return kdir(p1[0] - p2[0], p1[1] - p2[1])
+                if K(p2) == K(e): return kdir(p2[0] - p1[0], p2[1] - p1[1])
+            return "R"
+        wires = [(p1, p2) for p1, p2 in r["wires"] if math.hypot(p2[0] - p1[0], p2[1] - p1[1]) > 1e-6]
+        out = []
+        def foreign(pt):
+            """a label joins EVERY wire through its anchor (a wire end on another wire's middle does not): never put
+            one where another net's wire runs or ends, e.g. a crossing, or a T that Eagle leaves unjoined"""
+            x, y = pt
+            for nn, (x1, y1), (x2, y2) in self._netwires:
+                if nn == n: continue
+                if abs((x2 - x1) * (y - y1) - (y2 - y1) * (x - x1)) <= 1e-3 * max(1.0, math.hypot(x2 - x1, y2 - y1)) and \
+                        min(x1, x2) - 1e-3 <= x <= max(x1, x2) + 1e-3 and min(y1, y2) - 1e-3 <= y <= max(y1, y2) + 1e-3:
+                    return True
+            return False
+        def best(cands, name, size):
+            scored = []
+            ok = [c for c in cands if not foreign(c[0])]
+            if not ok:   # every preferred spot touches another net: any end or wire middle of this segment will do
+                more = [(e, outward(e), 4) for e in r["ends"]]
+                for p1, p2 in wires:
+                    m = ((p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2)
+                    more += [(m, d, 5) for d in (("U", "D") if abs(p2[0] - p1[0]) >= abs(p2[1] - p1[1]) else ("R", "L"))]
+                ok = [c for c in more if not foreign(c[0])]
+            cands = ok or cands
+            for (ex, ey), d, cost in cands:
+                sc, b = self.label_score(kind, name, size, X(ex), Y(ey), d, cost)
+                scored.append((sc, (ex, ey), d, b))
+            scored.sort(key=lambda t: t[0])
+            return scored[0]
+        used = set()
+        for l in r["labels"]:
+            sp = TSpec(l)
+            lx, ly = sp.x, sp.y
+            # Eagle's label sits on (or right by) a wire of its segment: anchor it at the nearest wire point
+            q = None
+            for p1, p2 in wires or [(e, e) for e in r["ends"][:1]]:
+                dx, dy = p2[0] - p1[0], p2[1] - p1[1]; L2 = dx * dx + dy * dy
+                t = max(0.0, min(1.0, ((lx - p1[0]) * dx + (ly - p1[1]) * dy) / L2)) if L2 else 0.0
+                c = (p1[0] + t * dx, p1[1] + t * dy)
+                dd = (c[0] - lx) ** 2 + (c[1] - ly) ** 2
+                if q is None or dd < q[0]: q = (dd, c, (dx, dy))
+            if q is None:
+                continue
+            box, horiz = eagle_rel(sp)
+            ed = ("R" if box[0] >= -1e-6 else "L") if horiz else ("U" if box[1] >= -1e-6 else "D")
+            # candidates: Eagle's own spot, and the segment's free wire ends (a label there also closes the dangling end
+            # that KiCad's ERC would otherwise report; Eagle usually puts its label right by that end anyway)
+            cands = [(q[1], ed, 1.0)]
+            for e in r["free"]:
+                if K(e) in used: continue
+                dist = math.hypot(e[0] - lx, e[1] - ly)
+                if glob:
+                    cands.append((e, outward(e), 0.05 * dist))
+                else:
+                    cands += [(e, ed, 0.05 * dist), (e, outward(e), 0.3 + 0.05 * dist)]
+            if glob:
+                # a global label's flag must not lie along its own wire: also offer the perpendiculars at Eagle's spot
+                wdx, wdy = q[2]
+                perp = ("U", "D") if abs(wdx) >= abs(wdy) else ("R", "L")
+                cands += [(q[1], d, 1.5) for d in perp]
+            size = min(sp.size, 1.27) if glob else sp.size   # a global label's flag is ~1.9 x its text: 1.27 fits a 2.54 pitch
+            cands = [c for c in cands if K(c[0]) not in used]
+            if not cands:
+                continue        # a second Eagle label of this segment with nowhere else to go: one label already names it
+            sc, pt, d, b = best(cands, n, size)
+            used.add(K(pt))
+            out.append(emit(n, X(pt[0]), Y(pt[1]), d, idx, si, l.get("x"), l.get("y"), size=size))
+            self._occ.append(b)
+        need = not r["labels"] and not r["supply"] and (self.e.net_segs.get(n, 0) > 1 or n in self.power_names())
+        if need and r["ends"]:
+            cands = [(e, outward(e), 0) for e in r["free"]]
+            for p1, p2 in wires:
+                for e in (p1, p2):   # corners: two wires meet, not on a pin; offer the directions no wire takes
+                    if r["cnt"].get(K(e), 0) == 2 and K(e) not in r["pinpts"]:
+                        taken = {kdir(q2[0] - q1[0], q2[1] - q1[1]) if K(q1) == K(e) else kdir(q1[0] - q2[0], q1[1] - q2[1])
+                                 for q1, q2 in wires if K(q1) == K(e) or K(q2) == K(e)}
+                        cands += [(e, d, 2) for d in "RLUD" if d not in taken]
+                L = math.hypot(p2[0] - p1[0], p2[1] - p1[1])
+                if L >= 2.5:   # the middle of a wire, flag across it
+                    m = ((p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2)
+                    perp = ("U", "D") if abs(p2[0] - p1[0]) >= abs(p2[1] - p1[1]) else ("R", "L")
+                    cands += [(m, d, 3) for d in perp]
+            if not cands:
+                cands = [(r["ends"][0], outward(r["ends"][0]), 5)]
+            sc, pt, d, b = best(cands, n, 1.27)
+            out.append(emit(n, X(pt[0]), Y(pt[1]), d, idx, si, "auto", pt))
+            self._occ.append(b)
+        return out
 
 # ----------------------------------------------------------------------------- main
 if __name__ == "__main__":

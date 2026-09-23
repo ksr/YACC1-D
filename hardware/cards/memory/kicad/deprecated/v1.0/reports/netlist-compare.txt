@@ -1,3 +1,4 @@
 schematic: 17 components, 69 multi-pin nets; board: 69 multi-pin nets
 identical net groups: 69 of 69
+  same connectivity, different net name: [('Net-(IC1-~{OE})', 'N$3'), ('Net-(IC1-~{WE})', 'N$4'), ('Net-(IC4-I1)', 'N$10'), ('Net-(IC4-I2)', 'N$9'), ('Net-(IC4-I3)', 'N$8'), ('Net-(IC4-I4)', 'N$7'), ('Net-(IC4-I5)', 'N$6'), ('Net-(IC4-I6)', 'N$5'), ('Net-(IC4-I7)', 'N$1'), ('Net-(IC4-O)', 'N$14'), ('Net-(IC6A-I)', 'MEM-RD'), ('Net-(IC6B-I)', 'N$2'), ('Net-(IC10A-I0)', 'N$12'), ('Net-(IC10A-O)', 'N$13'), ('Net-(PWR0-PadA)', 'N$11')]
 RESULT: MATCH

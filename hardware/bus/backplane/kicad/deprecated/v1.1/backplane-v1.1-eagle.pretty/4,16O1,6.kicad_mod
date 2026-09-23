@@ -4,11 +4,11 @@
 	(generator_version "10.0")
 	(layer "F.Cu")
 	(descr "THROUGH-HOLE PAD")
-	(property "Reference" "UNK5V0"
+	(property "Reference" "GND0"
 		(at -2.1 -2.2 0)
 		(unlocked yes)
 		(layer "F.SilkS")
-		(uuid "56842668-4bda-4ec1-8f69-db2069f49548")
+		(uuid "58232442-87a5-427f-9b93-42d4c47a74f6")
 		(effects
 			(font
 				(size 1.1684 1.1684)
@@ -21,7 +21,7 @@
 		(at 0 0 0)
 		(unlocked yes)
 		(layer "F.Fab")
-		(uuid "f344c804-8f14-41fb-b14e-774d0e32705d")
+		(uuid "0706bd54-b2fc-4ad9-bdc3-bb2efe3ab58c")
 		(effects
 			(font
 				(size 0.023368 0.023368)
@@ -35,7 +35,7 @@
 		(unlocked yes)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "bdc78543-1356-4547-9faa-a93f6cde7977")
+		(uuid "a7bc2ba6-5190-48e6-a708-2d0c775fc9e0")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -47,7 +47,7 @@
 		(unlocked yes)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "9cd1c0c4-5aab-4184-acc5-b1fbd2549d83")
+		(uuid "25bc430f-f27b-496d-aeb9-3beb02cfd48e")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -66,7 +66,7 @@
 		(chamfer top_left top_right bottom_left bottom_right)
 		(solder_mask_margin 0.0762)
 		(thermal_bridge_angle 0)
-		(uuid "6c2e952c-2b42-42c8-8933-21bcc428fd43")
+		(uuid "ce9cd47b-56a0-474e-88e6-ecdd26eb077d")
 	)
 	(embedded_fonts no)
 )
