@@ -44,4 +44,5 @@ Generated 2026-09-20 by `tools/eagle_to_kicad_all.py`: every Eagle design under 
 
 ## Hand-maintained masters (not generated; `MASTER` marker file)
 
+- [`cards/cf/kicad/v1.0`](cards/cf/kicad/v1.0/) — see its README
 - [`cards/video/kicad/v1.1`](cards/video/kicad/v1.1/) — see its README

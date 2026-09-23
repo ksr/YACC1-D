@@ -109,8 +109,13 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 ## Disk operating system (plan `docs/system/OS-PLAN.md`, decisions 2026-09-22)
 - (done 2026-09-22 evening: phase 1 — CF model in both emulators, ROM driver + `O` boot + vectors, p8xfs/img2bin; phase 2
   read-only — `os/y1os.c` shell with dir/cd/pwd/cat/load/run and /BIN programs, `tests/os/` sessions on both emulators.)
-- **The CF card in hardware**: KiCad, two ports (P8 select latch, P9 data), 74245 + 74LS174 + decode + strobe gating,
-  True IDE 8-bit, rails and pull-ups checked; bench-test with the bus tester (OUTI P8 / INP P9 through the ROM driver).
+- (designed 2026-09-23: **the CF card v1.0** — `hardware/cards/cf/kicad/v1.0/` generated from `cf_netlist.py`: 5 ICs
+  (74LS138/32/175/08/245), 40-pin IDE header for a CF-to-IDE adapter, schematic and board both proven equal to the
+  netlist, DRC 0 errors / 0 unconnected, gerbers ready; theory in `docs/cards/cf.md`.) **Before ordering**: check Ken's
+  CF-to-IDE adapter against J1 (fit, overhang, ribbon or direct) and its power connector against J2 / JP1; check X1's
+  position on a real card (the blank V3.2 it came from was never fabricated); confirm the I/O card's IO-ADDR-HL strap
+  is P0-P7. **After building**: the bring-up steps in `docs/cards/cf.md` section 7 (empty adapter = `CF ERROR`, the P8
+  latch on J1's DA pins, then `O` with a card prepared by `dd` from `os/disk.img`); write the card-preparation procedure.
 - (done 2026-09-23: **write support** — save/del/ren/mkdir/rmdir in the shell, files written at the free pointer and
   registered as `p8xfs.py` does, verified from the host in `tests/os/run.py` (fsck, ls, get); **the file API** —
   a 22-entry syscall table at $0F14 (SYSARG/SYSRES at $0F06..), y1cc's `sys()`/`funcaddr()` builtins, `os/lib_fs.c`

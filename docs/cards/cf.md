@@ -152,6 +152,15 @@ there is nothing tight:
   after `-IOR`, and a data-register read is exactly the access where the CF advances its sector-buffer pointer on the
   end of `-IOR`. With `-CS0` tied low permanently, the strobes alone define each cycle, which True IDE allows.
 
+- **The buffer's direction at the end of a read.** `DIR` is `-IOR` itself, while the enable `-CFOE` comes one AND
+  gate later. So when `-IOR` rises, the 245 turns back towards the CF (A to B) about one gate delay, roughly 10 ns,
+  before it switches off, and for that moment it can drive the CF's data lines while the CF is still releasing them.
+  The CPU took its byte a step earlier, so no data is at risk; the effect is a brief current spike through two
+  drivers. The alternatives are worse: taking direction from the write strobe instead moves the same race to the
+  start of every write, where the bus byte is being driven, and the bus carries no direction signal earlier than the
+  strobes (reads and writes use the same port). The P8X CF card has the same arrangement. If it ever shows on a scope
+  as ringing on the CF data lines, a revision could delay the rising edge of `DIR` with an RC or spare gates.
+
 ## 5. Programming model
 
 What the ROM driver does (`firmware/monitor/monitor.asm`; the same sequence is in `software/cfmodel.h`):

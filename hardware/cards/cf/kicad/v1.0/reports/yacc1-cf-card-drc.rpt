@@ -1,0 +1,47 @@
+** Drc report for yacc1-cf-card.kicad_pcb **
+** Created on 2026-09-23T13:43:37 **
+** Report includes: Errors, Warnings, Exclusions **
+
+** Found 8 DRC violations **
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(17.7470 mm, 10.0250 mm): Segment on Edge.Cuts
+    @(19.0170 mm, 24.9350 mm): Segment of X1 on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(17.7470 mm, 10.0250 mm): Segment on Edge.Cuts
+    @(19.0170 mm, 108.7550 mm): Segment of X1 on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(17.7470 mm, 10.0250 mm): Segment on Edge.Cuts
+    @(22.8270 mm, 19.8550 mm): Segment of X1 on F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: board setup constraints silk; warning
+    @(17.7470 mm, 10.0250 mm): Segment on Edge.Cuts
+    @(22.8270 mm, 113.7951 mm): Segment of X1 on F.Silkscreen
+[text_thickness]: Text thickness out of range (board setup constraints silk text thickness min thickness 0.1200 mm; actual 0.0813 mm)
+    Rule: board setup constraints silk text thickness; warning
+    @(20.2870 mm, 26.8400 mm): Footprint text of X1 (32)
+[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.7315 mm)
+    Rule: board setup constraints silk text height; warning
+    @(20.2870 mm, 26.8400 mm): Footprint text of X1 (32)
+[text_thickness]: Text thickness out of range (board setup constraints silk text thickness min thickness 0.1200 mm; actual 0.0813 mm)
+    Rule: board setup constraints silk text thickness; warning
+    @(20.2870 mm, 105.9610 mm): Footprint text of X1 (1)
+[text_height]: Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.7315 mm)
+    Rule: board setup constraints silk text height; warning
+    @(20.2870 mm, 105.9610 mm): Footprint text of X1 (1)
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint field does not match symbol field
+    - Footprint doesn't match symbol's footprint filters
+    - Footprint component type doesn't match footprint pads
+
+** End of Report **

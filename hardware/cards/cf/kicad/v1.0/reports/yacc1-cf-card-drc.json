@@ -1,0 +1,194 @@
+{
+    "$schema": "https://schemas.kicad.org/drc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-09-23T13:43:39",
+    "ignored_checks": [
+        {
+            "description": "Footprint has no courtyard defined",
+            "key": "missing_courtyard"
+        },
+        {
+            "description": "Track endpoint not centered on via",
+            "key": "track_not_centered_on_via"
+        },
+        {
+            "description": "Tuning profile track geometries",
+            "key": "tuning_profile_track_geometries"
+        },
+        {
+            "description": "Footprint field does not match symbol field",
+            "key": "footprint_symbol_field_mismatch"
+        },
+        {
+            "description": "Footprint doesn't match symbol's footprint filters",
+            "key": "footprint_filters_mismatch"
+        },
+        {
+            "description": "Footprint component type doesn't match footprint pads",
+            "key": "footprint_type_mismatch"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.6",
+    "schematic_parity": [],
+    "source": "yacc1-cf-card.kicad_pcb",
+    "unconnected_items": [],
+    "violations": [
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 17.747,
+                        "y": 10.025
+                    },
+                    "uuid": "f6057151-48d6-4e0b-82de-32e5d2beb9c6"
+                },
+                {
+                    "description": "Segment of X1 on F.Silkscreen",
+                    "pos": {
+                        "x": 19.017,
+                        "y": 24.935
+                    },
+                    "uuid": "972a55e3-924c-4d9d-91fa-270ca508e2a4"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 17.747,
+                        "y": 10.025
+                    },
+                    "uuid": "f6057151-48d6-4e0b-82de-32e5d2beb9c6"
+                },
+                {
+                    "description": "Segment of X1 on F.Silkscreen",
+                    "pos": {
+                        "x": 19.017,
+                        "y": 108.755
+                    },
+                    "uuid": "3da3b858-d390-4a1a-bc90-9dcfd64158c3"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 17.747,
+                        "y": 10.025
+                    },
+                    "uuid": "f6057151-48d6-4e0b-82de-32e5d2beb9c6"
+                },
+                {
+                    "description": "Segment of X1 on F.Silkscreen",
+                    "pos": {
+                        "x": 22.827,
+                        "y": 19.855
+                    },
+                    "uuid": "65f03ddf-35aa-4d34-83c8-203e94b8e4f7"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 17.747,
+                        "y": 10.025
+                    },
+                    "uuid": "f6057151-48d6-4e0b-82de-32e5d2beb9c6"
+                },
+                {
+                    "description": "Segment of X1 on F.Silkscreen",
+                    "pos": {
+                        "x": 22.827,
+                        "y": 113.7951
+                    },
+                    "uuid": "615773f4-be0a-40b6-8398-b9e23834521f"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Text thickness out of range (board setup constraints silk text thickness min thickness 0.1200 mm; actual 0.0813 mm)",
+            "items": [
+                {
+                    "description": "Footprint text of X1 (32)",
+                    "pos": {
+                        "x": 20.287,
+                        "y": 26.84
+                    },
+                    "uuid": "404fe5af-ac8b-4836-a6d0-615c21df1612"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_thickness"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.7315 mm)",
+            "items": [
+                {
+                    "description": "Footprint text of X1 (32)",
+                    "pos": {
+                        "x": 20.287,
+                        "y": 26.84
+                    },
+                    "uuid": "404fe5af-ac8b-4836-a6d0-615c21df1612"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text thickness out of range (board setup constraints silk text thickness min thickness 0.1200 mm; actual 0.0813 mm)",
+            "items": [
+                {
+                    "description": "Footprint text of X1 (1)",
+                    "pos": {
+                        "x": 20.287,
+                        "y": 105.961
+                    },
+                    "uuid": "022fd5a5-30c6-4ec8-9627-3fe966dec18e"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_thickness"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.7315 mm)",
+            "items": [
+                {
+                    "description": "Footprint text of X1 (1)",
+                    "pos": {
+                        "x": 20.287,
+                        "y": 105.961
+                    },
+                    "uuid": "022fd5a5-30c6-4ec8-9627-3fe966dec18e"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        }
+    ]
+}
