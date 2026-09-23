@@ -1,15 +1,18 @@
 # os — Y1/OS, the YACC1 disk operating system
 
-A RAM-resident shell and file layer over a P8XFS v2 CompactFlash volume, written in C for
-`software/compiler/y1cc.py` and loaded by the ROM monitor's `O` command. Started 2026-09-22 from the plan in
-`docs/system/OS-PLAN.md`: **v0 (2026-09-22) = phases 1 and 2 read-only; v0.1 (2026-09-23) = write support and a
-file API for programs, proven on both emulators** (the CF card itself is not built yet). Y1/OS is the YACC1's own
+A RAM-resident shell and file layer over a P8XFS v2 CompactFlash volume, loaded by the ROM monitor's `O` command.
+Started 2026-09-22 from the plan in `docs/system/OS-PLAN.md`: **v0 (2026-09-22) = phases 1 and 2 read-only; v0.1
+(2026-09-23) = write support and a file API for programs, proven on both emulators; v0.2 (2026-09-23) = the same OS
+rewritten in YACC1 assembly (`y1os.asm`), half the size and 1.3-1.9x faster** (the CF card itself is not built
+yet). `y1os.c`, the C version for `software/compiler/y1cc.py`, stays as the specification: `make -C os OS=c` builds
+and installs it instead, and both pass the same tests (below, "The assembly OS"). Y1/OS is the YACC1's own
 from here on: it is not kept in step with P8X/OS, and neither are the programs brought over (Ken, 2026-09-22).
 Only the on-disk format is shared, so `tools/p8xfs.py` (a fork of the P8X tool) builds the images and reads back
 what the OS writes.
 
 ```
-make -C os              # build/y1os.bin, /BIN programs, disk.img
+make -C os              # build/y1os.bin (the assembly OS), /BIN programs, disk.img
+make -C os OS=c         # the same with the C OS (y1os.c); build/os-sel remembers the choice, disk.img follows it
 make -C os run          # the microcode emulator with the ROM and the disk: type O at the monitor prompt
 make -C os run-int      # the instruction-level emulator
 make -C os test         # tests/os/run.py: scripted sessions on both emulators against expected transcripts,
@@ -20,12 +23,13 @@ make -C os test         # tests/os/run.py: scripted sessions on both emulators a
 
 The monitor's `O` command (ROM, `firmware/monitor/monitor.asm`) initialises the card (SET FEATURES, 8-bit mode),
 reads the boot block (LBA 0) to $1000, checks the `P8` signature and OSCNT, reads LBA 1..OSCNT to $1000 and JSRURs
-it. `y1os.c` is compiled with `--org 0x1000`, so `main` is the first byte of the image; `exit` makes main return,
-and the monitor's prompt is back. `tools/p8xfs.py boot disk.img build/y1os.bin` installs it (14,619 bytes = 29 of
-the 32 reserved sectors since redirection and pipes, 2026-09-23; 12,204 bytes = 24 sectors before; v0 was 5,136
-bytes). Its image plus its data must end below $5000, where the programs start: 16,043 of the 16,384 bytes today,
-which the Makefile checks and prints. At boot main() clears its BSS (which is also what zeroes the handle table and
-the redirect state), fills the syscall table (below), and reads the boot block again for the free-sector pointer;
+it. `y1os.asm` starts at `ORG 1000H` with its entry (`os_start`), so the monitor lands on it; `exit` RETs and the
+monitor's prompt is back. `tools/p8xfs.py boot disk.img build/y1os.bin` installs it: **7,137 bytes = 14 of the 32
+reserved sectors** (v0.2, 2026-09-23; the C version is 14,619 bytes = 29 sectors, 12,204 = 24 before redirection and
+pipes, and v0 was 5,136). Its image must end below its RAM at $4A00 (the Makefile checks and prints it: 7,711 bytes
+free between them today); the C version's image plus data must end below $5000 (16,043 of 16,384). At boot the OS
+clears its RAM $4A00-$4FFF (the C clears its BSS: the same effect, the handle table and the redirect state zeroed),
+fills the syscall table (below), and reads the boot block again for the free-sector pointer;
 it keeps that pointer in RAM and reads it again after every program returns (`read_free()` in `run_prog()`, since
 2026-09-23), because `/BIN/PACK` lowers it on the disk.
 
@@ -143,7 +147,8 @@ result is a full 16-bit word (no carry bit): 1/0 for done/cannot, a handle or 0,
 | 20 | KEYIN | | a KEY: always the console, never redirected, no echo; 65535 on Ctrl-D / NUL. The `--More--` key, `vi`, `dump`, `examine` (2026-09-23) |
 | 21 | STDIO | | bit 0: stdin is redirected, bit 1: stdout is (the pager does not page into a file) (2026-09-23) |
 
-All 22 slots are in use: the next syscall needs SYSTAB grown (ARGBUF moves) or a multiplexed entry.
+All 22 slots are in use. The next syscall needs the table moved, since ARGBUF follows it: the plan (BACKLOG.md) is a
+32-entry table at $4FC0-$4FFF, which the assembly OS keeps free, with `SYSTAB` changed in `lib_abi.c` and `y1cc.py`.
 
 Handles: four, each with its own 512-byte buffer and 16-bit position (so a file over 64K cannot be opened). A
 read handle serves `GETC` (byte-wise, buffered) and `READ` (sector-wise into the caller's buffer; the position then
@@ -318,10 +323,17 @@ image is byte-identical, and that the next file lands at the new free pointer.
 | $0F10–$0F12 | CFLBA0..2, the sector for CFREAD/CFWRITE (ROM variables) |
 | $0F14–$0F3F | SYSTAB, the syscall jump table (22 entries, all used since 2026-09-23) |
 | $0F40–$0FBF | ARGBUF, a program's command tail (127 chars + NUL; the upper half overlays the monitor's idle line buffer) |
-| $1000–$4FFF | the OS image (14.3K today) and its data (1.4K): sector buffer, line, path, directory and pipeline state; the Makefile fails the build past $4FFF |
+| $1000–$2BE0 | the OS image (`y1os.asm`, 7,137 bytes, 2026-09-23); the Makefile fails the build if it reaches $4A00 |
+| $2BE1–$49FF | free (7,711 bytes) |
+| $4A00–$4F0F | the OS's RAM, cleared at boot: line $4A00 (page-aligned), path, path copy, the entry, name buffers; the pipeline table $4B80; the sector buffer $4C00 (512-aligned); the handle records $4E00 (page-aligned, 16 bytes each); the variables $4E50-$4F0F |
+| $4F10–$4FFF | free; $4FC0-$4FFF is kept for a 32-entry SYSTAB (BACKLOG) |
+| (C OS) | `y1os.c` instead: image 14,619 bytes and data 1,424 in $1000-$4EAA, which the Makefile checks against $4FFF |
 | $5000–$CFFF | programs |
 
 ## Inside
+
+(Written for `y1os.c`; `y1os.asm` follows it routine for routine under the same names, see its header comments.
+The assembly-specific parts are in the next section.)
 
 - `cfread(lba, buf)` / `cfwrite(lba, buf)` = poke the LBA into the ROM's variables, `bios(CFREAD/CFWRITE, buf, 0)`;
   the ROM streams 512 bytes through the two CF ports (P8 select, P9 data).
@@ -347,6 +359,56 @@ image is byte-identical, and that the next file lands at the new free pointer.
   the raw console. `y1cc` cannot check this: calls through SYSTAB are invisible to its call graph.
 - The shell parses a line in place (`split()`): commands split at `|`, the redirect names NUL-terminated where
   they stand; `stage()` opens a command's input and output, `run_cmd()` runs it, `io_reset()` closes both.
+
+## The assembly OS (v0.2, 2026-09-23)
+
+`y1os.asm` is `y1os.c` rewritten by hand, routine by routine, with the C as the specification: the same shell,
+commands, messages (`strings.txt`, byte-identical; only the banner says v0.2), syscall numbers, arguments, results
+and side effects (including what `ENTRY` returns after each call), the same redirection and pipes, the same RAM
+areas outside $1000-$4FFF, and the same sectors written in the same order. It is half the size (7,137 bytes against
+14,619) and runs the test sessions in 1.3-1.9x fewer instructions (`pipe` and `pack` 1.9x, the command-heavy
+sessions ~1.55x; most of the remaining time is the programs, compiled C, and the ROM's sector loop).
+
+- **Build.** The RC/asm assembler upper-cases every source line, so the messages are in `strings.txt` and
+  `mkstrings.py` turns them into numeric `DB` lines (`build/asm/y1os_str.inc`, `INCLUDE`d at the end of the code).
+- **Registers.** R3 = the value / result (16 bits), R4 and R5 operands and pointers, R6/R7 scratch (the ROM's
+  CFREAD/CFWRITE clobber them); R2 is never used (the machine's hidden operand-address register). A routine that
+  answers yes/no or a handle leaves it in R3 and in ACC, so the caller branches at once; `ret0`/`ret1`/`reta`/`retr3`
+  are the shared exits. 16-bit adds are ADDT/ADDI then ADDTC/ADDIC with only register moves between; no carry is
+  read after a shift or a subtract (the machine's carry flip-flop is clocked by those, the interpreter's is not).
+- **Layout for cheap addressing.** The RAM is at fixed addresses at the top of the OS area: `SBUF` is 512-aligned, so
+  an entry's offset in it is its address's low nine bits; `HTAB` is page-aligned with a 16-byte record per handle
+  (mode, then the big-endian words position, length, cur, start), so `hrec` is four shifts and any field is
+  `MVRLA R4 / ANDI 0F0H / ORI field / MVARL R4` away; `LINE` is page-aligned, so its length is a register's low byte.
+- **The static-frame rule, assembly edition.** Every variable is static, as in the C. The console syscalls and what
+  they reach (`cout`, `fs_putc`, `fs_getc`, `hrec`, `hbuf`, `zero512`, `cfrd`, `cfwr`, `key_in`) use registers and
+  their own variables only and never print; the shell's own output (`cout`) goes to `fs_putc` directly instead of
+  through SYSTAB, which is what the C's `putchar` did by way of the CONOUT handler.
+- **Tests.** `tests/os/run.py` passes every session on both emulators with either OS (it compares the banner without
+  its version), `run.py --cuts 60` passed 120 of 120 (then 119: a cut in pack's own window, the same with the C OS, BACKLOG.md), and a C-versus-assembly differential run (the same disk, the
+  same keystrokes; transcript and every sector of the disk afterwards compared) agreed on the sessions plus the
+  built-ins that `/BIN` normally hides, loads at the address limits, redirection and pipe edge cases, and a syscall
+  torture program (every call with odd handles, paths, names and buffers, the `ENTRY` record after each).
+
+**Behaviours of `y1os.c` kept as they are** (the transcripts are the contract; each is in BACKLOG.md):
+
+1. CLOSE of a read handle returns 1 and of a directory handle **3** (its mode), not the documented 1.
+2. A trailing slash after a FILE name still resolves (`fopen("README.TXT/")` opens it).
+3. CHDIR with a component over 12 characters matches an entry whose 12-character name is its first 12 characters,
+   and the current path then carries the whole typed name (`cd /D1/AAAAAAAAAAAAXYZ` gives the prompt
+   `/D1/AAAAAAAAAAAAXYZ>`); OPEN/RESOLVE refuse such a component.
+4. CHDIR into a directory whose path would pass 62 characters moves the current directory but leaves the path (the
+   prompt, GETCWD) at the parent's: `path_push` gives up silently.
+5. DELETE returns 1 even when the tombstone cannot be written; `ren` accepts a new name with spaces (`ren A B C`
+   names the file "B C").
+
+**Fixed in both, the same day** (`tests/os/badhandle.session`): PUTC/WRITE on handle 0 with no write open were
+accepted (`h != wh` was 0 != 0): the bytes went to `hb(0)` = $0200 (BASIC's variables) and the 513th wrote that
+buffer to LBA 0, destroying the boot block; now only the open write handle is written through (READ/GETC/READDIR
+were already safe: they check the handle's mode). And `load`/`run` of an empty file loaded one sector's worth and
+`run` jumped into it; now it says "bad load address or size". The session writes and reads through bad handles
+(0, read, directory, closed, out of range), runs an empty file three ways, and the host checks prove the volume
+intact (fsck, the boot block, every pristine file byte-identical); against the old OS it fails (boot block "AB").
 
 ## Not there yet
 

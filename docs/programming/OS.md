@@ -1,7 +1,9 @@
 # Y1/OS — the YACC1 disk operating system
 
 User guide, programmer guide (commands and the syscall/file API), the on-disk format, the memory layout and the
-plan for Y1/OS. Written 2026-09-23 from the YACC1-D tree. Later the same day the P8X commands were ported (26 programs in /BIN, ten shared libraries, 50 man pages in /MAN, `vi`): `os/README.md` carries the current command table and `os/PORT-PLAN.md` the per-command status; the API described here is unchanged.
+plan for Y1/OS. Written 2026-09-23 from the YACC1-D tree. **Later still that day (v0.2) the OS was rewritten in
+YACC1 assembly, `os/y1os.asm`, with the same behaviour and ABI** (section 1a); `y1os.c` is its specification and is
+still built with `make -C os OS=c`. Where this guide names a `y1os.c` function, `y1os.asm` has a routine of that name. Later the same day the P8X commands were ported (26 programs in /BIN, ten shared libraries, 50 man pages in /MAN, `vi`): `os/README.md` carries the current command table and `os/PORT-PLAN.md` the per-command status; the API described here is unchanged.
 
 Sources: `os/y1os.c` (v0.1, read as of 2026-09-23 09:43 — **it was being edited while this was written**),
 `os/lib_abi.c` (09:37), `os/README.md` (the v0 text of 2026-09-22), `os/commands/{hello,echo,wc}.c`, `os/Makefile`,
@@ -26,8 +28,18 @@ ones (the v0.1 banner differs: `Y1/OS v0.1 (2026-09-23)  P8XFS v2`). **To verify
 `tests/os/run.py --update` once the OS edit settles; the v0.1 commands below are read from the source, not from a
 transcript.
 
+### 1a. v0.2: the assembly OS (2026-09-23)
+
+`os/y1os.asm` (hand-written, 7,137 bytes = 14 sectors; the C version is 14,619 = 29) does exactly what `y1os.c`
+does: same shell, messages (`os/strings.txt`, assembled as numeric bytes by `os/mkstrings.py`), syscalls, results,
+side effects and sectors written; only the banner says `Y1/OS v0.2 (2026-09-23)`. The test sessions take 1.3-1.9x
+fewer instructions (e.g. `pipe` 9.57M -> 4.91M, `pack` 29.97M -> 15.78M on the interpreter; the same ratio in
+microcode steps). Its RAM is $4A00-$4FFF at fixed, aligned addresses; $2BE1-$49FF is free. `os/README.md` ("The
+assembly OS") has the conventions, the test evidence and the list of `y1os.c` behaviours both versions keep.
+
 ```
-make -C os              # build/y1os.bin, the /BIN programs, disk.img
+make -C os              # build/y1os.bin (the assembly OS), the /BIN programs, disk.img
+make -C os OS=c         # the same with the C OS (y1os.c)
 make -C os run          # the microcode emulator with the ROM and the disk: type O at the monitor prompt
 make -C os run-int      # the instruction-level emulator
 make -C os test         # tests/os/run.py: scripted sessions on both emulators against expected transcripts
@@ -258,7 +270,7 @@ image with `-c disk.img` and create a zero-filled 256-sector one if the file is 
 |---|---|
 | $0000–$0EFF | system page: BASIC's areas (unused while the OS runs); the OS's four 512-byte handle buffers at $0400–$0BFF (since 2026-09-23); the stack from $0EFF down, not below $0C00 |
 | $0F00–$0FFF | the ROM's variables, and the OS's syscall block inside their free space: `SYSARG0..2` $0F06–$0F0B, `SYSRES` $0F0C, `CFLBA0..2` $0F10, `SYSTAB` $0F14–$0F3F, `ARGBUF` $0F40–$0FBF (over the monitor's idle line buffer) |
-| $1000–$4FFF | the OS image (5.1K for v0; 14,619 bytes = 29 sectors with redirection and pipes, 2026-09-23) and its data (1,424 bytes: the OS sector buffer, line, path, directory, handle and pipeline state); image + data must end below $5000 (the Makefile checks; 16,043 of 16,384 today) |
+| $1000–$4FFF | the OS: `y1os.asm` (v0.2) = a 7,137-byte image ($1000–$2BE0, 14 sectors), free $2BE1–$49FF, and its RAM $4A00–$4F0F (line, path, entry, pipeline table, the sector buffer at $4C00, the handle records at $4E00, the variables; the Makefile fails the build if the image reaches $4A00). The C version (`OS=c`): 14,619 bytes = 29 sectors + 1,424 bytes of data, 16,043 of 16,384 (5.1K for v0) |
 | $5000–$CFFF | the transient program area (`TPA`..`TPATOP`), 32 K |
 | $D000–$DFFF | video (map A: $D000–$D7FF the 2K display RAM, $D800–$DFFF unused) — not RAM |
 | $E000–$FFFF | ROM |

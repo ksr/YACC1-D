@@ -57,10 +57,13 @@ RESET-SAFE
         volume if pack stops.
       - A directory's '.' and its subdirectories' '..' follow at once,
         and every '.' and '..' is checked and repaired on each run.
-    An interrupted pack leaves a volume that passes p8xfs.py fsck
-    with every file intact; the next pack reclaims what is left,
-    the scratch area included. (Tested on the emulator by cutting
-    pack off at 120 points in every phase: nothing was lost.) The
+    An interrupted pack leaves every file intact, and the next pack
+    reclaims what is left, the scratch area included. One window is
+    known: a cut during a two-step directory move can leave a
+    subdirectory's '..' pointing at the scratch copy (fsck complains);
+    no file is lost, and running pack again repairs it. (Tested on the
+    emulator by cutting pack off at 120 points in every phase: nothing
+    was lost, and every rerun left a clean volume.) The
     one thing no program can guard against is a sector half-written
     when the power drops, as with any write.
 

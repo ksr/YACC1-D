@@ -1,0 +1,66 @@
+# os/strings.txt - every message and name of the assembly Y1/OS (y1os.asm), one per line: LABEL "text".
+# mkstrings.py turns each into `LABEL: DB b,b,...,0` (numeric bytes: the assembler upper-cases its source lines,
+# so DB "text" would lose the lower case) in build/asm/y1os_str.inc, which y1os.asm INCLUDEs. The text is exactly
+# what y1os.c prints (the transcripts in tests/os are the contract); only the banner's version differs.
+# No escapes are needed; labels are at most 29 characters. Lines starting with # are comments.
+
+# the banner, the prompt, the end
+S_BANNER    "Y1/OS v0.2 (2026-09-23)  P8XFS v2"
+S_PROMPT    "> "
+S_BYE       "bye"
+S_CFERR     "CF read error"
+S_SYNTAX    "syntax: cmd [< in] [> out | >> out] [| cmd ...] (4 commands at most)"
+S_WHAT      "what?"
+S_CANTREAD  "cannot read the < file"
+S_CANTWRITE "cannot write the > or pipe file"
+
+# the built-in commands' messages
+S_NOTFOUND  "not found"
+S_NOTDIR    "not a directory"
+S_ISDIR     "is a directory"
+S_TOOBIG    "too big"
+S_DIRTAG    "<DIR>"
+S_X64K      "x64K+"
+S_AT        "  @"
+S_ENTRIES   " entries"
+S_BADLOAD   "bad load address or size"
+S_LOADED    "loaded "
+S_BYTESAT   " bytes at $"
+S_SAVEUSE   "usage: save path addr len (hex)"
+S_CANTMAKE  "cannot create"
+S_WRITEERR  "write error"
+S_SAVED     "saved "
+S_BYTES     " bytes"
+S_NOTAFILE  "not a file"
+S_RENUSE    "usage: ren path newname"
+S_CANTREN   "cannot rename"
+S_CANTMKDIR "cannot mkdir"
+S_NOTEMPTY  "not an empty directory"
+S_HELP1     "Y1/OS: dir [path]  cd path  pwd  cat path  load path  run path [args]  help  exit"
+S_HELP2     "       save path addr len (hex)  del path  ren path newname  mkdir path  rmdir path"
+S_HELP3     "       or the name of a program in /BIN (or here), followed by its arguments"
+S_HELP4     "       cmd [< in] [> out | >> out] [| cmd ...]  redirection, pipes (4 commands)"
+
+# names
+S_BIN       "/BIN/"
+S_PIPE0     "/PIPE0.TMP"
+S_PIPE1     "/PIPE1.TMP"
+S_DOT       "."
+S_DOTDOT    ".."
+
+# the shell's words (run_cmd; compared after the word is lower-cased)
+S_EXIT      "exit"
+S_CDIR      "dir"
+S_CCD       "cd"
+S_CPWD      "pwd"
+S_CCAT      "cat"
+S_CTYPE     "type"
+S_CLOAD     "load"
+S_CRUN      "run"
+S_CSAVE     "save"
+S_CDEL      "del"
+S_CREN      "ren"
+S_CMKDIR    "mkdir"
+S_CRMDIR    "rmdir"
+S_CHELP     "help"
+S_CQ        "?"

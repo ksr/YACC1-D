@@ -1,0 +1,54 @@
+BOOT FROM CF
+Y1/OS v0.2 (2026-09-23)  P8XFS v2
+/> 
+
+/> badh
+
+putc 0 x600 0
+write 0 600 0
+putc read 0
+write read 0
+putc dir 0
+write dir 0
+putc 5 0
+putc 255 0
+putc 256 0
+putc 65535 0
+write 65535 0
+create 1
+putc other 0
+putc w 3
+getc w 65535
+read w 0
+readdir w 0
+getc 0 65535
+getc 5 65535
+getc 65535 65535
+getc dir 65535
+read 0 0
+read 9 0
+readdir read 0
+close w 1
+putc closed 0
+write closed 0
+getc closed 65535
+putc 0 again 0
+0200 untouched 1
+/> cat /BADH.TXT
+
+ABC/> load /ZERO.BIN
+
+bad load address or size
+/> run /ZERO.BIN
+
+bad load address or size
+/> zero.bin
+
+bad load address or size
+/> dir /ZERO.BIN
+
+      0  ZERO.BIN  @6000
+/> exit
+
+bye
+>

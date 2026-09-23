@@ -36,7 +36,8 @@ LIMITS = {"basic": (8000000, 120000000),         # instructions (int) / microcod
           "wave2": (9000000, 130000000),         # 5.7M / 79M needed; 5.9M / 49M with --os
           "redirect": (4000000, 60000000),       # 1.9M / 27M needed (2026-09-23)
           "pipe": (13000000, 180000000),         # 9.8M / 136M needed: every byte crosses CONOUT, then CONIN
-          "pack": (34000000, 480000000)}         # <= 30M / <= 420M needed (2026-09-23, two-step pack): ~430 sectors moved
+          "pack": (34000000, 480000000),
+          "badhandle": (6000000, 90000000)}      # 2026-09-23: writes and reads through bad handles, empty loads         # <= 30M / <= 420M needed (2026-09-23, two-step pack): ~430 sectors moved
 DEFAULT_LIMIT = (12000000, 200000000)
 
 # host-side checks on the disk image a session leaves behind: ("fsck",) must pass; ("ls", path, present, absent)
@@ -46,6 +47,8 @@ DEFAULT_LIMIT = (12000000, 200000000)
 # subdirectories), computed from the image; ("same", gone) = every file of the pristine os/disk.img is still there
 # with the same bytes, load and exec address, except the paths in gone, which must be absent (2026-09-23, pack)
 HOST = {
+    "badhandle": [("fsck",), ("boot",), ("same", []),       # 2026-09-23: nothing written through a bad handle
+                  ("data", "/BADH.TXT", b"ABC")],
     "api": [("fsck",), ("get", "/COPY.TXT", "os/disk/README.TXT", 0)],
     "write": [("fsck",),
               ("ls", "/", ["T", "T2", "SAVED.BIN"], ["README.TXT"]),
@@ -87,11 +90,44 @@ HOST = {
 }
 
 
+# extra files a session's disk copy gets before it boots (2026-09-23): (host source, disk name, load/exec); a .c
+# source is compiled first with y1cc --os at $5000, as os/Makefile compiles /BIN commands
+EXTRA = {"badhandle": [("badh.c", "/BADH", 0x5000), ("", "/ZERO.BIN", 0x6000)]}
+
+
+def extras(name, img):
+    for src, disk, addr in EXTRA.get(name, []):
+        if src.endswith(".c"):
+            base = os.path.splitext(src)[0]
+            shutil.copy(os.path.join(ROOT, "software/assembler/yacc1.def"), BUILD)
+            open(os.path.join(BUILD, "rcasm.rc"), "w").write("-h\n")
+            subprocess.run([sys.executable, os.path.join(ROOT, "software/compiler/y1cc.py"), os.path.join(HERE, src),
+                            "-o", os.path.join(BUILD, base + ".asm"), "--org", "0x5000", "--os"], check=True)
+            lst = subprocess.run([os.path.join(ROOT, "software/assembler/asm"), base, "-d=yacc1"], cwd=BUILD,
+                                 capture_output=True, text=True).stdout
+            if "\n0 Errors" not in lst: sys.exit("%s: assembler errors" % src)
+            host = os.path.join(BUILD, base + ".bin")
+            subprocess.run([sys.executable, os.path.join(ROOT, "tools/img2bin.py"), os.path.join(BUILD, base + ".img"),
+                            host, "--base", "0x5000"], check=True, capture_output=True)
+        else:
+            host = os.path.join(BUILD, "empty.bin"); open(host, "wb").close()
+        rc, out = p8xfs("put", img, host, "--name", disk, "--load", hex(addr), "--exec", hex(addr))
+        if rc: sys.exit("put %s: %s" % (disk, out))
+
+
 # numbers in a transcript that follow the disk's contents rather than the session: pack's summary lines give the free
 # pointer and how many files moved, and every man page or /DOCS edit changes both. Numbers of two or more digits on
 # those lines become N (the one-digit counts the session itself makes stay checked; the "packed" host check
 # verifies the free pointer from the image)
 MASK = {"pack": (re.compile(r"^(pack: .*)$", re.M), re.compile(r"\d\d+"))}
+
+
+# the banner's version: y1os.asm is v0.2, y1os.c (the specification, `make -C os OS=c`) v0.1; both must pass the same
+# transcripts, which carry the default (assembly) OS's banner (2026-09-23)
+BANNER = re.compile(r"Y1/OS v[0-9.]+ \([0-9-]+\)")
+
+
+def same(got, exp): return BANNER.sub("Y1/OS v", got) == BANNER.sub("Y1/OS v", exp)
 
 
 def mask(name, s):
@@ -153,6 +189,10 @@ def host_check(name, img):
                     if path in got: fails.append("%s should be gone" % path)
                 elif path not in got: fails.append("%s is missing" % path)
                 elif got[path] != v: fails.append("%s differs from the pristine image" % path)
+        elif chk[0] == "boot":                  # the boot block as the pristine image has it: 'P8', version, OSCNT,
+            vol = P.read_img(img); ref = P.read_img(os.path.join(OS, "disk.img"))   # a free pointer not below it
+            if bytes(vol[0:4]) != bytes(ref[0:4]) or P.get_free(vol) < P.get_free(ref):
+                fails.append("boot block changed: %r free %d" % (bytes(vol[0:6]), P.get_free(vol)))
         elif chk[0] == "fsck":
             rc, out = p8xfs("fsck", img)
             if rc: fails.append("fsck failed:\n" + out.strip())
@@ -273,6 +313,7 @@ def main():
         for (tag, emu), limit in zip(EMUS, LIMITS.get(name, DEFAULT_LIMIT)):
             img = os.path.join(BUILD, "%s.%s.img" % (name, tag))
             shutil.copy(os.path.join(OS, "disk.img"), img)
+            extras(name, img)
             got, status = transcript(emu, limit, img, script)
             if got is not None: got = mask(name, got)
             exp_file = os.path.join(HERE, "%s.%s.out" % (name, tag))
@@ -281,7 +322,7 @@ def main():
             if not os.path.exists(exp_file): print("%-12s %-4s FAIL  no %s (run with --update)" % (name, tag, os.path.basename(exp_file))); failed += 1; continue
             exp = open(exp_file, newline="").read()          # keep the CR LF pairs the monitor prints
             fails = host_check(name, img)
-            if got != exp:
+            if not same(got, exp):
                 open(os.path.join(HERE, "%s.%s.got" % (name, tag)), "w", newline="").write(got)
                 fails.insert(0, "transcript differs (see %s.%s.got)" % (name, tag))
             if fails:

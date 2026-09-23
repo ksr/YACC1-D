@@ -347,7 +347,8 @@ int fs_create(char *path, int load, int exec) {
 
 int fs_putc(int h, int c) {     /* append a byte; a full buffer goes to the card when the next byte arrives */
     int o, pos; char *b;
-    if (h != wh) return 0;
+    if (!wh || h != wh) return 0;   /* only the open write handle: with none open, h = 0 used to pass (0 == 0) and
+                                       wrote hb(0) = $0200, then that buffer to LBA 0, the boot block (fixed 2026-09-23) */
     pos = h_pos[h];
     if (pos == 65535) return 0;
     b = hb(h);
@@ -666,8 +667,9 @@ int load_file(char *path) {             /* file -> its load address; 1 ok */
     int h; char *dst;
     h = file_of(path);
     if (!h) return 0;
-    if (e_load < TPA || e_load >= TPATOP || e_secs > (TPATOP - e_load) >> 9) {  /* whole sectors land below TPATOP;
-                                  not e_load + e_secs * 512: that wraps to e_load at 128 sectors (fixed 2026-09-23) */
+    if (e_load < TPA || e_load >= TPATOP || e_secs > (TPATOP - e_load) >> 9 || !e_len) {  /* whole sectors land
+                                  below TPATOP; not e_load + e_secs * 512: that wraps to e_load at 128 sectors (fixed
+                                  2026-09-23); an empty file is refused (it loaded a sector and `run` jumped into it) */
         fs_close(h); eputs("bad load address or size"); return 0;
     }
     dst = e_load;

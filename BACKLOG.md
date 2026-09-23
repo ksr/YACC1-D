@@ -138,6 +138,14 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   passed the check and overwrote all of memory). `p8xfs.py fsck` checks '.'. `tests/os/pack.session` with host checks
   (no dead sector, every pristine file byte-identical, the next file at the new free pointer); `os/man/pack`. OS image
   14,619 bytes, image + data 16,043.)
+- **PACK reset window (found 2026-09-23 by `run.py --cuts 60`, 1 of 120):** in a two-step move of a DIRECTORY, a cut
+  after the copy down but before the entry's final rewrite (`631>630 via 687: ceC`) leaves a child's `..`
+  (`/PK/SUB/..`) pointing at the scratch copy (687) while its parent's entry already says 630: fsck fails until the
+  next pack's repair pass fixes it (no file is lost; the rerun passes). The same cut fails identically with the C OS
+  and the assembly OS (pack does its own raw sector I/O); earlier runs passed only because no cut point landed in
+  that ~20,000-instruction window, and the man-page/README edits of the same day moved the layout. Either rewrite the
+  '..' of the subdirectories before the parent's entry moves off the scratch copy, or let fsck accept a '..' that
+  points at an identical copy; `os/README.md`'s "a '..' that lags one step" says the second is the design.
 - PACK, what is left: the "no room on the card" refusal for the scratch area rests on a real card rejecting an LBA
   past its end (the emulators' CF model reads zeros there and grows the image), so try it on the CF card once it
   exists; a nearly full card cannot pack a big file that sits behind a small hole (the scratch area needs its size
@@ -152,8 +160,8 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   docs -> /DOCS, sample data /FRUIT.TXT /FRUIT2.TXT; the shell runs /BIN/NAME before a built-in of the same name;
   `tests/os/wave1.session`, `wave2.session` with host-side p8xfs checks. Status per command in PORT-PLAN section 2.)
 - Wave 3 of the port: `asm` (on-target assembler for the RC/asm dialect, table generated from `yacc1.def`), a YACC1
-  `disasm`; `vi` is being ported separately. Then BASIC as /BIN/BASIC. The OS image has 3 sectors of headroom before
-  the 16K reserve (LBA 1..32) is full, and image + data ~290 bytes before $5000 (2026-09-23, after redirection).
+  `disasm`; `vi` is being ported separately. Then BASIC as /BIN/BASIC. The assembly OS has 18 sectors of headroom in the
+  16K reserve (LBA 1..32) and 7,711 bytes free below its RAM (2026-09-23, v0.2).
 - (done 2026-09-23: **redirection and pipes** — `cmd [< in] [> out | >> out] [| cmd ...]`, up to 4 commands, clauses
   after the arguments, quotes protect `| < >`; `y1cc --os` makes putchar/puts the new syscall CONOUT (19) and getchar
   CONIN, KEYIN (20) is always the keyboard (pager, vi, dump, examine), STDIO (21) says what is redirected (the pager
@@ -162,11 +170,35 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   file at CLOSE (the new entry over the old slot); eputs() and the shell's errors go to the raw console; the four
   handle buffers moved to $0400-$0BFF to fit (OS image 14,673 bytes = 29 sectors, image + data 16,097 of 16K);
   `tests/os/redirect.session`, `pipe.session` with host checks; `os/man/shell`.)
-- Redirection and pipes, what is left: SYSTAB is full (the next syscall needs SYSTAB grown, which moves ARGBUF, or a
-  multiplexed entry); no `2>` (errors always go to the screen); stages run one after the other, not concurrently; a
+- Redirection and pipes, what is left: SYSTAB is full (see the SYSTAB item below); no `2>` (errors always go to the screen); stages run one after the other, not concurrently; a
   redirect clause must follow the arguments (`echo > F hi` is a syntax error); a write that fails part-way (disk full,
-  64K) drops bytes silently; the OS has ~290 bytes left below $5000, so the next OS feature needs space found first
-  (y1cc size levers, or more data moved into the system page).
+  64K) drops bytes silently. (The space problem is gone with the assembly OS: 7,711 bytes free, below.)
+- (done 2026-09-23: **the OS in assembly, v0.2** — `os/y1os.asm` (hand-written, 3,415 lines) replaces the C OS as
+  the default: 7,137 bytes = 14 sectors instead of 14,619 = 29; its RAM at fixed aligned addresses $4A00-$4F0F, so
+  $2BE1-$49FF (7,711 bytes) is free; messages in `os/strings.txt` -> numeric DB lines by `os/mkstrings.py`. Same
+  behaviour and ABI: every `tests/os` session passes on both emulators with either OS (run.py compares the banner
+  without its version; transcripts changed only in the banner), `--cuts 60` 120/120 (119/120 after the day's doc edits moved the disk layout: the PACK reset window below, identical with the C OS), and a C-vs-asm differential
+  run (same disk and keystrokes, transcript and every data sector compared) agreed on the sessions plus the
+  built-ins /BIN hides, load limits, redirect/pipe edge cases and a syscall torture program. Instructions to `exit`,
+  C -> asm (interpreter; ucemu steps the same ratio): basic 1.53M -> 0.99M, api 1.80M -> 1.11M, write 2.84M -> 1.95M,
+  wave1 5.04M -> 3.20M, wave2 5.68M -> 3.63M, redirect 1.88M -> 1.25M, pipe 9.57M -> 4.91M, vi 1.11M -> 0.84M,
+  pack 29.97M -> 15.78M (1.3-1.9x). `make -C os OS=c` builds the C OS, still the specification.)
+- **SYSTAB 22 -> 32 entries, not done (2026-09-23).** The assembly OS has the room, but the table's address is
+  compiled into every program (`LDR R7,SYSTAB+2n`) and hard-coded in `tests/compiler/syscall.c` and the committed
+  bench image `tests/bench/images/syscall.img`; it cannot grow in place without moving ARGBUF. When the 23rd syscall
+  comes: the smallest change is the whole table at $4FC0-$4FFF (kept free in the assembly OS's RAM, and above the C
+  OS's data), `SYSTAB`/`SYSMAX` in `y1cc.py` (rt_putc/rt_getc follow the constant) and `os/lib_abi.c`, the two tests
+  above re-made, `firmware/abi/README.md`; every program is rebuilt by the Makefile anyway.
+- **Y1/OS behaviours kept by the assembly rewrite (y1os.c's, the transcripts are the contract; fix both together):**
+  CLOSE of a
+  directory handle returns 3 (its mode), of a read handle 1, not "1" as documented. A trailing slash after a file name
+  resolves (`fopen("README.TXT/")`). CHDIR with a component over 12 characters matches the entry named by its first
+  12 and puts the whole typed name in the path (`cd /D1/AAAAAAAAAAAAXYZ`). DELETE returns 1 when the tombstone write
+  fails. `ren A B C` names the file "B C".
+- (done 2026-09-23, both OSes: PUTC/WRITE through anything but the open write handle refused — handle 0 with no write
+  open used to write $0200 and then LBA 0, the boot block; `load`/`run` of an empty file refused with "bad load address
+  or size"; `tests/os/badhandle.session` + `badh.c`, host checks fsck, boot block, pristine files. The asm image is
+  7,151 bytes.)
 - `software/emulator` (instruction level) treats a lower-case `q` on the console as end of input (`mygetchar()`,
   an old quit key): a command line containing `q` (`uniq`, `sed s/q/x/`) is cut there. Sessions use `UNIQ` and `Q`
   until it is fixed; the microcode emulator has no such quirk.
