@@ -1018,6 +1018,27 @@ uartinc:
         JSR   uartout
         RET
 ;
+; uartinne: uartin WITHOUT the echo and the LED (2026-09-23, vector $FFFC): Y1/OS's CONIN syscall reads the
+; console for a program (a filter reading its input) and the shell echoes what it wants itself. Same paths:
+; port 2 on the instruction-level emulator (BRDEV), the UART on the machine; CR becomes LF.
+;
+uartinne:
+        BRDEV uartinnehw
+        inp p2
+        ret
+uartinnehw:
+        OUTI  P0,(UARTCS!UARTA5)
+        INP   p1
+        ANDI  01h
+        BRZ   uartinnehw
+        OUTI  P0,(UARTCS)
+        INP   P1
+        ldti 0dh
+        brneq uartinnec
+        ldai 0ah
+uartinnec:
+        RET
+;
 ; long delay (approx 5 seconds)
 ; destroys r7
 ;
@@ -1337,9 +1358,9 @@ e_cfwrite:
 e_const:
     jsr const
     ret
+e_uartinne:                 ; $FFFC, the last slot (2026-09-23): console byte without echo
+    jsr uartinne
+    ret
 ;
-; The End
+; The End ($10000: the table fills the ROM to its last byte)
 ;
-
-ZZZZ:
-  DB   0

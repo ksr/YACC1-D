@@ -1,5 +1,5 @@
 BOOT FROM CF
-Y1/OS v0 (2026-09-22)  P8XFS v2
+Y1/OS v0.1 (2026-09-23)  P8XFS v2
 /> 
 /> 
 .            <DIR>
@@ -14,10 +14,13 @@ LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN hold
 /BIN> 
 .            <DIR>
 ..           <DIR>
+CAT2         540  @5000
+CP           1174  @5000
 ECHO         55  @5000
 HELLO        132  @5000
-WC           886  @5000
-5 entries
+LS           1112  @5000
+WC           619  @5000
+8 entries
 /BIN> 
 /BIN
 /BIN> 
@@ -31,10 +34,13 @@ hi there
 /> 
 .            <DIR>
 ..           <DIR>
+CAT2         540  @5000
+CP           1174  @5000
 ECHO         55  @5000
 HELLO        132  @5000
-WC           886  @5000
-5 entries
+LS           1112  @5000
+WC           619  @5000
+8 entries
 /> 
 /BIN> 
 /BIN
@@ -45,6 +51,7 @@ what?
 loaded 132 bytes at $5000
 /> 
 Y1/OS: dir [path]  cd path  pwd  cat path  load path  run path [args]  help  exit
+       save path addr len (hex)  del path  ren path newname  mkdir path  rmdir path
        or the name of a program in /BIN (or here), followed by its arguments
 /> 
 bye

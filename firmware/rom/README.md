@@ -9,6 +9,8 @@
   28C64): `python3 tools/img2bin.py firmware/rom/shipped/rom firmware/rom/shipped/rom.bin --base 0xE000 --end 0x10000 --fill 0xFF --size 8192`.
   Offset 0 = $E000; bytes the sources never write are $FF like a blank part. Checked 2026-09-22: its BASIC half is
   byte-identical to the chip capture, the monitor half differs (the new monitor: G fix, CF driver, O command, four
-  new vectors), and $FFFC holds the monitor's end label byte. MD5 33efa63dbd9e141f739888f139f86bc9.
+  new vectors). **Rebuilt 2026-09-23** (still not burned): a fifth vector, `UARTINNE` at $FFFC (console byte without
+  echo, for Y1/OS's CONIN syscall; `firmware/abi/README.md`), so the table now ends exactly at $FFFF and the old
+  end-label byte is gone. MD5 a42ea1ef4537d0b974f38643091fef00 (the 2026-09-22 build was 33efa63dbd9e141f739888f139f86bc9).
 - `builds/2021-09-02-3bcacf3-not-working/rom` — the git-HEAD build, never burned.
 - `makerom` — `awk` drops the last line of basic.img, then concatenates monitor.img.

@@ -116,9 +116,17 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   read-only — `os/y1os.c` shell with dir/cd/pwd/cat/load/run and /BIN programs, `tests/os/` sessions on both emulators.)
 - **The CF card in hardware**: KiCad, two ports (P8 select latch, P9 data), 74245 + 74LS174 + decode + strobe gating,
   True IDE 8-bit, rails and pull-ups checked; bench-test with the bus tester (OUTI P8 / INP P9 through the ROM driver).
-- Y1/OS write support: save, del, mkdir, rmdir, pack, format, fsck (`p8xfs.py fsck` verifies from the host).
-- A file API for programs: an OS jump table at $1000+ (open/read/close/argstr), then the P8X C commands that fit
-  (cat, wc, head, grep ... rewritten for the YACC1's lib_abi; recursion-free), BASIC as /BIN/BASIC.
+- (done 2026-09-23: **write support** — save/del/ren/mkdir/rmdir in the shell, files written at the free pointer and
+  registered as `p8xfs.py` does, verified from the host in `tests/os/run.py` (fsck, ls, get); **the file API** —
+  a 22-entry syscall table at $0F14 (SYSARG/SYSRES at $0F06..), y1cc's `sys()`/`funcaddr()` builtins, `os/lib_fs.c`
+  wrappers (fopen/fread/fgetc/fclose/fcreate/fwrite/fputc/fdelete/fmkdir/frmdir/opendir/readdir/fresolve/fentry/
+  getcwd/chdir/frename/conin/constat), four handles with their own buffers; CONIN through a new ROM vector UARTINNE
+  $FFFC (no echo; ROM rebuilt, still unburned); ARGBUF 128 bytes; first commands on the API: CAT2, WC, LS, CP;
+  OS image 12,183 bytes = 24 sectors; `os/README.md`.)
+- Y1/OS still to write: PACK (reclaim tombstones), FORMAT and FSCK on the target, seek/append to an existing file,
+  output redirection, more than one write handle (needs allocation away from the single free pointer).
+- The P8X C commands that fit (`os/PORT-PLAN.md`: cat, head, tail, grep, sort, cmp, dump ... recursion-free), then
+  BASIC as /BIN/BASIC. The OS image has 8 sectors of headroom before the 16K reserve (LBA 1..32) is full.
 - Phase 4: video card v2 (6845 on ports PA/PB, 2K RAM) + PS/2 keyboard behind the console vectors.
 - (done 2026-09-22: `yacc1.def` P8=9 typo -> P8=8.)
 

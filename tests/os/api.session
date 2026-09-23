@@ -1,0 +1,21 @@
+cat2 README.TXT
+ls
+ls /BIN
+ls /NOPE
+cd BIN
+ls
+cat2 /README.TXT ../README.TXT
+cd ..
+wc /README.TXT
+wc
+hello there
+world
+
+cat2
+filter line
+
+cp /README.TXT /COPY.TXT
+cat2 COPY.TXT
+cat COPY.TXT
+ls
+exit

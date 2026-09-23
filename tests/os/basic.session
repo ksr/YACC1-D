@@ -6,7 +6,7 @@ pwd
 cd ..
 hello a b c
 run /BIN/ECHO hi there
-wc 45 1
+wc README.TXT
 dir /BIN
 cd /BIN/../BIN
 pwd

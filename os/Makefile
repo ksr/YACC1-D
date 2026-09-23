@@ -17,14 +17,14 @@ FILES  = $(wildcard disk/*)
 
 all: disk.img
 
-$(B)/y1os.bin: y1os.c lib_abi.c $(ROOT)/software/compiler/y1cc.py $(ROOT)/software/compiler/lib/y1lib.c
+$(B)/y1os.bin: y1os.c lib_abi.c lib_fs.c $(ROOT)/software/compiler/y1cc.py $(ROOT)/software/compiler/lib/y1lib.c
 	@mkdir -p $(B) && cp $(DEF) $(B)/ && echo -h > $(B)/rcasm.rc
 	$(CC) y1os.c -o $(B)/y1os.asm --org 0x1000 -l
 	@cd $(B) && ../$(ASM) y1os -d=yacc1 > y1os.lst && grep -q "^0 Errors" y1os.lst || { grep -i "err" $(B)/y1os.lst | head; exit 1; }
 	@grep "Object Code" $(B)/y1os.lst
 	$(I2B) $(B)/y1os.img $@ --base 0x1000
 
-$(B)/bin/%.bin: commands/%.c lib_abi.c
+$(B)/bin/%.bin: commands/%.c lib_abi.c lib_fs.c
 	@mkdir -p $(B)/bin && cp $(DEF) $(B)/bin/ && echo -h > $(B)/bin/rcasm.rc
 	@$(CC) $< -o $(B)/bin/$*.asm --org 0x5000
 	@cd $(B)/bin && ../../$(ASM) $* -d=yacc1 > $*.lst && grep -q "^0 Errors" $*.lst || { grep -i "err" $(B)/bin/$*.lst | head; exit 1; }

@@ -228,7 +228,7 @@ From `firmware/rom/README.md`, `firmware/abi/README.md`, and a byte comparison o
 - `tools/verify_firmware.py` (or `make -C software/assembler check`) proves the image reproduces from `firmware/monitor/monitor.asm`
   and `firmware/basic/basic.asm` before you burn it.
 - **The chip in the machine still holds the 2021 build** (captured 2026-09-18 through the bus tester as
-  `firmware/rom/eprom-captured-2026-09-18.bin`). The 2026 image differs in 3,870 bytes, all in the monitor half ($F021..$FFFC);
+  `firmware/rom/eprom-captured-2026-09-18.bin`). The 2026 image differs in the monitor half only ($F021..$FFFF);
   the BASIC half is identical. The differences that matter: the `G` command is now `JSRUR R7` (a call; the program returns
   with `RET`) instead of `BRVR R7` (an indirect jump through the word at the address, so `G AAAA` never ran the code at AAAA);
   the `T` menu tests are gone; the CompactFlash driver and the `O` boot command are in.
@@ -238,7 +238,7 @@ From `firmware/rom/README.md`, `firmware/abi/README.md`, and a byte comparison o
   |---|---|---|---|
   | $FFC0-$FFEB | `04 F8 59 05 04 F8 67 05 ...` | `04 F5 28 05 04 F5 36 05 ...` | the eleven original BIOS vectors, `JSR routine / RET`; same shape, different targets because the monitor moved |
   | $FFEC-$FFFB | `00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF` | `04 F2 A5 05 04 F2 D5 05 04 F2 FE 05 04 F3 27 05` | the four new vectors CFINIT $FFEC, CFREAD $FFF0, CFWRITE $FFF4, CONST $FFF8 (`firmware/abi/README.md`) - a `04` (JSR) at $FFEC is the 2026 build, `00` is 2021 |
-  | $FFFC | `FF` | `00` | the monitor's end-label byte in the 2026 build |
+  | $FFFC-$FFFF | `FF FF FF FF` | `04 F5 69 05` | UARTINNE (console byte without echo), the sixteenth vector, added 2026-09-23 for Y1/OS v0.1 (the 2026-09-22 build had a `00` end-label byte here instead) |
 
 - After burning: re-capture and compare with `python3 tests/memory/rom_verify.py [port] --save` (~30 s with the blocks-1
   tester firmware): it reads $E000-$FFFF through the bus tester and diffs against the image `tools/romimage.py` assembles from

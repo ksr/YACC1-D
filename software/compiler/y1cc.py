@@ -28,7 +28,12 @@ The C subset
                inp(port) outp(port,v)   (INP/OUTA/OUTI: port is a constant 0..15)
                halt()  (HALT)   bios(addr, r7, acc) -> ACC   (JSR a monitor routine with R7 and ACC set up)
                call(addr) -> int  (JSRUR to an address in a variable: the OS running a program; returns its R3)
-               argstr() -> char*  (the command tail the OS left for the program at $0F40)
+               argstr() -> char*  (the command tail the OS left for the program at $0F40, up to 127 chars + NUL)
+               sys(n, a, b, c) -> int  (a Y1/OS syscall, 2026-09-23: a, b, c (any of them optional) go to the
+                 parameter words SYSARG0..2 at $0F06/$0F08/$0F0A, entry n (0..21) of the OS's jump table SYSTAB at
+                 $0F14 is JSRURed, the result word SYSRES at $0F0C comes back; os/lib_fs.c wraps them as fopen()...)
+               funcaddr(f) -> int  (the address of function f: how the OS fills SYSTAB with pokew(SYSTAB+2*n,
+                 funcaddr(handler)); f is kept in the image even if nothing calls it directly)
   limits       NO recursion: every function's parameters and locals live at fixed addresses (static frames), so a
                function that can call itself, even indirectly, is rejected at compile time. Compound assignment and
                ++/-- evaluate their lvalue twice (keep the lvalue side-effect free). No floating point, no long,
@@ -70,7 +75,12 @@ import sys, os, re, time
 ORG_DEFAULT = 0x3000        # $1000-$1FFF is BASIC's token buffer (cleared at every monitor boot), $2000.. the monitor's test scratch
 STACK_TOP = 0x0EFF          # the monitor's stack (monitor.asm: STACK EQU 0EFFh)
 MONITOR_RESTART = 0xF000    # where a program goes when main returns on the machine (the monitor's reset entry)
-ARGBUF = 0x0F40             # the OS's 64-byte command-tail buffer for programs (monitor.asm ARGBUF); argstr() returns it
+ARGBUF = 0x0F40             # the OS's command-tail buffer for programs (monitor.asm ARGBUF, 128 bytes since 2026-09-23); argstr()
+SYSARG = 0x0F06             # sys() parameter block: SYSARG0/1/2 = $0F06/$0F08/$0F0A (big-endian words, the machine's own order)
+SYSRES = 0x0F0C             # sys() result word, written by the OS handler
+SYSTAB = 0x0F14             # the OS syscall jump table: 22 big-endian word entries $0F14..$0F3F, filled by Y1/OS at boot
+SYSMAX = 21                 # (the monitor's free variable space: $0F06..$0F0F after its own variables, $0F14..$0F3F between
+                            # CFLBA2 $0F12 and ARGBUF $0F40; firmware/abi/README.md)
 BIOS_CHAROUT = 0xFFC4       # monitor BIOS vectors (monitor.asm, org 0ffc0h: 4 bytes per entry)
 BIOS_UARTIN = 0xFFE8
 LABEL_MAX = 29              # RC/asm: labels[][30]; a 30+ character label crashes the assembler
@@ -455,9 +465,11 @@ def fold(e):
         if a is None or b is None: return None
         op = e[1]
         if op in ("/", "%") and b == 0: return None
-        r = {"+": a + b, "-": a - b, "*": a * b, "/": a // b, "%": a % b, "&": a & b, "|": a | b, "^": a ^ b,
-             "<<": a << (b & 15), ">>": a >> (b & 15), "==": int(a == b), "!=": int(a != b),
-             "<": int(a < b), ">": int(a > b), "<=": int(a <= b), ">=": int(a >= b)}[op]
+        # one lambda per operator: an eager dict evaluated a // b for EVERY fold, so `2 * ZERO` crashed (2026-09-23)
+        r = {"+": lambda: a + b, "-": lambda: a - b, "*": lambda: a * b, "/": lambda: a // b, "%": lambda: a % b,
+             "&": lambda: a & b, "|": lambda: a | b, "^": lambda: a ^ b,
+             "<<": lambda: a << (b & 15), ">>": lambda: a >> (b & 15), "==": lambda: int(a == b), "!=": lambda: int(a != b),
+             "<": lambda: int(a < b), ">": lambda: int(a > b), "<=": lambda: int(a <= b), ">=": lambda: int(a >= b)}[op]()
         return r & 0xFFFF
     if k == "sizeoft": return sizeof(e[1], e[2])
     if k == "cond":
@@ -552,7 +564,7 @@ class Gen:
     BUILTIN_TYPES = {"getchar": ("int", 0), "peek": ("int", 0), "peekw": ("int", 0), "inp": ("int", 0),
                      "bios": ("int", 0), "putchar": ("void", 0), "puts": ("void", 0), "poke": ("void", 0),
                      "pokew": ("void", 0), "outp": ("void", 0), "halt": ("void", 0),
-                     "call": ("int", 0), "argstr": ("char", 1)}
+                     "call": ("int", 0), "argstr": ("char", 1), "sys": ("int", 0), "funcaddr": ("int", 0)}
     def typeof(self, e):                      # -> (base, ptr) of e's VALUE (arrays decay)
         k = e[0]
         if k == "num": return ("int", 0)
@@ -1130,6 +1142,28 @@ class Gen:
             self.gen_expr(args[0]); self.ins("MOVRR", "R3,R7"); self.ins("JSRUR", "R7"); return
         if name == "argstr":                               # the OS leaves a program's command tail at ARGBUF
             self.ins("MVIW", "R3,%d" % ARGBUF); return
+        if name == "sys":                                  # sys(n, a, b, c): Y1/OS syscall n through SYSTAB (2026-09-23)
+            if not 1 <= len(args) <= 4: sys.exit("y1cc: sys() takes 1 to 4 arguments (the number, then up to three)")
+            n = fold(args[0])
+            if n is not None and not 0 <= n <= SYSMAX: sys.exit("y1cc: sys() number must be 0..%d" % SYSMAX)
+            if n is None:                                  # a computed number: its table slot's address, parked on the stack
+                self.gen_expr(args[0]); self.shl1(); self.add_const(SYSTAB); self.push_r3()
+            parked = []
+            for i, a in enumerate(args[1:]):               # a later argument that calls anything could run a sys() itself
+                hazard = any(self.calls_in(later) for later in args[i + 2:])
+                self.gen_expr(a)
+                if hazard: self.push_r3(); parked.append(i)
+                else: self.ins("STR", "R3,%d" % (SYSARG + 2 * i))
+            for i in reversed(parked): self.pop_r4(); self.ins("STR", "R4,%d" % (SYSARG + 2 * i))
+            if n is not None: self.ins("LDR", "R7,%d" % (SYSTAB + 2 * n))
+            else:
+                self.ins("POPR", "R3"); self.ins("LDAVR", "R3"); self.ins("MVAT"); self.ins("INCR", "R3")
+                self.ins("LDAVR", "R3"); self.ins("MVARL", "R7"); self.ins("MVTA"); self.ins("MVARH", "R7")
+            self.ins("JSRUR", "R7"); self.ins("LDR", "R3,%d" % SYSRES); return
+        if name == "funcaddr":                             # funcaddr(f): the address of function f, as an int
+            if len(args) != 1 or args[0][0] != "id" or args[0][1] not in self.flabel:
+                sys.exit("y1cc: funcaddr() wants the name of a defined function (in %s)" % self.func)
+            self.ins("MVIW", "R3,%s" % self.flabel[args[0][1]]); return
         if name == "bios":                                 # bios(addr, r7, acc) -> ACC
             addr = fold(args[0])
             if addr is None: sys.exit("y1cc: bios() address must be a constant")
@@ -1163,6 +1197,16 @@ class Gen:
         if isinstance(node, (list, tuple)):
             if len(node) >= 2 and node[0] == "call" and isinstance(node[1], str): acc.add(node[1])
             for x in node: self.calls_in(x, acc)
+        return acc
+
+    def funcaddrs_in(self, node, acc=None):  # the functions whose address is taken with funcaddr(f)
+        if acc is None: acc = set()
+        if isinstance(node, (list, tuple)):
+            if len(node) >= 3 and node[0] == "call" and node[1] == "funcaddr":
+                a = node[2]
+                if len(a) != 1 or a[0][0] != "id": sys.exit("y1cc: funcaddr() wants the name of a function")
+                acc.add(a[0][1])
+            for x in node: self.funcaddrs_in(x, acc)
         return acc
 
     # ---- statements ---------------------------------------------------------
@@ -1431,7 +1475,13 @@ class Gen:
         bodies = {d[2]: d[4] for d in decls if d[0] == "func"}
         if "main" not in bodies: sys.exit("y1cc: no main()")
         self.build_reach(bodies)
-        live = {"main"} | self.reach["main"]
+        roots = {"main"}                  # a function named in funcaddr() is an entry point too (the OS's syscall
+        for b in bodies.values():         # handlers, reached by JSRUR through SYSTAB): keep it and what it reaches
+            for f in self.funcaddrs_in(b):
+                if f not in bodies: sys.exit("y1cc: funcaddr(%s): no such function" % f)
+                roots.add(f)
+        live = set(roots)
+        for r in roots: live |= self.reach[r]
         order = ["main"] + [d[2] for d in decls if d[0] == "func" and d[2] != "main" and d[2] in live]
         for d in decls:
             if d[0] == "func" and d[2] in live: self.layout_func(d[2], d[3], d[4])

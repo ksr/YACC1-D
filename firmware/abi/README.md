@@ -23,9 +23,11 @@ travels in R7, a byte in ACC; a BIOS routine may clobber R5, R6, TMP and, unless
 | $FFF0 | CFREAD | CFLBA0..2 = sector, R7 = 512-byte buffer | the sector in the buffer, R7 += 512, ACC = 0 ok |
 | $FFF4 | CFWRITE | CFLBA0..2, R7 = buffer | the buffer written, R7 += 512, ACC = 0 ok |
 | $FFF8 | CONST | | ACC = 1 when a console byte is waiting (the emulator's port 2: always 1) |
+| $FFFC | UARTINNE | | ACC = next console byte WITHOUT echo or LED (2026-09-23, for Y1/OS's CONIN syscall; CR becomes LF); the last slot, the table ends at $FFFF |
 
-The first eleven date from 2020/21; the CF four and CONST were added with the O command (2026-09-22), reachable
-from C as `bios(CFREAD, buf, 0)` etc. `BRDEV` inside CHAROUT/UARTIN/CONST picks the UART on the machine and port 2
+The first eleven date from 2020/21; the CF four and CONST were added with the O command (2026-09-22), UARTINNE
+the day after (the ROM rebuilt, `firmware/rom/shipped`, not yet burned), all reachable from C as
+`bios(CFREAD, buf, 0)` etc. `BRDEV` inside CHAROUT/UARTIN/CONST picks the UART on the machine and port 2
 on the instruction-level emulator; the microcode emulator takes the UART path like the machine.
 
 ## Variables ($0F00 page)
@@ -35,12 +37,17 @@ on the instruction-level emulator; the microcode emulator takes the UART path li
 | $0F00 | monmode | monitor mode |
 | $0F02 | continue_addr | |
 | $0F04 | interupt_cnt | |
+| $0F06–$0F0D | SYSARG0..2, SYSRES | Y1/OS syscall arguments and result (big-endian words); y1cc's `sys()` (2026-09-23) |
 | $0F10–$0F12 | CFLBA0..2 | the 24-bit sector number for CFREAD/CFWRITE (low byte first) |
-| $0F40–$0F7F | ARGBUF | the command tail Y1/OS leaves for a program (NUL-terminated); y1cc's `argstr()` |
-| $0F80–$0FFF | line_buffer | the monitor's line buffer |
+| $0F14–$0F3F | SYSTAB | Y1/OS's syscall jump table: 22 word entries, filled at boot (`os/README.md`) |
+| $0F40–$0FBF | ARGBUF | the command tail Y1/OS leaves for a program (up to 127 chars + NUL, 128 bytes since 2026-09-23); y1cc's `argstr()` |
+| $0F80–$0FFF | line_buffer | the monitor's line buffer — idle while the OS runs, which is why ARGBUF's upper half may overlay it |
 | $0EFF down | | the hardware stack (R1), set by the monitor at reset; $0C00 is the informal floor |
 | $0100–$02FF | | BASIC's variables (BASIC stays in ROM at $E000 for now) |
 | $1000–$1FFF | | BASIC's token buffer — and where the O command loads the OS; the two are not used together |
+
+The monitor itself never touches $0F06–$0F3F: it is Y1/OS's (the syscall block above), documented here because a
+program compiled for the OS relies on those addresses as it relies on the vectors.
 
 ## Ports
 

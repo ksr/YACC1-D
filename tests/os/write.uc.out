@@ -1,0 +1,122 @@
+BOOT FROM CF
+Y1/OS v0.1 (2026-09-23)  P8XFS v2
+/> 
+
+/> load /BIN/HELLO
+
+loaded 132 bytes at $5000
+/> mkdir T
+
+/> dir
+
+.            <DIR>
+..           <DIR>
+BIN          <DIR>
+README.TXT   156  @B000
+T            <DIR>
+5 entries
+/> cd T
+
+/T> save H.BIN 5000 20
+
+saved 32 bytes
+/T> dir
+
+.            <DIR>
+..           <DIR>
+H.BIN        32  @5000
+3 entries
+/T> mkdir SUB
+
+/T> dir
+
+.            <DIR>
+..           <DIR>
+H.BIN        32  @5000
+SUB          <DIR>
+4 entries
+/T> rmdir /T
+
+not an empty directory
+/T> rmdir SUB
+
+/T> cd ..
+
+/> cp /README.TXT /T/COPY.TXT
+
+copied 156 bytes
+/> cat /T/COPY.TXT
+
+Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
+LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
+/> ren /T/COPY.TXT KEEP.TXT
+
+/> ren /T/KEEP.TXT KEEP.TXT
+
+cannot rename
+/> dir /T
+
+.            <DIR>
+..           <DIR>
+H.BIN        32  @5000
+KEEP.TXT     156  @B000
+4 entries
+/> del /T/H.BIN
+
+/> del /T/H.BIN
+
+not a file
+/> dir /T
+
+.            <DIR>
+..           <DIR>
+KEEP.TXT     156  @B000
+3 entries
+/> rmdir /T
+
+not an empty directory
+/> del /README.TXT
+
+/> dir
+
+.            <DIR>
+..           <DIR>
+BIN          <DIR>
+T            <DIR>
+4 entries
+/> mkdir /T2
+
+/> cp /BIN/HELLO /T2/HELLO
+
+copied 132 bytes
+/> cd /T2
+
+/T2> hello x y
+
+hello from /BIN/HELLO
+args: x y
+/T2> run /T2/HELLO 1 2 3
+
+hello from /BIN/HELLO
+args: 1 2 3
+/T2> cd /
+
+/> save /SAVED.BIN 5000 84
+
+saved 132 bytes
+/> mkdir /T2
+
+cannot mkdir
+/> save /T2/HELLO 5000 10
+
+saved 16 bytes
+/> dir /T2
+
+.            <DIR>
+..           <DIR>
+HELLO        16  @5000
+3 entries
+/> exit
+
+bye
+>

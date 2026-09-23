@@ -1,0 +1,33 @@
+load /BIN/HELLO
+mkdir T
+dir
+cd T
+save H.BIN 5000 20
+dir
+mkdir SUB
+dir
+rmdir /T
+rmdir SUB
+cd ..
+cp /README.TXT /T/COPY.TXT
+cat /T/COPY.TXT
+ren /T/COPY.TXT KEEP.TXT
+ren /T/KEEP.TXT KEEP.TXT
+dir /T
+del /T/H.BIN
+del /T/H.BIN
+dir /T
+rmdir /T
+del /README.TXT
+dir
+mkdir /T2
+cp /BIN/HELLO /T2/HELLO
+cd /T2
+hello x y
+run /T2/HELLO 1 2 3
+cd /
+save /SAVED.BIN 5000 84
+mkdir /T2
+save /T2/HELLO 5000 10
+dir /T2
+exit

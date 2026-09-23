@@ -1,0 +1,59 @@
+BOOT FROM CF
+Y1/OS v0.1 (2026-09-23)  P8XFS v2
+/> 
+/> 
+Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
+LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
+/> 
+BIN <DIR>
+README.TXT 156  @B000
+2 entries
+/> 
+CAT2 540  @5000
+CP 1174  @5000
+ECHO 55  @5000
+HELLO 132  @5000
+LS 1112  @5000
+WC 619  @5000
+6 entries
+/> 
+ls: not found
+/> 
+/BIN> 
+CAT2 540  @5000
+CP 1174  @5000
+ECHO 55  @5000
+HELLO 132  @5000
+LS 1112  @5000
+WC 619  @5000
+6 entries
+/BIN> 
+Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
+LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
+Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
+LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
+/BIN> 
+/> 
+2 29 156
+/> 
+2 3 18
+/> 
+/> 
+filter line
+/> 
+/> 
+copied 156 bytes
+/> 
+Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
+LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
+/> 
+Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
+LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
+/> 
+BIN <DIR>
+README.TXT 156  @B000
+COPY.TXT 156  @B000
+3 entries
+/> 
+bye
+>

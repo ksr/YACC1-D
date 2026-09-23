@@ -23,7 +23,7 @@ python3 tests/compiler/run.py                                    # the test suit
 | statements | `{}` decl (with initializer, several per line) `if/else` `while` `for(e;e;e)` `switch/case/default` `break` `continue` `return` expr `;` |
 | expressions | `=` `+= -= *= /= %= &= \|= ^= <<= >>=` `++ --` (pre/post) `?:` `\|\| &&` `\| ^ &` `== != < > <= >=` `<< >>` `+ - * / %` unary `- ! ~ & *` `a[i]` `s.m` `p->m` `f(args)` `sizeof` |
 | preprocessor | `#define NAME value` (integer or char), `#include "file"` (textual, each file once, searched beside the source then in `lib/`) |
-| builtins | `putchar(c)` `getchar()` `puts(s)` (console), `peek(a)` `poke(a,v)` `peekw(a)` `pokew(a,v)` (memory), `inp(port)` `outp(port,v)` (I/O ports, constant 0..15), `halt()`, `bios(addr, r7, acc)` (JSR a monitor routine with R7 and ACC set; returns ACC) |
+| builtins | `putchar(c)` `getchar()` `puts(s)` (console), `peek(a)` `poke(a,v)` `peekw(a)` `pokew(a,v)` (memory), `inp(port)` `outp(port,v)` (I/O ports, constant 0..15), `halt()`, `bios(addr, r7, acc)` (JSR a monitor routine with R7 and ACC set; returns ACC), `call(addr)` (JSRUR a computed address, returns its R3), `argstr()` (the command tail at $0F40), `sys(n, a, b, c)` and `funcaddr(f)` (the Y1/OS syscall interface, below) |
 | library | `lib/y1lib.c`: `putstr putnum puthex puthex2 strlen strcmp strcpy memset` — `#include "y1lib.c"`; unused functions cost nothing (dead-function elimination) |
 | not there | **recursion** (rejected at compile time), signed arithmetic, `long`/float, function pointers, `goto`, bit fields |
 
@@ -87,7 +87,21 @@ and big-endian words in memory. There is no 16-bit ALU and no indexed addressing
   a table of `DW` addresses, load the word into R3, `BRUR R3` (about 49 bytes plus 2 per slot; holes go to default).
   `--no-brur` forbids the table, for the machine until its sequencer EEPROM holds the microcode with BRUR; the
   same test program passes both ways (`switch.c` / `switchnb.c`).
-- Never emitted: `LDTVR STTVR OUTVR BR16Z BR16NZ BRNC` (no microcode), `BRVR JSRUR` (not needed yet),
+- **Syscalls** (2026-09-23): `sys(n, a, b, c)` is how a program reaches Y1/OS (`os/README.md`). The arguments
+  (any of a, b, c may be left out) are evaluated into the parameter words SYSARG0..2 at $0F06/$0F08/$0F0A
+  (`STR R3,addr`); an argument evaluated later that calls anything (it could run a `sys()` of its own) makes the
+  earlier ones wait on the stack, exactly as a user call's arguments do. Then the entry word `SYSTAB + 2n`
+  ($0F14 + 2n, n = 0..21) is loaded into R7 (`LDR R7,addr` for a constant n; a computed n is shifted, added and
+  dereferenced) and `JSRUR R7` calls the handler; the result word SYSRES ($0F0C) comes back in R3 as an int.
+  `funcaddr(f)` is the address of function `f` as an int (`MVIW R3,f_label`): the OS installs its handlers with
+  `pokew(SYSTAB + 2 * n, funcaddr(h_open))`. A function named in `funcaddr()` is an entry point: it and whatever it
+  calls are kept in the image even when nothing calls them directly (the dead-function pass starts from `main` and
+  every such function). The call-graph check cannot see through the table: an OS handler must not `sys()` itself.
+  `tests/compiler/syscall.c` installs its own handlers and calls them, constant and computed numbers, 1..4
+  arguments, nested `sys()` in arguments. Constant folding got a fix the same day: the operator table was an eager
+  dictionary that evaluated `a // b` for every fold, so any constant expression with a zero right operand
+  (`SYSTAB + 2 * SYS_OPEN`) crashed the compiler.
+- Never emitted: `LDTVR STTVR OUTVR BR16Z BR16NZ BRNC` (no microcode), `BRVR` (not needed yet),
   negative numbers (the assembler silently drops the sign), labels over 29 characters (crash the assembler), or
   two labels differing only in case (the assembler folds case; the compiler mangles and uniquifies).
 
@@ -97,7 +111,8 @@ and big-endian words in memory. There is no 16-bit ALU and no indexed addressing
 compile error, `// y1cc: flags` on a line for per-test compiler flags); `tests/compiler/run.py` compiles, assembles, runs each on `emulator -x` and diffs. `--oracle`
 regenerates the `.out` files with the HOST C compiler through `host_shim.h` (`int` = `unsigned short`, unsigned
 char), so the expectations are independent of this compiler; tests marked `no-oracle` (peek/poke, struct layout,
-byte order) carry hand-written expectations. 15 programs, 15/15 on 2026-09-22 (~1 s). `make check` runs them.
+byte order) carry hand-written expectations. 16 programs, 16/16 on 2026-09-23 (~3 s; `syscall.c` joined that day).
+`make check` runs them.
 The same images also run under the monitor on the emulator (`emulator -m -f prog.img`, then `G3000`): the program's
 output appears after `GO ADDRESS:` and the monitor's banner follows when main returns (hello and fib tried 2026-09-22).
 
