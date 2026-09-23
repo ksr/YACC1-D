@@ -57,7 +57,7 @@ program compiled for the OS relies on those addresses as it relies on the vector
 | P0 | I/O card control latch: `UARTCS` $40 + UART register 0/8/…/$38, `SWITCHLED` $01, `LCDENABLE` $02, `LCDREGISTER` $04, `TIL311` $80 |
 | P1 | I/O card data for the device selected in P0 |
 | P2 | the instruction-level emulator's console (no hardware) |
-| P8 | CompactFlash register select (write): bits 0..2 = ATA task-file register 0..7 |
+| P8 | CompactFlash register select (write): bits 0..2 = ATA task-file register 0..7; bit 3 = CF reset, 1 = held (the ROM never sets it; `docs/cards/cf.md`) |
 | P9 | CompactFlash data: reading/writing the selected register (0 data, 1 error/feature, 2 sector count, 3..5 LBA0..2, 6 drive/head, 7 status/command) |
 | PA, PB | reserved: the 6845 on the next video card |
 | PC..PF | free |

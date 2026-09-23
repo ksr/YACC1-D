@@ -25,6 +25,7 @@ The machine and its bus as a whole: `docs/system/` (architecture, microcode, bus
 |---|---|---|
 | [`memory.md`](memory.md) | Memory v1.3 | two 62256 + one 28C64, 4K-block jumpers, the FORCE-ROM boot remap, TMP0/TMP1; the M1/M2 findings |
 | [`io.md`](io.md) | I/O V1.1 | 16550 UART behind P0/P1, switches, LEDs, TIL311s, LCD, IN/OUT; the full programming model; the CompactFlash card on P8/P9 as the next card |
+| [`cf.md`](cf.md) | CompactFlash v1.0 (designed 2026-09-23, not built) | two I/O ports: a P8 register-select latch with a CF reset bit, P9 data through a 74LS245; 8-bit True IDE via a CF-to-IDE adapter; the timing argument for tying -CS0 low |
 | [`video.md`](video.md) | Video V1.0 built / v1.1 KiCad master | 6845 + IDT7134 dual-port RAM at $D000, the register-select fix, the +5V rail wire, the plan to move the 6845 onto ports |
 
 ## Test and bring-up cards
