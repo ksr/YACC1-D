@@ -1,7 +1,8 @@
 /* help.c - the Y1/OS command reference: the shell's built-ins and the /BIN programs, one line each.
      help       the list (man NAME for the page of any of them)
    Ported from P8X os/commands/help.c 2026-09-23, changes: the text is rewritten for Y1/OS (no /d1, graphics,
-   kermit, make, sh, redirection or pipes; the built-ins are Y1/OS's). Keep it in step with os/README.md. */
+   kermit, make, sh; the built-ins are Y1/OS's; redirection and pipes since the same evening: man shell). Keep it
+   in step with os/README.md. */
 #include "y1lib.c"
 
 void main() {
@@ -15,6 +16,7 @@ void main() {
     puts("  mkdir / rmdir  make / remove (an empty) directory");
     puts("  type path      print a file (the built-in cat)");
     puts("  exit           back to the ROM monitor");
+    puts("  cmd < in  > out  >> out  a | b | c   redirection and pipes (man shell)");
     puts("in /BIN:");
     puts("  awk  one-rule awk: fields, /re/ {print $N ...}, NR NF");
     puts("  cat  print files (globs, - = console)   cmp  first differing byte");

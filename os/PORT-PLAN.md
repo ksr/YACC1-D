@@ -189,7 +189,7 @@ machine and is out of scope.
 | lib_regex | 86 | grep sed awk | **matchhere is recursive** (tail recursion on `c*`, `c+`, `c?`, and on the literal case) | **PORT WITH CHANGES**: with only single-character quantifiers the matcher can be made iterative with a small explicit backtrack stack of `(re, t)` pairs (depth <= pattern length; ~70 lines). Keep the P8X test cases (`grep`/`sed` c_*_test.sh inputs) as the oracle | CHANGED: matchhere with an explicit backtrack stack (32 points) |
 | lib_rdline | 35 | uniq sed | none | **PORT AS-IS** | DONE |
 | lib_streq | 17 | uniq mv | none | **PORT AS-IS** (or use `y1lib.c`'s `strcmp`) | DROPPED: y1lib.c strcmp |
-| lib_err | 29 | most commands | none | **PORT WITH CHANGES**: `eputs()` writes to the *console* (raw `PUTS`/`CONOUT`) so `?errors` never land in a `>` file; on the Y1 that is `bios(CHAROUT, ...)` per byte — 10 lines. Matters only once redirection exists | CHANGED: putchar-based (no redirection yet); kept as the one place to change |
+| lib_err | 29 | most commands | none | **PORT WITH CHANGES**: `eputs()` writes to the *console* (raw `PUTS`/`CONOUT`) so `?errors` never land in a `>` file; on the Y1 that is `bios(CHAROUT, ...)` per byte — 10 lines. Matters only once redirection exists | CHANGED: putchar-based at first; since 2026-09-23 (redirection) bios(CHAROUT) per byte, as planned |
 | lib_distab | 8 (generated) | disasm | — | **SKIP** (P8X opcodes) | SKIPPED |
 | lib_gfx, lib_g3d, lib_g3cam | 187 / 603 / 100 | graphics | glbyt/glwrd (mutual) | **SKIP** | SKIPPED |
 | lib_wm, lib_ptr, lib_ps2 | 297 / 158 / 153 | desk paint finder sheet term write | none | **SKIP** (WM, xterm mouse reports, PS/2 window `$FF58`) | SKIPPED |
@@ -266,7 +266,8 @@ Mapped from the P8X BIOS/OS names actually used by the commands in waves 0–3:
   or they hang on the console when no file is given. Shell `<file`, `>file`, `>>`, `|` are P8X shell features
   (`OUTCH`/`REDIRF`, `PIPE.TMP`), not in Y1/OS yet; the commands degrade gracefully (file argument instead of
   `<`), but `sort | uniq`, `cat *.C >ALL.C` wait for the shell. Recommend the API's console `getc` implements
-  Ctrl-D now and the shell redirection lands as its own backlog item.
+  Ctrl-D now and the shell redirection lands as its own backlog item. **Done 2026-09-23**: `<` `>` `>>` `|` in the
+  shell, CONOUT/KEYIN/STDIO syscalls, `y1cc --os` (`os/README.md`, `os/man/shell`).
 - **C. `rename`.** P8XFS has no rename; P8X `mv` is copy + delete (132 lines, 5.7K). A `rename(old, new)`
   that rewrites the directory entry in place (same directory) would make `mv` a 40-line command and is cheap
   on the OS side (one entry rewrite). Optional.
@@ -287,7 +288,8 @@ Mapped from the P8X BIOS/OS names actually used by the commands in waves 0–3:
   `touch` tests existence by opening, sizes come from `readdir`). Skip unless `more` is ever made bidirectional.
 - **H. Wildcard expansion** is done inside the commands (`lib_globx`, needs `opendir`/`readdir` on an
   arbitrary path + `getcwd`); the shell needs nothing. The 64-byte ARGBUF is the real limit (item 5 above).
-- **I. Error output separate from stdout** (`eputs`): only matters once `>` exists; `CHAROUT` suffices.
+- **I. Error output separate from stdout** (`eputs`): only matters once `>` exists; `CHAROUT` suffices. **Done
+  2026-09-23**: `lib_err.c` eputs() is `bios(CHAROUT, 0, c)` per byte.
 - **J. Directory entry snapshot vs live cursor.** `SYS_DIRENTRY` copies the current entry out so the program
   can keep it while the cursor moves; `readdir(h, entry)` filling a caller struct gives the same for free.
 

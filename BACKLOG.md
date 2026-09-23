@@ -123,8 +123,9 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   getcwd/chdir/frename/conin/constat), four handles with their own buffers; CONIN through a new ROM vector UARTINNE
   $FFFC (no echo; ROM rebuilt, still unburned); ARGBUF 128 bytes; first commands on the API: CAT2 (retired the same day for the ported cat), WC, LS, CP;
   OS image 12,183 bytes = 24 sectors; `os/README.md`.)
-- Y1/OS still to write: PACK (reclaim tombstones), FORMAT and FSCK on the target, seek/append to an existing file,
-  output redirection, more than one write handle (needs allocation away from the single free pointer).
+- Y1/OS still to write: PACK (reclaim tombstones; every pipe and every `>>` that copies now leaves dead sectors, so it
+  matters more), FORMAT and FSCK on the target, seek, more than one write handle (needs allocation away from the single
+  free pointer; it would let `cp`/`touch`/`save`/`mkdir`/`vi :w` work inside a `>` or a pipe).
 - (done 2026-09-23: **the P8X commands, waves 0-2 of `os/PORT-PLAN.md`** — shared libs `os/lib_*.c` (stdin, rdline,
   glob/globx with an iterative gmatch, regex with a backtrack stack, walk = a recursion-free tree walker on one
   directory handle, apath, more = the pager, num, err); /BIN pwd help dep dump examine man cat wc head tail more sort
@@ -132,10 +133,21 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   docs -> /DOCS, sample data /FRUIT.TXT /FRUIT2.TXT; the shell runs /BIN/NAME before a built-in of the same name;
   `tests/os/wave1.session`, `wave2.session` with host-side p8xfs checks. Status per command in PORT-PLAN section 2.)
 - Wave 3 of the port: `asm` (on-target assembler for the RC/asm dialect, table generated from `yacc1.def`), a YACC1
-  `disasm`; `vi` is being ported separately. Then BASIC as /BIN/BASIC. The OS image has 8 sectors of headroom before
-  the 16K reserve (LBA 1..32) is full.
-- Output redirection and pipes in the shell (`>`, `>>`, `<`, `|`): the filters (sort, uniq, grep, wc ...) read files or
-  the console until then; `lib_err.c` eputs() is where the diagnostics move to the raw console when `>` lands.
+  `disasm`; `vi` is being ported separately. Then BASIC as /BIN/BASIC. The OS image has 3 sectors of headroom before
+  the 16K reserve (LBA 1..32) is full, and image + data ~290 bytes before $5000 (2026-09-23, after redirection).
+- (done 2026-09-23: **redirection and pipes** — `cmd [< in] [> out | >> out] [| cmd ...]`, up to 4 commands, clauses
+  after the arguments, quotes protect `| < >`; `y1cc --os` makes putchar/puts the new syscall CONOUT (19) and getchar
+  CONIN, KEYIN (20) is always the keyboard (pager, vi, dump, examine), STDIO (21) says what is redirected (the pager
+  stops paging into a file); pipes run stage by stage through /PIPE0.TMP and /PIPE1.TMP, deleted after the line;
+  `>>` appends in place when the file is the last one written, else copy-then-extend; CREATE now replaces a same-named
+  file at CLOSE (the new entry over the old slot); eputs() and the shell's errors go to the raw console; the four
+  handle buffers moved to $0400-$0BFF to fit (OS image 14,673 bytes = 29 sectors, image + data 16,097 of 16K);
+  `tests/os/redirect.session`, `pipe.session` with host checks; `os/man/shell`.)
+- Redirection and pipes, what is left: SYSTAB is full (the next syscall needs SYSTAB grown, which moves ARGBUF, or a
+  multiplexed entry); no `2>` (errors always go to the screen); stages run one after the other, not concurrently; a
+  redirect clause must follow the arguments (`echo > F hi` is a syntax error); a write that fails part-way (disk full,
+  64K) drops bytes silently; the OS has ~290 bytes left below $5000, so the next OS feature needs space found first
+  (y1cc size levers, or more data moved into the system page).
 - `software/emulator` (instruction level) treats a lower-case `q` on the console as end of input (`mygetchar()`,
   an old quit key): a command line containing `q` (`uniq`, `sed s/q/x/`) is cut there. Sessions use `UNIQ` and `Q`
   until it is fixed; the microcode emulator has no such quirk.

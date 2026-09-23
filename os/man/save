@@ -16,6 +16,9 @@ DESCRIPTION
     directory), "write error".
 
 LIMITS
+    save inside a > or >> redirect (save F 5000 10 > LOG) or a pipe
+    says "cannot create": the OS has one file open for writing at a
+    time, and the redirect is it (see shell).
     load and run accept only files inside $5000..$CFFF: memory saved
     from elsewhere (the OS, the monitor's page) can be kept and looked
     at with cat or dump, but not loaded back. At most 65535 bytes.
@@ -31,4 +34,4 @@ NOTES
     ported from P8X os/man/save 2026-09-23.
 
 SEE ALSO
-    load, run, dep, dump
+    load, run, dep, dump, shell

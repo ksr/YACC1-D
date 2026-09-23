@@ -8,8 +8,8 @@ DESCRIPTION
     Prints one line for each shell built-in and each /BIN program;
     man NAME gives the page for any of them. help is /BIN/HELP.
 
-    The shell also has a built-in help, a three-line summary of the
-    built-ins, used only when /BIN/HELP is missing. `?` always runs
+    The shell also has a built-in help, a four-line summary of the
+    built-ins and of < > >> |, used only when /BIN/HELP is missing. `?` always runs
     the built-in one.
 
 EXAMPLES
@@ -19,8 +19,9 @@ EXAMPLES
 
 NOTES
     Removed from the P8X version: the lines for /d1, graphics, kermit,
-    make, sh, redirection and pipes; the built-ins are Y1/OS's.
+    make and sh; the built-ins are Y1/OS's; redirection and pipes are
+    one line (man shell).
     Ported from P8X os/commands/help.c 2026-09-23.
 
 SEE ALSO
-    man, run, ls
+    man, shell, run, ls

@@ -33,11 +33,17 @@ DESCRIPTION
          0 SYS_OPEN      8 SYS_MKDIR    16 SYS_ENTRY
          1 SYS_READ      9 SYS_RMDIR    17 SYS_CONIN
          2 SYS_GETC     10 SYS_OPENDIR  18 SYS_CONST
-         3 SYS_CLOSE    11 SYS_READDIR  19..21 SYS_SPARE (0)
+         3 SYS_CLOSE    11 SYS_READDIR  19 SYS_CONOUT
+                                        20 SYS_KEYIN
+                                        21 SYS_STDIO  (SYSTAB full)
          4 SYS_CREATE   12 SYS_RESOLVE
          5 SYS_WRITE    13 SYS_GETCWD
          6 SYS_PUTC     14 SYS_CHDIR
          7 SYS_DELETE   15 SYS_RENAME
+    CONIN/CONST are stdin and CONOUT stdout, which the shell redirects
+    (y1cc --os compiles getchar/putchar/puts to them); KEYIN is always
+    the keyboard; STDIO says which are redirected (2026-09-23). A
+    raw bios(CHAROUT, ...) bypasses redirection: errors only (err).
     Their arguments and results are in os/README.md (md OS.MD); the C
     wrappers are in lib_fs.c (see fs). Y1/OS fills SYSTAB at boot; the
     handlers read SYSARGn with peekw() and write SYSRES with pokew().
@@ -49,4 +55,4 @@ NOTES
     syscall vector and & 256 carry tests do not exist here.
 
 SEE ALSO
-    fs, mon, run
+    fs, shell, err, mon, run

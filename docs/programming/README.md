@@ -113,8 +113,10 @@ From C: `bios(CHAROUT, 0, c)` (`software/compiler/y1cc.py`, `os/lib_abi.c`).
 
 On the machine the console is the I/O card's 16550 UART at 38400 baud, reached through port P0 (select latch,
 `UARTCS` $40 + register offset) and P1 (data) — `monitor.asm` `uartout`/`uartin`. `UARTIN` echoes every byte it
-reads and turns CR into LF; `UARTINNE` ($FFFC) reads without the echo. Under Y1/OS a program reads the console
-through the syscalls `SYS_CONIN`/`SYS_CONST` ([OS.md](OS.md)), which return 65535 at Ctrl-D or end of input. On the instruction-level emulator the same routines take the `BRDEV` branch and use
+reads and turns CR into LF; `UARTINNE` ($FFFC) reads without the echo. Under Y1/OS a program reads its input
+through the syscalls `SYS_CONIN`/`SYS_CONST` and writes through `SYS_CONOUT` (`y1cc --os` makes `getchar`/`putchar`
+those), which the shell redirects (`<`, `>`, `>>`, `|`); a key the user answers with is `SYS_KEYIN`, always the
+console ([OS.md](OS.md)). CONIN and KEYIN return 65535 at Ctrl-D or end of input. On the instruction-level emulator the same routines take the `BRDEV` branch and use
 port 2 (`OUTA P2` / `INP P2`); the microcode-level emulator models the UART, so it takes the hardware path
 ([EMULATORS.md](EMULATORS.md)).
 

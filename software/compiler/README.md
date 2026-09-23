@@ -8,6 +8,7 @@ source unchanged as far as the subset goes; the back end is new, written for wha
 ```
 python3 software/compiler/y1cc.py prog.c -o prog.asm            # for the machine (monitor: G3000 calls main)
 python3 software/compiler/y1cc.py prog.c -o prog.asm --vector   # for the monitor as burned in 2021 (G = BRVR)
+python3 software/compiler/y1cc.py prog.c -o prog.asm --org 0x5000 --os   # a Y1/OS program (os/Makefile): console via the OS
 python3 software/compiler/y1cc.py prog.c -o prog.asm --boot     # for the emulator, stand-alone
 cd <dir with rcasm.rc + yacc1.def> && ../software/assembler/asm prog -d=yacc1 > prog.lst   # -> prog.img (Intel hex)
 software/emulator/emulator -x -f prog.img                       # runs it, exits at HALT (--boot images)
@@ -31,6 +32,17 @@ Console I/O: on the emulator `putchar` is `OUTA P2` and `getchar` is `INP P2` (r
 machine they call the monitor's BIOS vectors `charout` ($FFC4) and `uartin` ($FFE8). The runtime chooses at run
 time with `BRDEV`, which never branches on the emulator and always branches on the hardware, so one image serves
 both. `puts` appends `\n` (10) only.
+
+**`--os`** (2026-09-23) compiles a Y1/OS program: `os/Makefile` builds the OS itself and every `/BIN` command with
+it. `putchar` (and `puts`, which loops over it) then stores the byte in SYSARG0 ($0F06, a big-endian word, high byte
+0) and JSRURs the Y1/OS syscall CONOUT (the word at SYSTAB + 38 = $0F3A); `getchar` JSRURs CONIN (SYSTAB + 34) and
+returns the low byte of SYSRES, or **0** when CONIN says 65535 (end of input, Ctrl-D, the end of a `<` file): the
+same end-of-input byte as `INP P2` on the emulator. Both keep R3 and R4 (`rt_puts` walks its string in R3); the OS
+handler is compiled code and clobbers R5-R7, ACC and TMP, which nothing keeps across a call. This is what lets the
+shell redirect a program's output (`>`, `>>`, `|`) and input (`<`) with no change to its source (`os/README.md`).
+Without `--os` the console runtime is the one above, byte for byte (checked 2026-09-23: every `tests/compiler`
+program and the bench sources compile to identical assembly). An `--os` program must run under Y1/OS: from the
+bare monitor its first `putchar` would jump through an empty SYSTAB slot.
 
 ## How the generated code works (the YACC1-specific part)
 

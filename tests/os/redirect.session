@@ -1,0 +1,22 @@
+echo hello > /R1.TXT
+cat /R1.TXT
+echo more >>/R1.TXT
+type /FRUIT.TXT >/R2.TXT
+echo third>>/R1.TXT
+cat /R1.TXT
+wc < /R1.TXT
+cmp /FRUIT.TXT /R2.TXT
+cd /BIN
+pwd > /R3.TXT
+cd /
+type R3.TXT
+cp /FRUIT.TXT /R4.TXT > /R5.TXT
+save /R6.BIN 5000 10 >> /R1.TXT
+echo x > /BIN
+cat < /NOPE
+echo a >
+echo a > b c
+echo "a > b" 'c|d'
+sort /R2.TXT > /R2.TXT
+head -3 /R2.TXT
+exit

@@ -6,21 +6,21 @@ SYNOPSIS
     eputs("cmd: not found");
 
 DESCRIPTION
-    eputs(s) prints s and a line feed on the console. Today that is
-    what puts() does: Y1/OS has no output redirection, so the output IS
-    the console. It stays a function of its own so that when the shell
-    gets > and pipes, every command's diagnostics move to the raw
-    console in one place, as the P8X eputs does: a "not found" must
-    never land in an output file or a pipe.
+    eputs(s) prints s and a line feed on the RAW console, through the
+    ROM's CHAROUT vector, whatever the shell did with stdout: a
+    "not found" never lands in a > file or in the next command of a
+    pipe, as with the P8X eputs (stderr, in effect; there is no 2>).
+    eput2(s, t) prints s then eputs(t); eputc(c) is one raw byte.
 
     Convention: eputs for failures, including a usage message printed
     because the arguments were wrong; puts for output, including the
     usage asked for with -h.
 
 NOTES
-    Changed from the P8X version: putchar instead of the PUTS and
-    CONOUT BIOS calls.
+    Changed from the P8X version: bios(CHAROUT, 0, c) per byte instead
+    of the PUTS and CONOUT BIOS calls. Until the shell had redirection
+    (2026-09-23) it was putchar.
     Ported from P8X os/commands/lib_err.c 2026-09-23.
 
 SEE ALSO
-    abi, fs, cat
+    abi, fs, shell, cat

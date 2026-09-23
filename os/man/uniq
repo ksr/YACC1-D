@@ -5,10 +5,11 @@ SYNOPSIS
     uniq [file ...]
 
 DESCRIPTION
-    Prints the files named (as one stream; globs expand, "-" is the
-    console), or the console up to Ctrl-D, leaving out every line that
-    equals the line before it. Only adjacent repeats go: sort first to
-    drop every repeat. Each file ends a line. uniq is /BIN/UNIQ.
+    Prints the files named (as one stream; globs expand, "-" is stdin),
+    or stdin, leaving out every line that equals the line before it.
+    Only adjacent repeats go: sort first to drop every repeat. Each file
+    ends a line. uniq is /BIN/UNIQ. stdin is the shell's < file or pipe
+    (see shell), else the console up to Ctrl-D.
 
 LIMITS
     Lines are cut at 255 characters (CR is dropped).

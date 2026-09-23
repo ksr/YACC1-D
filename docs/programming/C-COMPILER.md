@@ -50,8 +50,8 @@ error (`tests/compiler/bigconst.err`); a function that can reach itself through 
 
 | Builtin | Code | Notes |
 |---|---|---|
-| `putchar(c)` | `JSR rt_putc` | the runtime's `rt_putc` is `BRDEV rt_putc_h / OUTA P2 / RET` then `JSR $FFC4` (CHAROUT): port 2 on the interpreter, the monitor's BIOS on the machine and on ucemu (one image serves both) |
-| `getchar()` | `JSR rt_getc` → int | `INP P2` on the interpreter (0 at end of input), `JSR $FFE8` (UARTIN, which echoes) otherwise |
+| `putchar(c)` | `JSR rt_putc` | the runtime's `rt_putc` is `BRDEV rt_putc_h / OUTA P2 / RET` then `JSR $FFC4` (CHAROUT): port 2 on the interpreter, the monitor's BIOS on the machine and on ucemu (one image serves both); with `--os` the Y1/OS syscall CONOUT instead |
+| `getchar()` | `JSR rt_getc` → int | `INP P2` on the interpreter (0 at end of input), `JSR $FFE8` (UARTIN, which echoes) otherwise; with `--os` the syscall CONIN (its 65535 becomes 0) |
 | `puts(s)` | `JSR rt_puts` | the string then `\n` (10) only |
 | `peek(a)` / `poke(a,v)` | `LDAVR` / `STAVR` through R3 (R4) | byte at address |
 | `peekw(a)` / `pokew(a,v)` | two byte accesses | big-endian word at address |
@@ -125,6 +125,7 @@ From the docstring and `README.md`, with the instructions involved:
 | `--org 0xNNNN` | load address. Default `$3000`: `$1000–$1FFF` is BASIC's token buffer, which the monitor's boot clears (a program at $1000 lost its first byte before it ran, 2026-09-22), and the removed T-menu tests scribbled at $2000 |
 | `--boot` | append a stub at `$F000`: `BR $F003 / MVIW R1,$0EFF / JSR f_main / HALT / END $F000`. The first branch presents an A15-high address, which releases the memory card's FORCE-ROM boot remap exactly as the monitor's first instruction does; without it every fetch stays inside $F000–$FFFF on ucemu. This is how the test suites run |
 | `--vector` | layout for the monitor as burned in 2021, whose `G` was `BRVR R7` (an indirect jump through the word at the address, no return pushed): the image starts with `DW start`, then `start: JSR f_main / BR $F000` (restart the monitor) |
+| `--os` | a Y1/OS program (2026-09-23; `os/Makefile` uses it for the OS and every `/BIN` command): `putchar`/`puts` go through the OS syscall CONOUT (19) and `getchar` through CONIN (17), so the shell can redirect them; `getchar` still returns 0 at the end of input; R3/R4 are kept across both (`software/compiler/README.md`). Without it the console runtime is unchanged |
 | `--no-brur` | never emit `BRUR` ($AD): a `switch` is always a compare chain. For a machine whose sequencer EEPROM lacks the 2026-09-22 microcode (it was reloaded that evening, so this is now a bench-verification option) |
 | `-l` | print the line count and per-function instruction counts |
 

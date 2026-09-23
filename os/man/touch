@@ -12,6 +12,9 @@ DESCRIPTION
     directory is missing or the name is not valid. touch is /BIN/TOUCH.
 
 LIMITS
+    Inside a > or >> redirect or a pipe (stdout going to a file) the
+    OS refuses a second file open for writing: touch says "touch:
+    cannot create NAME" (see shell).
     No globs (a pattern could only match files that already exist).
     Names are 1..12 characters.
 
@@ -24,4 +27,4 @@ NOTES
     Ported from P8X os/commands/touch.c 2026-09-23.
 
 SEE ALSO
-    cp, del, save, vi
+    cp, del, save, vi, shell

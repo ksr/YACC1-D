@@ -1,5 +1,5 @@
 NAME
-    cat - print files, or copy the console to the output
+    cat - print files, or copy stdin to the output
 
 SYNOPSIS
     cat [file | glob | -] ...
@@ -7,9 +7,9 @@ SYNOPSIS
 DESCRIPTION
     Prints each file named in turn, byte for byte: nothing is added or
     dropped. A glob (* or ? in the last component, case folded) expands
-    to the matching files of that directory; "-" is the console, read
-    without echo up to Ctrl-D. With no argument cat copies the console
-    to the output until Ctrl-D. cat is /BIN/CAT.
+    to the matching files of that directory; "-" is stdin: the shell's
+    < file or pipe, else the console, read without echo up to Ctrl-D.
+    With no argument cat copies stdin to the output. cat is /BIN/CAT.
 
     Every name is checked before anything is printed: one that is not
     found (or a glob that matches nothing) stops cat with
@@ -28,12 +28,14 @@ EXAMPLES
     cat /MAN/C*                    every page whose name starts with C
     cat /FRUIT.TXT - /README.TXT   a file, typed lines up to Ctrl-D,
                                    then another file
+    cat /A.TXT /B.TXT > /AB.TXT    join two files into a new one
+    cat > /NOTE.TXT                type a file, Ctrl-D ends it
 
 NOTES
-    Removed from the P8X version: > and >> redirection and | pipes
-    (Y1/OS has none yet), so cat cannot join files into a new one.
-    New: several names in any mix, and "-" for the console.
+    The P8X cat's > >> < and | are the Y1/OS shell's since 2026-09-23
+    (see shell), so they work for cat and every other command.
+    New: several names in any mix, and "-" for stdin.
     Ported from P8X os/commands/cat.c 2026-09-23.
 
 SEE ALSO
-    type, more, head, tail, stdin, man
+    type, shell, more, head, tail, stdin, man

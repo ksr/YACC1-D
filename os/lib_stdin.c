@@ -2,18 +2,22 @@
      openarg(tail) -> 0 no file named (the console), 1 ready, 2 a name was not found (gbad points at it)
        tail   the rest of the command line: every word is a file, a glob (expanded, lib_globx.c), or "-" for the
               console; up to GMAX (24) names in all, read one after the other as ONE stream
-     nextc()  the next byte of that stream, 65535 at its end. The console is conin(): no echo, Ctrl-D ends it.
+     nextc()  the next byte of that stream, 65535 at its end. "The console" is conin(), which is STDIN: the
+              shell's < file or pipe when there is one (so `sort < F` and `cat F | sort` work), else the keyboard
+              (no echo, Ctrl-D ends it).
      sepfiles set it to 1 before the first nextc() to make every file end with a line feed (a line tool must not
               glue the last line of one file to the first of the next); leave it 0 for byte-exact tools (cat, wc)
      curname  the name of the file being read ("-" for the console): grep's "name:" prefix
      gnf      how many names openarg found
-     notfound(cmd)  prints "cmd: not found: WORD" after openarg returned 2
+     notfound(cmd)  prints "cmd: not found: WORD" after openarg returned 2, on the raw console (lib_err.c)
    One read handle is open at a time (opened as the stream reaches the file, closed at its end).
    Ported from P8X os/commands/lib_stdin.c 2026-09-23, changes: all the words of the tail, not just the first;
    "-" = the console; sepfiles and curname are new; Y1/OS fopen/fgetc (relative names resolve in the OS, so the
    P8X absolute-path building is gone; so are RDBUF, FRESOLVE and the & 256 carry tests); the console is conin()
-   with its 65535 at Ctrl-D (P8X getchar()/SYS_GETC, which could be a < redirect: Y1/OS has no redirection yet). */
+   with its 65535 at Ctrl-D (P8X getchar()/SYS_GETC); since 2026-09-23 it follows the shell's < and pipes, as the
+   P8X one did. */
 #include "lib_globx.c"
+#include "lib_err.c"
 #define GMAX 24
 char gfiles[GMAX * GSLOT];
 int gnf, gidx, ginh, glast, sepfiles;
@@ -65,8 +69,8 @@ int nextc() {
 
 void notfound(char *cmd) {                       /* "cmd: not found: WORD" for the word openarg stopped at */
     char *p;
-    for (p = cmd; *p; p++) putchar(*p);
-    for (p = ": not found: "; *p; p++) putchar(*p);
-    for (p = gbad; *p && *p != ' '; p++) putchar(*p);
-    putchar(10);
+    for (p = cmd; *p; p++) eputc(*p);
+    for (p = ": not found: "; *p; p++) eputc(*p);
+    for (p = gbad; *p && *p != ' '; p++) eputc(*p);
+    eputc(10);
 }

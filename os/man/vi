@@ -7,7 +7,8 @@ SYNOPSIS
 DESCRIPTION
     A modal, vi-flavoured screen editor for a VT100/ANSI terminal on the
     serial console (it positions the cursor with ANSI escapes and reads
-    keys raw, without echo). The file is a flat buffer of fixed-width
+    keys raw, without echo, from the keyboard: keyin, never a < file or
+    a pipe; :w inside a > redirect or a pipe cannot create the file). The file is a flat buffer of fixed-width
     lines: up to 320 lines of up to 79 characters. A file that does not
     exist starts as an empty buffer ("[new file]"). Longer lines, or
     lines past the 320th, are cut when the file is read; the status row

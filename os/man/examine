@@ -9,8 +9,8 @@ DESCRIPTION
 
         AAAA: vv
 
-    and waits for a key, read without echo (examine echoes the digits
-    it uses):
+    and waits for a key, read without echo from the keyboard (keyin,
+    never a < file or a pipe; examine echoes the digits it uses):
 
         Enter            keep the byte, go to the next address
         two hex digits   store that byte, go to the next address

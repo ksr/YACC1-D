@@ -40,11 +40,12 @@ on the instruction-level emulator; the microcode emulator takes the UART path li
 | $0F04 | interupt_cnt | |
 | $0F06–$0F0D | SYSARG0..2, SYSRES | Y1/OS syscall arguments and result (big-endian words); y1cc's `sys()` (2026-09-23) |
 | $0F10–$0F12 | CFLBA0..2 | the 24-bit sector number for CFREAD/CFWRITE (low byte first) |
-| $0F14–$0F3F | SYSTAB | Y1/OS's syscall jump table: 22 word entries, filled at boot (`os/README.md`) |
+| $0F14–$0F3F | SYSTAB | Y1/OS's syscall jump table: 22 word entries, filled at boot (`os/README.md`); all 22 in use since 2026-09-23 (19 CONOUT, 20 KEYIN, 21 STDIO: redirection and pipes) |
 | $0F40–$0FBF | ARGBUF | the command tail Y1/OS leaves for a program (up to 127 chars + NUL, 128 bytes since 2026-09-23); y1cc's `argstr()` |
 | $0F80–$0FFF | line_buffer | the monitor's line buffer — idle while the OS runs, which is why ARGBUF's upper half may overlay it |
 | $0EFF down | | the hardware stack (R1), set by the monitor at reset; $0C00 is the informal floor |
 | $0100–$02FF | | BASIC's variables (BASIC stays in ROM at $E000 for now) |
+| $0400–$0BFF | HBUFS | **while Y1/OS runs**: its four file handles' 512-byte sector buffers (2026-09-23, moved out of the OS's 16K to make room for redirection and pipes). $0400–$04FF is BASIC's token-line scratch, dead while the OS runs (the OS load has already overwritten BASIC's token buffer at $1000); $0500–$0BFF was unassigned. The stack must stay above $0C00, its informal floor, for as long as the OS runs |
 | $1000–$1FFF | | BASIC's token buffer — and where the O command loads the OS; the two are not used together |
 
 The monitor itself never touches $0F06–$0F3F: it is Y1/OS's (the syscall block above), documented here because a

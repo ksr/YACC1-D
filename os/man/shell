@@ -1,0 +1,79 @@
+NAME
+    shell - the Y1/OS command line: < > >> and | pipes
+
+SYNOPSIS
+    cmd [args] [< in] [> out | >> out] [| cmd [args] ...]
+
+DESCRIPTION
+    The shell reads a line, splits it at | into up to 4 commands and
+    runs them one after the other. Each command is a built-in (cd,
+    type, load, run, save, ren, mkdir, rmdir, exit...) or a program:
+    /BIN/NAME first, then NAME in the current directory.
+
+        cmd > F      the output goes to the file F; a file F is
+                     replaced when cmd is done (until then the old F
+                     is still there to read: sort F > F works)
+        cmd >> F     the output is added to the end of F (a new F if
+                     there is none)
+        cmd < F      the input comes from F: what a filter reads when
+                     no file is named, "-", and conin()
+        a | b        a's output is b's input; a | b | c | d at most
+        > F          alone: F becomes an empty file
+
+    The clauses come after the arguments (echo hi > F, not echo > F
+    hi), in any order, each once per command, with or without a space
+    after the operator. | < > inside '...' or "..." are text, so awk
+    and echo can use them. Relative names resolve in the directory
+    that is current when that command starts.
+
+    Redirection works for the built-ins too (type F > G). The prompt,
+    the shell's own messages ("what?", "syntax: ...", "cannot read the
+    < file", "cannot write the > or pipe file", "not found") and every
+    command's error messages go to the screen, never into a file or a
+    pipe. Keys go to the keyboard: more, man and md page a pipe while
+    their --More-- key comes from the keyboard, and they do not page
+    at all when their own output is a file or a pipe.
+
+HOW PIPES RUN
+    There is no multitasking. a | b runs a with its output to the file
+    /PIPE0.TMP, then b with its input from it; a third command reads
+    /PIPE1.TMP, a fourth /PIPE0.TMP again. The temp files are deleted
+    when the line is done; their sectors come back only with a PACK
+    (not written yet), like those of every deleted file.
+
+LIMITS
+    One file open for writing at a time: while a command's output goes
+    to a file (> >> or a pipe to the next command) the command cannot
+    create one of its own. cp, mv to another directory, touch, save,
+    mkdir, cp -r and vi's :w fail with their "cannot create" message
+    there; with < alone they work.
+    A redirect holds one of the four file handles (two with < and >)
+    while the command runs.
+    There is no 2> (errors always go to the screen), no & and no ;.
+    A line is 128 characters, a command's argument tail 127.
+
+EXAMPLES
+    echo hello > /R1.TXT         a new file
+    echo more >> /R1.TXT         added to it
+    wc < /R1.TXT                 2 2 11
+    cat /FRUIT.TXT | sort | uniq
+    dir /BIN | grep VI
+    sort < /FRUIT.TXT | uniq | wc > /COUNT.TXT
+    cat /A.TXT /B.TXT > /AB.TXT  join two files
+    cat /DOCS/OS.MD | more       page a pipe: keys from the keyboard
+    man cat > /CAT.TXT           a page into a file, not paged
+
+NOTES
+    >> appends in place when the file is the last one written (its
+    sectors end at the volume's free pointer), else it copies the old
+    sectors to the free pointer first; the entry is rewritten only
+    when the command is done, so a failed append leaves the old file.
+    Programs built with y1cc --os send putchar/puts through the OS
+    (the CONOUT syscall) and read with conin() (CONIN), which is what
+    the shell redirects; keys come from keyin() (KEYIN).
+    New in Y1/OS 2026-09-23 (the P8X shell had < > >> and a two-stage
+    |; here the redirects apply to every command and a pipe has up to
+    four stages).
+
+SEE ALSO
+    help, cat, more, pager, err, stdin, fs, run, exit

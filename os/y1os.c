@@ -5,6 +5,7 @@
 
    Shell:  dir [path]  cd path  pwd  cat path  load path  run path [args]  save path addr len  del path
            mkdir path  rmdir path  ren path newname  help  exit
+           cmd [< in] [> out | >> out] [| cmd ...]   (2026-09-23: redirection and pipes, up to NSEG commands)
            a /BIN/<NAME> program comes FIRST, even over a built-in of that name (since 2026-09-23: the ported /BIN dir,
            cat, pwd, del, help replace the built-ins, which stay for a card without /BIN); an unknown word runs <NAME>
            in the current directory; the rest of the line is the program's argument tail.
@@ -27,7 +28,15 @@
    byte-wise; the YACC1's own words are big-endian, which never matters here). Files over 64K cannot be opened
    (16-bit positions). A file a program leaves open is closed by the shell when the program returns. The console
    syscalls CONIN (no echo, through the ROM's UARTINNE vector added the same day) and CONST let a program read
-   its input the way the P8X filters do. */
+   its input the way the P8X filters do.
+
+   Redirection and pipes (2026-09-23): this file and every /BIN command are compiled with `y1cc --os`, so putchar/
+   puts are the syscall CONOUT and getchar is CONIN. CONOUT writes to the file the shell opened for `>`/`>>`/a pipe
+   (so_h), else to the raw console (bios CHAROUT); CONIN/CONST read the `<` file or the pipe (si_h), else the
+   console; KEYIN is always the keyboard (the pager's and vi's keys). A pipe `a | b` runs a with its output to
+   /PIPE0.TMP, then b with its input from it (the next stage writes /PIPE1.TMP, then /PIPE0.TMP again...), and
+   the temp files are deleted after the last stage: the commands run one after the other, there is no
+   multitasking. Diagnostics of the shell (and eputs() in the commands, lib_err.c) go to the raw console. */
 #include "lib_abi.c"
 #include "y1lib.c"
 
@@ -48,7 +57,10 @@
 #define NOSEC 65535             /* h_cur: nothing loaded */
 
 char sbuf[512];                 /* the OS's own sector buffer: directory scans, the boot block */
-char hbufs[2048];               /* the handles' sector buffers, 512 each: hb(h) */
+/* the handles' sector buffers, 512 each: hb(h) = HBUFS + 512 * (h - 1), $0400..$0BFF. In the system page since
+   2026-09-23 (they left the OS's 16K to make room for redirection): BASIC's token-line scratch $0400-$04FF (BASIC
+   is not running while the OS is) and the free $0500-$0BFF, below the stack's floor $0C00 (firmware/abi/README.md) */
+#define HBUFS 0x0400
 char line[130];                 /* the command line (up to 128 characters; the tail goes to ARGBUF, ARGMAX) */
 char cwdpath[64];               /* the current path, for the prompt and GETCWD */
 char pbuf[64];                  /* a working copy of a path (parent_of, fs_chdir) */
@@ -69,6 +81,15 @@ int wh;                         /* the write handle in use, 0 none: CREATE/MKDIR
 int w_dlba, w_dsecs, w_load, w_exec;          /* the write handle's directory and header */
 char w_name[13];
 int oscnt;
+int w_oslba, w_ooff;            /* the live same-named file a CREATE replaces: its entry's sector/offset (0 = none) */
+int si_h, so_h;                 /* the shell's redirection: 0 = the console, else the handle of the < file / pipe
+                                   (SI_EMPTY: a pipe stage after one that wrote its own > file: empty input) and of
+                                   the > or >> file / pipe */
+#define SI_EMPTY 255            /* not a handle: fs_getc() of it is 65535 at once */
+#define NSEG 4                  /* commands in a pipeline */
+char *seg[NSEG];                /* the pipeline's commands (inside line[]) */
+char *rin[NSEG], *rout[NSEG];   /* each command's < and > / >> file name (inside line[]), 0 = none */
+char rapp[NSEG];                /* 1: that > is >> */
 
 int cfread(int lba, char *buf) {
     poke(CFLBA0, lba); poke(CFLBA1, lba >> 8); poke(CFLBA2, 0);
@@ -78,11 +99,16 @@ int cfwrite(int lba, char *buf) {
     poke(CFLBA0, lba); poke(CFLBA1, lba >> 8); poke(CFLBA2, 0);
     return bios(CFWRITE, buf, 0);
 }
-char *hb(int h) { return hbufs + ((h - 1) << 9); }
+char *hb(int h) { return HBUFS - 512 + (h << 9); }
 int le16(char *p) { return p[0] | (p[1] << 8); }
 void put16(char *p, int v) { p[0] = v; p[1] = v >> 8; }
 char getch() { return bios(UARTIN, 0, 0); }
 void crlf() { putchar(10); }
+void eputs(char *s) {           /* a diagnostic line on the raw console, whatever stdout is: the shell's errors
+                                   never land in a > file or a pipe */
+    while (*s) bios(CHAROUT, 0, *s++);
+    bios(CHAROUT, 0, 10);
+}
 
 /* ---- directory entries ------------------------------------------------------------------------------------ */
 void take_entry(int o) {        /* the e_* globals <- the 32-byte entry at sbuf[o] */
@@ -127,7 +153,7 @@ int name_is(int o, char *nm, int n) {   /* does the entry at sbuf[o] carry the n
 int find_in(int dlba, int dsecs, char *nm, int n) {
     int s, o;
     for (s = 0; s < dsecs; s++) {
-        if (cfread(dlba + s, sbuf)) { puts("CF read error"); return 0; }
+        if (cfread(dlba + s, sbuf)) { eputs("CF read error"); return 0; }
         for (o = 0; o < 512; o += ENT) {
             if (sbuf[o + 24] == F_END) return 0;
             if (sbuf[o + 24] == F_DEL) continue;
@@ -290,13 +316,17 @@ int fs_readdir(int h, char *buf) {  /* the next live entry (32 bytes) -> buf; 0 
     return 0;
 }
 
-/* a new file at the free pointer, replacing a same-named file (tombstoned now); the entry is written at close */
+/* a new file at the free pointer; the entry is written at close. A same-named FILE is replaced AT CLOSE (since
+   2026-09-23; before, it was tombstoned here): the new entry is written over the old one's slot, one sector write,
+   so until then the old file is whole and readable (`sort F > F` reads the old F), and a write that never
+   completes leaves it as it was. */
 int fs_create(char *path, int load, int exec) {
     int h;
     if (wh || !parent_of(path)) return 0;
+    w_oslba = 0;
     if (find_in(p_lba, p_secs, leaf, strlen(leaf))) {
         if (e_flags != F_FILE) return 0;
-        tombstone();
+        w_oslba = e_slba; w_ooff = e_off;
     }
     h = new_handle();
     if (!h) return 0;
@@ -325,10 +355,49 @@ int fs_putc(int h, int c) {     /* append a byte; a full buffer goes to the card
     return 1;
 }
 
+/* >> (the shell's; not a syscall): a write handle positioned at the end of path, a new file if there is none.
+   Files are contiguous and only the free pointer allocates, so the new bytes must follow the old ones in one
+   extent: when the file's extent ends at the free pointer (the last thing written: `echo a >> LOG` twice) the
+   handle continues IN PLACE; otherwise the old sectors are copied to the free pointer first (copy-then-extend,
+   as P8X does). Either way no byte of the old file changes (in place, only bytes past its length are written),
+   and CLOSE writes the new entry over the old one (fs_create's replace-at-close), so an append that fails or
+   never closes leaves the old file intact. Files over 64K cannot be appended to (16-bit positions). */
+int fs_append(char *path) {
+    int h, olba, len, n, s, base; char *b;
+    if (!resolve(path) || e_flags != F_FILE) return fs_create(path, 0, 0);   /* (a directory: fs_create refuses) */
+    if (e_lenhi) return 0;
+    olba = e_lba; len = e_len;
+    n = len >> 9; if (len & 511) n++;
+    base = n && olba + e_secs == free_lba ? olba : free_lba;
+    h = fs_create(path, e_load, e_exec);
+    if (!h) return 0;
+    b = hb(h);
+    h_lba[h] = base;
+    for (s = 0; s < n; s++) {
+        if (cfread(olba + s, b) || (s + 1 < n && base != olba && cfwrite(base + s, b))) {
+            h_mode[h] = M_FREE; wh = 0; return 0;           /* abandoned: nothing registered, the old file stands */
+        }
+    }
+    if (n) h_cur[h] = n - 1;                                /* the buffer holds the last (partial or full) sector */
+    h_pos[h] = len;
+    return h;
+}
+
 int fs_write(int h, char *buf, int n) {
     int i;
     for (i = 0; i < n; i++) if (!fs_putc(h, buf[i])) return i;
     return n;
+}
+
+int new_slot() {                /* where CLOSE registers the file: the replaced file's own slot, if it still holds
+                                   that file (a del or ren of it while the write was open: not), else the first free */
+    if (w_oslba) {
+        if (cfread(w_oslba, sbuf)) return 0;
+        if (sbuf[w_ooff + 24] == F_FILE && name_is(w_ooff, w_name, strlen(w_name))) {
+            e_slba = w_oslba; e_off = w_ooff; return 1;
+        }
+    }
+    return find_slot(w_dlba, w_dsecs);
 }
 
 int fs_close(int h) {           /* a write: flush the last sector, register the file, move the free pointer */
@@ -337,7 +406,7 @@ int fs_close(int h) {           /* a write: flush the last sector, register the 
     if (ok == M_FREE) return 0;
     if (ok == M_WRITE) {        /* the buffer always holds the last (maybe partial, maybe empty) sector */
         ok = 0; lba = h_lba[h]; cur = h_cur[h];
-        if (!cfwrite(lba + cur, hb(h)) && find_slot(w_dlba, w_dsecs)) {
+        if (!cfwrite(lba + cur, hb(h)) && new_slot()) {
             set_entry(e_off, w_name, lba, h_pos[h], w_load, w_exec, F_FILE);
             if (!cfwrite(e_slba, sbuf)) { free_lba = lba + cur + 1; write_free(); ok = 1; }
         }
@@ -347,7 +416,10 @@ int fs_close(int h) {           /* a write: flush the last sector, register the 
     return ok;
 }
 
-void close_all() { int h; for (h = 1; h <= NH; h++) if (h_mode[h]) fs_close(h); }
+void close_all() {              /* what a program left open; not the shell's redirect files (io_reset closes those) */
+    int h;
+    for (h = 1; h <= NH; h++) if (h_mode[h] && h != si_h && h != so_h) fs_close(h);
+}
 
 int fs_delete(char *path) {
     if (!resolve(path) || e_flags != F_FILE || e_slba == 0) return 0;
@@ -418,13 +490,32 @@ int fs_entry(char *buf) {       /* the entry the last lookup found (OPEN, OPENDI
     return 1;
 }
 
-int con_in() {                  /* a console byte without echo; 65535 on Ctrl-D and on NUL (the emulator's end of input) */
+/* ---- the console syscalls: CONOUT/CONIN/CONST follow the shell's redirection, KEYIN is always the keyboard -----
+   STATIC-FRAME RULE: y1cc gives every function ONE fixed frame, and with --os this file's own putchar/puts ARE the
+   CONOUT syscall (and getchar CONIN). So the handlers below and everything they call - con_out, con_in, key_in,
+   con_st, fs_putc, fs_getc, mode_of, hb, cfread, cfwrite - must never call putchar/puts/putstr/putnum/crlf or
+   anything that does: a handler would re-enter itself, or a function on its path, on the frame in use. Their
+   errors are return codes only (a byte lost at a full disk or at 64K is silently dropped). Messages go through
+   eputs(), which is the raw console too. */
+void con_out(int c) {           /* CONOUT: the > / >> / pipe file, else the raw console (never putchar: see above) */
+    if (so_h) fs_putc(so_h, c);
+    else bios(CHAROUT, 0, c);
+}
+int key_in() {                  /* KEYIN: a console byte without echo; 65535 on Ctrl-D and on NUL (the emulator's end of input) */
     int c;
     c = bios(UARTINNE, 0, 0);
     if (c == 4 || c == 0) return 65535;
     return c;
 }
-int con_st() { return bios(CONST, 0, 0); }
+int con_in() {                  /* CONIN: the next byte of the < file / pipe (65535 at its end), else KEYIN */
+    if (si_h) return fs_getc(si_h);
+    return key_in();
+}
+int con_st() {                  /* CONST: a < file / pipe never blocks: 1 (CONIN then gives a byte or 65535 at its end);
+                                   else the ROM's CONST */
+    if (si_h) return 1;
+    return bios(CONST, 0, 0);
+}
 
 void path_pop() {                       /* cwdpath: drop the last component */
     int n;
@@ -485,9 +576,15 @@ void h_rename()  { pokew(SYSRES, fs_rename(peekw(SYSARG0), peekw(SYSARG1))); }
 void h_entry()   { pokew(SYSRES, fs_entry(peekw(SYSARG0))); }
 void h_conin()   { pokew(SYSRES, con_in()); }
 void h_const()   { pokew(SYSRES, con_st()); }
+void h_conout()  { con_out(peekw(SYSARG0)); }                     /* SYSRES untouched: it returns nothing */
+void h_keyin()   { pokew(SYSRES, key_in()); }
+void h_stdio() {
+    int r;
+    r = 0; if (si_h) r = 1; if (so_h) r += 2;
+    pokew(SYSRES, r);
+}
 
 void install() {                /* SYSTAB <- the handlers; programs reach them with sys(SYS_x, ...) */
-    int n;
     pokew(SYSTAB + 2 * SYS_OPEN, funcaddr(h_open));
     pokew(SYSTAB + 2 * SYS_READ, funcaddr(h_read));
     pokew(SYSTAB + 2 * SYS_GETC, funcaddr(h_getc));
@@ -507,20 +604,22 @@ void install() {                /* SYSTAB <- the handlers; programs reach them w
     pokew(SYSTAB + 2 * SYS_ENTRY, funcaddr(h_entry));
     pokew(SYSTAB + 2 * SYS_CONIN, funcaddr(h_conin));
     pokew(SYSTAB + 2 * SYS_CONST, funcaddr(h_const));
-    for (n = SYS_SPARE; n <= SYS_LAST; n++) pokew(SYSTAB + 2 * n, 0);
+    pokew(SYSTAB + 2 * SYS_CONOUT, funcaddr(h_conout));
+    pokew(SYSTAB + 2 * SYS_KEYIN, funcaddr(h_keyin));
+    pokew(SYSTAB + 2 * SYS_STDIO, funcaddr(h_stdio));
 }
 
 /* ---- commands ------------------------------------------------------------------------------------------- */
 int dir_of(char *path) {                /* a directory handle for the shell, with the messages; 0 = said why */
-    if (!resolve(path)) { puts("not found"); return 0; }
-    if (e_flags != F_DIR) { puts("not a directory"); return 0; }
+    if (!resolve(path)) { eputs("not found"); return 0; }
+    if (e_flags != F_DIR) { eputs("not a directory"); return 0; }
     return open_ent(M_DIR);
 }
 
 int file_of(char *path) {               /* a read handle for the shell */
-    if (!resolve(path)) { puts("not found"); return 0; }
-    if (e_flags != F_FILE) { puts("is a directory"); return 0; }
-    if (e_lenhi) { puts("too big"); return 0; }
+    if (!resolve(path)) { eputs("not found"); return 0; }
+    if (e_flags != F_FILE) { eputs("is a directory"); return 0; }
+    if (e_lenhi) { eputs("too big"); return 0; }
     return open_ent(M_READ);
 }
 
@@ -544,8 +643,8 @@ void cmd_dir(char *path) {
 void cmd_cd(char *path) {
     int r;
     r = fs_chdir(path);
-    if (r == 0) puts("not found");
-    else if (r == 2) puts("not a directory");
+    if (r == 0) eputs("not found");
+    else if (r == 2) eputs("not a directory");
 }
 
 void cmd_cat(char *path) {
@@ -561,7 +660,7 @@ int load_file(char *path) {             /* file -> its load address; 1 ok */
     h = file_of(path);
     if (!h) return 0;
     if (e_load < TPA || e_load + e_secs * 512 > TPATOP || e_load + e_secs * 512 < e_load) {   /* whole sectors land */
-        fs_close(h); puts("bad load address or size"); return 0;
+        fs_close(h); eputs("bad load address or size"); return 0;
     }
     dst = e_load;
     while (fs_read(h, dst)) dst += 512;
@@ -613,24 +712,24 @@ int hexnum(char *s) {                   /* hex digits -> int (stops at the first
 void cmd_save(char *rest) {             /* save path addr len: memory -> a file with that load/exec address */
     char *a, *l; int h, addr, len;
     a = word(rest); l = word(a);
-    if (!*a || !*l) { puts("usage: save path addr len (hex)"); return; }
+    if (!*a || !*l) { eputs("usage: save path addr len (hex)"); return; }
     addr = hexnum(a); len = hexnum(l);
     h = fs_create(rest, addr, addr);
-    if (!h) { puts("cannot create"); return; }
+    if (!h) { eputs("cannot create"); return; }
     a = addr;
-    if (fs_write(h, a, len) != len || !fs_close(h)) { puts("write error"); return; }
+    if (fs_write(h, a, len) != len || !fs_close(h)) { eputs("write error"); return; }
     putstr("saved "); putnum(len); puts(" bytes");
 }
 
-void cmd_del(char *path) { if (!fs_delete(path)) puts("not a file"); }
+void cmd_del(char *path) { if (!fs_delete(path)) eputs("not a file"); }
 void cmd_ren(char *rest) {              /* ren path newname */
     char *nm;
     nm = word(rest);
-    if (!*nm) { puts("usage: ren path newname"); return; }
-    if (!fs_rename(rest, nm)) puts("cannot rename");
+    if (!*nm) { eputs("usage: ren path newname"); return; }
+    if (!fs_rename(rest, nm)) eputs("cannot rename");
 }
-void cmd_mkdir(char *path) { if (!fs_mkdir(path)) puts("cannot mkdir"); }
-void cmd_rmdir(char *path) { if (!fs_rmdir(path)) puts("not an empty directory"); }
+void cmd_mkdir(char *path) { if (!fs_mkdir(path)) eputs("cannot mkdir"); }
+void cmd_rmdir(char *path) { if (!fs_rmdir(path)) eputs("not an empty directory"); }
 
 void upper(char *s) { while (*s) { if (*s >= 'a' && *s <= 'z') *s -= 32; s++; } }
 
@@ -648,6 +747,7 @@ void cmd_help() {
     puts("Y1/OS: dir [path]  cd path  pwd  cat path  load path  run path [args]  help  exit");
     puts("       save path addr len (hex)  del path  ren path newname  mkdir path  rmdir path");
     puts("       or the name of a program in /BIN (or here), followed by its arguments");
+    puts("       cmd [< in] [> out | >> out] [| cmd ...]  redirection, pipes (4 commands)");
 }
 
 /* ---- the shell --------------------------------------------------------------------------------------------- */
@@ -666,38 +766,118 @@ int readline() {
 
 void lower(char *s) { while (*s) { if (*s >= 'A' && *s <= 'Z') *s += 32; s++; } }
 
+int run_cmd(char *cmd) {                /* one command (a pipeline stage): its word, then its tail; 1 = exit */
+    char *rest;
+    if (*cmd == 0) return 0;            /* `> F` alone: F is made empty */
+    rest = word(cmd);
+    lower(cmd);
+    if (strcmp(cmd, "exit") == 0) return 1;
+    if (try_prog(cmd, rest, 1)) return 0;   /* a /BIN program wins over a built-in of the same name (2026-09-23) */
+    if (strcmp(cmd, "dir") == 0) cmd_dir(rest);
+    else if (strcmp(cmd, "cd") == 0) cmd_cd(rest);
+    else if (strcmp(cmd, "pwd") == 0) puts(cwdpath);
+    else if (strcmp(cmd, "cat") == 0 || strcmp(cmd, "type") == 0) cmd_cat(rest);
+    else if (strcmp(cmd, "load") == 0) cmd_load(rest);
+    else if (strcmp(cmd, "run") == 0) cmd_run(rest);
+    else if (strcmp(cmd, "save") == 0) cmd_save(rest);
+    else if (strcmp(cmd, "del") == 0) cmd_del(rest);
+    else if (strcmp(cmd, "ren") == 0) cmd_ren(rest);
+    else if (strcmp(cmd, "mkdir") == 0) cmd_mkdir(rest);
+    else if (strcmp(cmd, "rmdir") == 0) cmd_rmdir(rest);
+    else if (strcmp(cmd, "help") == 0 || strcmp(cmd, "?") == 0) cmd_help();
+    else if (!try_prog(cmd, rest, 0)) eputs("what?");
+    return 0;
+}
+
+/* ---- redirection and pipes (2026-09-23) --------------------------------------------------------------------
+   A line is up to NSEG commands split on '|'. Each may END with `< path`, `> path`, `>> path` (a space after the
+   operator or not, any order, each at most once): the clauses come after the command's arguments, and the names
+   are NUL-terminated where they stand in line[]. Stage k reads its < file, else (k > 0) the pipe file the stage
+   before wrote, else the console; it writes its > / >> file, else (not the last) a pipe file, else the console.
+   '|', '<' and '>' inside '...' or "..." are text (awk programs, grep patterns). */
+int split() {                           /* line -> seg[], the redirect names -> rin[]/rout[]/rapp[]; the count, 0 = bad */
+    char *p, *e, *b, *ri, *ro, q, c, ra; int n;     /* (char q, c: one compare each, not two) */
+    n = 0; p = line;
+    while (1) {                         /* one command per pass (locals: an indexed seg[n] costs ~25 bytes a use) */
+        while (*p == ' ') p++;
+        b = p; ri = 0; ro = 0; ra = 0; q = 0;
+        while ((c = *p)) {              /* the command text: up to a | < > outside quotes */
+            if (c == 39 || c == '"') { if (!q) q = c; else if (q == c) q = 0; }
+            else if (!q && (c == '|' || c == '<' || c == '>')) break;
+            p++;
+        }
+        e = p;                          /* drop its trailing spaces */
+        while (e != b && e[-1] == ' ') e--;
+        *e = 0;
+        while (c == '<' || c == '>') {  /* the redirect clauses: each name NUL-terminated where it stands */
+            *p++ = 0;
+            if (c == '>' && *p == '>') { ra = 1; *p++ = 0; }
+            while (*p == ' ') p++;
+            e = p;
+            while (*p && *p != ' ' && *p != '|' && *p != '<' && *p != '>') p++;
+            if (p == e) return 0;       /* no name */
+            if (c == '<') { if (ri) return 0; ri = e; }
+            else { if (ro) return 0; ro = e; }
+            while (*p == ' ') *p++ = 0;
+            c = *p;
+        }
+        seg[n] = b; rin[n] = ri; rout[n] = ro; rapp[n] = ra;
+        n++;
+        if (!c) return n;
+        if (c != '|' || n == NSEG) return 0;    /* a word after a clause, or too many commands */
+        *p++ = 0;
+    }
+}
+
+char *pipename(int k) { return k & 1 ? "/PIPE1.TMP" : "/PIPE0.TMP"; }   /* stage k writes this one */
+
+int stage(int k, int n) {               /* open stage k's input and output (of n); 0 = cannot (said so) */
+    char *nm; int h;
+    nm = rin[k];
+    if (nm) {
+        if (!(si_h = fs_open(nm))) { eputs("cannot read the < file"); return 0; }
+    } else if (k) {
+        if (!(si_h = fs_open(pipename(k - 1)))) si_h = SI_EMPTY;
+    }
+    nm = rout[k];
+    if (nm) {
+        h = rapp[k] ? fs_append(nm) : fs_create(nm, 0, 0);
+        if (k + 1 < n) fs_delete(pipename(k));      /* the next stage reads an empty input, not a stale file */
+    } else if (k + 1 < n) h = fs_create(pipename(k), 0, 0);
+    else return 1;
+    if (!(so_h = h)) { eputs("cannot write the > or pipe file"); return 0; }
+    return 1;
+}
+
+void io_reset() {                       /* back to the console; closing a written file registers it */
+    int h;
+    h = so_h; so_h = 0; if (h) fs_close(h);
+    h = si_h; si_h = 0; if (h) fs_close(h);
+}
+
 void main() {
-    char *cmd, *rest; int n;
+    int n, k, quit;
     cwd_lba = ROOT_LBA; cwd_secs = ROOT_SECS; strcpy(cwdpath, "/");
-    wh = 0;
+    wh = 0; si_h = 0; so_h = 0;
     for (n = 0; n <= NH; n++) h_mode[n] = M_FREE;
     install();
     if (cfread(0, sbuf)) { puts("CF read error"); return; }
     oscnt = sbuf[3]; free_lba = le16(sbuf + 4);
     puts("Y1/OS v0.1 (2026-09-23)  P8XFS v2");
-    while (1) {
+    quit = 0;
+    while (!quit) {
         putstr(cwdpath); putstr("> ");
-        n = readline();
+        readline();
         crlf();
-        cmd = line;
-        while (*cmd == ' ') cmd++;
-        if (*cmd == 0) continue;
-        rest = word(cmd);
-        lower(cmd);
-        if (strcmp(cmd, "exit") == 0) { puts("bye"); return; }
-        if (try_prog(cmd, rest, 1)) continue;   /* a /BIN program wins over a built-in of the same name (2026-09-23) */
-        if (strcmp(cmd, "dir") == 0) cmd_dir(rest);
-        else if (strcmp(cmd, "cd") == 0) cmd_cd(rest);
-        else if (strcmp(cmd, "pwd") == 0) puts(cwdpath);
-        else if (strcmp(cmd, "cat") == 0 || strcmp(cmd, "type") == 0) cmd_cat(rest);
-        else if (strcmp(cmd, "load") == 0) cmd_load(rest);
-        else if (strcmp(cmd, "run") == 0) cmd_run(rest);
-        else if (strcmp(cmd, "save") == 0) cmd_save(rest);
-        else if (strcmp(cmd, "del") == 0) cmd_del(rest);
-        else if (strcmp(cmd, "ren") == 0) cmd_ren(rest);
-        else if (strcmp(cmd, "mkdir") == 0) cmd_mkdir(rest);
-        else if (strcmp(cmd, "rmdir") == 0) cmd_rmdir(rest);
-        else if (strcmp(cmd, "help") == 0 || strcmp(cmd, "?") == 0) cmd_help();
-        else if (!try_prog(cmd, rest, 0)) puts("what?");
+        n = split();
+        for (k = 0; k < n; k++) if (n > 1 && !*seg[k]) n = 0;
+        if (!n) { eputs("syntax: cmd [< in] [> out | >> out] [| cmd ...] (4 commands at most)"); continue; }
+        for (k = 0; k < n && !quit; k++) {
+            if (stage(k, n)) quit = run_cmd(seg[k]);
+            else k = n;
+            io_reset();                 /* also after a failed stage or command: files closed, console back */
+        }
+        if (n > 1) { fs_delete("/PIPE0.TMP"); fs_delete("/PIPE1.TMP"); }
     }
+    puts("bye");
 }

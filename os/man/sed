@@ -6,11 +6,12 @@ SYNOPSIS
 
 DESCRIPTION
     Applies one substitution to each line of the files named (read as
-    one stream; globs expand, "-" is the console), or of the console up
-    to Ctrl-D, and prints the result. Only the s command exists. The
-    left side is a basic regex (. * + ? ^ $, see regex); the
-    replacement is literal text. Without g only the first match of each
-    line is replaced, with g (or G) every one. sed is /BIN/SED.
+    one stream; globs expand, "-" is stdin), or of stdin, and prints the
+    result. Only the s command exists. The left side is a basic regex (.
+    * + ? ^ $, see regex); the replacement is literal text. Without g
+    only the first match of each line is replaced, with g (or G) every
+    one. sed is /BIN/SED. stdin is the shell's < file or pipe (see
+    shell), else the console up to Ctrl-D.
 
     The match replaced is the shortest one: * and + are not greedy, so
     s/a.*e/X/ stops at the first e after the a. An empty match is

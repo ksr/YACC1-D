@@ -23,7 +23,9 @@ DESCRIPTION
         fclose(h)
     Writing (one file open for writing at a time)
         fcreate(path, load, exec)   a handle; a same-named file is
-                                    replaced
+                                    replaced when it is closed; 0
+                                    while another write is open, and
+                                    so inside a > or a pipe (shell)
         fputc(h, c)  fwrite(h, buf, n)  fputs(h, s)
         fclose(h)               registers the file; 1 = ok
     Names
@@ -39,8 +41,15 @@ DESCRIPTION
         ent_len(e)              the low 16 bits; e[18] counts 64Ks
         ent_name(e, out)        the name, unpadded (out: 13 bytes)
     Console
-        conin()                 a byte without echo; 65535 at Ctrl-D
-        constat()               1 when a byte is waiting
+        conin()                 DATA: the next byte of stdin, no echo
+                                (a < file or a pipe, else the
+                                console); 65535 at its end / Ctrl-D
+        constat()               1 when a stdin byte is waiting
+        keyin()                 a KEY: always the keyboard, no echo,
+                                never redirected; 65535 at Ctrl-D
+        stdio()                 bit 0 stdin, bit 1 stdout redirected
+    Output is putchar/puts (y1cc --os: the CONOUT syscall, which the
+    shell redirects); errors are eputs() from lib_err.c (the screen).
     Arguments
         argword(tail, out, max) the next word of a command tail into
                                 out (max characters); returns the rest
@@ -61,4 +70,4 @@ NOTES
     tests, the RDBUF page, and P8X os/commands/lib_dirent.c.
 
 SEE ALSO
-    abi, apath, walk, stdin, ls
+    abi, apath, walk, stdin, shell, err, ls

@@ -11,8 +11,9 @@ DESCRIPTION
 
     (the address, 16 bytes in hex, then the same bytes as text with
     anything unprintable shown as "."), then waits for a key, read
-    without echo: ".", q or Q, or Ctrl-D returns to the shell; any
-    other key shows the next 256 bytes. "dump: bad address" when addr
+    without echo from the keyboard (keyin: even when the dump goes to
+    a > file or a pipe): ".", q or Q, or Ctrl-D returns to the shell;
+    any other key shows the next 256 bytes. "dump: bad address" when addr
     is not hex. dump is /BIN/DUMP.
 
 EXAMPLES

@@ -22,11 +22,12 @@ same program is 0.85x the p8cc code (5,985 vs 7,037 B) even with the additions b
 - `//#use apath` + `//#use abi` -> `#include "../lib_fs.c"` + `#include "y1lib.c"`. `abspath()` is gone: the Y1/OS
   file API resolves relative paths against the current directory itself.
 - `bios(CONIN)` -> `conin()` (the CONIN syscall, the ROM's UARTINNE: no echo, CR arrives as LF on the machine);
+  since 2026-09-23 `keyin()` (KEYIN), because CONIN became stdin, which the shell's `<` and pipes redirect;
   `bios(CONOUT)` -> `putchar()`, `outs()` -> `putstr()`.
 - `load()`: FRESOLVE + FOPEN(RDBUF) + FGETB with the `& 256` carry tests -> `fopen()` / `fgetc()` until 65535 /
   `fclose()`. No `RDBUF` at $FC00: the OS's handle buffer is used.
 - `save()`: FRESOLVE + FWOPEN + FPUTB + FCLOSE -> `fcreate(path, 0, 0)` + one `fwrite()` per line + `fputc(h, 10)`
-  + `fclose()`; a same-named file is replaced by the OS (tombstoned). Load/exec are 0 (text).
+  + `fclose()`; a same-named file is replaced by the OS (at close since 2026-09-23). Load/exec are 0 (text).
 - Recursion: `outn()` (recursive decimal printer for the ANSI arguments) is y1lib's iterative `putnum()`.
 - `i*80` became `lp(i)` = `line + (i<<6) + (i<<4)` (y1cc inlines small constant shifts but calls a multiply loop
   for `*80`); the character-copy loops became pointer walks (`copyline`, `openslot`, `delchar`, `strcpy`).

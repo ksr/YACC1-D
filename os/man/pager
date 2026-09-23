@@ -8,8 +8,9 @@ SYNOPSIS
 
 DESCRIPTION
     pgc(c)   prints c; after every PGLINES (23) line feeds it shows
-             "--More--", waits for a key from conin() (no echo) and
-             wipes the prompt line (CR, spaces, CR):
+             "--More--", waits for a key from keyin() (the keyboard,
+             no echo, never redirected) and wipes the prompt line
+             (CR, spaces, CR):
                  space, other   the next page
                  Enter          one more line (CR or LF)
                  q, Q, Ctrl-D   quit: pgquit becomes 1 and pgc prints
@@ -20,14 +21,18 @@ DESCRIPTION
 
     A screen is 24 lines: 23 of text and the prompt line. Everything a
     command prints must go through pgc(), or the count goes wrong.
+    When stdout is a > file or a pipe (stdio() bit 1, asked at the
+    first line feed) pgc() only prints: nothing is paged into a file.
 
 NOTES
     On the instruction-level emulator a lower-case q is read as end of
-    input (conin() returns 65535), which quits as well.
+    input (keyin() returns 65535), which quits as well.
+    The key came from conin() until 2026-09-23; since the shell has
+    pipes, conin() is stdin and the key must be keyin().
     The page is named pager because `more` is the command's page.
     Ported from the prompt() of P8X os/commands/more.c 2026-09-23 (the
     P8X md had its own copy at 22 lines); Enter is CR or LF here,
     since the emulators deliver a session's line ends as LF.
 
 SEE ALSO
-    more, man, md
+    more, man, md, shell, fs

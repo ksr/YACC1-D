@@ -3,7 +3,8 @@
      vi NAME          edit NAME (a new, empty buffer when it does not exist)
 
    Needs a VT100/ANSI terminal on the serial console (the cursor is driven with ESC [ r ; c H, ESC [ 2 J, ESC [ K).
-   Keys come raw, without echo, through conin() (the ROM's UARTINNE via the CONIN syscall); output is putchar().
+   Keys come raw, without echo, through keyin() (the ROM's UARTINNE via the KEYIN syscall: always the keyboard,
+   never a < file or a pipe, 2026-09-23); output is putchar().
 
    Model (P8X): the file is a flat buffer of fixed-width line slots, line i at line[i*80 .. i*80+79], NUL-terminated
    (y1cc has no 2-D arrays). The cursor is (cy, cx); `top` is the first line on the screen, which maps 1:1 onto the
@@ -16,7 +17,7 @@
             / pat  search forward (literal, wraps once)   n  repeat   Ctrl-L  repaint
             :w [name]  :wq [name]  :x [name]  :q  :q!
    INSERT:  printable characters insert; Enter splits the line; Backspace/DEL deletes left; Esc -> NORMAL.
-   End of console input (conin() = 65535: Ctrl-D, or the emulators' end of stdin): Esc in INSERT, `:q` in NORMAL;
+   End of console input (keyin() = 65535: Ctrl-D, or the emulators' end of stdin): Esc in INSERT, `:q` in NORMAL;
    sixteen in a row abandon the edit, so a scripted run can never spin for ever.
 
    Limits: MAXL lines of up to 79 characters (longer lines and lines past MAXL are cut on load, and the status row
@@ -50,7 +51,7 @@ int  hasnote;                   /* note[] waits to be shown */
 int  uop, uy, ux;
 
 /* ---- terminal primitives ------------------------------------------------------------------------------------- */
-int rawkey() { return conin(); }                        /* one key, no echo; 65535 = end of input (Ctrl-D) */
+int rawkey() { return keyin(); }                        /* one key, no echo; 65535 = end of input (Ctrl-D) */
 void esc() { putchar(27); putchar('['); }               /* CSI */
 void gotoxy(int r, int c) { esc(); putnum(r); putchar(';'); putnum(c); putchar('H'); }   /* 1-based */
 void clrscr() { esc(); putchar('2'); putchar('J'); }

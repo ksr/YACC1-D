@@ -6,10 +6,11 @@ SYNOPSIS
     grep -r regex [dir]
 
 DESCRIPTION
-    Prints the lines that match a basic regular expression. The input
-    is the files named, read as one stream (globs expand, "-" is the
-    console), or the console up to Ctrl-D. With more than one file each
-    matching line is prefixed "NAME:". grep is /BIN/GREP.
+    Prints the lines that match a basic regular expression. The input is
+    the files named, read as one stream (globs expand, "-" is stdin), or
+    stdin. With more than one file each matching line is prefixed
+    "NAME:". grep is /BIN/GREP. stdin is the shell's < file or pipe (see
+    shell), else the console up to Ctrl-D.
 
     With -r grep searches every file under the current directory (or
     dir), depth first, and prefixes each match with the file's absolute

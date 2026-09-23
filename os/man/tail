@@ -5,11 +5,11 @@ SYNOPSIS
     tail [-N] [file ...]
 
 DESCRIPTION
-    Prints the last N lines (default 10) of the files named, read as
-    one stream (globs expand, "-" is the console), or of the console up
-    to Ctrl-D. The lines stream through a ring of 40 slots and are
-    printed when the input ends. CR is dropped; each file ends a line.
-    tail is /BIN/TAIL.
+    Prints the last N lines (default 10) of the files named, read as one
+    stream (globs expand, "-" is stdin), or of stdin. The lines stream
+    through a ring of 40 slots and are printed when the input ends. CR
+    is dropped; each file ends a line. tail is /BIN/TAIL. stdin is the
+    shell's < file or pipe (see shell), else the console up to Ctrl-D.
 
 OPTIONS
     -N    the last N lines, 1..40 (e.g. -5); a count outside that range

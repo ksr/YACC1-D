@@ -13,7 +13,7 @@ Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
 LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
 /> 
 /BIN> 
-    132  HELLO  @5000
+    144  HELLO  @5000
 /BIN> 
 /BIN
 /BIN> 
@@ -25,7 +25,7 @@ hi there
 /> 
 2 29 156
 /> 
-     55  ECHO  @5000
+     67  ECHO  @5000
 /> 
 /BIN> 
 /BIN
@@ -33,7 +33,7 @@ hi there
 what?
 /BIN> 
 /> 
-loaded 132 bytes at $5000
+loaded 144 bytes at $5000
 /> 
 Y1/OS commands (man NAME for more; a /BIN program wins over a built-in of the same name)
 built into the shell:
@@ -45,6 +45,7 @@ built into the shell:
   mkdir / rmdir  make / remove (an empty) directory
   type path      print a file (the built-in cat)
   exit           back to the ROM monitor
+  cmd < in  > out  >> out  a | b | c   redirection and pipes (man shell)
 in /BIN:
   awk  one-rule awk: fields, /re/ {print $N ...}, NR NF
   cat  print files (globs, - = console)   cmp  first differing byte

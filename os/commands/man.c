@@ -2,7 +2,7 @@
      man cat      the page for cat (the name is upper-cased: the Makefile installs the pages as /MAN/CAT ...)
      man man      this command's own page
      man          the list of pages (the names in /MAN)
-   The pager is lib_more.c: 23 lines, then --More-- and a key (conin): space = next page, Enter = one line, q = quit.
+   The pager is lib_more.c: 23 lines, then --More-- and a key (keyin): space = next page, Enter = one line, q = quit.
    Ported from P8X os/commands/man.c 2026-09-23, changes: /MAN instead of /man and the name upper-cased (Y1/OS
    names are case-sensitive, the command word is not); the page goes through the --More-- pager (the P8X streamed
    it whole); no argument lists the pages instead of printing usage; fopen/fgetc from lib_fs.c. */

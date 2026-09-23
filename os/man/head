@@ -6,8 +6,9 @@ SYNOPSIS
 
 DESCRIPTION
     Prints the first N lines (default 10) of the files named, read as
-    one stream just as cat would print them (globs expand, "-" is the
-    console), or of the console up to Ctrl-D. head is /BIN/HEAD.
+    one stream just as cat would print them (globs expand, "-" is
+    stdin), or of stdin. head is /BIN/HEAD. stdin is the shell's < file
+    or pipe (see shell), else the console up to Ctrl-D.
 
 OPTIONS
     -N    the first N lines (e.g. -5)

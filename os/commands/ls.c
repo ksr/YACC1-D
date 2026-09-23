@@ -1,6 +1,7 @@
 /* ls.c - list a directory through the OS file API (2026-09-23): opendir / readdir and the entry accessors.
      ls [PATH]   name, <DIR> or the size, the load address of a program, then the count ('.' and '..' skipped) */
 #include "../lib_fs.c"
+#include "../lib_err.c"
 #include "y1lib.c"
 char ent[32];
 char nm[13];
@@ -9,9 +10,9 @@ void main() {
     int h, n; char *a;
     a = argstr();
     while (*a == ' ') a++;
-    if (*a && !fresolve(a, ent)) { puts("ls: not found"); return; }
+    if (*a && !fresolve(a, ent)) { eputs("ls: not found"); return; }
     h = opendir(a);
-    if (!h) { puts("ls: not a directory"); return; }
+    if (!h) { eputs("ls: not a directory"); return; }
     n = 0;
     while (readdir(h, ent)) {
         ent_name(ent, nm);

@@ -5,6 +5,8 @@
 #   make test       tests/os/run.py: scripted sessions on both emulators against expected transcripts
 #   make clean
 #   make sizes      each /BIN program's size (image + uninitialised data) against the 32K program area
+# y1cc --os (2026-09-23) for the OS and every program: putchar/puts/getchar are the OS syscalls CONOUT/CONIN,
+# which the shell redirects (> >> < |); a program built without it would write past a redirect to the screen.
 # Programs: os/commands/*.c -> /BIN/NAME (upper case), compiled at TPA $5000; they #include the os/lib_*.c
 # libraries. Files in os/disk/ go to the root, os/man/NAME to /MAN/NAME (upper case: `man` upper-cases the name),
 # and the Markdown documents in DOCS to /DOCS for `md` (host file = disk name).
@@ -25,14 +27,17 @@ all: disk.img
 
 $(B)/y1os.bin: y1os.c lib_abi.c lib_fs.c $(ROOT)/software/compiler/y1cc.py $(ROOT)/software/compiler/lib/y1lib.c
 	@mkdir -p $(B) && cp $(DEF) $(B)/ && echo -h > $(B)/rcasm.rc
-	$(CC) y1os.c -o $(B)/y1os.asm --org 0x1000 -l
+	$(CC) y1os.c -o $(B)/y1os.asm --org 0x1000 --os -l
 	@cd $(B) && ../$(ASM) y1os -d=yacc1 > y1os.lst && grep -q "^0 Errors" y1os.lst || { grep -i "err" $(B)/y1os.lst | head; exit 1; }
 	@grep "Object Code" $(B)/y1os.lst
 	$(I2B) $(B)/y1os.img $@ --base 0x1000
+	@i=$$(wc -c < $@); d=$$(awk '/^bss_start:/{b=1} b && $$2=="DS"{s+=$$3} END{print s+0}' $(B)/y1os.asm); \
+	  printf "y1os: %d bytes image (%d of 32 sectors) + %d data = %d of 16384 (\$$1000-\$$4FFF)\n" $$i $$(( (i + 511) / 512 )) $$d $$((i + d)); \
+	  if [ $$((i + d)) -gt 16384 ] || [ $$i -gt 16384 ]; then echo "y1os: over its 16K (the programs start at \$$5000)"; rm -f $@; exit 1; fi
 
-$(B)/bin/%.bin: commands/%.c $(LIBS)
+$(B)/bin/%.bin: commands/%.c $(LIBS) $(ROOT)/software/compiler/y1cc.py
 	@mkdir -p $(B)/bin && cp $(DEF) $(B)/bin/ && echo -h > $(B)/bin/rcasm.rc
-	@$(CC) $< -o $(B)/bin/$*.asm --org 0x5000
+	@$(CC) $< -o $(B)/bin/$*.asm --org 0x5000 --os
 	@cd $(B)/bin && ../../$(ASM) $* -d=yacc1 > $*.lst && grep -q "^0 Errors" $*.lst || { grep -i "err" $(B)/bin/$*.lst | head; exit 1; }
 	@$(I2B) $(B)/bin/$*.img $@ --base 0x5000
 	@t=$$(( $$(wc -c < $@) + $$(awk '/^bss_start:/{b=1} b && $$2=="DS"{s+=$$3} END{print s+0}' $(B)/bin/$*.asm) )); \

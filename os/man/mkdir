@@ -15,7 +15,10 @@ DESCRIPTION
     card needs it to make /BIN before any /BIN program exists.
 
 LIMITS
-    Names are 1..12 characters; the path at most 62.
+    Names are 1..12 characters; the path at most 62. Refused ("cannot
+    mkdir") while a file is open for writing, which includes a > or
+    >> redirect and a pipe: a directory is allocated at the same free
+    pointer (see shell).
 
 EXAMPLES
     mkdir /T
@@ -28,4 +31,4 @@ NOTES
     ported from P8X os/man/mkdir 2026-09-23.
 
 SEE ALSO
-    rmdir, cd, dir, cp
+    rmdir, cd, dir, cp, shell

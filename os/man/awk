@@ -8,8 +8,9 @@ DESCRIPTION
     Reads its input a line (record) at a time, splits each record into
     fields and runs a one-rule program against it. The input is the
     files named, read one after the other as one stream (globs expand,
-    "-" is the console), or the console up to Ctrl-D when none is
-    given. awk is /BIN/AWK.
+    "-" is stdin), or stdin when none is given. awk is /BIN/AWK. stdin
+    is the shell's < file or pipe (see shell), else the console up to
+    Ctrl-D.
 
     The program is one argument in single or double quotes; awk strips
     them itself (the shell does not). An unquoted program ends at the

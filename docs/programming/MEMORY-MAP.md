@@ -37,18 +37,18 @@ Sources: `docs/system/MACHINE.md` (the memory card's jumper settings, verified w
 | $0100–$01FF | 256 | `BASIC_VARS`: BASIC's 26 one-byte variables, 256-byte aligned | `basic.asm` |
 | $0200–$02FF | 256 | BASIC internal state: `bas_run_ended` $0200, text/token pointers $0202–$0216, FOR-NEXT stack $0280–, GOSUB stack $02C0– | `basic.asm` |
 | $0300–$03FF | 256 | `parse_input_line`: BASIC's input line | `basic.asm` |
-| $0400–$04FF | 256 | `parse_token_buffer`: BASIC's tokenised line under construction | `basic.asm` |
-| $0500–$0BFF | 1,792 | not assigned; the stack may grow into it (no check) | free |
+| $0400–$04FF | 256 | `parse_token_buffer`: BASIC's tokenised line under construction — **and**, while Y1/OS runs, the first of its handle buffers (below) | `basic.asm` |
+| $0500–$0BFF | 1,792 | while Y1/OS runs: `HBUFS` $0400–$0BFF, the four file handles' 512-byte buffers (2026-09-23, out of the OS's 16K to make room for redirection and pipes); otherwise not assigned. The stack must not grow below $0C00 (no check) | `os/y1os.c` |
 | $0C00–$0EFF | 768 | the stack: R1 = $0EFF at reset, grows down, $0C00 the informal floor | `monitor.asm` `STACK`, `firmware/abi/README.md` |
 | $0F00–$0F04 | | `monmode` $0F00, `continue_addr` $0F02, `interupt_cnt` $0F04 | `monitor.asm` |
 | $0F06–$0F0B | 6 | `SYSARG0..2`: Y1/OS syscall argument words (big-endian) | `os/lib_abi.c`, `y1cc.py` (2026-09-23) |
 | $0F0C–$0F0D | 2 | `SYSRES`: the syscall result word | idem |
 | $0F10–$0F12 | 3 | `CFLBA0..2`: the sector number for CFREAD/CFWRITE (low byte first) | `monitor.asm` (2026-09-22) |
-| $0F14–$0F3F | 44 | `SYSTAB`: the OS's syscall jump table, 22 big-endian words, filled at boot | `os/lib_abi.c`, `os/y1os.c` |
+| $0F14–$0F3F | 44 | `SYSTAB`: the OS's syscall jump table, 22 big-endian words, filled at boot; all 22 used since 2026-09-23 | `os/lib_abi.c`, `os/y1os.c` |
 | $0F40–$0FBF | 128 | `ARGBUF`: a program's command tail from Y1/OS, NUL-terminated (`ARGMAX` 127); `argstr()`. The monitor's equate says 64 bytes; the upper 64 overlay `line_buffer` | `monitor.asm`, `os/lib_abi.c`, `y1cc.py` |
 | $0F80–$0FFF | 128 | `line_buffer`: the monitor's line buffer (`P` command), idle while the OS runs | `monitor.asm` |
 | $1000–$1FFF | 4K | BASIC's token buffer (`bas_tok_buf_start`..`_end` = $2000), cleared by `basic_cold` at every monitor boot — **and** `OSBASE`: where the `O` command loads Y1/OS. The two are never used together | `basic.asm`, `monitor.asm` |
-| $1000–$4FFF | 16K | Y1/OS image and data when the OS is running (LBA 1–32 reserve; v0 was 5.1K, v0.1 with the file layer is being written on 2026-09-23 and its size is not yet recorded) | `os/README.md`, `os/y1os.c` |
+| $1000–$4FFF | 16K | Y1/OS image and data when the OS is running (LBA 1–32 reserve; v0 was 5.1K; 2026-09-23 with redirection and pipes: a 14,673-byte image = 29 sectors + 1,424 bytes of data = 16,097 of 16,384, the Makefile checks it) | `os/README.md`, `os/y1os.c` |
 | $2000 | | scratch of the removed monitor T-menu tests (nothing now) | `y1cc.py` comment |
 | $3000 | | default `ORG` of a compiled program run from the monitor (`G3000`) | `y1cc.py` `ORG_DEFAULT` |
 | $5000–$CFFF | 32K | Y1/OS transient program area (`TPA`..`TPATOP`); `/BIN` programs are compiled `--org 0x5000` | `os/lib_abi.c` |

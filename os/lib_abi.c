@@ -2,6 +2,8 @@
    (2026-09-22), and since 2026-09-23 the Y1/OS syscall interface (numbers and RAM addresses; the C wrappers are in
    lib_fs.c). Use with y1cc's bios(addr, r7, acc): R7 and ACC are set, the routine is JSRed, ACC comes back.
    Console: CHAROUT (ACC = byte), UARTIN (-> ACC, echoes on the machine), CONST (-> 1 when a byte waits).
+   A program's normal output is NOT these: y1cc --os compiles putchar/puts/getchar to the syscalls CONOUT/CONIN,
+   which the shell redirects; bios(CHAROUT, 0, c) is the raw console, for diagnostics (lib_err.c eputs).
    CompactFlash: set CFLBA0..2 with poke(), then CFREAD/CFWRITE with R7 = a 512-byte buffer (R7 advances); ACC = 0 ok.
    ARGBUF: 128 bytes ($0F40..$0FBF, ARGMAX = 127 characters + NUL) where the OS leaves a program's command tail;
    argstr() returns its address.
@@ -53,7 +55,10 @@
 #define SYS_CHDIR    14   /* (path) -> 1, 0 not found, 2 not a directory */
 #define SYS_RENAME   15   /* (oldpath, newname) -> 1, 0 cannot (the entry keeps its directory; newname is a bare name) */
 #define SYS_ENTRY    16   /* (buf32) -> 1; the 32-byte entry the last OPEN/OPENDIR/RESOLVE/CREATE... found, copied */
-#define SYS_CONIN    17   /* () -> a console byte WITHOUT echo (ROM UARTINNE), 65535 on Ctrl-D or end of input */
-#define SYS_CONST    18   /* () -> 1 when a console byte is waiting (ROM CONST; always 1 on the emulators) */
-#define SYS_SPARE    19   /* 19..21 unused: the slots hold 0 */
+/* 17, 18: stdin (the shell's < file or pipe, else the console); 19: stdout; 20: the keyboard; 21: which is which */
+#define SYS_CONIN    17   /* () -> next stdin byte, no echo; 65535 at the end / Ctrl-D (y1cc --os: getchar) */
+#define SYS_CONST    18   /* () -> 1 when a stdin byte is waiting (a file: bytes left; console: ROM CONST) */
+#define SYS_CONOUT   19   /* (byte) -> nothing: to stdout, the > / >> file or pipe, else CHAROUT (--os: putchar) */
+#define SYS_KEYIN    20   /* () -> a key: ALWAYS the console, no echo; 65535 at Ctrl-D (pager, vi, dump, examine) */
+#define SYS_STDIO    21   /* () -> bit 0 stdin redirected, bit 1 stdout redirected (SYSTAB is full with 21) */
 #define SYS_LAST     21

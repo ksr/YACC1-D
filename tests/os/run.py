@@ -29,13 +29,15 @@ EMUS = [("int", os.path.join(ROOT, "software/emulator/emulator")),
 LIMITS = {"basic": (8000000, 120000000),         # instructions (int) / microcode steps (uc): the session must finish
           "api": (12000000, 200000000),          # inside them; a program-heavy session needs more (2026-09-23)
           "write": (14000000, 220000000),
-          "wave1": (8000000, 110000000),         # 4.5M / 62M needed (2026-09-23)
-          "wave2": (9000000, 130000000)}         # 5.7M / 79M needed
+          "wave1": (8000000, 110000000),         # 4.5M / 62M needed (2026-09-23); 4.9M / 73M with --os output
+          "wave2": (9000000, 130000000),         # 5.7M / 79M needed; 5.9M / 49M with --os
+          "redirect": (4000000, 60000000),       # 1.9M / 27M needed (2026-09-23)
+          "pipe": (13000000, 180000000)}         # 9.8M / 136M needed: every byte crosses CONOUT, then CONIN
 DEFAULT_LIMIT = (12000000, 200000000)
 
 # host-side checks on the disk image a session leaves behind: ("fsck",) must pass; ("ls", path, present, absent)
 # lists a directory and checks names; ("get", path, hostfile, nbytes) fetches a file and compares it with the first
-# nbytes (0 = all) of a host file
+# nbytes (0 = all) of a host file; ("data", path, bytes) fetches a file and compares it with the bytes given
 HOST = {
     "api": [("fsck",), ("get", "/COPY.TXT", "os/disk/README.TXT", 0)],
     "write": [("fsck",),
@@ -45,6 +47,16 @@ HOST = {
               ("get", "/T2/HELLO", "os/build/bin/hello.bin", 16),
               ("get", "/SAVED.BIN", "os/build/bin/hello.bin", 0x84)],
     "vi": [("fsck",), ("ls", "/", ["T.TXT"], [])],
+    "redirect": [("fsck",),                    # 2026-09-23: > >> < and the write-handle rule
+                 ("ls", "/", ["R1.TXT", "R2.TXT", "R3.TXT", "R5.TXT"], ["R4.TXT", "R6.BIN", "B"]),
+                 ("data", "/R1.TXT", b"hello\nmore\nthird\n"),
+                 ("data", "/R2.TXT", b"apple 3 red\napple 3 red\nbanana 12 yellow\nbanana 12 yellow\n"
+                                     b"cherry 40 red\nfig 7 purple\npear 5 green\n"),     # sort F > F
+                 ("data", "/R3.TXT", b"/BIN\n"),
+                 ("data", "/R5.TXT", b"")],
+    "pipe": [("fsck",),                        # 2026-09-23: pipes; the temp files are gone afterwards
+             ("ls", "/", ["P1.TXT"], ["PIPE0.TMP", "PIPE1.TMP"]),
+             ("data", "/P1.TXT", b"5 15 69\n")],
     "wave2": [("fsck",),
               ("ls", "/T", ["E1", "E2", "FRUIT.TXT", "H", "S"], []),
               ("ls", "/U", ["E3", "S"], ["E1", "E2", "FRUIT.TXT", "H"]),
@@ -88,6 +100,12 @@ def host_check(name, img):
                 if n not in names: fails.append("ls %s: %s missing (got %s)" % (chk[1], n, sorted(names)))
             for n in chk[3]:
                 if n in names: fails.append("ls %s: %s should be gone" % (chk[1], n))
+        elif chk[0] == "data":
+            tmp = img + ".get"
+            rc, out = p8xfs("get", img, chk[1], "--out", tmp)
+            if rc: fails.append("get %s: %s" % (chk[1], out.strip())); continue
+            got = open(tmp, "rb").read(); os.remove(tmp)
+            if got != chk[2]: fails.append("get %s: %r, expected %r" % (chk[1], got[:60], chk[2]))
         elif chk[0] == "get":
             tmp = img + ".get"
             rc, out = p8xfs("get", img, chk[1], "--out", tmp)

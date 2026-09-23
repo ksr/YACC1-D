@@ -23,7 +23,8 @@ The C subset
                + - * / %   unary - ! ~ & *   a[i]  s.m  p->m   f(args)   sizeof(type)/sizeof(expr) (constant)
                literals: decimal, 0x hex, 'c', "string"; #define NAME value; #include "file" (textual, once)
   builtins     putchar(c)  getchar()  puts(s)  (console: port 2 on the emulator, the monitor's BIOS charout/uartin
-                 vectors at $FFC4/$FFE8 on the machine; the runtime picks the path at run time with BRDEV)
+                 vectors at $FFC4/$FFE8 on the machine; the runtime picks the path at run time with BRDEV;
+                 with --os the Y1/OS syscalls CONOUT/CONIN instead, so the shell can redirect them)
                peek(addr) poke(addr,v)  peekw(addr) pokew(addr,v)   (byte / big-endian word memory access)
                inp(port) outp(port,v)   (INP/OUTA/OUTI: port is a constant 0..15)
                halt()  (HALT)   bios(addr, r7, acc) -> ACC   (JSR a monitor routine with R7 and ACC set up)
@@ -59,7 +60,7 @@ Execution model (the part that is YACC1-specific)
   * The carry flag is used only inside ADDT/ADDTC pairs with nothing but register moves between them (the idiom
     the monitor's do_add16 proved on the hardware); plain shifts and subtracts never feed a following carry op.
 
-Usage:  y1cc.py prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [-l]
+Usage:  y1cc.py prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [--os] [-l]
   --org     load address (default $3000: $1000-$1FFF is BASIC's token buffer, which the monitor's boot clears,
             and the monitor's T tests scribble at $2000). main is first: the monitor's `G3000` calls it (JSRUR R7,
             monitor of 2026-09-22) and its RET returns to the command loop.
@@ -68,6 +69,10 @@ Usage:  y1cc.py prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-br
   --boot    append a boot stub at $F000 (SP=$0EFF, JSR main, HALT) so `emulator -x -f prog.img` runs it stand-alone
   --no-brur never emit BRUR ($AD, added 2026-09-22): a switch is always a compare chain. For the machine until its
             sequencer EEPROM holds the microcode with BRUR.
+  --os      a Y1/OS program (2026-09-23; os/Makefile builds the OS and every /BIN command with it): putchar/puts
+            go through the OS syscall CONOUT (19) and getchar through CONIN (17) instead of the ROM, so the shell
+            can redirect them (`>`, `>>`, `<`, `|`). getchar still returns 0 at the end of input (CONIN's 65535).
+            R3/R4 are preserved around the syscall. Without --os the console runtime is the ROM/port-2 one, unchanged.
   -l        print the line count / a summary
 """
 import sys, os, re, time
@@ -79,6 +84,8 @@ ARGBUF = 0x0F40             # the OS's command-tail buffer for programs (monitor
 SYSARG = 0x0F06             # sys() parameter block: SYSARG0/1/2 = $0F06/$0F08/$0F0A (big-endian words, the machine's own order)
 SYSRES = 0x0F0C             # sys() result word, written by the OS handler
 SYSTAB = 0x0F14             # the OS syscall jump table: 22 big-endian word entries $0F14..$0F3F, filled by Y1/OS at boot
+SYS_CONIN = 17             # --os: getchar() is this syscall (os/lib_abi.c SYS_CONIN)
+SYS_CONOUT = 19            # --os: putchar()/puts() go through this syscall (os/lib_abi.c SYS_CONOUT, 2026-09-23)
 SYSMAX = 21                 # (the monitor's free variable space: $0F06..$0F0F after its own variables, $0F14..$0F3F between
                             # CFLBA2 $0F12 and ARGBUF $0F40; firmware/abi/README.md)
 BIOS_CHAROUT = 0xFFC4       # monitor BIOS vectors (monitor.asm, org 0ffc0h: 4 bytes per entry)
@@ -514,8 +521,8 @@ class Var:
 
 
 class Gen:
-    def __init__(self, org=ORG_DEFAULT, boot=False, vector=False, brur=True):
-        self.org, self.boot, self.vector, self.brur = org, boot, vector, brur
+    def __init__(self, org=ORG_DEFAULT, boot=False, vector=False, brur=True, osmode=False):
+        self.org, self.boot, self.vector, self.brur, self.osmode = org, boot, vector, brur, osmode
         self.code = []; self.data = []; self.bss = []
         self.globals = {}     # name -> Var
         self.frames = {}      # func -> {name: Var}
@@ -1595,6 +1602,20 @@ class Gen:
                         "rt_putc_h: JSR %d" % BIOS_CHAROUT, "        RET"]
         R["rt_getc"] = ["rt_getc: BRDEV rt_getc_h", "        INP P2", "        RET",
                         "rt_getc_h: JSR %d" % BIOS_UARTIN, "        RET"]
+        if self.osmode:
+            # --os (2026-09-23): the console goes through Y1/OS, so the shell can redirect it (> file, pipes).
+            # putchar = syscall CONOUT (19): the byte -> SYSARG0 as a big-endian word (high byte 0), JSRUR the word at
+            # SYSTAB+38. getchar = syscall CONIN (17), the byte from SYSRES; CONIN's 65535 (end of input: Ctrl-D, NUL,
+            # the end of a < file) becomes 0, the end-of-input byte getchar returns on the emulator (INP P2).
+            # R3 and R4 survive both (rt_puts walks its string in R3; compiled code keeps nothing else in a
+            # register across a call); the OS handler is compiled code and clobbers R5-R7, ACC, TMP.
+            R["rt_putc"] = ["rt_putc: PUSHR R3", "        PUSHR R4", "        MVARL R3", "        LDAI 0",
+                            "        MVARH R3", "        STR R3,%d" % SYSARG, "        LDR R7,%d" % (SYSTAB + 2 * SYS_CONOUT),
+                            "        JSRUR R7", "        POPR R4", "        POPR R3", "        RET"]
+            R["rt_getc"] = ["rt_getc: PUSHR R3", "        PUSHR R4", "        LDR R7,%d" % (SYSTAB + 2 * SYS_CONIN),
+                            "        JSRUR R7", "        LDR R5,%d" % SYSRES, "        POPR R4", "        POPR R3",
+                            "        MVRHA R5", "        BRNZ rt_getc_e", "        MVRLA R5", "        RET",
+                            "rt_getc_e: LDAI 0", "        RET"]
         R["rt_puts"] = ["rt_puts: LDAVR R3", "        BRZ rt_puts_d", "        JSR rt_putc", "        INCR R3",
                         "        BR rt_puts", "rt_puts_d: LDAI 10", "        JSR rt_putc", "        RET"]
         for h in ["rt_sub", "rt_mul", "rt_divmod", "rt_shl", "rt_shr", "rt_putc", "rt_getc", "rt_puts"]:
@@ -1602,8 +1623,8 @@ class Gen:
                 self.emit("; runtime " + h); self.emit(*R[h])
 
 
-def compile_src(src, path, org=ORG_DEFAULT, boot=False, vector=False, brur=True):
-    g = Gen(org, boot, vector, brur)
+def compile_src(src, path, org=ORG_DEFAULT, boot=False, vector=False, brur=True, osmode=False):
+    g = Gen(org, boot, vector, brur, osmode)
     g.gen_program(P(lex(src, path)).program(), os.path.basename(path))
     return "\n".join(g.code) + "\n", g
 
@@ -1615,7 +1636,7 @@ def main():
     if "-o" in a: out = a[a.index("-o") + 1]
     if "--org" in a: org = int(a[a.index("--org") + 1], 0)
     if "--boot" in a: boot = True
-    text, g = compile_src(open(src).read(), src, org, boot, "--vector" in a, "--no-brur" not in a)
+    text, g = compile_src(open(src).read(), src, org, boot, "--vector" in a, "--no-brur" not in a, "--os" in a)
     open(out, "w").write(text)
     if "-l" in a:
         print("y1cc: %s -> %s: %d lines; functions: %s" % (src, out, len(text.splitlines()),

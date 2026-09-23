@@ -1,7 +1,9 @@
 /* dump.c - hex dump of memory, 256 bytes a page: dump addr
      dump 5000     16 rows of  AAAA: bb bb ... bb  cccccccccccccccc  then a key: '.' (or q, or Ctrl-D) quits,
                    anything else shows the next 256 bytes
-   Ported from P8X os/commands/dump.c 2026-09-23, changes: the key is conin() (no echo; 65535 = end of console
+   The key is keyin() (the KEYIN syscall, 2026-09-23): always the keyboard, even when the dump goes to a file
+   (`dump 5000 > F`: one key per 256 bytes, as on the screen).
+   Ported from P8X os/commands/dump.c 2026-09-23, changes: the key is keyin() (no echo; 65535 = end of console
    input also quits), q quits as well as '.', rows end in LF only (the P8X printed CR LF). */
 #include "../lib_fs.c"
 #include "../lib_err.c"
@@ -33,7 +35,7 @@ void main() {
             putchar(10);
             addr += 16;
         }
-        k = conin();
+        k = keyin();
         if (k == '.' || k == 'q' || k == 'Q' || k == 65535) return;
     }
 }

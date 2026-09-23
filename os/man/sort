@@ -5,11 +5,11 @@ SYNOPSIS
     sort [file ...]
 
 DESCRIPTION
-    Reads the files named (as one stream; globs expand, "-" is the
-    console), or the console up to Ctrl-D, into memory, sorts the lines
-    in ascending byte order (A-Z before a-z; equal lines keep their
-    order) and prints them. CR is dropped; each file ends a line. sort
-    is /BIN/SORT.
+    Reads the files named (as one stream; globs expand, "-" is stdin),
+    or stdin, into memory, sorts the lines in ascending byte order (A-Z
+    before a-z; equal lines keep their order) and prints them. CR is
+    dropped; each file ends a line. sort is /BIN/SORT. stdin is the
+    shell's < file or pipe (see shell), else the console up to Ctrl-D.
 
 LIMITS
     200 lines of 79 characters: longer lines are cut, and the lines

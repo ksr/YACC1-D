@@ -1,0 +1,12 @@
+cat /FRUIT.TXT | sort | UNIQ
+dir /BIN | grep VI
+sort < /FRUIT.TXT|UNIQ|wc > /P1.TXT
+cat /P1.TXT
+cat /FRUIT.TXT | sort | UNIQ | head -2
+awk '/e/ {print $1 "|" $3}' /FRUIT.TXT | tail -2
+cat /MAN/MORE | more | wc
+cat /MAN/MORE | more
+ 
+echo a | b | c | d | e
+| sort
+exit

@@ -394,7 +394,7 @@ From `hardware/cards/memory/README.md`, `docs/system/MACHINE.md` "Memory card v1
 | Range | What | Decided by |
 |---|---|---|
 | $0000–$7FFF | low RAM (62256 IC1) — always present, cannot be jumpered out (`-LO-RAM` = NAND(NOT BADDR15, VMA); datapath review M4) | memory card |
-| $0000–$0FFF | the system page: BASIC variables $0100–$02FF; monitor variables $0F00.. (monmode $0F00, continue_addr $0F02, interupt_cnt $0F04, CFLBA0..2 $0F10–$0F12, ARGBUF $0F40–$0F7F, line_buffer $0F80–$0FFF); the hardware stack grows down from $0EFF (R1), informal floor $0C00 | `monitor.asm` EQUs, `firmware/abi/README.md` |
+| $0000–$0FFF | the system page: BASIC variables $0100–$02FF; Y1/OS's four handle buffers $0400–$0BFF while the OS runs (2026-09-23); monitor variables $0F00.. (monmode $0F00, continue_addr $0F02, interupt_cnt $0F04, CFLBA0..2 $0F10–$0F12, ARGBUF $0F40–$0F7F, line_buffer $0F80–$0FFF); the hardware stack grows down from $0EFF (R1), informal floor $0C00 | `monitor.asm` EQUs, `firmware/abi/README.md` |
 | $1000–$1FFF | BASIC's token buffer, also where the `O` command loads Y1/OS (the two are not used together) | `firmware/abi/README.md` |
 | $3000.. | where y1cc images load and where `G3000` runs them | `docs/system/MACHINE.md` |
 | $8000–$CFFF | high RAM (62256 IC2), five 4K blocks jumpered "up" | memory card jumper header U$1 (3 × 8) |

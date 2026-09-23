@@ -1,0 +1,66 @@
+BOOT FROM CF
+Y1/OS v0.1 (2026-09-23)  P8XFS v2
+/> 
+
+/> echo hello > /R1.TXT
+
+/> cat /R1.TXT
+
+hello
+/> echo more >>/R1.TXT
+
+/> type /FRUIT.TXT >/R2.TXT
+
+/> echo third>>/R1.TXT
+
+/> cat /R1.TXT
+
+hello
+more
+third
+/> wc < /R1.TXT
+
+3 3 17
+/> cmp /FRUIT.TXT /R2.TXT
+
+/> cd /BIN
+
+/BIN> pwd > /R3.TXT
+
+/BIN> cd /
+
+/> type R3.TXT
+
+/BIN
+/> cp /FRUIT.TXT /R4.TXT > /R5.TXT
+
+cp: cannot create /R4.TXT
+/> save /R6.BIN 5000 10 >> /R1.TXT
+
+cannot create
+/> echo x > /BIN
+
+cannot write the > or pipe file
+/> cat < /NOPE
+
+cannot read the < file
+/> echo a >
+
+syntax: cmd [< in] [> out | >> out] [| cmd ...] (4 commands at most)
+/> echo a > b c
+
+syntax: cmd [< in] [> out | >> out] [| cmd ...] (4 commands at most)
+/> echo "a > b" 'c|d'
+
+"a > b" 'c|d'
+/> sort /R2.TXT > /R2.TXT
+
+/> head -3 /R2.TXT
+
+apple 3 red
+apple 3 red
+banana 12 yellow
+/> exit
+
+bye
+>

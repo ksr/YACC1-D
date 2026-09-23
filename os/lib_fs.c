@@ -9,11 +9,17 @@
    Reading:   h = fopen(path); while ((c = fgetc(h)) != 65535) ...; fclose(h);      byte-wise through the OS buffer
               while ((n = fread(h, buf512))) ...                                     whole sectors into your buffer
    Writing:   h = fcreate(path, load, exec); fputc(h, c) / fwrite(h, buf, n) / fputs(h, s); fclose(h) registers it
-              (one file may be open for writing at a time; a same-named file is replaced)
+              (one file may be open for writing at a time, and a shell > or pipe is one; a same-named file is
+              replaced when the new one is closed)
    Names:     fdelete(path)  fmkdir(path)  frmdir(path)  frename(path, newname)  chdir(path)  getcwd(buf)
    Entries:   h = opendir(path); while (readdir(h, ent32)) { ent_len(ent) ... }; fclose(h)
               fresolve(path, ent32) -> 1 found; fentry(ent32) copies the entry the last call found
-   Console:   conin() a byte without echo (65535 at Ctrl-D: filters end there); constat() 1 when one is waiting.
+   Console:   conin() the next byte of STDIN without echo: the shell's < file or pipe, else the console (65535 at
+              the end / Ctrl-D: filters end there); constat() 1 when one is waiting. DATA comes from conin().
+              keyin() a KEY: always the keyboard, never redirected (65535 at Ctrl-D): --More--, vi, dump, examine.
+              stdio() bit 0: stdin redirected, bit 1: stdout redirected (the pager does not page into a file).
+              Output is putchar/puts (y1cc --os: the CONOUT syscall, redirected by the shell); a diagnostic that must
+              reach the screen even under > or | is eputs() from lib_err.c.
    Paths are as the shell takes them: absolute /A/B or relative to the current directory, names 1..12 characters,
    case-sensitive; "" is the current directory for opendir/fresolve. */
 #include "lib_abi.c"
@@ -37,6 +43,8 @@ int frename(char *path, char *newname) { return sys(SYS_RENAME, path, newname); 
 int fentry(char *ent) { return sys(SYS_ENTRY, ent); }
 int conin() { return sys(SYS_CONIN); }
 int constat() { return sys(SYS_CONST); }
+int keyin() { return sys(SYS_KEYIN); }
+int stdio() { return sys(SYS_STDIO); }
 
 int fputs(int h, char *s) {                 /* a string (no newline added); returns the bytes written */
     int n;

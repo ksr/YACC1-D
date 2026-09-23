@@ -94,8 +94,9 @@ void main() {
 }
 ```
 
-- Compile at the transient area: `y1cc.py hello.c -o hello.asm --org 0x5000` (no `--boot`, no `--vector`: the OS
-  calls the exec address with `call()` = `JSRUR R7`, and `main`'s `RET` returns to the shell).
+- Compile at the transient area: `y1cc.py hello.c -o hello.asm --org 0x5000 --os` (no `--boot`, no `--vector`: the
+  OS calls the exec address with `call()` = `JSRUR R7`, and `main`'s `RET` returns to the shell; `--os` since
+  2026-09-23, so that the console goes through the OS and can be redirected).
 - Assemble (`asm hello -d=yacc1` with `yacc1.def` and a `-h` `rcasm.rc` beside it) → `hello.img`.
 - Flatten: `python3 tools/img2bin.py hello.img hello.bin --base 0x5000` (unwritten bytes come out as 0; the `--end`
   default $F000 keeps any stub out).
@@ -103,8 +104,9 @@ void main() {
   (the Makefile does this for every `commands/*.c`, upper-casing the name), or from the machine `save /BIN/HELLO
   5000 len` after loading it another way.
 - Arguments: `argstr()` returns the NUL-terminated tail at ARGBUF ($0F40, up to 127 characters). Console output is
-  the compiler's `putchar`/`puts` (BIOS `CHAROUT` on the machine and on ucemu, port 2 on the interpreter); console
-  input for a filter is `sys(SYS_CONIN)` (no echo, 65535 at Ctrl-D or end of input) and `sys(SYS_CONST)`.
+  the compiler's `putchar`/`puts` (with `--os` the CONOUT syscall, which the shell redirects; without it BIOS
+  `CHAROUT` on the machine and on ucemu, port 2 on the interpreter); input for a filter is `sys(SYS_CONIN)` (stdin:
+  no echo, 65535 at its end or at Ctrl-D) and `sys(SYS_CONST)`; a key is `sys(SYS_KEYIN)` (below).
 - All the compiler's rules apply: no recursion, R2 untouched, carry only in the compiler's idioms
   ([C-COMPILER.md](C-COMPILER.md)). A program's globals and BSS live in its own image (cleared at its `main`).
 
@@ -137,9 +139,11 @@ buffer and position; **one write handle at a time**.
 | 14 | `SYS_CHDIR` | `(path)` → 1, 0 not found, 2 not a directory |
 | 15 | `SYS_RENAME` | `(oldpath, newname)` → 1, 0 cannot |
 | 16 | `SYS_ENTRY` | `(buf32)` → 1; the 32-byte entry the last OPEN/OPENDIR/RESOLVE/CREATE… found, copied |
-| 17 | `SYS_CONIN` | `()` → a console byte **without echo** (ROM `UARTINNE`), 65535 on Ctrl-D or NUL (the emulator's end of input) |
-| 18 | `SYS_CONST` | `()` → 1 when a console byte is waiting (ROM `CONST`; always 1 on the emulators) |
-| 19–21 | `SYS_SPARE`..`SYS_LAST` | unused, the slots hold 0 |
+| 17 | `SYS_CONIN` | `()` → the next byte of **stdin**, without echo: the shell's `<` file or pipe (65535 at its end), else the console (ROM `UARTINNE`; 65535 on Ctrl-D or NUL, the emulator's end of input). `y1cc --os`: `getchar()` |
+| 18 | `SYS_CONST` | `()` → 1 when a stdin byte is waiting (a `<` file or pipe: always 1; the console: ROM `CONST`, always 1 on the emulators) |
+| 19 | `SYS_CONOUT` | `(byte)` → nothing (SYSRES untouched): the byte to **stdout**, the shell's `>`/`>>` file or pipe, else the raw console (`CHAROUT`). `y1cc --os`: `putchar()`/`puts()` (2026-09-23) |
+| 20 | `SYS_KEYIN` | `()` → a **key**: always the console, never redirected, no echo; 65535 on Ctrl-D/NUL (2026-09-23) |
+| 21 | `SYS_STDIO` | `()` → bit 0 stdin redirected, bit 1 stdout redirected (2026-09-23). SYSTAB is full with it |
 
 Writing goes to the volume's free pointer (boot block bytes 4–5, kept in step on disk): `CREATE` takes the handle
 and remembers the directory and the name, `PUTC`/`WRITE` fill the handle's sector buffer and flush full sectors,
@@ -147,6 +151,38 @@ and remembers the directory and the name, `PUTC`/`WRITE` fill the handle's secto
 free slot of the directory, and advances the free pointer — the same layout `p8xfs.py` writes, so the host tool
 reads what the OS wrote and vice versa. Files over 64K cannot be opened (16-bit positions). `tests/compiler/syscall.c`
 is a stand-alone model of the whole mechanism (handlers, `funcaddr`, nested `sys()` calls).
+
+### Redirection and pipes (2026-09-23)
+
+The shell takes `cmd [args] [< in] [> out | >> out] [| cmd ...]`, up to four commands per line (`os/man/shell`,
+`os/README.md`). It works because the OS and every `/BIN` command are compiled with `y1cc --os`: `putchar`/`puts` are
+the syscall **CONOUT** (19) and `getchar` is **CONIN** (17). Before a command runs the shell opens its files and sets
+`so_h`/`si_h` in `y1os.c`: CONOUT then writes the byte to the output file (or, with `so_h` = 0, to the raw console
+through the ROM's `CHAROUT`, never through `putchar`, which would call CONOUT again); CONIN and CONST read the input
+file (`si_h`) or the console. After the command, whatever happened, both files are closed and the console is back. A
+pipe `a | b` runs a with its output to `/PIPE0.TMP`, then b with its input from it (stages alternate
+`/PIPE0.TMP`/`/PIPE1.TMP`); the temp files are deleted after the line. There is no multitasking: the stages run one
+after the other.
+
+Two kinds of input follow from it. **Data** is `conin()` (CONIN): the filters' "no file named" and `-`, redirectable.
+A **key** the user presses in answer to the program is `keyin()` (**KEYIN**, 20): always the console, so `cat F |
+more` pages the pipe while `--More--` waits on the keyboard (a Unix pager reads `/dev/tty` for the same reason);
+`vi`, `dump`, `examine` and the pager use it. **STDIO** (21) tells a program what is redirected; the pager does not
+page when its output is a file or a pipe. Error messages use `eputs()` (`os/lib_err.c`), which writes through the
+ROM's `CHAROUT` and so never lands in a file or a pipe.
+
+Rules that come with it:
+
+- **One write handle.** CREATE and MKDIR allocate at the single free pointer, so while a command's stdout is a file
+  (`>`, `>>`, or a pipe) its own CREATE/MKDIR returns 0: `cp`, `touch`, `save`, `mkdir`, `vi`'s `:w` fail cleanly
+  inside a redirect or a pipe (they work with `<`).
+- **Replace at close.** A same-named file is replaced when the new one is closed, by writing the new entry over the
+  old one's slot (one sector); until then the old file is whole (`sort F > F` works) and a write that fails leaves it.
+- **`>>`** continues in place when the file is the last one written (its extent ends at the free pointer), else copies
+  the old sectors to the free pointer first; no byte of the old file changes either way.
+- **Static frames.** y1cc frames are static and the OS's own `putchar` is CONOUT, so nothing on the console handlers'
+  path (`con_out`, `con_in`, `key_in`, `fs_putc`, `fs_getc`, `cfread`, `cfwrite`...) may print: a handler would
+  re-enter itself. Their errors are return codes; the shell's messages use the raw console.
 
 ### Reading sectors directly (`os/commands/wc.c`)
 
@@ -201,9 +237,9 @@ image with `-c disk.img` and create a zero-filled 256-sector one if the file is 
 
 | Range | Use |
 |---|---|
-| $0000–$0EFF | system page: BASIC's areas (unused while the OS runs), the stack from $0EFF down |
+| $0000–$0EFF | system page: BASIC's areas (unused while the OS runs); the OS's four 512-byte handle buffers at $0400–$0BFF (since 2026-09-23); the stack from $0EFF down, not below $0C00 |
 | $0F00–$0FFF | the ROM's variables, and the OS's syscall block inside their free space: `SYSARG0..2` $0F06–$0F0B, `SYSRES` $0F0C, `CFLBA0..2` $0F10, `SYSTAB` $0F14–$0F3F, `ARGBUF` $0F40–$0FBF (over the monitor's idle line buffer) |
-| $1000–$4FFF | the OS image (5.1K for v0; v0.1 not yet measured) and its data: the OS sector buffer, four handle buffers (2K), line, path, directory and handle state, the BSS (16 K reserved = LBA 1–32) |
+| $1000–$4FFF | the OS image (5.1K for v0; 14,673 bytes = 29 sectors with redirection and pipes, 2026-09-23) and its data (1,424 bytes: the OS sector buffer, line, path, directory, handle and pipeline state); image + data must end below $5000 (the Makefile checks; 16,097 of 16,384 today) |
 | $5000–$CFFF | the transient program area (`TPA`..`TPATOP`), 32 K |
 | $D000–$DFFF | video (map A: $D000–$D7FF the 2K display RAM, $D800–$DFFF unused) — not RAM |
 | $E000–$FFFF | ROM |
@@ -249,5 +285,5 @@ the start of phase 3). Still to do, in the plan's order:
 4. **Video console + PS/2 keyboard** behind the console vectors (video card v2 on PA/PB, a keyboard controller on
    PC/PD).
 
-Also open: output redirection (`<`, `>`, `|`) and command history in the shell; dual CF (a second card at PC/PD);
+Done 2026-09-23: redirection and pipes (`<`, `>`, `>>`, `|`, above). Also open: command history in the shell; dual CF (a second card at PC/PD);
 the E-command RAM loader, which becomes unnecessary once the card boots.

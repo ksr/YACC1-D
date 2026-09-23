@@ -6,10 +6,10 @@ SYNOPSIS
 
 DESCRIPTION
     Prints three counts, "lines words bytes", for the files named taken
-    together as one stream (globs expand, "-" is the console), or for
-    the console up to Ctrl-D. A line is an LF; a word is a run of
-    anything but space, tab, CR and LF. The counts are 32-bit (see
-    num). wc is /BIN/WC.
+    together as one stream (globs expand, "-" is stdin), or for stdin. A
+    line is an LF; a word is a run of anything but space, tab, CR and
+    LF. The counts are 32-bit (see num). wc is /BIN/WC. stdin is the
+    shell's < file or pipe (see shell), else the console up to Ctrl-D.
 
 LIMITS
     Up to 24 names in all, after glob expansion.
