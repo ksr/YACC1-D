@@ -348,6 +348,30 @@ path (`-REG-RD-HI/LO` + `-HL-SWAP` into `BRANCH-LD-HI/LO` with `-2-BYTE-OPERAND-
 
 ---
 
+## 6b. The bench test set (`tests/bench/run.py --port`)
+
+Once the 2026-09-23 ROM is in and `tools/monload.py` can load `hello`, one command runs the whole set on the machine:
+
+```
+python3 tests/bench/run.py --port /dev/cu.usbserial-XXXX          # all 15, in order; --only hello,brur,isa for a subset
+```
+
+Each program is loaded through the `:` loader, run with `G3000`, and its output compared with the transcript the
+microcode-level emulator produced for the same image (`tests/bench/expected/NAME.uc.out`). Every transcript, with the
+expected text beside each failure, goes to `tests/bench/logs/bench-DATE.log`; commit it: it is the record of what the
+machine has proven. Read the results in this order, because each step assumes the ones before it:
+
+| Program | What it proves | A failure points at |
+|---|---|---|
+| `hello` | the loader, `G`, RET back to the monitor, the console vectors | the UART path, the `:` loader, JSRUR/RET |
+| `brur` | `BRUR Rn` ($AD, loaded 2026-09-22): prints `ABC0123` | the new microcode record, the register-to-branch-register path |
+| `isa` | every arithmetic, logic, shift, compare, register, memory and stack instruction: 62 hex bytes, 16 per line | compare byte by byte with `expected/isa.uc.out`; the byte's position names the instruction in `tests/ucemu/isa.asm` (results in order). `CD AB` = PUSHR/POPR (H-1), the `59 4E` pairs = taken/not-taken branches (H-2) |
+| `arith` ... `syscall` | compiled C: `rt_sub`, `rt_mul`, `rt_divmod`, shifts, compares, calls, arrays, structs, switch tables | the runtime helper the failing line exercises (`tests/compiler/NAME.c`) |
+
+The emulators already agree with these transcripts (`make check` runs the set on both, and the `--port` path itself
+through a pseudo-terminal); a difference on the machine is therefore the machine's. Loading the whole set takes a few
+minutes at the default 3 ms per character.
+
 ## 7. The bus tester
 
 ### 7.1 Hardware and firmware
