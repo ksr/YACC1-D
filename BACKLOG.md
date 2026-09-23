@@ -127,7 +127,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   Until burned, compile for the machine with `--vector`.
 - (done 2026-09-22: the sequencer EEPROM holds the regenerated image — BRUR at $AD, the H-2 fix in BRZ/BRNZ/BR16Z/BR16NZ, the
   H-1 fix in PUSHR; six records differed, all 256 sent with `tools/ucode_send.py --all`; the scope look at the old image's
-  bus fight was skipped.) **Bench-check the reloaded microcode**: BRUR (`tests/assembler/brur/`, `ABC0123`),
+  bus fight was skipped.) **Bench-check the reloaded microcode** (first evidence 2026-09-22/23: `tests/assembler/romcount` ran overnight from ROM — BRNZ, DECR, MVRHA, MVAT/MVTA, ADDI, OUTA/INP, BRINL — after `romdiag` had shown the bring-up machine lacked register card 1; card fitted, R7 reads correctly): BRUR (`tests/assembler/brur/`, `ABC0123`),
   `tests/ucemu/isa.asm` (every instruction; the port-2 byte stream must equal `tests/ucemu/run.py`'s), then the monitor from
   ROM.
 - **Run a compiled program on the machine.** Needs RAM loading: the monitor E-command loader (`tools/monload.py`, above) or
