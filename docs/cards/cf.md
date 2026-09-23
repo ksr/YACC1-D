@@ -211,8 +211,8 @@ The card needs the I/O card strapped to ports 0..7 (its `IO-ADDR-HL` header), wh
    and the buffer direction for reads, without any risk to a card.
 2. With the bus tester or the monitor's `E` command, write to P8 and watch DA0..2 on J1 pins 35, 33, 36 with a meter or
    LEDs: each value 0..7 must appear, and bit 3 must pull J1 pin 1 low.
-3. Fit the adapter with a card prepared on the Mac: `make -C os` writes `os/disk.img`; copy it to the card's first
-   sectors with `dd` (**To verify:** the procedure is not yet in `docs/procedures/`). Then `O` should boot Y1/OS.
+3. Fit the adapter with a card prepared on the Mac: `make -C os`, then `python3 tools/cfcard.py write os/disk.img --disk diskN`
+   (`docs/procedures/CF-CARD.md`). Then `O` should boot Y1/OS.
 4. `tests/os/*.session` then run on the machine by hand: `dir`, `cat README.TXT`, `hello`.
 
 If it misbehaves: ACT not flickering during `O` means no port-9 strobes (U1/U2, the I/O card's strap); status always

@@ -10,3 +10,4 @@ System build order, EEPROM programming, microcode loading, bus-tester usage (fro
 | `BUS Driver Commands - Google Docs.pdf` | the bus-tester script language as sent by `embedded/command-sender` (LET/FOR/NEXT, labels, expected values, DUMP) |
 
 _The PDF and the build notes were migrated 2026-09-19; MIGRATION.md at the repo root says which copy each item came from._
+| `CF-CARD.md` | putting Y1/OS on a real CompactFlash card from the Mac (`tools/cfcard.py`), reading one back, safety (2026-09-23) |
