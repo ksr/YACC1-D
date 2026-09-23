@@ -44,6 +44,8 @@ Generated 2026-09-23 by `tools/eagle_to_kicad_all.py`: every Eagle design under 
 | `cards/sequencer-memory/eagle/v2.1/Sequencer-Memory-V2.1` | [`sequencer-memory-v2.1`](cards/sequencer-memory/kicad/v2.1/) | yes | MATCH (106/106 nets) | 11 | 461 + 0 unconnected | 28 | 0 | ok |
 | `cards/video/eagle/v1.0-fusion-export-2026-09-18/Video_1.0` | [`video-v1.0-fusion-export-2026-09-18`](cards/video/kicad/v1.0-fusion-export-2026-09-18/) | yes | MISMATCH (115/117 nets) | 122 | 229 + 0 unconnected | 25 | 0 | ok |
 
+**Label styles in the converted schematics** (Ken looked, 2026-09-23, and kept them): a boxed global label marks a net the card also uses on another sheet (only global labels connect across KiCad sheets); plain text on a wire marks a net that appears on that sheet only, e.g. a bus signal the card does not use, drawn from the connector pin to the bus. Eagle drew both the same way, since its labels connect across sheets by name.
+
 ## Hand-maintained masters (not generated; `MASTER` marker file)
 
 - [`cards/cf/kicad/v1.0`](cards/cf/kicad/v1.0/) — see its README
