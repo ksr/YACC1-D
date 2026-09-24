@@ -24,7 +24,9 @@
   22 programs since 2026-09-24 (the recursion tests `rfact rmutual rlocals rcalc`, errors `recurse rmain adjstr`). Beside it:
   `corpus.py` (every C program the tree compiles, with its options), `diffcheck.py` (an old y1cc.py from git against the
   working one over the corpus: identical assembly), `twin.py` (y1cc.py against its C twin `software/compiler/c/y1cc`, also
-  `--16`), `twinfuzz.py` (random subset programs and 60 invalid ones through both compilers).
+  `--16`; `--chain`/`--chain16` against the multi-pass compiler `y1ccp`, cc1..cc9), `twinfuzz.py` (random subset programs and
+  60 invalid ones through both compilers; `--chain` too), `passes.py` (each pass of the multi-pass compiler against the Y1/OS
+  program area: image, tables, measured stack; the corpus through the passes with their Y1/OS table sizes).
 - `os/` — Y1/OS: `run.py` builds `os/disk.img`, boots it on both emulators with the console script `basic.session`
   after the monitor's `O` command, and diffs the transcripts (`basic.int.out`, `basic.uc.out`; the latter shows the
   monitor's input echo). `make os-test`.

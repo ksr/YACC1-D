@@ -246,18 +246,35 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - (done 2026-09-24: **`software/compiler/c/y1cc.c`, the C twin** — 3,122 lines in the C89 + y1cc subset, the same
   assembly as y1cc.py on the whole corpus including itself, `tests/compiler/twin.py` in `make check`; compiled by
   y1cc.py it is an 82,345-byte image, 2.5x the 32K program area.) **The road to a native compiler**, in order:
-  1. Split y1cc.c into passes that each fit $5000-$CFFF with their tables: lexer + parser -> an AST (or token) file
-     (~15K of code); call graph / frame layout; the code generator (56K today: split it again — expressions,
-     statements + data, runtime text — or shrink it: runtime text and messages as data files). Keep the twin test
-     passing at every step (the passes chained on the host must still equal y1cc.py).
-  2. A stack for the native compiler: its recursive parser/generator with frame saves needs far more than the
-     monitor's 768 bytes ($0C00-$0EFF); give a pass its own R1 region (the memory map in docs/system/OS-PLAN.md).
-  3. Y1/OS: an exit syscall (`io_fail` HALTs today), temporary files for the data sections (one write handle).
+  1. (done 2026-09-24: **the multi-pass compiler** — y1cc.c split into nine programs `software/compiler/c/cc1_lex.c`
+     .. `cc9_final.c` (lexer; parser; declarations; call graph; labels and frames; statements; expression analysis;
+     expression code; the text), chained by `y1ccp` on the Mac: the same assembly as y1cc.py on the whole corpus
+     (`twin.py --chain`, `--chain16`: 126 programs + 4 errors, the passes compiling themselves among them) and on
+     random programs (`twinfuzz.py --chain`, seeds 1-6 x 500, the 60 error programs and 20 with two errors found
+     in different passes, where the first in y1cc.py's order must win). Every pass compiled by
+     y1cc.py and assembled fits $5000-$CFFF with its Y1/OS tables and its measured stack, the tightest cc9 with 244
+     bytes to spare; with those tables the chain compiles the whole corpus but y1cc.c (`tests/compiler/passes.py`,
+     in `make check`). software/compiler/README.md, "The multi-pass compiler".)
+  2. A stack for the native compiler — measured (passes.py: 84-1,202 bytes on the corpus, cc2 about 144 more per
+     level of parentheses, cc8 62 per level of operators) and placed: at the top of each pass's program area,
+     growing down to its tables. To build: either y1cc `--stack ADDR` (main saves R1, loads ADDR, restores it;
+     a y1cc.py change, Ken's call) or Y1/OS's `run` giving every program the area's top as its stack.
+  3. Y1/OS: an exit syscall (`io_fail`/`io_done` HALT today); files over 64K (16-bit positions: y1os.c's
+     intermediate files and the passes' own assembly are 70-250K; 111 of 125 compiles stay under 64K); an
+     `#include` deeper than three open files (four handles, one writing) needs `target_io.c` to close and reopen
+     the outer file; a way to run the nine passes in turn (no exec: a shell script facility or a driver);
+     `lib/y1ccrt.txt` on the disk as `/LIB/Y1CCRT.TXT`.
   4. Run a pass on the emulator under Y1/OS (`c/target_io.c` is compiled, never run), then the whole chain.
   5. The on-target assembler (wave 3 of os/PORT-PLAN.md) (the host assembler's label table: done 2026-09-24,
      8,191 labels with a clear error when full, was 1,000 with no check) before it can assemble a pass
-     this size.
-  6. Code size of what y1cc emits (the bullet below): every byte saved there shrinks the native compiler too.
+     this size (cc8: 1,283 labels, 25,936 bytes).
+  6. Code size of what y1cc emits (the bullet below): every byte saved there shrinks the native compiler too — cc1,
+     cc7 and cc9 are within 600 bytes of the 32K; the nine passes are 120K of code against y1cc.c's 75K.
+  7. y1cc.c, the single-program twin, stays until the passes run on the machine (a y1cc.py change now has two C
+     counterparts to follow), then can go.
+- y1cc.py: a function defined twice is not an error — both definitions are laid out and the last is compiled twice
+  under the second label (`f_f_1:` twice, which the assembler rejects); y1cc.c and the passes compile it once. Make it
+  an error like "global declared twice" (a y1cc.py change: Ken's call; the C versions follow). Found 2026-09-24.
 - (done 2026-09-23: the rebuilt ROM is burned — `ROM 2026-09-23`, MD5 d2d7b027…, = `firmware/rom/shipped/rom.bin`; monitor
   G = `JSRUR R7`, so `--vector` is only for a 2021 chip.) Still to do: re-capture it with `tests/memory/rom_verify.py`
   (no read-back of the new chip is in the tree yet).

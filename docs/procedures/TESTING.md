@@ -95,6 +95,16 @@ an address above $8000 (`--boot` stub) so that the FORCE-ROM remap is released e
   the whole corpus (`tests/compiler/corpus.py`, 121 compiles including y1cc.c itself) with it and with y1cc.py: the assembly, the
   `-l` summary and every expected error message must be identical. `--16` uses the check build `y1cc16` (int = unsigned short,
   unsigned char). **Pass looks like:** `twin: 117 programs identical, 4 identical errors, 0 DIFFERENT`. Both run in `make check`.
+  (126 programs since the multi-pass compiler's nine passes joined the corpus as Y1/OS programs, `software/compiler/c/target/`.)
+- **The multi-pass compiler** (2026-09-24, `software/compiler/c/cc1_lex.c` .. `cc9_final.c`, driver `y1ccp`): `twin.py --chain`
+  and `--chain16` compare y1cc.py with the nine passes chained (the 16-bit check builds), `twinfuzz.py N --seed S --chain` does
+  the same for random programs and the 60 invalid ones. **Pass looks like:** `twin (the pass chain y1ccp: cc1..cc9): 126 programs
+  identical, 4 identical errors, 0 DIFFERENT`. `python3 tests/compiler/passes.py [-v]` compiles each pass with y1cc.py as a Y1/OS
+  program, assembles it, and measures image + tables + stack against the 32K program area; then it compiles the corpus through
+  the passes built with their Y1/OS table sizes and a stack probe. **Pass looks like:** a table with a positive "free" column for
+  all nine passes, `125 identical, 4 identical errors, 1 do not fit, 0 DIFFERENT` (the one: y1cc.c, `software/compiler/c/target.c`),
+  and the count of compiles whose files stay under Y1/OS's 64K. Exit 1 if a pass does not fit or an assembly differs. All in
+  `make check`.
 - **Run:** `python3 tests/compiler/run.py [name ...] [--oracle] [--keep]`. Per test: compile with `--boot` (stack, `JSR main`,
   `HALT`), assemble with `software/assembler/asm NAME -d=yacc1`, run `emulator -x -f NAME.img < NAME.in`, compare stdout with
   `NAME.out`. Per-test compiler flags in a `// y1cc:` comment. `--oracle` regenerates the `.out` files with the host C compiler
