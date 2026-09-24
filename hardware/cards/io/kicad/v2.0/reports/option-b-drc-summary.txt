@@ -1,0 +1,4 @@
+     schematic parity: 67 items, all inherited from v1.1's Eagle values/fields; new: none
+DRC: {'items_not_allowed': 22, 'silk_edge_clearance': 6, 'lib_footprint_mismatch': 2, 'text_thickness': 1, 'text_height': 4, 'silk_overlap': 68, 'silk_over_copper': 199}; v1.1 had {'items_not_allowed': 22, 'silk_edge_clearance': 4, 'lib_footprint_mismatch': 2, 'text_thickness': 1, 'text_height': 4, 'silk_overlap': 60, 'silk_over_copper': 199}
+     unrouted connections (ratsnest) 205; v1.1 copper items (tracks + vias) kept 900 of 1567
+     non-cosmetic violations beyond v1.1's: none -> PASS

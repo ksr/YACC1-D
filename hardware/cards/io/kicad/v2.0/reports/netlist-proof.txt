@@ -1,0 +1,9 @@
+schematic: v1.1 71 parts / 195 nets  +  CF section 19 parts / 25 own nets, 62 pins joined onto 15 shared nets
+           expected v2.0: 90 parts, 195 named/auto nets holding 612 pins, 42 unconnected pins (25 v1.1 + 17 CF no-connect)
+           v1.1 -IO-SEL4 = [('DATA-ADDR0', '8'), ('IC5', '11'), ('IO-ADDR0', '8')] (IC5 and the two jumper headers only)
+           v1.1 -IO-SEL5 = [('DATA-ADDR0', '6'), ('IC5', '10'), ('IO-ADDR0', '6')] (IC5 and the two jumper headers only)
+           KiCad v2.0 schematic: 90 parts, 195 nets, 42 unconnected pins: MATCH
+board io-v2.0-option-a.kicad_pcb: 90 footprints, 195 nets / 612 pads, 42 unconnected pads (+ 5 pinless v1.1 pads): MATCH
+board io-v2.0-option-b.kicad_pcb: 90 footprints, 195 nets / 612 pads, 42 unconnected pads (+ 5 pinless v1.1 pads): MATCH
+board io-v2.0-option-c.kicad_pcb: 90 footprints, 195 nets / 612 pads, 42 unconnected pads (+ 5 pinless v1.1 pads): MATCH
+RESULT: MATCH (v2.0 = v1.1 + the CF section, pin for pin; every board = the schematic)
