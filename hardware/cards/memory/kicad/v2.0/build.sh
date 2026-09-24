@@ -1,36 +1,47 @@
 #!/bin/sh
-# build.sh - build and verify the YACC1 memory card v2.0 (the BUILT v1.3 + the CF section) and its placement options
-# (2026-09-24). The built card = ../v1.3-fusion-export-2026-09-24 (KiCad conversion of the Fusion export of the card
-# JLCPCB made; its copper = the fab gerbers). "v1.3" below means that card.
+# build.sh - build and verify the YACC1 memory card v2.0 (2026-09-24): the schematic (the built v1.3 + the CF section)
+# and the RE-LAYOUT placement options, each with a trial autoroute. Ken's decision (2026-09-24): lay the whole card out
+# again with the CF section designed in; the built card's placement and copper are discarded, its outline, X1 and
+# 4-layer stack-up (In1 GND / In2 VCC planes) kept. The built card = ../v1.3-fusion-export-2026-09-24 ("v1.3" below).
 #
-#   hardware/cards/memory/kicad/v2.0/build.sh                 schematic + every option in placements.py
-#   OPTIONS="a c" hardware/cards/memory/kicad/v2.0/build.sh   only those options
+#   hardware/cards/memory/kicad/v2.0/build.sh                schematic + every re-layout option + trial routes (~15 min)
+#   RELAYOUT="a c" hardware/cards/memory/kicad/v2.0/build.sh  only those options
+#   NOROUTE=1 hardware/cards/memory/kicad/v2.0/build.sh      no new trial route: the committed trial boards are checked
+#   KEEPCOPPER="a b c" hardware/cards/memory/kicad/v2.0/build.sh   also regenerate the blocked keep-the-built-copper
+#                                                            options (the record in options-keep-copper/)
 #
 # 1 gen_mem_v2.py sch: schematic (v1.3 sheets 1-6 + sheet 7 CF) + project + libraries
-# 2 ERC (must equal v1.3's list + the one designed-in SRST single-pin label; the six bus labels that became global
-#   lose their v1.3 "isolated label" warnings)
-# 3 the reference board (the built card with v2.0 net names) and its DRC under the v2.0 rules (the project's + the
-#   card's Eagle rules in memory-v2.0.kicad_dru); per option: board = the built card + the option's moves + CF
-#   placement; LOCKED: every built-card track/via still there unchanged (gen_mem_v2.py locked); refill the GND/VCC
-#   planes; placement check (no new body overlaps, pads clear of the edge, no tall part in the TAODAN keep-low zone);
-#   DRC with schematic parity: no copper violation the built card does not have; review images:
-#   <option>-render-top.png (3D, adapter zones shown on silk) and <option>-placement.png (2D: copper, silk, adapter
-#   zones, ratsnest from DRC's unconnected items)
-# 3s space_check.py: can the CF parts sit on the built card at all (every pad clear of the built copper)?
-# 4 netlist proof: v2.0 schematic = v1.3 schematic + CF section, and every board = the schematic (check_netlist.py)
+# 2 ERC (must equal v1.3's list + the one designed-in SRST single-pin label; the six bus labels that became global lose
+#   their v1.3 "isolated label" warnings)
+# 3 per re-layout option (relayout_placements.py): gen_relayout.py board (every track/via of the built card removed,
+#   every part but X1 placed, rules 0.25 mm / 0.2 mm / vias 0.8/0.4 in the project + .kicad_dru), plane refill,
+#   placement check (overlaps, pads 0.5 mm inside the edge, X1 as built, TAODAN keep-low zone), DRC with schematic
+#   parity, airwire length, review images (<opt>-render-top.png: 3D with the adapter zones; <opt>-placement.png: 2D
+#   with the airwires)
+# 3r TRIAL ROUTE of each option (proves routability; NOT the final routing - Ken picks the option first): a two-signal-
+#   layer DSN (the planes carry GND/VCC, class Power not routed), Freerouting 1.9 (-mt 1, watchdog), the session back
+#   onto the 4-layer board (<opt>-trial.kicad_pcb), plane refill, DRC with schematic parity, the numbers
+#   (reports/relayout-<opt>-trial.txt: unrouted, vias, track length, DRC copper violations), a copper plot
+#   (<opt>-trial.png). Freerouting is not deterministic: every run gives a different, equally valid result.
+# 4 netlist proof: v2.0 schematic = v1.3 schematic + CF section, and every board (options, trial routes, the keep-copper
+#   record) = the schematic (check_netlist.py)
 # 5 schematic PDF, BOM
-# The CF section is NOT routed here (placement review). Exit status non-zero if a gate fails.
+# Exit status non-zero if a gate fails. (A trial route with unrouted connections is reported, not failed.)
 HERE=$(cd "$(dirname "$0")" && pwd)
 PYK=/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3
 CLI=/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli
 INK=/Applications/Inkscape.app/Contents/MacOS/inkscape
+FRJAR="${FRJAR:-$HOME/freerouting/freerouting.jar}"
+WATCHDOG=${WATCHDOG:-1800}
 P=memory-v2.0
 R="$HERE/reports"
-OPTIONS=${OPTIONS:-"a b c"}
-export PYTHONDONTWRITEBYTECODE=1
-q() { grep -vE 'Debug|assert|wxApp|traits|Fontconfig|memory leak|^$'; }
+K="$HERE/options-keep-copper"
+RELAYOUT=${RELAYOUT:-"a b c"}
+KEEPCOPPER=${KEEPCOPPER:-""}
+export PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+q() { grep --line-buffered -vE 'Debug|assert|wxApp|traits|Fontconfig|memory leak|^$'; }
 fail=0
-mkdir -p "$R"
+mkdir -p "$R" "$K/reports"
 cd "$HERE" || exit 1
 BASE=v1.3-fusion-export-2026-09-24
 LIB=memory-$BASE-eagle
@@ -72,95 +83,118 @@ print("  unexplained: %d new, %d gone -> %s" % (len(unexpected), len(odd_gone),
 sys.exit(0 if not unexpected and not odd_gone else 1)
 EOF
 grep -q -- "-> PASS" "$R/erc-summary.txt" || fail=1
-
 "$CLI" pcb drc --schematic-parity --severity-all --format json -o "$TMP/v1.3-drc.json" "$OLD.kicad_pcb" >/dev/null 2>&1
 
-echo "== 3   reference board: the built card with the v2.0 net names, no CF section =="
-"$PYK" gen_mem_v2.py board base "$R/$P.net" "$TMP/base.kicad_pcb" 2>&1 | q | sed 's/^/  /'
-"$PYK" gen_mem_v2.py locked "$TMP/base.kicad_pcb" "$OLD.kicad_pcb" "$TMP/base-locked.txt" 2>&1 | q | sed 's/^/  /'
-grep -q " 0 missing; net rename one-to-one: yes" "$TMP/base-locked.txt" || fail=1
-"$PYK" gen_mem_v2.py refill "$TMP/base.kicad_pcb" 2>&1 | q
-rm -rf "$TMP/p"; mkdir "$TMP/p"
-cp -R "$HERE"/*.kicad_sch "$HERE/$P.kicad_pro" "$HERE/$P.kicad_dru" "$HERE"/*-lib-table "$HERE/$LIB".* "$TMP/p/"
-cp "$TMP/base.kicad_pcb" "$TMP/p/$P.kicad_pcb"
-"$CLI" pcb drc --severity-all --format json -o "$TMP/base-drc.json" "$TMP/p/$P.kicad_pcb" >/dev/null 2>&1
-python3 - "$TMP/base-drc.json" "$TMP/base.kicad_pcb" <<'EOF2' | tee "$R/base-summary.txt" | sed 's/^/  /'
-import json, sys, re, collections
-d = json.load(open(sys.argv[1]))
-kept = len(re.findall(r"^\t\((segment|via|arc)\b", open(sys.argv[2]).read(), re.M))
-print("reference (the built card under the v2.0 rules): %d copper items, %d unrouted connections, DRC %s"
-      % (kept, len(d.get("unconnected_items", [])), dict(sorted(collections.Counter(v["type"] for v in d["violations"]).items()))))
-EOF2
-boards=""
-for o in $OPTIONS; do
-  B="$P-option-$o.kicad_pcb"
-  echo "== 3$o  option $o =="
-  "$PYK" gen_mem_v2.py board "$o" "$R/$P.net" 2>&1 | q || { fail=1; continue; }
-  "$PYK" gen_mem_v2.py locked "$B" "$OLD.kicad_pcb" "$R/option-$o-locked.txt" 2>&1 | q | sed 's/^/  /'
-  grep -q " 0 missing; net rename one-to-one: yes" "$R/option-$o-locked.txt" || fail=1
-  "$PYK" gen_mem_v2.py refill "$B" 2>&1 | q
-  "$PYK" gen_mem_v2.py check "$B" "$o" 2>&1 | q | tee "$R/option-$o-placement-check.txt" | sed 's/^/  /'
-  grep -q ": OK" "$R/option-$o-placement-check.txt" || fail=1
-  cp "$HERE/$P.kicad_pro" "$HERE/$P-option-$o.kicad_pro"
-  cp "$HERE/$P.kicad_dru" "$HERE/$P-option-$o.kicad_dru"
-  # DRC with schematic parity: the board needs the schematic beside it under the same name
+# drc_parity <board> <its .kicad_pro> <its .kicad_dru> <out.json>: DRC with schematic parity (the board needs the
+# schematic beside it under the same name, and its own rules)
+drc_parity() {
   rm -rf "$TMP/p"; mkdir "$TMP/p"
-  cp -R "$HERE"/*.kicad_sch "$HERE/$P.kicad_pro" "$HERE/$P.kicad_dru" "$HERE"/*-lib-table "$HERE/$LIB".* "$TMP/p/"
-  cp "$B" "$TMP/p/$P.kicad_pcb"
-  "$CLI" pcb drc --schematic-parity --severity-all --format json -o "$R/option-$o-drc.json" "$TMP/p/$P.kicad_pcb" >/dev/null 2>&1
-  python3 - "$R/option-$o-drc.json" "$TMP/v1.3-drc.json" "$B" "$TMP/base-drc.json" "$TMP/base.kicad_pcb" <<'EOF2' | tee "$R/option-$o-drc-summary.txt" | sed 's/^/  /' || fail=1
-import json, sys, collections, re
-d, b, ref = json.load(open(sys.argv[1])), json.load(open(sys.argv[2])), json.load(open(sys.argv[4]))
-c = collections.Counter(v["type"] for v in d["violations"])
-cr = collections.Counter(v["type"] for v in ref["violations"])
-COSMETIC = {"silk_overlap", "silk_edge_clearance", "silk_over_copper", "text_height", "text_thickness",
-            "lib_footprint_mismatch", "lib_footprint_issues"}
-copper = {t: n for t, n in c.items() if t not in COSMETIC and n > cr.get(t, 0)}
-# parity: the built card's own (run beside its converted schematic) has the Eagle board values / fields; anything
-# beyond is new
+  cp -R "$HERE"/*.kicad_sch "$HERE"/*-lib-table "$HERE/$LIB".* "$TMP/p/"
+  cp "$2" "$TMP/p/$P.kicad_pro"; cp "$3" "$TMP/p/$P.kicad_dru"; cp "$1" "$TMP/p/$P.kicad_pcb"
+  "$CLI" pcb drc --schematic-parity --severity-all --format json -o "$4" "$TMP/p/$P.kicad_pcb" >/dev/null 2>&1
+}
+# parity items beyond the built card's own (its Eagle board values / fields, inherited) -> none expected
+parity_new() {
+  python3 - "$1" "$TMP/v1.3-drc.json" <<'EOF'
+import json, sys
+d, b = json.load(open(sys.argv[1])), json.load(open(sys.argv[2]))
 bpar = {(x["type"], x["description"]) for x in b.get("schematic_parity", []) if x["type"] != "net_conflict"}
-newpar = [x["description"] for x in d.get("schematic_parity", []) if (x["type"], x["description"]) not in bpar]
-print("     schematic parity: %d items (built v1.3: %d); new: %s" % (len(d.get("schematic_parity", [])),
-                                                                   len(b.get("schematic_parity", [])), newpar or "none"))
-kept = len(re.findall(r"^\t\((segment|via|arc)\b", open(sys.argv[3]).read(), re.M))
-print("DRC: %s" % dict(sorted(c.items())))
-print("     the built card under the same rules: %s" % dict(sorted(cr.items())))
-CF = r"\b(IC3[0-4]|J2|J3|JP2|RN9|R1[0-4]|LED1|C2[5-9]|C30)\b"
-def rats(dd):
-    n = cf = 0; tot = tcf = 0.0
-    for u in dd.get("unconnected_items", []):
-        its = u["items"]
-        if len(its) != 2:
-            continue
-        L = ((its[0]["pos"]["x"] - its[1]["pos"]["x"]) ** 2 + (its[0]["pos"]["y"] - its[1]["pos"]["y"]) ** 2) ** 0.5
-        n += 1; tot += L
-        if any(re.search(r" of " + CF, i["description"]) for i in its):
-            cf += 1; tcf += L
-    return n, tot, cf, tcf
-n, tot, cf, tcf = rats(d)
-print("     ratsnest %d airwires (%.0f mm), %d of them touching a CF part (%.0f mm); the built card: %d"
-      % (n, tot, cf, tcf, len(ref.get("unconnected_items", []))))
-print("     copper items (tracks + vias) %d = the built card's %d, all kept (reports/option-X-locked.txt)"
-      % (kept, len(re.findall(r"^\t\((segment|via|arc)\b", open(sys.argv[5]).read(), re.M))))
-print("     non-cosmetic violations beyond the built card's: %s -> %s" % (copper or "none", "PASS" if not copper and not newpar else "FAIL"))
-sys.exit(0 if not copper and not newpar else 1)
-EOF2
-  grep -q -- "-> PASS" "$R/option-$o-drc-summary.txt" || { fail=1; echo "  option $o: CF pads on the built card's copper (reports/option-$o-drc-summary.txt, reports/space-check.txt)"; }
-  # review images
+new = [x["description"] for x in d.get("schematic_parity", []) if (x["type"], x["description"]) not in bpar]
+print("     schematic parity: %d items (built v1.3: %d, all inherited Eagle values/fields); new: %s"
+      % (len(d.get("schematic_parity", [])), len(b.get("schematic_parity", [])), new or "none"))
+sys.exit(1 if new else 0)
+EOF
+}
+freeroute() {   # freeroute <dsn> <ses> <log>: Freerouting 1.9, one thread, class Power (GND/VCC: planes) not routed
+  dsn=$1; ses=$2; log=$3
+  rm -f "$ses"; t0=$(date +%s)
+  ( cd "$(dirname "$dsn")" && exec java -jar "$FRJAR" -de "$dsn" -do "$ses" -mp 30 -oit 100 -mt 1 -inc Power ) > "$log" 2>&1 &
+  jp=$!
+  while kill -0 $jp 2>/dev/null; do
+    if [ $(( $(date +%s) - t0 )) -gt "$WATCHDOG" ]; then
+      echo "  watchdog: Freerouting still running after ${WATCHDOG}s - killed"; kill $jp; sleep 2; kill -9 $jp 2>/dev/null
+      break
+    fi
+    sleep 5
+  done
+  wait $jp 2>/dev/null
+  [ -f "$(dirname "$dsn")/logs/freerouting.log" ] && cat "$(dirname "$dsn")/logs/freerouting.log" >> "$log"
+  echo "  Freerouting: $(( $(date +%s) - t0 )) s"
+  [ -f "$ses" ]
+}
+
+boards=""
+for o in $RELAYOUT; do
+  B="$P-relayout-$o.kicad_pcb"
+  TR="$P-relayout-$o-trial.kicad_pcb"
+  echo "== 3$o  re-layout option $o =="
+  "$PYK" gen_relayout.py board "$o" "$R/$P.net" 2>&1 | q | sed 's/^/  /' || { fail=1; continue; }
+  "$PYK" gen_relayout.py refill "$B" 2>&1 | q
+  "$PYK" gen_relayout.py check "$B" "$o" 2>&1 | q | tee "$R/relayout-$o-placement-check.txt" | sed 's/^/  /'
+  grep -q ": OK" "$R/relayout-$o-placement-check.txt" || fail=1
+  "$PYK" gen_relayout.py airwire "$B" 2>&1 | q | tee -a "$R/relayout-$o-placement-check.txt" | sed 's/^/  /'
+  drc_parity "$B" "$P-relayout-$o.kicad_pro" "$P-relayout-$o.kicad_dru" "$R/relayout-$o-drc.json"
+  parity_new "$R/relayout-$o-drc.json" | tee -a "$R/relayout-$o-placement-check.txt" || fail=1
   "$PYK" gen_mem_v2.py review "$B" "$TMP/r.kicad_pcb" render 2>&1 | q
-  "$CLI" pcb render --side top --width 2000 --height 1400 -o "$HERE/$P-option-$o-render-top.png" "$TMP/r.kicad_pcb" >/dev/null 2>&1 \
-    && echo "  render -> $P-option-$o-render-top.png"
+  "$CLI" pcb render --side top --width 2000 --height 1400 -o "$HERE/$P-relayout-$o-render-top.png" "$TMP/r.kicad_pcb" >/dev/null 2>&1 \
+    && echo "  render -> $P-relayout-$o-render-top.png"
   "$PYK" gen_mem_v2.py review "$B" "$TMP/p2.kicad_pcb" plot 2>&1 | q | sed 's/^/  /'
   "$CLI" pcb export svg --mode-single --page-size-mode 2 --exclude-drawing-sheet \
     -l Edge.Cuts,F.Cu,B.Cu,F.Silkscreen,User.Drawings,User.Eco1 -o "$TMP/p2.svg" "$TMP/p2.kicad_pcb" >/dev/null 2>&1
   "$INK" "$TMP/p2.svg" --export-type=png --export-width=2400 --export-background=white \
-    --export-filename="$HERE/$P-option-$o-placement.png" >/dev/null 2>&1 && echo "  plot   -> $P-option-$o-placement.png"
+    --export-filename="$HERE/$P-relayout-$o-placement.png" >/dev/null 2>&1 && echo "  plot   -> $P-relayout-$o-placement.png"
   boards="$boards $B"
+
+  echo "== 3r$o  trial route of option $o =="
+  if [ -z "$NOROUTE" ]; then
+    mkdir -p "$TMP/fr$o"
+    "$PYK" gen_relayout.py dsn "$B" "$TMP/fr$o/$o.dsn" 2>&1 | q | sed 's/^/  /'
+    if freeroute "$TMP/fr$o/$o.dsn" "$TMP/fr$o/$o.ses" "$R/relayout-$o-freerouting.log"; then
+      "$PYK" gen_relayout.py ses "$B" "$TMP/fr$o/$o.ses" "$TR" 2>&1 | q | sed 's/^/  /'
+      "$PYK" gen_relayout.py refill "$TR" 2>&1 | q
+      cp "$P-relayout-$o.kicad_pro" "$P-relayout-$o-trial.kicad_pro"
+      cp "$P-relayout-$o.kicad_dru" "$P-relayout-$o-trial.kicad_dru"
+    else
+      echo "  TRIAL ROUTE FAILED (no session file) - see reports/relayout-$o-freerouting.log"; fail=1
+    fi
+  fi
+  if [ -f "$TR" ]; then
+    drc_parity "$TR" "$P-relayout-$o.kicad_pro" "$P-relayout-$o.kicad_dru" "$R/relayout-$o-trial-drc.json"
+    { "$PYK" gen_relayout.py stats "$TR" "$R/relayout-$o-trial-drc.json" "$o" 2>&1 | q
+      parity_new "$R/relayout-$o-trial-drc.json"; } | tee "$R/relayout-$o-trial.txt" | sed 's/^/  /'
+    grep -q "new: none" "$R/relayout-$o-trial.txt" || fail=1
+    "$CLI" pcb export svg --mode-single --page-size-mode 2 --exclude-drawing-sheet \
+      -l Edge.Cuts,F.Cu,B.Cu,F.Silkscreen -o "$TMP/t.svg" "$TR" >/dev/null 2>&1
+    "$INK" "$TMP/t.svg" --export-type=png --export-width=2400 --export-background=white \
+      --export-filename="$HERE/$P-relayout-$o-trial.png" >/dev/null 2>&1 && echo "  plot   -> $P-relayout-$o-trial.png"
+    boards="$boards $TR"
+  fi
 done
 
-echo "== 3s space check: where can the CF parts go on the built card? (space_check.py) =="
-"$PYK" space_check.py 2000 2>&1 | q | sed 's/^/  /'
-grep -q "^RESULT: the five CF DIPs fit" "$R/space-check.txt" || fail=1
+# the blocked keep-the-built-copper options (the record, options-keep-copper/): regenerated only on request
+for o in $KEEPCOPPER; do
+  B="$K/$P-option-$o.kicad_pcb"
+  echo "== k$o  keep-copper option $o (record) =="
+  "$PYK" gen_mem_v2.py board "$o" "$R/$P.net" 2>&1 | q || { fail=1; continue; }
+  "$PYK" gen_mem_v2.py locked "$B" "$OLD.kicad_pcb" "$K/reports/option-$o-locked.txt" 2>&1 | q | sed 's/^/  /'
+  "$PYK" gen_mem_v2.py refill "$B" 2>&1 | q
+  "$PYK" gen_mem_v2.py check "$B" "$o" 2>&1 | q | tee "$K/reports/option-$o-placement-check.txt" | sed 's/^/  /'
+  cp "$HERE/$P.kicad_pro" "$K/$P-option-$o.kicad_pro"
+  cp "$HERE/$P.kicad_dru" "$K/$P-option-$o.kicad_dru"
+  drc_parity "$B" "$HERE/$P.kicad_pro" "$HERE/$P.kicad_dru" "$K/reports/option-$o-drc.json"
+  "$PYK" gen_mem_v2.py review "$B" "$TMP/r.kicad_pcb" render 2>&1 | q
+  "$CLI" pcb render --side top --width 2000 --height 1400 -o "$K/$P-option-$o-render-top.png" "$TMP/r.kicad_pcb" >/dev/null 2>&1
+  "$PYK" gen_mem_v2.py review "$B" "$TMP/p2.kicad_pcb" plot 2>&1 | q | sed 's/^/  /'
+  "$CLI" pcb export svg --mode-single --page-size-mode 2 --exclude-drawing-sheet \
+    -l Edge.Cuts,F.Cu,B.Cu,F.Silkscreen,User.Drawings,User.Eco1 -o "$TMP/p2.svg" "$TMP/p2.kicad_pcb" >/dev/null 2>&1
+  "$INK" "$TMP/p2.svg" --export-type=png --export-width=2400 --export-background=white \
+    --export-filename="$K/$P-option-$o-placement.png" >/dev/null 2>&1
+done
+if [ -n "$KEEPCOPPER" ]; then
+  echo "== ks space check (space_check.py, record) =="
+  "$PYK" space_check.py 2000 2>&1 | q | sed 's/^/  /'
+fi
+for f in "$K"/$P-option-*.kicad_pcb; do [ -f "$f" ] && boards="$boards $f"; done
 
 echo "== 4  netlist proof =="
 python3 check_netlist.py "$R/$P.net" "$TMP/v1.3.net" "$OLD.kicad_pcb" $boards | tee "$R/netlist-proof.txt" | sed 's/^/  /'
@@ -171,7 +205,7 @@ echo "== 5  schematic PDF, BOM =="
 "$CLI" sch export bom --fields 'Reference,Value,Footprint,${QUANTITY}' --labels 'Refs,Value,Footprint,Qty' \
   --group-by 'Value,Footprint' --sort-field 'Reference' -o "$HERE/$P-bom.csv" "$P.kicad_sch" >/dev/null 2>&1 \
   && echo "  BOM -> $P-bom.csv ($(($(wc -l < "$HERE/$P-bom.csv") - 1)) lines)"
-rm -f "$HERE"/*.kicad_prl "$HERE/fp-info-cache"
+rm -f "$HERE"/*.kicad_prl "$K"/*.kicad_prl "$HERE/fp-info-cache"
 
 [ $fail -eq 0 ] && echo "== BUILD PASS ==" || echo "== BUILD FAIL (see above) =="
 exit $fail

@@ -3,6 +3,12 @@ schematic: v1.3 53 parts / 169 nets  +  CF section 21 parts / 27 own nets, 69 pi
            v1.3 IO-ADDR0-3, -IO-RD, -IO-WR = X1 C7-C10, B25, B26 only (sheet-1 local labels); now global
            CF card X1: 27 bus pins on 17 nets, each on the same-named net of the memory card's X1
            KiCad v2.0 schematic: 74 parts, 186 nets, 33 unconnected pins: MATCH
+board memory-v2.0-relayout-a.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads): MATCH
+board memory-v2.0-relayout-a-trial.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads): MATCH
+board memory-v2.0-relayout-b.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads): MATCH
+board memory-v2.0-relayout-b-trial.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads): MATCH
+board memory-v2.0-relayout-c.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads): MATCH
+board memory-v2.0-relayout-c-trial.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads): MATCH
 board memory-v2.0-option-a.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads): MATCH
 board memory-v2.0-option-b.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads): MATCH
 board memory-v2.0-option-c.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads): MATCH

@@ -19,7 +19,7 @@ are the order of work. Nothing here is built yet.
    **Note 2026-09-23/24:** the ports were moved to P4/P5 for an I/O card v2.0 carrying the interface (commit
    24378cb) and moved back the next day when that plan was dropped (65851b0). The CF stays on **P8/P9** as above; the
    circuit (the CF card v1.0, `hardware/cards/cf/kicad/v1.0`, `docs/cards/cf.md`) is now planned onto the memory card,
-   still I/O-mapped (not designed yet).
+   still I/O-mapped (schematic done 2026-09-24; the card is being laid out again with it, `hardware/cards/memory/kicad/v2.0`).
 2. **Video card v2 puts the 6845 registers on ports too** (PA = address register, PB = data register: RS is
    IO-ADDR0, no latch), so the card needs only its 2K of display RAM in the memory map. Until then the built card
    stays as it is: 2K block, RS-to-A1 fix pending (`hardware/cards/video/docs/fix-6845-register-select.md`).

@@ -128,9 +128,12 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   netlist, DRC 0 errors / 0 unconnected, gerbers ready; theory in `docs/cards/cf.md`; never ordered.
   Card-preparation procedure written: `docs/procedures/CF-CARD.md`. A move of the interface onto an I/O card v2.0 on
   ports P4/P5 was designed 2026-09-23 and dropped 2026-09-24 (6eeb259, 65851b0).)
-  **BLOCKED 2026-09-24 - decision needed**: `hardware/cards/memory/kicad/v2.0` (built memory card + CF, schematic proven)
-  does not fit with the built card's copper kept (its DATA8-15 bundle crosses the free area; best packing: 4 of 5 CF chips,
-  `space_check.py`): re-route that bundle, keep the separate CF card v1.0, or re-lay the card. Earlier plan:
+  **2026-09-24: RE-LAYOUT, Ken to pick an option**: `hardware/cards/memory/kicad/v2.0` (built memory card + CF, schematic
+  proven) did not fit with the built card's copper kept, so the whole card is laid out again (same circuit, outline, X1,
+  4-layer planes; 0.25 mm tracks / 0.2 mm clearance / 0.8-0.4 mm vias): options A/B/C, each trial-routed complete
+  (0 unrouted, 43 vias), B recommended (TMP registers at the bus connector, CF column at the top edge, J2 centred).
+  After the pick: final routing polish, silk tidy, fab outputs; open items in its README (J2 key vs adapter, J3
+  pinout, socket heights under the TAODAN, slot, C20-C23). Earlier plan:
   design the CF interface onto the **memory card** (more room, chips spaced far apart),
   kept I/O-mapped on **P8/P9** with the CF card v1.0 circuit (own 74LS138 enabled by IO-ADDR3, 74LS32, 74LS175, 74LS08,
   74LS245, 40-pin IDE header); the memory card's IO-ADDR0-3, -IO-RD and -IO-WR pins are on its connector but unwired

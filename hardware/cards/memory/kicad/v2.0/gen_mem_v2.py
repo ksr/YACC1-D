@@ -26,8 +26,12 @@ Called "base" / "v1.3" below. This script:
          the schematic), renames the base tracks to the same names, applies the option's moves (only parts with no
          tracks on their pads, e.g. C23 in option B: the planes reach them through their pads) and placements, adds the
          silkscreen (title V2.0, "CF: P8/P9") and the CF-to-IDE adapter zones (User.Drawings). The CF section itself
-         is NOT routed here: ratsnest only (route_v2.py routes the chosen option).
+         is NOT routed here: ratsnest only (the blocked keep-copper record; the re-layout is gen_relayout.py).
   locked / check / review   the steps after the board: see build.sh.
+
+Since Ken's re-layout decision (2026-09-24) the "board" half is the RECORD of the blocked keep-the-built-copper options
+(placements.py, written to options-keep-copper/, regenerated only with KEEPCOPPER="a b c" build.sh); the re-layout
+boards come from gen_relayout.py, which reuses this file's netlist, footprint and review helpers.
 """
 import os, sys, re, json, shutil, subprocess, collections
 
@@ -49,6 +53,7 @@ ROOT_UUID = re.search(r'\(uuid "([^"]+)"\)', open(os.path.join(V13, OLD + ".kica
 SHEET7 = gen_cf.U("memory-v2.0", "sheet7", "instance")
 SHEET7_FILE_UUID = gen_cf.U("memory-v2.0", "sheet7", "file")
 TITLE_OLD, TITLE_NEW = "YACC1 MEMORY BOARD V1.3", "YACC1 MEMORY BOARD V2.0"
+KEEP = os.path.join(HERE, "options-keep-copper")       # the blocked keep-the-built-copper options A/B/C (the record)
 
 
 def gx(n):
@@ -362,7 +367,7 @@ def build_board(opt, netfile, out=None):
     src = open(os.path.join(V13, OLD + ".kicad_pcb")).read()
     assert src.count('"%s"' % TITLE_OLD) == 1
     src = src.replace('"%s"' % TITLE_OLD, '"%s"' % TITLE_NEW)
-    out = out or os.path.join(HERE, "%s-option-%s.kicad_pcb" % (PROJ, opt))
+    out = out or os.path.join(KEEP, "%s-option-%s.kicad_pcb" % (PROJ, opt))
     open(out, "w").write(src)
     b = pcbnew.LoadBoard(out)
 

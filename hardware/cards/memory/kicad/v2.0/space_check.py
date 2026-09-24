@@ -2,7 +2,7 @@
 """space_check.py - does the CF section fit on the BUILT memory card with all of its copper kept? (2026-09-24)
 
 Run with KiCad's bundled Python (pcbnew, PIL):
-    $PYK space_check.py [trials]            -> reports/space-check.txt, memory-v2.0-free-space.png
+    $PYK space_check.py [trials]            -> options-keep-copper/reports/space-check.txt, .../memory-v2.0-free-space.png
 
 The built card (../v1.3-fusion-export-2026-09-24) routes the TMP registers' data lines DATA8-15 as a bundle of eight
 B.Cu tracks from the bus connector along the bottom edge and diagonally up to IC27/IC29 (the earlier save had those
@@ -216,8 +216,8 @@ def main():
     L += ["", "RESULT: %s" % ("the five CF DIPs fit" if n0 == 5 else
                               "the CF section does NOT fit on the built card with its copper kept: at most %d of its "
                               "five DIPs fit even without J2 and without any of its 16 other parts" % n0)]
-    os.makedirs(os.path.join(HERE, "reports"), exist_ok=True)
-    open(os.path.join(HERE, "reports", "space-check.txt"), "w").write("\n".join(L) + "\n")
+    os.makedirs(os.path.join(HERE, "options-keep-copper", "reports"), exist_ok=True)
+    open(os.path.join(HERE, "options-keep-copper", "reports", "space-check.txt"), "w").write("\n".join(L) + "\n")
     print("\n".join(L))
     # picture: built copper, the area where a CF DIP can go, the best packing without J2
     S = 12.0
@@ -244,7 +244,7 @@ def main():
     d.rectangle([P(R.x0, R.y0), P(R.x1, R.y1)], outline=(0, 0, 0), width=2)
     d.text((10, 10), "Built memory card: blue haze = where a CF DIP can sit without touching the built copper; "
            "green = the best packing found (%d of 5 DIPs, no IDE header)" % n0, fill=(0, 0, 0))
-    img.save(os.path.join(HERE, "memory-v2.0-free-space.png"))
+    img.save(os.path.join(HERE, "options-keep-copper", "memory-v2.0-free-space.png"))
     return 0 if n0 == 5 else 1
 
 

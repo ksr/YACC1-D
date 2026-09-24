@@ -1,0 +1,6 @@
+placement memory-v2.0-relayout-a.kicad_pcb: OK - no overlaps, pads 0.5 mm inside the edge, X1 as built, keep-low zone clear of ICs and tall parts
+    J2 pads x 189.20/191.74, y 64.31-112.57; keep-low zone x 183.5-197.5, y 52.3-124.6 holds: nothing
+    nearest tall parts / ICs to the keep-low zone: C30 1.7 mm, J3 5.2 mm, IC34 5.4 mm, IC29 5.6 mm
+    reference texts touching a pad: 5 ['C22 on R13.2', 'RN8 on RN8.1', 'IC18 on C24.1', 'RN7 on RN7.1', 'J3 on JP2.2']
+airwire memory-v2.0-relayout-a.kicad_pcb: 11438 mm, 329 connections on 146 signal nets
+     schematic parity: 53 items (built v1.3: 220, all inherited Eagle values/fields); new: none
