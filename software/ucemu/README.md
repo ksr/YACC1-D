@@ -17,7 +17,7 @@ python3 tests/ucemu/run.py                           # the compiler suite + test
 ```
 
 Options: `-u test.hex` another control store; `-F and|src` how a bus fight resolves (below); `-s NN` the switch
-byte; `-l N` stop after N steps. The status line on stderr gives instructions, steps, clocks (a step is two clock
+byte; `-c disk.img` a CompactFlash image; `-l N` stop after N steps. The status line on stderr gives instructions, steps, clocks (a step is two clock
 periods, the UCODE-COUNT-RESET step one), R3, and the bus-fight count.
 
 ## The model
@@ -48,6 +48,9 @@ the bit positions:
   ready and THRE, DLAB divisor writes accepted), the switches (`-s`) and LEDs. Port 2 is also a console, the old
   emulator's shortcut, so `OUTA P2` programs still print. A port read is sampled once at the leading edge of -IO-RD;
   a port write happens once, at the trailing edge of -IO-WR. Reading with nothing left gives 0 with "ready" set.
+- **CompactFlash** (`-c disk.img`, 2026-09-22): `software/cfmodel.h`, shared with the other emulator, on P4 (register
+  select) and P5 (data) — P8/P9 until 2026-09-23, when the interface moved onto the I/O card v2.0
+  (`docs/cards/cf.md`). With no image every read gives $FF; `tests/os` boots Y1/OS through it.
 - **Reset** is the real one: registers and IR cleared, FORCE-ROM set, so record $00 fetches $0000 and gets ROM[$F000];
   the monitor's first `BR eprom` releases the remap. A stand-alone image therefore needs the same first branch
   (the compiler's `--boot` stub and `tests/assembler/brur` got one on 2026-09-22).
@@ -87,8 +90,8 @@ The mechanical review's "two drivers" count (`tools/ucode_review.py`, rule R2) w
 
 ## Not modelled yet
 
-Interrupts beyond the enable/pending latches (no source raises one); IRET/IADDR/INT records run as written; the CF
-card (ports P8/P9, `docs/system/OS-PLAN.md` phase 1) and the video card; a clock-cycle cost model per instruction
+Interrupts beyond the enable/pending latches (no source raises one); IRET/IADDR/INT records run as written; the
+video card; a clock-cycle cost model per instruction
 is one step-count away (the status line has steps and clocks); comparing the interpreter's and this emulator's
 instruction traces automatically.
 

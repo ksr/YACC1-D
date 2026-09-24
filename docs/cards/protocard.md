@@ -64,6 +64,7 @@ must qualify its select with -VMA (`docs/cards/memory.md`, `docs/cards/video.md`
 |---|---|---|---|
 | V1.0 | 2016-07-14 | **built** (gerbers in `fab/`, sent to the board house in 2016), the only version | a gen-1 "ProtoCard-V1.1" working folder has a byte-identical schematic (README) |
 
-The next card that needs a prototype stage is the CompactFlash card (`docs/system/OS-PLAN.md`: 74245, 74LS174/273
-latch, a 74138 decode, strobe gating) — small enough to build here before its KiCad board is ordered. For a new
+The next circuit that could use a prototype stage is the CompactFlash interface (`docs/cards/cf.md`: 74LS32 strobe
+gating, 74LS175 latch, 74LS08, 74LS245; since 2026-09-23 part of the I/O card v2.0, decoded by its IC5 on P4/P5) —
+small enough to build here before the KiCad board is ordered. For a new
 *card* design, start from Blank V3.2 (`hardware/bus/blank-card/eagle/v3.2`), which carries the current names.

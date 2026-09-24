@@ -35,7 +35,7 @@ Options (`print_usage`, `main`):
 | `-m` (default with no arguments) | load `firmware/basic/basic.img` + `firmware/monitor/monitor.img`, found relative to the executable (works from a Finder double-click or any directory) |
 | `-f FILE` | load an Intel-hex image (relative to the current directory); after `-m` if both given |
 | `-x` | scripted run: no load/dump chatter, no raw tty, stdout flushed, `HALT` exits with `HALT at aaaa after N instructions, R3=xxxx` on stderr |
-| `-c IMAGE` | attach a CompactFlash image on ports P8/P9 (created zero-filled if missing) |
+| `-c IMAGE` | attach a CompactFlash image on ports P4/P5 (created zero-filled if missing; P8/P9 until 2026-09-23) |
 | `-l N` | stop after N instructions (`instruction limit reached at ... R3=...` on stderr) |
 | `-h` | usage |
 
@@ -52,7 +52,8 @@ Behaviour worth knowing (`main.c`):
 - An interactive debugger is wired to `HALT` (without `-x`) and to `PC == $0000`: keys `C` continue, `S` single-step
   (prints opcode, PC, ACC, TMP, R3, R7 per instruction), `R` run, `J` step over the current call depth, `D` dump
   $0200, $0F80, $0400, $1000 and the registers. `HALT` without `-x` prints those dumps too.
-- `INP P1` returns `$FF` once when P0 = 1 (the first switch read); `INP` of other ports leaves ACC unchanged.
+- `INP P1` returns `$FF` once when P0 = 1 (the first switch read); `INP P4`/`INP P5` go to the CF model (`$FF` from
+  P4, the write-only select, and from P5 with no image); `INP` of other ports leaves ACC unchanged.
 - Bad opcodes (`$00`, `$A5`, `$AE`, `$80–$8F`, `$F8–$FA`, `BR16Z/NZ`, `IRET`, `INT`) print `bad opcode [xx] pc[aaaa]`
   and exit.
 
@@ -78,7 +79,7 @@ Options (`y1ucemu.c` header):
 | `-u FILE` | another control store (default the tree's `test.hex`, relative to the executable) |
 | `-m` | load `basic.img` + `monitor.img` (the ROM) as the interpreter does |
 | `-f FILE` | load an Intel-hex image; repeatable, later files overwrite |
-| `-c IMAGE` | the CF image on P8/P9 |
+| `-c IMAGE` | the CF image on P4/P5 (P8/P9 until 2026-09-23) |
 | `-x` | scripted: quiet, stdout flushed, `SOFT-HALT` exits; a status line on stderr with instructions, steps, clocks, R3 and the bus-fight count (`... bus fights: N in M`) |
 | `-t` | one line per instruction fetch on stderr; `-T` every step with the signals asserted |
 | `-w` | list bus fights (opcode, step, drivers) as they first occur (the summary is always printed with `-x`) |

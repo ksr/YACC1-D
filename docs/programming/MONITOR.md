@@ -13,18 +13,22 @@ emulators run it), `BACKLOG.md`.
 
 ## 1. Two monitors: the chip and the tree
 
-- **On the chip** (memory card, 28C64): the 2021 build (git ff7d85a), captured 2026-09-18 as
-  `firmware/rom/eprom-captured-2026-09-18.bin/.hex`, byte-identical to the 2021 sources.
+- **On the chip** (memory card, 28C64): the 2026-09-23 afternoon build (banner `ROM 2026-09-23`, MD5
+  d2d7b027e7c6951d7dd93412a8fd9cd8, CF driver on P8/P9), burned by Ken 2026-09-23 (`docs/system/MACHINE.md`). Before
+  that the 2021 build (git ff7d85a), captured 2026-09-18 as `firmware/rom/eprom-captured-2026-09-18.bin/.hex`,
+  byte-identical to the 2021 sources.
 - **In the tree** (`firmware/rom/shipped/rom`, to burn): the 2026-09-22 rebuild of `monitor.asm` — the `G` command
   fixed (`JSRUR R7` instead of `BRVR R7`), the T-menu bench tests removed (1,062 bytes), the CompactFlash driver, the
   `O` boot command, four new BIOS vectors and two new variable areas — plus, on 2026-09-23, `uartinne` (console
-  input without echo) and its vector at `$FFFC`, the sixteenth and last slot. BASIC is unchanged. Object code
-  2,979 bytes, 0 errors, 193 labels, 1,366 source lines (`monitor.lst` of 2026-09-23 09:36). `tools/patched_files.txt`
-  still describes the 2026-09-22 state of `monitor.asm` and `rom` (the 2026-09-23 lines were not yet added when
-  this was written).
+  input without echo) and its vector at `$FFFC`, the sixteenth and last slot, the `:` Intel-hex loader and the build
+  date in the banner. BASIC is unchanged. Object code 2,979 bytes, 0 errors, 193 labels, 1,366 source lines
+  (`monitor.lst` of 2026-09-23 09:36, before the loader). **2026-09-23 evening: `ROM 2026-09-23B`**, the CF driver
+  and `O` moved from P8/P9 to P4/P5 (the CF interface is going onto the I/O card v2.0), nothing else changed; not
+  yet burned (`firmware/rom/README.md`).
 
-Until the chip is reburned, `tests/memory/rom_verify.py` and `memory_status.py` report the monitor half as different,
-and a compiled program for the machine must be built with `y1cc --vector` (`docs/system/MACHINE.md` item 5).
+Until 2026-09-23B is burned, `tests/memory/rom_verify.py` and `memory_status.py` report the monitor half as different
+(the burned 2026-09-23 build differs from 2026-09-23B in the CF port operands, the banner and the strings it shifts),
+and `O` on the machine talks to P8/P9.
 
 ## 2. Reset and boot sequence (`monitor.asm` `eprom:`, $F003)
 
@@ -141,8 +145,10 @@ buffer at $1000–$1FFF, which the `O` command reuses as the OS load address ([M
 
 ## 6. The CompactFlash driver and the `O` command (2026-09-22)
 
-The card sits on two ports (`docs/system/OS-PLAN.md` decision 1): **P8** = a write-only register-select latch (ATA
-task-file register 0–7 in bits 0–2), **P9** = the data port; reading or writing P9 strobes the selected register.
+The card sits on two ports (`docs/system/OS-PLAN.md` decision 1 and its 2026-09-23 update): **P4** = a write-only
+register-select latch (ATA task-file register 0–7 in bits 0–2), **P5** = the data port; reading or writing P5 strobes
+the selected register. The hardware will be the I/O card v2.0 ([`docs/cards/cf.md`](../cards/cf.md)). P4/P5 from the
+build `ROM 2026-09-23B` (not yet burned); the builds before it, including the chip in the machine, use P8/P9.
 8-bit True IDE mode. Register numbers (`CFSEL_*` equates): 0 data, 1 error/feature, 2 sector count, 3–5 LBA0–2,
 6 drive/head, 7 status/command.
 
@@ -153,15 +159,15 @@ task-file register 0–7 in bits 0–2), **P9** = the data port; reading or writ
   and the result is 1.
 - `cfsetl` — task file ← `CFLBA0..2`, drive/head $E0, sector count 1.
 - `cfread` — `cfwait`, `cfsetl`, command $20 (READ SECTORS), `cfdrq`; if DRQ is not set → `cferr` (ACC = 1); else
-  select the data register once and loop 512 times `INP P9 / STAVR R7 / INCR R7` (R6 counts down). ACC = 0.
-- `cfwrite` — the same with command $30 and `LDAVR R7 / OUTA P9`, then `cfwait` and ACC ← ERR.
+  select the data register once and loop 512 times `INP P5 / STAVR R7 / INCR R7` (R6 counts down). ACC = 0.
+- `cfwrite` — the same with command $30 and `LDAVR R7 / OUTA P5`, then `cfwait` and ACC ← ERR.
 - `const` — `BRDEV consthw / LDAI 1 / RET`; on hardware LSR bit 0.
 
 The **`O` command** (`boot:` $F333) prints `BOOT FROM CF`, `cfinit` (error → `CF ERROR`), reads LBA 0 to
 `OSBASE` = $1000, checks bytes 0–1 = `P8` and byte 3 = OSCNT ≠ 0 (else `NO OS ON THE CARD`), then reads LBA 1..OSCNT
 to $1000 onward (R7 advancing 512 per sector, `CFLBA0` incremented — so OSCNT ≤ 255 and the OS ≤ 32 sectors by the
 P8XFS rule), `MVIW R7,OSBASE`, **`JSRUR R7`**, `BR cmdloop`. The OS returns with `RET`. Both emulators model the card
-with `-c disk.img` (`software/cfmodel.h`); the card itself is not built.
+with `-c disk.img` (`software/cfmodel.h`); the hardware is not built.
 
 ## 7. BASIC in ROM ($E000–$EFFF)
 
@@ -208,7 +214,8 @@ asserted, `docs/isa/MICROCODE-REVIEW-NOTES.md` L-8), so the ISR path has not bee
 - **`shipped/rom.bin`** = the same as a flat 8,192-byte file for the programmer: `python3 tools/img2bin.py
   firmware/rom/shipped/rom firmware/rom/shipped/rom.bin --base 0xE000 --end 0x10000 --fill 0xFF --size 8192`. Offset
   0 = $E000; bytes the sources never write are $FF like a blank part; MD5 in `firmware/rom/README.md`. Device: 28C64, Visual Minipro / `minipro`.
-- **Telling builds apart**: the banner ends `ROM 2026-09-23` on the current build (MD5 d2d7b027e7c6951d7dd93412a8fd9cd8); the 2021 chip
+- **Telling builds apart**: the banner ends `ROM 2026-09-23B` on the current tree build (MD5 a9fefd4ae21eb46eb21cff614376617f,
+  CF on P4/P5, not yet burned) and `ROM 2026-09-23` on the chip in the machine (MD5 d2d7b027e7c6951d7dd93412a8fd9cd8, CF on P8/P9); the 2021 chip
   prints the banner alone and has `00` at $FFEC; the 2026-09-22 build has `04` at $FFEC and `00` at $FFFC. Vector targets
   move with every monitor edit, so compare whole images by MD5.
 - **`tools/verify_firmware.py`** rebuilds everything from source in a scratch directory — the assembler from its C

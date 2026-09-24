@@ -290,7 +290,8 @@ committed transcripts are v0's (banner `Y1/OS v0 (2026-09-22)`).
 
 ## 7. The plan and the backlog (`OS-PLAN.md`, `os/PORT-PLAN.md`, `BACKLOG.md`)
 
-Decisions already taken (2026-09-22): CF in I/O space on P8/P9 (select + data, to keep six ports free); the video
+Decisions already taken (2026-09-22): CF in I/O space on P8/P9 (select + data, to keep six ports free; moved to
+P4/P5 on 2026-09-23, on the I/O card v2.0: `OS-PLAN.md` decision 1 update); the video
 card v2 puts the 6845 on ports PA/PB so it needs only 2K of memory; the port map and the two memory-map variants;
 the ROM holds only sectors (monitor + CF driver + boot), never the filesystem, so an OS change never needs a burn;
 P8XFS v2 byte for byte; the kernel in C with y1cc (size is the risk: C is 2–3× assembly); the console is two BIOS
@@ -299,9 +300,11 @@ vectors so video/PS-2 can replace the UART without the OS knowing.
 Done since (2026-09-23, in the source): write support and the file API/syscalls above (phase 2's second half and
 the start of phase 3). Still to do, in the plan's order:
 
-1. **The CF card in hardware**: KiCad, two ports, 74245 + 74LS174/273 select latch + decode + strobe gating, True
-   IDE 8-bit, status pull-ups, activity LED; the first KiCad-native card; bench-tested with the bus tester
-   (`OUTI P8 / INP P9` through the ROM driver) before the CPU touches it.
+1. **The CF interface in hardware**: designed first as its own card (CF card v1.0, KiCad, never ordered, now
+   superseded), now part of the I/O card v2.0 (being designed): IC5's Y4/Y5 decode P4/P5, then 74LS32 strobe gating,
+   74LS175 select latch, 74LS08, 74LS245, True IDE 8-bit, status pull-ups, ACT LED ([`docs/cards/cf.md`](../cards/cf.md));
+   bench-tested with the bus tester (`OUTI P4 / INP P5` through the ROM driver, build `ROM 2026-09-23B`, still to be
+   burned) before the CPU touches it.
 2. `fsck` on the OS side (`pack` done 2026-09-23, `/BIN/PACK`); `os/lib_fs.c` (the C wrappers over `sys()`); updated `os/README.md`, `disk.img`
    and `tests/os` transcripts for v0.1.
 3. **Porting the P8X commands** (`os/PORT-PLAN.md`, survey of 46 commands + 18 libraries): wave 0 the shared

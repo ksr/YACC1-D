@@ -15,26 +15,45 @@ are the order of work. Nothing here is built yet.
    Chips: 74245 data buffer, a 74LS174/273 select latch, the port decode (IO-ADDR3 high, IO-ADDR0..2 = 0/1), strobe
    gating from -IO-RD/-IO-WR, the CF status pull-ups, activity LED. True IDE 8-bit mode (SET FEATURES $EF/$01 at
    init), the P8X card's circuit otherwise (`p8x/hardware/cf-card/`). First KiCad-native card of the machine.
+
+   **Update 2026-09-23 (evening): the ports are P4/P5, and the interface is on the I/O card.** The backplane has only
+   eight slots, so the CF interface moves onto the I/O card as **I/O card v2.0** (being designed,
+   `hardware/cards/io/kicad/v2.0/`). The I/O card's own 74LS138 (IC5), strapped to P0-P7 by IO-ADDR-HL, had six unused
+   outputs: Y4 (-IO-SEL4) and Y5 (-IO-SEL5) become the CF select and data ports, so the CF card's own decoder goes and
+   the interface is four chips (74LS32 strobes, 74LS175 latch, 74LS08 enables/reset/ACT LED, 74LS245 data buffer) plus
+   the 40-pin IDE header, to a SinLoon CF-to-IDE adapter mounted above the card on standoffs; the DASP LED is dropped
+   and the bus connector is shared. **P4** = register-select latch (write-only: bits 0..2 = ATA register, bit 3 = CF
+   reset), **P5** = data port; the select-then-data scheme is unchanged. P2 was not taken because it is the emulators'
+   console and test-output port. Consequences: the I/O card's IO-ADDR-HL strap must stay at P0-P7, and its IO-ADDR /
+   DATA-ADDR jumper headers must not select P4 or P5. The ROM driver (build `ROM 2026-09-23B`, not yet burned) and both
+   emulators (`software/cfmodel.h`) moved in commit 24378cb. The standalone CF card v1.0 (`hardware/cards/cf/kicad/v1.0`,
+   decoding P8/P9 with IO-ADDR3 high as written above, never ordered) is superseded; `docs/cards/cf.md`.
 2. **Video card v2 puts the 6845 registers on ports too** (PA = address register, PB = data register: RS is
    IO-ADDR0, no latch), so the card needs only its 2K of display RAM in the memory map. Until then the built card
    stays as it is: 2K block, RS-to-A1 fix pending (`hardware/cards/video/docs/fix-6845-register-select.md`).
-3. **Port map** (16 ports, IO-ADDR0..3, strobes -IO-RD/-IO-WR; `yacc1.def` had `P8=9`, fixed 2026-09-22):
+3. **Port map** (16 ports, IO-ADDR0..3, strobes -IO-RD/-IO-WR; `yacc1.def` had `P8=9`, fixed 2026-09-22). Updated
+   2026-09-23 for the CF move to P4/P5 (decision 1 update); until then the CF rows were P8/P9 and P4-P7 were all
+   "reserved to the I/O card":
 
    | Port | Today | Proposed |
    |---|---|---|
    | P0 | I/O card select latch (write): UART = `UARTCS` $40 + register 0/8/…/$38, `SWITCHLED` $01, `LCDENABLE` $02, `LCDREGISTER` $04, `TIL311` $80 | unchanged |
    | P1 | I/O card data port for the device selected in P0 (UART registers, switches in / LEDs out, LCD, TIL311) | unchanged |
    | P2 | -IO-SEL2 on the I/O card's header, nothing wired; the emulator's console (`OUTA P2`/`INP P2`) | stays the emulator console; reserved to the I/O card |
-   | P3-P7 | -IO-SEL3..7 on the I/O card's header (its 74138 decodes all eight, the card wires two) | reserved to the I/O card (a second UART, a printer port…) |
-   | P8 | free | **CF register select** (write-only latch): bits 0-2 = ATA register 0-7, bit 3 = CF reset (1 = held; 2026-09-23: the card design chose a hardware reset over the CS1 control block, `docs/cards/cf.md` section 5), bits 4-7 ignored |
-   | P9 | free | **CF data**: reading/writing it strobes -IOR/-IOW on the selected register |
+   | P3 | -IO-SEL3 on the I/O card's header (its 74138 decodes all eight, v1.1 wires two) | reserved to the I/O card (a second UART, a printer port…) |
+   | P4 | -IO-SEL4 on the I/O card's header, nothing wired (v1.1) | **CF register select** on the I/O card v2.0 (IC5 Y4; write-only latch): bits 0-2 = ATA register 0-7, bit 3 = CF reset (1 = held; 2026-09-23: the card design chose a hardware reset over the CS1 control block, `docs/cards/cf.md` section 5), bits 4-7 ignored |
+   | P5 | -IO-SEL5 on the I/O card's header, nothing wired (v1.1) | **CF data** on the I/O card v2.0 (IC5 Y5): reading/writing it strobes -IOR/-IOW on the selected register |
+   | P6, P7 | -IO-SEL6..7 on the I/O card's header, nothing wired | reserved to the I/O card |
+   | P8 | free | free (was the CF register select until 2026-09-23) |
+   | P9 | free | free (was the CF data port until 2026-09-23) |
    | PA | free | video card v2: 6845 address register (RS = 0) |
    | PB | free | video card v2: 6845 data register (RS = 1) |
    | PC | free | PS/2 keyboard controller data (or on the video v2 card as a terminal card) |
    | PD | free | PS/2 keyboard status/control |
    | PE, PF | free | free (RTC, second CF select+data, sound) |
 
-   The I/O card's IO-ADDR3 strap puts it in P0-P7 or P8-P15; it stays in the low half. Every new device follows
+   The I/O card's IO-ADDR3 strap puts it in P0-P7 or P8-P15; it stays in the low half (from v2.0 it must: the CF
+   interface on P4/P5 depends on it, and the IO-ADDR/DATA-ADDR jumpers must not select P4/P5). Every new device follows
    the select+data pattern when it has more than one register, so the port space lasts.
 4. **Memory map** — two variants, both jumper-only on the hardware (memory card block jumpers, video 7485 SV3):
 
@@ -71,8 +90,8 @@ session on both emulators. Not started: write support, the file API for programs
 
 ## Phases
 
-1. **Emulator CF model** on ports P8/P9 backed by a disk image (`-d disk.img`, like p8xemu's `-c`), ~150 lines of
-   C in `software/emulator/main.c`. **ROM side**: CF driver + B command in `monitor.asm`, tests removed, vectors
+1. **Emulator CF model** on ports P8/P9 (P4/P5 since 2026-09-23, decision 1 update) backed by a disk image
+   (`-d disk.img`, like p8xemu's `-c`), ~150 lines of C in `software/emulator/main.c`. **ROM side**: CF driver + B command in `monitor.asm`, tests removed, vectors
    added; proven on the emulator with a P8XFS image whose LBA 1.. holds a test program. Burn = the same ROM
    burn already pending for the G fix. Hardware in parallel: the CF card in KiCad (rails and pull-ups checked
    first, this week's lesson), built, bench-tested with the bus tester before the CPU touches it.
@@ -87,6 +106,7 @@ session on both emulators. Not started: write support, the file API for programs
 ## Still open
 
 - Whether the OS load address stays $1000 if the OS grows past 16K (the map has room to move it; P8X's did twice).
-- Dual CF (P8X supports two volumes); a second card at PC/PD would be the direct copy.
+- Dual CF (P8X supports two volumes): a second interface needs another port pair (P8/P9 are free again since
+  2026-09-23; PC/PD are pencilled for PS/2).
 - The E-command RAM loader on the backlog becomes unnecessary once the CF card boots; until then it is the only
   way to run compiled programs on the machine.

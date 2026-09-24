@@ -29,6 +29,9 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Memory card**: the unconnected jumper wire on IC7 pin 4 — purpose not remembered (Ken 2026-09-20); trace it on the board or remove it.
 
 ## Firmware — written, not burned / loaded
+- **`ROM 2026-09-23B`** (`firmware/rom/shipped/rom.bin`, MD5 a9fefd4ae21eb46eb21cff614376617f): the CF driver and `O`
+  on P4/P5 for the I/O card v2.0; otherwise the same as the burned `ROM 2026-09-23` (P8/P9). Burn, then
+  `tests/memory/rom_verify.py`; needed before the v2.0 CF interface can be tested.
 - **Monitor + BASIC 8afde21** (2021-09, `firmware/*/candidates/2021-09-8afde21`): `charavail` BIOS vector ($FFEC),
   BASIC ON/OFF statements, break into a running program. Needs a hardware test, then burn and update `rom/shipped`.
 - **monnew-2025** (`firmware/monitor/monnew-2025`): small D/M/B monitor; assembled, never run on the machine.
@@ -111,11 +114,17 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   read-only — `os/y1os.c` shell with dir/cd/pwd/cat/load/run and /BIN programs, `tests/os/` sessions on both emulators.)
 - (designed 2026-09-23: **the CF card v1.0** — `hardware/cards/cf/kicad/v1.0/` generated from `cf_netlist.py`: 5 ICs
   (74LS138/32/175/08/245), 40-pin IDE header for a CF-to-IDE adapter, schematic and board both proven equal to the
-  netlist, DRC 0 errors / 0 unconnected, gerbers ready; theory in `docs/cards/cf.md`.) **Before ordering**: check Ken's
-  CF-to-IDE adapter against J1 (fit, overhang, ribbon or direct) and its power connector against J2 / JP1; check X1's
-  position on a real card (the blank V3.2 it came from was never fabricated); confirm the I/O card's IO-ADDR-HL strap
-  is P0-P7. **After building**: the bring-up steps in `docs/cards/cf.md` section 7 (empty adapter = `CF ERROR`, the P8
-  latch on J1's DA pins, then `O` with a card prepared by `dd` from `os/disk.img`); write the card-preparation procedure.
+  netlist, DRC 0 errors / 0 unconnected, gerbers ready; theory in `docs/cards/cf.md`. **Superseded the same evening,
+  never ordered**: the backplane has eight slots, so the CF interface moves onto the **I/O card v2.0**, decoded by the
+  I/O card's IC5 on Y4/Y5 = **P4/P5** (4 chips, SinLoon CF-to-IDE adapter on standoffs above the card, no DASP LED);
+  ROM driver, `ROM 2026-09-23B` and both emulators moved to P4/P5 in 24378cb; `docs/system/OS-PLAN.md` decision 1
+  update. Card-preparation procedure written: `docs/procedures/CF-CARD.md`.)
+  **Next**: finish the I/O card v2.0 design (`hardware/cards/io/kicad/v2.0/`); **burn `ROM 2026-09-23B`** (the chip
+  still holds `ROM 2026-09-23`, whose CF driver uses P8/P9); before ordering, check the SinLoon adapter's fit on its
+  standoffs and how it is powered; confirm on the machine that the I/O card's IO-ADDR-HL strap is P0-P7 and that the
+  IO-ADDR/DATA-ADDR jumpers are on P0/P1 (never P4/P5). **After building**: the bring-up steps in `docs/cards/cf.md`
+  section 7 (the new ROM first, empty adapter = `CF ERROR`, the P4 latch on the IDE header's DA pins, then `O` with a
+  card prepared by `tools/cfcard.py` from `os/disk.img`).
 - (done 2026-09-23: **write support** — save/del/ren/mkdir/rmdir in the shell, files written at the free pointer and
   registered as `p8xfs.py` does, verified from the host in `tests/os/run.py` (fsck, ls, get); **the file API** —
   a 22-entry syscall table at $0F14 (SYSARG/SYSRES at $0F06..), y1cc's `sys()`/`funcaddr()` builtins, `os/lib_fs.c`
@@ -235,8 +244,9 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   for char arithmetic (`c + 1` still goes through 16-bit add), constant compares with a zero high byte, `for` loops
   counting down to 0. Measure with `run.py` (bytes + instruction counts per test).
 - (done 2026-09-22: `software/ucemu` counts steps and clocks; a per-opcode cost table from it is a one-liner away.)
-- Microcode emulator follow-ups: interrupts (a source, INT/IRET/IADDR checked against the generator), the CF ports P8/P9
-  and a disk image (OS-PLAN phase 1), automatic trace comparison against the interpreter, the video card.
+- Microcode emulator follow-ups: interrupts (a source, INT/IRET/IADDR checked against the generator), automatic trace
+  comparison against the interpreter, the video card. (The CF model with a disk image, `-c`, is done: 2026-09-22 on
+  P8/P9, P4/P5 since 2026-09-23.)
 - Port the P8X libraries/programs that fit the subset (the P8X OS itself needs the stack-frame mode and its syscalls).
 - Emulator (done 2026-09-22, `tools/patched_files.txt`): `-x` scripted mode; BRVR and JSRUR now follow the microcode, so the
   monitor's `G` and `T` commands work on the emulator (they never had). Still stubs vs the hardware: IRET/INT/IADDR, SUB

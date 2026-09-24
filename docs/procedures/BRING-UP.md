@@ -223,7 +223,8 @@ From `firmware/rom/README.md`, `firmware/abi/README.md`, and a byte comparison o
 
 - The image to burn is **`firmware/rom/shipped/rom.bin`**: 8,192 bytes, offset 0 = $E000; BASIC (`firmware/basic/basic.img`) at
   $E000, the monitor (`firmware/monitor/monitor.img`) at $F000; bytes the sources never write are $FF like a blank part.
-  MD5 `d2d7b027e7c6951d7dd93412a8fd9cd8` (the 2026-09-23 afternoon build, with the `:` loader). Programmer: Visual Minipro / `minipro`, device 28C64. It is built from `shipped/rom`
+  MD5 `a9fefd4ae21eb46eb21cff614376617f` (`ROM 2026-09-23B`, the 2026-09-23 evening build: the afternoon build with
+  the CF driver and `O` moved from ports P8/P9 to P4/P5 for the I/O card v2.0; **not yet burned**). Programmer: Visual Minipro / `minipro`, device 28C64. It is built from `shipped/rom`
   (Intel hex) by `python3 tools/img2bin.py firmware/rom/shipped/rom firmware/rom/shipped/rom.bin --base 0xE000 --end 0x10000 --fill 0xFF --size 8192`.
 - `tools/verify_firmware.py` (or `make -C software/assembler check`) proves the image reproduces from `firmware/monitor/monitor.asm`
   and `firmware/basic/basic.asm` before you burn it.
@@ -232,9 +233,13 @@ From `firmware/rom/README.md`, `firmware/abi/README.md`, and a byte comparison o
   the BASIC half is identical. The differences that matter: the `G` command is now `JSRUR R7` (a call; the program returns
   with `RET`) instead of `BRVR R7` (an indirect jump through the word at the address, so `G AAAA` never ran the code at AAAA);
   the `T` menu tests are gone; the CompactFlash driver and the `O` boot command are in; the `:` Intel-hex loader
-  (section 6a) and a no-echo console vector are in; the banner ends with the build date, `ROM 2026-09-23`.
-- **How to tell which build a chip holds**: the banner at power-up ends with `ROM 2026-09-23` on the current build (the
-  2021 chip and the 2026-09-22 build print `YACC 2020: HELLO WORLD` alone). Without a console, read back two bytes with
+  (section 6a) and a no-echo console vector are in; the banner ends with the build date, `ROM 2026-09-23`. That chip
+  build is MD5 `d2d7b027e7c6951d7dd93412a8fd9cd8`; its CF driver uses P8/P9. The tree's `ROM 2026-09-23B` behaves the same
+  except for the CF ports and the banner (the one-byte longer banner shifts the strings after it, so about 1,400 bytes
+  of the monitor half differ); burn it before the I/O card v2.0's CF interface is tested (`docs/cards/cf.md` section 7).
+- **How to tell which build a chip holds**: the banner at power-up ends with `ROM 2026-09-23B` on the tree's build and
+  `ROM 2026-09-23` on the chip burned 2026-09-23 (the 2021 chip and the 2026-09-22 build print `YACC 2020: HELLO WORLD`
+  alone). Without a console, read back two bytes with
   the programmer or `busdrv.py`:
 
   | Address | 2021 chip (captured) | 2026 builds | Meaning |
@@ -247,8 +252,8 @@ From `firmware/rom/README.md`, `firmware/abi/README.md`, and a byte comparison o
 
 - After burning: re-capture and compare with `python3 tests/memory/rom_verify.py [port] --save` (~30 s with the blocks-1
   tester firmware): it reads $E000-$FFFF through the bus tester and diffs against the image `tools/romimage.py` assembles from
-  `basic.img` + `monitor.img`. Until the chip is reburned that test (and `memory_status.py`) reports the monitor half as
-  differing - expected, not a fault (`MACHINE.md`).
+  `basic.img` + `monitor.img`. Until `ROM 2026-09-23B` is burned that test (and `memory_status.py`) reports the monitor
+  half as differing - expected, not a fault (`MACHINE.md`).
 - Compiled programs for the **old** chip need `y1cc.py --vector` (a first word for `BRVR` to jump through); for the new one
   `G3000` calls `main` directly (`software/emulator/README.md`, `MACHINE.md`).
 - Handling (memory `Build Notes.md`): one machined 28-pin socket soldered in IC13; keep each EEPROM in its own milled socket and
