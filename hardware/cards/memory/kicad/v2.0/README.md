@@ -87,12 +87,14 @@ options put the CF chips. A through-hole pad cannot sit on a track, and the buil
 - **Every option's board has CF pads on built-card tracks** (DRC under the card's rules, beyond the built card's own
   list): option A 11 shorts + 4 clearance + 63 solder-mask bridges, option B 12 + 1 + 50, option C 12 + 3 + 63
   (`reports/option-X-drc-summary.txt`; the renders and placement plots show the CF parts on the bundle).
-- **There is no legal placement at all** (`space_check.py`, `reports/space-check.txt`,
+- **No legal placement was found at all** (`space_check.py`, `reports/space-check.txt`,
   `memory-v2.0-free-space.png`): with every pad at least 0.3 mm clear of the built copper (and pads, bodies and the
   edge respected) a CF DIP can only go in the triangle right of the bundle, courtyards within x 157.8-195.2 /
-  y 68.7-123.3. **At most 4 of the 5 CF DIPs fit there even with no IDE header and none of the 16 other CF parts**;
-  with J2 where option C puts it (the free top edge, lower half) only 2 fit, with J2 where option A puts it 4. J2
-  itself fits only along the top edge beside IC26-IC29, flush against their outlines.
+  y 68.7-123.3 (1,450 mm2 of allowed courtyard area for 1,027 mm2 of DIP courtyards). The best of thousands of random
+  packings places **4 of the 5 CF DIPs, even with no IDE header and none of the 16 other CF parts**; with J2 where
+  option C puts it (the free top edge, lower half) 2, with J2 where option A puts it 4. J2 itself fits only along the
+  top edge beside IC26-IC29, flush against their outlines. (The packing search is a strong heuristic, not a proof;
+  an exhaustive search did not finish in 40 minutes. With J2 and the passives added the margin is far larger.)
 
 What the old option texts said about space (the "three empty IC slots", the band under the ROM, "nothing of v1.3
 moves") was true of the earlier save only.

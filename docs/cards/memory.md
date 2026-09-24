@@ -329,7 +329,7 @@ What to measure if it misbehaves:
 ROM and the emulators use them; it would be the first use of the IO-ADDR0..3, -IO-RD and -IO-WR pins this card leaves
 unwired today. The schematic is done and proven, but the card has less room than the earlier save suggested: the
 built card routes the TMP high byte (DATA8-15) as a bundle of tracks across the lower right of the board, and with its
-copper kept at most four of the five CF chips fit (`space_check.py` in that folder). Ken decides between re-routing that
+copper kept no placement of the five CF chips was found (the best packing fits four, `space_check.py` in that folder). Ken decides between re-routing that
 bundle, keeping the separate CF card, or another layout (the folder's README).
 
 Open ideas from `eagle/v1.3/Notes.md`, `BACKLOG.md` and the reviews, for a v1.4:

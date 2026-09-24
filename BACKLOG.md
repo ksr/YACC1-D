@@ -129,7 +129,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   Card-preparation procedure written: `docs/procedures/CF-CARD.md`. A move of the interface onto an I/O card v2.0 on
   ports P4/P5 was designed 2026-09-23 and dropped 2026-09-24 (6eeb259, 65851b0).)
   **BLOCKED 2026-09-24 - decision needed**: `hardware/cards/memory/kicad/v2.0` (built memory card + CF, schematic proven)
-  does not fit with the built card's copper kept (its DATA8-15 bundle crosses the free area; at most 4 of 5 CF chips fit,
+  does not fit with the built card's copper kept (its DATA8-15 bundle crosses the free area; best packing: 4 of 5 CF chips,
   `space_check.py`): re-route that bundle, keep the separate CF card v1.0, or re-lay the card. Earlier plan:
   design the CF interface onto the **memory card** (more room, chips spaced far apart),
   kept I/O-mapped on **P8/P9** with the CF card v1.0 circuit (own 74LS138 enabled by IO-ADDR3, 74LS32, 74LS175, 74LS08,
