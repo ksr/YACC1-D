@@ -1,24 +1,26 @@
 /*
  * cfmodel.h - the CompactFlash card model shared by both YACC1 emulators (2026-09-22).
  *
- * The card (docs/system/OS-PLAN.md, decision 1) sits in I/O space on two ports: P8 is a write-only register-select
- * latch (bits 0..2 = the ATA task-file register, bit 3 = the CS1 block, unused here) and P9 is the data port: a read
- * or write of P9 strobes -IOR/-IOW on the selected register. The CF runs in 8-bit True IDE mode. The handshake is
+ * The card (docs/system/OS-PLAN.md, decision 1) sits in I/O space on two ports: P4 is a write-only register-select
+ * latch (bits 0..2 = the ATA task-file register, bit 3 = the CS1 block, unused here) and P5 is the data port: a read
+ * or write of P5 strobes -IOR/-IOW on the selected register. The CF runs in 8-bit True IDE mode. The handshake is
  * the one p8xemu models for the P8X's memory-mapped card (p8x/emulator/p8xemu.c): BSY is never asserted (a transfer
  * is instantaneous), DRQ is raised while a 512-byte buffer streams through the data register and dropped when it
  * drains, ERR on an unknown command. Registers: 0 data, 1 error/feature, 2 sector count (accepted, single-sector
  * model), 3..5 LBA0..2, 6 drive/head (LBA mode bit; the device bit is ignored: one drive), 7 status/command.
  * Commands: $EF SET FEATURES, $EC IDENTIFY, $20 READ SECTORS, $30 WRITE SECTORS. With no image attached every read
  * returns $FF, as a floating bus would, so a bounded status poll times out instead of hanging.
+ * Ports: P8/P9 until 2026-09-23, then P4/P5, when the interface moved onto the I/O card v2.0, whose own 74LS138
+ * (IC5, strapped to P0-P7) decodes them on its spare outputs Y4/Y5 (docs/cards/cf.md).
  *
  * Include after <stdio.h>/<string.h>/<stdint.h>; call cf_attach(path) for -c, then cf_io_write(port, v) for OUTA/OUTI
- * on P8/P9 and cf_io_read(port) for INP on P9.
+ * on P4/P5 and cf_io_read(port) for INP on P5.
  */
 #ifndef CFMODEL_H
 #define CFMODEL_H
 
-#define CF_PORT_SEL  8
-#define CF_PORT_DATA 9
+#define CF_PORT_SEL  4
+#define CF_PORT_DATA 5
 
 static struct {
     FILE *img;

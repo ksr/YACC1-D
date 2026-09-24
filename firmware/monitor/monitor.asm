@@ -477,7 +477,7 @@ dumpreg:
 
 ;
 ; ---- CompactFlash driver (YACC1-D 2026-09-22) -----------------------------------------------------------
-; The card sits on two ports: P8 = register-select latch (ATA task-file register 0-7), P9 = data.
+; The card sits on two ports: P4 = register-select latch (ATA task-file register 0-7), P5 = data (on the I/O card v2.0; P8/P9 until 2026-09-23).
 ; 8-bit True IDE mode. Registers: 0 data, 1 error/feature, 2 sector count, 3-5 LBA0-2, 6 drive/head, 7 status/cmd.
 ; Entry points (also BIOS vectors at 0FFECh..): cfinit  ACC = 0 ok / 1 error (absent card times out);
 ;   cfread   sector CFLBA0..2 -> (R7), R7 += 512, ACC = 0 ok / 1 error;   cfwrite  (R7) -> sector, R7 += 512, same;
@@ -496,8 +496,8 @@ CFSEL_CMD:   EQU 7
 cfwait:
         MVIW R6,0
 cfwaitl:
-        OUTI P8,CFSEL_CMD
-        INP P9
+        OUTI P4,CFSEL_CMD
+        INP P5
         ANDI 080H
         BRZ cfwaitd
         DECR R6
@@ -506,16 +506,16 @@ cfwaitl:
         MVRHA R6
         BRNZ cfwaitl
 cfwaitd:
-        OUTI P8,CFSEL_CMD
-        INP P9
+        OUTI P4,CFSEL_CMD
+        INP P5
         RET
 ;
 ; wait until DRQ (bit 3), bounded; returns the status in ACC
 cfdrq:
         MVIW R6,0
 cfdrql:
-        OUTI P8,CFSEL_CMD
-        INP P9
+        OUTI P4,CFSEL_CMD
+        INP P5
         ANDI 008H
         BRNZ cfdrqd
         DECR R6
@@ -524,51 +524,51 @@ cfdrql:
         MVRHA R6
         BRNZ cfdrql
 cfdrqd:
-        OUTI P8,CFSEL_CMD
-        INP P9
+        OUTI P4,CFSEL_CMD
+        INP P5
         RET
 ;
 cfinit:
         JSR cfwait
-        OUTI P8,CFSEL_HEAD
-        OUTI P9,0E0H            ; LBA mode, drive 0
-        OUTI P8,CFSEL_FEAT
-        OUTI P9,001H            ; feature 1: 8-bit transfers
-        OUTI P8,CFSEL_CMD
-        OUTI P9,0EFH            ; SET FEATURES
+        OUTI P4,CFSEL_HEAD
+        OUTI P5,0E0H            ; LBA mode, drive 0
+        OUTI P4,CFSEL_FEAT
+        OUTI P5,001H            ; feature 1: 8-bit transfers
+        OUTI P4,CFSEL_CMD
+        OUTI P5,0EFH            ; SET FEATURES
         JSR cfwait
         ANDI 001H               ; ERR bit; an absent card reads FFh and times out -> 1
         RET
 ;
 ; task file <- CFLBA0..2, LBA mode, one sector
 cfsetl:
-        OUTI P8,CFSEL_LBA0
+        OUTI P4,CFSEL_LBA0
         LDA CFLBA0
-        OUTA P9
-        OUTI P8,CFSEL_LBA1
+        OUTA P5
+        OUTI P4,CFSEL_LBA1
         LDA CFLBA1
-        OUTA P9
-        OUTI P8,CFSEL_LBA2
+        OUTA P5
+        OUTI P4,CFSEL_LBA2
         LDA CFLBA2
-        OUTA P9
-        OUTI P8,CFSEL_HEAD
-        OUTI P9,0E0H
-        OUTI P8,CFSEL_SCNT
-        OUTI P9,1
+        OUTA P5
+        OUTI P4,CFSEL_HEAD
+        OUTI P5,0E0H
+        OUTI P4,CFSEL_SCNT
+        OUTI P5,1
         RET
 ;
 cfread:
         JSR cfwait
         JSR cfsetl
-        OUTI P8,CFSEL_CMD
-        OUTI P9,020H            ; READ SECTORS
+        OUTI P4,CFSEL_CMD
+        OUTI P5,020H            ; READ SECTORS
         JSR cfdrq
         ANDI 008H
         BRZ cferr
-        OUTI P8,CFSEL_DATA
+        OUTI P4,CFSEL_DATA
         MVIW R6,512
 cfrdl:
-        INP P9
+        INP P5
         STAVR R7
         INCR R7
         DECR R6
@@ -585,16 +585,16 @@ cferr:
 cfwrite:
         JSR cfwait
         JSR cfsetl
-        OUTI P8,CFSEL_CMD
-        OUTI P9,030H            ; WRITE SECTORS
+        OUTI P4,CFSEL_CMD
+        OUTI P5,030H            ; WRITE SECTORS
         JSR cfdrq
         ANDI 008H
         BRZ cferr
-        OUTI P8,CFSEL_DATA
+        OUTI P4,CFSEL_DATA
         MVIW R6,512
 cfwrl:
         LDAVR R7
-        OUTA P9
+        OUTA P5
         INCR R7
         DECR R6
         MVRLA R6
@@ -1328,7 +1328,7 @@ nblinkdone:
 ;
 ; MONITOR STRINGS
 ;
-hello:  DB 0ah,0dh,"YACC 2020: hello world  ROM 2026-09-23",0ah,0dh,0    ; the build date tells ROMs apart at a glance
+hello:  DB 0ah,0dh,"YACC 2020: hello world  ROM 2026-09-23B",0ah,0dh,0    ; the build date tells ROMs apart at a glance
 PROMPT: DB ">",0
 CRLF: DB 0ah,0dh,0
 ERROR: DB "UNRECOGINIZED COMMAND",0ah,0dh,0

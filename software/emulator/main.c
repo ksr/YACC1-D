@@ -20,7 +20,7 @@
 #include <ctype.h>
 #include "../opcodes.h"
 #include <stdint.h>
-#include "../cfmodel.h"        /* YACC1-D 2026-09-22: the CompactFlash card on ports P8 (select) / P9 (data), -c image */
+#include "../cfmodel.h"        /* YACC1-D 2026-09-22: the CompactFlash card on ports P4 (select) / P5 (data), -c image */
 
 #define DEBUG 0
 
@@ -430,7 +430,7 @@ void print_usage(const char *progname) {
     printf("  -m           Load firmware/basic/basic.img and firmware/monitor/monitor.img from the tree (found relative to this program; default)\n");
     printf("  -f filename  Load the specified file using load_file\n");
     printf("  -x           Scripted run: no load/dump chatter, HALT exits (instruction count on stderr)\n");
-    printf("  -c image     Attach a CompactFlash image on ports P8/P9 (created zero-filled if missing)\n");
+    printf("  -c image     Attach a CompactFlash image on ports P4/P5 (created zero-filled if missing)\n");
     printf("  -l N         Stop after N instructions (with -x: status on stderr)\n");
 }
 
