@@ -21,7 +21,8 @@ are the order of work. Nothing here is built yet.
    `hardware/cards/io/kicad/v2.0/`). The I/O card's own 74LS138 (IC5), strapped to P0-P7 by IO-ADDR-HL, had six unused
    outputs: Y4 (-IO-SEL4) and Y5 (-IO-SEL5) become the CF select and data ports, so the CF card's own decoder goes and
    the interface is four chips (74LS32 strobes, 74LS175 latch, 74LS08 enables/reset/ACT LED, 74LS245 data buffer) plus
-   the 40-pin IDE header, to a SinLoon CF-to-IDE adapter mounted above the card on standoffs; the DASP LED is dropped
+   the 40-pin IDE header, onto which a TAODAN CF-IDE40 CF-to-IDE adapter plugs directly (standing perpendicular to
+   the card); the DASP LED is dropped
    and the bus connector is shared. **P4** = register-select latch (write-only: bits 0..2 = ATA register, bit 3 = CF
    reset), **P5** = data port; the select-then-data scheme is unchanged. P2 was not taken because it is the emulators'
    console and test-output port. Consequences: the I/O card's IO-ADDR-HL strap must stay at P0-P7, and its IO-ADDR /

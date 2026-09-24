@@ -54,6 +54,8 @@ OPTIONS = {
         silk=SILK_COMMON,
     ),
     # ------------------------------------------------------------------------------------------------------------------
+    # CHOSEN by Ken 2026-09-23. Kept as reviewed; the one later change (JP2 moved clear of the adapter overhang) is
+    # route_v2.py FINAL_MOVES, applied when the routed board io-v2.0.kicad_pcb is made from this option.
     "b": dict(
         title="IDE header along the top edge; the four CF chips in a column between the logic and the switch row",
         moves={**{r: (3.8, 0) for r in SWITCHES}, **{r: (0, 2.54) for r in TOP_ROW}},

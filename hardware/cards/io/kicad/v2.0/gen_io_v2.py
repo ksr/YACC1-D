@@ -4,7 +4,7 @@
 Run with KiCad's bundled Python (the board half needs pcbnew); build.sh does that:
 
     /Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3 gen_io_v2.py sch
-    ... gen_io_v2.py board a        (one placement option; placements.py holds the options)
+    ... gen_io_v2.py board a <net>  (one placement option -> options/io-v2.0-option-a.kicad_pcb; placements.py)
 
 v2.0 = the I/O card v1.1 + the CompactFlash section (io_v2_netlist.py says exactly what that is). This script:
 
@@ -22,7 +22,8 @@ v2.0 = the I/O card v1.1 + the CompactFlash section (io_v2_netlist.py says exact
          the v1.1 tracks to the same names, applies the option's moves and placements (placements.py), deletes the v1.1
          track segments/vias that sat on a pad that moved, adds silkscreen notes and the CF-to-IDE adapter outline
          (User.Drawings, dashed). build.sh then trims the v1.1 copper the moves broke (tools: kicad-cli DRC) - the
-         CF section itself is NOT routed: ratsnest only.
+         CF section itself is NOT routed: ratsnest only. Option B was chosen (2026-09-23); route_v2.py turns it into
+         the routed board io-v2.0.kicad_pcb, and the option boards in options/ are the review record.
 """
 import os, sys, re, json, shutil, subprocess, collections, math
 
@@ -228,6 +229,15 @@ def build_sheet7():
 def write_project():
     pro = json.load(open(os.path.join(V11, OLD + ".kicad_pro")))
     pro["meta"]["filename"] = PROJ + ".kicad_pro"
+    # net classes for routing the CF section (route_v2.py): Default = v1.1's rules (0.1524 mm track, 0.127 mm
+    # clearance) with v1.1's via (0.508 / 0.254 mm, all 158 of its vias); Power = GND + VCC at 0.3048 mm, wider
+    # than v1.1's 0.1524 mm power tracks
+    cls = pro["net_settings"]["classes"]
+    assert len(cls) == 1 and cls[0]["name"] == "Default"
+    cls[0]["via_diameter"], cls[0]["via_drill"] = 0.508, 0.254
+    pw = dict(cls[0], name="Power", track_width=0.3048, priority=0)
+    cls.append(pw)
+    pro["net_settings"]["netclass_patterns"] = [{"netclass": "Power", "pattern": n} for n in ("GND", "VCC")]
     json.dump(pro, open(os.path.join(HERE, PROJ + ".kicad_pro"), "w"), indent=2)
     return pro
 
@@ -264,7 +274,7 @@ def read_netlist(path):
     return nodes, paths
 
 
-def build_board(opt, netfile):
+def build_board(opt, netfile, out=None):
     import pcbnew
     from pcbnew import VECTOR2I
     import placements
@@ -276,7 +286,7 @@ def build_board(opt, netfile):
     src = open(os.path.join(V11, OLD + ".kicad_pcb")).read()
     assert src.count('"YACC1 IO V1.1"') == 1
     src = src.replace('"YACC1 IO V1.1"', '"YACC1 IO V2.0"')
-    out = os.path.join(HERE, "%s-option-%s.kicad_pcb" % (PROJ, opt))
+    out = out or os.path.join(HERE, "options", "%s-option-%s.kicad_pcb" % (PROJ, opt))
     open(out, "w").write(src)
     b = pcbnew.LoadBoard(out)
 
@@ -570,7 +580,7 @@ if __name__ == "__main__":
     if sys.argv[1] == "sch":
         main_sch()
     elif sys.argv[1] == "board":
-        build_board(sys.argv[2], sys.argv[3])
+        build_board(sys.argv[2], sys.argv[3], sys.argv[4] if len(sys.argv) > 4 else None)
     elif sys.argv[1] == "trim":
         trim(sys.argv[2], sys.argv[3])
     elif sys.argv[1] == "check":

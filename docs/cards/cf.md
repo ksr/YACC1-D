@@ -25,9 +25,10 @@ driver: `cfwait`, `cfinit`, `cfread`, `cfwrite`), `software/cfmodel.h` (the emul
   the interface moved onto the I/O card. The I/O card's own 74LS138 (IC5), strapped to P0-P7 by its IO-ADDR-HL header,
   had six unused outputs; **Y4 (-IO-SEL4) and Y5 (-IO-SEL5) become the CF's select and data ports**, and U1 goes. The
   CF section is four chips — the 74LS32 strobe gating, the 74LS175 register latch, the 74LS08 enables/reset/ACT LED and
-  the 74LS245 data buffer — plus the 40-pin IDE header, which takes a SinLoon CF-to-IDE adapter mounted above the card
-  on standoffs. It shares the I/O card's bus connector; the CF's DASP LED is dropped. P2 was not used because it is the
-  emulators' console and test-output port.
+  the 74LS245 data buffer — plus the 40-pin IDE header. A TAODAN "CF-IDE40 V2.0" CF-to-IDE adapter (70 x 63 mm, female
+  40-pin socket along one 70 mm edge) plugs straight onto that header, no ribbon, and stands perpendicular to the card
+  on its component side. It shares the I/O card's bus connector; the CF's DASP LED is dropped. P2 was not used because
+  it is the emulators' console and test-output port.
 - The ROM driver (build `ROM 2026-09-23B`, not yet burned: `firmware/rom/README.md`) and both emulators
   (`software/cfmodel.h`) use **P4/P5**. The chip in the machine on 2026-09-23 is the earlier build, which still talks
   to P8/P9.
@@ -149,7 +150,9 @@ instead of acting on noise.
 **J2: adapter power** (v1.0). A 4-pin header in the floppy-power order: pin 1 +5 V, pins 2 and 3 ground, pin 4
 (+12 V on a floppy lead) unconnected. Most CF-to-IDE adapters take their power through a floppy connector. C6, 10 µF,
 sits beside it: a CF card can draw about 100 mA in bursts. **To verify:** the power connector and pinout of the adapter
-Ken uses (on v2.0 the SinLoon adapter sits above the card on standoffs; how it takes its power is part of that design).
+Ken uses. On v2.0 the TAODAN CF-IDE40 plugs straight onto the IDE header and takes +5 V on IDE pin 20 (JP2 fitted); it
+selects that or its own floppy-style power connector by itself. The v2.0 card keeps the 4-pin header (J3) for other
+adapters.
 
 **LEDs.** ACT (yellow) during every port-5 access, so a sector transfer shows as a flicker, through a 1k resistor. The
 v1.0 card also had PWR (green) on VCC and DASP (red), driven by the CF itself while it is busy; on v2.0 the I/O card's
@@ -234,7 +237,7 @@ On the v1.0 card (the v2.0 equivalents, and their designators, are in `hardware/
 | Item | Setting | Purpose |
 |---|---|---|
 | JP1 | open (default) | fit only for a CF-to-IDE adapter powered on IDE pin 20 |
-| J1 | 40-pin IDE header, pin 1 marked | the CF-to-IDE adapter, directly or on a short ribbon |
+| J1 | 40-pin IDE header, pin 1 marked | the CF-to-IDE adapter, directly or on a short ribbon (v2.0: J2, the TAODAN CF-IDE40 plugged straight on) |
 | J2 | +5 V, GND, GND, n/c | the adapter's power lead |
 | LED1 PWR, LED2 ACT, LED3 DASP | | power; any port access; the CF busy (v2.0 keeps only ACT) |
 
@@ -274,8 +277,9 @@ is fitted suggests an `IO-ADDR`/`DATA-ADDR` jumper on -IO-SEL4/5.
   generated from it (`hardware/cards/cf/README.md`). Never fabricated.
 - 2026-09-23 evening: the ports moved to **P4/P5** and the interface onto the **I/O card v2.0** (the backplane's eight
   slots): the I/O card's IC5 decodes it on Y4/Y5, so U1 is gone and the section is four chips; the DASP and PWR LEDs
-  are dropped; the SinLoon CF-to-IDE adapter sits above the card on standoffs. The ROM driver and `software/cfmodel.h`
-  moved with it (commit 24378cb; ROM `2026-09-23B`, not yet burned). The v1.0 card is superseded.
+  are dropped; the CF-to-IDE adapter (a TAODAN CF-IDE40) plugs straight onto the IDE header and stands perpendicular
+  to the card. The ROM driver and `software/cfmodel.h` moved with it (commit 24378cb; ROM `2026-09-23B`, not yet
+  burned). The v1.0 card is superseded.
 
 For a next revision: a second drive (the P8X card has two headers), `INTRQ` to the bus `-INT` if the OS ever wants
 interrupt-driven transfers, and a CF socket on the card itself instead of the adapter (surface-mount on most

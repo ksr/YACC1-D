@@ -390,8 +390,10 @@ operation: [`cf.md`](cf.md).
 - **Decode costs nothing:** IC5 already decodes P0-P7, and its outputs Y4 (-IO-SEL4) and Y5 (-IO-SEL5) become the CF's
   select and data ports. The CF card's own 74LS138 goes, and the CF section is four chips: a 74LS32 gating -IO-RD/-IO-WR
   with the two selects, a 74LS175 register-select latch, a 74LS08 (buffer enable, CF reset, ACT LED) and a 74LS245 data
-  buffer, plus the CF status pull-ups and a 40-pin IDE header for a SinLoon CF-to-IDE adapter mounted above the card on
-  standoffs. The bus connector is shared; the CF's DASP LED is dropped.
+  buffer, plus the CF status pull-ups and a 40-pin IDE header. A TAODAN "CF-IDE40 V2.0" CF-to-IDE adapter plugs
+  straight onto the header (no ribbon, no mounting holes) and stands perpendicular to the card, so the card needs about
+  75 mm of free space on its component side (an end slot or empty neighbour slots). The bus connector is shared; the
+  CF's DASP LED is dropped.
 - **Two ports, same select-then-data pattern as P0/P1.** P4 = write-only register-select latch (bits 0-2 = the ATA
   task-file register 0-7: 0 data, 1 error/feature, 2 sector count, 3-5 LBA0-2, 6 drive/head, 7 status/command; bit 3
   = CF reset, 1 = held); P5 = the data port — a read or write of P5 strobes the CF's -IOR/-IOW on the selected register.
