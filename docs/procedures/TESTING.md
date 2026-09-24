@@ -90,6 +90,11 @@ an address above $8000 (`--boot` stub) so that the FORCE-ROM remap is released e
   Since 2026-09-24 recursion is supported: `rfact`, `rmutual`, `rlocals`, `rcalc` run, and the errors are `recurse.err`
   (the address of a local passed into a recursive cycle) and `rmain.err` (recursive `main`). `tests/compiler/diffcheck.py`
   compiles the whole corpus with an older `y1cc.py` from git and the working one and requires identical assembly.
+  `adjstr.err` (adjacent string literals) joined with the C twin.
+- **The C twin:** `python3 tests/compiler/twin.py [--16] [-v]` builds `software/compiler/c/y1cc` (y1cc.c, 2026-09-24) and compiles
+  the whole corpus (`tests/compiler/corpus.py`, 121 compiles including y1cc.c itself) with it and with y1cc.py: the assembly, the
+  `-l` summary and every expected error message must be identical. `--16` uses the check build `y1cc16` (int = unsigned short,
+  unsigned char). **Pass looks like:** `twin: 117 programs identical, 4 identical errors, 0 DIFFERENT`. Both run in `make check`.
 - **Run:** `python3 tests/compiler/run.py [name ...] [--oracle] [--keep]`. Per test: compile with `--boot` (stack, `JSR main`,
   `HALT`), assemble with `software/assembler/asm NAME -d=yacc1`, run `emulator -x -f NAME.img < NAME.in`, compare stdout with
   `NAME.out`. Per-test compiler flags in a `// y1cc:` comment. `--oracle` regenerates the `.out` files with the host C compiler

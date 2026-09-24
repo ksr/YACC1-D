@@ -10,8 +10,8 @@ every /BIN command, the OS test programs) with an OLD y1cc.py taken from git and
 
 Every program the old compiler accepts must come out byte-identical (the header's timestamp masked). A program the
 old compiler REJECTS is allowed to differ only if the old error was its "recursion is not supported" (the programs
-that only compile since recursion exists); for expected-error tests the error text of both is shown. Exit 1 on any
-other difference.
+that only compile since recursion exists), or if the old compiler crashed (a Python traceback: fixed bugs such as
+tests/compiler/adjstr.c); for expected-error tests the error texts must be equal. Exit 1 on any other difference.
 """
 import os, sys, subprocess, shutil, tempfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -46,7 +46,7 @@ def main():
     shutil.rmtree(BUILD, ignore_errors=True)
     tmp = tempfile.mkdtemp(prefix="y1cc-old-")
     old = old_compiler(rev, tmp)
-    same = newonly = errs = 0; bad = []
+    same = newonly = errs = crashed = 0; bad = []
     for i, (tag, src, opts) in enumerate(corpus.items()):
         base = "%03d_%s_%s" % (i, tag, os.path.basename(src)[:-2])
         outs = {}
@@ -59,6 +59,8 @@ def main():
             if ok: same += 1
             else: bad.append((src, opts, "differs" if nrc == 0 else "new compiler failed: " + nerr[-200:]))
             state = "identical" if ok else "DIFFERENT"
+        elif "Traceback (most recent call last)" in oerr:   # the old compiler crashed: nothing to compare
+            crashed += 1; state = "old crashed (%s), new: %s" % (oerr.splitlines()[-1][:60], "compiles" if nrc == 0 else nerr[-60:])
         elif "recursion is not supported" in oerr:
             if nrc == 0: newonly += 1; state = "new: compiles (old: recursion rejected)"
             else: errs += 1; state = "both reject (new: %s)" % nerr[-90:]
@@ -71,7 +73,7 @@ def main():
             print("%-44s %-28s %s" % (src, " ".join(opts), state))
     shutil.rmtree(tmp, ignore_errors=True)
     print("diffcheck against %s: %d identical, %d compile only with the new y1cc (recursion), %d expected errors, "
-          "%d DIFFERENT" % (rev, same, newonly, errs, len(bad)))
+          "%d crashed the old one, %d DIFFERENT" % (rev, same, newonly, errs, crashed, len(bad)))
     for src, opts, why in bad: print("  DIFF %s %s: %s" % (src, " ".join(opts), why))
     if "--keep" not in av and not bad: shutil.rmtree(BUILD, ignore_errors=True)
     sys.exit(1 if bad else 0)

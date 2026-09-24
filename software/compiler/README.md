@@ -1,7 +1,9 @@
 # software/compiler — y1cc, a C cross-compiler for the YACC1
 
 `y1cc.py` (Python 3, no dependencies) compiles a small C subset to YACC1 assembly for `software/assembler`
-(RC/asm with `yacc1.def`). Written 2026-09-22; the first C compiler the machine has had. The front end (lexer,
+(RC/asm with `yacc1.def`). Written 2026-09-22; the first C compiler the machine has had. Since 2026-09-24 it has a
+twin in C, `c/y1cc.c` (below), written in the subset itself and producing the same assembly byte for byte: the first
+step towards a compiler that runs on the machine. `y1cc.py` stays the reference and the bootstrap. The front end (lexer,
 parser, the C subset) is the one of the P8X compiler `p8x/compiler/p8cc.py`, so P8X C programs port with their
 source unchanged as far as the subset goes; the back end is new, written for what the YACC1 actually has.
 
@@ -13,6 +15,8 @@ python3 software/compiler/y1cc.py prog.c -o prog.asm --boot     # for the emulat
 cd <dir with rcasm.rc + yacc1.def> && ../software/assembler/asm prog -d=yacc1 > prog.lst   # -> prog.img (Intel hex)
 software/emulator/emulator -x -f prog.img                       # runs it, exits at HALT (--boot images)
 python3 tests/compiler/run.py                                    # the test suite (make cc-test)
+make -C software/compiler/c && software/compiler/c/y1cc prog.c -o prog.asm --boot   # the C twin: same options, same output
+python3 tests/compiler/twin.py                                   # y1cc.py vs the C twin over the whole corpus
 ```
 
 ## The C subset
@@ -161,19 +165,131 @@ depth 50 with int and char locals), `rmutual.c` (even/odd, a three-function cycl
 (local arrays and structs in a recursive function through `rt_fsave`, an odd-sized frame, Hanoi, a pointer to a
 local handed to a non-recursive helper), `rcalc.c` (a recursive-descent expression evaluator over a string), and
 the compile errors `recurse.c` (address of a local into the cycle) and `rmain.c` (recursive main); all pass on both
-emulators (`tests/ucemu/run.py`). `make check` runs them.
+emulators (`tests/ucemu/run.py`); 22 with `adjstr.c` (an error test, from the twin work below). `make check` runs them.
 
 `tests/compiler/diffcheck.py [--base REV]` is the differential proof for a compiler change: it compiles the whole
 corpus (`tests/compiler/corpus.py`: the compiler tests with `--boot`, plain, `--os` and `--no-brur`, three
-`--vector` builds, the bench sources, `os/y1os.c`, every `/BIN` command, `tests/os/*.c` — 119 compiles on
-2026-09-24) with an old `y1cc.py` from git and the working one and diffs the assembly (the header's timestamp masked).
-Against c847a97 (the last compiler without recursion): 100 identical, 16 that only the new one compiles (the recursion
-tests), 3 expected errors, 0 different.
+`--vector` builds, the bench sources, `os/y1os.c`, every `/BIN` command, `tests/os/*.c`, and since the twin
+`c/target.c` — 121 compiles on 2026-09-24) with an old `y1cc.py` from git and the working one and diffs the assembly
+(the header's timestamp masked). Against c847a97 (the last compiler without recursion): 100 identical, 17 that only
+the new one compiles (the recursion tests and y1cc.c), 3 expected errors, 1 that crashed the old one (`adjstr.c`),
+0 different. `tests/compiler/twin.py` is the same kind of proof between y1cc.py and its C twin (below).
 The same images also run under the monitor on the emulator (`emulator -m -f prog.img`, then `G3000`): the program's
 output appears after `GO ADDRESS:` and the monitor's banner follows when main returns (hello and fib tried 2026-09-22).
 
 Sizes on 2026-09-22 (code + data + runtime, bytes): hello 111, io 722, sieve 862, chars 893, calls 948,
 globals 966, fib 1045, structs 1398, arrays 1446, control 2356, arith 2339.
+
+## y1cc.c — the C twin (2026-09-24)
+
+`c/y1cc.c` is `y1cc.py` rewritten in C, function by function (the same names where C allows), so that a change to
+one carries over to the other. It is written in the **intersection of C89 and the y1cc subset**, so it builds three
+ways:
+
+```
+make -C software/compiler/c              # ./y1cc on the Mac: cc -std=c89 -Wall -Wextra -pedantic, no warnings
+                                         #   (plus ./y1cc16, the 16-bit check build, below)
+software/compiler/c/y1cc prog.c -o prog.asm [--org N] [--boot] [--vector] [--no-brur] [--os] [-l]
+make -C software/compiler/c target       # y1cc.py compiles y1cc.c as a Y1/OS program; its size (below)
+python3 tests/compiler/twin.py [--16]    # the twin test (make check, make cc-test)
+```
+
+| file | what |
+|---|---|
+| `c/y1cc.c` | the compiler, 3,122 lines: lexer, parser, AST, code generator, peephole, runtime text, driver (`y1cc_main`) |
+| `c/io.h` | the host interface: everything outside y1cc.c goes through these twelve functions |
+| `c/host_io.c` | io.h on the Mac (stdio, `getcwd`, `main(argc, argv)`), plain host C |
+| `c/target_io.c` | io.h on Y1/OS over `os/lib_fs.c` (the file syscalls), in the subset; compiled, not yet run |
+| `c/host.c`, `c/target.c` | the two translation units: limits + (target I/O) + `#include "y1cc.c"` |
+| `c/limits_host.h`, `c/limits_y1.h` | the table sizes (#define numbers only: y1cc's preprocessor has no `#if`) |
+| `c/host16.c` | the check build `y1cc16`: `#define int unsigned short` and `-funsigned-char` |
+
+**The I/O interface** (`c/io.h`): `io_argc()`, `io_arg(i, buf, max)` (the command line); `io_open(path)`,
+`io_getc(h)` (0..255, **256** at the end), `io_close(h)` (source files); `io_find(name, from, out, max)` (an
+`#include`: beside the including file, then the library directory, with a canonical path so each file is included
+once); `io_create(path)`, `io_put(section, c)`, `io_finish()` (the output in three sections — code, data, uninitialised
+data — concatenated at the end; the host writes the file only when the compile succeeded, as y1cc.py does);
+`io_out(c)` (the `-l` summary), `io_fail(msg)` (message, exit status 1), `io_date(buf)` (the header's timestamp). All
+plain ints and char buffers, no negative numbers. On the host the library directory is `$Y1CC_LIB`, else `../lib`
+beside the executable (= `software/compiler/lib`, where y1cc.py looks). On Y1/OS (`target_io.c`) the command line is
+the `argstr()` tail, `#include` falls back to `/LIB`, code goes straight into the output file while data and BSS wait
+in RAM (Y1/OS has one write handle), there is no clock (the date is `0000-00-00 00:00`) and `io_fail` HALTs (no exit
+syscall yet).
+
+**Rules it keeps** (so it means the same compiled by `cc` and by y1cc): `int` is 16-bit unsigned on the YACC1 and
+32-bit signed on the Mac, so every value stays in 0..65535 — no negative numbers or -1 sentinels ("none" is 0, the
+end of a file is 256), wrapping arithmetic is masked (`& 65535`, products through `mul16`), no loop runs to 65535;
+`char` is unsigned there and signed here, so bytes read back from char arrays are masked with `& 255`; no casts, no
+`long`, no function pointers (y1cc.py's lambdas became mode numbers), no `goto`, no `do ... while`, no struct at all
+(parallel arrays), no adjacent string literals, no `#if`; every local declared at the top of its function (y1cc does
+not see declarations inside a `switch` body); every function defined or prototyped before use (the prototype block
+at the top). Recursion is y1cc's (since 2026-09-24): the parser and the code generator are recursive, and no address
+of a local ever goes into a recursive call — every buffer that crosses a call is a global, and functions that return
+two or more values leave them in globals (`fv`, `tb`/`tp`, `sl_*`, `sm_*`...), as their callers read them at once.
+**`y1cc16`** (`host16.c`: `int` = `unsigned short`, unsigned `char`, the same trick `tests/compiler/host_shim.h`
+plays for the test oracle) runs the whole corpus through the YACC1's integer types on the Mac: arithmetic is still
+promoted to the host's `int`, so it does not model every 16-bit wrap, but it found a real bug on its first run —
+`for (i = k; i <= 65535; i++)` (emitting up to three `DECR`s) never ends with a 16-bit `int`.
+
+**How it differs inside** (the output does not): y1cc.py lexes the whole file and keeps every line of code until
+the end; y1cc.c streams both. The lexer reads through a 4-byte lookahead per open file (an `#include` pushes a
+file) and the parser looks at most 2 tokens ahead and 1 back; the peephole pass keeps only the lines that a later
+line can still change — a run of `BR` lines, which a following label can delete (the four rules delete or replace
+only the NEW line otherwise, so the rewrite system is confluent and the streaming result equals y1cc.py's
+repeat-until-no-change passes). The whole program's AST is kept (as in y1cc.py: the call graph, dead functions and
+recursion need every body before any code is generated) and the nodes made while generating a function are freed
+after it. Generated labels (`Lend12`) are a number plus a prefix remembered per function; the labels derived from
+names (`g_x`, `f_main`, `main_i`) are the only ones checked for case-folded uniqueness (they always contain `_`, the
+generated ones never do). Where the two can still disagree, on invalid or odd input only: with several errors in a
+program y1cc.c may report a different one first (it lexes as it parses); source must be ASCII (Python decodes
+UTF-8, y1cc.c sees bytes); a `#define` value over 65535 is masked at once; `*x` of a non-pointer does not go to
+pointer depth -1.
+
+**Limits** (`limits_host.h`, each overflow is a clean "y1cc: too many ... (NAME)" error): 4,000 names (32,000
+bytes), 2,000 distinct string literals (32,000 bytes, 1,024 per literal), 40,000 AST nodes, 3,000 variables, 512
+functions, 64 structs with 512 members, 4,000 derived labels (40,000 bytes), 2,000 generated labels per function,
+8 levels of `#include` and 64 files, 64 nested loops, 512 cases per switch. Enough for the corpus and for y1cc.c
+itself. `limits_y1.h` is a small illustrative set for the Y1/OS build (about 41K of tables): a native compiler will
+size its tables per pass.
+
+**The twin test** `tests/compiler/twin.py` compiles the whole corpus (`tests/compiler/corpus.py`, 121 compiles on
+2026-09-24: the compiler tests in four option sets, three `--vector` builds, the bench sources, `os/y1os.c`, every
+`/BIN` command, `tests/os` programs, and `c/target.c` — y1cc.c compiling itself) with both compilers and requires
+identical assembly (the header's timestamp masked), identical `-l` summaries and identical error messages for the
+expected-error tests. 2026-09-24: **117 programs identical, 4 identical errors, 0 different**, with `y1cc` and with
+`y1cc16`. It runs in `make check` and `make cc-test`. **`tests/compiler/twinfuzz.py [N] [--seed S]`** adds random
+programs (every operator, type and statement shape of the subset mixed, recursion, switch tables, struct members,
+pointer arithmetic, initialisers, `--boot`/`--os`/`--no-brur`/`--vector`) and a fixed list of 60 invalid programs
+whose error messages must match: 2026-09-24, seeds 1-3, 1,400 random programs identical (or the same error) and 60 of
+60 error messages, 0 different. Writing the twin found two y1cc.py crashes, now fixed in y1cc.py: a string literal
+right after an expression (`puts("a" "b")`, a Python `TypeError`; now the ordinary "expected ')'" error,
+`tests/compiler/adjstr.err`) and `0x` without digits (a `ValueError`; now "bad hex constant").
+
+**y1cc.c compiled by y1cc.py** (`make target`, the proof that it is in the subset): no errors, 45,173 lines of
+assembly, **code 75,445 + data 6,900 = an 82,345-byte image** (plus about 41K of tables with `limits_y1.h`), 2.5
+times the 32K program area ($5000-$CFFF) for the image alone and over the 64K address space; so the assembler cannot
+take it (its label table holds 1,000 labels, this has 3,817; and every label past $FFFF is an error), and the bytes
+are counted from the assembly with `yacc1.def`'s instruction lengths — a count checked against the assembler's
+"Object Code" on all 116 corpus programs that assemble (exact on every one). Where the code goes: the code generator
+56,040 bytes (`gen_call` 4,484, `gen_bin` 2,821, `gen_program` 2,793, `gen_expr` 2,257, `walk` 2,043, `gen_stmt`
+1,988, `const_data` 1,729, `type_of` 1,513, `gen_cond` 1,404), the parser 8,749, the lexer 6,549, the runtime text
+(`emit_runtime`) 2,257, the Y1/OS I/O with `lib_fs.c` 1,603; the data is mostly message and instruction strings.
+Recursion costs about 4,100 bytes of it (124 call sites through `rt_fsave`/`rt_frest`, 190 inline word saves). That is
+about 24 bytes of code per line of C.
+
+**The road to native** (BACKLOG "C compiler"):
+1. *Self-compile on the host* — done: y1cc.c compiling `target.c` gives the same assembly as y1cc.py (the twin
+   corpus), so the C compiler already compiles itself, on the Mac.
+2. *Split into passes* that each fit the 32K area with their tables: e.g. pass 1 lexer + parser writing the AST (or a
+   token file) to the disk (~15K of code), pass 2 the call graph / layout, pass 3+ the code generator — which alone
+   is 56K today and must itself be split (expressions / statements and data / runtime text), or shrunk: the runtime
+   text and messages can be data files, and y1cc's own code is 2-3x hand assembly (peephole work pays twice).
+3. *A bigger stack*: the recursive parser and generator with frame saves need far more than the monitor's 768
+   bytes ($0C00-$0EFF); a native pass must move R1 to a region of its own.
+4. *Y1/OS support*: an exit syscall (for `io_fail`), and temporary files or the pass structure instead of RAM for the
+   data sections (one write handle).
+5. *The on-target assembler* (BACKLOG wave 3): the compiler emits assembly text; the machine needs an assembler
+   (and one that takes more than 1,000 labels) before a program compiled on it can run.
 
 ## Not done yet (BACKLOG "C compiler")
 

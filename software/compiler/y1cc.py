@@ -162,6 +162,7 @@ def lex(src, path="<src>", included=None, macros=None):
             if c == "0" and i + 1 < n and src[i + 1] in "xX":
                 j = i + 2
                 while j < n and src[j] in "0123456789abcdefABCDEF": j += 1
+                if j == i + 2: err("bad hex constant")          # "0x" alone was a Python ValueError until 2026-09-24
                 v = int(src[i + 2:j], 16)
             else:
                 while j < n and src[j].isdigit(): j += 1
@@ -391,7 +392,7 @@ class P:
             return ("cond", left, a, b)
         if self.val() == "=":
             self.next(); return ("assign", left, self.assign())
-        if self.val() in self.ASSIGN_OPS:                   # x op= e  ->  x = x op e (lvalue evaluated twice)
+        if self.kind() == "op" and self.val() in self.ASSIGN_OPS:   # x op= e -> x = x op e (lvalue evaluated twice)
             op = self.ASSIGN_OPS[self.next()[1]]
             return ("assign", left, ("bin", op, left, self.assign()))
         return left

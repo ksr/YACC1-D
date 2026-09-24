@@ -46,7 +46,7 @@ def items():
         yield ("bin", rel(src), ["--org", "0x5000", "--os"])              # os/Makefile /BIN commands
     for src in sorted(glob.glob(os.path.join(ROOT, "tests/os/*.c"))):
         yield ("os-test", rel(src), ["--org", "0x5000", "--os"])          # tests/os/run.py EXTRA programs
-    cc = os.path.join(ROOT, "software/compiler/c/y1cc.c")                 # the C twin compiled by itself (stage 2)
+    cc = os.path.join(ROOT, "software/compiler/c/target.c")               # y1cc.c (the C twin) compiled as a Y1/OS program
     if os.path.exists(cc):
         yield ("self", rel(cc), ["--org", "0x5000", "--os"])
 

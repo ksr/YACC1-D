@@ -230,6 +230,21 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 ## C compiler (y1cc, 2026-09-22)
 `software/compiler/y1cc.py` compiles p8cc's C subset to YACC1 assembly (static frames, R3 accumulator, see its README);
 12 test programs pass on the emulator (`make cc-test`), 9 of them checked against the host C compiler as an oracle.
+- (done 2026-09-24: **`software/compiler/c/y1cc.c`, the C twin** — 3,122 lines in the C89 + y1cc subset, the same
+  assembly as y1cc.py on the whole corpus including itself, `tests/compiler/twin.py` in `make check`; compiled by
+  y1cc.py it is an 82,345-byte image, 2.5x the 32K program area.) **The road to a native compiler**, in order:
+  1. Split y1cc.c into passes that each fit $5000-$CFFF with their tables: lexer + parser -> an AST (or token) file
+     (~15K of code); call graph / frame layout; the code generator (56K today: split it again — expressions,
+     statements + data, runtime text — or shrink it: runtime text and messages as data files). Keep the twin test
+     passing at every step (the passes chained on the host must still equal y1cc.py).
+  2. A stack for the native compiler: its recursive parser/generator with frame saves needs far more than the
+     monitor's 768 bytes ($0C00-$0EFF); give a pass its own R1 region (the memory map in docs/system/OS-PLAN.md).
+  3. Y1/OS: an exit syscall (`io_fail` HALTs today), temporary files for the data sections (one write handle).
+  4. Run a pass on the emulator under Y1/OS (`c/target_io.c` is compiled, never run), then the whole chain.
+  5. The on-target assembler (wave 3 of os/PORT-PLAN.md) — and the host assembler's 1,000-label table
+     (`software/assembler/header.h` MAX_LABELS, no bounds check: it segfaults beyond) before it can assemble a pass
+     this size.
+  6. Code size of what y1cc emits (the bullet below): every byte saved there shrinks the native compiler too.
 - **Burn the rebuilt ROM** (`firmware/rom/shipped/rom`, 2026-09-22: monitor G = `JSRUR R7`, was the indirect `BRVR R7`; BASIC
   unchanged), then re-capture and `tests/memory/rom_verify.py` (until then it reports the monitor half as different).
   Until burned, compile for the machine with `--vector`.

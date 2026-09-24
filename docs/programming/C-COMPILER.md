@@ -28,6 +28,10 @@ software/emulator/emulator -x -f prog.img                       # runs a --boot 
 software/ucemu/y1ucemu -x -m -f prog.img                        # the same on the microcode emulator, ROM loaded
 ```
 
+Since 2026-09-24 the compiler has a twin in C, `software/compiler/c/y1cc.c`, written in the subset itself (and in
+C89), which produces the same assembly byte for byte (`tests/compiler/twin.py`); its build, I/O interface, limits
+and self-compiled size are in `software/compiler/README.md` ("y1cc.c — the C twin"). Everything below describes both.
+
 ## 2. The language subset (`y1cc.py` docstring, `README.md`)
 
 | | Accepted |

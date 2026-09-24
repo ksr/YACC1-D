@@ -21,6 +21,10 @@
 - `compiler/` — the C compiler's test programs (`*.c` + expected `.out`/`.in`/`.err`) and `run.py`, which compiles each with
   `software/compiler/y1cc.py --boot`, assembles it and runs it on `emulator -x`; `--oracle` regenerates the expectations with
   the host C compiler through `host_shim.h`. 15/15 on 2026-09-22 (switch.c also compiled with `--no-brur` as switchnb.c); `make cc-test`.
+  22 programs since 2026-09-24 (the recursion tests `rfact rmutual rlocals rcalc`, errors `recurse rmain adjstr`). Beside it:
+  `corpus.py` (every C program the tree compiles, with its options), `diffcheck.py` (an old y1cc.py from git against the
+  working one over the corpus: identical assembly), `twin.py` (y1cc.py against its C twin `software/compiler/c/y1cc`, also
+  `--16`), `twinfuzz.py` (random subset programs and 60 invalid ones through both compilers).
 - `os/` — Y1/OS: `run.py` builds `os/disk.img`, boots it on both emulators with the console script `basic.session`
   after the monitor's `O` command, and diffs the transcripts (`basic.int.out`, `basic.uc.out`; the latter shows the
   monitor's input echo). `make os-test`.
