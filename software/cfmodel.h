@@ -2,7 +2,7 @@
  * cfmodel.h - the CompactFlash card model shared by both YACC1 emulators (2026-09-22).
  *
  * The card (docs/system/OS-PLAN.md, decision 1) sits in I/O space on two ports: P8 is a write-only register-select
- * latch (bits 0..2 = the ATA task-file register, bit 3 = the CS1 block, unused here) and P9 is the data port: a read
+ * latch (bits 0..2 = the ATA task-file register, bit 3 = CF reset on the card, ignored by the model) and P9 is the data port: a read
  * or write of P9 strobes -IOR/-IOW on the selected register. The CF runs in 8-bit True IDE mode. The handshake is
  * the one p8xemu models for the P8X's memory-mapped card (p8x/emulator/p8xemu.c): BSY is never asserted (a transfer
  * is instantaneous), DRQ is raised while a 512-byte buffer streams through the data register and dropped when it

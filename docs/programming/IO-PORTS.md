@@ -28,7 +28,7 @@ Instructions: `OUTA Pn` (port ← ACC), `OUTI Pn,byte` (port ← immediate), `IN
 | P0 | I/O card **select latch** (write): which device P1 talks to — see section 3 | stored; `$40` selects the UART path for `OUTI P1` | modelled (control latch) | unchanged |
 | P1 | I/O card **data port** for the device selected in P0 | `OUTI P1` with P0 = $40 prints; `INP P1` with P0 = 1 returns $FF once (the switches) | modelled: 16550 (stdin/stdout), switches (`-s`), LEDs (`-L`) | unchanged |
 | P2 | `-IO-SEL2` on the I/O card's header, nothing wired | **the console**: `OUTA P2` prints, `INP P2` reads a key | also a console (kept as the old shortcut) | stays the emulator console; reserved to the I/O card |
-| P3–P7 | `-IO-SEL3..7` on the header, nothing wired | nothing | nothing | reserved to the I/O card (a second UART, a printer port…) |
+| P3–P7 | `-IO-SEL3..7` on the header, nothing wired | nothing | nothing | reserved to the I/O card (a second UART, a printer port…); since nothing on the card uses them, probably usable by another card that decodes them itself - verify on the board first (BACKLOG, 2026-09-24) |
 | P8 | free | CF register select (`cfmodel.h`) | same | **CF register select** (write-only latch): bits 0–2 = ATA register 0–7, bit 3 = CF reset (1 = held; the ROM never sets it, the model ignores it), 4–7 ignored |
 | P9 | free | CF data (`cfmodel.h`) | same | **CF data**: a read/write strobes -IOR/-IOW on the selected register |
 | PA, PB | free | nothing | nothing | video card v2: 6845 address register (RS = 0) and data register (RS = 1) |

@@ -30,7 +30,7 @@ are the order of work. Nothing here is built yet.
    | P0 | I/O card select latch (write): UART = `UARTCS` $40 + register 0/8/…/$38, `SWITCHLED` $01, `LCDENABLE` $02, `LCDREGISTER` $04, `TIL311` $80 | unchanged |
    | P1 | I/O card data port for the device selected in P0 (UART registers, switches in / LEDs out, LCD, TIL311) | unchanged |
    | P2 | -IO-SEL2 on the I/O card's header, nothing wired; the emulator's console (`OUTA P2`/`INP P2`) | stays the emulator console; reserved to the I/O card |
-   | P3-P7 | -IO-SEL3..7 on the I/O card's header (its 74138 decodes all eight, the card wires two) | reserved to the I/O card (a second UART, a printer port…) |
+   | P3-P7 | -IO-SEL3..7 on the I/O card's header (its 74138 decodes all eight, the card wires two) | reserved to the I/O card (a second UART, a printer port…); since nothing on the card uses them, probably usable by another card that decodes them itself - verify on the board first (BACKLOG, 2026-09-24) |
    | P8 | free | **CF register select** (write-only latch): bits 0-2 = ATA register 0-7, bit 3 = CF reset (1 = held; 2026-09-23: the card design chose a hardware reset over the CS1 control block, `docs/cards/cf.md` section 5), bits 4-7 ignored |
    | P9 | free | **CF data**: reading/writing it strobes -IOR/-IOW on the selected register |
    | PA | free | video card v2: 6845 address register (RS = 0) |
