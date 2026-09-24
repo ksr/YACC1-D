@@ -5,11 +5,12 @@ type and statement shape mixed at random, including recursion, switch tables, st
 string and array initialisers, and some programs y1cc must reject; before them a fixed list of 60 invalid programs
 (ERRORS) whose error messages must match. Compile-only (nothing is run).
 
-  twinfuzz.py [N] [--seed S] [--keep] [--chain | --chain16]
+  twinfuzz.py [N] [--seed S] [--keep] [--chain | --chain16] [--xisa]
                                            N programs (default 300), reproducible from the seed; --chain compares
                                            y1cc.py with the multi-pass compiler (software/compiler/c/y1ccp, cc1..cc9)
                                            instead of y1cc.c, --chain16 with its 16-bit check build; both add ORDER,
-                                           programs with two errors found in different passes
+                                           programs with two errors found in different passes; --xisa adds that
+                                           option to every compile (the page, LDZ/STZ, ADDIW, SHL16; 2026-09-24)
 """
 import os, sys, random, subprocess, shutil
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -228,12 +229,13 @@ def main():
     BUILD = os.path.join(BUILD, "seed%d" % seed)
     shutil.rmtree(BUILD, ignore_errors=True); os.makedirs(BUILD)
     rnd = random.Random(seed); g = Gen(rnd)
+    X = ["--xisa"] if "--xisa" in av else []
     same = errs = 0; bad = []
     for k, text in enumerate(ERRORS + (ORDER if target == "passes" else [])):   # the error corpus first
         src = os.path.join(BUILD, "e%02d.c" % k)
         open(src, "w").write(text + "\n")
-        p = run([sys.executable, PY, src], src[:-2] + ".py.asm")
-        c = run([TWIN, src], src[:-2] + ".c.asm")
+        p = run([sys.executable, PY, src] + X, src[:-2] + ".py.asm")
+        c = run([TWIN, src] + X, src[:-2] + ".c.asm")
         if p[0] and c[0] and p[2] == c[2]: errs += 1
         elif p[0] == 0 and c[0] == 0 and p[1] == c[1]: same += 1
         else:
@@ -241,7 +243,7 @@ def main():
     for k in range(n):
         src = os.path.join(BUILD, "f%04d.c" % k)
         open(src, "w").write(g.program())
-        opts = rnd.choice([["--boot"], [], ["--os", "--org", "0x5000"], ["--no-brur", "--boot"], ["--vector"]])
+        opts = rnd.choice([["--boot"], [], ["--os", "--org", "0x5000"], ["--no-brur", "--boot"], ["--vector"]]) + X
         p = run([sys.executable, PY, src] + opts, src[:-2] + ".py.asm")
         c = run([TWIN, src] + opts, src[:-2] + ".c.asm")
         if p[0] == 0 and c[0] == 0 and p[1] == c[1]: same += 1
@@ -249,7 +251,7 @@ def main():
         else:
             bad.append(src)
             print("DIFFERENT %s %s: py rc %d %s | c rc %d %s" % (src, opts, p[0], p[2][-120:], c[0], c[2][-120:]), flush=True)
-    print("twinfuzz (seed %d): %d programs identical, %d identical errors, %d DIFFERENT" % (seed, same, errs, len(bad)))
+    print("twinfuzz (seed %d%s): %d programs identical, %d identical errors, %d DIFFERENT" % (seed, " --xisa" if X else "", same, errs, len(bad)))
     if "--keep" not in av and not bad: shutil.rmtree(BUILD, ignore_errors=True)
     sys.exit(1 if bad else 0)
 

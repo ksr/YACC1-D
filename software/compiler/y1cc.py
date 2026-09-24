@@ -67,7 +67,7 @@ Execution model (the part that is YACC1-specific)
   * The carry flag is used only inside ADDT/ADDTC pairs with nothing but register moves between them (the idiom
     the monitor's do_add16 proved on the hardware); plain shifts and subtracts never feed a following carry op.
 
-Usage:  y1cc.py prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [--os] [-l]
+Usage:  y1cc.py prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [--os] [--xisa] [-l]
   --org     load address (default $3000: $1000-$1FFF is BASIC's token buffer, which the monitor's boot clears,
             and the monitor's T tests scribble at $2000). main is first: the monitor's `G3000` calls it (JSRUR R7,
             monitor of 2026-09-22) and its RET returns to the command loop.
@@ -80,6 +80,13 @@ Usage:  y1cc.py prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-br
             go through the OS syscall CONOUT (19) and getchar through CONIN (17) instead of the ROM, so the shell
             can redirect them (`>`, `>>`, `<`, `|`). getchar still returns 0 at the end of input (CONIN's 65535).
             R3/R4 are preserved around the syscall. Without --os the console runtime is the ROM/port-2 one, unchanged.
+  --xisa    (2026-09-24) use the instructions added to the microcode that day: LDZ/STZ Rn,d (the word at R6.hi:d, 2
+            bytes instead of LDR/STR's 3) for the hottest 2-byte variables, placed in one 256-byte page at the end of
+            the BSS (zpage, aligned by `zpad: DS (256-(zpad).0)&255`), R6 = the page register (main and every
+            funcaddr() entry load it, and it is reloaded after anything that leaves compiled code: bios(), call(),
+            sys(), the console helpers, rt_fsave/rt_frest); ADDIW Rn,#w for 16-bit constant adds; SHL16 R3 for << 1.
+            R6 is then reserved: rt_divmod keeps its remainder in R5. Needs the 2026-09-24 microcode on the machine.
+            Without the option the output is exactly what it was.
   -l        print the line count / a summary
 """
 import sys, os, re, time
@@ -529,8 +536,9 @@ class Var:
 
 
 class Gen:
-    def __init__(self, org=ORG_DEFAULT, boot=False, vector=False, brur=True, osmode=False):
-        self.org, self.boot, self.vector, self.brur, self.osmode = org, boot, vector, brur, osmode
+    def __init__(self, org=ORG_DEFAULT, boot=False, vector=False, brur=True, osmode=False, xisa=False):
+        self.org, self.boot, self.vector, self.brur, self.osmode, self.xisa = org, boot, vector, brur, osmode, xisa
+        self.zset = set(); self.zvars = set(); self.zframes = set(); self.zused = False; self.roots = set()
         self.code = []; self.data = []; self.bss = []
         self.globals = {}     # name -> Var
         self.frames = {}      # func -> {name: Var}
@@ -699,17 +707,22 @@ class Gen:
         self.gen_expr(e); self.ins("MVRLA", "R3")        # calls, conditionals, assignments: low byte of R3
 
     # ---- loads / stores of static variables ---------------------------------
+    def ldst(self, mn, reg, addr):            # LDR/STR reg,addr - LDZ/STZ reg,(addr).0 when addr is a page variable's label
+        if addr in self.zset: self.ins("LDZ" if mn == "LDR" else "STZ", "%s,(%s).0" % (reg, addr))
+        else: self.ins(mn, "%s,%s" % (reg, addr))
+    def zreload(self):                        # --xisa: R6 = the page again, after code that is not ours ran
+        if self.zused: self.ins("MVIW", "R6,zpage")
     def load_static(self, reg, addr, base, ptr, slot):
-        if slot or sizeof(base, ptr) == 2: self.ins("LDR", "%s,%s" % (reg, addr)); return
+        if slot or sizeof(base, ptr) == 2: self.ldst("LDR", reg, addr); return
         if sizeof(base, ptr) != 1: sys.exit("y1cc: struct/union used as a value")
         self.ins("LDA", str(addr)); self.ins("MVARL", reg); self.ins("LDAI", "0"); self.ins("MVARH", reg)
     def store_static_r3(self, addr, base, ptr, slot, narrow):
         """memory at addr = R3 (a char slot gets its high byte zeroed unless the value is known narrow)."""
-        if sizeof(base, ptr) == 2: self.ins("STR", "R3,%s" % addr); return
+        if sizeof(base, ptr) == 2: self.ldst("STR", "R3", addr); return
         if sizeof(base, ptr) != 1: sys.exit("y1cc: whole struct/array assignment not supported")
         if slot:
             if not narrow: self.ins("LDAI", "0"); self.ins("MVARH", "R3")
-            self.ins("STR", "R3,%s" % addr)
+            self.ldst("STR", "R3", addr)
         else:
             self.ins("MVRLA", "R3"); self.ins("STA", str(addr))
 
@@ -754,8 +767,10 @@ class Gen:
             if k >= 0xFFFD:
                 for _ in range(0x10000 - k): self.ins("DECR", "R3")
                 return
+            if self.xisa: self.ins("ADDIW", "R3,%d" % k); return
             if k & 0xFF == 0:                 # high byte only
                 self.ins("MVRHA", "R3"); self.ins("ADDI", str(k >> 8)); self.ins("MVARH", "R3"); return
+        elif self.xisa: self.ins("ADDIW", "R3,%s" % k); return
         self.ins("MVRLA", "R3"); self.ins("ADDI", klo(k)); self.ins("MVARL", "R3")
         self.ins("MVRHA", "R3"); self.ins("ADDIC", khi(k)); self.ins("MVARH", "R3")
     def add_r4(self):                         # R3 += R4 (the monitor's do_add16 idiom)
@@ -773,6 +788,7 @@ class Gen:
         if lo != ident: self.ins("MVRLA", "R3"); self.ins(m, str(lo)); self.ins("MVARL", "R3")
         if hi != ident: self.ins("MVRHA", "R3"); self.ins(m, str(hi)); self.ins("MVARH", "R3")
     def shl1(self):                           # R3 <<= 1 (R3 += R3)
+        if self.xisa: self.ins("SHL16", "R3"); return
         self.ins("MVRLA", "R3"); self.ins("MVAT"); self.ins("ADDT"); self.ins("MVARL", "R3")
         self.ins("MVRHA", "R3"); self.ins("MVAT"); self.ins("ADDTC"); self.ins("MVARH", "R3")
     def shr1(self):                           # R3 >>= 1 (carry cleared, then rotate high and low through it)
@@ -859,7 +875,7 @@ class Gen:
                 self.gen_expr(lv); self.ins("MOVRR", "R3,R4")
                 bt, bp = self.typeof(lv); esz = sizeof(bt, bp - 1) if bp else 1
                 self.add_const(esz if op == "+" else -esz)
-                self.ins("STR", "R3,%s" % sl[0]); self.ins("MOVRR", "R4,R3")
+                self.ldst("STR", "R3", sl[0]); self.ins("MOVRR", "R4,R3")
             else:
                 self.gen_expr(lv); self.push_r3()
                 self.gen_assign(lv, ("bin", op, lv, step), want=False)
@@ -925,6 +941,7 @@ class Gen:
         if off <= 3:
             for _ in range(off): self.ins("INCR", "R4")
             return
+        if self.xisa: self.ins("ADDIW", "R4,%d" % off); return
         self.ins("MVRLA", "R4"); self.ins("ADDI", str(off & 0xFF)); self.ins("MVARL", "R4")
         self.ins("MVRHA", "R4"); self.ins("ADDIC", str(off >> 8)); self.ins("MVARH", "R4")
 
@@ -1154,7 +1171,7 @@ class Gen:
             self.ins("OUTA", self.port(args[0])); return
         if name == "halt": self.ins("HALT"); return
         if name == "call":                                 # call(addr): JSRUR to a computed address; R3 = what it returns
-            self.gen_expr(args[0]); self.ins("MOVRR", "R3,R7"); self.ins("JSRUR", "R7"); return
+            self.gen_expr(args[0]); self.ins("MOVRR", "R3,R7"); self.ins("JSRUR", "R7"); self.zreload(); return
         if name == "argstr":                               # the OS leaves a program's command tail at ARGBUF
             self.ins("MVIW", "R3,%d" % ARGBUF); return
         if name == "sys":                                  # sys(n, a, b, c): Y1/OS syscall n through SYSTAB (2026-09-23)
@@ -1174,7 +1191,7 @@ class Gen:
             else:
                 self.ins("POPR", "R3"); self.ins("LDAVR", "R3"); self.ins("MVAT"); self.ins("INCR", "R3")
                 self.ins("LDAVR", "R3"); self.ins("MVARL", "R7"); self.ins("MVTA"); self.ins("MVARH", "R7")
-            self.ins("JSRUR", "R7"); self.ins("LDR", "R3,%d" % SYSRES); return
+            self.ins("JSRUR", "R7"); self.zreload(); self.ins("LDR", "R3,%d" % SYSRES); return
         if name == "funcaddr":                             # funcaddr(f): the address of function f, as an int
             if len(args) != 1 or args[0][0] != "id" or args[0][1] not in self.flabel:
                 sys.exit("y1cc: funcaddr() wants the name of a defined function (in %s)" % self.func)
@@ -1185,7 +1202,7 @@ class Gen:
             self.gen_expr(args[1]); self.ins("MOVRR", "R3,R7")
             if self.is_narrow(args[2]): self.gen_byte_acc(args[2])
             else: self.gen_expr(args[2]); self.ins("MVRLA", "R3")
-            self.ins("JSR", str(addr)); self.ins("MVARL", "R3"); self.ins("LDAI", "0"); self.ins("MVARH", "R3"); return
+            self.ins("JSR", str(addr)); self.zreload(); self.ins("MVARL", "R3"); self.ins("LDAI", "0"); self.ins("MVARH", "R3"); return
         if name not in self.funcs: sys.exit("y1cc: call of undeclared function %r" % name)
         rb, rp, ptypes = self.funcs[name]
         if len(args) != len(ptypes): sys.exit("y1cc: %s() takes %d argument(s), %d given" % (name, len(ptypes), len(args)))
@@ -1209,9 +1226,9 @@ class Gen:
             self.gen_expr(a)
             if var.slot and not self.is_narrow(a): self.ins("LDAI", "0"); self.ins("MVARH", "R3")
             if hazard: self.push_r3(); parked.append(var)
-            else: self.ins("STR", "R3,%s" % var.label)
+            else: self.ldst("STR", "R3", var.label)
         for var in reversed(parked):
-            self.pop_r4(); self.ins("STR", "R4,%s" % var.label)
+            self.pop_r4(); self.ldst("STR", "R4", var.label)
         self.ins("JSR", self.flabel[name])
         if rec: self.frame_restore(name)
 
@@ -1225,8 +1242,11 @@ class Gen:
         nothing is live in a register at the start of a call sequence (every call clobbers them)."""
         lab, n = self.frame_block(f)
         if not n: return
+        z = f in self.zframes                 # --xisa: the whole frame is in the page
         if n <= self.FRAME_INLINE:
-            for off in range(0, n - 1, 2): self.ins("LDR", "R4,%s" % kadd(lab, off)); self.ins("PUSHR", "R4")
+            for off in range(0, n - 1, 2):
+                self.ins("LDZ", "R4,(%s).0" % kadd(lab, off)) if z else self.ins("LDR", "R4,%s" % kadd(lab, off))
+                self.ins("PUSHR", "R4")
             if n & 1: self.ins("LDA", kadd(lab, n - 1)); self.ins("PUSH")
             return
         self.ins("MVIW", "R5,%s" % lab); self.ins("MVIW", "R6,%d" % n); self.need("rt_fsave"); self.ins("JSR", "rt_fsave")
@@ -1236,7 +1256,10 @@ class Gen:
         if not n: return
         if n <= self.FRAME_INLINE:
             if n & 1: self.ins("POP"); self.ins("STA", kadd(lab, n - 1))
-            for off in reversed(range(0, n - 1, 2)): self.ins("POPR", "R4"); self.ins("STR", "R4,%s" % kadd(lab, off))
+            for off in reversed(range(0, n - 1, 2)):
+                self.ins("POPR", "R4")
+                if f in self.zframes: self.ins("STZ", "R4,(%s).0" % kadd(lab, off))
+                else: self.ins("STR", "R4,%s" % kadd(lab, off))
             return
         self.ins("MVIW", "R5,%s" % kadd(lab, n - 1)); self.ins("MVIW", "R6,%d" % n); self.need("rt_frest"); self.ins("JSR", "rt_frest")
 
@@ -1436,6 +1459,7 @@ class Gen:
         self.func = name; self.locals = self.frames[name]; self.loops = []
         start = len(self.code)
         self.emit("%s:" % self.flabel[name])
+        if name in self.roots: self.zreload()     # --xisa: main and the funcaddr() entries set the page register
         if name == "main": self.emit_bss_clear()
         self.gen_stmt(body)
         if not self.code[-1].strip() == "RET": self.ins("RET")
@@ -1537,6 +1561,55 @@ class Gen:
             sys.exit("y1cc: main() can call itself (via %s): main cannot be recursive"
                      % ", ".join(sorted(c for c in direct["main"] if c == "main" or "main" in reach.get(c, ()))))
 
+    def zpage_plan(self, order, bodies):
+        """--xisa: which variables go into the 256-byte page that LDZ/STZ address through R6. Every 2-byte BSS variable
+        (an uninitialised global, a parameter or local) is a candidate; a function in a recursive cycle is one
+        candidate with its whole frame (rt_fsave/frame_save need it contiguous) when the frame is 1..256 bytes. The
+        weight of a candidate = how many times its variables are named in the live functions' bodies (every ("id", x)
+        of the tree, x resolved as vinfo would in that function); density = weight // its size in words. Greedy: the
+        densest first (ties: the earlier in BSS order), taken if it still fits in 256 bytes. The C twin and the passes
+        (cc6) compute exactly this."""
+        def zsize(v):                                       # size, 0 for an unknown type (no error here: y1cc
+            if v.ptr == 0 and v.base not in ("int", "char") and v.base not in STRUCTS: return 0   # reports it later)
+            return v.size()
+        cnt = {}
+        def walk(node, f):
+            if isinstance(node, (list, tuple)):
+                if len(node) == 2 and node[0] == "id" and isinstance(node[1], str):
+                    v = self.frames[f].get(node[1]) or self.globals.get(node[1])
+                    if v is not None: cnt[id(v)] = cnt.get(id(v), 0) + 1
+                    return
+                for x in node: walk(x, f)
+        for f in order: walk(bodies[f], f)
+        units = []                                          # (function or None, [vars]) in BSS order
+        for v, base, ptr, arr, count, init in self.gvars:
+            if init is None and zsize(v) == 2: units.append((None, [v]))
+        for f in order:
+            vs = list(self.frames[f].values())
+            if f in self.reach.get(f, ()):
+                n = 0; bad = False                          # (a variable of unknown size keeps the frame out)
+                for v in vs:
+                    n += zsize(v); bad = bad or zsize(v) == 0
+                    if n > 256: break
+                if 0 < n <= 256 and not bad: units.append((f, vs))
+            else: units.extend((None, [v]) for v in vs if zsize(v) == 2)
+        info = []
+        for f, vs in units:
+            size = sum(zsize(v) for v in vs); w = sum(cnt.get(id(v), 0) for v in vs) & 0xFFFF
+            info.append((size, w, w // ((size + 1) // 2)))
+        done = [False] * len(units); used = 0
+        while True:
+            best = -1
+            for i, (size, w, d) in enumerate(info):
+                if not done[i] and w and (best < 0 or d > info[best][2]): best = i
+            if best < 0: break
+            done[best] = True
+            if used + info[best][0] <= 256:
+                used += info[best][0]; f, vs = units[best]
+                if f is not None: self.zframes.add(f)
+                for v in vs: self.zvars.add(id(v)); self.zset.add(v.label)
+        self.zused = bool(self.zvars)
+
     def gen_program(self, decls, src_name):
         STRUCTS.clear(); self.flabel = {}
         for d in decls:
@@ -1560,6 +1633,8 @@ class Gen:
         order = ["main"] + [d[2] for d in decls if d[0] == "func" and d[2] != "main" and d[2] in live]
         for d in decls:
             if d[0] == "func" and d[2] in live: self.layout_func(d[2], d[3], d[4])
+        self.roots = roots
+        if self.xisa: self.zpage_plan(order, bodies)
         # Image layout: main first, so the monitor's `G AAAA` (JSRUR R7 since the 2026-09-22 monitor: a call)
         # enters it directly and its RET returns to the command loop. --vector emits the layout for the
         # monitor as burned in 2021, whose G was `BRVR R7` = an indirect jump through the word AT the address
@@ -1580,8 +1655,14 @@ class Gen:
         self.code = self.peephole(self.code)
         self.emit_runtime()
         self.code.extend(self.data)
+        # --xisa: the page first in the BSS, aligned to 256 bytes by zpad (the assembler resolves zpad in pass 1); the
+        # padding sits before bss_start, so main's BSS clear does not spend time on it
+        if self.zused: self.emit("zpad: DS (256-(zpad).0)&255")
         self.emit("bss_start:")
-        self.code.extend(self.bss)
+        if self.zused:
+            self.emit("zpage:")
+            self.code.extend(l for l in self.bss if l.split(":")[0] in self.zset)       # the page's variables, BSS order
+        self.code.extend(l for l in self.bss if l.split(":")[0] not in self.zset)
         self.emit("bss_end: DS 1")       # a byte so the label is a real address even for an empty BSS
         if self.boot:
             # The first BR is what the monitor does too: after reset the memory card's FORCE-ROM maps every fetch into
@@ -1606,9 +1687,10 @@ class Gen:
                     ma, aa = parts(a)
                     if ins(b):
                         mb, ab = parts(b)
-                        if ma == "STR" and mb == "LDR" and aa == ab and aa.startswith("R3,"):
+                        if (ma, mb) in (("STR", "LDR"), ("STZ", "LDZ")) and aa == ab and aa.startswith("R3,"):
                             out.append(a); i += 2; changed = True; continue      # store then reload: drop the reload
-                        if ma in ("STR", "LDR") and mb == "LDR" and aa.startswith("R3,") and ab == "R4," + aa[3:]:
+                        if ((ma in ("STR", "LDR") and mb == "LDR") or (ma in ("STZ", "LDZ") and mb == "LDZ")) and \
+                                aa.startswith("R3,") and ab == "R4," + aa[3:]:
                             out.append(a); out.append("        MOVRR R3,R4"); i += 2; changed = True; continue
                         if ma == "MOVRR" and mb == "MOVRR" and aa == "R3,R4" and ab == "R4,R3":
                             out.append(a); i += 2; changed = True; continue
@@ -1695,13 +1777,26 @@ class Gen:
         R["rt_frest"] = ["rt_frest: POPR R7", "rt_frest_l: POP", "        STAVR R5", "        DECR R5", "        DECR R6",
                          "        MVRLA R6", "        MVAT", "        MVRHA R6", "        ORT", "        BRNZ rt_frest_l",
                          "        PUSHR R7", "        RET"]
+        if self.xisa:
+            # --xisa (2026-09-24): SHL16 for the doublings whose carry nothing reads; rt_divmod keeps its remainder in
+            # R5 (R6 is the page register); code that leaves compiled code reloads R6 afterwards (when the page is used)
+            m = R["rt_mul"]; i = m.index("rt_mul_s: MVRLA R3"); R["rt_mul"] = m[:i] + ["rt_mul_s: SHL16 R3"] + m[i + 8:]
+            R["rt_shl"] = ["rt_shl: MVRLA R4", "        BRZ rt_shl_d", "rt_shl_l: SHL16 R3",
+                           "        DECR R4", "        MVRLA R4", "        BRNZ rt_shl_l", "rt_shl_d: RET"]
+            R["rt_divmod"] = [l.replace("R6", "R5") for l in R["rt_divmod"] if l != "        MOVRR R6,R5"]
+            if self.zused:
+                z = "        MVIW R6,zpage"
+                for h in ("rt_putc", "rt_getc"):
+                    j = next(i for i, l in enumerate(R[h]) if "JSRUR R7" in l or l.endswith(": JSR %d" % (BIOS_CHAROUT if h == "rt_putc" else BIOS_UARTIN)))
+                    R[h].insert(j + 1, z)
+                for h in ("rt_fsave", "rt_frest"): R[h].insert(len(R[h]) - 2, z)
         for h in ["rt_sub", "rt_mul", "rt_divmod", "rt_shl", "rt_shr", "rt_putc", "rt_getc", "rt_puts", "rt_fsave", "rt_frest"]:
             if h in self.used:
                 self.emit("; runtime " + h); self.emit(*R[h])
 
 
-def compile_src(src, path, org=ORG_DEFAULT, boot=False, vector=False, brur=True, osmode=False):
-    g = Gen(org, boot, vector, brur, osmode)
+def compile_src(src, path, org=ORG_DEFAULT, boot=False, vector=False, brur=True, osmode=False, xisa=False):
+    g = Gen(org, boot, vector, brur, osmode, xisa)
     g.gen_program(P(lex(src, path)).program(), os.path.basename(path))
     return "\n".join(g.code) + "\n", g
 
@@ -1713,7 +1808,7 @@ def main():
     if "-o" in a: out = a[a.index("-o") + 1]
     if "--org" in a: org = int(a[a.index("--org") + 1], 0)
     if "--boot" in a: boot = True
-    text, g = compile_src(open(src).read(), src, org, boot, "--vector" in a, "--no-brur" not in a, "--os" in a)
+    text, g = compile_src(open(src).read(), src, org, boot, "--vector" in a, "--no-brur" not in a, "--os" in a, "--xisa" in a)
     open(out, "w").write(text)
     if "-l" in a:
         print("y1cc: %s -> %s: %d lines; functions: %s" % (src, out, len(text.splitlines()),

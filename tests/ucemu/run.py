@@ -2,8 +2,9 @@
 """Run the compiler test programs (and tests/assembler/brur) on the MICROCODE-level emulator (software/ucemu) and
 compare with the expectations the instruction-level emulator established (tests/compiler/NAME.out).
 
-  run.py [name ...] [--keep] [--ucode PATH] [--fight and|src]
+  run.py [name ...] [--keep] [--ucode PATH] [--fight and|src] [--xisa]
     --ucode  control store to run (default: the tree's test.hex); --fight: the emulator's -F policy
+    --xisa   compile the programs with y1cc --xisa (LDZ/STZ/ADDIW/SHL16, 2026-09-24)
 
 Each program is compiled with --boot and run with the monitor ROM loaded (-m): under the microcode BRDEV always
 branches, so the runtime's console goes through the monitor's charout/uartin and the I/O card's UART model, the
@@ -28,6 +29,7 @@ def sh(cmd, **kw):
 
 
 EXTRA = []
+CCX = []                    # extra compiler flags (--xisa)
 
 def run_image(img, inp, rom=True):
     with open(inp) if inp and os.path.exists(inp) else open(os.devnull) as f:
@@ -44,7 +46,7 @@ def run_one(src):
     shutil.copy(DEF, d); open(os.path.join(d, "rcasm.rc"), "w").write("-h\n")
     if os.path.exists(src[:-2] + ".err"): return None, "compile-error test, skipped"
     flags = re.search(r"//\s*y1cc:\s*(.*)", open(src).read())
-    r = sh([sys.executable, CC, src, "-o", os.path.join(d, name + ".asm"), "--boot"] + (flags.group(1).split() if flags else []))
+    r = sh([sys.executable, CC, src, "-o", os.path.join(d, name + ".asm"), "--boot"] + (flags.group(1).split() if flags else []) + CCX)
     if r.returncode: return False, "compile failed: " + r.stderr.strip()[-200:]
     a = sh([ASM, name, "-d=yacc1"], cwd=d)
     if not re.search(r"^0 Errors", a.stdout, re.M): return False, "assembler errors"
@@ -64,6 +66,7 @@ def main():
     av = sys.argv[1:]
     if "--ucode" in av: i = av.index("--ucode"); EXTRA.extend(["-u", av[i + 1]]); del av[i:i + 2]
     if "--fight" in av: i = av.index("--fight"); EXTRA.extend(["-F", av[i + 1]]); del av[i:i + 2]
+    if "--xisa" in av: CCX.append("--xisa")
     args = [a for a in av if not a.startswith("--")]; keep = "--keep" in av
     if not os.path.exists(EMU): sys.exit("missing %s (make -C software/ucemu)" % EMU)
     os.makedirs(BUILD, exist_ok=True)

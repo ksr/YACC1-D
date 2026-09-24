@@ -7,6 +7,8 @@ the -l summary must be the same line.
 
   twin.py [-v] [--keep] [--16] [name ...]   name = a corpus path substring to run only those; --16 = the check
                                        build y1cc16 (int = unsigned short, unsigned char: the YACC1's types)
+          [--chain | --chain16] [--xisa]   the pass chain instead of y1cc.c; --xisa: every compile with --xisa
+                                       (LDZ/STZ/ADDIW/SHL16 and the page, 2026-09-24)
   twin.py --size ASM                   (make target) the size of y1cc.c compiled by y1cc.py against the 32K area
 
 Builds the twin first (make -C software/compiler/c). Exit 1 on any difference.
@@ -47,15 +49,17 @@ def def_sizes():
 def estimate(text, sizes=None):
     """(code, data, bss) bytes of an assembly text: instructions by yacc1.def, DB/DW by their items, DS = bss.
     Checked against the assembler's Object Code on the whole corpus (make target prints the check)."""
-    sizes = sizes or def_sizes(); code = data = bss = 0
+    sizes = sizes or def_sizes(); code = data = bss = 0; org = None
     for line in text.splitlines():
         if line.startswith(";"): continue
         m = re.match(r"^\w+:\s*(.*)$", line); rest = (m.group(1) if m else line).split(";")[0].strip()
         if not rest: continue
         mn, _, args = rest.partition(" "); mn = mn.upper(); args = args.strip()
+        if mn == "ORG" and org is None: org = int(args, 0)
         if mn in ("ORG", "END"): continue
         if mn == "DB": data += len(args.split(","))
         elif mn == "DW": data += 2 * len(args.split(","))
+        elif mn == "DS" and args.startswith("(256-(zpad)"): bss += (-((org or 0) + code + data + bss)) & 255   # --xisa page alignment
         elif mn == "DS": bss += int(args, 0)
         else: code += sizes[mn]
     return code, data, bss
@@ -130,8 +134,10 @@ def main():
     shutil.rmtree(BUILD, ignore_errors=True)
     for side in ("py", "c"): os.makedirs(os.path.join(BUILD, side))
     same = errs = 0; bad = []
+    xisa = ["--xisa"] if "--xisa" in av else []
     for i, (tag, src, opts) in enumerate(corpus.items()):
         if only and not any(o in src for o in only): continue
+        opts = opts + xisa
         base = "%03d_%s_%s.asm" % (i, tag, os.path.basename(src)[:-2])
         p = run([sys.executable, PY, src] + opts, os.path.join(BUILD, "py", base))
         c = run([twin, src] + opts, os.path.join(BUILD, "c", base))
@@ -148,11 +154,11 @@ def main():
         if verbose or not ok:
             print("%-44s %-30s %s" % (src, " ".join(opts), "identical" if ok and p[0] == 0 else
                                       "same error" if ok else "DIFFERENT: " + why), flush=True)
-    print("twin%s: %d programs identical, %d identical errors, %d DIFFERENT" % (
+    print("twin%s%s: %d programs identical, %d identical errors, %d DIFFERENT" % (
           " (y1cc16: 16-bit int, unsigned char)" if "--16" in av else
           " (the pass chain y1ccp: cc1..cc9)" if "--chain" in av else
           " (the pass chain y1ccp16: cc1_16..cc9_16, 16-bit int, unsigned char)" if "--chain16" in av else "",
-          same, errs, len(bad)))
+          " --xisa" if xisa else "", same, errs, len(bad)))
     if not keep and not bad: shutil.rmtree(BUILD, ignore_errors=True)
     sys.exit(1 if bad else 0)
 

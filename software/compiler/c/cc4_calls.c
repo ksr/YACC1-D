@@ -5,7 +5,8 @@
 
      cc4 W          reads W.ast (twice: the direct calls; funcaddr), W.s1, W.nam; writes W.cg
 
-   W.cg  nfuncs(2) row(2), live(b) per function 1..nfuncs (1 a root, 2 reached from one, 0 dropped), then nfuncs
+   W.cg  nfuncs(2) row(2), live(b) per function 1..nfuncs (1 a root - main or named in funcaddr(), even when another
+         live function reaches it (2026-09-24, cc6 --xisa: an entry sets the page register) - 2 reached from one, 0 dropped), then nfuncs
          rows of `row` bytes: bit g of row f = f can reach g (for cc7's recursion and argument analysis). */
 #include "pcommon.c"
 #include "pnames.c"
@@ -115,7 +116,7 @@ void y1cc_main(void) {
     }
     io_close(h);
     if (perr_key) fail(perr_msg);
-    for (r = 1; r <= nfuncs; r++) if (f_live[r] && f_body[r]) for (t = 1; t <= nfuncs; t++) if (bit(r, t)) f_live[t] = 2;
+    for (r = 1; r <= nfuncs; r++) if (f_live[r] && f_body[r]) for (t = 1; t <= nfuncs; t++) if (bit(r, t) && f_live[t] != 1) f_live[t] = 2;
     n = (nfuncs >> 3) + 1;
     wopen(".cg");
     wi(nfuncs); wi(n);

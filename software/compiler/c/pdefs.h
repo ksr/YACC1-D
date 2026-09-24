@@ -197,6 +197,7 @@
 #define OPT_BRUR 4
 #define OPT_OS 8
 #define OPT_LIST 16
+#define OPT_XISA 32             /* --xisa (2026-09-24): LDZ/STZ + the page, ADDIW, SHL16 */
 
 /* ---- stream records (.dat from cc3, .st from cc6, .se from cc7, .em from cc8): one byte, then the operands ----- */
 #define R_CODE 1                /* mn form operands: an instruction line (through the peephole) */
@@ -273,7 +274,8 @@
 #define MN_SUBT 52
 #define MN_SUBI 53
 #define MN_BRDEV 54
-#define MN_LAST 54
+#define MN_ADDIW 55             /* --xisa (cc8's load_address_r4: ADDIW R4,k) */
+#define MN_LAST 55
 
 /* operand forms (R_CODE mn form ...) */
 #define F_0 0                   /* "        MN" */
@@ -297,7 +299,8 @@
 #define A_RT 4                  /* id = runtime helper: its name */
 #define ATERMS_MAX 8
 
-/* macros (R_MACRO m ...), expanded by cc9 exactly as y1cc.c's functions of the same name */
+/* macros (R_MACRO m ...), expanded by cc9 exactly as y1cc.c's functions of the same name. M_ADDR4, M_LOGR4, M_LOGK,
+   M_SHR1 and M_NOT are no longer written (2026-09-24: cc8 writes their instructions itself, to make room in cc9) */
 #define M_ADDK 1                /* k(2): add_const */
 #define M_ADDA 2                /* address: add_const_text */
 #define M_ADDR4 3               /* add_r4 */
@@ -313,6 +316,7 @@
 #define M_FREST 13              /* v(2) bytes(2): frame_restore */
 #define M_BSSCLR 14             /* emit_bss_clear */
 #define M_SWITCH 15             /* narrow(1) miss(2) ncs(2) (val(2) sym(2))...: gen_switch's dispatch */
+#define M_ZP 16                 /* --xisa: MVIW R6,zpage when the page is used (zreload: an entry, after bios/call/sys) */
 
 /* holes (R_HOLE hk ...): expression code; the tree follows (cc6: nodes; cc7: nodes + attributes) */
 #define H_EXPR 1                /* root(2): gen_expr_stmt */

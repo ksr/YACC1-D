@@ -15,7 +15,7 @@ char *mntext[] = {"", "LDR", "STR", "MVIW", "MVRLA", "MVRHA", "MVARL", "MVARH", 
                   "LDA", "STA", "LDT", "LDAVR", "STAVR", "INCR", "DECR", "ADDI", "ADDIC", "ADDT", "ADDTC", "ANDI",
                   "ORI", "XORI", "ANDT", "ORT", "XORT", "INVA", "CSHL", "CSHR", "PUSHR", "POPR", "PUSH", "POP",
                   "MOVRR", "JSR", "JSRUR", "RET", "BR", "BRZ", "BRNZ", "BREQ", "BRNEQ", "BRLT", "BRGT", "BRUR",
-                  "INP", "OUTA", "HALT", "ORG", "SUBT", "SUBI", "BRDEV"};
+                  "INP", "OUTA", "HALT", "ORG", "SUBT", "SUBI", "BRDEV", "ADDIW"};
 char *lkname[] = {"", "Lf", "Le", "Lt", "Ls", "Lelse", "Lend", "Ltop", "Lnext", "Lsw", "Lc", "Ld", "La", "Lo",
                   "Lz", "Lzg", "Lzd", "s"};
 char *rtname[] = {"rt_sub", "rt_mul", "rt_divmod", "rt_shl", "rt_shr", "rt_putc", "rt_getc", "rt_puts",
@@ -46,6 +46,10 @@ char outpath[LINE_MAX];
 int opt_org;
 int opt_flags;
 int fmain;
+int zused;                      /* --xisa: the page (W.zp from cc6): used, a bit per variable; zsec: 1 = the page's */
+char zbits[VARS_MAX / 8 + 1];   /* DS lines are being written; ra_z: r_addr's operand was a page variable's label */
+int zsec;
+int ra_z;
 
 int sec;                        /* the section being written: 0 code, 1 data, 2 bss */
 int nl;                         /* the label numbers so far (y1cc.c's nl) */
@@ -79,6 +83,7 @@ int cs_val[CASES_MAX];
 int cs_lab[CASES_MAX];
 
 void pass_fail(char *msg) { io_fail(msg); }
+int zp(int v) { return (zbits[v >> 3] >> (v & 7)) & 1; }
 int is_pyspace(int c);
 int skip_space(char *s, int i);
 void blab(char *buf, int n);
@@ -112,16 +117,9 @@ void bnum32(char *buf, int hi, int lo);
 void r_code(void);
 void add_const(int k);
 void add_const_text(char *t);
-void add_r4(void);
-char *logic_mn(int op);
-char *logici_mn(int op);
-void logic_r4(int op);
-void logic_const(int op, int k);
 void shl1(void);
-void shr1(void);
 void scale_r3(int esz);
 void deref_r3(int sz);
-void not_r3(void);
 void lo_load(int mode, int k);
 void branch_rel(int rel, int label, int lomode, int lok);
 void frame_save(int v, int n);
@@ -198,8 +196,16 @@ void code_line(char *b) {                           /* one line of code: counted
     last_ret = s_eq(b, "        RET");
     peep(b);
 }
+int lsk(char *m) {                                  /* the peephole's word loads and stores (above) */
+    int k;
+    if ((m[2] != 'R' && m[2] != 'Z') || m[3]) return 0;
+    k = m[2] == 'Z' ? 3 : 1;
+    if (m[0] == 'L' && m[1] == 'D') return k;
+    if (m[0] == 'S' && m[1] == 'T') return k + 1;
+    return 0;
+}
 void peep(char *b) {
-    char *a; int i;
+    char *a; int i; int ka; int kb;
     for (;;) {
         if (npend == 0) break;
         a = pend + (npend - 1) * LINE_MAX;
@@ -207,9 +213,10 @@ void peep(char *b) {
         mn_arg(a, pmn_a, parg_a);
         if (is_ins(b)) {
             mn_arg(b, pmn_b, parg_b);
-            if (s_eq(pmn_a, "STR") && s_eq(pmn_b, "LDR") && s_eq(parg_a, parg_b) && s_starts(parg_a, "R3,"))
+            ka = lsk(pmn_a); kb = lsk(pmn_b);       /* LDR 1, STR 2, LDZ 3, STZ 4 (--xisa), other 0 */
+            if ((kb & 1) && ka == kb + 1 && s_eq(parg_a, parg_b) && s_starts(parg_a, "R3,"))
                 return;                             /* store then reload: drop the reload */
-            if ((s_eq(pmn_a, "STR") || s_eq(pmn_a, "LDR")) && s_eq(pmn_b, "LDR") && s_starts(parg_a, "R3,") &&
+            if ((kb & 1) && ka && (ka + 1) / 2 == (kb + 1) / 2 && s_starts(parg_a, "R3,") &&
                 s_starts(parg_b, "R4,") && s_eq(parg_b + 3, parg_a + 3)) {
                 pp_push("        MOVRR R3,R4");
                 return;
@@ -270,6 +277,7 @@ void kadd(char *buf, int off) { if (off) { bchr(buf, '+'); bnum(buf, off); } }
 void r_addr(char *buf) {                            /* an address operand: label, then "+term"s */
     int k; int id; int n;
     k = rb(inh); id = ri(inh); n = rb(inh);
+    ra_z = k == A_VAR && !n && zp(id);
     if (k == A_VAR) bcat(buf, vlab(id));
     else if (k == A_STR) { bchr(buf, 's'); bnum(buf, lit_lab[id]); }
     else if (k == A_FUNC) bcat(buf, flab(id));
@@ -301,7 +309,12 @@ void r_code(void) {
     else if (f == F_RN) { Lr(rb(inh)); bchr(lb, ','); bnum(lb, ri(inh)); }
     else if (f == F_RL) { Lr(rb(inh)); bchr(lb, ','); blab(lb, sym_num(ri(inh))); }
     else if (f == F_RR) { Lr(rb(inh)); bchr(lb, ','); Lr(rb(inh)); }
-    else if (f == F_RA) { Lr(rb(inh)); bchr(lb, ','); r_addr(lb); }
+    else if (f == F_RA) {
+        Lr(rb(inh)); bchr(lb, ','); r_addr(lb);
+        if (ra_z && mn <= MN_STR) {                 /* --xisa: a page variable: "        LDZ R3,(label).0" */
+            lb[10] = 'Z'; tbuf[0] = 0; bcat(tbuf, lb + 15); lb[15] = 0; bchr(lb, '('); bcat(lb, tbuf); bcat(lb, ").0");
+        }
+    }
     else if (f == F_P) { n = rb(inh); bchr(lb, 'P'); bchr(lb, n < 10 ? '0' + n : 'A' + n - 10); }
     Lend();
 }
@@ -313,39 +326,20 @@ void add_const(int k) {                             /* R3 += k (a number; masked
     if (k == 0) return;
     if (k <= 3) { for (i = 0; i < k; i++) insr("INCR", 3); return; }
     if (k >= 65533) { for (i = 65535 - k + 1; i > 0; i--) insr("DECR", 3); return; }
+    if (opt_flags & OPT_XISA) { insrn("ADDIW", 3, k); return; }
     if ((k & 255) == 0) { insr("MVRHA", 3); insn("ADDI", k >> 8); insr("MVARH", 3); return; }
     insr("MVRLA", 3); insn("ADDI", k & 255); insr("MVARL", 3);
     insr("MVRHA", 3); insn("ADDIC", (k >> 8) & 255); insr("MVARH", 3);
 }
 void add_const_text(char *t) {                      /* R3 += a label expression */
+    if (opt_flags & OPT_XISA) { insrs("ADDIW", 3, t); return; }
     insr("MVRLA", 3); L("ADDI"); Lsp(); bchr(lb, '('); bcat(lb, t); bcat(lb, ").0"); Lend(); insr("MVARL", 3);
     insr("MVRHA", 3); L("ADDIC"); Lsp(); bchr(lb, '('); bcat(lb, t); bcat(lb, ").1"); Lend(); insr("MVARH", 3);
 }
-void add_r4(void) {                                 /* R3 += R4 (the monitor's do_add16 idiom) */
-    insr("MVRLA", 4); ins0("MVAT"); insr("MVRLA", 3); ins0("ADDT"); insr("MVARL", 3);
-    insr("MVRHA", 4); ins0("MVAT"); insr("MVRHA", 3); ins0("ADDTC"); insr("MVARH", 3);
-}
-char *logic_mn(int op) { if (op == O_AMP) return "ANDT"; if (op == O_BAR) return "ORT"; return "XORT"; }
-char *logici_mn(int op) { if (op == O_AMP) return "ANDI"; if (op == O_BAR) return "ORI"; return "XORI"; }
-void logic_r4(int op) {                             /* R3 = R3 op R4 */
-    insr("MVRLA", 4); ins0("MVAT"); insr("MVRLA", 3); ins0(logic_mn(op)); insr("MVARL", 3);
-    insr("MVRHA", 4); ins0("MVAT"); insr("MVRHA", 3); ins0(logic_mn(op)); insr("MVARH", 3);
-}
-void logic_const(int op, int k) {                   /* R3 = R3 op k */
-    int lo; int hi; int ident;
-    lo = k & 255; hi = (k >> 8) & 255;
-    ident = op == O_AMP ? 255 : 0;                  /* the byte value that leaves a byte unchanged */
-    if (lo != ident) { insr("MVRLA", 3); insn(logici_mn(op), lo); insr("MVARL", 3); }
-    if (hi != ident) { insr("MVRHA", 3); insn(logici_mn(op), hi); insr("MVARH", 3); }
-}
 void shl1(void) {                                   /* R3 <<= 1 (R3 += R3) */
+    if (opt_flags & OPT_XISA) { insr("SHL16", 3); return; }
     insr("MVRLA", 3); ins0("MVAT"); ins0("ADDT"); insr("MVARL", 3);
     insr("MVRHA", 3); ins0("MVAT"); ins0("ADDTC"); insr("MVARH", 3);
-}
-void shr1(void) {                                   /* R3 >>= 1 (carry cleared, then rotate high and low through it) */
-    insn("LDAI", 0); ins0("CSHL");
-    insr("MVRHA", 3); ins0("CSHR"); insr("MVARH", 3);
-    insr("MVRLA", 3); ins0("CSHR"); insr("MVARL", 3);
 }
 void scale_r3(int esz) {                            /* R3 *= esz (element size) */
     if (esz == 1) return;
@@ -360,10 +354,6 @@ void deref_r3(int sz) {                             /* R3 = *(R3), a word or a b
     } else {
         insr("LDAVR", 3); insr("MVARL", 3); insn("LDAI", 0); insr("MVARH", 3);
     }
-}
-void not_r3(void) {                                 /* R3 = ~R3 */
-    insr("MVRLA", 3); ins0("INVA"); insr("MVARL", 3);
-    insr("MVRHA", 3); ins0("INVA"); insr("MVARH", 3);
 }
 void lo_load(int mode, int k) {                     /* the low bytes of a two-level compare: ACC = L.lo, TMP = R.lo */
     if (mode == 2) { insr("MVRLA", 4); ins0("MVAT"); insr("MVRLA", 3); }
@@ -398,11 +388,15 @@ void branch_rel(int rel, int label, int lomode, int lok) {
     }
     label_def(skip);
 }
+void zldst(char *mn, int v) {                       /* frame_save/restore: LDR/STR R4,tbuf, LDZ/STZ in the page */
+    if (!zp(v)) { insrs(mn, 4, tbuf); return; }
+    L(mn[0] == 'L' ? "LDZ" : "STZ"); bcat(lb, " R4,("); bcat(lb, tbuf); bcat(lb, ").0"); Lend();
+}
 void frame_save(int v, int n) {                     /* push a frame of n bytes at v's label; R4 inline, or rt_fsave */
     int off;
     if (n <= FRAME_INLINE) {
         for (off = 0; off + 1 < n; off = off + 2) {
-            tbuf[0] = 0; bcat(tbuf, vlab(v)); kadd(tbuf, off); insrs("LDR", 4, tbuf); insr("PUSHR", 4);
+            tbuf[0] = 0; bcat(tbuf, vlab(v)); kadd(tbuf, off); zldst("LDR", v); insr("PUSHR", 4);
         }
         if (n & 1) { tbuf[0] = 0; bcat(tbuf, vlab(v)); kadd(tbuf, n - 1); inss("LDA", tbuf); ins0("PUSH"); }
         return;
@@ -416,7 +410,7 @@ void frame_restore(int v, int n) {                  /* pop it back; R3 (the resu
         off = n & 65534;
         while (off > 0) {
             off = off - 2;
-            insr("POPR", 4); tbuf[0] = 0; bcat(tbuf, vlab(v)); kadd(tbuf, off); insrs("STR", 4, tbuf);
+            insr("POPR", 4); tbuf[0] = 0; bcat(tbuf, vlab(v)); kadd(tbuf, off); zldst("STR", v);
         }
         return;
     }
@@ -481,18 +475,14 @@ void r_macro(void) {
     m = rb(inh);
     if (m == M_ADDK) add_const(ri(inh));
     else if (m == M_ADDA) { tbuf[0] = 0; r_addr(tbuf); add_const_text(tbuf); }
-    else if (m == M_ADDR4) add_r4();
-    else if (m == M_LOGR4) logic_r4(rb(inh));
-    else if (m == M_LOGK) { a = rb(inh); logic_const(a, ri(inh)); }
     else if (m == M_SHL1) shl1();
-    else if (m == M_SHR1) shr1();
     else if (m == M_SCALE) scale_r3(ri(inh));
     else if (m == M_DEREF) deref_r3(rb(inh));
-    else if (m == M_NOT) not_r3();
     else if (m == M_BREL) { a = rb(inh); b = sym_num(ri(inh)); c = rb(inh); d = ri(inh); branch_rel(a, b, c, d); }
     else if (m == M_FSAVE) { a = ri(inh); frame_save(a, ri(inh)); }
     else if (m == M_FREST) { a = ri(inh); frame_restore(a, ri(inh)); }
     else if (m == M_BSSCLR) emit_bss_clear();
+    else if (m == M_ZP) { if (zused) insrs("MVIW", 6, "zpage"); }
     else {                                          /* M_SWITCH */
         a = rb(inh); b = sym_num(ri(inh)); c = ri(inh);
         if (c > CASES_MAX) fail("y1cc: too many cases in a switch (CASES_MAX)");
@@ -527,7 +517,8 @@ void stream(char *ext) {                            /* one reading of W.dat or W
         } else if (c == R_FLABEL) { lb[0] = 0; bcat(lb, flab(ri(inh))); bchr(lb, ':'); code_line(lb); }
         else if (c == R_TEXT) { a = rb(inh); rs(inh, lb, LINE_MAX); sec_line(a, lb); }
         else if (c == R_DSVAR) {
-            a = ri(inh); db[0] = 0; bcat(db, vlab(a)); bcat(db, ": DS "); bnum(db, ri(inh)); bss_line(db);
+            a = ri(inh); b = ri(inh);
+            if (zp(a) == zsec) { db[0] = 0; bcat(db, vlab(a)); bcat(db, ": DS "); bnum(db, b); bss_line(db); }
         } else if (c == R_DATALAB) { db[0] = 0; bcat(db, vlab(ri(inh))); bchr(db, ':'); data_line(db); }
         else if (c == R_DWVAR) { db[0] = 0; bcat(db, "        DW "); bcat(db, vlab(ri(inh))); data_line(db); }
         else if (c == R_DWSTR) { db[0] = 0; bcat(db, "        DW s"); bnum(db, lit_lab[ri(inh)]); data_line(db); }
@@ -554,7 +545,7 @@ void stream(char *ext) {                            /* one reading of W.dat or W
 
 /* ---- the runtime: y1cc.c emit_runtime's text, from lib/y1ccrt.txt (the helpers used, in its order) ----------- */
 void emit_runtime(void) {
-    int h; int i; int k; int on; int os_;
+    int h; int i; int k; int on; int c;
     io_lib("y1ccrt.txt", tbuf, LINE_MAX);
     h = io_open(tbuf);
     if (!h) { e_start("y1cc: cannot read "); e_s(tbuf); e_go(); }
@@ -562,16 +553,19 @@ void emit_runtime(void) {
     for (;;) {
         rs_line(h, lb);
         if (!lb[0] && rs_eof) break;
-        if (lb[0] == '@') {                         /* @rt_name or @rt_name.os: is it a section this program wants? */
-            os_ = 0;
-            for (i = 0; lb[i]; i++) if (lb[i] == '.') { lb[i] = 0; os_ = 1; }
+        if (lb[0] == '@') {                         /* @rt_name[+o|-o|+x|-x]: a section this program wants? */
+            c = 0;
+            for (i = 1; lb[i]; i++) if (lb[i] == '+' || lb[i] == '-') c = i;
+            k = 0;
+            if (c) { k = (opt_flags & (lb[c + 1] == 'o' ? OPT_OS : OPT_XISA)) != 0; if (lb[c] == '-') k = !k; lb[c] = 0; }
             on = 0;
-            for (k = 0; k < RT_COUNT; k++) if (s_eq(lb + 1, rtname[k])) on = used[k];
-            if (on && (s_eq(lb + 1, "rt_putc") || s_eq(lb + 1, "rt_getc"))) on = os_ == ((opt_flags & OPT_OS) != 0);
+            for (i = 0; i < RT_COUNT; i++) if (s_eq(lb + 1, rtname[i])) on = used[i];
+            if (c && !k) on = 0;
             if (on) { db[0] = 0; bcat(db, "; runtime "); bcat(db, lb + 1); sec_line(0, db); }
             continue;
         }
-        if (on) sec_line(0, lb);
+        if (on && lb[0] == '%') { if (zused) sec_line(0, lb + 1); }   /* a line for programs with the page */
+        else if (on) sec_line(0, lb);
     }
     io_close(h);
 }
@@ -606,6 +600,7 @@ void load_all(void) {
     rarr(h, f_name + 1, nfuncs); rarrc(h, f_ln + 1, nfuncs); skip(h, nfuncs);
     rarr(h, drop_nm, ndrop);
     io_close(h);
+    if (opt_flags & OPT_XISA) { h = ropen(".zp"); zused = rb(h); rarrc(h, zbits, nvars / 8 + 1); io_close(h); }
     h = ropen(".lit");
     nlits = ri(h);
     if (nlits >= LITS_MAX) fail("y1cc: too many string literals (LITS_MAX)");
@@ -632,16 +627,17 @@ void y1cc_main(void) {
             lb[0] = 0; bcat(lb, "; y1cc: ");
             r = 0; for (p = 0; srcpath[p]; p++) if (srcpath[p] == '/') r = p + 1;
             bcat(lb, srcpath + r); bcat(lb, "  ("); bcat(lb, tbuf); bchr(lb, ')'); code_line(lb);
-            lb[0] = 0; bcat(lb, "; R3 = expression accumulator, R4 = operand, R5-R7 runtime scratch, R2 never used (hardware IR)");
-            code_line(lb);
+            code_line("; R3 = expression accumulator, R4 = operand, R5-R7 runtime scratch, R2 never used (hardware IR)");
             insn("ORG", opt_org);
             if (opt_flags & OPT_VECTOR) {
-                lb[0] = 0; bcat(lb, "        DW start                ; vector for the 2021 monitor's G command (BRVR = PC <- [org])");
-                code_line(lb);
+                code_line("        DW start                ; vector for the 2021 monitor's G command (BRVR = PC <- [org])");
                 lb[0] = 0; bcat(lb, "start:  JSR "); bcat(lb, flab(fmain)); code_line(lb);
-                lb[0] = 0; bcat(lb, "        BR "); bnum(lb, MONITOR_RESTART); bcat(lb, "                 ; back to the monitor (restart)");
-                code_line(lb);
+                code_line("        BR 61440                 ; back to the monitor (restart)");   /* MONITOR_RESTART */
             }
+        }
+        if (sec == 2 && zused) {                    /* --xisa: the page first (zpad, before bss_start, aligned it) */
+            bss_line("zpage:");
+            zsec = 1; stream(".dat"); stream(".em"); zsec = 0;
         }
         stream(".dat");
         stream(".em");
@@ -652,17 +648,19 @@ void y1cc_main(void) {
             }
             pp_flush();
             emit_runtime();
-        } else if (sec == 1) data_line("bss_start:");
+        } else if (sec == 1) {
+            if (zused) data_line("zpad: DS (256-(zpad).0)&255");
+            data_line("bss_start:");
+        }
         else {
             bss_line("bss_end: DS 1");              /* a byte so the label is a real address even for an empty BSS */
             if (opt_flags & OPT_BOOT) {
                 bss_line("; boot stub for `emulator -x -f prog.img` / `y1ucemu -x -m -f prog.img`: release FORCE-ROM, stack, main, HALT");
-                db[0] = 0; bcat(db, "        ORG "); bnum(db, 61440); bss_line(db);
-                db[0] = 0; bcat(db, "        BR "); bnum(db, 61443); bss_line(db);
-                db[0] = 0; bcat(db, "        MVIW R1,"); bnum(db, STACK_TOP); bss_line(db);
+                bss_line("        ORG 61440"); bss_line("        BR 61443");
+                bss_line("        MVIW R1,3839");               /* STACK_TOP */
                 db[0] = 0; bcat(db, "        JSR "); bcat(db, flab(fmain)); bss_line(db);
                 bss_line("        HALT");
-                db[0] = 0; bcat(db, "        END "); bnum(db, 61440); bss_line(db);
+                bss_line("        END 61440");
             } else {
                 db[0] = 0; bcat(db, "        END "); bnum(db, opt_org); bss_line(db);
             }

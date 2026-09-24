@@ -3,6 +3,9 @@
 #   make OS=c       the same with the C OS (y1os.c, the specification) instead of the assembly one (y1os.asm, the
 #                   default since 2026-09-23); the choice is remembered in build/os-sel, so switching rebuilds disk.img.
 #                   `OS=c python3 ../tests/os/run.py` runs the test sessions against the C OS (make inherits OS).
+#   make XISA=1     every program (the /BIN commands, and the OS with OS=c) compiled with y1cc --xisa (2026-09-24:
+#                   LDZ/STZ + the page, ADDIW, SHL16 - needs the 2026-09-24 microcode on the machine); remembered in
+#                   build/xisa-sel like OS, so switching rebuilds. `XISA=1 python3 ../tests/os/run.py` tests that build.
 #   make run        boot it on the microcode emulator, interactive (type O at the monitor prompt)
 #   make run-int    same on the instruction-level emulator
 #   make test       tests/os/run.py: scripted sessions on both emulators against expected transcripts
@@ -17,6 +20,8 @@
 # libraries. Files in os/disk/ go to the root, os/man/NAME to /MAN/NAME (upper case: `man` upper-cases the name),
 # and the Markdown documents in DOCS to /DOCS for `md` (host file = disk name).
 OS    ?= asm
+XISA  ?=
+CCX    = $(if $(XISA),--xisa)
 ifneq ($(OS),asm)
 ifneq ($(OS),c)
 $(error OS must be asm (the default) or c, not "$(OS)")
@@ -43,6 +48,9 @@ $(B)/y1os.bin: $(B)/y1os-$(OS).bin $(B)/os-sel
 $(B)/os-sel: FORCE
 	@mkdir -p $(B); if [ "$$(cat $@ 2>/dev/null)" != "$(OS)" ]; then echo $(OS) > $@; fi
 
+$(B)/xisa-sel: FORCE
+	@mkdir -p $(B); if [ "$$(cat $@ 2>/dev/null)" != "$(CCX)" ]; then echo "$(CCX)" > $@; fi
+
 $(B)/y1os-asm.bin: y1os.asm strings.txt mkstrings.py $(DEF)
 	@mkdir -p $(B)/asm && cp $(DEF) $(B)/asm/ && echo -h > $(B)/asm/rcasm.rc && cp y1os.asm $(B)/asm/
 	python3 mkstrings.py strings.txt > $(B)/asm/y1os_str.inc
@@ -53,22 +61,22 @@ $(B)/y1os-asm.bin: y1os.asm strings.txt mkstrings.py $(DEF)
 	  printf "y1os (asm): %d bytes image (%d of 32 sectors), \$$1000-\$$%04X; RAM \$$4A00-\$$4FFF; %d bytes free between\n" $$i $$(( (i + 511) / 512 )) $$(( 4096 + i - 1 )) $$(( 0x4A00 - 4096 - i )); \
 	  if [ $$(( 4096 + i )) -gt $$(( 0x4A00 )) ]; then echo "y1os: the image runs into its RAM at \$$4A00"; rm -f $@; exit 1; fi
 
-$(B)/y1os-c.bin: y1os.c lib_abi.c lib_fs.c $(ROOT)/software/compiler/y1cc.py $(ROOT)/software/compiler/lib/y1lib.c
+$(B)/y1os-c.bin: y1os.c lib_abi.c lib_fs.c $(ROOT)/software/compiler/y1cc.py $(ROOT)/software/compiler/lib/y1lib.c $(B)/xisa-sel
 	@mkdir -p $(B)/c && cp $(DEF) $(B)/c/ && echo -h > $(B)/c/rcasm.rc
-	$(CC) y1os.c -o $(B)/c/y1os.asm --org 0x1000 --os -l
+	$(CC) y1os.c -o $(B)/c/y1os.asm --org 0x1000 --os $(CCX) -l
 	@cd $(B)/c && ../../$(ASM) y1os -d=yacc1 > y1os.lst && grep -q "^0 Errors" y1os.lst || { grep -i "err" $(B)/c/y1os.lst | head; exit 1; }
 	@grep "Object Code" $(B)/c/y1os.lst
 	$(I2B) $(B)/c/y1os.img $@ --base 0x1000
-	@i=$$(wc -c < $@); d=$$(awk '/^bss_start:/{b=1} b && $$2=="DS"{s+=$$3} END{print s+0}' $(B)/c/y1os.asm); \
+	@i=$$(wc -c < $@); d=$$(awk '/^(zpad|bss_start):/{b=1} b && $$2=="DS"{s+=($$3 ~ /^[0-9]+$$/) ? $$3 : 255} END{print s+0}' $(B)/c/y1os.asm); \
 	  printf "y1os (C): %d bytes image (%d of 32 sectors) + %d data = %d of 16384 (\$$1000-\$$4FFF)\n" $$i $$(( (i + 511) / 512 )) $$d $$((i + d)); \
 	  if [ $$((i + d)) -gt 16384 ] || [ $$i -gt 16384 ]; then echo "y1os: over its 16K (the programs start at \$$5000)"; rm -f $@; exit 1; fi
 
-$(B)/bin/%.bin: commands/%.c $(LIBS) $(ROOT)/software/compiler/y1cc.py
+$(B)/bin/%.bin: commands/%.c $(LIBS) $(ROOT)/software/compiler/y1cc.py $(B)/xisa-sel
 	@mkdir -p $(B)/bin && cp $(DEF) $(B)/bin/ && echo -h > $(B)/bin/rcasm.rc
-	@$(CC) $< -o $(B)/bin/$*.asm --org 0x5000 --os
+	@$(CC) $< -o $(B)/bin/$*.asm --org 0x5000 --os $(CCX)
 	@cd $(B)/bin && ../../$(ASM) $* -d=yacc1 > $*.lst && grep -q "^0 Errors" $*.lst || { grep -i "err" $(B)/bin/$*.lst | head; exit 1; }
 	@$(I2B) $(B)/bin/$*.img $@ --base 0x5000
-	@t=$$(( $$(wc -c < $@) + $$(awk '/^bss_start:/{b=1} b && $$2=="DS"{s+=$$3} END{print s+0}' $(B)/bin/$*.asm) )); \
+	@t=$$(( $$(wc -c < $@) + $$(awk '/^(zpad|bss_start):/{b=1} b && $$2=="DS"{s+=($$3 ~ /^[0-9]+$$/) ? $$3 : 255} END{print s+0}' $(B)/bin/$*.asm) )); \
 	  if [ $$t -gt 32768 ]; then echo "$*: $$t bytes, over the 32K program area"; rm -f $@; exit 1; fi
 
 disk.img: $(B)/y1os.bin $(CMDS) $(FILES) $(MANS) $(foreach d,$(DOCS),$(firstword $(subst :, ,$(d)))) Makefile
@@ -86,7 +94,7 @@ disk.img: $(B)/y1os.bin $(CMDS) $(FILES) $(MANS) $(foreach d,$(DOCS),$(firstword
 
 sizes: $(CMDS)
 	@for c in $(CMDS); do n=$$(basename $$c .bin); b=$$(wc -c < $$c); \
-	  d=$$(awk '/^bss_start:/{f=1} f && $$2=="DS"{s+=$$3} END{print s+0}' $(B)/bin/$$n.asm); \
+	  d=$$(awk '/^(zpad|bss_start):/{f=1} f && $$2=="DS"{s+=($$3 ~ /^[0-9]+$$/) ? $$3 : 255} END{print s+0}' $(B)/bin/$$n.asm); \
 	  printf "%-8s %6d image + %6d data = %6d of 32768\n" $$n $$b $$d $$((b + d)); done
 
 run: disk.img

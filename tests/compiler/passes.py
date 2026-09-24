@@ -16,8 +16,9 @@ multi-pass compiler"). For each of the nine passes (software/compiler/c/cc1_lex.
   3. capacity: the same chain's output is compared with y1cc.py's: identical, or which table overflowed; and how
      many compiles keep every intermediate file and the output under Y1/OS's 64K file size.
 
-  passes.py [-v]          the table, the programs that do not fit (the limit that stopped them); -v: the probe's
-                          unmeasured calls, every compile with a file over 64K
+  passes.py [-v] [--xisa] the table, the programs that do not fit (the limit that stopped them); -v: the probe's
+                          unmeasured calls, every compile with a file over 64K; --xisa: the passes compiled with y1cc
+                          --xisa (2026-09-24: LDZ/STZ + the page, ADDIW, SHL16) and the corpus compiled with it
 
 The program area is $5000-$CFFF (32,768 bytes): image + uninitialised data + stack must fit in it, the stack at
 the top (software/compiler/README.md, "The stack"). Exit 1 if a pass does not fit, or on an assembly that differs.
@@ -38,6 +39,7 @@ AREA = 0xD000 - 0x5000
 SYSCALL_STACK = 64          # what a Y1/OS syscall handler may push below the caller (an allowance, not measured)
 BIOS_STACK = 16             # a ROM routine called with bios()
 HOST_PATHPOOL = 1200        # the capacity run's path pool (Mac paths are absolute); every other table is Y1/OS's
+XISA = []                   # --xisa: added to every compile
 
 
 def sh(cmd, **kw):
@@ -49,7 +51,7 @@ def build_target(src, lim):
     os.makedirs(B, exist_ok=True)
     shutil.copy(twin.DEF, B); open(os.path.join(B, "rcasm.rc"), "w").write("-h\n")
     c = os.path.join(CDIR, "target", lim + ".c")
-    r = sh([sys.executable, PY, c, "-o", os.path.join(B, lim + ".asm"), "--org", "0x5000", "--os"], cwd=ROOT)
+    r = sh([sys.executable, PY, c, "-o", os.path.join(B, lim + ".asm"), "--org", "0x5000", "--os"] + XISA, cwd=ROOT)
     if r.returncode: sys.exit("passes: y1cc.py cannot compile %s: %s" % (src, r.stderr.strip()))
     r = sh([ASM, lim, "-d=yacc1"], cwd=B)
     m = {k: re.search(p, r.stdout) for k, p in (("errors", r"(\d+) Errors"), ("labels", r"(\d+) Labels"),
@@ -158,6 +160,7 @@ def build_probes():
 
 def main():
     verbose = "-v" in sys.argv
+    if "--xisa" in sys.argv: XISA.append("--xisa")
     r = sh(["make", "-s", "-C", CDIR, "passes"])
     if r.returncode: sys.exit(r.stdout + r.stderr)
     rows = []; tables = os.path.join(B, "stack")
@@ -175,6 +178,7 @@ def main():
     keep = os.path.join(tmp, "keep")
     os.makedirs(keep, exist_ok=True)
     for i, (tag, src, opts) in enumerate(items):
+        opts = opts + XISA
         pa = os.path.join(tmp, "%d.py.asm" % i); ca = os.path.join(tmp, "%d.t.asm" % i)
         p = sh([sys.executable, PY, src, "-o", pa] + opts, cwd=ROOT)
         env = dict(os.environ, Y1STACK_OUT=out, Y1STACK_TABLE_DIR=tables, Y1CCP_KEEP=keep)  # each probe: its table

@@ -299,6 +299,8 @@ int v_base[VARS_MAX];
 int v_ptr[VARS_MAX];
 int v_cnt[VARS_MAX];
 char v_slot[VARS_MAX];
+int v_zc[VARS_MAX];              /* --xisa: how often the variable is named in the live bodies */
+char v_zp[VARS_MAX];             /* --xisa: the variable is in the page (LDZ/STZ) */
 int v_name[VARS_MAX];
 int nvars;
 
@@ -313,6 +315,7 @@ int f_vfirst[FUNCS_MAX];
 int f_vn[FUNCS_MAX];
 int f_npar[FUNCS_MAX];
 char f_live[FUNCS_MAX];
+char f_root[FUNCS_MAX];          /* main and the functions named in funcaddr() (the program's entries) */
 int f_stat[FUNCS_MAX];
 int nfuncs;
 int corder[FUNCS_MAX];          /* the compile order, for -l */
@@ -336,6 +339,7 @@ char lpool[LABELPOOL];
 int lpn;
 int ul_off[ULABELS_MAX];
 int ul_next[ULABELS_MAX];
+char ul_zp[ULABELS_MAX];         /* --xisa: this label is a page variable's */
 int ul_hash[HASH_SIZE];
 int nul;
 
@@ -383,6 +387,8 @@ int opt_vector;
 int opt_brur;
 int opt_os;
 int opt_list;
+int opt_xisa;
+int zused;                       /* --xisa: the page holds at least one variable */
 int cur_fn;
 int cur_vfirst;
 int cur_vn;
@@ -411,6 +417,7 @@ char argw[LINE_MAX];
 #define W_MENTION 4
 #define W_FADDR 5
 #define W_LIST 6
+#define W_ZCOUNT 7
 
 /* ---- prototypes ------------------------------------------------------------------------------------------------ */
 void y1cc_main(void);
@@ -539,6 +546,11 @@ int simple_byte(int e);
 void byte_src(int e);
 void gen_byte_acc(int e);
 void load_static(int reg, int base, int ptr, int slot);
+void ldst(char *mn, int reg);
+void zreload(void);
+void zpage_plan(void);
+void zbss(int page);
+int zsz(int v);
 void store_static_r3(int base, int ptr, int slot, int narrow);
 int is_leaf(int e);
 void gen_leaf(int reg, int e);
@@ -608,6 +620,7 @@ void gen_program(void);
 void emit_runtime(void);
 void rt(char *t);
 void rtn(char *pre, int n);
+void zrt(void);
 void out_s(char *s);
 void out_n(int n);
 
@@ -1573,9 +1586,11 @@ void peep(char *b) {
         mn_arg(a, pmn_a, parg_a);
         if (is_ins(b)) {
             mn_arg(b, pmn_b, parg_b);
-            if (s_eq(pmn_a, "STR") && s_eq(pmn_b, "LDR") && s_eq(parg_a, parg_b) && s_starts(parg_a, "R3,"))
+            if (((s_eq(pmn_a, "STR") && s_eq(pmn_b, "LDR")) || (s_eq(pmn_a, "STZ") && s_eq(pmn_b, "LDZ"))) &&
+                s_eq(parg_a, parg_b) && s_starts(parg_a, "R3,"))
                 return;                             /* store then reload: drop the reload */
-            if ((s_eq(pmn_a, "STR") || s_eq(pmn_a, "LDR")) && s_eq(pmn_b, "LDR") && s_starts(parg_a, "R3,") &&
+            if ((((s_eq(pmn_a, "STR") || s_eq(pmn_a, "LDR")) && s_eq(pmn_b, "LDR")) ||
+                 ((s_eq(pmn_a, "STZ") || s_eq(pmn_a, "LDZ")) && s_eq(pmn_b, "LDZ"))) && s_starts(parg_a, "R3,") &&
                 s_starts(parg_b, "R4,") && s_eq(parg_b + 3, parg_a + 3)) {
                 pp_push("        MOVRR R3,R4");
                 return;
@@ -1826,17 +1841,27 @@ void gen_byte_acc(int e) {
 }
 
 /* ---- loads / stores of static variables (the address is in abuf) --------------------------------------------- */
+void ldst(char *mn, int reg) {                      /* LDR/STR reg,abuf - LDZ/STZ reg,(abuf).0 for a page variable */
+    int id;
+    id = opt_xisa ? ul_find(abuf) : 0;
+    if (id && ul_zp[id]) {
+        L(mn[0] == 'L' ? "LDZ" : "STZ"); Lsp(); Lr(reg); bcat(lb, ",("); bcat(lb, abuf); bcat(lb, ").0"); Lend();
+        return;
+    }
+    insrs(mn, reg, abuf);
+}
+void zreload(void) { if (zused) insrs("MVIW", 6, "zpage"); }   /* R6 = the page again after code that is not ours */
 void load_static(int reg, int base, int ptr, int slot) {
-    if (slot || size_of(base, ptr) == 2) { insrs("LDR", reg, abuf); return; }
+    if (slot || size_of(base, ptr) == 2) { ldst("LDR", reg); return; }
     if (size_of(base, ptr) != 1) fail("y1cc: struct/union used as a value");
     inss("LDA", abuf); insr("MVARL", reg); insn("LDAI", 0); insr("MVARH", reg);
 }
 void store_static_r3(int base, int ptr, int slot, int narrow) {
-    if (size_of(base, ptr) == 2) { insrs("STR", 3, abuf); return; }
+    if (size_of(base, ptr) == 2) { ldst("STR", 3); return; }
     if (size_of(base, ptr) != 1) fail("y1cc: whole struct/array assignment not supported");
     if (slot) {
         if (!narrow) { insn("LDAI", 0); insr("MVARH", 3); }
-        insrs("STR", 3, abuf);
+        ldst("STR", 3);
     } else {
         insr("MVRLA", 3); inss("STA", abuf);
     }
@@ -1884,11 +1909,13 @@ void add_const(int k) {                             /* R3 += k (a number; masked
     if (k == 0) return;
     if (k <= 3) { for (i = 0; i < k; i++) insr("INCR", 3); return; }
     if (k >= 65533) { for (i = 65535 - k + 1; i > 0; i--) insr("DECR", 3); return; }
+    if (opt_xisa) { insrn("ADDIW", 3, k); return; }
     if ((k & 255) == 0) { insr("MVRHA", 3); insn("ADDI", k >> 8); insr("MVARH", 3); return; }
     insr("MVRLA", 3); insn("ADDI", k & 255); insr("MVARL", 3);
     insr("MVRHA", 3); insn("ADDIC", (k >> 8) & 255); insr("MVARH", 3);
 }
 void add_const_text(char *t) {                      /* R3 += a label expression */
+    if (opt_xisa) { insrs("ADDIW", 3, t); return; }
     insr("MVRLA", 3); L("ADDI"); Lsp(); bchr(lb, '('); bcat(lb, t); bcat(lb, ").0"); Lend(); insr("MVARL", 3);
     insr("MVRHA", 3); L("ADDIC"); Lsp(); bchr(lb, '('); bcat(lb, t); bcat(lb, ").1"); Lend(); insr("MVARH", 3);
 }
@@ -1910,6 +1937,7 @@ void logic_const(int op, int k) {                   /* R3 = R3 op k */
     if (hi != ident) { insr("MVRHA", 3); insn(logici_mn(op), hi); insr("MVARH", 3); }
 }
 void shl1(void) {                                   /* R3 <<= 1 (R3 += R3) */
+    if (opt_xisa) { insr("SHL16", 3); return; }
     insr("MVRLA", 3); ins0("MVAT"); ins0("ADDT"); insr("MVARL", 3);
     insr("MVRHA", 3); ins0("MVAT"); ins0("ADDTC"); insr("MVARH", 3);
 }
@@ -2016,7 +2044,7 @@ void gen_expr(int e) {
             esz = bp ? size_of(bt, dec_ptr(bp)) : 1;
             add_const(op == O_PLUS ? esz : 65535 - esz + 1);
             static_lval(lv);                        /* (gen_expr used abuf: the address again) */
-            insrs("STR", 3, abuf); insrr("MOVRR", 4, 3);
+            ldst("STR", 3); insrr("MOVRR", 4, 3);
         } else {
             gen_expr(lv); insr("PUSHR", 3);
             gen_assign(lv, new_node(N_BIN, op, lv, new_node(N_NUM, 1, 0, 0, 0), 0), 0);
@@ -2096,6 +2124,7 @@ void load_address_r4(int lhs) {                     /* R4 = &lhs for a simple_ad
     off = off & 65535;
     if (off == 0) return;
     if (off <= 3) { for (i = 0; i < off; i++) insr("INCR", 4); return; }
+    if (opt_xisa) { insrn("ADDIW", 4, off); return; }
     insr("MVRLA", 4); insn("ADDI", off & 255); insr("MVARL", 4);
     insr("MVRHA", 4); insn("ADDIC", off >> 8); insr("MVARH", 4);
 }
@@ -2350,7 +2379,7 @@ void walk(int n) {                                  /* y1cc.py calls_in(), funca
             if (nc[n] != 1 || nk[a] != N_ID) fail("y1cc: funcaddr() wants the name of a function");
             f = nm_fn[na[a]];
             if (!f || !f_body[f]) { e_start("y1cc: funcaddr("); e_s(nm_text(na[a])); e_s("): no such function"); e_go(); }
-            f_live[f] = 1;
+            f_live[f] = 1; f_root[f] = 1;
         } else if (wmode == W_LIST) {
             if (f && f_body[f]) {
                 for (i = 0; i < nwlist; i++) if (wlist[i] == f) f = 0;
@@ -2360,7 +2389,11 @@ void walk(int n) {                                  /* y1cc.py calls_in(), funca
         walk_list(nb[n]);
         return;
     }
-    if (k == N_ID) { if (wmode == W_MENTION && na[n] == wname) wfound = 1; return; }
+    if (k == N_ID) {
+        if (wmode == W_MENTION && na[n] == wname) wfound = 1;
+        if (wmode == W_ZCOUNT) { c = local_var(na[n]); if (!c) c = nm_glob[na[n]]; if (c) v_zc[c]++; }
+        return;
+    }
     if (k == N_UNARY || k == N_PREINC || k == N_POSTINC) { walk(nb[n]); return; }
     if (k == N_SIZEOFE || k == N_MEMBER || k == N_ARROW || k == N_RETURN || k == N_EXPR) { walk(na[n]); return; }
     if (k == N_INDEX || k == N_ASSIGN || k == N_LOGOR || k == N_LOGAND || k == N_WHILE || k == N_SWITCH) {
@@ -2424,7 +2457,7 @@ void gen_call(int e) {
     }
     if (name == B_HALT) { ins0("HALT"); return; }
     if (name == B_CALL) {                           /* call(addr): JSRUR to a computed address; R3 = what it returns */
-        gen_expr(nth_arg(e, 0)); insrr("MOVRR", 3, 7); insr("JSRUR", 7); return;
+        gen_expr(nth_arg(e, 0)); insrr("MOVRR", 3, 7); insr("JSRUR", 7); zreload(); return;
     }
     if (name == B_ARGSTR) { insrn("MVIW", 3, ARGBUF); return; }
     if (name == B_SYS) {                            /* sys(n, a, b, c): Y1/OS syscall n through SYSTAB */
@@ -2452,7 +2485,7 @@ void gen_call(int e) {
             insr("POPR", 3); insr("LDAVR", 3); ins0("MVAT"); insr("INCR", 3);
             insr("LDAVR", 3); insr("MVARL", 7); ins0("MVTA"); insr("MVARH", 7);
         }
-        insr("JSRUR", 7); insrn("LDR", 3, SYSRES); return;
+        insr("JSRUR", 7); zreload(); insrn("LDR", 3, SYSRES); return;
     }
     if (name == B_FUNCADDR) {                       /* funcaddr(f): the address of function f, as an int */
         a = nth_arg(e, 0);
@@ -2468,7 +2501,7 @@ void gen_call(int e) {
         gen_expr(nth_arg(e, 1)); insrr("MOVRR", 3, 7);
         c = nth_arg(e, 2);
         if (is_narrow(c)) gen_byte_acc(c); else { gen_expr(c); insr("MVRLA", 3); }
-        insn("JSR", n); insr("MVARL", 3); insn("LDAI", 0); insr("MVARH", 3); return;
+        insn("JSR", n); zreload(); insr("MVARL", 3); insn("LDAI", 0); insr("MVARH", 3); return;
     }
     fn = nm_fn[name];
     if (!fn) { e_start("y1cc: call of undeclared function "); e_q(nm_text(name)); e_go(); }
@@ -2505,10 +2538,10 @@ void gen_call(int e) {
             insr("PUSHR", 3);
             if (npark >= PARK_MAX) fail("y1cc: too many parked arguments");
             park[npark] = v; npark++;
-        } else insrs("STR", 3, lpool + v_lab[v]);
+        } else { abuf[0] = 0; bcat(abuf, lpool + v_lab[v]); ldst("STR", 3); }
         i++;
     }
-    while (npark > base) { npark--; insr("POPR", 4); insrs("STR", 4, lpool + v_lab[park[npark]]); }
+    while (npark > base) { npark--; insr("POPR", 4); abuf[0] = 0; bcat(abuf, lpool + v_lab[park[npark]]); ldst("STR", 4); }
     inss("JSR", lpool + f_lab[fn]);
     if (rec) frame_restore(fn);
 }
@@ -2522,7 +2555,10 @@ void frame_save(int f) {                            /* push f's whole frame; R4 
     lab = lpool + v_lab[f_vfirst[f]];
     if (n <= FRAME_INLINE) {
         for (off = 0; off + 1 < n; off = off + 2) {
-            abuf[0] = 0; bcat(abuf, lab); kadd(off); insrs("LDR", 4, abuf); insr("PUSHR", 4);
+            abuf[0] = 0; bcat(abuf, lab); kadd(off);
+            if (v_zp[f_vfirst[f]]) { L("LDZ"); bcat(lb, " R4,("); bcat(lb, abuf); bcat(lb, ").0"); Lend(); }
+            else insrs("LDR", 4, abuf);
+            insr("PUSHR", 4);
         }
         if (n & 1) { abuf[0] = 0; bcat(abuf, lab); kadd(n - 1); inss("LDA", abuf); ins0("PUSH"); }
         return;
@@ -2539,7 +2575,9 @@ void frame_restore(int f) {                         /* pop f's frame back; R3 (t
         off = n & 65534;
         while (off > 0) {
             off = off - 2;
-            insr("POPR", 4); abuf[0] = 0; bcat(abuf, lab); kadd(off); insrs("STR", 4, abuf);
+            insr("POPR", 4); abuf[0] = 0; bcat(abuf, lab); kadd(off);
+            if (v_zp[f_vfirst[f]]) { L("STZ"); bcat(lb, " R4,("); bcat(lb, abuf); bcat(lb, ").0"); Lend(); }
+            else insrs("STR", 4, abuf);
         }
         return;
     }
@@ -2768,10 +2806,12 @@ void compile_func(int fn) {
     lbase = nl + 1;
     start = nraw;
     lb[0] = 0; bcat(lb, lpool + f_lab[fn]); bchr(lb, ':'); code_line(lb);
+    if (f_root[fn]) zreload();                 /* --xisa: main and the funcaddr() entries set the page register */
     if (f_name[fn] == NM_MAIN) emit_bss_clear();
     gen_stmt(nd[f_body[fn]]);
     if (!last_ret) ins0("RET");
     for (i = 0; i < f_vn[fn]; i++) {
+        if (v_zp[f_vfirst[fn] + i]) continue;       /* --xisa: the page's variables come at the end of the BSS */
         db[0] = 0; bcat(db, lpool + v_lab[f_vfirst[fn] + i]); bcat(db, ": DS "); bnum(db, v_size(f_vfirst[fn] + i));
         bss_line(db);
     }
@@ -2811,7 +2851,8 @@ void emit_globals(void) {                           /* after every global has it
         if (nk[g] != N_GVAR) continue;
         v = nm_glob[nb[g]];
         if (!nc[g]) {
-            db[0] = 0; bcat(db, lpool + v_lab[v]); bcat(db, ": DS "); bnum(db, v_size(v)); bss_line(db);
+            db[0] = 0; bcat(db, lpool + v_lab[v]); bcat(db, ": DS "); bnum(db, v_size(v));
+            if (!opt_xisa) bss_line(db);            /* --xisa: written after the page plan (zpage_plan) */
             continue;
         }
         const_data(g, 0);                           /* y1cc.py makes the strings first, then the label and the lines */
@@ -2938,10 +2979,15 @@ void gen_program(void) {
     f = nm_fn[NM_MAIN];
     if (!f || !f_body[f]) fail("y1cc: no main()");
     build_reach();
-    f_live[f] = 1;                                  /* roots: main and every function named in funcaddr() */
+    f_live[f] = 1; f_root[f] = 1;                   /* roots: main and every function named in funcaddr() */
     for (r = 1; r <= nfuncs; r++) if (f_body[r]) { wmode = W_FADDR; walk(nd[f_body[r]]); }
     for (r = 1; r <= nfuncs; r++) if (f_live[r] && f_body[r]) for (t = 1; t <= nfuncs; t++) if (bit(r, t)) f_live[t] = 2;
     for (d = prog_first; d; d = nx[d]) if (nk[d] == N_FUNC && f_live[nm_fn[nb[d]]] && f_body[nm_fn[nb[d]]] == d) layout_func(nm_fn[nb[d]]);
+    if (opt_xisa) {                                 /* the page first in the BSS (zpad precedes bss_start: not cleared) */
+        zpage_plan();
+        if (zused) { bss_line("zpage:"); zbss(1); }
+        zbss(0);
+    }
     io_date(tbuf);                                  /* the header */
     lb[0] = 0; bcat(lb, "; y1cc: ");
     r = 0; for (p = 0; srcpath[p]; p++) if (srcpath[p] == '/') r = p + 1;
@@ -2966,6 +3012,7 @@ void gen_program(void) {
         }
     pp_flush();
     emit_runtime();
+    if (zused) data_line("zpad: DS (256-(zpad).0)&255");
     data_line("bss_start:");
     bss_line("bss_end: DS 1");                      /* a byte so the label is a real address even for an empty BSS */
     if (opt_boot) {
@@ -2981,9 +3028,96 @@ void gen_program(void) {
     }
 }
 
+/* ---- --xisa: the page (y1cc.py zpage_plan: the same candidates, weights and greedy order) ------------------------ */
+int u_first[VARS_MAX];                              /* a candidate: its first variable, how many, the function if a */
+int u_n[VARS_MAX];                                  /* whole recursive frame (else 0), size, weight, density, state */
+int u_fn[VARS_MAX];
+int u_size[VARS_MAX];
+int u_w[VARS_MAX];
+int u_d[VARS_MAX];
+char u_done[VARS_MAX];
+int nunits;
+int zsz(int v) {                                    /* v_size, 0 for an unknown type (no error here) */
+    if (v_ptr[v] == 0 && v_base[v] != K_INT && v_base[v] != K_CHAR && !(v_base[v] && nm_st[v_base[v]])) return 0;
+    return v_size(v);
+}
+void z_unit(int first, int n, int fn) {
+    int i; int size; int w;
+    size = 0; w = 0;
+    for (i = 0; i < n; i++) { size = size + zsz(first + i); w = (w + v_zc[first + i]) & 65535; }
+    u_first[nunits] = first; u_n[nunits] = n; u_fn[nunits] = fn; u_size[nunits] = size; u_w[nunits] = w;
+    u_d[nunits] = w / ((size + 1) / 2); u_done[nunits] = 0;
+    nunits++;
+}
+void zpage_plan(void) {
+    int d; int f; int i; int n; int v; int best; int used; int first; int bad;
+    for (i = 0; i < 2; i++)                         /* the counts: main first, then source order (compile order) */
+        for (d = prog_first; d; d = nx[d]) {
+            if (nk[d] != N_FUNC) continue;
+            f = nm_fn[nb[d]];
+            if (!f_live[f] || f_body[f] != d || (i == 0) != (nb[d] == NM_MAIN)) continue;
+            cur_vfirst = f_vfirst[f]; cur_vn = f_vn[f];
+            wmode = W_ZCOUNT; walk(nd[d]);
+        }
+    nunits = 0;
+    for (d = prog_first; d; d = nx[d])              /* the candidates, in BSS order: the uninitialised globals */
+        if (nk[d] == N_GVAR && !nc[d]) { v = nm_glob[nb[d]]; if (zsz(v) == 2) z_unit(v, 1, 0); }
+    for (i = 0; i < 2; i++)                         /* then the frames in compile order */
+        for (d = prog_first; d; d = nx[d]) {
+            if (nk[d] != N_FUNC) continue;
+            f = nm_fn[nb[d]];
+            if (!f_live[f] || f_body[f] != d || (i == 0) != (nb[d] == NM_MAIN)) continue;
+            first = f_vfirst[f];
+            if (bit(f, f)) {                        /* a recursive function: its whole frame, 1..256 bytes */
+                n = 0; bad = 0;                     /* (a variable of unknown size keeps the frame out) */
+                for (v = 0; v < f_vn[f] && n <= 256; v++) { n = n + zsz(first + v); if (!zsz(first + v)) bad = 1; }
+                if (n > 0 && n <= 256 && !bad) z_unit(first, f_vn[f], f);
+            } else
+                for (v = 0; v < f_vn[f]; v++) if (zsz(first + v) == 2) z_unit(first + v, 1, 0);
+        }
+    used = 0;
+    for (;;) {                                      /* the densest first (ties: the earlier), if it still fits */
+        best = nunits;
+        for (i = 0; i < nunits; i++)
+            if (!u_done[i] && u_w[i] && (best == nunits || u_d[i] > u_d[best])) best = i;
+        if (best == nunits) break;
+        u_done[best] = 1;
+        if (used + u_size[best] <= 256) {
+            used = used + u_size[best];
+            for (i = 0; i < u_n[best]; i++) {
+                v = u_first[best] + i;
+                v_zp[v] = 1; zused = 1;
+                ul_zp[ul_find(lpool + v_lab[v])] = 1;
+            }
+        }
+    }
+}
+void zbss(int page) {                               /* the DS lines of the globals (page 0) or of the page (page 1) */
+    int d; int v; int i; int k; int f;
+    for (d = prog_first; d; d = nx[d]) {
+        if (nk[d] != N_GVAR || nc[d]) continue;
+        v = nm_glob[nb[d]];
+        if (v_zp[v] != page) continue;
+        db[0] = 0; bcat(db, lpool + v_lab[v]); bcat(db, ": DS "); bnum(db, v_size(v)); bss_line(db);
+    }
+    if (!page) return;
+    for (k = 0; k < 2; k++)                         /* the frames' page variables in compile order */
+        for (d = prog_first; d; d = nx[d]) {
+            if (nk[d] != N_FUNC) continue;
+            f = nm_fn[nb[d]];
+            if (!f_live[f] || f_body[f] != d || (k == 0) != (nb[d] == NM_MAIN)) continue;
+            for (i = 0; i < f_vn[f]; i++) {
+                v = f_vfirst[f] + i;
+                if (!v_zp[v]) continue;
+                db[0] = 0; bcat(db, lpool + v_lab[v]); bcat(db, ": DS "); bnum(db, v_size(v)); bss_line(db);
+            }
+        }
+}
+
 /* ---- the runtime (y1cc.py emit_runtime: the same text) ---------------------------------------------------------- */
 void rt(char *t) { sec_line(0, t); }
 void rtn(char *pre, int n) { db[0] = 0; bcat(db, pre); bnum(db, n); sec_line(0, db); }
+void zrt(void) { if (zused) rt("        MVIW R6,zpage"); }
 void emit_runtime(void) {
     int h;
     for (h = 0; h < RT_COUNT; h++) {
@@ -2994,6 +3128,16 @@ void emit_runtime(void) {
             rt("        MVAT"); rt("        LDAI 255"); rt("        ADDI 1");
             rt("        MVRLA R3"); rt("        ADDTC"); rt("        MVARL R3"); rt("        MVRHA R4"); rt("        MVAT");
             rt("        MVRHA R3"); rt("        ADDTC"); rt("        MVARH R3"); rt("        RET");
+        } else if (h == RT_MUL && opt_xisa) {        /* --xisa: SHL16 where nothing reads the carry */
+            rt("rt_mul: MVIW R5,0");
+            rt("rt_mul_l: MVRLA R4"); rt("        MVAT"); rt("        MVRHA R4"); rt("        ORT"); rt("        BRZ rt_mul_d");
+            rt("        MVRLA R4"); rt("        ANDI 1"); rt("        BRZ rt_mul_s");
+            rt("        MVRLA R3"); rt("        MVAT"); rt("        MVRLA R5"); rt("        ADDT"); rt("        MVARL R5");
+            rt("        MVRHA R3"); rt("        MVAT"); rt("        MVRHA R5"); rt("        ADDTC"); rt("        MVARH R5");
+            rt("rt_mul_s: SHL16 R3");
+            rt("        LDAI 0"); rt("        CSHL"); rt("        MVRHA R4"); rt("        CSHR"); rt("        MVARH R4");
+            rt("        MVRLA R4"); rt("        CSHR"); rt("        MVARL R4"); rt("        BR rt_mul_l");
+            rt("rt_mul_d: MOVRR R5,R3"); rt("        RET");
         } else if (h == RT_MUL) {
             rt("rt_mul: MVIW R5,0");
             rt("rt_mul_l: MVRLA R4"); rt("        MVAT"); rt("        MVRHA R4"); rt("        ORT"); rt("        BRZ rt_mul_d");
@@ -3005,6 +3149,22 @@ void emit_runtime(void) {
             rt("        LDAI 0"); rt("        CSHL"); rt("        MVRHA R4"); rt("        CSHR"); rt("        MVARH R4");
             rt("        MVRLA R4"); rt("        CSHR"); rt("        MVARL R4"); rt("        BR rt_mul_l");
             rt("rt_mul_d: MOVRR R5,R3"); rt("        RET");
+        } else if (h == RT_DIVMOD && opt_xisa) {     /* --xisa: the remainder in R5 (R6 is the page register) */
+            rt("rt_divmod: MVIW R5,0"); rt("        MVIW R7,16");
+            rt("rt_dm_l: MVRLA R3"); rt("        MVAT"); rt("        ADDT"); rt("        MVARL R3");
+            rt("        MVRHA R3"); rt("        MVAT"); rt("        ADDTC"); rt("        MVARH R3");
+            rt("        MVRLA R5"); rt("        MVAT"); rt("        ADDTC"); rt("        MVARL R5");
+            rt("        MVRHA R5"); rt("        MVAT"); rt("        ADDTC"); rt("        MVARH R5");
+            rt("        MVRHA R4"); rt("        MVAT"); rt("        MVRHA R5");
+            rt("        BRLT rt_dm_n"); rt("        BRNEQ rt_dm_y");
+            rt("        MVRLA R4"); rt("        MVAT"); rt("        MVRLA R5"); rt("        BRLT rt_dm_n");
+            rt("rt_dm_y: MVRLA R4"); rt("        MVAT"); rt("        MVRLA R5"); rt("        BRLT rt_dm_b");
+            rt("        SUBT"); rt("        MVARL R5"); rt("        MVRHA R4"); rt("        MVAT"); rt("        MVRHA R5");
+            rt("        SUBT"); rt("        MVARH R5"); rt("        INCR R3"); rt("        BR rt_dm_n");
+            rt("rt_dm_b: SUBT"); rt("        MVARL R5"); rt("        MVRHA R4"); rt("        MVAT"); rt("        MVRHA R5");
+            rt("        SUBT"); rt("        SUBI 1"); rt("        MVARH R5"); rt("        INCR R3");
+            rt("rt_dm_n: DECR R7"); rt("        MVRLA R7"); rt("        BRNZ rt_dm_l");
+            rt("        RET");
         } else if (h == RT_DIVMOD) {
             rt("rt_divmod: MVIW R6,0"); rt("        MVIW R7,16");
             rt("rt_dm_l: MVRLA R3"); rt("        MVAT"); rt("        ADDT"); rt("        MVARL R3");
@@ -3021,6 +3181,9 @@ void emit_runtime(void) {
             rt("        SUBT"); rt("        SUBI 1"); rt("        MVARH R6"); rt("        INCR R3");
             rt("rt_dm_n: DECR R7"); rt("        MVRLA R7"); rt("        BRNZ rt_dm_l");
             rt("        MOVRR R6,R5"); rt("        RET");
+        } else if (h == RT_SHL && opt_xisa) {
+            rt("rt_shl: MVRLA R4"); rt("        BRZ rt_shl_d"); rt("rt_shl_l: SHL16 R3");
+            rt("        DECR R4"); rt("        MVRLA R4"); rt("        BRNZ rt_shl_l"); rt("rt_shl_d: RET");
         } else if (h == RT_SHL) {
             rt("rt_shl: MVRLA R4"); rt("        BRZ rt_shl_d");
             rt("rt_shl_l: MVRLA R3"); rt("        MVAT"); rt("        ADDT"); rt("        MVARL R3");
@@ -3035,20 +3198,20 @@ void emit_runtime(void) {
             if (opt_os) {
                 rt("rt_putc: PUSHR R3"); rt("        PUSHR R4"); rt("        MVARL R3"); rt("        LDAI 0");
                 rt("        MVARH R3"); rtn("        STR R3,", SYSARG); rtn("        LDR R7,", SYSTAB + 2 * SYS_CONOUT);
-                rt("        JSRUR R7"); rt("        POPR R4"); rt("        POPR R3"); rt("        RET");
+                rt("        JSRUR R7"); zrt(); rt("        POPR R4"); rt("        POPR R3"); rt("        RET");
             } else {
                 rt("rt_putc: BRDEV rt_putc_h"); rt("        OUTA P2"); rt("        RET");
-                rtn("rt_putc_h: JSR ", BIOS_CHAROUT); rt("        RET");
+                rtn("rt_putc_h: JSR ", BIOS_CHAROUT); zrt(); rt("        RET");
             }
         } else if (h == RT_GETC) {
             if (opt_os) {
                 rt("rt_getc: PUSHR R3"); rt("        PUSHR R4"); rtn("        LDR R7,", SYSTAB + 2 * SYS_CONIN);
-                rt("        JSRUR R7"); rtn("        LDR R5,", SYSRES); rt("        POPR R4"); rt("        POPR R3");
+                rt("        JSRUR R7"); zrt(); rtn("        LDR R5,", SYSRES); rt("        POPR R4"); rt("        POPR R3");
                 rt("        MVRHA R5"); rt("        BRNZ rt_getc_e"); rt("        MVRLA R5"); rt("        RET");
                 rt("rt_getc_e: LDAI 0"); rt("        RET");
             } else {
                 rt("rt_getc: BRDEV rt_getc_h"); rt("        INP P2"); rt("        RET");
-                rtn("rt_getc_h: JSR ", BIOS_UARTIN); rt("        RET");
+                rtn("rt_getc_h: JSR ", BIOS_UARTIN); zrt(); rt("        RET");
             }
         } else if (h == RT_PUTS) {
             rt("rt_puts: LDAVR R3"); rt("        BRZ rt_puts_d"); rt("        JSR rt_putc"); rt("        INCR R3");
@@ -3056,11 +3219,11 @@ void emit_runtime(void) {
         } else if (h == RT_FSAVE) {
             rt("rt_fsave: POPR R7"); rt("rt_fsave_l: LDAVR R5"); rt("        PUSH"); rt("        INCR R5"); rt("        DECR R6");
             rt("        MVRLA R6"); rt("        MVAT"); rt("        MVRHA R6"); rt("        ORT"); rt("        BRNZ rt_fsave_l");
-            rt("        PUSHR R7"); rt("        RET");
+            zrt(); rt("        PUSHR R7"); rt("        RET");
         } else if (h == RT_FREST) {
             rt("rt_frest: POPR R7"); rt("rt_frest_l: POP"); rt("        STAVR R5"); rt("        DECR R5"); rt("        DECR R6");
             rt("        MVRLA R6"); rt("        MVAT"); rt("        MVRHA R6"); rt("        ORT"); rt("        BRNZ rt_frest_l");
-            rt("        PUSHR R7"); rt("        RET");
+            zrt(); rt("        PUSHR R7"); rt("        RET");
         }
     }
 }
@@ -3081,7 +3244,7 @@ void y1cc_main(void) {
     n = io_argc();
     if (n > 0) io_arg(0, srcpath, LINE_MAX);
     if (n == 0 || srcpath[0] == '-')
-        fail("usage: y1cc prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [--os] [-l]");
+        fail("usage: y1cc prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [--os] [--xisa] [-l]");
     sep = 0; dot = 0;                               /* os.path.splitext: the extension of the last path element */
     for (i = 0; srcpath[i]; i++) { if (srcpath[i] == '/') sep = i + 1; }
     for (i = sep; srcpath[i]; i++) if (srcpath[i] == '.') dot = i;
@@ -3104,6 +3267,7 @@ void y1cc_main(void) {
     opt_brur = has_arg("--no-brur") == 0;
     opt_os = has_arg("--os") != 0;
     opt_list = has_arg("-l") != 0;
+    opt_xisa = has_arg("--xisa") != 0;
     lbase = LBASE_NONE;
     lx_push(srcpath);
     program();

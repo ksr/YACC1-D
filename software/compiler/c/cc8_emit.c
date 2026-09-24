@@ -63,6 +63,7 @@ int m_hi;                       /* mul32() */
 int m_lo;
 
 int cur_name;                   /* the function being compiled */
+int opt_xisa;                   /* --xisa (2026-09-24): ADDIW R4,k; M_ZP after bios()/call()/sys() */
 int cur_rbase;
 int cur_rptr;
 int nsym;
@@ -116,7 +117,13 @@ void zext(void);
 void m_addk(int k);
 void m_adda(void);
 void m_simple(int m);
-void m_logk(int op, int k);
+void r4op(int lo, int hi);
+void add_r4(void);
+int logic_mn(int op);
+void logic_r4(int op);
+void logic_const(int op, int k);
+void shr1(void);
+void not_r3(void);
 void m_scale(int esz);
 void m_brel(int rel, int sym, int lomode, int lok);
 void a_var(int v);
@@ -157,6 +164,7 @@ void gen_expr_stmt(int e);
 void read_tree(void);
 void copy(int n);
 void load_structs(void);
+void zreload(void);
 
 /* ---- the attributes: a poisoned one raises its error ---------------------------------------------------------- */
 void e_name(int id) { nm_fetch(id == 65535 ? 0 : id, nmbuf); e_s(nmbuf); }
@@ -219,7 +227,32 @@ void zext(void) { insn(MN_LDAI, 0); insr(MN_MVARH, 3); }
 void m_addk(int k) { wb(R_MACRO); wb(M_ADDK); wi(k & 65535); }
 void m_adda(void) { wb(R_MACRO); wb(M_ADDA); w_addr(); }
 void m_simple(int m) { wb(R_MACRO); wb(m); }
-void m_logk(int op, int k) { wb(R_MACRO); wb(M_LOGK); wb(op); wi(k & 65535); }
+/* y1cc.c's add_r4, logic_r4, logic_const, shr1, not_r3: instruction records here (2026-09-24; they were cc9 macros,
+   moved out of cc9 to make room there for --xisa) */
+void r4op(int lo, int hi) {                         /* R3 = R3 op R4, a byte at a time (lo op, then hi op) */
+    insr(MN_MVRLA, 4); ins0(MN_MVAT); insr(MN_MVRLA, 3); ins0(lo); insr(MN_MVARL, 3);
+    insr(MN_MVRHA, 4); ins0(MN_MVAT); insr(MN_MVRHA, 3); ins0(hi); insr(MN_MVARH, 3);
+}
+void add_r4(void) { r4op(MN_ADDT, MN_ADDTC); }
+int logic_mn(int op) { if (op == O_AMP) return MN_ANDT; if (op == O_BAR) return MN_ORT; return MN_XORT; }
+void logic_r4(int op) { r4op(logic_mn(op), logic_mn(op)); }
+void logic_const(int op, int k) {                   /* R3 = R3 op k */
+    int lo; int hi; int ident; int m;
+    k = k & 65535; lo = k & 255; hi = (k >> 8) & 255;
+    ident = op == O_AMP ? 255 : 0;                  /* the byte value that leaves a byte unchanged */
+    m = op == O_AMP ? MN_ANDI : (op == O_BAR ? MN_ORI : MN_XORI);
+    if (lo != ident) { insr(MN_MVRLA, 3); insn(m, lo); insr(MN_MVARL, 3); }
+    if (hi != ident) { insr(MN_MVRHA, 3); insn(m, hi); insr(MN_MVARH, 3); }
+}
+void shr1(void) {                                   /* R3 >>= 1 (carry cleared, then rotate high and low through it) */
+    insn(MN_LDAI, 0); ins0(MN_CSHL);
+    insr(MN_MVRHA, 3); ins0(MN_CSHR); insr(MN_MVARH, 3);
+    insr(MN_MVRLA, 3); ins0(MN_CSHR); insr(MN_MVARL, 3);
+}
+void not_r3(void) {                                 /* R3 = ~R3 */
+    insr(MN_MVRLA, 3); ins0(MN_INVA); insr(MN_MVARL, 3);
+    insr(MN_MVRHA, 3); ins0(MN_INVA); insr(MN_MVARH, 3);
+}
 void m_scale(int esz) { wb(R_MACRO); wb(M_SCALE); wi(esz); }
 void m_brel(int rel, int sym, int lomode, int lok) { wb(R_MACRO); wb(M_BREL); wb(rel); wi(sym); wb(lomode); wi(lok); }
 
@@ -385,8 +418,8 @@ void gen_address(int e) {
         }
         gen_expr(i); m_scale(esz);
         if (is_array(b) && static_addr(b)) { m_adda(); return; }
-        if (is_leaf(b)) { gen_leaf(4, b); m_simple(M_ADDR4); return; }
-        insr(MN_PUSHR, 3); gen_expr(b); insr(MN_POPR, 4); m_simple(M_ADDR4); return;
+        if (is_leaf(b)) { gen_leaf(4, b); add_r4(); return; }
+        insr(MN_PUSHR, 3); gen_expr(b); insr(MN_POPR, 4); add_r4(); return;
     }
     e_start("y1cc: not an lvalue: "); e_q(k <= N_BIN ? kindname[k] : "?"); e_go();
 }
@@ -416,9 +449,9 @@ void gen_expr(int e) {
         if (op == O_AMP) { gen_address(nb[e]); return; }
         if (op == O_STAR) { gen_expr(nb[e]); type_lval(e); deref_r3(tb, tp); return; }
         if (op == O_NOT) { materialize(e); return; }
-        if (op == O_TILDE) { gen_expr(nb[e]); m_simple(M_NOT); return; }
+        if (op == O_TILDE) { gen_expr(nb[e]); not_r3(); return; }
         if (fold(e)) { insrn(MN_MVIW, 3, fv); return; }
-        gen_expr(nb[e]); m_simple(M_NOT); insr(MN_INCR, 3);
+        gen_expr(nb[e]); not_r3(); insr(MN_INCR, 3);
         return;
     }
     if (k == N_INDEX || k == N_MEMBER || k == N_ARROW) {
@@ -523,6 +556,7 @@ void load_address_r4(int lhs) {                     /* R4 = &lhs for a simple_ad
     off = off & 65535;
     if (off == 0) return;
     if (off <= 3) { for (i = 0; i < off; i++) insr(MN_INCR, 4); return; }
+    if (opt_xisa) { insrn(MN_ADDIW, 4, off); return; }
     insr(MN_MVRLA, 4); insn(MN_ADDI, off & 255); insr(MN_MVARL, 4);
     insr(MN_MVRHA, 4); insn(MN_ADDIC, off >> 8); insr(MN_MVARH, 4);
 }
@@ -560,7 +594,7 @@ void gen_bin(int e) {
             if (tp > 0) {                           /* pointer - pointer = element count */
                 esz = size_of(lt, lp - 1);
                 operands(op, a, b); need(RT_SUB); jsr_rt(RT_SUB);
-                if (esz == 2) m_simple(M_SHR1);
+                if (esz == 2) shr1();
                 else if (esz != 1) { insrn(MN_MVIW, 4, esz); need(RT_DIVMOD); jsr_rt(RT_DIVMOD); }
                 return;
             }
@@ -578,8 +612,8 @@ void gen_bin(int e) {
         if (scale != 1) {                           /* pointer +- int: scale the int first */
             gen_expr(b); m_scale(scale);
             if (op == O_PLUS) {
-                if (is_leaf(a)) { gen_leaf(4, a); m_simple(M_ADDR4); return; }
-                insr(MN_PUSHR, 3); gen_expr(a); insr(MN_POPR, 4); m_simple(M_ADDR4); return;
+                if (is_leaf(a)) { gen_leaf(4, a); add_r4(); return; }
+                insr(MN_PUSHR, 3); gen_expr(a); insr(MN_POPR, 4); add_r4(); return;
             }
             insrr(MN_MOVRR, 3, 4);
             if (is_leaf(a)) gen_leaf(3, a);
@@ -590,13 +624,13 @@ void gen_bin(int e) {
             if (fold(a)) { ka = fv; gen_expr(b); m_addk(ka); return; }
         }
         operands(op, a, b);
-        if (op == O_PLUS) m_simple(M_ADDR4); else { need(RT_SUB); jsr_rt(RT_SUB); }
+        if (op == O_PLUS) add_r4(); else { need(RT_SUB); jsr_rt(RT_SUB); }
         return;
     }
     if (op == O_AMP || op == O_BAR || op == O_CARET) {
-        if (hkb) { gen_expr(a); m_logk(op, kb); return; }
-        if (fold(a)) { ka = fv; gen_expr(b); m_logk(op, ka); return; }
-        operands(op, a, b); wb(R_MACRO); wb(M_LOGR4); wb(op); return;
+        if (hkb) { gen_expr(a); logic_const(op, kb); return; }
+        if (fold(a)) { ka = fv; gen_expr(b); logic_const(op, ka); return; }
+        operands(op, a, b); logic_r4(op); return;
     }
     if (op == O_STAR) {
         hka = fold(a); ka = fv;
@@ -622,9 +656,9 @@ void gen_bin(int e) {
             sh = 0;
             for (t = kb; t > 1; t = t >> 1) sh++;
             gen_expr(a);
-            if (op == O_PERCENT) { m_logk(O_AMP, kb - 1); return; }
+            if (op == O_PERCENT) { logic_const(O_AMP, kb - 1); return; }
             if (sh == 8) { insr(MN_MVRHA, 3); insr(MN_MVARL, 3); insn(MN_LDAI, 0); insr(MN_MVARH, 3); return; }
-            if (sh <= 3) { for (i = 0; i < sh; i++) m_simple(M_SHR1); return; }
+            if (sh <= 3) { for (i = 0; i < sh; i++) shr1(); return; }
             insrn(MN_MVIW, 4, sh); need(RT_SHR); jsr_rt(RT_SHR); return;
         }
         operands(op, a, b); need(RT_DIVMOD); jsr_rt(RT_DIVMOD);
@@ -641,7 +675,7 @@ void gen_bin(int e) {
                 else { insr(MN_MVRHA, 3); insr(MN_MVARL, 3); insn(MN_LDAI, 0); insr(MN_MVARH, 3); }
                 return;
             }
-            if (kb <= 3) { for (i = 0; i < kb; i++) { if (op == O_SHL) m_simple(M_SHL1); else m_simple(M_SHR1); } return; }
+            if (kb <= 3) { for (i = 0; i < kb; i++) { if (op == O_SHL) m_simple(M_SHL1); else shr1(); } return; }
             insrn(MN_MVIW, 4, kb);
         } else operands(op, a, b);
         if (op == O_SHL) { need(RT_SHL); jsr_rt(RT_SHL); }
@@ -767,7 +801,7 @@ void gen_builtin(int e) {                           /* y1cc.c gen_call's builtin
     }
     if (name == B_HALT) { ins0(MN_HALT); return; }
     if (name == B_CALL) {                           /* call(addr): JSRUR to a computed address; R3 = what it returns */
-        gen_expr(nth_arg(e, 0)); insrr(MN_MOVRR, 3, 7); insr(MN_JSRUR, 7); return;
+        gen_expr(nth_arg(e, 0)); insrr(MN_MOVRR, 3, 7); insr(MN_JSRUR, 7); zreload(); return;
     }
     if (name == B_ARGSTR) { insrn(MN_MVIW, 3, ARGBUF); return; }
     if (name == B_SYS) {                            /* sys(n, a, b, c): Y1/OS syscall n through SYSTAB */
@@ -793,7 +827,7 @@ void gen_builtin(int e) {                           /* y1cc.c gen_call's builtin
             insr(MN_POPR, 3); insr(MN_LDAVR, 3); ins0(MN_MVAT); insr(MN_INCR, 3);
             insr(MN_LDAVR, 3); insr(MN_MVARL, 7); ins0(MN_MVTA); insr(MN_MVARH, 7);
         }
-        insr(MN_JSRUR, 7); insrn(MN_LDR, 3, SYSRES); return;
+        insr(MN_JSRUR, 7); zreload(); insrn(MN_LDR, 3, SYSRES); return;
     }
     if (name == B_FUNCADDR) {                       /* funcaddr(f): the address of function f, as an int */
         if (!a_v[e]) {
@@ -807,7 +841,7 @@ void gen_builtin(int e) {                           /* y1cc.c gen_call's builtin
     gen_expr(nth_arg(e, 1)); insrr(MN_MOVRR, 3, 7);
     c = nth_arg(e, 2);
     if (is_narrow(c)) gen_byte_acc(c); else { gen_expr(c); insr(MN_MVRLA, 3); }
-    insn(MN_JSR, n); insr(MN_MVARL, 3); zext();
+    insn(MN_JSR, n); zreload(); insr(MN_MVARL, 3); zext();
 }
 void frame(int e, int restore) {                    /* frame_save / frame_restore of the callee: M_FSAVE / M_FREST */
     if (a_fer[e]) { e_start("y1cc: unknown type '"); e_name(a_fer[e]); e_s("'"); e_go(); }
@@ -879,6 +913,7 @@ void read_tree(void) {                              /* a hole's tree with cc7's 
     rarrc(inh, e_code + 1, n); rarr(inh, e_a1 + 1, n); rarr(inh, e_a2 + 1, n);
 }
 void copy(int n) { while (n) { wb(rb(inh)); n--; } }
+void zreload(void) { if (opt_xisa) m_simple(M_ZP); }   /* y1cc.c zreload: cc9 prints it when the page is used */
 void load_structs(void) {                           /* W.sym: the struct tags and sizes */
     int h;
     h = ropen(".sym");
@@ -891,9 +926,14 @@ void load_structs(void) {                           /* W.sym: the struct tags an
 }
 char rlen[] = {0, 0, 2, 3, 2, 0, 4, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0};   /* operand bytes of cc6's simple records */
 void y1cc_main(void) {
-    int c; int hk; int r; int r2; int sym; int when; int n; int i; int narrow;
+    int c; int hk; int r; int r2; int sym; int when; int n; int i; int narrow; int h;
     p_args();
     load_structs();
+    h = ropen(".opt");                              /* the options: only --xisa matters here */
+    while (rb(h) % 256) {}
+    while (rb(h) % 256) {}
+    ri(h); opt_xisa = (rb(h) & OPT_XISA) != 0;
+    io_close(h);
     inh = ropen(".se");
     wopen(".em");
     for (;;) {

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """y1cc test runner: compile every tests/compiler/*.c, assemble it, run it on the emulator, compare the output.
 
-  run.py [name ...] [--oracle] [--keep]
+  run.py [name ...] [--oracle] [--keep] [--xisa]
     name      run only these tests (basenames without .c)
+    --xisa    compile every test with y1cc --xisa (LDZ/STZ/ADDIW/SHL16, 2026-09-24); expectations are the same
     --oracle  (re)generate NAME.out with the HOST C compiler through host_shim.h (int = unsigned short,
               char unsigned) for every test that is not marked `// no-oracle`; then run as usual
     --keep    leave the build directory (asm, img, listing) in tests/compiler/build/
@@ -20,6 +21,7 @@ ASM = os.path.join(ROOT, "software/assembler/asm")
 DEF = os.path.join(ROOT, "software/assembler/yacc1.def")
 EMU = os.path.join(ROOT, "software/emulator/emulator")
 BUILD = os.path.join(HERE, "build")
+EXTRA = []                  # extra compiler flags for every test (--xisa)
 
 
 def sh(cmd, **kw):
@@ -43,7 +45,7 @@ def run_one(src, want_oracle):
     shutil.copy(DEF, d); open(os.path.join(d, "rcasm.rc"), "w").write("-h\n")
     err_file, out_file, in_file = src[:-2] + ".err", src[:-2] + ".out", src[:-2] + ".in"
     flags = re.search(r"//\s*y1cc:\s*(.*)", open(src).read())         # per-test compiler flags, e.g. // y1cc: --no-brur
-    r = sh([sys.executable, CC, src, "-o", os.path.join(d, name + ".asm"), "--boot"] + (flags.group(1).split() if flags else []))
+    r = sh([sys.executable, CC, src, "-o", os.path.join(d, name + ".asm"), "--boot"] + (flags.group(1).split() if flags else []) + EXTRA)
     if os.path.exists(err_file):
         want = open(err_file).read().strip()
         ok = r.returncode != 0 and want in (r.stderr + r.stdout)
@@ -77,6 +79,7 @@ def run_one(src, want_oracle):
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     want_oracle = "--oracle" in sys.argv; keep = "--keep" in sys.argv
+    if "--xisa" in sys.argv: EXTRA.append("--xisa")
     for t in (ASM, EMU):
         if not os.path.exists(t): sys.exit("missing %s (run `make` at the repo root)" % t)
     os.makedirs(BUILD, exist_ok=True)

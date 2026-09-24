@@ -12,6 +12,8 @@ Every program the old compiler accepts must come out byte-identical (the header'
 old compiler REJECTS is allowed to differ only if the old error was its "recursion is not supported" (the programs
 that only compile since recursion exists), or if the old compiler crashed (a Python traceback: fixed bugs such as
 tests/compiler/adjstr.c); for expected-error tests the error texts must be equal. Exit 1 on any other difference.
+Compiles with --xisa (2026-09-24: tests/compiler/xisa.c asks for it) are not compared when the old compiler predates
+the option (it ignores the flag): they are counted apart; the default output is what this proves unchanged.
 """
 import os, sys, subprocess, shutil, tempfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -46,8 +48,13 @@ def main():
     shutil.rmtree(BUILD, ignore_errors=True)
     tmp = tempfile.mkdtemp(prefix="y1cc-old-")
     old = old_compiler(rev, tmp)
-    same = newonly = errs = crashed = 0; bad = []
+    same = newonly = errs = crashed = xonly = 0; bad = []
+    old_xisa = "--xisa" in open(old).read()
     for i, (tag, src, opts) in enumerate(corpus.items()):
+        if "--xisa" in opts and not old_xisa:            # an option the old compiler does not have
+            xonly += 1
+            if verbose: print("%-44s %-28s %s" % (src, " ".join(opts), "--xisa: new option, not compared"))
+            continue
         base = "%03d_%s_%s" % (i, tag, os.path.basename(src)[:-2])
         outs = {}
         for side, cc in (("old", old), ("new", NEW)):
@@ -73,7 +80,8 @@ def main():
             print("%-44s %-28s %s" % (src, " ".join(opts), state))
     shutil.rmtree(tmp, ignore_errors=True)
     print("diffcheck against %s: %d identical, %d compile only with the new y1cc (recursion), %d expected errors, "
-          "%d crashed the old one, %d DIFFERENT" % (rev, same, newonly, errs, crashed, len(bad)))
+          "%d crashed the old one, %d DIFFERENT%s" % (rev, same, newonly, errs, crashed, len(bad),
+          "; %d --xisa compiles not compared (the old y1cc has no --xisa)" % xonly if xonly else ""))
     for src, opts, why in bad: print("  DIFF %s %s: %s" % (src, " ".join(opts), why))
     if "--keep" not in av and not bad: shutil.rmtree(BUILD, ignore_errors=True)
     sys.exit(1 if bad else 0)

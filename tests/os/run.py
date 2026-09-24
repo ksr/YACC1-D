@@ -102,7 +102,8 @@ def extras(name, img):
             shutil.copy(os.path.join(ROOT, "software/assembler/yacc1.def"), BUILD)
             open(os.path.join(BUILD, "rcasm.rc"), "w").write("-h\n")
             subprocess.run([sys.executable, os.path.join(ROOT, "software/compiler/y1cc.py"), os.path.join(HERE, src),
-                            "-o", os.path.join(BUILD, base + ".asm"), "--org", "0x5000", "--os"], check=True)
+                            "-o", os.path.join(BUILD, base + ".asm"), "--org", "0x5000", "--os"] +
+                           (["--xisa"] if os.environ.get("XISA") else []), check=True)
             lst = subprocess.run([os.path.join(ROOT, "software/assembler/asm"), base, "-d=yacc1"], cwd=BUILD,
                                  capture_output=True, text=True).stdout
             if "\n0 Errors" not in lst: sys.exit("%s: assembler errors" % src)
@@ -127,7 +128,18 @@ MASK = {"pack": (re.compile(r"^(pack: .*)$", re.M), re.compile(r"\d\d+"))}
 BANNER = re.compile(r"Y1/OS v[0-9.]+ \([0-9-]+\)")
 
 
-def same(got, exp): return BANNER.sub("Y1/OS v", got) == BANNER.sub("Y1/OS v", exp)
+# XISA=1 (2026-09-24: the /BIN programs built with y1cc --xisa): the programs are smaller (or, the smallest, 2 bytes
+# larger), so the sizes that `ls` and `load` print are masked; everything else must be the same transcript
+XSIZES = [(re.compile(r"(?m)^(\s*)\d+(  \S+  @[0-9A-F]{4})$"), r"\1N\2"), (re.compile(r"loaded \d+ bytes"), "loaded N bytes")]
+
+
+def xmask(s):
+    if os.environ.get("XISA"):
+        for rx, rep in XSIZES: s = rx.sub(rep, s)
+    return s
+
+
+def same(got, exp): return xmask(BANNER.sub("Y1/OS v", got)) == xmask(BANNER.sub("Y1/OS v", exp))
 
 
 def mask(name, s):

@@ -18,6 +18,9 @@ The set, in the order a bench session should read it (simplest first):
              D on the microcode and the machine, I then D on the instruction-level emulator
   arith calls control arrays structs globals switch switchnb fib sieve syscall   compiled C (tests/compiler)
              rt_sub, rt_mul, rt_divmod, the shifts, comparisons, calls, switch via BRUR tables
+  xisa       (2026-09-24) tests/compiler/xisa.c compiled with y1cc --xisa: LDZ/STZ through the page register R6,
+             ADDIW, SHL16 in compiled code (the page, a recursive frame in it, R6 reloaded after the ROM's charout);
+             needs the 2026-09-24 microcode in the sequencer EEPROM (isa checks the instructions one by one first)
 
 Why the assembly tests are rewritten: the originals write each result to port 2, which exists only on the emulators,
 and several results depend on the carry surviving to the next instruction, so they cannot call a ROM print routine
@@ -35,7 +38,8 @@ CC = os.path.join(ROOT, "software/compiler/y1cc.py"); ASM = os.path.join(ROOT, "
 DEF = os.path.join(ROOT, "software/assembler/yacc1.def")
 IMAGES = os.path.join(HERE, "images"); EXPECTED = os.path.join(HERE, "expected"); LOGS = os.path.join(HERE, "logs")
 MONLST = os.path.join(ROOT, "firmware/monitor/monitor.lst")
-C_TESTS = ["hello", "arith", "calls", "control", "arrays", "structs", "globals", "switch", "switchnb", "fib", "sieve", "syscall"]
+C_TESTS = ["hello", "arith", "calls", "control", "arrays", "structs", "globals", "switch", "switchnb", "fib", "sieve", "syscall",
+           "xisa"]
 ORDER = ["hello", "brur", "isa"] + [t for t in C_TESTS if t != "hello"]
 
 EPILOGUE = """;
