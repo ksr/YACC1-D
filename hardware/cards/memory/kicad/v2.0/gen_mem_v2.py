@@ -6,42 +6,46 @@ Run with KiCad's bundled Python (the board half needs pcbnew); build.sh does tha
     /Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3 gen_mem_v2.py sch
     ... gen_mem_v2.py board a <net>   (one placement option; placements.py holds the options)
 
-v2.0 = the memory card v1.3 + the CompactFlash section (mem_v2_netlist.py says exactly what that is). This script:
+v2.0 = the BUILT memory card v1.3 + the CompactFlash section (mem_v2_netlist.py says exactly what that is). The built
+card is ../v1.3-fusion-export-2026-09-24: the KiCad conversion of Ken's Fusion export of the design JLCPCB fabricated
+on 2025-06-27 (proven against the order's gerbers, hardware/cards/memory/eagle/v1.3-fusion-export-2026-09-24/README.md).
+Called "base" / "v1.3" below. This script:
 
-  sch    copies the v1.3 schematic (../v1.3, 6 sheets converted from Eagle) unchanged except for
+  sch    copies the base schematic (6 sheets converted from Eagle) unchanged except for
            - project/sheet-file names memory-v1.3 -> memory-v2.0 and the title blocks,
            - sheet 1: the IO-ADDR0-3 / -IO-RD / -IO-WR labels on X1 become global labels (sheet 7 uses those nets)
              and a note says so,
          adds sheet 7 = the CF section, drawn with the CF card's own sheet writer (hardware/cards/cf/kicad/v1.0/gen_cf.py,
          class Sheet: KiCad standard symbols, short wire stubs to labels / power symbols, no-connect flags) from
          mem_v2_netlist.py; nets shared with v1.3 are boxed global labels, as on the converted v1.3 sheets;
-         copies the v1.3 symbol + footprint libraries (nickname memory-v1.3-eagle kept, so nothing is re-linked).
-  board  starts from the v1.3 board (same outline, X1 at the same place: it plugs into the same backplane), keeps every
-         v1.3 footprint and its copper, adds the CF footprints (KiCad standard libraries, as on the CF card v1.0),
-         puts EVERY pad on the net the v2.0 schematic gives it (names from a netlist export of the schematic), renames
-         the v1.3 tracks to the same names, applies the option's moves and placements (placements.py: first the
-         TMP registers IC26-IC29 and RN5/RN6 onto the board where the fabricated card has them - the converted v1.3
-         board keeps them OUTSIDE the outline, as the tree's Eagle board does), deletes the v1.3 track segments/vias
-         that sat on a pad that moved, adds the silkscreen (title V2.0, "CF: P8/P9"), the CF-to-IDE adapter zones
-         (User.Drawings) and the reserved spot of the fabricated card's IC15 (User.Comments). build.sh then trims the
-         v1.3 copper the moves broke (kicad-cli DRC) - the CF section itself is NOT routed: ratsnest only.
-  trim / check / review   the steps after the board: see build.sh.
+         copies the base symbol + footprint libraries (their nickname kept, so nothing is re-linked).
+  board  starts from the base board (same outline, X1 at the same place: it plugs into the same backplane), keeps every
+         base footprint and ALL its copper (the built card's copper = the fab gerbers; nothing is removed or moved:
+         the board fails if an option would break a base track), adds the CF footprints (KiCad standard libraries, as
+         on the CF card v1.0), puts EVERY pad on the net the v2.0 schematic gives it (names from a netlist export of
+         the schematic), renames the base tracks to the same names, applies the option's moves (only parts with no
+         tracks on their pads, e.g. C23 in option B: the planes reach them through their pads) and placements, adds the
+         silkscreen (title V2.0, "CF: P8/P9") and the CF-to-IDE adapter zones (User.Drawings). The CF section itself
+         is NOT routed here: ratsnest only (route_v2.py routes the chosen option).
+  locked / check / review   the steps after the board: see build.sh.
 """
 import os, sys, re, json, shutil, subprocess, collections
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, "..", "..", "..", "..", ".."))
-V13 = os.path.join(HERE, "..", "v1.3")
+BASE_NAME = "v1.3-fusion-export-2026-09-24"             # the built card's KiCad conversion (generated, read-only here)
+V13 = os.path.join(HERE, "..", BASE_NAME)
 sys.path.insert(0, HERE)
 import mem_v2_netlist as NL                                # noqa: E402  (puts the CF card folder on sys.path)
 import gen_cf                                              # noqa: E402  the CF card v1.0's sheet writer (read-only reuse)
 
 PROJ = "memory-v2.0"
-OLD = "memory-v1.3"
+OLD = "memory-" + BASE_NAME
 CLI = gen_cf.CLI
 KFP = gen_cf.KFP
 G = 2.54
-ROOT_UUID = "42231b4d-4c5f-cebb-da74-8d622a2f1dd4"        # the v1.3 root sheet's UUID, kept (footprint paths stay valid)
+ROOT_UUID = re.search(r'\(uuid "([^"]+)"\)', open(os.path.join(V13, OLD + ".kicad_sch")).read()).group(1)
+                                                         # the base root sheet's UUID, kept (footprint paths stay valid)
 SHEET7 = gen_cf.U("memory-v2.0", "sheet7", "instance")
 SHEET7_FILE_UUID = gen_cf.U("memory-v2.0", "sheet7", "file")
 TITLE_OLD, TITLE_NEW = "YACC1 MEMORY BOARD V1.3", "YACC1 MEMORY BOARD V2.0"
@@ -75,7 +79,7 @@ def copy_v13_sheets():
     for n in range(1, 7):
         t = open(os.path.join(V13, "%s-sheet%d.kicad_sch" % (OLD, n))).read()
         t = t.replace('(project "%s"' % OLD, '(project "%s"' % PROJ)
-        note = "Unchanged from v1.3 (converted from Eagle Memory V1.3.sch sheet %d)" % n
+        note = "Unchanged from the built v1.3 (Fusion export 2026-09-24, Memory V1.3.sch sheet %d)" % n
         if n == 1:
             note = "v1.3 sheet 1 + IO-ADDR0-3, -IO-RD, -IO-WR made global (CF section, sheet 7) + note"
             cnt = 0
@@ -111,7 +115,7 @@ def write_root():
     assert old_tb in t
     t = t.replace(old_tb, '(title_block (title "YACC1 memory card v2.0") (date "%s") (rev "%s") (comment 1 %s) '
                   '(comment 2 %s))' % (NL.DATE, NL.REV,
-                                       gen_cf.q("Sheets 1-6 = memory card v1.3 (sheet 1: six bus labels made global); "
+                                       gen_cf.q("Sheets 1-6 = memory card v1.3 as built (sheet 1: six bus labels made global); "
                                                 "sheet 7 = CompactFlash on P8/P9 (the CF card v1.0 circuit)"),
                                        gen_cf.q("Circuit source: mem_v2_netlist.py; generated by gen_mem_v2.py; "
                                                 "see README.md")))
@@ -248,10 +252,25 @@ def build_sheet7():
     return S
 
 
+# the built card's Eagle design rules (Memory V1.3.brd, "oshpark-4layer") where they are stricter than the project's
+# OSH Park defaults (0.1524 mm track, 0.127 mm clearance, 0.381 mm copper to edge, 0.4572/0.254 mm vias): the card
+# keeps 18 mil between tracks (mdWireWire; its closest pair is 0.483 mm) and 10 mil track to pad (mdWirePad)
+DRU = """(version 1)
+# generated by gen_mem_v2.py: the built memory card's Eagle design rules (Memory V1.3.brd) beyond the project defaults
+(rule "track to track 18 mil (Eagle mdWireWire)"
+\t(constraint clearance (min 0.4572mm))
+\t(condition "A.Type == 'track' && B.Type == 'track'"))
+(rule "track to pad 10 mil (Eagle mdWirePad)"
+\t(constraint clearance (min 0.254mm))
+\t(condition "A.Type == 'track' && B.Type == 'pad'"))
+"""
+
+
 def write_project():
     pro = json.load(open(os.path.join(V13, OLD + ".kicad_pro")))
     pro["meta"]["filename"] = PROJ + ".kicad_pro"
     json.dump(pro, open(os.path.join(HERE, PROJ + ".kicad_pro"), "w"), indent=2)
+    open(os.path.join(HERE, PROJ + ".kicad_dru"), "w").write(DRU)
     return pro
 
 
@@ -330,85 +349,11 @@ def adapter_zones(O):
     return g, keep, taodan
 
 
-def dead_copper(b, refs):
-    """uuids of the v1.3 tracks/vias in copper pieces that touch fewer than two pads of the footprints in refs.
-    The tree's Eagle board (and so ../v1.3) is an earlier save than the fabricated card: with IC26-IC29 where the
-    fabricated card has them, its DATA8 and DATA12-15 runs along the bottom edge (routed for an earlier TMP placement)
-    reach X1 only. They are dead copper; build_board drops them before anything is placed."""
-    import pcbnew
-    T = pcbnew.ToMM
-    par = {}
-
-    def f(a):
-        while par.setdefault(a, a) != a:
-            par[a] = par.get(par[a], par[a])
-            a = par[a]
-        return a
-
-    def u(a, c):
-        par[f(a)] = f(c)
-
-    segs, vias = [], []
-    for t in b.GetTracks():
-        if t.Type() == pcbnew.PCB_VIA_T:
-            vias.append(t)
-        else:
-            segs.append(t)
-    S = [(t.m_Uuid.AsString(), t.GetLayer(), T(t.GetStart().x), T(t.GetStart().y), T(t.GetEnd().x), T(t.GetEnd().y),
-          T(t.GetWidth())) for t in segs]
-    for sid, ly, x0, y0, x1, y1, w in S:
-        u(("s", sid), ("p", ly, round(x0, 3), round(y0, 3)))
-        u(("s", sid), ("p", ly, round(x1, 3), round(y1, 3)))
-
-    def on(px, py, s, tol):
-        sid, ly, x0, y0, x1, y1, w = s
-        dx, dy = x1 - x0, y1 - y0
-        L2 = dx * dx + dy * dy
-        k = 0 if L2 == 0 else max(0, min(1, ((px - x0) * dx + (py - y0) * dy) / L2))
-        return (x0 + k * dx - px) ** 2 + (y0 + k * dy - py) ** 2 <= tol * tol
-
-    # T-junctions: an end on another segment of the same layer
-    for s in S:
-        for (px, py) in ((s[2], s[3]), (s[4], s[5])):
-            for o in S:
-                if o is not s and o[1] == s[1] and on(px, py, o, o[6] / 2):
-                    u(("s", s[0]), ("s", o[0]))
-    # vias join every layer at their position
-    for v in vias:
-        vx, vy, r = T(v.GetPosition().x), T(v.GetPosition().y), T(v.GetWidth(pcbnew.F_Cu)) / 2
-        u(("v", v.m_Uuid.AsString()), ("v", v.m_Uuid.AsString()))
-        for s in S:
-            if on(vx, vy, s, r + s[6] / 2):
-                u(("v", v.m_Uuid.AsString()), ("s", s[0]))
-    # pads (through-hole: every layer)
-    pads = collections.defaultdict(set)
-    for fp in b.GetFootprints():
-        if fp.GetReference() not in refs:
-            continue
-        for p in fp.Pads():
-            for s in S:
-                if p.HitTest(pcbnew.VECTOR2I(pcbnew.FromMM(s[2]), pcbnew.FromMM(s[3]))) or \
-                        p.HitTest(pcbnew.VECTOR2I(pcbnew.FromMM(s[4]), pcbnew.FromMM(s[5]))):
-                    pads[f(("s", s[0]))].add((fp.GetReference(), p.GetNumber()))
-            for v in vias:
-                if p.HitTest(v.GetPosition()):
-                    pads[f(("v", v.m_Uuid.AsString()))].add((fp.GetReference(), p.GetNumber()))
-    dead, length = set(), 0.0
-    for s in S:
-        if len(pads.get(f(("s", s[0])), ())) < 2:
-            dead.add(s[0])
-            length += ((s[4] - s[2]) ** 2 + (s[5] - s[3]) ** 2) ** 0.5
-    for v in vias:
-        if len(pads.get(f(("v", v.m_Uuid.AsString())), ())) < 2:
-            dead.add(v.m_Uuid.AsString())
-    return dead, length
-
-
 def build_board(opt, netfile, out=None):
     import pcbnew
     from pcbnew import VECTOR2I
     import placements
-    base = opt == "base"                    # v1.3 + the fabricated positions only: the reference for the options
+    base = opt == "base"                    # the built card with v2.0 net names, no CF section: the reference
     O = placements.OPTIONS[opt] if not base else dict(moves={}, place={}, silk=[], text_moves={}, title="")
     FM = pcbnew.FromMM
     P = lambda x, y: VECTOR2I(FM(x), FM(y))
@@ -482,18 +427,15 @@ def build_board(opt, netfile, out=None):
         if z.GetNetname() and z.GetNetname() in ren:
             z.SetNet(net(ren[z.GetNetname()]))
 
-    # moves of v1.3 parts: remember the old pad positions, drop the copper that ended on them
+    # moves of base parts: only parts with no track or via on a pad (the built card's copper stays whole)
     moved_pads = []
-    moves = dict(placements.FAB_MOVES)
-    moves.update(O["moves"])
+    moves = dict(O["moves"])
     for ref, mv in moves.items():
         fp = fps[ref]
         for p in fp.Pads():
             moved_pads.append((p.GetPosition().x, p.GetPosition().y))
         pos = fp.GetPosition()
         dx, dy = mv[0], mv[1]
-        if ref in placements.FAB_MOVES and ref in O["moves"]:     # an option's move is relative to the fab spot
-            dx, dy = placements.FAB_MOVES[ref][0] + O["moves"][ref][0], placements.FAB_MOVES[ref][1] + O["moves"][ref][1]
         fp.SetPosition(VECTOR2I(pos.x + FM(dx), pos.y + FM(dy)))
         if len(mv) > 2:
             fp.SetOrientationDegrees(mv[2])
@@ -534,8 +476,9 @@ def build_board(opt, netfile, out=None):
         for e in ends:
             if any(abs(e.x - px) < tol and abs(e.y - py) < tol for px, py in moved_pads):
                 kill.add(t.m_Uuid.AsString())
-    dead, dlen = dead_copper(b, {r for r in fps if r not in NL.PARTS})
-    kill |= dead
+    if kill:
+        raise SystemExit("option %s: moving %s would break %d track/via item(s) of the built card; the built card's "
+                         "copper is locked - move a part with no tracks instead" % (opt, sorted(moves), len(kill)))
     # texts moved (the board title etc.)
     for d in b.GetDrawings():
         if d.GetClass() == "PCB_TEXT" and d.GetText() in O.get("text_moves", {}):
@@ -567,8 +510,7 @@ def build_board(opt, netfile, out=None):
     for s, x, y, size, angle in O.get("silk", []):
         text(s, x, y, size, angle)
     if base:
-        return finish(b, out, kill, "base: v1.3 + fabricated positions, %d dead copper items (%.0f mm) and %d on moved "
-                      "pads removed" % (len(dead), dlen, len(kill - dead)))
+        return finish(b, out, kill, "base: the built card, v2.0 net names, %d copper items" % len(tracks))
     g, keep, taodan = adapter_zones(O)
     rect(*keep, pcbnew.Dwgs_User, dash=True)
     rect(*taodan, pcbnew.Dwgs_User, w=0.3)
@@ -576,14 +518,9 @@ def build_board(opt, netfile, out=None):
     for s, x in (("Solid: TAODAN CF-IDE40 on J2 (70 mm, standing up, lower edge ~9-10 mm above the card)", 149.4),
                  ("Dashed: keep-low zone, nothing over ~8 mm (12 mm past each end of J2, both sides)", 151.4)):
         text(s, x, 68.0, 1.0, 90, pcbnew.Dwgs_User, pcbnew.GR_TEXT_H_ALIGN_CENTER)
-    x0, y0, x1, y1 = placements.IC15_SPOT
-    rect(x0, y0, x1, y1, pcbnew.Cmts_User, dash=True)
-    for i, s in enumerate(("reserved: IC15 74ALS11", "fabricated card only,", "not in the v1.3 schematic")):
-        text(s, x0 + 1.0, y0 + 2.2 + 2.2 * i, 0.9, 0, pcbnew.Cmts_User)
     text("Option %s: %s" % (opt.upper(), O["title"]), 20.0, 7.0, 1.5, 0, pcbnew.Dwgs_User)
-    finish(b, out, kill, "option %s: %d footprints, %d CF parts placed, %d v1.3 parts moved, %d dead v1.3 copper "
-           "items (%.0f mm) and %d on moved pads removed" % (opt, len(fps), len(O["place"]), len(moves), len(dead),
-                                                             dlen, len(kill - dead)))
+    finish(b, out, kill, "option %s: %d footprints, %d CF parts placed, %d base part(s) moved %s, all %d base copper "
+           "items kept" % (opt, len(fps), len(O["place"]), len(moves), sorted(moves), len(tracks)))
 
 
 def finish(b, out, kill, msg):
@@ -603,48 +540,59 @@ def finish(b, out, kill, msg):
 
 
 # ---------------------------------------------------------------------------------------------------------------------
-# 3. after the board is written: trim broken v1.3 copper, check the placement, make the review images
-KILL_TYPES = {"clearance", "shorting_items", "tracks_crossing", "hole_clearance", "copper_edge_clearance",
-              "track_dangling", "via_dangling", "items_not_allowed", "hole_to_hole", "solder_mask_bridge"}
-
-
+# 3. after the board is written: prove the built card's copper untouched, check the placement, review images
 def drc_json(pcb, out, refill=False):
     subprocess.run([CLI, "pcb", "drc", "--severity-all", "--format", "json", "-o", out, pcb]
                    + (["--refill-zones"] if refill else []), capture_output=True, text=True)
     return json.load(open(out))
 
 
-def trim(pcb, baseline):
-    """delete the v1.3 track segments / vias that a move or a new part broke: any track or via DRC names in a
-    clearance / short / crossing / dangling / keepout violation that the v1.3 board does not already have; repeat
-    until none is left (a dangling chain is eaten back to its junction or pad)"""
-    base = drc_json(baseline, pcb + ".base.json")
-    os.remove(pcb + ".base.json")
-    seen = {(v["type"], tuple(sorted(i.get("uuid", "") for i in v["items"]))) for v in base["violations"]}
-    total = 0
-    it = 0
-    for it in range(40):
-        d = drc_json(pcb, pcb + ".drc.json")
-        kill = set()
-        for v in d["violations"]:
-            if v["type"] not in KILL_TYPES:
-                continue
-            if (v["type"], tuple(sorted(i.get("uuid", "") for i in v["items"]))) in seen:
-                continue                                  # already on v1.3 (its 17 dangling Eagle stubs)
-            for i in v["items"]:
-                if re.match(r"(Track|Via|Arc)\b", i["description"]):
-                    kill.add(i["uuid"])
-        if not kill:
-            break
-        t = open(pcb).read()
-        forms = gen_cf.top_forms(t)
-        keep = [f for f in forms if not (re.match(r"\((segment|via|arc)\b", f) and
-                                         re.search(r'\(uuid "([^"]+)"\)', f).group(1) in kill)]
-        total += len(forms) - len(keep)
-        open(pcb, "w").write("(kicad_pcb\n\t" + "\n\t".join(keep) + "\n)\n")
-    os.remove(pcb + ".drc.json")
-    n = sum(1 for f in gen_cf.top_forms(open(pcb).read()) if re.match(r"\((segment|via|arc)\b", f))
-    print("trim %s: %d more v1.3 copper items removed in %d DRC passes; %d kept" % (os.path.basename(pcb), total, it, n))
+def copper_keys(pcb):
+    """-> {geometry key: net name} of every track segment / arc / via of a board (text level, no pcbnew). The key is
+    the item's kind, layer(s), end points (sorted) and width / drill: what the fab sees."""
+    out = collections.Counter(); nets = {}
+    for f in gen_cf.top_forms(open(pcb).read()):
+        m = re.match(r"\((segment|via|arc)\b", f)
+        if not m:
+            continue
+        num = lambda tag: tuple(re.search(r"\(%s ([-\d.]+) ([-\d.]+)\)" % tag, f).groups()) if re.search(r"\(%s " % tag, f) else None
+        net = re.search(r'\(net (?:\d+ )?"?([^")]*)"?\)', f)
+        layer = re.search(r'\(layers? ([^)]*)\)', f).group(1)
+        pts = sorted(filter(None, [num("start"), num("end"), num("at"), num("mid")]))
+        w = re.search(r"\(width ([\d.]+)\)", f) or re.search(r"\(size ([\d.]+)\)", f)
+        dr = re.search(r"\(drill ([\d.]+)\)", f)
+        k = (m.group(1), layer, tuple(pts), w.group(1) if w else "", dr.group(1) if dr else "")
+        out[k] += 1
+        nets.setdefault(k, set()).add(net.group(1) if net else "")
+    return out, nets
+
+
+def locked(pcb, baseline, report=None):
+    """prove the built card's copper untouched: every track/via of the base board is on the v2.0 board with the same
+    kind, layer, end points, width and drill, and its net is the base net under the one-to-one v1.3 -> v2.0 rename;
+    -> number of base items missing (0 = pass). Items only on the v2.0 board are the new (CF) copper."""
+    bk, bn = copper_keys(baseline)
+    vk, vn = copper_keys(pcb)
+    missing = bk - vk
+    ren, bad = {}, []
+    for k in bk:
+        if k in vn:
+            for o in bn[k]:
+                n = sorted(vn[k])[0]
+                if ren.setdefault(o, n) != n:
+                    bad.append((o, ren[o], n))
+    inj = len(set(ren.values())) == len(ren)
+    added = sum((vk - bk).values())
+    msg = ("locked %s: %d of %d built-card copper items present unchanged (kind, layer, ends, width, drill); %d missing; "
+           "net rename one-to-one: %s%s; %d new items (the CF section's)"
+           % (os.path.basename(pcb), sum(bk.values()) - sum(missing.values()), sum(bk.values()), sum(missing.values()),
+              "yes" if inj and not bad else "NO", (" %s" % bad[:3]) if bad else "", added))
+    print(msg)
+    for k in list(missing)[:10]:
+        print("    missing:", k)
+    if report:
+        open(report, "w").write(msg + "\n" + "".join("missing: %r\n" % (k,) for k in missing))
+    return sum(missing.values()) + len(bad) + (0 if inj else 1)
 
 
 def refill(pcb):
@@ -689,7 +637,7 @@ def check_placement(pcb, opt):
     O = placements.OPTIONS[opt]
     b = pcbnew.LoadBoard(pcb)
     boxes = body_boxes(b)
-    changed = set(placements.FAB_MOVES) | set(O["moves"]) | set(O["place"])
+    changed = set(O["moves"]) | set(O["place"])
     probs = []
     refs = sorted(boxes)
     for i, a in enumerate(refs):
@@ -715,10 +663,6 @@ def check_placement(pcb, opt):
         bx = boxes[ref]
         if bx[0] < ex0 or bx[1] < ey0 or bx[2] > ex1 or bx[3] > ey1:
             probs.append("%s body outside the board outline" % ref)
-    # the fabricated card's IC15 spot stays free
-    for ref, bx in boxes.items():
-        if overlap(bx, placements.IC15_SPOT):
-            probs.append("%s is in the reserved IC15 spot" % ref)
     # the TAODAN keep-low zone: no tall part in it (J2 itself excepted)
     g, keep, taodan = adapter_zones(O)
     under = sorted(r for r, bx in boxes.items() if r != "J2" and overlap(bx, keep))
@@ -736,7 +680,7 @@ def check_placement(pcb, opt):
     h = boxes["J2"]
     edge = min((h[0] - ex0, "x=%.1f edge" % ex0), (ex1 - h[2], "x=%.1f edge" % ex1), (h[1] - ey0, "y=%.1f edge" % ey0),
                (ey1 - h[3], "y=%.1f edge" % ey1))
-    print("placement %s: %s" % (os.path.basename(pcb), "OK - no new overlaps, pads clear of the edge, IC15 spot free, "
+    print("placement %s: %s" % (os.path.basename(pcb), "OK - no new overlaps, pads clear of the edge, "
                                 "TAODAN keep-low zone clear of tall parts" if not probs else "%d problem(s)" % len(probs)))
     for x in probs:
         print("    ", x)
@@ -764,8 +708,8 @@ def airwire_stats(pcb, drcfile):
 
 
 def review_copy(pcb, out, what):
-    """a copy of the board for the review images only: the adapter zones (User.Drawings) and the IC15 spot
-    (User.Comments) duplicated onto the front silkscreen so the 3D render shows them ('render'), or the ratsnest (from
+    """a copy of the board for the review images only: the adapter zones (User.Drawings) duplicated onto the front
+    silkscreen so the 3D render shows them ('render'), or the ratsnest (from
     DRC's unconnected items) drawn on User.Eco1 ('plot')"""
     import pcbnew
     b = pcbnew.LoadBoard(pcb)
@@ -799,8 +743,10 @@ if __name__ == "__main__":
         main_sch()
     elif sys.argv[1] == "board":
         build_board(sys.argv[2], sys.argv[3], sys.argv[4] if len(sys.argv) > 4 else None)
-    elif sys.argv[1] == "trim":
-        trim(sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == "locked":
+        n = locked(sys.argv[2], sys.argv[3], sys.argv[4] if len(sys.argv) > 4 else None)
+        sys.stdout.flush()
+        os._exit(1 if n else 0)
     elif sys.argv[1] == "refill":
         refill(sys.argv[2])
     elif sys.argv[1] == "check":

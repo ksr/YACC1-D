@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.kicad.org/erc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-09-24T04:59:05",
+    "date": "2026-09-24T10:18:13",
     "ignored_checks": [
         {
             "description": "Global label only appears once in the schematic",
@@ -29,8 +29,23 @@
     "sheets": [
         {
             "path": "/",
-            "uuid_path": "/42231b4d-4c5f-cebb-da74-8d622a2f1dd4",
+            "uuid_path": "/fa1b571f-6e3e-ef79-e2c3-62299d46526c",
             "violations": [
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Symbol IC15 Hidden pin 7 [GND, Power input, Line]",
+                            "pos": {
+                                "x": 1.34657,
+                                "y": 0.54392
+                            },
+                            "uuid": "84e0a030-fd6a-d0cf-c837-98dd33c0ad9c"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
                 {
                     "description": "Symbol pin or wire end off connection grid",
                     "items": [
@@ -38,9 +53,24 @@
                             "description": "Symbol IC12 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
                                 "x": 1.34657,
-                                "y": 0.65822
+                                "y": 0.74712
                             },
-                            "uuid": "56d9ed57-ce1a-8a6d-b7c8-0a068962ee50"
+                            "uuid": "cf3673a5-d6f0-39aa-3b00-48e1890bfd9d"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Symbol IC15 Hidden pin 7 [GND, Power input, Line]",
+                            "pos": {
+                                "x": 1.34657,
+                                "y": 0.92492
+                            },
+                            "uuid": "06a876e8-bdae-fe86-b91c-c214b9bb3f8f"
                         }
                     ],
                     "severity": "warning",
@@ -53,9 +83,9 @@
                             "description": "Symbol IC3 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
                                 "x": 1.34657,
-                                "y": 0.98842
+                                "y": 1.07732
                             },
-                            "uuid": "b45be351-7f2d-2452-e63f-8e33ebdf9df2"
+                            "uuid": "03161b1a-16ad-a27f-59b2-748dc1f25aa2"
                         }
                     ],
                     "severity": "warning",
@@ -68,9 +98,9 @@
                             "description": "Symbol IC3 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
                                 "x": 1.34657,
-                                "y": 1.14082
+                                "y": 1.22972
                             },
-                            "uuid": "63b87acd-aa38-a0e6-cf33-8883ae4b2c28"
+                            "uuid": "32ed4d90-bee8-3f59-c90a-701713f42a5d"
                         }
                     ],
                     "severity": "warning",
@@ -83,9 +113,9 @@
                             "description": "Symbol IC3 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
                                 "x": 1.34657,
-                                "y": 1.31862
+                                "y": 1.40752
                             },
-                            "uuid": "b1ec1772-a9ca-c83c-02cd-427d792bd389"
+                            "uuid": "299c3f88-bcd7-9aab-4fca-738a6789ac66"
                         }
                     ],
                     "severity": "warning",
@@ -98,9 +128,9 @@
                             "description": "Vertical Wire, length 0.0127 mm",
                             "pos": {
                                 "x": 1.651,
-                                "y": 0.6731
+                                "y": 0.762
                             },
-                            "uuid": "8d34da46-27cf-237c-c944-8b8052d921a9"
+                            "uuid": "38973fcc-0fec-4232-6c4d-e5990d217f68"
                         }
                     ],
                     "severity": "warning",
@@ -113,9 +143,9 @@
                             "description": "Vertical Wire, length 0.0127 mm",
                             "pos": {
                                 "x": 1.651,
-                                "y": 0.8255
+                                "y": 0.9144
                             },
-                            "uuid": "485931f4-9cca-f760-b6b4-b772eff8dca8"
+                            "uuid": "7a4acc87-6530-c1e6-fb5b-63188de92ec3"
                         }
                     ],
                     "severity": "warning",
@@ -128,9 +158,9 @@
                             "description": "Label '-REG-FUNC-RD'",
                             "pos": {
                                 "x": 1.8542,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "3fd88a75-5792-7912-62e8-762efb891183"
+                            "uuid": "ab598f0a-c615-81e4-674a-a26d038334b0"
                         }
                     ],
                     "severity": "warning",
@@ -143,9 +173,9 @@
                             "description": "Label '-REG-FUNC-LD'",
                             "pos": {
                                 "x": 1.8796,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "3ac45c90-0106-3e4f-219c-556a799c8f70"
+                            "uuid": "e53b2e74-fa71-5329-4029-2ea7ef3253e6"
                         }
                     ],
                     "severity": "warning",
@@ -158,9 +188,9 @@
                             "description": "Label 'REG-RD-ID0'",
                             "pos": {
                                 "x": 1.905,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "96cfbe09-8fa8-9d3c-87d3-4e82225cb919"
+                            "uuid": "9dd109f3-71bf-00c7-4cbf-f614529ca370"
                         }
                     ],
                     "severity": "warning",
@@ -173,9 +203,9 @@
                             "description": "Label 'REG-RD-ID1'",
                             "pos": {
                                 "x": 1.9304,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "4956b857-1cb9-11af-045a-955b7da4ca00"
+                            "uuid": "416dea5e-63e3-e891-b2b3-b7abb2299fe7"
                         }
                     ],
                     "severity": "warning",
@@ -188,9 +218,9 @@
                             "description": "Label 'REG-RD-ID2'",
                             "pos": {
                                 "x": 1.9558,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "6b4e5dfe-8ed1-6b10-52d0-dfc714cfe12d"
+                            "uuid": "73d598c7-0b40-c63a-97a2-50f975221bbe"
                         }
                     ],
                     "severity": "warning",
@@ -203,9 +233,9 @@
                             "description": "Label 'REG-RD-ID3'",
                             "pos": {
                                 "x": 1.9812,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "9f436d85-5390-1382-beaa-1f5ad6a31ad7"
+                            "uuid": "e6f58e4e-b498-235e-7fde-f918c925c5c4"
                         }
                     ],
                     "severity": "warning",
@@ -218,9 +248,9 @@
                             "description": "Label 'REG-LD-ID0'",
                             "pos": {
                                 "x": 2.0066,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "811528ac-ce20-5716-d4a6-e2a90f2dd5d4"
+                            "uuid": "7b6b393c-f862-973b-b457-cbad67effddc"
                         }
                     ],
                     "severity": "warning",
@@ -233,9 +263,9 @@
                             "description": "Label 'REG-LD-ID1'",
                             "pos": {
                                 "x": 2.032,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "b63c024f-da4e-c25a-d183-6a96ce123cf8"
+                            "uuid": "4f1d5f70-53f6-f935-6e64-47eb0df518e1"
                         }
                     ],
                     "severity": "warning",
@@ -248,9 +278,9 @@
                             "description": "Label 'REG-LD-ID2'",
                             "pos": {
                                 "x": 2.0574,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "7738b428-cfd4-7ede-b338-6cc53213f10b"
+                            "uuid": "e18890ff-67f7-c58b-acb0-9326d9ef9bc3"
                         }
                     ],
                     "severity": "warning",
@@ -263,9 +293,9 @@
                             "description": "Label 'REG-LD-ID3'",
                             "pos": {
                                 "x": 2.0828,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "bf4b1eb9-4460-11a2-07ad-4a6c3c9c23dd"
+                            "uuid": "d85d788f-05c0-cdc6-530b-71fad4760e10"
                         }
                     ],
                     "severity": "warning",
@@ -278,9 +308,9 @@
                             "description": "Label '-REG-RD-LO'",
                             "pos": {
                                 "x": 2.1082,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "4ee1e796-a19a-10b2-49c3-03da1d2d5bf5"
+                            "uuid": "bd06cd31-e894-02b3-a89b-252a9dedccda"
                         }
                     ],
                     "severity": "warning",
@@ -293,9 +323,9 @@
                             "description": "Label '-REG-LD-LO'",
                             "pos": {
                                 "x": 2.1336,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "2ec20990-6556-c87e-60fa-93cd7d39f700"
+                            "uuid": "cf19d086-da36-c450-df7c-391ca45bfadb"
                         }
                     ],
                     "severity": "warning",
@@ -308,9 +338,9 @@
                             "description": "Label '-REG-RD-HI'",
                             "pos": {
                                 "x": 2.159,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "7e1b686f-7c04-ad4a-0e11-20cb5a2d92fc"
+                            "uuid": "e8e5cb83-d333-327b-e370-3ba6ca47e79e"
                         }
                     ],
                     "severity": "warning",
@@ -323,9 +353,9 @@
                             "description": "Label '-REG-LD-HI'",
                             "pos": {
                                 "x": 2.1844,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "e311876f-6c2a-5eef-3e7a-0c17f46a6462"
+                            "uuid": "a8fc2f13-a593-0626-7f93-9f6d50583506"
                         }
                     ],
                     "severity": "warning",
@@ -338,9 +368,9 @@
                             "description": "Label '-REG-DN'",
                             "pos": {
                                 "x": 2.2098,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "d1dcf5ae-b350-798b-9868-22a9bead5ff0"
+                            "uuid": "3bd4f092-bd2d-e85e-3800-8557852a2273"
                         }
                     ],
                     "severity": "warning",
@@ -353,9 +383,9 @@
                             "description": "Label '-REG-UP'",
                             "pos": {
                                 "x": 2.2352,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "d3a40c8f-2e35-99cc-6640-4dfdd209b21d"
+                            "uuid": "5c7f8246-342d-7837-dff1-b955148e894e"
                         }
                     ],
                     "severity": "warning",
@@ -368,9 +398,9 @@
                             "description": "Label '-ADDR-REG-ID0'",
                             "pos": {
                                 "x": 2.4892,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "b789cceb-6e6d-8c6c-b00d-9711946916ce"
+                            "uuid": "3bb257c6-4fcf-c1dd-67cf-b9e43577865a"
                         }
                     ],
                     "severity": "warning",
@@ -383,9 +413,9 @@
                             "description": "Label '-ADDR-REG-ID1'",
                             "pos": {
                                 "x": 2.5146,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "36724865-2422-a7f7-e296-39dab29d8e94"
+                            "uuid": "76a275e4-f93a-b3fa-26a6-24dcde561515"
                         }
                     ],
                     "severity": "warning",
@@ -398,9 +428,9 @@
                             "description": "Label '-ADDR-REG-ID2'",
                             "pos": {
                                 "x": 2.54,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "cb648d28-d9f3-7198-08c8-6e5aaa8efd0b"
+                            "uuid": "934f5aaa-440f-80d2-dd84-5aa518846ada"
                         }
                     ],
                     "severity": "warning",
@@ -413,9 +443,9 @@
                             "description": "Label '-ADDR-REG-ID3'",
                             "pos": {
                                 "x": 2.5654,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "e03d17c2-e377-6786-841c-4aebbd4b8025"
+                            "uuid": "8521cd33-419a-71ac-8642-6819cc231ec9"
                         }
                     ],
                     "severity": "warning",
@@ -428,9 +458,9 @@
                             "description": "Label '-IO-ADDR-LD'",
                             "pos": {
                                 "x": 2.6924,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "86f654c9-b2dd-b5ad-1806-4dc44e42a84a"
+                            "uuid": "56f7146a-4b3e-93ce-4ff2-2feffa70a482"
                         }
                     ],
                     "severity": "warning",
@@ -443,9 +473,9 @@
                             "description": "Label '-INT'",
                             "pos": {
                                 "x": 2.7432,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "e3e2a24a-7de5-0a4d-ad1d-ab0104e173bc"
+                            "uuid": "9384af91-15d2-2548-a6c3-901bef7464ae"
                         }
                     ],
                     "severity": "warning",
@@ -458,9 +488,9 @@
                             "description": "Label '-INTA'",
                             "pos": {
                                 "x": 2.7686,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "d0393739-b03a-55d5-3ed0-23f1fb212c11"
+                            "uuid": "7232b052-1a3a-f0c7-7043-b329247b865f"
                         }
                     ],
                     "severity": "warning",
@@ -473,9 +503,9 @@
                             "description": "Label '-ALU-FUNC'",
                             "pos": {
                                 "x": 2.794,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "a580f166-1af1-8cd1-dd73-72ebca2d22c0"
+                            "uuid": "f3625675-ea58-f9f9-563c-08c14b71fafb"
                         }
                     ],
                     "severity": "warning",
@@ -488,9 +518,9 @@
                             "description": "Label 'ALU0'",
                             "pos": {
                                 "x": 2.8194,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "683340ff-dec8-76c2-e2d2-970f8ec226e8"
+                            "uuid": "65d2fd8d-3ba3-ed7b-e7f9-5c8f868359ea"
                         }
                     ],
                     "severity": "warning",
@@ -503,9 +533,9 @@
                             "description": "Label 'ALU1'",
                             "pos": {
                                 "x": 2.8448,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "26bc802a-880e-4924-f916-c2be04875d7c"
+                            "uuid": "3289f566-e603-adac-2851-16335950e900"
                         }
                     ],
                     "severity": "warning",
@@ -518,9 +548,9 @@
                             "description": "Label 'ALU2'",
                             "pos": {
                                 "x": 2.8702,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "f2b04fe6-6e44-4cc2-3c6b-2b333404d242"
+                            "uuid": "37d4cde1-fbfe-f379-5327-9b853cc09be9"
                         }
                     ],
                     "severity": "warning",
@@ -533,9 +563,9 @@
                             "description": "Label 'ALU3'",
                             "pos": {
                                 "x": 2.8956,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "99f16c41-bf83-9e2d-53d6-8c479f84d2f2"
+                            "uuid": "7fa8d09f-6919-eb59-9deb-e4046a50723b"
                         }
                     ],
                     "severity": "warning",
@@ -548,9 +578,9 @@
                             "description": "Label '-AC-LD-INV'",
                             "pos": {
                                 "x": 2.921,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "41c817dc-83dc-8613-c6c8-0a82d494fec4"
+                            "uuid": "7ad2cc16-7652-a2c7-edef-cb6d7ba67371"
                         }
                     ],
                     "severity": "warning",
@@ -563,9 +593,9 @@
                             "description": "Label '-AC-RD'",
                             "pos": {
                                 "x": 2.9464,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "02307d45-cc2b-31d3-ae5b-148a42ae39cc"
+                            "uuid": "bb759b2e-6bd6-a6dd-504b-d31334198875"
                         }
                     ],
                     "severity": "warning",
@@ -578,9 +608,9 @@
                             "description": "Label '-AC-LD'",
                             "pos": {
                                 "x": 2.9718,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "b1a799da-6355-c1d5-43e4-58fccd9bc0c1"
+                            "uuid": "3e418298-7332-5ab7-19fb-9fb10794cd8e"
                         }
                     ],
                     "severity": "warning",
@@ -593,9 +623,9 @@
                             "description": "Label '-SR-LD'",
                             "pos": {
                                 "x": 2.9972,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "3fd0757c-0ed1-9418-95c1-05a16dd9b975"
+                            "uuid": "ef5bde0d-cddb-f404-de1a-84e7980dafae"
                         }
                     ],
                     "severity": "warning",
@@ -608,9 +638,9 @@
                             "description": "Label 'BR-COND'",
                             "pos": {
                                 "x": 3.0226,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "9cd63035-22ad-18bf-7e3a-6fcde48a1566"
+                            "uuid": "2ce989cf-a517-2483-ec53-aef6aa37282b"
                         }
                     ],
                     "severity": "warning",
@@ -623,9 +653,9 @@
                             "description": "Label '-HL-SWAP'",
                             "pos": {
                                 "x": 3.048,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "eab5c0a1-d1e1-c61f-3b91-349f17832cce"
+                            "uuid": "25bc0b13-eb35-4345-6797-c4ce19d35dfc"
                         }
                     ],
                     "severity": "warning",
@@ -638,9 +668,9 @@
                             "description": "Label '-IN'",
                             "pos": {
                                 "x": 3.0734,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "8e9c1e33-539e-35b2-4cb8-b8f3b2db1cbc"
+                            "uuid": "755f6f38-505f-719a-8602-bbc0a800532d"
                         }
                     ],
                     "severity": "warning",
@@ -653,9 +683,9 @@
                             "description": "Label '-OUT'",
                             "pos": {
                                 "x": 3.0988,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "7c0aeefe-ff02-5dc2-94c2-b6530abb9f2c"
+                            "uuid": "78b09ae2-2fc8-9727-1cef-645b4bb48c1c"
                         }
                     ],
                     "severity": "warning",
@@ -668,9 +698,9 @@
                             "description": "Label '-RUN'",
                             "pos": {
                                 "x": 3.1496,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
-                            "uuid": "4233ffe8-4eb4-978d-8ca0-89d776d4a5a8"
+                            "uuid": "8c582eba-4949-fe0a-5dc2-88257fd3b7e8"
                         }
                     ],
                     "severity": "warning",
@@ -685,7 +715,7 @@
                                 "x": 0.50763,
                                 "y": 1.31028
                             },
-                            "uuid": "c13c74d6-e4d2-e266-b937-df3aa629e43b"
+                            "uuid": "ec0c7f4e-2a32-7cb8-5a92-5fb0c86a393b"
                         }
                     ],
                     "severity": "warning",
@@ -700,7 +730,7 @@
                                 "x": 0.60997,
                                 "y": 0.49312
                             },
-                            "uuid": "c3620d27-b36b-47fe-0582-d0cd21288f74"
+                            "uuid": "84323530-2082-9258-87cb-4cacba369bcf"
                         }
                     ],
                     "severity": "warning",
@@ -715,7 +745,7 @@
                                 "x": 0.73623,
                                 "y": 1.31028
                             },
-                            "uuid": "9ebe3e47-d34b-e564-96a8-0874e6c1b492"
+                            "uuid": "a20a5b5f-f609-95b8-c39f-6c887f66f84d"
                         }
                     ],
                     "severity": "warning",
@@ -730,7 +760,7 @@
                                 "x": 0.7366,
                                 "y": 0.9525
                             },
-                            "uuid": "ebb8d1cf-99a6-6363-65a6-251352d9e1fe"
+                            "uuid": "376c781b-df03-ab60-5e00-883b3fbc13d6"
                         }
                     ],
                     "severity": "warning",
@@ -745,7 +775,7 @@
                                 "x": 0.94017,
                                 "y": 0.49312
                             },
-                            "uuid": "efbde0f5-5f68-45aa-1066-7d8b95ebdb25"
+                            "uuid": "a7312989-55fa-68cf-239d-7fa151336601"
                         }
                     ],
                     "severity": "warning",
@@ -760,7 +790,7 @@
                                 "x": 1.09257,
                                 "y": 0.79781
                             },
-                            "uuid": "ba0493b5-f235-3c76-6056-b9c9b0e1ab98"
+                            "uuid": "81f46f79-c6dc-500b-4d03-aab86adcfe1f"
                         }
                     ],
                     "severity": "warning",
@@ -775,7 +805,7 @@
                                 "x": 1.29577,
                                 "y": 0.39152
                             },
-                            "uuid": "95e07b23-beed-77ce-ee72-f73d44d99cad"
+                            "uuid": "dd549b71-312d-ff5e-abd2-9906acdf9819"
                         }
                     ],
                     "severity": "warning",
@@ -790,7 +820,7 @@
                                 "x": 1.57517,
                                 "y": 0.39152
                             },
-                            "uuid": "d8afb26a-b41a-a96c-2ede-59cc5b74d526"
+                            "uuid": "88549955-85e5-8049-82eb-84e3ebefc64c"
                         }
                     ],
                     "severity": "warning",
@@ -805,7 +835,7 @@
                                 "x": 2.05777,
                                 "y": 0.39152
                             },
-                            "uuid": "7facb580-a07f-dd07-cf98-1859d39a14b4"
+                            "uuid": "04957cb3-b7f9-413e-1078-9c844df3f1cc"
                         }
                     ],
                     "severity": "warning",
@@ -820,7 +850,7 @@
                                 "x": 2.26097,
                                 "y": 1.30592
                             },
-                            "uuid": "7c167d9c-aabc-618b-ae86-a54a411c5593"
+                            "uuid": "082faf5b-165b-4a76-2de3-fb672cd1623c"
                         }
                     ],
                     "severity": "warning",
@@ -835,7 +865,7 @@
                                 "x": 2.48957,
                                 "y": 1.30592
                             },
-                            "uuid": "b1d343e8-5713-c665-8ecf-706d8e775dad"
+                            "uuid": "b1b5a2f2-4275-b1cc-d458-b54602096c0a"
                         }
                     ],
                     "severity": "warning",
@@ -850,7 +880,7 @@
                                 "x": 1.28307,
                                 "y": 1.09002
                             },
-                            "uuid": "b870b6b2-324b-1292-3c50-cbad53eb15fb"
+                            "uuid": "72f49d2b-adbe-7bfb-09b6-16f184966e44"
                         }
                     ],
                     "severity": "warning",
@@ -865,7 +895,7 @@
                                 "x": 1.28307,
                                 "y": 1.26782
                             },
-                            "uuid": "d7123f68-0dfc-c44f-2929-9f9241d182c2"
+                            "uuid": "5049dac0-baad-0bf2-e24b-844d1cee1646"
                         }
                     ],
                     "severity": "warning",
@@ -880,7 +910,7 @@
                                 "x": 1.63867,
                                 "y": 0.93762
                             },
-                            "uuid": "44ed5e73-a647-ec11-d2a4-aaaaae599040"
+                            "uuid": "06731a55-b147-1b79-ceb4-196f6431382f"
                         }
                     ],
                     "severity": "warning",
@@ -895,7 +925,7 @@
                                 "x": 1.63867,
                                 "y": 1.57262
                             },
-                            "uuid": "a6141012-802d-3584-b920-3889536ab3f6"
+                            "uuid": "c3615601-6a86-0d4b-afce-5570e6911bae"
                         }
                     ],
                     "severity": "warning",
@@ -910,7 +940,7 @@
                                 "x": 1.66407,
                                 "y": 1.16622
                             },
-                            "uuid": "a7538657-ae0a-bdc7-7e08-921cad1785ab"
+                            "uuid": "7726c7af-df20-3c70-dd1f-a727321d9585"
                         }
                     ],
                     "severity": "warning",
@@ -925,7 +955,7 @@
                                 "x": 1.86727,
                                 "y": 1.57262
                             },
-                            "uuid": "30d89772-c5b7-440f-449b-d78eeb75ee45"
+                            "uuid": "182713ed-f970-5b02-2911-b14a236b7557"
                         }
                     ],
                     "severity": "warning",
@@ -940,7 +970,7 @@
                                 "x": 1.89267,
                                 "y": 0.93762
                             },
-                            "uuid": "93d0ef5e-4930-2eee-cd29-56eaed252d25"
+                            "uuid": "2fa703e9-efd5-c0b9-e52a-a15f02924095"
                         }
                     ],
                     "severity": "warning",
@@ -955,7 +985,7 @@
                                 "x": 2.6035,
                                 "y": 1.6256
                             },
-                            "uuid": "1c2cf23c-9249-6331-91bc-63e837b2fe61"
+                            "uuid": "f790e5c0-a452-0e28-1662-5c8e300de57a"
                         }
                     ],
                     "severity": "warning",
@@ -970,7 +1000,7 @@
                                 "x": 3.2639,
                                 "y": 0.508
                             },
-                            "uuid": "cb62d3a8-a421-2198-a72e-7005bb258869"
+                            "uuid": "15110226-bf8f-e8a9-05dc-b560c7766cfe"
                         }
                     ],
                     "severity": "warning",
@@ -985,7 +1015,7 @@
                                 "x": 3.2639,
                                 "y": 0.6858
                             },
-                            "uuid": "6557e9b6-745d-b6b6-dc8c-aafa704820c6"
+                            "uuid": "1d21d33d-646f-bd37-5fd2-3008d3678df4"
                         }
                     ],
                     "severity": "warning",
@@ -1000,7 +1030,7 @@
                                 "x": 3.2639,
                                 "y": 1.1684
                             },
-                            "uuid": "7cf07cf0-131f-d1c8-1627-08f842a892c5"
+                            "uuid": "07092cc4-bd2f-3b1b-5134-79a95dc052d3"
                         }
                     ],
                     "severity": "warning",
@@ -1015,7 +1045,7 @@
                                 "x": 3.2639,
                                 "y": 1.3462
                             },
-                            "uuid": "07b16207-7891-c292-027e-260309e12025"
+                            "uuid": "506ab07e-e980-1e11-b984-af98cf8416f9"
                         }
                     ],
                     "severity": "warning",
@@ -1030,7 +1060,7 @@
                                 "x": 1.15607,
                                 "y": 0.4421
                             },
-                            "uuid": "c3c9d36a-c48e-80ad-c074-f4faaf04e7dc"
+                            "uuid": "415896c4-e58d-1116-d54f-9871ec1d093d"
                         }
                     ],
                     "severity": "warning",
@@ -1045,7 +1075,7 @@
                                 "x": 1.15607,
                                 "y": 0.6961
                             },
-                            "uuid": "b1715db9-76e4-e89d-138c-8bffe7f5349a"
+                            "uuid": "c9171a64-751a-6959-b49d-fa7666122a5e"
                         }
                     ],
                     "severity": "warning",
@@ -1060,7 +1090,7 @@
                                 "x": 1.15607,
                                 "y": 0.9755
                             },
-                            "uuid": "9c78a7e0-9961-7cff-ac95-ac16c3a45ac4"
+                            "uuid": "d0b2f23c-ba23-544d-990c-aa7835153051"
                         }
                     ],
                     "severity": "warning",
@@ -1075,7 +1105,7 @@
                                 "x": 1.15607,
                                 "y": 1.2295
                             },
-                            "uuid": "31c207f9-8193-f516-a748-ccbd613d8ce3"
+                            "uuid": "0e133268-5a54-7d5a-b68e-28bbb357aa9a"
                         }
                     ],
                     "severity": "warning",
@@ -1090,7 +1120,7 @@
                                 "x": 1.71487,
                                 "y": 1.30581
                             },
-                            "uuid": "8dc2ae95-0562-64d6-c390-9c1de26a290b"
+                            "uuid": "37e121d1-5a99-db88-27e8-418e1c0f30bf"
                         }
                     ],
                     "severity": "warning",
@@ -1105,7 +1135,7 @@
                                 "x": 2.1717,
                                 "y": 0.3937
                             },
-                            "uuid": "befdc93b-2ff4-8ca6-e8ba-e639f8228d01"
+                            "uuid": "20b992b9-6ed6-d2f6-1ac5-8debfdae732b"
                         }
                     ],
                     "severity": "warning",
@@ -1120,7 +1150,7 @@
                                 "x": 2.1717,
                                 "y": 0.4699
                             },
-                            "uuid": "abaa02f0-231c-0065-81f9-ff12bc58b251"
+                            "uuid": "80ddb400-8acc-96f3-f5f7-347c94d66eac"
                         }
                     ],
                     "severity": "warning",
@@ -1135,7 +1165,7 @@
                                 "x": 2.1717,
                                 "y": 0.6477
                             },
-                            "uuid": "37ead957-82e7-f0f3-9338-519aff2e9599"
+                            "uuid": "81e54b4f-5f8f-20d5-9506-b20439c40b87"
                         }
                     ],
                     "severity": "warning",
@@ -1150,7 +1180,7 @@
                                 "x": 2.1717,
                                 "y": 0.7239
                             },
-                            "uuid": "e0f058c5-c43c-d18c-020e-dfd2320aaa35"
+                            "uuid": "93f63276-05cc-bfb9-692b-dabfd1fa39b2"
                         }
                     ],
                     "severity": "warning",
@@ -1165,7 +1195,7 @@
                                 "x": 2.1717,
                                 "y": 0.9271
                             },
-                            "uuid": "632e497c-0841-2f76-5030-05a8d1a8c4f6"
+                            "uuid": "8d5012a9-d3fc-84c1-26e8-5e1e3d5baf7c"
                         }
                     ],
                     "severity": "warning",
@@ -1180,7 +1210,7 @@
                                 "x": 2.1717,
                                 "y": 1.0033
                             },
-                            "uuid": "6d70e955-f292-2bbb-9a1a-8c2379b6eab9"
+                            "uuid": "ed91bc72-1cb8-34f1-f4b0-afe42ee94ff9"
                         }
                     ],
                     "severity": "warning",
@@ -1190,12 +1220,27 @@
                     "description": "Symbol pin or wire end off connection grid",
                     "items": [
                         {
+                            "description": "Symbol IC15 Hidden pin 7 [GND, Power input, Line]",
+                            "pos": {
+                                "x": 1.11797,
+                                "y": 1.09002
+                            },
+                            "uuid": "44d3eeb4-5649-a4fd-e98c-cd221221433e"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
                             "description": "Symbol IC5 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.57517,
-                                "y": 0.8612
+                                "x": 1.85457,
+                                "y": 0.8358
                             },
-                            "uuid": "a52f1512-ad34-f7bd-227e-9ddf122afac1"
+                            "uuid": "1797a08b-05fe-ad13-3e50-5eb751489b8c"
                         }
                     ],
                     "severity": "warning",
@@ -1210,7 +1255,7 @@
                                 "x": 1.53707,
                                 "y": 0.91222
                             },
-                            "uuid": "1ef6ce96-9ac9-fc3f-2276-be078ecd490f"
+                            "uuid": "7fe535e6-720e-f2c2-8153-3a083caf1501"
                         }
                     ],
                     "severity": "warning",
@@ -1225,7 +1270,7 @@
                                 "x": 1.53707,
                                 "y": 1.75042
                             },
-                            "uuid": "e2413611-33c1-9d13-dbc3-a80f0b7a7ff1"
+                            "uuid": "77ae9e66-0195-4419-a1dd-568d4b4c6a24"
                         }
                     ],
                     "severity": "warning",
@@ -1240,7 +1285,7 @@
                                 "x": 2.32447,
                                 "y": 0.785
                             },
-                            "uuid": "8c1bdbce-1ca3-3851-4923-c7b5e08a2939"
+                            "uuid": "21acfb82-748d-8fa6-b568-21f92c19f520"
                         }
                     ],
                     "severity": "warning",
@@ -1255,7 +1300,7 @@
                                 "x": 2.32447,
                                 "y": 1.2168
                             },
-                            "uuid": "6d63963e-de68-9131-ccfc-e5f2b43033df"
+                            "uuid": "3d9b0bbd-85a7-a039-8ec3-257458fcdbb5"
                         }
                     ],
                     "severity": "warning",
@@ -1270,7 +1315,7 @@
                                 "x": 2.32447,
                                 "y": 1.6232
                             },
-                            "uuid": "e752af9d-a3b2-40db-fc05-9f7788633404"
+                            "uuid": "fe72ce01-c12d-404c-ea15-a16f97bf3a35"
                         }
                     ],
                     "severity": "warning",
@@ -1285,7 +1330,7 @@
                                 "x": 2.32447,
                                 "y": 2.055
                             },
-                            "uuid": "02c934e9-3877-eaae-1190-6cfedc2a73b9"
+                            "uuid": "4b1330db-9621-4b28-2304-31212f091480"
                         }
                     ],
                     "severity": "warning",
@@ -1300,7 +1345,7 @@
                                 "x": 2.7051,
                                 "y": 0.6604
                             },
-                            "uuid": "513e0b76-724d-37ed-6e28-fc83e642b8d9"
+                            "uuid": "2bbdbfb9-d86a-1160-45ef-0067caef3c62"
                         }
                     ],
                     "severity": "warning",
@@ -1315,7 +1360,7 @@
                                 "x": 3.0607,
                                 "y": 0.8382
                             },
-                            "uuid": "8e70ef1a-9ad2-c942-8c74-4a10d31b5926"
+                            "uuid": "5adecff6-df9b-ea45-cdf1-cf7d07c129cb"
                         }
                     ],
                     "severity": "warning",
@@ -1330,7 +1375,7 @@
                                 "x": 2.7051,
                                 "y": 1.0922
                             },
-                            "uuid": "1de4bb5b-d826-d206-144d-c38d787001ad"
+                            "uuid": "13cb324a-a884-3949-c971-4718dae9f0ac"
                         }
                     ],
                     "severity": "warning",
@@ -1345,7 +1390,7 @@
                                 "x": 3.0607,
                                 "y": 1.27
                             },
-                            "uuid": "a74f84f6-e0df-1730-3d89-6bc7f0b69f63"
+                            "uuid": "88ba255f-2fe9-f5a7-8b29-0d0160320537"
                         }
                     ],
                     "severity": "warning",
@@ -1360,7 +1405,7 @@
                                 "x": 2.4511,
                                 "y": 1.4986
                             },
-                            "uuid": "b8f46c48-bb5d-0ee5-638e-978e4d791291"
+                            "uuid": "de755c17-2203-1f13-8c3b-6aca9f9454b6"
                         }
                     ],
                     "severity": "warning",
@@ -1375,7 +1420,7 @@
                                 "x": 2.4511,
                                 "y": 1.6764
                             },
-                            "uuid": "e69f2963-a0e9-6757-fc36-12551dde7d73"
+                            "uuid": "de1ad94b-24c1-e679-3612-b6430c1b2c01"
                         }
                     ],
                     "severity": "warning",
@@ -1390,7 +1435,7 @@
                                 "x": 2.4511,
                                 "y": 1.9304
                             },
-                            "uuid": "ab7bea00-b636-6ff3-90aa-4caeecc9c268"
+                            "uuid": "ab6c816c-67ad-c6a9-033b-5f4705ef05f1"
                         }
                     ],
                     "severity": "warning",
@@ -1405,7 +1450,7 @@
                                 "x": 2.4511,
                                 "y": 2.1082
                             },
-                            "uuid": "ead34a8a-699a-9d20-3047-947ba7fda51a"
+                            "uuid": "c2611db9-0d03-a6d2-8269-d794c83f91d7"
                         }
                     ],
                     "severity": "warning",
@@ -1430,17 +1475,17 @@
         },
         {
             "path": "/Sheet 1/",
-            "uuid_path": "/42231b4d-4c5f-cebb-da74-8d622a2f1dd4/36727bec-ef3f-c35c-0354-2dfce4bdbefc",
+            "uuid_path": "/fa1b571f-6e3e-ef79-e2c3-62299d46526c/424595ae-6639-3ee1-b215-e29acd454577",
             "violations": []
         },
         {
             "path": "/Sheet 2/",
-            "uuid_path": "/42231b4d-4c5f-cebb-da74-8d622a2f1dd4/35468cab-567a-8772-871a-8015ceda3737",
+            "uuid_path": "/fa1b571f-6e3e-ef79-e2c3-62299d46526c/ff6ea588-bf4c-2e43-bc44-ece26085ac80",
             "violations": []
         },
         {
             "path": "/Sheet 3/",
-            "uuid_path": "/42231b4d-4c5f-cebb-da74-8d622a2f1dd4/84e875fa-3717-f8e6-26e7-02d6fa9bd086",
+            "uuid_path": "/fa1b571f-6e3e-ef79-e2c3-62299d46526c/b3b771df-f9da-5689-1a9a-c7a9cc358821",
             "violations": [
                 {
                     "description": "Symbol IC14 has input power pins in units [ C, D ] that are not placed",
@@ -1451,7 +1496,7 @@
                                 "x": 1.2827,
                                 "y": 1.0922
                             },
-                            "uuid": "38a06a82-163b-deba-ff42-565349f110ac"
+                            "uuid": "c4fe522a-0a59-8a6a-5f09-8f4faa8bb9c2"
                         }
                     ],
                     "severity": "error",
@@ -1466,7 +1511,7 @@
                                 "x": 1.2827,
                                 "y": 1.0922
                             },
-                            "uuid": "38a06a82-163b-deba-ff42-565349f110ac"
+                            "uuid": "c4fe522a-0a59-8a6a-5f09-8f4faa8bb9c2"
                         }
                     ],
                     "severity": "warning",
@@ -1481,7 +1526,7 @@
                                 "x": 1.2827,
                                 "y": 1.0922
                             },
-                            "uuid": "38a06a82-163b-deba-ff42-565349f110ac"
+                            "uuid": "c4fe522a-0a59-8a6a-5f09-8f4faa8bb9c2"
                         }
                     ],
                     "severity": "warning",
@@ -1491,53 +1536,22 @@
         },
         {
             "path": "/Sheet 4/",
-            "uuid_path": "/42231b4d-4c5f-cebb-da74-8d622a2f1dd4/5a1379ad-354c-e374-017d-2bdc4c9ef65c",
+            "uuid_path": "/fa1b571f-6e3e-ef79-e2c3-62299d46526c/bb238470-a6bd-f06e-9ca9-4e609da77273",
             "violations": []
         },
         {
             "path": "/Sheet 5/",
-            "uuid_path": "/42231b4d-4c5f-cebb-da74-8d622a2f1dd4/06d3ca30-126d-da4e-e4bc-92d2b2e7731b",
-            "violations": [
-                {
-                    "description": "Pin not connected",
-                    "items": [
-                        {
-                            "description": "Symbol IC5 Hidden pin 20 [VCC, Power input, Line]",
-                            "pos": {
-                                "x": 1.57517,
-                                "y": 0.86109
-                            },
-                            "uuid": "2aff29af-29a8-a22f-6393-467e7ca8b2c3"
-                        }
-                    ],
-                    "severity": "error",
-                    "type": "pin_not_connected"
-                },
-                {
-                    "description": "Pin not connected",
-                    "items": [
-                        {
-                            "description": "Symbol IC5 Hidden pin 10 [GND, Power input, Line]",
-                            "pos": {
-                                "x": 1.57517,
-                                "y": 0.8612
-                            },
-                            "uuid": "a52f1512-ad34-f7bd-227e-9ddf122afac1"
-                        }
-                    ],
-                    "severity": "error",
-                    "type": "pin_not_connected"
-                }
-            ]
+            "uuid_path": "/fa1b571f-6e3e-ef79-e2c3-62299d46526c/d79e46fe-3a48-ed7d-87d7-2a1784e25268",
+            "violations": []
         },
         {
             "path": "/Sheet 6/",
-            "uuid_path": "/42231b4d-4c5f-cebb-da74-8d622a2f1dd4/b7a92c64-d729-c1d1-c602-029f5e9b9f0f",
+            "uuid_path": "/fa1b571f-6e3e-ef79-e2c3-62299d46526c/c48148da-debe-007c-6c50-860596463e1b",
             "violations": []
         },
         {
             "path": "/Sheet 7/",
-            "uuid_path": "/42231b4d-4c5f-cebb-da74-8d622a2f1dd4/a2a33116-bb28-57d9-919a-09aa1af6e969",
+            "uuid_path": "/fa1b571f-6e3e-ef79-e2c3-62299d46526c/a2a33116-bb28-57d9-919a-09aa1af6e969",
             "violations": []
         }
     ],

@@ -1,6 +1,6 @@
-     schematic parity: 52 items (v1.3: 217); new: none
-DRC: {'items_not_allowed': 2, 'lib_footprint_mismatch': 1, 'silk_edge_clearance': 4, 'silk_over_copper': 199, 'silk_overlap': 36, 'text_height': 2, 'text_thickness': 1, 'track_dangling': 3}
-     v1.3 had {'items_not_allowed': 2, 'lib_footprint_mismatch': 1, 'silk_edge_clearance': 4, 'silk_over_copper': 199, 'silk_overlap': 24, 'text_height': 2, 'text_thickness': 1, 'track_dangling': 17}
-     ratsnest 152 airwires (6641 mm): 64 touch a CF part (3215 mm); the other 88 (3426 mm) join v1.3 pads only (reference board: 91, 3727 mm; fewer here because the ratsnest of a shared net now also runs via CF pads)
-     v1.3 copper items (tracks + vias) kept 947 of 1048 (reference board 947 -> 0 more removed by this option)
-     non-cosmetic violations beyond v1.3's: none -> PASS
+     schematic parity: 53 items (built v1.3: 220); new: none
+DRC: {'clearance': 2, 'items_not_allowed': 2, 'lib_footprint_mismatch': 1, 'shorting_items': 11, 'silk_edge_clearance': 4, 'silk_over_copper': 199, 'silk_overlap': 45, 'solder_mask_bridge': 50, 'text_height': 2, 'text_thickness': 1}
+     the built card under the same rules: {'items_not_allowed': 2, 'lib_footprint_mismatch': 1, 'silk_edge_clearance': 4, 'silk_over_copper': 199, 'silk_overlap': 45, 'text_height': 2, 'text_thickness': 1}
+     ratsnest 61 airwires (2985 mm), 61 of them touching a CF part (2985 mm); the built card: 0
+     copper items (tracks + vias) 1377 = the built card's 1377, all kept (reports/option-X-locked.txt)
+     non-cosmetic violations beyond the built card's: {'shorting_items': 11, 'clearance': 2, 'solder_mask_bridge': 50} -> FAIL

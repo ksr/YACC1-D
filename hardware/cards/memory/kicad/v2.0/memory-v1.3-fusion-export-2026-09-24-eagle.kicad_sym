@@ -7,7 +7,7 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "IC" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "74*00" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:DIL14" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle 74xx-us:74*00" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "74xx-us_74x00_N_pwrhidden_0_1"
@@ -56,7 +56,7 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "IC" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "74*04" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:DIL14" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle 74xx-us:74*04" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "74xx-us_74x04_N_pwrhidden_0_1"
@@ -106,11 +106,54 @@
 			(pin output inverted (at 10.16 0 180) (length 5.08) (name "O" (effects (font (size 1.27 1.27)) (hide yes))) (number "12" (effects (font (size 1.27 1.27)))))
 		)
 	)
+	(symbol "74xx-us_74x11_N_pwrhidden"
+		(pin_names (hide yes))
+		(exclude_from_sim no) (in_bom yes) (on_board yes)
+		(property "Reference" "IC" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "74*11" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Description" "Eagle 74xx-us:74*11" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(symbol "74xx-us_74x11_N_pwrhidden_0_1"
+			(pin power_in line (at 0.037 0.218 90) (length 0) (hide yes) (name "GND" (effects (font (size 1.27 1.27)) (hide yes))) (number "7" (effects (font (size 1.27 1.27)))))
+			(pin power_in line (at 0.037 0.284 270) (length 0) (hide yes) (name "VCC" (effects (font (size 1.27 1.27)) (hide yes))) (number "14" (effects (font (size 1.27 1.27)))))
+		)
+		(symbol "74xx-us_74x11_N_pwrhidden_1_1"
+			(polyline (pts (xy 2.54 5.08) (xy -7.62 5.08)) (stroke (width 0.4064) (type default)) (fill (type none)))
+			(polyline (pts (xy -7.62 5.08) (xy -7.62 -5.08)) (stroke (width 0.4064) (type default)) (fill (type none)))
+			(polyline (pts (xy -7.62 -5.08) (xy 2.54 -5.08)) (stroke (width 0.4064) (type default)) (fill (type none)))
+			(arc (start 2.54 5.08) (mid 7.62 0) (end 2.54 -5.08) (stroke (width 0.4064) (type default)) (fill (type none)))
+			(pin input line (at -12.7 2.54 0) (length 5.08) (name "I0" (effects (font (size 1.27 1.27)) (hide yes))) (number "1" (effects (font (size 1.27 1.27)))))
+			(pin input line (at -12.7 0 0) (length 5.08) (name "I1" (effects (font (size 1.27 1.27)) (hide yes))) (number "2" (effects (font (size 1.27 1.27)))))
+			(pin output line (at 12.7 0 180) (length 5.08) (name "O" (effects (font (size 1.27 1.27)) (hide yes))) (number "12" (effects (font (size 1.27 1.27)))))
+			(pin input line (at -12.7 -2.54 0) (length 5.08) (name "I2" (effects (font (size 1.27 1.27)) (hide yes))) (number "13" (effects (font (size 1.27 1.27)))))
+		)
+		(symbol "74xx-us_74x11_N_pwrhidden_2_1"
+			(polyline (pts (xy 2.54 5.08) (xy -7.62 5.08)) (stroke (width 0.4064) (type default)) (fill (type none)))
+			(polyline (pts (xy -7.62 5.08) (xy -7.62 -5.08)) (stroke (width 0.4064) (type default)) (fill (type none)))
+			(polyline (pts (xy -7.62 -5.08) (xy 2.54 -5.08)) (stroke (width 0.4064) (type default)) (fill (type none)))
+			(arc (start 2.54 5.08) (mid 7.62 0) (end 2.54 -5.08) (stroke (width 0.4064) (type default)) (fill (type none)))
+			(pin input line (at -12.7 2.54 0) (length 5.08) (name "I0" (effects (font (size 1.27 1.27)) (hide yes))) (number "3" (effects (font (size 1.27 1.27)))))
+			(pin input line (at -12.7 0 0) (length 5.08) (name "I1" (effects (font (size 1.27 1.27)) (hide yes))) (number "4" (effects (font (size 1.27 1.27)))))
+			(pin output line (at 12.7 0 180) (length 5.08) (name "O" (effects (font (size 1.27 1.27)) (hide yes))) (number "6" (effects (font (size 1.27 1.27)))))
+			(pin input line (at -12.7 -2.54 0) (length 5.08) (name "I2" (effects (font (size 1.27 1.27)) (hide yes))) (number "5" (effects (font (size 1.27 1.27)))))
+		)
+		(symbol "74xx-us_74x11_N_pwrhidden_3_1"
+			(polyline (pts (xy 2.54 5.08) (xy -7.62 5.08)) (stroke (width 0.4064) (type default)) (fill (type none)))
+			(polyline (pts (xy -7.62 5.08) (xy -7.62 -5.08)) (stroke (width 0.4064) (type default)) (fill (type none)))
+			(polyline (pts (xy -7.62 -5.08) (xy 2.54 -5.08)) (stroke (width 0.4064) (type default)) (fill (type none)))
+			(arc (start 2.54 5.08) (mid 7.62 0) (end 2.54 -5.08) (stroke (width 0.4064) (type default)) (fill (type none)))
+			(pin input line (at -12.7 2.54 0) (length 5.08) (name "I0" (effects (font (size 1.27 1.27)) (hide yes))) (number "9" (effects (font (size 1.27 1.27)))))
+			(pin input line (at -12.7 0 0) (length 5.08) (name "I1" (effects (font (size 1.27 1.27)) (hide yes))) (number "10" (effects (font (size 1.27 1.27)))))
+			(pin output line (at 12.7 0 180) (length 5.08) (name "O" (effects (font (size 1.27 1.27)) (hide yes))) (number "8" (effects (font (size 1.27 1.27)))))
+			(pin input line (at -12.7 -2.54 0) (length 5.08) (name "I2" (effects (font (size 1.27 1.27)) (hide yes))) (number "11" (effects (font (size 1.27 1.27)))))
+		)
+	)
 	(symbol "74xx-us_74x138_N_pwrhidden"
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "IC" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "74*138" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:DIL16" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:DIL16" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle 74xx-us:74*138" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "74xx-us_74x138_N_pwrhidden_0_1"
@@ -142,7 +185,7 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "IC" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "74*157" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:DIL16" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:DIL16" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle 74xx-us:74*157" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "74xx-us_74x157_N_pwrhidden_0_1"
@@ -174,7 +217,7 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "IC" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "74*244" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:DIL20" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle 74xx-us:74*244" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "74xx-us_74x244_N_pwrhidden_0_1"
@@ -217,7 +260,7 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "IC" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "74*30" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:DIL14" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle 74xx-us:74*30" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "74xx-us_74x30_N_pwrhidden_0_1"
@@ -245,7 +288,7 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "IC" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "74*32" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:DIL14" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle 74xx-us:74*32" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "74xx-us_74x32_N_pwrhidden_0_1"
@@ -305,7 +348,7 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "IC" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "74*374" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:DIL20" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle 74xx-us:74*374" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "74xx-us_74x374_N_pwrhidden_0_1"
@@ -341,7 +384,7 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "IC" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "74*74" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:DIL14" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle 74xx-us:74*74" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "74xx-us_74x74_N_pwrhidden_0_1"
@@ -377,7 +420,7 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "IC" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "74*245" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:DIL20" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle adafruit:74*245" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "adafruit_74x245_N_pwrhidden_0_1"
@@ -415,7 +458,7 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "C" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "C-US" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:C025-025X050" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle adafruit:C-US" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "adafruit_C-US_025-025X050_1_1"
@@ -433,7 +476,7 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "X" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "FABC96R" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:FABC96R" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:FABC96R" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle con-vg:FABC96R" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "con-vg_FABC96R_1_1"
@@ -827,7 +870,7 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "R" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "R" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:0207_10" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:0207_10" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle eagle-ltspice:R" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "eagle-ltspice_R_0207_10_1_1"
@@ -845,7 +888,7 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "LED" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "LED" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:LED5MM" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:LED5MM" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle led:LED" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "led_LED_5MM_1_1"
@@ -860,15 +903,15 @@
 			(polyline (pts (xy -1.905 -1.905) (xy -3.302 -3.302)) (stroke (width 0.1524) (type default)) (fill (type none)))
 			(pin passive line (at 0 -5.08 90) (length 2.54) (name "C" (effects (font (size 1.27 1.27)) (hide yes))) (number "K" (effects (font (size 1.27 1.27)) (hide yes))))
 			(pin passive line (at 0 2.54 270) (length 2.54) (name "A" (effects (font (size 1.27 1.27)) (hide yes))) (number "A" (effects (font (size 1.27 1.27)) (hide yes))))
-			(polyline (pts (xy -3.429 -2.159) (xy -3.048 -1.27) (xy -2.54 -1.778) (xy -3.429 -2.159)) (stroke (width 0.254) (type default)) (fill (type outline)))
-			(polyline (pts (xy -3.302 -3.302) (xy -2.921 -2.413) (xy -2.413 -2.921) (xy -3.302 -3.302)) (stroke (width 0.254) (type default)) (fill (type outline)))
+			(polyline (pts (xy -3.048 -1.27) (xy -3.429 -2.159) (xy -2.54 -1.778) (xy -3.048 -1.27)) (stroke (width 0.254) (type default)) (fill (type outline)))
+			(polyline (pts (xy -2.921 -2.413) (xy -3.302 -3.302) (xy -2.413 -2.921) (xy -2.921 -2.413)) (stroke (width 0.254) (type default)) (fill (type outline)))
 		)
 	)
 	(symbol "memory-hitachi_62256P"
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "IC" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "62256P" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:DIL28-6" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:DIL28-6" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle memory-hitachi:62256P" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "memory-hitachi_62256P_1_1"
@@ -910,7 +953,7 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "IC" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "28C64C" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:DIL28-6" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:DIL28-6" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle memory-nec:28C64C" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "memory-nec_28C64C_1_1"
@@ -953,7 +996,7 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "U" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "PIN_3X8" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:PIN_3X8" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:PIN_3X8" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle pinhead_3row:PIN_3X8" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "pinhead_3row_PIN_3X8_1_1"
@@ -992,7 +1035,7 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "JP" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "PINHD-1X3" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:1X03" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:1X03" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle pinhead:PINHD-1X3" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "pinhead_PINHD-1X3_1_1"
@@ -1010,7 +1053,7 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "RN" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "RNX8" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:RN-9" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:RN-9" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle resistor-net:RNX8" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "resistor-net_RNX8_1_1"
@@ -1073,7 +1116,7 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "RN" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "G08R" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "memory-v1.3-eagle:SIL9" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "memory-v1.3-fusion-export-2026-09-24-eagle:SIL9" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Description" "Eagle resistor-sil:G08R" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(symbol "resistor-sil_G08R_1_1"

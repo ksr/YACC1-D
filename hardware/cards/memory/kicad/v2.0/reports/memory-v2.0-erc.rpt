@@ -1,136 +1,142 @@
-ERC report (2026-09-24T04:59:04, Encoding UTF8)
+ERC report (2026-09-24T10:18:07, Encoding UTF8)
 Report includes: Errors, Warnings, Exclusions
 
 ***** Sheet /
 [endpoint_off_grid]: Symbol pin or wire end off connection grid
     ; warning
-    @(134.657 mm, 65.822 mm): Symbol IC12 Hidden pin 7 [GND, Power input, Line]
+    @(134.657 mm, 54.392 mm): Symbol IC15 Hidden pin 7 [GND, Power input, Line]
 [endpoint_off_grid]: Symbol pin or wire end off connection grid
     ; warning
-    @(134.657 mm, 98.842 mm): Symbol IC3 Hidden pin 7 [GND, Power input, Line]
+    @(134.657 mm, 74.712 mm): Symbol IC12 Hidden pin 7 [GND, Power input, Line]
 [endpoint_off_grid]: Symbol pin or wire end off connection grid
     ; warning
-    @(134.657 mm, 114.082 mm): Symbol IC3 Hidden pin 7 [GND, Power input, Line]
+    @(134.657 mm, 92.492 mm): Symbol IC15 Hidden pin 7 [GND, Power input, Line]
 [endpoint_off_grid]: Symbol pin or wire end off connection grid
     ; warning
-    @(134.657 mm, 131.862 mm): Symbol IC3 Hidden pin 7 [GND, Power input, Line]
+    @(134.657 mm, 107.732 mm): Symbol IC3 Hidden pin 7 [GND, Power input, Line]
+[endpoint_off_grid]: Symbol pin or wire end off connection grid
+    ; warning
+    @(134.657 mm, 122.972 mm): Symbol IC3 Hidden pin 7 [GND, Power input, Line]
+[endpoint_off_grid]: Symbol pin or wire end off connection grid
+    ; warning
+    @(134.657 mm, 140.752 mm): Symbol IC3 Hidden pin 7 [GND, Power input, Line]
 [unconnected_wire_endpoint]: Unconnected wire endpoint
     ; warning
-    @(165.10 mm, 67.31 mm): Vertical Wire, length 1.27 mm
+    @(165.10 mm, 76.20 mm): Vertical Wire, length 1.27 mm
 [unconnected_wire_endpoint]: Unconnected wire endpoint
     ; warning
-    @(165.10 mm, 82.55 mm): Vertical Wire, length 1.27 mm
+    @(165.10 mm, 91.44 mm): Vertical Wire, length 1.27 mm
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(185.42 mm, 196.85 mm): Label '-REG-FUNC-RD'
+    @(185.42 mm, 205.74 mm): Label '-REG-FUNC-RD'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(187.96 mm, 196.85 mm): Label '-REG-FUNC-LD'
+    @(187.96 mm, 205.74 mm): Label '-REG-FUNC-LD'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(190.50 mm, 196.85 mm): Label 'REG-RD-ID0'
+    @(190.50 mm, 205.74 mm): Label 'REG-RD-ID0'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(193.04 mm, 196.85 mm): Label 'REG-RD-ID1'
+    @(193.04 mm, 205.74 mm): Label 'REG-RD-ID1'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(195.58 mm, 196.85 mm): Label 'REG-RD-ID2'
+    @(195.58 mm, 205.74 mm): Label 'REG-RD-ID2'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(198.12 mm, 196.85 mm): Label 'REG-RD-ID3'
+    @(198.12 mm, 205.74 mm): Label 'REG-RD-ID3'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(200.66 mm, 196.85 mm): Label 'REG-LD-ID0'
+    @(200.66 mm, 205.74 mm): Label 'REG-LD-ID0'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(203.20 mm, 196.85 mm): Label 'REG-LD-ID1'
+    @(203.20 mm, 205.74 mm): Label 'REG-LD-ID1'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(205.74 mm, 196.85 mm): Label 'REG-LD-ID2'
+    @(205.74 mm, 205.74 mm): Label 'REG-LD-ID2'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(208.28 mm, 196.85 mm): Label 'REG-LD-ID3'
+    @(208.28 mm, 205.74 mm): Label 'REG-LD-ID3'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(210.82 mm, 196.85 mm): Label '-REG-RD-LO'
+    @(210.82 mm, 205.74 mm): Label '-REG-RD-LO'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(213.36 mm, 196.85 mm): Label '-REG-LD-LO'
+    @(213.36 mm, 205.74 mm): Label '-REG-LD-LO'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(215.90 mm, 196.85 mm): Label '-REG-RD-HI'
+    @(215.90 mm, 205.74 mm): Label '-REG-RD-HI'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(218.44 mm, 196.85 mm): Label '-REG-LD-HI'
+    @(218.44 mm, 205.74 mm): Label '-REG-LD-HI'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(220.98 mm, 196.85 mm): Label '-REG-DN'
+    @(220.98 mm, 205.74 mm): Label '-REG-DN'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(223.52 mm, 196.85 mm): Label '-REG-UP'
+    @(223.52 mm, 205.74 mm): Label '-REG-UP'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(248.92 mm, 196.85 mm): Label '-ADDR-REG-ID0'
+    @(248.92 mm, 205.74 mm): Label '-ADDR-REG-ID0'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(251.46 mm, 196.85 mm): Label '-ADDR-REG-ID1'
+    @(251.46 mm, 205.74 mm): Label '-ADDR-REG-ID1'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(254.00 mm, 196.85 mm): Label '-ADDR-REG-ID2'
+    @(254.00 mm, 205.74 mm): Label '-ADDR-REG-ID2'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(256.54 mm, 196.85 mm): Label '-ADDR-REG-ID3'
+    @(256.54 mm, 205.74 mm): Label '-ADDR-REG-ID3'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(269.24 mm, 196.85 mm): Label '-IO-ADDR-LD'
+    @(269.24 mm, 205.74 mm): Label '-IO-ADDR-LD'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(274.32 mm, 196.85 mm): Label '-INT'
+    @(274.32 mm, 205.74 mm): Label '-INT'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(276.86 mm, 196.85 mm): Label '-INTA'
+    @(276.86 mm, 205.74 mm): Label '-INTA'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(279.40 mm, 196.85 mm): Label '-ALU-FUNC'
+    @(279.40 mm, 205.74 mm): Label '-ALU-FUNC'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(281.94 mm, 196.85 mm): Label 'ALU0'
+    @(281.94 mm, 205.74 mm): Label 'ALU0'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(284.48 mm, 196.85 mm): Label 'ALU1'
+    @(284.48 mm, 205.74 mm): Label 'ALU1'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(287.02 mm, 196.85 mm): Label 'ALU2'
+    @(287.02 mm, 205.74 mm): Label 'ALU2'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(289.56 mm, 196.85 mm): Label 'ALU3'
+    @(289.56 mm, 205.74 mm): Label 'ALU3'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(292.10 mm, 196.85 mm): Label '-AC-LD-INV'
+    @(292.10 mm, 205.74 mm): Label '-AC-LD-INV'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(294.64 mm, 196.85 mm): Label '-AC-RD'
+    @(294.64 mm, 205.74 mm): Label '-AC-RD'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(297.18 mm, 196.85 mm): Label '-AC-LD'
+    @(297.18 mm, 205.74 mm): Label '-AC-LD'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(299.72 mm, 196.85 mm): Label '-SR-LD'
+    @(299.72 mm, 205.74 mm): Label '-SR-LD'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(302.26 mm, 196.85 mm): Label 'BR-COND'
+    @(302.26 mm, 205.74 mm): Label 'BR-COND'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(304.80 mm, 196.85 mm): Label '-HL-SWAP'
+    @(304.80 mm, 205.74 mm): Label '-HL-SWAP'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(307.34 mm, 196.85 mm): Label '-IN'
+    @(307.34 mm, 205.74 mm): Label '-IN'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(309.88 mm, 196.85 mm): Label '-OUT'
+    @(309.88 mm, 205.74 mm): Label '-OUT'
 [isolated_pin_label]: Label connected to only one pin
     ; warning
-    @(314.96 mm, 196.85 mm): Label '-RUN'
+    @(314.96 mm, 205.74 mm): Label '-RUN'
 [endpoint_off_grid]: Symbol pin or wire end off connection grid
     ; warning
     @(50.763 mm, 131.028 mm): Symbol IC6 Hidden pin 7 [GND, Power input, Line]
@@ -235,7 +241,10 @@ Report includes: Errors, Warnings, Exclusions
     @(217.17 mm, 100.33 mm): Horizontal Wire, length 88.90 mm
 [endpoint_off_grid]: Symbol pin or wire end off connection grid
     ; warning
-    @(157.517 mm, 86.12 mm): Symbol IC5 Hidden pin 10 [GND, Power input, Line]
+    @(111.797 mm, 109.002 mm): Symbol IC15 Hidden pin 7 [GND, Power input, Line]
+[endpoint_off_grid]: Symbol pin or wire end off connection grid
+    ; warning
+    @(185.457 mm, 83.58 mm): Symbol IC5 Hidden pin 10 [GND, Power input, Line]
 [endpoint_off_grid]: Symbol pin or wire end off connection grid
     ; warning
     @(153.707 mm, 91.222 mm): Symbol IC14 Hidden pin 7 [GND, Power input, Line]
@@ -300,18 +309,12 @@ Report includes: Errors, Warnings, Exclusions
 ***** Sheet /Sheet 4/
 
 ***** Sheet /Sheet 5/
-[pin_not_connected]: Pin not connected
-    ; error
-    @(157.517 mm, 86.109 mm): Symbol IC5 Hidden pin 20 [VCC, Power input, Line]
-[pin_not_connected]: Pin not connected
-    ; error
-    @(157.517 mm, 86.12 mm): Symbol IC5 Hidden pin 10 [GND, Power input, Line]
 
 ***** Sheet /Sheet 6/
 
 ***** Sheet /Sheet 7/
 
- ** ERC messages: 98  Errors 3  Warnings 95
+ ** ERC messages: 99  Errors 1  Warnings 98
 
  ** Ignored checks:
     - Global label only appears once in the schematic

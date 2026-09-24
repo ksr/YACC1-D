@@ -1,10 +1,12 @@
-"""mem_v2_netlist.py - the YACC1 memory card v2.0 circuit: v1.3 unchanged + the CompactFlash section (2026-09-24).
+"""mem_v2_netlist.py - the YACC1 memory card v2.0 circuit: the built v1.3 unchanged + the CompactFlash section (2026-09-24).
 
 THE single source of what v2.0 adds. Plain Python, no KiCad import.
 
-    v2.0 = v1.3                      the netlist KiCad extracts from ../v1.3/memory-v1.3.kicad_sch (itself proved pin for
-                                     pin against the Eagle board in hardware/cards/memory/eagle/v1.3; see ../v1.3/README.md).
-                                     Not restated here: check_netlist.py exports it fresh and compares.
+    v2.0 = v1.3 as built             the netlist KiCad extracts from ../v1.3-fusion-export-2026-09-24 (the conversion of
+                                     Ken's Fusion export of the card JLCPCB fabricated, IC15 included; proved pin for pin
+                                     against its Eagle board, and that board against the order's gerbers - see
+                                     hardware/cards/memory/eagle/v1.3-fusion-export-2026-09-24/README.md). Called "v1.3"
+                                     below. Not restated here: check_netlist.py exports it fresh and compares.
          + CF section                hardware/cards/cf/kicad/v1.0/cf_netlist.py (the standalone CF card v1.0), transformed
                                      by the explicit rules below - nothing else is added or changed.
 
@@ -20,8 +22,7 @@ Rules (Ken's decisions, 2026-09-24):
   3. The CF card's DASP LED (LED3 + R6) is DROPPED (Ken); -DASP keeps its 10k pull-up.
   4. The CF card's PWR LED (LED1 + R7) is DROPPED: the memory card v1.3 already has one (PWR0 + R2 330R).
   5. Every other CF part is kept with its value, KiCad symbol and footprint, renamed so nothing collides with v1.3
-     (v1.3 uses IC1-IC14, IC18, IC26-IC29, C1-C24, R2, RN5-RN8, JP1, PWR0, U$1, X1) nor with the IC15 (74ALS11) that
-     the FABRICATED card carries but no schematic in the tree has (README.md, "The fabricated v1.3"): REFMAP below.
+     (v1.3 uses IC1-IC15, IC18, IC26-IC29, C1-C24, R2, RN5-RN8, JP1, PWR0, U$1, X1): REFMAP below.
      The CF card's per-IC 100 nF caps stay one per IC (C25-C29) and its 10 uF bulk cap (C30) stays beside the adapter
      power header.
 The CF section's own nets keep their cf_netlist.py names (on sheet 7 of the schematic, so KiCad calls them

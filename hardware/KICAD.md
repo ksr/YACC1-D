@@ -50,5 +50,5 @@ Generated 2026-09-23 by `tools/eagle_to_kicad_all.py`: every Eagle design under 
 ## Hand-maintained masters (not generated; `MASTER` marker file)
 
 - [`cards/cf/kicad/v1.0`](cards/cf/kicad/v1.0/) — see its README (not ordered; its circuit is the CF section of `cards/memory/kicad/v2.0`)
-- [`cards/memory/kicad/v2.0`](cards/memory/kicad/v2.0/) — see its README (memory v1.3 + the CF interface on P8/P9; placement options A/B/C, not routed, not ordered)
+- [`cards/memory/kicad/v2.0`](cards/memory/kicad/v2.0/) — see its README (the built memory v1.3 + the CF interface on P8/P9; schematic proven; placement BLOCKED: the CF section does not fit beside the built card's copper; not routed, not ordered)
 - [`cards/video/kicad/v1.1`](cards/video/kicad/v1.1/) — see its README

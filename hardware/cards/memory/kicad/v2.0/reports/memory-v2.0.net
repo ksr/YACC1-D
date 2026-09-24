@@ -2,7 +2,7 @@
 	(version "E")
 	(design
 		(source "/Users/ksr77/Developer/YACC1-D/hardware/cards/memory/kicad/v2.0/memory-v2.0.kicad_sch")
-		(date "2026-09-24T04:59:02")
+		(date "2026-09-24T10:18:03")
 		(tool "Eeschema 10.0.6")
 		(sheet
 			(number "1")
@@ -16,7 +16,7 @@
 				(source "memory-v2.0.kicad_sch")
 				(comment
 					(number "1")
-					(value "Sheets 1-6 = memory card v1.3 (sheet 1: six bus labels made global); sheet 7 = CompactFlash on P8/P9 (the CF card v1.0 circuit)")
+					(value "Sheets 1-6 = memory card v1.3 as built (sheet 1: six bus labels made global); sheet 7 = CompactFlash on P8/P9 (the CF card v1.0 circuit)")
 				)
 				(comment
 					(number "2")
@@ -55,7 +55,7 @@
 		(sheet
 			(number "2")
 			(name "/Sheet 1/")
-			(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+			(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			(title_block
 				(title "memory-v2.0 sheet 1")
 				(company)
@@ -103,7 +103,7 @@
 		(sheet
 			(number "3")
 			(name "/Sheet 2/")
-			(tstamps "/35468cab-567a-8772-871a-8015ceda3737/")
+			(tstamps "/ff6ea588-bf4c-2e43-bc44-ece26085ac80/")
 			(title_block
 				(title "memory-v2.0 sheet 2")
 				(company)
@@ -112,7 +112,7 @@
 				(source "memory-v2.0-sheet2.kicad_sch")
 				(comment
 					(number "1")
-					(value "Unchanged from v1.3 (converted from Eagle Memory V1.3.sch sheet 2)")
+					(value "Unchanged from the built v1.3 (Fusion export 2026-09-24, Memory V1.3.sch sheet 2)")
 				)
 				(comment
 					(number "2")
@@ -151,7 +151,7 @@
 		(sheet
 			(number "4")
 			(name "/Sheet 3/")
-			(tstamps "/84e875fa-3717-f8e6-26e7-02d6fa9bd086/")
+			(tstamps "/b3b771df-f9da-5689-1a9a-c7a9cc358821/")
 			(title_block
 				(title "memory-v2.0 sheet 3")
 				(company)
@@ -160,7 +160,7 @@
 				(source "memory-v2.0-sheet3.kicad_sch")
 				(comment
 					(number "1")
-					(value "Unchanged from v1.3 (converted from Eagle Memory V1.3.sch sheet 3)")
+					(value "Unchanged from the built v1.3 (Fusion export 2026-09-24, Memory V1.3.sch sheet 3)")
 				)
 				(comment
 					(number "2")
@@ -199,7 +199,7 @@
 		(sheet
 			(number "5")
 			(name "/Sheet 4/")
-			(tstamps "/5a1379ad-354c-e374-017d-2bdc4c9ef65c/")
+			(tstamps "/bb238470-a6bd-f06e-9ca9-4e609da77273/")
 			(title_block
 				(title "memory-v2.0 sheet 4")
 				(company)
@@ -208,7 +208,7 @@
 				(source "memory-v2.0-sheet4.kicad_sch")
 				(comment
 					(number "1")
-					(value "Unchanged from v1.3 (converted from Eagle Memory V1.3.sch sheet 4)")
+					(value "Unchanged from the built v1.3 (Fusion export 2026-09-24, Memory V1.3.sch sheet 4)")
 				)
 				(comment
 					(number "2")
@@ -247,7 +247,7 @@
 		(sheet
 			(number "6")
 			(name "/Sheet 5/")
-			(tstamps "/06d3ca30-126d-da4e-e4bc-92d2b2e7731b/")
+			(tstamps "/d79e46fe-3a48-ed7d-87d7-2a1784e25268/")
 			(title_block
 				(title "memory-v2.0 sheet 5")
 				(company)
@@ -256,7 +256,7 @@
 				(source "memory-v2.0-sheet5.kicad_sch")
 				(comment
 					(number "1")
-					(value "Unchanged from v1.3 (converted from Eagle Memory V1.3.sch sheet 5)")
+					(value "Unchanged from the built v1.3 (Fusion export 2026-09-24, Memory V1.3.sch sheet 5)")
 				)
 				(comment
 					(number "2")
@@ -295,7 +295,7 @@
 		(sheet
 			(number "7")
 			(name "/Sheet 6/")
-			(tstamps "/b7a92c64-d729-c1d1-c602-029f5e9b9f0f/")
+			(tstamps "/c48148da-debe-007c-6c50-860596463e1b/")
 			(title_block
 				(title "memory-v2.0 sheet 6")
 				(company)
@@ -304,7 +304,7 @@
 				(source "memory-v2.0-sheet6.kicad_sch")
 				(comment
 					(number "1")
-					(value "Unchanged from v1.3 (converted from Eagle Memory V1.3.sch sheet 6)")
+					(value "Unchanged from the built v1.3 (Fusion export 2026-09-24, Memory V1.3.sch sheet 6)")
 				)
 				(comment
 					(number "2")
@@ -393,10 +393,10 @@
 		(comp
 			(ref "C1")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -405,7 +405,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -419,9 +419,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "961471c2-a537-a75d-570a-8c46ab54a53d")
+			(tstamps "ba2ef8c7-9e20-3af3-b7de-31ef420e5610")
 			(units
 				(unit
 					(name "A")
@@ -439,10 +439,10 @@
 		(comp
 			(ref "C2")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -451,7 +451,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -465,9 +465,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "fe48c06c-34c9-6db0-d5a5-d24486e5c708")
+			(tstamps "aa2530dc-e658-87f9-fa8f-169131cd6e9a")
 			(units
 				(unit
 					(name "A")
@@ -485,10 +485,10 @@
 		(comp
 			(ref "C3")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -497,7 +497,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -511,9 +511,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "7f7c03ab-1e9c-4fc1-aca0-25230a4cfa5b")
+			(tstamps "b1723686-be37-e336-cdef-e99a049a79a0")
 			(units
 				(unit
 					(name "A")
@@ -531,10 +531,10 @@
 		(comp
 			(ref "C4")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -543,7 +543,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -557,9 +557,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "66475f2b-9515-ce21-c0a7-104d47ec7c12")
+			(tstamps "898cccfa-b862-56e1-018c-8be3e3cbfc75")
 			(units
 				(unit
 					(name "A")
@@ -577,10 +577,10 @@
 		(comp
 			(ref "C5")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -589,7 +589,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -603,9 +603,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "f25478fa-2e8d-1623-0aef-382e01c35056")
+			(tstamps "aef71ebb-8138-3988-e1c7-ead3780a7f9e")
 			(units
 				(unit
 					(name "A")
@@ -623,10 +623,10 @@
 		(comp
 			(ref "C6")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -635,7 +635,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -649,9 +649,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "3c2c4e17-1675-618d-9ccc-963df60ff0ee")
+			(tstamps "4525f273-2836-1821-54e5-aa2038fdf7e5")
 			(units
 				(unit
 					(name "A")
@@ -669,10 +669,10 @@
 		(comp
 			(ref "C7")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -681,7 +681,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -695,9 +695,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "960d911b-0a3b-264e-c8ec-2b3d6b6af781")
+			(tstamps "9003d3fa-6b89-44f5-7b15-4f315f15ebbd")
 			(units
 				(unit
 					(name "A")
@@ -715,10 +715,10 @@
 		(comp
 			(ref "C8")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -727,7 +727,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -741,9 +741,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "63666b09-b521-4a4c-6f53-96864046b6d5")
+			(tstamps "e1631b56-392e-cede-f9ed-5d6b1a9cc138")
 			(units
 				(unit
 					(name "A")
@@ -761,10 +761,10 @@
 		(comp
 			(ref "C9")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -773,7 +773,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -787,9 +787,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "4c3d491a-d24d-8346-6283-9cbc2174a346")
+			(tstamps "e79cfe71-84fa-1aea-28c3-c4628867f88c")
 			(units
 				(unit
 					(name "A")
@@ -807,10 +807,10 @@
 		(comp
 			(ref "C10")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -819,7 +819,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -833,9 +833,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "8d5cc839-1824-15ef-9565-0409452a6027")
+			(tstamps "2f03d87e-f153-cbc9-84a4-fe9346ad1ba7")
 			(units
 				(unit
 					(name "A")
@@ -853,10 +853,10 @@
 		(comp
 			(ref "C11")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -865,7 +865,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -879,9 +879,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "2c5cdfe1-d402-dfa9-0940-fb6d459b06ab")
+			(tstamps "2b9620a2-b2b8-f50a-4cf8-88c6c69f0518")
 			(units
 				(unit
 					(name "A")
@@ -899,10 +899,10 @@
 		(comp
 			(ref "C12")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -911,7 +911,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -925,9 +925,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "9e052ef2-7d4c-46a8-295e-73e7af1f1cb3")
+			(tstamps "3b5bc731-3b81-cfd6-d74e-cc38a2d6fe78")
 			(units
 				(unit
 					(name "A")
@@ -945,10 +945,10 @@
 		(comp
 			(ref "C13")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -957,7 +957,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -971,9 +971,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "37d31862-e835-90cb-76fe-0c5bf8e3e61c")
+			(tstamps "b8952173-ca97-3bb0-3982-272fbab5095e")
 			(units
 				(unit
 					(name "A")
@@ -991,10 +991,10 @@
 		(comp
 			(ref "C14")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -1003,7 +1003,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -1017,9 +1017,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "07ac65f7-2a80-d7cb-fa14-dc5383505858")
+			(tstamps "1775e894-dd68-7900-c7e2-23de9d287ec5")
 			(units
 				(unit
 					(name "A")
@@ -1037,10 +1037,10 @@
 		(comp
 			(ref "C15")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -1049,7 +1049,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -1063,9 +1063,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "3c7f87b6-2586-8a42-31eb-bfc16db596c5")
+			(tstamps "80c1f0d9-7111-18ff-1a3c-6a9ac5003c0e")
 			(units
 				(unit
 					(name "A")
@@ -1083,10 +1083,10 @@
 		(comp
 			(ref "C16")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -1095,7 +1095,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -1109,9 +1109,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "7c38de70-53d4-2554-4fae-ce3621a0c6f0")
+			(tstamps "6fd4de31-15f4-3d1f-2667-9380a49bf7ee")
 			(units
 				(unit
 					(name "A")
@@ -1129,10 +1129,10 @@
 		(comp
 			(ref "C17")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -1141,7 +1141,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -1155,9 +1155,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "a9265ab0-092d-6613-e4b3-daf3218ba737")
+			(tstamps "136507ce-8d72-eb3c-e77c-f3f9545b110f")
 			(units
 				(unit
 					(name "A")
@@ -1175,10 +1175,10 @@
 		(comp
 			(ref "C18")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -1187,7 +1187,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -1201,9 +1201,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "0bfaf3a3-3e80-4eca-4d91-3f747c4f8678")
+			(tstamps "7243b4d5-ce1f-4f97-10fa-c4eef82ede02")
 			(units
 				(unit
 					(name "A")
@@ -1221,10 +1221,10 @@
 		(comp
 			(ref "C19")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -1233,7 +1233,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -1247,9 +1247,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "1eb74acc-3484-aecd-b7af-6393bc0621f8")
+			(tstamps "4fdf6dd7-2386-e9cd-b820-79bcf3a10371")
 			(units
 				(unit
 					(name "A")
@@ -1267,10 +1267,10 @@
 		(comp
 			(ref "C20")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -1279,7 +1279,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -1293,9 +1293,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "9fb188fa-cd55-c33e-f351-3e1a1782d506")
+			(tstamps "589de8ed-34b5-042c-345a-6c7437078ede")
 			(units
 				(unit
 					(name "A")
@@ -1313,10 +1313,10 @@
 		(comp
 			(ref "C21")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -1325,7 +1325,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -1339,9 +1339,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "a40e51ce-bc33-f000-a4c1-4a04e11b99f5")
+			(tstamps "84973c4a-04e6-60cb-587f-f59001d0dd49")
 			(units
 				(unit
 					(name "A")
@@ -1359,10 +1359,10 @@
 		(comp
 			(ref "C22")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -1371,7 +1371,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -1385,9 +1385,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "de88fde7-7140-ea9f-957d-e8e0f44273af")
+			(tstamps "f182a8cd-9e2c-ad30-bcc1-fdc2e3e2c467")
 			(units
 				(unit
 					(name "A")
@@ -1405,10 +1405,10 @@
 		(comp
 			(ref "C23")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -1417,7 +1417,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -1431,9 +1431,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "22f1a832-90df-d26c-3261-4ca12b2ca321")
+			(tstamps "b1e02c38-8c8e-0a0e-2cc0-f586273eb8fb")
 			(units
 				(unit
 					(name "A")
@@ -1451,10 +1451,10 @@
 		(comp
 			(ref "C24")
 			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -1463,7 +1463,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_C-US_025-025X050")
 				(description "Eagle adafruit:C-US")
 			)
@@ -1477,9 +1477,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "91ee87a7-3ddf-0e99-fd3a-e6923082a9c5")
+			(tstamps "0ca51451-f411-1410-844c-71d4979a366c")
 			(units
 				(unit
 					(name "A")
@@ -1497,10 +1497,10 @@
 		(comp
 			(ref "IC3")
 			(value "74*32")
-			(footprint "memory-v1.3-eagle:DIL14")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL14")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 				(field
 					(name "Datasheet")
 				)
@@ -1509,7 +1509,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "74xx-us_74x32_N_pwrhidden")
 				(description "Eagle 74xx-us:74*32")
 			)
@@ -1523,10 +1523,10 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "c1827d29-6364-fa16-1d0e-4c124cab0671" "d4bcf5ef-d8d9-e01e-ad1d-2b4b69e090c7"
-				"2227900c-96f9-589b-b5cb-f3d49d0971cb"
+			(tstamps "ee645483-5754-3dec-86d7-5606ca145a1a" "f9978df6-2397-13ca-2385-d8c6d0084921"
+				"97688664-ba41-949e-b281-16cd30f33c1c"
 			)
 			(units
 				(unit
@@ -1614,10 +1614,10 @@
 		(comp
 			(ref "IC12")
 			(value "74*74")
-			(footprint "memory-v1.3-eagle:DIL14")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL14")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 				(field
 					(name "Datasheet")
 				)
@@ -1626,7 +1626,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "74xx-us_74x74_N_pwrhidden")
 				(description "Eagle 74xx-us:74*74")
 			)
@@ -1640,9 +1640,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "01684079-4a07-6875-1cfe-44acc54b36e6")
+			(tstamps "6147cee2-6833-e666-16a7-cfeb07732431")
 			(units
 				(unit
 					(name "A")
@@ -1705,12 +1705,12 @@
 			)
 		)
 		(comp
-			(ref "PWR0")
-			(value "LED")
-			(footprint "memory-v1.3-eagle:LED5MM")
+			(ref "IC15")
+			(value "74*11")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:LED5MM")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 				(field
 					(name "Datasheet")
 				)
@@ -1719,7 +1719,111 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
+				(part "74xx-us_74x11_N_pwrhidden")
+				(description "Eagle 74xx-us:74*11")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-v2.0-sheet1.kicad_sch")
+			)
+			(sheetpath
+				(names "/Sheet 1/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
+			)
+			(tstamps "a721421c-0242-c3eb-7a77-ea7803e1bd7c" "5a2f193c-5abe-ce49-70ad-b20ea4ce45d8")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "13")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "12")
+						)
+					)
+				)
+				(unit
+					(name "B")
+					(pins
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "6")
+						)
+					)
+				)
+				(unit
+					(name "C")
+					(pins
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "10")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "8")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "PWR0")
+			(value "LED")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:LED5MM")
+			(fields
+				(field
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:LED5MM")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "led_LED_5MM")
 				(description "Eagle led:LED")
 			)
@@ -1733,9 +1837,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "02e36b53-34a0-6cea-bf96-cb8c8b24e18f")
+			(tstamps "66add71f-388c-d165-7414-472e36ff7799")
 			(units
 				(unit
 					(name "A")
@@ -1753,10 +1857,10 @@
 		(comp
 			(ref "R2")
 			(value "330")
-			(footprint "memory-v1.3-eagle:0207_10")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:0207_10")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:0207_10")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:0207_10")
 				(field
 					(name "Datasheet")
 				)
@@ -1765,7 +1869,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "eagle-ltspice_R_0207_10")
 				(description "Eagle eagle-ltspice:R")
 			)
@@ -1779,9 +1883,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "b8fa6554-4b9d-fad0-02fa-2f652a6284f3")
+			(tstamps "830ff140-f0b8-1302-8589-541c7f1b4e3c")
 			(units
 				(unit
 					(name "A")
@@ -1799,12 +1903,12 @@
 		(comp
 			(ref "X1")
 			(value "FABC96R")
-			(footprint "memory-v1.3-eagle:FABC96R")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:FABC96R")
 			(fields
 				(field
 					(name "Eagle name") "X1-A1")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:FABC96R")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:FABC96R")
 				(field
 					(name "Datasheet")
 				)
@@ -1813,13 +1917,13 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "con-vg_FABC96R")
 				(description "Eagle con-vg:FABC96R")
 			)
 			(property
 				(name "Eagle name")
-				(value "X1-C21")
+				(value "X1-A3")
 			)
 			(property
 				(name "Sheetname")
@@ -1831,56 +1935,56 @@
 			)
 			(sheetpath
 				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
+				(tstamps "/424595ae-6639-3ee1-b215-e29acd454577/")
 			)
-			(tstamps "d944c07e-9c8c-1aee-0268-fda0a3480728" "d0c96c03-72af-1ede-6500-99ffe250c97b"
-				"f4a900e1-b9d1-1e36-5a0d-730551bf57ab" "37b84c20-4e84-1049-674c-feebc39392fa"
-				"f19d0a35-8331-1001-ce51-2b1b86b8fbcf" "dc215514-28fc-88a6-731f-333339b4a88f"
-				"b889721e-2237-71f7-8fe0-7f6cf9bcb779" "c61d60cb-7776-a946-2ba2-57eba1ea41c3"
-				"14e77e73-45c8-e797-329f-06af1826d87d" "8febf4f0-e776-5137-9a5b-0d46cbcba02c"
-				"63423cf2-1086-97d4-2ae5-7f397b1868f6" "1cd90c72-8e62-e2a7-9b7d-83d5b379f2e6"
-				"565139b3-e642-0e45-22c0-588e65974e7d" "131021fa-c189-a3e1-8f24-85a90185bc8e"
-				"712dd4a9-b056-89d3-e161-c4a6159f9eba" "fdc47551-918e-e751-b1d7-b46e196843a7"
-				"26bae04f-dbba-2a3d-f0d0-38bf53153409" "44c2e9fd-33aa-4ed6-5943-d60eb63c3415"
-				"418f86e3-2da4-7abe-c0b5-3a06c13fa26e" "d8824f68-d141-5ca7-d82a-b6a55d9e5e13"
-				"cf8b95cb-cab1-d374-c683-20cc0ad5e8e8" "23c95a61-e3ed-1b19-60cc-6623abd9d751"
-				"c863811d-f555-47b8-8845-1e9ac90a9d29" "14912643-81b4-0f1a-1648-67099c8c20f8"
-				"1fdc5e04-7521-47c4-935a-c70add912c35" "0f8be29b-52b6-d709-4e78-e3bfcc9f32f6"
-				"89922577-8f1b-e2f6-c88b-35d3ae225a88" "1ab4a601-e034-8379-acf8-3f1a98cbc9b4"
-				"d6369c79-82b3-1e77-a3bc-a9a79d5d8a3a" "78f91466-b176-3a8c-bb46-202ad0379036"
-				"0f3275fc-711f-7754-9dd9-ce8723111ab6" "cce92d27-317b-061f-851a-9d415968911f"
-				"35a58fe1-e449-7d45-6904-23afb1b04bf9" "b83de07f-4f7e-0478-8011-bafcc8da104c"
-				"ef12078d-4dea-aef6-976b-e4d4f7196731" "33a0285d-7d06-3b02-0075-732da8e2fad1"
-				"d0d9f7b3-d915-0bea-0d10-620cf02e140d" "3443db20-7952-a94e-e08e-1683544f30cf"
-				"c084eb60-d061-a702-b3af-7997d66eb8c6" "fb954ee6-5df1-d59e-1aa2-452de9f99673"
-				"d2558902-babb-1ade-3c1b-c4d3469f0f15" "a7440738-574f-ce35-810c-d20684f2b3b3"
-				"3a09aaf5-21ef-fafc-ce70-155f0bf61fa5" "18d8dacc-0ce0-292f-d4bd-83fb14a824e2"
-				"3d095a10-bd56-49ca-3070-0d1e89af3bd7" "75d7b447-92f2-3da0-dc27-64161027d2bb"
-				"f4daf184-fc48-933e-de71-b72bf3d895c2" "b533156c-0583-f40d-16e2-e5dae4ce2385"
-				"e4345aa5-4c32-ef90-a014-970add35b463" "9aa69ae9-57a9-fa14-667c-82b6290a37a1"
-				"41fed11d-6c8f-3f56-aa69-c21f82fc0223" "5b6965eb-1eaa-e311-f77c-262e6fdb37ef"
-				"5108b76a-9071-7ef0-5e93-32f2b309251c" "1deef23c-a215-eb92-4b57-f8743503baca"
-				"b31371dc-0283-1143-19d1-34baa76ae571" "4609c72b-ad13-4057-9637-74ed7bc61e35"
-				"6d5d4609-9b72-ab0f-4e60-3042709f887c" "cbe1361c-324c-571e-62df-6003e1039c85"
-				"7ed9bfb2-44d4-b33a-5bdf-8aeec2e2a8e7" "d4ec5547-0827-f8ef-c099-36c5ebd9dc46"
-				"dd616d23-3523-d450-a6ba-13837ff9263f" "c09a03ef-811d-8a45-d2a1-6dd4b4d3888e"
-				"b90e75d7-c52e-fc3c-60d5-3ea9df3955aa" "79adbde6-f4d4-d15e-913b-5130c2c97723"
-				"7362fa81-6e53-cf06-e099-014ff4726314" "e9707e83-3415-e611-f372-a137b8e2d77b"
-				"8816516f-1de4-bb72-0509-868ee9ba34ab" "ff567550-218f-80d4-a3e2-5801ed9c068a"
-				"81aa35de-4c00-cbf7-3d90-7733a4de4ae2" "92961abe-dbcd-7998-4a6f-0b299701f10f"
-				"a83db68a-3f3d-384d-adb8-7c36d6eed6b4" "f3509d06-d9a5-6487-f4cb-ea3fd6115ba1"
-				"d391eae0-abc1-026b-97f4-2aa69df73143" "1ea77a89-2d60-6213-ce74-dcdf6fe5e517"
-				"b6460986-a21b-3309-bca2-e806a5ac0550" "c1dd2e38-858b-26ef-695e-88b011ae0cde"
-				"a4bb3382-5b9e-bf88-104b-cd873a859d0d" "9ed23c1a-a6ed-1968-1c60-2f9fca962ad0"
-				"c1ca867f-d848-2038-e69d-b029b62adac4" "3ed85f7d-5b9f-2d9a-5626-4f35a7d407dc"
-				"d3d1c04c-b4b9-873e-a0e9-11a1cf0b1b84" "b68167ed-ed9f-0d60-dde0-c15361dba391"
-				"a2c7d731-0345-dc4f-88bc-c4f40a2e0881" "4b43f8a9-6820-d01a-8db1-540ffbed5eae"
-				"7e315ea3-7330-d33a-ce1e-3ec7837c3b37" "facee71f-505f-9533-1dfc-c79a69c0cc18"
-				"fd853a3a-c3c8-8c45-fb7c-7ad425d58355" "6a4e692a-7207-69ac-a06c-40269f8fa5a7"
-				"193ed111-b70c-7b03-3509-06bd39b60ae1" "621f1e33-c6ba-e23f-e1e1-c7035eb393c3"
-				"d8c3e6b3-23d3-a769-3d20-e23e5c4b636d" "f6d0045a-61e7-c842-9c10-79f777de2231"
-				"25f2b72e-093d-b3d3-0d48-cc7a296f5e40" "93467394-012c-4b14-8453-ef3f6d1b74ee"
-				"46405c00-4500-7c90-93db-e04f503b0867" "0dc434e1-3666-8f5c-d706-d98047f4eb48"
+			(tstamps "e953ef3d-1f34-b9c7-a831-b1b4d7633a65" "7a53c58b-864d-72e0-139f-44fc49b3a827"
+				"61f34c13-9cb5-1bce-42cf-083f58e38823" "a21ff238-a02f-88b5-c21a-823eb45df7eb"
+				"4cc2dc3c-8a22-a8b0-1064-5852d7b2fd2a" "da34b671-3e28-da1f-759d-809a59516222"
+				"bc1a0c04-dbb7-09db-920c-3063ffd84ef2" "36d702b8-1bd1-4484-ef7f-84100b249f14"
+				"3de69929-c3ff-e68f-71c5-7fac147b1589" "0447ff11-2f99-19d2-2659-ac7a82032de2"
+				"05c6fdd4-eea2-493e-56f0-489a04e37add" "9b264f9f-7484-bfe4-1a22-e4e83defe664"
+				"8778adbd-fa3a-77b3-7ca7-17262681d6ae" "004b2d4e-53dc-ef79-646c-4b05fe234097"
+				"1c65e7a4-aa08-2e78-e378-8367a30b25dd" "a63bc580-c09a-23de-89d3-c3acf7c194c9"
+				"9107d2ba-abb8-1f44-6fc9-0abc1a73485d" "3c5415f1-0844-80c4-f90e-54faf8d43d81"
+				"4efaeaff-6751-2f01-1900-b4589f2c414c" "74562ae3-29e9-0099-0612-b093a787c63b"
+				"40a599db-3e71-f517-ebcd-596b9f80bc07" "f839d5b7-cc8c-3db0-9cf2-a53ba6920dfa"
+				"b8af92c5-04ab-9fcf-31e7-923a44046653" "2e05d2cd-b6a2-085b-8d10-4126886590ca"
+				"2f9e2838-9005-5b87-6143-2b30c5e45b40" "f2dfe240-bf1b-7143-2e18-d2f755d2358f"
+				"a5a3077f-0c89-b9ea-04a7-c1746cd28f0b" "ee4890a3-7f7a-e14a-0fa9-eeee32d78423"
+				"e794751c-2fd4-e03c-0075-91901dac8318" "57566116-4e43-f73b-c558-a9abff60bc5b"
+				"5de87f9b-d8c8-ab88-6283-93585c7d49c6" "94a621da-e763-10b5-30ba-94151a8fa0e7"
+				"c3b9b2d9-6dda-e8ad-6a19-d57eae2029c5" "c003b817-3d36-899d-13c7-2ef8dabc53fd"
+				"998a238c-ce31-74eb-5507-5851a8834129" "8ddac11b-6805-2154-5860-2e29ae6b3216"
+				"2b1b7a28-1211-4301-868f-c6b80e20de01" "abc1572a-519f-54a6-362a-33f8d9d03dd9"
+				"423f78b1-6e30-2dfd-4789-c25d0221704f" "2c6a1fc7-7e3f-3e4d-5285-3e45831620fa"
+				"fb22632c-f98c-8681-7ccd-9da869fa32fb" "42e75c8b-7714-bf22-32df-53f9a92434db"
+				"7b09172a-21ed-ff0b-c68b-50fc3fda1604" "e764f629-9eeb-cd2c-1857-cdb6a0507154"
+				"92ffb94c-fb65-b318-706b-c16102850db6" "5de754af-865e-cd54-c816-f0c23e2fe8e0"
+				"3e52774b-5e05-1833-079d-fe20a4dde0a2" "0ae7088e-3a92-1e62-157a-41f0c30d7a99"
+				"5970eff9-16ef-240f-7b8f-f0b432df7f6f" "d9ab54a0-3906-4c5e-4fb9-7a85cd1d4729"
+				"773d56f6-ee1f-bdbf-0414-5a1214769f6a" "ab89b342-352a-25f9-bb42-bd2d5a6298d7"
+				"4f8cdcce-bbf8-33e5-a62a-6506424e68b4" "9401e246-b312-fa58-f9b4-d30b8136a85e"
+				"81fcbb65-636e-46b7-e783-4cd2c57a0f64" "e6b681fe-06c1-ec3b-62ac-2e3453bdf38c"
+				"500c427e-742e-80a4-acf3-3e231e1739fa" "1bd570aa-8895-239e-9f8f-a6aa7c44a2fe"
+				"41dbcf55-a3d1-d7a4-d31e-f407ea8410c9" "ca7aa51a-6e3e-ec0f-368a-43f3ae260b20"
+				"ddca3f33-d738-4920-e489-31f831ab331e" "32d606eb-cc6e-1b8d-3463-3cb50d52e2dc"
+				"c819d270-d485-ddf8-79a7-6c29e9ac7b23" "3d570904-e871-e6a5-344c-1f2bf3f43391"
+				"4112a5c6-dc38-d625-0bfe-cf006e7c7f51" "87f0acce-4b81-e814-31c5-090218960164"
+				"6f2fa2db-f6b5-023a-7088-c54175129956" "c6c6ba94-2856-fe55-14fa-7c3771195657"
+				"7f24ba60-d2ca-38ef-e2fa-15eac848e276" "4de5df53-85f0-2346-0abd-3591c0ffbc07"
+				"7e76003b-5474-6711-dc18-23fa60dc11a9" "adfacac7-f9d2-dc22-0612-5f7b60644132"
+				"56b7da48-054d-1a5f-ffa0-7664247228b0" "eef266e2-74ac-3a81-b4a4-2df29a3e1546"
+				"fcbccfe9-f08c-f63b-c244-da94ba7916de" "d5f9d022-3883-cc09-93d8-e21e8357fc26"
+				"f6d90f3e-56c4-6803-b6b1-fc447e1e1362" "32338a16-4cb8-6e41-36d0-8c35787af8f9"
+				"73bc046c-38ed-2955-3ec7-633d7cbc5acf" "900aeb79-14b6-ea87-39b8-970e94bc972d"
+				"2d93e507-a3f7-3d94-59f8-c16e1cc70d79" "3a91e623-390c-3888-5c8c-68ac098b7a36"
+				"7ce4d6c5-e3e8-aab3-c966-b68f6e3b7bcc" "961e79d1-b226-f750-dcdd-95404e5446bf"
+				"16336a37-cc83-11a0-c6e8-4240b41745ff" "6c6685dc-b13c-c6af-a1ea-777bdb5c43be"
+				"dbb8ca71-4cff-89ea-fc69-0fa69aa9f3ae" "8145a136-e2e1-e62e-aeb1-0ddd1dc1c59b"
+				"8a18e4ae-cc32-3efc-e946-4cb501c5065a" "9035fb7f-5877-2469-1d05-dd37f13c6ed5"
+				"24f6ec64-8868-f9dc-e25e-45aedb0d0d64" "c5626425-969a-ea7b-b608-b236535280de"
+				"b9859461-f06d-4586-efda-afd2de0cb7e7" "e9f6de28-c139-fcd3-32a6-857fe88d05d9"
+				"4d1c79d3-5b2b-89b7-35c3-e45eaf3f608f" "0046d87e-83ca-20ae-8b58-e14e634f6603"
 			)
 			(units
 				(unit
@@ -2656,10 +2760,10 @@
 		(comp
 			(ref "IC4")
 			(value "74*30")
-			(footprint "memory-v1.3-eagle:DIL14")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL14")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 				(field
 					(name "Datasheet")
 				)
@@ -2668,7 +2772,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "74xx-us_74x30_N_pwrhidden")
 				(description "Eagle 74xx-us:74*30")
 			)
@@ -2682,9 +2786,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 2/")
-				(tstamps "/35468cab-567a-8772-871a-8015ceda3737/")
+				(tstamps "/ff6ea588-bf4c-2e43-bc44-ece26085ac80/")
 			)
-			(tstamps "3b38ff45-2637-a187-49b6-fc1905ce7be8")
+			(tstamps "7cd82bee-cc13-9de4-3b4b-8ca7c5158be6")
 			(units
 				(unit
 					(name "A")
@@ -2729,10 +2833,10 @@
 		(comp
 			(ref "IC6")
 			(value "74*04")
-			(footprint "memory-v1.3-eagle:DIL14")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL14")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 				(field
 					(name "Datasheet")
 				)
@@ -2741,7 +2845,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "74xx-us_74x04_N_pwrhidden")
 				(description "Eagle 74xx-us:74*04")
 			)
@@ -2755,9 +2859,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 2/")
-				(tstamps "/35468cab-567a-8772-871a-8015ceda3737/")
+				(tstamps "/ff6ea588-bf4c-2e43-bc44-ece26085ac80/")
 			)
-			(tstamps "74e0c8c5-79e6-d559-a5c7-2327f0f7c354" "23c1ddbf-f9d8-138e-903b-c5fde1ff3322")
+			(tstamps "a6731656-0538-3e92-1d47-ec7c6d409abd" "5a045b7e-6b84-38a9-8ff8-e02b2a04aa78")
 			(units
 				(unit
 					(name "A")
@@ -2866,10 +2970,10 @@
 		(comp
 			(ref "IC7")
 			(value "74*138")
-			(footprint "memory-v1.3-eagle:DIL16")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL16")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL16")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL16")
 				(field
 					(name "Datasheet")
 				)
@@ -2878,7 +2982,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "74xx-us_74x138_N_pwrhidden")
 				(description "Eagle 74xx-us:74*138")
 			)
@@ -2892,9 +2996,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 2/")
-				(tstamps "/35468cab-567a-8772-871a-8015ceda3737/")
+				(tstamps "/ff6ea588-bf4c-2e43-bc44-ece26085ac80/")
 			)
-			(tstamps "005d829e-988e-ce02-2d91-de108d6647bf")
+			(tstamps "5e07d624-d90c-99fd-2bac-163448b3b044")
 			(units
 				(unit
 					(name "A")
@@ -2954,10 +3058,10 @@
 		(comp
 			(ref "IC10")
 			(value "74*00")
-			(footprint "memory-v1.3-eagle:DIL14")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL14")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 				(field
 					(name "Datasheet")
 				)
@@ -2966,7 +3070,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "74xx-us_74x00_N_pwrhidden")
 				(description "Eagle 74xx-us:74*00")
 			)
@@ -2980,10 +3084,10 @@
 			)
 			(sheetpath
 				(names "/Sheet 2/")
-				(tstamps "/35468cab-567a-8772-871a-8015ceda3737/")
+				(tstamps "/ff6ea588-bf4c-2e43-bc44-ece26085ac80/")
 			)
-			(tstamps "f8cb99f3-a36b-52df-30dd-a2bf55dfa4fc" "c2ef0799-b73a-bd78-dfd9-8714559d23a5"
-				"1deb518f-49fa-352a-593a-40fe098aa674"
+			(tstamps "50f7ed60-5646-0df7-8f03-63b7db27895f" "3ccf88b9-0ca2-c4e8-a94b-bb3a32ae9a5f"
+				"21b40368-fd6c-54be-5850-603c73c64186"
 			)
 			(units
 				(unit
@@ -3071,10 +3175,10 @@
 		(comp
 			(ref "IC18")
 			(value "74*30")
-			(footprint "memory-v1.3-eagle:DIL14")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL14")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 				(field
 					(name "Datasheet")
 				)
@@ -3083,7 +3187,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "74xx-us_74x30_N_pwrhidden")
 				(description "Eagle 74xx-us:74*30")
 			)
@@ -3097,9 +3201,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 2/")
-				(tstamps "/35468cab-567a-8772-871a-8015ceda3737/")
+				(tstamps "/ff6ea588-bf4c-2e43-bc44-ece26085ac80/")
 			)
-			(tstamps "f632a496-154d-9e2b-a3d3-05ec35a852fd")
+			(tstamps "8833bb9b-51df-115b-fe1b-fbbf5d588b37")
 			(units
 				(unit
 					(name "A")
@@ -3144,10 +3248,10 @@
 		(comp
 			(ref "JP1")
 			(value "PINHD-1X3")
-			(footprint "memory-v1.3-eagle:1X03")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:1X03")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:1X03")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:1X03")
 				(field
 					(name "Datasheet")
 				)
@@ -3156,7 +3260,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "pinhead_PINHD-1X3")
 				(description "Eagle pinhead:PINHD-1X3")
 			)
@@ -3170,9 +3274,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 2/")
-				(tstamps "/35468cab-567a-8772-871a-8015ceda3737/")
+				(tstamps "/ff6ea588-bf4c-2e43-bc44-ece26085ac80/")
 			)
-			(tstamps "d562a9ac-a94d-0279-9023-1ba4dfe186d4")
+			(tstamps "6e8c001d-d874-89e2-aa78-6c551ff5e628")
 			(units
 				(unit
 					(name "A")
@@ -3193,10 +3297,10 @@
 		(comp
 			(ref "RN7")
 			(value "G08R")
-			(footprint "memory-v1.3-eagle:SIL9")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:SIL9")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:SIL9")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:SIL9")
 				(field
 					(name "Datasheet")
 				)
@@ -3205,7 +3309,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "resistor-sil_G08R")
 				(description "Eagle resistor-sil:G08R")
 			)
@@ -3219,9 +3323,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 2/")
-				(tstamps "/35468cab-567a-8772-871a-8015ceda3737/")
+				(tstamps "/ff6ea588-bf4c-2e43-bc44-ece26085ac80/")
 			)
-			(tstamps "3b00eee9-0ac1-a007-3f26-8e47a26bf663")
+			(tstamps "f3640a85-d1b6-6758-c1e2-0b5c034c4ac6")
 			(units
 				(unit
 					(name "A")
@@ -3260,10 +3364,10 @@
 		(comp
 			(ref "RN8")
 			(value "G08R")
-			(footprint "memory-v1.3-eagle:SIL9")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:SIL9")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:SIL9")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:SIL9")
 				(field
 					(name "Datasheet")
 				)
@@ -3272,7 +3376,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "resistor-sil_G08R")
 				(description "Eagle resistor-sil:G08R")
 			)
@@ -3286,9 +3390,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 2/")
-				(tstamps "/35468cab-567a-8772-871a-8015ceda3737/")
+				(tstamps "/ff6ea588-bf4c-2e43-bc44-ece26085ac80/")
 			)
-			(tstamps "edf363fd-50e3-5a8d-1a1e-3f4ba2e91a35")
+			(tstamps "8362d0de-bafa-0967-0756-d74ecdfbcc29")
 			(units
 				(unit
 					(name "A")
@@ -3327,10 +3431,10 @@
 		(comp
 			(ref "U$1")
 			(value "PIN_3X8")
-			(footprint "memory-v1.3-eagle:PIN_3X8")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:PIN_3X8")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:PIN_3X8")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:PIN_3X8")
 				(field
 					(name "Datasheet")
 				)
@@ -3339,7 +3443,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "pinhead_3row_PIN_3X8")
 				(description "Eagle pinhead_3row:PIN_3X8")
 			)
@@ -3353,9 +3457,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 2/")
-				(tstamps "/35468cab-567a-8772-871a-8015ceda3737/")
+				(tstamps "/ff6ea588-bf4c-2e43-bc44-ece26085ac80/")
 			)
-			(tstamps "76432af9-26d3-8a04-716c-abf4c8f179cf")
+			(tstamps "41b0c417-2390-aef1-8deb-a9b677e03f65")
 			(units
 				(unit
 					(name "A")
@@ -3439,10 +3543,10 @@
 		(comp
 			(ref "IC1")
 			(value "62256P")
-			(footprint "memory-v1.3-eagle:DIL28-6")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL28-6")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL28-6")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL28-6")
 				(field
 					(name "Datasheet")
 				)
@@ -3451,7 +3555,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "memory-hitachi_62256P")
 				(description "Eagle memory-hitachi:62256P")
 			)
@@ -3465,9 +3569,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 3/")
-				(tstamps "/84e875fa-3717-f8e6-26e7-02d6fa9bd086/")
+				(tstamps "/b3b771df-f9da-5689-1a9a-c7a9cc358821/")
 			)
-			(tstamps "220e1647-4e26-e047-9ba0-2d1f84ca7562")
+			(tstamps "627da2b6-e186-d7f9-f20c-19b7911ef652")
 			(units
 				(unit
 					(name "A")
@@ -3563,10 +3667,10 @@
 		(comp
 			(ref "IC2")
 			(value "62256P")
-			(footprint "memory-v1.3-eagle:DIL28-6")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL28-6")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL28-6")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL28-6")
 				(field
 					(name "Datasheet")
 				)
@@ -3575,7 +3679,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "memory-hitachi_62256P")
 				(description "Eagle memory-hitachi:62256P")
 			)
@@ -3589,9 +3693,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 3/")
-				(tstamps "/84e875fa-3717-f8e6-26e7-02d6fa9bd086/")
+				(tstamps "/b3b771df-f9da-5689-1a9a-c7a9cc358821/")
 			)
-			(tstamps "e80f8397-5c85-b2e4-6ec3-b8fbfc9fe7f2")
+			(tstamps "5a7a332a-3ffb-007c-0a2d-e737fdc9f21b")
 			(units
 				(unit
 					(name "A")
@@ -3687,10 +3791,10 @@
 		(comp
 			(ref "IC13")
 			(value "28C64C")
-			(footprint "memory-v1.3-eagle:DIL28-6")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL28-6")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL28-6")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL28-6")
 				(field
 					(name "Datasheet")
 				)
@@ -3699,7 +3803,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "memory-nec_28C64C")
 				(description "Eagle memory-nec:28C64C")
 			)
@@ -3713,9 +3817,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 3/")
-				(tstamps "/84e875fa-3717-f8e6-26e7-02d6fa9bd086/")
+				(tstamps "/b3b771df-f9da-5689-1a9a-c7a9cc358821/")
 			)
-			(tstamps "4d212902-dbd0-c0de-e928-99a971c58dfe")
+			(tstamps "055347ea-26f5-30a2-12d7-d35948af0772")
 			(units
 				(unit
 					(name "A")
@@ -3811,10 +3915,10 @@
 		(comp
 			(ref "IC14")
 			(value "74*04")
-			(footprint "memory-v1.3-eagle:DIL14")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL14")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 				(field
 					(name "Datasheet")
 				)
@@ -3823,7 +3927,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "74xx-us_74x04_N_pwrhidden")
 				(description "Eagle 74xx-us:74*04")
 			)
@@ -3837,9 +3941,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 3/")
-				(tstamps "/84e875fa-3717-f8e6-26e7-02d6fa9bd086/")
+				(tstamps "/b3b771df-f9da-5689-1a9a-c7a9cc358821/")
 			)
-			(tstamps "9136715d-09a2-1f43-cadc-ff8c8ba0af00" "38a06a82-163b-deba-ff42-565349f110ac")
+			(tstamps "c4fe522a-0a59-8a6a-5f09-8f4faa8bb9c2" "20ff9b5f-09b3-08aa-94ab-5840627a7389")
 			(units
 				(unit
 					(name "A")
@@ -3948,10 +4052,10 @@
 		(comp
 			(ref "IC8")
 			(value "74*244")
-			(footprint "memory-v1.3-eagle:DIL20")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL20")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20")
 				(field
 					(name "Datasheet")
 				)
@@ -3960,7 +4064,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "74xx-us_74x244_N_pwrhidden")
 				(description "Eagle 74xx-us:74*244")
 			)
@@ -3974,9 +4078,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 4/")
-				(tstamps "/5a1379ad-354c-e374-017d-2bdc4c9ef65c/")
+				(tstamps "/bb238470-a6bd-f06e-9ca9-4e609da77273/")
 			)
-			(tstamps "9feb2e74-5987-4b44-34e8-8daafcb0c5e9" "232a04ec-ff68-b99c-b069-5c0091fb83f9")
+			(tstamps "28ee143d-df50-a7d2-5908-8db4562b9b39" "16d2d918-b68b-ea04-2a66-041cca813766")
 			(units
 				(unit
 					(name "A")
@@ -4059,10 +4163,10 @@
 		(comp
 			(ref "IC9")
 			(value "74*244")
-			(footprint "memory-v1.3-eagle:DIL20")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL20")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20")
 				(field
 					(name "Datasheet")
 				)
@@ -4071,7 +4175,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "74xx-us_74x244_N_pwrhidden")
 				(description "Eagle 74xx-us:74*244")
 			)
@@ -4085,9 +4189,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 4/")
-				(tstamps "/5a1379ad-354c-e374-017d-2bdc4c9ef65c/")
+				(tstamps "/bb238470-a6bd-f06e-9ca9-4e609da77273/")
 			)
-			(tstamps "7cb145cd-08a6-87a9-3801-6611ad027e35" "57deac0e-6cde-09b1-19e8-c9ab66fcd509")
+			(tstamps "d120aee5-100c-a97a-b0e3-e6cb8de38429" "9364dca2-b395-0933-fdab-f1537081934e")
 			(units
 				(unit
 					(name "A")
@@ -4170,10 +4274,10 @@
 		(comp
 			(ref "IC11")
 			(value "74*157")
-			(footprint "memory-v1.3-eagle:DIL16")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL16")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL16")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL16")
 				(field
 					(name "Datasheet")
 				)
@@ -4182,7 +4286,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "74xx-us_74x157_N_pwrhidden")
 				(description "Eagle 74xx-us:74*157")
 			)
@@ -4196,9 +4300,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 4/")
-				(tstamps "/5a1379ad-354c-e374-017d-2bdc4c9ef65c/")
+				(tstamps "/bb238470-a6bd-f06e-9ca9-4e609da77273/")
 			)
-			(tstamps "232c3528-9ef1-0e8b-5100-0407109b9abe")
+			(tstamps "cbd36ccf-0120-31dc-3095-1877cc824369")
 			(units
 				(unit
 					(name "A")
@@ -4258,10 +4362,10 @@
 		(comp
 			(ref "IC5")
 			(value "74*245")
-			(footprint "memory-v1.3-eagle:DIL20")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL20")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20")
 				(field
 					(name "Datasheet")
 				)
@@ -4270,7 +4374,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "adafruit_74x245_N_pwrhidden")
 				(description "Eagle adafruit:74*245")
 			)
@@ -4284,9 +4388,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 5/")
-				(tstamps "/06d3ca30-126d-da4e-e4bc-92d2b2e7731b/")
+				(tstamps "/d79e46fe-3a48-ed7d-87d7-2a1784e25268/")
 			)
-			(tstamps "45a38265-80f8-7e35-c89e-a7110bb85375")
+			(tstamps "bcfcea9c-cf7e-62fc-7a79-d4f4e8fce74a")
 			(units
 				(unit
 					(name "A")
@@ -4358,10 +4462,10 @@
 		(comp
 			(ref "IC26")
 			(value "74*374")
-			(footprint "memory-v1.3-eagle:DIL20")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL20")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20")
 				(field
 					(name "Datasheet")
 				)
@@ -4370,7 +4474,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "74xx-us_74x374_N_pwrhidden")
 				(description "Eagle 74xx-us:74*374")
 			)
@@ -4384,9 +4488,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 6/")
-				(tstamps "/b7a92c64-d729-c1d1-c602-029f5e9b9f0f/")
+				(tstamps "/c48148da-debe-007c-6c50-860596463e1b/")
 			)
-			(tstamps "ae950935-02bc-b703-3824-80cbe3344264")
+			(tstamps "ce46f28c-910b-5166-f78a-bfd38ec5da8c")
 			(units
 				(unit
 					(name "A")
@@ -4458,10 +4562,10 @@
 		(comp
 			(ref "IC27")
 			(value "74*374")
-			(footprint "memory-v1.3-eagle:DIL20")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL20")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20")
 				(field
 					(name "Datasheet")
 				)
@@ -4470,7 +4574,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "74xx-us_74x374_N_pwrhidden")
 				(description "Eagle 74xx-us:74*374")
 			)
@@ -4484,9 +4588,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 6/")
-				(tstamps "/b7a92c64-d729-c1d1-c602-029f5e9b9f0f/")
+				(tstamps "/c48148da-debe-007c-6c50-860596463e1b/")
 			)
-			(tstamps "0b70c320-c093-3644-991a-d080056ed332")
+			(tstamps "ff9af9f4-33bf-4ade-9a11-101c20c9b970")
 			(units
 				(unit
 					(name "A")
@@ -4558,10 +4662,10 @@
 		(comp
 			(ref "IC28")
 			(value "74*374")
-			(footprint "memory-v1.3-eagle:DIL20")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL20")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20")
 				(field
 					(name "Datasheet")
 				)
@@ -4570,7 +4674,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "74xx-us_74x374_N_pwrhidden")
 				(description "Eagle 74xx-us:74*374")
 			)
@@ -4584,9 +4688,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 6/")
-				(tstamps "/b7a92c64-d729-c1d1-c602-029f5e9b9f0f/")
+				(tstamps "/c48148da-debe-007c-6c50-860596463e1b/")
 			)
-			(tstamps "b2e4aeb4-a98b-928a-74bc-43762b42d618")
+			(tstamps "b0ac2a4f-25f9-1c07-af7c-62bc37dc94f4")
 			(units
 				(unit
 					(name "A")
@@ -4658,10 +4762,10 @@
 		(comp
 			(ref "IC29")
 			(value "74*374")
-			(footprint "memory-v1.3-eagle:DIL20")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20")
 			(fields
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL20")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20")
 				(field
 					(name "Datasheet")
 				)
@@ -4670,7 +4774,7 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "74xx-us_74x374_N_pwrhidden")
 				(description "Eagle 74xx-us:74*374")
 			)
@@ -4684,9 +4788,9 @@
 			)
 			(sheetpath
 				(names "/Sheet 6/")
-				(tstamps "/b7a92c64-d729-c1d1-c602-029f5e9b9f0f/")
+				(tstamps "/c48148da-debe-007c-6c50-860596463e1b/")
 			)
-			(tstamps "6f9bb892-37e5-43be-26c8-883da144187d")
+			(tstamps "903c77ff-a02e-a855-8690-cbaa800e619a")
 			(units
 				(unit
 					(name "A")
@@ -4758,12 +4862,12 @@
 		(comp
 			(ref "RN5")
 			(value "RNX8")
-			(footprint "memory-v1.3-eagle:RN-9")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:RN-9")
 			(fields
 				(field
 					(name "Eagle name") "RN5_")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:RN-9")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:RN-9")
 				(field
 					(name "Datasheet")
 				)
@@ -4772,13 +4876,13 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "resistor-net_RNX8")
 				(description "Eagle resistor-net:RNX8")
 			)
 			(property
 				(name "Eagle name")
-				(value "RN5-2")
+				(value "RN5-1")
 			)
 			(property
 				(name "Sheetname")
@@ -4790,13 +4894,13 @@
 			)
 			(sheetpath
 				(names "/Sheet 6/")
-				(tstamps "/b7a92c64-d729-c1d1-c602-029f5e9b9f0f/")
+				(tstamps "/c48148da-debe-007c-6c50-860596463e1b/")
 			)
-			(tstamps "882742bd-813b-af30-d3bc-8a2c185cec49" "7e0a0a75-0b28-f84d-1579-e427e48e196d"
-				"82271c12-3b5a-6a59-c8bf-3d74b987a767" "5d64d936-7ea5-57bd-ec21-835e793c164b"
-				"799b4e7f-5983-4d73-ba11-05bccebc1bce" "cfcc1f83-d043-0863-2f28-9483e440b4a0"
-				"d34de466-b464-b44e-e847-03f1cb641f19" "4bde63c2-d2b7-7ba0-79a7-ed3fa5a0efd2"
-				"1df95930-2d09-50ad-4421-f2f6005e282e"
+			(tstamps "a4a7a4a2-8215-30c0-da06-1ffe34335ee3" "96e3a2aa-e0f9-2855-227f-f1cad995ad87"
+				"cb5d1b66-c4de-c668-aa99-5dac5343d48f" "9257d3ed-fde8-5c1b-9b67-cf374f47afb5"
+				"b8ed4ea8-ed38-3870-ac3a-cce2383547fa" "ef8138b2-5a6f-1e45-f3f2-76248491c6c0"
+				"7e1bfcc2-6182-5746-d5a7-2297a7502418" "7d9e3d52-35c6-9ddc-09f2-1a66427b72de"
+				"4774b5ac-066f-81f0-26d5-910ef8911579"
 			)
 			(units
 				(unit
@@ -4876,12 +4980,12 @@
 		(comp
 			(ref "RN6")
 			(value "RNX8")
-			(footprint "memory-v1.3-eagle:RN-9")
+			(footprint "memory-v1.3-fusion-export-2026-09-24-eagle:RN-9")
 			(fields
 				(field
 					(name "Eagle name") "RN6_")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:RN-9")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:RN-9")
 				(field
 					(name "Datasheet")
 				)
@@ -4890,13 +4994,13 @@
 				)
 			)
 			(libsource
-				(lib "memory-v1.3-eagle")
+				(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 				(part "resistor-net_RNX8")
 				(description "Eagle resistor-net:RNX8")
 			)
 			(property
 				(name "Eagle name")
-				(value "RN6-8")
+				(value "RN6-3")
 			)
 			(property
 				(name "Sheetname")
@@ -4908,13 +5012,13 @@
 			)
 			(sheetpath
 				(names "/Sheet 6/")
-				(tstamps "/b7a92c64-d729-c1d1-c602-029f5e9b9f0f/")
+				(tstamps "/c48148da-debe-007c-6c50-860596463e1b/")
 			)
-			(tstamps "e6ca0725-188a-ea43-f104-4d9dd8180520" "225ad027-0b00-f7da-48cb-41869b9c1364"
-				"b55764da-8e7f-4db2-3cf7-703994f9f064" "500beb02-1a42-46a8-84b8-98b5349b3244"
-				"3e83bd71-346f-94ae-ecb5-a7cec8b17bf2" "1b51d785-2677-273b-0811-8227a5a85b34"
-				"e31aee0a-5d80-dbe8-f4bb-03ce9a882e94" "85452683-70aa-a3a4-e9c0-f9a6a0e984b2"
-				"0bdd8e7c-85e1-2b51-36e4-232fafa43a1e"
+			(tstamps "f6d6d5cd-d092-0a16-c624-f7c5d3c68925" "37450305-bf8f-46f0-1c41-b36b377d8759"
+				"bdaea777-c94f-c38a-86f1-2b0d7eab021e" "ae31fabd-bc31-e57e-739b-eed0b264f10f"
+				"ade685dc-bdec-e5a1-09e8-97d04f272230" "cf4f6c5e-4ca0-532c-6b82-9e8ca8b07a6b"
+				"45963af9-08b6-d130-006a-dfa6fef29337" "9567dfea-ebfa-b2ff-aec8-f6d5147dce4f"
+				"0e9d1e5f-81dd-9239-354c-ae16d4c0d8d2"
 			)
 			(units
 				(unit
@@ -7557,7 +7661,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "74xx-us_74x00_N_pwrhidden")
 			(description "Eagle 74xx-us:74*00")
 			(fields
@@ -7566,7 +7670,7 @@
 				(field
 					(name "Value") "74*00")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL14")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 				(field
 					(name "Datasheet")
 				)
@@ -7647,7 +7751,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "74xx-us_74x04_N_pwrhidden")
 			(description "Eagle 74xx-us:74*04")
 			(fields
@@ -7656,7 +7760,7 @@
 				(field
 					(name "Value") "74*04")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL14")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 				(field
 					(name "Datasheet")
 				)
@@ -7737,7 +7841,97 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
+			(part "74xx-us_74x11_N_pwrhidden")
+			(description "Eagle 74xx-us:74*11")
+			(fields
+				(field
+					(name "Reference") "IC")
+				(field
+					(name "Value") "74*11")
+				(field
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Eagle 74xx-us:74*11")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "I0")
+					(type "input")
+				)
+				(pin
+					(num "2")
+					(name "I1")
+					(type "input")
+				)
+				(pin
+					(num "3")
+					(name "I0")
+					(type "input")
+				)
+				(pin
+					(num "4")
+					(name "I1")
+					(type "input")
+				)
+				(pin
+					(num "5")
+					(name "I2")
+					(type "input")
+				)
+				(pin
+					(num "6")
+					(name "O")
+					(type "output")
+				)
+				(pin
+					(num "7")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "8")
+					(name "O")
+					(type "output")
+				)
+				(pin
+					(num "9")
+					(name "I0")
+					(type "input")
+				)
+				(pin
+					(num "10")
+					(name "I1")
+					(type "input")
+				)
+				(pin
+					(num "11")
+					(name "I2")
+					(type "input")
+				)
+				(pin
+					(num "12")
+					(name "O")
+					(type "output")
+				)
+				(pin
+					(num "13")
+					(name "I2")
+					(type "input")
+				)
+				(pin
+					(num "14")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "74xx-us_74x138_N_pwrhidden")
 			(description "Eagle 74xx-us:74*138")
 			(fields
@@ -7746,7 +7940,7 @@
 				(field
 					(name "Value") "74*138")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL16")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL16")
 				(field
 					(name "Datasheet")
 				)
@@ -7837,7 +8031,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "74xx-us_74x157_N_pwrhidden")
 			(description "Eagle 74xx-us:74*157")
 			(fields
@@ -7846,7 +8040,7 @@
 				(field
 					(name "Value") "74*157")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL16")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL16")
 				(field
 					(name "Datasheet")
 				)
@@ -7937,7 +8131,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "74xx-us_74x244_N_pwrhidden")
 			(description "Eagle 74xx-us:74*244")
 			(fields
@@ -7946,7 +8140,7 @@
 				(field
 					(name "Value") "74*244")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL20")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20")
 				(field
 					(name "Datasheet")
 				)
@@ -8057,7 +8251,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "74xx-us_74x30_N_pwrhidden")
 			(description "Eagle 74xx-us:74*30")
 			(fields
@@ -8066,7 +8260,7 @@
 				(field
 					(name "Value") "74*30")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL14")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 				(field
 					(name "Datasheet")
 				)
@@ -8132,7 +8326,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "74xx-us_74x32_N_pwrhidden")
 			(description "Eagle 74xx-us:74*32")
 			(fields
@@ -8141,7 +8335,7 @@
 				(field
 					(name "Value") "74*32")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL14")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 				(field
 					(name "Datasheet")
 				)
@@ -8222,7 +8416,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "74xx-us_74x374_N_pwrhidden")
 			(description "Eagle 74xx-us:74*374")
 			(fields
@@ -8231,7 +8425,7 @@
 				(field
 					(name "Value") "74*374")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL20")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20")
 				(field
 					(name "Datasheet")
 				)
@@ -8342,7 +8536,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "74xx-us_74x74_N_pwrhidden")
 			(description "Eagle 74xx-us:74*74")
 			(fields
@@ -8351,7 +8545,7 @@
 				(field
 					(name "Value") "74*74")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL14")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL14")
 				(field
 					(name "Datasheet")
 				)
@@ -8432,7 +8626,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "adafruit_74x245_N_pwrhidden")
 			(description "Eagle adafruit:74*245")
 			(fields
@@ -8441,7 +8635,7 @@
 				(field
 					(name "Value") "74*245")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL20")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL20")
 				(field
 					(name "Datasheet")
 				)
@@ -8552,7 +8746,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "adafruit_C-US_025-025X050")
 			(description "Eagle adafruit:C-US")
 			(fields
@@ -8561,7 +8755,7 @@
 				(field
 					(name "Value") "C-US")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:C025-025X050")
 				(field
 					(name "Datasheet")
 				)
@@ -8582,7 +8776,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "con-vg_FABC96R")
 			(description "Eagle con-vg:FABC96R")
 			(fields
@@ -8591,7 +8785,7 @@
 				(field
 					(name "Value") "FABC96R")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:FABC96R")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:FABC96R")
 				(field
 					(name "Datasheet")
 				)
@@ -9082,7 +9276,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "eagle-ltspice_R_0207_10")
 			(description "Eagle eagle-ltspice:R")
 			(fields
@@ -9091,7 +9285,7 @@
 				(field
 					(name "Value") "R")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:0207_10")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:0207_10")
 				(field
 					(name "Datasheet")
 				)
@@ -9112,7 +9306,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "led_LED_5MM")
 			(description "Eagle led:LED")
 			(fields
@@ -9121,7 +9315,7 @@
 				(field
 					(name "Value") "LED")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:LED5MM")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:LED5MM")
 				(field
 					(name "Datasheet")
 				)
@@ -9142,7 +9336,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "memory-hitachi_62256P")
 			(description "Eagle memory-hitachi:62256P")
 			(fields
@@ -9151,7 +9345,7 @@
 				(field
 					(name "Value") "62256P")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL28-6")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL28-6")
 				(field
 					(name "Datasheet")
 				)
@@ -9302,7 +9496,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "memory-nec_28C64C")
 			(description "Eagle memory-nec:28C64C")
 			(fields
@@ -9311,7 +9505,7 @@
 				(field
 					(name "Value") "28C64C")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:DIL28-6")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:DIL28-6")
 				(field
 					(name "Datasheet")
 				)
@@ -9462,7 +9656,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "pinhead_3row_PIN_3X8")
 			(description "Eagle pinhead_3row:PIN_3X8")
 			(fields
@@ -9471,7 +9665,7 @@
 				(field
 					(name "Value") "PIN_3X8")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:PIN_3X8")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:PIN_3X8")
 				(field
 					(name "Datasheet")
 				)
@@ -9602,7 +9796,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "pinhead_PINHD-1X3")
 			(description "Eagle pinhead:PINHD-1X3")
 			(fields
@@ -9611,7 +9805,7 @@
 				(field
 					(name "Value") "PINHD-1X3")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:1X03")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:1X03")
 				(field
 					(name "Datasheet")
 				)
@@ -9637,7 +9831,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "resistor-net_RNX8")
 			(description "Eagle resistor-net:RNX8")
 			(fields
@@ -9646,7 +9840,7 @@
 				(field
 					(name "Value") "RNX8")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:RN-9")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:RN-9")
 				(field
 					(name "Datasheet")
 				)
@@ -9702,7 +9896,7 @@
 			)
 		)
 		(libpart
-			(lib "memory-v1.3-eagle")
+			(lib "memory-v1.3-fusion-export-2026-09-24-eagle")
 			(part "resistor-sil_G08R")
 			(description "Eagle resistor-sil:G08R")
 			(fields
@@ -9711,7 +9905,7 @@
 				(field
 					(name "Value") "G08R")
 				(field
-					(name "Footprint") "memory-v1.3-eagle:SIL9")
+					(name "Footprint") "memory-v1.3-fusion-export-2026-09-24-eagle:SIL9")
 				(field
 					(name "Datasheet")
 				)
@@ -9781,8 +9975,8 @@
 			(uri "${KICAD10_SYMBOL_DIR}/Device.kicad_sym")
 		)
 		(library
-			(logical "memory-v1.3-eagle")
-			(uri "${KIPRJMOD}/memory-v1.3-eagle.kicad_sym")
+			(logical "memory-v1.3-fusion-export-2026-09-24-eagle")
+			(uri "${KIPRJMOD}/memory-v1.3-fusion-export-2026-09-24-eagle.kicad_sym")
 		)
 	)
 	(nets
@@ -9813,6 +10007,12 @@
 			(code "2")
 			(name "-HI-RAM")
 			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "2")
+				(pinfunction "I1_2")
+				(pintype "input")
+			)
 			(node
 				(ref "IC2")
 				(pin "20")
@@ -9865,6 +10065,29 @@
 		)
 		(net
 			(code "5")
+			(name "-LO-RAM")
+			(class "Default")
+			(node
+				(ref "IC1")
+				(pin "20")
+				(pinfunction "~{CS}_20")
+				(pintype "input")
+			)
+			(node
+				(ref "IC10")
+				(pin "3")
+				(pinfunction "O_3")
+				(pintype "output")
+			)
+			(node
+				(ref "IC15")
+				(pin "1")
+				(pinfunction "I0_1")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "6")
 			(name "-MEM-RD")
 			(class "Default")
 			(node
@@ -9887,7 +10110,7 @@
 			)
 		)
 		(net
-			(code "6")
+			(code "7")
 			(name "-MEM-WR")
 			(class "Default")
 			(node
@@ -9904,7 +10127,7 @@
 			)
 		)
 		(net
-			(code "7")
+			(code "8")
 			(name "-RESET")
 			(class "Default")
 			(node
@@ -9932,13 +10155,19 @@
 			)
 		)
 		(net
-			(code "8")
+			(code "9")
 			(name "-ROM-CS")
 			(class "Default")
 			(node
 				(ref "IC13")
 				(pin "20")
 				(pinfunction "~{CE}_20")
+				(pintype "input")
+			)
+			(node
+				(ref "IC15")
+				(pin "13")
+				(pinfunction "I2_13")
 				(pintype "input")
 			)
 			(node
@@ -9949,7 +10178,7 @@
 			)
 		)
 		(net
-			(code "9")
+			(code "10")
 			(name "-TMP-REG-LD0")
 			(class "Default")
 			(node
@@ -9966,7 +10195,7 @@
 			)
 		)
 		(net
-			(code "10")
+			(code "11")
 			(name "-TMP-REG-LD1")
 			(class "Default")
 			(node
@@ -9983,7 +10212,7 @@
 			)
 		)
 		(net
-			(code "11")
+			(code "12")
 			(name "-TMP-REG-RD0")
 			(class "Default")
 			(node
@@ -10006,7 +10235,7 @@
 			)
 		)
 		(net
-			(code "12")
+			(code "13")
 			(name "-TMP-REG-RD1")
 			(class "Default")
 			(node
@@ -10029,7 +10258,7 @@
 			)
 		)
 		(net
-			(code "13")
+			(code "14")
 			(name "-VMA")
 			(class "Default")
 			(node
@@ -10042,12 +10271,6 @@
 				(ref "IC3")
 				(pin "1")
 				(pinfunction "I0_1")
-				(pintype "input")
-			)
-			(node
-				(ref "IC5")
-				(pin "19")
-				(pinfunction "G_19")
 				(pintype "input")
 			)
 			(node
@@ -10064,7 +10287,7 @@
 			)
 		)
 		(net
-			(code "14")
+			(code "15")
 			(name "/Sheet 1/-AC-LD")
 			(class "Default")
 			(node
@@ -10075,7 +10298,7 @@
 			)
 		)
 		(net
-			(code "15")
+			(code "16")
 			(name "/Sheet 1/-AC-LD-INV")
 			(class "Default")
 			(node
@@ -10086,7 +10309,7 @@
 			)
 		)
 		(net
-			(code "16")
+			(code "17")
 			(name "/Sheet 1/-AC-RD")
 			(class "Default")
 			(node
@@ -10097,7 +10320,7 @@
 			)
 		)
 		(net
-			(code "17")
+			(code "18")
 			(name "/Sheet 1/-ADDR-REG-ID0")
 			(class "Default")
 			(node
@@ -10108,7 +10331,7 @@
 			)
 		)
 		(net
-			(code "18")
+			(code "19")
 			(name "/Sheet 1/-ADDR-REG-ID1")
 			(class "Default")
 			(node
@@ -10119,7 +10342,7 @@
 			)
 		)
 		(net
-			(code "19")
+			(code "20")
 			(name "/Sheet 1/-ADDR-REG-ID2")
 			(class "Default")
 			(node
@@ -10130,7 +10353,7 @@
 			)
 		)
 		(net
-			(code "20")
+			(code "21")
 			(name "/Sheet 1/-ADDR-REG-ID3")
 			(class "Default")
 			(node
@@ -10141,7 +10364,7 @@
 			)
 		)
 		(net
-			(code "21")
+			(code "22")
 			(name "/Sheet 1/-ALU-FUNC")
 			(class "Default")
 			(node
@@ -10152,7 +10375,7 @@
 			)
 		)
 		(net
-			(code "22")
+			(code "23")
 			(name "/Sheet 1/-HL-SWAP")
 			(class "Default")
 			(node
@@ -10163,7 +10386,7 @@
 			)
 		)
 		(net
-			(code "23")
+			(code "24")
 			(name "/Sheet 1/-IN")
 			(class "Default")
 			(node
@@ -10174,7 +10397,7 @@
 			)
 		)
 		(net
-			(code "24")
+			(code "25")
 			(name "/Sheet 1/-INT")
 			(class "Default")
 			(node
@@ -10185,7 +10408,7 @@
 			)
 		)
 		(net
-			(code "25")
+			(code "26")
 			(name "/Sheet 1/-INTA")
 			(class "Default")
 			(node
@@ -10196,7 +10419,7 @@
 			)
 		)
 		(net
-			(code "26")
+			(code "27")
 			(name "/Sheet 1/-IO-ADDR-LD")
 			(class "Default")
 			(node
@@ -10207,7 +10430,7 @@
 			)
 		)
 		(net
-			(code "27")
+			(code "28")
 			(name "/Sheet 1/-OUT")
 			(class "Default")
 			(node
@@ -10218,7 +10441,7 @@
 			)
 		)
 		(net
-			(code "28")
+			(code "29")
 			(name "/Sheet 1/-REG-DN")
 			(class "Default")
 			(node
@@ -10229,7 +10452,7 @@
 			)
 		)
 		(net
-			(code "29")
+			(code "30")
 			(name "/Sheet 1/-REG-FUNC-LD")
 			(class "Default")
 			(node
@@ -10240,7 +10463,7 @@
 			)
 		)
 		(net
-			(code "30")
+			(code "31")
 			(name "/Sheet 1/-REG-FUNC-RD")
 			(class "Default")
 			(node
@@ -10251,7 +10474,7 @@
 			)
 		)
 		(net
-			(code "31")
+			(code "32")
 			(name "/Sheet 1/-REG-LD-HI")
 			(class "Default")
 			(node
@@ -10262,7 +10485,7 @@
 			)
 		)
 		(net
-			(code "32")
+			(code "33")
 			(name "/Sheet 1/-REG-LD-LO")
 			(class "Default")
 			(node
@@ -10273,7 +10496,7 @@
 			)
 		)
 		(net
-			(code "33")
+			(code "34")
 			(name "/Sheet 1/-REG-RD-HI")
 			(class "Default")
 			(node
@@ -10284,7 +10507,7 @@
 			)
 		)
 		(net
-			(code "34")
+			(code "35")
 			(name "/Sheet 1/-REG-RD-LO")
 			(class "Default")
 			(node
@@ -10295,7 +10518,7 @@
 			)
 		)
 		(net
-			(code "35")
+			(code "36")
 			(name "/Sheet 1/-REG-UP")
 			(class "Default")
 			(node
@@ -10306,7 +10529,7 @@
 			)
 		)
 		(net
-			(code "36")
+			(code "37")
 			(name "/Sheet 1/-RUN")
 			(class "Default")
 			(node
@@ -10317,7 +10540,7 @@
 			)
 		)
 		(net
-			(code "37")
+			(code "38")
 			(name "/Sheet 1/-SR-LD")
 			(class "Default")
 			(node
@@ -10328,7 +10551,7 @@
 			)
 		)
 		(net
-			(code "38")
+			(code "39")
 			(name "/Sheet 1/ALU0")
 			(class "Default")
 			(node
@@ -10339,7 +10562,7 @@
 			)
 		)
 		(net
-			(code "39")
+			(code "40")
 			(name "/Sheet 1/ALU1")
 			(class "Default")
 			(node
@@ -10350,7 +10573,7 @@
 			)
 		)
 		(net
-			(code "40")
+			(code "41")
 			(name "/Sheet 1/ALU2")
 			(class "Default")
 			(node
@@ -10361,7 +10584,7 @@
 			)
 		)
 		(net
-			(code "41")
+			(code "42")
 			(name "/Sheet 1/ALU3")
 			(class "Default")
 			(node
@@ -10372,7 +10595,7 @@
 			)
 		)
 		(net
-			(code "42")
+			(code "43")
 			(name "/Sheet 1/BR-COND")
 			(class "Default")
 			(node
@@ -10383,7 +10606,7 @@
 			)
 		)
 		(net
-			(code "43")
+			(code "44")
 			(name "/Sheet 1/REG-LD-ID0")
 			(class "Default")
 			(node
@@ -10394,7 +10617,7 @@
 			)
 		)
 		(net
-			(code "44")
+			(code "45")
 			(name "/Sheet 1/REG-LD-ID1")
 			(class "Default")
 			(node
@@ -10405,7 +10628,7 @@
 			)
 		)
 		(net
-			(code "45")
+			(code "46")
 			(name "/Sheet 1/REG-LD-ID2")
 			(class "Default")
 			(node
@@ -10416,7 +10639,7 @@
 			)
 		)
 		(net
-			(code "46")
+			(code "47")
 			(name "/Sheet 1/REG-LD-ID3")
 			(class "Default")
 			(node
@@ -10427,7 +10650,7 @@
 			)
 		)
 		(net
-			(code "47")
+			(code "48")
 			(name "/Sheet 1/REG-RD-ID0")
 			(class "Default")
 			(node
@@ -10438,7 +10661,7 @@
 			)
 		)
 		(net
-			(code "48")
+			(code "49")
 			(name "/Sheet 1/REG-RD-ID1")
 			(class "Default")
 			(node
@@ -10449,7 +10672,7 @@
 			)
 		)
 		(net
-			(code "49")
+			(code "50")
 			(name "/Sheet 1/REG-RD-ID2")
 			(class "Default")
 			(node
@@ -10460,7 +10683,7 @@
 			)
 		)
 		(net
-			(code "50")
+			(code "51")
 			(name "/Sheet 1/REG-RD-ID3")
 			(class "Default")
 			(node
@@ -10471,24 +10694,511 @@
 			)
 		)
 		(net
-			(code "51")
-			(name "/Sheet 3/-LO-RAM")
+			(code "52")
+			(name "/Sheet 2/RAM0")
 			(class "Default")
 			(node
-				(ref "IC1")
-				(pin "20")
-				(pinfunction "~{CS}_20")
+				(ref "IC4")
+				(pin "1")
+				(pinfunction "I0_1")
 				(pintype "input")
 			)
 			(node
-				(ref "IC10")
-				(pin "3")
-				(pinfunction "O_3")
-				(pintype "output")
+				(ref "RN8")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "17")
+				(pinfunction "17_17")
+				(pintype "passive")
 			)
 		)
 		(net
-			(code "52")
+			(code "53")
+			(name "/Sheet 2/RAM1")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "2")
+				(pinfunction "I1_2")
+				(pintype "input")
+			)
+			(node
+				(ref "RN8")
+				(pin "3")
+				(pinfunction "3_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "18")
+				(pinfunction "18_18")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "54")
+			(name "/Sheet 2/RAM2")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "3")
+				(pinfunction "I2_3")
+				(pintype "input")
+			)
+			(node
+				(ref "RN8")
+				(pin "4")
+				(pinfunction "4_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "19")
+				(pinfunction "19_19")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "55")
+			(name "/Sheet 2/RAM3")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "4")
+				(pinfunction "I3_4")
+				(pintype "input")
+			)
+			(node
+				(ref "RN8")
+				(pin "5")
+				(pinfunction "5_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "20")
+				(pinfunction "20_20")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "56")
+			(name "/Sheet 2/RAM4")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "5")
+				(pinfunction "I4_5")
+				(pintype "input")
+			)
+			(node
+				(ref "RN8")
+				(pin "6")
+				(pinfunction "6_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "21")
+				(pinfunction "21_21")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "57")
+			(name "/Sheet 2/RAM5")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "6")
+				(pinfunction "I5_6")
+				(pintype "input")
+			)
+			(node
+				(ref "RN8")
+				(pin "7")
+				(pinfunction "7_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "22")
+				(pinfunction "22_22")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "58")
+			(name "/Sheet 2/RAM6")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "11")
+				(pinfunction "I6_11")
+				(pintype "input")
+			)
+			(node
+				(ref "RN8")
+				(pin "8")
+				(pinfunction "8_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "23")
+				(pinfunction "23_23")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "59")
+			(name "/Sheet 2/RAM7")
+			(class "Default")
+			(node
+				(ref "IC4")
+				(pin "12")
+				(pinfunction "I7_12")
+				(pintype "input")
+			)
+			(node
+				(ref "RN8")
+				(pin "9")
+				(pinfunction "9_9")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "24")
+				(pinfunction "24_24")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "60")
+			(name "/Sheet 2/ROM0")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "12")
+				(pinfunction "I7_12")
+				(pintype "input")
+			)
+			(node
+				(ref "RN7")
+				(pin "9")
+				(pinfunction "9_9")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "1")
+				(pinfunction "1_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "61")
+			(name "/Sheet 2/ROM1")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "11")
+				(pinfunction "I6_11")
+				(pintype "input")
+			)
+			(node
+				(ref "RN7")
+				(pin "8")
+				(pinfunction "8_8")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "62")
+			(name "/Sheet 2/ROM2")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "6")
+				(pinfunction "I5_6")
+				(pintype "input")
+			)
+			(node
+				(ref "RN7")
+				(pin "7")
+				(pinfunction "7_7")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "3")
+				(pinfunction "3_3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "63")
+			(name "/Sheet 2/ROM3")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "5")
+				(pinfunction "I4_5")
+				(pintype "input")
+			)
+			(node
+				(ref "RN7")
+				(pin "6")
+				(pinfunction "6_6")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "4")
+				(pinfunction "4_4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "64")
+			(name "/Sheet 2/ROM4")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "4")
+				(pinfunction "I3_4")
+				(pintype "input")
+			)
+			(node
+				(ref "RN7")
+				(pin "5")
+				(pinfunction "5_5")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "5")
+				(pinfunction "5_5")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "65")
+			(name "/Sheet 2/ROM5")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "3")
+				(pinfunction "I2_3")
+				(pintype "input")
+			)
+			(node
+				(ref "RN7")
+				(pin "4")
+				(pinfunction "4_4")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "6")
+				(pinfunction "6_6")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "66")
+			(name "/Sheet 2/ROM6")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "2")
+				(pinfunction "I1_2")
+				(pintype "input")
+			)
+			(node
+				(ref "RN7")
+				(pin "3")
+				(pinfunction "3_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "7")
+				(pinfunction "7_7")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "67")
+			(name "/Sheet 2/ROM7")
+			(class "Default")
+			(node
+				(ref "IC18")
+				(pin "1")
+				(pinfunction "I0_1")
+				(pintype "input")
+			)
+			(node
+				(ref "RN7")
+				(pin "2")
+				(pinfunction "2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "U$1")
+				(pin "8")
+				(pinfunction "8_8")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "68")
+			(name "/Sheet 2/SEL0")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "15")
+				(pinfunction "Y0_15")
+				(pintype "output")
+			)
+			(node
+				(ref "U$1")
+				(pin "9")
+				(pinfunction "9_9")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "69")
+			(name "/Sheet 2/SEL1")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "14")
+				(pinfunction "Y1_14")
+				(pintype "output")
+			)
+			(node
+				(ref "U$1")
+				(pin "10")
+				(pinfunction "10_10")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "70")
+			(name "/Sheet 2/SEL2")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "13")
+				(pinfunction "Y2_13")
+				(pintype "output")
+			)
+			(node
+				(ref "U$1")
+				(pin "11")
+				(pinfunction "11_11")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "71")
+			(name "/Sheet 2/SEL3")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "12")
+				(pinfunction "Y3_12")
+				(pintype "output")
+			)
+			(node
+				(ref "U$1")
+				(pin "12")
+				(pinfunction "12_12")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "72")
+			(name "/Sheet 2/SEL4")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "11")
+				(pinfunction "Y4_11")
+				(pintype "output")
+			)
+			(node
+				(ref "U$1")
+				(pin "13")
+				(pinfunction "13_13")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "73")
+			(name "/Sheet 2/SEL5")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "10")
+				(pinfunction "Y5_10")
+				(pintype "output")
+			)
+			(node
+				(ref "U$1")
+				(pin "14")
+				(pinfunction "14_14")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "74")
+			(name "/Sheet 2/SEL6")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "9")
+				(pinfunction "Y6_9")
+				(pintype "output")
+			)
+			(node
+				(ref "U$1")
+				(pin "15")
+				(pinfunction "15_15")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "75")
+			(name "/Sheet 2/SEL7")
+			(class "Default")
+			(node
+				(ref "IC7")
+				(pin "7")
+				(pinfunction "Y7_7")
+				(pintype "output")
+			)
+			(node
+				(ref "U$1")
+				(pin "16")
+				(pinfunction "16_16")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "76")
 			(name "/Sheet 7/-CFOE")
 			(class "Default")
 			(node
@@ -10514,7 +11224,7 @@
 			)
 		)
 		(net
-			(code "53")
+			(code "77")
 			(name "/Sheet 7/-CFRESET")
 			(class "Default")
 			(node
@@ -10530,7 +11240,7 @@
 			)
 		)
 		(net
-			(code "54")
+			(code "78")
 			(name "/Sheet 7/-DASP")
 			(class "Default")
 			(node
@@ -10546,7 +11256,7 @@
 			)
 		)
 		(net
-			(code "55")
+			(code "79")
 			(name "/Sheet 7/-DMACK")
 			(class "Default")
 			(node
@@ -10562,7 +11272,7 @@
 			)
 		)
 		(net
-			(code "56")
+			(code "80")
 			(name "/Sheet 7/-IOR")
 			(class "Default")
 			(node
@@ -10589,7 +11299,7 @@
 			)
 		)
 		(net
-			(code "57")
+			(code "81")
 			(name "/Sheet 7/-IOW")
 			(class "Default")
 			(node
@@ -10610,7 +11320,7 @@
 			)
 		)
 		(net
-			(code "58")
+			(code "82")
 			(name "/Sheet 7/-P8SEL")
 			(class "Default")
 			(node
@@ -10626,7 +11336,7 @@
 			)
 		)
 		(net
-			(code "59")
+			(code "83")
 			(name "/Sheet 7/-P9SEL")
 			(class "Default")
 			(node
@@ -10647,7 +11357,7 @@
 			)
 		)
 		(net
-			(code "60")
+			(code "84")
 			(name "/Sheet 7/-PDIAG")
 			(class "Default")
 			(node
@@ -10663,7 +11373,7 @@
 			)
 		)
 		(net
-			(code "61")
+			(code "85")
 			(name "/Sheet 7/-SRST")
 			(class "Default")
 			(node
@@ -10679,7 +11389,7 @@
 			)
 		)
 		(net
-			(code "62")
+			(code "86")
 			(name "/Sheet 7/ACTK")
 			(class "Default")
 			(node
@@ -10695,7 +11405,7 @@
 			)
 		)
 		(net
-			(code "63")
+			(code "87")
 			(name "/Sheet 7/CFD0")
 			(class "Default")
 			(node
@@ -10718,7 +11428,7 @@
 			)
 		)
 		(net
-			(code "64")
+			(code "88")
 			(name "/Sheet 7/CFD1")
 			(class "Default")
 			(node
@@ -10741,7 +11451,7 @@
 			)
 		)
 		(net
-			(code "65")
+			(code "89")
 			(name "/Sheet 7/CFD2")
 			(class "Default")
 			(node
@@ -10764,7 +11474,7 @@
 			)
 		)
 		(net
-			(code "66")
+			(code "90")
 			(name "/Sheet 7/CFD3")
 			(class "Default")
 			(node
@@ -10787,7 +11497,7 @@
 			)
 		)
 		(net
-			(code "67")
+			(code "91")
 			(name "/Sheet 7/CFD4")
 			(class "Default")
 			(node
@@ -10810,7 +11520,7 @@
 			)
 		)
 		(net
-			(code "68")
+			(code "92")
 			(name "/Sheet 7/CFD5")
 			(class "Default")
 			(node
@@ -10833,7 +11543,7 @@
 			)
 		)
 		(net
-			(code "69")
+			(code "93")
 			(name "/Sheet 7/CFD6")
 			(class "Default")
 			(node
@@ -10856,7 +11566,7 @@
 			)
 		)
 		(net
-			(code "70")
+			(code "94")
 			(name "/Sheet 7/CFD7")
 			(class "Default")
 			(node
@@ -10879,7 +11589,7 @@
 			)
 		)
 		(net
-			(code "71")
+			(code "95")
 			(name "/Sheet 7/DA0")
 			(class "Default")
 			(node
@@ -10896,7 +11606,7 @@
 			)
 		)
 		(net
-			(code "72")
+			(code "96")
 			(name "/Sheet 7/DA1")
 			(class "Default")
 			(node
@@ -10913,7 +11623,7 @@
 			)
 		)
 		(net
-			(code "73")
+			(code "97")
 			(name "/Sheet 7/DA2")
 			(class "Default")
 			(node
@@ -10930,7 +11640,7 @@
 			)
 		)
 		(net
-			(code "74")
+			(code "98")
 			(name "/Sheet 7/IORDY")
 			(class "Default")
 			(node
@@ -10946,7 +11656,7 @@
 			)
 		)
 		(net
-			(code "75")
+			(code "99")
 			(name "/Sheet 7/LATCHCLK")
 			(class "Default")
 			(node
@@ -10962,7 +11672,7 @@
 			)
 		)
 		(net
-			(code "76")
+			(code "100")
 			(name "/Sheet 7/LEDA2")
 			(class "Default")
 			(node
@@ -10978,7 +11688,7 @@
 			)
 		)
 		(net
-			(code "77")
+			(code "101")
 			(name "/Sheet 7/PIN20")
 			(class "Default")
 			(node
@@ -10995,7 +11705,7 @@
 			)
 		)
 		(net
-			(code "78")
+			(code "102")
 			(name "/Sheet 7/SRST")
 			(class "Default")
 			(node
@@ -11006,7 +11716,7 @@
 			)
 		)
 		(net
-			(code "79")
+			(code "103")
 			(name "ADDR0")
 			(class "Default")
 			(node
@@ -11023,7 +11733,7 @@
 			)
 		)
 		(net
-			(code "80")
+			(code "104")
 			(name "ADDR1")
 			(class "Default")
 			(node
@@ -11040,7 +11750,7 @@
 			)
 		)
 		(net
-			(code "81")
+			(code "105")
 			(name "ADDR2")
 			(class "Default")
 			(node
@@ -11057,7 +11767,7 @@
 			)
 		)
 		(net
-			(code "82")
+			(code "106")
 			(name "ADDR3")
 			(class "Default")
 			(node
@@ -11074,7 +11784,7 @@
 			)
 		)
 		(net
-			(code "83")
+			(code "107")
 			(name "ADDR4")
 			(class "Default")
 			(node
@@ -11091,7 +11801,7 @@
 			)
 		)
 		(net
-			(code "84")
+			(code "108")
 			(name "ADDR5")
 			(class "Default")
 			(node
@@ -11108,7 +11818,7 @@
 			)
 		)
 		(net
-			(code "85")
+			(code "109")
 			(name "ADDR6")
 			(class "Default")
 			(node
@@ -11125,7 +11835,7 @@
 			)
 		)
 		(net
-			(code "86")
+			(code "110")
 			(name "ADDR7")
 			(class "Default")
 			(node
@@ -11142,7 +11852,7 @@
 			)
 		)
 		(net
-			(code "87")
+			(code "111")
 			(name "ADDR8")
 			(class "Default")
 			(node
@@ -11159,7 +11869,7 @@
 			)
 		)
 		(net
-			(code "88")
+			(code "112")
 			(name "ADDR9")
 			(class "Default")
 			(node
@@ -11176,7 +11886,7 @@
 			)
 		)
 		(net
-			(code "89")
+			(code "113")
 			(name "ADDR10")
 			(class "Default")
 			(node
@@ -11193,7 +11903,7 @@
 			)
 		)
 		(net
-			(code "90")
+			(code "114")
 			(name "ADDR11")
 			(class "Default")
 			(node
@@ -11210,7 +11920,7 @@
 			)
 		)
 		(net
-			(code "91")
+			(code "115")
 			(name "ADDR12")
 			(class "Default")
 			(node
@@ -11227,7 +11937,7 @@
 			)
 		)
 		(net
-			(code "92")
+			(code "116")
 			(name "ADDR13")
 			(class "Default")
 			(node
@@ -11244,7 +11954,7 @@
 			)
 		)
 		(net
-			(code "93")
+			(code "117")
 			(name "ADDR14")
 			(class "Default")
 			(node
@@ -11261,7 +11971,7 @@
 			)
 		)
 		(net
-			(code "94")
+			(code "118")
 			(name "ADDR15")
 			(class "Default")
 			(node
@@ -11284,7 +11994,7 @@
 			)
 		)
 		(net
-			(code "95")
+			(code "119")
 			(name "BADDR0")
 			(class "Default")
 			(node
@@ -11313,7 +12023,7 @@
 			)
 		)
 		(net
-			(code "96")
+			(code "120")
 			(name "BADDR1")
 			(class "Default")
 			(node
@@ -11342,7 +12052,7 @@
 			)
 		)
 		(net
-			(code "97")
+			(code "121")
 			(name "BADDR2")
 			(class "Default")
 			(node
@@ -11371,7 +12081,7 @@
 			)
 		)
 		(net
-			(code "98")
+			(code "122")
 			(name "BADDR3")
 			(class "Default")
 			(node
@@ -11400,7 +12110,7 @@
 			)
 		)
 		(net
-			(code "99")
+			(code "123")
 			(name "BADDR4")
 			(class "Default")
 			(node
@@ -11429,7 +12139,7 @@
 			)
 		)
 		(net
-			(code "100")
+			(code "124")
 			(name "BADDR5")
 			(class "Default")
 			(node
@@ -11458,7 +12168,7 @@
 			)
 		)
 		(net
-			(code "101")
+			(code "125")
 			(name "BADDR6")
 			(class "Default")
 			(node
@@ -11487,7 +12197,7 @@
 			)
 		)
 		(net
-			(code "102")
+			(code "126")
 			(name "BADDR7")
 			(class "Default")
 			(node
@@ -11516,7 +12226,7 @@
 			)
 		)
 		(net
-			(code "103")
+			(code "127")
 			(name "BADDR8")
 			(class "Default")
 			(node
@@ -11545,7 +12255,7 @@
 			)
 		)
 		(net
-			(code "104")
+			(code "128")
 			(name "BADDR9")
 			(class "Default")
 			(node
@@ -11574,7 +12284,7 @@
 			)
 		)
 		(net
-			(code "105")
+			(code "129")
 			(name "BADDR10")
 			(class "Default")
 			(node
@@ -11603,7 +12313,7 @@
 			)
 		)
 		(net
-			(code "106")
+			(code "130")
 			(name "BADDR11")
 			(class "Default")
 			(node
@@ -11632,7 +12342,7 @@
 			)
 		)
 		(net
-			(code "107")
+			(code "131")
 			(name "BADDR12")
 			(class "Default")
 			(node
@@ -11667,7 +12377,7 @@
 			)
 		)
 		(net
-			(code "108")
+			(code "132")
 			(name "BADDR13")
 			(class "Default")
 			(node
@@ -11696,7 +12406,7 @@
 			)
 		)
 		(net
-			(code "109")
+			(code "133")
 			(name "BADDR14")
 			(class "Default")
 			(node
@@ -11725,7 +12435,7 @@
 			)
 		)
 		(net
-			(code "110")
+			(code "134")
 			(name "BADDR15")
 			(class "Default")
 			(node
@@ -11748,7 +12458,7 @@
 			)
 		)
 		(net
-			(code "111")
+			(code "135")
 			(name "BDATA0")
 			(class "Default")
 			(node
@@ -11777,7 +12487,7 @@
 			)
 		)
 		(net
-			(code "112")
+			(code "136")
 			(name "BDATA1")
 			(class "Default")
 			(node
@@ -11806,7 +12516,7 @@
 			)
 		)
 		(net
-			(code "113")
+			(code "137")
 			(name "BDATA2")
 			(class "Default")
 			(node
@@ -11835,7 +12545,7 @@
 			)
 		)
 		(net
-			(code "114")
+			(code "138")
 			(name "BDATA3")
 			(class "Default")
 			(node
@@ -11864,7 +12574,7 @@
 			)
 		)
 		(net
-			(code "115")
+			(code "139")
 			(name "BDATA4")
 			(class "Default")
 			(node
@@ -11893,7 +12603,7 @@
 			)
 		)
 		(net
-			(code "116")
+			(code "140")
 			(name "BDATA5")
 			(class "Default")
 			(node
@@ -11922,7 +12632,7 @@
 			)
 		)
 		(net
-			(code "117")
+			(code "141")
 			(name "BDATA6")
 			(class "Default")
 			(node
@@ -11951,7 +12661,7 @@
 			)
 		)
 		(net
-			(code "118")
+			(code "142")
 			(name "BDATA7")
 			(class "Default")
 			(node
@@ -11980,7 +12690,7 @@
 			)
 		)
 		(net
-			(code "119")
+			(code "143")
 			(name "DATA0")
 			(class "Default")
 			(node
@@ -12039,7 +12749,7 @@
 			)
 		)
 		(net
-			(code "120")
+			(code "144")
 			(name "DATA1")
 			(class "Default")
 			(node
@@ -12098,7 +12808,7 @@
 			)
 		)
 		(net
-			(code "121")
+			(code "145")
 			(name "DATA2")
 			(class "Default")
 			(node
@@ -12157,7 +12867,7 @@
 			)
 		)
 		(net
-			(code "122")
+			(code "146")
 			(name "DATA3")
 			(class "Default")
 			(node
@@ -12216,7 +12926,7 @@
 			)
 		)
 		(net
-			(code "123")
+			(code "147")
 			(name "DATA4")
 			(class "Default")
 			(node
@@ -12269,7 +12979,7 @@
 			)
 		)
 		(net
-			(code "124")
+			(code "148")
 			(name "DATA5")
 			(class "Default")
 			(node
@@ -12322,7 +13032,7 @@
 			)
 		)
 		(net
-			(code "125")
+			(code "149")
 			(name "DATA6")
 			(class "Default")
 			(node
@@ -12375,7 +13085,7 @@
 			)
 		)
 		(net
-			(code "126")
+			(code "150")
 			(name "DATA7")
 			(class "Default")
 			(node
@@ -12428,7 +13138,7 @@
 			)
 		)
 		(net
-			(code "127")
+			(code "151")
 			(name "DATA8")
 			(class "Default")
 			(node
@@ -12469,7 +13179,7 @@
 			)
 		)
 		(net
-			(code "128")
+			(code "152")
 			(name "DATA9")
 			(class "Default")
 			(node
@@ -12510,7 +13220,7 @@
 			)
 		)
 		(net
-			(code "129")
+			(code "153")
 			(name "DATA10")
 			(class "Default")
 			(node
@@ -12551,7 +13261,7 @@
 			)
 		)
 		(net
-			(code "130")
+			(code "154")
 			(name "DATA11")
 			(class "Default")
 			(node
@@ -12592,7 +13302,7 @@
 			)
 		)
 		(net
-			(code "131")
+			(code "155")
 			(name "DATA12")
 			(class "Default")
 			(node
@@ -12633,7 +13343,7 @@
 			)
 		)
 		(net
-			(code "132")
+			(code "156")
 			(name "DATA13")
 			(class "Default")
 			(node
@@ -12674,7 +13384,7 @@
 			)
 		)
 		(net
-			(code "133")
+			(code "157")
 			(name "DATA14")
 			(class "Default")
 			(node
@@ -12715,7 +13425,7 @@
 			)
 		)
 		(net
-			(code "134")
+			(code "158")
 			(name "DATA15")
 			(class "Default")
 			(node
@@ -12756,7 +13466,7 @@
 			)
 		)
 		(net
-			(code "135")
+			(code "159")
 			(name "FORCE-ROM")
 			(class "Default")
 			(node
@@ -12773,7 +13483,7 @@
 			)
 		)
 		(net
-			(code "136")
+			(code "160")
 			(name "GND")
 			(class "Default")
 			(node
@@ -13021,6 +13731,48 @@
 				(pin "7")
 				(pinfunction "GND_7")
 				(pintype "power_in")
+			)
+			(node
+				(ref "IC15")
+				(pin "10")
+				(pinfunction "I1_10")
+				(pintype "input")
+			)
+			(node
+				(ref "IC15")
+				(pin "11")
+				(pinfunction "I2_11")
+				(pintype "input")
+			)
+			(node
+				(ref "IC15")
+				(pin "3")
+				(pinfunction "I0_3")
+				(pintype "input")
+			)
+			(node
+				(ref "IC15")
+				(pin "4")
+				(pinfunction "I1_4")
+				(pintype "input")
+			)
+			(node
+				(ref "IC15")
+				(pin "5")
+				(pinfunction "I2_5")
+				(pintype "input")
+			)
+			(node
+				(ref "IC15")
+				(pin "7")
+				(pinfunction "GND_7")
+				(pintype "power_in")
+			)
+			(node
+				(ref "IC15")
+				(pin "9")
+				(pinfunction "I0_9")
+				(pintype "input")
 			)
 			(node
 				(ref "IC18")
@@ -13350,7 +14102,7 @@
 			)
 		)
 		(net
-			(code "137")
+			(code "161")
 			(name "IO-ADDR0")
 			(class "Default")
 			(node
@@ -13367,7 +14119,7 @@
 			)
 		)
 		(net
-			(code "138")
+			(code "162")
 			(name "IO-ADDR1")
 			(class "Default")
 			(node
@@ -13384,7 +14136,7 @@
 			)
 		)
 		(net
-			(code "139")
+			(code "163")
 			(name "IO-ADDR2")
 			(class "Default")
 			(node
@@ -13401,7 +14153,7 @@
 			)
 		)
 		(net
-			(code "140")
+			(code "164")
 			(name "IO-ADDR3")
 			(class "Default")
 			(node
@@ -13418,7 +14170,7 @@
 			)
 		)
 		(net
-			(code "141")
+			(code "165")
 			(name "Net-(IC1-~{OE})")
 			(class "Default")
 			(node
@@ -13447,7 +14199,7 @@
 			)
 		)
 		(net
-			(code "142")
+			(code "166")
 			(name "Net-(IC1-~{WE})")
 			(class "Default")
 			(node
@@ -13476,191 +14228,7 @@
 			)
 		)
 		(net
-			(code "143")
-			(name "Net-(IC4-I0)")
-			(class "Default")
-			(node
-				(ref "IC4")
-				(pin "1")
-				(pinfunction "I0_1")
-				(pintype "input")
-			)
-			(node
-				(ref "RN8")
-				(pin "2")
-				(pinfunction "2_2")
-				(pintype "passive")
-			)
-			(node
-				(ref "U$1")
-				(pin "17")
-				(pinfunction "17_17")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "144")
-			(name "Net-(IC4-I1)")
-			(class "Default")
-			(node
-				(ref "IC4")
-				(pin "2")
-				(pinfunction "I1_2")
-				(pintype "input")
-			)
-			(node
-				(ref "RN8")
-				(pin "3")
-				(pinfunction "3_3")
-				(pintype "passive")
-			)
-			(node
-				(ref "U$1")
-				(pin "18")
-				(pinfunction "18_18")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "145")
-			(name "Net-(IC4-I2)")
-			(class "Default")
-			(node
-				(ref "IC4")
-				(pin "3")
-				(pinfunction "I2_3")
-				(pintype "input")
-			)
-			(node
-				(ref "RN8")
-				(pin "4")
-				(pinfunction "4_4")
-				(pintype "passive")
-			)
-			(node
-				(ref "U$1")
-				(pin "19")
-				(pinfunction "19_19")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "146")
-			(name "Net-(IC4-I3)")
-			(class "Default")
-			(node
-				(ref "IC4")
-				(pin "4")
-				(pinfunction "I3_4")
-				(pintype "input")
-			)
-			(node
-				(ref "RN8")
-				(pin "5")
-				(pinfunction "5_5")
-				(pintype "passive")
-			)
-			(node
-				(ref "U$1")
-				(pin "20")
-				(pinfunction "20_20")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "147")
-			(name "Net-(IC4-I4)")
-			(class "Default")
-			(node
-				(ref "IC4")
-				(pin "5")
-				(pinfunction "I4_5")
-				(pintype "input")
-			)
-			(node
-				(ref "RN8")
-				(pin "6")
-				(pinfunction "6_6")
-				(pintype "passive")
-			)
-			(node
-				(ref "U$1")
-				(pin "21")
-				(pinfunction "21_21")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "148")
-			(name "Net-(IC4-I5)")
-			(class "Default")
-			(node
-				(ref "IC4")
-				(pin "6")
-				(pinfunction "I5_6")
-				(pintype "input")
-			)
-			(node
-				(ref "RN8")
-				(pin "7")
-				(pinfunction "7_7")
-				(pintype "passive")
-			)
-			(node
-				(ref "U$1")
-				(pin "22")
-				(pinfunction "22_22")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "149")
-			(name "Net-(IC4-I6)")
-			(class "Default")
-			(node
-				(ref "IC4")
-				(pin "11")
-				(pinfunction "I6_11")
-				(pintype "input")
-			)
-			(node
-				(ref "RN8")
-				(pin "8")
-				(pinfunction "8_8")
-				(pintype "passive")
-			)
-			(node
-				(ref "U$1")
-				(pin "23")
-				(pinfunction "23_23")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "150")
-			(name "Net-(IC4-I7)")
-			(class "Default")
-			(node
-				(ref "IC4")
-				(pin "12")
-				(pinfunction "I7_12")
-				(pintype "input")
-			)
-			(node
-				(ref "RN8")
-				(pin "9")
-				(pinfunction "9_9")
-				(pintype "passive")
-			)
-			(node
-				(ref "U$1")
-				(pin "24")
-				(pinfunction "24_24")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "151")
+			(code "167")
 			(name "Net-(IC4-O)")
 			(class "Default")
 			(node
@@ -13677,7 +14245,7 @@
 			)
 		)
 		(net
-			(code "152")
+			(code "168")
 			(name "Net-(IC6A-I)")
 			(class "Default")
 			(node
@@ -13694,7 +14262,7 @@
 			)
 		)
 		(net
-			(code "153")
+			(code "169")
 			(name "Net-(IC6B-I)")
 			(class "Default")
 			(node
@@ -13711,7 +14279,7 @@
 			)
 		)
 		(net
-			(code "154")
+			(code "170")
 			(name "Net-(IC7-G2B)")
 			(class "Default")
 			(node
@@ -13728,143 +14296,7 @@
 			)
 		)
 		(net
-			(code "155")
-			(name "Net-(IC7-Y0)")
-			(class "Default")
-			(node
-				(ref "IC7")
-				(pin "15")
-				(pinfunction "Y0_15")
-				(pintype "output")
-			)
-			(node
-				(ref "U$1")
-				(pin "9")
-				(pinfunction "9_9")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "156")
-			(name "Net-(IC7-Y1)")
-			(class "Default")
-			(node
-				(ref "IC7")
-				(pin "14")
-				(pinfunction "Y1_14")
-				(pintype "output")
-			)
-			(node
-				(ref "U$1")
-				(pin "10")
-				(pinfunction "10_10")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "157")
-			(name "Net-(IC7-Y2)")
-			(class "Default")
-			(node
-				(ref "IC7")
-				(pin "13")
-				(pinfunction "Y2_13")
-				(pintype "output")
-			)
-			(node
-				(ref "U$1")
-				(pin "11")
-				(pinfunction "11_11")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "158")
-			(name "Net-(IC7-Y3)")
-			(class "Default")
-			(node
-				(ref "IC7")
-				(pin "12")
-				(pinfunction "Y3_12")
-				(pintype "output")
-			)
-			(node
-				(ref "U$1")
-				(pin "12")
-				(pinfunction "12_12")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "159")
-			(name "Net-(IC7-Y4)")
-			(class "Default")
-			(node
-				(ref "IC7")
-				(pin "11")
-				(pinfunction "Y4_11")
-				(pintype "output")
-			)
-			(node
-				(ref "U$1")
-				(pin "13")
-				(pinfunction "13_13")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "160")
-			(name "Net-(IC7-Y5)")
-			(class "Default")
-			(node
-				(ref "IC7")
-				(pin "10")
-				(pinfunction "Y5_10")
-				(pintype "output")
-			)
-			(node
-				(ref "U$1")
-				(pin "14")
-				(pinfunction "14_14")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "161")
-			(name "Net-(IC7-Y6)")
-			(class "Default")
-			(node
-				(ref "IC7")
-				(pin "9")
-				(pinfunction "Y6_9")
-				(pintype "output")
-			)
-			(node
-				(ref "U$1")
-				(pin "15")
-				(pinfunction "15_15")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "162")
-			(name "Net-(IC7-Y7)")
-			(class "Default")
-			(node
-				(ref "IC7")
-				(pin "7")
-				(pinfunction "Y7_7")
-				(pintype "output")
-			)
-			(node
-				(ref "U$1")
-				(pin "16")
-				(pinfunction "16_16")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "163")
+			(code "171")
 			(name "Net-(IC10A-I0)")
 			(class "Default")
 			(node
@@ -13881,7 +14313,7 @@
 			)
 		)
 		(net
-			(code "164")
+			(code "172")
 			(name "Net-(IC10A-I1)")
 			(class "Default")
 			(node
@@ -13898,7 +14330,7 @@
 			)
 		)
 		(net
-			(code "165")
+			(code "173")
 			(name "Net-(IC10B-I1)")
 			(class "Default")
 			(node
@@ -13915,7 +14347,7 @@
 			)
 		)
 		(net
-			(code "166")
+			(code "174")
 			(name "Net-(IC10B-O)")
 			(class "Default")
 			(node
@@ -13938,7 +14370,7 @@
 			)
 		)
 		(net
-			(code "167")
+			(code "175")
 			(name "Net-(IC10C-O)")
 			(class "Default")
 			(node
@@ -13955,7 +14387,7 @@
 			)
 		)
 		(net
-			(code "168")
+			(code "176")
 			(name "Net-(IC10D-I0)")
 			(class "Default")
 			(node
@@ -13978,7 +14410,7 @@
 			)
 		)
 		(net
-			(code "169")
+			(code "177")
 			(name "Net-(IC11-1A)")
 			(class "Default")
 			(node
@@ -13995,7 +14427,7 @@
 			)
 		)
 		(net
-			(code "170")
+			(code "178")
 			(name "Net-(IC11-2A)")
 			(class "Default")
 			(node
@@ -14012,7 +14444,7 @@
 			)
 		)
 		(net
-			(code "171")
+			(code "179")
 			(name "Net-(IC11-3A)")
 			(class "Default")
 			(node
@@ -14029,7 +14461,7 @@
 			)
 		)
 		(net
-			(code "172")
+			(code "180")
 			(name "Net-(IC11-4A)")
 			(class "Default")
 			(node
@@ -14046,7 +14478,7 @@
 			)
 		)
 		(net
-			(code "173")
+			(code "181")
 			(name "Net-(IC14A-O)")
 			(class "Default")
 			(node
@@ -14069,7 +14501,7 @@
 			)
 		)
 		(net
-			(code "174")
+			(code "182")
 			(name "Net-(IC14F-O)")
 			(class "Default")
 			(node
@@ -14092,191 +14524,24 @@
 			)
 		)
 		(net
-			(code "175")
-			(name "Net-(IC18-I0)")
-			(class "Default")
-			(node
-				(ref "IC18")
-				(pin "1")
-				(pinfunction "I0_1")
-				(pintype "input")
-			)
-			(node
-				(ref "RN7")
-				(pin "2")
-				(pinfunction "2_2")
-				(pintype "passive")
-			)
-			(node
-				(ref "U$1")
-				(pin "8")
-				(pinfunction "8_8")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "176")
-			(name "Net-(IC18-I1)")
-			(class "Default")
-			(node
-				(ref "IC18")
-				(pin "2")
-				(pinfunction "I1_2")
-				(pintype "input")
-			)
-			(node
-				(ref "RN7")
-				(pin "3")
-				(pinfunction "3_3")
-				(pintype "passive")
-			)
-			(node
-				(ref "U$1")
-				(pin "7")
-				(pinfunction "7_7")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "177")
-			(name "Net-(IC18-I2)")
-			(class "Default")
-			(node
-				(ref "IC18")
-				(pin "3")
-				(pinfunction "I2_3")
-				(pintype "input")
-			)
-			(node
-				(ref "RN7")
-				(pin "4")
-				(pinfunction "4_4")
-				(pintype "passive")
-			)
-			(node
-				(ref "U$1")
-				(pin "6")
-				(pinfunction "6_6")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "178")
-			(name "Net-(IC18-I3)")
-			(class "Default")
-			(node
-				(ref "IC18")
-				(pin "4")
-				(pinfunction "I3_4")
-				(pintype "input")
-			)
-			(node
-				(ref "RN7")
-				(pin "5")
-				(pinfunction "5_5")
-				(pintype "passive")
-			)
-			(node
-				(ref "U$1")
-				(pin "5")
-				(pinfunction "5_5")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "179")
-			(name "Net-(IC18-I4)")
-			(class "Default")
-			(node
-				(ref "IC18")
-				(pin "5")
-				(pinfunction "I4_5")
-				(pintype "input")
-			)
-			(node
-				(ref "RN7")
-				(pin "6")
-				(pinfunction "6_6")
-				(pintype "passive")
-			)
-			(node
-				(ref "U$1")
-				(pin "4")
-				(pinfunction "4_4")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "180")
-			(name "Net-(IC18-I5)")
-			(class "Default")
-			(node
-				(ref "IC18")
-				(pin "6")
-				(pinfunction "I5_6")
-				(pintype "input")
-			)
-			(node
-				(ref "RN7")
-				(pin "7")
-				(pinfunction "7_7")
-				(pintype "passive")
-			)
-			(node
-				(ref "U$1")
-				(pin "3")
-				(pinfunction "3_3")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "181")
-			(name "Net-(IC18-I6)")
-			(class "Default")
-			(node
-				(ref "IC18")
-				(pin "11")
-				(pinfunction "I6_11")
-				(pintype "input")
-			)
-			(node
-				(ref "RN7")
-				(pin "8")
-				(pinfunction "8_8")
-				(pintype "passive")
-			)
-			(node
-				(ref "U$1")
-				(pin "2")
-				(pinfunction "2_2")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "182")
-			(name "Net-(IC18-I7)")
-			(class "Default")
-			(node
-				(ref "IC18")
-				(pin "12")
-				(pinfunction "I7_12")
-				(pintype "input")
-			)
-			(node
-				(ref "RN7")
-				(pin "9")
-				(pinfunction "9_9")
-				(pintype "passive")
-			)
-			(node
-				(ref "U$1")
-				(pin "1")
-				(pinfunction "1_1")
-				(pintype "passive")
-			)
-		)
-		(net
 			(code "183")
+			(name "Net-(IC15A-O)")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "12")
+				(pinfunction "O_12")
+				(pintype "output")
+			)
+			(node
+				(ref "IC5")
+				(pin "19")
+				(pinfunction "G_19")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "184")
 			(name "Net-(IC18-O)")
 			(class "Default")
 			(node
@@ -14293,7 +14558,7 @@
 			)
 		)
 		(net
-			(code "184")
+			(code "185")
 			(name "Net-(PWR0-PadA)")
 			(class "Default")
 			(node
@@ -14310,7 +14575,7 @@
 			)
 		)
 		(net
-			(code "185")
+			(code "186")
 			(name "VCC")
 			(class "Default")
 			(node
@@ -14554,6 +14819,12 @@
 				(pintype "power_in")
 			)
 			(node
+				(ref "IC15")
+				(pin "14")
+				(pinfunction "VCC_14")
+				(pintype "power_in")
+			)
+			(node
 				(ref "IC18")
 				(pin "14")
 				(pinfunction "VCC_14")
@@ -14766,7 +15037,7 @@
 			)
 		)
 		(net
-			(code "186")
+			(code "187")
 			(name "unconnected-(IC3B-O-Pad6)")
 			(class "Default")
 			(node
@@ -14777,7 +15048,7 @@
 			)
 		)
 		(net
-			(code "187")
+			(code "188")
 			(name "unconnected-(IC3C-O-Pad8)")
 			(class "Default")
 			(node
@@ -14788,7 +15059,7 @@
 			)
 		)
 		(net
-			(code "188")
+			(code "189")
 			(name "unconnected-(IC3D-O-Pad11)")
 			(class "Default")
 			(node
@@ -14799,7 +15070,7 @@
 			)
 		)
 		(net
-			(code "189")
+			(code "190")
 			(name "unconnected-(IC12A-~{Q}-Pad6)")
 			(class "Default")
 			(node
@@ -14810,7 +15081,7 @@
 			)
 		)
 		(net
-			(code "190")
+			(code "191")
 			(name "unconnected-(IC12B-Q-Pad9)")
 			(class "Default")
 			(node
@@ -14821,7 +15092,7 @@
 			)
 		)
 		(net
-			(code "191")
+			(code "192")
 			(name "unconnected-(IC12B-~{Q}-Pad8)")
 			(class "Default")
 			(node
@@ -14832,7 +15103,7 @@
 			)
 		)
 		(net
-			(code "192")
+			(code "193")
 			(name "unconnected-(IC13-NC-Pad1)")
 			(class "Default")
 			(node
@@ -14843,7 +15114,7 @@
 			)
 		)
 		(net
-			(code "193")
+			(code "194")
 			(name "unconnected-(IC13-NC@1-Pad26)")
 			(class "Default")
 			(node
@@ -14854,7 +15125,29 @@
 			)
 		)
 		(net
-			(code "194")
+			(code "195")
+			(name "unconnected-(IC15B-O-Pad6)")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "6")
+				(pinfunction "O_6")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "196")
+			(name "unconnected-(IC15C-O-Pad8)")
+			(class "Default")
+			(node
+				(ref "IC15")
+				(pin "8")
+				(pinfunction "O_8")
+				(pintype "output+no_connect")
+			)
+		)
+		(net
+			(code "197")
 			(name "unconnected-(IC30-O2-Pad13)")
 			(class "Default")
 			(node
@@ -14865,7 +15158,7 @@
 			)
 		)
 		(net
-			(code "195")
+			(code "198")
 			(name "unconnected-(IC30-O3-Pad12)")
 			(class "Default")
 			(node
@@ -14876,7 +15169,7 @@
 			)
 		)
 		(net
-			(code "196")
+			(code "199")
 			(name "unconnected-(IC30-O4-Pad11)")
 			(class "Default")
 			(node
@@ -14887,7 +15180,7 @@
 			)
 		)
 		(net
-			(code "197")
+			(code "200")
 			(name "unconnected-(IC30-O5-Pad10)")
 			(class "Default")
 			(node
@@ -14898,7 +15191,7 @@
 			)
 		)
 		(net
-			(code "198")
+			(code "201")
 			(name "unconnected-(IC30-O6-Pad9)")
 			(class "Default")
 			(node
@@ -14909,7 +15202,7 @@
 			)
 		)
 		(net
-			(code "199")
+			(code "202")
 			(name "unconnected-(IC30-O7-Pad7)")
 			(class "Default")
 			(node
@@ -14920,7 +15213,7 @@
 			)
 		)
 		(net
-			(code "200")
+			(code "203")
 			(name "unconnected-(IC31-Pad11)")
 			(class "Default")
 			(node
@@ -14930,7 +15223,7 @@
 			)
 		)
 		(net
-			(code "201")
+			(code "204")
 			(name "unconnected-(IC32-~{Q0}-Pad3)")
 			(class "Default")
 			(node
@@ -14941,7 +15234,7 @@
 			)
 		)
 		(net
-			(code "202")
+			(code "205")
 			(name "unconnected-(IC32-~{Q1}-Pad6)")
 			(class "Default")
 			(node
@@ -14952,7 +15245,7 @@
 			)
 		)
 		(net
-			(code "203")
+			(code "206")
 			(name "unconnected-(IC32-~{Q2}-Pad11)")
 			(class "Default")
 			(node
@@ -14963,7 +15256,7 @@
 			)
 		)
 		(net
-			(code "204")
+			(code "207")
 			(name "unconnected-(IC33-Pad11)")
 			(class "Default")
 			(node
@@ -14973,7 +15266,7 @@
 			)
 		)
 		(net
-			(code "205")
+			(code "208")
 			(name "unconnected-(J2-Pin_4-Pad4)")
 			(class "Default")
 			(node
@@ -14984,7 +15277,7 @@
 			)
 		)
 		(net
-			(code "206")
+			(code "209")
 			(name "unconnected-(J2-Pin_6-Pad6)")
 			(class "Default")
 			(node
@@ -14995,7 +15288,7 @@
 			)
 		)
 		(net
-			(code "207")
+			(code "210")
 			(name "unconnected-(J2-Pin_8-Pad8)")
 			(class "Default")
 			(node
@@ -15006,7 +15299,7 @@
 			)
 		)
 		(net
-			(code "208")
+			(code "211")
 			(name "unconnected-(J2-Pin_10-Pad10)")
 			(class "Default")
 			(node
@@ -15017,7 +15310,7 @@
 			)
 		)
 		(net
-			(code "209")
+			(code "212")
 			(name "unconnected-(J2-Pin_12-Pad12)")
 			(class "Default")
 			(node
@@ -15028,7 +15321,7 @@
 			)
 		)
 		(net
-			(code "210")
+			(code "213")
 			(name "unconnected-(J2-Pin_14-Pad14)")
 			(class "Default")
 			(node
@@ -15039,7 +15332,7 @@
 			)
 		)
 		(net
-			(code "211")
+			(code "214")
 			(name "unconnected-(J2-Pin_16-Pad16)")
 			(class "Default")
 			(node
@@ -15050,7 +15343,7 @@
 			)
 		)
 		(net
-			(code "212")
+			(code "215")
 			(name "unconnected-(J2-Pin_18-Pad18)")
 			(class "Default")
 			(node
@@ -15061,7 +15354,7 @@
 			)
 		)
 		(net
-			(code "213")
+			(code "216")
 			(name "unconnected-(J2-Pin_21-Pad21)")
 			(class "Default")
 			(node
@@ -15072,7 +15365,7 @@
 			)
 		)
 		(net
-			(code "214")
+			(code "217")
 			(name "unconnected-(J2-Pin_31-Pad31)")
 			(class "Default")
 			(node
@@ -15083,7 +15376,7 @@
 			)
 		)
 		(net
-			(code "215")
+			(code "218")
 			(name "unconnected-(J2-Pin_32-Pad32)")
 			(class "Default")
 			(node
@@ -15094,7 +15387,7 @@
 			)
 		)
 		(net
-			(code "216")
+			(code "219")
 			(name "unconnected-(J3-Pin_4-Pad4)")
 			(class "Default")
 			(node

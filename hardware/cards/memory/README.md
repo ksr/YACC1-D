@@ -20,7 +20,8 @@ Verified on hardware 2026-09-18 with the bus tester; the burned EEPROM is `firmw
   `fab/CAMOutputs/` are older CAM runs. Its KiCad conversion is `../kicad/v1.3/`.
   The old Working folder also held V1.0 and V1.2 files; they were duplicates of the revisions below and were
   removed 2026-09-20.
-- `kicad/v2.0/` – memory card v2.0 design (v1.3 + the CompactFlash interface on P8/P9), see its README.
+- `kicad/v2.0/` – memory card v2.0 design: the built v1.3 + the CompactFlash interface on P8/P9. Schematic proven; placement
+  blocked (2026-09-24): with the built card's copper kept, the CF section does not fit (see its README for the options).
 - `eagle/deprecated/v1.2/` – Production 2020-11-29 (built): -VMA gating of all chip selects, 7400 LOW-RAM -CS.
   `Memory V1.2.brd.old.brd` is an earlier 31-part layout of it. `Build Notes.rtf` = bring-up procedure.
 - `eagle/deprecated/v1.1/` – 2020-06-19, files still named V1.0: adds the boot ROM remap to 1.0. Built, retired 2021-01.

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""check_netlist.py - prove the memory card v2.0 schematic (and each placement-option board) = v1.3 + the CF section.
+"""check_netlist.py - prove the memory card v2.0 schematic (and each board) = the built v1.3 + the CF section.
+
+"v1.3" below = the built card, ../v1.3-fusion-export-2026-09-24 (build.sh passes its netlist and board).
 
 usage: check_netlist.py <v2.0 schematic .net> <v1.3 schematic .net> <v1.3 .kicad_pcb> [<v2.0 board .kicad_pcb> ...]
        (both .net files from: kicad-cli sch export netlist --format kicadsexpr <root .kicad_sch>)

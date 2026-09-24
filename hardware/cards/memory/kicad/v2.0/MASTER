@@ -1,4 +1,5 @@
 This KiCad project is hand-maintained (not written by tools/eagle_to_kicad_all.py); it is the design master of the
-memory card v2.0 (v1.3 + the CompactFlash interface on P8/P9) since 2026-09-24. Its schematic and placement-option
-boards are generated from mem_v2_netlist.py + placements.py by gen_mem_v2.py / build.sh in this folder (see
-README.md); once they are hand-edited in KiCad, the KiCad files become the master.
+memory card v2.0 (the BUILT v1.3, ../v1.3-fusion-export-2026-09-24, + the CompactFlash interface on P8/P9) since
+2026-09-24. Its schematic and placement-option boards are generated from mem_v2_netlist.py + placements.py by
+gen_mem_v2.py / build.sh in this folder (see README.md); once they are hand-edited in KiCad, the KiCad files become the
+master.

@@ -1,28 +1,45 @@
-# memory-v2.0 — memory card v1.3 + the CompactFlash interface (KiCad design, placement review)
+# memory-v2.0 — the built memory card v1.3 + the CompactFlash interface (KiCad design)
 
-**Status 2026-09-24: schematic done and proven, three placement options for review. NOT routed, not ordered.**
+**Status 2026-09-24 (rebuilt on the built card): schematic done and proven. PLACEMENT BLOCKED: the CF section does not
+fit on the built card with the built card's copper kept. None of the three placement options is legal on the real
+board, so nothing is routed. Not ordered.** See "Why nothing fits" below; a decision is needed (end of this file).
 
-v2.0 is the memory card v1.3 (the card in the machine: 62256 x 2, 28C64, IC7 block decode, FORCE-ROM, TMP0/TMP1)
-plus the CompactFlash interface of the CF card v1.0 (`../../../cf/kicad/v1.0/`), **as drawn**: its own 74LS138
-decoding **I/O ports P8 (register-select latch, write) and P9 (data, read/write)**, enabled by IO-ADDR3. The ROM in
-the machine and both emulators (`software/cfmodel.h`, `firmware/monitor/monitor.asm`) already talk to P8/P9: no
-firmware change. The CF card's own bus connector goes; the CF section shares the memory card's X1. Theory of the CF
-circuit: `docs/cards/cf.md`; of the memory card: `docs/cards/memory.md`.
+v2.0 is the memory card v1.3 **as built** (`../v1.3-fusion-export-2026-09-24`: the KiCad conversion of Ken's Fusion
+export of the card JLCPCB fabricated on 2025-06-27, proven against the order's gerbers; 62256 x 2, 28C64, IC7 block
+decode, FORCE-ROM, IC15 buffer enable, TMP0/TMP1) plus the CompactFlash interface of the CF card v1.0
+(`../../../cf/kicad/v1.0/`), **as drawn**: its own 74LS138 decoding **I/O ports P8 (register-select latch, write) and
+P9 (data, read/write)**, enabled by IO-ADDR3. The ROM in the machine and both emulators (`software/cfmodel.h`,
+`firmware/monitor/monitor.asm`) already talk to P8/P9: no firmware change. The CF card's own bus connector goes; the CF
+section shares the memory card's X1. Theory of the CF circuit: `docs/cards/cf.md`; of the memory card:
+`docs/cards/memory.md`.
 
 `MASTER` marks this folder as hand-maintained (not written by `tools/eagle_to_kicad_all.py`).
 
-## What changed from v1.3
+History: the first v2.0 (commit 0c2e15e) was built on `../v1.3`, the tree's older Eagle save. That save has no IC15
+and keeps the TMP registers IC26-IC29 and RN5/RN6 off the board, unrouted; the generator put them where the fabricated
+card has them, dropped 101 of the save's copper items that no longer made sense, and reserved IC15's spot. On
+2026-09-24 Ken exported the real design from Fusion; this folder is now generated from that, and all of the questions
+about IC15 are answered by it (below). The price: the real card's TMP routing occupies the space the old options used.
 
-- **Schematic.** Sheets 1-6 are v1.3's, copied unchanged except: on sheet 1 the six X1-only local labels
+## What v2.0 is, relative to the built card
+
+- **Schematic.** Sheets 1-6 are the built card's, copied unchanged except: on sheet 1 the six X1-only local labels
   IO-ADDR0-3, -IO-RD, -IO-WR became global labels (sheet 7 uses them) and a note says so; title blocks say v2.0.
   **Sheet 7** is the CF section, drawn with the CF card's own sheet writer (`gen_cf.py`, class `Sheet`), nets shared
-  with sheets 1-6 as boxed global labels.
-- **Bus pins now used** (same backplane pinout as the CF card v1.0; checked pin by pin against v1.3's X1 by
+  with sheets 1-6 as boxed global labels. **IC15** (74ALS11, gate A = AND(-LO-RAM, -HI-RAM, -ROM-CS) -> IC5 pin 19,
+  the 74LS245's enable) is simply part of the built card's schematic now: nothing reserved, nothing to add.
+- **Bus pins now used** (same backplane pinout as the CF card v1.0; checked pin by pin against the built card's X1 by
   `check_netlist.py`): IO-ADDR0-3 = C7-C10, -IO-RD = B25, -IO-WR = B26 (unused on v1.3, now wired to the CF
   section); -RESET = C30 (v1.3: IC12 PRE, now also IC32 CLR and IC33); DATA0-7 = A19-A26 (also IC34 A side, IC32 D1-D4).
-- **Board.** Same outline, X1 at the same place, 4 layers, v1.3's copper kept where it is valid (see "The
-  fabricated v1.3" below). Silkscreen title "YACC1 MEMORY BOARD V2.0" (v1.3's text, same place and size) and
-  "CF: P8/P9" beside the IDE header.
+- **Board.** Same outline (177.8 x 114.0 mm), X1 at the same place, **4 layers with the built card's stack-up**: In1 =
+  GND plane, In2 = VCC plane (both polygons already cover the whole board, x 17.7-194.4 / y 10.9-124.1, so the CF
+  pads join the planes on a refill), signals on F.Cu/B.Cu. **All 1,377 copper items of the built card (1,263 track
+  segments, 114 vias) are kept unchanged** in every board (`gen_mem_v2.py locked` proves it per option:
+  `reports/option-X-locked.txt`); a move of a built-card part that has a track on a pad is refused.
+- **Design rules** = the built card's: the project's (0.1524 mm tracks, 0.127 mm clearance, 0.4572/0.254 mm vias,
+  0.381 mm copper to edge) plus the two Eagle rules that are stricter, in `memory-v2.0.kicad_dru`: track to track
+  0.4572 mm (18 mil, Eagle mdWireWire; the built card's closest pair of tracks is 0.483 mm apart) and track to pad
+  0.254 mm (10 mil, mdWirePad). Every track on the built card is 0.1524 mm.
 
 ### Port assignment
 
@@ -34,10 +51,10 @@ circuit: `docs/cards/cf.md`; of the memory card: `docs/cards/memory.md`.
 IC30 (74LS138) takes IO-ADDR0-2, G1 = IO-ADDR3, G2A/G2B low: Y0 = P8, Y1 = P9, Y2-Y7 unused. The I/O card must keep
 its IO-ADDR-HL strap at P0-P7 (it would otherwise also answer P8/P9).
 
-### Part-list delta (v1.3 -> v2.0)
+### Part-list delta (built v1.3 -> v2.0)
 
-Added (reference designators chosen clear of v1.3's IC1-IC14, IC18, IC26-IC29, C1-C24, R2, RN5-RN8, JP1, PWR0,
-U$1, X1 **and** of the fabricated card's IC15, see below):
+Added (reference designators clear of the built card's IC1-IC15, IC18, IC26-IC29, C1-C24, R2, RN5-RN8, JP1, PWR0,
+U$1, X1):
 
 | v2.0 | CF card v1.0 | Part | Footprint |
 |---|---|---|---|
@@ -55,152 +72,123 @@ U$1, X1 **and** of the fabricated card's IC15, see below):
 | C25-C29 | C1-C5 | 100 nF, one per new IC | disc 5 mm |
 | C30 | C6 | 10 uF bulk beside J3 | radial D5 |
 
-Dropped from the CF card: X1 (bus connector, shared), **LED3 + R6 (DASP LED, Ken)**, **LED1 + R7 (PWR LED: v1.3
-already has PWR0 + R2 330R)**. Everything through-hole. BOM: `memory-v2.0-bom.csv` (34 lines; v1.3 parts keep
-their converted Eagle values, e.g. `74*32`, `C-US`).
+Dropped from the CF card: X1 (bus connector, shared), **LED3 + R6 (DASP LED, Ken)**, **LED1 + R7 (PWR LED: the
+memory card already has PWR0 + R2 330R)**. Everything through-hole. BOM: `memory-v2.0-bom.csv` (35 lines; built-card
+parts keep their converted Eagle values, e.g. `74*32`, `C-US`).
 
-## The fabricated v1.3 is not the tree's v1.3 (read this first)
+## Why nothing fits (read this first)
 
-`../v1.3` is converted from the tree's Eagle board, `eagle/v1.3/Memory V1.3.brd`. That file is an **earlier save** than
-the card that was fabricated on 2025-06-27 (Fusion "Memory V1.3 v4": `eagle/v1.3/fab/Memory V1_2025-06-27.zip`,
-gerbers + pick-and-place). Comparing the drill file and the copper of that zip with the converted board:
+The built card routes the TMP registers' high byte, **DATA8-15, as a bundle of eight B.Cu tracks** from the bus
+connector along the bottom edge and then diagonally up across the lower right of the board to IC27/IC29 (plus F.Cu runs
+under the ROM). In the earlier save those tracks did not exist, which is why the old options looked free. On the real
+card the bundle runs straight through the "three empty IC slots" beside C20-C22 and the band under the ROM, where the
+options put the CF chips. A through-hole pad cannot sit on a track, and the built copper is kept, so:
 
-1. **IC26-IC29 (TMP registers) and RN5/RN6 sit OUTSIDE the board outline** in the tree board, unrouted. On the
-   fabricated card they are on the board: IC26-IC29 in a column at the top edge (x 172.7, beside C14-C17), RN5/RN6
-   along the bottom edge. Every v2.0 option puts them exactly there (`placements.FAB_MOVES`); every other v1.3 pad
-   position matches a drill hole of the fabricated card (0 missing).
-2. **The fabricated card has a 15th logic chip no schematic in the tree has: IC15, 74ALS11N** (pick-and-place:
-   Eagle (151.13, 53.34) -> KiCad (168.85, 70.68), beside C19). Traced on the fabricated copper: gate 1 inputs =
-   -LO-RAM (IC1.20), -HI-RAM (IC2.20), -ROM-CS (IC13.20); output 1Y (pin 12) = **IC5 pin 19**, the 74LS245's enable.
-   So on the real card the data buffer is enabled only when one of the three memory chips is selected, not by -VMA
-   as the tree schematic (and therefore v1.3 and v2.0) draws it. The other two gates are unused. This matters: with
-   -VMA asserted in every microcode step (the M1 "hack"), the tree's wiring would drive the bus from undecoded blocks
-   (e.g. the video card's $D000) during reads. **v2.0 as proven here inherits the tree's wiring; every option keeps
-   IC15's footprint area free** (`placements.IC15_SPOT`, dashed box on User.Comments) so the fix can be added.
-3. **Stale copper.** The tree board's tracks in the TMP area and along the bottom edge were routed for an earlier
-   TMP placement. With IC26-IC29 where the fabricated card has them: 65 track/via items (1,300 mm; DATA1, 3, 5-8,
-   12-15) reach no second pad and are dropped as dead copper, and 36 more collide with the TMP pads and are trimmed.
-   The **reference board** (v1.3 + fabricated positions, no CF section) therefore keeps 947 of v1.3's 1,048 copper
-   items and has 91 unrouted v1.3 connections (the four TMP registers are essentially unrouted). None of that is the
-   CF section's doing; each option is measured against this reference.
+- **Every option's board has CF pads on built-card tracks** (DRC under the card's rules, beyond the built card's own
+  list): option A 11 shorts + 4 clearance + 63 solder-mask bridges, option B 12 + 1 + 50, option C 12 + 3 + 63
+  (`reports/option-X-drc-summary.txt`; the renders and placement plots show the CF parts on the bundle).
+- **There is no legal placement at all** (`space_check.py`, `reports/space-check.txt`,
+  `memory-v2.0-free-space.png`): with every pad at least 0.3 mm clear of the built copper (and pads, bodies and the
+  edge respected) a CF DIP can only go in the triangle right of the bundle, courtyards within x 157.8-195.2 /
+  y 68.7-123.3. **At most 4 of the 5 CF DIPs fit there even with no IDE header and none of the 16 other CF parts**;
+  with J2 where option C puts it (the free top edge, lower half) only 2 fit, with J2 where option A puts it 4. J2
+  itself fits only along the top edge beside IC26-IC29, flush against their outlines.
 
-**Recommendation:** if the Fusion "Memory V1.3 v4" design can still be exported, v2.0 should start from it (IC15,
-the real TMP routing), not from the tree's older Eagle save. That is `BACKLOG.md`'s "overlay the 2025 gerbers" item.
+What the old option texts said about space (the "three empty IC slots", the band under the ROM, "nothing of v1.3
+moves") was true of the earlier save only.
 
-## Placement options (not routed)
+## Placement options (the record; none is legal on the built card)
 
 Coordinates are board mm (y down). The card stands on X1 in the cage, so **x = 195.55 is the card's free top edge**,
-y = 10 and y = 124 its two free side edges. In all three options three CF chips sit in the **three empty IC slots**
-below IC15 (right of the pre-placed caps C20/C21/C22, which were already on v1.3 with no IC beside them): IC34
-(245), IC32 (175), IC33 (08), with R10-R13 between the rows, C27/C28 at the right ends and C29 above IC34; pin 1 at x 159.1 so v1.3's
-DATA0 track (B.Cu, x 160.3) runs between pins 1 and 2 with clearance. No v1.3 copper is removed by any option
-beyond the reference board. Airwire figures from DRC (straight-line, so only for comparison).
+y = 10 and y = 124 its two free side edges. The options are unchanged from 0c2e15e (`placements.py`), now drawn on the
+built card; the TMP registers and IC15 are simply the built card's. `gen_mem_v2.py check` still passes (no body
+overlaps, pads clear of the edge, no tall part in the TAODAN keep-low zone): the failure is copper, not bodies.
 
-| | J2 | v1.3 parts moved (besides the six fabricated positions) | CF airwire | of which to J2 | bus -> CF chips |
-|---|---|---|---|---|---|
-| **A** | top edge, upper half (beside TMP registers) | none | ~3.3 m | ~1.05 m | ~1.4 m |
-| **B** | y = 124 side edge, under the ROM | C23 (up 7.5 mm) | ~3.2 m | ~1.02 m | ~1.4 m |
-| **C** | top edge, lower half (beside the CF chips) | none | ~2.8 m | ~0.48 m | ~1.4 m |
-
-- **Option A** — `memory-v2.0-option-a-render-top.png`, `memory-v2.0-option-a-placement.png`. J2 vertical along the
-  top edge at y 16.5-64.8, pin 1 at the bottom (data pins nearest IC34), beside IC26-IC29. IC30/IC31 under the ROM,
-  RN9/J3/C30 in the line below them; JP2, R14 and the ACT LED in the top-edge strip below J2, ACT next to PWR0.
-  Nothing of v1.3 moves. J2's shroud is 0.6 mm from IC26-IC29's sockets (tight, legal; their silk outlines touch).
-  Longest IDE runs of the two top-edge options.
-- **Option B** — `memory-v2.0-option-b-*.png`. J2 horizontal along the y = 124 edge under the ROM, pin 1 at the right
-  end (data pins toward IC34); IC30/IC31 squeezed between v1.3's BADDR3-5 tracks and J2; C23 moves up 7.5 mm out of
-  J2's way; RN9, J3, C30, R14 in the top-edge strip; JP2 just past J2's end. The adapter/ribbon leaves at a side
-  edge of the card instead of the top. J2 is 0.1 mm (courtyard) from the edge.
-- **Option C** — `memory-v2.0-option-c-*.png`. J2 vertical along the top edge at y 56-104, level with the CF chips:
-  data pins just above IC34, DA0-2 level with IC32. Shortest IDE wiring (half of A/B). ACT LED, R14 and JP2 in the
-  top corner; RN9/J3/C30 under the ROM as in A. Nothing of v1.3 moves. The TAODAN keep-low zone ends 0.6 mm short of
-  PWR0 (5 mm LED), so this is the tightest option for the adapter overhang at J2's lower end.
-
-Every option passes `gen_mem_v2.py check`: no new body overlaps, pads >= 0.5 mm from the edge, bodies inside the
-outline, the IC15 spot free, and no tall part (LEDs, C30, JP2, J3, headers) in the TAODAN keep-low zone.
-
-### DRC (copper items; cosmetic ones listed for completeness)
-
-| | v1.3 | A | B | C |
+| | J2 | built-card parts moved | CF pads on built copper (shorts / clearance / mask bridges) | CF airwire (straight-line) |
 |---|---|---|---|---|
-| non-cosmetic violations beyond v1.3's | — | **0** | **0** | **0** |
-| track_dangling | 17 | 3 | 3 | 3 |
-| items_not_allowed (inherited) | 2 | 2 | 2 | 2 |
-| unrouted connections (ratsnest) | 100 | 152 | 152 | 152 |
-| silk_overlap | 24 | 37 | 36 | 39 |
-| silk_edge_clearance | 4 | 6 | 4 | 4 |
-| schematic parity items (all inherited Eagle values/fields) | 217 | 52 | 52 | 52 |
+| **A** | top edge, upper half, beside IC26-IC29 | none | 11 / 4 / 63 | ~3.1 m |
+| **B** | y = 124 side edge under the ROM | C23 up 7.5 mm (no tracks on its pads; planes only) | 12 / 1 / 50 | ~3.1 m |
+| **C** | top edge, lower half, beside the CF chips (Ken's choice) | none | 12 / 3 / 63 | ~2.7 m |
 
-Unrouted is expected (the CF section is ratsnest only: 64 airwires; the rest are v1.3's, mostly the TMP registers).
-The extra silk overlaps are IC26-IC29's Eagle reference texts over C14-C17 at the fabricated positions (+12) and a few
-CF reference texts; the two extra silk_edge items in A are J2's shroud outline at the edge.
+Renders: `memory-v2.0-option-{a,b,c}-render-top.png`; 2D plots with the ratsnest: `memory-v2.0-option-{a,b,c}-placement.png`.
+
+### DRC (all under the built card's rules; the built card's own list is the baseline)
+
+| | built card | A | B | C |
+|---|---|---|---|---|
+| shorting_items / clearance / solder_mask_bridge | 0 / 0 / 0 | 11 / 4 / 63 | 12 / 1 / 50 | 12 / 3 / 63 |
+| items_not_allowed (inherited) | 2 | 2 | 2 | 2 |
+| unrouted connections (ratsnest) | 0 | 61 | 61 | 61 |
+| silk_overlap / silk_edge_clearance | 45 / 4 | 46 / 6 | 45 / 4 | 48 / 4 |
+| schematic parity items (all inherited Eagle values/fields) | 220 | 53 | 53 | 53 |
+
+The built card itself is clean under its rules (no copper violation, 0 unconnected; the rest is the Eagle drawing's
+silk). ERC: 99 = the built card's 104 + the designed-in one-pin `SRST` label - the six "isolated label" warnings of the
+labels that became global.
 
 ## The CF-to-IDE adapter
 
 - **TAODAN CF-IDE40 V2.0** (70 x 63 mm, female 40-pin socket along a 70 mm edge) plugs straight onto J2 and stands
   **perpendicular to the card, out of the component side**, its lower edge ~9-10 mm above the card, overhanging each
   end of the 50.8 mm pin row by ~10 mm; +5 V from IDE pin 20 through JP2. Each option draws on User.Drawings (and on
-  the silk of the render copy): the adapter strip (solid, 70 x 8 mm) and a **keep-low zone** (dashed: 12 mm past each
-  end of the pin row, 7 mm either side of the header centre line) that must hold nothing taller than ~8 mm. Both sides
-  are kept low because which way the adapter faces depends on its socket's key, not known until it is in hand. Only
-  DIPs (assumed <= ~7.5 mm in sockets), disc caps and axial resistors are in the zones.
-- **The card needs free space on its component side** when the TAODAN is used: 63 mm of adapter stands into the
-  space of the next slot(s). Plan the card's slot accordingly (end slot, or empty neighbour slots).
-- **SinLoon CF-to-IDE** (60 x 43 mm, male 40-pin) on a short ribbon: J2 is shrouded and at a free edge in every
-  option, so the IDC plug fits and the ribbon leaves the card over the edge (top edge in A and C, side edge in B).
-  No mounting holes for either adapter (Ken). Adapter power then from J3.
+  the silk of the render copy) the adapter strip (solid, 70 x 8 mm) and a keep-low zone (dashed: 12 mm past each end
+  of the pin row, 7 mm either side of the header centre line) that must hold nothing taller than ~8 mm.
+- **The card needs free space on its component side** when the TAODAN is used (~75 mm).
+- **SinLoon CF-to-IDE** (60 x 43 mm, male 40-pin) on a short ribbon: J2 is shrouded and at a free edge.
 
 ## Files
 
 | File | What it is |
 |---|---|
 | `mem_v2_netlist.py` | **the delta** (single source): CF card v1.0 -> v2.0 reference map, dropped parts, shared nets, `check()`, `expected()` |
-| `gen_mem_v2.py` | writes the schematic (`sch`), the option boards (`board`), trims broken v1.3 copper (`trim`), refills the planes (`refill`), checks the placement (`check`), makes review copies (`review`) |
-| `placements.py` | the options (plain data), the fabricated positions `FAB_MOVES`, the reserved `IC15_SPOT` |
-| `check_netlist.py` | the netlist proof: schematic = v1.3 + CF section, every board = schematic |
-| `build.sh` | the whole pipeline; exit 0 = every gate passed |
-| `memory-v2.0.kicad_sch`, `-sheet1..7.kicad_sch`, `.kicad_pro` | schematic (sheets 1-6 v1.3, sheet 7 CF) |
-| `memory-v2.0-option-{a,b,c}.kicad_pcb` / `.kicad_pro` | the three placement options (ratsnest only) |
-| `memory-v2.0-option-{a,b,c}-render-top.png` | 3D render, adapter zones and IC15 spot copied onto silk |
-| `memory-v2.0-option-{a,b,c}-placement.png` | 2D plot: copper, silk, adapter zones, IC15 spot, airwires (light green) |
+| `gen_mem_v2.py` | writes the schematic (`sch`), the option boards (`board`), proves the built copper kept (`locked`), refills the planes (`refill`), checks the placement (`check`), makes review copies (`review`) |
+| `placements.py` | the options (plain data) |
+| `space_check.py` | where CF parts can sit on the built card at all; packs the five DIPs (`reports/space-check.txt`, `memory-v2.0-free-space.png`) |
+| `check_netlist.py` | the netlist proof: schematic = built v1.3 + CF section, every board = the schematic |
+| `build.sh` | the whole pipeline; exit 0 = every gate passed (today it exits 1: the options conflict with the built copper) |
+| `memory-v2.0.kicad_sch`, `-sheet1..7.kicad_sch`, `.kicad_pro`, `.kicad_dru` | schematic (sheets 1-6 built v1.3, sheet 7 CF), project, the built card's extra design rules |
+| `memory-v2.0-option-{a,b,c}.kicad_pcb` / `.kicad_pro` / `.kicad_dru` | the three placement options (ratsnest only) |
+| `memory-v2.0-option-{a,b,c}-render-top.png`, `-placement.png` | 3D render with the adapter zones; 2D plot with copper, silk, zones, airwires |
+| `memory-v2.0-free-space.png` | the built card's copper, where a CF DIP may sit (blue haze) and the best packing found (4 DIPs) |
 | `memory-v2.0-schematic.pdf`, `memory-v2.0-bom.csv` | schematic plot, bill of materials |
-| `memory-v1.3-eagle.kicad_sym`, `.pretty/`, `sym-lib-table`, `fp-lib-table` | v1.3's converted libraries, copied (same nickname) |
-| `reports/` | ERC (`.rpt`, `.json`, `erc-summary.txt`), netlist (`.net`), `netlist-proof.txt`, `base-summary.txt`, per option `option-X-drc.json`, `-drc-summary.txt`, `-placement-check.txt` |
+| `memory-v1.3-fusion-export-2026-09-24-eagle.kicad_sym`, `.pretty/`, `sym-lib-table`, `fp-lib-table` | the built card's converted libraries, copied (same nickname) |
+| `reports/` | ERC (`.rpt`, `.json`, `erc-summary.txt`), netlist (`.net`), `netlist-proof.txt`, `base-summary.txt`, `space-check.txt`, per option `option-X-drc.json`, `-drc-summary.txt`, `-placement-check.txt`, `-locked.txt` |
 
 ## Rebuild
 
-    hardware/cards/memory/kicad/v2.0/build.sh                 # ~2 minutes; OPTIONS="a c" for a subset
+    hardware/cards/memory/kicad/v2.0/build.sh                 # ~5 minutes; OPTIONS="a c" for a subset
 
-It reads `../v1.3` (through a scratch copy, so nothing is written there) and `../../../cf/kicad/v1.0/cf_netlist.py` +
-`gen_cf.py` (read-only). Steps: schematic; ERC vs v1.3; the reference board; per option: board, trim, plane refill,
-placement check, DRC with schematic parity, render + plot; netlist proof; PDF + BOM. To change the circuit edit
-`mem_v2_netlist.py`; to change a placement edit `placements.py`; then re-run. Once the files are edited by hand in
-KiCad, stop running the generator.
+It reads `../v1.3-fusion-export-2026-09-24` (through a scratch copy) and `../../../cf/kicad/v1.0/cf_netlist.py` +
+`gen_cf.py` (read-only). Steps: schematic; ERC vs the built card; the reference board (the built card with v2.0 net
+names) and its DRC under the v2.0 rules; per option: board, locked-copper proof, plane refill, placement check, DRC with
+schematic parity, render + plot; space check; netlist proof; PDF + BOM.
 
 ## Results (build of 2026-09-24)
 
-- **Netlist proof: MATCH.** v2.0 schematic = v1.3 (52 parts, 166 nets) + CF section (21 parts, 27 own nets, 69 pins
-  on 17 shared nets): 73 parts, 185 nets, 683 pins, 31 unconnected pins (8 v1.3 + 23 documented CF no-connects).
-  The CF card's 27 dropped X1 pins are each on the same-named net of the memory card's X1. All three option boards
-  equal the schematic pad for pad (`reports/netlist-proof.txt`).
-- **ERC: 98 violations vs v1.3's 103** — exactly v1.3's Eagle-conversion residue, plus the designed-in one-pin
-  `SRST` label (IC32 Q4, a probe point, as on the CF card), minus the six "isolated label" warnings of the labels that
-  became global. Sheet 7: 0 text overlaps; sheet 1: one new text touch (the IO-ADDR3 global-label flag against the
-  neighbouring -IO-ADDR-LD label at 2.54 mm pitch).
-- **DRC:** no copper violation beyond v1.3's in any option; details above.
+- **Netlist proof: MATCH.** v2.0 schematic = the built v1.3 (53 parts, 169 nets, IC15 included) + CF section (21
+  parts, 27 own nets, 69 pins on 17 shared nets): 74 parts, 186 nets, 695 pins, 33 unconnected pins (10 v1.3 + 23
+  documented CF no-connects). The CF card's 27 dropped X1 pins are each on the same-named net of the memory card's X1.
+  All three option boards equal the schematic pad for pad (`reports/netlist-proof.txt`).
+- **ERC: PASS** (99 vs the built card's 104, all explained).
+- **Built copper: kept**, 1,377 of 1,377 items unchanged on every board.
+- **Placement: FAIL** in every option, and no legal placement exists (above).
 
-## Open questions for Ken
+## Decision needed (Ken)
 
-1. **The fabricated card** (section above): can the Fusion "Memory V1.3 v4" design be exported, so v2.0 starts from
-   the real card? Otherwise, should v2.0 add IC15 (74ALS11: IC5 G = -LO-RAM AND -HI-RAM AND -ROM-CS) to the
-   schematic? Its spot is kept free.
-2. **Which option** (A, B or C)? Then routing (as the I/O v2.0 was routed from its chosen option).
-3. **Adapter facing / J2 pin 1:** which side the TAODAN's board is on relative to the socket key; the zones keep
-   both sides low, but the silk pin-1 orientation should be checked against the real adapter before ordering.
-4. **J3 pinout** (1 +5 V, 2/3 GND, 4 n/c, floppy order) against the cable the adapter takes; fit JP2 only for
-   adapters powered on IDE pin 20.
-5. **Heights:** the keep-low rule assumes DIPs in sockets <= ~8 mm; check the sockets Ken uses (machined sockets are
-   taller than stamped ones) for IC26-IC29 (A) or IC28/IC29/IC32-IC34 (C) under the adapter overhang.
-6. **Slot:** with the TAODAN plugged straight on, the memory card needs free space on its component side (63 mm).
-7. C20-C22 (v1.3's pre-placed caps at the three empty slots) now sit beside CF chips that also have their own
-   C27-C29; keep both, or drop one set?
+The CF section needs about as much free board as the built card has left, and the free part is a triangle in the
+bottom right corner. Ways forward, none taken:
+
+1. **Re-route the built card's DATA8-15 bundle** (and whatever else crosses the lower right), keeping every other
+   built-card track: the circuit stays the built card's, but its copper would no longer be the fabricated copper in
+   that area. This frees the "three empty slots" and the band under the ROM that the options were designed for;
+   option C could then be placed and routed as planned.
+2. **Keep the CF on its own card**: the CF card v1.0 (`hardware/cards/cf/kicad/v1.0/`) is routed and checked, costs a
+   backplane slot, and needs no change to the memory card.
+3. **Smaller packages** for the CF logic (SOIC 74LS/HCT parts on the bottom or top side) would fit into the triangle
+   with J2 at the top edge; the card is through-hole today.
+4. A fresh layout of the whole memory card (built circuit, new copper) with the CF section designed in from the start.
+
+Open items that stay whatever is chosen: J2 pin 1 / key vs the chosen adapter (TAODAN plugs straight on and stands
+perpendicular, SinLoon via ribbon); J3 pinout (1 +5 V, 2/3 GND, 4 n/c) against the adapter's cable; socket heights
+under a TAODAN overhang; which backplane slot (a TAODAN needs ~75 mm free on the component side); whether to keep
+both C20-C22 (the built card's caps with no IC beside them) and C27-C29.

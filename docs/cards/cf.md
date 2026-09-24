@@ -20,8 +20,10 @@ driver: `cfwait`, `cfinit`, `cfread`, `cfwrite`), `software/cfmodel.h` (the emul
 - **The CF card v1.0** (`hardware/cards/cf/kicad/v1.0/`) is the interface as a card of its own: five chips (U1 74LS138,
   U2 74LS32, U3 74LS175, U4 74LS08, U5 74LS245) and a 40-pin IDE header, decoding **P8/P9**. Routed and checked, never
   ordered. It is the reference circuit this document describes, with its reference designators.
-- **Plan (Ken, 2026-09-24, not designed yet):** the same circuit goes onto the **memory card**, which has more room (its
-  chips are spaced far apart), and stays **I/O-mapped on P8/P9**, not memory-mapped. The memory card today uses no I/O
+- **Plan (Ken, 2026-09-24):** the same circuit goes onto the **memory card** and stays **I/O-mapped on P8/P9**, not
+  memory-mapped. Designed as `hardware/cards/memory/kicad/v2.0/` (schematic proven), but **blocked**: on the card as
+  actually built (the Fusion export, not the earlier save the plan was drawn on) the TMP registers' data tracks cross
+  the free area, and with that copper kept the CF chips do not fit; see that folder's README. The memory card today uses no I/O
   signals: IO-ADDR0..3, -IO-RD and -IO-WR are on its connector but unwired (`docs/cards/memory.md`). The ROM in the
   machine (`ROM 2026-09-23`) and both emulators already use P8/P9, so nothing on the software side changes.
 - **The CF-to-IDE adapter is undecided.** Two were considered: a **SinLoon CF-IDE** adapter, connected by a short

@@ -1,18 +1,13 @@
 """placements.py - the placement options of the memory card v2.0 board (2026-09-24). Plain data, read by gen_mem_v2.py.
 
-Coordinates are the v1.3 board's (mm, y down; outline x 17.72..195.55, y 10.00..124.02, bus connector X1 on the left
+Coordinates are the built v1.3 board's (mm, y down; outline x 17.72..195.55, y 10.00..124.02, bus connector X1 on the left
 edge). Seen in the machine the card stands on X1: board +x is UP, so the x = 195.55 edge is the card's free top edge,
 and y = 10 / y = 124 are its two free side edges.
 
-  FAB_MOVES  applied in EVERY option: the TMP registers IC26-IC29 and the data-bus pull-downs RN5/RN6 go where the
-             FABRICATED card has them. The converted v1.3 board (like the tree's Eagle .brd, an earlier save of the
-             design) keeps these six parts OUTSIDE the board outline, unrouted; the 2025 gerbers and pick-and-place file
-             (../../eagle/v1.3/fab/Memory V1_2025-06-27.zip, "Memory V1.3 v4") put them on the board: ref -> (dx, dy)
-             from the v1.3 KiCad position = the fab position (Eagle x + 17.72, 124.02 - Eagle y).
-  IC15_SPOT  the fabricated card also has an IC15 74ALS11N at Eagle (151.13, 53.34) -> KiCad (168.85, 70.68), which no
-             schematic in the tree has (README.md): every option keeps its DIL14 footprint area free.
-  moves      v1.3 parts that move in this option: ref -> (dx, dy[, rotation]) (their v1.3 copper that ended on a moved
-             pad is dropped; build.sh then trims whatever that leaves dangling or in conflict)
+  Base = the BUILT card (../v1.3-fusion-export-2026-09-24): IC15 (74ALS11), the TMP registers IC26-IC29 and RN5/RN6
+             are where the fabricated card has them, with all their copper; no option moves or removes any of it.
+  moves      base parts that move in this option: ref -> (dx, dy) - only parts with no track on a pad (gen_mem_v2.py
+             refuses anything else: the built card's copper is locked)
   place      every CF part: ref -> (x, y, rotation) of the footprint origin = pad 1 (KiCad THT libraries).
              DIPs at rotation 90: pin 1 bottom left, pins to the right, the other row 7.62 mm above (the v1.3 ICs'
              orientation). J2 (IDC 2x20 shrouded) at rotation 0: pin 1 top, odd pins down the left column, even pins
@@ -20,15 +15,8 @@ and y = 10 / y = 124 are its two free side edges.
              270: pin 1 right, odd pins to the left, even row 2.54 mm below.
 """
 
-# ---- the fabricated card's positions for the six parts the v1.3 conversion keeps off the board --------------------
-FAB_MOVES = {
-    "IC26": (147.32, -111.76), "IC27": (147.32, -110.49), "IC28": (147.32, -109.22), "IC29": (147.32, -107.80),
-    "RN5": (29.21, -69.85), "RN6": (57.15, -74.93),
-}
-IC15_SPOT = (160.2, 66.0, 177.5, 75.4)          # x0, y0, x1, y1: DIL14 pads 161.23..176.47 x 66.87..74.49 + margin
-
 # ---- common pieces --------------------------------------------------------------------------------------------------
-# the three empty v1.3 IC slots below IC15, right of the pre-placed caps C20/C21/C22 (x 156.18, y 84.62/98.59/111.30).
+# the three empty IC slots below IC15, right of the built card's caps C20/C21/C22 (x 156.18, y 84.62/98.59/111.30).
 # Pin 1 at x 159.1: the v1.3 DATA0 track (B.Cu, x 160.30, y 75.4-101.5) then runs between pins 1 and 2 with clearance,
 # and a DIP20 ends at x 183.5, clear of an IDE header at the x = 195.55 edge.
 ROWX = 159.1

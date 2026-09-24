@@ -1,0 +1,12 @@
+space_check.py (2026-09-24): can the CF section sit on the built memory card with all its copper kept?
+built card: 1377 track segments + vias, 581 pads, 53 parts; pad keep-out 0.8 mm + 0.3 mm from copper, 1.4 mm inside the edge
+
+allowed positions per CF DIP (0.635 mm grid, 4 rotations): IC34 1898, IC30 3138, IC32 3138, IC31 3822, IC33 3822
+  all of them lie in x 157.8-195.2, y 68.7-123.3 (courtyards)
+  area: the union of all allowed DIP courtyards is 1450 mm2; the five DIP courtyards need 1027 mm2 (an area bound alone does not decide it)
+  whole CF section (21 parts): allowed courtyards cover 7926 mm2 of the board, the parts need 2137 mm2 (not decided by area); parts with no allowed position at all: ['J2']
+no IDE header at all:                                        at most 4 of the 5 DIPs fit together (2000 random packings)
+J2 where option A puts it (191.79, 64.76, 180):              at most 4 of the 5 DIPs fit together (2000 random packings)
+J2 where option C puts it (189.25, 56.0, 0):                 at most 2 of the 5 DIPs fit together (2000 random packings)
+
+RESULT: the CF section does NOT fit on the built card with its copper kept: at most 4 of its five DIPs fit even without J2 and without any of its 16 other parts
