@@ -223,8 +223,8 @@ From `firmware/rom/README.md`, `firmware/abi/README.md`, and a byte comparison o
 
 - The image to burn is **`firmware/rom/shipped/rom.bin`**: 8,192 bytes, offset 0 = $E000; BASIC (`firmware/basic/basic.img`) at
   $E000, the monitor (`firmware/monitor/monitor.img`) at $F000; bytes the sources never write are $FF like a blank part.
-  MD5 `a9fefd4ae21eb46eb21cff614376617f` (`ROM 2026-09-23B`, the 2026-09-23 evening build: the afternoon build with
-  the CF driver and `O` moved from ports P8/P9 to P4/P5 for the I/O card v2.0; **not yet burned**). Programmer: Visual Minipro / `minipro`, device 28C64. It is built from `shipped/rom`
+  MD5 `d2d7b027e7c6951d7dd93412a8fd9cd8` (the 2026-09-23 afternoon build, with the `:` loader; the build in the machine,
+  CF driver on P8/P9). Programmer: Visual Minipro / `minipro`, device 28C64. It is built from `shipped/rom`
   (Intel hex) by `python3 tools/img2bin.py firmware/rom/shipped/rom firmware/rom/shipped/rom.bin --base 0xE000 --end 0x10000 --fill 0xFF --size 8192`.
 - `tools/verify_firmware.py` (or `make -C software/assembler check`) proves the image reproduces from `firmware/monitor/monitor.asm`
   and `firmware/basic/basic.asm` before you burn it.
@@ -233,13 +233,10 @@ From `firmware/rom/README.md`, `firmware/abi/README.md`, and a byte comparison o
   the BASIC half is identical. The differences that matter: the `G` command is now `JSRUR R7` (a call; the program returns
   with `RET`) instead of `BRVR R7` (an indirect jump through the word at the address, so `G AAAA` never ran the code at AAAA);
   the `T` menu tests are gone; the CompactFlash driver and the `O` boot command are in; the `:` Intel-hex loader
-  (section 6a) and a no-echo console vector are in; the banner ends with the build date, `ROM 2026-09-23`. That chip
-  build is MD5 `d2d7b027e7c6951d7dd93412a8fd9cd8`; its CF driver uses P8/P9. The tree's `ROM 2026-09-23B` behaves the same
-  except for the CF ports and the banner (the one-byte longer banner shifts the strings after it, so about 1,400 bytes
-  of the monitor half differ); burn it before the I/O card v2.0's CF interface is tested (`docs/cards/cf.md` section 7).
-- **How to tell which build a chip holds**: the banner at power-up ends with `ROM 2026-09-23B` on the tree's build and
-  `ROM 2026-09-23` on the chip burned 2026-09-23 (the 2021 chip and the 2026-09-22 build print `YACC 2020: HELLO WORLD`
-  alone). Without a console, read back two bytes with
+  (section 6a) and a no-echo console vector are in; the banner ends with the build date, `ROM 2026-09-23`. (A `ROM 2026-09-23B` rebuild, CF on P4/P5, was made that
+  evening and withdrawn on 2026-09-24 without being burned; the tree's image is the burned build again.)
+- **How to tell which build a chip holds**: the banner at power-up ends with `ROM 2026-09-23` on the current build (the
+  2021 chip and the 2026-09-22 build print `YACC 2020: HELLO WORLD` alone). Without a console, read back two bytes with
   the programmer or `busdrv.py`:
 
   | Address | 2021 chip (captured) | 2026 builds | Meaning |
@@ -252,8 +249,9 @@ From `firmware/rom/README.md`, `firmware/abi/README.md`, and a byte comparison o
 
 - After burning: re-capture and compare with `python3 tests/memory/rom_verify.py [port] --save` (~30 s with the blocks-1
   tester firmware): it reads $E000-$FFFF through the bus tester and diffs against the image `tools/romimage.py` assembles from
-  `basic.img` + `monitor.img`. Until `ROM 2026-09-23B` is burned that test (and `memory_status.py`) reports the monitor
-  half as differing - expected, not a fault (`MACHINE.md`).
+  `basic.img` + `monitor.img`. The chip burned 2026-09-23 holds the tree's image, so both it and `memory_status.py`
+  should report it identical; a chip still holding the 2021 build differs in the monitor half - expected, not a fault
+  (`MACHINE.md`).
 - Compiled programs for the **old** chip need `y1cc.py --vector` (a first word for `BRVR` to jump through); for the new one
   `G3000` calls `main` directly (`software/emulator/README.md`, `MACHINE.md`).
 - Handling (memory `Build Notes.md`): one machined 28-pin socket soldered in IC13; keep each EEPROM in its own milled socket and
@@ -463,7 +461,7 @@ Sent by `command_sender_8` (file dialog; it still opens at the old `../tests/Tes
 | `tools/busdrv.py --probe` | port, banner, `READ-SWITCHES`, `RD-IN`, `RBR-COND` | seconds | |
 | `tools/busdrv.py --dump FFC0 FFFF` | any memory range (hex) | | |
 | `tests/memory/memory_status.py [port]` | boot remap after `-RESET`, every ROM byte vs `basic.img`+`monitor.img`, 8 low-RAM spots, and a class for every 4K block $8000-$FFFF (RAM / ROM / VIDEO / undecoded) against the jumper table | ~1 min | 2026-09-18: the jumper map as fitted |
-| `tests/memory/rom_verify.py [port] [--save]` | the chip against the tree's ROM image | ~30 s | until the reburn: monitor half differs (expected) |
+| `tests/memory/rom_verify.py [port] [--save]` | the chip against the tree's ROM image | ~30 s | the chip burned 2026-09-23 = the tree's image; a 2021 chip differs in the monitor half (expected) |
 | `tests/memory/memory_full_test.py [port] [--log F]` | A ROM; B address lines (unique byte at $0000 and every 1<<n); C/D RAM $0000-$CFFF, address-derived then inverted pattern, written in one sweep and verified in a second (retention); E video RAM; F ROM again + nothing answers at $D800-$DFFF | ~20 min with blocks-1 (~10 h per byte) | `full-run-2026-09-21.log`: **14/14 PASS**, 53,248 cells x2, 0 bad; the earlier logs are the link-drop attempt, the run stopped for the reflash, and 13/14 (F2 failed before the test learned no CRTC is fitted) |
 | `tests/video/video_ram_test.py [port] [--quick]` | the 1K display RAM at $D000-$D3FF: patterns, inverse, neighbour isolation, the block-0/9 write-through check, read stability with unrelated traffic in between | full ~14 min, quick ~1 min | **8/8** on 2026-09-21 after the +5V/VCC join; before it the write-through reproduced |
 | `tests/video/hold_address.py HEXADDR [--rd]` | holds one address (with `-VMA`, optionally `-MEM-RD`) so a meter or scope can sit on the video card's decode pins; Enter releases | | |

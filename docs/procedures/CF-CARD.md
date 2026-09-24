@@ -1,8 +1,8 @@
 # Preparing a CompactFlash card for the YACC1
 
 How to put Y1/OS on a real CF card from the Mac, check it, and read a card back. The card then goes into the CF-to-IDE
-adapter on the I/O card v2.0's IDE header (`docs/cards/cf.md`; the standalone CF card v1.0 is superseded), and the
-monitor's `O` command boots it (ROM build `ROM 2026-09-23B` or later: the CF on ports P4/P5).
+adapter on the CF interface's IDE header (`docs/cards/cf.md`: the CF card v1.0 circuit, planned onto the memory card,
+not built yet), and the monitor's `O` command boots it (the CF on ports P8/P9, as in the ROM in the machine).
 
 Written 2026-09-23. The tool (`tools/cfcard.py`) has been tested against an ordinary file standing in for a card and
 against the Mac's internal disk, which it refuses; **it has not yet written a real card** (no reader was attached).
@@ -45,8 +45,8 @@ was. The OS allocates new files from the volume's free pointer, never from the c
    what it found, and asks you to type the disk name back. It unmounts the disk, runs `sudo dd` (macOS asks for your
    password), reads the written sectors back, compares them with the image, and ejects the card. It reports
    `read back IDENTICAL`, or `DIFFERENT - do not use this card` and exits with an error.
-5. Put the card in the adapter, the adapter on the I/O card v2.0's IDE header (powered as that design provides), and
-   in the monitor type `O`.
+5. Put the card in the adapter, the adapter on the CF interface's IDE header (powered as the adapter needs:
+   `docs/cards/cf.md` sections 0 and 3), and in the monitor type `O`.
    `BOOT FROM CF` then the Y1/OS banner and `/>` mean it worked. What to check if it does not: `docs/cards/cf.md`
    section 7.
 

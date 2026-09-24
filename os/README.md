@@ -3,8 +3,8 @@
 A RAM-resident shell and file layer over a P8XFS v2 CompactFlash volume, loaded by the ROM monitor's `O` command.
 Started 2026-09-22 from the plan in `docs/system/OS-PLAN.md`: **v0 (2026-09-22) = phases 1 and 2 read-only; v0.1
 (2026-09-23) = write support and a file API for programs, proven on both emulators; v0.2 (2026-09-23) = the same OS
-rewritten in YACC1 assembly (`y1os.asm`), half the size and 1.3-1.9x faster** (the CF hardware, now part of the
-I/O card v2.0, is not built yet). `y1os.c`, the C version for `software/compiler/y1cc.py`, stays as the specification: `make -C os OS=c` builds
+rewritten in YACC1 assembly (`y1os.asm`), half the size and 1.3-1.9x faster** (the CF hardware, planned on the
+memory card, is not built yet). `y1os.c`, the C version for `software/compiler/y1cc.py`, stays as the specification: `make -C os OS=c` builds
 and installs it instead, and both pass the same tests (below, "The assembly OS"). Y1/OS is the YACC1's own
 from here on: it is not kept in step with P8X/OS, and neither are the programs brought over (Ken, 2026-09-22).
 Only the on-disk format is shared, so `tools/p8xfs.py` (a fork of the P8X tool) builds the images and reads back
@@ -336,7 +336,7 @@ image is byte-identical, and that the next file lands at the new free pointer.
 The assembly-specific parts are in the next section.)
 
 - `cfread(lba, buf)` / `cfwrite(lba, buf)` = poke the LBA into the ROM's variables, `bios(CFREAD/CFWRITE, buf, 0)`;
-  the ROM streams 512 bytes through the two CF ports (P4 select, P5 data; P8/P9 in ROM builds before 2026-09-23B).
+  the ROM streams 512 bytes through the two CF ports (P8 select, P9 data).
 - `take_entry()` fills the `e_*` globals (and `e_raw`, the record itself, plus `e_slba`/`e_off`, where it sits)
   for the entry a scan found; `find_in()` scans one extent sector by sector, stopping at the $00 end mark and
   skipping $FF tombstones; `find_slot()` finds the first free slot; `resolve()` walks a path component by component,
@@ -415,5 +415,5 @@ intact (fsck, the boot block, every pristine file byte-identical); against the o
 FORMAT and FSCK on the target (the host
 tool has them), seek, a second write handle (so `cp` works inside a `>` or a pipe), concurrent pipes (they run one
 after the other through temp files), `2>` (errors always go to the screen), the command history, the P8X development
-tools (`asm`, a YACC1 `disasm`; `os/PORT-PLAN.md` wave 3), BASIC as `/BIN/BASIC`, and the CF interface in hardware (on the
-I/O card v2.0), all in BACKLOG.md.
+tools (`asm`, a YACC1 `disasm`; `os/PORT-PLAN.md` wave 3), BASIC as `/BIN/BASIC`, and the CF interface in hardware (planned on
+the memory card), all in BACKLOG.md.

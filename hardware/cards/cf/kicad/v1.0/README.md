@@ -1,11 +1,8 @@
 # yacc1-cf-card v1.0 — KiCad design (generated from `cf_netlist.py`)
 
-> **Superseded 2026-09-23, never ordered.** The CF interface moved onto the I/O card v2.0
-> (`hardware/cards/io/kicad/v2.0/`), decoded by that card's IC5 on Y4/Y5 = **P4/P5**; the ROM (from `ROM 2026-09-23B`)
-> and both emulators use P4/P5. This design still decodes **P8/P9** (U1 G1 = IO-ADDR3, Y0/Y1). If it were ever built,
-> change the decode to match the ROM first: U1 G1 (pin 6) = VCC, G2A (pin 4) = IO-ADDR3, G2B (pin 5) low, and take the
-> selects from Y4 (pin 11) and Y5 (pin 10). The files below are kept unchanged as the reference for the circuit after
-> the decoder, which v2.0 reuses. Theory: [`docs/cards/cf.md`](../../../../../docs/cards/cf.md).
+> **Not built (never ordered).** This design is the basis for the CF section planned on the memory card (Ken,
+> 2026-09-24: same circuit, I/O-mapped on P8/P9, as the ROM and both emulators use; not designed yet). Theory:
+> [`docs/cards/cf.md`](../../../../../docs/cards/cf.md).
 
 The YACC1 CompactFlash card: a CF card in a commercial CF-to-IDE adapter, driven in 8-bit True IDE mode through two
 I/O ports. P8 (write) is a 74LS175 latch holding the ATA register number (DA0-2) and a CF-reset bit; P9 (read/write)

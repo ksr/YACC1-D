@@ -17,18 +17,16 @@ emulators run it), `BACKLOG.md`.
   d2d7b027e7c6951d7dd93412a8fd9cd8, CF driver on P8/P9), burned by Ken 2026-09-23 (`docs/system/MACHINE.md`). Before
   that the 2021 build (git ff7d85a), captured 2026-09-18 as `firmware/rom/eprom-captured-2026-09-18.bin/.hex`,
   byte-identical to the 2021 sources.
-- **In the tree** (`firmware/rom/shipped/rom`, to burn): the 2026-09-22 rebuild of `monitor.asm` — the `G` command
+- **In the tree** (`firmware/rom/shipped/rom`): the same image as the chip. It is the 2026-09-22 rebuild of `monitor.asm` — the `G` command
   fixed (`JSRUR R7` instead of `BRVR R7`), the T-menu bench tests removed (1,062 bytes), the CompactFlash driver, the
   `O` boot command, four new BIOS vectors and two new variable areas — plus, on 2026-09-23, `uartinne` (console
   input without echo) and its vector at `$FFFC`, the sixteenth and last slot, the `:` Intel-hex loader and the build
-  date in the banner. BASIC is unchanged. Object code 2,979 bytes, 0 errors, 193 labels, 1,366 source lines
-  (`monitor.lst` of 2026-09-23 09:36, before the loader). **2026-09-23 evening: `ROM 2026-09-23B`**, the CF driver
-  and `O` moved from P8/P9 to P4/P5 (the CF interface is going onto the I/O card v2.0), nothing else changed; not
-  yet burned (`firmware/rom/README.md`).
+  date in the banner. BASIC is unchanged. Object code 3,398 bytes, 0 errors, 218 labels, 1,535 source lines
+  (`monitor.lst`). A `ROM 2026-09-23B` rebuild (CF driver and `O` on P4/P5, for an I/O card v2.0) was made on
+  2026-09-23 evening and withdrawn on 2026-09-24 without being burned (`firmware/rom/README.md`).
 
-Until 2026-09-23B is burned, `tests/memory/rom_verify.py` and `memory_status.py` report the monitor half as different
-(the burned 2026-09-23 build differs from 2026-09-23B in the CF port operands, the banner and the strings it shifts),
-and `O` on the machine talks to P8/P9.
+`tests/memory/rom_verify.py` and `memory_status.py` therefore compare the chip with the image it was burned from; a
+chip still holding the 2021 build differs in the monitor half.
 
 ## 2. Reset and boot sequence (`monitor.asm` `eprom:`, $F003)
 
@@ -60,7 +58,7 @@ from its code:
 
 | Key | Command | What it does (`monitor.asm` label) |
 |---|---|---|
-| `H` | help | prints `helpmenu` ($F7FB) |
+| `H` | help | prints `helpmenu` ($F7FA) |
 | `0` | exit | `cmd_exit`: `BRDEV stop` — on the machine it loops forever at `stop:` (`BRDEV` branches); on the interpreter it falls into a `DB 0` = opcode $00 = `START`, which the interpreter reports as a bad opcode and exits. "Exit (emulator only)" |
 | `B AAAA` | dump block | `dumpblock`: mode ← BLOCKMODE, reads 4 hex digits into R7 (`getaddress`), prints 256 bytes from the 16-byte-aligned address (`show256`), saves the next address in `continue_addr`; CR shows the next 256 |
 | `C` | copy | `cmd_basic_copy`: `JSR basic_copy` ($E060) — copies BASIC's built-in test program into the interpreter buffer |
@@ -86,8 +84,8 @@ each echoed); lower-case hex is accepted (`getnibble` → `toupper`). There is n
 Sixteen entries of 4 bytes, each `JSR routine / RET`, so a caller uses `JSR $FFxx` and the entry address never
 moves when the monitor is re-assembled. Conventions (`firmware/abi/README.md`): a pointer travels in **R7**, a byte
 in **ACC**; a routine may clobber R5, R6, TMP and, unless stated, R7. The first eleven date from 2020/21 (BASIC calls
-them by these addresses: `basic.asm` lines 4–14), four were added 2026-09-22 and the last one 2026-09-23 (it is not
-yet in `firmware/abi/README.md`, whose file date is 2026-09-22).
+them by these addresses: `basic.asm` lines 4–14), four were added 2026-09-22 and the last one 2026-09-23 (`firmware/abi/README.md`
+lists all sixteen).
 
 | Vector | Name | In | Out / effect | Body |
 |---|---|---|---|---|
@@ -113,15 +111,15 @@ p2 / ret` — on the interpreter (where `BRDEV` never branches) the console is p
 code after the label polls the 16550: `OUTI P0,(UARTCS!UARTA5) / INP P1 / ANDI 40h` (LSR bit 6, transmitter empty)
 before `OUTI P0,UARTCS / OUTA P1`; `uartin` polls LSR bit 0 (data ready) then reads `INP P1`. `const` polls the same
 bit without waiting; `uartinne` is `uartin` without the `LEDOUT`/`uartout` echo. With sixteen vectors the table
-ends at `$FFFF`; the `ZZZZ: DB 0` end byte that sat at `$FFFC` in the 2026-09-22 build is gone (`firmware/rom/README.md`
-still mentions it: its file date is 2026-09-22).
+ends at `$FFFF`; the `ZZZZ: DB 0` end byte that sat at `$FFFC` in the 2026-09-22 build is gone (`firmware/rom/README.md`).
 
 The monitor's own helpers, not vectored but at known addresses in this build (`monitor.lst`): `getaddress` $F50F
 (four hex digits into R7), `getnibble` $F538, `show16`, `show256` $F5FB, `shownibble`, `switchin` $F65C (ACC ←
 switches), `ledout` $F660 (LEDs ← ACC), `TIL311out` $F664, `uartin` $F68B, `LONGDELAY` $F6C1, `SHORTDELAY` $F6CC,
-`switchtoggle` $F6D7, `blink` $F6F2, `lblink` $F707, `nblink` $F71C, the strings from `hello` to `PROMPT` $F759,
-`helpmenu` $F7FB. Addresses in this document are from the `ROM 2026-09-23B` listing; they move whenever the monitor is rebuilt (the `:` loader alone moved everything after `const` by $140),
-use the vectors.
+`switchtoggle` $F6D7, `blink` $F6F2, `lblink` $F707, `nblink` $F71C, the strings from `hello` to `PROMPT` $F758,
+`helpmenu` $F7FA. Addresses in this document are from the current `monitor.lst` (the `ROM 2026-09-23` build, the one
+in the machine); they move whenever the monitor is rebuilt (the `:` loader alone moved everything after `const` by
+$140), so programs use the vectors.
 
 ## 5. The variables page ($0F00) and the stack
 
@@ -145,10 +143,9 @@ buffer at $1000–$1FFF, which the `O` command reuses as the OS load address ([M
 
 ## 6. The CompactFlash driver and the `O` command (2026-09-22)
 
-The card sits on two ports (`docs/system/OS-PLAN.md` decision 1 and its 2026-09-23 update): **P4** = a write-only
-register-select latch (ATA task-file register 0–7 in bits 0–2), **P5** = the data port; reading or writing P5 strobes
-the selected register. The hardware will be the I/O card v2.0 ([`docs/cards/cf.md`](../cards/cf.md)). P4/P5 from the
-build `ROM 2026-09-23B` (not yet burned); the builds before it, including the chip in the machine, use P8/P9.
+The card sits on two ports (`docs/system/OS-PLAN.md` decision 1): **P8** = a write-only register-select latch (ATA
+task-file register 0–7 in bits 0–2), **P9** = the data port; reading or writing P9 strobes the selected register. The
+hardware is not built: the CF card v1.0 circuit, planned onto the memory card ([`docs/cards/cf.md`](../cards/cf.md)).
 8-bit True IDE mode. Register numbers (`CFSEL_*` equates): 0 data, 1 error/feature, 2 sector count, 3–5 LBA0–2,
 6 drive/head, 7 status/command.
 
@@ -159,8 +156,8 @@ build `ROM 2026-09-23B` (not yet burned); the builds before it, including the ch
   and the result is 1.
 - `cfsetl` — task file ← `CFLBA0..2`, drive/head $E0, sector count 1.
 - `cfread` — `cfwait`, `cfsetl`, command $20 (READ SECTORS), `cfdrq`; if DRQ is not set → `cferr` (ACC = 1); else
-  select the data register once and loop 512 times `INP P5 / STAVR R7 / INCR R7` (R6 counts down). ACC = 0.
-- `cfwrite` — the same with command $30 and `LDAVR R7 / OUTA P5`, then `cfwait` and ACC ← ERR.
+  select the data register once and loop 512 times `INP P9 / STAVR R7 / INCR R7` (R6 counts down). ACC = 0.
+- `cfwrite` — the same with command $30 and `LDAVR R7 / OUTA P9`, then `cfwait` and ACC ← ERR.
 - `const` — `BRDEV consthw / LDAI 1 / RET`; on hardware LSR bit 0.
 
 The **`O` command** (`boot:` $F473) prints `BOOT FROM CF`, `cfinit` (error → `CF ERROR`), reads LBA 0 to
@@ -214,8 +211,8 @@ asserted, `docs/isa/MICROCODE-REVIEW-NOTES.md` L-8), so the ISR path has not bee
 - **`shipped/rom.bin`** = the same as a flat 8,192-byte file for the programmer: `python3 tools/img2bin.py
   firmware/rom/shipped/rom firmware/rom/shipped/rom.bin --base 0xE000 --end 0x10000 --fill 0xFF --size 8192`. Offset
   0 = $E000; bytes the sources never write are $FF like a blank part; MD5 in `firmware/rom/README.md`. Device: 28C64, Visual Minipro / `minipro`.
-- **Telling builds apart**: the banner ends `ROM 2026-09-23B` on the current tree build (MD5 a9fefd4ae21eb46eb21cff614376617f,
-  CF on P4/P5, not yet burned) and `ROM 2026-09-23` on the chip in the machine (MD5 d2d7b027e7c6951d7dd93412a8fd9cd8, CF on P8/P9); the 2021 chip
+- **Telling builds apart**: the banner ends `ROM 2026-09-23` on the current build, the tree's and the chip's (MD5
+  d2d7b027e7c6951d7dd93412a8fd9cd8, CF on P8/P9); the 2021 chip
   prints the banner alone and has `00` at $FFEC; the 2026-09-22 build has `04` at $FFEC and `00` at $FFFC. Vector targets
   move with every monitor edit, so compare whole images by MD5.
 - **`tools/verify_firmware.py`** rebuilds everything from source in a scratch directory — the assembler from its C

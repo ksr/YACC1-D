@@ -64,13 +64,12 @@ Details: [ASSEMBLER.md](ASSEMBLER.md) (the invocation gotcha: source name before
    through the monitor's `:` loader (`docs/programming/MONITOR.md`, `docs/procedures/BRING-UP.md` section 6a).
 3. Burn with Visual Minipro / `minipro`, device 28C64 (`firmware/rom/README.md`). A program lands at offset `$1000`
    of the chip when assembled at `$F000`.
-4. Tell builds apart: the power-up banner ends `ROM 2026-09-23B` on the current tree build (CF on P4/P5); otherwise
-   `rom.bin`'s MD5 (a9fefd4ae21eb46eb21cff614376617f, `firmware/rom/README.md`) or the two check bytes in
-   `docs/procedures/BRING-UP.md` section 5. The chip currently holds the `ROM 2026-09-23` build (MD5
-   d2d7b027e7c6951d7dd93412a8fd9cd8, CF on P8/P9), burned 2026-09-23; 2026-09-23B is not yet burned (`MACHINE.md`).
+4. Tell builds apart: the power-up banner ends `ROM 2026-09-23` on the current build; otherwise `rom.bin`'s MD5
+   (d2d7b027e7c6951d7dd93412a8fd9cd8, `firmware/rom/README.md`) or the two check bytes in `docs/procedures/BRING-UP.md` section 5. The chip in the machine holds this build,
+   burned 2026-09-23 (`MACHINE.md`); before that it held the 2021 build (`eprom-captured-2026-09-18.bin/.hex`).
 5. After burning: `tests/memory/rom_verify.py` (~30 s, through the bus tester) compares every byte with
    `tools/romimage.py`'s image of `basic.img` + `monitor.img`; `memory_status.py` (~1 min) also checks the boot remap
-   and the block map. Until the reburn both report the monitor half as different.
+   and the block map. Against a chip still holding the 2021 build both report the monitor half as different.
 
 ## 4. Image → CF disk image (Y1/OS)
 
@@ -85,9 +84,9 @@ software/ucemu/y1ucemu -m -c disk.img          # then O at the monitor prompt
 ```
 
 `make -C os` does all of it for `os/y1os.c`, `os/commands/*.c` and `os/disk/*`; `make -C os run` / `run-int` boot it;
-`make -C os test` replays the sessions. Format and shell: [OS.md](OS.md). The card itself is not built; the emulators
-model it (`software/cfmodel.h`). **To verify:** writing the image to a real CF card (`dd` of `disk.img` to the raw
-device) is not described in the tree yet; it will need the card and the `O` command on the burned ROM.
+`make -C os test` replays the sessions. Format and shell: [OS.md](OS.md). The CF hardware is not built (planned on the memory
+card, `docs/cards/cf.md`); the emulators model it (`software/cfmodel.h`). Writing the image to a real CF card:
+`tools/cfcard.py`, `docs/procedures/CF-CARD.md` (not yet tried on a real card); the burned ROM's `O` then boots it.
 
 ## 5. Microcode: generate, verify, load
 

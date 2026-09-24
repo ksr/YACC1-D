@@ -295,13 +295,13 @@ Notes:
 - The I/O card decodes P0..P7 (its `IO-ADDR3` strap); P0 is a select latch and P1 the data port of the selected
   device (UART, switches/LEDs, LCD, TIL311), so a UART byte is two instructions: `OUTI P0,UARTCS / OUTA P1`
   (`monitor.asm` `uartout`). Full map in [IO-PORTS.md](IO-PORTS.md).
-- P4/P5 are the CompactFlash interface (register select / data; P8/P9 until 2026-09-23), modelled by both emulators
-  with `-c disk.img` (`software/cfmodel.h`); the hardware, on the I/O card v2.0, is not built yet.
+- P8/P9 are the CompactFlash interface (register select / data), modelled by both emulators with `-c disk.img`
+  (`software/cfmodel.h`); the hardware is not built yet (planned on the memory card, `docs/cards/cf.md`).
 - Port 2 is the interpreter's console (`OUTA P2` prints, `INP P2` reads a key; `main.c`); ucemu keeps that shortcut
   too. On the machine P2 is `-IO-SEL2` on the I/O card's header with nothing wired (`docs/system/OS-PLAN.md`).
 - On the interpreter only `OUTA`/`OUTI` to P2, and `OUTI P1` while P0 = $40 (the UART THR), produce output; `INP P1`
-  returns $FF on the first read while P0 = 1 (the switches), and an `INP` of any port other than P2, P4 and P5
-  otherwise leaves ACC unchanged (`main.c`: apart from that switch read only ports 2, 4 and 5 assign `acc`; P4, the
+  returns $FF on the first read while P0 = 1 (the switches), and an `INP` of any port other than P2, P8 and P9
+  otherwise leaves ACC unchanged (`main.c`: apart from that switch read only ports 2, 8 and 9 assign `acc`; P8, the
   write-only select, reads $FF).
 - `INP` has the slowest signal path in the machine in one microcode step (open-collector `IO-RD` rise, review M-3):
   the first instruction to misread at a faster clock.

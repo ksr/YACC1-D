@@ -48,9 +48,8 @@ the bit positions:
   ready and THRE, DLAB divisor writes accepted), the switches (`-s`) and LEDs. Port 2 is also a console, the old
   emulator's shortcut, so `OUTA P2` programs still print. A port read is sampled once at the leading edge of -IO-RD;
   a port write happens once, at the trailing edge of -IO-WR. Reading with nothing left gives 0 with "ready" set.
-- **CompactFlash** (`-c disk.img`, 2026-09-22): `software/cfmodel.h`, shared with the other emulator, on P4 (register
-  select) and P5 (data) — P8/P9 until 2026-09-23, when the interface moved onto the I/O card v2.0
-  (`docs/cards/cf.md`). With no image every read gives $FF; `tests/os` boots Y1/OS through it.
+- **CompactFlash** (`-c disk.img`, 2026-09-22): `software/cfmodel.h`, shared with the other emulator, on P8 (register
+  select) and P9 (data) (`docs/cards/cf.md`). With no image every read gives $FF; `tests/os` boots Y1/OS through it.
 - **Reset** is the real one: registers and IR cleared, FORCE-ROM set, so record $00 fetches $0000 and gets ROM[$F000];
   the monitor's first `BR eprom` releases the remap. A stand-alone image therefore needs the same first branch
   (the compiler's `--boot` stub and `tests/assembler/brur` got one on 2026-09-22).

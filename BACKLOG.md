@@ -34,9 +34,6 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Memory card**: the unconnected jumper wire on IC7 pin 4 — purpose not remembered (Ken 2026-09-20); trace it on the board or remove it.
 
 ## Firmware — written, not burned / loaded
-- **`ROM 2026-09-23B`** (`firmware/rom/shipped/rom.bin`, MD5 a9fefd4ae21eb46eb21cff614376617f): the CF driver and `O`
-  on P4/P5 for the I/O card v2.0; otherwise the same as the burned `ROM 2026-09-23` (P8/P9). Burn, then
-  `tests/memory/rom_verify.py`; needed before the v2.0 CF interface can be tested.
 - **Monitor + BASIC 8afde21** (2021-09, `firmware/*/candidates/2021-09-8afde21`): `charavail` BIOS vector ($FFEC),
   BASIC ON/OFF statements, break into a running program. Needs a hardware test, then burn and update `rom/shipped`.
 - **monnew-2025** (`firmware/monitor/monnew-2025`): small D/M/B monitor; assembled, never run on the machine.
@@ -85,7 +82,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   $90+n), so a run-time port needs `OUTA/INP Pn` + `RET` built in RAM and called, or a 16-entry jump table. `INP` like
   `PEEK addr,var` (no functions in expressions). ~230 bytes free in the BASIC half of the ROM. Test on both emulators
   (ucemu `-L` shows LED writes, `-i`/`-I` the switches), patched_files entry for basic.asm, then burn - ideally together
-  with the next ROM (23B). Example: `OUTP 0,1` (select switches/LEDs), `OUTP 1,170` (LEDs = $AA), `INP 1,S`.
+  with the next ROM burn. Example: `OUTP 0,1` (select switches/LEDs), `OUTP 1,170` (LEDs = $AA), `INP 1,S`.
 - Every C tool now has a plain Makefile (2026-09-20); the NetBeans projects are kept but no longer needed to build. The three
   tools still carry the old tree's relative include paths, satisfied by `tools/layout_links.py` symlinks; fixing the includes
   would let the links go.
@@ -126,17 +123,16 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   read-only — `os/y1os.c` shell with dir/cd/pwd/cat/load/run and /BIN programs, `tests/os/` sessions on both emulators.)
 - (designed 2026-09-23: **the CF card v1.0** — `hardware/cards/cf/kicad/v1.0/` generated from `cf_netlist.py`: 5 ICs
   (74LS138/32/175/08/245), 40-pin IDE header for a CF-to-IDE adapter, schematic and board both proven equal to the
-  netlist, DRC 0 errors / 0 unconnected, gerbers ready; theory in `docs/cards/cf.md`. **Superseded the same evening,
-  never ordered**: the backplane has eight slots, so the CF interface moves onto the **I/O card v2.0**, decoded by the
-  I/O card's IC5 on Y4/Y5 = **P4/P5** (4 chips, a TAODAN CF-IDE40 CF-to-IDE adapter plugged straight onto the IDE
-  header, standing perpendicular to the card, no DASP LED);
-  ROM driver, `ROM 2026-09-23B` and both emulators moved to P4/P5 in 24378cb; `docs/system/OS-PLAN.md` decision 1
-  update. Card-preparation procedure written: `docs/procedures/CF-CARD.md`.)
-  **Next**: the I/O card v2.0 is routed (`hardware/cards/io/kicad/v2.0/`, 2026-09-23, not ordered); **burn
-  `ROM 2026-09-23B`** (the chip still holds `ROM 2026-09-23`, whose CF driver uses P8/P9); before ordering, the open
-  items in `hardware/cards/io/kicad/v2.0/README.md` (J2 pin 1 / which way the adapter faces, J3 pinout); confirm on the
-  machine that the I/O card's IO-ADDR-HL strap is P0-P7 and that the IO-ADDR/DATA-ADDR jumpers are on P0/P1 (never P4/P5). **After building**: the bring-up steps in `docs/cards/cf.md`
-  section 7 (the new ROM first, empty adapter = `CF ERROR`, the P4 latch on the IDE header's DA pins, then `O` with a
+  netlist, DRC 0 errors / 0 unconnected, gerbers ready; theory in `docs/cards/cf.md`; never ordered.
+  Card-preparation procedure written: `docs/procedures/CF-CARD.md`. A move of the interface onto an I/O card v2.0 on
+  ports P4/P5 was designed 2026-09-23 and dropped 2026-09-24 (6eeb259, 65851b0).)
+  **Next (plan 2026-09-24)**: design the CF interface onto the **memory card** (more room, chips spaced far apart),
+  kept I/O-mapped on **P8/P9** with the CF card v1.0 circuit (own 74LS138 enabled by IO-ADDR3, 74LS32, 74LS175, 74LS08,
+  74LS245, 40-pin IDE header); the memory card's IO-ADDR0-3, -IO-RD and -IO-WR pins are on its connector but unwired
+  today (`docs/cards/memory.md`). The CF-to-IDE adapter is undecided: a SinLoon CF-IDE on a ribbon/standoffs, or the
+  TAODAN CF-IDE40 V2.0 plugged straight onto a male header (`docs/cards/cf.md` section 0). The ROM in the machine
+  (`ROM 2026-09-23`) already drives P8/P9, so no burn is needed. **After building**: the bring-up steps in
+  `docs/cards/cf.md` section 7 (empty adapter = `CF ERROR`, the P8 latch on the IDE header's DA pins, then `O` with a
   card prepared by `tools/cfcard.py` from `os/disk.img`).
 - (done 2026-09-23: **write support** — save/del/ren/mkdir/rmdir in the shell, files written at the free pointer and
   registered as `p8xfs.py` does, verified from the host in `tests/os/run.py` (fsck, ls, get); **the file API** —
@@ -250,9 +246,9 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
      (`software/assembler/header.h` MAX_LABELS, no bounds check: it segfaults beyond) before it can assemble a pass
      this size.
   6. Code size of what y1cc emits (the bullet below): every byte saved there shrinks the native compiler too.
-- **Burn the rebuilt ROM** (`firmware/rom/shipped/rom`, 2026-09-22: monitor G = `JSRUR R7`, was the indirect `BRVR R7`; BASIC
-  unchanged), then re-capture and `tests/memory/rom_verify.py` (until then it reports the monitor half as different).
-  Until burned, compile for the machine with `--vector`.
+- (done 2026-09-23: the rebuilt ROM is burned — `ROM 2026-09-23`, MD5 d2d7b027…, = `firmware/rom/shipped/rom.bin`; monitor
+  G = `JSRUR R7`, so `--vector` is only for a 2021 chip.) Still to do: re-capture it with `tests/memory/rom_verify.py`
+  (no read-back of the new chip is in the tree yet).
 - (done 2026-09-22: the sequencer EEPROM holds the regenerated image — BRUR at $AD, the H-2 fix in BRZ/BRNZ/BR16Z/BR16NZ, the
   H-1 fix in PUSHR; six records differed, all 256 sent with `tools/ucode_send.py --all`; the scope look at the old image's
   bus fight was skipped.) (done 2026-09-23 evening: `tests/bench/run.py --port` 14/14 on the machine after the SHIFT-OUT carry fix; first run found the fault.) **Bench-check the reloaded microcode** (first evidence 2026-09-22/23: `tests/assembler/romcount` ran overnight from ROM — BRNZ, DECR, MVRHA, MVAT/MVTA, ADDI, OUTA/INP, BRINL — after `romdiag` had shown the bring-up machine lacked register card 1; card fitted, R7 reads correctly). The rest is ONE command since 2026-09-23: burn the ROM, then
@@ -276,7 +272,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - (done 2026-09-22: `software/ucemu` counts steps and clocks; a per-opcode cost table from it is a one-liner away.)
 - Microcode emulator follow-ups: interrupts (a source, INT/IRET/IADDR checked against the generator), automatic trace
   comparison against the interpreter, the video card. (The CF model with a disk image, `-c`, is done: 2026-09-22 on
-  P8/P9, P4/P5 since 2026-09-23.)
+  P8/P9.)
 - Port the P8X libraries/programs that fit the subset (the P8X OS itself needs its syscalls; recursion exists since 2026-09-24).
 - Emulator (done 2026-09-22, `tools/patched_files.txt`): `-x` scripted mode; BRVR and JSRUR now follow the microcode, so the
   monitor's `G` and `T` commands work on the emulator (they never had). Still stubs vs the hardware: IRET/INT/IADDR, SUB

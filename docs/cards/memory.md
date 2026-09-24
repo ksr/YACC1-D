@@ -300,6 +300,10 @@ What to measure if it misbehaves:
 | v1.2 | 2020-11-29 | fabricated (built), retired 2021 | -VMA arrives on the bus (Blank V3.1 note): -VMA enables IC5, gates IC7 (pin 4) and the low-RAM -CS; the remap trigger moves from BADDR15 to raw ADDR15; "RN3&4 BADDR pull-ups not needed, leave in design"; the 7400 removed then added back for -LO-RAM. `media/memory v1.2 top.jpeg` and `... solder.jpeg` are photographs of this build |
 | v1.3 | design 2021-03-17, boards ordered 2025-06-27 | **in the machine** | "ARGH": the 3x8 jumper block on IC7's outputs with pull-ups so any 4K block can be removed from the map (for memory-mapped I/O — the video card uses it); KiCad conversion in `kicad/v1.3` (netlist proof 115/115) |
 
+**Planned (Ken, 2026-09-24; not designed yet):** the CompactFlash interface goes onto this card, which has room for
+it. It stays I/O-mapped on ports P8/P9, as the ROM and the emulators use them, with the CF card v1.0 circuit
+([`cf.md`](cf.md)); it would be the first use of the IO-ADDR0..3, -IO-RD and -IO-WR pins this card leaves unwired today.
+
 Open ideas from `eagle/v1.3/Notes.md`, `BACKLOG.md` and the reviews, for a v1.4:
 
 1. **Gate the EEPROM write (M2).** Either -WE = -MEM-WR OR FORCE-ROM (no writes while the remap is on) or, better, a

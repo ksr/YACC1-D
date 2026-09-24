@@ -4,8 +4,7 @@ The machine's console and front panel on one card: a 16550-class UART behind two
 eight LEDs, two TIL311 hex displays, an HD44780 character LCD, the input-switch line the branch instructions test,
 and the ON/OFF LED.
 
-Written 2026-09-23 from the YACC1-D tree. V2.0, which adds the CompactFlash interface on P4/P5, is being designed
-(section 8, [`cf.md`](cf.md)).
+Written 2026-09-23 from the YACC1-D tree.
 
 Sources: `hardware/cards/io/eagle/v1.1/IO V1.1.sch` and `.brd` (parts and nets parsed from the Eagle XML),
 `hardware/cards/io/eagle/v1.1/Notes.md`, `hardware/cards/io/README.md`, `firmware/monitor/monitor.asm` (the EQUs and
@@ -29,8 +28,7 @@ sixteen (which eight is a strap) and wires two of them:
   switches (read) and LEDs (write), the LCD, or the TIL311 displays.
 
 That "select, then transfer" pattern is why the monitor writes P0 before every P1 access, and it is the pattern
-`docs/system/OS-PLAN.md` adopts for every later device (CompactFlash on P4/P5, on this card from V2.0; the 6845 on
-PA/PB). Besides the ports,
+`docs/system/OS-PLAN.md` adopts for every later device (CompactFlash on P8/P9, the 6845 on PA/PB). Besides the ports,
 the card is the source of the bus line **IN** (a toggle switch that `BRINH`/`BRINL` test), the sink of **OUT** (the
 LED that `ON`/`OFF` drive) and, optionally, the source of **-INT** from the UART's interrupt output.
 
@@ -60,7 +58,7 @@ LED that `ON`/`OFF` drive) and, optionally, the source of **-INT** from the UART
 |---|---|---|---|
 | DATA0..7 | A19..A26 | bidir | the UART's D0..7, the LCD's DB0..7, the D inputs of the three 74273 latches (IC4, IC9, IC10), and the outputs of the switch buffer IC3. **No bus buffer**: the devices sit on the bus directly |
 | IO-ADDR0..2 | C7..C9 | in | IC5 (74LS138) A, B, C: the port number within the card's half |
-| IO-ADDR3 | C10 | in | to the IO-ADDR-HL strap only: chooses whether the card decodes P0-P7 or P8-P15 (V2.0: must be P0-P7) |
+| IO-ADDR3 | C10 | in | to the IO-ADDR-HL strap only: chooses whether the card decodes P0-P7 or P8-P15 |
 | -IO-RD | B25 | in | inverted by IC8/A (74LS06, open collector, pull-up RN2) into IO-RD: the UART's active-high IOR and the read qualifier of the switch buffer |
 | -IO-WR | B26 | in | inverted by IC8/B into IO-WR: the UART's IOW, and NANDed with the selects into the clocks of the three latches and the LCD E pulse |
 | -IO-ADDR-LD | C11 | — | **connector only**: no node on the card (the port is decoded combinationally; `MICROCODE-REVIEW-NOTES.md` 1.5, L-2) |
@@ -105,18 +103,13 @@ other pins are GND (pin 1), IO-ADDR3 (pins 2 and 5) and VCC (pin 6). Two jumpers
   IO-ADDR3 is low;
 - decode **P8-P15**: G1 = IO-ADDR3 (pin 4 to 2), G2A = GND (pin 3 to 1).
 
-**V2.0 requires P0-P7.** From V2.0 IC5 also decodes the CompactFlash interface on Y4/Y5 (P4/P5, section 8 and
-[`cf.md`](cf.md)); strapped to P8-P15 the CF would sit at PC/PD, where the ROM driver never looks.
-
 The eight outputs -IO-SEL0..7 (active low while that port number is on the bus, strobe or not) go to two 2x8
 headers. On **IO-ADDR** every odd pin (1, 3, ... 15) is the net -IO-ADDRSEL and the even pins carry -IO-SEL7 (pin 2)
 down to -IO-SEL0 (pin 16); one jumper picks which port is the control port. On **DATA-ADDR** the odd pins are
 -IO-DATASEL and the even pins the same selects; one jumper picks the data port. The monitor's `CNTL-PORT: EQU "P0"`
 and `DATAPORT: EQU "P1"` mean the jumpers sit on pins 15-16 of IO-ADDR (-IO-SEL0) and pins 13-14 of DATA-ADDR
-(-IO-SEL1). Nothing stops both headers selecting the same port, or a port being selected on neither; on V1.1 the
-six other selects have no consumer on the card (OS-PLAN reserves them "to the I/O card"). On **V2.0** -IO-SEL4 and
--IO-SEL5 also feed the CF section, so **neither header may select P4 or P5** (jumpers on pins 7-8 or 5-6): the control
-latch or the data port would then answer on a CF port as well.
+(-IO-SEL1). Nothing stops both headers selecting the same port, or a port being selected on neither; the six other
+selects have no consumer on the card (OS-PLAN reserves them "to the I/O card").
 
 ### 3.2 Strobes: IC8 (74LS06 open-collector inverters) and RN2
 
@@ -307,9 +300,9 @@ Nothing on this card is on the H-1/H-2/H-3 path; those fixes (2026-09-22) concer
 
 | Item | Pins / meaning | Setting in the machine |
 |---|---|---|
-| IO-ADDR-HL (2x3) | 1 GND, 2 IO-ADDR3, 3 IC5 G2A, 4 IC5 G1, 5 IO-ADDR3, 6 VCC | low half P0-P7 (MACHINE.md, OS-PLAN: "it stays in the low half"): 3-5 and 4-6; **required on V2.0** (the CF on P4/P5). **To verify** physically |
-| IO-ADDR (2x8) | odd pins = -IO-ADDRSEL; even pins 16..2 = -IO-SEL0..7 | P0 = control: pins 15-16; never P4/P5 (pins 7-8, 5-6) on V2.0 |
-| DATA-ADDR (2x8) | odd pins = -IO-DATASEL; even pins as above | P1 = data: pins 13-14; never P4/P5 on V2.0 |
+| IO-ADDR-HL (2x3) | 1 GND, 2 IO-ADDR3, 3 IC5 G2A, 4 IC5 G1, 5 IO-ADDR3, 6 VCC | low half P0-P7 (MACHINE.md, OS-PLAN: "it stays in the low half"): 3-5 and 4-6. **To verify** physically |
+| IO-ADDR (2x8) | odd pins = -IO-ADDRSEL; even pins 16..2 = -IO-SEL0..7 | P0 = control: pins 15-16 |
+| DATA-ADDR (2x8) | odd pins = -IO-DATASEL; even pins as above | P1 = data: pins 13-14 |
 | JP1 (2x3) | 1,6 RX-IN; 2,5 TX-OUT; 3 DB9 pin 3; 4 DB9 pin 2 | **To verify:** straight (1-3, 2-4) or crossed (3-5, 4-6) |
 | INPUT (1x2) | 1 = bus IN, 2 = IN switch pole | fitted (BRINH/BRINL work: romcount/romdiag) |
 | INT (1x2) | 1 = UART INT, 2 = IC8/F input | **To verify:** open or fitted; the monitor does not enable UART interrupts either way |
@@ -365,7 +358,6 @@ If it misbehaves:
 |---|---|---|---|
 | V1.0 | 2020-07 | fabricated, retired 2021-01 | no IC9 latch / IC11; two 1x10 headers instead of the 2x3 jumper (README) |
 | V1.1 | 2020-11-29 | **in the machine** (`media/io v1.1 top.jpeg`, `bottom.jpeg`) | TIL311 latch pins to GND and VCC to pin 14; LED bit order; keep-out under the LCD; DB9 with the null-modem jumper; TIL311 broken out to its own control bit (bit 7). The Working copy of 2020-07-31 was the same board with the V3.1 bus names; folded 2026-09-20 |
-| V2.0 | 2026-09-23 | **being designed** (KiCad, `hardware/cards/io/kicad/v2.0/`), not built | adds the CompactFlash interface on P4/P5, decoded by IC5's Y4/Y5 (section below, [`cf.md`](cf.md)); replaces the standalone CF card v1.0 |
 
 The never-done **V1.2** ideas (`Notes.md`, `BACKLOG.md`):
 
@@ -379,36 +371,30 @@ The never-done **V1.2** ideas (`Notes.md`, `BACKLOG.md`):
    header beside the DB9 if that is how the Mac is cabled.
 4. Leave -IO-ADDR-LD unconnected as now, and let the generator drop its steps (L-2).
 
-### V2.0: the CompactFlash interface on P4/P5 (being designed)
+### The next device on the ports: CompactFlash on P8/P9
 
-Decided 2026-09-22 as a card of its own on P8/P9 (`docs/system/OS-PLAN.md` decision 1; the CF card v1.0,
-`hardware/cards/cf/kicad/v1.0`, routed but never ordered). **Moved onto this card 2026-09-23** because the backplane
-has only eight slots: the I/O card **V2.0** (`hardware/cards/io/kicad/v2.0/`, being designed, not built) carries the
-CF interface, and the CF ports moved to **P4/P5** (OS-PLAN decision 1, 2026-09-23 update; commit 24378cb). Theory of
-operation: [`cf.md`](cf.md).
+Decided 2026-09-22 (`docs/system/OS-PLAN.md` decision 1, `firmware/abi/README.md`, `software/cfmodel.h`), not built.
+The circuit is the CF card v1.0's (`hardware/cards/cf/kicad/v1.0`, designed 2026-09-23, never ordered; theory in
+[`cf.md`](cf.md)); since 2026-09-24 it is planned onto the memory card, not onto a card of its own (not designed yet).
+(An I/O card V2.0 carrying the CF interface on P4/P5, decoded by this card's IC5, was designed on 2026-09-23 and
+dropped on 2026-09-24; this card stays V1.1.)
 
-- **Decode costs nothing:** IC5 already decodes P0-P7, and its outputs Y4 (-IO-SEL4) and Y5 (-IO-SEL5) become the CF's
-  select and data ports. The CF card's own 74LS138 goes, and the CF section is four chips: a 74LS32 gating -IO-RD/-IO-WR
-  with the two selects, a 74LS175 register-select latch, a 74LS08 (buffer enable, CF reset, ACT LED) and a 74LS245 data
-  buffer, plus the CF status pull-ups and a 40-pin IDE header. A TAODAN "CF-IDE40 V2.0" CF-to-IDE adapter plugs
-  straight onto the header (no ribbon, no mounting holes) and stands perpendicular to the card, so the card needs about
-  75 mm of free space on its component side (an end slot or empty neighbour slots). The bus connector is shared; the
-  CF's DASP LED is dropped.
-- **Two ports, same select-then-data pattern as P0/P1.** P4 = write-only register-select latch (bits 0-2 = the ATA
+- **Two ports, same select-then-data pattern as this card.** P8 = write-only register-select latch (bits 0-2 = the ATA
   task-file register 0-7: 0 data, 1 error/feature, 2 sector count, 3-5 LBA0-2, 6 drive/head, 7 status/command; bit 3
-  = CF reset, 1 = held); P5 = the data port — a read or write of P5 strobes the CF's -IOR/-IOW on the selected register.
-- **What it demands of this card's jumpers:** the IO-ADDR-HL strap must stay at P0-P7 (section 3.1), and neither the
-  IO-ADDR nor the DATA-ADDR header may select P4 or P5 (else the control latch or the data port answers on a CF port
-  too). P2 was not used for the CF because it is the emulators' console and test-output port.
-- **The driver is in the ROM** (`monitor.asm` `cfinit`/`cfread`/`cfwrite`, vectors $FFEC/$FFF0/$FFF4):
-  `OUTI P4,CFSEL_CMD` / `INP P5` polls status (BSY bit 7, DRQ bit 3, bounded to 65536 polls so an absent card times
-  out with ACC = 1); a sector transfer selects register 0 once and loops `INP P5` / `STAVR Rn` / `INCR Rn` 512 times.
-  The P4/P5 build is `ROM 2026-09-23B`, **not yet burned**: the chip in the machine still talks to P8/P9
-  (`firmware/rom/README.md`, `docs/system/MACHINE.md`).
-- **The emulators model it** (`software/cfmodel.h`: `CF_PORT_SEL` 4 sets the select, `CF_PORT_DATA` 5 reads/writes the
-  selected register; no image attached = $FF like a floating bus), so the driver runs on the emulators first and the
-  hardware can be bench-tested with the bus tester (`OUTI P4` / `INP P5` by hand, as the 2020 IO scripts did for the
-  UART).
-- Port map afterwards (OS-PLAN decision 3): P0/P1 this card's control and data ports, P2/P3 reserved to it (P2 is
-  also the emulators' console), P4/P5 this card's CF interface (V2.0), P6/P7 reserved to it, P8/P9 free again, PA/PB
-  the next video card's 6845 address/data registers, PC/PD a PS/2 keyboard controller, PE/PF free.
+  = CF reset, 1 = held); P9 = the data port — a read or write of P9 strobes the CF's -IOR/-IOW on the selected
+  register.
+- **Parts (the v1.0 circuit):** a 74LS138 port decode (enabled by IO-ADDR3 high, Y0/Y1 = P8/P9 — so it lives in the
+  *other* half from this card, which stays at P0-P7), a 74LS32 gating -IO-RD/-IO-WR with the two selects, a 74LS175
+  select latch, a 74LS08 (buffer enable, CF reset, ACT LED), a 74LS245 data buffer, the CF status pull-ups and a 40-pin
+  IDE header for a CF-to-IDE adapter; 8-bit True IDE mode (SET FEATURES $EF with feature $01 at init); otherwise the
+  P8X CF card's circuit.
+- **The driver already exists in the ROM** (`monitor.asm` `cfinit`/`cfread`/`cfwrite`, vectors $FFEC/$FFF0/$FFF4):
+  `OUTI P8,CFSEL_CMD` / `INP P9` polls status (BSY bit 7, DRQ bit 3, bounded to 65536 polls so an absent card times
+  out with ACC = 1); a sector transfer selects register 0 once and loops `INP P9` / `STAVR Rn` / `INCR Rn` 512 times.
+- **The emulators model it** (`software/cfmodel.h`: `CF_PORT_SEL` 8 sets the select, `CF_PORT_DATA` 9 reads/writes
+  the selected register; no image attached = $FF like a floating bus), so the driver runs on the emulators first and
+  the hardware can be bench-tested with the bus tester (`OUTI P8` / `INP P9` by hand, as the 2020 IO scripts did for
+  the UART).
+- Port map afterwards (OS-PLAN decision 3): P0/P1 this card, P2-P7 decoded by it but unused (reserved to it in the
+  plan; `BACKLOG.md` 2026-09-24: probably free for another card), P8/P9 CF, PA/PB the next video
+  card's 6845 address/data registers, PC/PD a PS/2 keyboard controller, PE/PF free.

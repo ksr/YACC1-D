@@ -56,7 +56,7 @@ Two emulators, deliberately different (`software/ucemu/README.md`):
   ports, console on port 2. Quick and forgiving. Options used by the tests: `-x` scripted mode (no load/dump chatter, no raw
   tty, stdout flushed, `HALT` exits with `HALT at aaaa after N instructions, R3=xxxx` on stderr), `-f FILE` load an Intel-hex
   image (the assembler's `.img`), `-m` load the monitor+BASIC ROM (`firmware/basic/basic.img` + `firmware/monitor/monitor.img`,
-  found relative to the executable), `-c disk.img` a CompactFlash image on ports P4/P5 (P8/P9 until 2026-09-23; `MACHINE.md`). Since 2026-09-22 `BRVR`
+  found relative to the executable), `-c disk.img` a CompactFlash image on ports P8/P9 (`MACHINE.md`). Since 2026-09-22 `BRVR`
   and `JSRUR` do what the microcode does, so the monitor's `G` and `T` work on it. It also stops itself at an instruction limit
   (`tests/os/basic.int.out` ends with `instruction limit reached at f530 after 6000000 instructions`).
 - **`software/ucemu/y1ucemu`** - the microcode-level model: does not know what any instruction does; it steps the control words
@@ -121,7 +121,7 @@ an address above $8000 (`--boot` stub) so that the FORCE-ROM remap is released e
 ### 3.3 `tests/os/` - Y1/OS on both emulators (no hardware)
 
 - **Proves:** `os/` builds (`y1os.bin`, the `/BIN` programs, `disk.img` as a P8XFS v2 volume via `tools/p8xfs.py`), the monitor's
-  `O` command boots it from the CF model on ports P4/P5, and a scripted shell session gives the same transcript on both emulators.
+  `O` command boots it from the CF model on ports P8/P9, and a scripted shell session gives the same transcript on both emulators.
 - **Run:** `python3 tests/os/run.py [--keep] [--update]` (= `make os-test`, `make -C os test`). Sessions are `tests/os/*.session`
   (one console line per line, sent after `O`); expectations `NAME.int.out` (instruction-level) and `NAME.uc.out` (microcode, with
   the input echo). The comparison starts at `BOOT FROM CF` and ends after the OS says `bye` and the prompt returns. `--update`
@@ -130,7 +130,7 @@ an address above $8000 (`--boot` stub) so that the FORCE-ROM remap is released e
   `basic uc PASS HALT at F529 after 5023647 instructions, 80000000 steps, ...`, `2 passed, 0 failed`. The session exercises
   `dir`, `cat`, `cd`, `pwd`, `hello a b c` (implicit `/BIN` lookup with arguments), `run /BIN/ECHO hi there`, `wc 45 1` (raw sectors
   through the BIOS vectors), an unknown command, `load`, `help`, `exit`.
-- The CF hardware (the I/O card v2.0, `docs/cards/cf.md`) does not exist yet, so this is emulator-only by nature.
+- The CF hardware (planned on the memory card, `docs/cards/cf.md`) does not exist yet, so this is emulator-only by nature.
 
 ### 3.4 `tests/sequencer/` - the microcode sender, without the card (no hardware)
 
@@ -162,7 +162,7 @@ an address above $8000 (`--boot` stub) so that the FORCE-ROM remap is released e
 | Script | Proves | Time | Result on record |
 |---|---|---|---|
 | `memory_status.py [port]` | boot remap after `-RESET` (ROM at $0000 until an A15-high access), every ROM byte against `basic.img`+`monitor.img` (`tools/romimage.py`), 8 low-RAM spots, every 4K block $8000-$FFFF classified RAM / ROM / VIDEO / undecoded against the jumper table in `MACHINE.md` | ~1 min | 2026-09-18: the fitted map ($8000-$CFFF RAM, $D000 undecoded/video, $E000-$FFFF ROM) |
-| `rom_verify.py [port] [--save]` | the 28C64 holds exactly the tree's ROM image; `--save` keeps the read-back as `rom-readback-<date>.bin` | ~30 s (blocks-1 firmware) | the monitor half **differs** until the tree's image (`ROM 2026-09-23B`, CF on P4/P5) is burned over the chip's `ROM 2026-09-23` - expected (`firmware/rom/README.md`) |
+| `rom_verify.py [port] [--save]` | the 28C64 holds exactly the tree's ROM image; `--save` keeps the read-back as `rom-readback-<date>.bin` | ~30 s (blocks-1 firmware) | the chip burned 2026-09-23 is the tree's image (`ROM 2026-09-23`, `firmware/rom/README.md`); a chip with the 2021 build differs in the monitor half - expected |
 | `memory_full_test.py [port] [--log F]` | A ROM; B address lines (unique byte at $0000 and at every 1<<n, read after all writes: an open or shorted address line shows in seconds); C RAM $0000-$7FFF and $8000-$CFFF address-derived pattern written in one sweep, verified in a second (retention); D the inverted pattern; E video RAM (both patterns, neighbour isolation, the block-0/9 write-through checks, read stability); F ROM again and nothing answers at $D800-$DFFF | ~20 min with blocks-1 (~10 h per byte) | `full-run-2026-09-21.log`: **14/14 PASS**, 53,248 cells x 2 patterns, 0 bad, in 0.3 h |
 
 The four logs beside them tell the day's story: `attempt1-linkdrop` (the USB port vanished mid-sweep, which is why `busdrv.py`
@@ -231,6 +231,6 @@ is not among this document's files and is left as it is.)
 | 2026-09-22 | `romcount` first build, then `romdiag` | found register card 1 missing (stage 2/9 = FF); card fitted | `tests/assembler/romcount/README.md`, `romdiag/README.md` |
 | 2026-09-22/23 | `romcount` (R3/TMP build) overnight from ROM | counting without a fault | `MACHINE.md` |
 
-Still owed on the bench (BACKLOG, `MACHINE.md`): burn `ROM 2026-09-23B` (the CF driver on P4/P5) and re-verify with
-`rom_verify.py`; the H-5 scope check on bus C3; the 6845 register-select fix on the video card. (`brur` and the ISA sweep
+Still owed on the bench (BACKLOG, `MACHINE.md`): a `rom_verify.py` read-back of the chip burned 2026-09-23; the H-5
+scope check on bus C3; the 6845 register-select fix on the video card. (`brur` and the ISA sweep
 ran on the machine in `tests/bench`, 14/14 on 2026-09-23.)

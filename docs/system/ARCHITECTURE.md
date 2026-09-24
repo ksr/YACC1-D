@@ -491,11 +491,9 @@ the port number into every step of an I/O record (`io.c` `setIo()`), so decode i
 On the I/O card (`hardware/cards/io/eagle/v1.1/IO V1.1.sch`; control-io review 3):
 
 - IC5 (74LS138) decodes `IO-ADDR0..2` into `-IO-SEL0..7`; the `IO-ADDR-HL` 2 × 3 header decides whether `IO-ADDR3`
-  must be low or high, i.e. whether the card answers P0–P7 or P8–PF (it is in the low half, `OS-PLAN.md`; the I/O card
-  v2.0 requires it, since its CompactFlash interface takes IC5's Y4/Y5 = P4/P5).
+  must be low or high, i.e. whether the card answers P0–P7 or P8–PF (it is in the low half, `OS-PLAN.md`).
 - Two 2 × 8 jumper blocks, `IO-ADDR` and `DATA-ADDR`, pick which `-IO-SELn` becomes `-IO-ADDRSEL` (the **control
-  port**) and which becomes `-IO-DATASEL` (the **data port**). In the machine they are P0 and P1 (`firmware/abi/README.md`);
-  on the I/O card v2.0 neither may be P4 or P5, the CF's ports.
+  port**) and which becomes `-IO-DATASEL` (the **data port**). In the machine they are P0 and P1 (`firmware/abi/README.md`).
   **To verify:** the jumper positions on the board (the schematic only shows the alternatives).
 - The strobes pass through open-collector 7406 inverters (IC8) with pull-ups RN2 (value blank in the design) to become
   `IO-RD`/`IO-WR`; every latch clocks on the trailing edge of `-IO-WR` and every reader drives the bus while `-IO-RD` is
@@ -529,11 +527,9 @@ read (3.3) — a software rule. The emulator implements exactly this latch (`y1u
 | P0 | I/O card control latch |
 | P1 | I/O card data port for the device selected in P0 |
 | P2 | nothing on the hardware (`-IO-SEL2` reaches only the header); the instruction-level emulator's console, and `y1ucemu` keeps it as a second console so `OUTA P2` programs print |
-| P3 | `-IO-SEL3` on the I/O card's header, unused; reserved to that card |
-| P4 | planned: CompactFlash register-select latch (ATA register 0–7 in bits 0–2, bit 3 = CF reset), on the I/O card v2.0 (IC5 Y4) |
-| P5 | planned: CompactFlash data, on the I/O card v2.0 (IC5 Y5). The `ROM 2026-09-23B` driver (not yet burned) and both emulators use P4/P5; the hardware is not built. P8/P9 until 2026-09-23 (`docs/cards/cf.md`) |
-| P6, P7 | `-IO-SEL6..7` on the I/O card's header, unused; reserved to that card |
-| P8, P9 | free (the CF's ports until 2026-09-23) |
+| P3–P7 | `-IO-SEL3..7` on the I/O card's header, unused; reserved to that card |
+| P8 | planned: CompactFlash register-select latch (ATA register 0–7 in bits 0–2, bit 3 = CF reset) |
+| P9 | planned: CompactFlash data (the ROM driver, `O` command and both emulators already use P8/P9; the hardware is not built: the CF card v1.0 circuit, planned 2026-09-24 onto the memory card, `docs/cards/cf.md`) |
 | PA, PB | planned: 6845 address/data on a video card v2 |
 | PC–PF | free (PS/2, RTC ... in the plan) |
 
@@ -646,7 +642,7 @@ Per `DOC-PLAN.md` rule 7 (`docs/isa/MICROCODE-REVIEW-NOTES.md`, `hardware/DESIGN
 | 1.1/4.1 | 17 bus lines driven regardless of `-BUS-EN`; the bus tester drives everything push-pull at boot | **open** (v2.2 "CPU off" switch in BACKLOG) |
 | 1.2 | counters drawn as 74LS192 (BCD), machine needs binary | **To verify** chip markings |
 | video | 6845 data register unreachable (RS = A0); 7416 outputs without pull-ups; E-clock one-shot | **open**, RS-to-A1 fix documented in `hardware/cards/video/docs/fix-6845-register-select.md` |
-| ROM | the burned monitor's `G` is `BRVR R7` (indirect); rebuilt as `JSRUR R7` in `firmware/rom/shipped/rom` | **to burn** |
+| ROM | the 2021 monitor's `G` was `BRVR R7` (indirect); rebuilt as `JSRUR R7` in `firmware/rom/shipped/rom` | **resolved** 2026-09-23 (`ROM 2026-09-23` burned) |
 
 ---
 
