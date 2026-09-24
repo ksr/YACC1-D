@@ -22,7 +22,7 @@
  * happens when the strobe goes away or the selection changes (the OR with the register select on the card).
  *
  * usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-l N]
- *   -c   attach a CompactFlash image (software/cfmodel.h: P4 = register select, P5 = data; created if missing)
+ *   -c   attach a CompactFlash image (software/cfmodel.h: P8 = register select, P9 = data; created if missing)
  *   -u   control store (default: firmware/microcode/ucode-generator2/test.hex relative to the executable)
  *   -m   load firmware/basic/basic.img + firmware/monitor/monitor.img (the ROM), as the other emulator does
  *   -f   load an Intel-hex image (repeatable; later files overwrite earlier ones)
@@ -57,7 +57,7 @@
 
 struct signal { char *name; int chip; int port; int bit; };
 #include "../../firmware/microcode/yaccsignaldata2.h"
-#include "../cfmodel.h"          /* the CompactFlash card on ports P4 (select) / P5 (data), -c image */
+#include "../cfmodel.h"          /* the CompactFlash card on ports P8 (select) / P9 (data), -c image */
 
 /* ---- control store ------------------------------------------------------------------------------------------ */
 static uint8_t ucode[256][64][8];

@@ -117,14 +117,14 @@ yacc1 -> Native
   114 f02f: 04 f5 54             JSR showaddr
   115 f032: 04 f5 e1             JSR show16
   116 f035: 04 f5 9c             JSR showregs
-  117 f038: 1f f7 5b             MVIW R7,CRLF
+  117 f038: 1f f7 5a             MVIW R7,CRLF
   118 f03b: 04 f6 68             JSR stringout
   119 f03e:             ;
   120 f03e:             ; show test code addr to use with go command
   121 f03e:             ;
   122 f03e: 1f f0 51             MVIW R7,tttt
   123 f041: 04 f5 54             JSR showaddr
-  124 f044: 1f f7 5b             MVIW R7,CRLF
+  124 f044: 1f f7 5a             MVIW R7,CRLF
   125 f047: 04 f6 68             JSR stringout
   126 f04a:             ;
   127 f04a:             ; if INPUT high start the monitor
@@ -136,7 +136,7 @@ yacc1 -> Native
   133 f051:             ; else run test/code below at completetion blink OUT LED jump to cmdloop
   134 f051:             ;
   135 f051:             tttt:
-  136 f051: 1f fc e5            MVIW R7,TESTMSG
+  136 f051: 1f fc e4            MVIW R7,TESTMSG
   137 f054: 04 f6 68            JSR stringout
   138 f057:             ;
   139 f057:             ; Tests to be run at startup
@@ -164,7 +164,7 @@ yacc1 -> Native
   161 f05b:             :
   162 f05b:             
   163 f05b:             cmdloop:
-  164 f05b: 1f f7 59          MVIW R7,PROMPT
+  164 f05b: 1f f7 58          MVIW R7,PROMPT
   165 f05e: 04 f6 68          JSR stringout
   166 f061:             ;
   167 f061:             ;
@@ -186,9 +186,9 @@ yacc1 -> Native
   183 f067: 04 f0 5a          jsr eat_nl
   184 f06a: 0d 48             LDTI 'H'
   185 f06c: aa f0 7e          BRNEQ testexamine
-  186 f06f: 1f f7 5b          MVIW R7,CRLF
+  186 f06f: 1f f7 5a          MVIW R7,CRLF
   187 f072: 04 f6 68          JSR stringout
-  188 f075: 1f f7 fb          MVIW R7,helpmenu
+  188 f075: 1f f7 fa          MVIW R7,helpmenu
   189 f078: 04 f6 68          JSR stringout
   190 f07b: a0 f0 5b          BR cmdloop
   191 f07e:             
@@ -234,14 +234,14 @@ yacc1 -> Native
   231 f0ce: 0d 0a             LDTI 0ah      ; emulator continue
   232 f0d0: a8 f0 e8          BREQ continue
   233 f0d3:             
-  234 f0d3: 1f f7 5b          MVIW R7,CRLF
+  234 f0d3: 1f f7 5a          MVIW R7,CRLF
   235 f0d6:             
   236 f0d6: 04 f6 68          JSR stringout
   237 f0d9:             
-  238 f0d9: 1f f7 5e          MVIW R7,ERROR
+  238 f0d9: 1f f7 5d          MVIW R7,ERROR
   239 f0dc: 04 f6 68          JSR stringout
   240 f0df:             
-  241 f0df: 1f f7 fb          MVIW R7,helpmenu
+  241 f0df: 1f f7 fa          MVIW R7,helpmenu
   242 f0e2: 04 f6 68          JSR stringout
   243 f0e5: a0 f0 5b          BR cmdloop
   244 f0e8:             ;
@@ -265,7 +265,7 @@ yacc1 -> Native
   262 f102:             ;
   263 f102:             ;      ERROR
   264 f102:             ;
-  265 f102: 1f f7 76           MVIW R7,CONTINUEERROR
+  265 f102: 1f f7 75           MVIW R7,CONTINUEERROR
   266 f105: 04 f6 68           JSR stringout
   267 f108: a0 f0 5b           BR cmdloop
   268 f10b:             
@@ -276,7 +276,7 @@ yacc1 -> Native
   273 f111: 00                DB 0
   274 f112:             
   275 f112:             cmd_basic:
-  276 f112: 1f f7 5b            MVIW R7,CRLF
+  276 f112: 1f f7 5a            MVIW R7,CRLF
   277 f115: 04 f6 68            JSR stringout
   278 f118: 04 e0 10           jsr basic_run
   279 f11b: a0 f0 5b           BR cmdloop
@@ -288,7 +288,7 @@ yacc1 -> Native
   285 f11e:                     ;until CR
   286 f11e:                     ;be sure line ends with a NULL or CR
   287 f11e:                     ;what does parse require???
-  288 f11e: 1f f7 ed            MVIW R7,BASIC_PARSEMSG
+  288 f11e: 1f f7 ec            MVIW R7,BASIC_PARSEMSG
   289 f121: 04 f6 68            JSR stringout
   290 f124:             
   291 f124: 1b 0f 80            mviw r3,line_buffer
@@ -315,19 +315,19 @@ yacc1 -> Native
   312 f14c: a0 f0 5b            BR CMDLOOP
   313 f14f:             
   314 f14f:             cmd_basiclist:
-  315 f14f: 1f f7 5b            MVIW R7,CRLF
+  315 f14f: 1f f7 5a            MVIW R7,CRLF
   316 f152: 04 f6 68            JSR stringout
   317 f155: 04 e0 00            JSR basic_list
   318 f158: a0 f0 5b            BR cmdloop
   319 f15b:             
   320 f15b:             cmd_basic_copy:
-  321 f15b: 1f f7 5b            MVIW R7,CRLF
+  321 f15b: 1f f7 5a            MVIW R7,CRLF
   322 f15e: 04 f6 68            JSR stringout
   323 f161: 04 e0 60            JSR basic_copy
   324 f164: a0 f0 5b            BR cmdloop
   325 f167:             
   326 f167:             cmd_basic_test:
-  327 f167: 1f f7 5b            MVIW R7,CRLF
+  327 f167: 1f f7 5a            MVIW R7,CRLF
   328 f16a: 04 f6 68            JSR stringout
   329 f16d: 04 e0 30            JSR basic_test
   330 f170: a0 f0 5b            BR cmdloop
@@ -337,11 +337,11 @@ yacc1 -> Native
   334 f173: 0d 03              LDTI BLOCKMODE
   335 f175: e7 0f 00           STT monmode
   336 f178:             
-  337 f178: 1f f7 98           MVIW R7,DUMPBLOCKMSG
+  337 f178: 1f f7 97           MVIW R7,DUMPBLOCKMSG
   338 f17b: 04 f6 68           JSR stringout
   339 f17e: 04 f5 0f           jsr getaddress
   340 f181: ef 0f 02           str r7,continue_addr
-  341 f184: 1f f7 5b           MVIW R7,CRLF
+  341 f184: 1f f7 5a           MVIW R7,CRLF
   342 f187: 04 f6 68           JSR stringout
   343 f18a:             
   344 f18a:             dumpblockcont:
@@ -356,11 +356,11 @@ yacc1 -> Native
   353 f196:             ;       MVIB R6,DUMPMODE
   354 f196: 0d 02              LDTI DUMPMODE
   355 f198: e7 0f 00           STT monmode
-  356 f19b: 1f f7 8b           MVIW R7,DUMPMSG
+  356 f19b: 1f f7 8a           MVIW R7,DUMPMSG
   357 f19e: 04 f6 68           JSR stringout
   358 f1a1: 04 f5 0f           jsr getaddress
   359 f1a4: ef 0f 02           str r7,continue_addr
-  360 f1a7: 1f f7 5b           MVIW R7,CRLF
+  360 f1a7: 1f f7 5a           MVIW R7,CRLF
   361 f1aa: 04 f6 68           JSR stringout
   362 f1ad:             
   363 f1ad:             dumpcont:
@@ -374,11 +374,11 @@ yacc1 -> Native
   371 f1bc:             ;       MVIB R6,EXAMINEMODE
   372 f1bc: 0d 01             LDTI EXAMINEMODE
   373 f1be: e7 0f 00          STT monmode
-  374 f1c1: 1f f7 cc          MVIW R7,EXAMINEMSG
+  374 f1c1: 1f f7 cb          MVIW R7,EXAMINEMSG
   375 f1c4: 04 f6 68          JSR stringout
   376 f1c7: 04 f5 0f          jsr getaddress
   377 f1ca: ef 0f 02          str r7,continue_addr
-  378 f1cd: 1f f7 5b          MVIW R7,CRLF
+  378 f1cd: 1f f7 5a          MVIW R7,CRLF
   379 f1d0: 04 f6 68          JSR stringout
   380 f1d3:             
   381 f1d3:             examinecont:
@@ -420,7 +420,7 @@ yacc1 -> Native
   417 f215: a0 f1 d3          BR examinecont
   418 f218:             
   419 f218:             examdone:
-  420 f218: 1f f7 5b          MVIW R7,CRLF
+  420 f218: 1f f7 5a          MVIW R7,CRLF
   421 f21b: 04 f6 68          JSR stringout
   422 f21e: a0 f0 5b          BR cmdloop
   423 f221:             
@@ -429,17 +429,17 @@ yacc1 -> Native
   426 f221: 0d 04              LDTI FILLMODE
   427 f223: e7 0f 00           STT monmode
   428 f226:             
-  429 f226: 1f f7 ab           MVIW R7,FILLMSG
+  429 f226: 1f f7 aa           MVIW R7,FILLMSG
   430 f229: 04 f6 68           JSR stringout
   431 f22c: 04 f5 0f           jsr getaddress
   432 f22f: ef 0f 02           STR r7,continue_addr
-  433 f232: 1f f7 5b           MVIW R7,CRLF
+  433 f232: 1f f7 5a           MVIW R7,CRLF
   434 f235: 04 f6 68           JSR stringout
   435 f238:             
   436 f238:             fillcont:
   437 f238: f7 0f 02          ldr r7,continue_addr
   438 f23b: 04 f5 54          jsr showaddr
-  439 f23e: 1f f7 5b          MVIW R7,CRLF
+  439 f23e: 1f f7 5a          MVIW R7,CRLF
   440 f241: 04 f6 68          JSR stringout
   441 f244: f7 0f 02          ldr r7,continue_addr
   442 f247:             morefill:
@@ -458,7 +458,7 @@ yacc1 -> Native
   455 f261:             
   456 f261:             
   457 f261:             go:
-  458 f261: 1f f7 be          MVIW R7,GOMSG
+  458 f261: 1f f7 bd          MVIW R7,GOMSG
   459 f264: 04 f6 68          JSR stringout
   460 f267: 04 f5 0f          jsr getaddress
   461 f26a:             ;
@@ -480,7 +480,7 @@ yacc1 -> Native
   477 f27a:             
   478 f27a:             ;
   479 f27a:             ; ---- CompactFlash driver (YACC1-D 2026-09-22) -----------------------------------------------------------
-  480 f27a:             ; The card sits on two ports: P4 = register-select latch (ATA task-file register 0-7), P5 = data (on the I/O card v2.0; P8/P9 until 2026-09-23).
+  480 f27a:             ; The card sits on two ports: P8 = register-select latch (ATA task-file register 0-7), P9 = data.
   481 f27a:             ; 8-bit True IDE mode. Registers: 0 data, 1 error/feature, 2 sector count, 3-5 LBA0-2, 6 drive/head, 7 status/cmd.
   482 f27a:             ; Entry points (also BIOS vectors at 0FFECh..): cfinit  ACC = 0 ok / 1 error (absent card times out);
   483 f27a:             ;   cfread   sector CFLBA0..2 -> (R7), R7 += 512, ACC = 0 ok / 1 error;   cfwrite  (R7) -> sector, R7 += 512, same;
@@ -499,8 +499,8 @@ yacc1 -> Native
   496 f27a:             cfwait:
   497 f27a: 1e 00 00            MVIW R6,0
   498 f27d:             cfwaitl:
-  499 f27d: 74 07               OUTI P4,CFSEL_CMD
-  500 f27f: 95                  INP P5
+  499 f27d: 78 07               OUTI P8,CFSEL_CMD
+  500 f27f: 99                  INP P9
   501 f280: b3 80               ANDI 080H
   502 f282: a1 f2 8e            BRZ cfwaitd
   503 f285: 5e                  DECR R6
@@ -509,16 +509,16 @@ yacc1 -> Native
   506 f28a: 2e                  MVRHA R6
   507 f28b: a2 f2 7d            BRNZ cfwaitl
   508 f28e:             cfwaitd:
-  509 f28e: 74 07               OUTI P4,CFSEL_CMD
-  510 f290: 95                  INP P5
+  509 f28e: 78 07               OUTI P8,CFSEL_CMD
+  510 f290: 99                  INP P9
   511 f291: 05                  RET
   512 f292:             ;
   513 f292:             ; wait until DRQ (bit 3), bounded; returns the status in ACC
   514 f292:             cfdrq:
   515 f292: 1e 00 00            MVIW R6,0
   516 f295:             cfdrql:
-  517 f295: 74 07               OUTI P4,CFSEL_CMD
-  518 f297: 95                  INP P5
+  517 f295: 78 07               OUTI P8,CFSEL_CMD
+  518 f297: 99                  INP P9
   519 f298: b3 08               ANDI 008H
   520 f29a: a2 f2 a6            BRNZ cfdrqd
   521 f29d: 5e                  DECR R6
@@ -527,51 +527,51 @@ yacc1 -> Native
   524 f2a2: 2e                  MVRHA R6
   525 f2a3: a2 f2 95            BRNZ cfdrql
   526 f2a6:             cfdrqd:
-  527 f2a6: 74 07               OUTI P4,CFSEL_CMD
-  528 f2a8: 95                  INP P5
+  527 f2a6: 78 07               OUTI P8,CFSEL_CMD
+  528 f2a8: 99                  INP P9
   529 f2a9: 05                  RET
   530 f2aa:             ;
   531 f2aa:             cfinit:
   532 f2aa: 04 f2 7a            JSR cfwait
-  533 f2ad: 74 06               OUTI P4,CFSEL_HEAD
-  534 f2af: 75 e0               OUTI P5,0E0H            ; LBA mode, drive 0
-  535 f2b1: 74 01               OUTI P4,CFSEL_FEAT
-  536 f2b3: 75 01               OUTI P5,001H            ; feature 1: 8-bit transfers
-  537 f2b5: 74 07               OUTI P4,CFSEL_CMD
-  538 f2b7: 75 ef               OUTI P5,0EFH            ; SET FEATURES
+  533 f2ad: 78 06               OUTI P8,CFSEL_HEAD
+  534 f2af: 79 e0               OUTI P9,0E0H            ; LBA mode, drive 0
+  535 f2b1: 78 01               OUTI P8,CFSEL_FEAT
+  536 f2b3: 79 01               OUTI P9,001H            ; feature 1: 8-bit transfers
+  537 f2b5: 78 07               OUTI P8,CFSEL_CMD
+  538 f2b7: 79 ef               OUTI P9,0EFH            ; SET FEATURES
   539 f2b9: 04 f2 7a            JSR cfwait
   540 f2bc: b3 01               ANDI 001H               ; ERR bit; an absent card reads FFh and times out -> 1
   541 f2be: 05                  RET
   542 f2bf:             ;
   543 f2bf:             ; task file <- CFLBA0..2, LBA mode, one sector
   544 f2bf:             cfsetl:
-  545 f2bf: 74 03               OUTI P4,CFSEL_LBA0
+  545 f2bf: 78 03               OUTI P8,CFSEL_LBA0
   546 f2c1: e4 0f 10            LDA CFLBA0
-  547 f2c4: 65                  OUTA P5
-  548 f2c5: 74 04               OUTI P4,CFSEL_LBA1
+  547 f2c4: 69                  OUTA P9
+  548 f2c5: 78 04               OUTI P8,CFSEL_LBA1
   549 f2c7: e4 0f 11            LDA CFLBA1
-  550 f2ca: 65                  OUTA P5
-  551 f2cb: 74 05               OUTI P4,CFSEL_LBA2
+  550 f2ca: 69                  OUTA P9
+  551 f2cb: 78 05               OUTI P8,CFSEL_LBA2
   552 f2cd: e4 0f 12            LDA CFLBA2
-  553 f2d0: 65                  OUTA P5
-  554 f2d1: 74 06               OUTI P4,CFSEL_HEAD
-  555 f2d3: 75 e0               OUTI P5,0E0H
-  556 f2d5: 74 02               OUTI P4,CFSEL_SCNT
-  557 f2d7: 75 01               OUTI P5,1
+  553 f2d0: 69                  OUTA P9
+  554 f2d1: 78 06               OUTI P8,CFSEL_HEAD
+  555 f2d3: 79 e0               OUTI P9,0E0H
+  556 f2d5: 78 02               OUTI P8,CFSEL_SCNT
+  557 f2d7: 79 01               OUTI P9,1
   558 f2d9: 05                  RET
   559 f2da:             ;
   560 f2da:             cfread:
   561 f2da: 04 f2 7a            JSR cfwait
   562 f2dd: 04 f2 bf            JSR cfsetl
-  563 f2e0: 74 07               OUTI P4,CFSEL_CMD
-  564 f2e2: 75 20               OUTI P5,020H            ; READ SECTORS
+  563 f2e0: 78 07               OUTI P8,CFSEL_CMD
+  564 f2e2: 79 20               OUTI P9,020H            ; READ SECTORS
   565 f2e4: 04 f2 92            JSR cfdrq
   566 f2e7: b3 08               ANDI 008H
   567 f2e9: a1 f3 00            BRZ cferr
-  568 f2ec: 74 00               OUTI P4,CFSEL_DATA
+  568 f2ec: 78 00               OUTI P8,CFSEL_DATA
   569 f2ee: 1e 02 00            MVIW R6,512
   570 f2f1:             cfrdl:
-  571 f2f1: 95                  INP P5
+  571 f2f1: 99                  INP P9
   572 f2f2: 4f                  STAVR R7
   573 f2f3: 57                  INCR R7
   574 f2f4: 5e                  DECR R6
@@ -588,16 +588,16 @@ yacc1 -> Native
   585 f303:             cfwrite:
   586 f303: 04 f2 7a            JSR cfwait
   587 f306: 04 f2 bf            JSR cfsetl
-  588 f309: 74 07               OUTI P4,CFSEL_CMD
-  589 f30b: 75 30               OUTI P5,030H            ; WRITE SECTORS
+  588 f309: 78 07               OUTI P8,CFSEL_CMD
+  589 f30b: 79 30               OUTI P9,030H            ; WRITE SECTORS
   590 f30d: 04 f2 92            JSR cfdrq
   591 f310: b3 08               ANDI 008H
   592 f312: a1 f3 00            BRZ cferr
-  593 f315: 74 00               OUTI P4,CFSEL_DATA
+  593 f315: 78 00               OUTI P8,CFSEL_DATA
   594 f317: 1e 02 00            MVIW R6,512
   595 f31a:             cfwrl:
   596 f31a: 47                  LDAVR R7
-  597 f31b: 65                  OUTA P5
+  597 f31b: 69                  OUTA P9
   598 f31c: 57                  INCR R7
   599 f31d: 5e                  DECR R6
   600 f31e: 26                  MVRLA R6
@@ -970,7 +970,7 @@ yacc1 -> Native
   946 f59c:             showregs:
   947 f59c: 07 07                   pushr r7
   948 f59e: 07 07                   pushr r7
-  949 f5a0: 1f f7 5b                MVIW R7,CRLF
+  949 f5a0: 1f f7 5a                MVIW R7,CRLF
   950 f5a3: 04 f6 68                JSR stringout
   951 f5a6: 0f 70                   MOVRR r0,r7
   952 f5a8: 04 f5 54                jsr showaddr
@@ -994,7 +994,7 @@ yacc1 -> Native
   970 f5d4: 0a                      pop
   971 f5d5: 04 f6 34                jsr showcarry
   972 f5d8:             
-  973 f5d8: 1f f7 5b                MVIW R7,CRLF
+  973 f5d8: 1f f7 5a                MVIW R7,CRLF
   974 f5db: 04 f6 68                JSR stringout
   975 f5de: 08 70                   popr r7
   976 f5e0: 05                      RET
@@ -1362,55 +1362,55 @@ yacc1 -> Native
             4d 20 32 30 
             32 36 2d 30 
             39 2d 32 33 
-            42 0a 0d 00 hello:  DB 0ah,0dh,"YACC 2020: hello world  ROM 2026-09-23B",0ah,0dh,0    ; the build date tells ROMs apart at a glance
- 1332 f759: 3e 00       PROMPT: DB ">",0
- 1333 f75b: 0a 0d 00    CRLF: DB 0ah,0dh,0
- 1334 f75e: 55 4e 52 45 
+            0a 0d 00    hello:  DB 0ah,0dh,"YACC 2020: hello world  ROM 2026-09-23",0ah,0dh,0    ; the build date tells ROMs apart at a glance
+ 1332 f758: 3e 00       PROMPT: DB ">",0
+ 1333 f75a: 0a 0d 00    CRLF: DB 0ah,0dh,0
+ 1334 f75d: 55 4e 52 45 
             43 4f 47 49 
             4e 49 5a 45 
             44 20 43 4f 
             4d 4d 41 4e 
             44 0a 0d 00 ERROR: DB "UNRECOGINIZED COMMAND",0ah,0dh,0
- 1335 f776: 43 4f 4e 54 
+ 1335 f775: 43 4f 4e 54 
             49 4e 55 45 
             20 43 4d 44 
             20 45 52 52 
             4f 52 0a 0d 
             00          CONTINUEERROR: DB "CONTINUE CMD ERROR",0ah,0dh,0
- 1336 f78b: 0a 0d 44 55 
+ 1336 f78a: 0a 0d 44 55 
             4d 50 20 41 
             44 44 52 3a 
             00          DUMPMSG: DB 0ah,0dh,"DUMP ADDR:",0
- 1337 f798: 0a 0d 44 55 
+ 1337 f797: 0a 0d 44 55 
             4d 50 20 42 
             4c 4f 43 4b 
             20 41 44 44 
             52 3a 00    DUMPBLOCKMSG: DB 0ah,0dh,"DUMP BLOCK ADDR:",0
- 1338 f7ab: 0a 0d 46 49 
+ 1338 f7aa: 0a 0d 46 49 
             4c 4c 20 42 
             4c 4f 43 4b 
             20 41 44 44 
             52 3a 00    FILLMSG: DB 0ah,0dh,"FILL BLOCK ADDR:",0
- 1339 f7be: 0a 0d 47 4f 
+ 1339 f7bd: 0a 0d 47 4f 
             20 41 44 44 
             52 45 53 53 
             3a 00       GOMSG: DB 0ah,0dh,"GO ADDRESS:",0
- 1340 f7cc: 0a 0d 45 58 
+ 1340 f7cb: 0a 0d 45 58 
             41 4d 49 4e 
             45 20 41 44 
             44 52 45 53 
             53 3a 00    EXAMINEMSG: DB 0ah,0Dh,"EXAMINE ADDRESS:",0
- 1341 f7df: 43 4f 4e 54 
+ 1341 f7de: 43 4f 4e 54 
             49 4e 55 45 
             20 4d 4f 44 
             45 00       CONTMSG: DB "CONTINUE MODE",0
- 1342 f7ed: 0a 0d 45 4e 
+ 1342 f7ec: 0a 0d 45 4e 
             54 45 52 20 
             4c 49 4e 45 
             3a 00       BASIC_PARSEMSG: DB 0ah,0dh,"Enter Line:",0
- 1343 f7fb:             ;
- 1344 f7fb:             helpmenu:
- 1345 f7fb: 30 20 20 20 
+ 1343 f7fa:             ;
+ 1344 f7fa:             helpmenu:
+ 1345 f7fa: 30 20 20 20 
             20 20 2d 20 
             45 58 49 54 
             20 28 45 4d 
@@ -1418,14 +1418,14 @@ yacc1 -> Native
             4f 52 20 4f 
             4e 4c 59 29 
             0a 0d       DB "0     - Exit (emulator only)",0ah,0dh
- 1346 f819: 48 20 20 20 
+ 1346 f818: 48 20 20 20 
             20 20 2d 20 
             54 48 49 53 
             20 48 45 4c 
             50 20 4d 45 
             4e 55 0a 0d 
             0a 0d       DB "H     - This help menu",0ah,0dh,0ah,0dh
- 1347 f833: 42 20 41 41 
+ 1347 f832: 42 20 41 41 
             41 41 2d 20 
             53 48 4f 57 
             20 32 35 36 
@@ -1438,14 +1438,14 @@ yacc1 -> Native
             45 20 41 4c 
             49 47 4e 45 
             44 29       DB "B AAAA- Show 256 bytes of memory (16 byte aligned)"
- 1348 f865: 20 43 52 20 
+ 1348 f864: 20 43 52 20 
             44 49 53 50 
             4c 41 59 20 
             4e 45 58 54 
             20 32 35 36 
             20 42 59 54 
             45 53 0a 0d DB " CR display next 256 bytes",0ah,0dh
- 1349 f881: 43 20 20 20 
+ 1349 f880: 43 20 20 20 
             20 20 2d 20 
             43 4f 50 59 
             20 42 41 53 
@@ -1460,7 +1460,7 @@ yacc1 -> Native
             20 42 55 46 
             46 45 52 0a 
             0d          DB "C     - Copy BASIC test program into interpreter buffer",0ah,0dh
- 1350 f8ba: 44 20 41 41 
+ 1350 f8b9: 44 20 41 41 
             41 41 2d 20 
             53 48 4f 57 
             20 31 36 20 
@@ -1473,14 +1473,14 @@ yacc1 -> Native
             59 54 45 20 
             41 4c 49 47 
             4e 45 44 29 DB "D AAAA- Show 16 bytes of memory at (16 byte aligned)"
- 1351 f8ee: 20 43 52 20 
+ 1351 f8ed: 20 43 52 20 
             44 49 53 50 
             4c 41 59 20 
             4e 45 58 54 
             20 31 36 20 
             42 59 54 45 
             53 0a 0d    DB " CR display next 16 bytes",0ah,0dh
- 1352 f909: 45 20 41 41 
+ 1352 f908: 45 20 41 41 
             41 41 2d 20 
             53 48 4f 57 
             20 43 4f 4e 
@@ -1495,7 +1495,7 @@ yacc1 -> Native
             41 41 41 3a 
             58 58 29 0a 
             0d          DB "E AAAA- show contents of location AAAA (Output AAAA:XX)",0ah,0dh
- 1353 f942: 20 20 20 20 
+ 1353 f941: 20 20 20 20 
             20 20 20 20 
             49 46 20 46 
             4f 4c 4c 4f 
@@ -1516,7 +1516,7 @@ yacc1 -> Native
             49 53 50 4c 
             41 59 29 0a 
             0d          DB "        if followed by ASCII-HEX modify location with new value (and redisplay)",0ah,0DH
- 1354 f993: 20 20 20 20 
+ 1354 f992: 20 20 20 20 
             20 20 20 20 
             49 46 20 46 
             4f 4c 4c 4f 
@@ -1529,7 +1529,7 @@ yacc1 -> Native
             4f 43 41 54 
             49 4f 4e 0a 
             0d          DB "        if followed by CR display next location",0ah,0dh
- 1355 f9c4: 46 20 41 41 
+ 1355 f9c3: 46 20 41 41 
             41 41 20 20 
             46 49 4c 4c 
             20 43 4f 4e 
@@ -1552,7 +1552,7 @@ yacc1 -> Native
             29 20 57 49 
             54 48 20 30 
             0a 0d       DB "F AAAA  Fill contents 256 bytes of memory at address AAAA with 0(16 byte aligned) with 0",0ah,0dh
- 1356 fa1e: 20 20 20 20 
+ 1356 fa1d: 20 20 20 20 
             20 20 20 20 
             49 46 20 46 
             4f 4c 4c 4f 
@@ -1564,7 +1564,7 @@ yacc1 -> Native
             32 35 36 20 
             42 59 54 45 
             53 0a 0d    DB "        if followed by CR fill next 256 bytes",0ah,0dh
- 1357 fa4d: 47 20 41 41 
+ 1357 fa4c: 47 20 41 41 
             41 41 2d 20 
             4a 55 4d 50 
             20 54 4f 20 
@@ -1576,7 +1576,7 @@ yacc1 -> Native
             4e 47 20 41 
             54 20 41 41 
             41 41 0a 0d DB "G AAAA- Jump to (and execute) starting at AAAA",0ah,0dh
- 1358 fa7d: 20 20 20 20 
+ 1358 fa7c: 20 20 20 20 
             20 20 20 20 
             50 52 4f 47 
             52 41 4d 20 
@@ -1591,16 +1591,16 @@ yacc1 -> Native
             20 4a 53 52 
             55 52 20 52 
             37 29 0a 0d DB "        Program ends with RET (it is called with JSRUR R7)",0ah,0dh
- 1359 fab9: 49 20 20 20 
+ 1359 fab8: 49 20 20 20 
             20 20 2d 20 
             42 41 53 49 
             43 0a 0d    DB "I     - BASIC",0ah,0dh
- 1360 fac8: 4c 20 20 20 
+ 1360 fac7: 4c 20 20 20 
             20 20 2d 20 
             4c 49 53 54 
             20 42 41 53 
             49 43 0a 0d DB "L     - List BASIC",0ah,0dh
- 1361 fadc: 50 20 20 20 
+ 1361 fadb: 50 20 20 20 
             20 20 2d 20 
             45 4e 54 45 
             52 20 50 52 
@@ -1610,13 +1610,13 @@ yacc1 -> Native
             4f 20 42 41 
             53 49 43 0a 
             0d          DB "P     - Enter program line to BASIC",0ah,0dh
- 1362 fb01: 52 20 20 20 
+ 1362 fb00: 52 20 20 20 
             20 20 2d 20 
             53 48 4f 57 
             20 52 45 47 
             49 53 54 45 
             52 53 0a 0d DB "R     - Show registers",0ah,0dh
- 1363 fb19: 4f 20 20 20 
+ 1363 fb18: 4f 20 20 20 
             20 20 2d 20 
             42 4f 4f 54 
             20 54 48 45 
@@ -1635,7 +1635,7 @@ yacc1 -> Native
             20 31 30 30 
             30 48 29 0a 
             0d          DB "O     - bOot the OS from the CF card (LBA 1.., OSCNT sectors, to 1000h)",0ah,0DH
- 1364 fb62: 59 20 20 20 
+ 1364 fb61: 59 20 20 20 
             20 20 2d 20 
             52 55 4e 20 
             42 41 53 49 
@@ -1643,7 +1643,7 @@ yacc1 -> Native
             53 54 20 43 
             4f 44 45 0a 
             0d          DB "Y     - run BASIC test code",0ah,0DH
- 1365 fb7f: 3a 20 20 20 
+ 1365 fb7e: 3a 20 20 20 
             20 20 2d 20 
             49 4e 54 45 
             4c 2d 48 45 
@@ -1665,7 +1665,7 @@ yacc1 -> Native
             44 44 52 45 
             53 53 29 0a 
             0d          DB ":     - Intel-hex load (send a .img; . per record, ? bad record, ! refused address)",0ah,0DH
- 1366 fbd4: 5a 20 20 20 
+ 1366 fbd3: 5a 20 20 20 
             20 20 2d 20 
             52 55 4e 20 
             50 52 4f 47 
@@ -1676,61 +1676,61 @@ yacc1 -> Native
             4e 54 45 52 
             50 52 45 54 
             45 52 0a 0d DB "Z     - Run program with Basic interpreter",0ah,0DH
- 1367 fc00: 00          DB 0
- 1368 fc01:             ;
- 1369 fc01:             ; TEST HELP MESSAGES
- 1370 fc01:             ;
- 1371 fc01: 43 4f 4d 50 
+ 1367 fbff: 00          DB 0
+ 1368 fc00:             ;
+ 1369 fc00:             ; TEST HELP MESSAGES
+ 1370 fc00:             ;
+ 1371 fc00: 43 4f 4d 50 
             41 52 45 20 
             54 45 53 54 
             53 0a 0d 00 COMPAREHELP: DB "Compare Tests",0ah,0dh,0
- 1372 fc11: 52 49 4e 47 
+ 1372 fc10: 52 49 4e 47 
             20 53 48 49 
             46 54 20 4c 
             45 46 54 0a 
             0d 00       RSHIFT_LEFTHELP: DB "Ring Shift Left",0ah,0dh,0
- 1373 fc23: 52 49 4e 47 
+ 1373 fc22: 52 49 4e 47 
             20 53 48 49 
             46 54 20 52 
             49 47 48 54 
             0a 0d 00    RSHIFT_RIGHTHELP: DB "Ring Shift Right",0ah,0dh,0
- 1374 fc36: 50 52 4f 50 
+ 1374 fc35: 50 52 4f 50 
             20 53 48 49 
             46 54 20 52 
             49 47 48 54 
             0a 0d 00    PSHIFT_RIGHTHELP: DB "PROP Shift Right",0ah,0dh,0
- 1375 fc49: 43 41 52 52 
+ 1375 fc48: 43 41 52 52 
             59 20 53 48 
             49 46 54 20 
             4c 45 46 54 
             0a 0d 00    CSHIFT_LEFTHELP: DB "CARRY Shift Left",0ah,0dh,0
- 1376 fc5c: 43 41 52 52 
+ 1376 fc5b: 43 41 52 52 
             59 20 53 48 
             49 46 54 20 
             52 49 47 48 
             54 0a 0d 00 CSHIFT_RIGHTHELP: DB "CARRY Shift Right",0ah,0dh,0
- 1377 fc70: 53 55 42 54 
+ 1377 fc6f: 53 55 42 54 
             52 41 43 54 
             0a 0d 00    SUBHELP: DB "SUBTRACT",0ah,0dh,0
- 1378 fc7b: 41 43 43 55 
+ 1378 fc7a: 41 43 43 55 
             4d 55 4c 41 
             54 4f 52 20 
             54 45 53 54 
             0a 0d 00    accumhelp: DB "accumulator test",0ah,0dh,0
- 1379 fc8e: 50 55 53 48 
+ 1379 fc8d: 50 55 53 48 
             20 50 4f 50 
             20 45 4e 54 
             45 52 20 33 
             20 4e 55 4d 
             42 45 52 53 
             0a 0d 00    PUSHPOPHELP: DB "Push Pop enter 3 numbers",0ah,0dh,0
- 1380 fca9: 4f 52 20 54 
+ 1380 fca8: 4f 52 20 54 
             4d 50 20 52 
             45 47 49 53 
             54 45 52 20 
             54 45 53 54 
             53 0a 0d 00 ORTHELP: DB "OR Tmp register tests",0ah,0dh,0
- 1381 fcc1: 41 44 44 20 
+ 1381 fcc0: 41 44 44 20 
             49 4d 4d 45 
             44 49 41 54 
             45 20 30 32 
@@ -1739,92 +1739,92 @@ yacc1 -> Native
             55 54 20 4e 
             55 4d 42 45 
             52 0a 0d 00 ADDIHELP: DB "Add immediate 02h to input number",0ah,0dh,0
- 1382 fce5: 52 55 4e 20 
+ 1382 fce4: 52 55 4e 20 
             54 45 53 54 
             20 43 4f 44 
             45 0a 0d 00 TESTMSG: DB "Run test code",0ah,0dh,0
- 1383 fcf5:             
- 1384 fcf5:             
- 1385 fcf5:             
- 1386 fcf5:             ;
- 1387 fcf5:             ; OLD
- 1388 fcf5:             ;
- 1389 fcf5:             ;
- 1390 fcf5:             ;LCD
- 1391 fcf5:             ;
- 1392 fcf5:             ;xlcdtest:
- 1393 fcf5:             ;        OUTI P0,(LCDENABLE)
- 1394 fcf5:             
- 1395 fcf5:             ;        MVIW R3,1fFFh
- 1396 fcf5:             ;xdelay0:
- 1397 fcf5:             ;        DECR R3
- 1398 fcf5:             ;        MVRHA R3
- 1399 fcf5:             ;        BRNZ xdelay0
- 1400 fcf5:             
- 1401 fcf5:             ;        OUTI P1,3CH
- 1402 fcf5:             
- 1403 fcf5:             ;        MVIW R3,1fFFh
- 1404 fcf5:             ;xdelay1:
- 1405 fcf5:             ;        DECR R3
- 1406 fcf5:             ;        MVRHA R3
- 1407 fcf5:             ;        BRNZ xdelay1
- 1408 fcf5:             
- 1409 fcf5:             ;        OUTI P1,01H
- 1410 fcf5:             
- 1411 fcf5:             ;        MVIW R3,1fFFh
- 1412 fcf5:             ;xdelay2:
- 1413 fcf5:             ;        DECR R3
- 1414 fcf5:             ;        MVRHA R3
- 1415 fcf5:             ;        BRNZ xdelay2
- 1416 fcf5:             
- 1417 fcf5:             ;        OUTI P1,0FH
- 1418 fcf5:             
- 1419 fcf5:             ;        MVIW R3,1fFFh
- 1420 fcf5:             ;xdelay3:
- 1421 fcf5:             ;        DECR R3
- 1422 fcf5:             ;        MVRHA R3
- 1423 fcf5:             ;        BRNZ xdelay3
- 1424 fcf5:             
- 1425 fcf5:             ;        OUTI P0,(LCDENABLE!LCDREGISTER)
- 1426 fcf5:             
- 1427 fcf5:             ;        MVIW R3,1fFFh
- 1428 fcf5:             ;xdelay4:
- 1429 fcf5:             ;        DECR R3
- 1430 fcf5:             ;        MVRHA R3
- 1431 fcf5:             ;        BRNZ xdelay4
- 1432 fcf5:             
- 1433 fcf5:             ;        OUTI P1,'A'
- 1434 fcf5:             
- 1435 fcf5:             ;xdelay5:
- 1436 fcf5:             ;        DECR R3
- 1437 fcf5:             ;        MVRHA R3
- 1438 fcf5:             ;        BRNZ xdelay5
- 1439 fcf5:             
- 1440 fcf5:             ;        OUTI P1,'B'
- 1441 fcf5:             
- 1442 fcf5:             ;xaddtest:
- 1443 fcf5:             ;      OUTI  P0,(SWITCHLED)
- 1444 fcf5:             ;      INP   P1
- 1445 fcf5:             ;      ADDI  001H
- 1446 fcf5:             ;      OUTA  P1
- 1447 fcf5:             
- 1448 fcf5:             ;xandtest:
- 1449 fcf5:             ;      OUTI  P0,(SWITCHLED)
- 1450 fcf5:             ;      INP   P1
- 1451 fcf5:             ;      ANDI  055H
- 1452 fcf5:             ;      OUTA  P1
- 1453 fcf5:             
- 1454 fcf5:             ;xxortest:
- 1455 fcf5:             ;     OUTI  P0,(SWITCHLED)
- 1456 fcf5:             ;     INP   P1
- 1457 fcf5:             ;     XORI  055H
- 1458 fcf5:             ;     OUTA  P1
- 1459 fcf5:             ;      JSRUR R2
- 1460 fcf5:             
- 1461 fcf5:             ;
- 1462 fcf5:             ; Interupt sevice routine
- 1463 fcf5:             ;
- 1464 fcf5:               org 0ff90h
+ 1383 fcf4:             
+ 1384 fcf4:             
+ 1385 fcf4:             
+ 1386 fcf4:             ;
+ 1387 fcf4:             ; OLD
+ 1388 fcf4:             ;
+ 1389 fcf4:             ;
+ 1390 fcf4:             ;LCD
+ 1391 fcf4:             ;
+ 1392 fcf4:             ;xlcdtest:
+ 1393 fcf4:             ;        OUTI P0,(LCDENABLE)
+ 1394 fcf4:             
+ 1395 fcf4:             ;        MVIW R3,1fFFh
+ 1396 fcf4:             ;xdelay0:
+ 1397 fcf4:             ;        DECR R3
+ 1398 fcf4:             ;        MVRHA R3
+ 1399 fcf4:             ;        BRNZ xdelay0
+ 1400 fcf4:             
+ 1401 fcf4:             ;        OUTI P1,3CH
+ 1402 fcf4:             
+ 1403 fcf4:             ;        MVIW R3,1fFFh
+ 1404 fcf4:             ;xdelay1:
+ 1405 fcf4:             ;        DECR R3
+ 1406 fcf4:             ;        MVRHA R3
+ 1407 fcf4:             ;        BRNZ xdelay1
+ 1408 fcf4:             
+ 1409 fcf4:             ;        OUTI P1,01H
+ 1410 fcf4:             
+ 1411 fcf4:             ;        MVIW R3,1fFFh
+ 1412 fcf4:             ;xdelay2:
+ 1413 fcf4:             ;        DECR R3
+ 1414 fcf4:             ;        MVRHA R3
+ 1415 fcf4:             ;        BRNZ xdelay2
+ 1416 fcf4:             
+ 1417 fcf4:             ;        OUTI P1,0FH
+ 1418 fcf4:             
+ 1419 fcf4:             ;        MVIW R3,1fFFh
+ 1420 fcf4:             ;xdelay3:
+ 1421 fcf4:             ;        DECR R3
+ 1422 fcf4:             ;        MVRHA R3
+ 1423 fcf4:             ;        BRNZ xdelay3
+ 1424 fcf4:             
+ 1425 fcf4:             ;        OUTI P0,(LCDENABLE!LCDREGISTER)
+ 1426 fcf4:             
+ 1427 fcf4:             ;        MVIW R3,1fFFh
+ 1428 fcf4:             ;xdelay4:
+ 1429 fcf4:             ;        DECR R3
+ 1430 fcf4:             ;        MVRHA R3
+ 1431 fcf4:             ;        BRNZ xdelay4
+ 1432 fcf4:             
+ 1433 fcf4:             ;        OUTI P1,'A'
+ 1434 fcf4:             
+ 1435 fcf4:             ;xdelay5:
+ 1436 fcf4:             ;        DECR R3
+ 1437 fcf4:             ;        MVRHA R3
+ 1438 fcf4:             ;        BRNZ xdelay5
+ 1439 fcf4:             
+ 1440 fcf4:             ;        OUTI P1,'B'
+ 1441 fcf4:             
+ 1442 fcf4:             ;xaddtest:
+ 1443 fcf4:             ;      OUTI  P0,(SWITCHLED)
+ 1444 fcf4:             ;      INP   P1
+ 1445 fcf4:             ;      ADDI  001H
+ 1446 fcf4:             ;      OUTA  P1
+ 1447 fcf4:             
+ 1448 fcf4:             ;xandtest:
+ 1449 fcf4:             ;      OUTI  P0,(SWITCHLED)
+ 1450 fcf4:             ;      INP   P1
+ 1451 fcf4:             ;      ANDI  055H
+ 1452 fcf4:             ;      OUTA  P1
+ 1453 fcf4:             
+ 1454 fcf4:             ;xxortest:
+ 1455 fcf4:             ;     OUTI  P0,(SWITCHLED)
+ 1456 fcf4:             ;     INP   P1
+ 1457 fcf4:             ;     XORI  055H
+ 1458 fcf4:             ;     OUTA  P1
+ 1459 fcf4:             ;      JSRUR R2
+ 1460 fcf4:             
+ 1461 fcf4:             ;
+ 1462 fcf4:             ; Interupt sevice routine
+ 1463 fcf4:             ;
+ 1464 fcf4:               org 0ff90h
  1465 ff90:             isrcode:
  1466 ff90:             ;  halt
  1467 ff90: 09            push
@@ -1897,8 +1897,8 @@ yacc1 -> Native
  1534 10000:             ; The End ($10000: the table fills the ROM to its last byte)
  1535 10000:             ;
 
-fc7bh: ACCUMHELP        - <  1378> 
-fcc1h: ADDIHELP         - <  1381> 
+fc7ah: ACCUMHELP        - <  1378> 
+fcc0h: ADDIHELP         - <  1381> 
 f653h: AF               - <  1072>   1066 
 0f40h: ARGBUF           - <    55> 
 e020h: BASIC_COLD       - <     6>    106 
@@ -1906,7 +1906,7 @@ e060h: BASIC_COPY       - <    10>    323
 e040h: BASIC_INTERPRTER - <     8>    311 
 e000h: BASIC_LIST       - <     4>    317 
 e050h: BASIC_PARSE      - <     9>    302    307 
-f7edh: BASIC_PARSEMSG   - <  1342>    288 
+f7ech: BASIC_PARSEMSG   - <  1342>    288 
 e010h: BASIC_RUN        - <     5>    278 
 e030h: BASIC_TEST       - <     7>    329 
 f6f2h: BLINK            - <  1262>   1320   1471 
@@ -1951,18 +1951,18 @@ f15bh: CMD_BASIC_COPY   - <   320>    200
 f167h: CMD_BASIC_TEST   - <   326>    220 
 f10eh: CMD_EXIT         - <   271>    196 
 0050h: CNTL-PORT        - <    29> 
-fc01h: COMPAREHELP      - <  1371> 
+fc00h: COMPAREHELP      - <  1371> 
 f32ch: CONST            - <   609>   1528 
 f332h: CONSTHW          - <   613>    610 
 f0e8h: CONTINUE         - <   245>    224    232 
-f776h: CONTINUEERROR    - <  1335>    265 
+f775h: CONTINUEERROR    - <  1335>    265 
 0f02h: CONTINUE_ADDR    - <    46>    340    345    347    359    364    367 
           377    382    412    432    437    441    449 
-f7dfh: CONTMSG          - <  1341> 
-f75bh: CRLF             - <  1333>    117    124    186    234    276    315 
+f7deh: CONTMSG          - <  1341> 
+f75ah: CRLF             - <  1333>    117    124    186    234    276    315 
           321    327    341    360    378    420    433    439    949    973 
-fc49h: CSHIFT_LEFTHELP  - <  1375> 
-fc5ch: CSHIFT_RIGHTHELP - <  1376> 
+fc48h: CSHIFT_LEFTHELP  - <  1375> 
+fc5bh: CSHIFT_RIGHTHELP - <  1376> 
 0050h: DATAPORT         - <    30> 
 f6deh: DELAYA           - <  1244>   1247 
 f6eah: DELAYB           - <  1252>   1255 
@@ -1970,22 +1970,22 @@ f143h: DO_PARSE         - <   306>
 f196h: DUMP             - <   352>    202 
 f173h: DUMPBLOCK        - <   332>    198 
 f18ah: DUMPBLOCKCONT    - <   344>    251 
-f798h: DUMPBLOCKMSG     - <  1337>    337 
+f797h: DUMPBLOCKMSG     - <  1337>    337 
 f1adh: DUMPCONT         - <   363>    254 
 0002h: DUMPMODE         - <    37>    253    354 
-f78bh: DUMPMSG          - <  1336>    356 
+f78ah: DUMPMSG          - <  1336>    356 
 f26fh: DUMPREG          - <   470>    218 
 f05ah: EAT_NL           - <   152>    183 
 f05ah: EAT_NL_DONE      - <   157> 
 f67bh: EMULATOR2        - <  1130>   1126 
 f690h: EMULATOR3        - <  1166>   1162 
 f003h: EPROM            - <    71>     69 
-f75eh: ERROR            - <  1334>    238 
+f75dh: ERROR            - <  1334>    238 
 f218h: EXAMDONE         - <   419>    391    393 
 f1bch: EXAMINE          - <   370>    204 
 f1d3h: EXAMINECONT      - <   381>    257    417 
 0001h: EXAMINEMODE      - <    36>    256    372 
-f7cch: EXAMINEMSG       - <  1340>    374 
+f7cbh: EXAMINEMSG       - <  1340>    374 
 f207h: EXAMNEXT         - <   410>    395    397 
 ffdch: E_ SHOWREGS      - <  1506> 
 ffech: E_CFINIT         - <  1518> 
@@ -2006,14 +2006,14 @@ ffc8h: E_UARTOUT        - <  1491>
 f221h: FILLBLOCK        - <   424>    206 
 f238h: FILLCONT         - <   436>    260 
 0004h: FILLMODE         - <    39>    259    426 
-f7abh: FILLMSG          - <  1338>    429 
+f7aah: FILLMSG          - <  1338>    429 
 f50fh: GETADDRESS       - <   834>    339    358    376    431    460 
 f538h: GETNIBBLE        - <   871>    404    839    846    853    860 
 f53bh: GETNIBBLEC       - <   873>    398 
 f261h: GO               - <   457>    208 
-f7beh: GOMSG            - <  1339>    458 
+f7bdh: GOMSG            - <  1339>    458 
 f72dh: HELLO            - <  1331>    104 
-f7fbh: HELPMENU         - <  1344>    188    241 
+f7fah: HELPMENU         - <  1344>    188    241 
 f338h: HEXLOAD          - <   636>    194 
 f543h: INAF             - <   878>    875 
 f149h: INTERPRETER      - <   310>    212 
@@ -2068,14 +2068,14 @@ f700h: OFFLOOP          - <  1278>   1281
 f6d8h: OFFW             - <  1242>   1242 
 f6f7h: ONLOOP           - <  1271>   1274 
 f6e4h: ONW              - <  1250>   1250 
-fca9h: ORTHELP          - <  1380> 
+fca8h: ORTHELP          - <  1380> 
 1000h: OSBASE           - <    56>    795    798    801    804    807    819 
 f127h: PARSE_INPUTLOOP  - <   292>    298 
-f759h: PROMPT           - <  1332>    164 
-fc36h: PSHIFT_RIGHTHELP - <  1374> 
-fc8eh: PUSHPOPHELP      - <  1379> 
-fc11h: RSHIFT_LEFTHELP  - <  1372> 
-fc23h: RSHIFT_RIGHTHELP - <  1373> 
+f758h: PROMPT           - <  1332>    164 
+fc35h: PSHIFT_RIGHTHELP - <  1374> 
+fc8dh: PUSHPOPHELP      - <  1379> 
+fc10h: RSHIFT_LEFTHELP  - <  1372> 
+fc22h: RSHIFT_RIGHTHELP - <  1373> 
 f6cch: SHORTDELAY       - <  1226> 
 f6d0h: SHORTDELAYLOOP   - <  1229>   1232 
 f5e1h: SHOW16           - <   981>    115    300    366    987   1001 
@@ -2100,12 +2100,12 @@ f668h: STRINGOUT        - <  1104>    105    118    125    137    165    187
           189    236    239    242    266    277    289    316    322    328 
           338    342    357    361    375    379    421    430    434    440 
           459    721    725    729    788    824    828    950    974   1486 
-fc70h: SUBHELP          - <  1377> 
+fc6fh: SUBHELP          - <  1377> 
 f65ch: SWITCHIN         - <  1080> 
 0001h: SWITCHLED        - <    23>   1081   1089 
 f6d7h: SWITCHTOGGLE     - <  1240> 
 f07eh: TESTEXAMINE      - <   192>    185 
-fce5h: TESTMSG          - <  1382>    136 
+fce4h: TESTMSG          - <  1382>    136 
 0080h: TIL311           - <    27>   1094 
 f664h: TIL311OUT        - <  1093>   1318 
 f54bh: TOUPPER          - <   885>    178    761    878   1498 
@@ -2133,5 +2133,5 @@ f67dh: UARTOUTW         - <  1136>   1143
 1535 Lines assembled
 0 Errors
 218 Labels
-Object Code:3399 bytes
+Object Code:3398 bytes
 

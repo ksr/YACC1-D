@@ -4,6 +4,11 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 `docs/system/MACHINE.md`. Which revisions exist and were fabricated: `hardware/FABRICATED.md`.
 
 ## Hardware — designed, not built
+- **Ports P2-P7 are probably free for another card** (noted 2026-09-24). The I/O card's 74LS138 (IC5, strapped to
+  P0-P7) decodes all eight, but only P0 (control) and P1 (data) are used, each picked by a jumper on the IO-ADDR /
+  DATA-ADDR headers; -IO-SEL2..7 go only to those headers and drive nothing. So a card decoding P2-P7 itself should not
+  clash, as long as neither header's jumper selects that port. **To verify on the board** before relying on it: nothing
+  else on the I/O card loads or drives -IO-SEL2..7, and the fitted jumpers are on P0/P1 (`docs/cards/io.md` 3.1).
 - **Blank V3.2** (`hardware/bus/blank-card/eagle/v3.2`): derived 2026-09-20 from V3.1 with the Bus V3.2 names on C3–C6.
   Open it in Eagle/Fusion, re-save, use as the template for every new card.
 - **Bus Tester V3.1** (`hardware/cards/bus-tester/eagle/v3.1`, 2020-07): latches drive the bus, soft bus-enable/reset,

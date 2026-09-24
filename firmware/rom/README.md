@@ -14,10 +14,9 @@
   end-label byte is gone. **Rebuilt again 2026-09-23 afternoon** (still not burned): the `:` Intel-hex loader
   (`tools/monload.py` on the host) and the banner `YACC 2020: HELLO WORLD  ROM 2026-09-23`, so the build date shows at
   power-up. MD5 d2d7b027e7c6951d7dd93412a8fd9cd8 (earlier: a42ea1ef… the morning build, 33efa63d… 2026-09-22);
-  that build was burned and boots. **Rebuilt 2026-09-23 evening, not yet burned**: the CF driver moved from ports P8/P9
-  to **P4/P5** (the CF interface is being folded onto the I/O card v2.0, whose own 74LS138 decodes P4/P5 on spare
-  outputs, saving a chip), banner `ROM 2026-09-23B`. MD5 a9fefd4ae21eb46eb21cff614376617f. Nothing else changed: the
-  monitor, BASIC, the loader and every vector behave as before; only `O` and the CF vectors talk to different ports.
+  that build was burned and boots, and it is the current image again: a 2026-09-23 evening rebuild (`ROM 2026-09-23B`,
+  CF on P4/P5 for an I/O card v2.0) was withdrawn on 2026-09-24, when the CF interface moved to the memory card and back
+  to ports P8/P9. The chip in the machine matches `shipped/rom.bin` byte for byte.
   **Telling a chip apart**: the banner's date; failing that, $FFEC (`04` = a 2026 build, `00` = the 2021 chip) and
   $FFFC (`04` = 2026-09-23 or later). The exact vector bytes change with every monitor edit, so they are not quoted.
 - `builds/2021-09-02-3bcacf3-not-working/rom` — the git-HEAD build, never burned.
