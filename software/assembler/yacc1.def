@@ -58,8 +58,10 @@ OUTA \{ports}
 60|1
 OUTI \{ports},\B
 70|1 \2
-OUTVR \{ports},\{regs}
+LDZ \{regs},\B
 80|1 \2
+STZ \{regs},\B
+88|1 \2
 INP \{ports}
 90|1
 BR \W
@@ -122,9 +124,9 @@ RSHR
 BE
 PSHR
 BF
-LDTVR \{regs}
-C0|1
-STTVR \{regs}
+ADDIW \{regs},\W
+C0|1  hi(2) lo(2)
+SHL16 \{regs}
 C8|1
 LDIVR \{regs},\B
 D0|1 \2

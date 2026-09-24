@@ -53,7 +53,8 @@ extern "C" {
 #define        DECR	0x58
 #define        OUTA	0x60
 #define        OUTI	0x70
-#define        OUTVR	0x80
+#define        LDZ      0x80   /* YACC1-D 2026-09-24: LDZ Rn,d = Rn <- the word at (R6.hi:d), 2 bytes; was OUTVR (no microcode) */
+#define        STZ      0x88   /* YACC1-D 2026-09-24: STZ Rn,d = the word at (R6.hi:d) <- Rn, 2 bytes */
 #define        INP	0x90
 #define        BR	0xA0
 #define        BRZ	0xA1
@@ -93,8 +94,8 @@ extern "C" {
 #define        RSHL	0xBD
 #define        RSHR	0xBE
 #define        PSHR     0xBF
-#define        LDTVR	0xC0
-#define        STTVR	0xC8
+#define        ADDIW    0xC0   /* YACC1-D 2026-09-24: ADDIW Rn,#w = Rn <- Rn + w (16-bit), 3 bytes; was LDTVR (no microcode) */
+#define        SHL16    0xC8   /* YACC1-D 2026-09-24: SHL16 Rn = Rn <- Rn << 1 (16-bit), 1 byte; was STTVR (no microcode) */
 #define        LDIVR    0xD0
 #define        BRVR     0xD8
 #define        CSHL     0xE0

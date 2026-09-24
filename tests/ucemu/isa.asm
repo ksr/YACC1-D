@@ -264,12 +264,215 @@ dev:    LDAI 'D'                ; the microcode prints D only (BRDEV = BR)
         LDAI 0
         ADDIC 0
         OUTA P2                 ; 00
+; 2026-09-24: the page instructions LDZ/STZ ($80-$8F: the word at (R6.hi : d)), ADDIW ($C0-$C7: Rn += w) and
+; SHL16 ($C8-$CF: Rn <<= 1). Every register they are meant for: R1 (with SP saved in R5 and nothing pushed meanwhile),
+; R3-R7, and R2 for ADDIW/SHL16 only (LDZ/STZ address through R2 = IR; R2 is read back before the next output, which
+; on the machine goes through outb's LDR/STR and so reloads R2). R0 is not tested: the machine loads R0 only when a
+; branch is taken (the sequencer's load gate), the interpreter always. The page is zpg ($4000); d = 255 reaches
+; its second byte at $4100.
+        MVIW R6,zpg
+        LDZ R3,0
+        MVRHA R3
+        OUTA P2                 ; 12
+        MVRLA R3
+        OUTA P2                 ; 34
+        LDZ R4,254
+        MVRHA R4
+        OUTA P2                 ; 56
+        MVRLA R4
+        OUTA P2                 ; 78
+        LDZ R5,255              ; $40FF, then $4100
+        MVRHA R5
+        OUTA P2                 ; 78
+        MVRLA R5
+        OUTA P2                 ; BC
+        LDZ R7,2
+        MVRHA R7
+        OUTA P2                 ; DE
+        MVRLA R7
+        OUTA P2                 ; F0
+        MOVRR R1,R5             ; LDZ R1: SP saved in R5
+        LDZ R1,2
+        MOVRR R1,R3
+        MOVRR R5,R1
+        MVRLA R3
+        OUTA P2                 ; F0
+        MVIW R3,0A1B2H
+        STZ R3,4
+        LDA zpg+4
+        OUTA P2                 ; A1
+        LDA zpg+5
+        OUTA P2                 ; B2
+        MVIW R4,0C3D4H
+        STZ R4,255              ; $40FF, then $4100
+        LDA zpg+255
+        OUTA P2                 ; C3
+        LDA zpg+256
+        OUTA P2                 ; D4
+        MVIW R5,0E5F6H
+        STZ R5,6
+        MVIW R7,01728H
+        STZ R7,10
+        LDR R3,zpg+6
+        MVRLA R3
+        OUTA P2                 ; F6
+        LDR R3,zpg+10
+        MVRHA R3
+        OUTA P2                 ; 17
+        MOVRR R1,R5             ; STZ R1: SP saved in R5
+        MVIW R1,3949H
+        STZ R1,12
+        MOVRR R5,R1
+        LDA zpg+13
+        OUTA P2                 ; 49
+        MVIW R6,zpg2            ; the page register itself: page $41
+        LDZ R3,0
+        MVRHA R3
+        OUTA P2                 ; D4 (written by STZ R4,255)
+        MVIW R6,zpg
+        STZ R6,14               ; the page register as data
+        LDA zpg+14
+        OUTA P2                 ; 40
+        LDZ R6,16               ; loads the page register: $4100
+        LDZ R4,1                ; now from page $41: $4101-$4102
+        MVRHA R4
+        OUTA P2                 ; 65
+; ADDIW: carries across the bytes and out of bit 15, ACC = the result's high byte, TMP kept
+        MVIW R3,12FFH
+        LDTI 5AH
+        ADDIW R3,0001H
+        OUTA P2                 ; 13 (ACC)
+        MVRLA R3
+        OUTA P2                 ; 00
+        MVTA
+        OUTA P2                 ; 5A (TMP kept)
+        BRC d1
+        LDAI 'N'
+        BR d1e
+d1:     LDAI 'Y'
+d1e:    OUTA P2                 ; N
+        MVIW R4,0FFFFH
+        ADDIW R4,0001H
+        BRC d2
+        LDAI 'N'
+        BR d2e
+d2:     LDAI 'Y'
+d2e:    OUTA P2                 ; Y (carry out of bit 15)
+        MVRHA R4
+        OUTA P2                 ; 00
+        MVIW R5,8421H
+        ADDIW R5,8421H
+        MVRHA R5
+        OUTA P2                 ; 08
+        MVRLA R5
+        OUTA P2                 ; 42
+        MVIW R7,00F0H
+        ADDIW R7,0F020H
+        MVRHA R7
+        OUTA P2                 ; F1
+        MVRLA R7
+        OUTA P2                 ; 10
+        MVIW R6,1000H
+        ADDIW R6,0FFFFH
+        MVRHA R6
+        OUTA P2                 ; 0F
+        MVRLA R6
+        OUTA P2                 ; FF
+        MVIW R2,0ABCDH
+        ADDIW R2,1111H
+        MVRLA R2
+        MVAT
+        MVRHA R2
+        OUTA P2                 ; BC
+        MVTA
+        OUTA P2                 ; DE
+        MOVRR R1,R5             ; ADDIW R1: SP saved in R5
+        ADDIW R1,0100H
+        MOVRR R1,R3
+        MOVRR R5,R1
+        MOVRR R5,R4
+        MVRHA R3
+        MVAT
+        MVRHA R4
+        ADDI 1
+        BREQ d3                 ; R3.hi = SP.hi + 1
+        LDAI 'N'
+        BR d3e
+d3:     LDAI 'Y'
+d3e:    OUTA P2                 ; Y
+; SHL16: carries across the bytes and out of bit 15, ACC = the result's high byte, TMP kept
+        MVIW R3,4081H
+        LDTI 77H
+        SHL16 R3
+        OUTA P2                 ; 81 (ACC)
+        MVRLA R3
+        OUTA P2                 ; 02
+        MVTA
+        OUTA P2                 ; 77 (TMP kept)
+        BRC e1
+        LDAI 'N'
+        BR e1e
+e1:     LDAI 'Y'
+e1e:    OUTA P2                 ; N
+        MVIW R4,8001H
+        SHL16 R4
+        BRC e2
+        LDAI 'N'
+        BR e2e
+e2:     LDAI 'Y'
+e2e:    OUTA P2                 ; Y (bit 15 out)
+        MVRHA R4
+        OUTA P2                 ; 00
+        MVRLA R4
+        OUTA P2                 ; 02
+        LDAI 0
+        ADDIC 0
+        OUTA P2                 ; 01 (SHL16 R4's carry survives the moves and outputs)
+        MVIW R5,00C0H
+        SHL16 R5
+        MVRHA R5
+        OUTA P2                 ; 01
+        MVRLA R5
+        OUTA P2                 ; 80
+        MVIW R7,0C000H
+        SHL16 R7
+        MVRHA R7
+        OUTA P2                 ; 80
+        MVIW R6,1234H
+        SHL16 R6
+        SHL16 R6
+        MVRHA R6
+        OUTA P2                 ; 48
+        MVRLA R6
+        OUTA P2                 ; D0
+        MVIW R2,0A55AH
+        SHL16 R2
+        MVRLA R2
+        MVAT
+        MVRHA R2
+        OUTA P2                 ; 4A
+        MVTA
+        OUTA P2                 ; B4
+        MOVRR R1,R5             ; SHL16 R1: SP saved in R5
+        MVIW R1,1111H
+        SHL16 R1
+        MOVRR R1,R3
+        MOVRR R5,R1
+        MVRLA R3
+        OUTA P2                 ; 22
         HALT
 sub:    LDAI 'B'
         RET
 vec:    DW tgt
 var:    DS 1
 var2:   DS 2
+        ORG 4000H               ; the page of the LDZ/STZ tests
+zpg:    DB 12H,34H,0DEH,0F0H
+        DB 0,0,0,0,0,0,0,0,0,0,0,0
+        DB 41H,00H
+        ORG 40FEH
+        DB 56H,78H
+zpg2:   DB 0BCH,65H,43H
         ORG 0F000H
         BR 0F003H
         MVIW R1,0EFFH

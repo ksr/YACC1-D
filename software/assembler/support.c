@@ -80,7 +80,6 @@ word find_label(char* buf)
   int f;
   char buffer[30];
   char mode;
-  if (pass == 1) return 1;
   mode='N';
   strcpy(buffer,buf);
   i=pos('.',buffer);
@@ -92,6 +91,17 @@ word find_label(char* buf)
   f=0;
   for (i=1;i<=nlabel;i++) {
     if (strcmp(labels[i],buffer)==0)  f=i;
+    }
+  /* YACC1-D 2026-09-24: in pass 1 a label that is already defined (a backward reference) now has its value, so an
+     ORG, DS or EQU whose operand uses it places what follows where pass 2 will (pass 1 used to see every label as 1:
+     `DS (0-(pad).0)&255` reserved the wrong size). A forward reference is still 1, as before; nothing is reported. */
+  if (pass == 1) {
+    if (f==0) return 1;
+    switch(mode) {
+      case 'L':return labela[f] % 256;
+      case 'H':return labela[f] / 256;
+      default:return labela[f];
+      }
     }
   if (f==0) {
     printf("%d:Label not found - %s\n",linecount,buf);

@@ -73,3 +73,4 @@ extern "C" {
 #define PC 0 //program counter is currently locked to reg 0
 #define SP 1 //stack pointer is currently locked to reg 1 (only needed if JSR/RET is used)
 #define IR 2 //memory indirect operations
+#define ZP 6 // YACC1-D 2026-09-24: the page register of LDZ/STZ (its high byte is the page)

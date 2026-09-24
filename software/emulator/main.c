@@ -37,6 +37,7 @@
 #define PORTS 16
 
 #define IR 8 //HACK
+#define ZP 6 /* YACC1-D 2026-09-24: the page register of LDZ/STZ (its high byte) */
 
 #define REG0 0
 #define REG1 1
@@ -854,23 +855,40 @@ int main(int argc, char** argv) {
                 if (portaddr == CF_PORT_SEL || portaddr == CF_PORT_DATA) cf_io_write(portaddr, port[portaddr]);
                 break;
 
-            case OUTVR + PORT0:
-            case OUTVR + PORT1:
-            case OUTVR + PORT2:
-            case OUTVR + PORT3:
-            case OUTVR + PORT4:
-            case OUTVR + PORT5:
-            case OUTVR + PORT6:
-            case OUTVR + PORT7:
-            case OUTVR + PORT8:
-            case OUTVR + PORT9:
-            case OUTVR + PORT10:
-            case OUTVR + PORT11:
-            case OUTVR + PORT12:
-            case OUTVR + PORT13:
-            case OUTVR + PORT14:
-            case OUTVR + PORT15:
-                badOpcode(ins);
+            case LDZ + REG0:    /* YACC1-D 2026-09-24: LDZ Rn,d = Rn <- the word at (R6.hi : d), as the microcode */
+            case LDZ + REG1:    /* builds it: IR.hi <- R6.hi, IR.lo <- d, then LDR's second half ($80-$87, */
+            case LDZ + REG2:    /* was OUTVR, which had no microcode) */
+            case LDZ + REG3:
+            case LDZ + REG4:
+            case LDZ + REG5:
+            case LDZ + REG6:
+            case LDZ + REG7:
+                reg = ins & 0x07;
+                register_write_hi(IR, register_read_hi(ZP));
+                register_write_lo(IR, memory_read(register_read_word(PC)));
+                register_inc(PC);
+                register_write_hi(reg, memory_read(register_read_word(IR)));
+                register_inc(IR);
+                register_write_lo(reg, memory_read(register_read_word(IR)));
+                register_inc(IR);
+                break;
+
+            case STZ + REG0:    /* YACC1-D 2026-09-24: STZ Rn,d = the word at (R6.hi : d) <- Rn ($88-$8F) */
+            case STZ + REG1:
+            case STZ + REG2:
+            case STZ + REG3:
+            case STZ + REG4:
+            case STZ + REG5:
+            case STZ + REG6:
+            case STZ + REG7:
+                reg = ins & 0x07;
+                register_write_hi(IR, register_read_hi(ZP));
+                register_write_lo(IR, memory_read(register_read_word(PC)));
+                register_inc(PC);
+                memory_write(register_read_word(IR), register_read_hi(reg));
+                register_inc(IR);
+                memory_write(register_read_word(IR), register_read_lo(reg));
+                register_inc(IR);
                 break;
 
             case INP + PORT0:
@@ -1132,28 +1150,38 @@ int main(int argc, char** argv) {
                     acc = acc | 0x80;
                 break;
 
-            case LDTVR + REG0:
-            case LDTVR + REG1:
-            case LDTVR + REG2:
-            case LDTVR + REG3:
-            case LDTVR + REG4:
-            case LDTVR + REG5:
-            case LDTVR + REG6:
-            case LDTVR + REG7:
+            case ADDIW + REG0:  /* YACC1-D 2026-09-24: ADDIW Rn,#w = Rn <- Rn + w (w big-endian, 3 bytes; $C0-$C7, */
+            case ADDIW + REG1:  /* was LDTVR, which had no microcode). As the microcode: the low bytes added, */
+            case ADDIW + REG2:  /* then the high bytes with that carry; ACC = the result's high byte, carry = */
+            case ADDIW + REG3:  /* the carry out of bit 15 */
+            case ADDIW + REG4:
+            case ADDIW + REG5:
+            case ADDIW + REG6:
+            case ADDIW + REG7:
                 reg = ins & 0x07;
-                treg = memory_read(register_read_word(reg));
+                hi = memory_read(register_read_word(PC));
+                register_inc(PC);
+                lo = memory_read(register_read_word(PC));
+                register_inc(PC);
+                tmpCarry = (register_read_lo(reg) + lo) > 255;
+                register_write_lo(reg, (unsigned char) (register_read_lo(reg) + lo));
+                carry = (register_read_hi(reg) + hi + tmpCarry) > 255;
+                acc = (unsigned char) (register_read_hi(reg) + hi + tmpCarry);
+                register_write_hi(reg, acc);
                 break;
 
-            case STTVR + REG0:
-            case STTVR + REG1:
-            case STTVR + REG2:
-            case STTVR + REG3:
-            case STTVR + REG4:
-            case STTVR + REG5:
-            case STTVR + REG6:
-            case STTVR + REG7:
+            case SHL16 + REG0:  /* YACC1-D 2026-09-24: SHL16 Rn = Rn <- Rn << 1 (Rn + Rn; $C8-$CF, was STTVR, which */
+            case SHL16 + REG1:  /* had no microcode). ACC = the result's high byte, carry = bit 15 of the old Rn */
+            case SHL16 + REG2:
+            case SHL16 + REG3:
+            case SHL16 + REG4:
+            case SHL16 + REG5:
+            case SHL16 + REG6:
+            case SHL16 + REG7:
                 reg = ins & 0x07;
-                memory[registers[reg].word] = treg;
+                carry = (register_read_word(reg) & 0x8000) != 0;
+                register_write_word(reg, (unsigned short) (register_read_word(reg) << 1));
+                acc = register_read_hi(reg);
                 break;
 
             case LDIVR + REG0:

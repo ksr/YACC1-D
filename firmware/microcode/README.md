@@ -21,3 +21,10 @@
   `tests/bench/diag/div.c` on the machine; `docs/cards/alu.md`). Records $B0 $B1 $B8 $B9 $E2 $E3 change (+2 steps each).
   **Loaded 2026-09-23 evening** (`--all`); boot check: RAM == EEPROM, 320 dumped lines == test.hex
   (`tests/sequencer/boot-run-mode-2026-09-23-carryfix.log`).
+- **2026-09-24: `LDZ`/`STZ`/`ADDIW`/`SHL16`** in the 32 opcodes that had no microcode (OUTVR $80-$8F, LDTVR $C0-$C7,
+  STTVR $C8-$CF, never generated): `register.c` (LDZ/STZ: the operand address built in IR from R6's high byte and the
+  offset byte, then LDR's and STR's own second halves, now shared functions - $E8-$F7 unchanged) and
+  `accumulator.c` (ADDIW/SHL16 from the MVRLA/ADD/MVARL/MVRHA/ADDC/MVARH steps, TMP1 holding ADDIW's high byte).
+  `test.hex`/`test.hexz`/`test.123` regenerated: exactly records $80-$8F and $C0-$CF differ from the image the card
+  holds (`cache`, untouched). Checked on `software/ucemu` (`tests/ucemu/isa.asm`, 0 bus fights, the same bytes as the
+  instruction-level emulator). **Reload the EEPROM** (`tools/ucode_send.py --all`) and run `tests/bench` on the machine.

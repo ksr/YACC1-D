@@ -293,6 +293,9 @@ void Translate(int Entry)
       i=*Ptr-49;
       Ptr++;
       labelNum = find_label_number(labl);
+      /* YACC1-D 2026-09-24: in pass 1 too (the label was made from this line just before), so that pass 1 sees an
+         EQU's value, not its address, now that pass 1 resolves backward references (support.c find_label) */
+      if (pass == 1 && strlen(labl) > 0) labelNum = nlabel;
       if (labelNum > 0) labela[labelNum]=args[i];
       valid=1;
       noout='Y';
