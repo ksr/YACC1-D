@@ -30,6 +30,7 @@ for root, dirs, files in os.walk(DST):
         elif f == "README.md": buckets["mine: placeholder README.md"] += 1
         elif f == "Makefile": buckets["mine: hand-written Makefile (2026-09)"] += 1
         elif rel.startswith(HAND_MADE): buckets["mine: session captures"] += 1
+        elif rel.startswith("hardware/cards/memory/eagle/v1.3-fusion-export-2026-09-24/") and "/pdf/" not in rel: buckets["mine: Fusion export of the built card from Ken (~/Downloads 2026-09-24, not from YACCS)"] += 1
         elif rel.startswith("hardware/bus/blank-card/eagle/v3.2/"): buckets["mine: derived design (Blank V3.2, tools/make_blank_v32.py)"] += 1
         elif rel == "hardware/PROVENANCE.md": buckets["generated: provenance index (tools/gen_provenance.py)"] += 1
         elif rel == "firmware/rom/shipped/rom.bin": buckets["generated: 8K burn image of shipped/rom (tools/img2bin.py --fill 0xFF --size 8192)"] += 1

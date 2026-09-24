@@ -28,6 +28,7 @@ Generated %s by `tools/sch_to_pdf.py` from every Eagle `.sch` under `hardware/` 
 | `cards/memory/eagle/deprecated/v1.0/Memory V1.0.sch` | [`Memory V1.0-schematic.pdf`](cards/memory/eagle/deprecated/v1.0/pdf/Memory V1.0-schematic.pdf) |
 | `cards/memory/eagle/deprecated/v1.1/Memory V1.0.sch` | [`Memory V1.0-schematic.pdf`](cards/memory/eagle/deprecated/v1.1/pdf/Memory V1.0-schematic.pdf) |
 | `cards/memory/eagle/deprecated/v1.2/Memory V1.2.sch` | [`Memory V1.2-schematic.pdf`](cards/memory/eagle/deprecated/v1.2/pdf/Memory V1.2-schematic.pdf) |
+| `cards/memory/eagle/v1.3-fusion-export-2026-09-24/Memory V1.3.sch` | [`Memory V1.3-schematic.pdf`](cards/memory/eagle/v1.3-fusion-export-2026-09-24/pdf/Memory V1.3-schematic.pdf) |
 | `cards/memory/eagle/v1.3/Memory V1.3.sch` | [`Memory V1.3-schematic.pdf`](cards/memory/eagle/v1.3/pdf/Memory V1.3-schematic.pdf) |
 | `cards/protocard/eagle/v1.0/ProtoCard-Prod-V1.0.sch` | [`ProtoCard-Prod-V1.0-schematic.pdf`](cards/protocard/eagle/v1.0/pdf/ProtoCard-Prod-V1.0-schematic.pdf) |
 | `cards/register/eagle/deprecated/v1.0-no-address/Index Registers - 1.0.sch` | [`Index Registers - 1.0-schematic.pdf`](cards/register/eagle/deprecated/v1.0-no-address/pdf/Index Registers - 1.0-schematic.pdf) |
