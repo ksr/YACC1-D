@@ -99,7 +99,7 @@ session on both emulators. Not started: write support, the file API for programs
 2. **OS kernel v0 in C**: boot into a shell over P8XFS v2 read-only (dir, cd, cat, run, load), then write support
    (save, del, mkdir, pack, format), fsck last. Host-side disk images from `p8xfs.py`.
 3. **Commands**: `lib_abi.c` for the YACC1 addresses, then the P8X C commands that fit y1cc (static frames: the
-   recursive ones — tree, find — wait for the compiler's stack-frame mode or get rewritten iteratively). BASIC
+   recursive ones — tree, find — waited for recursion, which y1cc has since 2026-09-24, or got rewritten iteratively). BASIC
    re-assembled at a TPA address with its RAM equates moved, as `/bin/basic`.
 4. **Video console + PS/2 keyboard**: video card v2 (6845 on PA/PB, 2K RAM), a keyboard controller on a free
    port, both behind the console vectors.

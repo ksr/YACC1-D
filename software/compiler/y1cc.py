@@ -35,8 +35,11 @@ The C subset
                  $0F14 is JSRURed, the result word SYSRES at $0F0C comes back; os/lib_fs.c wraps them as fopen()...)
                funcaddr(f) -> int  (the address of function f: how the OS fills SYSTAB with pokew(SYSTAB+2*n,
                  funcaddr(handler)); f is kept in the image even if nothing calls it directly)
-  limits       NO recursion: every function's parameters and locals live at fixed addresses (static frames), so a
-               function that can call itself, even indirectly, is rejected at compile time. Compound assignment and
+  recursion    (2026-09-24) direct and mutual: parameters and locals still live at fixed addresses (static frames);
+               a call inside a recursive cycle pushes the callee's frame on the stack and pops it back after the
+               return. main cannot be recursive; the address of a recursive function's local cannot be passed into
+               a call inside its cycle (compile errors). See "Recursion" below and the README.
+  limits       Compound assignment and
                ++/-- evaluate their lvalue twice (keep the lvalue side-effect free). No floating point, no long,
                no signed arithmetic (comparisons and division are unsigned), no function pointers.
 
@@ -48,7 +51,11 @@ Execution model (the part that is YACC1-specific)
   * Variables are static: a global is a labelled word/byte, a function's parameters and locals are labelled slots
     in the function's own frame area (a char scalar occupies a 2-byte slot whose high byte is kept zero, so it is
     loaded with one LDR like an int; char arrays and struct members are true bytes). A load or store of a scalar
-    is therefore one 3-byte LDR/STR. The price is no recursion (checked) and no reentrancy.
+    is therefore one 3-byte LDR/STR. A function's slots are consecutive DS lines: its frame.
+  * Recursion (2026-09-24): a call whose callee can reach the caller again (both in one strongly connected
+    component of the call graph) saves the callee's whole frame on the R1 stack before the arguments are stored
+    and restores it after the JSR (inline LDR/PUSHR ... POPR/STR up to 8 bytes, rt_fsave/rt_frest above that).
+    Every other call, and every function outside a cycle, compiles exactly as before (tests/compiler/diffcheck.py).
   * Calls: the caller evaluates each argument into R3 and stores it straight into the callee's parameter slot
     (STR R3,slot), then JSR. If a later argument's evaluation could itself reach the callee (f(a, g()) where g
     calls f) the earlier arguments are parked on the stack meanwhile. The result comes back in R3. Return is RET.
@@ -1183,10 +1190,21 @@ class Gen:
         if len(args) != len(ptypes): sys.exit("y1cc: %s() takes %d argument(s), %d given" % (name, len(ptypes), len(args)))
         if name not in self.params: sys.exit("y1cc: %s() has no definition" % name)
         slots = self.params[name]
+        rec = self.func in self.reach.get(name, ())       # a call inside a recursive cycle (the callee can reach us)
+        if rec:
+            for a in args:
+                v = self.escapes(a)
+                if v is not None:
+                    sys.exit("y1cc: %s(): the address of local %r is passed to %s(), which can re-enter %s() "
+                             "(a recursive function's locals live in static slots): use a global" % (self.func, v, name, self.func))
+            self.frame_save(name)
         parked = []
         for i, a in enumerate(args):
             var = slots[i]
             hazard = any(self.reaches(name, later) for later in args[i + 1:])
+            if rec and name == self.func and not hazard:  # a self-call: storing this argument overwrites the caller's
+                pn = self.param_name(name, var)            # own parameter, which a later argument may still read
+                hazard = any(self.mentions(later, pn) for later in args[i + 1:])
             self.gen_expr(a)
             if var.slot and not self.is_narrow(a): self.ins("LDAI", "0"); self.ins("MVARH", "R3")
             if hazard: self.push_r3(); parked.append(var)
@@ -1194,6 +1212,54 @@ class Gen:
         for var in reversed(parked):
             self.pop_r4(); self.ins("STR", "R4,%s" % var.label)
         self.ins("JSR", self.flabel[name])
+        if rec: self.frame_restore(name)
+
+    # ---- recursion: save / restore a callee's static frame around a call inside its recursive cycle ------
+    FRAME_INLINE = 8                          # frames up to this many bytes are pushed word by word, inline
+    def frame_block(self, f):                 # (first label, bytes) of f's slots: contiguous DS lines (compile_func)
+        vs = list(self.frames[f].values())
+        return (vs[0].label if vs else None), sum(v.size() for v in vs)
+    def frame_save(self, f):
+        """Push f's whole frame (parameters and locals) on the R1 stack. Uses R4 inline or R5-R7 in rt_fsave;
+        nothing is live in a register at the start of a call sequence (every call clobbers them)."""
+        lab, n = self.frame_block(f)
+        if not n: return
+        if n <= self.FRAME_INLINE:
+            for off in range(0, n - 1, 2): self.ins("LDR", "R4,%s" % kadd(lab, off)); self.ins("PUSHR", "R4")
+            if n & 1: self.ins("LDA", kadd(lab, n - 1)); self.ins("PUSH")
+            return
+        self.ins("MVIW", "R5,%s" % lab); self.ins("MVIW", "R6,%d" % n); self.need("rt_fsave"); self.ins("JSR", "rt_fsave")
+    def frame_restore(self, f):
+        """Pop f's frame back (the reverse of frame_save). R3, the callee's result, is not touched."""
+        lab, n = self.frame_block(f)
+        if not n: return
+        if n <= self.FRAME_INLINE:
+            if n & 1: self.ins("POP"); self.ins("STA", kadd(lab, n - 1))
+            for off in reversed(range(0, n - 1, 2)): self.ins("POPR", "R4"); self.ins("STR", "R4,%s" % kadd(lab, off))
+            return
+        self.ins("MVIW", "R5,%s" % kadd(lab, n - 1)); self.ins("MVIW", "R6,%d" % n); self.need("rt_frest"); self.ins("JSR", "rt_frest")
+
+    def param_name(self, f, var):             # the name under which f's parameter slot var is declared
+        return next(n for n, v in self.frames[f].items() if v is var)
+    def mentions(self, node, name):           # does the expression tree name the variable `name` anywhere?
+        if isinstance(node, (list, tuple)):
+            if len(node) == 2 and node[0] == "id": return node[1] == name
+            return any(self.mentions(x, name) for x in node)
+        return False
+
+    def local_root(self, x):                  # the local variable whose storage the lvalue x lies in, or None
+        if x[0] == "id": return x[1] if x[1] in self.locals else None
+        if x[0] == "member": return self.local_root(x[1])
+        if x[0] == "index" and self.is_array(x[1]): return self.local_root(x[1])
+        return None
+    def escapes(self, e):                     # a local whose ADDRESS the value of e may carry (&x, a decayed array)
+        k = e[0]
+        if k == "unary" and e[1] == "&": return self.local_root(e[2])
+        if k in ("id", "member", "index") and self.is_array(e): return self.local_root(e)
+        if k == "bin" and e[1] in ("+", "-"): return self.escapes(e[2]) or self.escapes(e[3])
+        if k == "cond": return self.escapes(e[2]) or self.escapes(e[3])
+        if k == "assign": return self.escapes(e[2])
+        return None
 
     def reaches(self, callee, node):          # does evaluating node call something that can run callee?
         for c in self.calls_in(node):
@@ -1463,11 +1529,12 @@ class Gen:
                 seen.add(g); work.extend(direct.get(g, ()))
             reach[f] = seen
         self.reach = reach
-        for f in bodies:
-            if f in reach[f]:
-                path = [c for c in direct[f] if c == f or f in reach.get(c, ())]
-                sys.exit("y1cc: %s() can call itself (via %s): recursion is not supported (static frames)"
-                         % (f, ", ".join(path)))
+        # Recursion (2026-09-24): a function that can reach itself belongs to a recursive cycle (a strongly connected
+        # component of the call graph); calls INSIDE a cycle save and restore the callee's static frame (gen_call).
+        # main cannot be part of one: it starts by clearing the BSS, and the boot/monitor entry calls it once.
+        if "main" in reach["main"]:
+            sys.exit("y1cc: main() can call itself (via %s): main cannot be recursive"
+                     % ", ".join(sorted(c for c in direct["main"] if c == "main" or "main" in reach.get(c, ()))))
 
     def gen_program(self, decls, src_name):
         STRUCTS.clear(); self.flabel = {}
@@ -1618,7 +1685,16 @@ class Gen:
                             "rt_getc_e: LDAI 0", "        RET"]
         R["rt_puts"] = ["rt_puts: LDAVR R3", "        BRZ rt_puts_d", "        JSR rt_putc", "        INCR R3",
                         "        BR rt_puts", "rt_puts_d: LDAI 10", "        JSR rt_putc", "        RET"]
-        for h in ["rt_sub", "rt_mul", "rt_divmod", "rt_shl", "rt_shr", "rt_putc", "rt_getc", "rt_puts"]:
+        # recursion (2026-09-24): push / pop a static frame of R6 bytes (R6 > 0) under the return address.
+        # rt_fsave: R5 = the frame's first byte, pushed first; rt_frest: R5 = its LAST byte, popped first.
+        # Both keep R3 (the callee's result) and R4; they use R5-R7, ACC and TMP, and no carry.
+        R["rt_fsave"] = ["rt_fsave: POPR R7", "rt_fsave_l: LDAVR R5", "        PUSH", "        INCR R5", "        DECR R6",
+                         "        MVRLA R6", "        MVAT", "        MVRHA R6", "        ORT", "        BRNZ rt_fsave_l",
+                         "        PUSHR R7", "        RET"]
+        R["rt_frest"] = ["rt_frest: POPR R7", "rt_frest_l: POP", "        STAVR R5", "        DECR R5", "        DECR R6",
+                         "        MVRLA R6", "        MVAT", "        MVRHA R6", "        ORT", "        BRNZ rt_frest_l",
+                         "        PUSHR R7", "        RET"]
+        for h in ["rt_sub", "rt_mul", "rt_divmod", "rt_shl", "rt_shr", "rt_putc", "rt_getc", "rt_puts", "rt_fsave", "rt_frest"]:
             if h in self.used:
                 self.emit("; runtime " + h); self.emit(*R[h])
 

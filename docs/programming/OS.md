@@ -119,7 +119,7 @@ void main() {
   the compiler's `putchar`/`puts` (with `--os` the CONOUT syscall, which the shell redirects; without it BIOS
   `CHAROUT` on the machine and on ucemu, port 2 on the interpreter); input for a filter is `sys(SYS_CONIN)` (stdin:
   no echo, 65535 at its end or at Ctrl-D) and `sys(SYS_CONST)`; a key is `sys(SYS_KEYIN)` (below).
-- All the compiler's rules apply: no recursion, R2 untouched, carry only in the compiler's idioms
+- All the compiler's rules apply: recursion only with its rules (since 2026-09-24; 768 bytes of stack), R2 untouched, carry only in the compiler's idioms
   ([C-COMPILER.md](C-COMPILER.md)). A program's globals and BSS live in its own image (cleared at its `main`).
 
 ### The syscall interface (`os/lib_abi.c`, `y1cc.py` `sys`, `y1os.c` `install`)

@@ -87,6 +87,9 @@ an address above $8000 (`--boot` stub) so that the FORCE-ROM remap is released e
 - **Proves:** `software/compiler/y1cc.py` compiles each program correctly for the YACC1: 15 programs (`arith`, `arrays`, `calls`,
   `chars` (with stdin), `control`, `fib`, `globals`, `hello`, `io`, `sieve`, `structs`, `switch`, `switchnb` = `switch` compiled with
   `--no-brur`) plus two that must **fail** to compile (`bigconst.err` "does not fit 16 bits", `recurse.err` "recursion is not supported").
+  Since 2026-09-24 recursion is supported: `rfact`, `rmutual`, `rlocals`, `rcalc` run, and the errors are `recurse.err`
+  (the address of a local passed into a recursive cycle) and `rmain.err` (recursive `main`). `tests/compiler/diffcheck.py`
+  compiles the whole corpus with an older `y1cc.py` from git and the working one and requires identical assembly.
 - **Run:** `python3 tests/compiler/run.py [name ...] [--oracle] [--keep]`. Per test: compile with `--boot` (stack, `JSR main`,
   `HALT`), assemble with `software/assembler/asm NAME -d=yacc1`, run `emulator -x -f NAME.img < NAME.in`, compare stdout with
   `NAME.out`. Per-test compiler flags in a `// y1cc:` comment. `--oracle` regenerates the `.out` files with the host C compiler

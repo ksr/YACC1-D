@@ -26,7 +26,8 @@ python3 tests/compiler/run.py                                    # the test suit
 | preprocessor | `#define NAME value` (integer or char), `#include "file"` (textual, each file once, searched beside the source then in `lib/`) |
 | builtins | `putchar(c)` `getchar()` `puts(s)` (console), `peek(a)` `poke(a,v)` `peekw(a)` `pokew(a,v)` (memory), `inp(port)` `outp(port,v)` (I/O ports, constant 0..15), `halt()`, `bios(addr, r7, acc)` (JSR a monitor routine with R7 and ACC set; returns ACC), `call(addr)` (JSRUR a computed address, returns its R3), `argstr()` (the command tail at $0F40), `sys(n, a, b, c)` and `funcaddr(f)` (the Y1/OS syscall interface, below) |
 | library | `lib/y1lib.c`: `putstr putnum puthex puthex2 strlen strcmp strcpy memset` — `#include "y1lib.c"`; unused functions cost nothing (dead-function elimination) |
-| not there | **recursion** (rejected at compile time), signed arithmetic, `long`/float, function pointers, `goto`, bit fields |
+| recursion | direct and mutual (2026-09-24): a call inside a recursive cycle saves and restores the callee's static frame on the stack (below). Not `main`; not the address of a local passed into the cycle |
+| not there | signed arithmetic, `long`/float, function pointers, `goto`, bit fields, `do ... while`, `#if`/`#ifdef` (ignored, like every directive but `#define`/`#include`) |
 
 Console I/O: on the emulator `putchar` is `OUTA P2` and `getchar` is `INP P2` (returns 0 at end of input); on the
 machine they call the monitor's BIOS vectors `charout` ($FFC4) and `uartin` ($FFE8). The runtime chooses at run
@@ -55,14 +56,45 @@ and big-endian words in memory. There is no 16-bit ALU and no indexed addressing
   **R2 is never touched**: on the hardware `LDA/STA/LDT/STT/LDR/STR` use R2 as the hidden operand-address register
   (`docs/isa/MICROCODE-REVIEW-NOTES.md` L-9); the emulator uses a ninth register for that, so a program that
   relied on R2 would only fail on the real machine.
-- **Static frames, no recursion.** A global is a labelled word or byte; a function's parameters and locals are
+- **Static frames.** A global is a labelled word or byte; a function's parameters and locals are
   labelled slots of their own (`main_i: DS 2`). Loading or storing a scalar is one 3-byte `LDR R3,label` /
   `STR R3,label`; a frame-relative access would have cost a 16-bit add per variable (about 12 bytes) because the
-  ISA has no `(Rn+d)` addressing. The price: a function that can call itself, even through another function, is
-  a compile error (the call graph is checked). A char scalar occupies a 2-byte slot whose high byte is kept zero,
-  so it loads with one `LDR` too; char arrays and struct members are true bytes.
+  ISA has no `(Rn+d)` addressing. A char scalar occupies a 2-byte slot whose high byte is kept zero,
+  so it loads with one `LDR` too; char arrays and struct members are true bytes. A function's slots are
+  consecutive `DS` lines: its **frame**, one block of bytes.
+- **Recursion** (2026-09-24) keeps the static frames and saves them. The call graph's reachability tells which
+  functions can reach themselves (a recursive cycle, a strongly connected component: `fact`, or `is_even`/`is_odd`).
+  A call from a function to a callee that can reach back to it is a call *inside* a cycle; only those change:
+  the caller pushes the callee's whole frame (parameters and locals) on the R1 stack, stores the arguments into
+  the slots as usual, `JSR`s, and pops the frame back afterwards. So every activation finds its own values in the
+  slots while it runs, all accesses stay one `LDR`/`STR`, and a function outside every cycle compiles exactly as
+  before (`tests/compiler/diffcheck.py` proves it on the whole corpus). Why the callee's frame: whatever the callee
+  (or anything it calls) changes in any frame of the cycle is put back by the call that changed it, so after any
+  call inside the cycle every frame of the cycle is as it was. A function outside the cycle needs nothing: it
+  cannot be active further up the stack (it would then reach the cycle and be part of it).
+  - **Cost** per call inside a cycle: frames of up to 8 bytes are copied inline, `LDR R4,f+k / PUSHR R4` before and
+    `POPR R4 / STR R4,f+k` after (10 bytes of code and about 123 microcode steps per frame word, an odd byte through
+    `LDA/PUSH`, `POP/STA`); a bigger frame goes through the runtime pair `rt_fsave`/`rt_frest` (`MVIW R5,frame /
+    MVIW R6,bytes / JSR`, 9 bytes each side, about 107 steps per byte each way). Example (2026-09-24, `--boot`):
+    `fib(15)` recursive is 1,973 calls, 48,388 instructions and about 980,000 microcode steps (~500 steps a call);
+    the iterative loop is 541 instructions and about 9,000 steps; the recursive function is 14 bytes larger (two
+    call sites × 10 bytes of save/restore, less code elsewhere). Stack: 2 bytes of return address + the frame per
+    level. The stack is the monitor's $0C00-$0EFF (768 bytes, the handle buffers of Y1/OS end at $0BFF), so keep
+    deep recursion to small frames; nothing checks for overflow.
+  - **Self-calls and arguments.** In `f(a, b)` called from `f` the arguments are stored into the caller's own
+    parameter slots; an argument whose slot a later argument still reads (`hanoi(n - 1, from, via, to)` stores `to`'s
+    slot before reading `to`) waits on the stack like a parked argument. The return value comes back in R3, which
+    the restore does not touch.
+  - **Rules.** `main` cannot be recursive (it clears the BSS on entry; compile error). The address of a local of a
+    recursive function (`&x`, a local array, a member of a local struct) cannot be passed as an argument to a call
+    inside its cycle: the callee's activation of the same function would reuse the slot (compile error "the address
+    of local 'x' is passed to f()"). Passing it to a function outside the cycle is fine (`fill(buf)`, `strlen(buf)`).
+    Not detected: such an address stored in a variable and used after a call into the cycle, or returned. Local
+    arrays and structs in recursive functions are allowed; they are saved and restored whole on every call inside the
+    cycle (the cost above, per byte). A syscall handler must still not `sys()` itself (the call graph cannot see
+    through SYSTAB).
 - **Calls**: the caller evaluates each argument into R3 and stores it straight into the callee's parameter slot,
-  then `JSR`. When a later argument's evaluation could itself run the callee (`f(x, g())` where `g` calls `f`)
+  then `JSR` (inside a recursive cycle wrapped in the frame save/restore above). When a later argument's evaluation could itself run the callee (`f(x, g())` where `g` calls `f`)
   the earlier ones are parked on the stack meanwhile. The result comes back in R3; `return` is `RET`.
 - **Arithmetic** is byte-wise through ACC/TMP. `+ & | ^` are inline (`MVRLA R4 / MVAT / MVRLA R3 / ADDT /
   MVARL R3 / ... ADDTC ...`, the `do_add16` idiom the monitor proved on the hardware; 8-10 bytes), constants fold
@@ -123,8 +155,20 @@ and big-endian words in memory. There is no 16-bit ALU and no indexed addressing
 compile error, `// y1cc: flags` on a line for per-test compiler flags); `tests/compiler/run.py` compiles, assembles, runs each on `emulator -x` and diffs. `--oracle`
 regenerates the `.out` files with the HOST C compiler through `host_shim.h` (`int` = `unsigned short`, unsigned
 char), so the expectations are independent of this compiler; tests marked `no-oracle` (peek/poke, struct layout,
-byte order) carry hand-written expectations. 16 programs, 16/16 on 2026-09-23 (~3 s; `syscall.c` joined that day).
-`make check` runs them.
+byte order) carry hand-written expectations. 16 programs, 16/16 on 2026-09-23 (~3 s; `syscall.c` joined that day);
+21 since 2026-09-24 with the recursion tests: `rfact.c` (fact, fib, Ackermann with a recursive call in an argument,
+depth 50 with int and char locals), `rmutual.c` (even/odd, a three-function cycle, Hofstadter F/M), `rlocals.c`
+(local arrays and structs in a recursive function through `rt_fsave`, an odd-sized frame, Hanoi, a pointer to a
+local handed to a non-recursive helper), `rcalc.c` (a recursive-descent expression evaluator over a string), and
+the compile errors `recurse.c` (address of a local into the cycle) and `rmain.c` (recursive main); all pass on both
+emulators (`tests/ucemu/run.py`). `make check` runs them.
+
+`tests/compiler/diffcheck.py [--base REV]` is the differential proof for a compiler change: it compiles the whole
+corpus (`tests/compiler/corpus.py`: the compiler tests with `--boot`, plain, `--os` and `--no-brur`, three
+`--vector` builds, the bench sources, `os/y1os.c`, every `/BIN` command, `tests/os/*.c` — 119 compiles on
+2026-09-24) with an old `y1cc.py` from git and the working one and diffs the assembly (the header's timestamp masked).
+Against c847a97 (the last compiler without recursion): 100 identical, 16 that only the new one compiles (the recursion
+tests), 3 expected errors, 0 different.
 The same images also run under the monitor on the emulator (`emulator -m -f prog.img`, then `G3000`): the program's
 output appears after `GO ADDRESS:` and the monitor's banner follows when main returns (hello and fib tried 2026-09-22).
 
@@ -134,8 +178,9 @@ globals 966, fib 1045, structs 1398, arrays 1446, control 2356, arith 2339.
 ## Not done yet (BACKLOG "C compiler")
 
 Running a compiled program on the real machine needs a way to load RAM (the monitor's E-command loader on the
-backlog, or the bus tester with the CPU off); a stack-frame mode for recursion; `switch`; signed types; peephole
-work (the code is straightforward, roughly 2-3x what hand assembly would be); the P8X-side libraries.
+backlog, or the bus tester with the CPU off); signed types; peephole
+work (the code is straightforward, roughly 2-3x what hand assembly would be); the P8X-side libraries. (`switch`
+done 2026-09-22, recursion 2026-09-24.)
 
 ## Size against the P8X compiler
 

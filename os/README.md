@@ -197,7 +197,7 @@ next page) is `keyin()`, always the keyboard. (`getchar()` under `--os` is CONIN
 Output is `putchar`/`puts`; an error message is `eputs()` from `lib_err.c`, which writes to the screen even under
 `>` or `|`. A program that does not follow the rules still works on the console, but its output cannot be redirected
 (built without `--os`) or its keys come out of the pipe (read with `conin()`).
-The rules of the compiler apply: no recursion, `int` is unsigned (`>= 0` loops for ever), 16-bit literals only.
+The rules of the compiler apply: recursion with its rules (since 2026-09-24; the stack is 768 bytes), `int` is unsigned (`>= 0` loops for ever), 16-bit literals only.
 `make sizes` prints each program's image + uninitialised data against the 32K area (the build fails over it).
 
 The shared libraries (`#include "../lib_NAME.c"`; each includes what it needs, each file once; `man NAME` for each):

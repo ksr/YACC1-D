@@ -243,8 +243,10 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   First hardware checks: `rt_sub` (INVA/moves between ADDTC), `rt_divmod` (SUBT/SUBI after a comparator branch), the
   shifts (`LDAI 0 / CSHL` carry clear), `BRDEV` selecting the BIOS path, and that `BR $F000` after main is acceptable
   (it restarts the monitor: BASIC cold start, banners). A `cmdloop` BIOS vector would be cleaner than the restart.
-- Stack-frame mode (`--frames`) for recursion/reentrancy, at ~4x the cost per local access; or overlaying the static
-  frames of functions that are never live together (cheap, no semantic change).
+- (done 2026-09-24: **recursion** — static frames kept, a call inside a recursive cycle saves/restores the callee's frame
+  on the stack; functions outside a cycle compile byte-identically, `tests/compiler/diffcheck.py`.) Still open:
+  reentrancy (an interrupt handler in C), overlaying the static frames of functions that are never live together
+  (cheap, no semantic change), a stack-overflow check (the stack is 768 bytes, $0C00-$0EFF).
 - (done 2026-09-22: `switch`, compare chain or BRUR jump table by size, `--no-brur` until the microcode is reloaded.)
 - Function pointers (`BRUR`/`JSRUR`), signed `int` (BRLT/BRGT are unsigned comparators: signed compare = flip bit 15
   first), `long`, `goto`.
@@ -255,7 +257,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Microcode emulator follow-ups: interrupts (a source, INT/IRET/IADDR checked against the generator), automatic trace
   comparison against the interpreter, the video card. (The CF model with a disk image, `-c`, is done: 2026-09-22 on
   P8/P9, P4/P5 since 2026-09-23.)
-- Port the P8X libraries/programs that fit the subset (the P8X OS itself needs the stack-frame mode and its syscalls).
+- Port the P8X libraries/programs that fit the subset (the P8X OS itself needs its syscalls; recursion exists since 2026-09-24).
 - Emulator (done 2026-09-22, `tools/patched_files.txt`): `-x` scripted mode; BRVR and JSRUR now follow the microcode, so the
   monitor's `G` and `T` commands work on the emulator (they never had). Still stubs vs the hardware: IRET/INT/IADDR, SUB
   borrow into carry, shifts loading carry, opcode $00, LDTVR/STTVR (emulator runs them, hardware has no microcode).

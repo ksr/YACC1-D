@@ -54,7 +54,8 @@ These apply to the whole set and are what "PORT AS-IS" means below: nothing comm
    `#define`, so P8X's "native-cc dialect" (no `++`, decls at top, callee before caller) compiles unchanged —
    nothing needs rewriting for syntax. `char` is unsigned on both; `int` is unsigned on both (the P8X `& 255`
    masks are harmless). y1cc has no signed types: P8X code that does `0 - eval(3)` (sheet) is fine, unsigned.
-10. **No recursion.** y1cc rejects any function reachable from itself (call graph checked at compile time).
+10. **No recursion** (at the time of the port; y1cc supports recursion since 2026-09-24, see its README). y1cc rejected
+    any function reachable from itself (call graph checked at compile time).
     Section 3 lists every recursive function found; the shared ones (`gmatch`, `matchhere`) are fixed once in
     wave 0, the per-command ones (`walk`, `collect`, `copy_tree`, `outn`, `eval`) in their wave.
 11. **Memory constants in help text and man pages**: `$5900` (P8X TPA) -> `$5000`; `/d1`, `mount`, `screen`,

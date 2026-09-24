@@ -37,14 +37,15 @@ software/ucemu/y1ucemu -x -m -f prog.img                        # the same on th
 | statements | `{ }`, declarations with initializers (several per line), `if/else`, `while`, `for(e;e;e)`, `switch/case/default`, `break`, `continue`, `return [e]`, expression statements, `;` |
 | expressions | `=`, `+= -= *= /= %= &= \|= ^= <<= >>=`, `++ --` (pre/post), `?:`, `\|\| &&`, `\| ^ &`, `== != < > <= >=`, `<< >>`, `+ - * / %`, unary `- ! ~ & *`, `a[i]`, `s.m`, `p->m`, `f(args)`, `sizeof(type)` / `sizeof(expr)` (constant); literals decimal, `0x` hex, `'c'`, `"string"` |
 | preprocessor | `#define NAME value` (integer or char); `#include "file"` (textual, each file once, searched beside the source then in `software/compiler/lib/`) |
-| not there | **recursion** (rejected at compile time), signed arithmetic (comparisons and division are unsigned), `long`, floating point, function pointers, `goto`, bit fields |
+| recursion | direct and mutual, since 2026-09-24 (section 4): not `main`, and not the address of a recursive function's local passed into its own cycle |
+| not there | signed arithmetic (comparisons and division are unsigned), `long`, floating point, function pointers, `goto`, bit fields, `do ... while`, `#if`/`#ifdef` (every directive but `#define`/`#include` is ignored) |
 
 `switch`: the `case` labels must be direct statements of the switch block.
 
 Gotchas that come with the subset: compound assignment and `++`/`--` evaluate their lvalue twice (keep it free of
 side effects); an unsigned loop `for (i = n; i >= 0; i--)` never ends; integer literals over 65535 are a compile
-error (`tests/compiler/bigconst.err`); a function that can reach itself through any chain of calls is an error
-(`tests/compiler/recurse.err`).
+error (`tests/compiler/bigconst.err`); a recursive `main` is an error (`rmain.err`), and so is passing `&local` (or a
+local array) of a recursive function to a call that can re-enter it (`recurse.err`).
 
 ## 3. Builtins
 
@@ -79,7 +80,13 @@ From the docstring and `README.md`, with the instructions involved:
   and locals are labelled slots of their own (`main_i: DS 2`, `square_x: DS 2`). A scalar load or store is one
   3-byte `LDR R3,label` / `STR R3,label`; a frame-relative access would have cost a 16-bit add per variable because
   the ISA has no `(Rn+d)`. A `char` scalar occupies a 2-byte slot with a zero high byte so it loads with one `LDR`;
-  char arrays and struct members are true bytes. The call graph is checked (`build_reach`); any cycle is an error.
+  char arrays and struct members are true bytes. A function's slots are consecutive: its frame.
+- **Recursion** (2026-09-24). The call graph's reachability (`build_reach`) finds the recursive cycles. A call whose
+  callee can reach back to the caller (a call inside a cycle) pushes the callee's frame on the stack before the
+  arguments are stored and pops it after the `JSR` (`LDR R4,f_n / PUSHR R4` ... `POPR R4 / STR R4,f_n` inline for
+  frames up to 8 bytes, the runtime pair `rt_fsave`/`rt_frest` above that); a self-call parks an argument whose slot a
+  later argument still reads. Nothing else changes: functions outside a cycle compile byte for byte as before
+  (`tests/compiler/diffcheck.py`). Cost, rules and the fib example: `software/compiler/README.md`.
 - **Calls.** The caller evaluates each argument into R3 and stores it straight into the callee's parameter slot
   (`STR R3,square_x`), then `JSR f_square`. When a later argument's evaluation could itself run the callee
   (`f(x, g())` where `g` reaches `f`) the earlier ones are parked on the stack (`PUSHR R3` … `POPR R4`). The result
@@ -157,14 +164,15 @@ Options are recognised anywhere after the source file; the source file must be t
 - For each `tests/compiler/NAME.c`: compile with `--boot` (plus any `// y1cc: flags` line in the source), assemble
   in `tests/compiler/build/NAME/` (copies `yacc1.def`, writes a `-h` `rcasm.rc`), run `emulator -x -f NAME.img`
   with `NAME.in` as stdin if present, and compare stdout with `NAME.out`. A `NAME.err` file instead means the
-  compiler must fail with that substring (`recurse.err`, `bigconst.err`). Prints PASS/FAIL, the object size and the
+  compiler must fail with that substring (`recurse.err`, `rmain.err`, `bigconst.err`). Prints PASS/FAIL, the object size and the
   instruction count; the build directory is removed when everything passes.
 - **`--oracle`** regenerates every `NAME.out` from the **host C compiler**: `cc -w -funsigned-char -include
   host_shim.h -I software/compiler/lib NAME.c`, where `host_shim.h` makes `int` = `unsigned short`, maps
   `getchar`/`puts`/`putchar`/`halt` to stdio and `exit`. So the expectations are independent of y1cc. Tests marked
   `// no-oracle` (peek/poke, struct layout, byte order) carry hand-written expectations.
 - Programs (15 on 2026-09-22, 15/15; `syscall` added 2026-09-23, no-oracle): `arith arrays bigconst(err) calls
-  chars(in) control fib globals hello io recurse(err) sieve structs switch switchnb syscall`. `make cc-test` at the
+  chars(in) control fib globals hello io recurse(err) sieve structs switch switchnb syscall`; since 2026-09-24 the
+  recursion tests `rfact rmutual rlocals rcalc rmain(err)`, and `recurse.err` checks the address-of-local rule. `make cc-test` at the
   root runs this and `tests/ucemu/run.py`. `syscall.c` is a stand-alone model of the OS's boot (`funcaddr` into
   `SYSTAB`) and of a command's `sys()` calls, including nested ones.
 - The same suite on ucemu (`tests/ucemu/run.py`) uses `NAME.ucout` where the monitor's input echo changes the
@@ -294,7 +302,9 @@ Things the example shows: every variable is a memory slot; a comparison against 
 
 ## 10. Known limitations and gotchas
 
-- No recursion, no reentrancy (static frames); the BACKLOG lists a `--frames` mode as future work.
+- Recursion costs a frame copy per call inside a cycle (about 123 steps per frame word inline) and stack: 2 bytes +
+  the frame per level, in the monitor's 768-byte stack ($0C00-$0EFF), unchecked. No reentrancy (an interrupt handler
+  in C would share the static frames).
 - `int` is unsigned: `<`, `/`, `%` and `>>` are unsigned; `-1` is 65535; signed compares would need bit 15 flipped
   first (`BACKLOG.md`).
 - **R2** is off limits in any inline or `bios()` code that the program reaches; the compiler itself never uses it.
