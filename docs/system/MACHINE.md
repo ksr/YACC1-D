@@ -60,12 +60,8 @@ Plan for the disk operating system, CF card and the port/memory maps: `OS-PLAN.m
 3. Video card: the block-0/9 write-through fault of 2026-09-18 is RESOLVED (2026-09-21): its cause was the unpowered +5V
    rail (IC1, IC2, RN2 and all decoupling on a net with no source); joined to VCC by a wire, 1K RAM test passes 8/8.
 4. Blank V3.1 template (and the cards drawn on it) label C3–C6 with the pre-V3.2 names; harmless, documented.
-6. Sequencer EEPROM: the tree's microcode gained `BRUR Rn` ($AD) and the H-1/H-2 bus-fight fixes (2026-09-22); until the
-   EEPROM is reloaded, $AD is an all-zero word on the machine and PUSHR/BRZ/BRNZ run with the fights the microcode emulator
-   showed to corrupt the pushed word and the branch target under the usual TTL rule (if the monitor ever printed a string
-   on the machine, the fight fell the other way: worth one scope look at DATA0 during a taken BRZ, `MICROCODE-REVIEW-NOTES.md`
-   H-2). Load, then bench-check with `tests/assembler/brur/` (`ABC0123`) and `tests/ucemu/isa.asm` (the byte stream).
-5. Monitor as burned (2021): the G command is `BRVR R7`, an indirect jump through the word at the address (the microcode's
-   `branch()` fetches the target through the register), so `G AAAA` never ran the code at AAAA. Fixed in the tree 2026-09-22
-   (`JSRUR R7 + BR cmdloop`: a call, the program returns with RET) — **reburn the 28C64 from `firmware/rom/shipped/rom`**.
-   Compiled programs for the OLD chip need `y1cc.py --vector`.
+5. RESOLVED 2026-09-23: the monitor's G command (`BRVR R7` on the 2021 chip, so `G AAAA` never ran the code). The 2026 ROM
+   with `JSRUR R7 + BR cmdloop` is burned and boots; `y1cc.py --vector` is only needed for a 2021 chip.
+6. RESOLVED 2026-09-22/23: the sequencer EEPROM holds the tree's microcode (`BRUR` $AD, the H-1/H-2 bus-fight fixes, and
+   the ALU SHIFT-OUT carry fix), loaded and verified with `tools/ucode_send.py --all`; `tests/bench` passes 14/14 on the
+   machine (`tests/bench/logs/bench-2026-09-23-1855.log`).

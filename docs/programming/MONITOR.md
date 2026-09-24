@@ -60,20 +60,20 @@ from its code:
 
 | Key | Command | What it does (`monitor.asm` label) |
 |---|---|---|
-| `H` | help | prints `helpmenu` ($F694) |
+| `H` | help | prints `helpmenu` ($F7FB) |
 | `0` | exit | `cmd_exit`: `BRDEV stop` — on the machine it loops forever at `stop:` (`BRDEV` branches); on the interpreter it falls into a `DB 0` = opcode $00 = `START`, which the interpreter reports as a bad opcode and exits. "Exit (emulator only)" |
 | `B AAAA` | dump block | `dumpblock`: mode ← BLOCKMODE, reads 4 hex digits into R7 (`getaddress`), prints 256 bytes from the 16-byte-aligned address (`show256`), saves the next address in `continue_addr`; CR shows the next 256 |
 | `C` | copy | `cmd_basic_copy`: `JSR basic_copy` ($E060) — copies BASIC's built-in test program into the interpreter buffer |
 | `D AAAA` | dump | `dump`: 16 bytes at the address (`showaddr` + `show16`); CR shows the next 16 |
 | `E AAAA` | examine / modify | `examine`: prints `AAAA: XX` and waits. Two hex digits replace the byte and advance (the value is read with `getnibblec`/`getnibble`, assembled with `SHL`×4 / `PUSH` / `MVAT` / `POP` / `ORT`, stored with `STAVR R7`); CR or LF advances without change; Esc ($1B) or `-` ends. This is the only way to put bytes into RAM from the console (`BACKLOG.md`'s planned `tools/monload.py` drives it) |
 | `F AAAA` | fill | `fillblock`: writes 0 into 256 bytes from the address (`morefill`: `LDAI 0 / STAVR R7 / INCR R7` until the low byte wraps); CR fills the next 256 |
-| `G AAAA` | go | `go` ($F25C): prints `GO ADDRESS:`, reads the address into R7, **`JSRUR R7`** (a call), then `BR cmdloop`: the program ends with `RET` and lands back at the prompt. History: until 2026-09-22 it was `BRVR R7`, an indirect jump through the word at AAAA that pushed no return, so `G AAAA` never ran the code at AAAA (the microcode's `branch()` fetches the target through the register). Compiled images for the old chip start with a 2-byte vector (`y1cc --vector`) |
+| `G AAAA` | go | `go` ($F261): prints `GO ADDRESS:`, reads the address into R7, **`JSRUR R7`** (a call), then `BR cmdloop`: the program ends with `RET` and lands back at the prompt. History: until 2026-09-22 it was `BRVR R7`, an indirect jump through the word at AAAA that pushed no return, so `G AAAA` never ran the code at AAAA (the microcode's `branch()` fetches the target through the register). Compiled images for the old chip start with a 2-byte vector (`y1cc --vector`) |
 | `I` | BASIC | `interpreter`: `JSR BASIC_INTERPRTER` ($E040) |
 | `L` | list | `cmd_basiclist`: `JSR basic_list` ($E000) |
 | `P` | parse | `cmd_basicparse`: prints `Enter Line:`, reads a line into `line_buffer` ($0F80) until LF, shows it, `JSR BASIC_PARSE` ($E050) — enters one program line into BASIC's token buffer |
 | `R` | registers | `dumpreg`: `showregs` — R0..R7 as four hex digits each, then `C`/`X` for the carry flip-flop |
 | `:` | Intel-hex load | `hexload` (2026-09-23): the rest of the record is read without echo and stored; `.` good, `?` bad digit or checksum, `!` address outside $1000-$DFFF or read back wrong; records up to the end record (`LOADED` / `LOADED WITH ERRORS`); ESC or NUL abandons anywhere; CR/LF at the prompt afterwards do nothing (`LOADMODE`); error flag `lderr` at $0F01. Host side `tools/monload.py`; about 39 instructions per received character |
-| `O` | boot | `boot` ($F333): boot Y1/OS from the CompactFlash card (section 6) |
+| `O` | boot | `boot` ($F473): boot Y1/OS from the CompactFlash card (section 6) |
 | `Y` | BASIC test | `cmd_basic_test`: `JSR basic_test` ($E030) |
 | `Z` | run | `cmd_basic`: `JSR basic_run` ($E010) — run the BASIC program in the buffer |
 | CR / LF | continue | `continue`: according to `monmode` (BLOCKMODE 3, DUMPMODE 2, EXAMINEMODE 1, FILLMODE 4) repeats the last B/D/E/F from `continue_addr`; NOMODE just re-prompts. The loop accepts both $0D and $0A because the hardware sends CR and the emulator's terminal sends LF |
@@ -91,21 +91,21 @@ yet in `firmware/abi/README.md`, whose file date is 2026-09-22).
 
 | Vector | Name | In | Out / effect | Body |
 |---|---|---|---|---|
-| $FFC0 | STRINGOUT | R7 → NUL-terminated string | prints it; R7 left at the NUL | `stringout` $F528: `LDAVR R7 / BRZ / JSR uartout / INCR R7` |
-| $FFC4 | CHAROUT | ACC = byte | to the console | `charout` = `uartout` $F536 |
+| $FFC0 | STRINGOUT | R7 → NUL-terminated string | prints it; R7 left at the NUL | `stringout` $F668: `LDAVR R7 / BRZ / JSR uartout / INCR R7` |
+| $FFC4 | CHAROUT | ACC = byte | to the console | `charout` = `uartout` $F676 |
 | $FFC8 | UARTOUT | ACC | same routine | |
 | $FFCC | SHOWADDR | R7 = word | prints `HHHH: ` | `showaddr` |
 | $FFD0 | TOUPPER | ACC | ACC upper-cased (`LDTI 'Z' / BRGT lower / SUBI 20h`) | `toupper` |
 | $FFD4 | SHOWR7 | R7 | prints four hex digits, no suffix | `showr7` (= `shownum`) |
 | $FFD8 | SHOWBYTE | R7 → byte | prints two hex digits of [R7] | `showbyte` |
-| $FFDC | SHOWREGS | | prints R0..R7 and the carry | `showregs` $F45C |
+| $FFDC | SHOWREGS | | prints R0..R7 and the carry | `showregs` $F59C |
 | $FFE0 | SHOWBYTEA | ACC | prints ACC as two hex digits (ACC preserved) | `showbytea` |
-| $FFE4 | SHOWCARRY | | prints `C` or `X` | `showcarry` $F4F4 |
-| $FFE8 | UARTIN | | ACC = next console byte; **waits, echoes it, CR becomes LF**, also shows it on the LEDs (`JSR LEDOUT`) | `uartin` $F54B |
-| $FFEC | CFINIT | | ACC = 0 ok, 1 error (an absent card reads $FF and the bounded wait times out) | `cfinit` $F2A5 |
-| $FFF0 | CFREAD | CFLBA0..2 = sector, R7 → 512-byte buffer | the sector in the buffer, R7 += 512, ACC = 0 ok / 1 error | `cfread` $F2D5 |
-| $FFF4 | CFWRITE | CFLBA0..2, R7 → buffer | the buffer written, R7 += 512, ACC = 0 ok / 1 (the ERR bit) | `cfwrite` $F2FE |
-| $FFF8 | CONST | | ACC = 1 when a console byte is waiting (on the interpreter always 1) | `const` $F327 |
+| $FFE4 | SHOWCARRY | | prints `C` or `X` | `showcarry` $F634 |
+| $FFE8 | UARTIN | | ACC = next console byte; **waits, echoes it, CR becomes LF**, also shows it on the LEDs (`JSR LEDOUT`) | `uartin` $F68B |
+| $FFEC | CFINIT | | ACC = 0 ok, 1 error (an absent card reads $FF and the bounded wait times out) | `cfinit` $F2AA |
+| $FFF0 | CFREAD | CFLBA0..2 = sector, R7 → 512-byte buffer | the sector in the buffer, R7 += 512, ACC = 0 ok / 1 error | `cfread` $F2DA |
+| $FFF4 | CFWRITE | CFLBA0..2, R7 → buffer | the buffer written, R7 += 512, ACC = 0 ok / 1 (the ERR bit) | `cfwrite` $F303 |
+| $FFF8 | CONST | | ACC = 1 when a console byte is waiting (on the interpreter always 1) | `const` $F32C |
 | $FFFC | UARTINNE | | ACC = next console byte **without echo** (waits; CR becomes LF; no LED); port 2 on the interpreter | `uartinne` (2026-09-23) |
 
 The CF routines clobber R6 and TMP. `uartout` and `uartin` are the two `BRDEV` switches: `BRDEV emulator2 / outa
@@ -116,11 +116,11 @@ bit without waiting; `uartinne` is `uartin` without the `LEDOUT`/`uartout` echo.
 ends at `$FFFF`; the `ZZZZ: DB 0` end byte that sat at `$FFFC` in the 2026-09-22 build is gone (`firmware/rom/README.md`
 still mentions it: its file date is 2026-09-22).
 
-The monitor's own helpers, not vectored but at known addresses in this build (`monitor.lst`): `getaddress` $F3CF
-(four hex digits into R7), `getnibble` $F3F8, `show16`, `show256` $F4BB, `shownibble`, `switchin` $F51C (ACC ←
-switches), `ledout` $F520 (LEDs ← ACC), `TIL311out` $F524, `uartin` $F54B, `LONGDELAY` $F581, `SHORTDELAY` $F58C,
-`switchtoggle` $F597, `blink` $F5B2, `lblink` $F5C7, `nblink` $F5DC, the strings from `hello` to `PROMPT` $F60A,
-`helpmenu` $F6AC. They move when the monitor is rebuilt (everything after `uartin` moved by $18 on 2026-09-23);
+The monitor's own helpers, not vectored but at known addresses in this build (`monitor.lst`): `getaddress` $F50F
+(four hex digits into R7), `getnibble` $F538, `show16`, `show256` $F5FB, `shownibble`, `switchin` $F65C (ACC ←
+switches), `ledout` $F660 (LEDs ← ACC), `TIL311out` $F664, `uartin` $F68B, `LONGDELAY` $F6C1, `SHORTDELAY` $F6CC,
+`switchtoggle` $F6D7, `blink` $F6F2, `lblink` $F707, `nblink` $F71C, the strings from `hello` to `PROMPT` $F759,
+`helpmenu` $F7FB. Addresses in this document are from the `ROM 2026-09-23B` listing; they move whenever the monitor is rebuilt (the `:` loader alone moved everything after `const` by $140),
 use the vectors.
 
 ## 5. The variables page ($0F00) and the stack
@@ -163,7 +163,7 @@ build `ROM 2026-09-23B` (not yet burned); the builds before it, including the ch
 - `cfwrite` — the same with command $30 and `LDAVR R7 / OUTA P5`, then `cfwait` and ACC ← ERR.
 - `const` — `BRDEV consthw / LDAI 1 / RET`; on hardware LSR bit 0.
 
-The **`O` command** (`boot:` $F333) prints `BOOT FROM CF`, `cfinit` (error → `CF ERROR`), reads LBA 0 to
+The **`O` command** (`boot:` $F473) prints `BOOT FROM CF`, `cfinit` (error → `CF ERROR`), reads LBA 0 to
 `OSBASE` = $1000, checks bytes 0–1 = `P8` and byte 3 = OSCNT ≠ 0 (else `NO OS ON THE CARD`), then reads LBA 1..OSCNT
 to $1000 onward (R7 advancing 512 per sector, `CFLBA0` incremented — so OSCNT ≤ 255 and the OS ≤ 32 sectors by the
 P8XFS rule), `MVIW R7,OSBASE`, **`JSRUR R7`**, `BR cmdloop`. The OS returns with `RET`. Both emulators model the card
