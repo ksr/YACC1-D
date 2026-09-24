@@ -25,12 +25,13 @@
 # 3 (RELAYOUT) per option: board, plane refill, placement check, DRC, airwire, review images, trial route
 # k (KEEPCOPPER) the keep-copper record
 # 4 (FROM=trial / ROUTE=1) the final board: finish_v2.py make (through vias, via clean-up, collinear merge, adapter
-#   outline on F.Fab, J3 pin labels, silkscreen tidy, title block, plane refill)
+#   outline on F.Fab, J3 pin labels, silkscreen tidy, title block, C20-C23 taken off, plane refill)
 # 5 DRC of memory-v2.0.kicad_pcb with schematic parity + finish_v2.py verify: 0 unrouted, 0 copper violations, every
 #   via a through via, both planes one solid piece, every GND/VCC pad on its plane, no silkscreen text on a pad / via /
 #   other silk / the edge, none upside down; no parity item beyond the built card's inherited Eagle values/fields
-# 6 netlist proof: v2.0 schematic = v1.3 + CF section; every board (final, options, trial routes, record) = the
-#   schematic (check_netlist.py)
+# 6 netlist proof: v2.0 schematic = v1.3 - C20-C23 + CF section; the final board = the schematic; the option boards,
+#   trial routes and keep-copper boards (records, made before C20-C23 were removed, Ken 2026-09-24) = the schematic +
+#   exactly C20-C23 as on v1.3 (check_netlist.py)
 # 7 fab: gerbers/ (4 copper layers, masks, silk, edge) + drill + memory-v2.0-gerbers.zip, top/bottom renders,
 #   placement PDF, the JLCPCB order note, schematic PDF, BOM
 # Exit status non-zero if a gate fails.
@@ -104,15 +105,27 @@ drc_parity() {
   cp "$2" "$TMP/p/$P.kicad_pro"; cp "$3" "$TMP/p/$P.kicad_dru"; cp "$1" "$TMP/p/$P.kicad_pcb"
   "$CLI" pcb drc --schematic-parity --severity-all --format json -o "$4" "$TMP/p/$P.kicad_pcb" >/dev/null 2>&1
 }
-# parity items beyond the built card's own (its Eagle board values / fields, inherited) -> none expected
+# parity items beyond the built card's own (its Eagle board values / fields, inherited) -> none expected.
+# parity_new <drc.json> record: a board made before C20-C23 were removed (option boards, trial routes) may also carry
+# exactly those four as extra footprints (mem_v2_netlist.REMOVED)
 parity_new() {
-  python3 - "$1" "$TMP/v1.3-drc.json" <<'EOF'
+  python3 - "$1" "$TMP/v1.3-drc.json" "$2" <<'EOF'
 import json, sys
+sys.path.insert(0, ".")
+from mem_v2_netlist import REMOVED
 d, b = json.load(open(sys.argv[1])), json.load(open(sys.argv[2]))
+record = len(sys.argv) > 3 and sys.argv[3] == "record"
 bpar = {(x["type"], x["description"]) for x in b.get("schematic_parity", []) if x["type"] != "net_conflict"}
-new = [x["description"] for x in d.get("schematic_parity", []) if (x["type"], x["description"]) not in bpar]
-print("     schematic parity: %d items (built v1.3: %d, all inherited Eagle values/fields); new: %s"
-      % (len(d.get("schematic_parity", [])), len(b.get("schematic_parity", [])), new or "none"))
+rem = lambda x: x["type"] == "extra_footprint" and all(i["description"] in ["Footprint " + r for r in REMOVED]
+                                                       for i in x["items"])
+par = d.get("schematic_parity", [])
+old = [x for x in par if rem(x)] if record else []
+new = [x["description"] for x in par if (x["type"], x["description"]) not in bpar and x not in old]
+print("     schematic parity: %d items (built v1.3: %d, all inherited Eagle values/fields%s); new: %s"
+      % (len(par), len(b.get("schematic_parity", [])),
+         "; + %d = %s, on this record board made before their removal" % (
+             len(old), "/".join(sorted(i["description"].split()[-1] for x in old for i in x["items"]))) if old else "",
+         new or "none"))
 sys.exit(1 if new else 0)
 EOF
 }
@@ -146,7 +159,7 @@ for o in $RELAYOUT; do
   grep -q ": OK" "$R/relayout-$o-placement-check.txt" || fail=1
   "$PYK" gen_relayout.py airwire "$B" 2>&1 | q | tee -a "$R/relayout-$o-placement-check.txt" | sed 's/^/  /'
   drc_parity "$B" "$P-relayout-$o.kicad_pro" "$P-relayout-$o.kicad_dru" "$R/relayout-$o-drc.json"
-  parity_new "$R/relayout-$o-drc.json" | tee -a "$R/relayout-$o-placement-check.txt" || fail=1
+  parity_new "$R/relayout-$o-drc.json" record | tee -a "$R/relayout-$o-placement-check.txt" || fail=1
   "$PYK" gen_mem_v2.py review "$B" "$TMP/r.kicad_pcb" render 2>&1 | q
   "$CLI" pcb render --side top --width 2000 --height 1400 -o "$HERE/$P-relayout-$o-render-top.png" "$TMP/r.kicad_pcb" >/dev/null 2>&1 \
     && echo "  render -> $P-relayout-$o-render-top.png"
@@ -172,7 +185,7 @@ for o in $RELAYOUT; do
   if [ -f "$TR" ]; then
     drc_parity "$TR" "$P-relayout-$o.kicad_pro" "$P-relayout-$o.kicad_dru" "$R/relayout-$o-trial-drc.json"
     { "$PYK" gen_relayout.py stats "$TR" "$R/relayout-$o-trial-drc.json" "$o" 2>&1 | q
-      parity_new "$R/relayout-$o-trial-drc.json"; } | tee "$R/relayout-$o-trial.txt" | sed 's/^/  /'
+      parity_new "$R/relayout-$o-trial-drc.json" record; } | tee "$R/relayout-$o-trial.txt" | sed 's/^/  /'
     grep -q "new: none" "$R/relayout-$o-trial.txt" || fail=1
     "$CLI" pcb export svg --mode-single --page-size-mode 2 --exclude-drawing-sheet \
       -l Edge.Cuts,F.Cu,B.Cu,F.Silkscreen -o "$TMP/t.svg" "$TR" >/dev/null 2>&1
@@ -270,10 +283,10 @@ grep -q -- "-> PASS" "$R/$P-final.txt" || fail=1
 grep -q "new: none" "$R/$P-final.txt" || fail=1
 
 echo "== 6  netlist proof =="
-for f in "$P".kicad_pcb "$P"-relayout-?.kicad_pcb "$P"-relayout-?-trial.kicad_pcb "$K"/$P-option-?.kicad_pcb; do
+for f in "$P"-relayout-?.kicad_pcb "$P"-relayout-?-trial.kicad_pcb "$K"/$P-option-?.kicad_pcb; do
   [ -f "$f" ] && boards="$boards $f"
 done
-python3 check_netlist.py "$R/$P.net" "$TMP/v1.3.net" "$OLD.kicad_pcb" $boards | tee "$R/netlist-proof.txt" | sed 's/^/  /'
+python3 check_netlist.py "$R/$P.net" "$TMP/v1.3.net" "$OLD.kicad_pcb" "$P".kicad_pcb --records $boards | tee "$R/netlist-proof.txt" | sed 's/^/  /'
 grep -q "^RESULT: MATCH" "$R/netlist-proof.txt" || fail=1
 
 echo "== 7  fab outputs, schematic PDF, BOM =="

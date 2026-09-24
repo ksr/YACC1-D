@@ -15,6 +15,9 @@ Called "base" / "v1.3" below. This script:
            - project/sheet-file names memory-v1.3 -> memory-v2.0 and the title blocks,
            - sheet 1: the IO-ADDR0-3 / -IO-RD / -IO-WR labels on X1 become global labels (sheet 7 uses those nets)
              and a note says so,
+           - sheet 1: the four removed caps C20-C23 (mem_v2_netlist.REMOVED, Ken 2026-09-24) taken out of the row of
+             caps C19-C24 (remove_parts(): the symbols go, the GND and VCC rails that ran through their pins become
+             one wire each from C19 to C24, the junctions at the removed pins go),
          adds sheet 7 = the CF section, drawn with the CF card's own sheet writer (hardware/cards/cf/kicad/v1.0/gen_cf.py,
          class Sheet: KiCad standard symbols, short wire stubs to labels / power symbols, no-connect flags) from
          mem_v2_netlist.py; nets shared with v1.3 are boxed global labels, as on the converted v1.3 sheets;
@@ -80,13 +83,61 @@ def global_label(net, x, y, ang, uid):
                                                                    uid, gen_cf.f(x), gen_cf.f(y)))
 
 
+def _pt(x, y):
+    return (round(float(x), 3), round(float(y), 3))
+
+
+def remove_parts(t, refs):
+    """take the symbols of refs (two-pin parts in a row on a rail pair: the base's cap row C19-C24) out of a sheet.
+    Each removed pin must be a junction where exactly two collinear wires meet: the two wires become one and the
+    junction goes. -> (text, removed refs). The netlist proof and the ERC check the result."""
+    lib = open(os.path.join(V13, OLD + "-eagle.kicad_sym")).read()
+    done = []
+    for ref in sorted(refs):
+        m = re.search(r'\t\(symbol \(lib_id "([^"]+)"\) \(at ([-\d.]+) ([-\d.]+) (\d+)\)[^\n]*\n(?:\t\t[^\n]*\n)*?'
+                      r'\t\t\(instances \(project "[^"]+" \(path "[^"]+" \(reference "%s"\) \(unit 1\)\)\)\)\n\t\)\n'
+                      % re.escape(ref), t)
+        if not m:
+            continue
+        libid, sx, sy, rot = m.group(1), float(m.group(2)), float(m.group(3)), int(m.group(4))
+        assert rot == 0, "%s: rotated symbol" % ref
+        sym = re.search(r'\t\(symbol "%s"\n[\s\S]*?\n\t\)\n' % re.escape(libid.split(":")[1]), lib).group(0)
+        pins = [(float(a), float(b)) for a, b in re.findall(r'\(pin \w+ \w+ \(at ([-\d.]+) ([-\d.]+) \d+\)', sym)]
+        assert len(pins) == 2, "%s: %d pins" % (ref, len(pins))
+        t = t.replace(m.group(0), "")
+        for px, py in pins:
+            P = _pt(sx + px, sy - py)                    # symbol y up, sheet y down
+            wires = [w for w in re.finditer(r'\t\(wire \(pts \(xy ([-\d.]+) ([-\d.]+)\) \(xy ([-\d.]+) ([-\d.]+)\)\)'
+                                            r'( \(stroke[^\n]*?\)) \(uuid "([^"]+)"\)\)\n', t)
+                     if P in (_pt(w.group(1), w.group(2)), _pt(w.group(3), w.group(4)))]
+            junc = [j for j in re.finditer(r'\t\(junction \(at ([-\d.]+) ([-\d.]+)\)[^\n]*\n', t)
+                    if _pt(j.group(1), j.group(2)) == P]
+            assert len(wires) == 2 and len(junc) == 1, "%s pin at %s: %d wires, %d junctions" % (ref, P, len(wires),
+                                                                                                  len(junc))
+            ends = []
+            for w in wires:
+                a, b = _pt(w.group(1), w.group(2)), _pt(w.group(3), w.group(4))
+                ends.append(b if a == P else a)
+            (ax, ay), (bx, by) = ends
+            assert (ax - P[0]) * (by - P[1]) == (ay - P[1]) * (bx - P[0]), "%s: rails not collinear at %s" % (ref, P)
+            w0 = wires[0]
+            new = '\t(wire (pts (xy %s %s) (xy %s %s))%s (uuid "%s"))\n' % (gen_cf.f(ax), gen_cf.f(ay), gen_cf.f(bx),
+                                                                          gen_cf.f(by), w0.group(5), w0.group(6))
+            t = t.replace(wires[1].group(0), "").replace(w0.group(0), new).replace(junc[0].group(0), "")
+        done.append(ref)
+    return t, done
+
+
 def copy_v13_sheets():
+    removed = []
     for n in range(1, 7):
         t = open(os.path.join(V13, "%s-sheet%d.kicad_sch" % (OLD, n))).read()
         t = t.replace('(project "%s"' % OLD, '(project "%s"' % PROJ)
         note = "Unchanged from the built v1.3 (Fusion export 2026-09-24, Memory V1.3.sch sheet %d)" % n
+        t, gone = remove_parts(t, NL.REMOVED)
+        removed += gone
         if n == 1:
-            note = "v1.3 sheet 1 + IO-ADDR0-3, -IO-RD, -IO-WR made global (CF section, sheet 7) + note"
+            note = "v1.3 sheet 1: 6 bus labels global (CF, sheet 7), C20-C23 removed, + note"
             cnt = 0
             for net in sorted(set(NL.V13_RENAMED.values())):
                 for m in list(re.finditer(r'\t\(label "%s" \(at ([\d.]+) ([\d.]+) (\d+)\).*?\(uuid "([^"]+)"\)\)'
@@ -98,7 +149,9 @@ def copy_v13_sheets():
             txt = ("Memory card v2.0: IO-ADDR0-3 (C7-C10), -IO-RD (B25), -IO-WR (B26) and -RESET (C30) also feed the\n"
                    "CompactFlash section on sheet 7 (I/O ports P8 = register latch, P9 = data; its own 74LS138 IC30,\n"
                    "enabled by IO-ADDR3). DATA0-7 reach its data buffer IC34 and latch IC32. v1.3 used none of the I/O\n"
-                   "signals: the six labels above were X1-only local labels and are global labels now.")
+                   "signals: the six labels above were X1-only local labels and are global labels now.\n"
+                   "C20-C23 (v1.3: four 100 nF with no IC beside them, in the cap row between C19 and C24) are removed\n"
+                   "on v2.0 (Ken, %s); every IC keeps its own 100 nF." % NL.REMOVED_DATE)
             t = t.rstrip()
             assert t.endswith(")")
             t = t[:-1] + ('\t(text %s (exclude_from_sim no) (at 111.76 236.22 0) (effects (font (size 1.778 1.778) '
@@ -109,6 +162,7 @@ def copy_v13_sheets():
                     % (PROJ, n, NL.DATE, NL.REV, gen_cf.q(note)), t)
         assert t2 != t, "sheet %d: title block not found" % n
         open(os.path.join(HERE, "%s-sheet%d.kicad_sch" % (PROJ, n)), "w").write(t2)
+    assert sorted(removed) == sorted(NL.REMOVED), "removed %s, expected %s" % (removed, sorted(NL.REMOVED))
 
 
 def write_root():
@@ -375,6 +429,8 @@ def build_board(opt, netfile, out=None):
     # v1.3 net -> v2.0 net, through the pads (a v1.3 net keeps its pads, so this is a function)
     ren = {}
     for ref, f in fps.items():
+        if ref in NL.REMOVED:
+            continue            # C20-C23: kept on this record as built (GND / VCC pads), see below
         for p in f.Pads():
             if p.GetNumber() == "":
                 continue
@@ -411,6 +467,13 @@ def build_board(opt, netfile, out=None):
         b.Add(fp)
         fps[ref] = fp
     for ref, fp in fps.items():
+        if ref in NL.REMOVED:
+            # C20-C23, removed from the schematic after this record was made (Ken 2026-09-24): the record keeps them as
+            # the built board has them (its symbol path, pads on GND / VCC), as when it was made
+            got = {p.GetNumber(): p.GetNetname() for p in fp.Pads()}
+            if got != NL.REMOVED_NETS:
+                raise SystemExit("board: removed part %s has pads %s on the built board" % (ref, got))
+            continue
         if ref not in paths:
             raise SystemExit("board: %s is not in the schematic" % ref)
         pth = "/" + "/".join(x for x in paths[ref].split("/") if x and x != ROOT_UUID)

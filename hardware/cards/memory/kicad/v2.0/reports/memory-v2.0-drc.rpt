@@ -1,5 +1,5 @@
 ** Drc report for memory-v2.0.kicad_pcb **
-** Created on 2026-09-24T16:03:54 **
+** Created on 2026-09-24T18:27:29 **
 ** Report includes: Errors, Warnings, Exclusions **
 
 ** Found 208 DRC violations **
@@ -36,16 +36,76 @@
     @(20.2870 mm, 105.9610 mm): Footprint text of X1 (1)
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(146.4010 mm, 121.4600 mm): Segment of C23 on F.Silkscreen
-    @(147.2900 mm, 121.4600 mm): PTH pad 2 [VCC] of C23
+    @(148.5600 mm, 17.5740 mm): Segment of C8 on F.Silkscreen
+    @(148.5600 mm, 18.5900 mm): PTH pad 1 [VCC] of C8
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(145.7660 mm, 121.4600 mm): Segment of C23 on F.Silkscreen
-    @(144.7500 mm, 121.4600 mm): PTH pad 1 [GND] of C23
+    @(148.5600 mm, 16.9390 mm): Segment of C8 on F.Silkscreen
+    @(148.5600 mm, 16.0500 mm): PTH pad 2 [GND] of C8
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(74.9000 mm, 26.5910 mm): Segment of IC14 on F.Silkscreen
-    @(81.2500 mm, 27.4800 mm): PTH pad 3 [BADDR15] of IC14
+    @(152.3700 mm, 20.2410 mm): Segment of IC7 on F.Silkscreen
+    @(163.8000 mm, 21.1300 mm): PTH pad 5 [Net-(IC7-G2B)] of IC7
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(152.3700 mm, 20.2410 mm): Segment of IC7 on F.Silkscreen
+    @(166.3400 mm, 21.1300 mm): PTH pad 6 [BADDR15] of IC7
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(152.3700 mm, 20.2410 mm): Segment of IC7 on F.Silkscreen
+    @(168.8800 mm, 21.1300 mm): PTH pad 7 [/Sheet 2/SEL7] of IC7
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(152.3700 mm, 20.2410 mm): Segment of IC7 on F.Silkscreen
+    @(171.4200 mm, 21.1300 mm): PTH pad 8 [GND] of IC7
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(152.3700 mm, 20.2410 mm): Segment of IC7 on F.Silkscreen
+    @(153.6400 mm, 21.1300 mm): PTH pad 1 [BADDR12] of IC7
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(152.3700 mm, 20.2410 mm): Segment of IC7 on F.Silkscreen
+    @(156.1800 mm, 21.1300 mm): PTH pad 2 [BADDR13] of IC7
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(152.3700 mm, 20.2410 mm): Segment of IC7 on F.Silkscreen
+    @(158.7200 mm, 21.1300 mm): PTH pad 3 [BADDR14] of IC7
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(152.3700 mm, 20.2410 mm): Segment of IC7 on F.Silkscreen
+    @(161.2600 mm, 21.1300 mm): PTH pad 4 [-VMA] of IC7
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(172.6900 mm, 14.3990 mm): Segment of IC7 on F.Silkscreen
+    @(171.4200 mm, 13.5100 mm): PTH pad 9 [/Sheet 2/SEL6] of IC7
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(172.6900 mm, 14.3990 mm): Segment of IC7 on F.Silkscreen
+    @(168.8800 mm, 13.5100 mm): PTH pad 10 [/Sheet 2/SEL5] of IC7
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(172.6900 mm, 14.3990 mm): Segment of IC7 on F.Silkscreen
+    @(166.3400 mm, 13.5100 mm): PTH pad 11 [/Sheet 2/SEL4] of IC7
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(172.6900 mm, 14.3990 mm): Segment of IC7 on F.Silkscreen
+    @(163.8000 mm, 13.5100 mm): PTH pad 12 [/Sheet 2/SEL3] of IC7
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(172.6900 mm, 14.3990 mm): Segment of IC7 on F.Silkscreen
+    @(161.2600 mm, 13.5100 mm): PTH pad 13 [/Sheet 2/SEL2] of IC7
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(172.6900 mm, 14.3990 mm): Segment of IC7 on F.Silkscreen
+    @(158.7200 mm, 13.5100 mm): PTH pad 14 [/Sheet 2/SEL1] of IC7
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(172.6900 mm, 14.3990 mm): Segment of IC7 on F.Silkscreen
+    @(156.1800 mm, 13.5100 mm): PTH pad 15 [/Sheet 2/SEL0] of IC7
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(172.6900 mm, 14.3990 mm): Segment of IC7 on F.Silkscreen
+    @(153.6400 mm, 13.5100 mm): PTH pad 16 [VCC] of IC7
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(74.9000 mm, 26.5910 mm): Segment of IC14 on F.Silkscreen
@@ -70,6 +130,10 @@
     Local override; warning
     @(74.9000 mm, 26.5910 mm): Segment of IC14 on F.Silkscreen
     @(78.7100 mm, 27.4800 mm): PTH pad 2 [Net-(IC14A-O)] of IC14
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 26.5910 mm): Segment of IC14 on F.Silkscreen
+    @(81.2500 mm, 27.4800 mm): PTH pad 3 [BADDR15] of IC14
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(92.6800 mm, 20.7490 mm): Segment of IC14 on F.Silkscreen
@@ -108,254 +172,6 @@
     @(71.0900 mm, 24.9400 mm): PTH pad 1 [VCC] of C13
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(39.3400 mm, 26.5910 mm): Segment of IC27 on F.Silkscreen
-    @(53.3100 mm, 27.4800 mm): PTH pad 6 [DATA10] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 26.5910 mm): Segment of IC27 on F.Silkscreen
-    @(55.8500 mm, 27.4800 mm): PTH pad 7 [DATA10] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 26.5910 mm): Segment of IC27 on F.Silkscreen
-    @(58.3900 mm, 27.4800 mm): PTH pad 8 [DATA11] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 26.5910 mm): Segment of IC27 on F.Silkscreen
-    @(60.9300 mm, 27.4800 mm): PTH pad 9 [DATA11] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 26.5910 mm): Segment of IC27 on F.Silkscreen
-    @(63.4700 mm, 27.4800 mm): PTH pad 10 [GND] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 26.5910 mm): Segment of IC27 on F.Silkscreen
-    @(40.6100 mm, 27.4800 mm): PTH pad 1 [-TMP-REG-RD0] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 26.5910 mm): Segment of IC27 on F.Silkscreen
-    @(43.1500 mm, 27.4800 mm): PTH pad 2 [DATA8] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 26.5910 mm): Segment of IC27 on F.Silkscreen
-    @(45.6900 mm, 27.4800 mm): PTH pad 3 [DATA8] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 26.5910 mm): Segment of IC27 on F.Silkscreen
-    @(48.2300 mm, 27.4800 mm): PTH pad 4 [DATA9] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 26.5910 mm): Segment of IC27 on F.Silkscreen
-    @(50.7700 mm, 27.4800 mm): PTH pad 5 [DATA9] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 20.7490 mm): Segment of IC27 on F.Silkscreen
-    @(63.4700 mm, 19.8600 mm): PTH pad 11 [Net-(IC14A-O)] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 20.7490 mm): Segment of IC27 on F.Silkscreen
-    @(60.9300 mm, 19.8600 mm): PTH pad 12 [DATA12] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 20.7490 mm): Segment of IC27 on F.Silkscreen
-    @(58.3900 mm, 19.8600 mm): PTH pad 13 [DATA12] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 20.7490 mm): Segment of IC27 on F.Silkscreen
-    @(55.8500 mm, 19.8600 mm): PTH pad 14 [DATA13] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 20.7490 mm): Segment of IC27 on F.Silkscreen
-    @(53.3100 mm, 19.8600 mm): PTH pad 15 [DATA13] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 20.7490 mm): Segment of IC27 on F.Silkscreen
-    @(50.7700 mm, 19.8600 mm): PTH pad 16 [DATA14] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 20.7490 mm): Segment of IC27 on F.Silkscreen
-    @(48.2300 mm, 19.8600 mm): PTH pad 17 [DATA14] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 20.7490 mm): Segment of IC27 on F.Silkscreen
-    @(45.6900 mm, 19.8600 mm): PTH pad 18 [DATA15] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 20.7490 mm): Segment of IC27 on F.Silkscreen
-    @(43.1500 mm, 19.8600 mm): PTH pad 19 [DATA15] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 20.7490 mm): Segment of IC27 on F.Silkscreen
-    @(40.6100 mm, 19.8600 mm): PTH pad 20 [VCC] of IC27
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 40.5610 mm): Segment of IC29 on F.Silkscreen
-    @(63.4700 mm, 41.4500 mm): PTH pad 10 [GND] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 40.5610 mm): Segment of IC29 on F.Silkscreen
-    @(40.6100 mm, 41.4500 mm): PTH pad 1 [-TMP-REG-RD1] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 40.5610 mm): Segment of IC29 on F.Silkscreen
-    @(43.1500 mm, 41.4500 mm): PTH pad 2 [DATA8] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 40.5610 mm): Segment of IC29 on F.Silkscreen
-    @(45.6900 mm, 41.4500 mm): PTH pad 3 [DATA8] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 40.5610 mm): Segment of IC29 on F.Silkscreen
-    @(48.2300 mm, 41.4500 mm): PTH pad 4 [DATA9] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 40.5610 mm): Segment of IC29 on F.Silkscreen
-    @(50.7700 mm, 41.4500 mm): PTH pad 5 [DATA9] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 40.5610 mm): Segment of IC29 on F.Silkscreen
-    @(53.3100 mm, 41.4500 mm): PTH pad 6 [DATA10] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 40.5610 mm): Segment of IC29 on F.Silkscreen
-    @(55.8500 mm, 41.4500 mm): PTH pad 7 [DATA10] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 40.5610 mm): Segment of IC29 on F.Silkscreen
-    @(58.3900 mm, 41.4500 mm): PTH pad 8 [DATA11] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(39.3400 mm, 40.5610 mm): Segment of IC29 on F.Silkscreen
-    @(60.9300 mm, 41.4500 mm): PTH pad 9 [DATA11] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 34.7190 mm): Segment of IC29 on F.Silkscreen
-    @(63.4700 mm, 33.8300 mm): PTH pad 11 [Net-(IC14F-O)] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 34.7190 mm): Segment of IC29 on F.Silkscreen
-    @(60.9300 mm, 33.8300 mm): PTH pad 12 [DATA12] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 34.7190 mm): Segment of IC29 on F.Silkscreen
-    @(58.3900 mm, 33.8300 mm): PTH pad 13 [DATA12] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 34.7190 mm): Segment of IC29 on F.Silkscreen
-    @(55.8500 mm, 33.8300 mm): PTH pad 14 [DATA13] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 34.7190 mm): Segment of IC29 on F.Silkscreen
-    @(53.3100 mm, 33.8300 mm): PTH pad 15 [DATA13] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 34.7190 mm): Segment of IC29 on F.Silkscreen
-    @(50.7700 mm, 33.8300 mm): PTH pad 16 [DATA14] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 34.7190 mm): Segment of IC29 on F.Silkscreen
-    @(48.2300 mm, 33.8300 mm): PTH pad 17 [DATA14] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 34.7190 mm): Segment of IC29 on F.Silkscreen
-    @(45.6900 mm, 33.8300 mm): PTH pad 18 [DATA15] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 34.7190 mm): Segment of IC29 on F.Silkscreen
-    @(43.1500 mm, 33.8300 mm): PTH pad 19 [DATA15] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 34.7190 mm): Segment of IC29 on F.Silkscreen
-    @(40.6100 mm, 33.8300 mm): PTH pad 20 [VCC] of IC29
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(35.5300 mm, 15.6690 mm): Segment of C21 on F.Silkscreen
-    @(35.5300 mm, 14.7800 mm): PTH pad 2 [VCC] of C21
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(35.5300 mm, 16.3040 mm): Segment of C21 on F.Silkscreen
-    @(35.5300 mm, 17.3200 mm): PTH pad 1 [GND] of C21
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(35.5300 mm, 23.2890 mm): Segment of C15 on F.Silkscreen
-    @(35.5300 mm, 22.4000 mm): PTH pad 2 [GND] of C15
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(35.5300 mm, 23.9240 mm): Segment of C15 on F.Silkscreen
-    @(35.5300 mm, 24.9400 mm): PTH pad 1 [VCC] of C15
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(35.5300 mm, 37.2590 mm): Segment of C17 on F.Silkscreen
-    @(35.5300 mm, 36.3700 mm): PTH pad 2 [GND] of C17
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(35.5300 mm, 37.8940 mm): Segment of C17 on F.Silkscreen
-    @(35.5300 mm, 38.9100 mm): PTH pad 1 [VCC] of C17
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(71.0900 mm, 37.8940 mm): Segment of C10 on F.Silkscreen
-    @(71.0900 mm, 38.9100 mm): PTH pad 1 [VCC] of C10
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(71.0900 mm, 37.2590 mm): Segment of C10 on F.Silkscreen
-    @(71.0900 mm, 36.3700 mm): PTH pad 2 [GND] of C10
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 40.5610 mm): Segment of IC6 on F.Silkscreen
-    @(76.1700 mm, 41.4500 mm): PTH pad 1 [Net-(IC6A-I)] of IC6
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 40.5610 mm): Segment of IC6 on F.Silkscreen
-    @(78.7100 mm, 41.4500 mm): PTH pad 2 [Net-(IC1-~{OE})] of IC6
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 40.5610 mm): Segment of IC6 on F.Silkscreen
-    @(81.2500 mm, 41.4500 mm): PTH pad 3 [Net-(IC6B-I)] of IC6
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 40.5610 mm): Segment of IC6 on F.Silkscreen
-    @(83.7900 mm, 41.4500 mm): PTH pad 4 [Net-(IC1-~{WE})] of IC6
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 40.5610 mm): Segment of IC6 on F.Silkscreen
-    @(86.3300 mm, 41.4500 mm): PTH pad 5 [-MEM-RD] of IC6
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 40.5610 mm): Segment of IC6 on F.Silkscreen
-    @(88.8700 mm, 41.4500 mm): PTH pad 6 [Net-(IC6A-I)] of IC6
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 40.5610 mm): Segment of IC6 on F.Silkscreen
-    @(91.4100 mm, 41.4500 mm): PTH pad 7 [GND] of IC6
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(92.6800 mm, 34.7190 mm): Segment of IC6 on F.Silkscreen
-    @(78.7100 mm, 33.8300 mm): PTH pad 13 [Net-(IC18-O)] of IC6
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(92.6800 mm, 34.7190 mm): Segment of IC6 on F.Silkscreen
-    @(76.1700 mm, 33.8300 mm): PTH pad 14 [VCC] of IC6
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(92.6800 mm, 34.7190 mm): Segment of IC6 on F.Silkscreen
-    @(83.7900 mm, 33.8300 mm): PTH pad 11 [Net-(IC4-O)] of IC6
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(92.6800 mm, 34.7190 mm): Segment of IC6 on F.Silkscreen
-    @(81.2500 mm, 33.8300 mm): PTH pad 12 [-ROM-CS] of IC6
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(92.6800 mm, 34.7190 mm): Segment of IC6 on F.Silkscreen
-    @(91.4100 mm, 33.8300 mm): PTH pad 8 [Net-(IC6B-I)] of IC6
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(92.6800 mm, 34.7190 mm): Segment of IC6 on F.Silkscreen
-    @(88.8700 mm, 33.8300 mm): PTH pad 9 [-MEM-WR] of IC6
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(92.6800 mm, 34.7190 mm): Segment of IC6 on F.Silkscreen
-    @(86.3300 mm, 33.8300 mm): PTH pad 10 [-HI-RAM] of IC6
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
     @(99.4110 mm, 29.1310 mm): Segment of RN8 on F.Silkscreen
     @(100.3000 mm, 30.0200 mm): PTH pad 1 [VCC] of RN8
 [silk_over_copper]: Silkscreen clipped by solder mask
@@ -364,164 +180,12 @@
     @(100.3000 mm, 30.0200 mm): PTH pad 1 [VCC] of RN8
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(21.5600 mm, 15.4150 mm): Segment of JP1 on F.Silkscreen
-    @(22.8300 mm, 14.7800 mm): PTH pad 1 [-BUS-EN] of JP1
+    @(71.0900 mm, 37.8940 mm): Segment of C10 on F.Silkscreen
+    @(71.0900 mm, 38.9100 mm): PTH pad 1 [VCC] of C10
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(22.1950 mm, 13.5100 mm): Segment of JP1 on F.Silkscreen
-    @(22.8300 mm, 14.7800 mm): PTH pad 1 [-BUS-EN] of JP1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(22.1950 mm, 13.5100 mm): Segment of JP1 on F.Silkscreen
-    @(22.8300 mm, 14.7800 mm): PTH pad 1 [-BUS-EN] of JP1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(23.4650 mm, 16.0500 mm): Segment of JP1 on F.Silkscreen
-    @(22.8300 mm, 14.7800 mm): PTH pad 1 [-BUS-EN] of JP1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(24.1000 mm, 14.1450 mm): Segment of JP1 on F.Silkscreen
-    @(25.3700 mm, 14.7800 mm): PTH pad 2 [Net-(IC7-G2B)] of JP1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(24.7350 mm, 13.5100 mm): Segment of JP1 on F.Silkscreen
-    @(25.3700 mm, 14.7800 mm): PTH pad 2 [Net-(IC7-G2B)] of JP1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(26.0050 mm, 13.5100 mm): Segment of JP1 on F.Silkscreen
-    @(25.3700 mm, 14.7800 mm): PTH pad 2 [Net-(IC7-G2B)] of JP1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(26.6400 mm, 14.1450 mm): Segment of JP1 on F.Silkscreen
-    @(27.9100 mm, 14.7800 mm): PTH pad 3 [GND] of JP1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(23.4650 mm, 13.5100 mm): Segment of JP1 on F.Silkscreen
-    @(22.8300 mm, 14.7800 mm): PTH pad 1 [-BUS-EN] of JP1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(24.1000 mm, 15.4150 mm): Segment of JP1 on F.Silkscreen
-    @(22.8300 mm, 14.7800 mm): PTH pad 1 [-BUS-EN] of JP1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(24.7350 mm, 16.0500 mm): Segment of JP1 on F.Silkscreen
-    @(25.3700 mm, 14.7800 mm): PTH pad 2 [Net-(IC7-G2B)] of JP1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(26.0050 mm, 16.0500 mm): Segment of JP1 on F.Silkscreen
-    @(25.3700 mm, 14.7800 mm): PTH pad 2 [Net-(IC7-G2B)] of JP1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(26.6400 mm, 15.4150 mm): Segment of JP1 on F.Silkscreen
-    @(25.3700 mm, 14.7800 mm): PTH pad 2 [Net-(IC7-G2B)] of JP1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(27.2750 mm, 13.5100 mm): Segment of JP1 on F.Silkscreen
-    @(27.9100 mm, 14.7800 mm): PTH pad 3 [GND] of JP1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(27.2750 mm, 16.0500 mm): Segment of JP1 on F.Silkscreen
-    @(27.9100 mm, 14.7800 mm): PTH pad 3 [GND] of JP1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(28.5450 mm, 13.5100 mm): Segment of JP1 on F.Silkscreen
-    @(27.9100 mm, 14.7800 mm): PTH pad 3 [GND] of JP1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(28.5450 mm, 16.0500 mm): Segment of JP1 on F.Silkscreen
-    @(27.9100 mm, 14.7800 mm): PTH pad 3 [GND] of JP1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(29.1800 mm, 15.4150 mm): Segment of JP1 on F.Silkscreen
-    @(27.9100 mm, 14.7800 mm): PTH pad 3 [GND] of JP1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 82.4710 mm): Segment of IC12 on F.Silkscreen
-    @(76.1700 mm, 83.3600 mm): PTH pad 1 [VCC] of IC12
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 82.4710 mm): Segment of IC12 on F.Silkscreen
-    @(78.7100 mm, 83.3600 mm): PTH pad 2 [GND] of IC12
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 82.4710 mm): Segment of IC12 on F.Silkscreen
-    @(81.2500 mm, 83.3600 mm): PTH pad 3 [Net-(IC10C-O)] of IC12
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 82.4710 mm): Segment of IC12 on F.Silkscreen
-    @(91.4100 mm, 83.3600 mm): PTH pad 7 [GND] of IC12
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 82.4710 mm): Segment of IC12 on F.Silkscreen
-    @(83.7900 mm, 83.3600 mm): PTH pad 4 [-RESET] of IC12
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 82.4710 mm): Segment of IC12 on F.Silkscreen
-    @(86.3300 mm, 83.3600 mm): PTH pad 5 [FORCE-ROM] of IC12
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 82.4710 mm): Segment of IC12 on F.Silkscreen
-    @(88.8700 mm, 83.3600 mm): PTH pad 6 [unconnected-(IC12A-~{Q}-Pad6)] of IC12
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(92.6800 mm, 76.6290 mm): Segment of IC12 on F.Silkscreen
-    @(78.7100 mm, 75.7400 mm): PTH pad 13 [GND] of IC12
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(92.6800 mm, 76.6290 mm): Segment of IC12 on F.Silkscreen
-    @(76.1700 mm, 75.7400 mm): PTH pad 14 [VCC] of IC12
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(92.6800 mm, 76.6290 mm): Segment of IC12 on F.Silkscreen
-    @(91.4100 mm, 75.7400 mm): PTH pad 8 [unconnected-(IC12B-~{Q}-Pad8)] of IC12
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(92.6800 mm, 76.6290 mm): Segment of IC12 on F.Silkscreen
-    @(88.8700 mm, 75.7400 mm): PTH pad 9 [unconnected-(IC12B-Q-Pad9)] of IC12
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(92.6800 mm, 76.6290 mm): Segment of IC12 on F.Silkscreen
-    @(86.3300 mm, 75.7400 mm): PTH pad 10 [GND] of IC12
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(92.6800 mm, 76.6290 mm): Segment of IC12 on F.Silkscreen
-    @(83.7900 mm, 75.7400 mm): PTH pad 11 [GND] of IC12
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(92.6800 mm, 76.6290 mm): Segment of IC12 on F.Silkscreen
-    @(81.2500 mm, 75.7400 mm): PTH pad 12 [GND] of IC12
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 68.5010 mm): Segment of IC11 on F.Silkscreen
-    @(76.1700 mm, 69.3900 mm): PTH pad 1 [FORCE-ROM] of IC11
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 68.5010 mm): Segment of IC11 on F.Silkscreen
-    @(78.7100 mm, 69.3900 mm): PTH pad 2 [Net-(IC11-1A)] of IC11
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 68.5010 mm): Segment of IC11 on F.Silkscreen
-    @(81.2500 mm, 69.3900 mm): PTH pad 3 [VCC] of IC11
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 68.5010 mm): Segment of IC11 on F.Silkscreen
-    @(83.7900 mm, 69.3900 mm): PTH pad 4 [BADDR12] of IC11
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 68.5010 mm): Segment of IC11 on F.Silkscreen
-    @(86.3300 mm, 69.3900 mm): PTH pad 5 [Net-(IC11-2A)] of IC11
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 68.5010 mm): Segment of IC11 on F.Silkscreen
-    @(88.8700 mm, 69.3900 mm): PTH pad 6 [VCC] of IC11
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 68.5010 mm): Segment of IC11 on F.Silkscreen
-    @(91.4100 mm, 69.3900 mm): PTH pad 7 [BADDR13] of IC11
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(74.9000 mm, 68.5010 mm): Segment of IC11 on F.Silkscreen
-    @(93.9500 mm, 69.3900 mm): PTH pad 8 [GND] of IC11
+    @(71.0900 mm, 37.2590 mm): Segment of C10 on F.Silkscreen
+    @(71.0900 mm, 36.3700 mm): PTH pad 2 [GND] of C10
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(95.2200 mm, 62.6590 mm): Segment of IC11 on F.Silkscreen
@@ -556,12 +220,16 @@
     @(76.1700 mm, 61.7700 mm): PTH pad 16 [VCC] of IC11
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(71.0900 mm, 65.8340 mm): Segment of C11 on F.Silkscreen
-    @(71.0900 mm, 66.8500 mm): PTH pad 1 [VCC] of C11
+    @(74.9000 mm, 54.5310 mm): Segment of IC5 on F.Silkscreen
+    @(93.9500 mm, 55.4200 mm): PTH pad 8 [DATA6] of IC5
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(71.0900 mm, 65.1990 mm): Segment of C11 on F.Silkscreen
-    @(71.0900 mm, 64.3100 mm): PTH pad 2 [GND] of C11
+    @(74.9000 mm, 54.5310 mm): Segment of IC5 on F.Silkscreen
+    @(96.4900 mm, 55.4200 mm): PTH pad 9 [DATA7] of IC5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 54.5310 mm): Segment of IC5 on F.Silkscreen
+    @(99.0300 mm, 55.4200 mm): PTH pad 10 [GND] of IC5
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(74.9000 mm, 54.5310 mm): Segment of IC5 on F.Silkscreen
@@ -592,16 +260,24 @@
     @(91.4100 mm, 55.4200 mm): PTH pad 7 [DATA5] of IC5
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(74.9000 mm, 54.5310 mm): Segment of IC5 on F.Silkscreen
-    @(93.9500 mm, 55.4200 mm): PTH pad 8 [DATA6] of IC5
+    @(100.3000 mm, 48.6890 mm): Segment of IC5 on F.Silkscreen
+    @(99.0300 mm, 47.8000 mm): PTH pad 11 [BDATA7] of IC5
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(74.9000 mm, 54.5310 mm): Segment of IC5 on F.Silkscreen
-    @(96.4900 mm, 55.4200 mm): PTH pad 9 [DATA7] of IC5
+    @(100.3000 mm, 48.6890 mm): Segment of IC5 on F.Silkscreen
+    @(96.4900 mm, 47.8000 mm): PTH pad 12 [BDATA6] of IC5
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(74.9000 mm, 54.5310 mm): Segment of IC5 on F.Silkscreen
-    @(99.0300 mm, 55.4200 mm): PTH pad 10 [GND] of IC5
+    @(100.3000 mm, 48.6890 mm): Segment of IC5 on F.Silkscreen
+    @(93.9500 mm, 47.8000 mm): PTH pad 13 [BDATA5] of IC5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(100.3000 mm, 48.6890 mm): Segment of IC5 on F.Silkscreen
+    @(91.4100 mm, 47.8000 mm): PTH pad 14 [BDATA4] of IC5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(100.3000 mm, 48.6890 mm): Segment of IC5 on F.Silkscreen
+    @(88.8700 mm, 47.8000 mm): PTH pad 15 [BDATA3] of IC5
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(100.3000 mm, 48.6890 mm): Segment of IC5 on F.Silkscreen
@@ -624,32 +300,428 @@
     @(76.1700 mm, 47.8000 mm): PTH pad 20 [VCC] of IC5
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(100.3000 mm, 48.6890 mm): Segment of IC5 on F.Silkscreen
-    @(99.0300 mm, 47.8000 mm): PTH pad 11 [BDATA7] of IC5
+    @(74.9000 mm, 40.5610 mm): Segment of IC6 on F.Silkscreen
+    @(76.1700 mm, 41.4500 mm): PTH pad 1 [Net-(IC6A-I)] of IC6
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(100.3000 mm, 48.6890 mm): Segment of IC5 on F.Silkscreen
-    @(96.4900 mm, 47.8000 mm): PTH pad 12 [BDATA6] of IC5
+    @(74.9000 mm, 40.5610 mm): Segment of IC6 on F.Silkscreen
+    @(78.7100 mm, 41.4500 mm): PTH pad 2 [Net-(IC1-~{OE})] of IC6
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(100.3000 mm, 48.6890 mm): Segment of IC5 on F.Silkscreen
-    @(93.9500 mm, 47.8000 mm): PTH pad 13 [BDATA5] of IC5
+    @(74.9000 mm, 40.5610 mm): Segment of IC6 on F.Silkscreen
+    @(81.2500 mm, 41.4500 mm): PTH pad 3 [Net-(IC6B-I)] of IC6
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(100.3000 mm, 48.6890 mm): Segment of IC5 on F.Silkscreen
-    @(91.4100 mm, 47.8000 mm): PTH pad 14 [BDATA4] of IC5
+    @(74.9000 mm, 40.5610 mm): Segment of IC6 on F.Silkscreen
+    @(83.7900 mm, 41.4500 mm): PTH pad 4 [Net-(IC1-~{WE})] of IC6
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(100.3000 mm, 48.6890 mm): Segment of IC5 on F.Silkscreen
-    @(88.8700 mm, 47.8000 mm): PTH pad 15 [BDATA3] of IC5
+    @(74.9000 mm, 40.5610 mm): Segment of IC6 on F.Silkscreen
+    @(86.3300 mm, 41.4500 mm): PTH pad 5 [-MEM-RD] of IC6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 40.5610 mm): Segment of IC6 on F.Silkscreen
+    @(88.8700 mm, 41.4500 mm): PTH pad 6 [Net-(IC6A-I)] of IC6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 40.5610 mm): Segment of IC6 on F.Silkscreen
+    @(91.4100 mm, 41.4500 mm): PTH pad 7 [GND] of IC6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(92.6800 mm, 34.7190 mm): Segment of IC6 on F.Silkscreen
+    @(91.4100 mm, 33.8300 mm): PTH pad 8 [Net-(IC6B-I)] of IC6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(92.6800 mm, 34.7190 mm): Segment of IC6 on F.Silkscreen
+    @(88.8700 mm, 33.8300 mm): PTH pad 9 [-MEM-WR] of IC6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(92.6800 mm, 34.7190 mm): Segment of IC6 on F.Silkscreen
+    @(86.3300 mm, 33.8300 mm): PTH pad 10 [-HI-RAM] of IC6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(92.6800 mm, 34.7190 mm): Segment of IC6 on F.Silkscreen
+    @(83.7900 mm, 33.8300 mm): PTH pad 11 [Net-(IC4-O)] of IC6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(92.6800 mm, 34.7190 mm): Segment of IC6 on F.Silkscreen
+    @(81.2500 mm, 33.8300 mm): PTH pad 12 [-ROM-CS] of IC6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(92.6800 mm, 34.7190 mm): Segment of IC6 on F.Silkscreen
+    @(78.7100 mm, 33.8300 mm): PTH pad 13 [Net-(IC18-O)] of IC6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(92.6800 mm, 34.7190 mm): Segment of IC6 on F.Silkscreen
+    @(76.1700 mm, 33.8300 mm): PTH pad 14 [VCC] of IC6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(71.0900 mm, 51.2290 mm): Segment of C6 on F.Silkscreen
+    @(71.0900 mm, 50.3400 mm): PTH pad 2 [GND] of C6
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(71.0900 mm, 51.8640 mm): Segment of C6 on F.Silkscreen
     @(71.0900 mm, 52.8800 mm): PTH pad 1 [VCC] of C6
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(71.0900 mm, 51.2290 mm): Segment of C6 on F.Silkscreen
-    @(71.0900 mm, 50.3400 mm): PTH pad 2 [GND] of C6
+    @(41.8800 mm, 106.2200 mm): Segment of RN5 on F.Silkscreen
+    @(43.1500 mm, 104.9500 mm): PTH pad 2 [DATA0] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 106.2200 mm): Segment of RN5 on F.Silkscreen
+    @(45.6900 mm, 104.9500 mm): PTH pad 3 [DATA1] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 106.2200 mm): Segment of RN5 on F.Silkscreen
+    @(48.2300 mm, 104.9500 mm): PTH pad 4 [DATA2] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 106.2200 mm): Segment of RN5 on F.Silkscreen
+    @(50.7700 mm, 104.9500 mm): PTH pad 5 [DATA3] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 106.2200 mm): Segment of RN5 on F.Silkscreen
+    @(53.3100 mm, 104.9500 mm): PTH pad 6 [DATA4] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 106.2200 mm): Segment of RN5 on F.Silkscreen
+    @(55.8500 mm, 104.9500 mm): PTH pad 7 [DATA5] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 106.2200 mm): Segment of RN5 on F.Silkscreen
+    @(58.3900 mm, 104.9500 mm): PTH pad 8 [DATA6] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 106.2200 mm): Segment of RN5 on F.Silkscreen
+    @(60.9300 mm, 104.9500 mm): PTH pad 9 [DATA7] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(62.2000 mm, 103.6800 mm): Segment of RN5 on F.Silkscreen
+    @(43.1500 mm, 104.9500 mm): PTH pad 2 [DATA0] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(62.2000 mm, 103.6800 mm): Segment of RN5 on F.Silkscreen
+    @(45.6900 mm, 104.9500 mm): PTH pad 3 [DATA1] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(62.2000 mm, 103.6800 mm): Segment of RN5 on F.Silkscreen
+    @(48.2300 mm, 104.9500 mm): PTH pad 4 [DATA2] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(62.2000 mm, 103.6800 mm): Segment of RN5 on F.Silkscreen
+    @(50.7700 mm, 104.9500 mm): PTH pad 5 [DATA3] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(62.2000 mm, 103.6800 mm): Segment of RN5 on F.Silkscreen
+    @(53.3100 mm, 104.9500 mm): PTH pad 6 [DATA4] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(62.2000 mm, 103.6800 mm): Segment of RN5 on F.Silkscreen
+    @(55.8500 mm, 104.9500 mm): PTH pad 7 [DATA5] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(62.2000 mm, 103.6800 mm): Segment of RN5 on F.Silkscreen
+    @(58.3900 mm, 104.9500 mm): PTH pad 8 [DATA6] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(62.2000 mm, 103.6800 mm): Segment of RN5 on F.Silkscreen
+    @(60.9300 mm, 104.9500 mm): PTH pad 9 [DATA7] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.3400 mm, 96.4410 mm): Segment of IC8 on F.Silkscreen
+    @(40.6100 mm, 97.3300 mm): PTH pad 1 [GND] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.3400 mm, 96.4410 mm): Segment of IC8 on F.Silkscreen
+    @(43.1500 mm, 97.3300 mm): PTH pad 2 [ADDR0] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.3400 mm, 96.4410 mm): Segment of IC8 on F.Silkscreen
+    @(45.6900 mm, 97.3300 mm): PTH pad 3 [BADDR7] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.3400 mm, 96.4410 mm): Segment of IC8 on F.Silkscreen
+    @(48.2300 mm, 97.3300 mm): PTH pad 4 [ADDR1] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.3400 mm, 96.4410 mm): Segment of IC8 on F.Silkscreen
+    @(50.7700 mm, 97.3300 mm): PTH pad 5 [BADDR6] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.3400 mm, 96.4410 mm): Segment of IC8 on F.Silkscreen
+    @(53.3100 mm, 97.3300 mm): PTH pad 6 [ADDR2] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.3400 mm, 96.4410 mm): Segment of IC8 on F.Silkscreen
+    @(55.8500 mm, 97.3300 mm): PTH pad 7 [BADDR5] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.3400 mm, 96.4410 mm): Segment of IC8 on F.Silkscreen
+    @(58.3900 mm, 97.3300 mm): PTH pad 8 [ADDR3] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.3400 mm, 96.4410 mm): Segment of IC8 on F.Silkscreen
+    @(60.9300 mm, 97.3300 mm): PTH pad 9 [BADDR4] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.3400 mm, 96.4410 mm): Segment of IC8 on F.Silkscreen
+    @(63.4700 mm, 97.3300 mm): PTH pad 10 [GND] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(64.7400 mm, 90.5990 mm): Segment of IC8 on F.Silkscreen
+    @(63.4700 mm, 89.7100 mm): PTH pad 11 [ADDR4] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(64.7400 mm, 90.5990 mm): Segment of IC8 on F.Silkscreen
+    @(60.9300 mm, 89.7100 mm): PTH pad 12 [BADDR3] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(64.7400 mm, 90.5990 mm): Segment of IC8 on F.Silkscreen
+    @(58.3900 mm, 89.7100 mm): PTH pad 13 [ADDR5] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(64.7400 mm, 90.5990 mm): Segment of IC8 on F.Silkscreen
+    @(55.8500 mm, 89.7100 mm): PTH pad 14 [BADDR2] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(64.7400 mm, 90.5990 mm): Segment of IC8 on F.Silkscreen
+    @(53.3100 mm, 89.7100 mm): PTH pad 15 [ADDR6] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(64.7400 mm, 90.5990 mm): Segment of IC8 on F.Silkscreen
+    @(50.7700 mm, 89.7100 mm): PTH pad 16 [BADDR1] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(64.7400 mm, 90.5990 mm): Segment of IC8 on F.Silkscreen
+    @(48.2300 mm, 89.7100 mm): PTH pad 17 [ADDR7] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(64.7400 mm, 90.5990 mm): Segment of IC8 on F.Silkscreen
+    @(45.6900 mm, 89.7100 mm): PTH pad 18 [BADDR0] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(64.7400 mm, 90.5990 mm): Segment of IC8 on F.Silkscreen
+    @(43.1500 mm, 89.7100 mm): PTH pad 19 [GND] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(64.7400 mm, 90.5990 mm): Segment of IC8 on F.Silkscreen
+    @(40.6100 mm, 89.7100 mm): PTH pad 20 [VCC] of IC8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 111.3000 mm): Segment of RN6 on F.Silkscreen
+    @(43.1500 mm, 110.0300 mm): PTH pad 2 [DATA8] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 111.3000 mm): Segment of RN6 on F.Silkscreen
+    @(45.6900 mm, 110.0300 mm): PTH pad 3 [DATA9] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 111.3000 mm): Segment of RN6 on F.Silkscreen
+    @(48.2300 mm, 110.0300 mm): PTH pad 4 [DATA10] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 111.3000 mm): Segment of RN6 on F.Silkscreen
+    @(50.7700 mm, 110.0300 mm): PTH pad 5 [DATA11] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 111.3000 mm): Segment of RN6 on F.Silkscreen
+    @(53.3100 mm, 110.0300 mm): PTH pad 6 [DATA12] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 111.3000 mm): Segment of RN6 on F.Silkscreen
+    @(55.8500 mm, 110.0300 mm): PTH pad 7 [DATA13] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 111.3000 mm): Segment of RN6 on F.Silkscreen
+    @(58.3900 mm, 110.0300 mm): PTH pad 8 [DATA14] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 111.3000 mm): Segment of RN6 on F.Silkscreen
+    @(60.9300 mm, 110.0300 mm): PTH pad 9 [DATA15] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(62.2000 mm, 108.7600 mm): Segment of RN6 on F.Silkscreen
+    @(43.1500 mm, 110.0300 mm): PTH pad 2 [DATA8] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(62.2000 mm, 108.7600 mm): Segment of RN6 on F.Silkscreen
+    @(45.6900 mm, 110.0300 mm): PTH pad 3 [DATA9] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(62.2000 mm, 108.7600 mm): Segment of RN6 on F.Silkscreen
+    @(48.2300 mm, 110.0300 mm): PTH pad 4 [DATA10] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(62.2000 mm, 108.7600 mm): Segment of RN6 on F.Silkscreen
+    @(50.7700 mm, 110.0300 mm): PTH pad 5 [DATA11] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(62.2000 mm, 108.7600 mm): Segment of RN6 on F.Silkscreen
+    @(53.3100 mm, 110.0300 mm): PTH pad 6 [DATA12] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(62.2000 mm, 108.7600 mm): Segment of RN6 on F.Silkscreen
+    @(55.8500 mm, 110.0300 mm): PTH pad 7 [DATA13] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(62.2000 mm, 108.7600 mm): Segment of RN6 on F.Silkscreen
+    @(58.3900 mm, 110.0300 mm): PTH pad 8 [DATA14] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(62.2000 mm, 108.7600 mm): Segment of RN6 on F.Silkscreen
+    @(60.9300 mm, 110.0300 mm): PTH pad 9 [DATA15] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(71.0900 mm, 107.1090 mm): Segment of C18 on F.Silkscreen
+    @(71.0900 mm, 106.2200 mm): PTH pad 2 [GND] of C18
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(71.0900 mm, 107.7440 mm): Segment of C18 on F.Silkscreen
+    @(71.0900 mm, 108.7600 mm): PTH pad 1 [VCC] of C18
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.3400 mm, 103.6800 mm): Segment of RN5 on F.Silkscreen
+    @(40.6100 mm, 104.9500 mm): PTH pad 1 [GND] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 103.6800 mm): Segment of RN5 on F.Silkscreen
+    @(40.6100 mm, 104.9500 mm): PTH pad 1 [GND] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 103.6800 mm): Segment of RN5 on F.Silkscreen
+    @(40.6100 mm, 104.9500 mm): PTH pad 1 [GND] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.3400 mm, 106.2200 mm): Segment of RN5 on F.Silkscreen
+    @(40.6100 mm, 104.9500 mm): PTH pad 1 [GND] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.3400 mm, 106.2200 mm): Segment of RN5 on F.Silkscreen
+    @(40.6100 mm, 104.9500 mm): PTH pad 1 [GND] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 106.2200 mm): Segment of RN5 on F.Silkscreen
+    @(40.6100 mm, 104.9500 mm): PTH pad 1 [GND] of RN5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.3400 mm, 108.7600 mm): Segment of RN6 on F.Silkscreen
+    @(40.6100 mm, 110.0300 mm): PTH pad 1 [GND] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.3400 mm, 111.3000 mm): Segment of RN6 on F.Silkscreen
+    @(40.6100 mm, 110.0300 mm): PTH pad 1 [GND] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.3400 mm, 111.3000 mm): Segment of RN6 on F.Silkscreen
+    @(40.6100 mm, 110.0300 mm): PTH pad 1 [GND] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 108.7600 mm): Segment of RN6 on F.Silkscreen
+    @(40.6100 mm, 110.0300 mm): PTH pad 1 [GND] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 108.7600 mm): Segment of RN6 on F.Silkscreen
+    @(40.6100 mm, 110.0300 mm): PTH pad 1 [GND] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(41.8800 mm, 111.3000 mm): Segment of RN6 on F.Silkscreen
+    @(40.6100 mm, 110.0300 mm): PTH pad 1 [GND] of RN6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 82.4710 mm): Segment of IC12 on F.Silkscreen
+    @(76.1700 mm, 83.3600 mm): PTH pad 1 [VCC] of IC12
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 82.4710 mm): Segment of IC12 on F.Silkscreen
+    @(78.7100 mm, 83.3600 mm): PTH pad 2 [GND] of IC12
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 82.4710 mm): Segment of IC12 on F.Silkscreen
+    @(81.2500 mm, 83.3600 mm): PTH pad 3 [Net-(IC10C-O)] of IC12
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 82.4710 mm): Segment of IC12 on F.Silkscreen
+    @(83.7900 mm, 83.3600 mm): PTH pad 4 [-RESET] of IC12
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 82.4710 mm): Segment of IC12 on F.Silkscreen
+    @(86.3300 mm, 83.3600 mm): PTH pad 5 [FORCE-ROM] of IC12
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 82.4710 mm): Segment of IC12 on F.Silkscreen
+    @(88.8700 mm, 83.3600 mm): PTH pad 6 [unconnected-(IC12A-~{Q}-Pad6)] of IC12
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 82.4710 mm): Segment of IC12 on F.Silkscreen
+    @(91.4100 mm, 83.3600 mm): PTH pad 7 [GND] of IC12
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(92.6800 mm, 76.6290 mm): Segment of IC12 on F.Silkscreen
+    @(91.4100 mm, 75.7400 mm): PTH pad 8 [unconnected-(IC12B-~{Q}-Pad8)] of IC12
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(92.6800 mm, 76.6290 mm): Segment of IC12 on F.Silkscreen
+    @(88.8700 mm, 75.7400 mm): PTH pad 9 [unconnected-(IC12B-Q-Pad9)] of IC12
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(92.6800 mm, 76.6290 mm): Segment of IC12 on F.Silkscreen
+    @(86.3300 mm, 75.7400 mm): PTH pad 10 [GND] of IC12
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(92.6800 mm, 76.6290 mm): Segment of IC12 on F.Silkscreen
+    @(83.7900 mm, 75.7400 mm): PTH pad 11 [GND] of IC12
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(92.6800 mm, 76.6290 mm): Segment of IC12 on F.Silkscreen
+    @(81.2500 mm, 75.7400 mm): PTH pad 12 [GND] of IC12
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(92.6800 mm, 76.6290 mm): Segment of IC12 on F.Silkscreen
+    @(78.7100 mm, 75.7400 mm): PTH pad 13 [GND] of IC12
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(92.6800 mm, 76.6290 mm): Segment of IC12 on F.Silkscreen
+    @(76.1700 mm, 75.7400 mm): PTH pad 14 [VCC] of IC12
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 68.5010 mm): Segment of IC11 on F.Silkscreen
+    @(93.9500 mm, 69.3900 mm): PTH pad 8 [GND] of IC11
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 68.5010 mm): Segment of IC11 on F.Silkscreen
+    @(83.7900 mm, 69.3900 mm): PTH pad 4 [BADDR12] of IC11
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 68.5010 mm): Segment of IC11 on F.Silkscreen
+    @(86.3300 mm, 69.3900 mm): PTH pad 5 [Net-(IC11-2A)] of IC11
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 68.5010 mm): Segment of IC11 on F.Silkscreen
+    @(88.8700 mm, 69.3900 mm): PTH pad 6 [VCC] of IC11
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 68.5010 mm): Segment of IC11 on F.Silkscreen
+    @(91.4100 mm, 69.3900 mm): PTH pad 7 [BADDR13] of IC11
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 68.5010 mm): Segment of IC11 on F.Silkscreen
+    @(76.1700 mm, 69.3900 mm): PTH pad 1 [FORCE-ROM] of IC11
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 68.5010 mm): Segment of IC11 on F.Silkscreen
+    @(78.7100 mm, 69.3900 mm): PTH pad 2 [Net-(IC11-1A)] of IC11
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.9000 mm, 68.5010 mm): Segment of IC11 on F.Silkscreen
+    @(81.2500 mm, 69.3900 mm): PTH pad 3 [VCC] of IC11
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(71.0900 mm, 65.8340 mm): Segment of C11 on F.Silkscreen
+    @(71.0900 mm, 66.8500 mm): PTH pad 1 [VCC] of C11
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(71.0900 mm, 65.1990 mm): Segment of C11 on F.Silkscreen
+    @(71.0900 mm, 64.3100 mm): PTH pad 2 [GND] of C11
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(71.0900 mm, 79.1690 mm): Segment of C12 on F.Silkscreen
@@ -660,180 +732,108 @@
     @(71.0900 mm, 80.8200 mm): PTH pad 1 [VCC] of C12
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(35.5300 mm, 65.1990 mm): Segment of C16 on F.Silkscreen
-    @(35.5300 mm, 64.3100 mm): PTH pad 2 [GND] of C16
+    @(35.5300 mm, 79.8040 mm): Segment of C4 on F.Silkscreen
+    @(35.5300 mm, 80.8200 mm): PTH pad 1 [VCC] of C4
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(35.5300 mm, 65.8340 mm): Segment of C16 on F.Silkscreen
-    @(35.5300 mm, 66.8500 mm): PTH pad 1 [VCC] of C16
+    @(39.3400 mm, 82.4710 mm): Segment of IC9 on F.Silkscreen
+    @(48.2300 mm, 83.3600 mm): PTH pad 4 [ADDR9] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(39.3400 mm, 54.5310 mm): Segment of IC26 on F.Silkscreen
-    @(40.6100 mm, 55.4200 mm): PTH pad 1 [-TMP-REG-RD0] of IC26
+    @(39.3400 mm, 82.4710 mm): Segment of IC9 on F.Silkscreen
+    @(50.7700 mm, 83.3600 mm): PTH pad 5 [Net-(IC11-3A)] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(39.3400 mm, 54.5310 mm): Segment of IC26 on F.Silkscreen
-    @(43.1500 mm, 55.4200 mm): PTH pad 2 [DATA0] of IC26
+    @(39.3400 mm, 82.4710 mm): Segment of IC9 on F.Silkscreen
+    @(53.3100 mm, 83.3600 mm): PTH pad 6 [ADDR10] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(39.3400 mm, 54.5310 mm): Segment of IC26 on F.Silkscreen
-    @(45.6900 mm, 55.4200 mm): PTH pad 3 [DATA0] of IC26
+    @(39.3400 mm, 82.4710 mm): Segment of IC9 on F.Silkscreen
+    @(55.8500 mm, 83.3600 mm): PTH pad 7 [Net-(IC11-2A)] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(39.3400 mm, 54.5310 mm): Segment of IC26 on F.Silkscreen
-    @(48.2300 mm, 55.4200 mm): PTH pad 4 [DATA1] of IC26
+    @(39.3400 mm, 82.4710 mm): Segment of IC9 on F.Silkscreen
+    @(58.3900 mm, 83.3600 mm): PTH pad 8 [ADDR11] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(39.3400 mm, 54.5310 mm): Segment of IC26 on F.Silkscreen
-    @(50.7700 mm, 55.4200 mm): PTH pad 5 [DATA1] of IC26
+    @(39.3400 mm, 82.4710 mm): Segment of IC9 on F.Silkscreen
+    @(60.9300 mm, 83.3600 mm): PTH pad 9 [Net-(IC11-1A)] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(39.3400 mm, 54.5310 mm): Segment of IC26 on F.Silkscreen
-    @(53.3100 mm, 55.4200 mm): PTH pad 6 [DATA2] of IC26
+    @(39.3400 mm, 82.4710 mm): Segment of IC9 on F.Silkscreen
+    @(63.4700 mm, 83.3600 mm): PTH pad 10 [GND] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(39.3400 mm, 54.5310 mm): Segment of IC26 on F.Silkscreen
-    @(55.8500 mm, 55.4200 mm): PTH pad 7 [DATA2] of IC26
+    @(39.3400 mm, 82.4710 mm): Segment of IC9 on F.Silkscreen
+    @(40.6100 mm, 83.3600 mm): PTH pad 1 [GND] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(39.3400 mm, 54.5310 mm): Segment of IC26 on F.Silkscreen
-    @(58.3900 mm, 55.4200 mm): PTH pad 8 [DATA3] of IC26
+    @(39.3400 mm, 82.4710 mm): Segment of IC9 on F.Silkscreen
+    @(43.1500 mm, 83.3600 mm): PTH pad 2 [ADDR8] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(39.3400 mm, 54.5310 mm): Segment of IC26 on F.Silkscreen
-    @(60.9300 mm, 55.4200 mm): PTH pad 9 [DATA3] of IC26
+    @(39.3400 mm, 82.4710 mm): Segment of IC9 on F.Silkscreen
+    @(45.6900 mm, 83.3600 mm): PTH pad 3 [Net-(IC11-4A)] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(39.3400 mm, 54.5310 mm): Segment of IC26 on F.Silkscreen
-    @(63.4700 mm, 55.4200 mm): PTH pad 10 [GND] of IC26
+    @(64.7400 mm, 76.6290 mm): Segment of IC9 on F.Silkscreen
+    @(63.4700 mm, 75.7400 mm): PTH pad 11 [ADDR12] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(64.7400 mm, 48.6890 mm): Segment of IC26 on F.Silkscreen
-    @(63.4700 mm, 47.8000 mm): PTH pad 11 [Net-(IC14A-O)] of IC26
+    @(64.7400 mm, 76.6290 mm): Segment of IC9 on F.Silkscreen
+    @(60.9300 mm, 75.7400 mm): PTH pad 12 [BADDR11] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(64.7400 mm, 48.6890 mm): Segment of IC26 on F.Silkscreen
-    @(60.9300 mm, 47.8000 mm): PTH pad 12 [DATA4] of IC26
+    @(64.7400 mm, 76.6290 mm): Segment of IC9 on F.Silkscreen
+    @(58.3900 mm, 75.7400 mm): PTH pad 13 [ADDR13] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(64.7400 mm, 48.6890 mm): Segment of IC26 on F.Silkscreen
-    @(58.3900 mm, 47.8000 mm): PTH pad 13 [DATA4] of IC26
+    @(64.7400 mm, 76.6290 mm): Segment of IC9 on F.Silkscreen
+    @(55.8500 mm, 75.7400 mm): PTH pad 14 [BADDR10] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(64.7400 mm, 48.6890 mm): Segment of IC26 on F.Silkscreen
-    @(55.8500 mm, 47.8000 mm): PTH pad 14 [DATA5] of IC26
+    @(64.7400 mm, 76.6290 mm): Segment of IC9 on F.Silkscreen
+    @(53.3100 mm, 75.7400 mm): PTH pad 15 [ADDR14] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(64.7400 mm, 48.6890 mm): Segment of IC26 on F.Silkscreen
-    @(53.3100 mm, 47.8000 mm): PTH pad 15 [DATA5] of IC26
+    @(64.7400 mm, 76.6290 mm): Segment of IC9 on F.Silkscreen
+    @(40.6100 mm, 75.7400 mm): PTH pad 20 [VCC] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(64.7400 mm, 48.6890 mm): Segment of IC26 on F.Silkscreen
-    @(50.7700 mm, 47.8000 mm): PTH pad 16 [DATA6] of IC26
+    @(64.7400 mm, 76.6290 mm): Segment of IC9 on F.Silkscreen
+    @(50.7700 mm, 75.7400 mm): PTH pad 16 [BADDR9] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(64.7400 mm, 48.6890 mm): Segment of IC26 on F.Silkscreen
-    @(48.2300 mm, 47.8000 mm): PTH pad 17 [DATA6] of IC26
+    @(64.7400 mm, 76.6290 mm): Segment of IC9 on F.Silkscreen
+    @(48.2300 mm, 75.7400 mm): PTH pad 17 [ADDR15] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(64.7400 mm, 48.6890 mm): Segment of IC26 on F.Silkscreen
-    @(45.6900 mm, 47.8000 mm): PTH pad 18 [DATA7] of IC26
+    @(64.7400 mm, 76.6290 mm): Segment of IC9 on F.Silkscreen
+    @(45.6900 mm, 75.7400 mm): PTH pad 18 [BADDR8] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(64.7400 mm, 48.6890 mm): Segment of IC26 on F.Silkscreen
-    @(43.1500 mm, 47.8000 mm): PTH pad 19 [DATA7] of IC26
+    @(64.7400 mm, 76.6290 mm): Segment of IC9 on F.Silkscreen
+    @(43.1500 mm, 75.7400 mm): PTH pad 19 [GND] of IC9
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(64.7400 mm, 48.6890 mm): Segment of IC26 on F.Silkscreen
-    @(40.6100 mm, 47.8000 mm): PTH pad 20 [VCC] of IC26
+    @(39.3400 mm, 68.5010 mm): Segment of IC28 on F.Silkscreen
+    @(40.6100 mm, 69.3900 mm): PTH pad 1 [-TMP-REG-RD1] of IC28
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(64.7400 mm, 62.6590 mm): Segment of IC28 on F.Silkscreen
-    @(40.6100 mm, 61.7700 mm): PTH pad 20 [VCC] of IC28
+    @(39.3400 mm, 68.5010 mm): Segment of IC28 on F.Silkscreen
+    @(43.1500 mm, 69.3900 mm): PTH pad 2 [DATA0] of IC28
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(64.7400 mm, 62.6590 mm): Segment of IC28 on F.Silkscreen
-    @(63.4700 mm, 61.7700 mm): PTH pad 11 [Net-(IC14F-O)] of IC28
+    @(39.3400 mm, 68.5010 mm): Segment of IC28 on F.Silkscreen
+    @(45.6900 mm, 69.3900 mm): PTH pad 3 [DATA0] of IC28
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(64.7400 mm, 62.6590 mm): Segment of IC28 on F.Silkscreen
-    @(60.9300 mm, 61.7700 mm): PTH pad 12 [DATA4] of IC28
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 62.6590 mm): Segment of IC28 on F.Silkscreen
-    @(58.3900 mm, 61.7700 mm): PTH pad 13 [DATA4] of IC28
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 62.6590 mm): Segment of IC28 on F.Silkscreen
-    @(55.8500 mm, 61.7700 mm): PTH pad 14 [DATA5] of IC28
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 62.6590 mm): Segment of IC28 on F.Silkscreen
-    @(53.3100 mm, 61.7700 mm): PTH pad 15 [DATA5] of IC28
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 62.6590 mm): Segment of IC28 on F.Silkscreen
-    @(50.7700 mm, 61.7700 mm): PTH pad 16 [DATA6] of IC28
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 62.6590 mm): Segment of IC28 on F.Silkscreen
-    @(48.2300 mm, 61.7700 mm): PTH pad 17 [DATA6] of IC28
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 62.6590 mm): Segment of IC28 on F.Silkscreen
-    @(45.6900 mm, 61.7700 mm): PTH pad 18 [DATA7] of IC28
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(64.7400 mm, 62.6590 mm): Segment of IC28 on F.Silkscreen
-    @(43.1500 mm, 61.7700 mm): PTH pad 19 [DATA7] of IC28
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(35.5300 mm, 51.2290 mm): Segment of C14 on F.Silkscreen
-    @(35.5300 mm, 50.3400 mm): PTH pad 2 [GND] of C14
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(35.5300 mm, 51.8640 mm): Segment of C14 on F.Silkscreen
-    @(35.5300 mm, 52.8800 mm): PTH pad 1 [VCC] of C14
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(104.1100 mm, 42.3390 mm): Segment of C1 on F.Silkscreen
-    @(104.1100 mm, 41.4500 mm): PTH pad 2 [GND] of C1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(104.1100 mm, 64.5640 mm): Segment of C2 on F.Silkscreen
-    @(104.1100 mm, 65.5800 mm): PTH pad 1 [VCC] of C2
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(104.1100 mm, 42.9740 mm): Segment of C1 on F.Silkscreen
-    @(104.1100 mm, 43.9900 mm): PTH pad 1 [VCC] of C1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(99.5380 mm, 31.0360 mm): Segment of RN8 on F.Silkscreen
-    @(100.3000 mm, 30.0200 mm): PTH pad 1 [VCC] of RN8
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(99.5380 mm, 31.0360 mm): Segment of RN8 on F.Silkscreen
-    @(115.5400 mm, 30.0200 mm): PTH pad 7 [/Sheet 2/RAM5] of RN8
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(99.5380 mm, 31.0360 mm): Segment of RN8 on F.Silkscreen
-    @(118.0800 mm, 30.0200 mm): PTH pad 8 [/Sheet 2/RAM6] of RN8
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(99.5380 mm, 31.0360 mm): Segment of RN8 on F.Silkscreen
-    @(120.6200 mm, 30.0200 mm): PTH pad 9 [/Sheet 2/RAM7] of RN8
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(99.5380 mm, 31.0360 mm): Segment of RN8 on F.Silkscreen
-    @(102.8400 mm, 30.0200 mm): PTH pad 2 [/Sheet 2/RAM0] of RN8
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(99.5380 mm, 31.0360 mm): Segment of RN8 on F.Silkscreen
-    @(105.3800 mm, 30.0200 mm): PTH pad 3 [/Sheet 2/RAM1] of RN8
+    @(39.3400 mm, 68.5010 mm): Segment of IC28 on F.Silkscreen
+    @(48.2300 mm, 69.3900 mm): PTH pad 4 [DATA1] of IC28
 
 ** Found 0 unconnected pads **
 
-** Found 53 Footprint errors **
+** Found 49 Footprint errors **
 [footprint_symbol_mismatch]: Value (C1) doesn't match symbol value ()
     Local override; warning
     @(104.1100 mm, 42.7200 mm): Footprint C1
@@ -891,18 +891,6 @@
 [footprint_symbol_mismatch]: Value (C19) doesn't match symbol value ()
     Local override; warning
     @(104.1100 mm, 103.6800 mm): Footprint C19
-[footprint_symbol_mismatch]: Value (C20) doesn't match symbol value ()
-    Local override; warning
-    @(35.5300 mm, 117.6500 mm): Footprint C20
-[footprint_symbol_mismatch]: Value (C21) doesn't match symbol value ()
-    Local override; warning
-    @(35.5300 mm, 16.0500 mm): Footprint C21
-[footprint_symbol_mismatch]: Value (C22) doesn't match symbol value ()
-    Local override; warning
-    @(179.0400 mm, 13.5100 mm): Footprint C22
-[footprint_symbol_mismatch]: Value (C23) doesn't match symbol value ()
-    Local override; warning
-    @(146.0200 mm, 121.4600 mm): Footprint C23
 [footprint_symbol_mismatch]: Value (C24) doesn't match symbol value ()
     Local override; warning
     @(125.7000 mm, 18.5900 mm): Footprint C24

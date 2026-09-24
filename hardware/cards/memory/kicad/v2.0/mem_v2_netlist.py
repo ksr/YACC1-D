@@ -7,6 +7,8 @@ THE single source of what v2.0 adds. Plain Python, no KiCad import.
                                      against its Eagle board, and that board against the order's gerbers - see
                                      hardware/cards/memory/eagle/v1.3/README.md). Called "v1.3"
                                      below. Not restated here: check_netlist.py exports it fresh and compares.
+         - C20, C21, C22, C23        REMOVED below: the built card's four 100 nF caps with no IC beside them (each one
+                                     pin on VCC, one on GND, nothing else)
          + CF section                hardware/cards/cf/kicad/v1.0/cf_netlist.py (the standalone CF card v1.0), transformed
                                      by the explicit rules below - nothing else is added or changed.
 
@@ -25,6 +27,12 @@ Rules (Ken's decisions, 2026-09-24):
      (v1.3 uses IC1-IC15, IC18, IC26-IC29, C1-C24, R2, RN5-RN8, JP1, PWR0, U$1, X1): REFMAP below.
      The CF card's per-IC 100 nF caps stay one per IC (C25-C29) and its 10 uF bulk cap (C30) stays beside the adapter
      power header.
+  6. C20, C21, C22 and C23 are REMOVED (Ken, 2026-09-24: "get rid of unused capacitors on the memory card"): the
+     built card's four 100 nF caps with no IC beside them, which v2.0 had kept only as spare plane-to-plane
+     decoupling. Every IC keeps its own 100 nF (C1-C19, C24, C25-C29) and C30 (10 uF bulk at J3) stays. expected()
+     checks that each of the four is on VCC and GND only on v1.3 and takes them out; nothing else of v1.3 changes.
+     The committed option / trial-route / keep-copper boards are records made BEFORE the removal and still carry the
+     four (check_netlist.py checks them against the schematic + exactly these four, as on v1.3).
 The CF section's own nets keep their cf_netlist.py names (on sheet 7 of the schematic, so KiCad calls them
 /Sheet 7/<name>); the shared ones are global labels / power symbols with the memory card's names.
 """
@@ -65,6 +73,16 @@ DROPPED = {
     "LED3": "DASP LED (dropped, Ken 2026-09-24)",
     "R6": "DASP LED resistor",
 }
+# v1.3 parts taken out of v2.0 (rule 6): ref -> why. Their pins on v1.3: pin 1 GND, pin 2 VCC (checked by expected())
+REMOVED = {
+    "C20": "100 nF, no IC beside it (v2.0 had it as spare decoupling at X1's A1-C2 power group)",
+    "C21": "100 nF, no IC beside it (v2.0 had it as spare decoupling at X1's A31-C32 power group)",
+    "C22": "100 nF, no IC beside it (v2.0 had it as spare decoupling at the far end of the planes)",
+    "C23": "100 nF, no IC beside it (v2.0 had it as spare decoupling at the far end of the planes)",
+}
+REMOVED_DATE = "2026-09-24"
+REMOVED_NETS = {"1": "GND", "2": "VCC"}      # every removed part: pin -> v1.3 net, and no other pin
+
 # nets shared with the v1.3 part of the card: global labels (or power symbols) on sheet 7, same names as v1.3
 SHARED = (["DATA%d" % i for i in range(8)] + ["IO-ADDR%d" % i for i in range(4)] + ["-IO-RD", "-IO-WR", "-RESET"])
 POWER = ["VCC", "GND"]
@@ -146,18 +164,35 @@ def check():
     return probs
 
 
+def removed_pins(v13_nets, v13_parts):
+    """-> {(ref, pin): net} of the REMOVED parts on v1.3; exits unless each is a v1.3 part with exactly the pins of
+    REMOVED_NETS on exactly those nets (a plain VCC-GND capacitor, nothing else on it)"""
+    out = {}
+    for ref in REMOVED:
+        if ref not in v13_parts:
+            raise SystemExit("removed part %s is not a v1.3 part" % ref)
+        pins = {p: n for n, s in v13_nets.items() for r, p in s if r == ref}
+        if pins != REMOVED_NETS:
+            raise SystemExit("removed part %s: v1.3 pins %s, expected %s" % (ref, pins, REMOVED_NETS))
+        out.update({(ref, p): n for p, n in pins.items()})
+    return out
+
+
 def expected(v13_nets, v13_parts):
-    """v2.0 = v1.3 + CF section.
+    """v2.0 = v1.3 - REMOVED + CF section.
     v13_nets: {name: set((ref, pin))} of the v1.3 schematic netlist (every net, including one-pin and unconnected-()
     ones); v13_parts: {ref: (value, footprint)}.
     -> (nets {name: set}, parts {ref: (value, footprint)}, lone set((ref, pin)) = pins KiCad must leave unconnected,
         notes [str])"""
     nets, lone, notes = {}, set(), []
+    gone = removed_pins(v13_nets, v13_parts)
     for name, nodes in v13_nets.items():
         if name.startswith("unconnected-("):
             lone |= nodes
         else:
-            nets[V13_RENAMED.get(name, name)] = set(nodes)
+            nets[V13_RENAMED.get(name, name)] = set(nodes) - set(gone)
+    notes.append("v1.3 %s removed (%s): each pin 1 on GND, pin 2 on VCC, nothing else; GND/VCC lose those %d pins"
+                 % (", ".join(sorted(REMOVED)), REMOVED_DATE, len(gone)))
     # the v1.3 bus nets the CF section joins: IO-ADDR0-3 / -IO-RD / -IO-WR must reach X1 only on v1.3
     for old, new in V13_RENAMED.items():
         if old not in v13_nets:
@@ -182,7 +217,7 @@ def expected(v13_nets, v13_parts):
         nets.setdefault(full, set()).update(conns)
     for ref, pins in NO_CONNECT.items():
         lone |= {(ref, p) for p in pins}
-    parts = dict(v13_parts)
+    parts = {r: v for r, v in v13_parts.items() if r not in REMOVED}
     for ref, (value, sym, fp, note) in PARTS.items():
         if ref in parts:
             raise SystemExit("reference %s collides with v1.3" % ref)

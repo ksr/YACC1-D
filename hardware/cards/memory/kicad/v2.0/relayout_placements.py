@@ -35,8 +35,8 @@ LOW_SIDE = 7.0               # keep-low half-width either side of the header cen
 # column at x = 189.23 the shroud ends 0.6 mm inside the top edge.
 J2_X = 189.23
 
-# the built card's 100 nF caps and their ICs; C20-C23 (the built card's caps with no IC beside them) and C25-C29 (the
-# CF section's) as the options place them
+# the built card's 100 nF caps and their ICs, and C25-C29 (the CF section's); C20-C23 (the built card's caps with no
+# IC beside them, removed from v2.0 on 2026-09-24) are SPARE_A/B/C below
 CAP_OF = {"IC1": "C1", "IC2": "C2", "IC13": "C3", "IC9": "C4", "IC8": "C5", "IC5": "C6", "IC4": "C7", "IC7": "C8",
           "IC10": "C9", "IC6": "C10", "IC11": "C11", "IC12": "C12", "IC14": "C13", "IC26": "C14", "IC27": "C15",
           "IC28": "C16", "IC29": "C17", "IC3": "C18", "IC15": "C19", "IC18": "C24", "IC30": "C25", "IC31": "C26",
@@ -102,9 +102,10 @@ def j2(pin1_y):
 
 
 # C20-C23: the built card has these four 100 nF caps with no IC beside them (C20-C22 in a column below C19, C23 under
-# the ROM); the re-layout keeps them (the circuit is the v2.0 netlist) as plane-to-plane decoupling spread over the
-# board: C20/C21 at the bus connector's two power groups (X1 A1-C2 / A31-C32), C22/C23 at the far end of the planes.
-# Whether to keep them at all is an open item (README).
+# the ROM); the re-layout options kept them as plane-to-plane decoupling spread over the board: C20/C21 at the bus
+# connector's two power groups (X1 A1-C2 / A31-C32), C22/C23 at the far end of the planes. REMOVED from the circuit
+# afterwards (Ken, 2026-09-24: mem_v2_netlist.REMOVED): the option boards and trial routes are the review record from
+# before and keep them (so these positions stay); finish_v2.py make takes them off the final board.
 SPARE_A = {"C20": (35.56, 117.47, 90), "C21": (35.56, 16.51, 90), "C22": (179.07, 121.92, 0), "C23": (146.05, 121.29, 0)}
 SPARE_B = {"C20": (35.56, 117.47, 90), "C21": (35.56, 16.51, 90), "C22": (179.07, 13.97, 0), "C23": (146.05, 121.29, 0)}
 SPARE_C = {"C20": (35.56, 117.47, 90), "C21": (35.56, 16.51, 90), "C22": (146.05, 121.29, 0), "C23": (177.8, 13.97, 0)}

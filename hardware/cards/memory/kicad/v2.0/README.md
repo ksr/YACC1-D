@@ -4,12 +4,12 @@
 designed in (circuit, outline, bus connector X1 and 4-layer stack-up kept from the built card). **Ken picked option B**
 of the three re-layout placements; the final board is **`memory-v2.0.kicad_pcb`**: 0 unrouted, 43 through vias,
 11,779 mm of 0.25 mm track, DRC 0 copper violations under the v2.0 rules, both planes solid, netlist proof MATCH,
-silkscreen tidied. Gerbers (4 layers) + drill (`memory-v2.0-gerbers.zip`), renders, placement PDF, schematic PDF, BOM
+silkscreen tidied; **C20-C23 removed** (Ken, 2026-09-24, below): 70 parts. Gerbers (4 layers) + drill (`memory-v2.0-gerbers.zip`), renders, placement PDF, schematic PDF, BOM
 and the JLCPCB order note are in this folder. Before ordering: the open items in "Before ordering" below.
 
 v2.0 is the memory card v1.3 **as built** (`../v1.3`: the KiCad conversion of Ken's Fusion
 export (2026-09-24) of the card JLCPCB fabricated on 2025-06-27, proven against the order's gerbers; 62256 x 2, 28C64, IC7 block
-decode, FORCE-ROM, IC15 buffer enable, TMP0/TMP1) plus the CompactFlash interface of the CF card v1.0
+decode, FORCE-ROM, IC15 buffer enable, TMP0/TMP1) **minus C20-C23** (four spare 100 nF, below) plus the CompactFlash interface of the CF card v1.0
 (`../../../cf/kicad/v1.0/`), **as drawn**: its own 74LS138 decoding **I/O ports P8 (register-select latch, write) and
 P9 (data, read/write)**, enabled by IO-ADDR3. The ROM in the machine and both emulators (`software/cfmodel.h`,
 `firmware/monitor/monitor.asm`) already talk to P8/P9: no firmware change. The CF card's own bus connector goes; the CF
@@ -39,7 +39,9 @@ every track, via, arc and zone is byte-identical, and `NOROUTE=1 build.sh` passe
 ## What v2.0 is, relative to the built card
 
 - **Schematic.** Sheets 1-6 are the built card's, copied unchanged except: on sheet 1 the six X1-only local labels
-  IO-ADDR0-3, -IO-RD, -IO-WR became global labels (sheet 7 uses them) and a note says so; title blocks say v2.0.
+  IO-ADDR0-3, -IO-RD, -IO-WR became global labels (sheet 7 uses them) and a note says so; **C20-C23 are taken out of
+  sheet 1's cap row** (the symbols go; the GND and VCC rails through their pins become one wire each from C19 to C24,
+  their four + four junctions go; `gen_mem_v2.py` `remove_parts()`); title blocks say v2.0.
   **Sheet 7** is the CF section, drawn with the CF card's own sheet writer (`gen_cf.py`, class `Sheet`), nets shared
   with sheets 1-6 as boxed global labels. **IC15** (74ALS11, gate A = AND(-LO-RAM, -HI-RAM, -ROM-CS) -> IC5 pin 19,
   the 74LS245's enable) is part of the built card's schematic. The circuit is unchanged by the re-layout.
@@ -58,6 +60,13 @@ IC30 (74LS138) takes IO-ADDR0-2, G1 = IO-ADDR3, G2A/G2B low: Y0 = P8, Y1 = P9, Y
 its IO-ADDR-HL strap at P0-P7 (it would otherwise also answer P8/P9).
 
 ### Part-list delta (built v1.3 -> v2.0)
+
+**Removed (Ken, 2026-09-24: "get rid of unused capacitors on the memory card"):** **C20, C21, C22, C23**, the built
+card's four 100 nF (`C-US`, `C025-025X050`) with no IC beside them: on v1.3 they sit in the cap row between C19 and
+C24, pin 1 on GND, pin 2 on VCC, nothing else. v2.0 had kept them only as spare plane-to-plane decoupling (C20/C21 at
+X1's two power groups, C22/C23 at the far end of the planes). Every IC keeps its own 100 nF (C1-C19 and C24 for the
+built card's 20 ICs, C25-C29 for the CF chips) and C30 (10 uF bulk at J3) stays. `mem_v2_netlist.REMOVED` is the
+single source; the netlist proof checks that each was a plain VCC-GND cap on v1.3 and is gone from v2.0.
 
 Added (reference designators clear of the built card's IC1-IC15, IC18, IC26-IC29, C1-C24, R2, RN5-RN8, JP1, PWR0,
 U$1, X1):
@@ -79,8 +88,9 @@ U$1, X1):
 | C30 | C6 | 10 uF bulk beside J3 | radial D5 |
 
 Dropped from the CF card: X1 (bus connector, shared), **LED3 + R6 (DASP LED, Ken)**, **LED1 + R7 (PWR LED: the
-memory card already has PWR0 + R2 330R)**. Everything through-hole. BOM: `memory-v2.0-bom.csv` (35 lines; built-card
-parts keep their converted Eagle values, e.g. `74*32`, `C-US`).
+memory card already has PWR0 + R2 330R)**. Everything through-hole. BOM: `memory-v2.0-bom.csv` (35 lines, **70 parts**:
+the built card's 53 - C20-C23 + the CF section's 21; built-card parts keep their converted Eagle values, e.g. `74*32`,
+`C-US`, whose line is now `C1-C19,C24` x 20).
 
 ## The final board: option B (Ken's pick, 2026-09-24)
 
@@ -105,6 +115,12 @@ time than the trial's). The trial route is better on every count (43 vias, 11,77
   (1,801 -> 1,794 segments; no geometry change). No jog worth removing was found: the optimiser pulls tracks tight.
 
 **Placement changes after the pick** (the only ones; every other part is exactly where option B has it):
+- **C20-C23 taken off** (Ken, 2026-09-24): `finish_v2.py make` drops their footprints (`drop_removed()`) after the
+  silkscreen tidy, so no other text moves because of them, then refills the planes. Their pads were plane-only (GND /
+  VCC through thermal reliefs): no track or via touched them, none was removed, the routing is unchanged (43 vias,
+  1,794 segments, 11,779 mm). Made on the committed board: the result is the previous board minus exactly the four
+  footprints (their references with them) and the two refilled plane zones; `FROM=trial build.sh` gives the same board
+  (only the UUIDs of the texts `make` adds differ).
 - **C30** (10 uF, adapter power) moved **2.54 mm inboard** (away from the top edge, x 185.42 -> 182.88, y 22.86 unchanged): frees
   the row left of J3 pin 1 for its "+5V" label. Its two pads are plane-only (GND / VCC), no track moved.
 - The LEDs stay where option B has them (PWR0 at 191.74 / 120.19, LED1 ACT at 182.88 / 120.19, the free top-edge
@@ -121,7 +137,8 @@ time than the trial's). The trial route is better on every count (43 vias, 11,77
 - **LED labels "PWR" and "ACT"** above the two LEDs.
 - **Reference texts**: every IC's reference in the middle of its body (its value on F.Fab just below, for the
   placement PDF); every other reference beside its part. 46 texts were moved by the tidy (most 0.3-0.5 mm off their
-  own outline, the largest LED1 5.1 mm, C8 3.1 mm, C24 / PWR0 2.6 mm), R2's upside-down reference turned upright, the
+  own outline, the largest LED1 5.1 mm, C8 3.1 mm, C24 / PWR0 2.6 mm; four of the 46 were C20-C23's, which went with
+  their parts), R2's upside-down reference turned upright, the
   U$1 reference thickened to 0.15 mm. Result: **no reference or board text touches a pad, a via, other silk or the
   edge, none is upside down** (`reports/memory-v2.0-final.txt`); DRC silk_overlap 0 (the built card: 45).
 - **F.Fab** keeps the **TAODAN CF-IDE40 outline**: the 70 mm adapter strip (solid) and the keep-low zone (dashed)
@@ -135,12 +152,12 @@ time than the trial's). The trial route is better on every count (43 vias, 11,77
 | vias | **43**, all through, 0.8 / 0.4 mm | (built: 0.4572 / 0.254 mm) |
 | track | **1,794 segments, 11,779 mm** (F.Cu 6,858 / B.Cu 4,921), all 0.25 mm; placement airwire 10,496 mm | 1,377 tracks and vias, 0.1524 mm |
 | DRC copper violations | **0** (clearance, shorts, width, via, hole, edge, starved thermal, dangling, unconnected) | 0 |
-| planes | GND on In1.Cu and VCC on In2.Cu each **one piece**, ~16,500 mm2 (81 % of the board after antipads); all **182 GND/VCC pads** on their plane through thermal reliefs | same stack-up |
+| planes | GND on In1.Cu and VCC on In2.Cu each **one piece**, ~16,500 mm2 (81-82 % of the board after antipads); all **174 GND/VCC pads** on their plane through thermal reliefs (182 before C20-C23 went) | same stack-up |
 | DRC items left, all inherited | X1's two mounting holes in X1's own keepout 2/2, X1 library mismatch 1/1, X1 silk over the edge 4/4, X1 pin-number text height 2/2, Eagle-footprint silk outlines over pads (silk_over_copper) 199/199 | |
 | DRC silk_overlap / text_thickness | **0 / 0** | 45 / 1 |
-| schematic parity | 53 items, all the built card's inherited Eagle values/fields; **new: none** | 220 |
-| ERC | 99 (= the built card's 104 residue - 6 bus labels now global + the designed-in SRST label), PASS | 104 |
-| netlist proof | **MATCH** (74 parts, 186 nets, 695 pads) | |
+| schematic parity | 49 items, all the built card's inherited Eagle values/fields (53 before C20-C23 went: four were theirs); **new: none** | 220 |
+| ERC | 99 (= the built card's 104 residue - 6 bus labels now global + the designed-in SRST label; removing C20-C23 changed nothing), PASS | 104 |
+| netlist proof | **MATCH** (70 parts, 186 nets, 687 pads) | |
 | placement check | OK (no overlap, pads 0.5 mm inside the edge, X1 as built, TAODAN keep-low zone clear) | |
 
 ### Fab outputs (`finish_v2.py fab`, regenerated by every plain `build.sh`)
@@ -154,7 +171,7 @@ time than the trial's). The trial route is better on every count (43 vias, 11,77
 | `memory-v2.0-jlcpcb-order.txt` | **the order parameters**, as the built card's JLCPCB order 2000765A-Y42 (`../../eagle/v1.3/fab/jlcpcb-order-2000765A-Y42.zip`, `YG/4te.json`): FR-4, **4 layers, 1.6 mm, outer copper 1 oz, inner 0.5 oz**, green mask, white silk, HASL with lead, vias plugged |
 | `memory-v2.0-render-top.png`, `memory-v2.0-render-bottom.png` | 3D renders |
 | `memory-v2.0-placement.pdf` | assembly drawing: silkscreen + F.Fab (values, the TAODAN outline) + outline, title block |
-| `memory-v2.0-schematic.pdf`, `memory-v2.0-bom.csv` | schematic (7 sheets), BOM (35 lines, **74 parts**) |
+| `memory-v2.0-schematic.pdf`, `memory-v2.0-bom.csv` | schematic (7 sheets), BOM (35 lines, **70 parts**) |
 
 ## Before ordering (open items)
 
@@ -169,8 +186,10 @@ time than the trial's). The trial route is better on every count (43 vias, 11,77
    Measure the adapter.
 4. **Which backplane slot**: the TAODAN needs ~75 mm free on the card's component side, i.e. the neighbouring slot on
    that side empty (or use a SinLoon on a ribbon).
-5. **C20-C23** (the built card's four 100 nF with no IC beside them) are kept as spare plane-to-plane decoupling next
-   to the CF chips' own C25-C29: keep them, or drop them from the schematic (then re-make the board).
+
+Decided: **C20-C23** (the built card's four 100 nF with no IC beside them, kept until then as spare plane-to-plane
+decoupling): **removed** (Ken, 2026-09-24, "get rid of unused capacitors on the memory card"); schematic, board and
+fab files re-made (part-list delta above).
 
 **Not ordered.**
 
@@ -191,8 +210,9 @@ through-hole pad that reaches its plane through a thermal relief (0.4 mm gap, 0.
 DRC's "0 unrouted" of the trial boards includes every power pin reaching its plane. **Decoupling:** one 100 nF per
 IC, standing beside the IC's pin-1 / VCC end (the built card's arrangement): C1-C19, C24 for the built card's 20 ICs
 (same pairs as built), C25-C29 for the CF chips; C30 (10 uF) at J3. C20-C23 (the built card's four caps with no IC
-beside them) are kept as plane-to-plane decoupling: C20/C21 at X1's two power groups, C22/C23 at the far end of the
-planes (open item).
+beside them) were placed in the options as plane-to-plane decoupling (C20/C21 at X1's two power groups, C22/C23 at
+the far end of the planes) and then **removed from v2.0** (Ken, 2026-09-24): they are on the option boards and trial
+routes (made before), not on the final board.
 
 ### Design rules (`memory-v2.0.kicad_pro` and `memory-v2.0-relayout-X.kicad_pro` net classes + `.kicad_dru`)
 
@@ -222,7 +242,8 @@ signal is on an odd pin) and 191.74, shroud 0.6 mm inside the top edge, pin 1 to
 
 ## Placement options (the review; Ken picked B)
 
-Every option: same circuit (netlist proof MATCH, board and trial route), no body overlap, every pad 0.5 mm inside the
+Every option: same circuit (netlist proof MATCH, board and trial route; made before C20-C23 were removed, so every
+option board, trial route and keep-copper record still carries them: see "The records and C20-C23" below), no body overlap, every pad 0.5 mm inside the
 edge, X1 exactly as built, the TAODAN keep-low zone (12 mm past each end of J2's pin row, 7 mm either side of its
 centre line) holding no IC and nothing tall (`reports/relayout-X-placement-check.txt`). Column 3 is the memories
 (IC1 low RAM, IC2 high RAM, IC13 EEPROM) under the block-map jumper group, which keeps the built card's exact pad
@@ -293,6 +314,18 @@ at the top and leaves the adapter strip 0.3 mm inside the y = 10 edge.
 The list that went with the three options is now "Before ordering" above; its last point (the final routing polish,
 silkscreen tidy and fab outputs after the pick) is done.
 
+## The records and C20-C23
+
+C20-C23 were removed (Ken, 2026-09-24) after the re-layout options, their trial routes and the keep-copper options
+were made. Least churn: those nine boards and their renders, plots and reports are **left as they were, documented as
+pre-removal records**, not re-made. They carry the four caps exactly as the built board has them (same footprint,
+value, symbol path; pin 1 GND, pin 2 VCC); `check_netlist.py --records` checks each against the schematic + exactly
+those four, and `build.sh` accepts the four as "extra footprint" parity items on them (`parity_new ... record`) and on
+nothing else. Regenerating them (`RELAYOUT=` / `KEEPCOPPER=`) reproduces the same pre-removal records
+(`gen_relayout.py board` and `gen_mem_v2.py board` keep the four from the built board; checked with
+`RELAYOUT=b NOROUTE=1 KEEPCOPPER=b` on a scratch copy: BUILD PASS). Only the final board is made without them:
+`finish_v2.py make` takes them off (also after `ROUTE=1`, which routes option B's board with them on it).
+
 ## The keep-the-built-copper record (`options-keep-copper/`)
 
 The three options of 4365de6 (the CF section added to the built card with all 1,377 built tracks and vias kept),
@@ -311,7 +344,7 @@ DATA8-15 bundle (DRC: A 11 shorts / 4 clearance / 63 mask bridges, B 12 / 1 / 50
 | `relayout_placements.py` | **the re-layout options** (plain data + helpers: `row()` = a DIP and its cap, `j2()`, `labels()`) |
 | `gen_relayout.py` | re-layout boards (`board`), `check`, `airwire`, trial route (`dsn` two-signal-layer export, `ses` import, `stats`); `write_project()` = the re-layout rules |
 | `finish_v2.py` | **the final board**: `project` (the v2.0 project gets the re-layout rules), `make` (through vias, via clean-up, collinear merge, F.Fab adapter outline, J3 pin labels, nudges, silkscreen tidy, title block, refill), `silk`, `verify` (the final gates + numbers), `fab` (gerbers, drill, zip, renders, placement PDF, JLCPCB note) |
-| `check_netlist.py` | the netlist proof: schematic = built v1.3 + CF section, every board = the schematic |
+| `check_netlist.py` | the netlist proof: schematic = built v1.3 - C20-C23 + CF section; the final board = the schematic; the record boards (`--records`) = the schematic + exactly C20-C23 as on v1.3 |
 | `build.sh` | the whole pipeline; exit 0 = every gate passed |
 | `memory-v2.0.kicad_sch`, `-sheet1..7.kicad_sch`, `.kicad_pro`, `.kicad_dru` | schematic (sheets 1-6 built v1.3, sheet 7 CF), project with the re-layout rules (since 2026-09-24; the keep-copper record keeps the built card's rules in its own `.kicad_pro` / `.kicad_dru`) |
 | **`memory-v2.0.kicad_pcb`** | **the final board** (option B, routed, silkscreen tidied) |
@@ -347,10 +380,13 @@ and BOM. Freerouting is not deterministic (and slow on a loaded machine), so the
 
 ## Results (build of 2026-09-24, final board)
 
-- **Netlist proof: MATCH.** v2.0 schematic = the built v1.3 (53 parts, 169 nets, IC15 included) + CF section (21
-  parts, 27 own nets, 69 pins on 17 shared nets): 74 parts, 186 nets, 695 pins, 33 unconnected pins (10 v1.3 + 23
-  documented CF no-connects). All three re-layout boards, their three trial routes and the three record boards equal
-  the schematic pad for pad (`reports/netlist-proof.txt`).
+- **Netlist proof: MATCH.** v2.0 schematic = the built v1.3 (53 parts, 169 nets, IC15 included) minus C20-C23 (each
+  checked to be pin 1 GND / pin 2 VCC and nothing else on v1.3) + CF section (21 parts, 27 own nets, 69 pins on 17
+  shared nets): 70 parts, 186 nets, 687 pins, 33 unconnected pins (10 v1.3 + 23 documented CF no-connects). The final
+  board equals the schematic pad for pad; the three re-layout boards, their three trial routes and the three
+  keep-copper boards (records made before the removal) equal the schematic plus exactly C20-C23 as on v1.3
+  (`reports/netlist-proof.txt`). Any other difference fails the proof (checked: a final board still carrying the four,
+  a record missing one of them, a pad moved to another net all give MISMATCH).
 - **ERC: PASS** (99 vs the built card's 104, all explained: `reports/erc-summary.txt`).
 - **Placement: OK** for A, B and C (`reports/relayout-X-placement-check.txt`) and for the final board.
 - **Trial routes: complete** for A, B and C (0 unrouted, 43 vias each, 0 DRC copper violations; table above).

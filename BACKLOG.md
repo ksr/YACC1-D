@@ -136,8 +136,8 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   `memory-v2.0.kicad_pcb` is routed (0 unrouted, 43 through vias, DRC 0 copper violations), silkscreen tidied, gerbers
   + drill zip, renders, placement PDF, BOM and the JLCPCB order note (4 layers, 1.6 mm, as order 2000765A) are in the
   folder. **Before ordering**, the open items in its README: J2 pin-1/key vs the chosen adapter, J3 pinout vs the
-  adapter's power cable, socket heights under a TAODAN overhang, which backplane slot (TAODAN needs ~75 mm free),
-  keep or drop C20-C23. Earlier plan:
+  adapter's power cable, socket heights under a TAODAN overhang, which backplane slot (TAODAN needs ~75 mm free).
+  C20-C23 (four spare 100 nF with no IC): removed (Ken 2026-09-24), board and fab files re-made. Earlier plan:
   design the CF interface onto the **memory card** (more room, chips spaced far apart),
   kept I/O-mapped on **P8/P9** with the CF card v1.0 circuit (own 74LS138 enabled by IO-ADDR3, 74LS32, 74LS175, 74LS08,
   74LS245, 40-pin IDE header); the memory card's IO-ADDR0-3, -IO-RD and -IO-WR pins are on its connector but unwired

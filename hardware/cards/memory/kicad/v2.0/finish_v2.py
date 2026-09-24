@@ -13,8 +13,9 @@ Run with KiCad's bundled Python (pcbnew); build.sh does:
                                                    (a run of track between a via and a pad flipped onto the other
                                                    signal layer when it fits there, the via removed), collinear
                                                    segments merged, the adapter strip + keep-low zone moved to F.Fab,
-                                                   J3 pin labels, silkscreen tidy (tidy() below), title block, planes
-                                                   refilled
+                                                   J3 pin labels, silkscreen tidy (tidy() below), title block, the
+                                                   removed caps C20-C23 taken off (drop_removed(), after the tidy, so
+                                                   no other text moves because of them), planes refilled
   finish_v2.py silk <pcb>                       -> the silkscreen check alone (reference texts and board texts clear of
                                                    pads, holes, vias, other silk and the edge; upright)
   finish_v2.py verify <pcb> <drc.json>          -> the final gates: 0 unrouted, 0 DRC copper violations, every via a
@@ -25,6 +26,8 @@ Run with KiCad's bundled Python (pcbnew); build.sh does:
                                                    <name>-jlcpcb-order.txt (the built card's order parameters)
 
 Nothing here moves a part: the placement is option B's. The only positions that change are silkscreen texts.
+The one part change: C20-C23 (mem_v2_netlist.REMOVED, Ken 2026-09-24) are on option B's board and its trial route (both
+made before the removal) and are not on the final board.
 """
 import os, sys, re, json, math, glob, shutil, zipfile, subprocess, collections
 
@@ -33,6 +36,7 @@ sys.path.insert(0, HERE)
 import gen_mem_v2 as GM                                     # noqa: E402
 import gen_relayout as GR                                   # noqa: E402
 import relayout_placements as RP                            # noqa: E402
+import mem_v2_netlist as NL                                 # noqa: E402
 
 PROJ = GM.PROJ
 CLI = GM.CLI
@@ -630,7 +634,41 @@ def make(routed, out):
     print("silk tidy: %d text(s) moved %s" % (len(moved), moved))
     if stuck:
         print("silk tidy: %d text(s) with no free spot: %s" % (len(stuck), stuck))
+    drop_removed(out)
     GM.refill(out)
+
+
+def drop_removed(pcb):
+    """take the removed parts (mem_v2_netlist.REMOVED: C20-C23) off a board, at the text level (KiCad 10's SWIG
+    containers misbehave after Remove()). Their pads are plane-only (GND / VCC through thermal reliefs); a track or via
+    touching one of their pads would be copper that served only them: none may exist (power is never routed), else
+    stop. Their silk / fab graphics and reference texts are part of the footprint and go with it; nothing else changes
+    (the plane refill after this redraws the reliefs)."""
+    import pcbnew
+    b = pcbnew.LoadBoard(pcb)
+    pads = [(f.GetReference(), p) for f in b.GetFootprints() if f.GetReference() in NL.REMOVED for p in f.Pads()]
+    hit = []
+    for tr in b.GetTracks():
+        pts = [tr.GetPosition()] if tr.Type() == pcbnew.PCB_VIA_T else [tr.GetStart(), tr.GetEnd()]
+        for ref, p in pads:
+            if any(p.HitTest(q) for q in pts):
+                hit.append("%s.%s: %s on %s" % (ref, p.GetNumber(), tr.GetClass(), tr.GetNetname()))
+    if hit:
+        raise SystemExit("drop_removed: copper on the removed parts' pads: %s" % hit)
+    nets = sorted({"%s.%s %s" % (r, p.GetNumber(), p.GetNetname()) for r, p in pads})
+    t = open(pcb).read()
+    forms = GR.gen_cf.top_forms(t)
+    head = t[:t.index(forms[0])]
+    keep, gone = [], []
+    for f in forms:
+        m = re.match(r'\(footprint "[^"]*"[\s\S]*?\(property "Reference" "([^"]+)"', f)
+        if m and m.group(1) in NL.REMOVED:
+            gone.append(m.group(1))
+            continue
+        keep.append(f)
+    open(pcb, "w").write(head + "\n\t".join(keep) + "\n)\n")
+    print("removed parts: %s taken off (pads %s; no track or via on them)" % (sorted(gone), nets))
+    return gone
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -782,6 +820,9 @@ if __name__ == "__main__":
         make(sys.argv[2], sys.argv[3])
     elif cmd == "cleanup":
         cleanup(sys.argv[2])
+    elif cmd == "drop-removed":
+        drop_removed(sys.argv[2])
+        GM.refill(sys.argv[2])
     elif cmd == "silk":
         ok = silk_report(sys.argv[2])
     elif cmd == "verify":

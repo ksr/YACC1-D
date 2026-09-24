@@ -2,7 +2,7 @@
 	(version "E")
 	(design
 		(source "/Users/ksr77/Developer/YACC1-D/hardware/cards/memory/kicad/v2.0/memory-v2.0.kicad_sch")
-		(date "2026-09-24T16:03:30")
+		(date "2026-09-24T18:27:16")
 		(tool "Eeschema 10.0.6")
 		(sheet
 			(number "1")
@@ -64,7 +64,7 @@
 				(source "memory-v2.0-sheet1.kicad_sch")
 				(comment
 					(number "1")
-					(value "v1.3 sheet 1 + IO-ADDR0-3, -IO-RD, -IO-WR made global (CF section, sheet 7) + note")
+					(value "v1.3 sheet 1: 6 bus labels global (CF, sheet 7), C20-C23 removed, + note")
 				)
 				(comment
 					(number "2")
@@ -1250,190 +1250,6 @@
 				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
 			)
 			(tstamps "1eb74acc-3484-aecd-b7af-6393bc0621f8")
-			(units
-				(unit
-					(name "A")
-					(pins
-						(pin
-							(num "1")
-						)
-						(pin
-							(num "2")
-						)
-					)
-				)
-			)
-		)
-		(comp
-			(ref "C20")
-			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
-			(fields
-				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
-				(field
-					(name "Datasheet")
-				)
-				(field
-					(name "Description")
-				)
-			)
-			(libsource
-				(lib "memory-v1.3-eagle")
-				(part "adafruit_C-US_025-025X050")
-				(description "Eagle adafruit:C-US")
-			)
-			(property
-				(name "Sheetname")
-				(value "Sheet 1")
-			)
-			(property
-				(name "Sheetfile")
-				(value "memory-v2.0-sheet1.kicad_sch")
-			)
-			(sheetpath
-				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
-			)
-			(tstamps "9fb188fa-cd55-c33e-f351-3e1a1782d506")
-			(units
-				(unit
-					(name "A")
-					(pins
-						(pin
-							(num "1")
-						)
-						(pin
-							(num "2")
-						)
-					)
-				)
-			)
-		)
-		(comp
-			(ref "C21")
-			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
-			(fields
-				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
-				(field
-					(name "Datasheet")
-				)
-				(field
-					(name "Description")
-				)
-			)
-			(libsource
-				(lib "memory-v1.3-eagle")
-				(part "adafruit_C-US_025-025X050")
-				(description "Eagle adafruit:C-US")
-			)
-			(property
-				(name "Sheetname")
-				(value "Sheet 1")
-			)
-			(property
-				(name "Sheetfile")
-				(value "memory-v2.0-sheet1.kicad_sch")
-			)
-			(sheetpath
-				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
-			)
-			(tstamps "a40e51ce-bc33-f000-a4c1-4a04e11b99f5")
-			(units
-				(unit
-					(name "A")
-					(pins
-						(pin
-							(num "1")
-						)
-						(pin
-							(num "2")
-						)
-					)
-				)
-			)
-		)
-		(comp
-			(ref "C22")
-			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
-			(fields
-				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
-				(field
-					(name "Datasheet")
-				)
-				(field
-					(name "Description")
-				)
-			)
-			(libsource
-				(lib "memory-v1.3-eagle")
-				(part "adafruit_C-US_025-025X050")
-				(description "Eagle adafruit:C-US")
-			)
-			(property
-				(name "Sheetname")
-				(value "Sheet 1")
-			)
-			(property
-				(name "Sheetfile")
-				(value "memory-v2.0-sheet1.kicad_sch")
-			)
-			(sheetpath
-				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
-			)
-			(tstamps "de88fde7-7140-ea9f-957d-e8e0f44273af")
-			(units
-				(unit
-					(name "A")
-					(pins
-						(pin
-							(num "1")
-						)
-						(pin
-							(num "2")
-						)
-					)
-				)
-			)
-		)
-		(comp
-			(ref "C23")
-			(value "C-US")
-			(footprint "memory-v1.3-eagle:C025-025X050")
-			(fields
-				(field
-					(name "Footprint") "memory-v1.3-eagle:C025-025X050")
-				(field
-					(name "Datasheet")
-				)
-				(field
-					(name "Description")
-				)
-			)
-			(libsource
-				(lib "memory-v1.3-eagle")
-				(part "adafruit_C-US_025-025X050")
-				(description "Eagle adafruit:C-US")
-			)
-			(property
-				(name "Sheetname")
-				(value "Sheet 1")
-			)
-			(property
-				(name "Sheetfile")
-				(value "memory-v2.0-sheet1.kicad_sch")
-			)
-			(sheetpath
-				(names "/Sheet 1/")
-				(tstamps "/36727bec-ef3f-c35c-0354-2dfce4bdbefc/")
-			)
-			(tstamps "22f1a832-90df-d26c-3261-4ca12b2ca321")
 			(units
 				(unit
 					(name "A")
@@ -13559,30 +13375,6 @@
 				(pintype "passive")
 			)
 			(node
-				(ref "C20")
-				(pin "1")
-				(pinfunction "1_1")
-				(pintype "passive")
-			)
-			(node
-				(ref "C21")
-				(pin "1")
-				(pinfunction "1_1")
-				(pintype "passive")
-			)
-			(node
-				(ref "C22")
-				(pin "1")
-				(pinfunction "1_1")
-				(pintype "passive")
-			)
-			(node
-				(ref "C23")
-				(pin "1")
-				(pinfunction "1_1")
-				(pintype "passive")
-			)
-			(node
 				(ref "C24")
 				(pin "1")
 				(pinfunction "1_1")
@@ -14648,30 +14440,6 @@
 				(ref "C2")
 				(pin "1")
 				(pinfunction "1_1")
-				(pintype "passive")
-			)
-			(node
-				(ref "C20")
-				(pin "2")
-				(pinfunction "2_2")
-				(pintype "passive")
-			)
-			(node
-				(ref "C21")
-				(pin "2")
-				(pinfunction "2_2")
-				(pintype "passive")
-			)
-			(node
-				(ref "C22")
-				(pin "2")
-				(pinfunction "2_2")
-				(pintype "passive")
-			)
-			(node
-				(ref "C23")
-				(pin "2")
-				(pinfunction "2_2")
 				(pintype "passive")
 			)
 			(node

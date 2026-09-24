@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
-"""check_netlist.py - prove the memory card v2.0 schematic (and each board) = the built v1.3 + the CF section.
+"""check_netlist.py - prove the memory card v2.0 schematic (and each board) = the built v1.3 minus C20-C23 + the CF
+section.
 
 "v1.3" below = the built card, ../v1.3 (build.sh passes its netlist and board).
 
 usage: check_netlist.py <v2.0 schematic .net> <v1.3 schematic .net> <v1.3 .kicad_pcb> [<v2.0 board .kicad_pcb> ...]
+                        [--records <record board .kicad_pcb> ...]
        (both .net files from: kicad-cli sch export netlist --format kicadsexpr <root .kicad_sch>)
 
 What must hold, exactly (mem_v2_netlist.expected() builds the expectation):
-  schematic  every net of v1.3 is in v2.0 with the same pins and the same name, except that
+  schematic  every part of v1.3 but the REMOVED four (C20-C23, Ken 2026-09-24) is in v2.0; each removed one was on
+             v1.3 a capacitor with pin 1 on GND and pin 2 on VCC and nothing else (mem_v2_netlist.removed_pins());
+             every net of v1.3 is in v2.0 with the same pins (less the removed caps' pins) and the same name, except that
                - IO-ADDR0-3 / -IO-RD / -IO-WR (v1.3: sheet-1 local labels on X1 only) are global now and ALSO carry
                  the CF section's pins,
                - DATA0-7, -RESET, VCC, GND also carry the CF section's pins,
@@ -21,6 +25,11 @@ What must hold, exactly (mem_v2_netlist.expected() builds the expectation):
              (X1's mounting holes, and the unused gate pins the
              Eagle board left without a net: IC3, IC4, IC12, IC13, IC14, IC18), and the footprints are the schematic's parts with the same library
              footprints and values (v1.3 parts: the value on the v1.3 board, which is the Eagle board's).
+             The boards before --records (the final board) must equal the schematic.
+  records    the boards after --records (re-layout options, trial routes, keep-copper options) were made BEFORE C20-C23
+             were removed: each must equal the schematic PLUS exactly C20-C23 as on the v1.3 board (same footprint and
+             value, pin 1 on GND, pin 2 on VCC), nothing else. A record board without the four is checked like the
+             final board (a regenerated record would be one).
 Exit status 0 only if everything matches. Plain Python (no KiCad import).
 """
 import os, sys, collections
@@ -109,7 +118,8 @@ def check_schematic(v2file, v13file):
           % (len(got_parts), len(got), len(got_lone), "MATCH" if not bad else "MISMATCH"))
     for x in bad:
         print("    ", x)
-    return not bad, got, got_lone, got_parts
+    gone = NL.removed_pins(v13_nets, v13_parts)
+    return not bad, got, got_lone, got_parts, gone
 
 
 def board_parts(pcb):
@@ -125,11 +135,22 @@ def board_parts(pcb):
     return parts, nonet
 
 
-def check_board(pcb, sch_nets, sch_lone, sch_parts, v13_board):
+def check_board(pcb, sch_nets, sch_lone, sch_parts, v13_board, gone=None):
     """v13_board: the v1.3 .kicad_pcb. Its footprints keep their Eagle board values (the converted symbols carry the
     Eagle deviceset names instead: inherited, see ../v1.3), and its pads that no schematic pin names (X1's mounting
-    holes, unused gate pins the Eagle board left netless) stay netless."""
+    holes, unused gate pins the Eagle board left netless) stay netless.
+    gone: {(ref, pin): net} of the removed parts -> the board is a pre-removal record: it must carry exactly those
+    parts too, on those nets (footprint and value as on the v1.3 board)."""
     v13_parts, v13_nonet = board_parts(v13_board)
+    kind = "final"
+    if gone:
+        sch_nets = {n: set(s) for n, s in sch_nets.items()}
+        for rp, n in gone.items():
+            sch_nets[n].add(rp)
+        sch_parts = dict(sch_parts)
+        for r in {r for r, p in gone}:
+            sch_parts[r] = v13_parts[r]
+        kind = "record, before the removal of %s" % ", ".join(sorted({r for r, p in gone}))
     pinless = {rp for rp in v13_nonet if rp not in sch_lone and not any(rp in s for s in sch_nets.values())}
     root = sparse(open(pcb).read())[0]
     parts, nets, alone, bad = {}, collections.defaultdict(set), set(), []
@@ -164,18 +185,33 @@ def check_board(pcb, sch_nets, sch_lone, sch_parts, v13_board):
             bad.append("footprint %s is %s, should be %s" % (ref, parts.get(ref), want))
     for ref in sorted(set(parts) - set(sch_parts)):
         bad.append("extra footprint %s" % ref)
-    print("board %s: %d footprints, %d nets / %d pads, %d unconnected pads (+ %d pinless v1.3 pads): %s"
+    print("board %s: %d footprints, %d nets / %d pads, %d unconnected pads (+ %d pinless v1.3 pads) [%s]: %s"
           % (os.path.basename(pcb), len(parts), len(nets), sum(len(s) for s in nets.values()), len(alone), len(pinless),
-             "MATCH" if not bad else "MISMATCH"))
+             kind, "MATCH" if not bad else "MISMATCH"))
     for x in bad[:30]:
         print("    ", x)
     return not bad
 
 
+def is_record(pcb):
+    """a record board made before the removal carries the removed parts"""
+    return bool(set(board_parts(pcb)[0]) & set(NL.REMOVED))
+
+
 if __name__ == "__main__":
-    ok, sn, sl, sp = check_schematic(sys.argv[1], sys.argv[2])
-    oks = [check_board(p, sn, sl, sp, sys.argv[3]) for p in sys.argv[4:]]
+    ok, sn, sl, sp, gone = check_schematic(sys.argv[1], sys.argv[2])
+    args = sys.argv[4:]
+    finals = args[:args.index("--records")] if "--records" in args else args
+    records = args[args.index("--records") + 1:] if "--records" in args else []
+    oks = [check_board(p, sn, sl, sp, sys.argv[3]) for p in finals]
+    nrec = 0
+    for p in records:
+        rec = is_record(p)
+        nrec += rec
+        oks.append(check_board(p, sn, sl, sp, sys.argv[3], gone if rec else None))
     good = ok and all(oks)
-    print("RESULT:", "MATCH (v2.0 = v1.3 + the CF section, pin for pin%s)" % (
-        "; every board = the schematic" if oks else "") if good else "MISMATCH")
+    print("RESULT:", "MATCH (v2.0 = v1.3 - %s + the CF section, pin for pin%s%s)" % (
+        "/".join(sorted(NL.REMOVED)), "; every board = the schematic" if oks else "",
+        " (%d record board(s) made before the removal = the schematic + exactly %s as on v1.3)"
+        % (nrec, "/".join(sorted(NL.REMOVED))) if nrec else "") if good else "MISMATCH")
     sys.exit(0 if good else 1)

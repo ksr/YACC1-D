@@ -15,7 +15,9 @@ Run with KiCad's bundled Python (pcbnew); build.sh does, in this order per optio
         the CF footprints added; EVERY part except X1 placed from relayout_placements.py; the built card's silkscreen
         labels moved with their parts (U$1 block labels, JP1 labels), title V2.0, "CF: P8/P9" beside J2, LED/jumper
         labels; the TAODAN adapter strip + keep-low zone on User.Drawings; the planes' thermal reliefs; design rules
-        (RULES below) in the project and in the .kicad_dru
+        (RULES below) in the project and in the .kicad_dru. C20-C23 (removed from the circuit on 2026-09-24, after
+        these boards were made) stay on them as the built board has them: the option boards are the pre-removal review
+        record (check_netlist.py --records, build.sh parity_new ... record)
   gen_relayout.py refill <pcb>                      -> the planes refilled (every new pad on GND/VCC gets its relief)
   gen_relayout.py check <pcb> <opt>                 -> placement check (overlaps, edge, keep-low zone, X1 = built)
   gen_relayout.py review <pcb> <out> render|plot    -> review copies (gen_mem_v2.py review_copy)
@@ -157,6 +159,14 @@ def build(opt, netfile, out=None):
         b.Add(fp)
         fps[ref] = fp
     for ref, fp in fps.items():
+        if ref in NL.REMOVED:
+            # C20-C23: removed from the schematic after these option boards were made (Ken 2026-09-24); the option
+            # boards are the review record from before, so they keep them as the built board has them (path, GND /
+            # VCC pads); finish_v2.py make takes them off the final board
+            got = {p.GetNumber(): p.GetNetname() for p in fp.Pads()}
+            if got != NL.REMOVED_NETS:
+                raise SystemExit("board: removed part %s has pads %s on the built board" % (ref, got))
+            continue
         if ref not in paths:
             raise SystemExit("board: %s is not in the schematic" % ref)
         fp.SetPath(pcbnew.KIID_PATH("/" + "/".join(x for x in paths[ref].split("/") if x and x != GM.ROOT_UUID)))
