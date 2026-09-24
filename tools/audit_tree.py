@@ -37,7 +37,7 @@ for root, dirs, files in os.walk(DST):
         elif f == "FABRICATED" or rel == "hardware/FABRICATED.md": buckets["generated: FABRICATED markers/index"] += 1
         elif rel == "hardware/NEWER-DESIGNS-vs-ACTIVE.txt": buckets["generated: design comparison report (tools/compare_eagle.py)"] += 1
         elif f == "SKIP.txt" and os.path.basename(root) == "pdf": buckets["mine: pdf/SKIP.txt lists"] += 1
-        elif rel.startswith(("hardware/cards/video/kicad/v1.1/", "hardware/cards/io/kicad/v2.0/")): buckets["mine: KiCad design masters (MASTER marker)"] += 1
+        elif rel.startswith("hardware/cards/video/kicad/v1.1/"): buckets["mine: KiCad design masters (MASTER marker)"] += 1
         elif rel.startswith("docs/bom/"): buckets["generated: bills of material (tools/gen_bom.py)"] += 1
         elif rel.startswith("docs/isa/"): buckets["generated: ISA timing diagrams (tools/ucode_wavedrom.py)"] += 1
         elif (rel.startswith("hardware/") and "/kicad/" in rel) or rel == "hardware/KICAD.md": buckets["generated: KiCad conversions (tools/eagle_to_kicad_all.py)"] += 1

@@ -1,9 +1,0 @@
-     schematic parity: 67 items, all inherited from v1.1's Eagle values/fields; new: none
-DRC: {'items_not_allowed': 22, 'lib_footprint_mismatch': 2, 'silk_edge_clearance': 6, 'silk_over_copper': 199, 'silk_overlap': 59, 'text_height': 4, 'text_thickness': 1}; v1.1 had {'items_not_allowed': 22, 'lib_footprint_mismatch': 2, 'silk_edge_clearance': 4, 'silk_over_copper': 199, 'silk_overlap': 60, 'text_height': 4, 'text_thickness': 1}
-     unrouted connections 0; copper items (tracks + vias) 3376
-     silk collisions on a new or moved part's reference text: 0 []
-     non-cosmetic violations beyond v1.1's: none -> PASS
-v1.1 copper kept from option B: 900 of 900 items intact, 900 of them locked; 0 removed by the router's last-resort rip-up (listed in reports/route-kept-removed.txt)
-routed copper added: 2166 track segments (B.Cu 1150, F.Cu 1016), 310 vias; widths signal 0.1524 mm: 1869, power 0.3048 mm: 297
-totals: 2988 track segments, 388 vias
-kept-copper check -> PASS
