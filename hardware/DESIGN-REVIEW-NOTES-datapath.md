@@ -14,6 +14,12 @@ enforced by hardware; LOW = housekeeping or documentation.
 
 ## Memory card v1.3 (`hardware/cards/memory/kicad/v1.3/`)
 
+> **Note 2026-09-24:** this review traced `kicad/v1.3`, which is an **earlier save** of the design, not the card that was
+> fabricated (`hardware/cards/memory/eagle/v1.3-fusion-export-2026-09-24/`, KiCad `kicad/v1.3-fusion-export-2026-09-24/`).
+> The one circuit difference: on the built card IC5's enable (pin 19) is IC15 pin 12 = AND(-LO-RAM, -HI-RAM, -ROM-CS),
+> not `-VMA`, so where the findings below say "IC5 enable" read "the chip selects, through IC15". The findings
+> themselves (M1-M8) are unchanged by that: every pin they name is wired the same on the built card.
+
 ### M1 — HIGH (masked by a microcode hack): FORCE-ROM clears on any -VMA cycle that starts with the address bus floating
 
 Trace of the FORCE-ROM flip-flop clock:

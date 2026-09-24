@@ -111,7 +111,7 @@ inputs on the net; **Level** = the asserted level. Details per group follow in s
 | C3–C6 | `ADDR-REG-ID0..3` (V3.1 and older: `-ADDR-REG-RD0`, `-ADDR-REG-LD0`, `-ADDR-REG-RD1`, `-ADDR-REG-LD1`) | sequencer IC18 gate B (pipeline `LADDR-REG-ID`, enabled by `-ONE-OPERAND-SEL`); IC18A / IC11A would add the operand register under the `SRC-ADDR`/`DEST-ADDR` jumpers; **IC11 gate B is drawn with grounded inputs and enable on the same nets** (H-5, To verify) | register cards IC38 (74LS139: bits 0–1 → register, bits 2–3 → card via J3), enabled by `-BUS-EN OR -VMA` | high = 1 |
 | C7–C10 | `IOADDR0..3` (`IO-ADDR0..3` on the cards) | pipeline | I/O card IC5 (74LS138 on bits 0–2; bit 3 through the `IO-ADDR-HL` header) | high = 1 |
 | C11 | `-IO-ADDR-LD` | pipeline | **nothing** (single-node net on I/O v1.1) | low |
-| C12 | `-VMA` | pipeline; asserted in every microcode step | memory card (IC3 with `-BUS-EN` → chip-select gating, IC5 G, FORCE-ROM clock), register cards (IC40 → address-buffer enable), video (7485 A=B cascade input), bring-up cards (IC1/IC7 NOR qualifiers) | low |
+| C12 | `-VMA` | pipeline; asserted in every microcode step | memory card (IC7 G2A and the `-LO-RAM` NAND → chip-select gating, and through the selects IC15 → IC5 G; IC3 with `-BUS-EN` → FORCE-ROM clock), register cards (IC40 → address-buffer enable), video (7485 A=B cascade input), bring-up cards (IC1/IC7 NOR qualifiers) | low |
 | C13 | `-INT` | I/O card IC8 pin 12 (7406 open collector, RN2 pull-up) from the 16550 INT through the INT0 jumper; optional 10 k on the logic card (`-INT-PULLUP`) | sequencer JP3 (edge → IC23A CLK, or level → IC36 → IC23A PRE) | low (open collector) |
 | C14 | `-INTA` | pipeline (IC17 1Q) — never asserted | nothing in the machine | low |
 | C15 | `-ALU-FUNC` | pipeline | ALU: transceiver enable (IC7 with `-BUS-EN`), JP1 option for the condition mux | low |
@@ -147,7 +147,7 @@ The data bus is 16 bits wide, but most drivers use only the low byte. Which card
 
 | Driver | Enable | Lanes driven | Value on the other lanes |
 |---|---|---|---|
-| memory card IC5 (74LS245) | `-MEM-RD` with `-VMA` (G) | DATA0..7 | — (DATA8..15 untouched) |
+| memory card IC5 (74LS245) | `-MEM-RD` while one of the card's chip selects is active (G = IC15, the AND of `-LO-RAM`, `-HI-RAM`, `-ROM-CS`, each qualified by `-VMA`; nothing in an undecoded block) | DATA0..7 | — (DATA8..15 untouched) |
 | TMP0 (IC26/IC27), TMP1 (IC28/IC29) | `-TMP-REG-RD0/1` | DATA0..15 | — |
 | register cards IC35 + IC36 | `-REG-FUNC-RD` selecting the card (straight) | DATA0..15 = ADATA0..15; a byte whose read buffer is not enabled reads the pull-ups ($FF) | — |
 | register cards IC37 (swap) | `-REG-FUNC-RD` + `-HL-SWAP` | DATA0..7 = ADATA8..15 (the high byte) | DATA8..15 not driven |
@@ -207,7 +207,8 @@ single-stepped `PUSH` (steps 7–9): a clean high means the board differs from t
 ### 4.4 Memory and I/O strobes `-MEM-RD`, `-MEM-WR`, `-IO-RD`, `-IO-WR`, `-VMA` (B23–B26, C12)
 
 - `-VMA` (valid memory address, added in V3.1) is the qualifier every memory-side card ANDs with its decode: on the
-  memory card it gates the low-RAM chip select, the 74LS138 high-half decoder and the data transceiver; on the register
+  memory card it gates the low-RAM chip select and the 74LS138 high-half decoder, and through those selects the data
+  transceiver (IC15; in the earlier save of v1.3 `-VMA` enabled the transceiver directly); on the register
   cards it enables the address drive; on the video card it is the comparator's cascade input; on the bring-up cards it
   is NORed with `-BUS-EN` and the strobe. Its purpose (memory notes 1.1→1.2: "so ROM & HI Ram can only be selected
   with -VMA asserted") is defeated by the microcode's permanent assertion (datapath review M1).

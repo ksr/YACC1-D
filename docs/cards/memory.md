@@ -3,16 +3,26 @@
 64K of address space on one card: two 62256 SRAMs, one 28C64 EEPROM, the 4K-block map jumpers, the FORCE-ROM boot
 remap, and the two 16-bit TMP registers that the microcode uses as scratch words.
 
-Written 2026-09-23 from the YACC1-D tree.
+Written 2026-09-23 from the YACC1-D tree; **revised 2026-09-24 for the built card** (below).
 
-Sources: `hardware/cards/memory/eagle/v1.3/Memory V1.3.sch` and `.brd` (the built card; parts and nets parsed from
-the Eagle XML), `hardware/cards/memory/eagle/v1.3/Notes.md`, `hardware/cards/memory/README.md`,
+Sources: `hardware/cards/memory/eagle/v1.3-fusion-export-2026-09-24/Memory V1.3.sch` and `.brd` (**the built card**:
+Ken's Fusion 360 export of the design JLCPCB fabricated on 2025-06-27, proven against the order's gerbers by
+`tools/verify_fab_vs_brd.py`; parts and nets parsed from the Eagle XML; KiCad conversion with netlist proof 116/116 in
+`hardware/cards/memory/kicad/v1.3-fusion-export-2026-09-24/`), `hardware/cards/memory/eagle/v1.3/Notes.md`,
+`hardware/cards/memory/README.md`,
 `hardware/cards/memory/eagle/deprecated/v1.1/Notes.md`, `.../v1.2/Notes.md`, `.../v1.2/Build Notes.md`,
 `hardware/DESIGN-REVIEW-NOTES-datapath.md` (findings M1–M8, S1, S3), `hardware/DESIGN-REVIEW-NOTES-control-io.md`
 (1.3, 5.1), `docs/isa/MICROCODE-REVIEW-NOTES.md` (1.3, 1.6, H-1/H-2 status), `firmware/microcode/yaccsignaldata2.h`,
 `firmware/microcode/ucode-generator2/main.c` (the -VMA "hack"), `software/ucemu/y1ucemu.c` (the memory model),
 `firmware/monitor/monitor.asm` (the reset entry), `docs/system/MACHINE.md`, `hardware/FABRICATED.md`,
 `tests/memory/*.py` and their logs, `BACKLOG.md`.
+
+> **2026-09-24: the first version of this document described an earlier save.** It was written from
+> `hardware/cards/memory/eagle/v1.3/`, which turned out to be an earlier save of the design (notes 2025-03-06), not the
+> card that was fabricated. The built card differs in one circuit detail and in the board: **IC15 (74ALS11)** makes the
+> 74LS245's enable the AND of the card's three chip selects instead of `-VMA` (section 3.5), and the TMP registers
+> IC26-IC29 with RN5/RN6 are placed and routed on the board (in the earlier save they sat off the board, unrouted).
+> Everything else below (the decode, FORCE-ROM, the strobes, the TMP wiring) is the same in both files.
 
 ## 1. Purpose and place in the machine
 
@@ -49,7 +59,7 @@ Two things make the card more than "RAM plus ROM":
              |         | BADDR12..15 (mapped)                       |
              |   +-----v------+  Y0..Y7  +-------------+     +------v------+
              |   | IC7 74LS138|--------->| U$1 3x8 hdr |     | IC5 74LS245 | DIR = -MEM-RD
-             |   | G1=BADDR15 |          | jumpers     |     | G   = -VMA  |
+             |   | G1=BADDR15 |          | jumpers     |     | G = IC15 AND|  of the 3 -CS
              |   | G2A=-VMA   |          +--+-------+--+     +------+------+
              |   | G2B=JP1    |    ROM row  |       | RAM row        | BDATA0..7
              |   +------------+   +--------v-+   +--v-------+        |
@@ -79,12 +89,12 @@ the card's point of view.
 | DATA8..15 | A27..A30, B3..B6 | bidir | high byte of TMP0/TMP1 only; the memory chips never see it |
 | -MEM-RD | B23 | in | direction of IC5 (low = memory drives the bus) and, through IC6/C then IC6/A, the -OE of IC1, IC2 and IC13 |
 | -MEM-WR | B24 | in | through IC6/D then IC6/B, the -WE of IC1, IC2 and IC13 (see M2 in section 4) |
-| -VMA | C12 | in | "valid memory address": IC5 output enable, IC7 G2A (high-32K decode), one input of the -LO-RAM NAND, one term of the FORCE-ROM clock, and the clock for TMP loads is not gated by it |
+| -VMA | C12 | in | "valid memory address": IC7 G2A (high-32K decode), one input of the -LO-RAM NAND, one term of the FORCE-ROM clock; the clock for TMP loads is not gated by it. It reaches IC5's enable only through the chip selects (IC15, section 3.5); in the earlier save IC5 G was -VMA itself |
 | -BUS-EN | C28 | in | one term of the FORCE-ROM clock (IC3/A ORed with -VMA); optionally IC7 G2B through JP1 |
 | -RESET | C30 | in | presets IC12/A: FORCE-ROM = 1 |
 | -TMP-REG-LD0 / -LD1 | B28 / B30 | in | inverted by IC14/A and IC14/F into the CLK of the TMP0 / TMP1 374s: the register latches at the **leading** edge of the strobe |
 | -TMP-REG-RD0 / -RD1 | B27 / B29 | in | output enable of the TMP0 / TMP1 374s: the register drives all 16 data lines |
-| VCC / GND | A2,B2,C2,A31,B31,C31 / A1,B1,C1,A32,B32,C32 | power | 24 x 100 nF-class decoupling C1-C24; PWR LED through R2 330 Ω |
+| VCC / GND | A2,B2,C2,A31,B31,C31 / A1,B1,C1,A32,B32,C32 | power | 24 x 100 nF-class decoupling C1-C24; PWR LED through R2 330 Ω. The board is 4 layers: inner layer 2 is a GND plane, inner layer 15 a VCC plane, signals on top and bottom (6 mil tracks) |
 
 Every other bus signal reaches the connector symbol only (the template's full set is on X1) and has no other node on
 the card. In particular -IO-RD/-IO-WR, the register strobes and the ALU lines are not used here.
@@ -162,14 +172,23 @@ are the bus strobes re-driven by one LS gate. There is no address, -VMA or FORCE
 chip *select* carries all the qualification. For the two RAMs that is fine (a 62256 write needs -CS and -WE both
 low). For the EEPROM it is the M2 finding (section 4).
 
-### 3.5 Data path: IC5 (74LS245), RN5/RN6
+### 3.5 Data path: IC5 (74LS245), IC15 (74ALS11), RN5/RN6
 
-IC5's A side is DATA0..7, its B side BDATA0..7 (the three memory chips' I/O pins). G = -VMA, DIR = -MEM-RD. With the
-74LS245 convention DIR high = A to B, the card receives the bus (bus to memory) whenever -VMA is low and -MEM-RD is
-high, and drives the bus (memory to bus) while -MEM-RD is low. The 245 is therefore *always* turned on during a valid
-cycle, in the write direction unless a read is in progress — `Notes.md` v1.2: "-VMA to enable 74245 bus data buffer
-pin 19". The datapath review notes the ~20-30 ns BDATA overlap at the end of a read (the 245 turns around before the
-RAM's -OE releases) as normal for LS parts.
+IC5's A side is DATA0..7, its B side BDATA0..7 (the three memory chips' I/O pins). DIR = -MEM-RD; G (pin 19) = N$21,
+the output (pin 12) of **IC15 gate A, a 3-input AND of -LO-RAM (pin 1), -HI-RAM (pin 2) and -ROM-CS (pin 13)**. All
+three selects are active low, so N$21 is low, and the 245 on, exactly while one of the card's own chips is selected;
+IC15's gates B and C have their inputs on GND. With the 74LS245 convention DIR high = A to B, the card receives the bus
+(bus to memory) when a chip is selected and -MEM-RD is high, and drives the bus (memory to bus) while -MEM-RD is low.
+
+Why IC15 is there: v1.3 added the IC7 jumper block so that any 4K block of the upper half can be left undecoded for a
+memory-mapped device, and the video card uses that at $D000. With the earlier enable (`Notes.md` v1.2: "-VMA to
+enable 74245 bus data buffer pin 19", which the earlier save of v1.3 still has) the 245 would turn on for every valid
+cycle, including reads of the undecoded $D000 block, and drive the floating BDATA lines onto DATA0..7 against the
+video card. With IC15 an undecoded block leaves the 245 off. (The design files carry no note of the change; this is
+the evident reason, not a recorded one.) Cost: the enable now follows the decode (IC7 -> IC4/IC18 -> IC6 -> IC15, or
+IC10/A -> IC15 for low RAM) instead of arriving with -VMA, one ALS gate (~10 ns) after the chip select; the chips'
+own access time (62256 / 28C64, 150-250 ns) still dominates the read path. The datapath review notes the ~20-30 ns
+BDATA overlap at the end of a read (the 245 turns around before the RAM's -OE releases) as normal for LS parts.
 
 RN5 and RN6 (RN-9, common pin 1 on **GND**) hang on DATA0..7 and DATA8..15: they are pull-downs on the whole data
 bus. Their value is empty in both `.sch` and `.brd` (M8). **To verify:** measure the resistance from bus pin A19
@@ -188,6 +207,11 @@ the source one step before the load (`memory.c:24-28`, `accumulator.c:343-349`, 
 
 IC14/B and IC14/E are the inverters of section 3.3; IC14/C and IC14/D are unused and their inputs (pins 5 and 9)
 have no net in the PCB (M6).
+
+On the built board the four 374s stand in a column at the right-hand end (IC26 at the top down to IC29, x = 154.9 mm)
+with their decoupling caps C14-C17 beside them; IC15 is below them. RN5/RN6 are along the bottom edge. (In the
+earlier save `eagle/v1.3` these six parts sat outside the board outline with their connections unrouted; the 2025
+order's gerbers, part list and pick-and-place all have them on the board.)
 
 ### 3.7 Gate-count check (what the review calls "checked, no issue")
 
@@ -217,7 +241,7 @@ Findings that concern this card, with their status on 2026-09-23:
 
 | ID | Severity | Finding | Status 2026-09-23 |
 |---|---|---|---|
-| M1 (`DESIGN-REVIEW-NOTES-datapath.md`) | HIGH, masked | FORCE-ROM's clock is ADDR15·VMA·BUS-EN (three gates, ~35 ns after -VMA falls) while the register card needs ~75 ns to drive the address after -VMA; between cycles the address bus floats high, so the first -VMA after reset would clear FORCE-ROM regardless of the address. Masked since 2020 by the generator asserting -VMA in **every** step (`main.c:102,115` "Hack prevent ROM mapping from triggering"), which keeps the address bus driven at all times — and thereby removes the -VMA qualification from every chip select on this card (IC7 G2A, -LO-RAM, IC5 G are permanently active). | Open. Hazard returns if any microcode line drops -VMA or the tester drives -VMA with the address bus tri-stated. The tester tests pass because the tester drives the address before it lowers -VMA. |
+| M1 (`DESIGN-REVIEW-NOTES-datapath.md`) | HIGH, masked | FORCE-ROM's clock is ADDR15·VMA·BUS-EN (three gates, ~35 ns after -VMA falls) while the register card needs ~75 ns to drive the address after -VMA; between cycles the address bus floats high, so the first -VMA after reset would clear FORCE-ROM regardless of the address. Masked since 2020 by the generator asserting -VMA in **every** step (`main.c:102,115` "Hack prevent ROM mapping from triggering"), which keeps the address bus driven at all times — and thereby removes the -VMA qualification from every chip select on this card (IC7 G2A and -LO-RAM are permanently active; on the built card IC5's enable follows the chip selects through IC15, in the earlier save it was -VMA itself). | Open. Hazard returns if any microcode line drops -VMA or the tester drives -VMA with the address bus tri-stated. The tester tests pass because the tester drives the address before it lowers -VMA. |
 | M2 | MED | The 28C64's -WE is raw -MEM-WR (N$4), with no write-protect jumper; during FORCE-ROM every address selects block $F, so a store before the first jump above $8000 writes the EEPROM; any later stray write into $E000-$FFFF does too, and a 28C64 then spends ~10 ms in an internal write cycle during which reads return the poll bits (code executing from ROM crashes). | Open. The shipped monitor is safe by construction (`BR eprom` first). The ROM was byte-identical to the sources on 2026-09-18 and again in the 2026-09-21 full test (`tests/memory/full-run-2026-09-21.log`, phase A and F), so it has not happened yet or the fitted chip has data protection. **To verify:** whether the fitted 28C64 has software data protection enabled (read the chip's part marking/datasheet). |
 | 1.3 (`DESIGN-REVIEW-NOTES-control-io.md`) | MED | The sequencer's pipeline is not reloaded while reset is asserted, only on its release; during reset the bus carries the last or power-up control word. With FORCE-ROM active and a stale word that has -MEM-WR and -VMA asserted, that is an EEPROM write during reset (same path as M2). | Open (a sequencer v2.2 item). Bench: scope B24 and C12 during power-up and with RESET held; run `tools/verify_firmware.py` after a batch of power cycles. |
 | M3 | MED | TMP registers latch on the leading edge of -TMP-REG-LDn; correct only under the microcode's source-one-step-early rule. `moveRegtoTmp` in `branch.c:14-22` breaks the rule but has no callers. | Open, latent. |
@@ -287,7 +311,7 @@ What to measure if it misbehaves:
 | a jumpered block reads as undecoded | JP1 (M7): IC7 pin 5 must be low; IC7 pin 4 (-VMA) must follow C12; the jumper's NAND input (IC4/IC18) must go low when the block is addressed |
 | writes to $E000-$FFFF change the ROM | expected as built (M2): -WE on IC13 pin 27 follows B24 one for one. Re-verify with `rom_verify.py`, re-burn from `firmware/rom/shipped/rom` |
 | a byte reads back differently minutes later | RAM retention; `memory_full_test.py` phases C/D separate the write sweep from the read sweep for this reason |
-| reads return the last value on the bus | the block is undecoded (no jumper) or the 245 is not turning around: IC5 pin 1 (DIR) = B23, pin 19 (G) = C12 |
+| reads return the last value on the bus | the block is undecoded (no jumper; the 245 stays off, as designed) or the 245 is not turning around: IC5 pin 1 (DIR) = B23, pin 19 (G) = IC15 pin 12, which must go low whenever IC1 pin 20, IC2 pin 20 or IC13 pin 20 is low |
 | TMP values wrong (JSR returns to the wrong place, ALU operands stale) | M3: the source must be on the bus before -TMP-REG-LDn falls; with the tester, put a value on DATA, assert -TMP-REG-LD0, change DATA while still low, release, read back with -TMP-REG-RD0: the first value must return |
 | control lines at ~1.5-1.9 V | the sequencer is not READY or -BUS-EN is high (M5): nothing pulls them; not a fault of this card |
 
@@ -298,11 +322,12 @@ What to measure if it misbehaves:
 | v1.0 | 2020-06 | fabricated, retired | first card; IN/OUT bus signals were still active-low in the template ("converted from active low to Active HI ... not used in memory board") |
 | v1.1 | 2020-06-19 (files still named V1.0) | fabricated, retired | adds the boot ROM remap: IC11 74LS157 + IC12 74LS74 FORCE-ROM ("Add memory map ROM to 0x0000 until 0xf000 is accessed") |
 | v1.2 | 2020-11-29 | fabricated (built), retired 2021 | -VMA arrives on the bus (Blank V3.1 note): -VMA enables IC5, gates IC7 (pin 4) and the low-RAM -CS; the remap trigger moves from BADDR15 to raw ADDR15; "RN3&4 BADDR pull-ups not needed, leave in design"; the 7400 removed then added back for -LO-RAM. `media/memory v1.2 top.jpeg` and `... solder.jpeg` are photographs of this build |
-| v1.3 | design 2021-03-17, boards ordered 2025-06-27 | **in the machine** | "ARGH": the 3x8 jumper block on IC7's outputs with pull-ups so any 4K block can be removed from the map (for memory-mapped I/O — the video card uses it); KiCad conversion in `kicad/v1.3` (netlist proof 115/115) |
+| v1.3 | design 2021-03-17, boards ordered 2025-06-27 (JLCPCB 2000765A, 4 layers) | **in the machine** | "ARGH": the 3x8 jumper block on IC7's outputs with pull-ups so any 4K block can be removed from the map (for memory-mapped I/O — the video card uses it); IC15 74ALS11 so the 74245 is enabled only by the card's own chip selects; TMP registers on the board. Built design = `eagle/v1.3-fusion-export-2026-09-24` (KiCad `kicad/v1.3-fusion-export-2026-09-24`, netlist proof 116/116). `eagle/v1.3` is an earlier save (no IC15, TMP off the board; KiCad `kicad/v1.3`, 115/115) |
 
-**Planned (Ken, 2026-09-24; not designed yet):** the CompactFlash interface goes onto this card, which has room for
-it. It stays I/O-mapped on ports P8/P9, as the ROM and the emulators use them, with the CF card v1.0 circuit
-([`cf.md`](cf.md)); it would be the first use of the IO-ADDR0..3, -IO-RD and -IO-WR pins this card leaves unwired today.
+**v2.0 (designed 2026-09-24, not ordered):** the CompactFlash interface goes onto this card, which has room for
+it: `hardware/cards/memory/kicad/v2.0/` = the built v1.3 card unchanged plus the CF card v1.0 circuit
+([`cf.md`](cf.md)), I/O-mapped on ports P8/P9 as the ROM and the emulators use them; it is the first use of the
+IO-ADDR0..3, -IO-RD and -IO-WR pins this card leaves unwired today. See that folder's README for its status.
 
 Open ideas from `eagle/v1.3/Notes.md`, `BACKLOG.md` and the reviews, for a v1.4:
 
@@ -323,5 +348,6 @@ Open ideas from `eagle/v1.3/Notes.md`, `BACKLOG.md` and the reviews, for a v1.4:
 8. The datapath review's question whether TMP should move to the ALU is answered "no" in the Notes; the H-1 fix
    removed the microcode fight that involved TMP1, so nothing in the hardware needs to move.
 
-The 2025 gerbers came from Fusion's CAM; `BACKLOG.md` asks for an overlay against the tree's Eagle board
-(netlist proven, gerbers not).
+The 2025 gerbers came from Fusion's CAM. Done 2026-09-24: `tools/verify_fab_vs_brd.py` proves the Fusion export
+(`eagle/v1.3-fusion-export-2026-09-24`) against them hole for hole and track for track, and the same check shows the
+older `eagle/v1.3` board is not what was ordered.

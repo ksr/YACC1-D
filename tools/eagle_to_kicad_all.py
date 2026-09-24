@@ -12,7 +12,7 @@ For each Eagle .sch/.brd pair (or a lone .sch / .brd) this makes, next to the Ea
         reports/netlist.net, netlist-compare.txt   PROOF: schematic netlist vs the pad netlist embedded in the imported board
         reports/erc.json, drc.json, <project>-schematic.pdf, <project>-top.png, -bottom.png
         README.md                          what was converted, the proof result, residual ERC/DRC counts
-and an index hardware/KICAD.md.  Designs listed in a folder's pdf/SKIP.txt (label-only duplicates) are skipped.
+and an index hardware/KICAD.md (with --only, just the converted designs' rows are replaced/inserted).  Designs listed in a folder's pdf/SKIP.txt (label-only duplicates) are skipped.
 A kicad/<rev>/ folder holding a MASTER marker file is hand-maintained: never written by this tool, listed separately in the index.
 The Eagle files are never touched. Output is regenerated from scratch on every run (deterministic converter).
 usage: eagle_to_kicad_all.py [--only <substring>]   (any python3; re-executes itself under KiCad's python for pcbnew)
@@ -237,6 +237,27 @@ def main():
         r["fabricated"] = rel in fab
         write_readme(r, r["fabricated"]); results.append(r)
         print("%s  proof=%s  (%.0fs)" % (r["status"] if r["status"] != "ok" else "ok", r["proof"], time.time() - t), flush=True)
+    def index_row(r):
+        erc = sum(r["erc"].values()) if r.get("erc") else "-"
+        drc = ("%d + %d unconnected" % (sum(r["drc"]["violations"].values()), r["drc"]["unconnected"])) if r.get("drc") else "-"
+        o = r.get("overlaps")
+        ovl = ("%d" % (o.get("text/text", 0) + o.get("text/body", 0) + o.get("text/line", 0))) if o is not None else "-"
+        off = ("%d" % o.get("frame", 0)) if o is not None else "-"
+        return "| `%s` | [`%s`](%s/) | %s | %s | %s | %s | %s | %s | %s |\n" % (
+            os.path.join(r["rel"], r["base"]), r["project"], os.path.relpath(r["dest"], HW), "yes" if r["fabricated"] else "no",
+            r["proof"], erc, drc, ovl, off, "ok" if r["status"] == "ok" else "**" + r["status"] + "**")
+    kmd = os.path.join(HW, "KICAD.md")
+    if only and os.path.exists(kmd):
+        # --only: splice the converted designs' rows into the existing index (replace by Eagle design, else insert
+        # in sorted order); the rest of the index and its date stay as they were
+        lines = open(kmd).read().split("\n"); rows = {}
+        first = next(i for i, l in enumerate(lines) if l.startswith("| `"))
+        last = first
+        while last < len(lines) and lines[last].startswith("| `"): last += 1
+        for l in lines[first:last]: rows[l.split("`")[1]] = l
+        for r in results: rows[os.path.join(r["rel"], r["base"])] = index_row(r).rstrip("\n")
+        lines[first:last] = [rows[k] for k in sorted(rows, key=lambda k: (os.path.dirname(k), os.path.basename(k)))]   # = designs() order
+        open(kmd, "w").write("\n".join(lines))
     if not only:
         with open(os.path.join(HW, "KICAD.md"), "w") as f:
             f.write("# KiCad conversions\n\nGenerated %s by `tools/eagle_to_kicad_all.py`: every Eagle design under `hardware/` (active and deprecated "
@@ -247,15 +268,7 @@ def main():
                     "**Overlaps** = `tools/kicad/sch_overlaps.py` over all sheets: text/text + text/body + text/line collisions, "
                     "and items off the drawing frame.\n\n"
                     "| Eagle design | KiCad project | Built | Proof | ERC | DRC | Overlaps | Off frame | Status |\n|---|---|---|---|---|---|---|---|---|\n" % time.strftime("%Y-%m-%d"))
-            for r in results:
-                erc = sum(r["erc"].values()) if r.get("erc") else "-"
-                drc = ("%d + %d unconnected" % (sum(r["drc"]["violations"].values()), r["drc"]["unconnected"])) if r.get("drc") else "-"
-                o = r.get("overlaps")
-                ovl = ("%d" % (o.get("text/text", 0) + o.get("text/body", 0) + o.get("text/line", 0))) if o is not None else "-"
-                off = ("%d" % o.get("frame", 0)) if o is not None else "-"
-                f.write("| `%s` | [`%s`](%s/) | %s | %s | %s | %s | %s | %s | %s |\n" % (
-                    os.path.join(r["rel"], r["base"]), r["project"], os.path.relpath(r["dest"], HW), "yes" if r["fabricated"] else "no",
-                    r["proof"], erc, drc, ovl, off, "ok" if r["status"] == "ok" else "**" + r["status"] + "**"))
+            for r in results: f.write(index_row(r))
         masters = sorted(os.path.relpath(r_, HW) for r_, d_, f_ in os.walk(HW) if "MASTER" in f_ and "/kicad/" in r_ + "/")
         if masters:
             with open(os.path.join(HW, "KICAD.md"), "a") as f:

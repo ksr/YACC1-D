@@ -1,6 +1,6 @@
 # memory-v1.3 — KiCad conversion
 
-Generated 2026-09-23 by `tools/eagle_to_kicad_all.py` from the Eagle design `Memory V1.3` in `hardware/cards/memory/eagle/v1.3/`. **The Eagle files are the record of what was designed and built; this KiCad project is derived from them and is regenerated from scratch on every run of the tool** (hand edits here will be lost - once a card is edited in KiCad, remove it from the tool's list). This revision was FABRICATED (see `hardware/FABRICATED.md`).
+Generated 2026-09-23 by `tools/eagle_to_kicad_all.py` from the Eagle design `Memory V1.3` in `hardware/cards/memory/eagle/v1.3/`. **The Eagle files are the record of what was designed and built; this KiCad project is derived from them and is regenerated from scratch on every run of the tool** (hand edits here will be lost - once a card is edited in KiCad, remove it from the tool's list). This revision was never fabricated (or its build status is unknown, see `hardware/FABRICATED.md`).
 
 ## Files
 
