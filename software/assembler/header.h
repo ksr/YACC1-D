@@ -5,7 +5,8 @@
 #endif
 
 #define VERSION 2.2
-#define MAX_LABELS 1000
+#define MAX_LABELS 8192   /* YACC1-D 2026-09-24: was 1000, with no bounds check (a bigger program crashed) */
+#define LABEL_CHARS 29   /* longest label: labels[][30] holds 29 characters + NUL */
 
 #define DEF_DIR    "/Users/ken/rcasm/"
 

@@ -107,9 +107,11 @@ table with `-x`. `firmware/monitor/monitor.lst` is the reference example (`f05b:
    the compiler writes `DB 115,117,109,...` (`y1cc.py`). The monitor's banner is written `"YACC 2020: hello world  "`
    in `monitor.asm` but the listing shows the bytes `4f 52 4c 44` (`ORLD`, `monitor.lst` around line 1160): the
    machine prints `YACC 2020: HELLO WORLD`.
-2. **Labels are at most 29 characters**; a 30-character label crashes the assembler (`software/assembler/README.md`;
-   `header.h`: `char labels[MAX_LABELS][30]`, "KEN CHANGED FROM 16 TO 30"; `y1cc.py` `LABEL_MAX = 29`). The compiler
-   mangles long C names.
+2. **Labels are at most 29 characters** (`header.h`: `char labels[MAX_LABELS][30]`, "KEN CHANGED FROM 16 TO 30";
+   `y1cc.py` `LABEL_MAX = 29`; the compiler mangles long C names). A longer label used to overwrite memory; since
+   2026-09-24 it stops the assembly with `ERR - Label longer than 29 characters`. The label table holds **8,191**
+   labels (`MAX_LABELS` 8192, was 1,000 with no check: 3,817 crashed it); a full table is the error `Too many labels`.
+   Also fixed 2026-09-24: a space or tab inside an operand (`DW A, B`) made the assembler loop forever.
 3. **A leading `-` on a number is silently dropped**: `LDAI -1` assembles to `0E 01` (checked). There are no negative
    numbers; write two's complement by hand (`0FFH`).
 4. **A `\B` operand over 255 is an error** ("out of range"); `\W` operands over 65535 likewise. The compiler rejects

@@ -6,9 +6,9 @@ software/emulator/main.c	2026-09-20: -m (and the no-argument default) load firmw
 firmware/microcode/ucode-generator2/controlLine.c	2026-09-20: outputs (test.123/.hex/.hexz) written beside the executable, not in the cwd (Finder double-click); unused locals removed
 firmware/microcode/ucode-generator2/main.c	2026-09-20: keeps argv[0] for controlLine.c's exe_relative(); unused locals removed
 software/ubasic-c/ubasic-master/use-ubasic.c	2026-09-20: interactive mode exits at end of input instead of looping forever; unused locals removed, the OLD-main sample program under #ifdef OLD
-software/assembler/asm.c	2026-09-20: usage message when no source is given, clean error when the .def is missing (both crashed before); unused local removed
+software/assembler/asm.c	2026-09-20: usage message when no source is given, clean error when the .def is missing (both crashed before); unused local removed; 2026-09-24: make_label() stops with a clear error when the label table is full or a label is longer than 29 characters (both used to overwrite memory: 3,817 labels crashed it); the symbol-sort swap buffer l[20] -> l[30] (overflowed on 20-29 character labels) and the sorts keep labelf with its label
 software/assembler/asmcmds.c	2026-09-20: parentheses in the quote/comma loop condition; explicit (int) cast in the abs() range check (both warning fixes, no behaviour change); unused locals class/i/m2/BPtr/buffer removed; 2026-09-22: DS (\B) flushes the pending Intel-hex record like ORG does - bytes after a DS were appended to the record that started before it and landed at the wrong address (the firmware never uses DS: images unchanged, make check proves it)
-software/assembler/support.c	2026-09-20: #include <stdlib.h> for atoi(), old K&R 'int atoi();' declaration removed; unused locals mode/i/e/sign removed
+software/assembler/support.c	2026-09-20: #include <stdlib.h> for atoi(), old K&R 'int atoi();' declaration removed; unused locals mode/i/e/sign removed; 2026-09-24: buildTokens() skips spaces/tabs inside an operand (nothing advanced past them, so 'DW A, B' looped forever); find_label_number() initialises f (a missing label returned garbage)
 software/assembler/mstrings.c	2026-09-20: unused locals tmpr/dest removed
 firmware/microcode/ucode-generator2/code.h	2026-09-20: bitOn/bitOff prototypes (were K&R declarations)
 software/ubasic-c/ubasic-master/tokenizer.c	2026-09-20: (const char *)/(char *) casts on the unsigned-char token buffers passed to strlen/strcpy/memcpy (no behaviour change); unused locals removed; debug-only src/dest marked used
@@ -38,3 +38,4 @@ firmware/microcode/ucode-generator2/test.hexz	2026-09-22: regenerated (loader fo
 firmware/microcode/ucode-generator2/test.123	2026-09-22: regenerated (listing) with BRUR
 firmware/microcode/ucode-generator2/cache	2026-09-22: rewritten by tools/ucode_send.py --all (the loader's record of what the sequencer EEPROM holds = test.hex with BRUR + H-1/H-2)
 firmware/microcode/ucode-generator2/accumulator.c	2026-09-23: aluOp() clears the ALU's SHIFT-OUT flip-flop (SHIFT_LOAD + -SR-LD) before every add/subtract (the carry latches CO/BO OR SHIFT-OUT; a stale shift-out corrupted multi-byte arithmetic on the machine)
+software/assembler/header.h	2026-09-24: MAX_LABELS 1000 -> 8192 (y1cc.c compiled for the YACC1 needs 3,817), LABEL_CHARS 29 for the length check

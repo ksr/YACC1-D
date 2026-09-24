@@ -92,6 +92,15 @@ void make_label()
     flag='*';
     }
   if (flag==' ') {
+    /* YACC1-D 2026-09-24: bounds checks - a label past the table or longer than its slot used to overwrite memory */
+    if (strlen(labl) > LABEL_CHARS) {
+      printf("%d:ERR - Label longer than %d characters: %s\n",linecount,LABEL_CHARS,labl);
+      exit(1);
+      }
+    if (nlabel+1 >= MAX_LABELS) {
+      printf("%d:ERR - Too many labels (the table holds %d; MAX_LABELS in header.h): %s\n",linecount,MAX_LABELS-1,labl);
+      exit(1);
+      }
     nlabel++;
     strcpy(labels[nlabel],labl);
     labell[nlabel]=linecount;
@@ -103,7 +112,7 @@ void make_label()
 void sort_labels()
 {
   word t;
-  char l[20];
+  char l[30];   /* YACC1-D 2026-09-24: was 20, overflowed on labels of 20-29 characters */
   char flag;
   int i;
   flag='*';
@@ -114,6 +123,7 @@ void sort_labels()
         flag='*';
         t=labell[i]; labell[i]=labell[i+1]; labell[i+1]=t;
         t=labela[i]; labela[i]=labela[i+1]; labela[i+1]=t;
+        t=labelf[i]; labelf[i]=labelf[i+1]; labelf[i+1]=t;
         strcpy(l,labels[i]); strcpy(labels[i],labels[i+1]);
         strcpy(labels[i+1],l);
         }
@@ -124,7 +134,7 @@ void sort_labels()
 void sort_labelsa()
 {
   word t;
-  char l[20];
+  char l[30];   /* YACC1-D 2026-09-24: was 20, overflowed on labels of 20-29 characters */
   char flag;
   int i;
   flag='*';
@@ -135,6 +145,7 @@ void sort_labelsa()
         flag='*';
         t=labell[i]; labell[i]=labell[i+1]; labell[i+1]=t;
         t=labela[i]; labela[i]=labela[i+1]; labela[i+1]=t;
+        t=labelf[i]; labelf[i]=labelf[i+1]; labelf[i+1]=t;
         strcpy(l,labels[i]); strcpy(labels[i],labels[i+1]);
         strcpy(labels[i+1],l);
         }

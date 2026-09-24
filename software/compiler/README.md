@@ -268,7 +268,8 @@ right after an expression (`puts("a" "b")`, a Python `TypeError`; now the ordina
 **y1cc.c compiled by y1cc.py** (`make target`, the proof that it is in the subset): no errors, 45,173 lines of
 assembly, **code 75,445 + data 6,900 = an 82,345-byte image** (plus about 41K of tables with `limits_y1.h`), 2.5
 times the 32K program area ($5000-$CFFF) for the image alone and over the 64K address space; so the assembler cannot
-take it (its label table holds 1,000 labels, this has 3,817; and every label past $FFFF is an error), and the bytes
+take it (every label past $FFFF is an error; its label table held 1,000 labels until 2026-09-24 and crashed on this
+one's 3,817 - it holds 8,191 now and says so when full), and the bytes
 are counted from the assembly with `yacc1.def`'s instruction lengths — a count checked against the assembler's
 "Object Code" on all 116 corpus programs that assemble (exact on every one). Where the code goes: the code generator
 56,040 bytes (`gen_call` 4,484, `gen_bin` 2,821, `gen_program` 2,793, `gen_expr` 2,257, `walk` 2,043, `gen_stmt`
@@ -289,7 +290,7 @@ about 24 bytes of code per line of C.
 4. *Y1/OS support*: an exit syscall (for `io_fail`), and temporary files or the pass structure instead of RAM for the
    data sections (one write handle).
 5. *The on-target assembler* (BACKLOG wave 3): the compiler emits assembly text; the machine needs an assembler
-   (and one that takes more than 1,000 labels) before a program compiled on it can run.
+   (the host assembler's label table now holds 8,191, enough for any single pass) before a program compiled on it can run.
 
 ## Not done yet (BACKLOG "C compiler")
 

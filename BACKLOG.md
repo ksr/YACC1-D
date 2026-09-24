@@ -247,8 +247,8 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
      monitor's 768 bytes ($0C00-$0EFF); give a pass its own R1 region (the memory map in docs/system/OS-PLAN.md).
   3. Y1/OS: an exit syscall (`io_fail` HALTs today), temporary files for the data sections (one write handle).
   4. Run a pass on the emulator under Y1/OS (`c/target_io.c` is compiled, never run), then the whole chain.
-  5. The on-target assembler (wave 3 of os/PORT-PLAN.md) — and the host assembler's 1,000-label table
-     (`software/assembler/header.h` MAX_LABELS, no bounds check: it segfaults beyond) before it can assemble a pass
+  5. The on-target assembler (wave 3 of os/PORT-PLAN.md) (the host assembler's label table: done 2026-09-24,
+     8,191 labels with a clear error when full, was 1,000 with no check) before it can assemble a pass
      this size.
   6. Code size of what y1cc emits (the bullet below): every byte saved there shrinks the native compiler too.
 - (done 2026-09-23: the rebuilt ROM is burned — `ROM 2026-09-23`, MD5 d2d7b027…, = `firmware/rom/shipped/rom.bin`; monitor

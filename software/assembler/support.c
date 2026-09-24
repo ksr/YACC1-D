@@ -62,6 +62,7 @@ word find_label_number(char* buf) {
   int i;
   int f;
   if (pass == 1) return 0;
+  f=0;   /* YACC1-D 2026-09-24: was uninitialised, so a missing label returned garbage */
   for (i=1;i<=nlabel;i++) {
     if (strcmp(labels[i],buf)==0)  f=i;
     }
@@ -202,6 +203,7 @@ void buildTokens(char* buffer) {
       *bPtr = 0;
       len++;
       }
+      else buffer++;   /* YACC1-D 2026-09-24: skip a space/tab; nothing advanced past it, so "DW A, B" hung forever */
     }
   if (tokenCount > 0 && len == 0) --tokenCount;
   for (i=0; i<tokenCount; i++) tokens[i].typ = 'C';
