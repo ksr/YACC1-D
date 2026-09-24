@@ -3,8 +3,9 @@
 #                   disassembler, uBASIC, vector generator
 #   make check      audit the tree + rebuild firmware/microcode/sketches and diff against the committed images,
 #                   then run the C compiler's test programs on the emulator (tests/compiler/run.py), compare
-#                   y1cc.py with its C twin over the whole corpus (tests/compiler/twin.py, also --16)
-#   make cc-test    just the compiler tests (on both emulators) and the twin comparison
+#                   y1cc.py with its C twin and with the multi-pass compiler over the whole corpus (tests/compiler/
+#                   twin.py, also --16, --chain, --chain16), and size the passes against Y1/OS (tests/compiler/passes.py)
+#   make cc-test    just the compiler tests (on both emulators) and the twin comparisons (y1cc.c, the passes)
 #   make os-test    Y1/OS sessions on both emulators (tests/os/run.py)
 #   make bom        regenerate docs/bom/ (bills of material per card + consolidated) from the active Eagle schematics (tools/gen_bom.py)
 #   make clean
@@ -23,6 +24,9 @@ check:
 	python3 tests/compiler/run.py
 	python3 tests/compiler/twin.py
 	python3 tests/compiler/twin.py --16
+	python3 tests/compiler/twin.py --chain
+	python3 tests/compiler/twin.py --chain16
+	python3 tests/compiler/passes.py
 	python3 tests/ucemu/run.py
 	python3 tests/os/run.py
 	python3 tests/monload/run.py
@@ -34,6 +38,7 @@ check:
 cc-test:
 	python3 tests/compiler/run.py
 	python3 tests/compiler/twin.py
+	python3 tests/compiler/twin.py --chain
 	python3 tests/ucemu/run.py
 os-test:
 	python3 tests/os/run.py

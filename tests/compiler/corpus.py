@@ -49,6 +49,9 @@ def items():
     cc = os.path.join(ROOT, "software/compiler/c/target.c")               # y1cc.c (the C twin) compiled as a Y1/OS program
     if os.path.exists(cc):
         yield ("self", rel(cc), ["--org", "0x5000", "--os"])
+    for name in ("lex", "parse", "decl", "calls", "layout", "stmt", "sema", "emit", "final"):
+        p = os.path.join(ROOT, "software/compiler/c/target", name + ".c")  # the multi-pass compiler's passes, likewise
+        if os.path.exists(p): yield ("pass", rel(p), ["--org", "0x5000", "--os"])
 
 
 STAMP = re.compile(r"^(; y1cc: .*)  \(\d{4}-\d\d-\d\d \d\d:\d\d\)$", re.M)

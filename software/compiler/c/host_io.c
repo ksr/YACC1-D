@@ -124,6 +124,14 @@ int io_find(char *name, char *from, char *out, int max) {
     return 0;
 }
 
+void io_lib(char *name, char *out, int max) {
+    char p[PATHMAX];
+    find_libdir();
+    snprintf(p, sizeof p, "%s/%s", libdir, name);
+    strncpy(out, p, (size_t)max - 1);
+    out[max - 1] = 0;
+}
+
 int io_create(char *path) {
     snprintf(outname, sizeof outname, "%s", path);
     return 1;
@@ -153,6 +161,26 @@ void io_fail(char *msg) {
     fputs(msg, stderr);
     fputc('\n', stderr);
     exit(1);
+}
+
+static FILE *wfile;
+
+int io_wopen(char *path) {
+    wfile = fopen(path, "wb");
+    return wfile != 0;
+}
+
+void io_wput(int c) { fputc(c, wfile); }
+
+void io_wclose(void) {
+    if (wfile && fclose(wfile) != 0) { fputs("y1cc: cannot write an intermediate file\n", stderr); exit(1); }
+    wfile = 0;
+}
+
+void io_done(void) {
+    fflush(stdout);
+    if (wfile) io_wclose();
+    exit(0);
 }
 
 void io_date(char *buf) {

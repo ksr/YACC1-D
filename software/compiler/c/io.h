@@ -21,11 +21,19 @@
                                 so a failed compile leaves no file, as y1cc.py does)
      io_put(s, c)               append byte c to section s (0 code, 1 data, 2 uninitialised data)
      io_finish()                write sections 0, 1, 2 to the output; 1 = done
+   Intermediate files (the passes of the multi-pass compiler, 2026-09-24): one file open for writing at a time, as
+   Y1/OS allows
+     io_wopen(path)             create path for writing (replacing a file of that name); 1 = fine
+     io_wput(c)                 append byte c to it
+     io_wclose()                close it
    The console and the rest
      io_out(c)                  one byte to standard output (the -l summary)
      io_fail(msg)               msg and a newline to standard error, then stop with exit status 1 (does not return
                                 on the host)
-     io_date(buf)               the date and time as "YYYY-MM-DD HH:MM" (17 bytes with the NUL) for the header */
+     io_date(buf)               the date and time as "YYYY-MM-DD HH:MM" (17 bytes with the NUL) for the header
+     io_done()                  stop now, successfully (exit status 0): a pass that has written a deferred error
+     io_lib(name, out, max)     the path of a file in the compiler's library directory (cc9 reads the runtime
+                                helpers from lib/y1ccrt.txt) */
 int io_argc(void);
 void io_arg(int i, char *buf, int max);
 int io_open(char *path);
@@ -38,3 +46,8 @@ int io_finish(void);
 void io_out(int c);
 void io_fail(char *msg);
 void io_date(char *buf);
+int io_wopen(char *path);
+void io_wput(int c);
+void io_wclose(void);
+void io_done(void);
+void io_lib(char *name, char *out, int max);

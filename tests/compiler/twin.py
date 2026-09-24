@@ -19,6 +19,7 @@ ROOT = corpus.ROOT
 PY = os.path.join(ROOT, "software/compiler/y1cc.py")
 CDIR = os.path.join(ROOT, "software/compiler/c")
 TWIN = os.path.join(CDIR, "y1cc")
+CHAIN = os.path.join(CDIR, "y1ccp")                  # the multi-pass compiler: the driver running cc1..cc9
 BUILD = os.path.join(corpus.HERE, "build", "twin")
 
 
@@ -121,6 +122,8 @@ def main():
     verbose = "-v" in av; keep = "--keep" in av
     only = [a for a in av if not a.startswith("-")]
     twin, target = (TWIN + "16", "y1cc16") if "--16" in av else (TWIN, "y1cc")
+    if "--chain" in av: twin, target = CHAIN, "passes"
+    if "--chain16" in av: twin, target = CHAIN + "16", "passes"
     r = subprocess.run(["make", "-s", "-C", CDIR, target], capture_output=True, text=True)
     if r.returncode or r.stderr.strip():
         sys.exit("twin: building the C twin failed or warned:\n" + r.stdout + r.stderr)
@@ -145,8 +148,11 @@ def main():
         if verbose or not ok:
             print("%-44s %-30s %s" % (src, " ".join(opts), "identical" if ok and p[0] == 0 else
                                       "same error" if ok else "DIFFERENT: " + why), flush=True)
-    print("twin%s: %d programs identical, %d identical errors, %d DIFFERENT" % (" (y1cc16: 16-bit int, unsigned char)"
-          if "--16" in av else "", same, errs, len(bad)))
+    print("twin%s: %d programs identical, %d identical errors, %d DIFFERENT" % (
+          " (y1cc16: 16-bit int, unsigned char)" if "--16" in av else
+          " (the pass chain y1ccp: cc1..cc9)" if "--chain" in av else
+          " (the pass chain y1ccp16: cc1_16..cc9_16, 16-bit int, unsigned char)" if "--chain16" in av else "",
+          same, errs, len(bad)))
     if not keep and not bad: shutil.rmtree(BUILD, ignore_errors=True)
     sys.exit(1 if bad else 0)
 

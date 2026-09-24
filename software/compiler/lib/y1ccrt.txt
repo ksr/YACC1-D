@@ -1,0 +1,219 @@
+; y1ccrt.txt - the runtime helpers of the multi-pass y1cc (2026-09-24): cc9_final.c copies the section of each
+; helper a program uses, in this order, after the line "; runtime NAME" (the .os section instead with --os).
+; The same text as y1cc.py's emit_runtime (tests/compiler/twin.py --chain proves it); a line starting with @
+; names a section, the lines before the first one are these comments.
+@rt_sub
+rt_sub: MVRHA R4
+        INVA
+        MVARH R4
+        MVRLA R4
+        INVA
+        MVAT
+        LDAI 255
+        ADDI 1
+        MVRLA R3
+        ADDTC
+        MVARL R3
+        MVRHA R4
+        MVAT
+        MVRHA R3
+        ADDTC
+        MVARH R3
+        RET
+@rt_mul
+rt_mul: MVIW R5,0
+rt_mul_l: MVRLA R4
+        MVAT
+        MVRHA R4
+        ORT
+        BRZ rt_mul_d
+        MVRLA R4
+        ANDI 1
+        BRZ rt_mul_s
+        MVRLA R3
+        MVAT
+        MVRLA R5
+        ADDT
+        MVARL R5
+        MVRHA R3
+        MVAT
+        MVRHA R5
+        ADDTC
+        MVARH R5
+rt_mul_s: MVRLA R3
+        MVAT
+        ADDT
+        MVARL R3
+        MVRHA R3
+        MVAT
+        ADDTC
+        MVARH R3
+        LDAI 0
+        CSHL
+        MVRHA R4
+        CSHR
+        MVARH R4
+        MVRLA R4
+        CSHR
+        MVARL R4
+        BR rt_mul_l
+rt_mul_d: MOVRR R5,R3
+        RET
+@rt_divmod
+rt_divmod: MVIW R6,0
+        MVIW R7,16
+rt_dm_l: MVRLA R3
+        MVAT
+        ADDT
+        MVARL R3
+        MVRHA R3
+        MVAT
+        ADDTC
+        MVARH R3
+        MVRLA R6
+        MVAT
+        ADDTC
+        MVARL R6
+        MVRHA R6
+        MVAT
+        ADDTC
+        MVARH R6
+        MVRHA R4
+        MVAT
+        MVRHA R6
+        BRLT rt_dm_n
+        BRNEQ rt_dm_y
+        MVRLA R4
+        MVAT
+        MVRLA R6
+        BRLT rt_dm_n
+rt_dm_y: MVRLA R4
+        MVAT
+        MVRLA R6
+        BRLT rt_dm_b
+        SUBT
+        MVARL R6
+        MVRHA R4
+        MVAT
+        MVRHA R6
+        SUBT
+        MVARH R6
+        INCR R3
+        BR rt_dm_n
+rt_dm_b: SUBT
+        MVARL R6
+        MVRHA R4
+        MVAT
+        MVRHA R6
+        SUBT
+        SUBI 1
+        MVARH R6
+        INCR R3
+rt_dm_n: DECR R7
+        MVRLA R7
+        BRNZ rt_dm_l
+        MOVRR R6,R5
+        RET
+@rt_shl
+rt_shl: MVRLA R4
+        BRZ rt_shl_d
+rt_shl_l: MVRLA R3
+        MVAT
+        ADDT
+        MVARL R3
+        MVRHA R3
+        MVAT
+        ADDTC
+        MVARH R3
+        DECR R4
+        MVRLA R4
+        BRNZ rt_shl_l
+rt_shl_d: RET
+@rt_shr
+rt_shr: MVRLA R4
+        BRZ rt_shr_d
+rt_shr_l: LDAI 0
+        CSHL
+        MVRHA R3
+        CSHR
+        MVARH R3
+        MVRLA R3
+        CSHR
+        MVARL R3
+        DECR R4
+        MVRLA R4
+        BRNZ rt_shr_l
+rt_shr_d: RET
+@rt_putc
+rt_putc: BRDEV rt_putc_h
+        OUTA P2
+        RET
+rt_putc_h: JSR 65476
+        RET
+@rt_putc.os
+rt_putc: PUSHR R3
+        PUSHR R4
+        MVARL R3
+        LDAI 0
+        MVARH R3
+        STR R3,3846
+        LDR R7,3898
+        JSRUR R7
+        POPR R4
+        POPR R3
+        RET
+@rt_getc
+rt_getc: BRDEV rt_getc_h
+        INP P2
+        RET
+rt_getc_h: JSR 65512
+        RET
+@rt_getc.os
+rt_getc: PUSHR R3
+        PUSHR R4
+        LDR R7,3894
+        JSRUR R7
+        LDR R5,3852
+        POPR R4
+        POPR R3
+        MVRHA R5
+        BRNZ rt_getc_e
+        MVRLA R5
+        RET
+rt_getc_e: LDAI 0
+        RET
+@rt_puts
+rt_puts: LDAVR R3
+        BRZ rt_puts_d
+        JSR rt_putc
+        INCR R3
+        BR rt_puts
+rt_puts_d: LDAI 10
+        JSR rt_putc
+        RET
+@rt_fsave
+rt_fsave: POPR R7
+rt_fsave_l: LDAVR R5
+        PUSH
+        INCR R5
+        DECR R6
+        MVRLA R6
+        MVAT
+        MVRHA R6
+        ORT
+        BRNZ rt_fsave_l
+        PUSHR R7
+        RET
+@rt_frest
+rt_frest: POPR R7
+rt_frest_l: POP
+        STAVR R5
+        DECR R5
+        DECR R6
+        MVRLA R6
+        MVAT
+        MVRHA R6
+        ORT
+        BRNZ rt_frest_l
+        PUSHR R7
+        RET

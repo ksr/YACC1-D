@@ -4,20 +4,13 @@
    is the shape of the port rather than a tested layer. Its choices:
    - the command line is the tail argstr() hands a program, split into words at spaces;
    - #include "name" looks beside the including file, then in /LIB;
-   - section 0 (code) goes straight into the output file; sections 1 and 2 (data, uninitialised data) wait in RAM
-     (TSEC bytes each) and are appended by io_finish: Y1/OS allows one file open for writing at a time;
+   - the three output sections of y1cc.c (io_create/io_put/io_finish) are in target_sec.c, which only target.c
+     includes (the passes write their files with io_wopen/io_wput/io_wclose and would only carry its buffers);
    - there is no clock, so the header's date is 0000-00-00 00:00;
    - io_fail prints the message and HALTs: there is no exit syscall yet to return to the shell from deep inside. */
 #include "../../../os/lib_fs.c"
 
-#define TSEC 1024
-
 char targs[128];
-char tsec1[TSEC];
-char tsec2[TSEC];
-int tn1;
-int tn2;
-int touth;
 
 void y1cc_main(void);
 
@@ -64,22 +57,20 @@ int io_find(char *name, char *from, char *out, int max) {
     out[i] = 0;
     return fresolve(out, 0);
 }
-int io_create(char *path) { touth = fcreate(path, 0, 0); return touth != 0; }
 void io_fail(char *msg) { puts(msg); halt(); }
-void io_put(int s, int c) {
-    if (s == 0) { fputc(touth, c); return; }
-    if (s == 1) { if (tn1 >= TSEC) io_fail("y1cc: data section over TSEC"); tsec1[tn1] = c; tn1++; return; }
-    if (tn2 >= TSEC) io_fail("y1cc: bss section over TSEC");
-    tsec2[tn2] = c; tn2++;
-}
-int io_finish(void) {
-    int i;
-    for (i = 0; i < tn1; i++) fputc(touth, tsec1[i]);
-    for (i = 0; i < tn2; i++) fputc(touth, tsec2[i]);
-    fclose(touth);
-    return 1;
-}
 void io_out(int c) { putchar(c); }
+void io_lib(char *name, char *out, int max) {      /* /LIB/name */
+    int i; int j;
+    out[0] = '/'; out[1] = 'L'; out[2] = 'I'; out[3] = 'B'; out[4] = '/';
+    i = 5;
+    for (j = 0; name[j] && i < max - 1; j++) { out[i] = name[j]; i++; }
+    out[i] = 0;
+}
+int twh;
+int io_wopen(char *path) { twh = fcreate(path, 0, 0); return twh != 0; }
+void io_wput(int c) { fputc(twh, c); }
+void io_wclose(void) { fclose(twh); twh = 0; }
+void io_done(void) { if (twh) io_wclose(); halt(); }    /* no exit syscall yet (BACKLOG): stop the machine */
 void io_date(char *buf) {
     char *d; int i;
     d = "0000-00-00 00:00";

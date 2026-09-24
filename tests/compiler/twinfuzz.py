@@ -5,7 +5,11 @@ type and statement shape mixed at random, including recursion, switch tables, st
 string and array initialisers, and some programs y1cc must reject; before them a fixed list of 60 invalid programs
 (ERRORS) whose error messages must match. Compile-only (nothing is run).
 
-  twinfuzz.py [N] [--seed S] [--keep]      N programs (default 300), reproducible from the seed
+  twinfuzz.py [N] [--seed S] [--keep] [--chain | --chain16]
+                                           N programs (default 300), reproducible from the seed; --chain compares
+                                           y1cc.py with the multi-pass compiler (software/compiler/c/y1ccp, cc1..cc9)
+                                           instead of y1cc.c, --chain16 with its 16-bit check build; both add ORDER,
+                                           programs with two errors found in different passes
 """
 import os, sys, random, subprocess, shutil
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -83,6 +87,33 @@ ERRORS = [
     'int t[2] = {{1}, 2}; void main() {}',
     'char *q[] = {1, "a"}; char b[2] = {"x"}; void main() {}',
     'int x = 5; int y = x; void main() {}',
+]
+
+# programs with two errors found by different passes of the multi-pass compiler (--chain only): the first in
+# y1cc.py's order must win - a lexer error before any parse error (y1cc.py lexes first; y1cc.c does not, so these
+# are not run against it), a statement error after an earlier expression's, main compiled first, funcaddr() by
+# function order, a size error at the DS line or the frame save (2026-09-24)
+ORDER = [
+    'void main() { int a; a = (1 + 2; } char *s = "unterminated',
+    'void main() { int a; a = ; }\nint b = 0x;',
+    'void main() { break; x = nosuch; }',
+    'void main() { x = nosuch; break; }',
+    'int f() { break; } void main() { f(); nosuch = 1; }',
+    'int f() { nosuch2 = 1; } void main() { f(); break; }',
+    'void main() { struct Q q; }',
+    'void main() { struct Q q; int a; a = b; }',
+    'int r(int n) { struct Q q; if (n) return r(n - 1); return 0; } void main() { r(3); }',
+    'void main() { int a; switch (a) { case 1: x = 1; case 1: ; } }',
+    'void main() { int a; switch (b) { case 1: case 1: ; } }',
+    'int g(int a) { return funcaddr(h); } int h() { return funcaddr(k); } void main() { g(1); h(); }',
+    'int h(); int g() { return funcaddr(k2); } int h() { return funcaddr(k1); } void main() { g(); h(); }',
+    'int g() { return funcaddr(k3) + funcaddr(1); } void main() { g(); }',
+    'int h() { return 1; } int g() { return funcaddr(k4); } int h() { return funcaddr(k5); } void main() { g(); h(); }',
+    'void main() { int a; a = sizeof(f(nosuch)); } int f(int x) { return x; }',
+    'void main() { int a; a = 1 ? nosuch : 2; }',
+    'int f(int a, int b) { return a; } void main() { f(1); x = 1; }',
+    'void main() { int *p; p->x = 1; q = 2; }',
+    'int main2() { main2(); } void main() { int a; a = main2() + nosuch; }',
 ]
 
 
@@ -187,14 +218,18 @@ def main():
     av = sys.argv[1:]
     n = int(next((a for a in av if a.isdigit()), "300"))
     seed = int(av[av.index("--seed") + 1]) if "--seed" in av else 1
-    r = subprocess.run(["make", "-s", "-C", os.path.dirname(TWIN), "y1cc"], capture_output=True, text=True)
+    global BUILD, TWIN
+    target = "y1cc"
+    if "--chain" in av or "--chain16" in av:
+        target = "passes"
+        TWIN = os.path.join(ROOT, "software/compiler/c/y1ccp" + ("16" if "--chain16" in av else ""))
+    r = subprocess.run(["make", "-s", "-C", os.path.dirname(TWIN), target], capture_output=True, text=True)
     if r.returncode: sys.exit(r.stdout + r.stderr)
-    global BUILD
     BUILD = os.path.join(BUILD, "seed%d" % seed)
     shutil.rmtree(BUILD, ignore_errors=True); os.makedirs(BUILD)
     rnd = random.Random(seed); g = Gen(rnd)
     same = errs = 0; bad = []
-    for k, text in enumerate(ERRORS):             # the error corpus first
+    for k, text in enumerate(ERRORS + (ORDER if target == "passes" else [])):   # the error corpus first
         src = os.path.join(BUILD, "e%02d.c" % k)
         open(src, "w").write(text + "\n")
         p = run([sys.executable, PY, src], src[:-2] + ".py.asm")

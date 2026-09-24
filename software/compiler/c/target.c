@@ -3,4 +3,5 @@
    `make target` assembles it and reports its size against the 32K program area). Not run on the machine yet. */
 #include "limits_y1.h"
 #include "target_io.c"
+#include "target_sec.c"
 #include "y1cc.c"
