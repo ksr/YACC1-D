@@ -59,8 +59,9 @@ Behaviour worth knowing (`main.c`):
 
 What it does **not** model (the ISA reference has the full table): `BRDEV` on hardware, the carry flip-flop's loads
 on SUB and on the plain shifts, R2 as the operand-address register, the suppressed loads of R0, bus fights,
-timing, FORCE-ROM, interrupts, the UART's status bits, the video card. `LDTVR`/`STTVR` run here although the
-hardware has no microcode for them. Since 2026-09-22 `BRVR` (indirect jump, Rn += 2), `JSRUR` (PC ← Rn, bytes no
+timing, FORCE-ROM, interrupts, the UART's status bits, the video card. (`LDTVR`/`STTVR`, which ran here without
+microcode, are gone: since 2026-09-24 their opcodes are `ADDIW`/`SHL16`, and $80-$8F `LDZ`/`STZ`, implemented as the
+microcode does them.) Since 2026-09-22 `BRVR` (indirect jump, Rn += 2), `JSRUR` (PC ← Rn, bytes no
 longer swapped) and `BRUR` follow the microcode (`tools/patched_files.txt`).
 
 ## 3. The microcode-level emulator (`software/ucemu`)

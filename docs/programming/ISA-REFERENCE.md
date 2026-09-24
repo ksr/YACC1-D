@@ -1,7 +1,7 @@
 # YACC1 instruction set reference
 
 Every opcode of the YACC1: encoding, size, microcode step count, what it does, and the traps. Written 2026-09-23
-from the YACC1-D tree.
+from the YACC1-D tree; section 4a (`LDZ`/`STZ`/`ADDIW`/`SHL16`, in the opcodes that had no microcode) added 2026-09-24.
 
 Sources: `software/opcodes.h` (the opcode numbers; `firmware/opcodes.h` is the same file), `software/assembler/yacc1.def`
 (mnemonic syntax and byte encoding), `firmware/microcode/ucode-generator2/{main,branch,register,accumulator,io,memory}.c`
@@ -58,8 +58,6 @@ in the steps that follow. Nothing is pipelined across instructions.
 | $E6 | `LDT addr` | 3 | 21 | R2 ← addr; TMP ← [R2] |
 | $E7 | `STT addr` | 3 | 22 | R2 ← addr; [R2] ← TMP |
 | $D0+n | `LDIVR Rn,byte` | 2 | 15 | [Rn] ← byte (through TMP1) |
-| $C0+n | `LDTVR Rn` | 1 | — | **no microcode** (TMP ← [Rn] on the interpreter only) |
-| $C8+n | `STTVR Rn` | 1 | — | **no microcode** ([Rn] ← TMP on the interpreter only) |
 
 Notes:
 
@@ -72,9 +70,8 @@ Notes:
   `INCR Rn`. The monitor's `stringout` is the idiom: `LDAVR R7 / BRZ done / JSR uartout / INCR R7 / BR loop`.
 - `LDIVR Rn,byte` goes through TMP1, the memory card's second temporary register (`memory.c`), so TMP (= TMP0) is
   preserved. `LDIVR R0,byte` would write the byte over the next instruction — do not.
-- `LDTVR`/`STTVR` ($C0..$CF) have all-zero microcode records (review H-4): on the machine an all-zero control word
-  asserts every active-low strobe at once for 61 steps until `COUNT-FAULT` stops the clock. The assembler accepts the
-  mnemonics and the interpreter executes them; ucemu and the hardware do not. Neither the monitor nor BASIC uses them.
+- `LDTVR`/`STTVR` ($C0..$CF) never had microcode (all-zero records, review H-4) and are gone since 2026-09-24:
+  those opcodes are now `ADDIW`/`SHL16` (section 4a). Nothing in the tree used them.
 - Hazard on the machine: a store into $E000–$FFFF reaches the 28C64's `-WE` (`BACKLOG.md`, design review MED: "28C64
   -WE is raw -MEM-WR"), i.e. it can program the EEPROM. The interpreter exits with `Rom Write` on any write above
   $DFFF (`main.c` `memory_write`); ucemu ignores writes above $E000 (`software/ucemu/README.md`).
@@ -94,8 +91,8 @@ Notes:
 | $38+n | `MVARH Rn` | 1 | 12 | Rn.hi ← ACC |
 | $0B | `MVAT` | 1 | 10 | TMP ← ACC |
 | $0C | `MVTA` | 1 | 11 | ACC ← TMP |
-| $F0+n | `LDR Rn,addr` | 3 | 30 | R2 ← addr; Rn.hi ← [R2]; Rn.lo ← [R2+1]; R2 ← addr+2 |
-| $E8+n | `STR Rn,addr` | 3 | 32 (R2: 31) | R2 ← addr; [R2] ← Rn.hi; [R2+1] ← Rn.lo; R2 ← addr+2 |
+| $F0+n | `LDR Rn,addr` | 3 | 30 | R2 ← addr; Rn.hi ← [R2]; Rn.lo ← [R2+1]; R2 ← addr+1 |
+| $E8+n | `STR Rn,addr` | 3 | 32 (R2: 31) | R2 ← addr; [R2] ← Rn.hi; [R2+1] ← Rn.lo; R2 ← addr+1 |
 | $50+n | `INCR Rn` | 1 | 9 | Rn ← Rn+1 |
 | $58+n | `DECR Rn` | 1 | 10 | Rn ← Rn−1 |
 
@@ -109,7 +106,7 @@ Notes:
   has. `INCR R0`/`DECR R0` move the PC (the fetch prologue relies on `INCR`-like steps), so they are usable only as a
   deliberate skip. The monitor's delay loops are `DECR R7 / MVRHA R7 / BRNZ loop`.
 - `LDR`/`STR` are the 16-bit variable access of the C compiler (one 3-byte instruction per scalar,
-  `software/compiler/README.md`). Both leave R2 = addr+2. `LDR R2,addr` and `STR R2,addr` are degenerate (review
+  `software/compiler/README.md`). Both leave R2 = addr+1 (one count between the two bytes; checked on ucemu 2026-09-24 - this said +2 before). `LDR R2,addr` and `STR R2,addr` are degenerate (review
   L-9): `STR R2,addr` stores `addr` itself at `addr`; `LDR R2,addr` reads its second byte from the value it just
   loaded plus one.
 - **Loads whose target is R0 are silently suppressed on the hardware** unless a taken branch test preceded them in
@@ -122,6 +119,49 @@ Notes:
   becomes $FF; harmless, nothing reads it.
 - `yacc1.def` lists `R8` and `R9` in the register class. They are not registers: `INCR R8` assembles to `$58` =
   `DECR R0`, `MVIB R8,b` to `$18` = `MVIW R0`'s first byte, and so on. Never write R8/R9.
+
+## 4a. The page, and 16-bit register arithmetic (2026-09-24)
+
+Four register families in the 32 opcodes that had no microcode ($80-$8F was `OUTVR`, $C0-$CF `LDTVR`/`STTVR`, all
+empty records). They exist to shrink compiled C (`y1cc --xisa`, `software/compiler/README.md`): 13,300 of the nine
+compiler passes' 119,083 code bytes were 3-byte `LDR`/`STR` of static variables, 1,177 constant adds took 8 bytes
+and 925 doublings 8 bytes.
+
+| Opcode | Mnemonic | Bytes | Steps | Description |
+|---|---|---|---|---|
+| $80+n | `LDZ Rn,d` | 2 | 30 | R2 ← R6.hi:d; Rn.hi ← [R2]; R2++; Rn.lo ← [R2]. The word at offset d of the page R6.hi |
+| $88+n | `STZ Rn,d` | 2 | 31 (R2: 30) | R2 ← R6.hi:d; [R2] ← Rn.hi; R2++; [R2] ← Rn.lo |
+| $C0+n | `ADDIW Rn,w` | 3 | 46 | Rn ← Rn + w (16 bits, w high byte first); ACC ← the result's high byte; carry ← carry out of bit 15 |
+| $C8+n | `SHL16 Rn` | 1 | 35 | Rn ← Rn << 1 (bit 0 ← 0); ACC ← the result's high byte; carry ← the old bit 15 |
+
+- **The page register is R6**, and only its **high byte** counts: `MVIW R6,page` with a 256-byte-aligned `page`
+  (y1cc: `MVIW R6,zpage`). `d` is a byte offset 0..255, so one page holds 128 words; the words are big-endian like
+  every other word. A word at d = 255 has its second byte at the start of the next page (R2 counts through; checked
+  by `tests/ucemu/isa.asm`). R6 stays a general register for everything else; `LDZ R6,d` reloads the page register
+  from the page (the address is formed before R6 changes), `STZ R6,d` stores it.
+- **Microcode** (`register.c` `zpageAddress()` + LDR's/STR's own second halves, shared): R6.hi goes to R2.hi as a
+  register-to-register move on the **high byte lane** - R6 (card 1) read with `-REG-RD-HI` only, R2 (card 0) loaded
+  with `REG-LD-HI` only; the two cards' straight transceivers carry the byte on DATA8..15, the path every cross-card
+  `MOVRR` (y1cc's `MOVRR R3,R4`) already uses, proven on the machine by `tests/bench`. DATA0..7 carries card 1's
+  pull-ups ($FF) meanwhile and nothing else drives it. Then R2.lo ← the offset byte at [PC], PC++, and the rest is
+  `LDR`/`STR` from the point where R2 holds the address. So `LDZ`/`STZ` have the same R2 side effect as `LDR`/`STR`
+  (R2 = the address + 1 afterwards; programs never use R2) and the same R0 rule (`LDZ R0` loads nothing on the
+  hardware). `LDZ R2`/`STZ R2` are meaningless (R2 is the address). They save a byte, not time: 30 steps like `LDR`.
+- **`ADDIW`** (`accumulator.c`): w.hi is fetched first into TMP1 (the microcode's scratch register, as `LDIVR` and
+  `PUSHR` use it; no instruction reads it), then ACC ← Rn.lo, ACC ← ACC + w.lo (as `ADDI`), Rn.lo ← ACC, ACC ← Rn.hi,
+  ACC ← ACC + TMP1 + carry (as `ADDTC`), Rn.hi ← ACC. The same bytes, ACC and carry as `MVRLA / ADDI lo / MVARL /
+  MVRHA / ADDIC hi / MVARH` (8 bytes, 72 steps) in 3 bytes and 46 steps; TMP (TMP0) is not touched.
+- **`SHL16`**: Rn + Rn a byte at a time - ACC ← Rn.lo, then ACC ← ACC + Rn.lo with the register still driving the bus,
+  Rn.lo ← ACC; the same for the high byte with the carry. Replaces `MVRLA / MVAT / ADDT / MVARL / MVRHA / MVAT /
+  ADDTC / MVARH` (8 bytes, 90 steps) in 1 byte and 35 steps, and unlike that sequence it leaves TMP alone.
+- **Carry afterwards** (both emulators agree, `isa.asm`): `ADDIW` = the carry out of the 16-bit add, `SHL16` = the
+  bit shifted out of bit 15. Like every add, the microcode clears SHIFT-OUT first (`aluOp()`, 2026-09-23). y1cc does
+  not rely on either carry yet: nothing it emits tests the carry after them (to do once the machine has run
+  `tests/bench` with the new EEPROM image).
+- R0 as `ADDIW`/`SHL16` target: the machine suppresses the load (the R0 gate), the interpreter performs it - never.
+- **On the machine these need the 2026-09-24 microcode image in the sequencer EEPROM** (`tools/ucode_send.py --all`);
+  until then $80-$8F and $C0-$CF are the old all-zero records (the H-4 storm). `tests/bench/run.py --port` checks
+  them (`isa`, then `xisa`: compiled C that uses all four).
 
 ## 5. The stack, calls and returns
 
@@ -282,13 +322,13 @@ Notes:
 |---|---|---|---|---|
 | $60+p | `OUTA Pp` | 1 | 12 | port p ← ACC |
 | $70+p | `OUTI Pp,byte` | 2 | 14 (P0: 13) | port p ← byte (memory → port directly, ACC unchanged) |
-| $80+p | `OUTVR Pp,Rn` | 2 | — | **no microcode** (bad opcode on the interpreter too) |
 | $90+p | `INP Pp` | 1 | 12 | ACC ← port p |
 | $01 | `ON` | 1 | 8 | the OUT latch (ON/OFF LED) on |
 | $02 | `OFF` | 1 | 8 | OUT latch off |
 
 Notes:
 
+- There is no `OUTVR` any more: $80-$8F never had microcode and are `LDZ`/`STZ` since 2026-09-24 (section 4a).
 - p = 0..15, spelled `P0`..`P9`, `PA`..`PF` (`yacc1.def` CLASS ports; `P8=8` since the 2026-09-22 typo fix).
   The port number is the `IOADDR0..3` field of the control word; the `-IO-ADDR-LD` strobe the generator also emits
   reaches nothing on the I/O card (review 1.5, L-2).
@@ -348,22 +388,22 @@ every active-low strobe for 61 steps until `COUNT-FAULT`; the interpreter says `
 
 | Opcode | Mnemonic | Opcode | Mnemonic | Opcode | Mnemonic | Opcode | Mnemonic |
 |---|---|---|---|---|---|---|---|
-| $00 | START (reset record) | $40 | LDAVR R0 | $80 | **empty** (OUTVR P0) | $C0 | **empty** (LDTVR R0) |
-| $01 | ON | $41 | LDAVR R1 | $81 | **empty** | $C1 | **empty** |
-| $02 | OFF | $42 | LDAVR R2 | $82 | **empty** | $C2 | **empty** |
-| $03 | HALT | $43 | LDAVR R3 | $83 | **empty** | $C3 | **empty** |
-| $04 | JSR addr | $44 | LDAVR R4 | $84 | **empty** | $C4 | **empty** |
-| $05 | RET | $45 | LDAVR R5 | $85 | **empty** | $C5 | **empty** |
-| $06 | JSRUR Rn | $46 | LDAVR R6 | $86 | **empty** | $C6 | **empty** |
-| $07 | PUSHR Rn | $47 | LDAVR R7 | $87 | **empty** | $C7 | **empty** (LDTVR R7) |
-| $08 | POPR Rn | $48 | STAVR R0 | $88 | **empty** | $C8 | **empty** (STTVR R0) |
-| $09 | PUSH | $49 | STAVR R1 | $89 | **empty** | $C9 | **empty** |
-| $0A | POP | $4A | STAVR R2 | $8A | **empty** | $CA | **empty** |
-| $0B | MVAT | $4B | STAVR R3 | $8B | **empty** | $CB | **empty** |
-| $0C | MVTA | $4C | STAVR R4 | $8C | **empty** | $CC | **empty** |
-| $0D | LDTI byte | $4D | STAVR R5 | $8D | **empty** | $CD | **empty** |
-| $0E | LDAI byte | $4E | STAVR R6 | $8E | **empty** | $CE | **empty** |
-| $0F | MOVRR Rs,Rd | $4F | STAVR R7 | $8F | **empty** (OUTVR PF) | $CF | **empty** (STTVR R7) |
+| $00 | START (reset record) | $40 | LDAVR R0 | $80 | LDZ R0,d | $C0 | ADDIW R0,w |
+| $01 | ON | $41 | LDAVR R1 | $81 | LDZ R1,d | $C1 | ADDIW R1,w |
+| $02 | OFF | $42 | LDAVR R2 | $82 | LDZ R2,d | $C2 | ADDIW R2,w |
+| $03 | HALT | $43 | LDAVR R3 | $83 | LDZ R3,d | $C3 | ADDIW R3,w |
+| $04 | JSR addr | $44 | LDAVR R4 | $84 | LDZ R4,d | $C4 | ADDIW R4,w |
+| $05 | RET | $45 | LDAVR R5 | $85 | LDZ R5,d | $C5 | ADDIW R5,w |
+| $06 | JSRUR Rn | $46 | LDAVR R6 | $86 | LDZ R6,d | $C6 | ADDIW R6,w |
+| $07 | PUSHR Rn | $47 | LDAVR R7 | $87 | LDZ R7,d | $C7 | ADDIW R7,w |
+| $08 | POPR Rn | $48 | STAVR R0 | $88 | STZ R0,d | $C8 | SHL16 R0 |
+| $09 | PUSH | $49 | STAVR R1 | $89 | STZ R1,d | $C9 | SHL16 R1 |
+| $0A | POP | $4A | STAVR R2 | $8A | STZ R2,d | $CA | SHL16 R2 |
+| $0B | MVAT | $4B | STAVR R3 | $8B | STZ R3,d | $CB | SHL16 R3 |
+| $0C | MVTA | $4C | STAVR R4 | $8C | STZ R4,d | $CC | SHL16 R4 |
+| $0D | LDTI byte | $4D | STAVR R5 | $8D | STZ R5,d | $CD | SHL16 R5 |
+| $0E | LDAI byte | $4E | STAVR R6 | $8E | STZ R6,d | $CE | SHL16 R6 |
+| $0F | MOVRR Rs,Rd | $4F | STAVR R7 | $8F | STZ R7,d | $CF | SHL16 R7 |
 | $10 | MVIB R0,b | $50 | INCR R0 | $90 | INP P0 | $D0 | LDIVR R0,b |
 | $11 | MVIB R1,b | $51 | INCR R1 | $91 | INP P1 | $D1 | LDIVR R1,b |
 | $12 | MVIB R2,b | $52 | INCR R2 | $92 | INP P2 | $D2 | LDIVR R2,b |
@@ -413,8 +453,9 @@ every active-low strobe for 61 steps until `COUNT-FAULT`; the interpreter says `
 | $3E | MVARH R6 | $7E | OUTI PE,b | $BE | RSHR | $FE | IADDR addr |
 | $3F | MVARH R7 | $7F | OUTI PF,b | $BF | PSHR | $FF | INT (hardware only) |
 
-218 of the 256 records hold microcode (`MICROCODE-REVIEW.md`); the 38 empty ones are $80–$8F, $A5, $AE, $C0–$CF,
-$F8–$FA. `BACKLOG.md` lists filling them with a one-step trap as an open HIGH item.
+251 of the 256 records hold microcode since 2026-09-24 (`MICROCODE-REVIEW.md`); the 5 empty ones are $A5, $AE and
+$F8–$FA ($80–$8F and $C0–$CF became `LDZ`/`STZ`/`ADDIW`/`SHL16`). `BACKLOG.md` lists filling them with a one-step
+trap as an open HIGH item.
 
 ## 11. Emulator versus hardware, in one table
 
@@ -422,14 +463,15 @@ The microcode is the truth of the machine; ucemu runs it; the interpreter is the
 
 | Instruction(s) | Hardware / ucemu (microcode) | Interpreter (`software/emulator/main.c`) |
 |---|---|---|
-| `LDA STA LDT STT LDR STR` | operand address left in **R2** (+2 for LDR/STR) | a hidden 9th register; R2 untouched |
+| `LDA STA LDT STT LDR STR` | operand address left in **R2** (+1 for LDR/STR/LDZ/STZ) | a hidden 9th register; R2 untouched |
 | loads to R0 (`MVIB/MVIW/MVARL/MVARH/MOVRR/POPR/LDR`) | suppressed (branch-taken gate) | performed |
 | `BRDEV` | branches | falls through |
 | `SUBI SUBT` | carry FF ← borrow | carry untouched |
 | `SHL SHR RSHL RSHR PSHR` | carry FF ← bit shifted out | carry untouched |
 | `BR16Z BR16NZ` | never / always branch (H-3) | bad opcode |
-| `LDTVR STTVR` | empty record (H-4 storm) | executed |
-| `OUTVR`, $A5, $AE, $F8–$FA | empty record (H-4 storm) | bad opcode |
+| `LDZ STZ` (2026-09-24) | address built in **R2** (left = address + 1); loads to R0 suppressed | the hidden 9th register; loads to R0 performed |
+| `ADDIW SHL16` (2026-09-24) | as described in section 4a | the same bytes, ACC and carry (`isa.asm`) |
+| $A5, $AE, $F8–$FA | empty record (H-4 storm) | bad opcode |
 | $00 | 1-byte NOP + OUT off | bad opcode |
 | `INTE INTD IADDR IRET INT` | as microcoded (never exercised; ucemu has no interrupt source) | no-op / skip / bad opcode |
 | `INTD` | also clears a pending interrupt (M-6) | — |
@@ -446,7 +488,7 @@ emulators and the port-2 byte streams are identical apart from `BRDEV` (`softwar
 - H-1 (`PUSHR` bus fight) and H-2 (`BRZ`/`BRNZ`/`BR16Z`/`BR16NZ` bus fight): fixed in `branch.c` 2026-09-22, image
   regenerated, EEPROM reloaded with `tools/ucode_send.py --all`; `romcount` ran on the machine afterwards (`BRNZ`).
 - H-3 (`BR16Z`/`BR16NZ` cannot work): open.
-- H-4 (38 empty records): open (`BACKLOG.md`).
+- H-4 (empty records): open (`BACKLOG.md`); 5 left since 2026-09-24 ($A5, $AE, $F8–$FA).
 - H-5 (sequencer IC11 gate B on `ADDR-REG-ID`): open hardware question; see section 5.
 - M-2 (one-step memory windows before leading-edge latches): a clock-frequency rule, open.
 - The review's speed table (section 5 there) estimates ~30 % of all executed steps removable; nothing changed.

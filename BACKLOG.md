@@ -34,6 +34,12 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Memory card**: the unconnected jumper wire on IC7 pin 4 — purpose not remembered (Ken 2026-09-20); trace it on the board or remove it.
 
 ## Firmware — written, not burned / loaded
+- **Sequencer microcode with `LDZ`/`STZ`/`ADDIW`/`SHL16` (2026-09-24)** — `firmware/microcode/ucode-generator2/test.hex`
+  has 32 new records ($80-$8F, $C0-$CF; every other record unchanged, `cache` = the EEPROM's image). At the machine:
+  `python3 tools/ucode_send.py --all` (Ken), then `python3 tests/bench/run.py --port /dev/cu.usbserial-X`: `isa` now
+  checks the four instructions byte by byte (114 bytes; the machine must print exactly `expected/isa.uc.out`), and
+  `xisa` is compiled C using them (y1cc `--xisa`: the page register R6, a recursive frame in the page, ADDIW, SHL16,
+  R6 reloaded after the ROM's charout). When both pass, make `--xisa` y1cc's default (below, "C compiler").
 - **Monitor + BASIC 8afde21** (2021-09, `firmware/*/candidates/2021-09-8afde21`): `charavail` BIOS vector ($FFEC),
   BASIC ON/OFF statements, break into a running program. Needs a hardware test, then burn and update `rom/shipped`.
 - **monnew-2025** (`firmware/monitor/monnew-2025`): small D/M/B monitor; assembled, never run on the machine.
@@ -268,8 +274,9 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   5. The on-target assembler (wave 3 of os/PORT-PLAN.md) (the host assembler's label table: done 2026-09-24,
      8,191 labels with a clear error when full, was 1,000 with no check) before it can assemble a pass
      this size (cc8: 1,283 labels, 25,936 bytes).
-  6. Code size of what y1cc emits (the bullet below): every byte saved there shrinks the native compiler too — cc1,
-     cc7 and cc9 are within 600 bytes of the 32K; the nine passes are 120K of code against y1cc.c's 75K.
+  6. Code size of what y1cc emits (the bullet below): every byte saved there shrinks the native compiler too — cc6,
+     cc7 and cc9 are within 600 bytes of the 32K (cc6 since the --xisa page planning); the nine passes are 124K of code
+     against y1cc.c's 75K, 102K when compiled with `--xisa` (2026-09-24: every pass then has 2-15K free).
   7. y1cc.c, the single-program twin, stays until the passes run on the machine (a y1cc.py change now has two C
      counterparts to follow), then can go.
 - y1cc.py: a function defined twice is not an error — both definitions are laid out and the last is compiled twice
@@ -295,6 +302,14 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - (done 2026-09-22: `switch`, compare chain or BRUR jump table by size, `--no-brur` until the microcode is reloaded.)
 - Function pointers (`BRUR`/`JSRUR`), signed `int` (BRLT/BRGT are unsigned comparators: signed compare = flip bit 15
   first), `long`, `goto`.
+- **`--xisa`** (2026-09-24: `LDZ`/`STZ` through a 256-byte variable page, `ADDIW`, `SHL16`; opt-in, the default output
+  is byte-identical to before; README "--xisa"). Next, in order: (1) the EEPROM reload and `tests/bench --port` above;
+  (2) then make it the default (y1cc.py, y1cc.c and cc1 take `--no-xisa` instead; os/Makefile `XISA` default on; the
+  tests/os and bench expectations keep their sizes masked or are refreshed); (3) rebuild the passes with it: each is
+  2-4K smaller (passes.py --xisa), which is the room the native compiler needs. Later: rely on SHL16's carry out of
+  bit 15 in `rt_divmod`'s double-width shift (tested on both emulators, not on the machine yet); a second page
+  (a family through R6.lo would need 16 more opcodes; only 5 are left) or word offsets; drop LDZ/STZ's three idle
+  microcode steps (they take 30 steps like LDR: they save a byte, not time); `ADDIW R1` for stack frames.
 - Code size: peephole over R3/R4 traffic (store-then-reload across labels, `MVIW R3,k / MVRLA R3` → `LDAI`), 8-bit paths
   for char arithmetic (`c + 1` still goes through 16-bit add), constant compares with a zero high byte, `for` loops
   counting down to 0. Measure with `run.py` (bytes + instruction counts per test).
@@ -305,6 +320,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Port the P8X libraries/programs that fit the subset (the P8X OS itself needs its syscalls; recursion exists since 2026-09-24).
 - Emulator (done 2026-09-22, `tools/patched_files.txt`): `-x` scripted mode; BRVR and JSRUR now follow the microcode, so the
   monitor's `G` and `T` commands work on the emulator (they never had). Still stubs vs the hardware: IRET/INT/IADDR, SUB
-  borrow into carry, shifts loading carry, opcode $00, LDTVR/STTVR (emulator runs them, hardware has no microcode).
+  borrow into carry, shifts loading carry, opcode $00. (LDTVR/STTVR, which it ran without microcode, became ADDIW/SHL16
+  on 2026-09-24.)
 - Assembler (done 2026-09-22): `DS` flushes the hex record. Still open: negative numbers silently mis-assemble, labels
   over 29 chars crash it, source lines are upper-cased (strings in `DB "..."` come out upper-case).

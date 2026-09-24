@@ -122,7 +122,20 @@ From the docstring and `README.md`, with the instructions involved:
   case, range-check, index a `DW` table, `BRUR R3`; about 49 bytes plus 2 per slot; holes go to `default`).
   `--no-brur` forbids the table. `tests/compiler/switch.c` and `switchnb.c` (`// y1cc: --no-brur`) are the same
   program both ways.
-- **Never emitted**: `LDTVR STTVR OUTVR BR16Z BR16NZ BRNC` (no microcode), `BRVR` (not needed), negative numbers
+- **`--xisa`** (2026-09-24, opt-in): the instructions added to the microcode that day (`ISA-REFERENCE.md` section 4a).
+  The hottest 2-byte variables go into one 256-byte **page** at the start of the BSS (`zpad: DS (256-(zpad).0)&255`
+  aligns it, `zpage:` starts it) and are loaded and stored with `LDZ Rn,(label).0` / `STZ Rn,(label).0`, 2 bytes
+  instead of `LDR`/`STR`'s 3. **R6 is the page register**: `main` (and every `funcaddr()` entry) starts with `MVIW
+  R6,zpage`, and it is reloaded after everything that leaves compiled code (`bios()`, `call()`, `sys()`, the console
+  helpers' ROM/OS calls, `rt_fsave`/`rt_frest`, which use R6 as a counter); `rt_divmod` keeps its remainder in R5.
+  Which variables: every uninitialised 2-byte global and every 2-byte parameter/local is a candidate, a recursive
+  function's whole frame (1..256 bytes) is one candidate (its save/restore needs it contiguous); weight = how many
+  times the variables are named in the live function bodies, density = weight per word; the densest first while they
+  fit. Constant adds become `ADDIW R3,k` / `ADDIW R4,k` (3 bytes instead of 8, or of 4 for a high-byte-only add) and the
+  doublings `SHL16 R3` (1 byte for 8), in the compiled code and in `rt_mul`/`rt_shl`. Nothing reads the carry after
+  them. Without the option the output is byte-identical to before (`tests/compiler/diffcheck.py`); y1cc.c and the
+  passes produce the same `--xisa` output (`twin.py --xisa`, `--chain --xisa`).
+- **Never emitted**: `BR16Z BR16NZ BRNC` (no microcode; `LDTVR STTVR OUTVR` no longer exist), `BRVR` (not needed), negative numbers
   (the assembler drops the sign), labels over 29 characters, two labels differing only in case (the assembler folds
   case; labels are mangled and uniquified).
 - A **peephole** pass removes a reload after a store of the same slot, turns `STR R3,x / LDR R4,x` into `MOVRR R3,R4`,
@@ -141,6 +154,7 @@ From the docstring and `README.md`, with the instructions involved:
 | `--vector` | layout for the monitor as burned in 2021, whose `G` was `BRVR R7` (an indirect jump through the word at the address, no return pushed): the image starts with `DW start`, then `start: JSR f_main / BR $F000` (restart the monitor) |
 | `--os` | a Y1/OS program (2026-09-23; `os/Makefile` uses it for the OS and every `/BIN` command): `putchar`/`puts` go through the OS syscall CONOUT (19) and `getchar` through CONIN (17), so the shell can redirect them; `getchar` still returns 0 at the end of input; R3/R4 are kept across both (`software/compiler/README.md`). Without it the console runtime is unchanged |
 | `--no-brur` | never emit `BRUR` ($AD): a `switch` is always a compare chain. For a machine whose sequencer EEPROM lacks the 2026-09-22 microcode (it was reloaded that evening, so this is now a bench-verification option) |
+| `--xisa` | (2026-09-24) use `LDZ`/`STZ` (the variable page, R6 = page register), `ADDIW`, `SHL16` (section 4). Needs the 2026-09-24 microcode on the machine (`BACKLOG.md`: reload the sequencer EEPROM, then `tests/bench`); the emulators have it. Opt-in until the bench has passed |
 | `-l` | print the line count and per-function instruction counts |
 
 Options are recognised anywhere after the source file; the source file must be the first argument.
@@ -166,7 +180,7 @@ Options are recognised anywhere after the source file; the source file must be t
 
 ## 7. The test suite and its oracle
 
-`tests/compiler/run.py [name ...] [--oracle] [--keep]`:
+`tests/compiler/run.py [name ...] [--oracle] [--keep] [--xisa]` (`--xisa`: every test compiled with it):
 
 - For each `tests/compiler/NAME.c`: compile with `--boot` (plus any `// y1cc: flags` line in the source), assemble
   in `tests/compiler/build/NAME/` (copies `yacc1.def`, writes a `-h` `rcasm.rc`), run `emulator -x -f NAME.img`
@@ -179,7 +193,9 @@ Options are recognised anywhere after the source file; the source file must be t
   `// no-oracle` (peek/poke, struct layout, byte order) carry hand-written expectations.
 - Programs (15 on 2026-09-22, 15/15; `syscall` added 2026-09-23, no-oracle): `arith arrays bigconst(err) calls
   chars(in) control fib globals hello io recurse(err) sieve structs switch switchnb syscall`; since 2026-09-24 the
-  recursion tests `rfact rmutual rlocals rcalc rmain(err)`, and `recurse.err` checks the address-of-local rule. `make cc-test` at the
+  recursion tests `rfact rmutual rlocals rcalc rmain(err)`, and `recurse.err` checks the address-of-local rule;
+  `xisa` (2026-09-24, `// y1cc: --xisa`) exercises the `--xisa` code (a page that cannot hold every variable, a
+  recursive frame in it, ADDIW, SHL16, R6 reloads). `make cc-test` at the
   root runs this and `tests/ucemu/run.py`. `syscall.c` is a stand-alone model of the OS's boot (`funcaddr` into
   `SYSTAB`) and of a command's `sys()` calls, including nested ones.
 - The same suite on ucemu (`tests/ucemu/run.py`) uses `NAME.ucout` where the monitor's input echo changes the

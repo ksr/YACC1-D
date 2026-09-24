@@ -94,7 +94,7 @@ table with `-x`. `firmware/monitor/monitor.lst` is the reference example (`f05b:
 | `DB byte[,byte...]` / `DB "text"` | emit bytes | `DB \L` → `\1` |
 | `DB HIGH word` | emit the high byte of a word | `DB HIGH \W` → `hi(1)` |
 | `DW word[,word...]` | emit words, **high byte first** | `DW \W` → `hi(1) lo(1)`; `DW \M` |
-| `DS n` | reserve n bytes (nothing emitted; the next record starts after them) | `DS \W` → `\B1` |
+| `DS n` | reserve n bytes (nothing emitted; the next record starts after them); n may use backward labels (quirk 11) | `DS \W` → `\B1` |
 | `PUBLIC`, `EXTERN`, `LIB PROC`, `LIB ENDP` | RC/asm library markers; unused in the tree | `\P \X \R \Q` |
 
 `ORG` takes the address in the assembler's expression syntax; the compiler emits it as decimal (`ORG 12288`).
@@ -126,6 +126,13 @@ table with `-x`. `firmware/monitor/monitor.lst` is the reference example (`f05b:
 8. The `-d` option consumes the following argument (section 2).
 9. Missing `yacc1.def` or a missing source name used to crash; since 2026-09-20 they print a message (`asm.c`).
 10. There is no `.0`/`.1` on a bare `label+4` (write `(label+4).0`); the compiler always parenthesises.
+11. **Pass 1 used to read every label as 1** (`support.c` `find_label`), so an `ORG`, `DS` or `EQU` whose operand
+    named a label placed what followed at the wrong address (`DS 256-(y).0` reserved 255 bytes). Since 2026-09-24 a
+    label already defined earlier in the source (a backward reference) has its value in pass 1 too, and `EQU` sets
+    its value in pass 1 (`asmcmds.c`); a forward reference is still 1 in pass 1, so keep label expressions in
+    `ORG`/`DS`/`EQU` backward. y1cc `--xisa` aligns its variable page with `zpad: DS (256-(zpad).0)&255` (the label
+    on the same line counts as defined). Every firmware image, bench image and test program assembles to the same
+    bytes as before (`tools/verify_firmware.py`, `tests/bench`, `tests/os`, `tests/compiler/passes.py`).
 
 ## 7. The four worked examples in `tests/assembler/`
 

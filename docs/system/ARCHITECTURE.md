@@ -649,8 +649,7 @@ Per `DOC-PLAN.md` rule 7 (`docs/isa/MICROCODE-REVIEW-NOTES.md`, `hardware/DESIGN
 ## 14. The two emulators, briefly
 
 `software/emulator` interprets instructions (it knows what ADDI does) and is the quick one; it differs from the
-hardware where the microcode does something else (BRDEV never branches there, LDTVR/STTVR run although they have no
-record, carry semantics of SUB and shifts, R0-load suppression: review L-7). `software/ucemu/y1ucemu` loads
+hardware where the microcode does something else (BRDEV never branches there, carry semantics of SUB and shifts, R0-load suppression: review L-7). `software/ucemu/y1ucemu` loads
 `test.hex` and steps the control words through the model described in this document; it is the one that reproduced
 H-1 and H-2, runs the monitor from reset and counts bus fights (`software/ucemu/README.md`). When the two disagree,
 the microcode emulator is the closer approximation of the machine, and the bench is the truth.

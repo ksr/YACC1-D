@@ -49,7 +49,7 @@ $(B)/os-sel: FORCE
 	@mkdir -p $(B); if [ "$$(cat $@ 2>/dev/null)" != "$(OS)" ]; then echo $(OS) > $@; fi
 
 $(B)/xisa-sel: FORCE
-	@mkdir -p $(B); if [ "$$(cat $@ 2>/dev/null)" != "$(CCX)" ]; then echo "$(CCX)" > $@; fi
+	@mkdir -p $(B); if [ "$$(cat $@ 2>/dev/null)" != "$(CCX)" ]; then echo "$(CCX)" > $@; rm -f $(B)/bin/*.bin $(B)/y1os-c.bin; fi
 
 $(B)/y1os-asm.bin: y1os.asm strings.txt mkstrings.py $(DEF)
 	@mkdir -p $(B)/asm && cp $(DEF) $(B)/asm/ && echo -h > $(B)/asm/rcasm.rc && cp y1os.asm $(B)/asm/

@@ -355,13 +355,15 @@ records and steps moved. The program prints a "dup found" line for each filtered
 
 ### 5.4 Records that are never written
 
-`main()` never emits OUTVR ($80–$8F), LDTVR/STTVR ($C0–$CF), $A5 (BRNC was planned), $AE and $F8–$FA: **37 all-zero
-records** remain in `test.hex` on 2026-09-23 (38 before BRUR filled $AD). Because active-low signals are stored as
+`main()` never emits $A5 (BRNC was planned), $AE and $F8–$FA: **5 all-zero records** remain in `test.hex` since
+2026-09-24 (38 before BRUR filled $AD on 2026-09-22; 37 until `LDZ`/`STZ`/`ADDIW`/`SHL16` filled $80–$8F and $C0–$CF,
+where OUTVR and LDTVR/STTVR had never had microcode — section 7a). Because active-low signals are stored as
 1 = inactive, an all-zero word asserts `-REG-FUNC-RD, -REG-FUNC-LD, -REG-RD-LO/HI, -REG-UP, -REG-DN, -MEM-RD, -MEM-WR,
 -IO-RD, -IO-WR, -TMP-REG-RD0/1, -TMP-REG-LD0/1, -ALU-FUNC, -AC-LD-INV, -AC-RD, -AC-LD, -SR-LD, -HL-SWAP, -BRANCH-RD,
 -INT-JMP, -2-BYTE-OPERAND-SEL, -INTA` and `-VMA` together; fetching such an opcode runs steps 3..63 of that storm until
-`COUNT-FAULT` stops the clock (review H-4, HIGH, open). The assembler will emit LDTVR/STTVR/OUTVR if asked and the
-instruction-level emulator runs LDTVR/STTVR, so a program that works there can do this on the hardware. The proposed
+`COUNT-FAULT` stops the clock (review H-4, HIGH, open). (Until 2026-09-24 the assembler would emit LDTVR/STTVR/OUTVR
+and the instruction-level emulator ran LDTVR/STTVR, so a program that worked there could do this on the hardware; those
+mnemonics are gone.) The proposed
 fix is a one-line loop in `main()`: fill every unwritten record with the idle word plus `UCODE-COUNT-RESET` at step 3
 (an illegal opcode becomes a one-byte NOP) or with `SOFT-HALT`.
 
@@ -385,8 +387,10 @@ From `docs/isa/README.md` (steps per record after the 2026-09-22 regeneration; f
 | 22 | BRVR, LDA, STT, IRET |
 | 23 | STA |
 | 28 | POPR |
-| 30 | LDR, INT |
-| 31 | JSR, STR |
+| 30 | LDR, INT, **LDZ** (2026-09-24) |
+| 31 | JSR, STR, **STZ** (STZ R2: 30) |
+| 35 | **SHL16** (2026-09-24) |
+| 46 | **ADDIW** (2026-09-24) |
 | 32 | JSRUR |
 | 33 | PUSHR |
 
@@ -481,6 +485,41 @@ What remains: **bench-check on the hardware** — the register-to-branch-registe
 before (`tests/assembler/brur/README.md`, `BACKLOG.md`). The reload changed six records ($07 PUSHR, $A1/$A2/$AB/$AC the H-2 branches, $AD BRUR): `tools/ucode_send.py
 --dry-run` against the loader's cache listed exactly those on 2026-09-22 before the load (the "14 records" once in
 `docs/system/MACHINE.md` was an estimate made before the images were compared; corrected).
+
+## 7a. LDZ/STZ, ADDIW, SHL16 (2026-09-24)
+
+Four register families for the C compiler's `--xisa` code (`docs/programming/ISA-REFERENCE.md` section 4a), in the
+32 opcodes that had never had microcode. The same places were touched as for BRUR: `software/opcodes.h` (LDZ $80, STZ
+$88, ADDIW $C0, SHL16 $C8; OUTVR/LDTVR/STTVR removed), `yacc1.def`, the interpreter, and the generator:
+
+- `register.c`: LDR's and STR's second halves (from "R2 holds the address" to the end) became `loadRegFromIR()` and
+  `storeRegAtIR()`, the same lines in the same order, so $E8–$F7 did not change by a bit. `zpageAddress()` builds the
+  address from the page register `ZP` = R6 (`CodeGen.h`):
+
+  | Step (LDZ R3) | Signals | Why |
+  |---|---|---|
+  | 0–5 | prologue | fetch $83, PC++ |
+  | 6 | `-REG-FUNC-RD`, RD-ID = 6, `-REG-RD-HI`, `-REG-FUNC-LD`, LD-ID = 2 | R6.hi on card 1's high lane → DATA8..15 (straight transceivers, card 1 only read-selected); card 0 only load-selected: DATA → ADATA |
+  | 7 | + `REG-LD-HI` | R2.hi ← DATA8..15 at the trailing edge (level-sensitive load: the source was set up a step before) |
+  | 8 | as 6 | hold one step after the strobe |
+  | 9 | idle | everything released before memory drives the bus |
+  | 10–14 | `-MEM-RD` (address = PC), `-REG-FUNC-LD`, `REG-LD-LO` | R2.lo ← the offset byte (as LDR's second address byte) |
+  | 15–16 | `-REG-UP` on R0 | PC past the operand |
+  | 17–29 | LDR's own steps 17–29 | Rn.hi ← [R2] (swap path), R2++, Rn.lo ← [R2], `UCODE-COUNT-RESET` |
+
+  No `-HL-SWAP` in steps 6–8: it is one bus line that both cards see, and both ends of this move use the high lane.
+  The unread low lane of card 1 drives the pull-ups' $FF onto DATA0..7 while nothing else drives it (the ucemu counts
+  it as a weak drive, not a fight). The 16-bit cross-card path is the one every `MOVRR R3,R4` of compiled C uses,
+  which `tests/bench` has run on the machine.
+- `accumulator.c`: `ADDIW` fetches w.hi into TMP1, then ACC ← Rn.lo, `aluOp(ALUADD)` with w.lo from memory, Rn.lo ←
+  ACC, PC++, ACC ← Rn.hi, TMP1 on the bus and `aluOp(ALUADD | CARRY_SHIFT)`, Rn.hi ← ACC (46 steps). `SHL16` loads each
+  byte of Rn into ACC and adds it again from the register, which keeps driving the bus through `aluOp` (35 steps).
+  `-MEM-RD` is released before every PC increment and before ACC drives the bus. Each add goes through `aluOp()`, so
+  SHIFT-OUT is cleared first (the 2026-09-23 carry fix) and only register moves separate the low add from the high one.
+- Result: exactly the 32 records $80–$8F and $C0–$CF differ from the image in the EEPROM (`cache`); `tests/ucemu/isa.asm`
+  checks every family on both emulators (0 bus fights, the same bytes); `docs/isa/` and `MICROCODE-REVIEW.md` were
+  regenerated. **Still to do at the machine**: `tools/ucode_send.py --all`, then `tests/bench/run.py --port ...` (`isa`
+  and `xisa`).
 
 ---
 

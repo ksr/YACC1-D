@@ -26,11 +26,16 @@
   working one over the corpus: identical assembly), `twin.py` (y1cc.py against its C twin `software/compiler/c/y1cc`, also
   `--16`; `--chain`/`--chain16` against the multi-pass compiler `y1ccp`, cc1..cc9), `twinfuzz.py` (random subset programs and
   60 invalid ones through both compilers; `--chain` too), `passes.py` (each pass of the multi-pass compiler against the Y1/OS
-  program area: image, tables, measured stack; the corpus through the passes with their Y1/OS table sizes).
+  program area: image, tables, measured stack; the corpus through the passes with their Y1/OS table sizes). Since
+  2026-09-24 `run.py`, `twin.py`, `twinfuzz.py`, `passes.py` and `../ucemu/run.py` take `--xisa` (every compile with
+  y1cc's `--xisa`: the LDZ/STZ page, ADDIW, SHL16), `xisa.c` (`// y1cc: --xisa`) is the 23rd program, and `diffcheck.py`
+  proves the default output unchanged.
 - `os/` — Y1/OS: `run.py` builds `os/disk.img`, boots it on both emulators with the console script `basic.session`
   after the monitor's `O` command, and diffs the transcripts (`basic.int.out`, `basic.uc.out`; the latter shows the
-  monitor's input echo). `make os-test`.
+  monitor's input echo). `make os-test`. `XISA=1 python3 tests/os/run.py` (2026-09-24) runs the same sessions with
+  every `/BIN` program built by y1cc `--xisa` (`make -C os XISA=1`); the program sizes `ls`/`load` print are masked.
 - `ucemu/` — the same programs (and `assembler/brur`) on the MICROCODE-level emulator `software/ucemu` with the monitor ROM
   loaded (`run.py`, 14/14 on 2026-09-22, `chars.ucout` = the expectation with the monitor's input echo), and `isa.asm`, a
-  differential test of every instruction whose port-2 byte stream must be identical on both emulators (it is, BRDEV aside).
+  differential test of every instruction whose port-2 byte stream must be identical on both emulators (it is, BRDEV aside;
+  since 2026-09-24 it covers LDZ/STZ/ADDIW/SHL16 too, 114 bytes, and `tests/bench` runs it on the machine).
 - Hardware findings of 2026-09 (memory-card block map, EPROM identity, video-card write-through) are in the card READMEs.

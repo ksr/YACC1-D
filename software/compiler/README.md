@@ -14,6 +14,7 @@ python3 software/compiler/y1cc.py prog.c -o prog.asm            # for the machin
 python3 software/compiler/y1cc.py prog.c -o prog.asm --vector   # for the monitor as burned in 2021 (G = BRVR)
 python3 software/compiler/y1cc.py prog.c -o prog.asm --org 0x5000 --os   # a Y1/OS program (os/Makefile): console via the OS
 python3 software/compiler/y1cc.py prog.c -o prog.asm --boot     # for the emulator, stand-alone
+python3 software/compiler/y1cc.py prog.c -o prog.asm --xisa     # + LDZ/STZ/ADDIW/SHL16 (2026-09-24 microcode), below
 cd <dir with rcasm.rc + yacc1.def> && ../software/assembler/asm prog -d=yacc1 > prog.lst   # -> prog.img (Intel hex)
 software/emulator/emulator -x -f prog.img                       # runs it, exits at HALT (--boot images)
 python3 tests/compiler/run.py                                    # the test suite (make cc-test)
@@ -153,9 +154,72 @@ and big-endian words in memory. There is no 16-bit ALU and no indexed addressing
   arguments, nested `sys()` in arguments. Constant folding got a fix the same day: the operator table was an eager
   dictionary that evaluated `a // b` for every fold, so any constant expression with a zero right operand
   (`SYSTAB + 2 * SYS_OPEN`) crashed the compiler.
-- Never emitted: `LDTVR STTVR OUTVR BR16Z BR16NZ BRNC` (no microcode), `BRVR` (not needed yet),
+- Never emitted: `BR16Z BR16NZ BRNC` (no microcode), `BRVR` (not needed yet), `LDZ STZ ADDIW SHL16` without `--xisa`,
   negative numbers (the assembler silently drops the sign), labels over 29 characters (crash the assembler), or
   two labels differing only in case (the assembler folds case; the compiler mangles and uniquifies).
+
+## --xisa: the page, ADDIW and SHL16 (2026-09-24)
+
+Four instruction families were added to the microcode on 2026-09-24 (`docs/programming/ISA-REFERENCE.md` section 4a)
+to shrink exactly what this compiler emits most: `LDZ Rn,d` / `STZ Rn,d` (2 bytes: the word at R6.hi:d),
+`ADDIW Rn,w` (3 bytes: Rn += w) and `SHL16 Rn` (1 byte: Rn <<= 1). `--xisa` uses them. **It is opt-in until the
+machine's sequencer EEPROM holds that microcode and `tests/bench` has passed on it** (`BACKLOG.md`); without it the
+output is byte-identical to before (`tests/compiler/diffcheck.py`: 126 identical + 4 errors).
+
+- **The page.** Every uninitialised 2-byte global and every 2-byte parameter or local is a candidate; so is the whole
+  frame of a function in a recursive cycle (1..256 bytes: `frame_save` and `rt_fsave` need it contiguous). A
+  candidate's weight is how many times its variables are named in the live functions' bodies (every identifier of the
+  tree, resolved as `vinfo` would), its density the weight per word; the densest go first (ties: the earlier in BSS
+  order) while they fit in 256 bytes. They are laid out first in the BSS: `zpad: DS (256-(zpad).0)&255` (before
+  `bss_start`, so main's BSS clear does not clear the padding; it needs the 2026-09-24 assembler, which resolves the
+  label in pass 1), then `zpage:`, then their `DS` lines in BSS order, then the rest. A load or store of one of them
+  is `LDZ R3,(main_i).0` instead of `LDR R3,main_i` (the low byte of an address in the aligned page is its offset),
+  and a recursive frame in the page is saved with `LDZ R4,(f_a+2).0` / `STZ`. The peephole's store/reload rules
+  apply to `STZ`/`LDZ` pairs as to `STR`/`LDR`.
+- **R6 is the page register** and is reserved: `main` and every `funcaddr()` function (an entry from outside: the
+  OS's syscall handlers) start with `MVIW R6,zpage`, and R6 is set again after everything that leaves compiled code,
+  because the ROM and Y1/OS use R6 freely: after `bios()`'s `JSR`, `call()`'s and `sys()`'s `JSRUR`, inside
+  `rt_putc`/`rt_getc` after the ROM or OS call, and at the end of `rt_fsave`/`rt_frest` (whose callers load R6 with
+  the byte count). `rt_divmod` keeps its remainder in R5 instead of R6. A program with nothing in the page (no 2-byte
+  variable named anywhere) gets none of this: no `MVIW R6`, no `zpad`.
+- **ADDIW / SHL16**: `add_const`'s 8-byte `MVRLA/ADDI/MVARL/MVRHA/ADDIC/MVARH` (and the 4-byte high-byte-only form)
+  becomes `ADDIW R3,k` (a label expression too: `ADDIW R3,g_table`), the same for R4 in `load_address_r4`; `shl1`'s
+  8 bytes become `SHL16 R3`, in compiled code and in `rt_mul` and `rt_shl`. Both leave ACC and the carry as the old
+  sequences did (ACC = the high byte, carry = out of bit 15), but nothing the compiler emits reads the carry after them
+  (`rt_divmod`'s double shift still does it the long way until the machine has confirmed SHL16's carry).
+- **Sizes** (2026-09-24): the nine compiler passes, compiled as Y1/OS programs (`tests/compiler/passes.py [--xisa]`):
+
+  | pass | code | code --xisa | image --xisa | total --xisa | free --xisa (default) |
+  |---|---|---|---|---|---|
+  | cc1 lex | 12,434 | 10,148 | 11,591 | 29,637 | 3,131 (1,030) |
+  | cc2 parse | 16,893 | 14,325 | 15,021 | 28,039 | 4,729 (2,244) |
+  | cc3 decl | 8,961 | 6,585 | 7,562 | 19,909 | 12,859 (10,601) |
+  | cc4 calls | 5,809 | 4,529 | 4,959 | 17,335 | 15,433 (14,314) |
+  | cc5 layout | 8,908 | 7,069 | 7,609 | 24,767 | 8,001 (6,233) |
+  | cc6 stmt | 11,921 | 9,302 | 9,963 | 29,795 | 2,973 (375) |
+  | cc7 sema | 16,974 | 13,106 | 13,546 | 28,376 | 4,392 (546) |
+  | cc8 emit | 25,197 | 21,979 | 23,406 | 27,593 | 5,175 (2,103) |
+  | cc9 final | 16,714 | 14,841 | 16,771 | 30,745 | 2,023 (275) |
+  | all nine | 123,811 | **101,884** (-17.7 %) | | | |
+
+  In the nine with `--xisa` 9,115 of the 13,063 word loads and stores are `LDZ`/`STZ`, with 1,278 `ADDIW` and 954
+  `SHL16`. The `/BIN` commands (`make -C os sizes`, `XISA=1`): 87,235 bytes of images → 75,998 (-12.9 %); the
+  smallest grow by up to 2 bytes (`hello`: the `MVIW R6,zpage` costs more than its two variables save) and the
+  data stays the same. The C OS `y1os.c`: code 13,747 → 11,905. Test programs (code + data, `--boot`): -9 % to -18 %.
+- **Speed** (microcode emulator, clocks): `ADDIW` is 46 steps against 72, `SHL16` 35 against 90, `LDZ`/`STZ` 30/31
+  like `LDR`/`STR` (they save a byte, not time). Whole programs: `bench/sort` -5.0 %, `arrays` -5.5 %, `fib`/`sieve`/
+  `structs`/`rcalc` -1 to -1.5 %, `arith`/`rfact` -0.5 to -0.7 %, `strings`/`control` +0.5 to +0.7 % (the R6 reload after
+  every character printed, and main's larger BSS clear).
+- **Tests**: `tests/compiler/run.py --xisa` and `tests/ucemu/run.py --xisa` (every test, both emulators, 0 bus
+  fights); `twin.py --xisa` (also `--16`, `--chain`, `--chain16`) and `twinfuzz.py --xisa`: y1cc.py, y1cc.c and the
+  passes agree; `XISA=1 python3 tests/os/run.py` (Y1/OS with every `/BIN` program built with `--xisa`, 20/20;
+  `make -C os XISA=1` builds that disk); `tests/compiler/xisa.c` (`// y1cc: --xisa`) is a test of its own and a
+  `tests/bench` program for the machine.
+- In the passes: cc6 counts the identifiers while it copies each expression tree, plans the page after the last
+  function and writes `W.zp` (a flag byte and a bit per variable); cc8 writes `ADDIW R4` and the `M_ZP` reloads;
+  cc9 prints `LDZ`/`STZ` for page variables, the page's `DS` lines first and the runtime variants
+  (`lib/y1ccrt.txt`: `@NAME+x`/`-x` sections, `%` lines only when there is a page); cc4 keeps a `funcaddr()` root's
+  live value at 1 even when another function reaches it.
 
 ## Tests
 
@@ -169,7 +233,8 @@ depth 50 with int and char locals), `rmutual.c` (even/odd, a three-function cycl
 (local arrays and structs in a recursive function through `rt_fsave`, an odd-sized frame, Hanoi, a pointer to a
 local handed to a non-recursive helper), `rcalc.c` (a recursive-descent expression evaluator over a string), and
 the compile errors `recurse.c` (address of a local into the cycle) and `rmain.c` (recursive main); all pass on both
-emulators (`tests/ucemu/run.py`); 22 with `adjstr.c` (an error test, from the twin work below). `make check` runs them.
+emulators (`tests/ucemu/run.py`); 22 with `adjstr.c` (an error test, from the twin work below); 23 with `xisa.c`
+(2026-09-24, `// y1cc: --xisa`, section "--xisa"). `make check` runs them.
 
 `tests/compiler/diffcheck.py [--base REV]` is the differential proof for a compiler change: it compiles the whole
 corpus (`tests/compiler/corpus.py`: the compiler tests with `--boot`, plain, `--os` and `--no-brur`, three
@@ -386,17 +451,21 @@ data (tables, static frames), and measures the stack (below). 2026-09-24, in byt
 
 | pass | code | data | image | tables | stack | total | free of 32,768 | labels |
 |---|---|---|---|---|---|---|---|---|
-| cc1 lex | 12,408 | 1,427 | 13,835 | 17,771 | 90 | 31,696 | 1,072 | 878 |
+| cc1 lex | 12,434 | 1,443 | 13,877 | 17,771 | 90 | 31,738 | 1,030 | 880 |
 | cc2 parse | 16,893 | 696 | 17,589 | 11,733 | 1,202 | 30,524 | 2,244 | 967 |
 | cc3 decl | 8,961 | 977 | 9,938 | 12,143 | 86 | 22,167 | 10,601 | 528 |
-| cc4 calls | 5,792 | 430 | 6,222 | 12,131 | 84 | 18,437 | 14,331 | 382 |
+| cc4 calls | 5,809 | 430 | 6,239 | 12,131 | 84 | 18,454 | 14,314 | 382 |
 | cc5 layout | 8,908 | 540 | 9,448 | 17,003 | 84 | 26,535 | 6,233 | 578 |
-| cc6 stmt | 9,017 | 648 | 9,665 | 15,949 | 592 | 26,206 | 6,562 | 523 |
+| cc6 stmt | 11,921 | 661 | 12,582 | 19,219 | 592 | 32,393 | 375 | 663 |
 | cc7 sema | 16,974 | 440 | 17,414 | 14,613 | 195 | 32,222 | 546 | 910 |
-| cc8 emit | 24,514 | 1,422 | 25,936 | 3,597 | 424 | 29,957 | 2,811 | 1,283 |
-| cc9 final | 16,918 | 1,809 | 18,727 | 13,697 | 100 | 32,524 | 244 | 1,160 |
+| cc8 emit | 25,197 | 1,427 | 26,624 | 3,617 | 424 | 30,665 | 2,103 | 1,326 |
+| cc9 final | 16,714 | 1,930 | 18,644 | 13,749 | 100 | 32,493 | 275 | 1,178 |
 
-Every pass fits. The nine together are 120,385 bytes of code against y1cc.c's 75,445: each carries the shared
+(Updated after `--xisa`, same day: cc6 grew by the page planning (2.9K of code, 3.3K of tables), cc9 kept its room
+because five of its macros became cc8's instructions; the table before it had cc6 at 26,206 and cc9 at 244 free. The
+same passes compiled with `--xisa` are in the section "--xisa" above: 101,884 bytes of code instead of 123,811.)
+
+Every pass fits. The nine together are 123,811 bytes of code against y1cc.c's 75,445: each carries the shared
 utilities and file code, and the work split across passes costs its intermediate records. What made them fit: the
 runtime helpers' text moved into `lib/y1ccrt.txt` (about 3K out of cc9); the call graph and the layout read the call
 and declaration lists instead of bodies (they had to hold whole functions); the labels made again from their owners

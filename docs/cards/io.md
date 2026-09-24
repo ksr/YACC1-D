@@ -81,7 +81,7 @@ How the sequencer drives them (`firmware/microcode/ucode-generator2/io.c`, `docs
 | `INP Pn` | $90 \| n | -ALU-FUNC with ALU = DATA from step 6; **-IO-RD from step 8 to 11**; -AC-LD at step 9 — the accumulator latches on the *leading* edge of step 9, so the card has one step (two clock periods) from -IO-RD falling to put the byte on the bus; 12 steps |
 | `ON` / `OFF` | $01 / $02 | OUT-ON / OUT-OFF set or clear the OUT latch on the sequencer (IC22 there); the level arrives here on C27 |
 | `BRINH addr` / `BRINL addr` | $A3 / $A4 | the ALU's condition mux (74LS251, select 5 = `ALUIN`) samples the bus line IN; no strobe reaches this card |
-| `OUTVR Pn,Rm` | $80 \| n | in `yacc1.def` and `opcodes.h`, **no microcode** (an all-zero record, H-4 in the microcode review): never use it |
+| (`OUTVR Pn,Rm`) | ($80 \| n) | never had microcode; removed 2026-09-24: $80-$8F are now `LDZ`/`STZ` (memory, not I/O; ISA reference section 4a) |
 
 The I/O latches clock on the **trailing** edge of -IO-WR (the 74273s clock on the rising edge of a NAND that falls
 with IO-WR), which is why the generator holds the data source one step past the strobe. `software/ucemu/y1ucemu.c`
@@ -292,7 +292,7 @@ through RN2) only ends the cycle. The review therefore calls the port decode sou
 | L-2 (microcode review) | LOW | -IO-ADDR-LD reaches nothing; the OUTI/OUTA/INP records spend 2-3 steps on it | Microcode clean-up item; harmless on the card |
 | 1.5 (microcode review) | note | the open-collector rise after -IO-RD is "the slowest edge in the machine" | By design; matters only if the clock is raised |
 | cross-card | LOW | the machine relies on floating LS inputs reading high while the pipeline is off the bus; IO-RD/IO-WR are inactive then, so this card sits quietly during the 54 s microcode load | By convention (backplane has no pull-ups, control/IO notes 5.1) |
-| H-4 (microcode review) | HIGH, microcode | OUTVR ($80-$8F) has all-zero records: fetching one asserts every strobe for 61 steps, -IO-RD and -IO-WR included | Open in the generator (fill undefined records); never emit OUTVR |
+| H-4 (microcode review) | HIGH, microcode | OUTVR ($80-$8F) had all-zero records: fetching one asserts every strobe for 61 steps, -IO-RD and -IO-WR included | $80-$8F filled 2026-09-24 (`LDZ`/`STZ`); 5 empty records remain elsewhere ($A5, $AE, $F8-$FA), open in the generator |
 
 Nothing on this card is on the H-1/H-2/H-3 path; those fixes (2026-09-22) concern PUSHR and the branch records.
 
