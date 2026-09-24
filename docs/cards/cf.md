@@ -25,7 +25,9 @@ driver: `cfwait`, `cfinit`, `cfread`, `cfwrite`), `software/cfmodel.h` (the emul
   (`hardware/cards/memory/eagle/v1.3/`, Ken's Fusion export; not the earlier save the plan was first drawn on, now
   `eagle/deprecated/v1.3-do-not-use/`) the TMP registers' data tracks cross the free area, so
   with that copper kept the CF chips did not fit; Ken decided to lay the whole memory card out again with the CF
-  section designed in (three placement options, all trial-routed complete; see that folder's README). The memory card today uses no I/O
+  section designed in; Ken picked option B of three, and the card is routed with fab files ready, not ordered
+(`memory-v2.0.kicad_pcb`: J2 centred on the top edge, JP2 = IDE pin-20 +5 V, J3 = adapter power; open items before
+ordering in that folder's README). The memory card today uses no I/O
   signals: IO-ADDR0..3, -IO-RD and -IO-WR are on its connector but unwired (`docs/cards/memory.md`). The ROM in the
   machine (`ROM 2026-09-23`) and both emulators already use P8/P9, so nothing on the software side changes.
 - **The CF-to-IDE adapter is undecided.** Two were considered: a **SinLoon CF-IDE** adapter, connected by a short

@@ -1,32 +1,39 @@
 #!/bin/sh
-# build.sh - build and verify the YACC1 memory card v2.0 (2026-09-24): the schematic (the built v1.3 + the CF section)
-# and the RE-LAYOUT placement options, each with a trial autoroute. Ken's decision (2026-09-24): lay the whole card out
-# again with the CF section designed in; the built card's placement and copper are discarded, its outline, X1 and
-# 4-layer stack-up (In1 GND / In2 VCC planes) kept. The built card = ../v1.3 ("v1.3" below).
+# build.sh - build and verify the YACC1 memory card v2.0: the schematic (the built v1.3 + the CF section) and the FINAL
+# board memory-v2.0.kicad_pcb (Ken's pick 2026-09-24: re-layout option B), then its fab outputs. The built card =
+# ../v1.3 ("v1.3" below).
 #
-#   hardware/cards/memory/kicad/v2.0/build.sh                schematic + every re-layout option + trial routes (~15 min)
-#   RELAYOUT="a c" hardware/cards/memory/kicad/v2.0/build.sh  only those options
-#   NOROUTE=1 hardware/cards/memory/kicad/v2.0/build.sh      no new trial route: the committed trial boards are checked
-#   KEEPCOPPER="a b c" hardware/cards/memory/kicad/v2.0/build.sh   also regenerate the blocked keep-the-built-copper
-#                                                            options (the record in options-keep-copper/)
+#   hardware/cards/memory/kicad/v2.0/build.sh               verify the committed final board + fab outputs (~5 min)
+#   FROM=trial hardware/cards/memory/kicad/v2.0/build.sh    + remake memory-v2.0.kicad_pcb from the committed option-B
+#                                                             trial route (how the committed board was made)
+#   ROUTE=1 hardware/cards/memory/kicad/v2.0/build.sh       + route option B anew: ROUTES Freerouting runs (default 4,
+#                                                             in parallel), the best kept (fewest vias, then shortest),
+#                                                             memory-v2.0.kicad_pcb made from it. Freerouting is not
+#                                                             deterministic, so the committed board is the master; a
+#                                                             new route replaces it only if you commit it
+#   RELAYOUT="a b c" hardware/cards/memory/kicad/v2.0/build.sh   + regenerate the re-layout option boards (the review
+#                                                             record) with new trial routes; add NOROUTE=1 to keep the
+#                                                             committed trial routes and only re-check them
+#   KEEPCOPPER="a b c" hardware/cards/memory/kicad/v2.0/build.sh + regenerate the blocked keep-the-built-copper options
+#                                                             (the record in options-keep-copper/)
 #
-# 1 gen_mem_v2.py sch: schematic (v1.3 sheets 1-6 + sheet 7 CF) + project + libraries
+# 1 gen_mem_v2.py sch: schematic (v1.3 sheets 1-6 + sheet 7 CF) + libraries; finish_v2.py project: the project
+#   memory-v2.0.kicad_pro/.kicad_dru carries the re-layout rules (0.25 mm tracks, 0.2 mm clearance, vias 0.8/0.4, class
+#   Power = GND/VCC on the planes, never routed); the built card's rules are kept aside for the keep-copper record
 # 2 ERC (must equal v1.3's list + the one designed-in SRST single-pin label; the six bus labels that became global lose
 #   their v1.3 "isolated label" warnings)
-# 3 per re-layout option (relayout_placements.py): gen_relayout.py board (every track/via of the built card removed,
-#   every part but X1 placed, rules 0.25 mm / 0.2 mm / vias 0.8/0.4 in the project + .kicad_dru), plane refill,
-#   placement check (overlaps, pads 0.5 mm inside the edge, X1 as built, TAODAN keep-low zone), DRC with schematic
-#   parity, airwire length, review images (<opt>-render-top.png: 3D with the adapter zones; <opt>-placement.png: 2D
-#   with the airwires)
-# 3r TRIAL ROUTE of each option (proves routability; NOT the final routing - Ken picks the option first): a two-signal-
-#   layer DSN (the planes carry GND/VCC, class Power not routed), Freerouting 1.9 (-mt 1, watchdog), the session back
-#   onto the 4-layer board (<opt>-trial.kicad_pcb), plane refill, DRC with schematic parity, the numbers
-#   (reports/relayout-<opt>-trial.txt: unrouted, vias, track length, DRC copper violations), a copper plot
-#   (<opt>-trial.png). Freerouting is not deterministic: every run gives a different, equally valid result.
-# 4 netlist proof: v2.0 schematic = v1.3 schematic + CF section, and every board (options, trial routes, the keep-copper
-#   record) = the schematic (check_netlist.py)
-# 5 schematic PDF, BOM
-# Exit status non-zero if a gate fails. (A trial route with unrouted connections is reported, not failed.)
+# 3 (RELAYOUT) per option: board, plane refill, placement check, DRC, airwire, review images, trial route
+# k (KEEPCOPPER) the keep-copper record
+# 4 (FROM=trial / ROUTE=1) the final board: finish_v2.py make (through vias, via clean-up, collinear merge, adapter
+#   outline on F.Fab, J3 pin labels, silkscreen tidy, title block, plane refill)
+# 5 DRC of memory-v2.0.kicad_pcb with schematic parity + finish_v2.py verify: 0 unrouted, 0 copper violations, every
+#   via a through via, both planes one solid piece, every GND/VCC pad on its plane, no silkscreen text on a pad / via /
+#   other silk / the edge, none upside down; no parity item beyond the built card's inherited Eagle values/fields
+# 6 netlist proof: v2.0 schematic = v1.3 + CF section; every board (final, options, trial routes, record) = the
+#   schematic (check_netlist.py)
+# 7 fab: gerbers/ (4 copper layers, masks, silk, edge) + drill + memory-v2.0-gerbers.zip, top/bottom renders,
+#   placement PDF, the JLCPCB order note, schematic PDF, BOM
+# Exit status non-zero if a gate fails.
 HERE=$(cd "$(dirname "$0")" && pwd)
 PYK=/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3
 CLI=/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli
@@ -34,10 +41,12 @@ INK=/Applications/Inkscape.app/Contents/MacOS/inkscape
 FRJAR="${FRJAR:-$HOME/freerouting/freerouting.jar}"
 WATCHDOG=${WATCHDOG:-1800}
 P=memory-v2.0
+BRD="$HERE/$P.kicad_pcb"
 R="$HERE/reports"
 K="$HERE/options-keep-copper"
-RELAYOUT=${RELAYOUT:-"a b c"}
+RELAYOUT=${RELAYOUT:-""}
 KEEPCOPPER=${KEEPCOPPER:-""}
+ROUTES=${ROUTES:-4}
 export PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 q() { grep --line-buffered -vE 'Debug|assert|wxApp|traits|Fontconfig|memory leak|^$'; }
 fail=0
@@ -51,8 +60,10 @@ trap 'rm -rf "$TMP"' EXIT
 cp -R "../$BASE" "$TMP/v13"
 OLD="$TMP/v13/memory-$BASE"
 
-echo "== 1  schematic (gen_mem_v2.py sch) =="
+echo "== 1  schematic (gen_mem_v2.py sch), project (finish_v2.py project) =="
 "$PYK" gen_mem_v2.py sch 2>&1 | q || exit 1
+cp "$P.kicad_pro" "$TMP/built-rules.kicad_pro"; cp "$P.kicad_dru" "$TMP/built-rules.kicad_dru"
+"$PYK" finish_v2.py project 2>&1 | q | sed 's/^/  /'
 "$CLI" sch export netlist --format kicadsexpr -o "$R/$P.net" "$P.kicad_sch" >/dev/null 2>&1
 "$CLI" sch export netlist --format kicadsexpr -o "$TMP/v1.3.net" "$OLD.kicad_sch" >/dev/null 2>&1
 
@@ -119,10 +130,11 @@ freeroute() {   # freeroute <dsn> <ses> <log>: Freerouting 1.9, one thread, clas
   done
   wait $jp 2>/dev/null
   [ -f "$(dirname "$dsn")/logs/freerouting.log" ] && cat "$(dirname "$dsn")/logs/freerouting.log" >> "$log"
-  echo "  Freerouting: $(( $(date +%s) - t0 )) s"
+  echo "  Freerouting $(basename "$(dirname "$dsn")"): $(( $(date +%s) - t0 )) s"
   [ -f "$ses" ]
 }
 
+# 3: the re-layout options (the review record; regenerated only on request)
 boards=""
 for o in $RELAYOUT; do
   B="$P-relayout-$o.kicad_pcb"
@@ -143,7 +155,6 @@ for o in $RELAYOUT; do
     -l Edge.Cuts,F.Cu,B.Cu,F.Silkscreen,User.Drawings,User.Eco1 -o "$TMP/p2.svg" "$TMP/p2.kicad_pcb" >/dev/null 2>&1
   "$INK" "$TMP/p2.svg" --export-type=png --export-width=2400 --export-background=white \
     --export-filename="$HERE/$P-relayout-$o-placement.png" >/dev/null 2>&1 && echo "  plot   -> $P-relayout-$o-placement.png"
-  boards="$boards $B"
 
   echo "== 3r$o  trial route of option $o =="
   if [ -z "$NOROUTE" ]; then
@@ -167,11 +178,11 @@ for o in $RELAYOUT; do
       -l Edge.Cuts,F.Cu,B.Cu,F.Silkscreen -o "$TMP/t.svg" "$TR" >/dev/null 2>&1
     "$INK" "$TMP/t.svg" --export-type=png --export-width=2400 --export-background=white \
       --export-filename="$HERE/$P-relayout-$o-trial.png" >/dev/null 2>&1 && echo "  plot   -> $P-relayout-$o-trial.png"
-    boards="$boards $TR"
   fi
 done
 
-# the blocked keep-the-built-copper options (the record, options-keep-copper/): regenerated only on request
+# k: the blocked keep-the-built-copper options (the record, options-keep-copper/): regenerated only on request, with
+# the built card's rules
 for o in $KEEPCOPPER; do
   B="$K/$P-option-$o.kicad_pcb"
   echo "== k$o  keep-copper option $o (record) =="
@@ -179,9 +190,9 @@ for o in $KEEPCOPPER; do
   "$PYK" gen_mem_v2.py locked "$B" "$OLD.kicad_pcb" "$K/reports/option-$o-locked.txt" 2>&1 | q | sed 's/^/  /'
   "$PYK" gen_mem_v2.py refill "$B" 2>&1 | q
   "$PYK" gen_mem_v2.py check "$B" "$o" 2>&1 | q | tee "$K/reports/option-$o-placement-check.txt" | sed 's/^/  /'
-  cp "$HERE/$P.kicad_pro" "$K/$P-option-$o.kicad_pro"
-  cp "$HERE/$P.kicad_dru" "$K/$P-option-$o.kicad_dru"
-  drc_parity "$B" "$HERE/$P.kicad_pro" "$HERE/$P.kicad_dru" "$K/reports/option-$o-drc.json"
+  cp "$TMP/built-rules.kicad_pro" "$K/$P-option-$o.kicad_pro"
+  cp "$TMP/built-rules.kicad_dru" "$K/$P-option-$o.kicad_dru"
+  drc_parity "$B" "$TMP/built-rules.kicad_pro" "$TMP/built-rules.kicad_dru" "$K/reports/option-$o-drc.json"
   "$PYK" gen_mem_v2.py review "$B" "$TMP/r.kicad_pcb" render 2>&1 | q
   "$CLI" pcb render --side top --width 2000 --height 1400 -o "$K/$P-option-$o-render-top.png" "$TMP/r.kicad_pcb" >/dev/null 2>&1
   "$PYK" gen_mem_v2.py review "$B" "$TMP/p2.kicad_pcb" plot 2>&1 | q | sed 's/^/  /'
@@ -194,17 +205,84 @@ if [ -n "$KEEPCOPPER" ]; then
   echo "== ks space check (space_check.py, record) =="
   "$PYK" space_check.py 2000 2>&1 | q | sed 's/^/  /'
 fi
-for f in "$K"/$P-option-*.kicad_pcb; do [ -f "$f" ] && boards="$boards $f"; done
 
-echo "== 4  netlist proof =="
+# 4: the final board
+if [ -n "$ROUTE" ]; then
+  echo "== 4  route option B anew: $ROUTES Freerouting runs =="
+  best=""
+  i=1
+  while [ $i -le "$ROUTES" ]; do
+    mkdir -p "$TMP/final$i"
+    "$PYK" gen_relayout.py dsn "$P-relayout-b.kicad_pcb" "$TMP/final$i/b.dsn" 2>&1 | q | sed 's/^/  /'
+    ( freeroute "$TMP/final$i/b.dsn" "$TMP/final$i/b.ses" "$TMP/final$i/freerouting.log" ) &
+    i=$((i + 1))
+  done
+  wait
+  i=1
+  : > "$TMP/routes.txt"
+  while [ $i -le "$ROUTES" ]; do
+    if [ -f "$TMP/final$i/b.ses" ]; then
+      "$PYK" gen_relayout.py ses "$P-relayout-b.kicad_pcb" "$TMP/final$i/b.ses" "$TMP/final$i/b.kicad_pcb" 2>&1 | q | sed 's/^/  /'
+      cp "$P-relayout-b.kicad_pro" "$TMP/final$i/b.kicad_pro"; cp "$P-relayout-b.kicad_dru" "$TMP/final$i/b.kicad_dru"
+      "$PYK" gen_relayout.py refill "$TMP/final$i/b.kicad_pcb" 2>&1 | q
+      "$CLI" pcb drc --severity-all --format json -o "$TMP/final$i/drc.json" "$TMP/final$i/b.kicad_pcb" >/dev/null 2>&1
+      "$PYK" gen_relayout.py stats "$TMP/final$i/b.kicad_pcb" "$TMP/final$i/drc.json" b 2>&1 | q > "$TMP/final$i/stats.txt"
+      u=$(sed -n 's/.*after Freerouting: \([0-9]*\).*/\1/p' "$TMP/final$i/stats.txt")
+      v=$(sed -n 's/^  vias: \([0-9]*\).*/\1/p' "$TMP/final$i/stats.txt")
+      l=$(sed -n 's/^  track length: \([0-9]*\) mm.*/\1/p' "$TMP/final$i/stats.txt")
+      echo "  run $i: unrouted $u, vias $v, track $l mm"
+      echo "$u $v $l $i" >> "$TMP/routes.txt"
+    fi
+    i=$((i + 1))
+  done
+  pick=$(sort -n -k1,1 -k2,2 -k3,3 "$TMP/routes.txt" | head -1 | awk '$1 == 0 {print $4}')
+  if [ -n "$pick" ]; then
+    echo "  best: run $pick"
+    cp "$TMP/final$pick/freerouting.log" "$R/$P-freerouting.log"
+    "$PYK" finish_v2.py make "$TMP/final$pick/b.kicad_pcb" "$BRD" 2>&1 | q | tee "$R/$P-make.txt" | sed 's/^/  /'
+  else
+    echo "  NO COMPLETE ROUTE - the committed board stays"; fail=1
+  fi
+elif [ "$FROM" = "trial" ]; then
+  echo "== 4  final board from the committed option-B trial route =="
+  "$PYK" finish_v2.py make "$P-relayout-b-trial.kicad_pcb" "$BRD" 2>&1 | q | tee "$R/$P-make.txt" | sed 's/^/  /'
+fi
+
+echo "== 5  DRC + verify of the final board ($P.kicad_pcb) =="
+"$PYK" gen_relayout.py check "$BRD" b 2>&1 | q | tee "$R/$P-placement-check.txt" | sed 's/^/  /'
+grep -q ": OK" "$R/$P-placement-check.txt" || fail=1
+"$CLI" pcb drc --schematic-parity --severity-all -o "$R/$P-drc.rpt" "$BRD" >/dev/null 2>&1
+"$CLI" pcb drc --schematic-parity --severity-all --format json -o "$R/$P-drc.json" "$BRD" >/dev/null 2>&1
+{ "$PYK" finish_v2.py verify "$BRD" "$R/$P-drc.json" 2>&1 | q
+  python3 - "$R/$P-drc.json" "$TMP/v1.3-drc.json" <<'EOF'
+import json, sys, collections
+x1 = lambda v: v["type"] == "items_not_allowed" and all(" of X1" in i["description"] for i in v["items"])
+d, b = json.load(open(sys.argv[1])), json.load(open(sys.argv[2]))
+cd = collections.Counter(v["type"] for v in d["violations"])
+cb = collections.Counter(v["type"] for v in b["violations"])
+print("  DRC by type, v2.0 / built v1.3 (its own rules): %s"
+      % ", ".join("%s %d/%d" % (t, cd.get(t, 0), cb.get(t, 0)) for t in sorted(set(cd) | set(cb))))
+print("  DRC unconnected, v2.0 / built v1.3: %d/%d" % (len(d.get("unconnected_items", [])),
+                                                        len(b.get("unconnected_items", []))))
+EOF
+  parity_new "$R/$P-drc.json"; } | tee "$R/$P-final.txt" | sed 's/^/  /'
+grep -q -- "-> PASS" "$R/$P-final.txt" || fail=1
+grep -q "new: none" "$R/$P-final.txt" || fail=1
+
+echo "== 6  netlist proof =="
+for f in "$P".kicad_pcb "$P"-relayout-?.kicad_pcb "$P"-relayout-?-trial.kicad_pcb "$K"/$P-option-?.kicad_pcb; do
+  [ -f "$f" ] && boards="$boards $f"
+done
 python3 check_netlist.py "$R/$P.net" "$TMP/v1.3.net" "$OLD.kicad_pcb" $boards | tee "$R/netlist-proof.txt" | sed 's/^/  /'
 grep -q "^RESULT: MATCH" "$R/netlist-proof.txt" || fail=1
 
-echo "== 5  schematic PDF, BOM =="
+echo "== 7  fab outputs, schematic PDF, BOM =="
+"$PYK" finish_v2.py fab "$BRD" 2>&1 | q | sed 's/^/  /'
 "$CLI" sch export pdf -o "$HERE/$P-schematic.pdf" "$P.kicad_sch" >/dev/null 2>&1 && echo "  schematic PDF -> $P-schematic.pdf"
 "$CLI" sch export bom --fields 'Reference,Value,Footprint,${QUANTITY}' --labels 'Refs,Value,Footprint,Qty' \
   --group-by 'Value,Footprint' --sort-field 'Reference' -o "$HERE/$P-bom.csv" "$P.kicad_sch" >/dev/null 2>&1 \
-  && echo "  BOM -> $P-bom.csv ($(($(wc -l < "$HERE/$P-bom.csv") - 1)) lines)"
+  && echo "  BOM -> $P-bom.csv ($(($(wc -l < "$HERE/$P-bom.csv") - 1)) lines, $(python3 -c "
+import csv; print(sum(int(r['Qty']) for r in csv.DictReader(open('$HERE/$P-bom.csv'))))") parts)"
 rm -f "$HERE"/*.kicad_prl "$K"/*.kicad_prl "$HERE/fp-info-cache"
 
 [ $fail -eq 0 ] && echo "== BUILD PASS ==" || echo "== BUILD FAIL (see above) =="

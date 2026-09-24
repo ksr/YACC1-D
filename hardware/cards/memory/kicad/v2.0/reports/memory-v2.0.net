@@ -2,7 +2,7 @@
 	(version "E")
 	(design
 		(source "/Users/ksr77/Developer/YACC1-D/hardware/cards/memory/kicad/v2.0/memory-v2.0.kicad_sch")
-		(date "2026-09-24T15:04:26")
+		(date "2026-09-24T16:03:30")
 		(tool "Eeschema 10.0.6")
 		(sheet
 			(number "1")
@@ -13485,7 +13485,7 @@
 		(net
 			(code "160")
 			(name "GND")
-			(class "Default")
+			(class "Power")
 			(node
 				(ref "C1")
 				(pin "2")
@@ -14577,7 +14577,7 @@
 		(net
 			(code "186")
 			(name "VCC")
-			(class "Default")
+			(class "Power")
 			(node
 				(ref "C1")
 				(pin "1")

@@ -64,9 +64,13 @@ def fname(opt, kind="kicad_pcb"):
     return os.path.join(HERE, "%s-relayout-%s.%s" % (PROJ, opt, kind))
 
 
-def write_project(opt):
+def write_project(opt, name=None):
+    """the re-layout rules into <name or memory-v2.0-relayout-<opt>>.kicad_pro / .kicad_dru, on the base of the v2.0
+    project gen_mem_v2.py sch wrote (the built card's project, whose top-level sheet list is not this project's)"""
     pro = json.load(open(os.path.join(HERE, PROJ + ".kicad_pro")))
-    pro["meta"]["filename"] = os.path.basename(fname(opt, "kicad_pro"))
+    out = os.path.join(HERE, name) if name else fname(opt, "kicad_pro")[:-len(".kicad_pro")]
+    pro["meta"]["filename"] = os.path.basename(out) + ".kicad_pro"
+    pro.get("schematic", {})["top_level_sheets"] = []
     r = pro["board"]["design_settings"]["rules"]
     r.update(min_clearance=RULES["clearance"], min_track_width=RULES["track"], min_via_diameter=RULES["via"],
              min_through_hole_diameter=RULES["via_drill"], min_via_annular_width=RULES["annular"],
@@ -82,8 +86,8 @@ def write_project(opt):
     pro["net_settings"]["classes"] = [base, power]
     pro["net_settings"]["netclass_patterns"] = [{"netclass": "Power", "pattern": "GND"},
                                                 {"netclass": "Power", "pattern": "VCC"}]
-    json.dump(pro, open(fname(opt, "kicad_pro"), "w"), indent=2)
-    open(fname(opt, "kicad_dru"), "w").write(DRU)
+    json.dump(pro, open(out + ".kicad_pro", "w"), indent=2)
+    open(out + ".kicad_dru", "w").write(DRU)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -395,7 +399,13 @@ def ses(pcb, sesfile, out):
     pcbnew.SaveBoard(out, b)
     ntrk = sum(1 for t in b.GetTracks() if t.Type() == pcbnew.PCB_TRACE_T)
     nvia = sum(1 for t in b.GetTracks() if t.Type() == pcbnew.PCB_VIA_T)
-    print("ses -> %s: %d track segments, %d vias" % (os.path.basename(out), ntrk, nvia))
+    # the session's F.Cu-B.Cu vias come in as "buried" on the 4-layer board: they are through vias (fixed
+    # 2026-09-24; the three committed trial routes of 2cae926 still carry the buried type, finish_v2.py make fixes it)
+    t = open(out).read()
+    nb = len(re.findall(r"^\t\(via (?:buried|blind)\b", t, re.M))
+    open(out, "w").write(re.sub(r"^\t\(via (?:buried|blind)\b", "\t(via", t, flags=re.M))
+    print("ses -> %s: %d track segments, %d vias (%d imported as buried -> through)" % (os.path.basename(out), ntrk,
+                                                                                      nvia, nb))
 
 
 COSMETIC = {"silk_overlap", "silk_edge_clearance", "silk_over_copper", "text_height", "text_thickness",
