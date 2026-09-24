@@ -78,7 +78,7 @@ Severity: HIGH = would stop the card working or damage parts; MED = unreliable; 
 
 ## cards/memory/kicad/v1.3
 
-52 parts, 166 nets, 20 ICs, 86 bus-connector nets, rails GND, VCC
+53 parts, 169 nets, 21 ICs, 86 bus-connector nets, rails GND, VCC
 
 - no findings
 

@@ -1,5 +1,5 @@
   ERC v2.0: 99 violations {('warning', 'endpoint_off_grid'): 36, ('warning', 'unconnected_wire_endpoint'): 22, ('warning', 'isolated_pin_label'): 38, ('error', 'missing_power_pin'): 1, ('warning', 'missing_input_pin'): 1, ('warning', 'missing_unit'): 1}
-  ERC built v1.3: 104 violations (the Eagle-conversion residue, ../v1.3-fusion-export-2026-09-24/README.md)
+  ERC built v1.3: 104 violations (the Eagle-conversion residue, ../v1.3/README.md)
   new on v2.0: [('isolated_pin_label', ("Label 'SRST'",))]
   gone on v2.0: [('isolated_pin_label', ("Label '-IO-RD'",)), ('isolated_pin_label', ("Label '-IO-WR'",)), ('isolated_pin_label', ("Label 'IO-ADDR0'",)), ('isolated_pin_label', ("Label 'IO-ADDR1'",)), ('isolated_pin_label', ("Label 'IO-ADDR2'",)), ('isolated_pin_label', ("Label 'IO-ADDR3'",))]
   unexplained: 0 new, 0 gone -> PASS

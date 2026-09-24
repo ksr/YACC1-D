@@ -204,7 +204,7 @@ The two 16-bit temporaries do not live on the ALU card but on the memory card (I
 74LS374s with D and Q on the same bus lines; `docs/isa/MICROCODE-REVIEW-NOTES.md` 1.3). They latch on the **leading**
 edge of `-TMP-REG-LDn` (through inverter IC14) and their reads drive **all 16** data lines. TMP0 is the programmer's
 TMP (MVAT/MVTA/LDTI/LDT/STT, the T-forms of the ALU ops, the compare branches); TMP1 is microcode scratch (LDIVR, PUSHR).
-The memory notes ask "Should tmp registers be moved to ALU - I do not see why" (`hardware/cards/memory/eagle/v1.3/Notes.md`).
+The memory notes ask "Should tmp registers be moved to ALU - I do not see why" (`hardware/cards/memory/eagle/deprecated/v1.3-do-not-use/Notes.md`).
 When `-AC-RD` writes ACC into TMP0 (MVAT), TMP0's high byte becomes $FF from the ALU's pull-ups (review section 4).
 
 ---
@@ -404,7 +404,7 @@ From `hardware/cards/memory/README.md`, `docs/system/MACHINE.md` "Memory card v1
 Reading an undecoded block "returns the last value left on the bus" (`docs/system/MACHINE.md`); the memory card's
 DATA pull-down networks RN5/RN6 have no value in the design files (datapath review M8), so **To verify:** whether RN5/RN6
 are fitted and their value (measure A19 to GND with the card out). The 4K-block jumper idea came from the 1.3 notes
-("add jumpers so any 4k block can be removed (for memory map IO)", `hardware/cards/memory/eagle/v1.3/Notes.md`).
+("add jumpers so any 4k block can be removed (for memory map IO)", `hardware/cards/memory/eagle/deprecated/v1.3-do-not-use/Notes.md`).
 `OS-PLAN.md` keeps this map for the disk OS (system page, OS at $1000–$4FFF, TPA above) and lists a variant B that
 would move the video block up by a jumper.
 

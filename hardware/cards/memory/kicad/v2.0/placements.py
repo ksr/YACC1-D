@@ -4,7 +4,7 @@ Coordinates are the built v1.3 board's (mm, y down; outline x 17.72..195.55, y 1
 edge). Seen in the machine the card stands on X1: board +x is UP, so the x = 195.55 edge is the card's free top edge,
 and y = 10 / y = 124 are its two free side edges.
 
-  Base = the BUILT card (../v1.3-fusion-export-2026-09-24): IC15 (74ALS11), the TMP registers IC26-IC29 and RN5/RN6
+  Base = the BUILT card (../v1.3): IC15 (74ALS11), the TMP registers IC26-IC29 and RN5/RN6
              are where the fabricated card has them, with all their copper; no option moves or removes any of it.
   moves      base parts that move in this option: ref -> (dx, dy) - only parts with no track on a pad (gen_mem_v2.py
              refuses anything else: the built card's copper is locked)

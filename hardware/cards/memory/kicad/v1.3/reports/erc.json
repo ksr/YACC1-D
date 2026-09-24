@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.kicad.org/erc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-09-23T17:39:28",
+    "date": "2026-09-24T15:02:20",
     "ignored_checks": [
         {
             "description": "Global label only appears once in the schematic",
@@ -35,12 +35,42 @@
                     "description": "Symbol pin or wire end off connection grid",
                     "items": [
                         {
+                            "description": "Symbol IC15 Hidden pin 7 [GND, Power input, Line]",
+                            "pos": {
+                                "x": 1.34657,
+                                "y": 0.54392
+                            },
+                            "uuid": "9bcb948b-e162-de0f-87a2-302ea4a674bc"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
                             "description": "Symbol IC12 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
                                 "x": 1.34657,
-                                "y": 0.65822
+                                "y": 0.74712
                             },
                             "uuid": "56d9ed57-ce1a-8a6d-b7c8-0a068962ee50"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Symbol IC15 Hidden pin 7 [GND, Power input, Line]",
+                            "pos": {
+                                "x": 1.34657,
+                                "y": 0.92492
+                            },
+                            "uuid": "e25490a7-452f-73bd-9c3d-32261706f892"
                         }
                     ],
                     "severity": "warning",
@@ -53,7 +83,7 @@
                             "description": "Symbol IC3 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
                                 "x": 1.34657,
-                                "y": 0.98842
+                                "y": 1.07732
                             },
                             "uuid": "b45be351-7f2d-2452-e63f-8e33ebdf9df2"
                         }
@@ -68,7 +98,7 @@
                             "description": "Symbol IC3 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
                                 "x": 1.34657,
-                                "y": 1.14082
+                                "y": 1.22972
                             },
                             "uuid": "63b87acd-aa38-a0e6-cf33-8883ae4b2c28"
                         }
@@ -83,7 +113,7 @@
                             "description": "Symbol IC3 Hidden pin 7 [GND, Power input, Line]",
                             "pos": {
                                 "x": 1.34657,
-                                "y": 1.31862
+                                "y": 1.40752
                             },
                             "uuid": "b1ec1772-a9ca-c83c-02cd-427d792bd389"
                         }
@@ -98,7 +128,7 @@
                             "description": "Vertical Wire, length 0.0127 mm",
                             "pos": {
                                 "x": 1.651,
-                                "y": 0.6731
+                                "y": 0.762
                             },
                             "uuid": "8d34da46-27cf-237c-c944-8b8052d921a9"
                         }
@@ -113,7 +143,7 @@
                             "description": "Vertical Wire, length 0.0127 mm",
                             "pos": {
                                 "x": 1.651,
-                                "y": 0.8255
+                                "y": 0.9144
                             },
                             "uuid": "485931f4-9cca-f760-b6b4-b772eff8dca8"
                         }
@@ -128,7 +158,7 @@
                             "description": "Label '-REG-FUNC-RD'",
                             "pos": {
                                 "x": 1.8542,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "3fd88a75-5792-7912-62e8-762efb891183"
                         }
@@ -143,7 +173,7 @@
                             "description": "Label '-REG-FUNC-LD'",
                             "pos": {
                                 "x": 1.8796,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "3ac45c90-0106-3e4f-219c-556a799c8f70"
                         }
@@ -158,7 +188,7 @@
                             "description": "Label 'REG-RD-ID0'",
                             "pos": {
                                 "x": 1.905,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "96cfbe09-8fa8-9d3c-87d3-4e82225cb919"
                         }
@@ -173,7 +203,7 @@
                             "description": "Label 'REG-RD-ID1'",
                             "pos": {
                                 "x": 1.9304,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "4956b857-1cb9-11af-045a-955b7da4ca00"
                         }
@@ -188,7 +218,7 @@
                             "description": "Label 'REG-RD-ID2'",
                             "pos": {
                                 "x": 1.9558,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "6b4e5dfe-8ed1-6b10-52d0-dfc714cfe12d"
                         }
@@ -203,7 +233,7 @@
                             "description": "Label 'REG-RD-ID3'",
                             "pos": {
                                 "x": 1.9812,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "9f436d85-5390-1382-beaa-1f5ad6a31ad7"
                         }
@@ -218,7 +248,7 @@
                             "description": "Label 'REG-LD-ID0'",
                             "pos": {
                                 "x": 2.0066,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "811528ac-ce20-5716-d4a6-e2a90f2dd5d4"
                         }
@@ -233,7 +263,7 @@
                             "description": "Label 'REG-LD-ID1'",
                             "pos": {
                                 "x": 2.032,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "b63c024f-da4e-c25a-d183-6a96ce123cf8"
                         }
@@ -248,7 +278,7 @@
                             "description": "Label 'REG-LD-ID2'",
                             "pos": {
                                 "x": 2.0574,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "7738b428-cfd4-7ede-b338-6cc53213f10b"
                         }
@@ -263,7 +293,7 @@
                             "description": "Label 'REG-LD-ID3'",
                             "pos": {
                                 "x": 2.0828,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "bf4b1eb9-4460-11a2-07ad-4a6c3c9c23dd"
                         }
@@ -278,7 +308,7 @@
                             "description": "Label '-REG-RD-LO'",
                             "pos": {
                                 "x": 2.1082,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "4ee1e796-a19a-10b2-49c3-03da1d2d5bf5"
                         }
@@ -293,7 +323,7 @@
                             "description": "Label '-REG-LD-LO'",
                             "pos": {
                                 "x": 2.1336,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "2ec20990-6556-c87e-60fa-93cd7d39f700"
                         }
@@ -308,7 +338,7 @@
                             "description": "Label '-REG-RD-HI'",
                             "pos": {
                                 "x": 2.159,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "7e1b686f-7c04-ad4a-0e11-20cb5a2d92fc"
                         }
@@ -323,7 +353,7 @@
                             "description": "Label '-REG-LD-HI'",
                             "pos": {
                                 "x": 2.1844,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "e311876f-6c2a-5eef-3e7a-0c17f46a6462"
                         }
@@ -338,7 +368,7 @@
                             "description": "Label '-REG-DN'",
                             "pos": {
                                 "x": 2.2098,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "d1dcf5ae-b350-798b-9868-22a9bead5ff0"
                         }
@@ -353,7 +383,7 @@
                             "description": "Label '-REG-UP'",
                             "pos": {
                                 "x": 2.2352,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "d3a40c8f-2e35-99cc-6640-4dfdd209b21d"
                         }
@@ -368,7 +398,7 @@
                             "description": "Label '-IO-RD'",
                             "pos": {
                                 "x": 2.3114,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "9754b0a3-cbd8-114a-7284-04ad9ef3770a"
                         }
@@ -383,7 +413,7 @@
                             "description": "Label '-IO-WR'",
                             "pos": {
                                 "x": 2.3368,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "0c8744a2-50e8-5627-e5a1-41ee4fb3e6f6"
                         }
@@ -398,7 +428,7 @@
                             "description": "Label '-ADDR-REG-ID0'",
                             "pos": {
                                 "x": 2.4892,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "b789cceb-6e6d-8c6c-b00d-9711946916ce"
                         }
@@ -413,7 +443,7 @@
                             "description": "Label '-ADDR-REG-ID1'",
                             "pos": {
                                 "x": 2.5146,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "36724865-2422-a7f7-e296-39dab29d8e94"
                         }
@@ -428,7 +458,7 @@
                             "description": "Label '-ADDR-REG-ID2'",
                             "pos": {
                                 "x": 2.54,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "cb648d28-d9f3-7198-08c8-6e5aaa8efd0b"
                         }
@@ -443,7 +473,7 @@
                             "description": "Label '-ADDR-REG-ID3'",
                             "pos": {
                                 "x": 2.5654,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "e03d17c2-e377-6786-841c-4aebbd4b8025"
                         }
@@ -458,7 +488,7 @@
                             "description": "Label 'IO-ADDR0'",
                             "pos": {
                                 "x": 2.5908,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "69af948f-f93b-9598-32e5-cd76b2f18cf9"
                         }
@@ -473,7 +503,7 @@
                             "description": "Label 'IO-ADDR1'",
                             "pos": {
                                 "x": 2.6162,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "7deba09d-ae58-64a6-f3e3-8a1d2dc2e252"
                         }
@@ -488,7 +518,7 @@
                             "description": "Label 'IO-ADDR2'",
                             "pos": {
                                 "x": 2.6416,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "1f95c149-f097-5c5d-fa71-ab3fe2d7e0a4"
                         }
@@ -503,7 +533,7 @@
                             "description": "Label 'IO-ADDR3'",
                             "pos": {
                                 "x": 2.667,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "c4ab45e3-0532-2a51-42c5-c07296846d00"
                         }
@@ -518,7 +548,7 @@
                             "description": "Label '-IO-ADDR-LD'",
                             "pos": {
                                 "x": 2.6924,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "86f654c9-b2dd-b5ad-1806-4dc44e42a84a"
                         }
@@ -533,7 +563,7 @@
                             "description": "Label '-INT'",
                             "pos": {
                                 "x": 2.7432,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "e3e2a24a-7de5-0a4d-ad1d-ab0104e173bc"
                         }
@@ -548,7 +578,7 @@
                             "description": "Label '-INTA'",
                             "pos": {
                                 "x": 2.7686,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "d0393739-b03a-55d5-3ed0-23f1fb212c11"
                         }
@@ -563,7 +593,7 @@
                             "description": "Label '-ALU-FUNC'",
                             "pos": {
                                 "x": 2.794,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "a580f166-1af1-8cd1-dd73-72ebca2d22c0"
                         }
@@ -578,7 +608,7 @@
                             "description": "Label 'ALU0'",
                             "pos": {
                                 "x": 2.8194,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "683340ff-dec8-76c2-e2d2-970f8ec226e8"
                         }
@@ -593,7 +623,7 @@
                             "description": "Label 'ALU1'",
                             "pos": {
                                 "x": 2.8448,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "26bc802a-880e-4924-f916-c2be04875d7c"
                         }
@@ -608,7 +638,7 @@
                             "description": "Label 'ALU2'",
                             "pos": {
                                 "x": 2.8702,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "f2b04fe6-6e44-4cc2-3c6b-2b333404d242"
                         }
@@ -623,7 +653,7 @@
                             "description": "Label 'ALU3'",
                             "pos": {
                                 "x": 2.8956,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "99f16c41-bf83-9e2d-53d6-8c479f84d2f2"
                         }
@@ -638,7 +668,7 @@
                             "description": "Label '-AC-LD-INV'",
                             "pos": {
                                 "x": 2.921,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "41c817dc-83dc-8613-c6c8-0a82d494fec4"
                         }
@@ -653,7 +683,7 @@
                             "description": "Label '-AC-RD'",
                             "pos": {
                                 "x": 2.9464,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "02307d45-cc2b-31d3-ae5b-148a42ae39cc"
                         }
@@ -668,7 +698,7 @@
                             "description": "Label '-AC-LD'",
                             "pos": {
                                 "x": 2.9718,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "b1a799da-6355-c1d5-43e4-58fccd9bc0c1"
                         }
@@ -683,7 +713,7 @@
                             "description": "Label '-SR-LD'",
                             "pos": {
                                 "x": 2.9972,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "3fd0757c-0ed1-9418-95c1-05a16dd9b975"
                         }
@@ -698,7 +728,7 @@
                             "description": "Label 'BR-COND'",
                             "pos": {
                                 "x": 3.0226,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "9cd63035-22ad-18bf-7e3a-6fcde48a1566"
                         }
@@ -713,7 +743,7 @@
                             "description": "Label '-HL-SWAP'",
                             "pos": {
                                 "x": 3.048,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "eab5c0a1-d1e1-c61f-3b91-349f17832cce"
                         }
@@ -728,7 +758,7 @@
                             "description": "Label '-IN'",
                             "pos": {
                                 "x": 3.0734,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "8e9c1e33-539e-35b2-4cb8-b8f3b2db1cbc"
                         }
@@ -743,7 +773,7 @@
                             "description": "Label '-OUT'",
                             "pos": {
                                 "x": 3.0988,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "7c0aeefe-ff02-5dc2-94c2-b6530abb9f2c"
                         }
@@ -758,7 +788,7 @@
                             "description": "Label '-RUN'",
                             "pos": {
                                 "x": 3.1496,
-                                "y": 1.9685
+                                "y": 2.0574
                             },
                             "uuid": "4233ffe8-4eb4-978d-8ca0-89d776d4a5a8"
                         }
@@ -1280,10 +1310,25 @@
                     "description": "Symbol pin or wire end off connection grid",
                     "items": [
                         {
+                            "description": "Symbol IC15 Hidden pin 7 [GND, Power input, Line]",
+                            "pos": {
+                                "x": 1.11797,
+                                "y": 1.09002
+                            },
+                            "uuid": "67c40f7c-955e-38fd-9995-a2464bff4646"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
                             "description": "Symbol IC5 Hidden pin 10 [GND, Power input, Line]",
                             "pos": {
-                                "x": 1.57517,
-                                "y": 0.8612
+                                "x": 1.85457,
+                                "y": 0.8358
                             },
                             "uuid": "a52f1512-ad34-f7bd-227e-9ddf122afac1"
                         }
@@ -1572,38 +1617,7 @@
         {
             "path": "/Sheet 5/",
             "uuid_path": "/42231b4d-4c5f-cebb-da74-8d622a2f1dd4/06d3ca30-126d-da4e-e4bc-92d2b2e7731b",
-            "violations": [
-                {
-                    "description": "Pin not connected",
-                    "items": [
-                        {
-                            "description": "Symbol IC5 Hidden pin 20 [VCC, Power input, Line]",
-                            "pos": {
-                                "x": 1.57517,
-                                "y": 0.86109
-                            },
-                            "uuid": "2aff29af-29a8-a22f-6393-467e7ca8b2c3"
-                        }
-                    ],
-                    "severity": "error",
-                    "type": "pin_not_connected"
-                },
-                {
-                    "description": "Pin not connected",
-                    "items": [
-                        {
-                            "description": "Symbol IC5 Hidden pin 10 [GND, Power input, Line]",
-                            "pos": {
-                                "x": 1.57517,
-                                "y": 0.8612
-                            },
-                            "uuid": "a52f1512-ad34-f7bd-227e-9ddf122afac1"
-                        }
-                    ],
-                    "severity": "error",
-                    "type": "pin_not_connected"
-                }
-            ]
+            "violations": []
         },
         {
             "path": "/Sheet 6/",

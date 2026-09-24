@@ -4,7 +4,7 @@
 Run with KiCad's bundled Python (pcbnew, PIL):
     $PYK space_check.py [trials]            -> options-keep-copper/reports/space-check.txt, .../memory-v2.0-free-space.png
 
-The built card (../v1.3-fusion-export-2026-09-24) routes the TMP registers' data lines DATA8-15 as a bundle of eight
+The built card (../v1.3) routes the TMP registers' data lines DATA8-15 as a bundle of eight
 B.Cu tracks from the bus connector along the bottom edge and diagonally up to IC27/IC29 (the earlier save had those
 parts off the board and no such bundle). A through-hole pad cannot sit on a track, so a CF footprint can only go where
 none of its pads comes near the built copper. This script finds every such spot and then tries to pack the CF parts:
@@ -28,7 +28,7 @@ import mem_v2_netlist as NL                       # noqa: E402
 import placements                                  # noqa: E402
 
 T, FM = pcbnew.ToMM, pcbnew.FromMM
-BASE = os.path.join(HERE, "..", "v1.3-fusion-export-2026-09-24", "memory-v1.3-fusion-export-2026-09-24.kicad_pcb")
+BASE = os.path.join(HERE, "..", "v1.3", "memory-v1.3.kicad_pcb")
 KFP = "/Applications/KiCad/KiCad.app/Contents/SharedSupport/footprints"
 PAD_R, CLR, EDGE, BODY_GAP, STEP, CELL = 0.8, 0.3, 1.4, 0.2, 0.635, 0.127
 DIPS = ["IC34", "IC30", "IC32", "IC31", "IC33"]

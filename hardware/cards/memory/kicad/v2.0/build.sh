@@ -2,7 +2,7 @@
 # build.sh - build and verify the YACC1 memory card v2.0 (2026-09-24): the schematic (the built v1.3 + the CF section)
 # and the RE-LAYOUT placement options, each with a trial autoroute. Ken's decision (2026-09-24): lay the whole card out
 # again with the CF section designed in; the built card's placement and copper are discarded, its outline, X1 and
-# 4-layer stack-up (In1 GND / In2 VCC planes) kept. The built card = ../v1.3-fusion-export-2026-09-24 ("v1.3" below).
+# 4-layer stack-up (In1 GND / In2 VCC planes) kept. The built card = ../v1.3 ("v1.3" below).
 #
 #   hardware/cards/memory/kicad/v2.0/build.sh                schematic + every re-layout option + trial routes (~15 min)
 #   RELAYOUT="a c" hardware/cards/memory/kicad/v2.0/build.sh  only those options
@@ -43,7 +43,7 @@ q() { grep --line-buffered -vE 'Debug|assert|wxApp|traits|Fontconfig|memory leak
 fail=0
 mkdir -p "$R" "$K/reports"
 cd "$HERE" || exit 1
-BASE=v1.3-fusion-export-2026-09-24
+BASE=v1.3
 LIB=memory-$BASE-eagle
 TMP=$(mktemp -d /tmp/memory-v2-build.XXXXXX)
 trap 'rm -rf "$TMP"' EXIT
@@ -72,7 +72,7 @@ v2, v1 = load(sys.argv[1]), load(sys.argv[2])
 new, gone = v2 - v1, v1 - v2
 by = lambda c: dict(collections.Counter((k[0], k[1]) for k in c.elements()))
 print("  ERC v2.0: %d violations %s" % (sum(v2.values()), by(v2)))
-print("  ERC built v1.3: %d violations (the Eagle-conversion residue, ../v1.3-fusion-export-2026-09-24/README.md)" % sum(v1.values()))
+print("  ERC built v1.3: %d violations (the Eagle-conversion residue, ../v1.3/README.md)" % sum(v1.values()))
 print("  new on v2.0: %s" % ([(k[1], k[2]) for k in new] or "none"))
 print("  gone on v2.0: %s" % ([(k[1], k[2]) for k in gone] or "none"))
 unexpected = [k for k in new if not (k[1] == "isolated_pin_label" and k[2] == ("Label 'SRST'",))]

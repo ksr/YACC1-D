@@ -115,7 +115,8 @@ ADATA8..15) and IC37 (DATA0..7 ↔ ADATA8..15, the byte-swap path). `ADATA` has 
 
 ### 1.3 Memory card: TMP registers live here; write timing
 
-Memory v1.3 (`hardware/cards/memory/kicad/v1.3/reports/netlist.net`):
+Memory v1.3 (`hardware/cards/memory/kicad/v1.3/reports/netlist.net`; this review read the earlier save that was then filed as
+`kicad/v1.3`, now `kicad/deprecated/v1.3-do-not-use/`, whose TMP wiring is the same as the built card's):
 
 - TMP0 = IC26 (DATA0..7) + IC27 (DATA8..15), TMP1 = IC28 + IC29, all 74LS374 with D and Q on the same bus lines, output-enabled
   by `-TMP-REG-RD0/1` (pin 1) and clocked by `-TMP-REG-LD0/1` through inverter IC14 (pins 2, 12): **TMP registers latch on the

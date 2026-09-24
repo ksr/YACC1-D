@@ -25,12 +25,14 @@ for root, dirs, files in os.walk(DST):
         if rel in plan:
             r = plan[rel]; buckets["plan: " + r["mode"]] += 1
             if r["mode"] in ("copy", "archive") and not rel.endswith("Readme.md") and h(p) != r["md5"]: bad.append(rel)
+        # the built memory card v1.3: Ken's Fusion export (~/Downloads 2026-09-24, not from YACCS; filed as eagle/v1.3-fusion-export-2026-09-24,
+        # renamed to eagle/v1.3 the same day). Checked before the run log, which still lists the earlier save's 2026-09-20 copies at this path
+        elif rel.startswith("hardware/cards/memory/eagle/v1.3/") and "/pdf/" not in rel and f != "README.md": buckets["mine: Fusion export of the built card from Ken (~/Downloads 2026-09-24, not from YACCS)"] += 1
         elif rel in logged: buckets["extra sources (kicad pilot, Arduino libs, eagle conv)"] += 1
         elif rel.startswith(("tools/", "migration/")) or rel in ("README.md", "MIGRATION.md", ".gitignore", ".gitattributes", "BACKLOG.md", "docs/system/MACHINE.md", "docs/system/OS-PLAN.md"): buckets["mine: tools/migration/front-page docs"] += 1
         elif f == "README.md": buckets["mine: placeholder README.md"] += 1
         elif f == "Makefile": buckets["mine: hand-written Makefile (2026-09)"] += 1
         elif rel.startswith(HAND_MADE): buckets["mine: session captures"] += 1
-        elif rel.startswith("hardware/cards/memory/eagle/v1.3-fusion-export-2026-09-24/") and "/pdf/" not in rel: buckets["mine: Fusion export of the built card from Ken (~/Downloads 2026-09-24, not from YACCS)"] += 1
         elif rel.startswith("hardware/bus/blank-card/eagle/v3.2/"): buckets["mine: derived design (Blank V3.2, tools/make_blank_v32.py)"] += 1
         elif rel == "hardware/PROVENANCE.md": buckets["generated: provenance index (tools/gen_provenance.py)"] += 1
         elif rel == "firmware/rom/shipped/rom.bin": buckets["generated: 8K burn image of shipped/rom (tools/img2bin.py --fill 0xFF --size 8192)"] += 1

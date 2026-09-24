@@ -5,11 +5,11 @@ remap, and the two 16-bit TMP registers that the microcode uses as scratch words
 
 Written 2026-09-23 from the YACC1-D tree; **revised 2026-09-24 for the built card** (below).
 
-Sources: `hardware/cards/memory/eagle/v1.3-fusion-export-2026-09-24/Memory V1.3.sch` and `.brd` (**the built card**:
+Sources: `hardware/cards/memory/eagle/v1.3/Memory V1.3.sch` and `.brd` (**the built card**:
 Ken's Fusion 360 export of the design JLCPCB fabricated on 2025-06-27, proven against the order's gerbers by
 `tools/verify_fab_vs_brd.py`; parts and nets parsed from the Eagle XML; KiCad conversion with netlist proof 116/116 in
-`hardware/cards/memory/kicad/v1.3-fusion-export-2026-09-24/`), `hardware/cards/memory/eagle/v1.3/Notes.md`,
-`hardware/cards/memory/README.md`,
+`hardware/cards/memory/kicad/v1.3/`), `hardware/cards/memory/eagle/deprecated/v1.3-do-not-use/Notes.md` (the notes
+kept with the earlier save), `hardware/cards/memory/README.md`,
 `hardware/cards/memory/eagle/deprecated/v1.1/Notes.md`, `.../v1.2/Notes.md`, `.../v1.2/Build Notes.md`,
 `hardware/DESIGN-REVIEW-NOTES-datapath.md` (findings M1–M8, S1, S3), `hardware/DESIGN-REVIEW-NOTES-control-io.md`
 (1.3, 5.1), `docs/isa/MICROCODE-REVIEW-NOTES.md` (1.3, 1.6, H-1/H-2 status), `firmware/microcode/yaccsignaldata2.h`,
@@ -18,10 +18,11 @@ Ken's Fusion 360 export of the design JLCPCB fabricated on 2025-06-27, proven ag
 `tests/memory/*.py` and their logs, `BACKLOG.md`.
 
 > **2026-09-24: the first version of this document described an earlier save.** It was written from
-> `hardware/cards/memory/eagle/v1.3/`, which turned out to be an earlier save of the design (notes 2025-03-06), not the
-> card that was fabricated. The built card differs in one circuit detail and in the board: **IC15 (74ALS11)** makes the
-> 74LS245's enable the AND of the card's three chip selects instead of `-VMA` (section 3.5), and the TMP registers
-> IC26-IC29 with RN5/RN6 are placed and routed on the board (in the earlier save they sat off the board, unrouted).
+> what was then `hardware/cards/memory/eagle/v1.3/` (now `hardware/cards/memory/eagle/deprecated/v1.3-do-not-use/`),
+> which turned out to be an earlier save of the design (notes 2025-03-06), not the card that was fabricated. The
+> built card differs in one circuit detail and in the board: **IC15 (74ALS11)** makes the 74LS245's enable the AND of
+> the card's three chip selects instead of `-VMA` (section 3.5), and the TMP registers IC26-IC29 with RN5/RN6 are
+> placed and routed on the board (in the earlier save they sat off the board, unrouted).
 > Everything else below (the decode, FORCE-ROM, the strobes, the TMP wiring) is the same in both files.
 
 ## 1. Purpose and place in the machine
@@ -210,7 +211,7 @@ have no net in the PCB (M6).
 
 On the built board the four 374s stand in a column at the right-hand end (IC26 at the top down to IC29, x = 154.9 mm)
 with their decoupling caps C14-C17 beside them; IC15 is below them. RN5/RN6 are along the bottom edge. (In the
-earlier save `eagle/v1.3` these six parts sat outside the board outline with their connections unrouted; the 2025
+earlier save `eagle/deprecated/v1.3-do-not-use` these six parts sat outside the board outline with their connections unrouted; the 2025
 order's gerbers, part list and pick-and-place all have them on the board.)
 
 ### 3.7 Gate-count check (what the review calls "checked, no issue")
@@ -222,7 +223,7 @@ order's gerbers, part list and pick-and-place all have them on the board.)
 - FORCE-ROM uses raw ADDR15, so the IC11 feedback cannot hold it set.
 - Reset polarity: IC12/A PRE is active low and the bus -RESET is active low.
 
-The Logisim file `hardware/cards/memory/eagle/v1.3/ROM ZSelect.circ` is a simulation of this select logic (a 7400-
+The Logisim file `hardware/cards/memory/eagle/deprecated/v1.3-do-not-use/ROM ZSelect.circ` is a simulation of this select logic (a 7400-
 series library model); it is the designer's check of the jumper/NAND arrangement, not a source of any other fact.
 
 ## 4. Timing and the design-review findings
@@ -322,7 +323,7 @@ What to measure if it misbehaves:
 | v1.0 | 2020-06 | fabricated, retired | first card; IN/OUT bus signals were still active-low in the template ("converted from active low to Active HI ... not used in memory board") |
 | v1.1 | 2020-06-19 (files still named V1.0) | fabricated, retired | adds the boot ROM remap: IC11 74LS157 + IC12 74LS74 FORCE-ROM ("Add memory map ROM to 0x0000 until 0xf000 is accessed") |
 | v1.2 | 2020-11-29 | fabricated (built), retired 2021 | -VMA arrives on the bus (Blank V3.1 note): -VMA enables IC5, gates IC7 (pin 4) and the low-RAM -CS; the remap trigger moves from BADDR15 to raw ADDR15; "RN3&4 BADDR pull-ups not needed, leave in design"; the 7400 removed then added back for -LO-RAM. `media/memory v1.2 top.jpeg` and `... solder.jpeg` are photographs of this build |
-| v1.3 | design 2021-03-17, boards ordered 2025-06-27 (JLCPCB 2000765A, 4 layers) | **in the machine** | "ARGH": the 3x8 jumper block on IC7's outputs with pull-ups so any 4K block can be removed from the map (for memory-mapped I/O — the video card uses it); IC15 74ALS11 so the 74245 is enabled only by the card's own chip selects; TMP registers on the board. Built design = `eagle/v1.3-fusion-export-2026-09-24` (KiCad `kicad/v1.3-fusion-export-2026-09-24`, netlist proof 116/116). `eagle/v1.3` is an earlier save (no IC15, TMP off the board; KiCad `kicad/v1.3`, 115/115) |
+| v1.3 | design 2021-03-17, boards ordered 2025-06-27 (JLCPCB 2000765A, 4 layers) | **in the machine** | "ARGH": the 3x8 jumper block on IC7's outputs with pull-ups so any 4K block can be removed from the map (for memory-mapped I/O — the video card uses it); IC15 74ALS11 so the 74245 is enabled only by the card's own chip selects; TMP registers on the board. Built design = `eagle/v1.3` (Ken's Fusion export of 2026-09-24, verified against JLCPCB order 2000765A; KiCad `kicad/v1.3`, netlist proof 116/116). `eagle/deprecated/v1.3-do-not-use` is an earlier save, do not use (no IC15, TMP off the board; KiCad `kicad/deprecated/v1.3-do-not-use`, 115/115) |
 
 **v2.0 (2026-09-24, being re-laid, not ordered):** the CompactFlash interface on this card: `hardware/cards/memory/kicad/v2.0/`
 = the built v1.3 card unchanged plus the CF card v1.0 circuit ([`cf.md`](cf.md)), I/O-mapped on ports P8/P9 as the
@@ -333,7 +334,7 @@ copper kept no placement of the five CF chips was found (the best packing fits f
 the whole card out again with the CF section designed in: same circuit, outline, bus connector and 4-layer GND/VCC
 planes, new placement and copper; three placement options, each trial-routed complete, are in that folder's README.
 
-Open ideas from `eagle/v1.3/Notes.md`, `BACKLOG.md` and the reviews, for a v1.4:
+Open ideas from `eagle/deprecated/v1.3-do-not-use/Notes.md`, `BACKLOG.md` and the reviews, for a v1.4:
 
 1. **Gate the EEPROM write (M2).** Either -WE = -MEM-WR OR FORCE-ROM (no writes while the remap is on) or, better, a
    write-protect jumper on IC13 pin 27 that is only closed for burning in place. This also closes the reset-time
@@ -353,5 +354,6 @@ Open ideas from `eagle/v1.3/Notes.md`, `BACKLOG.md` and the reviews, for a v1.4:
    removed the microcode fight that involved TMP1, so nothing in the hardware needs to move.
 
 The 2025 gerbers came from Fusion's CAM. Done 2026-09-24: `tools/verify_fab_vs_brd.py` proves the Fusion export
-(`eagle/v1.3-fusion-export-2026-09-24`) against them hole for hole and track for track, and the same check shows the
-older `eagle/v1.3` board is not what was ordered.
+(filed then as `eagle/v1.3-fusion-export-2026-09-24`, now `eagle/v1.3`) against them hole for hole and track for track,
+and the same check shows the older board (then `eagle/v1.3`, now `eagle/deprecated/v1.3-do-not-use`) is not what was
+ordered.

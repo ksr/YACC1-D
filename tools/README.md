@@ -15,7 +15,7 @@ the PDF generators, and the KiCad conversion:
 - `verify_fab_vs_brd.py` — proves an Eagle `.brd` is the design a fab house received: every hole against the Excellon
   drill file, every Top/Bottom track against the copper gerbers, inner-layer planes, part list and pick-and-place,
   optionally byte-compares two gerber sets. Takes a gerber zip or a whole order archive (nested zips are searched).
-  First used 2026-09-24 on the memory card (`hardware/cards/memory/eagle/v1.3-fusion-export-2026-09-24/README.md`).
+  First used 2026-09-24 on the memory card (`hardware/cards/memory/eagle/v1.3/README.md`).
 - `verify_processing.py` — builds the Processing command sender with the Processing 4 CLI and re-compiles it with warnings on.
 
 _Contents migrated 2026-09-19; MIGRATION.md at the repo root says which copy each item came from._

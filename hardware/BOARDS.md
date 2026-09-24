@@ -28,8 +28,8 @@ Generated 2026-09-24 by `tools/brd_to_pdf.py` from every Eagle `.brd` under `har
 | `cards/memory/eagle/deprecated/v1.1/Memory V1.0.brd` | [`Memory V1.0-board.pdf`](cards/memory/eagle/deprecated/v1.1/pdf/Memory V1.0-board.pdf) |  |
 | `cards/memory/eagle/deprecated/v1.2/Memory V1.2.brd` | [`Memory V1.2-board.pdf`](cards/memory/eagle/deprecated/v1.2/pdf/Memory V1.2-board.pdf) |  |
 | `cards/memory/eagle/deprecated/v1.2/Memory V1.2.brd.old.brd` | [`Memory V1.2.brd.old-board.pdf`](cards/memory/eagle/deprecated/v1.2/pdf/Memory V1.2.brd.old-board.pdf) |  |
-| `cards/memory/eagle/v1.3-fusion-export-2026-09-24/Memory V1.3.brd` | [`Memory V1.3-board.pdf`](cards/memory/eagle/v1.3-fusion-export-2026-09-24/pdf/Memory V1.3-board.pdf) | 4 layers, 53 parts, 1377 track segments |
-| `cards/memory/eagle/v1.3/Memory V1.3.brd` | [`Memory V1.3-board.pdf`](cards/memory/eagle/v1.3/pdf/Memory V1.3-board.pdf) |  |
+| `cards/memory/eagle/deprecated/v1.3-do-not-use/Memory V1.3.brd` | [`Memory V1.3-board.pdf`](cards/memory/eagle/deprecated/v1.3-do-not-use/pdf/Memory V1.3-board.pdf) |  |
+| `cards/memory/eagle/v1.3/Memory V1.3.brd` | [`Memory V1.3-board.pdf`](cards/memory/eagle/v1.3/pdf/Memory V1.3-board.pdf) | 4 layers, 53 parts, 1377 track segments |
 | `cards/protocard/eagle/v1.0/ProtoCard-Prod-V1.0.brd` | [`ProtoCard-Prod-V1.0-board.pdf`](cards/protocard/eagle/v1.0/pdf/ProtoCard-Prod-V1.0-board.pdf) |  |
 | `cards/register/eagle/deprecated/v1.0-no-address/Index Registers - 1.0.brd` | [`Index Registers - 1.0-board.pdf`](cards/register/eagle/deprecated/v1.0-no-address/pdf/Index Registers - 1.0-board.pdf) |  |
 | `cards/register/eagle/deprecated/v1.0/Index Registers - 1.0.brd` | [`Index Registers - 1.0-board.pdf`](cards/register/eagle/deprecated/v1.0/pdf/Index Registers - 1.0-board.pdf) |  |

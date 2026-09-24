@@ -7,8 +7,8 @@ Run with KiCad's bundled Python (the board half needs pcbnew); build.sh does tha
     ... gen_mem_v2.py board a <net>   (one placement option; placements.py holds the options)
 
 v2.0 = the BUILT memory card v1.3 + the CompactFlash section (mem_v2_netlist.py says exactly what that is). The built
-card is ../v1.3-fusion-export-2026-09-24: the KiCad conversion of Ken's Fusion export of the design JLCPCB fabricated
-on 2025-06-27 (proven against the order's gerbers, hardware/cards/memory/eagle/v1.3-fusion-export-2026-09-24/README.md).
+card is ../v1.3: the KiCad conversion of Ken's Fusion export (2026-09-24) of the design JLCPCB fabricated on
+2025-06-27 (proven against the order's gerbers, hardware/cards/memory/eagle/v1.3/README.md).
 Called "base" / "v1.3" below. This script:
 
   sch    copies the base schematic (6 sheets converted from Eagle) unchanged except for
@@ -37,7 +37,7 @@ import os, sys, re, json, shutil, subprocess, collections
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, "..", "..", "..", "..", ".."))
-BASE_NAME = "v1.3-fusion-export-2026-09-24"             # the built card's KiCad conversion (generated, read-only here)
+BASE_NAME = "v1.3"                                     # the built card's KiCad conversion (generated, read-only here)
 V13 = os.path.join(HERE, "..", BASE_NAME)
 sys.path.insert(0, HERE)
 import mem_v2_netlist as NL                                # noqa: E402  (puts the CF card folder on sys.path)

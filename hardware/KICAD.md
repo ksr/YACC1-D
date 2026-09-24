@@ -30,8 +30,8 @@ Generated 2026-09-23 by `tools/eagle_to_kicad_all.py`: every Eagle design under 
 | `cards/memory/eagle/deprecated/v1.0/Memory V1.0` | [`memory-v1.0`](cards/memory/kicad/deprecated/v1.0/) | yes | MATCH (69/69 nets) | 102 | 208 + 0 unconnected | 38 | 0 | ok |
 | `cards/memory/eagle/deprecated/v1.1/Memory V1.0` | [`memory-v1.1`](cards/memory/kicad/deprecated/v1.1/) | yes | MATCH (75/75 nets) | 102 | 208 + 0 unconnected | 38 | 0 | ok |
 | `cards/memory/eagle/deprecated/v1.2/Memory V1.2` | [`memory-v1.2`](cards/memory/kicad/deprecated/v1.2/) | yes | MATCH (99/99 nets) | 111 | 208 + 0 unconnected | 93 | 0 | ok |
-| `cards/memory/eagle/v1.3/Memory V1.3` | [`memory-v1.3`](cards/memory/kicad/v1.3/) | no | MATCH (115/115 nets) | 103 | 250 + 100 unconnected | 95 | 0 | ok |
-| `cards/memory/eagle/v1.3-fusion-export-2026-09-24/Memory V1.3` | [`memory-v1.3-fusion-export-2026-09-24`](cards/memory/kicad/v1.3-fusion-export-2026-09-24/) | yes | MATCH (116/116 nets) | 104 | 254 + 0 unconnected | 98 | 0 | ok |
+| `cards/memory/eagle/deprecated/v1.3-do-not-use/Memory V1.3` | [`memory-v1.3-do-not-use`](cards/memory/kicad/deprecated/v1.3-do-not-use/) | no | MATCH (115/115 nets) | 103 | 250 + 100 unconnected | 95 | 0 | ok |
+| `cards/memory/eagle/v1.3/Memory V1.3` | [`memory-v1.3`](cards/memory/kicad/v1.3/) | yes | MATCH (116/116 nets) | 104 | 254 + 0 unconnected | 98 | 0 | ok |
 | `cards/protocard/eagle/v1.0/ProtoCard-Prod-V1.0` | [`protocard-v1.0`](cards/protocard/kicad/v1.0/) | yes | MATCH (87/87 nets) | - | 268 + 0 unconnected | 21 | 0 | ok |
 | `cards/register/eagle/deprecated/v1.0/Index Registers - 1.0` | [`register-v1.0`](cards/register/kicad/deprecated/v1.0/) | yes | MATCH (192/192 nets) | 163 | 212 + 0 unconnected | 110 | 0 | ok |
 | `cards/register/eagle/deprecated/v1.0-no-address/Index Registers - 1.0` | [`register-v1.0-no-address`](cards/register/kicad/deprecated/v1.0-no-address/) | yes | MATCH (192/192 nets) | 163 | 212 + 0 unconnected | 110 | 0 | ok |

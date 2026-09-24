@@ -38,7 +38,7 @@ BOARDS = [
     ("alu",              "ALU V3.2",                       "hardware/cards/alu/eagle/v3.2/ALU V3.2.sch",                                         "machine", 1, ""),
     ("register",         "Index Registers 1.1",            "hardware/cards/register/eagle/v1.1/Index Registers - 1.1.sch",                       "machine", 2, "two cards: R0-R3 and R4-R7 (J3 selects the card)"),
     ("io",               "I/O V1.1",                       "hardware/cards/io/eagle/v1.1/IO V1.1.sch",                                           "machine", 1, "UART, switch/LED port, TIL311s, LCD"),
-    ("memory",           "Memory v1.3 (built card, Fusion export)", "hardware/cards/memory/eagle/v1.3-fusion-export-2026-09-24/Memory V1.3.sch", "machine", 1, "two 62256 + 28C64, FORCE-ROM remap, TMP registers, IC15 buffer enable; eagle/v1.3 is an earlier save"),
+    ("memory",           "Memory v1.3 (built card, Fusion export)", "hardware/cards/memory/eagle/v1.3/Memory V1.3.sch", "machine", 1, "two 62256 + 28C64, FORCE-ROM remap, TMP registers, IC15 buffer enable; eagle/deprecated/v1.3-do-not-use is an earlier save"),
     ("video",            "Video V1.0 (Fusion export)",     "hardware/cards/video/eagle/v1.0-fusion-export-2026-09-18/Video_1.0.sch",             "machine", 1, "installed for bring-up, 6845 socket empty (MACHINE.md); KiCad v1.1 is the design master"),
     ("bus-tester",       "Bus Test Card v1.1",             "hardware/cards/bus-tester/eagle/v1.1/tester.sch",                                    "bench",   1, "plugged in for bring-up sessions"),
     ("mem-switch",       "Mem Switch V1.1 (bring-up)",     "hardware/cards/mem-switch/eagle/v1.1/Mem Switch V1.1.sch",                           "bench",   1, "16-byte switch ROM at $0000"),

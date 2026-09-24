@@ -21,8 +21,9 @@ driver: `cfwait`, `cfinit`, `cfread`, `cfwrite`), `software/cfmodel.h` (the emul
   U2 74LS32, U3 74LS175, U4 74LS08, U5 74LS245) and a 40-pin IDE header, decoding **P8/P9**. Routed and checked, never
   ordered. It is the reference circuit this document describes, with its reference designators.
 - **Plan (Ken, 2026-09-24):** the same circuit goes onto the **memory card** and stays **I/O-mapped on P8/P9**, not
-  memory-mapped. Designed as `hardware/cards/memory/kicad/v2.0/` (schematic proven). On the card as actually built (the
-  Fusion export, not the earlier save the plan was drawn on) the TMP registers' data tracks cross the free area, so
+  memory-mapped. Designed as `hardware/cards/memory/kicad/v2.0/` (schematic proven). On the card as actually built
+  (`hardware/cards/memory/eagle/v1.3/`, Ken's Fusion export; not the earlier save the plan was first drawn on, now
+  `eagle/deprecated/v1.3-do-not-use/`) the TMP registers' data tracks cross the free area, so
   with that copper kept the CF chips did not fit; Ken decided to lay the whole memory card out again with the CF
   section designed in (three placement options, all trial-routed complete; see that folder's README). The memory card today uses no I/O
   signals: IO-ADDR0..3, -IO-RD and -IO-WR are on its connector but unwired (`docs/cards/memory.md`). The ROM in the

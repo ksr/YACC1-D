@@ -107,9 +107,10 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - (done 2026-09-21: both ATmegas now run tree builds, verified by reading the flash back; the previous binaries are in
   `embedded/*/readback/`)
 - (done 2026-09-20: `tools/verify_embedded.py`, 12 sketches compile against the vendored libraries)
-- (done 2026-09-24: the tree's `eagle/v1.3` board turned out NOT to be the ordered one; Ken's Fusion export of the built card is
-  `hardware/cards/memory/eagle/v1.3-fusion-export-2026-09-24/`, proven hole for hole and track for track against the 2025 gerbers by
-  `tools/verify_fab_vs_brd.py`; it adds IC15, the 74245 enable from the chip selects.)
+- (done 2026-09-24: the tree's `eagle/v1.3` board turned out NOT to be the ordered one (now `eagle/deprecated/v1.3-do-not-use/`);
+  Ken's Fusion export of the built card is `hardware/cards/memory/eagle/v1.3/` (filed first as `v1.3-fusion-export-2026-09-24`),
+  proven hole for hole and track for track against the 2025 gerbers (JLCPCB order 2000765A) by `tools/verify_fab_vs_brd.py`; it
+  adds IC15, the 74245 enable from the chip selects.)
 - (answered 2026-09-20: jumper boards not fitted/obsolete, EEPROM adaptor fitted, two register cards, RN2 = 1k; bus tester
   firmware settled 2026-09-21 by reading the flash out; sequencer likewise = Sequencer3) — no **(confirm)** marks left.
 

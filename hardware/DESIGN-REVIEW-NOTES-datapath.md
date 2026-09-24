@@ -12,10 +12,11 @@ enforced by hardware; LOW = housekeeping or documentation.
 
 ---
 
-## Memory card v1.3 (`hardware/cards/memory/kicad/v1.3/`)
+## Memory card v1.3 (traced on `hardware/cards/memory/kicad/deprecated/v1.3-do-not-use/`, then filed as `kicad/v1.3`)
 
-> **Note 2026-09-24:** this review traced `kicad/v1.3`, which is an **earlier save** of the design, not the card that was
-> fabricated (`hardware/cards/memory/eagle/v1.3-fusion-export-2026-09-24/`, KiCad `kicad/v1.3-fusion-export-2026-09-24/`).
+> **Note 2026-09-24:** this review traced what was then `kicad/v1.3` (now `kicad/deprecated/v1.3-do-not-use/`), which is an
+> **earlier save** of the design, not the card that was fabricated (`hardware/cards/memory/eagle/v1.3/`, KiCad `kicad/v1.3/`;
+> filed first as `v1.3-fusion-export-2026-09-24`).
 > The one circuit difference: on the built card IC5's enable (pin 19) is IC15 pin 12 = AND(-LO-RAM, -HI-RAM, -ROM-CS),
 > not `-VMA`, so where the findings below say "IC5 enable" read "the chip selects, through IC15". The findings
 > themselves (M1-M8) are unchanged by that: every pin they name is wired the same on the built card.

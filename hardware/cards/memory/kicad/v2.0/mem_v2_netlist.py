@@ -2,10 +2,10 @@
 
 THE single source of what v2.0 adds. Plain Python, no KiCad import.
 
-    v2.0 = v1.3 as built             the netlist KiCad extracts from ../v1.3-fusion-export-2026-09-24 (the conversion of
+    v2.0 = v1.3 as built             the netlist KiCad extracts from ../v1.3 (the conversion of
                                      Ken's Fusion export of the card JLCPCB fabricated, IC15 included; proved pin for pin
                                      against its Eagle board, and that board against the order's gerbers - see
-                                     hardware/cards/memory/eagle/v1.3-fusion-export-2026-09-24/README.md). Called "v1.3"
+                                     hardware/cards/memory/eagle/v1.3/README.md). Called "v1.3"
                                      below. Not restated here: check_netlist.py exports it fresh and compares.
          + CF section                hardware/cards/cf/kicad/v1.0/cf_netlist.py (the standalone CF card v1.0), transformed
                                      by the explicit rules below - nothing else is added or changed.

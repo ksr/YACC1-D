@@ -15,7 +15,7 @@ Supply symbols and frames are not parts and are skipped. A `*` left in a value m
 | ALU V3.2 | machine | 1 | `hardware/cards/alu/eagle/v3.2/ALU V3.2.sch` | 86 | 39 | 42 | 4 | 1 | [alu.md](alu.md) |
 | Index Registers 1.1 | machine | 2 | `hardware/cards/register/eagle/v1.1/Index Registers - 1.1.sch` | 102 | 47 | 50 | 4 | 1 | [register.md](register.md) |
 | I/O V1.1 | machine | 1 | `hardware/cards/io/eagle/v1.1/IO V1.1.sch` | 71 | 11 | 28 | 8 | 24 | [io.md](io.md) |
-| Memory v1.3 (built card, Fusion export) | machine | 1 | `hardware/cards/memory/eagle/v1.3-fusion-export-2026-09-24/Memory V1.3.sch` | 53 | 20 | 29 | 3 | 1 | [memory.md](memory.md) |
+| Memory v1.3 (built card, Fusion export) | machine | 1 | `hardware/cards/memory/eagle/v1.3/Memory V1.3.sch` | 53 | 20 | 29 | 3 | 1 | [memory.md](memory.md) |
 | Video V1.0 (Fusion export) | machine | 1 | `hardware/cards/video/eagle/v1.0-fusion-export-2026-09-18/Video_1.0.sch` | 47 | 16 | 24 | 5 | 2 | [video.md](video.md) |
 | Bus Test Card v1.1 | bench | 1 | `hardware/cards/bus-tester/eagle/v1.1/tester.sch` | 86 | 10 | 42 | 5 | 29 | [bus-tester.md](bus-tester.md) |
 | Mem Switch V1.1 (bring-up) | bench | 1 | `hardware/cards/mem-switch/eagle/v1.1/Mem Switch V1.1.sch` | 112 | 21 | 55 | 2 | 34 | [mem-switch.md](mem-switch.md) |

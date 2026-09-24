@@ -51,7 +51,7 @@ Generated %s by `tools/gen_provenance.py`. **Source** = the YACCS folder the fil
 | `cards/memory/eagle/deprecated/v1.2` | `YACC gitversion/YACC1-2020/PCB/Production/Memory v1.2` | `Memory V1.2.brd` | 2020-11-29 | 5 in 2020, 2024, YACC1-2020 July 2021 backup, gitversion, newgit |
 |  |  | `Memory V1.2.brd.old.brd` | 2020-09-01 | 5 in 2020, 2024, YACC1-2020 July 2021 backup, gitversion, newgit |
 |  |  | `Memory V1.2.sch` | 2020-11-29 | 6 in 2020, 2024, YACC1-2020 July 2021 backup, gitversion, newgit, test |
-| `cards/memory/eagle/v1.3` | `YACC gitversion/YACC1-2020/PCB/Working - Under Develolpment/Memory v1.3` | `Memory V1.3.brd` | 2021-03-17 | 5 in 2020, 2024, YACC1-2020 July 2021 backup, gitversion, newgit |
+| `cards/memory/eagle/deprecated/v1.3-do-not-use` | `YACC gitversion/YACC1-2020/PCB/Working - Under Develolpment/Memory v1.3` | `Memory V1.3.brd` | 2021-03-17 | 5 in 2020, 2024, YACC1-2020 July 2021 backup, gitversion, newgit |
 |  |  | `Memory V1.3.sch` | 2021-03-17 | 6 in 2020, 2024, YACC1-2020 July 2021 backup, gitversion, newgit, test |
 | `cards/protocard/eagle/v1.0` | `YACC gitversion/YACC1-2020/PCB/Production/PROTOCARD-PROD-V1.0` | `ProtoCard-Prod-V1.0.brd` | 2016-07-14 | 11 in 2020, 2024, YACC1-2020 July 2021 backup, YACC1-BACKUP, YACC1A, YACC1A1, gitversion, newgit |
 |  |  | `ProtoCard-Prod-V1.0.sch` | 2016-07-14 | 11 in 2020, 2024, YACC1-2020 July 2021 backup, YACC1-BACKUP, YACC1A, YACC1A1, gitversion, newgit |

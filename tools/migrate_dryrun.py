@@ -68,7 +68,7 @@ RULES = [
     (GV, W + "Memory v1.3/Memory V1.2.pro", "", "skip"),
     (GV, W + "Memory v1.3/Memory V1.2.pdf", "", "skip"),   # Eagle print of the earlier V1.2 state; Production v1.2 has its own
     (GV, W + "Memory v1.3/Memory V1.2.brd.old.brd", "hardware/cards/memory/eagle/v1.2/", "copy"),   # earlier V1.2 layout (31 parts, 2020-09-01) -> with V1.2
-    (GV, W + "Memory v1.3/", "hardware/cards/memory/eagle/v1.3/", "copy"),
+    (GV, W + "Memory v1.3/", "hardware/cards/memory/eagle/deprecated/v1.3-do-not-use/", "copy"),   # an EARLIER SAVE of v1.3, not the built card (Ken 2026-09-24); the built card eagle/v1.3/ is his Fusion export, not from YACCS
     (GV, P + "Memory v1.2/", "hardware/cards/memory/eagle/v1.2/", "copy"),                     # fabricated
     (GV, P + "Memory v1.1/", "archive/superseded-revisions/memory-v1.1/", "archive"),
     (GV, P + "Memory v1.0/", "archive/superseded-revisions/memory-v1.0/", "archive"),
