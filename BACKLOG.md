@@ -74,6 +74,13 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   To fold into the generator when the diagrams are next regenerated.
 
 ## Software
+- **BASIC `OUTP port,value` / `INP port,var`** (asked 2026-09-23): both keywords tokenise, but `exe_outp_stmt` and
+  `exe_inp_stmt` in `firmware/basic/basic.asm` only eat the keyword - no port access, so BASIC cannot drive the LEDs or read
+  the switches (POKE cannot: they are I/O ports, P0 select + P1 data). The port is in the opcode (`OUTA Pn` $60+n, `INP Pn`
+  $90+n), so a run-time port needs `OUTA/INP Pn` + `RET` built in RAM and called, or a 16-entry jump table. `INP` like
+  `PEEK addr,var` (no functions in expressions). ~230 bytes free in the BASIC half of the ROM. Test on both emulators
+  (ucemu `-L` shows LED writes, `-i`/`-I` the switches), patched_files entry for basic.asm, then burn - ideally together
+  with the next ROM (23B). Example: `OUTP 0,1` (select switches/LEDs), `OUTP 1,170` (LEDs = $AA), `INP 1,S`.
 - Every C tool now has a plain Makefile (2026-09-20); the NetBeans projects are kept but no longer needed to build. The three
   tools still carry the old tree's relative include paths, satisfied by `tools/layout_links.py` symlinks; fixing the includes
   would let the links go.
@@ -116,13 +123,14 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   (74LS138/32/175/08/245), 40-pin IDE header for a CF-to-IDE adapter, schematic and board both proven equal to the
   netlist, DRC 0 errors / 0 unconnected, gerbers ready; theory in `docs/cards/cf.md`. **Superseded the same evening,
   never ordered**: the backplane has eight slots, so the CF interface moves onto the **I/O card v2.0**, decoded by the
-  I/O card's IC5 on Y4/Y5 = **P4/P5** (4 chips, SinLoon CF-to-IDE adapter on standoffs above the card, no DASP LED);
+  I/O card's IC5 on Y4/Y5 = **P4/P5** (4 chips, a TAODAN CF-IDE40 CF-to-IDE adapter plugged straight onto the IDE
+  header, standing perpendicular to the card, no DASP LED);
   ROM driver, `ROM 2026-09-23B` and both emulators moved to P4/P5 in 24378cb; `docs/system/OS-PLAN.md` decision 1
   update. Card-preparation procedure written: `docs/procedures/CF-CARD.md`.)
-  **Next**: finish the I/O card v2.0 design (`hardware/cards/io/kicad/v2.0/`); **burn `ROM 2026-09-23B`** (the chip
-  still holds `ROM 2026-09-23`, whose CF driver uses P8/P9); before ordering, check the SinLoon adapter's fit on its
-  standoffs and how it is powered; confirm on the machine that the I/O card's IO-ADDR-HL strap is P0-P7 and that the
-  IO-ADDR/DATA-ADDR jumpers are on P0/P1 (never P4/P5). **After building**: the bring-up steps in `docs/cards/cf.md`
+  **Next**: the I/O card v2.0 is routed (`hardware/cards/io/kicad/v2.0/`, 2026-09-23, not ordered); **burn
+  `ROM 2026-09-23B`** (the chip still holds `ROM 2026-09-23`, whose CF driver uses P8/P9); before ordering, the open
+  items in `hardware/cards/io/kicad/v2.0/README.md` (J2 pin 1 / which way the adapter faces, J3 pinout); confirm on the
+  machine that the I/O card's IO-ADDR-HL strap is P0-P7 and that the IO-ADDR/DATA-ADDR jumpers are on P0/P1 (never P4/P5). **After building**: the bring-up steps in `docs/cards/cf.md`
   section 7 (the new ROM first, empty adapter = `CF ERROR`, the P4 latch on the IDE header's DA pins, then `O` with a
   card prepared by `tools/cfcard.py` from `os/disk.img`).
 - (done 2026-09-23: **write support** — save/del/ren/mkdir/rmdir in the shell, files written at the free pointer and
