@@ -23,6 +23,13 @@ DESCRIPTION
         CONST     $FFF8  1 when a console byte is waiting
         UARTINNE  $FFFC  a console byte without echo
 
+    Video (ROM 2026-09-25 and later): VIDCTL $FFBC, the entry below
+    the full vector table: bios(VIDCTL, 0, n), n = 0 probe, 1 init,
+    2 clear; ACC = VIDPRES. Check peek(VIDCTL) == VIDSIG ($04) first
+    (an older ROM has $FF there). VIDPRES $0FF0 (1 = card found at
+    reset), VIDMIR $0FF1 (nonzero = CHAROUT also writes the screen),
+    VIDCUR $0FF2, VROW $0FF3, VCOL $0FF4 (see video).
+
     RAM: SYSARG0..2 $0F06/$0F08/$0F0A and SYSRES $0F0C (the syscall
     block), CFLBA0..2 $0F10..$0F12, SYSTAB $0F14 (entries 0..21),
     SYSTAB2 $4FC0 (entries 0..31, 2026-09-25; SYS_OLD = 21),
@@ -61,4 +68,4 @@ NOTES
     syscall vector and & 256 carry tests do not exist here.
 
 SEE ALSO
-    fs, shell, err, mon, run
+    fs, shell, err, mon, run, video

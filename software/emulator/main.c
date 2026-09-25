@@ -21,6 +21,7 @@
 #include "../opcodes.h"
 #include <stdint.h>
 #include "../cfmodel.h"        /* YACC1-D 2026-09-22: the CompactFlash card on ports P8 (select) / P9 (data), -c image */
+#include "../videomodel.h"     /* YACC1-D 2026-09-25: the video card in $D000-$DFFF (-V screen dump, -W CRTC log, -N absent) */
 
 #define DEBUG 0
 
@@ -251,8 +252,19 @@ void dump(int start, int end) {
     printf("\n");
 }
 
+/* YACC1-D 2026-09-25: the video card's block goes through software/videomodel.h (display RAM = memory[], the
+   CRTC/latch half modelled, -N absent: reads $FF, writes ignored); mem_rd/mem_wr are also LDAVR/STAVR/LDIVR's path */
+static unsigned char mem_rd(int address) {
+    if (vid_in(address)) { int v = vid_read(address, memory); return v < 0 ? 0xFF : v; }
+    return memory[address];
+}
+static void mem_wr(int address, unsigned char value) {
+    if (vid_in(address)) vid_write(address, value, memory); else memory[address] = value;
+}
+static void vid_exit(void) { fflush(stdout); vid_dump(memory); }
+
 unsigned char memory_read(int address) {
-    return (memory[address]);
+    return (mem_rd(address));
 }
 
 void memory_write(int address, unsigned char value) {
@@ -266,7 +278,7 @@ void memory_write(int address, unsigned char value) {
            regdump();
        }
      */
-    memory[address] = value;
+    mem_wr(address, value);
 }
 
 unsigned char register_read_lo(int registernum) {
@@ -465,6 +477,9 @@ void print_usage(const char *progname) {
     printf("  -l N         Stop after N instructions (with -x: status on stderr)\n");
     printf("  -P file      PC histogram: instructions per address, a block per program Y1/OS starts, into file\n");
     printf("  -S           Program watch: per program Y1/OS starts (JSRUR $5000) its instructions and own stack, on stderr\n");
+    printf("  -V           Video card: print the screen (and the CRTC registers) on stderr at exit\n");
+    printf("  -W           Video card: log CRTC register writes on stderr\n");
+    printf("  -N           No video card: $D000-$DFFF reads $FF, writes ignored\n");
 }
 
 int main(int argc, char** argv) {
@@ -488,6 +503,12 @@ int main(int argc, char** argv) {
         } else if (strcmp(argv[arg], "-P") == 0 && arg + 1 < argc) {
             if (!(pcfile = fopen(argv[++arg], "w"))) { fprintf(stderr, "cannot write %s\n", argv[arg]); return EXIT_FAILURE; }
             atexit(pc_exit);
+        } else if (strcmp(argv[arg], "-V") == 0) {
+            vid.dump = 1; atexit(vid_exit);
+        } else if (strcmp(argv[arg], "-W") == 0) {
+            vid.log = 1;
+        } else if (strcmp(argv[arg], "-N") == 0) {
+            vid.absent = 1;
         } else if (strcmp(argv[arg], "-x") == 0) {
             exit_on_halt = 1;
         } else if (strcmp(argv[arg], "-l") == 0 && arg + 1 < argc) {
@@ -814,7 +835,7 @@ int main(int argc, char** argv) {
             case LDAVR + REG6:
             case LDAVR + REG7:
                 reg = ins & 0x07;
-                acc = memory[registers[reg].word];
+                acc = mem_rd(registers[reg].word);
                 break;
 
             case STAVR + REG0:
@@ -826,7 +847,7 @@ int main(int argc, char** argv) {
             case STAVR + REG6:
             case STAVR + REG7:
                 reg = ins & 0x07;
-                memory[registers[reg].word] = acc;
+                mem_wr(registers[reg].word, acc);
                 break;
 
             case INCR + REG0:
@@ -1242,7 +1263,7 @@ int main(int argc, char** argv) {
             case LDIVR + REG6:
             case LDIVR + REG7:
                 reg = ins & 0x07;
-                memory[registers[reg].word] = memory_read(register_read_word(PC));
+                mem_wr(registers[reg].word, memory_read(register_read_word(PC)));
                 register_inc(PC);
                 break;
 

@@ -7,6 +7,7 @@
 #                   twin.py, also --16, --chain, --chain16), and size the passes against Y1/OS (tests/compiler/passes.py);
 #                   the Y1/OS sessions, the native assembler against the host one and under Y1/OS (tests/asm/run.py --target),
 #                   C compiled, assembled and run under Y1/OS by the native compiler and assembler (tests/native/run.py)
+#                   the ROM's video unit and Y1/OS's video command on both emulators' card model (tests/video/emu.py)
 #   make cc-test    just the compiler tests (on both emulators) and the twin comparisons (y1cc.c, the passes)
 #   make os-test    Y1/OS sessions on both emulators (tests/os/run.py)
 #   make native-test  the native compiler under Y1/OS on both emulators (tests/native/run.py; --all-uc: ~20 min)
@@ -39,6 +40,7 @@ check:
 	python3 tests/monload/run.py
 	python3 tests/bench/run.py
 	python3 tests/cfcard/run.py
+	python3 tests/video/emu.py
 	python3 tests/sequencer/run.py
 	python3 tests/assembler/romcount/run.py
 	python3 tests/assembler/romdiag/run.py

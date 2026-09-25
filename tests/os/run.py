@@ -167,9 +167,10 @@ def mask(name, s):
     return line.sub(lambda m: num.sub("N", m.group(1)), s)
 
 
-MON_EXIT = 0xF10E           # the monitor's `0` command (cmd_exit): the session's last line; the instruction-level emulator
-                            # stops at its $00 byte, the microcode one with -E (2026-09-25: the limits no longer have to
-                            # be run out after `exit`)
+# the monitor's `0` command (cmd_exit): the session's last line; the instruction-level emulator stops at its $00 byte,
+# the microcode one with -E (2026-09-25: the limits no longer have to be run out after `exit`). Read from the listing
+# (2026-09-25, the video unit moved it): every ROM build puts it somewhere else
+MON_EXIT = int(re.search(r"^([0-9a-f]{4})h: CMD_EXIT\b", open(os.path.join(ROOT, "firmware/monitor/monitor.lst")).read(), re.M).group(1), 16)
 
 
 def transcript(emu, limit, img, script):

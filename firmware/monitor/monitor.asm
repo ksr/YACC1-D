@@ -54,7 +54,28 @@ CFLBA1:         EQU 0f11h
 CFLBA2:         EQU 0f12h    ; high byte (24-bit LBA)
 ARGBUF:         EQU 0f40h    ; 64 bytes: the OS leaves a program's command tail here (NUL-terminated)
 OSBASE:         EQU 1000h    ; where the boot command loads the OS image (LBA 1..OSCNT) and calls it
-line_buffer:    EQU 0f80h    ; 128 bytes long max
+line_buffer:    EQU 0f80h    ; 112 bytes long max ($0FF0-$0FFF are the video variables since 2026-09-25)
+;
+; Video card (YACC1-D 2026-09-25): MC6845 CRTC + IDT7134 dual-port RAM in the $D000 block (docs/cards/video.md).
+; The driver is always in the ROM; VIDAUTO decides whether reset also starts it. Until the card is debugged it does
+; not: reset only probes $D000 (VIDPRES, the banner says VIDEO CARD FOUND) and homes the cursor variables; V I
+; initialises the CRTC and clears the screen, V M1 (or Y1/OS's `video on`) turns the mirroring on.
+;
+VIDAUTO:        EQU 0        ; 1 = reset also runs V I (CRTC table, clear, home) and sets VIDMIR when a card is found
+VIDRAM:         EQU 0d000h   ; display RAM, CPU side (A11 = 0); its first byte is the probe byte
+VIDSIZE:        EQU 2048     ; the RAM the CPU reaches (IC15 A11R grounded): VIDRAM..VIDRAM+2047
+VCOLS:          EQU 80       ; screen geometry: 80 x 24 = 1,920 bytes of the 2K, one byte per character
+VROWS:          EQU 24       ;   (VCOLS*(VROWS-1) must be a multiple of 8 and at most 2,040: the scroll's loop)
+VCRTCA:         EQU 0d800h   ; 6845 address register: A11 = 1, A1 = 0, A0 = 0 (the netlist reading of the card; the
+VCRTCD:         EQU 0d802h   ;   card README says $D400/$D402 - one edit here). Data register: A1 = 1, after the
+                             ;   RS-to-A1 bench fix (hardware/cards/video/docs/fix-6845-register-select.md)
+VIDPRES:        EQU 0ff0h    ; 1 = display RAM answered at VIDRAM at reset (or at the last V P)
+VIDMIR:         EQU 0ff1h    ; nonzero = CHAROUT/UARTOUT also write to the screen (only while VIDPRES is 1)
+VIDCUR:         EQU 0ff2h    ; nonzero = keep the CRTC's cursor (R14/R15) at the text cursor (set by V I)
+VROW:           EQU 0ff3h    ; text cursor row 0..VROWS-1
+VCOL:           EQU 0ff4h    ; text cursor column 0..VCOLS-1
+VCHAR:          EQU 0ff5h    ; the driver's scratch byte
+VLINE:          EQU 0ff6h    ; word ($0FF6 high, $0FF7 low): the address of the cursor row's first byte
 
 
 ;
@@ -97,12 +118,18 @@ eprom:
           STA MONMODE
           ldai 05h
           sta interupt_cnt
+          JSR vidreset     ; 2026-09-25: probe the video card, home its cursor (starts it only if VIDAUTO)
 ;
 ; Main
 ;
           JSR lblink
           MVIW R7,hello
           JSR stringout
+          LDA VIDPRES
+          BRZ novidmsg
+          MVIW R7,MSGVIDEO
+          JSR stringout
+novidmsg:
           JSR basic_cold   ; initialize basic interpreter
                            ; hack should this pass in token buffer ptr
 ;
@@ -216,6 +243,8 @@ testexamine:
       BREQ cmd_basicparse
       LDTI 'R'
       BREQ dumpreg
+      LDTI 'V'          ; 2026-09-25: the video unit
+      BREQ cmd_video
       LDTI 'Y'
       BREQ cmd_basic_test
       LDTI 'Z'
@@ -258,12 +287,6 @@ continue:
 
        LDTI FILLMODE
        BREQ fillcont
-       BR cmdloop
-;
-;      ERROR
-;
-       MVIW R7,CONTINUEERROR
-       JSR stringout
        BR cmdloop
 
 stop:   BR stop
@@ -395,16 +418,7 @@ examinecont:
       BREQ examnext
       LDTI 0ah
       BREQ examnext
-      JSR getnibblec
-      SHL
-      SHL
-      SHL
-      SHL
-      push
-      jsr getnibble
-      MVAT
-      Pop
-      ORT
+      JSR getbytec      ; 2026-09-25: the shared two-digit reader
       STAVR R7
 
 examnext:
@@ -831,12 +845,515 @@ MSGBOOT: DB 0ah,0dh,"BOOT FROM CF",0ah,0dh,0
 MSGCFERR: DB "CF ERROR",0ah,0dh,0
 MSGNOOS: DB "NO OS ON THE CARD",0ah,0dh,0
 ;
+; ---- Video card driver (YACC1-D 2026-09-25) --------------------------------------------------------------------
+; The screen is VCOLS x VROWS bytes from VIDRAM, row after row; a byte's bits 0-5 pick one of the 64 glyphs of the
+; character EPROM (the card latches VDATA0..5 only), bit 7 is inverse video, bit 6 is unused. The driver stores
+; ASCII with $60-$7F moved to $40-$5F (upper case), so a 2513-style set (code = ASCII bits 0-5) shows the text as sent. Cursor: VROW/VCOL, VLINE =
+; the address of the row. vputc handles CR (column 0), LF (column 0 of the next row: Y1/OS ends lines with LF
+; alone), BS (one left, no erase), TAB (spaces to the next multiple of 8), FF (clear + home); other control bytes and
+; DEL are ignored; a character in the last column wraps; LF on the last row scrolls (the whole screen moves up one
+; row, the last row is blanked). Only instructions of the 2021 set: no LDZ/STZ/ADDIW/SHL16/BRUR, no R2.
+;
+; vidreset: at reset. Mirroring and the CRTC cursor off, cursor home, probe; with VIDAUTO also V I + mirroring on.
+vidreset:
+        LDAI 0
+        STA VIDMIR
+        STA VIDCUR
+        JSR vhome
+        JSR vprobe
+        LDAI VIDAUTO
+        BRZ vidrx
+        LDA VIDPRES
+        BRZ vidrx
+        JSR vinit
+        LDAI 1
+        STA VIDMIR
+vidrx:  RET
+;
+; vprobe: VIDPRES (and ACC) = 1 when the byte at VIDRAM keeps $55 and then $AA, else 0; the old byte is put back.
+; An undecoded block reads what was last on the bus: between each STA and its LDA the LDA's own opcode and operand
+; bytes ($E4 $D0 $00) cross the bus, so a floating bus reads $00, not the pattern.
+vprobe:
+        LDA VIDRAM
+        PUSH
+        LDAI 055h
+        STA VIDRAM
+        LDA VIDRAM
+        LDTI 055h
+        BRNEQ vprno
+        LDAI 0aah
+        STA VIDRAM
+        LDA VIDRAM
+        LDTI 0aah
+        BRNEQ vprno
+        LDAI 1
+        BR vprset
+vprno:  LDAI 0
+vprset: STA VIDPRES
+        POP
+        STA VIDRAM
+        LDA VIDPRES
+        RET
+;
+; vinit: the CRTC's 16 registers from vcrtab, the CRTC cursor on, then vcls (R7 clobbered)
+vinit:
+        MVIW R7,vcrtab
+        LDAI 0
+vinitl: STA VCRTCA
+        PUSH
+        LDAVR R7
+        STA VCRTCD
+        INCR R7
+        POP
+        ADDI 1
+        LDTI 16
+        BRNEQ vinitl
+        LDAI 1
+        STA VIDCUR
+; vcls: every byte of the display RAM a space, cursor home
+vcls:   LDAI ' '
+        JSR vfill
+; vhome: cursor to row 0, column 0 (R7 clobbered)
+vhome:  LDAI 0
+        STA VROW
+        STA VCOL
+        MVIW R7,VIDRAM
+        STR R7,VLINE
+        RET
+;
+; vfill: ACC to all VIDSIZE bytes of the display RAM, 8 per pass (R7, TMP clobbered, R5 kept)
+vfill:  PUSHR R5
+        MVAT
+        MVIW R7,VIDRAM
+        MVIB R5,(VIDSIZE/8).0
+vfilll: MVTA
+        STAVR R7
+        INCR R7
+        STAVR R7
+        INCR R7
+        STAVR R7
+        INCR R7
+        STAVR R7
+        INCR R7
+        STAVR R7
+        INCR R7
+        STAVR R7
+        INCR R7
+        STAVR R7
+        INCR R7
+        STAVR R7
+        INCR R7
+        DECR R5
+        MVRLA R5
+        BRNZ vfilll
+        POPR R5
+        RET
+;
+; vputc: ACC to the screen at the cursor (see above). Keeps R3-R7 and TMP; ACC is not kept (charout has its copy).
+vputc:  STA VCHAR
+        MVTA
+        PUSH
+        PUSHR R7
+        LDA VCHAR
+        ANDI 07fh
+        LDTI 020h
+        BRLT vpctl
+        LDTI 07fh
+        BREQ vpdone
+        JSR vupper
+        JSR vpchar
+vpdone: JSR vcursor
+        POPR R7
+        POP
+        MVAT
+        RET
+vpctl:  LDTI 0dh
+        BREQ vpcr
+        LDTI 0ah
+        BREQ vplf
+        LDTI 08h
+        BREQ vpbs
+        LDTI 0ch
+        BREQ vpff
+        LDTI 09h
+        BRNEQ vpdone
+vptab:  LDAI ' '
+        JSR vpchar
+        LDA VCOL
+        ANDI 7
+        BRNZ vptab
+        BR vpdone
+vpcr:   LDAI 0
+        STA VCOL
+        BR vpdone
+vplf:   JSR vlf
+        BR vpdone
+vpbs:   LDA VCOL
+        BRZ vpdone
+        SUBI 1
+        STA VCOL
+        BR vpdone
+vpff:   JSR vcls
+        BR vpdone
+;
+; vpchar: ACC stored at the cursor, the cursor one right; past the last column to the next row (R7, TMP clobbered)
+vpchar: PUSH
+        JSR vcaddr
+        POP
+        STAVR R7
+        LDA VCOL
+        ADDI 1
+        STA VCOL
+        LDTI VCOLS
+        BRNEQ vpchx
+        JSR vlf
+vpchx:  RET
+;
+; vlf: column 0 of the next row; on the last row the screen scrolls instead (R7, TMP clobbered)
+vlf:    LDAI 0
+        STA VCOL
+        LDA VROW
+        ADDI 1
+        LDTI VROWS
+        BREQ vscroll
+        STA VROW
+        LDR R7,VLINE
+        LDTI VCOLS
+        JSR vaddt
+        STR R7,VLINE
+        RET
+;
+; vscroll: rows 1..VROWS-1 up one row (8 bytes per pass), the last row blanked; R5/R6 kept, R7 clobbered
+vscroll:
+        PUSHR R6
+        PUSHR R5
+        MVIW R6,VIDRAM+VCOLS
+        MVIW R7,VIDRAM
+        MVIB R5,(VCOLS*(VROWS-1)/8).0
+vscrl:  LDAVR R6
+        STAVR R7
+        INCR R6
+        INCR R7
+        LDAVR R6
+        STAVR R7
+        INCR R6
+        INCR R7
+        LDAVR R6
+        STAVR R7
+        INCR R6
+        INCR R7
+        LDAVR R6
+        STAVR R7
+        INCR R6
+        INCR R7
+        LDAVR R6
+        STAVR R7
+        INCR R6
+        INCR R7
+        LDAVR R6
+        STAVR R7
+        INCR R6
+        INCR R7
+        LDAVR R6
+        STAVR R7
+        INCR R6
+        INCR R7
+        LDAVR R6
+        STAVR R7
+        INCR R6
+        INCR R7
+        DECR R5
+        MVRLA R5
+        BRNZ vscrl
+        MVIB R5,VCOLS
+vscrb:  LDIVR R7,' '
+        INCR R7
+        DECR R5
+        MVRLA R5
+        BRNZ vscrb
+        POPR R5
+        POPR R6
+        RET
+;
+; vupper: $60-$7F down to $40-$5F (lower case to upper; the monitor's toupper also moves [ \ ] ^ _, which the
+; 64-glyph set has)
+vupper: LDTI 060h
+        BRLT vuppx
+        SUBI 020h
+vuppx:  RET
+;
+; vcaddr: R7 = VLINE + VCOL, the cursor's address (TMP clobbered)
+vcaddr: LDT VCOL
+        LDR R7,VLINE
+; vaddt: R7 += TMP (8 bits). The ADDIC follows the ADDI with only register moves between: the carry is the add's
+; on the machine and on both emulators (docs/programming/ISA-REFERENCE.md section 6)
+vaddt:  MVRLA R7
+        ADDT
+        MVARL R7
+        MVRHA R7
+        ADDIC 0
+        MVARH R7
+        RET
+;
+; vcursor: with VIDCUR set, the CRTC's cursor registers R14/R15 <- the cursor's offset from VIDRAM (R7 clobbered)
+vcursor:
+        LDA VIDCUR
+        BRZ vcurx
+        JSR vcaddr
+        LDAI 14
+        STA VCRTCA
+        MVRHA R7
+        SUBI (VIDRAM).1
+        STA VCRTCD
+        LDAI 15
+        STA VCRTCA
+        MVRLA R7
+        STA VCRTCD
+vcurx:  RET
+;
+; vidctl: the video entry at $FFBC (JSR vidctl / RET, below the full vector table), for Y1/OS and programs.
+; ACC = 0 probe (ACC = VIDPRES), 1 init (V I), 2 clear + home (V C); anything else: ACC = VIDPRES.
+; A caller checks that $FFBC holds $04 (JSR) first: an older ROM has $FF there. Clobbers R5-R7, TMP.
+vidctl: LDTI 1
+        BREQ vctli
+        LDTI 2
+        BREQ vctlc
+        BRNZ vctlx
+        JSR vprobe
+        BR vctlx
+vctli:  JSR vinit
+        BR vctlx
+vctlc:  JSR vcls
+vctlx:  LDA VIDPRES
+        RET
+;
+; ---- V: the video unit (monitor command) ---------------------------------------------------------------------
+; V then a letter (blanks skipped); numbers are hex, blanks between them optional. V? (or any other letter) lists:
+;   VS  status          VP  probe again      VI  init (CRTC, clear, home)     VC  clear, home
+;   VM1 / VM0  mirror on / off               VW rr cc text  text at row rr, column cc (not the cursor)
+;   VB aaaa bb bb ..  bytes from aaaa ($Dxxx only)   VF bb  fill the 2K     VD  the screen as text (not mirrored)
+;   VR rr [vv]  write CRTC register rr, or read it
+;
+cmd_video:
+        LDTI NOMODE
+        STT monmode
+        JSR vskip
+        JSR toupper
+        LDTI 'S'
+        BREQ vcstat
+        LDTI 'P'
+        BREQ vcprob
+        LDTI 'I'
+        BREQ vcinit
+        LDTI 'C'
+        BREQ vcclr
+        LDTI 'M'
+        BREQ vcmir
+        LDTI 'W'
+        BREQ vcwrt
+        LDTI 'B'
+        BREQ vcbyt
+        LDTI 'F'
+        BREQ vcfil
+        LDTI 'D'
+        BREQ vcdump
+        LDTI 'R'
+        BREQ vcreg
+        MVIW R7,VHELP
+        BR vcmsg
+vcprob: JSR vprobe
+        BR vcstat
+vcinit: JSR vinit
+        BR vcstat
+vcclr:  JSR vcls
+        BR vcok
+vcmir:  JSR vskip                ; '1' ($31) -> 1, '0' ($30) -> 0
+        ANDI 1
+        STA VIDMIR
+vcstat: MVIW R7,MSGVST          ; VIDPRES, VIDMIR, VIDCUR, VROW, VCOL ($0FF0-$0FF4), each after its label
+        MVIW R6,VIDPRES
+vcstl:  JSR stringout
+        INCR R7
+        LDAVR R6
+        JSR showbytea
+        INCR R6
+        MVRLA R6
+        LDTI (VCOL+1).0
+        BRNEQ vcstl
+vcok:   MVIW R7,CRLF
+vcmsg:  JSR stringout
+        BR cmdloop
+vcbad:  MVIW R1,STACK           ; from any depth: the V command runs from the command loop, whose stack is empty
+vcbadl: JSR uartin              ; the rest of the line is dropped (else its characters would run as commands:
+        LDTI 0ah                ; a 0 would stop the machine)
+        BREQ vcbadx
+        LDTI 0dh
+        BRNEQ vcbadl
+vcbadx: MVIW R7,MSGVBAD
+        BR vcmsg
+;
+; VW rr cc text: rows 0..VROWS-1, columns 0..VCOLS-1; one blank after cc is the separator, the text runs to CR/LF
+; (upper-cased, stored as typed, it may run on into the next rows but stops at the end of the display RAM)
+vcwrt:  JSR vgetb
+        LDTI VROWS-1
+        BRGT vcbad
+        PUSH
+        JSR vgetb
+        LDTI VCOLS-1
+        BRGT vcbad
+        STA VCHAR
+        POP
+        MVIW R7,VIDRAM
+vcwrl:  BRZ vcwrc
+        PUSH
+        LDTI VCOLS
+        JSR vaddt
+        POP
+        SUBI 1
+        BR vcwrl
+vcwrc:  LDT VCHAR
+        JSR vaddt
+        JSR uartin
+        LDTI ' '
+        BRNEQ vcwrs
+vcwrn:  JSR uartin
+vcwrs:  LDTI 0dh
+        BREQ vcok
+        LDTI 0ah
+        BREQ vcok
+        JSR vupper
+        STAVR R7
+        INCR R7
+        MVRHA R7
+        LDTI (VIDRAM+VIDSIZE).1
+        BRNEQ vcwrn
+        BR vcok
+;
+; VB aaaa bb bb ..: bytes stored from aaaa on, to CR/LF; aaaa must be in VIDRAM's 4K block and the bytes stop at its
+; end (never the ROM). Mind the card: an odd address in the CRTC half is the JP1 latch, which drives the bus even
+; while the CPU writes (docs/cards/video.md finding 6.4)
+vcbyt:  JSR vgetb
+        MVARH R7
+        JSR vgetb
+        MVARL R7
+vcbytl: MVRHA R7
+        ANDI 0f0h
+        LDTI (VIDRAM).1
+        BRNEQ vcbad             ; outside the block (or run off its end): ? and nothing stored there
+        JSR vskip
+        LDTI 0dh
+        BREQ vcok
+        LDTI 0ah
+        BREQ vcok
+        JSR getbytec
+        STAVR R7
+        INCR R7
+        BR vcbytl
+;
+; VF bb: fill the 2K display RAM (a RAM test by eye: VF55, VD)
+vcfil:  JSR vgetb
+        JSR vfill
+        BR vcok
+;
+; VD: the screen as text, one row per line after its hex row number; each byte shown as its glyph would be under the
+; 2513-style assumption (bits 0-5: 00-1F = @..underscore, 20-3F = blank..?). Mirroring is paused meanwhile.
+vcdump: LDA VIDMIR
+        PUSH
+        LDAI 0
+        STA VIDMIR
+        MVIW R7,CRLF
+        JSR stringout
+        MVIW R7,VIDRAM
+        MVIB R5,0
+vcdrow: MVRLA R5
+        JSR showbytea
+        LDAI ' '
+        JSR charout
+        MVIB R6,VCOLS
+vcdcol: LDAVR R7
+        ADDI 020h
+        ANDI 03fh
+        ADDI 020h
+        JSR charout
+        INCR R7
+        DECR R6
+        MVRLA R6
+        BRNZ vcdcol
+        PUSHR R7
+        MVIW R7,CRLF
+        JSR stringout
+        POPR R7
+        INCR R5
+        MVRLA R5
+        LDTI VROWS
+        BRNEQ vcdrow
+        POP
+        STA VIDMIR
+        BR cmdloop
+;
+; VR rr [vv]: rr to the CRTC's address register, then vv to its data register, or with no vv read the data register
+; (only R12-R17 read back on a 6845; the rest read what the bus floats to)
+vcreg:  JSR vgetb
+        STA VCRTCA
+        JSR vskip
+        LDTI 0dh
+        BREQ vcregr
+        LDTI 0ah
+        BREQ vcregr
+        JSR getbytec
+        STA VCRTCD
+        BR vcok
+vcregr: MVIW R7,CRLF
+        JSR stringout
+        LDA VCRTCD
+        JSR showbytea
+        BR vcok
+;
+; vskip: the next console character that is not a blank; vgetb: two hex digits after any blanks -> ACC
+vskip:  JSR uartin
+        LDTI ' '
+        BREQ vskip
+        RET
+vgetb:  JSR vskip
+        BR getbytec
+;
+; the CRTC registers R0..R15 for vinit. Timing ASSUMED (no crystal value in the tree, docs/cards/video.md 3.4): a
+; 10 MHz dot clock, 5 dots a character (IC28 divides by 5), 8 scan lines a row (RA0..2): a 2 MHz character clock,
+; 127 characters a line = 63.5 us (15.7 kHz), 32 rows + 6 lines = 262 lines (60 Hz), non-interlaced. Re-derive R0-R7
+; when the crystal is known; R1/R6 follow VCOLS/VROWS.
+vcrtab: DB 126            ; R0  horizontal total - 1
+        DB VCOLS          ; R1  characters displayed
+        DB 98             ; R2  horizontal sync position
+        DB 10             ; R3  sync width (HS 10 characters)
+        DB 31             ; R4  vertical total - 1 (rows)
+        DB 6              ; R5  vertical total adjust (scan lines)
+        DB VROWS          ; R6  rows displayed
+        DB 28             ; R7  vertical sync position (row)
+        DB 0              ; R8  interlace mode: off
+        DB 7              ; R9  scan lines per row - 1
+        DB 067h           ; R10 cursor start line 7, blinking (1/16 field rate)
+        DB 7              ; R11 cursor end line 7
+        DB 0              ; R12 start address high
+        DB 0              ; R13 start address low
+        DB 0              ; R14 cursor address high
+        DB 0              ; R15 cursor address low
+;
 getaddress:
 ;
-; Read 4 char address and return in R7
+; Read 4 char address and return in R7 (2026-09-25: two getbyte calls; getbyte is shared with E and V)
 ;
             Push
-            JSR getnibble
+            JSR getbyte
+            MVARH R7
+            JSR getbyte
+            MVARL R7
+            POP
+            RET
+;
+; getbyte: two hex digits from the console -> ACC; getbytec: the same with the first digit already read, in ACC
+;
+getbyte:    JSR uartin
+getbytec:   JSR getnibblec
             SHL
             SHL
             SHL
@@ -848,22 +1365,6 @@ getaddress:
             MVAT
             Pop
             ORT
-            MVARH R7
-
-            JSR getnibble
-            SHL
-            shl
-            shl
-            shl
-            ANDI 0f0h
-            push
-            JSR getnibble
-            ANDI 0FH
-            MVAT
-            pop
-            ORT
-            MVARL R7
-            POP
             RET
 ;
 ; getnibble return in accumulator
@@ -1075,23 +1576,11 @@ AF:          SUBI 10
              Pop
              RET
 ;
-; reading switches into accumulator
-;
-switchin:
-        OUTI  P0,(SWITCHLED)
-        INP   P1
-        RET
-;
 ;
 ; output accumulator to LEDS or Hex displays (non distructive)
 ;
 ledout:
         OUTI  P0,(SWITCHLED)
-        OUTA  P1
-        RET
-;
-TIL311out:
-        OUTI  P0,(TIL311)
         OUTA  P1
         RET
 ;
@@ -1120,6 +1609,21 @@ sloopdone:
 ;
 charout:
 uartout:
+;
+; 2026-09-25: the video mirror. With VIDMIR and VIDPRES set the byte also goes to the screen (vputc, which keeps
+; every register and TMP); with VIDMIR 0 this costs a PUSH, an LDA, a BRZ and a POP, and the UART path below is as
+; it was. ACC, TMP and R3-R7 are kept either way (R2 is LDA's address register, as in every LDA).
+;
+        PUSH
+        LDA VIDMIR
+        BRZ chnovid
+        LDA VIDPRES
+        BRZ chnovid
+        POP
+        PUSH
+        JSR vputc
+chnovid:
+        POP
 ;
 ; add for emulator, outputs via putch
 ;
@@ -1207,55 +1711,8 @@ uartinnehw:
 uartinnec:
         RET
 ;
-; long delay (approx 5 seconds)
-; destroys r7
-;
-LONGDELAY:
-        PUSH
-        MVIW R7,0FFFFh
-longdelayloop:
-        DECR R7
-        MVRHA R7
-        BRNZ longdelayloop
-        POP
-        RET
-;
-; short delay (approx 1 second)
-; destroys R7
-;
-SHORTDELAY:
-        PUSH
-        MVIW R7,033FFh
-shortdelayloop:
-        DECR R7
-        MVRHA R7
-        BRNZ shortdelayloop
-        POP
-        RET
-
-;
-; toggle input switch (with debounce)
-; destroys r7
-;
-switchtoggle:
-        Push
-offw:   BRINL offw
-        MVIW R7,01FFh
-delaya:
-        DECR R7
-        MVRHA R7
-        BRNZ delaya
-        ON
-
-onw:    BRINH onw
-        MVIW R7,01FFh
-delayb:
-        DECR R7
-        MVRHA R7
-        BRNZ delayb
-        OFF
-        Pop
-        RET
+; (LONGDELAY, SHORTDELAY, switchtoggle, switchin, TIL311out and nblink - never called - and the T-menu's help
+;  strings were removed 2026-09-25 to make room for the video unit; git history has them)
 ;
 ; quick blink LED
 ;
@@ -1307,78 +1764,49 @@ loffloop:
         Pop
         RET
 ;
-; blink n times in accumulator
-;
-; emulator change, return immediately to skip counting
-;
-;    ret
-nblink:
-        push
-nblinkloop:
-        JSR TIL311out
-        BRZ nblinkdone
-        JSR blink
-        subi 1
-        BR nblinkloop
-nblinkdone:
-        POP
-        RET
-
-
 ;
 ; MONITOR STRINGS
 ;
-hello:  DB 0ah,0dh,"YACC 2020: hello world  ROM 2026-09-23",0ah,0dh,0    ; the build date tells ROMs apart at a glance
+hello:  DB 0ah,0dh,"YACC 2020: hello world  ROM 2026-09-25",0ah,0dh,0    ; the build date tells ROMs apart at a glance
 PROMPT: DB ">",0
 CRLF: DB 0ah,0dh,0
 ERROR: DB "UNRECOGINIZED COMMAND",0ah,0dh,0
-CONTINUEERROR: DB "CONTINUE CMD ERROR",0ah,0dh,0
 DUMPMSG: DB 0ah,0dh,"DUMP ADDR:",0
 DUMPBLOCKMSG: DB 0ah,0dh,"DUMP BLOCK ADDR:",0
 FILLMSG: DB 0ah,0dh,"FILL BLOCK ADDR:",0
 GOMSG: DB 0ah,0dh,"GO ADDRESS:",0
 EXAMINEMSG: DB 0ah,0Dh,"EXAMINE ADDRESS:",0
-CONTMSG: DB "CONTINUE MODE",0
 BASIC_PARSEMSG: DB 0ah,0dh,"Enter Line:",0
 ;
-helpmenu:
-DB "0     - Exit (emulator only)",0ah,0dh
-DB "H     - This help menu",0ah,0dh,0ah,0dh
-DB "B AAAA- Show 256 bytes of memory (16 byte aligned)"
-DB " CR display next 256 bytes",0ah,0dh
-DB "C     - Copy BASIC test program into interpreter buffer",0ah,0dh
-DB "D AAAA- Show 16 bytes of memory at (16 byte aligned)"
-DB " CR display next 16 bytes",0ah,0dh
-DB "E AAAA- show contents of location AAAA (Output AAAA:XX)",0ah,0dh
-DB "        if followed by ASCII-HEX modify location with new value (and redisplay)",0ah,0DH
-DB "        if followed by CR display next location",0ah,0dh
-DB "F AAAA  Fill contents 256 bytes of memory at address AAAA with 0(16 byte aligned) with 0",0ah,0dh
-DB "        if followed by CR fill next 256 bytes",0ah,0dh
-DB "G AAAA- Jump to (and execute) starting at AAAA",0ah,0dh
-DB "        Program ends with RET (it is called with JSRUR R7)",0ah,0dh
-DB "I     - BASIC",0ah,0dh
-DB "L     - List BASIC",0ah,0dh
-DB "P     - Enter program line to BASIC",0ah,0dh
-DB "R     - Show registers",0ah,0dh
-DB "O     - bOot the OS from the CF card (LBA 1.., OSCNT sectors, to 1000h)",0ah,0DH
-DB "Y     - run BASIC test code",0ah,0DH
-DB ":     - Intel-hex load (send a .img; . per record, ? bad record, ! refused address)",0ah,0DH
-DB "Z     - Run program with Basic interpreter",0ah,0DH
+helpmenu:                   ; (2026-09-25: reworded shorter to make room for the video unit)
+DB "0      EXIT (EMULATOR ONLY)",0ah,0dh
+DB "H      THIS HELP",0ah,0dh,0ah,0dh
+DB "B AAAA SHOW MEMORY FROM AAAA TO A 256 BOUNDARY, CR THE NEXT 256",0ah,0dh
+DB "C      COPY THE BASIC TEST PROGRAM INTO THE INTERPRETER BUFFER",0ah,0dh
+DB "D AAAA SHOW MEMORY FROM AAAA TO A 16 BOUNDARY, CR THE NEXT 16",0ah,0dh
+DB "E AAAA SHOW AAAA:XX; HEX XX STORES, CR THE NEXT, ESC OR - ENDS",0ah,0dh
+DB "F AAAA FILL WITH 0 FROM AAAA TO A 256 BOUNDARY, CR THE NEXT 256",0ah,0dh
+DB "G AAAA CALL AAAA (JSRUR R7: THE PROGRAM ENDS WITH RET)",0ah,0dh
+DB "I      BASIC",0ah,0dh
+DB "L      LIST BASIC",0ah,0dh
+DB "O      BOOT THE OS FROM THE CF CARD (LBA 1.., OSCNT SECTORS, TO 1000H)",0ah,0dh
+DB "P      ENTER A PROGRAM LINE TO BASIC",0ah,0dh
+DB "R      SHOW REGISTERS",0ah,0dh
+DB "V      VIDEO CARD (V? LISTS ITS COMMANDS)",0ah,0dh
+DB "Y      RUN THE BASIC TEST CODE",0ah,0dh
+DB "Z      RUN THE PROGRAM WITH THE BASIC INTERPRETER",0ah,0dh
+DB ":      INTEL-HEX LOAD (. PER RECORD, ? BAD RECORD, ! REFUSED ADDRESS)",0ah,0dh
 DB 0
 ;
-; TEST HELP MESSAGES
+; the video unit's strings (2026-09-25)
 ;
-COMPAREHELP: DB "Compare Tests",0ah,0dh,0
-RSHIFT_LEFTHELP: DB "Ring Shift Left",0ah,0dh,0
-RSHIFT_RIGHTHELP: DB "Ring Shift Right",0ah,0dh,0
-PSHIFT_RIGHTHELP: DB "PROP Shift Right",0ah,0dh,0
-CSHIFT_LEFTHELP: DB "CARRY Shift Left",0ah,0dh,0
-CSHIFT_RIGHTHELP: DB "CARRY Shift Right",0ah,0dh,0
-SUBHELP: DB "SUBTRACT",0ah,0dh,0
-accumhelp: DB "accumulator test",0ah,0dh,0
-PUSHPOPHELP: DB "Push Pop enter 3 numbers",0ah,0dh,0
-ORTHELP: DB "OR Tmp register tests",0ah,0dh,0
-ADDIHELP: DB "Add immediate 02h to input number",0ah,0dh,0
+MSGVIDEO: DB "VIDEO CARD FOUND",0ah,0dh,0
+MSGVST: DB 0ah,0dh,"VIDEO ",0,"  MIRROR ",0,"  CRTC ",0,"  ROW ",0,"  COL ",0
+MSGVBAD: DB " ?",0ah,0dh,0
+VHELP:
+DB 0ah,0dh,"VS STATUS  VP PROBE  VI INIT CRTC+CLEAR  VC CLEAR  VM1/VM0 MIRROR ON/OFF",0ah,0dh
+DB "VW RR CC TEXT  VB AAAA BB BB..  VF BB  VD SCREEN AS TEXT  VR RR [VV] CRTC REG",0ah,0dh,0
+;
 TESTMSG: DB "Run test code",0ah,0dh,0
 
 
@@ -1480,6 +1908,15 @@ isrloop:
 ;
 ; BIOS ENTRY Points
 ;
+;
+; The video entry (2026-09-25): the 16-vector table below is full, so the video driver's one entry sits just under
+; it, at a fixed address like the vectors: ACC = 0 probe, 1 init, 2 clear (vidctl). An older ROM has $FF here.
+;
+    org 0ffbch
+e_vidctl:
+    jsr vidctl
+    ret
+
     org 0ffc0h
 
 e_stringout:

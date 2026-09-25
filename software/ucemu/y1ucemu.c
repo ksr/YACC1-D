@@ -38,6 +38,8 @@
  *        -E ADDR (hex) stops the run when an instruction is fetched from ADDR (e.g. the monitor's `stop` loop);
  *        -I N flips that line every N steps (a bench hand on the switch); -L report writes to the LED board, the TIL311 displays and the ON/OFF LED on
  *        stderr as they change; -l N stop after N steps
+ *   -V   print the video card's screen and CRTC registers on stderr at the end; -W log CRTC register writes; -N no
+ *        video card ($D000-$DFFF undriven: reads the pull-ups' $FF, writes lost). software/videomodel.h (2026-09-25)
  * Console: the I/O card's UART (P0 = UARTCS|register, P1 = data) is stdin/stdout, as on the machine; reading with
  * nothing left returns 0 with "data ready" set so a program's EOF test sees 0. Port 2 is also a console (the old
  * emulator's shortcut), so hand-written programs that OUTA P2 still print.
@@ -58,6 +60,7 @@
 struct signal { char *name; int chip; int port; int bit; };
 #include "../../firmware/microcode/yaccsignaldata2.h"
 #include "../cfmodel.h"          /* the CompactFlash card on ports P8 (select) / P9 (data), -c image */
+#include "../videomodel.h"       /* the video card in $D000-$DFFF (2026-09-25): -V screen dump, -W CRTC log, -N absent */
 
 /* ---- control store ------------------------------------------------------------------------------------------ */
 static uint8_t ucode[256][64][8];
@@ -285,7 +288,10 @@ static void compute(const uint8_t *w, struct comb *c) {
     char lo_d[160] = "", hi_d[160] = "";
 #define DRIVE_LO(v, nm) do { uint8_t _v = (v); if (lo_n && _v != (lo_val & 0xFF)) lo_dis = 1; lo_val = lo_n ? (lo_val & _v) : _v; lo_n++; strcat(lo_d, nm); strcat(lo_d, " "); } while (0)
 #define DRIVE_HI(v, nm) do { uint8_t _v = (v); if (hi_n && _v != (hi_val & 0xFF)) hi_dis = 1; hi_val = hi_n ? (hi_val & _v) : _v; hi_n++; strcat(hi_d, nm); strcat(hi_d, " "); } while (0)
-    if (on(w, s_mem_rd) && vma) DRIVE_LO(mem[c->addr], "MEM");
+    if (on(w, s_mem_rd) && vma) {                        /* the video card's block: software/videomodel.h (2026-09-25) */
+        if (vid_in(c->addr)) { int v = vid_read(c->addr, mem); if (v >= 0) DRIVE_LO(v, "VIDEO"); }
+        else DRIVE_LO(mem[c->addr], "MEM");
+    }
     if (on(w, s_io_rd)) { if (io_rd_hold < 0) io_rd_hold = io_read(field(w, s_ioaddr)); DRIVE_LO(io_rd_hold, "IO"); }
     else io_rd_hold = -1;
     if (on(w, s_tmp_rd0)) { DRIVE_LO(tmp0 & 0xFF, "TMP0"); DRIVE_HI(tmp0 >> 8, "TMP0"); }
@@ -417,6 +423,7 @@ static void do_step(void) {
     /* ---- trailing edge ---- */
     if (on(w, s_mem_wr) && on(w, s_vma)) {
         if (cur.addr >= 0xE000) { /* the EEPROM: ignore writes (the other emulator exits) */ }
+        else if (vid_in(cur.addr)) vid_write(cur.addr, cur.data & 0xFF, mem);
         else mem[cur.addr] = cur.data & 0xFF;
     }
     /* -IO-WR: the I/O card's latches clock on the trailing edge, once per assertion */
@@ -514,7 +521,10 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "-I") && i + 1 < argc) in_flip = strtoul(argv[++i], NULL, 0);
         else if (!strcmp(argv[i], "-R") && i + 1 < argc) { reg_cards = atoi(argv[++i]); if (reg_cards < 1 || reg_cards > 2) { fprintf(stderr, "y1ucemu: -R 1|2\n"); return 1; } }
         else if (!strcmp(argv[i], "-l") && i + 1 < argc) limit = strtoul(argv[++i], NULL, 0);
-        else { fprintf(stderr, "usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-i 0|1] [-I N] [-R 1|2] [-L] [-E ADDR] [-l N]\n"); return 1; }
+        else if (!strcmp(argv[i], "-V")) vid.dump = 1;
+        else if (!strcmp(argv[i], "-W")) vid.log = 1;
+        else if (!strcmp(argv[i], "-N")) vid.absent = 1;
+        else { fprintf(stderr, "usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-i 0|1] [-I N] [-R 1|2] [-L] [-E ADDR] [-l N] [-V] [-W] [-N]\n"); return 1; }
     }
     resolve_signals();
     load_opnames(exe_dir);
@@ -540,6 +550,7 @@ int main(int argc, char **argv) {
     }
     fflush(stdout);
     tty_restore();
+    vid_dump(mem);
     if (scripted || halted) {
         fprintf(stderr, "%s at %04X after %lu instructions, %lu steps, %lu clocks, R3=%04X; bus fights: %ld in %ld (opcode,step) pairs; weak pull-up drives: %ld\n",
                 halted == 2 ? "COUNT-FAULT" : "HALT", last_fetch_pc, ninstr, nsteps, nclocks, reg[3], fights_total, fights_kinds, weak_drives);

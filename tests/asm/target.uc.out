@@ -34,7 +34,7 @@ cherry 40 red
 fig 7 purple
 /S> asm -h MONITOR.ASM MON.IMG
 
-MON.IMG: 3398 bytes, 218 labels, load f000 exec f000
+MON.IMG: 3947 bytes, 277 labels, load f000 exec f000
 /S> asm -h ISA.ASM
 
 ISA.IMG: 790 bytes, 40 labels, load 3000 exec f000
@@ -72,8 +72,8 @@ usage: asm [-h] SRC [OUT]
     408  HELLO.IMG  @5000
   12902  ISA.ASM  @B000
    2216  ISA.IMG  @3000
-   9388  MON.IMG  @F000
-  31187  MONITOR.ASM  @B000
+  10906  MON.IMG  @F000
+  46179  MONITOR.ASM  @B000
     624  Q.IMG  @3000
     549  QUIRKS  @3000
    3258  QUIRKS.ASM  @B000

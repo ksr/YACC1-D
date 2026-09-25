@@ -22,6 +22,12 @@ DESCRIPTION
         G AAAA     call the program at AAAA (JSRUR R7); it returns
                    with RET
         R          show the registers
+        V?         the video card's commands (2026-09-25): VS status,
+                   VP probe, VI init the CRTC + clear, VC clear, VM1 /
+                   VM0 mirror the console on the screen, VW RR CC TEXT
+                   write text at row/column, VB AAAA BB.. store bytes,
+                   VF BB fill, VD the screen as text, VR RR [VV] a
+                   CRTC register (see video)
         O          boot Y1/OS from the CompactFlash card
         I          BASIC
         L          list the BASIC program
@@ -29,6 +35,7 @@ DESCRIPTION
         C          copy the BASIC test program into the buffer
         Y          run the BASIC test code
         Z          run the program with the BASIC interpreter
+        :          Intel-hex load (tools/monload.py sends a .img)
 
     O prints "BOOT FROM CF", initialises the card, reads the boot block
     (LBA 0), checks its P8 signature and sector count, reads the OS
@@ -52,4 +59,4 @@ NOTES
     (firmware/monitor/monitor.asm) from P8X os/man/mon 2026-09-23.
 
 SEE ALSO
-    exit, dump, examine, abi
+    exit, dump, examine, abi, video

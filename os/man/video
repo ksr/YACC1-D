@@ -1,0 +1,51 @@
+NAME
+    video - the video card: mirror the console on it, clear it
+
+SYNOPSIS
+    video [on | off | clear | init | probe]
+
+DESCRIPTION
+    The video card (an MC6845 CRTC and 2K of display RAM at $D000)
+    is driven by the ROM (ROM 2026-09-25 and later). At reset the
+    ROM tests $D000 and remembers whether the card answered; it does
+    not start the card by itself until the card is debugged. video
+    switches what the ROM does:
+
+        video          status: the card found or not, mirroring, the
+                       CRTC cursor, the text cursor's row and column
+        video on       mirror the console on the screen: every byte
+                       sent to the console (the ROM's CHAROUT) is
+                       also written at the screen's cursor, so the
+                       shell, its echo and every program show there
+        video off      stop mirroring (the screen keeps its text)
+        video clear    clear the screen, cursor to the top left
+        video init     program the CRTC's registers, clear, home
+                       (the monitor's V I); status afterwards
+        video probe    test $D000 again; status afterwards
+
+    The screen is 80 x 24 characters. CR, LF (a new line), BS, TAB
+    and FF (clear) are obeyed; the text is upper-cased (the character
+    ROM has 64 glyphs); the screen scrolls at the bottom.
+
+    What goes to a > file or through a pipe is not console output and
+    is not mirrored; error messages (the raw console) are.
+
+    "video on" says "no video card at D000" when the ROM found none.
+    On an older ROM video says "this ROM has no video driver" and
+    changes nothing. video is /BIN/VIDEO.
+
+EXAMPLES
+    video            e.g.  video card found at D000, mirror off, ...
+    video clear      then
+    video on         the console from here on also on the screen
+
+NOTES
+    The flags are the ROM's: VIDPRES $0FF0, VIDMIR $0FF1; the entry
+    $FFBC (VIDCTL) clears and initialises (see abi). Mirroring costs
+    about 650 microcode steps a character. The monitor's V command
+    does the same and more (V? lists it: write text, bytes, fill,
+    dump the screen, CRTC registers).
+    Written for Y1/OS 2026-09-25 (not in P8X).
+
+SEE ALSO
+    mon, abi

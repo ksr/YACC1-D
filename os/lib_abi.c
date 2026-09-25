@@ -38,6 +38,17 @@
    next program finds it here (a shell's $?) */
 #define STATUS    0x0F0E
 #define SYS_OLD   21      /* the last entry SYSTAB has */
+/* The video card (2026-09-25, ROM 2026-09-25 and later; firmware/abi/README.md "Video"): the ROM probes $D000 at reset
+   (VIDPRES) and, while VIDMIR is nonzero and VIDPRES 1, CHAROUT/UARTOUT also write every console byte to the screen.
+   VIDCTL is the video entry below the full vector table: bios(VIDCTL, 0, n), n = 0 probe, 1 init (CRTC registers,
+   clear, home), 2 clear + home; ACC = VIDPRES. An older ROM has $FF at $FFBC (VIDSIG = $04 = the JSR there) */
+#define VIDCTL    0xFFBC
+#define VIDSIG    4
+#define VIDPRES   0x0FF0
+#define VIDMIR    0x0FF1
+#define VIDCUR    0x0FF2
+#define VROW      0x0FF3
+#define VCOL      0x0FF4
 #define ARGBUF    0x0F40
 /* ARGBUF holds up to ARGMAX = 127 characters + NUL ($0F40..$0FBF, since 2026-09-23; the upper half overlays the
    monitor's line buffer, which is idle while the OS runs) */

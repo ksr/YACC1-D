@@ -39,7 +39,8 @@ FS = [sys.executable, os.path.join(ROOT, "tools/p8xfs.py")]
 PY = os.path.join(ROOT, "software/compiler/y1cc.py")
 ASM = os.path.join(ROOT, "software/assembler/asm")
 EMUS = {"int": os.path.join(ROOT, "software/emulator/emulator"), "uc": os.path.join(ROOT, "software/ucemu/y1ucemu")}
-MON_EXIT = "F10E"                                    # the monitor's `0` (cmd_exit): ucemu stops there (-E)
+MON_EXIT = re.search(r"^([0-9a-f]{4})h: CMD_EXIT\b", open(os.path.join(ROOT, "firmware/monitor/monitor.lst")).read(),
+                     re.M).group(1).upper()                # the monitor's `0` (cmd_exit): ucemu stops there (-E); from the listing (2026-09-25)
 PASSN = ["lex", "parse", "decl", "calls", "layout", "stmt", "sema", "emit", "final"]
 TPA = 0x5000
 C = "tests/compiler/"
