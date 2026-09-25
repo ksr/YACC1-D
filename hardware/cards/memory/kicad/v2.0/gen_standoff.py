@@ -25,7 +25,8 @@ Run with KiCad's bundled Python (pcbnew); build.sh does, per option:
         within 4.0 mm of a hole centre: washer / nut on the bottom; no part body within 3.5 mm: the hex standoff on
         top; the 7 mm keep-out on every copper layer), the ROM (IC13) not under the adapter / a standoff / the ribbon
         and its keep-clear zone (10 mm past both short ends, 2 mm along the long sides) empty
-  gen_standoff.py geom <pcb> <opt> <out.json>      -> the geometry the 1:1 print needs (print_1to1.py, system python)
+  gen_standoff.py geom <pcb> <opt> <out.json> [<stats.json> [final]]  -> the geometry the 1:1 print needs
+        (print_1to1.py, system python); "final" = the routed v2.0 board: the print draws its tracks and vias too
   gen_standoff.py shuffle <dsn> <seed> <out.dsn>   -> the DSN with its components listed in another order (seed 0:
         unchanged); build.sh routes each option in several orders and keeps the best (see shuffle())
   gen_standoff.py dsn / ses / stats / airwire / review   -> gen_relayout.py's (the trial route, same settings)
@@ -441,8 +442,9 @@ def check(pcb, opt):
 
 
 # ---------------------------------------------------------------------------------------------------------------------
-def geom(pcb, opt, out, stats=None):
-    """everything print_1to1.py draws, in board mm"""
+def geom(pcb, opt, out, stats=None, final=False):
+    """everything print_1to1.py draws, in board mm; final: the routed v2.0 board (memory-v2.0.kicad_pcb), whose
+    tracks and vias the print draws too"""
     import pcbnew
     O = SP.OPTIONS[opt]
     b = pcbnew.LoadBoard(pcb)
@@ -465,7 +467,14 @@ def geom(pcb, opt, out, stats=None):
              fps=fps, adapter=ad, j2=jg, ribbon=SP.ribbon_zone(jg, ad), rom=rom_zone_from(fprom, pcbnew),
              rom_ref=SP.ROM, hx=SP.HX, standoff=SP.STANDOFF, standoff_alt=SP.STANDOFF_ALT, hex_r=SP.HEX_R,
              keepout_d=SP.KEEPOUT_D, plug_h=SP.PLUG_H, plug_side=SP.PLUG_SIDE, ribbon_text=SP.RIBBON,
-             ribbon_min=SP.ribbon_length(jg, ad, SP.STANDOFF), stats=json.load(open(stats)) if stats and os.path.exists(stats) else None)
+             ribbon_min=SP.ribbon_length(jg, ad, SP.STANDOFF), stats=json.load(open(stats)) if stats and os.path.exists(stats) else None,
+             final=bool(final), tracks=[], vias=[])
+    for tr in b.GetTracks():
+        if tr.Type() == pcbnew.PCB_VIA_T:
+            d["vias"].append((T(tr.GetPosition().x), T(tr.GetPosition().y), T(tr.GetWidth(pcbnew.F_Cu))))
+        else:
+            d["tracks"].append((T(tr.GetStart().x), T(tr.GetStart().y), T(tr.GetEnd().x), T(tr.GetEnd().y),
+                                b.GetLayerName(tr.GetLayer()), T(tr.GetWidth())))
     json.dump(d, open(out, "w"), indent=1)
     print("geom -> %s" % os.path.basename(out))
 
@@ -508,7 +517,8 @@ if __name__ == "__main__":
     elif cmd == "check":
         ok = check(sys.argv[2], sys.argv[3])
     elif cmd == "geom":
-        geom(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5] if len(sys.argv) > 5 else None)
+        geom(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5] if len(sys.argv) > 5 else None,
+             len(sys.argv) > 6 and sys.argv[6] == "final")
     elif cmd == "airwire":
         tot, conns, nn = GR.airwire(sys.argv[2])
         print("airwire %s: %.0f mm, %d connections on %d signal nets" % (os.path.basename(sys.argv[2]), tot, conns, nn))

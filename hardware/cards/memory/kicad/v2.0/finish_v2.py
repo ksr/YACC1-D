@@ -62,6 +62,13 @@ def project():
     """the v2.0 project (schematic + final board) with the re-layout rules; gen_mem_v2.py sch writes it with the built
     card's rules first (those stay with the keep-copper record, build.sh keeps a copy for it)"""
     GR.write_project(OPT, PROJ)             # the same rules as memory-v2.0-relayout-b.kicad_pro
+    # the top-level sheet is this project's schematic (gen_mem_v2.py sch starts from the built card's project, whose
+    # entry names memory-v1.3.kicad_sch; KiCad used to fix it only when it saved the board beside it)
+    f = os.path.join(HERE, PROJ + ".kicad_pro")
+    pro = json.load(open(f))
+    pro.setdefault("schematic", {})["top_level_sheets"] = [
+        {"filename": PROJ + ".kicad_sch", "name": PROJ, "uuid": "00000000-0000-0000-0000-000000000000"}]
+    open(f, "w").write(json.dumps(pro, indent=2) + "\n")
     print("project: %s.kicad_pro / .kicad_dru = the re-layout rules" % PROJ)
 
 
@@ -738,7 +745,7 @@ def verify(pcb, drcfile):
 
 
 # ---------------------------------------------------------------------------------------------------------------------
-def fab(pcb):
+def fab(pcb, separate_th=False, note=None):
     sys.path.insert(0, os.path.join(GM.ROOT, "tools", "kicad"))
     import kicad_route as KR
     d = os.path.dirname(os.path.abspath(pcb))
@@ -752,7 +759,7 @@ def fab(pcb):
     run(CLI, "pcb", "export", "gerbers", "--no-protel-ext", "--layers",
         "F.Cu,In1.Cu,In2.Cu,B.Cu,F.Mask,B.Mask,F.Silkscreen,B.Silkscreen,Edge.Cuts", "-o", ger + "/", pcb)
     run(CLI, "pcb", "export", "drill", "--format", "excellon", "--excellon-units", "mm", "--generate-map",
-        "--map-format", "gerberx2", "-o", ger + "/", pcb)
+        "--map-format", "gerberx2", *(["--excellon-separate-th"] if separate_th else []), "-o", ger + "/", pcb)
     if os.path.exists(zipf):
         os.remove(zipf)
     with zipfile.ZipFile(zipf, "w", zipfile.ZIP_DEFLATED) as z:
@@ -762,7 +769,7 @@ def fab(pcb):
         run(CLI, "pcb", "render", "--side", side, "--quality", "high", "--floor", "-w", "2000", "-h", "1400",
             "-o", os.path.join(d, "%s-render-%s.png" % (name, side)), pcb)
     KR.placement(pcb)
-    jlc(pcb)
+    jlc(pcb, note or JLC)
     print("fab: %d gerber/drill files -> gerbers/ + %s; %s-render-top.png, -render-bottom.png, -placement.pdf"
           % (len(os.listdir(ger)), os.path.basename(zipf), name, ))
     for f in sorted(os.listdir(ger)):
@@ -800,7 +807,7 @@ Design minimums on this board: track 0.25 mm, clearance 0.2 mm, via 0.8 mm pad /
 """
 
 
-def jlc(pcb):
+def jlc(pcb, note=JLC):
     import pcbnew
     b = pcbnew.LoadBoard(pcb)
     T = pcbnew.ToMM
@@ -808,9 +815,295 @@ def jlc(pcb):
     name = os.path.basename(pcb)[:-len(".kicad_pcb")]
     nvia = sum(1 for t in b.GetTracks() if t.Type() == pcbnew.PCB_VIA_T)
     out = os.path.join(os.path.dirname(os.path.abspath(pcb)), name + "-jlcpcb-order.txt")
-    open(out, "w").write(JLC % dict(board=os.path.basename(pcb), zip=name + "-gerbers.zip", w=T(E.GetWidth()),
+    open(out, "w").write(note % dict(board=os.path.basename(pcb), zip=name + "-gerbers.zip", w=T(E.GetWidth()),
                                     h=T(E.GetHeight()), name=name, vias=nvia))
     print("jlc -> %s" % os.path.basename(out))
+
+
+# =====================================================================================================================
+# THE v2.0 BOARD: standoff option E (Ken's pick, 2026-09-25) -> memory-v2.0.kicad_pcb beside the schematic
+#
+#   finish_v2.py make-e <routed.kicad_pcb> <out>  -> the final board from a routed standoff-E board (the committed trial
+#        route memory-v2.0-standoff-e-trial.kicad_pcb, or a new Freerouting run of memory-v2.0-standoff-e.kicad_pcb):
+#        every via a through via, via clean-up + collinear merge (cleanup() above), the option's review drawings
+#        (User.Drawings: a copy of the F.Fab ones + the option captions) taken off, F.Fab keeps the adapter drawing for
+#        the placement PDF; the silkscreen made for fabrication (E_* below): the adapter outline (clipped around pads,
+#        vias and other silk), "CF ADAPTER ON 15 mm STANDOFFS", "ADAPTER PIN 1", "CF CARD INSERTS HERE" at the slot
+#        edge, H1 / H2 at the standoff circles, "ROM - removable" at IC13, J2 "IDE" + "PIN 1", "CF: P8/P9", J3 one
+#        label per pin, JP2 "PIN20 +5V (open for HX-2118P)", PWR / ACT at the LEDs; every IC's reference in the middle
+#        of its body, the tidy; title block; planes refilled. No part moves (E_NUDGE: none).
+#   finish_v2.py verify / silk / fab as above (fab-e: NPTH and PTH drill in separate files, the E order note)
+#   finish_v2.py drill-check <pcb>                -> the two standoff holes H1 / H2 in the NPTH drill file (3.2 mm, at
+#                                                    the adapter's holes), no plated hole there
+#   finish_v2.py bom-hw <bom.csv>                 -> the BOM + H1 / H2 (board features, no part) + the mechanical
+#                                                    hardware lines (standoffs, screws, washers, ribbon, power cable)
+# =====================================================================================================================
+E_OPT = "e"
+E_DATE = "2026-09-25"
+E_NUDGE = {}                  # placement nudges on the final board: none (every part where standoff option E has it)
+E_OWNER = dict(OWNER, **{"PIN 1": "J2", "IDE": "J2", "PIN20 +5V (open for HX-2118P)": "JP2", "ROM - removable": "IC13",
+                         "H1": "H1", "H2": "H2"})
+E_SILK_W = 0.15               # silkscreen line width of the adapter outline
+
+
+def _silk_line_clipped(b, a, c, w=E_SILK_W, gap=0.2):
+    """segments of the line a-c on F.SilkS that keep `gap` from every pad, via and hole and from other silkscreen
+    (the footprints' outlines, texts): the line is cut where it would touch one -> [(p, q)]"""
+    import pcbnew
+    T = pcbnew.ToMM
+    obst = []                                           # (a, c, r): capsules to keep clear of
+    for (pa, pc, r, net, name) in pad_capsules(b):
+        obst.append((pa, pc, r + gap + w / 2))
+    for tr in b.GetTracks():
+        if tr.Type() == pcbnew.PCB_VIA_T:
+            p = (T(tr.GetPosition().x), T(tr.GetPosition().y))
+            obst.append((p, p, T(tr.GetWidth(pcbnew.F_Cu)) / 2 + gap + w / 2))
+    for kind, d, oid in silk_obstacles(b):
+        if kind == "seg":
+            obst.append((d[0], d[1], d[2] + 0.1 + w / 2))
+        elif kind == "box":
+            cx, cy = (d[0] + d[2]) / 2, (d[1] + d[3]) / 2
+            hx, hy = (d[2] - d[0]) / 2, (d[3] - d[1]) / 2
+            if hx >= hy:
+                obst.append(((d[0] + hy, cy), (d[2] - hy, cy), hy + 0.1 + w / 2))
+            else:
+                obst.append(((cx, d[1] + hx), (cx, d[3] - hx), hx + 0.1 + w / 2))
+    L = math.hypot(c[0] - a[0], c[1] - a[1])
+    n = max(2, int(L / 0.05))
+    pts = [(a[0] + (c[0] - a[0]) * k / n, a[1] + (c[1] - a[1]) * k / n) for k in range(n + 1)]
+    near = [o for o in obst if seg_dist(a, c, o[0], o[1]) < o[2]]
+    free = [all(seg_dist(p, p, o[0], o[1]) >= o[2] for o in near) for p in pts]
+    out, start = [], None
+    for k, f in enumerate(free + [False]):
+        if f and start is None:
+            start = k
+        elif not f and start is not None:
+            if k - 1 - start >= 10:                        # >= 0.5 mm: shorter pieces are left off
+                out.append((pts[start], pts[k - 1]))
+            start = None
+    return out
+
+
+def make_e(routed, out):
+    import pcbnew
+    sys.path.insert(0, HERE)
+    import standoff_placements as SP
+    O = SP.OPTIONS[E_OPT]
+    ad, jg = O["adapter"], O["jg"]
+    shutil.copy(routed, out)
+    t = open(out).read()
+    nb = len(re.findall(r"^\t\(via (?:buried|blind|micro)", t, re.M))
+    t = re.sub(r"^\t\(via (?:buried|blind|micro)\b", "\t(via", t, flags=re.M)
+    t = re.sub(r"\t\(title_block[\s\S]*?\n\t\)\n", "", t)
+    tb = ('\t(title_block\n\t\t(title "%s")\n\t\t(date "%s")\n\t\t(rev "2.0")\n\t\t(company "YACC1")\n\t\t'
+          '(comment 1 "the built memory card v1.3 + the CF interface on P8/P9; standoff option E")\n\t\t'
+          '(comment 2 "CF adapter HX-2118P on 2 x M3 15 mm standoffs (H1/H2), fed from J2 by a 40-wire ribbon")\n\t\t'
+          '(comment 3 "4 layers: F.Cu signals / In1.Cu GND plane / In2.Cu VCC plane / B.Cu signals; 1.6 mm")\n\t)\n'
+          % (TITLE, E_DATE))
+    t = re.sub(r'(\t\(paper "[^"]*"\)\n)', lambda m: m.group(1) + tb, t, count=1)
+    # the option board's review drawings go (User.Drawings = a copy of the F.Fab drawing + captions); its silkscreen
+    # marks (the adapter's corner Ls and the option texts) are replaced by the fab silkscreen below; the standoff
+    # circles (gr_circle on F.Silkscreen) stay
+    forms = GR.gen_cf.top_forms(t)
+    head = t[:t.index(forms[0])]
+    keep, gone = [], collections.Counter()
+    OLDSILK = ("CF ADAPTER ON STANDOFFS", "CF SLOT", "ADAPTER PIN 1", "PIN 1", "CF: P8/P9")
+    for f in forms:
+        if f.startswith("(gr_") and '(layer "Dwgs.User")' in f:
+            gone["User.Drawings"] += 1
+            continue
+        if f.startswith("(gr_line") and '(layer "F.SilkS")' in f:
+            gone["silk corner marks"] += 1
+            continue
+        m = re.match(r'\(gr_text "((?:[^"\\]|\\.)*)"', f)
+        if m and '(layer "F.SilkS")' in f and m.group(1) in OLDSILK:
+            gone["option silk texts"] += 1
+            continue
+        keep.append(f)
+    open(out, "w").write(head + "\n\t".join(keep) + "\n)\n")
+    print("make-e: %s from %s; %d via(s) were imported as buried/blind -> through; taken off: %s"
+          % (os.path.basename(out), os.path.basename(routed), nb, dict(gone)))
+    cleanup(out)
+    b = pcbnew.LoadBoard(out)
+    FM, T = pcbnew.FromMM, pcbnew.ToMM
+    fps = {f.GetReference(): f for f in b.GetFootprints()}
+    JUST = {"l": pcbnew.GR_TEXT_H_ALIGN_LEFT, "c": pcbnew.GR_TEXT_H_ALIGN_CENTER, "r": pcbnew.GR_TEXT_H_ALIGN_RIGHT}
+
+    def text(s, x, y, size, angle=0, just="c", layer=pcbnew.F_SilkS):
+        tx = pcbnew.PCB_TEXT(b)
+        tx.SetText(s)
+        tx.SetLayer(layer)
+        tx.SetTextSize(pcbnew.VECTOR2I(FM(size), FM(size)))
+        tx.SetTextThickness(FM(max(0.15, size * 0.15)))
+        tx.SetHorizJustify(JUST[just])
+        tx.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_CENTER)
+        tx.SetTextAngleDegrees(angle)
+        tx.SetPosition(pcbnew.VECTOR2I(FM(x), FM(y)))
+        b.Add(tx)
+        return tx
+
+    for ref, (dx, dy) in E_NUDGE.items():
+        f = fps[ref]
+        f.SetPosition(pcbnew.VECTOR2I(f.GetPosition().x + FM(dx), f.GetPosition().y + FM(dy)))
+    for d in b.GetDrawings():
+        if d.GetClass() == "PCB_TEXT" and d.GetLayer() == pcbnew.F_SilkS and d.GetText() in TEXT_AT:
+            x, y, a, j = TEXT_AT[d.GetText()]
+            d.SetPosition(pcbnew.VECTOR2I(FM(x), FM(y)))
+            d.SetTextAngleDegrees(a)
+            d.SetHorizJustify(JUST[j])
+            d.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_CENTER)
+    # every IC's reference in the middle of its body (value on F.Fab below it), as on the top-edge board
+    for ref, f in fps.items():
+        if not ref.startswith("IC"):
+            continue
+        xs = [T(p.GetPosition().x) for p in f.Pads()]
+        ys = [T(p.GetPosition().y) for p in f.Pads()]
+        cx, cy = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
+        for fld, dy in ((f.Reference(), -0.8), (f.Value(), 0.9)):
+            fld.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_CENTER)
+            fld.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_CENTER)
+            fld.SetPosition(pcbnew.VECTOR2I(FM(cx), FM(cy + dy - (1.2 if ref == SP.ROM else 0))))
+            for a in (0, 90, 180, 270):
+                fld.SetTextAngleDegrees(a)
+                if abs(fld.GetDrawRotation().AsDegrees() % 360) < 0.1:
+                    break
+    for f in b.GetFootprints():
+        fld = f.Reference()
+        if fld.IsVisible() and fld.GetLayer() == pcbnew.F_SilkS and T(fld.GetTextThickness()) < 0.15:
+            fld.SetTextThickness(FM(0.15))
+    # the labels (E_TEXTS: text, x, y, size, angle, justify); positions are starting points, the tidy moves a label
+    # only if it touches something
+    x0, y0, x1, y1 = ad["outline"]
+    rom = fps[SP.ROM]
+    rxs = [T(p.GetPosition().x) for p in rom.Pads()]
+    rys = [T(p.GetPosition().y) for p in rom.Pads()]
+    j3 = sorted(fps["J3"].Pads(), key=lambda p: int(p.GetNumber()))
+    jp2 = sorted(fps["JP2"].Pads(), key=lambda p: p.GetNumber())
+    led = lambda r: [(T(p.GetPosition().x), T(p.GetPosition().y)) for p in fps[r].Pads()]
+    texts = [
+        ("ROM - removable", (min(rxs) + max(rxs)) / 2, (min(rys) + max(rys)) / 2 + 0.9, 1.0, 0, "c"),
+        ("PIN 1", jg["px"] + 4.6, jg["py1"], 0.9, 90, "c"),
+        ("IDE", jg["shroud"][0] + 1.1, jg["py1"] - 24.13, 1.0, 90, "c"),
+        ("CF: P8/P9", jg["px"] - 1.27, jg["shroud"][3] + 1.3, 1.0, 0, "c"),
+        ("CF ADAPTER ON 15 mm STANDOFFS", (x0 + x1) / 2 + 2.0, y0 + 8.5, 1.0, 0, "c"),
+        ("ADAPTER PIN 1", x0 + 1.1, y1 - 7.0, 0.8, 90, "c"),
+        ("CF CARD INSERTS HERE", x1 - 0.95, y0 + 12.0, 0.8, 90, "c"),
+        ("H1", ad["holes"][0][0] - 4.9, ad["holes"][0][1], 1.0, 0, "c"),
+        ("H2", ad["holes"][1][0] - 4.9, ad["holes"][1][1], 1.0, 0, "c"),
+        ("PIN20 +5V (open for HX-2118P)", T(jp2[0].GetPosition().x) - 1.9, T(jp2[0].GetPosition().y), 0.8, 0, "r"),
+        ("ACT", min(x for x, y in led("LED1")) - 3.3, led("LED1")[0][1], 1.0, 0, "r"),
+        ("PWR", (max(x for x, y in led("LED1")) + min(x for x, y in led("PWR0"))) / 2 + 1.4, led("PWR0")[0][1],
+         0.9, 90, "c"),
+    ]
+    # the adapter outline on the silkscreen (where the adapter goes), cut around pads, vias, holes and other silk; the
+    # slot side drawn 0.2 mm inboard of the slot edge (x1 is 0.49 mm inside the board edge: silk keeps 0.5 mm)
+    xs1 = x1 - 0.2
+    nseg = 0
+    for a, c in (((x0, y0), (xs1, y0)), ((xs1, y0), (xs1, y1)), ((xs1, y1), (x0, y1)), ((x0, y1), (x0, y0))):
+        for p, q in _silk_line_clipped(b, a, c):
+            s = pcbnew.PCB_SHAPE(b)
+            s.SetShape(pcbnew.SHAPE_T_SEGMENT)
+            s.SetStart(pcbnew.VECTOR2I(FM(p[0]), FM(p[1])))
+            s.SetEnd(pcbnew.VECTOR2I(FM(q[0]), FM(q[1])))
+            s.SetLayer(pcbnew.F_SilkS)
+            s.SetWidth(FM(E_SILK_W))
+            b.Add(s)
+            nseg += 1
+    for p in j3:
+        texts.append((J3_PINS[int(p.GetNumber()) - 1], T(p.GetPosition().x), T(p.GetPosition().y) - 2.2, 0.8, 0, "c"))
+    for s, x, y, size, a, j in texts:
+        text(s, x, y, size, a, j)
+    # PWR0's reference: no free spot on the silk (IC33 above, the board edge below, LED1 and the "PWR" label in the
+    # 3 mm between the LEDs, too small inside its outline): it goes onto F.Fab (the placement PDF shows it)
+    px = [x for x, y in led("PWR0")]
+    fld = fps["PWR0"].Reference()
+    fld.SetLayer(pcbnew.F_Fab)
+    fld.SetTextSize(pcbnew.VECTOR2I(FM(0.8), FM(0.8)))
+    fld.SetTextThickness(FM(0.15))
+    fld.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_CENTER)
+    fld.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_CENTER)
+    fld.SetTextAngleDegrees(0)
+    fld.SetPosition(pcbnew.VECTOR2I(FM((min(px) + max(px)) / 2), FM(led("PWR0")[0][1] - 1.8)))
+    global OWNER
+    saved, OWNER = OWNER, E_OWNER
+    try:
+        moved, stuck = tidy(b)
+    finally:
+        OWNER = saved
+    pcbnew.SaveBoard(out, b)
+    print("adapter outline on the silkscreen: %d pieces (cut around pads, vias and other silk)" % nseg)
+    print("silk tidy: %d text(s) moved %s" % (len(moved), moved))
+    if stuck:
+        print("silk tidy: %d text(s) with no free spot: %s" % (len(stuck), stuck))
+    GM.refill(out)
+
+
+def drill_check(pcb):
+    """the NPTH drill file holds H1 / H2 (3.2 mm, at the adapter's holes; besides them only X1's two unplated mounting
+    holes), the PTH file no hole there"""
+    sys.path.insert(0, HERE)
+    import standoff_placements as SP
+    d = os.path.join(os.path.dirname(os.path.abspath(pcb)), "gerbers")
+    name = os.path.basename(pcb)[:-len(".kicad_pcb")]
+
+    def holes(f):
+        tools, cur, out = {}, None, []
+        for ln in open(f):
+            ln = ln.strip()
+            m = re.match(r"^T(\d+)C([\d.]+)", ln)
+            if m:
+                tools[m.group(1)] = float(m.group(2))
+                continue
+            m = re.match(r"^T(\d+)$", ln)
+            if m:
+                cur = tools.get(m.group(1))
+                continue
+            m = re.match(r"^X([-\d.]+)Y([-\d.]+)$", ln)
+            if m and cur is not None:
+                out.append((cur, float(m.group(1)), -float(m.group(2))))
+        return out
+    npth = holes(os.path.join(d, name + "-NPTH.drl"))
+    pth = holes(os.path.join(d, name + "-PTH.drl"))
+    want = SP.OPTIONS[E_OPT]["adapter"]["holes"]
+    got = [(x, y) for dia, x, y in npth if abs(dia - 3.2) < 0.01]
+    ok = all(any(math.hypot(x - hx, y - hy) < 0.01 for x, y in got) for hx, hy in want)
+    ok = ok and not any(math.hypot(x - hx, y - hy) < 2.0 for dia, x, y in pth for hx, hy in want)
+    print("drill: NPTH file %d hole(s) %s; PTH file %d hole(s), %d sizes; H1 / H2 (3.2 mm at %s) in the NPTH file: %s"
+          % (len(npth), sorted(collections.Counter("%.2f mm" % h[0] for h in npth).items()), len(pth),
+             len({h[0] for h in pth}), ["(%.2f, %.2f)" % h for h in want], "yes" if ok else "NO"))
+    return ok
+
+
+HARDWARE = [   # the BOM's mechanical lines (not in the schematic): Refs, Value, Footprint, Qty
+    ("H1,H2", "M3 mounting hole 3.2 mm NPTH - board feature, NO PART (the adapter's standoffs)",
+     "MountingHole:MountingHole_3.2mm_M3", "0"),
+    ("HW1", "M3 hex standoff 15 mm female-female (5.5 mm across flats)", "hardware", "2"),
+    ("HW2", "M3 x 6 mm screw (2 above the adapter, 2 under the card)", "hardware", "4"),
+    ("HW3", "M3 flat washer 7 mm OD", "hardware", "4"),
+    ("HW4", "40-wire IDE ribbon ~5-8 cm between two 40-way IDC plugs, crimped alike (pin 1 to pin 1); pin 20 OPEN "
+            "on the J2 plug (or pull J2 pin 20)", "hardware", "1"),
+    ("HW5", "adapter power cable J3 (+5V G G nc) -> the adapter's four power pads (pad order: confirm on the adapter)",
+     "hardware", "1"),
+    ("HW6", "HX-2118P CF-to-IDE adapter (40-pin male header, no pin 20)", "hardware", "1"),
+]
+
+
+def bom_hw(csvfile):
+    import csv
+    rows = list(csv.reader(open(csvfile)))
+    rows = [r for r in rows if not (r and (r[0] in ("H1,H2",) or r[0].startswith("HW")))]
+    rows += [list(h) for h in HARDWARE]
+    with open(csvfile, "w", newline="") as f:
+        csv.writer(f, quoting=csv.QUOTE_ALL, lineterminator="\n").writerows(rows)
+    print("bom: + H1/H2 (board features, no part) + %d hardware lines" % (len(HARDWARE) - 1))
+
+
+JLC_E = JLC.replace("*** NOT ORDERED ***", "*** NOT ORDERED ***\nThe v2.0 board: standoff option E (Ken, 2026-09-25)."
+                    ).replace(
+    "  plus F_Mask, B_Mask, F_Silkscreen, B_Silkscreen, Edge_Cuts, the Excellon drill file(s) and the drill map.",
+    "  plus F_Mask, B_Mask, F_Silkscreen, B_Silkscreen, Edge_Cuts, the Excellon drill files (%(name)s-PTH.drl plated,\n"
+    "  %(name)s-NPTH.drl non-plated: the two 3.2 mm standoff holes H1 / H2 for the CF adapter and the bus connector\n"
+    "  X1's two 2.79 mm mounting holes) and the drill maps.")
 
 
 if __name__ == "__main__":
@@ -820,6 +1113,15 @@ if __name__ == "__main__":
         project()
     elif cmd == "make":
         make(sys.argv[2], sys.argv[3])
+    elif cmd == "make-e":
+        make_e(sys.argv[2], sys.argv[3])
+    elif cmd == "fab-e":
+        fab(sys.argv[2], separate_th=True, note=JLC_E)
+        ok = drill_check(sys.argv[2])
+    elif cmd == "drill-check":
+        ok = drill_check(sys.argv[2])
+    elif cmd == "bom-hw":
+        bom_hw(sys.argv[2])
     elif cmd == "cleanup":
         cleanup(sys.argv[2])
     elif cmd == "drop-removed":

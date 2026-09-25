@@ -325,22 +325,30 @@ What to measure if it misbehaves:
 | v1.2 | 2020-11-29 | fabricated (built), retired 2021 | -VMA arrives on the bus (Blank V3.1 note): -VMA enables IC5, gates IC7 (pin 4) and the low-RAM -CS; the remap trigger moves from BADDR15 to raw ADDR15; "RN3&4 BADDR pull-ups not needed, leave in design"; the 7400 removed then added back for -LO-RAM. `media/memory v1.2 top.jpeg` and `... solder.jpeg` are photographs of this build |
 | v1.3 | design 2021-03-17, boards ordered 2025-06-27 (JLCPCB 2000765A, 4 layers) | **in the machine** | "ARGH": the 3x8 jumper block on IC7's outputs with pull-ups so any 4K block can be removed from the map (for memory-mapped I/O — the video card uses it); IC15 74ALS11 so the 74245 is enabled only by the card's own chip selects; TMP registers on the board. Built design = `eagle/v1.3` (Ken's Fusion export of 2026-09-24, verified against JLCPCB order 2000765A; KiCad `kicad/v1.3`, netlist proof 116/116). `eagle/deprecated/v1.3-do-not-use` is an earlier save, do not use (no IC15, TMP off the board; KiCad `kicad/deprecated/v1.3-do-not-use`, 115/115) |
 
-**v2.0 (2026-09-24, routed, fab files ready, not ordered):** the CompactFlash interface on this card: `hardware/cards/memory/kicad/v2.0/`
-= the built v1.3 card plus the CF card v1.0 circuit ([`cf.md`](cf.md)), I/O-mapped on ports P8/P9 as the
-ROM and the emulators use them; it would be the first use of the IO-ADDR0..3, -IO-RD and -IO-WR pins this card leaves
-unwired today. The schematic is done and proven, but the card has less room than the earlier save suggested: the
-built card routes the TMP high byte (DATA8-15) as a bundle of tracks across the lower right of the board, and with its
-copper kept no placement of the five CF chips was found (the best packing fits four). Ken decided (2026-09-24) to lay
-the whole card out again with the CF section designed in: same circuit, outline, bus connector and 4-layer GND/VCC
-planes, new placement and copper; three placement options were trial-routed and Ken picked option B (the TMP
-registers beside the bus connector, the CF chips in one column at the top edge, the 40-pin IDE header J2 centred on
-the top edge). The routed board `memory-v2.0.kicad_pcb` (0 unrouted, 43 vias, DRC 0 copper violations, netlist proof
-MATCH) has its gerbers, drill, renders, placement PDF and BOM in that folder. **Decoupling on v2.0:** one 100 nF per IC
-(C1-C19 and C24 for the built card's 20 ICs, as built; C25-C29 for the five CF chips) and C30 (10 uF bulk at the
-adapter power header J3). The built card's C20-C23, four 100 nF with no IC beside them (v1.3 has them in the cap row
-between C19 and C24, plain VCC-GND caps), were **removed from v2.0 (Ken, 2026-09-24)**: 70 parts instead of 74. The
-open items before ordering (J2 key vs the CF-to-IDE adapter, J3 pinout, socket heights under the adapter, backplane
-slot) are in its README.
+**v2.0 (2026-09-25: finished for fabrication, NOT ORDERED):** the CompactFlash interface on this card:
+`hardware/cards/memory/kicad/v2.0/` = the built v1.3 card plus the CF card v1.0 circuit ([`cf.md`](cf.md)), I/O-mapped
+on ports P8/P9 as the ROM and the emulators use them; it would be the first use of the IO-ADDR0..3, -IO-RD and -IO-WR
+pins this card leaves unwired today. The schematic is done and proven, but the card has less room than the earlier save
+suggested: the built card routes the TMP high byte (DATA8-15) as a bundle of tracks across the lower right of the
+board, and with its copper kept no placement of the five CF chips was found (the best packing fits four). Ken decided
+(2026-09-24) to lay the whole card out again with the CF section designed in: same circuit, outline, bus connector and
+4-layer GND/VCC planes, new placement and copper. A first finished board (the IDE header J2 at the top edge, a TAODAN
+adapter standing on it) was superseded the same day by the **standoff decision**: the CF-to-IDE adapter (an HX-2118P,
+60 x 44 mm, no pin 20) mounts flat **on two 15 mm M3 standoffs on this card**, fed from J2 (parallel to the bus
+connector) by a short straight 40-wire ribbon; five placements were trial-routed and **Ken picked option E
+(2026-09-25)**: the TMP registers and address buffers beside the bus connector, the glue column, the memory column
+with the **ROM IC13 in its top row, uncovered and removable** (a keep-clear zone around it), J2, and the adapter over
+the CF chips at the free top edge (its CF slot at that edge), the block decode IC7 / IC4 and the port decode IC30 in
+the JP1 corner beside the U$1 jumpers. The board `memory-v2.0.kicad_pcb` is routed (0 unrouted, 69 through vias,
+12.8 m of 0.25 mm track; DRC 0 copper violations, 0 unconnected; planes one piece each; netlist proof MATCH), its
+silkscreen shows where the adapter goes, and its gerbers, NPTH/PTH drill, renders, placement PDF, BOM (with the
+standoffs, screws and ribbon), JLCPCB order note and a 1:1 print are in that folder. The card cage slot in front of the
+memory card stays empty (Ken, 2026-09-25), so the ~35-44 mm stack needs no other clearance. **Decoupling on v2.0:** one
+100 nF per IC (C1-C19 and C24 for the built card's 20 ICs, as built; C25-C29 for the five CF chips) and C30 (10 uF
+bulk at the adapter power header J3). The built card's C20-C23, four 100 nF with no IC beside them (v1.3 has them in
+the cap row between C19 and C24, plain VCC-GND caps), were **removed from v2.0 (Ken, 2026-09-24)**: 70 parts instead of
+74. Open before ordering (its README): the adapter's power-pad order (the J3 cable), and the ribbon plug's pin 20 (open,
+or pull J2's pin 20).
 
 Open ideas from `eagle/deprecated/v1.3-do-not-use/Notes.md`, `BACKLOG.md` and the reviews, for a v1.4:
 

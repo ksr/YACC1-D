@@ -191,7 +191,7 @@ def check_board(pcb, sch_nets, sch_lone, sch_parts, v13_board, gone=None):
     for ref in sorted(set(parts) - set(sch_parts)):
         bad.append("extra footprint %s" % ref)
     print("board %s: %d footprints%s, %d nets / %d pads, %d unconnected pads (+ %d pinless v1.3 pads) [%s]: %s"
-          % (os.path.basename(pcb), len(parts), " + %s (board-only standoff holes)" % "/".join(sorted(mech)) if mech else "",
+          % (os.path.relpath(os.path.abspath(pcb), os.path.dirname(os.path.abspath(__file__))), len(parts), " + %s (board-only standoff holes)" % "/".join(sorted(mech)) if mech else "",
              len(nets), sum(len(s) for s in nets.values()), len(alone), len(pinless),
              kind, "MATCH" if not bad else "MISMATCH"))
     for x in bad[:30]:

@@ -41,7 +41,9 @@ def main(src, out):
     gx = lambda x: x - ex0                         # board mm -> print grid mm
     gy = lambda y: y - ey0
     c = canvas.Canvas(out, pagesize=(PW, PH))
-    c.setTitle("YACC1 memory card v2.0 - standoff option %s - 1:1" % d["opt"].upper())
+    FINAL = bool(d.get("final"))
+    what = ("the v2.0 board (standoff option %s, routed)" if FINAL else "standoff option %s") % d["opt"].upper()
+    c.setTitle("YACC1 memory card v2.0 - %s - 1:1" % what)
     c.setAuthor("YACC1-D hardware/cards/memory/kicad/v2.0/print_1to1.py")
     ad, j2 = d["adapter"], d["j2"]
     fps = {f["ref"]: f for f in d["fps"]}
@@ -68,8 +70,8 @@ def main(src, out):
         c.restoreState()
 
     def footer(page):
-        text("YACC1 memory card v2.0 - standoff option %s - 1:1 check sheet - page %d/2 - made %s by print_1to1.py"
-             % (d["opt"].upper(), page, STAMP), 12 * mm, 6 * mm, 6.5, color=colors.grey)
+        text("YACC1 memory card v2.0 - %s - 1:1 check sheet - page %d/2 - made %s by print_1to1.py"
+             % (what, page, STAMP), 12 * mm, 6 * mm, 6.5, color=colors.grey)
         text(STAMP, PW - 12 * mm, 6 * mm, 6.5, color=colors.grey, anchor="r")
 
     def checkbar(y0):
@@ -87,8 +89,7 @@ def main(src, out):
 
     # ---------------------------------------------------------------------------------------------------------- page 1
     st = d.get("stats") or {}
-    text("YACC1 memory card v2.0 - standoff option %s - 1:1, component side up" % d["opt"].upper(), 12 * mm,
-         PH - 10 * mm, 12, "Helvetica-Bold")
+    text("YACC1 memory card v2.0 - %s - 1:1, component side up" % what, 12 * mm, PH - 10 * mm, 12, "Helvetica-Bold")
     text(d["title"], 12 * mm, PH - 15 * mm, 8)
     text("Grid 10 mm, numbers = mm from the BUS-CONNECTOR edge (x, across) and from the JP1 end (y, down) - the same "
          "grid as the first fit print (its \"JP2 end\" = this JP1 end). Shaded = parts, dots = pads, blue = the "
@@ -129,6 +130,17 @@ def main(src, out):
         elif r == "J3":
             fill = colors.Color(0.75, 0.9, 0.75)
         rect(f["box"], colors.Color(0.55, 0.55, 0.55), fill, 0.4)
+    # the routed board: its tracks (F.Cu light red, B.Cu light blue) and vias, over the parts' shading
+    TCOL = {"F.Cu": colors.Color(0.95, 0.55, 0.55), "B.Cu": colors.Color(0.55, 0.7, 0.95)}
+    for x0_, y0_, x1_, y1_, layer, w_ in d.get("tracks", []):
+        c.setStrokeColor(TCOL.get(layer, colors.grey))
+        c.setLineWidth(w_ * mm)
+        c.setLineCap(1)
+        c.line(X(x0_), Y(y0_), X(x1_), Y(y1_))
+    c.setLineCap(0)
+    for vx, vy, vd in d.get("vias", []):
+        c.setFillColor(colors.Color(0.45, 0.45, 0.45))
+        c.circle(X(vx), Y(vy), vd / 2 * mm, stroke=0, fill=1)
     for f in d["fps"]:
         if f["hole"]:
             continue
@@ -283,7 +295,7 @@ def main(src, out):
         ("both plugs; the ribbon arches up from J2", None),
         ("and down into the adapter's header.", None),
         ("", None),
-        ("Trial autoroute (Freerouting, unpolished)", "Helvetica-Bold"),
+        ("The routed v2.0 board" if FINAL else "Trial autoroute (Freerouting, unpolished)", "Helvetica-Bold"),
     ]
     if st:
         lines += [("unrouted %d, vias %d, track %d mm" % (st["unrouted"], st["vias"], st["length"]), None),
@@ -390,8 +402,8 @@ def main(src, out):
         "its plug envelope stays outside the adapter outline." % ph,
         "Total height above the card: CF card ~%.0f mm, the plug on the adapter's header ~%.0f mm, the ribbon loop "
         "~%.0f mm; below the card: screw heads / nuts ~3 mm." % (top + 5.8, top + 18.0, zt + 1.5),
-        "Slot pitch of the card cage: NOT KNOWN - if the neighbour card sits closer than ~%.0f mm above this card's "
-        "component side, leave that slot empty." % (zt + 3),
+        "Card cage: the slot on this card's component side stays EMPTY (Ken, 2026-09-25: nothing in front of the "
+        "memory card), so the ~%.0f mm stack has the room it needs." % (zt + 3),
         "Pin 20: the adapter has no pin 20 (key). J2 has it fitted: use a ribbon whose plugs have pin 20 OPEN, or pull "
         "J2's pin 20. JP2 (pin 20 = +5 V) stays OPEN.",
         "Power: the adapter takes +5 V through its power pads, by a short cable from J3 (+5V, G, G, nc) - pad order to "

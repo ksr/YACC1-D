@@ -1,0 +1,18 @@
+placement -> memory-v2.0-placement.pdf
+jlc -> memory-v2.0-jlcpcb-order.txt
+fab: 14 gerber/drill files -> gerbers/ + memory-v2.0-gerbers.zip; memory-v2.0-render-top.png, -render-bottom.png, -placement.pdf
+    gerbers/memory-v2.0-B_Cu.gbr
+    gerbers/memory-v2.0-B_Mask.gbr
+    gerbers/memory-v2.0-B_Silkscreen.gbr
+    gerbers/memory-v2.0-Edge_Cuts.gbr
+    gerbers/memory-v2.0-F_Cu.gbr
+    gerbers/memory-v2.0-F_Mask.gbr
+    gerbers/memory-v2.0-F_Silkscreen.gbr
+    gerbers/memory-v2.0-In1_Cu.gbr
+    gerbers/memory-v2.0-In2_Cu.gbr
+    gerbers/memory-v2.0-NPTH-drl_map.gbr
+    gerbers/memory-v2.0-NPTH.drl
+    gerbers/memory-v2.0-PTH-drl_map.gbr
+    gerbers/memory-v2.0-PTH.drl
+    gerbers/memory-v2.0-job.gbrjob
+drill: NPTH file 4 hole(s) [('2.79 mm', 2), ('3.20 mm', 2)]; PTH file 799 hole(s), 6 sizes; H1 / H2 (3.2 mm at ['(166.34, 111.90)', '(166.34, 59.90)']) in the NPTH file: yes
