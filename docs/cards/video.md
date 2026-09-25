@@ -177,7 +177,7 @@ least 450 ns (280 ns for the faster grades, per the review) for each register ac
 | README | HIGH | write-through fault of 2026-09-18: a write to block 0 or 9 landed in the video RAM regardless of BOARDSEL | **Resolved 2026-09-21**: cause was the unpowered rail; `tests/video/video_ram_test.py` 8/8, `tools/alias_min.py` clean |
 | DESIGN-REVIEW.md (mechanical) | MED | open-collector nets N$5 (IC27 p8) and N$16 (IC27 p10) without pull-up | Same as the 7416 item |
 | README / FABRICATED.md | LOW | inherits Blank V3.1's pre-V3.2 names on C3-C6 | Harmless (unused pins); start the next card from Blank V3.2 |
-| Naming (this document) | doc | the README, the fix document and the reviews quote the CRTC at `$D400`/`$D402` and describe the block as "2K, low half RAM"; the netlist (ADDR11 = bus pin A14, IC18 compares only ADDR12..15, IC15 A11R grounded) reads as a **4K** block with RAM at $D000-$D7FF and the CRTC/latch half at $D800-$DFFF. `memory_status.py` ("VIDEO $D000-$D7FF") and `memory_full_test.py` phase F2 ("$D800-$DFFF") use the 4K reading; `video_ram_test.py` tests $D000-$D3FF only | **To verify** with `tests/video/hold_address.py`: park $D400 and $D800 and meter IC17 pin 25 (-CS). Whichever is low is the CRTC address; the other documents then need the one-bit correction. The ROM (2026-09-25) follows the netlist: `VCRTCA`/`VCRTCD` = $D800/$D802 in `monitor.asm`, one equate pair to change |
+| Naming (this document) | doc | the README, the fix document and the reviews quoted the CRTC at `$D400`/`$D402` | **Resolved 2026-09-25 (Ken): video RAM is $D000-$D7FF (2K), the 6845/latch half $D800-$DFFF** - the netlist reading; the fix document and README are corrected; the ROM (2026-09-25) already uses $D800/$D802. `video_ram_test.py` tests $D000-$D3FF only; the monitor's `VF`/`VD` check covers all 2K |
 
 The memory-side conventions (floating LS inputs read high while the sequencer is off the bus; no pull-ups on the
 backplane) apply here as on every card; this card adds the open-collector nets to the list of lines that depend on
@@ -221,7 +221,7 @@ If it misbehaves:
 | RAM reads back what was written even at an address nothing should answer | the memory card's $D000 block echoes the bus; use `video_ram_test.py`'s ordering (other traffic between write and read) |
 | writes elsewhere land in the video RAM | the +5V/VCC wire (IC1 pin 14, RN2 pin 1 must be at 5 V); BOARDSEL at IC18 pin 6 must be low for non-$Dxxx addresses |
 | RAM answers at the wrong block | SV3 against ADDR15..12; RN2 pull-ups |
-| (with a 6845) registers cannot be written | E (IC1 pin 3) per 6.1; -CS per the RS finding; hold $D400 vs $D800 to settle the block question |
+| (with a 6845) registers cannot be written | E (IC1 pin 3) per 6.1; -CS per the RS finding (CRTC at $D800/$D802) |
 | no picture | DOTCLOCK at SV4 pin 2; CHARCLOCK width at IC19 pin 8 against IC28 pin 2 (6.2); glyph bits on IC24 pin 13; DE and HS/VS from the 6845 |
 
 ## 7. Revision history and what the next revision changes
@@ -276,6 +276,4 @@ crystal/C1 values belong in that redesign whichever interface it keeps.
 
 `VB aaaa bb ..` writes raw bytes anywhere in $D000-$DFFF (glyph codes, inverse video with bit 7, or the CRTC at
 $D800/$D802); **never an odd address above $D800**: that is the JP1 latch, which drives the bus even on a write
-(finding 6.4). If the CRTC turns out to answer at $D400 (the check in section 4), change `VCRTCA`/`VCRTCD` in
-`monitor.asm` (and `VID_CRTC` in `software/videomodel.h`) and rebuild; with RAM then only at $D000-$D3FF, change the
-geometry to 64 x 16 (`VCOLS`/`VROWS`, the table's R1/R6 follow) as well.
+(finding 6.4). The addresses are confirmed (Ken, 2026-09-25): RAM $D000-$D7FF, 6845 $D800/$D802.

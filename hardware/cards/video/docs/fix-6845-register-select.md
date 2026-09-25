@@ -28,12 +28,14 @@ address: a bus fight. Don't do that.
 
 Keep the decode as it is (CRTC at even addresses, latch at odd ones) and let A1 pick the CRTC register:
 
-| Address (repeats every 4 bytes through $D7FF) | A1 | A0 | What answers |
+| Address (repeats every 4 bytes through $DFFF) | A1 | A0 | What answers |
 |---|---|---|---|
-| $D400 | 0 | 0 | 6845 address register |
-| $D401 | 0 | 1 | JP1 read-back latch (IC2) |
-| $D402 | 1 | 0 | 6845 data register |
-| $D403 | 1 | 1 | JP1 read-back latch (IC2) |
+| $D800 | 0 | 0 | 6845 address register |
+| $D801 | 0 | 1 | JP1 read-back latch (IC2) |
+| $D802 | 1 | 0 | 6845 data register |
+| $D803 | 1 | 1 | JP1 read-back latch (IC2) |
+
+(Ken, 2026-09-25: video RAM is $D000-$D7FF, the 6845 half is $D800-$DFFF. This document said $D400 until then.)
 
 One connection changes: **IC17 pin 24 leaves ADDR0 and goes to ADDR1**. ADDR1 is on exactly two pins of the
 board: bus connector X1 pin A4 and the dual-port RAM IC15 pin 41. Nothing else on the card uses A1, and nothing
@@ -64,18 +66,18 @@ cut the ADDR0 track at the pad) and wire the socket pin to IC15 pin 41. Same res
 
 | Command | IC17 pin 25 (-CS) | IC17 pin 24 (RS) |
 |---|---|---|
-| `hold_address.py D400` | low | low |
-| `hold_address.py D402` | low | **high** (this is the new behaviour; before the fix it read low) |
-| `hold_address.py D401` | high | (latch selected instead) |
+| `hold_address.py D800` | low | low |
+| `hold_address.py D802` | low | **high** (this is the new behaviour; before the fix it read low) |
+| `hold_address.py D801` | high | (latch selected instead) |
 | `hold_address.py D001` | high | — (A11 = 0: video RAM half) |
 | `hold_address.py C400` | high | — (BOARDSEL off) |
 
-With a 6845 fitted, the software test is: write R12/R13 (start address, registers 12 and 13) through $D400/$D402 and read
-them back, or write a value to the data register and read it back at $D402 after re-selecting the register at $D400. The
+With a 6845 fitted, the software test is: write R12/R13 (start address, registers 12 and 13) through $D800/$D802 and read
+them back, or write a value to the data register and read it back at $D802 after re-selecting the register at $D800. The
 6845's registers 12–17 are readable; 0–11 are write-only, so read back R12 or R14.
 
-Software note: `firmware/` has no CRTC code yet; when it is written, the register access is
-`$D400 ← register number`, then `$D402 ← value` (or `value ← $D402`). Odd addresses read the JP1 latch.
+Software note: the ROM (2026-09-25, `VCRTCA`/`VCRTCD` in `monitor.asm`, the monitor's `VR` command) does the register
+access as `$D800 ← register number`, then `$D802 ← value` (or `value ← $D802`). Odd addresses read the JP1 latch.
 
 ## Design change for the next revision (not a bench item)
 

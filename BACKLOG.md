@@ -44,8 +44,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Video auto-start: `VIDAUTO EQU 1`** in `firmware/monitor/monitor.asm` once the card is debugged (6845 fitted with
   the RS-to-A1 fix, E one-shot and 7416 pull-ups sorted, a picture from `V I`): reset then programs the CRTC, clears the
   screen and turns mirroring on. Rebuild, `tools/verify_firmware.py`, burn.
-- **Video: settle the CRTC address and the timing** — the ROM uses $D800/$D802 (the netlist reading; README says
-  $D400/$D402: `VCRTCA`/`VCRTCD`, one edit) and a CRTC table assuming a 10 MHz dot clock, 5-dot characters, 80 x 24
+- **Video: settle the CRTC timing** — the ROM uses $D800/$D802 (confirmed by Ken 2026-09-25: RAM $D000-$D7FF, 6845
+  $D800-$DFFF) and a CRTC table assuming a 10 MHz dot clock, 5-dot characters, 80 x 24
   (`vcrtab`); read the crystal, confirm with `tests/video/hold_address.py`, adjust with the monitor's `VR` by hand, then
   in the table. The character EPROM's order is assumed 2513-style (ASCII bits 0-5); read the 2732 to confirm.
 - **Sequencer microcode with `LDZ`/`STZ`/`ADDIW`/`SHL16` (2026-09-24)** — `firmware/microcode/ucode-generator2/test.hex`

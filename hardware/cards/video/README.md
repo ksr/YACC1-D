@@ -28,7 +28,7 @@ Known issues and findings:
   (A11 AND N$5) where N$5 = IC27 pin 8 = /A0. RS is A0. So the chip is only selected with A0 = 0, which is always RS = 0:
   only the address register is reachable, the data register never. Bench fix: lift IC1 pin 13 off IC27 pin 8 and tie it
   high is WRONG (odd addresses drive the JP1 read-back latch IC2 onto the bus). Correct fix: move RS from A0 to A1 —
-  pin-by-pin procedure in `docs/fix-6845-register-select.md`; then $D400 = address register, $D402 = data register.
+  pin-by-pin procedure in `docs/fix-6845-register-select.md`; then $D800 = address register, $D802 = data register (video RAM $D000-$D7FF, 6845 half $D800-$DFFF; confirmed by Ken 2026-09-25).
 - 7416 open-collector outputs (IC27) drive IC1, IC2 and IC26 with no pull-ups; N$5 above only reads high when floating.
 - Inherits the Blank V3.1 template's pre-V3.2 names on bus pins C3–C6 (unused by the card).
 

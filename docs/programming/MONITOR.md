@@ -261,10 +261,9 @@ card by itself** until the card is debugged (`VIDAUTO EQU 0`). All of it is plai
 `ADDIW`/`SHL16`, no `BRUR`, no R2, so it runs on the sequencer EEPROM's current image and on the 2026-09-24 one.
 
 **Equates** (one edit each, top of `monitor.asm`): `VIDAUTO` 0, `VIDRAM` $D000, `VIDSIZE` 2048, `VCOLS` 80, `VROWS` 24,
-`VCRTCA` $D800 (6845 address register) and `VCRTCD` $D802 (data register). The CRTC addresses follow the netlist
-reading of the card (ADDR11 selects the CRTC half, A1 the register after the RS-to-A1 bench fix); the card's README
-and the fix document say $D400/$D402 — `docs/cards/video.md` section 4 has the check that settles it (`hold_address.py`
-on $D400 and $D800). Geometry: the 2K the CPU reaches holds 80 x 24 = 1,920 characters, one byte each; the card
+`VCRTCA` $D800 (6845 address register) and `VCRTCD` $D802 (data register). The CRTC addresses follow the card
+(ADDR11 selects the CRTC half, A1 the register after the RS-to-A1 bench fix): video RAM $D000-$D7FF, 6845 half
+$D800-$DFFF, confirmed by Ken 2026-09-25. Geometry: the 2K the CPU reaches holds 80 x 24 = 1,920 characters, one byte each; the card
 latches bits 0-5 (a 64-glyph character EPROM) and bit 7 (inverse); the driver stores ASCII with lower case moved up
 ($60-$7F → $40-$5F), which a 2513-style character set (code = ASCII bits 0-5) shows as sent. **Assumed**, not read from
 the card: the character EPROM's contents (nothing in the tree) and the dot clock (the crystal has no value in the
