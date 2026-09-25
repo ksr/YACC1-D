@@ -229,7 +229,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   file at CLOSE (the new entry over the old slot); eputs() and the shell's errors go to the raw console; the four
   handle buffers moved to $0400-$0BFF to fit (OS image 14,673 bytes = 29 sectors, image + data 16,097 of 16K);
   `tests/os/redirect.session`, `pipe.session` with host checks; `os/man/shell`.)
-- Redirection and pipes, what is left: SYSTAB is full (see the SYSTAB item below); no `2>` (errors always go to the screen); stages run one after the other, not concurrently; a
+- Redirection and pipes, what is left: no `2>` (errors always go to the screen); stages run one after the other, not concurrently; a
   redirect clause must follow the arguments (`echo > F hi` is a syntax error); a write that fails part-way (disk full,
   64K) drops bytes silently. (The space problem is gone with the assembly OS: 7,711 bytes free, below.)
 - (done 2026-09-23: **the OS in assembly, v0.2** — `os/y1os.asm` (hand-written, 3,415 lines) replaces the C OS as
@@ -242,12 +242,11 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   C -> asm (interpreter; ucemu steps the same ratio): basic 1.53M -> 0.99M, api 1.80M -> 1.11M, write 2.84M -> 1.95M,
   wave1 5.04M -> 3.20M, wave2 5.68M -> 3.63M, redirect 1.88M -> 1.25M, pipe 9.57M -> 4.91M, vi 1.11M -> 0.84M,
   pack 29.97M -> 15.78M (1.3-1.9x). `make -C os OS=c` builds the C OS, still the specification.)
-- **SYSTAB 22 -> 32 entries, not done (2026-09-23).** The assembly OS has the room, but the table's address is
-  compiled into every program (`LDR R7,SYSTAB+2n`) and hard-coded in `tests/compiler/syscall.c` and the committed
-  bench image `tests/bench/images/syscall.img`; it cannot grow in place without moving ARGBUF. When the 23rd syscall
-  comes: the smallest change is the whole table at $4FC0-$4FFF (kept free in the assembly OS's RAM, and above the C
-  OS's data), `SYSTAB`/`SYSMAX` in `y1cc.py` (rt_putc/rt_getc follow the constant) and `os/lib_abi.c`, the two tests
-  above re-made, `firmware/abi/README.md`; every program is rebuilt by the Makefile anyway.
+- (done 2026-09-25: **SYSTAB 22 -> 32 entries** — the OS fills SYSTAB2 at $4FC0-$4FFF (32 entries) and copies its
+  first 22 to SYSTAB at $0F14, so every program compiled before (and `tests/compiler/syscall.c`, the bench image
+  `syscall.img`) keeps working unchanged; y1cc's `sys()` reads SYSTAB for a constant 0..21 (output unchanged) and
+  SYSTAB2 for 22..31; a computed number still indexes SYSTAB (0..21). `os/README.md` "Two tables",
+  `tests/compiler/syscall2.c`, `sysbig.c`, `tests/os/systab.session`. Left: a computed number over 21.)
 - **Y1/OS behaviours kept by the assembly rewrite (y1os.c's, the transcripts are the contract; fix both together):**
   CLOSE of a
   directory handle returns 3 (its mode), of a read handle 1, not "1" as documented. A trailing slash after a file name

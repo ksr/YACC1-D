@@ -145,7 +145,8 @@ and big-endian words in memory. There is no 16-bit ALU and no indexed addressing
   (any of a, b, c may be left out) are evaluated into the parameter words SYSARG0..2 at $0F06/$0F08/$0F0A
   (`STR R3,addr`); an argument evaluated later that calls anything (it could run a `sys()` of its own) makes the
   earlier ones wait on the stack, exactly as a user call's arguments do. Then the entry word `SYSTAB + 2n`
-  ($0F14 + 2n, n = 0..21) is loaded into R7 (`LDR R7,addr` for a constant n; a computed n is shifted, added and
+  ($0F14 + 2n, n = 0..21; for a constant 22..31 the word at `SYSTAB2 + 2n`, $4FC0 + 2n, the OS's 32-entry table
+  since 2026-09-25) is loaded into R7 (`LDR R7,addr` for a constant n; a computed n is shifted, added and
   dereferenced) and `JSRUR R7` calls the handler; the result word SYSRES ($0F0C) comes back in R3 as an int.
   `funcaddr(f)` is the address of function `f` as an int (`MVIW R3,f_label`): the OS installs its handlers with
   `pokew(SYSTAB + 2 * n, funcaddr(h_open))`. A function named in `funcaddr()` is an entry point: it and whatever it

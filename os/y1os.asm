@@ -52,7 +52,8 @@ SYSRES:     EQU 0F0CH
 CFLBA0:     EQU 0F10H           ; the sector number for CFREAD/CFWRITE, low byte first (24 bits)
 CFLBA1:     EQU 0F11H
 CFLBA2:     EQU 0F12H
-SYSTAB:     EQU 0F14H           ; the syscall jump table, 22 big-endian word entries (os/README.md)
+SYSTAB:     EQU 0F14H           ; the syscall jump table, 22 big-endian word entries 0..21 (os/README.md)
+SYSTAB2:    EQU 4FC0H           ; the 32-entry table in the OS's RAM (2026-09-25): 0..21 as SYSTAB, 22..31 new
 ARGBUF:     EQU 0F40H           ; a program's command tail, 127 characters + NUL
 
 ; ---- P8XFS v2 and the handle records -------------------------------------------------------------------------------
@@ -90,7 +91,17 @@ os_clr: LDAI 0                  ; free, no write open, no redirection, the e_* e
         STR R3,CWD_SECS
         LDAI 47
         STA CWDPATH
-        MVIW R3,systab_init     ; install(): SYSTAB <- the 22 handler addresses
+        MVIW R3,systab_init     ; install(): SYSTAB2 <- the 32 handler addresses (0 for a free slot), SYSTAB <- the
+        MVIW R4,SYSTAB2         ; first 22 (every program compiled before SYSTAB2 reaches 0..21 there)
+        MVIB R5,64
+os_i2:  LDAVR R3
+        STAVR R4
+        INCR R3
+        INCR R4
+        DECR R5
+        MVRLA R5
+        BRNZ os_i2
+        MVIW R3,systab_init
         MVIW R4,SYSTAB
         MVIB R5,44
 os_ins: LDAVR R3
@@ -198,7 +209,8 @@ rts:    RET
 ; arguments stored, JSRUR through SYSTAB, SYSRES read. The compiled caller keeps nothing in a register across the
 ; call, so a handler may clobber R3-R7, ACC and TMP (y1cc's --os rt_putc/rt_getc save their R3/R4 themselves).
 ; =====================================================================================================================
-systab_init:                    ; SYSTAB's contents, copied at boot (lib_abi.c SYS_OPEN = 0 ... SYS_STDIO = 21)
+systab_init:                    ; SYSTAB2's contents, copied at boot (lib_abi.c SYS_OPEN = 0 ... SYS_STDIO = 21, then
+                                ; the entries 22..31 of SYSTAB2 only; 0 = not in use)
         DW h_open
         DW h_read
         DW h_getc
@@ -221,6 +233,16 @@ systab_init:                    ; SYSTAB's contents, copied at boot (lib_abi.c S
         DW h_conout
         DW h_keyin
         DW h_stdio
+        DW 0                    ; 22..31: not in use yet
+        DW 0
+        DW 0
+        DW 0
+        DW 0
+        DW 0
+        DW 0
+        DW 0
+        DW 0
+        DW 0
 
 h_open:     LDR R3,SYSARG0
             JSR fs_open
@@ -3599,5 +3621,5 @@ NSEG:       DS 1                ; the shell: commands in the line, the one runni
 KSEG:       DS 1
 QUIT:       DS 1
 ST_H:       DS 1                ; stage
-ram_end:                        ; must stay below $5000 (the programs)
+ram_end:                        ; must stay below $4FC0 (SYSTAB2; $4F17 on 2026-09-25)
         END 1000H

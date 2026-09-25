@@ -104,7 +104,8 @@ HOST = {
 # extra files a session's disk copy gets before it boots (2026-09-23): (host source, disk name, load/exec); a .c
 # source is compiled first with y1cc --os at $5000, as os/Makefile compiles /BIN commands
 EXTRA = {"badhandle": [("badh.c", "/BADH", 0x5000), ("", "/ZERO.BIN", 0x6000)],
-         "big": [("bigw.c", "/BIGW", 0x5000), ("bigr.c", "/BIGR", 0x5000)]}
+         "big": [("bigw.c", "/BIGW", 0x5000), ("bigr.c", "/BIGR", 0x5000)],
+         "systab": [("systab.c", "/SYSTAB", 0x5000)]}
 
 
 def extras(name, img):

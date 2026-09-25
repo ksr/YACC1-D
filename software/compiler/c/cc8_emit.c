@@ -822,7 +822,7 @@ void gen_builtin(int e) {                           /* y1cc.c gen_call's builtin
             i++;
         }
         while (npark > base) { npark--; insr(MN_POPR, 4); insrn(MN_STR, 4, SYSARG + 2 * park[npark]); }
-        if (hn) insrn(MN_LDR, 7, SYSTAB + 2 * n);
+        if (hn) insrn(MN_LDR, 7, (n > SYSOLD ? SYSTAB2 : SYSTAB) + 2 * n);
         else {
             insr(MN_POPR, 3); insr(MN_LDAVR, 3); ins0(MN_MVAT); insr(MN_INCR, 3);
             insr(MN_LDAVR, 3); insr(MN_MVARL, 7); ins0(MN_MVTA); insr(MN_MVARH, 7);

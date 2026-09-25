@@ -607,29 +607,34 @@ void h_stdio() {
     pokew(SYSRES, r);
 }
 
-void install() {                /* SYSTAB <- the handlers; programs reach them with sys(SYS_x, ...) */
-    pokew(SYSTAB + 2 * SYS_OPEN, funcaddr(h_open));
-    pokew(SYSTAB + 2 * SYS_READ, funcaddr(h_read));
-    pokew(SYSTAB + 2 * SYS_GETC, funcaddr(h_getc));
-    pokew(SYSTAB + 2 * SYS_CLOSE, funcaddr(h_close));
-    pokew(SYSTAB + 2 * SYS_CREATE, funcaddr(h_create));
-    pokew(SYSTAB + 2 * SYS_WRITE, funcaddr(h_write));
-    pokew(SYSTAB + 2 * SYS_PUTC, funcaddr(h_putc));
-    pokew(SYSTAB + 2 * SYS_DELETE, funcaddr(h_delete));
-    pokew(SYSTAB + 2 * SYS_MKDIR, funcaddr(h_mkdir));
-    pokew(SYSTAB + 2 * SYS_RMDIR, funcaddr(h_rmdir));
-    pokew(SYSTAB + 2 * SYS_OPENDIR, funcaddr(h_opendir));
-    pokew(SYSTAB + 2 * SYS_READDIR, funcaddr(h_readdir));
-    pokew(SYSTAB + 2 * SYS_RESOLVE, funcaddr(h_resolve));
-    pokew(SYSTAB + 2 * SYS_GETCWD, funcaddr(h_getcwd));
-    pokew(SYSTAB + 2 * SYS_CHDIR, funcaddr(h_chdir));
-    pokew(SYSTAB + 2 * SYS_RENAME, funcaddr(h_rename));
-    pokew(SYSTAB + 2 * SYS_ENTRY, funcaddr(h_entry));
-    pokew(SYSTAB + 2 * SYS_CONIN, funcaddr(h_conin));
-    pokew(SYSTAB + 2 * SYS_CONST, funcaddr(h_const));
-    pokew(SYSTAB + 2 * SYS_CONOUT, funcaddr(h_conout));
-    pokew(SYSTAB + 2 * SYS_KEYIN, funcaddr(h_keyin));
-    pokew(SYSTAB + 2 * SYS_STDIO, funcaddr(h_stdio));
+void install() {                /* SYSTAB2 <- the handlers, then its first 22 words to SYSTAB (2026-09-25): programs reach
+                                   them with sys(SYS_x, ...), y1cc through SYSTAB for 0..21 (as every program compiled
+                                   before SYSTAB2 does) and through SYSTAB2 for 22..31 */
+    int i;
+    for (i = 0; i < 64; i++) poke(SYSTAB2 + i, 0);     /* the slots not in use are 0 */
+    pokew(SYSTAB2 + 2 * SYS_OPEN, funcaddr(h_open));
+    pokew(SYSTAB2 + 2 * SYS_READ, funcaddr(h_read));
+    pokew(SYSTAB2 + 2 * SYS_GETC, funcaddr(h_getc));
+    pokew(SYSTAB2 + 2 * SYS_CLOSE, funcaddr(h_close));
+    pokew(SYSTAB2 + 2 * SYS_CREATE, funcaddr(h_create));
+    pokew(SYSTAB2 + 2 * SYS_WRITE, funcaddr(h_write));
+    pokew(SYSTAB2 + 2 * SYS_PUTC, funcaddr(h_putc));
+    pokew(SYSTAB2 + 2 * SYS_DELETE, funcaddr(h_delete));
+    pokew(SYSTAB2 + 2 * SYS_MKDIR, funcaddr(h_mkdir));
+    pokew(SYSTAB2 + 2 * SYS_RMDIR, funcaddr(h_rmdir));
+    pokew(SYSTAB2 + 2 * SYS_OPENDIR, funcaddr(h_opendir));
+    pokew(SYSTAB2 + 2 * SYS_READDIR, funcaddr(h_readdir));
+    pokew(SYSTAB2 + 2 * SYS_RESOLVE, funcaddr(h_resolve));
+    pokew(SYSTAB2 + 2 * SYS_GETCWD, funcaddr(h_getcwd));
+    pokew(SYSTAB2 + 2 * SYS_CHDIR, funcaddr(h_chdir));
+    pokew(SYSTAB2 + 2 * SYS_RENAME, funcaddr(h_rename));
+    pokew(SYSTAB2 + 2 * SYS_ENTRY, funcaddr(h_entry));
+    pokew(SYSTAB2 + 2 * SYS_CONIN, funcaddr(h_conin));
+    pokew(SYSTAB2 + 2 * SYS_CONST, funcaddr(h_const));
+    pokew(SYSTAB2 + 2 * SYS_CONOUT, funcaddr(h_conout));
+    pokew(SYSTAB2 + 2 * SYS_KEYIN, funcaddr(h_keyin));
+    pokew(SYSTAB2 + 2 * SYS_STDIO, funcaddr(h_stdio));
+    for (i = 0; i < 2 * (SYS_OLD + 1); i++) poke(SYSTAB + i, peek(SYSTAB2 + i));
 }
 
 /* ---- commands ------------------------------------------------------------------------------------------- */

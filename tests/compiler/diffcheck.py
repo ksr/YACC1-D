@@ -10,7 +10,8 @@ every /BIN command, the OS test programs) with an OLD y1cc.py taken from git and
 
 Every program the old compiler accepts must come out byte-identical (the header's timestamp masked). A program the
 old compiler REJECTS is allowed to differ only if the old error was its "recursion is not supported" (the programs
-that only compile since recursion exists), or if the old compiler crashed (a Python traceback: fixed bugs such as
+that only compile since recursion exists) or "sys() number must be 0..21" (since 2026-09-25 22..31 exist; the
+error itself now says 0..31), or if the old compiler crashed (a Python traceback: fixed bugs such as
 tests/compiler/adjstr.c); for expected-error tests the error texts must be equal. Exit 1 on any other difference.
 Compiles with --xisa (2026-09-24: tests/compiler/xisa.c asks for it) or --stack (2026-09-25: tests/compiler/stack.c) are
 not compared when the old compiler predates the option (it ignores the flag): they are counted apart; the default
@@ -70,8 +71,8 @@ def main():
             state = "identical" if ok else "DIFFERENT"
         elif "Traceback (most recent call last)" in oerr:   # the old compiler crashed: nothing to compare
             crashed += 1; state = "old crashed (%s), new: %s" % (oerr.splitlines()[-1][:60], "compiles" if nrc == 0 else nerr[-60:])
-        elif "recursion is not supported" in oerr:
-            if nrc == 0: newonly += 1; state = "new: compiles (old: recursion rejected)"
+        elif "recursion is not supported" in oerr or "sys() number must be 0..21" in oerr:   # (2026-09-25: 22..31)
+            if nrc == 0: newonly += 1; state = "new: compiles (old: rejected)"
             else: errs += 1; state = "both reject (new: %s)" % nerr[-90:]
         else:
             ok = nrc != 0 and oerr == nerr
@@ -81,7 +82,7 @@ def main():
         if verbose or state.isupper() or state.startswith("ERROR"):
             print("%-44s %-28s %s" % (src, " ".join(opts), state))
     shutil.rmtree(tmp, ignore_errors=True)
-    print("diffcheck against %s: %d identical, %d compile only with the new y1cc (recursion), %d expected errors, "
+    print("diffcheck against %s: %d identical, %d compile only with the new y1cc (recursion, sys() 22..31), %d expected errors, "
           "%d crashed the old one, %d DIFFERENT%s" % (rev, same, newonly, errs, crashed, len(bad),
           "; %d --xisa/--stack compiles not compared (options the old y1cc does not have)" % xonly if xonly else ""))
     for src, opts, why in bad: print("  DIFF %s %s: %s" % (src, " ".join(opts), why))

@@ -203,7 +203,9 @@
 #define SYSTAB 3860
 #define SYS_CONIN 17
 #define SYS_CONOUT 19
-#define SYSMAX 21
+#define SYSOLD 21               /* entries 0..21 at SYSTAB; 22..31 at SYSTAB2 = $4FC0 (2026-09-25) */
+#define SYSTAB2 20416
+#define SYSMAX 31
 #define BIOS_CHAROUT 65476
 #define BIOS_UARTIN 65512
 #define LABEL_MAX 29
@@ -2482,7 +2484,7 @@ void gen_call(int e) {
             i++;
         }
         while (npark > base) { npark--; insr("POPR", 4); insrn("STR", 4, SYSARG + 2 * park[npark]); }
-        if (hn) insrn("LDR", 7, SYSTAB + 2 * n);
+        if (hn) insrn("LDR", 7, (n > SYSOLD ? SYSTAB2 : SYSTAB) + 2 * n);
         else {
             insr("POPR", 3); insr("LDAVR", 3); ins0("MVAT"); insr("INCR", 3);
             insr("LDAVR", 3); insr("MVARL", 7); ins0("MVTA"); insr("MVARH", 7);

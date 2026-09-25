@@ -44,7 +44,7 @@ Sources: `docs/system/MACHINE.md` (the memory card's jumper settings, verified w
 | $0F06–$0F0B | 6 | `SYSARG0..2`: Y1/OS syscall argument words (big-endian) | `os/lib_abi.c`, `y1cc.py` (2026-09-23) |
 | $0F0C–$0F0D | 2 | `SYSRES`: the syscall result word | idem |
 | $0F10–$0F12 | 3 | `CFLBA0..2`: the sector number for CFREAD/CFWRITE (low byte first) | `monitor.asm` (2026-09-22) |
-| $0F14–$0F3F | 44 | `SYSTAB`: the OS's syscall jump table, 22 big-endian words, filled at boot; all 22 used since 2026-09-23 | `os/lib_abi.c`, `os/y1os.asm` |
+| $0F14–$0F3F | 44 | `SYSTAB`: the OS's syscall jump table, 22 big-endian words (entries 0..21), filled at boot from SYSTAB2 ($4FC0, 32 entries, 2026-09-25); all 22 used since 2026-09-23 | `os/lib_abi.c`, `os/y1os.asm` |
 | $0F40–$0FBF | 128 | `ARGBUF`: a program's command tail from Y1/OS, NUL-terminated (`ARGMAX` 127); `argstr()`. The monitor's equate says 64 bytes; the upper 64 overlay `line_buffer` | `monitor.asm`, `os/lib_abi.c`, `y1cc.py` |
 | $0F80–$0FFF | 128 | `line_buffer`: the monitor's line buffer (`P` command), idle while the OS runs | `monitor.asm` |
 | $1000–$1FFF | 4K | BASIC's token buffer (`bas_tok_buf_start`..`_end` = $2000), cleared by `basic_cold` at every monitor boot — **and** `OSBASE`: where the `O` command loads Y1/OS. The two are never used together | `basic.asm`, `monitor.asm` |

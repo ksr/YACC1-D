@@ -157,7 +157,7 @@ buffer and position; **one write handle at a time**.
 | 18 | `SYS_CONST` | `()` → 1 when a stdin byte is waiting (a `<` file or pipe: always 1; the console: ROM `CONST`, always 1 on the emulators) |
 | 19 | `SYS_CONOUT` | `(byte)` → nothing (SYSRES untouched): the byte to **stdout**, the shell's `>`/`>>` file or pipe, else the raw console (`CHAROUT`). `y1cc --os`: `putchar()`/`puts()` (2026-09-23) |
 | 20 | `SYS_KEYIN` | `()` → a **key**: always the console, never redirected, no echo; 65535 on Ctrl-D/NUL (2026-09-23) |
-| 21 | `SYS_STDIO` | `()` → bit 0 stdin redirected, bit 1 stdout redirected (2026-09-23). SYSTAB is full with it |
+| 21 | `SYS_STDIO` | `()` → bit 0 stdin redirected, bit 1 stdout redirected (2026-09-23). The last entry SYSTAB ($0F14) has: 22..31 are in SYSTAB2 ($4FC0, 32 entries, 0..21 the same; 2026-09-25), which y1cc's `sys()` uses for a constant number over 21 |
 
 Writing goes to the volume's free pointer (boot block bytes 4–5, kept in step on disk): `CREATE` takes the handle
 and remembers the directory and the name, `PUTC`/`WRITE` fill the handle's sector buffer and flush full sectors,

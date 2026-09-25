@@ -184,7 +184,9 @@
 #define SYSTAB 3860
 #define SYS_CONIN 17
 #define SYS_CONOUT 19
-#define SYSMAX 21
+#define SYSOLD 21               /* entries 0..21 at SYSTAB; 22..31 at SYSTAB2 = $4FC0 (2026-09-25) */
+#define SYSTAB2 20416
+#define SYSMAX 31
 #define BIOS_CHAROUT 65476
 #define BIOS_UARTIN 65512
 #define LABEL_MAX 29

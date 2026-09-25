@@ -29,6 +29,12 @@
 #define CFLBA1    0x0F11
 #define CFLBA2    0x0F12
 #define SYSTAB    0x0F14
+/* SYSTAB2 (2026-09-25): the 32-entry table, $4FC0..$4FFF in the OS's RAM. SYSTAB ($0F14..$0F3F) holds entries 0..21
+   (ARGBUF follows it, so it cannot grow); the OS fills both, SYSTAB2's first 22 words the same. y1cc's sys() reads
+   SYSTAB for a constant 0..21 (so every program compiled before is unchanged) and SYSTAB2 for 22..31; a computed
+   number reaches 0..21 */
+#define SYSTAB2   0x4FC0
+#define SYS_OLD   21      /* the last entry SYSTAB has */
 #define ARGBUF    0x0F40
 /* ARGBUF holds up to ARGMAX = 127 characters + NUL ($0F40..$0FBF, since 2026-09-23; the upper half overlays the
    monitor's line buffer, which is idle while the OS runs) */
@@ -60,5 +66,5 @@
 #define SYS_CONST    18   /* () -> 1 when a stdin byte is waiting (a file: bytes left; console: ROM CONST) */
 #define SYS_CONOUT   19   /* (byte) -> nothing: to stdout, the > / >> file or pipe, else CHAROUT (--os: putchar) */
 #define SYS_KEYIN    20   /* () -> a key: ALWAYS the console, no echo; 65535 at Ctrl-D (pager, vi, dump, examine) */
-#define SYS_STDIO    21   /* () -> bit 0 stdin redirected, bit 1 stdout redirected (SYSTAB is full with 21) */
+#define SYS_STDIO    21   /* () -> bit 0 stdin redirected, bit 1 stdout redirected (the last in SYSTAB; 22.. SYSTAB2) */
 #define SYS_LAST     21

@@ -32,7 +32,8 @@ The C subset
                argstr() -> char*  (the command tail the OS left for the program at $0F40, up to 127 chars + NUL)
                sys(n, a, b, c) -> int  (a Y1/OS syscall, 2026-09-23: a, b, c (any of them optional) go to the
                  parameter words SYSARG0..2 at $0F06/$0F08/$0F0A, entry n (0..21) of the OS's jump table SYSTAB at
-                 $0F14 is JSRURed, the result word SYSRES at $0F0C comes back; os/lib_fs.c wraps them as fopen()...)
+                 $0F14 is JSRURed (22..31: SYSTAB2 at $4FC0, 2026-09-25; a computed n reaches 0..21), the result
+                 word SYSRES at $0F0C comes back; os/lib_fs.c wraps them as fopen()...)
                funcaddr(f) -> int  (the address of function f: how the OS fills SYSTAB with pokew(SYSTAB+2*n,
                  funcaddr(handler)); f is kept in the image even if nothing calls it directly)
   recursion    (2026-09-24) direct and mutual: parameters and locals still live at fixed addresses (static frames);
@@ -106,8 +107,11 @@ SYSRES = 0x0F0C             # sys() result word, written by the OS handler
 SYSTAB = 0x0F14             # the OS syscall jump table: 22 big-endian word entries $0F14..$0F3F, filled by Y1/OS at boot
 SYS_CONIN = 17             # --os: getchar() is this syscall (os/lib_abi.c SYS_CONIN)
 SYS_CONOUT = 19            # --os: putchar()/puts() go through this syscall (os/lib_abi.c SYS_CONOUT, 2026-09-23)
-SYSMAX = 21                 # (the monitor's free variable space: $0F06..$0F0F after its own variables, $0F14..$0F3F between
-                            # CFLBA2 $0F12 and ARGBUF $0F40; firmware/abi/README.md)
+SYSOLD = 21                 # entries 0..21 are at SYSTAB (the monitor's free variable space: $0F06..$0F0F after its own
+                            # variables, $0F14..$0F3F between CFLBA2 $0F12 and ARGBUF $0F40; firmware/abi/README.md)
+SYSTAB2 = 0x4FC0            # (2026-09-25) the 32-entry table in the OS's RAM, $4FC0..$4FFF: entries 0..21 the same as
+                            # SYSTAB's, 22..31 new; a constant n over 21 goes through it (a computed n: SYSTAB, 0..21)
+SYSMAX = 31
 BIOS_CHAROUT = 0xFFC4       # monitor BIOS vectors (monitor.asm, org 0ffc0h: 4 bytes per entry)
 BIOS_UARTIN = 0xFFE8
 LABEL_MAX = 29              # RC/asm: labels[][30]; a 30+ character label crashes the assembler
@@ -1194,7 +1198,7 @@ class Gen:
                 if hazard: self.push_r3(); parked.append(i)
                 else: self.ins("STR", "R3,%d" % (SYSARG + 2 * i))
             for i in reversed(parked): self.pop_r4(); self.ins("STR", "R4,%d" % (SYSARG + 2 * i))
-            if n is not None: self.ins("LDR", "R7,%d" % (SYSTAB + 2 * n))
+            if n is not None: self.ins("LDR", "R7,%d" % ((SYSTAB if n <= SYSOLD else SYSTAB2) + 2 * n))
             else:
                 self.ins("POPR", "R3"); self.ins("LDAVR", "R3"); self.ins("MVAT"); self.ins("INCR", "R3")
                 self.ins("LDAVR", "R3"); self.ins("MVARL", "R7"); self.ins("MVTA"); self.ins("MVARH", "R7")

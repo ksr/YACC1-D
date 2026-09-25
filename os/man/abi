@@ -24,18 +24,20 @@ DESCRIPTION
         UARTINNE  $FFFC  a console byte without echo
 
     RAM: SYSARG0..2 $0F06/$0F08/$0F0A and SYSRES $0F0C (the syscall
-    block), CFLBA0..2 $0F10..$0F12, SYSTAB $0F14 (22 word entries),
+    block), CFLBA0..2 $0F10..$0F12, SYSTAB $0F14 (entries 0..21),
+    SYSTAB2 $4FC0 (entries 0..31, 2026-09-25; SYS_OLD = 21),
     ARGBUF $0F40 (ARGMAX = 127 characters + NUL: argstr()), OSBASE
     $1000, TPA $5000 and TPATOP $D000 (the program area).
 
     Syscalls: sys(n, a, b, c) puts a, b, c in SYSARG0..2, calls the
-    word at SYSTAB + 2n and returns SYSRES, a full 16-bit word:
+    word at SYSTAB + 2n (n 0..21; 22..31 at SYSTAB2 + 2n) and returns
+    SYSRES, a full 16-bit word:
          0 SYS_OPEN      8 SYS_MKDIR    16 SYS_ENTRY
          1 SYS_READ      9 SYS_RMDIR    17 SYS_CONIN
          2 SYS_GETC     10 SYS_OPENDIR  18 SYS_CONST
          3 SYS_CLOSE    11 SYS_READDIR  19 SYS_CONOUT
                                         20 SYS_KEYIN
-                                        21 SYS_STDIO  (SYSTAB full)
+                                        21 SYS_STDIO  (SYSTAB's last)
          4 SYS_CREATE   12 SYS_RESOLVE
          5 SYS_WRITE    13 SYS_GETCWD
          6 SYS_PUTC     14 SYS_CHDIR

@@ -123,7 +123,8 @@ result is a full 16-bit word (no carry bit): 1/0 for done/cannot, a handle or 0,
 |---|---|---|
 | $0F06 / $0F08 / $0F0A | SYSARG0 / 1 / 2 | the arguments (big-endian words, `peekw`/`pokew` order) |
 | $0F0C | SYSRES | the result |
-| $0F14..$0F3F | SYSTAB | 22 word entries, `SYSTAB + 2n` = the address of handler `n`; 0 for an unused slot |
+| $0F14..$0F3F | SYSTAB | 22 word entries 0..21, `SYSTAB + 2n` = the address of handler `n` |
+| $4FC0..$4FFF | SYSTAB2 | (2026-09-25) 32 word entries 0..31, `SYSTAB2 + 2n`; 0..21 the same as SYSTAB's, 0 for an unused slot |
 
 | n | Name | Arguments | Result |
 |---|---|---|---|
@@ -150,8 +151,15 @@ result is a full 16-bit word (no carry bit): 1/0 for done/cannot, a handle or 0,
 | 20 | KEYIN | | a KEY: always the console, never redirected, no echo; 65535 on Ctrl-D / NUL. The `--More--` key, `vi`, `dump`, `examine` (2026-09-23) |
 | 21 | STDIO | | bit 0: stdin is redirected, bit 1: stdout is (the pager does not page into a file) (2026-09-23) |
 
-All 22 slots are in use. The next syscall needs the table moved, since ARGBUF follows it: the plan (BACKLOG.md) is a
-32-entry table at $4FC0-$4FFF, which the assembly OS keeps free, with `SYSTAB` changed in `lib_abi.c` and `y1cc.py`.
+**Two tables** (2026-09-25). SYSTAB's 22 slots were all in use and ARGBUF follows it, so it cannot grow; moving it
+would have broken every program compiled before (they read `SYSTAB + 2n`). So the OS now fills SYSTAB2, 32 entries at
+$4FC0-$4FFF at the top of its own RAM (both kernels keep that free: the assembly OS's variables end at $4F17, the
+Makefile checks the C OS's data against $4FC0), and copies its first 22 words to SYSTAB. Every entry keeps its number
+and every old address still works. `y1cc`'s `sys(n)` reads SYSTAB for a constant n of 0..21 (so its output for every
+existing program is unchanged) and SYSTAB2 for 22..31 (`LDR R7,$4FC0+2n`); a computed n still indexes SYSTAB, so
+it reaches 0..21 only (a new syscall is called with a constant, as `lib_fs.c` does); a number over 31 is a compile
+error. `lib_abi.c`: `SYSTAB2`, `SYS_OLD` = 21. Tests: `tests/compiler/syscall2.c` (both tables, standalone),
+`sysbig.c` (the error), `tests/os/systab.session` (both kernels fill both, STDIO called through SYSTAB2).
 
 Handles: four, each with its own 512-byte buffer and a **24-bit position and length** (since 2026-09-25: a file is up
 to 16M - 1 bytes; with the 16-bit positions before, a file over 64K could not be opened or written past 64K). The
@@ -348,12 +356,13 @@ image is byte-identical, and that the next file lands at the new free pointer.
 | $0EFF down | the hardware stack, the monitor's (not below $0C00: the handle buffers end at $0BFF) |
 | $0F06–$0F0D | SYSARG0..2, SYSRES (the OS's syscall parameter block) |
 | $0F10–$0F12 | CFLBA0..2, the sector for CFREAD/CFWRITE (ROM variables) |
-| $0F14–$0F3F | SYSTAB, the syscall jump table (22 entries, all used since 2026-09-23) |
+| $0F14–$0F3F | SYSTAB, the syscall jump table (entries 0..21, all used since 2026-09-23; the OS copies them from SYSTAB2) |
 | $0F40–$0FBF | ARGBUF, a program's command tail (127 chars + NUL; the upper half overlays the monitor's idle line buffer) |
 | $1000–$2D16 | the OS image (`y1os.asm`, 7,447 bytes, 2026-09-25); the Makefile fails the build if it reaches $4A00 |
 | $2D17–$49FF | free (7,401 bytes) |
 | $4A00–$4F0F | the OS's RAM, cleared at boot: line $4A00 (page-aligned), path, path copy, the entry, name buffers; the pipeline table $4B80; the sector buffer $4C00 (512-aligned); the handle records $4E00 (page-aligned, 16 bytes each); the variables $4E50-$4F0F |
-| $4F10–$4FFF | free; $4FC0-$4FFF is kept for a 32-entry SYSTAB (BACKLOG) |
+| $4F18–$4FBF | free |
+| $4FC0–$4FFF | SYSTAB2, the 32-entry syscall table (2026-09-25) |
 | (C OS) | `y1os.c` instead (`--xisa`): image 13,149 bytes and data 1,699 in $1000-$49FF, which the Makefile checks against $4FBF |
 | $5000–$CFFF | programs |
 
