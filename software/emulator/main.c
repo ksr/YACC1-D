@@ -99,6 +99,21 @@ void stack_report(void) {
     if (sstart && smin < 0x10000) fprintf(stderr, ", stack $%04X down to $%04X, %u bytes", sstart, smin, sstart - smin);
     fprintf(stderr, "\n");
 }
+/* -P FILE (YACC1-D 2026-09-25): the PC histogram, for profiling. Every instruction counts at its address; at every
+   program start (a JSRUR to $5000, as -S sees it) and at exit the counts so far go to FILE as a block
+   "program N" (0 = before the first program: the monitor, the OS booting) and one line "AAAA count" per address that
+   ran, then start again from zero; tests/native/profile.py turns the blocks into instructions per function from the
+   programs' and the OS's assembly */
+FILE *pcfile = NULL;
+unsigned long pchist[65536];
+int pcseg = 0;
+void pc_dump(void) {
+    if (!pcfile) return;
+    fprintf(pcfile, "program %d\n", pcseg);
+    for (unsigned a = 0; a < 65536; a++) if (pchist[a]) { fprintf(pcfile, "%04X %lu\n", a, pchist[a]); pchist[a] = 0; }
+    fflush(pcfile);
+}
+void pc_exit(void) { pc_dump(); if (pcfile) fclose(pcfile); pcfile = NULL; }
 int exit_on_halt = 0;           /* YACC1-D 2026-09-22: -x, for scripted runs (compiler tests): quiet load, exit at HALT */
 unsigned long ilimit = 0;       /* -l N: stop after N instructions (scripted runs of code that never HALTs) */
 
@@ -448,6 +463,7 @@ void print_usage(const char *progname) {
     printf("  -x           Scripted run: no load/dump chatter, HALT exits (instruction count on stderr)\n");
     printf("  -c image     Attach a CompactFlash image on ports P8/P9 (created zero-filled if missing)\n");
     printf("  -l N         Stop after N instructions (with -x: status on stderr)\n");
+    printf("  -P file      PC histogram: instructions per address, a block per program Y1/OS starts, into file\n");
     printf("  -S           Program watch: per program Y1/OS starts (JSRUR $5000) its instructions and own stack, on stderr\n");
 }
 
@@ -469,6 +485,9 @@ int main(int argc, char** argv) {
             load_standard = true;
         } else if (strcmp(argv[arg], "-S") == 0) {
             stackwatch = 1; atexit(stack_report);
+        } else if (strcmp(argv[arg], "-P") == 0 && arg + 1 < argc) {
+            if (!(pcfile = fopen(argv[++arg], "w"))) { fprintf(stderr, "cannot write %s\n", argv[arg]); return EXIT_FAILURE; }
+            atexit(pc_exit);
         } else if (strcmp(argv[arg], "-x") == 0) {
             exit_on_halt = 1;
         } else if (strcmp(argv[arg], "-l") == 0 && arg + 1 < argc) {
@@ -522,6 +541,7 @@ int main(int argc, char** argv) {
 
         ins = memory_read(register_read_word(PC));
         icount++;
+        if (pcfile) pchist[register_read_word(PC)]++;
         if (stackwatch) {
             unsigned sp = register_read_word(1), pc = register_read_word(PC);
             if (pc >= 0x5000 && pc < 0xD000) slast = icount;
@@ -638,6 +658,7 @@ int main(int argc, char** argv) {
                 /* YACC1-D 2026-09-22: PC <- Rn (the bytes were swapped here; the microcode copies hi to hi) */
                 register_write_hi(PC, register_read_hi(reg));
                 register_write_lo(PC, register_read_lo(reg));
+                if (pcfile && register_read_word(PC) == 0x5000) { pc_dump(); pcseg++; }   /* -P: a new block */
                 if (stackwatch && register_read_word(PC) == 0x5000) {   /* -S: Y1/OS starts a program */
                     stack_report(); sseg++; sstart = 0; smin = 0x10000; sicount = icount; slast = icount;
                 }
