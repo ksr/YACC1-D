@@ -289,13 +289,13 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
      with the emulator's stack watch (`emulator -S`): every pass stays above its data (measured 2026-09-24 in
      passes.py: 84-1,202 bytes on the corpus, cc2 about 144 more per level of parentheses, cc8 62 per level of
      operators).)
-  3. Y1/OS: an exit syscall (`io_fail`/`io_done` HALT today); (done 2026-09-25: files over 64K - 24-bit positions
-     and lengths in both kernels, `tests/os/big.session`; y1os.c's intermediate files and the passes' own assembly
-     are 70-250K); an
-     `#include` deeper than three open files (four handles, one writing) needs `target_io.c` to close and reopen
-     the outer file; a way to run the nine passes in turn (no exec: a shell script facility or a driver);
-     `lib/y1ccrt.txt` on the disk as `/LIB/Y1CCRT.TXT`.
-  4. Run a pass on the emulator under Y1/OS (`c/target_io.c` is compiled, never run), then the whole chain.
+  3. (done 2026-09-25: **Y1/OS for the compiler** - files over 64K (24-bit positions and lengths in both kernels,
+     `tests/os/big.session`), SYSTAB2 (32 entries), the syscalls EXIT, EXEC and SEEK (`tests/os/exec.session`),
+     `/BIN/CC` chaining the passes with EXEC, the lexer's `#include` stack over three real handles
+     (`c/target_inc.c`), `/LIB/Y1CCRT.TXT` and `/LIB/Y1LIB.C` on the disk. The passes are built with `--xisa` since:
+     with the chaining and the include stack cc1, cc6 and cc9 no longer fit 32K without it.)
+  4. (done 2026-09-25: **the passes run under Y1/OS** - one by one and chained by `cc`, on the emulators;
+     `tests/native/run.py`.)
   5. (done 2026-09-25: **the on-target assembler** `/BIN/ASM`, wave 3 of os/PORT-PLAN.md - byte-identical to the host
      assembler on the corpus, the nine passes' assembly among it; its 16,640-byte symbol pool holds cc8's 1,326
      labels, the most of any pass. The host assembler's label table: done 2026-09-24, 8,191 labels with a clear error

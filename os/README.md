@@ -24,11 +24,11 @@ make -C os test         # tests/os/run.py: scripted sessions on both emulators a
 The monitor's `O` command (ROM, `firmware/monitor/monitor.asm`) initialises the card (SET FEATURES, 8-bit mode),
 reads the boot block (LBA 0) to $1000, checks the `P8` signature and OSCNT, reads LBA 1..OSCNT to $1000 and JSRURs
 it. `y1os.asm` starts at `ORG 1000H` with its entry (`os_start`), so the monitor lands on it; `exit` RETs and the
-monitor's prompt is back. `tools/p8xfs.py boot disk.img build/y1os.bin` installs it: **7,447 bytes = 15 of the 32
-reserved sectors** (2026-09-25 with 24-bit files; 7,151 on 2026-09-23 (v0.2); the C version is 13,149 bytes = 26
-sectors compiled with `--xisa`, 14,619 = 29 without on 2026-09-23, 12,204 = 24 before redirection and pipes, and v0
-was 5,136). Its image must end below its RAM at $4A00 (the Makefile checks and prints it: 7,401 bytes free between
-them); the C version's image plus data must end below $4FC0 (14,848 of 16,320). Since 2026-09-25 the C version is
+monitor's prompt is back. `tools/p8xfs.py boot disk.img build/y1os.bin` installs it: **7,808 bytes = 16 of the 32
+reserved sectors** (2026-09-25 with 24-bit files, SYSTAB2, EXIT/EXEC/SEEK; 7,151 on 2026-09-23 (v0.2); the C version
+is 14,041 bytes = 28 sectors compiled with `--xisa`, 14,619 = 29 without on 2026-09-23, 12,204 = 24 before
+redirection and pipes, and v0 was 5,136). Its image must end below its RAM at $4A00 (the Makefile checks and prints
+it: 7,040 bytes free between them); the C version's image plus data must end below $4FC0 (15,829 of 16,320). Since 2026-09-25 the C version is
 always compiled with `y1cc --xisa`: with 24-bit files it no longer fitted without (it is the specification and runs
 on the emulators; the machine runs the assembly OS). At boot the OS
 clears its RAM $4A00-$4FFF (the C clears its BSS: the same effect, the handle table and the redirect state zeroed),
@@ -123,6 +123,7 @@ result is a full 16-bit word (no carry bit): 1/0 for done/cannot, a handle or 0,
 |---|---|---|
 | $0F06 / $0F08 / $0F0A | SYSARG0 / 1 / 2 | the arguments (big-endian words, `peekw`/`pokew` order) |
 | $0F0C | SYSRES | the result |
+| $0F0E | STATUS | (2026-09-25) the status of the program that ran last: 0 when its main returned, else what it gave EXIT; set when it ends, so the next program reads the previous one's (a shell's `$?`) |
 | $0F14..$0F3F | SYSTAB | 22 word entries 0..21, `SYSTAB + 2n` = the address of handler `n` |
 | $4FC0..$4FFF | SYSTAB2 | (2026-09-25) 32 word entries 0..31, `SYSTAB2 + 2n`; 0..21 the same as SYSTAB's, 0 for an unused slot |
 
@@ -150,6 +151,9 @@ result is a full 16-bit word (no carry bit): 1/0 for done/cannot, a handle or 0,
 | 19 | CONOUT | byte | nothing (SYSRES untouched): the byte to STDOUT, the shell's `>`/`>>` file or pipe, else the raw console (CHAROUT). `y1cc --os`: `putchar()`, `puts()` (2026-09-23) |
 | 20 | KEYIN | | a KEY: always the console, never redirected, no echo; 65535 on Ctrl-D / NUL. The `--More--` key, `vi`, `dump`, `examine` (2026-09-23) |
 | 21 | STDIO | | bit 0: stdin is redirected, bit 1: stdout is (the pager does not page into a file) (2026-09-23) |
+| 22 | EXIT | status | (2026-09-25, SYSTAB2) does not return: the program ends at once, from any depth and on any stack, as if its main had returned (its files closed, a pending write registered); STATUS = status |
+| 23 | EXEC | path, args | (2026-09-25, SYSTAB2) 0 when path is over 63 characters, not found, not a file, or does not load into $5000-$CFFF (the `load` rule); else does not return: the caller ends as with EXIT(0) and path is loaded and run with args (0 = none; up to 127 characters) as its command tail, in the same shell command (a `>` or a pipe stays) |
+| 24 | SEEK | handle, hi, lo | (2026-09-25, SYSTAB2) 1: the read handle's position is now hi:lo (24 bits), not past its length; 0 for another handle, past the end, a card error. Inside a sector that sector is read into the handle's buffer |
 
 **Two tables** (2026-09-25). SYSTAB's 22 slots were all in use and ARGBUF follows it, so it cannot grow; moving it
 would have broken every program compiled before (they read `SYSTAB + 2n`). So the OS now fills SYSTAB2, 32 entries at
@@ -178,8 +182,42 @@ the free pointer. `MKDIR` allocates at the same pointer, so it is refused while 
 leaves open, the shell closes when the program returns (a pending write is registered, not lost; the shell's own
 redirect files stay open until the command is done). A same-named file is replaced at CLOSE, not at CREATE (since
 2026-09-23): the new entry is written over the old one's slot, so the old file is whole and readable until then.
-Files are contiguous: there is no seek, the only append is the shell's `>>` (above), and dead sectors come back
-only with `/BIN/PACK` (below).
+Files are contiguous: a read handle can SEEK (since 2026-09-25), the only append is the shell's `>>` (above), and dead
+sectors come back only with `/BIN/PACK` (below).
+
+### EXIT, EXEC and chaining programs (2026-09-25)
+
+The native C compiler is nine programs that must run one after the other with arguments (BACKLOG "The road to a
+native compiler"); a program could only end by returning from main. Two syscalls in SYSTAB2:
+
+- **EXIT(status)** ends the program from anywhere. The shell calls a program through a small routine that keeps its
+  own SP first (`rp_call` in `y1os.asm`: `MOVRR R1,R5 / STR R5,OS_SP / JSRUR R7 / RET`); EXIT's handler loads that
+  SP back into R1 and RETs, which lands in `run_prog` exactly where the program's own RET would have. So it works
+  from any depth (static frames need no unwinding) and from a program on its own stack (`y1cc --stack`, the
+  compiler's passes). y1cc cannot set R1, so `y1os.c` does the same with a 15-byte machine-code stub in a char array
+  (`stub`: the same four instructions, and `LDR R1,os_sp / RET` at stub+11 for EXIT), whose two addresses
+  `install()` fills in. The status goes to STATUS ($0F0E) when the program has ended, for the next one to read.
+- **EXEC(path, args)** replaces the caller: the handler checks that path can be run (the `load` rule: a file that
+  loads into $5000-$CFFF, not empty), copies it out of the program area (XPATH), copies args to ARGBUF, and ends the
+  caller as EXIT(0) does; `run_prog` closes what the caller left open, then loads XPATH and runs it the same way,
+  and again for as long as programs EXEC. It all stays one shell command: a `>` file or a pipe stays open across the
+  chain (`cc prog.c > LOG` sends all nine passes' output there), and the shell's prompt comes back only at the end.
+  EXEC returns (0) only when path cannot be run, so the caller can say so.
+- **Why EXEC and not batch files:** each pass knows its successor (it is fixed) and runs it with one argument, the
+  work prefix, so a chain needs no parser, no files and no shell change; a pass that finds an error EXITs (status
+  1) and the chain stops there by itself, where a batch file would need a test of STATUS. The driver is one small
+  command, `/BIN/CC` (`commands/cc.c`): it EXECs `/LIB/CC/CC1` with `CCW` + its command line; `cc1`..`cc8` EXEC
+  `/LIB/CC/CC2`..`CC9` with `CCW`, `cc9` returns. (`software/compiler/README.md`, "Native".)
+- **SEEK(handle, hi, lo)** positions a read handle (24 bits). The compiler's lexer needs it: a `/BIN` source nests
+  `#include`s five deep, and with four handles, one of them writing, only three can be open, so `target_inc.c`
+  closes the outermost file and later opens it again and SEEKs to where it was.
+
+Tests: `tests/os/exec.session` (`tests/os/exe.c`, also built with `--stack 0xCFFF` as `/EXES`): EXIT from three
+recursive calls deep and from a program on its own stack, STATUS as the next program sees it, a chain of four EXECs
+in one command and the same under `>`, EXEC refused for a missing file, a directory, a file that would run past
+$CFFF and a 64-character path, SEEK inside a sector, to the end, past it and on a directory handle, and EXIT inside
+a pipe; `big.session`'s `bigr -k` SEEKs across 64K and 128K in a 140K file; both kernels, both emulators.
+`tests/native/run.py` runs the compiler through `cc`.
 
 Directory entries are the 32-byte P8XFS v2 records, little-endian on disk: name[12] (space-padded) start[4]
 length[4] load[2] exec[2] flags (1 file, 2 directory, $FF deleted, 0 end of directory); `lib_fs.c`'s `ent_len()`,
@@ -242,6 +280,7 @@ names, globs and `-` (the console until Ctrl-D) work wherever a command reads te
 |---|---|
 | `asm [-h] SRC [OUT]` | the assembler (2026-09-25, below): RC/asm's dialect to a program file, or Intel hex with `-h` |
 | `awk [-F c] 'prog' [file...]` | one rule: `/re/ {print $1, $NF, NR, NF, "text"}` |
+| `cc prog.c [-o prog.asm] [y1cc options]` | the C compiler (2026-09-25): y1cc's nine passes, `/LIB/CC/CC1`..`CC9`, chained with EXEC; the assembly is byte-identical to y1cc.py's (`man cc`, `software/compiler/README.md` "Native") |
 | `cat [file\|glob\|-]...` | print files byte-exact, or the console |
 | `cmp f1 f2` | the first differing byte and line, or silence |
 | `cp [-r] src dst` | copy a file, a glob into a directory, or (`-r`) a tree; load/exec kept |
@@ -272,7 +311,8 @@ names, globs and `-` (the console until Ctrl-D) work wherever a command reads te
 | `vi [file]` | the screen editor (VT100) |
 | `wc [file...]` | lines, words, bytes (32-bit) |
 
-Also on the disk: `/MAN` (the pages, from `os/man/`), `/DOCS` (this README as `OS.MD`, the compiler README as
+Also on the disk: `/LIB` (2026-09-25: the compiler's passes `/LIB/CC/CC1`..`CC9`, built with `make -C os passes`,
+and `/LIB/Y1CCRT.TXT`, `/LIB/Y1LIB.C`), `/MAN` (the pages, from `os/man/`), `/DOCS` (this README as `OS.MD`, the compiler README as
 `Y1CC.MD`, `OSPLAN.MD`, `PORT.MD` and `MDDEMO.MD`, md's own sample), and `/FRUIT.TXT` + `/FRUIT2.TXT`, seven lines of
 sample data for trying the filters (`sort`, `uniq`, `awk`, `diff` ... the man pages' examples use them).
 
@@ -358,12 +398,12 @@ image is byte-identical, and that the next file lands at the new free pointer.
 | $0F10–$0F12 | CFLBA0..2, the sector for CFREAD/CFWRITE (ROM variables) |
 | $0F14–$0F3F | SYSTAB, the syscall jump table (entries 0..21, all used since 2026-09-23; the OS copies them from SYSTAB2) |
 | $0F40–$0FBF | ARGBUF, a program's command tail (127 chars + NUL; the upper half overlays the monitor's idle line buffer) |
-| $1000–$2D16 | the OS image (`y1os.asm`, 7,447 bytes, 2026-09-25); the Makefile fails the build if it reaches $4A00 |
-| $2D17–$49FF | free (7,401 bytes) |
+| $1000–$2E7F | the OS image (`y1os.asm`, 7,808 bytes, 2026-09-25); the Makefile fails the build if it reaches $4A00 |
+| $2E80–$49FF | free (7,040 bytes) |
 | $4A00–$4F0F | the OS's RAM, cleared at boot: line $4A00 (page-aligned), path, path copy, the entry, name buffers; the pipeline table $4B80; the sector buffer $4C00 (512-aligned); the handle records $4E00 (page-aligned, 16 bytes each); the variables $4E50-$4F0F |
-| $4F18–$4FBF | free |
+| $4F1D–$4FBF | free (the variables end at $4F1C; XPATH, EXEC's path, is at $4B9C in the pipeline page) |
 | $4FC0–$4FFF | SYSTAB2, the 32-entry syscall table (2026-09-25) |
-| (C OS) | `y1os.c` instead (`--xisa`): image 13,149 bytes and data 1,699 in $1000-$49FF, which the Makefile checks against $4FBF |
+| (C OS) | `y1os.c` instead (`--xisa`): image 14,041 bytes and data 1,788 in $1000-$4DD4, which the Makefile checks against $4FBF |
 | $5000–$CFFF | programs |
 
 ## Inside
@@ -449,7 +489,7 @@ intact (fsck, the boot block, every pristine file byte-identical); against the o
 ## Not there yet
 
 FORMAT and FSCK on the target (the host
-tool has them), seek, a second write handle (so `cp` works inside a `>` or a pipe), concurrent pipes (they run one
+tool has them), a second write handle (so `cp` works inside a `>` or a pipe), concurrent pipes (they run one
 after the other through temp files), `2>` (errors always go to the screen), the command history, a YACC1 `disasm` (`os/PORT-PLAN.md`
 wave 3; `asm` is there since 2026-09-25), BASIC as `/BIN/BASIC`, and the CF interface in hardware (planned on
 the memory card), all in BACKLOG.md.

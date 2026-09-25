@@ -2,6 +2,8 @@
    y1cc.py compiles to prove that y1cc.c is written in the subset (tests/compiler/corpus.py "self"; the Makefile's
    `make target` assembles it and reports its size against the 32K program area). Not run on the machine yet. */
 #include "limits_y1.h"
+char *io_next_pass = "";                         /* one program: nothing to run next */
 #include "target_io.c"
+#include "target_inc.c"
 #include "target_sec.c"
 #include "y1cc.c"

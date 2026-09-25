@@ -1,0 +1,14 @@
+exe x 5
+exe s
+exe s
+exes x 7
+exe s
+exe c 3
+exe s
+exe c 2 > /E.TXT
+cat /E.TXT
+exe b
+exe f
+exe x 1 | cat
+exe s
+exit

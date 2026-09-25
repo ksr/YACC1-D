@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """tests/native/run.py - the native C compiler under Y1/OS (2026-09-25): the nine passes of the multi-pass y1cc
 (software/compiler/c/cc1_lex.c .. cc9_final.c) built as Y1/OS programs (make -C os passes: y1cc.py --os --org 0x5000
---stack 0xCFFF), put on a copy of the OS disk with the compiler's library (/LIB/CC/CC1..CC9, /LIB/Y1CCRT.TXT,
-/LIB/Y1LIB.C), and run on the emulated YACC1 to compile C programs; the assembly they write must be byte-identical
-to what y1cc.py writes on the Mac (the header's date masked: Y1/OS has no clock).
+--stack 0xCFFF --xisa), on the OS disk with the compiler's library (/LIB/CC/CC1..CC9, /LIB/Y1CCRT.TXT, /LIB/Y1LIB.C)
+and /BIN/CC, which starts the chain (each pass EXECs the next), run on the emulated YACC1 to compile C programs; the
+assembly they write must be byte-identical to what y1cc.py writes on the Mac (the header's date masked: Y1/OS has
+no clock).
 
   run.py [name ...] [-v] [--keep]     name = a program of PROGRAMS (default: all)
 
@@ -47,18 +48,10 @@ def bss_end(name):
 
 
 def make_disk(progs):
-    sh(["make", "-s", "-C", OS])
-    sh(["make", "-s", "-C", OS, "passes"])
+    sh(["make", "-s", "-C", OS])                    # the disk has the compiler: /BIN/CC, /LIB/CC/CC1..CC9, /LIB/...
     os.makedirs(BUILD, exist_ok=True)
     img = os.path.join(BUILD, "native.img")
     shutil.copy(os.path.join(OS, "disk.img"), img)
-    sh(FS + ["mkdir", img, "/LIB"])
-    sh(FS + ["mkdir", img, "/LIB/CC"])
-    for i, n in enumerate(PASSN):
-        sh(FS + ["put", img, os.path.join(OS, "build/cc", n + ".bin"), "--name", "/LIB/CC/CC%d" % (i + 1),
-                 "--load", "0x5000", "--exec", "0x5000"])
-    sh(FS + ["put", img, os.path.join(ROOT, "software/compiler/lib/y1ccrt.txt"), "--name", "/LIB/Y1CCRT.TXT"])
-    sh(FS + ["put", img, os.path.join(ROOT, "software/compiler/lib/y1lib.c"), "--name", "/LIB/Y1LIB.C"])
     sh(FS + ["mkdir", img, "/SRC"])
     sh(FS + ["mkdir", img, "/OUT"])
     for name, src, opts in progs:
@@ -74,8 +67,7 @@ def main():
     img = make_disk(progs)
     lines = ["O"]
     for name, src, opts in progs:
-        lines.append("run /LIB/CC/CC1 /OUT/W /SRC/%s -o /OUT/%s.ASM %s" % (os.path.basename(src), name.upper(), " ".join(opts)))
-        lines += ["run /LIB/CC/CC%d /OUT/W" % i for i in range(2, 10)]
+        lines.append("cc /SRC/%s -o /OUT/%s.ASM %s" % (os.path.basename(src), name.upper(), " ".join(opts)))
     lines += ["exit", "0", ""]
     r = subprocess.run([EMU, "-x", "-S", "-m", "-c", img, "-l", "2000000000"], input="\n".join(lines).encode(),
                        capture_output=True)

@@ -11,7 +11,8 @@ FRUIT2.TXT 94  @B000
 README.TXT 156  @B000
 MAN <DIR>
 DOCS <DIR>
-6 entries
+LIB <DIR>
+7 entries
 /> 
 ls: not found
 /> 
@@ -22,7 +23,8 @@ FRUIT2.TXT 94  @B000
 README.TXT 156  @B000
 MAN <DIR>
 DOCS <DIR>
-6 entries
+LIB <DIR>
+7 entries
 /BIN> 
 Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
 LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
@@ -53,8 +55,9 @@ FRUIT2.TXT 94  @B000
 README.TXT 156  @B000
 MAN <DIR>
 DOCS <DIR>
+LIB <DIR>
 COPY.TXT 156  @B000
-7 entries
+8 entries
 /> 
 bye
 >

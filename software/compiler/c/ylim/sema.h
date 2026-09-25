@@ -3,9 +3,9 @@
 #define LITS_MAX     160
 #define STRUCTS_MAX  16
 #define MEMBERS_MAX  64
-#define FUNCS_MAX    170
-#define REACH_ROW    22
-#define REACH_BYTES  3762
+#define FUNCS_MAX    200
+#define REACH_ROW    25
+#define REACH_BYTES  5025
 #define VARS_MAX     380
 #define GLOBS_MAX    128
 #define TREE_MAX     40

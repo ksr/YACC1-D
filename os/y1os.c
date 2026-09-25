@@ -83,6 +83,16 @@ int wh;                         /* the write handle in use, 0 none: CREATE/MKDIR
 int w_dlba, w_dsecs, w_load, w_exec;          /* the write handle's directory and header */
 char w_name[13];
 int w_oslba, w_ooff;            /* the live same-named file a CREATE replaces: its entry's sector/offset (0 = none) */
+/* running programs (2026-09-25): EXIT and EXEC end a program from anywhere inside it, so the shell's SP is kept
+   while one runs and put back by a small machine-code stub (y1cc cannot set R1): stub+0 = MOVRR R1,R5 / STR R5,os_sp /
+   LDR R7,ex_addr / JSRUR R7 / RET calls the program; stub+11 = LDR R1,os_sp / RET returns from that call as if the
+   program had returned, whatever its own stack (y1cc --stack). install() puts the two addresses in. */
+int os_sp;                      /* the shell's SP inside the stub, while a program runs */
+int ex_addr;                    /* the program's exec address */
+int ex_code;                    /* its status: 0, or what it gave EXIT; STATUS ($0F0E) after it */
+char ex_pend;                   /* EXEC: xpath runs next */
+char xpath[64];                 /* EXEC's program, out of the program area */
+char stub[] = {15, 81, 237, 0, 0, 247, 0, 0, 6, 7, 5, 241, 0, 0, 5};
 int si_h, so_h;                 /* the shell's redirection: 0 = the console, else the handle of the < file / pipe
                                    (SI_EMPTY: a pipe stage after one that wrote its own > file: empty input) and of
                                    the > or >> file / pipe */
@@ -304,6 +314,19 @@ int fs_read(int h, char *buf) {
     s++;
     h_posx[h] = s >> 7; h_pos[h] = s << 9;
     return 512;
+}
+
+int fs_seek(int h, int hi, int lo) {    /* SEEK (2026-09-25): a read handle's position <- hi:lo, not past the length;
+                                   inside a sector that sector is loaded into the handle's buffer; 1 done */
+    int s;
+    if (mode_of(h) != M_READ || hi > h_lenx[h] || (hi == h_lenx[h] && lo > h_len[h])) return 0;
+    if (lo & 511) {
+        s = sec_of(hi, lo);
+        if (cfread(h_lba[h] + s, hb(h))) return 0;
+        h_cur[h] = s;
+    }
+    h_pos[h] = lo; h_posx[h] = hi;
+    return 1;
 }
 
 int fs_getc(int h) {            /* the next byte through the handle's own buffer; 65535 at the end */
@@ -601,6 +624,23 @@ void h_conin()   { pokew(SYSRES, con_in()); }
 void h_const()   { pokew(SYSRES, con_st()); }
 void h_conout()  { con_out(peekw(SYSARG0)); }                     /* SYSRES untouched: it returns nothing */
 void h_keyin()   { pokew(SYSRES, key_in()); }
+void h_seek()    { pokew(SYSRES, fs_seek(peekw(SYSARG0), peekw(SYSARG1), peekw(SYSARG2))); }
+void h_exit() {                 /* EXIT(status): back to run_prog, as if the program had returned */
+    ex_code = peekw(SYSARG0);
+    call(stub + 11);
+}
+int loadable();
+void h_exec() {                 /* EXEC(path, args): 0 when path cannot run; else the caller ends and path runs */
+    char *p, *a, *b; int i;
+    p = peekw(SYSARG0); a = peekw(SYSARG1);
+    if (strlen(p) > 63 || !resolve(p) || e_flags != F_FILE || !loadable()) { pokew(SYSRES, 0); return; }
+    strcpy(xpath, p);
+    b = ARGBUF; i = 0;
+    if (a) for (; i < ARGMAX && a[i]; i++) b[i] = a[i];    /* forward: an a inside ARGBUF is fine */
+    b[i] = 0;
+    ex_pend = 1; ex_code = 0;
+    call(stub + 11);
+}
 void h_stdio() {
     int r;
     r = 0; if (si_h) r = 1; if (so_h) r += 2;
@@ -634,6 +674,11 @@ void install() {                /* SYSTAB2 <- the handlers, then its first 22 wo
     pokew(SYSTAB2 + 2 * SYS_CONOUT, funcaddr(h_conout));
     pokew(SYSTAB2 + 2 * SYS_KEYIN, funcaddr(h_keyin));
     pokew(SYSTAB2 + 2 * SYS_STDIO, funcaddr(h_stdio));
+    pokew(SYSTAB2 + 2 * SYS_EXIT, funcaddr(h_exit));
+    pokew(SYSTAB2 + 2 * SYS_EXEC, funcaddr(h_exec));
+    pokew(SYSTAB2 + 2 * SYS_SEEK, funcaddr(h_seek));
+    i = &os_sp; stub[3] = i >> 8; stub[4] = i; stub[12] = i >> 8; stub[13] = i;
+    i = &ex_addr; stub[6] = i >> 8; stub[7] = i;
     for (i = 0; i < 2 * (SYS_OLD + 1); i++) poke(SYSTAB + i, peek(SYSTAB2 + i));
 }
 
@@ -682,15 +727,17 @@ void cmd_cat(char *path) {
     fs_close(h);
 }
 
+int loadable() {                /* the file in e_* fits the program area: whole sectors land below TPATOP (not
+                                   e_load + e_secs * 512: that wraps to e_load at 128 sectors, fixed 2026-09-23); an
+                                   empty file is refused (it loaded a sector and `run` jumped into it) */
+    return !(e_load < TPA || e_load >= TPATOP || e_secs > (TPATOP - e_load) >> 9 || !e_len);
+}
+
 int load_file(char *path) {             /* file -> its load address; 1 ok */
     int h; char *dst;
     h = file_of(path);
     if (!h) return 0;
-    if (e_load < TPA || e_load >= TPATOP || e_secs > (TPATOP - e_load) >> 9 || !e_len) {  /* whole sectors land
-                                  below TPATOP; not e_load + e_secs * 512: that wraps to e_load at 128 sectors (fixed
-                                  2026-09-23); an empty file is refused (it loaded a sector and `run` jumped into it) */
-        fs_close(h); eputs("bad load address or size"); return 0;
-    }
+    if (!loadable()) { fs_close(h); eputs("bad load address or size"); return 0; }
     dst = e_load;
     while (fs_read(h, dst)) dst += 512;
     fs_close(h);
@@ -702,14 +749,20 @@ void cmd_load(char *path) {
     putstr("loaded "); putnum(e_len); putstr(" bytes at $"); puthex(e_load); crlf();
 }
 
-void run_prog(char *args) {             /* e_* = the program (already loaded): args -> ARGBUF, call it */
+void run_prog(char *args) {             /* e_* = the program (already loaded): args -> ARGBUF, call it; then the
+                                           program it EXECs, if any (2026-09-25) */
     char *a; int i;
     a = ARGBUF;
     for (i = 0; i < ARGMAX && args[i]; i++) a[i] = args[i];
     a[i] = 0;
-    call(e_exec);
-    close_all();                        /* what the program left open (a pending write is registered) */
-    read_free();                        /* the free pointer as the program left it: pack lowers it (2026-09-23) */
+    while (1) {
+        ex_pend = 0; ex_code = 0; ex_addr = e_exec;
+        call(stub);                     /* back here when main returns, and from EXIT and EXEC */
+        pokew(STATUS, ex_code);
+        close_all();                    /* what the program left open (a pending write is registered) */
+        read_free();                    /* the free pointer as the program left it: pack lowers it (2026-09-23) */
+        if (!ex_pend || !load_file(xpath)) return;
+    }
 }
 
 char *word(char *s) {                   /* NUL-terminate the word at s, return what follows it */

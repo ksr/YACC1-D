@@ -5,14 +5,14 @@ BOOT FROM CF
 /> systab
 
 0..21 in both tables: 22
-22..31 set:
+22..31 set: 22 23 24
 STDIO through SYSTAB2: 0
 /> systab > /S.TXT
 
 /> cat /S.TXT
 
 0..21 in both tables: 22
-22..31 set:
+22..31 set: 22 23 24
 STDIO through SYSTAB2: 2
 /> exit
 

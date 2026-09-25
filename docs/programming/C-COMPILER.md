@@ -162,6 +162,11 @@ Options are recognised anywhere after the source file; the source file must be t
 
 ## 6. Running on the emulators and the machine
 
+- **On the machine itself (native, 2026-09-25)**: under Y1/OS, `cc prog.c -o prog.asm --org 0x5000 --os` runs the
+  multi-pass compiler (`/LIB/CC/CC1`..`CC9`, chained with the syscall EXEC) and writes the same assembly as y1cc.py
+  (only the header's date differs); `asm prog.asm` makes the program. So far on the emulators (Y1/OS needs the CF
+  interface); `software/compiler/README.md` "Native", `tests/native/run.py`.
+
 - **Interpreter, stand-alone**: compile with `--boot`, `emulator -x -f prog.img [< input]`; stdout is the program's
   output, stderr ends with `HALT at aaaa after N instructions, R3=xxxx`. `-l N` caps the instruction count.
 - **Interpreter, under the monitor**: compile without `--boot`, `emulator -m -f prog.img`, then type `G3000` at the

@@ -6,6 +6,7 @@ BOOT FROM CF
          DOCS/
      98  FRUIT.TXT  @B000
      94  FRUIT2.TXT  @B000
+         LIB/
          MAN/
     156  README.TXT  @B000
 /> 
@@ -50,6 +51,7 @@ in /BIN:
   asm  assemble: asm [-h] SRC [OUT]  (-h: Intel hex)
   awk  one-rule awk: fields, /re/ {print $N ...}, NR NF
   cat  print files (globs, - = console)   cmp  first differing byte
+  cc   compile C: cc prog.c -o prog.asm --org 0x5000 --os  (then asm)
   cp   copy files, -r a tree               del  delete files (globs)
   dep  deposit hex bytes into memory       diff line differences
   dir  list, sorted; -R -S, globs          dump hex dump, a page a key

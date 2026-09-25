@@ -55,6 +55,7 @@ CFLBA2:     EQU 0F12H
 SYSTAB:     EQU 0F14H           ; the syscall jump table, 22 big-endian word entries 0..21 (os/README.md)
 SYSTAB2:    EQU 4FC0H           ; the 32-entry table in the OS's RAM (2026-09-25): 0..21 as SYSTAB, 22..31 new
 ARGBUF:     EQU 0F40H           ; a program's command tail, 127 characters + NUL
+STATUS:     EQU 0F0EH           ; (2026-09-25) the status of the program that ran last (0, or what it gave EXIT)
 
 ; ---- P8XFS v2 and the handle records -------------------------------------------------------------------------------
 ROOT_LBA:   EQU 33              ; the root directory's extent: LBA 33..36
@@ -233,10 +234,10 @@ systab_init:                    ; SYSTAB2's contents, copied at boot (lib_abi.c 
         DW h_conout
         DW h_keyin
         DW h_stdio
-        DW 0                    ; 22..31: not in use yet
-        DW 0
-        DW 0
-        DW 0
+        DW h_exit               ; 22 (2026-09-25; SYSTAB2 only)
+        DW h_exec               ; 23
+        DW h_seek               ; 24
+        DW 0                    ; 25..31: not in use yet
         DW 0
         DW 0
         DW 0
@@ -341,6 +342,154 @@ hst_o:      LDA SO_H
             INCR R3
 retres:     STR R3,SYSRES
             RET
+; h_exit (2026-09-25): EXIT(status). The status is kept for run_prog and the shell's SP comes back as rp_call saved
+; it, so the RET lands in run_prog as the program's own RET would have, whatever stack the program was on (y1cc
+; --stack) and however deep it was.
+h_exit:     LDR R3,SYSARG0
+            STR R3,EX_CODE
+            LDR R1,OS_SP
+            RET
+
+; h_exec: EXEC(path, args). SYSRES = 0 when the path is over 63 characters, not found, not a file, or does not load
+; into $5000-$CFFF (loadable); else the path goes to XPATH, the args (0: none; up to 127 characters, copied forward,
+; so a tail inside ARGBUF itself is fine) to ARGBUF, and the program ends as with EXIT(0): run_prog loads XPATH and
+; runs it next.
+h_exec:     LDR R3,SYSARG0
+            JSR strlen              ; R4 = the length (R3 kept)
+            MVRHA R4
+            BRNZ hx_no
+            MVRLA R4
+            LDTI 64
+            BRLT hx_1
+            BR hx_no
+hx_1:       JSR resolve
+            BRZ hx_no
+            LDA ERAW+24
+            LDTI F_FILE
+            BRNEQ hx_no
+            JSR loadable
+            BRZ hx_no
+            LDR R3,SYSARG0          ; XPATH <- the path
+            MVIW R4,XPATH
+            JSR strcpy
+            LDR R3,SYSARG1          ; ARGBUF <- the args
+            MVIW R4,ARGBUF
+            MVIB R5,127
+            MVRLA R3
+            BRNZ hx_cp
+            MVRHA R3
+            BRZ hx_z
+hx_cp:      MVRLA R5
+            BRZ hx_z
+            LDAVR R3
+            BRZ hx_z
+            STAVR R4
+            INCR R3
+            INCR R4
+            DECR R5
+            BR hx_cp
+hx_z:       LDIVR R4,0
+            LDAI 1
+            STA EX_PEND
+            MVIW R3,0
+            STR R3,EX_CODE
+            LDR R1,OS_SP
+            RET
+hx_no:      MVIW R3,0
+            BR retres
+
+; h_seek: SEEK(handle, hi, lo): a read handle's position <- hi:lo (24 bits), not past its length -> SYSRES = 1; 0 (not
+; a read handle, past the end, a card error). A position inside a sector loads that sector into the handle's
+; buffer, since GETC reads the buffer until the next boundary (fs_getc).
+h_seek:     LDR R3,SYSARG0
+            JSR mode_of             ; R4 -> the record
+            LDTI M_READ
+            BRNEQ hx_no
+            LDA SYSARG1             ; hi over 255: past any length
+            BRNZ hx_no
+            MVRLA R4                ; hi:lo against the length, bits 16-23 first
+            ORI H_LENX
+            MVARL R4
+            LDAVR R4
+            MVAT
+            LDA SYSARG1+1
+            BRGT hx_no
+            BRLT hk_in
+            MVRLA R4
+            ANDI 0F0H
+            ORI H_LEN
+            MVARL R4
+            LDAVR R4
+            MVAT
+            LDA SYSARG2
+            BRGT hx_no
+            BRLT hk_in
+            INCR R4
+            LDAVR R4
+            MVAT
+            LDA SYSARG2+1
+            BRGT hx_no
+hk_in:      LDR R3,SYSARG2          ; R3 = lo
+            MVRLA R3                ; inside a sector: load it
+            BRNZ hk_rd
+            MVRHA R3
+            ANDI 1
+            BRZ hk_set
+hk_rd:      LDA SYSARG0+1
+            JSR hbuf                ; R5 = the buffer
+            LDA SYSARG1+1
+            JSR secno               ; R6 = the sector s
+            MVRLA R4                ; R6 = start + s
+            ANDI 0F0H
+            ORI H_LBA
+            MVARL R4
+            LDAVR R4
+            MVARH R7
+            INCR R4
+            LDAVR R4
+            MVARL R7
+            MVRLA R7
+            MVAT
+            MVRLA R6
+            ADDT
+            MVARL R6
+            MVRHA R7
+            MVAT
+            MVRHA R6
+            ADDTC
+            MVARH R6
+            MOVRR R5,R7
+            JSR cfrd
+            BRNZ hx_no
+            LDA SYSARG1+1           ; cur = s
+            JSR secno
+            MVRLA R4
+            ANDI 0F0H
+            ORI H_CUR
+            MVARL R4
+            MVRHA R6
+            STAVR R4
+            INCR R4
+            MVRLA R6
+            STAVR R4
+hk_set:     MVRLA R4                ; the position
+            ANDI 0F0H
+            ORI H_POS
+            MVARL R4
+            MVRHA R3
+            STAVR R4
+            INCR R4
+            MVRLA R3
+            STAVR R4
+            MVRLA R4
+            ANDI 0F0H
+            ORI H_POSX
+            MVARL R4
+            LDA SYSARG1+1
+            STAVR R4
+            MVIW R3,1
+            BR retres
+
 ; h_conout (con_out): the byte to the > / >> / pipe file, else the raw console. SYSRES is left untouched.
 h_conout:   LDA SYSARG0+1
             MVAT
@@ -2832,37 +2981,9 @@ load_file:
         JSR file_of
         BRZ ret0
         STR R3,LF_H
-        LDR R4,E_LOAD           ; e_load < $5000, >= $D000, or e_secs > ($D000 - e_load) >> 9: refused
-        MVRHA R4
-        LDTI 50H
-        BRLT lf_bad
-        LDTI 0D0H
-        BRLT lf_in
-        BR lf_bad
-lf_in:  MVRLA R4                ; ($D000 - e_load) >> 9 = the high byte of the difference >> 1
-        BRZ lf_nb
-        MVRHA R4
-        MVAT
-        LDAI 0CFH
-        SUBT
-        BR lf_d
-lf_nb:  MVRHA R4
-        MVAT
-        LDAI 0D0H
-        SUBT
-lf_d:   SHR
-        MVAT
-        LDR R5,E_SECS
-        MVRHA R5
-        BRNZ lf_bad
-        MVRLA R5
-        BRGT lf_bad
-        LDR R5,E_LEN            ; an empty file: refused (2026-09-23; it loaded a sector and `run` jumped into it)
-        MVRLA R5
-        BRNZ lf_ok
-        MVRHA R5
+        JSR loadable
         BRZ lf_bad
-lf_ok:
+        LDR R4,E_LOAD
         STR R4,LF_DST
 lf_rd:  LDR R3,LF_H             ; while (fs_read(h, dst)) dst += 512
         LDR R5,LF_DST
@@ -2883,6 +3004,42 @@ lf_bad: LDR R3,LF_H
         JSR eputs
         BR ret0
 
+; loadable (y1os.c loadable, 2026-09-25: shared with EXEC): the file in E_* fits the program area -> ACC = 1, else
+; 0. e_load < $5000, >= $D000, or e_secs > ($D000 - e_load) >> 9: refused; an empty file too (2026-09-23; it loaded a
+; sector and `run` jumped into it). Clobbers R4, R5, TMP.
+loadable:
+        LDR R4,E_LOAD
+        MVRHA R4
+        LDTI 50H
+        BRLT ret0a
+        LDTI 0D0H
+        BRLT ld_in
+        BR ret0a
+ld_in:  MVRLA R4                ; ($D000 - e_load) >> 9 = the high byte of the difference >> 1
+        BRZ ld_nb
+        MVRHA R4
+        MVAT
+        LDAI 0CFH
+        SUBT
+        BR ld_d
+ld_nb:  MVRHA R4
+        MVAT
+        LDAI 0D0H
+        SUBT
+ld_d:   SHR
+        MVAT
+        LDR R5,E_SECS
+        MVRHA R5
+        BRNZ ret0a
+        MVRLA R5
+        BRGT ret0a
+        LDR R5,E_LEN
+        MVRLA R5
+        BRNZ ret1a
+        MVRHA R5
+        BRZ ret0a
+        BR ret1a
+
 ; load path: "loaded N bytes at $AAAA"
 cmd_load:
         JSR load_file
@@ -2898,7 +3055,8 @@ cmd_load:
         BR crlf
 
 ; run_prog: the program in E_* (loaded): the tail at R3 -> ARGBUF (127 characters at most), call its exec address
-; (JSRUR, R3 = R7 = it), then close what it left open and re-read the free pointer (pack lowers it).
+; (JSRUR through rp_call, R3 = R7 = it), then STATUS, close what it left open and re-read the free pointer (pack
+; lowers it); then, if it EXECed another (2026-09-25), load that one and run it the same way.
 run_prog:
         MVIW R4,ARGBUF
         MVIB R5,127
@@ -2912,11 +3070,27 @@ rp_cp:  MVRLA R5
         DECR R5
         BR rp_cp
 rp_z:   LDIVR R4,0
+rp_go:  LDAI 0
+        STA EX_PEND
+        MVIW R3,0
+        STR R3,EX_CODE
         LDR R7,E_EXEC
         MOVRR R7,R3
-        JSRUR R7
+        JSR rp_call             ; back here when main returns, and from EXIT and EXEC
+        LDR R3,EX_CODE
+        STR R3,STATUS
         JSR close_all
-        BR read_free
+        JSR read_free
+        LDA EX_PEND
+        BRZ rts
+        MVIW R3,XPATH
+        JSR load_file
+        BRZ rts
+        BR rp_go
+rp_call: MOVRR R1,R5            ; the shell's SP (this call's return address on top) for EXIT and EXEC
+        STR R5,OS_SP
+        JSRUR R7
+        RET
 
 ; run path [args]
 cmd_run:
@@ -3503,6 +3677,7 @@ SEG:        DS 8                ; split's result: the pipeline's commands (words
 RIN:        DS 8                ; their < file names (0 none)
 ROUT:       DS 8                ; their > / >> file names
 RAPP:       DS 4                ; 1: that > is >>
+XPATH:      DS 64               ; EXEC's program (2026-09-25), out of the program area
         ORG 4C00H
 SBUF:       DS 512              ; the OS's sector buffer: directory scans, the boot block (512-aligned)
         ORG 4E00H
@@ -3540,6 +3715,8 @@ SE_LOAD:    DS 2
 SE_EXEC:    DS 2
 CR_LOAD:    DS 2                ; fs_create's load and exec
 CR_EXEC:    DS 2
+OS_SP:      DS 2                ; rp_call: the shell's SP while a program runs (EXIT, EXEC go back to it)
+EX_CODE:    DS 2                ; the running program's status (STATUS after it)
 FR_BUF:     DS 2                ; fs_read
 FR_S:       DS 2
 RD_BUF:     DS 2                ; fs_readdir
@@ -3604,6 +3781,7 @@ NM_SP:      DS 1
 SE_FLAG:    DS 1
 PC_BYTE:    DS 1                ; fs_putc's byte
 PC_X:       DS 1                ; fs_putc: the position's bits 16-23
+EX_PEND:    DS 1                ; EXEC: XPATH runs next
 HX:         DS 1                ; hpos: the position's bits 16-23 (fs_read, fs_getc)
 AP_LENX:    DS 1                ; fs_append: the length's bits 16-23
 OE_MODE:    DS 1                ; open_ent
@@ -3621,5 +3799,5 @@ NSEG:       DS 1                ; the shell: commands in the line, the one runni
 KSEG:       DS 1
 QUIT:       DS 1
 ST_H:       DS 1                ; stage
-ram_end:                        ; must stay below $4FC0 (SYSTAB2; $4F17 on 2026-09-25)
+ram_end:                        ; must stay below $4FC0 (SYSTAB2; $4F1C on 2026-09-25)
         END 1000H

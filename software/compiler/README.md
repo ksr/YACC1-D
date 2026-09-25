@@ -403,7 +403,7 @@ python3 tests/compiler/passes.py [-v]                            # the sizes, th
 
 `y1ccp` (`c/y1ccp.c`, host C) takes y1cc.py's command line, makes a temporary directory `W`, runs `cc1 W <the
 command line>`, then `cc2 W` ... `cc9 W`, stops at the first pass that fails (that pass printed the message) and
-removes the files. On Y1/OS the nine would be run in turn by the shell (not yet possible: "What is left", below).
+removes the files. On Y1/OS (2026-09-25) `/BIN/CC` does the same with the syscall EXEC: "Native", below.
 
 ### The passes
 
@@ -532,42 +532,51 @@ above) over Y1/OS giving every program the area's top: `os/Makefile passes` buil
 under Y1/OS with the stack watch (`emulator -S`) and checks that each one's deepest point stays above its last
 byte of data (below, "Native").
 
-### What is left for native
+### What was left for native (all done 2026-09-25)
 
-- (done 2026-09-25: Y1/OS positions and lengths are 24 bits, files up to 16M.) **Files over 64K.** Y1/OS kept a
-  16-bit position per handle. 111 of the corpus's 125 compiles keep every
-  intermediate file and the output under 64K; 14 do not: y1os.c (`W.se` 174K, its assembly 152K), md.c, awk.c,
-  grep.c and vi.c (their `W.se`, 75-88K: the annotated trees take 43 bytes a node, a tighter format would bring these
-  four under) and the passes compiling themselves (their assembly 68-251K). Either Y1/OS grows 32-bit positions (the
-  P8XFS v2 entry already has a 32-bit length), or the passes write a file per function.
-- **Open files.** Y1/OS has four handles, one of them the file being written: cc1 can keep only three sources open,
-  so an `#include` nested deeper (the /BIN commands nest five: cat.c, lib_stdin.c, lib_globx.c, lib_fs.c, lib_abi.c) needs
-  `target_io.c` to close the outer file and read up to its position again when the inner one ends.
-- **An exit syscall** (`io_fail` and `io_done` HALT today), **a way to run nine programs in a row** (a shell script
-  or a small driver; there is no exec), `lib/y1ccrt.txt` on the disk as `/LIB/Y1CCRT.TXT`, room on the disk for the
-  intermediate files (cc8's source compiling itself: 740K, of which `W.se` 231K and the assembly 251K), and the
-  stack (above).
-- **Then** run each pass on the emulator under Y1/OS (`target_io.c` is compiled, never run), then the chain; the
-  on-target assembler is there (2026-09-25: `/BIN/ASM`, which takes cc8's 1,326 labels; its sources, like the passes'
-  intermediate files, stop at 64K); and the code size work (every byte y1cc saves shrinks the passes too, and cc7
-  and cc9 are within 600 bytes of the limit, cc1 within 1.1K).
+- **Files over 64K** (done: Y1/OS positions and lengths are 24 bits, files up to 16M). 111 of the corpus's 125
+  compiles kept every intermediate file and the output under 64K; y1os.c (`W.se` 174K, its assembly 152K), md.c,
+  awk.c, grep.c, vi.c and the passes compiling themselves (their assembly 68-259K) did not.
+- **Open files** (done: `c/target_inc.c`, the lexer's reads). Y1/OS has four handles, one of them the file being
+  written, so cc1 can keep only three sources open, and the /BIN commands nest five (cat.c, lib_stdin.c,
+  lib_globx.c, lib_fs.c, lib_abi.c): a virtual handle per file, the innermost three real; the outermost is closed
+  and later opened again and SEEKed (the new syscall) to where it was.
+- **Exit, and nine programs in a row** (done: the syscalls EXIT and EXEC, SYSTAB2 for them; `/BIN/CC`), `/LIB/Y1CCRT.TXT`
+  on the disk (done), room on the disk for the intermediate files (cc8's source compiling itself: 740K; the emulators'
+  card grows, a real card is far bigger), and the stack (done: `--stack`, above).
+- The passes run under Y1/OS, one by one and chained (below). Still open: the code size work (every byte y1cc saves
+  shrinks the passes too) - since 2026-09-25 the passes are built with `--xisa`, because with the chaining and the
+  lexer's include stack cc1, cc6 and cc9 no longer fit without it; they need the 2026-09-24 microcode on the machine.
 
-### Native: the passes on the emulated YACC1 (2026-09-25)
+### Native: the compiler on the emulated YACC1 (2026-09-25)
 
-`tests/native/run.py` builds the passes as Y1/OS programs (`make -C os passes`: `build/cc/NAME.bin`, each with
-`--stack 0xCFFF`), puts them on a copy of the OS disk as `/LIB/CC/CC1`..`CC9` with `/LIB/Y1CCRT.TXT` (the runtime
-text cc9 reads) and `/LIB/Y1LIB.C` (`#include "y1lib.c"` falls back to `/LIB`; target_io.c upper-cases a `/LIB`
-name, as the Makefiles put files on a disk), boots Y1/OS on the instruction-level emulator and runs the nine in
-turn on each program (`run /LIB/CC/CC1 /OUT/W /SRC/fib.c -o /OUT/FIB.ASM`, then `run /LIB/CC/CC2 /OUT/W` ...). The
-assembly they write is compared with y1cc.py's on the Mac. First run, 2026-09-25: **target_io.c, compiled since
-2026-09-24 and never run, worked at once**, and 10 of 10 programs (hello, fib, sieve, calls, globals, chars,
-structs, switch, rfact, stack) came out byte-identical to y1cc.py (the header's date is `0000-00-00 00:00`: Y1/OS
-has no clock). hello takes 5.7M instructions, the others 24-39M; cc1 (the lexer, a syscall per source byte) and cc9
-(the text, a syscall per output byte) take most of it.
+```
+cc /SRC/FIB.C -o FIB.ASM --org 0x5000 --os      # under Y1/OS: y1cc's command line, the nine passes chained
+asm FIB.ASM                                     # /BIN/ASM: the program file FIB
+run FIB
+```
 
-The stack: `emulator -S` reports each pass's lowest SP; the deepest on those ten was cc2 at $CC8F (880 bytes,
-rfact's expressions), everything else under 250 bytes, and every pass kept at least 272 bytes between its stack and
-its last byte of data (cc9: data to $CEC6, stack down to $CFD7; cc6 330, cc7 651, cc1 780).
+- **On the disk** (`make -C os`): `/BIN/CC` (`os/commands/cc.c`), the passes `/LIB/CC/CC1`..`CC9` (`make -C os
+  passes`: `c/target/NAME.c` compiled with `--org 0x5000 --os --stack 0xCFFF --xisa`), `/LIB/Y1CCRT.TXT` (the
+  runtime text cc9 reads) and `/LIB/Y1LIB.C`. `#include "name"` looks beside the including file, then in `/LIB`
+  with the name upper-cased (`target_io.c` `io_lib`), as the Makefiles put files on a disk.
+- **The chain**: `cc` EXECs `/LIB/CC/CC1` with `CCW` + its own command line; every pass ends (`target_io.c` `main`,
+  or `io_done` after a deferred error) by EXECing the next one, named in its `target/NAME.c` (`io_next_pass`), with
+  the work prefix `CCW` as its whole command line; cc9 returns to the shell. A pass that finds an error prints it on
+  the screen (`lib_err.c` `eputs`, so not into a `>` file) and EXITs with status 1, which ends the chain. The work
+  files `CCW.opt`..`CCW.em` stay in the current directory (the next compile replaces them; pack gets the space back).
+- **The I/O layer**: `c/target_io.c` (every pass: the command line, `/LIB`, the output file, EXIT/EXEC) with
+  `c/target_rd.c` (plain reads: passes 2-9) or `c/target_inc.c` (the lexer: a stack of virtual handles, the three
+  innermost real, the others closed and SEEKed back to on the way out; the /BIN sources nest five `#include`s).
+- **First run**, 2026-09-25: target_io.c, compiled since 2026-09-24 and never run, worked at once: the passes run
+  one by one with the shell's `run` compiled hello, fib, sieve, calls, globals, chars, structs, switch, rfact and
+  stack byte-identically to y1cc.py (the header's date is `0000-00-00 00:00`: Y1/OS has no clock); then chained
+  with `cc`, and `cat.c` (five nested `#include`s) likewise. hello takes 5.7M instructions, the others 23-39M, cat.c
+  92M; cc1 (the lexer, a syscall per source byte) and cc9 (the text, a syscall per output byte) take most of it.
+- **The stack**: `emulator -S` reports each pass's lowest SP; the deepest on the ten was cc2 at $CC8F (880 bytes,
+  rfact's expressions), everything else under 250 bytes, and every pass kept at least 1,476 bytes between its stack
+  and its last byte of data (cc1; 272 before the passes were built with `--xisa`).
+- `tests/native/run.py` is the test (below, and `make check`).
 
 **y1cc.c stays** as the single-program C twin: it is what the passes were cut from, `twin.py` keeps it identical to
 y1cc.py, and it is the quicker program to read. A change to y1cc.py now has two C counterparts to follow it; once

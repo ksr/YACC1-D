@@ -14,7 +14,8 @@ FRUIT2.TXT 94  @B000
 README.TXT 156  @B000
 MAN <DIR>
 DOCS <DIR>
-6 entries
+LIB <DIR>
+7 entries
 /> ls /NOPE
 
 ls: not found
@@ -28,7 +29,8 @@ FRUIT2.TXT 94  @B000
 README.TXT 156  @B000
 MAN <DIR>
 DOCS <DIR>
-6 entries
+LIB <DIR>
+7 entries
 /BIN> cat /README.TXT ../README.TXT
 
 Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
@@ -71,8 +73,9 @@ FRUIT2.TXT 94  @B000
 README.TXT 156  @B000
 MAN <DIR>
 DOCS <DIR>
+LIB <DIR>
 COPY.TXT 156  @B000
-7 entries
+8 entries
 /> exit
 
 bye

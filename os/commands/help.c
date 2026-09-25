@@ -2,7 +2,7 @@
      help       the list (man NAME for the page of any of them)
    Ported from P8X os/commands/help.c 2026-09-23, changes: the text is rewritten for Y1/OS (no /d1, graphics,
    kermit, make, sh; the built-ins are Y1/OS's; redirection and pipes since the same evening: man shell; pack added 2026-09-23;
-   asm 2026-09-25). Keep it
+   asm and cc 2026-09-25). Keep it
    in step with os/README.md. */
 #include "y1lib.c"
 
@@ -22,6 +22,7 @@ void main() {
     puts("  asm  assemble: asm [-h] SRC [OUT]  (-h: Intel hex)");
     puts("  awk  one-rule awk: fields, /re/ {print $N ...}, NR NF");
     puts("  cat  print files (globs, - = console)   cmp  first differing byte");
+    puts("  cc   compile C: cc prog.c -o prog.asm --org 0x5000 --os  (then asm)");
     puts("  cp   copy files, -r a tree               del  delete files (globs)");
     puts("  dep  deposit hex bytes into memory       diff line differences");
     puts("  dir  list, sorted; -R -S, globs          dump hex dump, a page a key");

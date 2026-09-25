@@ -105,17 +105,22 @@ HOST = {
 # source is compiled first with y1cc --os at $5000, as os/Makefile compiles /BIN commands
 EXTRA = {"badhandle": [("badh.c", "/BADH", 0x5000), ("", "/ZERO.BIN", 0x6000)],
          "big": [("bigw.c", "/BIGW", 0x5000), ("bigr.c", "/BIGR", 0x5000)],
-         "systab": [("systab.c", "/SYSTAB", 0x5000)]}
+         "systab": [("systab.c", "/SYSTAB", 0x5000)],
+         "exec": [("exe.c", "/EXE", 0x5000), ("exe.c", "/EXES", 0x5000, ["--stack", "0xCFFF"]),
+                  ("", "/BIG.TXT", 0xC000, 20000)]}
 
 
 def extras(name, img):
-    for src, disk, addr in EXTRA.get(name, []):
+    for e in EXTRA.get(name, []):
+        src, disk, addr = e[:3]
+        more = e[3] if len(e) > 3 and isinstance(e[3], list) else []     # (2026-09-25) extra y1cc flags
+        fill = e[3] if len(e) > 3 and isinstance(e[3], int) else 0       # or the size of a zero-filled file
         if src.endswith(".c"):
             base = os.path.splitext(src)[0]
             shutil.copy(os.path.join(ROOT, "software/assembler/yacc1.def"), BUILD)
             open(os.path.join(BUILD, "rcasm.rc"), "w").write("-h\n")
             subprocess.run([sys.executable, os.path.join(ROOT, "software/compiler/y1cc.py"), os.path.join(HERE, src),
-                            "-o", os.path.join(BUILD, base + ".asm"), "--org", "0x5000", "--os"] +
+                            "-o", os.path.join(BUILD, base + ".asm"), "--org", "0x5000", "--os"] + more +
                            (["--xisa"] if os.environ.get("XISA") else []), check=True)
             lst = subprocess.run([os.path.join(ROOT, "software/assembler/asm"), base, "-d=yacc1"], cwd=BUILD,
                                  capture_output=True, text=True).stdout
@@ -124,7 +129,7 @@ def extras(name, img):
             subprocess.run([sys.executable, os.path.join(ROOT, "tools/img2bin.py"), os.path.join(BUILD, base + ".img"),
                             host, "--base", "0x5000"], check=True, capture_output=True)
         else:
-            host = os.path.join(BUILD, "empty.bin"); open(host, "wb").close()
+            host = os.path.join(BUILD, "fill%d.bin" % fill); open(host, "wb").write(bytes(fill))
         rc, out = p8xfs("put", img, host, "--name", disk, "--load", hex(addr), "--exec", hex(addr))
         if rc: sys.exit("put %s: %s" % (disk, out))
 

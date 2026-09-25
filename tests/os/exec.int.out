@@ -1,0 +1,41 @@
+BOOT FROM CF
+Y1/OS v0.2 (2026-09-23)  P8XFS v2
+/> 
+/> 
+exit 5
+/> 
+status 5
+/> 
+status 0
+/> 
+exit 7
+/> 
+status 7
+/> 
+chain 3
+chain 2
+chain 1
+chain 0
+/> 
+status 0
+/> 
+/> 
+chain 2
+chain 1
+chain 0
+/> 
+0000
+/> 
+1  on the YA
+1 rams.
+
+1 
+00
+0
+/> 
+exit 1
+/> 
+status 0
+/> 
+bye
+>

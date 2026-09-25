@@ -39,7 +39,7 @@ BOOT FROM CF
 /PK/SUB> pack
 
 pack: 9 sectors reclaimed, free pointer N (was N)
-pack: N files and 5 directories moved
+pack: N files and 7 directories moved
 /PK/SUB> pwd
 
 /PK/SUB
@@ -47,7 +47,7 @@ pack: N files and 5 directories moved
 
          DEEP/
     144  H  @5000
-  56874  Y1CC.MD  @B000
+  57659  Y1CC.MD  @B000
 /PK/SUB> cd DEEP
 
 /PK/SUB/DEEP> dir

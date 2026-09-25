@@ -6,7 +6,7 @@
 #define LITS_MAX     160
 #define STRUCTS_MAX  16
 #define MEMBERS_MAX  64
-#define FUNCS_MAX    170
+#define FUNCS_MAX    200
 #define VARS_MAX     128
 #define NODES_MAX    128
 #define ENTRIES_MAX  64

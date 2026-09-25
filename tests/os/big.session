@@ -5,6 +5,7 @@ dir /BIG2
 bigr /BIG1
 bigr -s /BIG1
 bigr -s /BIG2
+bigr -k /BIG2
 cat /BIG1 > /COPY1
 dir /COPY1
 echo tail >> /BIG2

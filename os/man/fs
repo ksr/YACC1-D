@@ -20,6 +20,8 @@ DESCRIPTION
         fread(h, buf)           the next whole sector into buf (512),
                                 the byte count, 0 at the end; mix with
                                 fgetc only at sector boundaries
+        fseek(h, hi, lo)        a read handle to position hi:lo (24
+                                bits), not past the end; 1 = done
         fclose(h)
     Writing (one file open for writing at a time)
         fcreate(path, load, exec)   a handle; a same-named file is
@@ -55,6 +57,13 @@ DESCRIPTION
     Arguments
         argword(tail, out, max) the next word of a command tail into
                                 out (max characters); returns the rest
+    Programs (2026-09-25)
+        osexit(status)          end the program now, from anywhere (its
+                                own --stack too); the next program finds
+                                status at STATUS ($0F0E: peekw)
+        osexec(path, args)      end this program and run path with args
+                                as its tail (same command: > and | stay);
+                                returns 0 only when path cannot run
 
     Paths are absolute or relative to the current directory; names are
     1..12 characters, case-sensitive. What a program leaves open the

@@ -158,6 +158,9 @@ buffer and position; **one write handle at a time**.
 | 19 | `SYS_CONOUT` | `(byte)` → nothing (SYSRES untouched): the byte to **stdout**, the shell's `>`/`>>` file or pipe, else the raw console (`CHAROUT`). `y1cc --os`: `putchar()`/`puts()` (2026-09-23) |
 | 20 | `SYS_KEYIN` | `()` → a **key**: always the console, never redirected, no echo; 65535 on Ctrl-D/NUL (2026-09-23) |
 | 21 | `SYS_STDIO` | `()` → bit 0 stdin redirected, bit 1 stdout redirected (2026-09-23). The last entry SYSTAB ($0F14) has: 22..31 are in SYSTAB2 ($4FC0, 32 entries, 0..21 the same; 2026-09-25), which y1cc's `sys()` uses for a constant number over 21 |
+| 22 | `SYS_EXIT` | `(status)` → does not return (2026-09-25): the program ends from any depth, on any stack, as if main had returned; `STATUS` ($0F0E) = status when it has ended, for the next program to read. `lib_fs.c`: `osexit()` |
+| 23 | `SYS_EXEC` | `(path, args)` → 0 when path cannot be run (over 63 characters, not found, not a file, does not load into $5000-$CFFF); else does not return: the caller ends and path runs with args as its tail, in the same shell command (`>` and `|` stay). `osexec()`. The native compiler's passes chain with it |
+| 24 | `SYS_SEEK` | `(handle, hi, lo)` → 1: a read handle at position hi:lo (24 bits), not past the end; 0 otherwise. `fseek()` |
 
 Writing goes to the volume's free pointer (boot block bytes 4–5, kept in step on disk): `CREATE` takes the handle
 and remembers the directory and the name, `PUTC`/`WRITE` fill the handle's sector buffer and flush full sectors,

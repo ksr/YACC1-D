@@ -45,6 +45,9 @@ int conin() { return sys(SYS_CONIN); }
 int constat() { return sys(SYS_CONST); }
 int keyin() { return sys(SYS_KEYIN); }
 int stdio() { return sys(SYS_STDIO); }
+void osexit(int status) { sys(SYS_EXIT, status); }                 /* 2026-09-25: never returns */
+int osexec(char *path, char *args) { return sys(SYS_EXEC, path, args); }   /* returns only when path cannot run */
+int fseek(int h, int hi, int lo) { return sys(SYS_SEEK, h, hi, lo); }     /* 24-bit position hi:lo; 1 done */
 
 int fputs(int h, char *s) {                 /* a string (no newline added); returns the bytes written */
     int n;

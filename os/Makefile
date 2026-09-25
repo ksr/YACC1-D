@@ -12,7 +12,8 @@
 #   make clean
 #   make sizes      each /BIN program's size (image + uninitialised data) against the 32K program area
 #   make passes     the native C compiler (2026-09-25): the nine passes of software/compiler/c (target/NAME.c) as
-#                   Y1/OS programs build/cc/NAME.bin, each on its own stack from $CFFF down (y1cc --stack)
+#                   Y1/OS programs build/cc/NAME.bin, each on its own stack from $CFFF down (y1cc --stack), always
+#                   compiled with --xisa (without, cc1, cc6 and cc9 no longer fit the 32K program area)
 # The OS: y1os.asm (hand-written, 2026-09-23) is assembled with strings.txt made into numeric DB lines by
 # mkstrings.py (the assembler upper-cases its source); its image must end below its RAM at $4A00. y1os.c (y1cc
 # --os) is the same OS in C, image + data below $4FC0 (the 32-entry syscall table SYSTAB2 is at $4FC0-$4FFF); since
@@ -22,7 +23,8 @@
 # which the shell redirects (> >> < |); a program built without it would write past a redirect to the screen.
 # Programs: os/commands/*.c -> /BIN/NAME (upper case), compiled at TPA $5000; they #include the os/lib_*.c
 # libraries. Files in os/disk/ go to the root, os/man/NAME to /MAN/NAME (upper case: `man` upper-cases the name),
-# and the Markdown documents in DOCS to /DOCS for `md` (host file = disk name).
+# and the Markdown documents in DOCS to /DOCS for `md` (host file = disk name). The native C compiler (2026-09-25):
+# /BIN/CC (commands/cc.c) runs the passes /LIB/CC/CC1..CC9 (make passes), which read /LIB/Y1CCRT.TXT and /LIB/Y1LIB.C.
 OS    ?= asm
 XISA  ?=
 CCX    = $(if $(XISA),--xisa)
@@ -47,6 +49,7 @@ PASSN  = lex parse decl calls layout stmt sema emit final
 PASSES = $(PASSN:%=$(B)/cc/%.bin)
 PSTACK = 0xCFFF
 PSRC   = $(wildcard $(CDIR)/*.c $(CDIR)/*.h $(CDIR)/ylim/*.h)
+RTLIB  = $(ROOT)/software/compiler/lib/y1ccrt.txt $(ROOT)/software/compiler/lib/y1lib.c
 DOCS   = docs/mddemo.md:MDDEMO.MD README.md:OS.MD ../software/compiler/README.md:Y1CC.MD ../docs/system/OS-PLAN.md:OSPLAN.MD PORT-PLAN.md:PORT.MD
 
 all: disk.img
@@ -97,13 +100,13 @@ $(B)/bin/%.bin: commands/%.c $(LIBS) $(ROOT)/software/compiler/y1cc.py $(B)/xisa
 # (tests/compiler/passes.py measures the room between; tests/native/run.py watches the stack on the emulator)
 $(B)/cc/%.bin: $(CDIR)/target/%.c $(PSRC) $(LIBS) $(ROOT)/software/compiler/y1cc.py $(B)/xisa-sel
 	@mkdir -p $(B)/cc && cp $(DEF) $(B)/cc/ && echo -h > $(B)/cc/rcasm.rc
-	@$(CC) $< -o $(B)/cc/$*.asm --org 0x5000 --os --stack $(PSTACK) $(CCX)
+	@$(CC) $< -o $(B)/cc/$*.asm --org 0x5000 --os --stack $(PSTACK) --xisa
 	@cd $(B)/cc && ../../$(ASM) $* -d=yacc1 > $*.lst && grep -q "^0 Errors" $*.lst || { grep -i "err" $(B)/cc/$*.lst | head; exit 1; }
 	@$(I2B) $(B)/cc/$*.img $@ --base 0x5000
 
 passes: $(PASSES)
 
-disk.img: $(B)/y1os.bin $(CMDS) $(FILES) $(MANS) $(foreach d,$(DOCS),$(firstword $(subst :, ,$(d)))) Makefile
+disk.img: $(B)/y1os.bin $(CMDS) $(PASSES) $(RTLIB) $(FILES) $(MANS) $(foreach d,$(DOCS),$(firstword $(subst :, ,$(d)))) Makefile
 	@rm -f $@
 	$(FS) create $@ --sectors 2048
 	$(FS) boot $@ $(B)/y1os.bin
@@ -114,6 +117,10 @@ disk.img: $(B)/y1os.bin $(CMDS) $(FILES) $(MANS) $(foreach d,$(DOCS),$(firstword
 	@for f in $(MANS); do $(FS) put $@ $$f --name /MAN/$$(basename $$f | tr a-z A-Z); done
 	$(FS) mkdir $@ /DOCS
 	@for d in $(DOCS); do $(FS) put $@ $${d%%:*} --name /DOCS/$${d##*:}; done
+	$(FS) mkdir $@ /LIB
+	@for f in $(RTLIB); do $(FS) put $@ $$f --name /LIB/$$(basename $$f | tr a-z A-Z); done
+	$(FS) mkdir $@ /LIB/CC
+	@n=1; for p in $(PASSN); do $(FS) put $@ $(B)/cc/$$p.bin --name /LIB/CC/CC$$n --load 0x5000 --exec 0x5000; n=$$((n + 1)); done
 	$(FS) tree $@
 
 sizes: $(CMDS)

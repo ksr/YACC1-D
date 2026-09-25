@@ -3,7 +3,7 @@
 #define NAMES_MAX    400
 #define NAMEPOOL     2600
 #define VARS_MAX     380
-#define FUNCS_MAX    170
+#define FUNCS_MAX    200
 #define DROPS_MAX    64
 #define STRPOOL      1800
 #define LITS_MAX     160

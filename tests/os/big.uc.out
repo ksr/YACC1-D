@@ -23,6 +23,9 @@ bigr: 71687 bytes, pattern ok
 /> bigr -s /BIG2
 
 bigr: 143367 bytes, pattern ok
+/> bigr -k /BIG2
+
+bigr seek: 1.1.1.1. 1100
 /> cat /BIG1 > /COPY1
 
 /> dir /COPY1

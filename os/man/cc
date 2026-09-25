@@ -1,0 +1,46 @@
+NAME
+    cc - the C compiler (y1cc), on the machine
+
+SYNOPSIS
+    cc prog.c [-o prog.asm] [--org N] [--os] [--xisa] [--stack N]
+       [--boot] [--vector] [--no-brur] [-l]
+
+DESCRIPTION
+    Compiles a C program (y1cc's subset: man pages cannot hold it, see
+    /DOCS/Y1CC.MD) to YACC1 assembly, the same text y1cc.py writes on
+    the Mac (only the date in its first line differs: Y1/OS has no
+    clock, it says 0000-00-00 00:00). asm then makes the program:
+
+        cc HELLO.C -o HELLO.ASM --org 0x5000 --os
+        asm HELLO.ASM
+        HELLO
+
+    --org 0x5000 --os is what a Y1/OS program needs (the program area
+    starts at $5000; putchar and getchar go through the shell, so > and
+    | work). -o names the output (default: the source's name with .asm).
+
+    The compiler is nine programs, /LIB/CC/CC1 to CC9, run one after
+    the other: cc starts CC1, and each pass EXECs the next one (they
+    replace each other, one command). An error stops the chain with its
+    message on the screen. The passes pass their work in files
+    CCW.OPT ... CCW.EM in the current directory, which stay there and
+    are replaced by the next compile (pack gets the space back).
+    #include "name" is looked for beside the including file, then in
+    /LIB (upper case: /LIB/Y1LIB.C); the runtime is /LIB/Y1CCRT.TXT.
+
+LIMITS
+    The passes' tables (software/compiler/c/ylim): about 760 names, 170
+    functions, 380 variables, 920 nodes in a function; eight nested
+    #includes. The command line is 122 characters. Slow: hello.c is
+    about 6M instructions, a 400-line program 100M+ (minutes to an
+    hour at 1 MHz).
+
+EXAMPLES
+    cc /SRC/FIB.C -o FIB.ASM --org 0x5000 --os
+    cc HELLO.C -l                      the -l summary line
+
+NOTES
+    New in Y1/OS 2026-09-25, with the syscalls EXEC and EXIT (man fs).
+
+SEE ALSO
+    asm, run, fs, abi
