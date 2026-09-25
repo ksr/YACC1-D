@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-"""finish_v2.py - the FINAL board of the YACC1 memory card v2.0: memory-v2.0.kicad_pcb (Ken's pick, 2026-09-24: option
-B of the re-layout, relayout_placements.py OPTIONS["b"]).
+"""finish_v2.py - the board finished from top-edge option B of the YACC1 memory card v2.0:
+options-top-edge-J2/memory-v2.0.kicad_pcb (Ken's pick, 2026-09-24, of the re-layout with J2 at the top edge,
+relayout_placements.py OPTIONS["b"]; superseded the same day by the standoff decision - gen_standoff.py - and kept, with
+its fab files, as a record: build.sh FROM=trial / ROUTE=1 remakes it there).
 
 Run with KiCad's bundled Python (pcbnew); build.sh does:
 

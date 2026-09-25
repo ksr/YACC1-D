@@ -1,11 +1,17 @@
 # memory-v2.0 — the built memory card v1.3 + the CompactFlash interface (KiCad design)
 
-**Status 2026-09-24: ROUTED, FAB FILES READY, NOT ORDERED.** The whole card was laid out again with the CF section
-designed in (circuit, outline, bus connector X1 and 4-layer stack-up kept from the built card). **Ken picked option B**
-of the three re-layout placements; the final board is **`memory-v2.0.kicad_pcb`**: 0 unrouted, 43 through vias,
-11,779 mm of 0.25 mm track, DRC 0 copper violations under the v2.0 rules, both planes solid, netlist proof MATCH,
-silkscreen tidied; **C20-C23 removed** (Ken, 2026-09-24, below): 70 parts. Gerbers (4 layers) + drill (`memory-v2.0-gerbers.zip`), renders, placement PDF, schematic PDF, BOM
-and the JLCPCB order note are in this folder. Before ordering: the open items in "Before ordering" below.
+**Status 2026-09-24 (evening): TWO STANDOFF PLACEMENT OPTIONS FOR KEN TO PICK, NOT ROUTED FOR FAB, NOT ORDERED.** Ken
+decided that the CF-to-IDE adapter (an **HX-2118P**, measured) mounts **flat on two M3 standoffs on the memory card**,
+fed by a short straight IDE ribbon from **J2, now parallel to the bus connector X1** about 1/3 of the way to the top edge.
+The card was placed again around that: **standoff options A and B** (`memory-v2.0-standoff-a/b.kicad_pcb`), each with a
+complete trial autoroute, renders, a placement plot and a **1:1 US-Letter check print**
+(`memory-v2.0-standoff-a/b-1to1.pdf`): print it at 100 %, lay the adapter on it. Next: Ken tests the print and picks;
+then the final routing polish, silkscreen tidy and fab files (as was done for the top-edge board). See "The standoff
+options" below.
+
+The board finished earlier the same day (top-edge option B: J2 at the free top edge, the TAODAN adapter standing on it;
+routed, 43 vias, fab files) is **kept as a record** in `options-top-edge-J2/` with the three top-edge re-layout options
+and their trial routes: "The top-edge record" below.
 
 v2.0 is the memory card v1.3 **as built** (`../v1.3`: the KiCad conversion of Ken's Fusion
 export (2026-09-24) of the card JLCPCB fabricated on 2025-06-27, proven against the order's gerbers; 62256 x 2, 28C64, IC7 block
@@ -92,10 +98,187 @@ memory card already has PWR0 + R2 330R)**. Everything through-hole. BOM: `memory
 the built card's 53 - C20-C23 + the CF section's 21; built-card parts keep their converted Eagle values, e.g. `74*32`,
 `C-US`, whose line is now `C1-C19,C24` x 20).
 
-## The final board: option B (Ken's pick, 2026-09-24)
+## The standoff options (Ken, 2026-09-24: the CF adapter on standoffs on the card)
 
-`memory-v2.0.kicad_pcb` (project `memory-v2.0.kicad_pro`, which now carries the re-layout rules below, so the
-schematic and the board open together in KiCad). Made by `finish_v2.py make` from option B's committed trial route
+### The decision
+
+- The CF-to-IDE adapter is an **HX-2118P** and mounts **flat on two M3 standoffs on the memory card**, component side
+  up, **its header edge toward the bus connector and its CF slot toward the free top edge** (a CF card is pushed in
+  toward the bus).
+- **J2 runs parallel to X1** (long axis along y) about 1/3 of the way from the bus edge to the top edge, **just beside
+  the adapter's header edge on the bus side, not under the adapter**; a short straight 40-way ribbon (two IDC plugs)
+  arches from J2 up to the adapter's header.
+- **The ROM (IC13, 28C64) must stay removable** (Ken pulls and reburns it): nothing above it (adapter, standoffs,
+  ribbon) and room around it to lever it out or fit a ZIF socket later.
+- The LEDs stay where they were (PWR0 / LED1 in the free top-edge corner at y = 124); X1, the outline, X1's mounting
+  holes, JP1 and the U$1 block jumpers (RN7 / U$1 / RN8, with IC18 / C24 beside them) as before; the circuit is the
+  same (netlist proof MATCH), the 4-layer stack-up and the re-layout rules are the same.
+
+### The adapter (measured from Ken's photo, confirmed by Ken with a 1:1 print)
+
+"View" = component side up, IDE header at the top.
+
+| | |
+|---|---|
+| board | 60.0 mm (along the header) x 44.0 mm |
+| IDE header | male 2x20, 2.54 mm, shrouded, along one 60 mm edge; **pin 20 missing** (the key: the adapter cannot take +5 V through IDE pin 20); pin rows ~4.6 / 7.1 mm from the edge (template) |
+| pin 1 | at the **left end** of the header (measured "left end of the outer row", see open question 1) |
+| holes | **two only, both at the header end**: 52.0 mm apart (+/- 0.7), centred on the header, **15.3 mm from the header edge**, ~4 mm in from the side edges, ~3.2-3.5 mm (M3) |
+| CF slot | opens at the far edge, 44 mm from the header edge |
+| power | **four unpopulated pads in a row** between the header and the holes, just inboard of the **right-hand** hole (view); probably +5V / GND / GND / +12V, floppy style (**Ken to confirm**). No power through the IDE connector (no pin 20): **J3 (+5V, G, G, nc) feeds the pads by a short cable** |
+
+**On the board** (the adapter turned so its header edge faces the bus and its slot the top edge, component side still
+up): the view's "up" is board -x, so the view's **left = board +y**: the adapter's **pin-1 end is its board y-max end**
+and the right-hand hole beside the power pads is its **y-min hole (H2)**. `standoff_placements.py` holds the geometry
+(`HX`, `adapter()`).
+
+### J2 and the ribbon: straight, pin 1 to pin 1
+
+A straight (untwisted) ribbon with its two plugs crimped alike joins two headers that are **oriented alike**: same pin-1
+end, same key-slot side. The adapter's pin 1 is at its board y-max end, so **J2's pin 1 is at its y-max end too**.
+J2 = `Connector_IDC:IDC-Header_2x20_P2.54mm_Vertical` at **rotation 180**: pad 1 at the y-max end (square pad, "PIN 1"
+on the silk), the odd pins 1..39 in the row on the adapter side (+x: almost every CF signal is on an odd pin, so the CF
+chips beside J2 reach them directly), the even pins on the bus side, the shroud's key slot on the odd-row (+x) side.
+With standard 2-row numbering (the same on every box header and IDC plug: pin 2 across from pin 1 - on a board seen
+from above with pin 1 at the left end, pin 1 is in the lower row and pin 2 above it, like a Raspberry Pi header) this is
+the adapter's orientation, so the red stripe lies along the y-max end at both plugs and the ribbon arches up out of
+J2's plug and down into the adapter's, a translation only. `gen_standoff.py check` verifies that J2's pin 1 is at the
+adapter's pin-1 end and J2's odd row faces the adapter.
+
+**Pin 20.** J2 is a full 2x20 (pin 20 fitted; JP2 can put +5 V on it for adapters powered through the header). A
+40-way IDC plug with **pin 20 open** (generic 40-way IDC sockets are) fits both J2 and the adapter. A plug with pin 20
+**blocked** (the keyed IDE cable kind) fits the adapter but **not J2**: use an open plug at the J2 end, or pull J2's
+pin 20 out of its header. **JP2 stays in the design but OPEN by default**: this adapter has no pin 20, so JP2 does
+nothing for it; it is harmless and serves other adapters.
+
+### Standoffs, holes and heights
+
+- **H1 / H2**: the adapter's two holes, **3.2 mm NPTH** (`MountingHole_3.2mm_M3`, board-only footprints: not in the
+  schematic, not in the BOM; the netlist proof accepts exactly these two, `check_netlist.py is_mech()`), each inside a
+  **7 mm copper keep-out on all four layers** (rule area: no track, no via, no plane fill: both planes pull back to
+  3.5 mm); no pad copper within **4.0 mm** of a hole centre (the washer / nut on the bottom), no part body within
+  **3.5 mm** (the hex standoff on top); a silk circle where each standoff stands.
+- **Proposed standoff: 15 mm M3 hex, female-female (5.5 mm across flats), with M3 x 6 screws and washers** (or 15 mm
+  male-female with a nut under the card). The adapter's underside is then 15 mm above the card; with its pin tails
+  (~2-2.5 mm under it) that leaves ~3.5 mm over socketed DIPs (~8.5-9.5 mm). **12 mm** standoffs lower everything by
+  3 mm but leave only ~0.5-1 mm over socketed DIPs.
+- **Under the adapter only low parts**: DIPs in sockets, disc caps, nothing else. `gen_standoff.py check` fails if
+  anything tall (J2, J3, JP1, JP2, U$1 + jumpers, C30, the LEDs, X1) is under the adapter or under the ribbon.
+- **Total height above the card (15 mm standoffs)**: adapter top 16.6 mm; CF holder + card (~8 mm) **~25 mm**; the IDC
+  plug on the adapter's header **~30 mm**; the ribbon loop over it **~35 mm**. Below the card: screw heads / nuts +
+  washers ~3 mm (the solder tails already stand ~1.5-2 mm). **The card cage's slot pitch is not known** (open question
+  4): the neighbour on this card's component side needs ~37 mm, or that slot stays empty.
+- The adapter hangs on its header end only (both holes are there); the CF slot end is free, ~29 mm past the holes.
+  Inserting a card pushes toward the bus, i.e. into the standoffs, which is fine; if it wobbles, a stick-on bumper
+  under the slot end (15 mm) would steady it.
+
+### The ROM stays removable (Ken's constraint)
+
+`gen_standoff.py check` enforces, on both options: the ROM IC13 and a **keep-clear zone of 10 mm past both short
+ends and 2 mm along both long sides** of its pads (lever it out; a 28-pin ZIF socket, ~50 x 15 mm, fits) hold **no other
+part**, and neither the ROM nor that zone comes within 3 mm of the adapter outline, a standoff or the ribbon zone.
+In **both options the ROM stands vertical at the free top edge** (pads x 175.3 / 190.5, y 55.9-88.9; zone x 172.0-193.7,
+y 44.8-99.0 = print grid x 154.3-176.0, y 34.8-89.0): **44.8 mm from the adapter's slot edge**, ~74 mm from the
+standoffs, ~80 mm from the ribbon, nothing above it, and the top edge is the part of the card reachable with the card in
+the cage. Its decoupling cap C3 moved beside its long side (outside the zone) so both short ends are clear.
+
+### The two options
+
+Common to both: column 1 at the bus connector as in top-edge option B (the TMP registers IC27/IC29/IC26/IC28, the
+address buffers IC9/IC8, RN5/RN6); **J2 pin rows at board x 76.17 (even) / 78.71 (odd)** = print grid x 58.4 / 61.0
+(Ken: ~59 +/- 10 from the bus edge); the adapter's header edge at x 83.19 (0.75 mm past J2's courtyard), its slot edge at
+x 127.19 (print grid x 65.4 / 109.4); **both holes at board x 98.49 = print grid x 80.7**; the **CF column** (IC30-IC34,
+horizontal DIPs, caps toward J2) right beside J2's odd row, three of its rows under the adapter's header half between
+the standoffs; the RAMs IC1/IC2 and IC5/IC15/IC11 in the column at x 122 (their left ends under the adapter's slot
+half); the block decode IC7/IC4 beside IC18 and the U$1 jumpers; IC6/IC12/IC10 vertical between the RAMs and the ROM;
+the ROM at the top edge; IC3 and the LED resistors R14/R2 near the LEDs. JP2 stands in the channel between column 1 and
+J2, beside J2's pin 20.
+
+| | **standoff-a**: adapter centred | **standoff-b**: adapter toward the y = 124 edge |
+|---|---|---|
+| adapter (board mm) | x 83.19-127.19, **y 36.85-96.85** | x 83.19-127.19, **y 63.52-123.52** |
+| adapter (print grid) | x 65.4-109.4, y 26.8-86.8 | x 65.4-109.4, y 53.5-113.5 |
+| **H1** (pin-1 end) | board **(98.49, 92.85)** = grid **(80.7, 82.8)** | board **(98.49, 119.52)** = grid **(80.7, 109.5)** |
+| **H2** (power-pad end) | board **(98.49, 40.85)** = grid **(80.7, 30.8)** | board **(98.49, 67.52)** = grid **(80.7, 57.5)** |
+| J2 | pins y 42.72-90.98, pin 1 (78.71, 90.98) = grid (61.0, 81.0) | pins y 69.39-117.65, pin 1 (78.71, 117.65) = grid (61.0, 107.6) |
+| CF column | IC32 / IC31 / IC34 between the standoffs (DA latch near J2 pins 33-37, strobes near 23-25, data buffer beside D0-D7), IC33 / IC30 past J2's pin-1 end | IC33 / IC31 / IC34 between the standoffs, IC32 / IC30 below the y-min standoff; IC6 moves into the space J2 leaves at the y = 10 end |
+| J3 (adapter power) + C30 | J3 just outside the adapter's y-min edge beside H2 and the power pads (J3 at 93.98, 34.29), C30 beside it | J3 just outside the adapter's y-min edge beside H2 (93.98, 60.96), C30 next to it |
+| R10-R13 / RN9 | at J2's y-min end / past its pin-1 end | at J2's y-min end / in the channel beside J2 |
+| under the adapter | IC31, IC32, IC34, the left ends of IC1, IC2, IC5, IC15 + caps | IC31, IC33, IC34, the left ends of IC2, IC5, IC15, IC11 + caps |
+| placement airwire | **11,507 mm** | 11,698 mm |
+| **trial route** | **0 unrouted, 94 vias, 13,540 mm** (F.Cu 7,521 / B.Cu 6,018) | **0 unrouted, 100 vias, 13,748 mm** (F.Cu 7,225 / B.Cu 6,523) |
+| DRC copper violations | 0 | 0 |
+
+For comparison, the top-edge board (the record): airwire 10,496 mm, route 43 vias / 11,779 mm. J2 in the middle of
+the card is a wall every bus-side signal to the right half has to cross (the address and data buses to the memories,
+the decode lines), hence ~2x the vias and +15 % track; both routes are complete with 0.25 mm tracks and no copper
+violation, and the final polish (via clean-up, as on the top-edge board) would lower the count somewhat.
+
+**Recommendation: standoff-a.** Shorter wiring and fewer vias, the adapter centred on the card (its standoffs 30.8 / 31.1
+mm from the two side edges; in b H1 is 4.5 mm from the y = 124 edge), J3 and C30 at J2's y-min end right beside
+the adapter's power pads, and the y = 124 corner (LEDs) well clear of the adapter. b leaves the y = 10 half of the middle
+of the card free under the U$1 jumpers, at the cost of 6 more vias and the adapter's hole H1 near the board edge.
+
+Trial route (both): Freerouting 1.9 on a two-signal-layer copy (planes carry GND/VCC), one run per pass count 20 / 30 /
+40 / 60 in parallel (where Freerouting stops changes the result; all four agreed this time), the best kept (fewest
+unrouted, then vias, then length); the session imported onto the 4-layer board, planes refilled, DRC with schematic
+parity (`reports/standoff-X-trial.txt`, `-trial-drc.json`). **Routability proof only**: no clean-up, no silkscreen tidy
+(silk_overlap 41 cosmetic items: option boards).
+
+Files per option X: `memory-v2.0-standoff-X.kicad_pcb` / `.kicad_pro` / `.kicad_dru` (the placement, unrouted),
+`memory-v2.0-standoff-X-trial.kicad_pcb` (+ `.kicad_pro`, `.kicad_dru`: the trial route),
+`memory-v2.0-standoff-X-render-top.png` (3D, the adapter drawn on the silk of a review copy),
+`memory-v2.0-standoff-X-placement.png` (outline, silk, adapter, ribbon zone, ROM zone, airwires),
+`memory-v2.0-standoff-X-trial.png` (the trial route: F.Cu red, B.Cu blue),
+**`memory-v2.0-standoff-X-1to1.pdf`** (below), `reports/standoff-X-placement-check.txt`, `-drc.json`, `-trial.txt`,
+`-trial-drc.json`, `-freerouting.log`.
+
+### The 1:1 check prints (`memory-v2.0-standoff-a-1to1.pdf`, `-b-1to1.pdf`)
+
+US Letter, landscape, **print at 100 % / "Actual size"** (a 100 mm check bar on each page; also: the two hole crosses
+are 52.0 mm apart). Page 1: the board 1:1, component side up, bus-connector edge left, the JP1 end at the top; a 10 mm
+grid in mm from the **bus-connector edge (x)** and the **JP1 end (y)** - the same grid as the first fit print, whose
+"JP2 end" is this JP1 end; parts shaded, pads dotted; **J2 highlighted with its pin 1**; the adapter in place (blue:
+outline, its two holes with crosses and the standoff circle, header shroud and pins, **its pin-1 end**, the pin-20
+column, the power pads (approx.), the **CF slot edge**); the ribbon zone; the **ROM ("keep clear, removable") and its
+keep-clear zone**; J3; the numbers (hole, J2, adapter, ROM zone positions in grid mm; standoffs; the trial route).
+Page 2: the side view at 1:1 (the height stack) and the notes (standoffs, total height, slot pitch, pin 20, power).
+Every page is stamped with the date and time it was made. Made by `print_1to1.py` (system python3 + reportlab) from the
+geometry `gen_standoff.py geom` reads out of the board; `build.sh` regenerates both.
+
+### Open questions (for Ken)
+
+1. **Pin 1 of the adapter's header - which end, and is the header on top?** The design follows the measurement: pin 1
+   at the header's left end (view) = board y-max end, header on the component side, pins up. The measured "left end of
+   the **outer** row" cannot both be right for a standard header: with pin 1 at the left end, pin 1 is in the **inner**
+   row and pin 2 in the outer one. Check on the adapter: **find the missing pin (20)**. It is in column 10 counted from
+   the pin-1 end: **10th from the left** (in the outer row) = pin 1 at the left end, J2 as drawn; **11th from the left**
+   (in the inner row) = pin 1 at the right end, then J2 turns 180 degrees (same place, pin 1 at its y-min end; a
+   placement edit and a re-route). The 1:1 print marks column 10. If the header is on the underside (pins down), the
+   ribbon cannot arch into it with 15 mm standoffs.
+2. **Adapter power pads**: their order (+5V / GND / GND / +12V?) and exact position; J3 is +5V, G, G, nc (pin 1 square).
+   Make the J3 cable to match (+12 V is not needed by a CF card).
+3. **Ribbon**: ~8-10 cm between the two plugs (the loop on page 2), 40-way, **pin 20 open at the J2 plug** (or J2's pin
+   20 pulled); plugs crimped alike, stripe on the pin-1 (y-max) end. Buy or crimp; the length is best tried with the
+   print and the adapter on real standoffs.
+4. **Card-cage slot pitch vs. the stack height** (~25 mm to the CF card top, ~30 mm to the plug on the adapter, ~35 mm
+   to the ribbon loop, 15 mm standoffs): does the neighbouring slot on the component side stay usable?
+5. **Standoff length**: 15 mm proposed; 12 mm if the sockets and the adapter's pin tails allow (measure the tails).
+6. **Pick A or B** (or ask for a change), then: final routing polish (through vias, via clean-up), silkscreen tidy,
+   fab files, before ordering.
+
+## The top-edge record: the board finished from option B (`options-top-edge-J2/`)
+
+**Superseded by the standoff decision the same day; kept as a record.** Everything in this section and the next few
+(the finished board, its fab outputs, "Before ordering", the three top-edge re-layout options, their trial routes) was
+moved unchanged into `options-top-edge-J2/` (reports: `options-top-edge-J2/reports/`); the file names below are in that
+folder. `options-top-edge-J2/memory-v2.0.kicad_pro` / `.kicad_dru` (the re-layout rules, as option B's) open the
+finished board with its rules. `build.sh` still re-checks it (step 5: DRC, `finish_v2.py verify`, the netlist proof);
+`FROM=trial` / `ROUTE=1` remake it and its fab outputs there, `RELAYOUT=` the options.
+
+
+`options-top-edge-J2/memory-v2.0.kicad_pcb` (until the standoff decision it sat beside the schematic, sharing
+`memory-v2.0.kicad_pro`, which still carries the re-layout rules). Made by `finish_v2.py make` from option B's committed trial route
 (`memory-v2.0-relayout-b-trial.kicad_pcb`, Freerouting 1.9 of 2026-09-24): `FROM=trial build.sh` remakes it exactly.
 
 **Which route.** The committed trial route was compared with fresh routes of the same placement: eight new Freerouting
@@ -160,7 +343,7 @@ time than the trial's). The trial route is better on every count (43 vias, 11,77
 | netlist proof | **MATCH** (70 parts, 186 nets, 687 pads) | |
 | placement check | OK (no overlap, pads 0.5 mm inside the edge, X1 as built, TAODAN keep-low zone clear) | |
 
-### Fab outputs (`finish_v2.py fab`, regenerated by every plain `build.sh`)
+### Fab outputs (`finish_v2.py fab`; remade only by a `FROM=trial` / `ROUTE=1` build)
 
 | File | What |
 |---|---|
@@ -173,7 +356,7 @@ time than the trial's). The trial route is better on every count (43 vias, 11,77
 | `memory-v2.0-placement.pdf` | assembly drawing: silkscreen + F.Fab (values, the TAODAN outline) + outline, title block |
 | `memory-v2.0-schematic.pdf`, `memory-v2.0-bom.csv` | schematic (7 sheets), BOM (35 lines, **70 parts**) |
 
-## Before ordering (open items)
+## Before ordering (the top-edge board; superseded by the standoff decision)
 
 1. **J2 pin 1 / key vs the adapter.** J2 (shrouded 2x20, rotation 0) has pin 1 toward y = 10, the odd pins inboard
    (x = 189.20); check on which side of the shroud the library's key slot falls. **TAODAN CF-IDE40**: it plugs straight onto J2 and
@@ -193,7 +376,7 @@ fab files re-made (part-list delta above).
 
 **Not ordered.**
 
-## The re-layout (Ken, 2026-09-24)
+## The re-layout (Ken, 2026-09-24; the rules and stack-up hold for the standoff options too)
 
 **Kept from the built card:** the board outline (177.8 x 114.0 mm, x 17.72-195.55 / y 10.00-124.02), the bus
 connector X1 (FABC96R, same position and orientation, its two mounting holes and keepouts: the card plugs into the same
@@ -240,7 +423,7 @@ the built card), row pitch 13.97 mm, 5-8 mm channels between columns. J2 (Connec
 shrouded, pin 20 present) is at rotation 0 in every option: pads at x = 189.20 (odd pins, inboard: almost every IDE
 signal is on an odd pin) and 191.74, shroud 0.6 mm inside the top edge, pin 1 toward y = 10.
 
-## Placement options (the review; Ken picked B)
+## Top-edge placement options (the review; Ken picked B; now the record in `options-top-edge-J2/`)
 
 Every option: same circuit (netlist proof MATCH, board and trial route; made before C20-C23 were removed, so every
 option board, trial route and keep-copper record still carries them: see "The records and C20-C23" below), no body overlap, every pad 0.5 mm inside the
@@ -298,7 +481,7 @@ the silk of a review copy), `memory-v2.0-relayout-X-placement.png` (2D: outline,
 A is the most familiar (the built card's column order) but the longest; C has the same topology as A with the CF chips
 at the top and leaves the adapter strip 0.3 mm inside the y = 10 edge.
 
-## The CF-to-IDE adapter
+## The CF-to-IDE adapter (the top-edge options; superseded: the HX-2118P on standoffs, above)
 
 - **TAODAN CF-IDE40 V2.0** (70 x 63 mm, female 40-pin socket along a 70 mm edge) plugs straight onto J2 and stands
   **perpendicular to the card, out of the component side**, its lower edge ~9-10 mm above the card, overhanging each
@@ -323,8 +506,9 @@ value, symbol path; pin 1 GND, pin 2 VCC); `check_netlist.py --records` checks e
 those four, and `build.sh` accepts the four as "extra footprint" parity items on them (`parity_new ... record`) and on
 nothing else. Regenerating them (`RELAYOUT=` / `KEEPCOPPER=`) reproduces the same pre-removal records
 (`gen_relayout.py board` and `gen_mem_v2.py board` keep the four from the built board; checked with
-`RELAYOUT=b NOROUTE=1 KEEPCOPPER=b` on a scratch copy: BUILD PASS). Only the final board is made without them:
-`finish_v2.py make` takes them off (also after `ROUTE=1`, which routes option B's board with them on it).
+`RELAYOUT=b NOROUTE=1 KEEPCOPPER=b` on a scratch copy: BUILD PASS). Made without them: the top-edge finished board
+(`finish_v2.py make` takes them off, also after `ROUTE=1`, which routes option B's board with them on it) and the
+standoff boards (`gen_standoff.py board` leaves them off; made after the removal).
 
 ## The keep-the-built-copper record (`options-keep-copper/`)
 
@@ -341,55 +525,63 @@ DATA8-15 bundle (DRC: A 11 shorts / 4 clearance / 63 mask bridges, B 12 / 1 / 50
 |---|---|
 | `mem_v2_netlist.py` | **the delta** (single source): CF card v1.0 -> v2.0 reference map, dropped parts, shared nets, `check()`, `expected()` |
 | `gen_mem_v2.py` | writes the schematic (`sch`); the keep-copper record boards (`board`, `locked`, `check`); `refill`, `review` (review images) |
-| `relayout_placements.py` | **the re-layout options** (plain data + helpers: `row()` = a DIP and its cap, `j2()`, `labels()`) |
-| `gen_relayout.py` | re-layout boards (`board`), `check`, `airwire`, trial route (`dsn` two-signal-layer export, `ses` import, `stats`); `write_project()` = the re-layout rules |
-| `finish_v2.py` | **the final board**: `project` (the v2.0 project gets the re-layout rules), `make` (through vias, via clean-up, collinear merge, F.Fab adapter outline, J3 pin labels, nudges, silkscreen tidy, title block, refill), `silk`, `verify` (the final gates + numbers), `fab` (gerbers, drill, zip, renders, placement PDF, JLCPCB note) |
-| `check_netlist.py` | the netlist proof: schematic = built v1.3 - C20-C23 + CF section; the final board = the schematic; the record boards (`--records`) = the schematic + exactly C20-C23 as on v1.3 |
+| **`standoff_placements.py`** | **the standoff options** A / B (plain data): the HX-2118P's measured geometry (`HX`, `adapter()`), J2's orientation (`j2()`, `j2_geom()`), the standoff / hole / ROM clearance figures |
+| **`gen_standoff.py`** | the standoff boards (`board`: placement, H1/H2 + keep-outs, adapter drawings), `check` (the placement gates above), `geom` (for the print); `dsn` / `ses` / `stats` / `airwire` / `review` = gen_relayout's |
+| **`print_1to1.py`** | the 1:1 US-Letter check print (reportlab, system python3) from `gen_standoff.py geom` |
+| `relayout_placements.py` | the top-edge re-layout options (plain data + helpers: `row()` = a DIP and its cap, `j2()`, `labels()`; the standoff options reuse `row()`, `col()`, `UBLOCK_BUILT`) |
+| `gen_relayout.py` | top-edge re-layout boards (`board`, into `options-top-edge-J2/`), `check`, `airwire`, trial route (`dsn` two-signal-layer export, `ses` import, `stats`); `write_project()` = the re-layout rules |
+| `finish_v2.py` | the board finished from top-edge option B (the record): `project` (the v2.0 project gets the re-layout rules), `make`, `silk`, `verify`, `fab` |
+| `check_netlist.py` | the netlist proof: schematic = built v1.3 - C20-C23 + CF section; the standoff boards, their trial routes and the top-edge finished board = the schematic (+ the two board-only standoff holes H1/H2, `is_mech()`); the record boards (`--records`) = the schematic + exactly C20-C23 as on v1.3 |
 | `build.sh` | the whole pipeline; exit 0 = every gate passed |
-| `memory-v2.0.kicad_sch`, `-sheet1..7.kicad_sch`, `.kicad_pro`, `.kicad_dru` | schematic (sheets 1-6 built v1.3, sheet 7 CF), project with the re-layout rules (since 2026-09-24; the keep-copper record keeps the built card's rules in its own `.kicad_pro` / `.kicad_dru`) |
-| **`memory-v2.0.kicad_pcb`** | **the final board** (option B, routed, silkscreen tidied) |
-| `memory-v2.0-gerbers.zip`, `gerbers/`, `memory-v2.0-jlcpcb-order.txt`, `memory-v2.0-render-{top,bottom}.png`, `memory-v2.0-placement.pdf` | its fab outputs (table above) |
-| `memory-v2.0-relayout-{a,b,c}.kicad_pcb` / `.kicad_pro` / `.kicad_dru` | the three re-layout placements (unrouted) with the re-layout rules |
-| `memory-v2.0-relayout-{a,b,c}-trial.kicad_pcb` / `.kicad_pro` / `.kicad_dru` | their trial routes (Freerouting output, not polished; B's is the final board's base) |
-| `memory-v2.0-relayout-{a,b,c}-render-top.png`, `-placement.png`, `-trial.png` | 3D render with adapter zones; 2D airwire plot; trial-route copper plot |
-| `memory-v2.0-schematic.pdf`, `memory-v2.0-bom.csv` | schematic plot, bill of materials |
+| `memory-v2.0.kicad_sch`, `-sheet1..7.kicad_sch`, `.kicad_pro`, `.kicad_dru` | schematic (sheets 1-6 built v1.3, sheet 7 CF), project with the re-layout rules |
+| **`memory-v2.0-standoff-{a,b}.kicad_pcb`** / `.kicad_pro` / `.kicad_dru` | **the two standoff options** (placed, unrouted, re-layout rules) |
+| `memory-v2.0-standoff-{a,b}-trial.kicad_pcb` / `.kicad_pro` / `.kicad_dru` | their trial routes |
+| **`memory-v2.0-standoff-{a,b}-1to1.pdf`** | **the 1:1 check prints** |
+| `memory-v2.0-standoff-{a,b}-render-top.png`, `-placement.png`, `-trial.png` | 3D render with the adapter, 2D placement / airwire plot, trial-route copper plot |
+| `memory-v2.0-schematic.pdf`, `memory-v2.0-bom.csv` | schematic plot, bill of materials (70 parts; H1/H2 are board-only, not in it) |
 | `memory-v1.3-eagle.kicad_sym`, `.pretty/`, `sym-lib-table`, `fp-lib-table` | the built card's converted libraries, copied (same nickname `memory-v1.3-eagle`; was `memory-v1.3-fusion-export-2026-09-24-eagle` before the rename, see below) |
+| `options-top-edge-J2/` | **the top-edge record**: `memory-v2.0.kicad_pcb` (the board finished from option B, + `.kicad_pro` / `.kicad_dru`) and its fab outputs (`memory-v2.0-gerbers.zip`, `gerbers/`, `memory-v2.0-jlcpcb-order.txt`, `memory-v2.0-render-{top,bottom}.png`, `memory-v2.0-placement.pdf`); the three re-layout placements `memory-v2.0-relayout-{a,b,c}.kicad_pcb` / `.kicad_pro` / `.kicad_dru`, their trial routes `-trial.*` and images `-render-top.png`, `-placement.png`, `-trial.png`; `reports/` (`memory-v2.0-final.txt`, `-drc.json` / `-drc.rpt`, `-make.txt`, `-placement-check.txt`, per option `relayout-X-*`) |
 | `placements.py`, `space_check.py`, `options-keep-copper/` | the blocked keep-the-built-copper options (record, above) |
-| `reports/` | final board: `memory-v2.0-final.txt` (the gates and numbers, DRC by type against the built card), `-drc.json` / `-drc.rpt`, `-make.txt` (clean-up and tidy log), `-placement-check.txt`; ERC (`.rpt`, `.json`, `erc-summary.txt`), netlist (`.net`), `netlist-proof.txt`; per re-layout option `relayout-X-placement-check.txt`, `-drc.json`, `-trial.txt`, `-trial-drc.json`, `-freerouting.log` |
+| `reports/` | ERC (`.rpt`, `.json`, `erc-summary.txt`), netlist (`.net`), `netlist-proof.txt`; per standoff option `standoff-X-placement-check.txt`, `-drc.json`, `-trial.txt`, `-trial-drc.json`, `-freerouting.log` |
 
 ## Rebuild
 
-    hardware/cards/memory/kicad/v2.0/build.sh                     # verify the committed final board, regenerate the
-                                                                  # fab outputs (~5 min; no routing)
-    FROM=trial hardware/cards/memory/kicad/v2.0/build.sh          # remake memory-v2.0.kicad_pcb from option B's
-                                                                  # committed trial route (how it was made)
-    ROUTE=1 ROUTES=4 hardware/cards/memory/kicad/v2.0/build.sh    # route option B anew: 4 Freerouting runs in
-                                                                  # parallel, the best complete one (fewest vias, then
-                                                                  # shortest) made into memory-v2.0.kicad_pcb
-    RELAYOUT="a b c" hardware/cards/memory/kicad/v2.0/build.sh    # also regenerate the three option boards + new
-                                                                  # trial routes (the review record)
-    RELAYOUT="b" NOROUTE=1 hardware/cards/memory/kicad/v2.0/build.sh   # an option board, its committed trial re-checked
+    hardware/cards/memory/kicad/v2.0/build.sh                     # verify the committed standoff options + trial
+                                                                  # routes, remake their images and 1:1 PDFs, re-check
+                                                                  # the top-edge record (~6 min; no routing)
+    STANDOFF="a b" hardware/cards/memory/kicad/v2.0/build.sh      # regenerate the standoff boards and route each anew
+                                                                  # (one Freerouting run per pass count in SMP, default
+                                                                  # "20 30 40 60", in parallel; the best kept)
+    STANDOFF="a" NOROUTE=1 hardware/cards/memory/kicad/v2.0/build.sh   # regenerate a board, keep its committed trial
+    FROM=trial hardware/cards/memory/kicad/v2.0/build.sh          # top-edge record: remake its finished board (and fab
+                                                                  # outputs) from option B's committed trial route
+    ROUTE=1 ROUTES=4 hardware/cards/memory/kicad/v2.0/build.sh    # top-edge record: route option B anew
+    RELAYOUT="a b c" hardware/cards/memory/kicad/v2.0/build.sh    # top-edge record: regenerate the three option boards
+                                                                  # + new trial routes (NOROUTE=1: keep the trials)
     KEEPCOPPER="a b c" hardware/cards/memory/kicad/v2.0/build.sh  # also regenerate the keep-copper record
 
-A plain run: schematic + ERC, the final board's placement check, DRC with schematic parity and `finish_v2.py verify`,
-the netlist proof over every committed board (final, options, trial routes, record), the fab outputs, schematic PDF
-and BOM. Freerouting is not deterministic (and slow on a loaded machine), so the committed board is the master; a
-`ROUTE=1` result replaces it only when committed. It reads `../v1.3` (through a scratch copy) and
-`../../../cf/kicad/v1.0/cf_netlist.py` + `gen_cf.py` (read-only); Freerouting from `~/freerouting/freerouting.jar`
-(`FRJAR=`), watchdog `WATCHDOG=` s.
+A plain run: schematic + ERC; per standoff option the placement check, DRC with schematic parity, airwire, the trial
+route's numbers and DRC, render, placement and trial plots, the 1:1 PDF; the top-edge finished board's placement check,
+DRC and `finish_v2.py verify`; the netlist proof over every committed board; schematic PDF and BOM. Freerouting is not
+deterministic (and slow on a loaded machine), so the committed boards are the master; a new route replaces one only
+when committed. It reads `../v1.3` (through a scratch copy) and `../../../cf/kicad/v1.0/cf_netlist.py` + `gen_cf.py`
+(read-only); Freerouting from `~/freerouting/freerouting.jar` (`FRJAR=`), watchdog `WATCHDOG=` s.
 
-## Results (build of 2026-09-24, final board)
+## Results (build of 2026-09-24, the standoff options)
 
 - **Netlist proof: MATCH.** v2.0 schematic = the built v1.3 (53 parts, 169 nets, IC15 included) minus C20-C23 (each
   checked to be pin 1 GND / pin 2 VCC and nothing else on v1.3) + CF section (21 parts, 27 own nets, 69 pins on 17
-  shared nets): 70 parts, 186 nets, 687 pins, 33 unconnected pins (10 v1.3 + 23 documented CF no-connects). The final
-  board equals the schematic pad for pad; the three re-layout boards, their three trial routes and the three
-  keep-copper boards (records made before the removal) equal the schematic plus exactly C20-C23 as on v1.3
-  (`reports/netlist-proof.txt`). Any other difference fails the proof (checked: a final board still carrying the four,
-  a record missing one of them, a pad moved to another net all give MISMATCH).
+  shared nets): 70 parts, 186 nets, 687 pins, 33 unconnected pins (10 v1.3 + 23 documented CF no-connects). The two
+  standoff boards and their trial routes equal the schematic pad for pad plus the two board-only standoff holes H1/H2;
+  the top-edge finished board equals the schematic; the three top-edge re-layout boards, their trial routes and the
+  three keep-copper boards (records made before the removal) equal the schematic plus exactly C20-C23 as on v1.3
+  (`reports/netlist-proof.txt`).
 - **ERC: PASS** (99 vs the built card's 104, all explained: `reports/erc-summary.txt`).
-- **Placement: OK** for A, B and C (`reports/relayout-X-placement-check.txt`) and for the final board.
-- **Trial routes: complete** for A, B and C (0 unrouted, 43 vias each, 0 DRC copper violations; table above).
-- **Final board (option B): PASS** - 0 unrouted, 43 through vias, 11,779 mm, DRC 0 copper violations, planes one
-  piece each, every power pad on its plane, no silkscreen text on a pad / via / silk / edge, no new parity item
-  (`reports/memory-v2.0-final.txt`); fab outputs written. **Not ordered**: see "Before ordering".
+- **Standoff placements: OK** for A and B (`reports/standoff-X-placement-check.txt`): no overlaps, pads 0.5 mm inside
+  the edge, X1 / JP1 / U$1 group as built, J2 oriented for a straight ribbon, nothing tall under the adapter or the
+  ribbon, the standoff holes clear (nearest pad 4.9 mm, nearest body 4.6 mm from a hole centre), the ROM keep-clear zone
+  empty and 44.8 mm from the adapter; schematic parity: nothing new.
+- **Standoff trial routes: complete** for A (94 vias, 13,540 mm) and B (100 vias, 13,748 mm), 0 DRC copper violations.
+- **Top-edge record (option B finished board): PASS** as before - 0 unrouted, 43 through vias, 11,779 mm, DRC 0 copper
+  violations, planes one piece each, silkscreen clean (`options-top-edge-J2/reports/memory-v2.0-final.txt`).
+- **Not ordered**: Ken picks a standoff option first (open questions above).

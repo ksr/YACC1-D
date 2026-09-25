@@ -15,7 +15,9 @@ Verified on hardware 2026-09-18 with the bus tester; the burned EEPROM is `firmw
   (Filed first as `eagle/v1.3-fusion-export-2026-09-24/`, renamed to `v1.3` the same day.)
 - `kicad/v2.0/` – memory card v2.0 design: the built v1.3 + the CompactFlash interface on P8/P9. Schematic proven. With the
   built card's copper kept the CF section did not fit, so Ken decided (2026-09-24) to lay the whole card out again:
-  three re-layout options, each trial-routed complete (0 unrouted); B recommended; Ken picks, then final routing.
+  three re-layout options with J2 at the top edge; B was picked and routed (fab files), then Ken decided the same day
+  that the CF adapter (HX-2118P) mounts on two M3 standoffs on the card with J2 parallel to X1: standoff options A / B,
+  trial-routed complete, with 1:1 check prints; Ken picks (the top-edge board is kept in `options-top-edge-J2/`).
 - `eagle/deprecated/v1.3-do-not-use/` – **DO NOT USE: earlier save (notes 2025-03-06, board 2021-03-17), NOT the built
   card** (found 2026-09-24; it was `eagle/v1.3/` until Ken renamed and deprecated it the same day): no IC15
   (IC5 pin 19 on -VMA), TMP registers and RN5/RN6 off the board and unrouted. Kept for its history: `Notes.rtf`/`.md`

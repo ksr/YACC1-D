@@ -1,0 +1,9 @@
+placement memory-v2.0-standoff-a.kicad_pcb: OK - no overlaps, pads 0.5 mm inside the edge, X1 / JP1 / U$1 group as built, J2 oriented for a straight ribbon, nothing tall under the adapter or the ribbon, standoff holes clear, ROM keep-clear zone empty and away from the adapter
+    adapter x 83.19-127.19, y 36.85-96.85 (print grid x 65.4-109.4, y 26.8-86.8); header edge x 83.19, slot edge x 127.19
+    J2 pin 1 (78.71, 90.98), pins y 42.72-90.98, odd row x 78.71, even row x 76.17, courtyard to x 82.44 (0.75 mm before the adapter's header edge)
+    H1 (98.49, 92.85) = print grid (80.7, 82.8): nearest pad IC33.11 4.9 mm, nearest body IC33 4.7 mm
+    H2 (98.49, 40.85) = print grid (80.7, 30.8): nearest pad IC32.13 4.9 mm, nearest body IC32 4.6 mm
+    under the adapter (low parts only): C1, C2, C26, C27, C29, C6, IC1, IC15, IC2, IC31, IC32, IC34, IC5
+    ROM IC13 keep-clear zone x 172.0-193.7, y 44.8-99.0, holds: nothing; 44.8 mm from the adapter
+airwire memory-v2.0-standoff-a.kicad_pcb: 11507 mm, 329 connections on 146 signal nets
+     schematic parity: 49 items (built v1.3: 220, all inherited Eagle values/fields); new: none

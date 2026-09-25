@@ -50,5 +50,5 @@ Generated 2026-09-23 by `tools/eagle_to_kicad_all.py`: every Eagle design under 
 ## Hand-maintained masters (not generated; `MASTER` marker file)
 
 - [`cards/cf/kicad/v1.0`](cards/cf/kicad/v1.0/) — see its README (not ordered; its circuit is the CF section of `cards/memory/kicad/v2.0`)
-- [`cards/memory/kicad/v2.0`](cards/memory/kicad/v2.0/) — see its README (the built memory v1.3 + the CF interface on P8/P9; schematic proven; whole card RE-LAID (Ken 2026-09-24), option B picked: `memory-v2.0.kicad_pcb` routed (0 unrouted, 43 vias, DRC 0 copper violations), fab files ready (gerbers + drill zip, renders, placement PDF, BOM); C20-C23 (four spare 100 nF with no IC) removed (Ken 2026-09-24): 70 parts, proof = v1.3 - C20-C23 + CF; not ordered)
+- [`cards/memory/kicad/v2.0`](cards/memory/kicad/v2.0/) — see its README (the built memory v1.3 + the CF interface on P8/P9; schematic proven; whole card RE-LAID (Ken 2026-09-24), top-edge option B was routed with fab files, then superseded (kept in `options-top-edge-J2/`) by Ken's standoff decision (2026-09-24): the HX-2118P CF adapter on two M3 standoffs on the card, J2 parallel to X1; standoff options A / B placed and trial-routed complete, 1:1 check prints; Ken picks; C20-C23 removed: 70 parts, proof = v1.3 - C20-C23 + CF; not ordered)
 - [`cards/video/kicad/v1.1`](cards/video/kicad/v1.1/) — see its README

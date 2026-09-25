@@ -10,7 +10,8 @@ plane through its own through-hole pad (thermal relief); no power track is route
 
 Run with KiCad's bundled Python (pcbnew); build.sh does, in this order per option:
 
-  gen_relayout.py board <opt> <schematic .net>      -> memory-v2.0-relayout-<opt>.kicad_pcb (+ .kicad_pro, .kicad_dru)
+  gen_relayout.py board <opt> <schematic .net>      -> options-top-edge-J2/memory-v2.0-relayout-<opt>.kicad_pcb (+ .kicad_pro,
+                                                       .kicad_dru; the top-edge record since the standoff decision)
         the built board with every track and via removed; every pad on its v2.0 schematic net (as gen_mem_v2.py board);
         the CF footprints added; EVERY part except X1 placed from relayout_placements.py; the built card's silkscreen
         labels moved with their parts (U$1 block labels, JP1 labels), title V2.0, "CF: P8/P9" beside J2, LED/jumper
@@ -62,8 +63,12 @@ DRU = """(version 1)
 """
 
 
+# the top-edge options and the board made from option B (the record since the standoff decision, Ken 2026-09-24)
+TOPEDGE = os.path.join(HERE, "options-top-edge-J2")
+
+
 def fname(opt, kind="kicad_pcb"):
-    return os.path.join(HERE, "%s-relayout-%s.%s" % (PROJ, opt, kind))
+    return os.path.join(TOPEDGE, "%s-relayout-%s.%s" % (PROJ, opt, kind))
 
 
 def write_project(opt, name=None):
@@ -72,7 +77,8 @@ def write_project(opt, name=None):
     pro = json.load(open(os.path.join(HERE, PROJ + ".kicad_pro")))
     out = os.path.join(HERE, name) if name else fname(opt, "kicad_pro")[:-len(".kicad_pro")]
     pro["meta"]["filename"] = os.path.basename(out) + ".kicad_pro"
-    pro.get("schematic", {})["top_level_sheets"] = []
+    if os.path.basename(out) != PROJ:
+        pro.get("schematic", {})["top_level_sheets"] = []     # a board-only project; the v2.0 project keeps its sheet
     r = pro["board"]["design_settings"]["rules"]
     r.update(min_clearance=RULES["clearance"], min_track_width=RULES["track"], min_via_diameter=RULES["via"],
              min_through_hole_diameter=RULES["via_drill"], min_via_annular_width=RULES["annular"],

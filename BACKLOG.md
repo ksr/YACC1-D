@@ -135,7 +135,15 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   netlist, DRC 0 errors / 0 unconnected, gerbers ready; theory in `docs/cards/cf.md`; never ordered.
   Card-preparation procedure written: `docs/procedures/CF-CARD.md`. A move of the interface onto an I/O card v2.0 on
   ports P4/P5 was designed 2026-09-23 and dropped 2026-09-24 (6eeb259, 65851b0).)
-  **2026-09-24: memory card v2.0 ROUTED, fab files ready, NOT ORDERED**: `hardware/cards/memory/kicad/v2.0`
+  **2026-09-24 (evening): memory card v2.0 - TWO STANDOFF OPTIONS, Ken picks** (`hardware/cards/memory/kicad/v2.0`,
+  README "The standoff options"): Ken decided the CF-to-IDE adapter (HX-2118P, measured: 60 x 44 mm, 2 M3 holes 52 mm
+  apart at the header end, no pin 20, power by pads from J3) sits on two M3 standoffs ON the card, J2 parallel to X1
+  ~1/3 in, a short straight ribbon; the ROM stays removable (keep-clear zone, at the top edge). Options A (adapter
+  centred; trial route 0 unrouted / 94 vias / 13.5 m) and B (adapter toward the y = 124 edge; 0 / 100 / 13.7 m), each
+  with a 1:1 US-Letter check print (`memory-v2.0-standoff-X-1to1.pdf`). Open: adapter pin-1 end check (the missing pin
+  20's column), power-pad order, ribbon length (pin 20 open at J2), slot pitch vs ~35 mm stack, standoff 15 vs 12 mm;
+  then final polish + fab. The earlier routed top-edge board (below) is kept as a record in `options-top-edge-J2/`.
+  Earlier the same day: **memory card v2.0 ROUTED, fab files ready, NOT ORDERED**: `hardware/cards/memory/kicad/v2.0`
   (built memory card + CF on P8/P9, schematic proven) did not fit with the built card's copper kept, so the whole card
   was laid out again (same circuit, outline, X1, 4-layer GND/VCC planes; 0.25 mm tracks / 0.2 mm clearance / 0.8-0.4 mm
   vias). Ken picked option B (TMP registers at the bus connector, CF column at the top edge, J2 centred);

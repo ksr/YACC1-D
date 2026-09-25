@@ -24,7 +24,9 @@ What must hold, exactly (mem_v2_netlist.expected() builds the expectation):
              pads with no net are exactly the schematic's unconnected pins + the v1.3 pads no schematic pin names
              (X1's mounting holes, and the unused gate pins the
              Eagle board left without a net: IC3, IC4, IC12, IC13, IC14, IC18), and the footprints are the schematic's parts with the same library
-             footprints and values (v1.3 parts: the value on the v1.3 board, which is the Eagle board's).
+             footprints and values (v1.3 parts: the value on the v1.3 board, which is the Eagle board's), plus at
+             most the two standoff holes H1 / H2 of the CF adapter (the standoff options, gen_standoff.py): board-only
+             footprints holding nothing but a non-plated hole with no net (is_mech()).
              The boards before --records (the final board) must equal the schematic.
   records    the boards after --records (re-layout options, trial routes, keep-copper options) were made BEFORE C20-C23
              were removed: each must equal the schematic PLUS exactly C20-C23 as on the v1.3 board (same footprint and
@@ -153,10 +155,13 @@ def check_board(pcb, sch_nets, sch_lone, sch_parts, v13_board, gone=None):
         kind = "record, before the removal of %s" % ", ".join(sorted({r for r, p in gone}))
     pinless = {rp for rp in v13_nonet if rp not in sch_lone and not any(rp in s for s in sch_nets.values())}
     root = sparse(open(pcb).read())[0]
-    parts, nets, alone, bad = {}, collections.defaultdict(set), set(), []
+    parts, nets, alone, bad, mech = {}, collections.defaultdict(set), set(), [], []
     for fp in kids(root, "footprint"):
         props = {p[1]: p[2] for p in kids(fp, "property")}
         ref = props.get("Reference")
+        if is_mech(fp, ref):
+            mech.append(ref)                                  # a standoff hole: board only, not a schematic part
+            continue
         parts[ref] = (props.get("Value"), fp[1])
         for pad in kids(fp, "pad"):
             num, net = pad[1], val(pad, "net")
@@ -185,12 +190,25 @@ def check_board(pcb, sch_nets, sch_lone, sch_parts, v13_board, gone=None):
             bad.append("footprint %s is %s, should be %s" % (ref, parts.get(ref), want))
     for ref in sorted(set(parts) - set(sch_parts)):
         bad.append("extra footprint %s" % ref)
-    print("board %s: %d footprints, %d nets / %d pads, %d unconnected pads (+ %d pinless v1.3 pads) [%s]: %s"
-          % (os.path.basename(pcb), len(parts), len(nets), sum(len(s) for s in nets.values()), len(alone), len(pinless),
+    print("board %s: %d footprints%s, %d nets / %d pads, %d unconnected pads (+ %d pinless v1.3 pads) [%s]: %s"
+          % (os.path.basename(pcb), len(parts), " + %s (board-only standoff holes)" % "/".join(sorted(mech)) if mech else "",
+             len(nets), sum(len(s) for s in nets.values()), len(alone), len(pinless),
              kind, "MATCH" if not bad else "MISMATCH"))
     for x in bad[:30]:
         print("    ", x)
     return not bad
+
+
+MECH = ("H1", "H2")      # the standoff holes of the CF adapter (gen_standoff.py): the only board-only footprints allowed
+
+
+def is_mech(fp, ref):
+    """a mechanical hole: reference H1 / H2, attribute board_only (not in the schematic, not in the BOM), nothing but
+    non-plated holes with no net"""
+    attr = [a for x in kids(fp, "attr") for a in x[1:]]
+    pads = kids(fp, "pad")
+    return (ref in MECH and "board_only" in attr and pads
+            and all(len(p) > 2 and p[2] == "np_thru_hole" and not val(p, "net") for p in pads))
 
 
 def is_record(pcb):
