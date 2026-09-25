@@ -16,6 +16,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Video card v1.1** (`hardware/cards/video/kicad/v1.1`, the KiCad master since 2026-09-21; Fusion abandoned): DONE in the
   design — one 5 V rail (`+5V` folded into `VCC`, joining track added; proof 116/116). TO DO — move the 6845 RS from A0 to A1
   (`hardware/cards/video/docs/fix-6845-register-select.md`; bench job first), pull-ups on the 7416 outputs; then order.
+  On the built v1.0: fit the 6845 with the RS bench fix, then the ROM's `VR0C 12` / `VR0C` read-back proves the register
+  path (`docs/cards/video.md` section 8, step 6).
 - **Sequencer logic v2.2: a "CPU off" switch** (`hardware/cards/sequencer-logic`). Today the card's outputs can never be
   silenced while the memory card is enabled: -BUS-EN is generated on the card itself (IC36 74LS04 from the sequencer's
   READY line) and is also the output enable of all nine pipeline 74LS374s and the two microcode-address 74LS244s; -RESET
@@ -34,6 +36,18 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Memory card**: the unconnected jumper wire on IC7 pin 4 — purpose not remembered (Ken 2026-09-20); trace it on the board or remove it.
 
 ## Firmware — written, not burned / loaded
+- **ROM 2026-09-25: the video unit (not burned)** — `firmware/rom/shipped/rom.bin` (MD5 3ebc6789...): the $D000 probe at
+  reset, the screen driver, CHAROUT mirroring (`VIDMIR` $0FF1, off at reset), the `V` command, the video entry at $FFBC
+  (`docs/programming/MONITOR.md` section 11). Burn it (Visual Minipro, 28C64) when ready, then check the banner says
+  `ROM 2026-09-25` and `VIDEO CARD FOUND`, and run the bring-up table in `docs/cards/video.md` section 8. The old chip
+  stays compatible (Y1/OS's `video` reports "no video driver").
+- **Video auto-start: `VIDAUTO EQU 1`** in `firmware/monitor/monitor.asm` once the card is debugged (6845 fitted with
+  the RS-to-A1 fix, E one-shot and 7416 pull-ups sorted, a picture from `V I`): reset then programs the CRTC, clears the
+  screen and turns mirroring on. Rebuild, `tools/verify_firmware.py`, burn.
+- **Video: settle the CRTC address and the timing** — the ROM uses $D800/$D802 (the netlist reading; README says
+  $D400/$D402: `VCRTCA`/`VCRTCD`, one edit) and a CRTC table assuming a 10 MHz dot clock, 5-dot characters, 80 x 24
+  (`vcrtab`); read the crystal, confirm with `tests/video/hold_address.py`, adjust with the monitor's `VR` by hand, then
+  in the table. The character EPROM's order is assumed 2513-style (ASCII bits 0-5); read the 2732 to confirm.
 - **Sequencer microcode with `LDZ`/`STZ`/`ADDIW`/`SHL16` (2026-09-24)** — `firmware/microcode/ucode-generator2/test.hex`
   has 32 new records ($80-$8F, $C0-$CF; every other record unchanged, `cache` = the EEPROM's image). At the machine:
   `python3 tools/ucode_send.py --all` (Ken), then `python3 tests/bench/run.py --port /dev/cu.usbserial-X`: `isa` now

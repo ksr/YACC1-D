@@ -321,12 +321,25 @@ names, globs and `-` (the console until Ctrl-D) work wherever a command reads te
 | `tree [dir]` | the tree, indented, depth first |
 | `uniq [file...]` | drop adjacent repeats |
 | `vi [file]` | the screen editor (VT100) |
+| `video [on\|off\|clear\|init\|probe]` | the video card (2026-09-25, below): status, mirror the console on the screen, clear it, program the CRTC |
 | `wc [file...]` | lines, words, bytes (32-bit) |
 
 Also on the disk: `/LIB` (2026-09-25: the compiler's passes `/LIB/CC/CC1`..`CC9`, built with `make -C os passes`,
 and `/LIB/Y1CCRT.TXT`, `/LIB/Y1LIB.C`), `/MAN` (the pages, from `os/man/`), `/DOCS` (this README as `OS.MD`, the compiler README as
 `Y1CC.MD`, `OSPLAN.MD`, `PORT.MD` and `MDDEMO.MD`, md's own sample), and `/FRUIT.TXT` + `/FRUIT2.TXT`, seven lines of
 sample data for trying the filters (`sort`, `uniq`, `awk`, `diff` ... the man pages' examples use them).
+
+### `video` (2026-09-25)
+
+`/BIN/VIDEO` (`commands/video.c`) switches the ROM's video driver (`ROM 2026-09-25`, `docs/programming/MONITOR.md`
+section 11). The ROM probes the card at $D000 at reset (`VIDPRES`, $0FF0) and, while `VIDMIR` ($0FF1) is set, its
+CHAROUT writes every console byte to the screen as well: `video on` / `off` set that flag (on refuses when no card
+was found), `video clear` and `video init` call the ROM's video entry `VIDCTL` ($FFBC: 2 clear, 1 CRTC table + clear),
+`video probe` probes again, `video` alone prints the status. **The kernels are unchanged**: everything the OS and its
+programs print reaches the console through CHAROUT (CONOUT's raw path, the shell's echo, `eputs`), so mirroring
+covers it; a `>` file or a pipe is not the console and is not mirrored. On an older ROM (no `JSR` at $FFBC) the
+command says the ROM has no video driver and changes nothing. The addresses are `#define`d in `lib_abi.c`;
+`man video`; tested by `tests/video/emu.py` on both emulators.
 
 ### `asm` (2026-09-25)
 

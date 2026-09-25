@@ -1,4 +1,9 @@
-# tests/video — video card RAM test
+# tests/video — video card tests
+
+`emu.py` (2026-09-25, in `make check`): the ROM's video unit (probe, the `V` command, mirroring with a scroll, the absent
+card) and Y1/OS's `video` command on both emulators, whose card model (`software/videomodel.h`) prints the screen with `-V`;
+the screen is compared with a Python model of the driver. The bench scripts below drive the real card.
+
 
 `video_ram_test.py [port] [--quick]` drives the Bus Test Card (`tools/busdrv.py`, FTDI 19200) and exercises the video
 card's 1K display RAM at $D000–$D3FF: address-derived and inverted patterns over every cell, one-cell neighbour isolation

@@ -223,8 +223,10 @@ From `firmware/rom/README.md`, `firmware/abi/README.md`, and a byte comparison o
 
 - The image to burn is **`firmware/rom/shipped/rom.bin`**: 8,192 bytes, offset 0 = $E000; BASIC (`firmware/basic/basic.img`) at
   $E000, the monitor (`firmware/monitor/monitor.img`) at $F000; bytes the sources never write are $FF like a blank part.
-  MD5 `d2d7b027e7c6951d7dd93412a8fd9cd8` (the 2026-09-23 afternoon build, with the `:` loader; the build in the machine,
-  CF driver on P8/P9). Programmer: Visual Minipro / `minipro`, device 28C64. It is built from `shipped/rom`
+  **Since 2026-09-25: MD5 `3ebc67898f70d319853fe42abdfd2cb9`, `ROM 2026-09-25` (the video unit: $D000 probe, the `V`
+  command, console mirroring off by default; `docs/programming/MONITOR.md` section 11) — not burned yet.** Before it,
+  MD5 `d2d7b027e7c6951d7dd93412a8fd9cd8` (the 2026-09-23 afternoon build, with the `:` loader; the build in the
+  machine, CF driver on P8/P9; `git show 65851b0:firmware/rom/shipped/rom.bin`). Programmer: Visual Minipro / `minipro`, device 28C64. It is built from `shipped/rom`
   (Intel hex) by `python3 tools/img2bin.py firmware/rom/shipped/rom firmware/rom/shipped/rom.bin --base 0xE000 --end 0x10000 --fill 0xFF --size 8192`.
 - `tools/verify_firmware.py` (or `make -C software/assembler check`) proves the image reproduces from `firmware/monitor/monitor.asm`
   and `firmware/basic/basic.asm` before you burn it.
@@ -235,7 +237,8 @@ From `firmware/rom/README.md`, `firmware/abi/README.md`, and a byte comparison o
   the `T` menu tests are gone; the CompactFlash driver and the `O` boot command are in; the `:` Intel-hex loader
   (section 6a) and a no-echo console vector are in; the banner ends with the build date, `ROM 2026-09-23`. (A `ROM 2026-09-23B` rebuild, CF on P4/P5, was made that
   evening and withdrawn on 2026-09-24 without being burned; the tree's image is the burned build again.)
-- **How to tell which build a chip holds**: the banner at power-up ends with `ROM 2026-09-23` on the current build (the
+- **How to tell which build a chip holds**: the banner at power-up ends with `ROM 2026-09-25` on the tree's build (then
+  `VIDEO CARD FOUND` when the video card answers), `ROM 2026-09-23` on the chip in the machine (the
   2021 chip and the 2026-09-22 build print `YACC 2020: HELLO WORLD` alone). Without a console, read back two bytes with
   the programmer or `busdrv.py`:
 
@@ -243,6 +246,7 @@ From `firmware/rom/README.md`, `firmware/abi/README.md`, and a byte comparison o
   |---|---|---|---|
   | $FFEC | `00` | `04` | the CFINIT vector (`JSR` = `04`) exists from the 2026-09-22 build on |
   | $FFFC | `FF` | `04` from 2026-09-23 | UARTINNE, the sixteenth vector (2026-09-22 had a `00` end byte here) |
+  | $FFBC | `FF` | `04` from 2026-09-25 | the video entry (`JSR vidctl`) below the vector table |
 
   The other vector bytes are `04 hi lo 05` (`JSR routine / RET`) with targets that move whenever the monitor changes,
   so compare the whole image by MD5 (`firmware/rom/README.md`) or with `tests/memory/rom_verify.py` below.

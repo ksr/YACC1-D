@@ -46,19 +46,21 @@ Sources: `docs/system/MACHINE.md` (the memory card's jumper settings, verified w
 | $0F10–$0F12 | 3 | `CFLBA0..2`: the sector number for CFREAD/CFWRITE (low byte first) | `monitor.asm` (2026-09-22) |
 | $0F14–$0F3F | 44 | `SYSTAB`: the OS's syscall jump table, 22 big-endian words (entries 0..21), filled at boot from SYSTAB2 ($4FC0, 32 entries, 2026-09-25); all 22 used since 2026-09-23 | `os/lib_abi.c`, `os/y1os.asm` |
 | $0F40–$0FBF | 128 | `ARGBUF`: a program's command tail from Y1/OS, NUL-terminated (`ARGMAX` 127); `argstr()`. The monitor's equate says 64 bytes; the upper 64 overlay `line_buffer` | `monitor.asm`, `os/lib_abi.c`, `y1cc.py` |
-| $0F80–$0FFF | 128 | `line_buffer`: the monitor's line buffer (`P` command), idle while the OS runs | `monitor.asm` |
+| $0F80–$0FEF | 112 | `line_buffer`: the monitor's line buffer (`P` command), idle while the OS runs (128 bytes until 2026-09-25) | `monitor.asm` |
+| $0FF0–$0FF7 | 8 | the video driver's variables (ROM 2026-09-25): `VIDPRES` $0FF0, `VIDMIR` $0FF1 (the mirroring switch), `VIDCUR`, `VROW`, `VCOL`, `VCHAR`, `VLINE` $0FF6 | `monitor.asm`, `firmware/abi/README.md` |
 | $1000–$1FFF | 4K | BASIC's token buffer (`bas_tok_buf_start`..`_end` = $2000), cleared by `basic_cold` at every monitor boot — **and** `OSBASE`: where the `O` command loads Y1/OS. The two are never used together | `basic.asm`, `monitor.asm` |
 | $1000–$4FFF | 16K | Y1/OS when the OS is running (LBA 1–32 reserve). The assembly OS (v0.2, 2026-09-23, the default): image $1000–$2BE0 (7,137 bytes = 14 sectors), free $2BE1–$49FF (7,711 bytes), RAM $4A00–$4F0F cleared at boot (line $4A00, path $4A82, pipeline table $4B80, sector buffer $4C00, handle records $4E00, variables $4E50), free $4F10–$4FFF ($4FC0–$4FFF kept for a larger SYSTAB). The C OS (`make -C os OS=c`): a 14,619-byte image = 29 sectors + 1,424 bytes of data = 16,043 of 16,384 (v0 was 5.1K). The Makefile checks both | `os/README.md`, `os/y1os.asm`, `os/y1os.c` |
 | $2000 | | scratch of the removed monitor T-menu tests (nothing now) | `y1cc.py` comment |
 | $3000 | | default `ORG` of a compiled program run from the monitor (`G3000`) | `y1cc.py` `ORG_DEFAULT` |
 | $5000–$CFFF | 32K | Y1/OS transient program area (`TPA`..`TPATOP`); `/BIN` programs are compiled `--org 0x5000` | `os/lib_abi.c` |
 | $8000–$CFFF | 20K | the high 62256 (jumpers up) — the upper part of the TPA | `MACHINE.md` |
-| $D000–$D7FF | 2K | video card display RAM (1K verified on the built card) | `OS-PLAN.md`, `tests/video` |
-| $D800–$DFFF | 2K | undecoded, unused | `MACHINE.md` |
+| $D000–$D7FF | 2K | video card display RAM (1K verified on the built card); the ROM's screen is 80 x 24 from $D000 (2026-09-25) | `OS-PLAN.md`, `tests/video`, `monitor.asm` |
+| $D800–$DFFF | 2K | the video card's CRTC half: the 6845 at even addresses ($D800 address register, $D802 data register after the RS-to-A1 fix; not fitted), the JP1 latch at odd ones (netlist reading, `docs/cards/video.md` section 4) | `docs/cards/video.md`, `monitor.asm` `VCRTCA` |
 | $E000–$EFFF | 4K | ROM: BASIC (entry table $E000..$E060 at 16-byte spacing; `ORG 0EF00h` and `0EFFFh` at its end) | `basic.asm`, `monitor.asm` equates |
 | $F000–$F7FF | | ROM: the monitor (code through `nblink` at $F5DC, strings from `hello` and `PROMPT` $F60A, the help text `helpmenu` $F6AC into $F7xx; 2,979 bytes in all as of 2026-09-23) | `monitor.lst` |
-| $F800–$FF8F | | ROM, unwritten ($FF in `rom.bin`) | `firmware/rom/README.md` |
+| $F800–$FF8F | | ROM, unwritten ($FF in `rom.bin`) — until 2026-09-25; `ROM 2026-09-25` (not burned) fills $F000–$FF14 (the video unit), 149 bytes free in the monitor half | `firmware/rom/README.md` |
 | $FF90 | | the interrupt service routine `isrcode` | `monitor.asm` `org 0ff90h` |
+| $FFBC | 4 | (ROM 2026-09-25) the video entry `JSR vidctl / RET`, below the full table: ACC 0 probe, 1 init, 2 clear | `monitor.asm`, `firmware/abi/README.md` |
 | $FFC0–$FFFF | 64 | the 16 BIOS vectors, 4 bytes each (15 until 2026-09-23; the 2021 chip has 11, then `00 FF FF …`) | `monitor.asm` `org 0ffc0h`, `eprom-captured-2026-09-18.hex` |
 
 The monitor's own routines are not at fixed addresses across builds; the vectors are ([MONITOR.md](MONITOR.md)).
@@ -94,7 +96,10 @@ is BASIC and `$1000–$1FFF` doubles as its buffer.
 - Interpreter (`software/emulator/main.c`): 64K flat, zero at start; the ROM images are loaded at $E000/$F000; any
   write above $DFFF prints `Rom Write` and exits; no FORCE-ROM (it starts at PC = $F000).
 - ucemu (`software/ucemu`): RAM filled with $FF at start; writes above $E000 ignored; FORCE-ROM modelled (address
-  bits 12–15 forced high until an A15-high address is presented with `-VMA`); no video card.
+  bits 12–15 forced high until an A15-high address is presented with `-VMA`).
+- Both (2026-09-25, `software/videomodel.h`): the video card — $D000–$D7FF RAM as before, the 6845 at $D800/$D802,
+  $FF from the odd (latch) addresses; `-V` prints the screen at exit, `-W` logs CRTC writes, `-N` takes the card away
+  ($D000–$DFFF reads $FF).
 - Both: the CF card is on I/O ports, not in the memory map ([IO-PORTS.md](IO-PORTS.md)).
 
 ## 6. Open items touching the map (`BACKLOG.md`)

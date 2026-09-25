@@ -172,7 +172,7 @@ an address above $8000 (`--boot` stub) so that the FORCE-ROM remap is released e
 | Script | Proves | Time | Result on record |
 |---|---|---|---|
 | `memory_status.py [port]` | boot remap after `-RESET` (ROM at $0000 until an A15-high access), every ROM byte against `basic.img`+`monitor.img` (`tools/romimage.py`), 8 low-RAM spots, every 4K block $8000-$FFFF classified RAM / ROM / VIDEO / undecoded against the jumper table in `MACHINE.md` | ~1 min | 2026-09-18: the fitted map ($8000-$CFFF RAM, $D000 undecoded/video, $E000-$FFFF ROM) |
-| `rom_verify.py [port] [--save]` | the 28C64 holds exactly the tree's ROM image; `--save` keeps the read-back as `rom-readback-<date>.bin` | ~30 s (blocks-1 firmware) | the chip burned 2026-09-23 is the tree's image (`ROM 2026-09-23`, `firmware/rom/README.md`); a chip with the 2021 build differs in the monitor half - expected |
+| `rom_verify.py [port] [--save]` | the 28C64 holds exactly the tree's ROM image; `--save` keeps the read-back as `rom-readback-<date>.bin` | ~30 s (blocks-1 firmware) | the chip burned 2026-09-23 was the tree's image (`ROM 2026-09-23`, `firmware/rom/README.md`); since 2026-09-25 the tree holds `ROM 2026-09-25` (the video unit, not burned), so until it is burned the monitor half differs - expected, as for a chip with the 2021 build |
 | `memory_full_test.py [port] [--log F]` | A ROM; B address lines (unique byte at $0000 and at every 1<<n, read after all writes: an open or shorted address line shows in seconds); C RAM $0000-$7FFF and $8000-$CFFF address-derived pattern written in one sweep, verified in a second (retention); D the inverted pattern; E video RAM (both patterns, neighbour isolation, the block-0/9 write-through checks, read stability); F ROM again and nothing answers at $D800-$DFFF | ~20 min with blocks-1 (~10 h per byte) | `full-run-2026-09-21.log`: **14/14 PASS**, 53,248 cells x 2 patterns, 0 bad, in 0.3 h |
 
 The four logs beside them tell the day's story: `attempt1-linkdrop` (the USB port vanished mid-sweep, which is why `busdrv.py`
@@ -190,6 +190,11 @@ CRTC, gives `00 FF` instead - the test was corrected), then the clean 14/14.
 - `hold_address.py HEXADDR [--rd]`: not a test - holds an address on the bus (with `-VMA`, optionally `-MEM-RD`) for a meter or
   scope on the card's decode pins; Enter releases. The port must stay open (the tester resets when it closes).
 - `tools/alias_min.py`: the minimal reproduction of the write-through fault (write $0010; `$D010` must keep 11, fault = 22).
+- `emu.py` (2026-09-25; **emulators**, in `make check`): not the card but the ROM's driver for it and Y1/OS's `video`,
+  on both emulators' card model (`-V` screen dump, `-N` no card): the probe (banner, `VS`), mirroring off by default,
+  `VW`/`VB`/`VF`/`VD`/`VR`, errors dropping the rest of the line, mirroring with a scroll compared against a Python model
+  of the driver, the absent card, and the OS command (on, clear, off, init, -h). 10 checks x 2 emulators, ~2 min.
+  On the machine the same steps are done by hand: `docs/cards/video.md` section 8.
 
 ### 3.8 `tests/bus-tester-scripts/` - the 2020 `CMD:OPERAND#` scripts (**tester**)
 

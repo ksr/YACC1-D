@@ -37,6 +37,9 @@ Options (`print_usage`, `main`):
 | `-x` | scripted run: no load/dump chatter, no raw tty, stdout flushed, `HALT` exits with `HALT at aaaa after N instructions, R3=xxxx` on stderr |
 | `-c IMAGE` | attach a CompactFlash image on ports P8/P9 (created zero-filled if missing) |
 | `-l N` | stop after N instructions (`instruction limit reached at ... R3=...` on stderr) |
+| `-V` | (2026-09-25) the video card: at exit print its screen (80 x 24 from $D000, or the CRTC's R1 x R6 from R12/R13 once written; each byte as its glyph, bits 0-5) and the 18 CRTC registers on stderr |
+| `-W` | log every CRTC register write on stderr (and writes to the latch's odd addresses) |
+| `-N` | no video card: $D000-$DFFF reads $FF, writes are lost (the monitor's "not found" path) |
 | `-h` | usage |
 
 Behaviour worth knowing (`main.c`):
@@ -91,6 +94,7 @@ Options (`y1ucemu.c` header):
 | `-R 1\|2` | index-register cards fitted (default 2): with 1, R4–R7 are absent — reads leave the bus to its pull-ups ($FF), loads and counts are lost, as on the 2026-09-22 bench |
 | `-L` | report writes to the LED board, the TIL311 displays and the ON/OFF LED on stderr as they change (`LED=25`, `TIL=25`, `ON`, `OFF`) |
 | `-l N` | stop after N **steps** |
+| `-V` / `-W` / `-N` | the video card, as on the interpreter (2026-09-25): the screen at the end, the CRTC write log, no card (nothing drives $D000-$DFFF: the pull-ups' $FF) |
 
 The model (`software/ucemu/README.md` "The model"): the sequencer (step counter, instruction register latched at the
 leading edge of `LD-INS-REG`, operand register, branch register, interrupt vector, the level-sensitive branch-taken
@@ -117,6 +121,14 @@ $00; the monitor could not print a string), H-1 real (`PUSHR R3` with $ABCD push
 (uncleared BSS, `DS` padding of partially initialised arrays); with the fixed image the whole compiler suite passes
 through the monitor's real console path, the monitor boots from reset, takes `G3000` and returns, 0 fights over 6
 million steps; the mechanical review's two-driver count went from 37 to 3.
+
+## 3a. The video card model (2026-09-25)
+
+Both emulators include `software/videomodel.h`: the display RAM stays plain RAM at $D000-$D7FF (so the ROM's probe
+finds the card), the $D800-$DFFF half is the card's CRTC side (even addresses: the 6845's address register at A1 = 0,
+its data register at A1 = 1, as after the RS-to-A1 fix; R12-R17 read back, the rest read 0; odd addresses: the JP1
+latch, $FF). Until 2026-09-25 $D800-$DFFF was plain RAM on both. `tests/video/emu.py` drives the monitor's `V`
+command and Y1/OS's `video` with `-V`/`-N`.
 
 ## 4. Recipes
 

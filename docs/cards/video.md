@@ -5,7 +5,8 @@ character-generator EPROM and a shift register turn the characters into dots, an
 separate video/HS/VS on a DB9 and as a sync signal on an RCA jack. Built once, in the machine for bring-up **without
 the 6845 fitted**; the RAM half is proven, the CRTC half is not.
 
-Written 2026-09-23 from the YACC1-D tree.
+Written 2026-09-23 from the YACC1-D tree; section 8 (the ROM's driver, the `V` command, bring-up with it) added
+2026-09-25.
 
 Sources: `hardware/cards/video/eagle/v1.0-fusion-export-2026-09-18/Video_1.0.sch` and `.brd` (the built card, as
 exported from Fusion 360; parts and nets parsed from the Eagle XML), `hardware/cards/video/kicad/v1.1/README.md` (the
@@ -176,7 +177,7 @@ least 450 ns (280 ns for the faster grades, per the review) for each register ac
 | README | HIGH | write-through fault of 2026-09-18: a write to block 0 or 9 landed in the video RAM regardless of BOARDSEL | **Resolved 2026-09-21**: cause was the unpowered rail; `tests/video/video_ram_test.py` 8/8, `tools/alias_min.py` clean |
 | DESIGN-REVIEW.md (mechanical) | MED | open-collector nets N$5 (IC27 p8) and N$16 (IC27 p10) without pull-up | Same as the 7416 item |
 | README / FABRICATED.md | LOW | inherits Blank V3.1's pre-V3.2 names on C3-C6 | Harmless (unused pins); start the next card from Blank V3.2 |
-| Naming (this document) | doc | the README, the fix document and the reviews quote the CRTC at `$D400`/`$D402` and describe the block as "2K, low half RAM"; the netlist (ADDR11 = bus pin A14, IC18 compares only ADDR12..15, IC15 A11R grounded) reads as a **4K** block with RAM at $D000-$D7FF and the CRTC/latch half at $D800-$DFFF. `memory_status.py` ("VIDEO $D000-$D7FF") and `memory_full_test.py` phase F2 ("$D800-$DFFF") use the 4K reading; `video_ram_test.py` tests $D000-$D3FF only | **To verify** with `tests/video/hold_address.py`: park $D400 and $D800 and meter IC17 pin 25 (-CS). Whichever is low is the CRTC address; the other documents then need the one-bit correction |
+| Naming (this document) | doc | the README, the fix document and the reviews quote the CRTC at `$D400`/`$D402` and describe the block as "2K, low half RAM"; the netlist (ADDR11 = bus pin A14, IC18 compares only ADDR12..15, IC15 A11R grounded) reads as a **4K** block with RAM at $D000-$D7FF and the CRTC/latch half at $D800-$DFFF. `memory_status.py` ("VIDEO $D000-$D7FF") and `memory_full_test.py` phase F2 ("$D800-$DFFF") use the 4K reading; `video_ram_test.py` tests $D000-$D3FF only | **To verify** with `tests/video/hold_address.py`: park $D400 and $D800 and meter IC17 pin 25 (-CS). Whichever is low is the CRTC address; the other documents then need the one-bit correction. The ROM (2026-09-25) follows the netlist: `VCRTCA`/`VCRTCD` = $D800/$D802 in `monitor.asm`, one equate pair to change |
 
 The memory-side conventions (floating LS inputs read high while the sequencer is off the bus; no pull-ups on the
 backplane) apply here as on every card; this card adds the open-collector nets to the list of lines that depend on
@@ -238,3 +239,43 @@ variants (decision 4): A, video stays at $D000 (nothing to change on the cards t
 the memory card's $D000 jumper set to RAM for a 36K TPA. Phase 4 of the plan pairs the card with a PS/2 keyboard
 controller behind the console vectors. The review items 6.2/6.3/6.5 (character clock, HC levels, LPSTB) and the
 crystal/C1 values belong in that redesign whichever interface it keeps.
+
+## 8. Software: the ROM's driver and bring-up with the `V` command (2026-09-25)
+
+`ROM 2026-09-25` (`firmware/rom/shipped`, **not burned yet**) drives this card; the full description is
+[`docs/programming/MONITOR.md`](../programming/MONITOR.md) section 11, the addresses are in
+[`firmware/abi/README.md`](../../firmware/abi/README.md). In short:
+
+- **Detection**: at reset the ROM writes $55 and $AA to $D000 and reads each back (the old byte restored); both must
+  come back. A floating bus reads the `LDA`'s own operand byte ($00) instead, so an absent card is not mistaken for
+  one. The result is `VIDPRES` ($0FF0) and the banner line `VIDEO CARD FOUND`.
+- **No auto-start**: `VIDAUTO EQU 0` in `monitor.asm`, so reset never touches the CRTC or the screen. Set it to 1 and
+  rebuild once the card works: reset then programs the CRTC, clears and turns mirroring on.
+- **Mirroring**: while `VIDMIR` ($0FF1) is set, CHAROUT/UARTOUT (the console of the monitor, BASIC, Y1/OS and every
+  program) also write each byte at the screen's cursor: CR, LF, BS, TAB, FF, wrap and scroll handled in software.
+- **Geometry assumed**: 80 x 24 from $D000 (1,920 of the 2K), one byte a character, the driver storing ASCII with
+  lower case moved up (right for a 2513-style set: glyph = ASCII bits 0-5); CRTC table for a 10 MHz dot clock,
+  5 dots a character, 8 lines a row (15.7 kHz, 60 Hz). The crystal and the EPROM contents are not in the tree:
+  equates and one 16-byte table in `monitor.asm` change them.
+- **Y1/OS**: `video [on|off|clear|init|probe]` (`/BIN/VIDEO`, `os/man/video`).
+- **Emulators**: `-V` prints the screen, `-W` logs CRTC writes, `-N` removes the card; `tests/video/emu.py`.
+
+**Bring-up on the machine, in order** (the 6845 not fitted yet; the monitor's `V?` lists the commands):
+
+| Step | Type | Expect / what it shows |
+|---|---|---|
+| 1 | (reset) | `VIDEO CARD FOUND` under the banner; missing = the $55/$AA probe failed: `E D000` by hand, then this document's section 6 |
+| 2 | `VS` | `VIDEO 01  MIRROR 00  CRTC 00  ROW 00  COL 00` |
+| 3 | `VF55`, `VD` | 24 rows of `U` (the RAM as text over the serial line); `VFAA`, `VD`: `*` everywhere. Any other character = a stuck or crossed data bit in the upper 1K too ($D400-$D7FF was never tested by `video_ram_test.py`) |
+| 4 | `VC`, `VW0000 HELLO`, `VW1700 LAST ROW`, `VD` | the text in rows 00 and 17; `B D000` shows the bytes ($48 $45 ...) |
+| 5 | `VM1`, then any command, `VD`, `VM0` | the console's own output in the screen RAM, scrolled at the bottom |
+| 6 | (6845 fitted, RS moved to A1, E fixed) `VR0C 12`, then `VR0C` | `12` read back from R12 (readable): the register interface works. `00`/`FF` = -CS, RS or E (section 4) |
+| 7 | `VI` | the CRTC programmed from the ROM's table (`VR rr` reads back R12-R17 only); `VS` shows `CRTC 01`. Then a monitor on the DB9: sync first (`VR00 7E`, `VR02 62`, `VR04 1F`, `VR07 1C` to move it), then the text of step 4 |
+| 8 | `VM1` | from here the console shows on the screen; the CRTC cursor follows (R14/R15) |
+| 9 | (card debugged) | `VIDAUTO EQU 1`, rebuild the ROM, burn: the card starts at reset (`BACKLOG.md`) |
+
+`VB aaaa bb ..` writes raw bytes anywhere in $D000-$DFFF (glyph codes, inverse video with bit 7, or the CRTC at
+$D800/$D802); **never an odd address above $D800**: that is the JP1 latch, which drives the bus even on a write
+(finding 6.4). If the CRTC turns out to answer at $D400 (the check in section 4), change `VCRTCA`/`VCRTCD` in
+`monitor.asm` (and `VID_CRTC` in `software/videomodel.h`) and rebuild; with RAM then only at $D000-$D3FF, change the
+geometry to 64 x 16 (`VCOLS`/`VROWS`, the table's R1/R6 follow) as well.

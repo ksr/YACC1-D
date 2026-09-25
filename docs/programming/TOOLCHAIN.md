@@ -64,9 +64,11 @@ Details: [ASSEMBLER.md](ASSEMBLER.md) (the invocation gotcha: source name before
    through the monitor's `:` loader (`docs/programming/MONITOR.md`, `docs/procedures/BRING-UP.md` section 6a).
 3. Burn with Visual Minipro / `minipro`, device 28C64 (`firmware/rom/README.md`). A program lands at offset `$1000`
    of the chip when assembled at `$F000`.
-4. Tell builds apart: the power-up banner ends `ROM 2026-09-23` on the current build; otherwise `rom.bin`'s MD5
-   (d2d7b027e7c6951d7dd93412a8fd9cd8, `firmware/rom/README.md`) or the two check bytes in `docs/procedures/BRING-UP.md` section 5. The chip in the machine holds this build,
-   burned 2026-09-23 (`MACHINE.md`); before that it held the 2021 build (`eprom-captured-2026-09-18.bin/.hex`).
+4. Tell builds apart: the power-up banner ends `ROM 2026-09-25` on the tree's build (the video unit, MD5
+   3ebc67898f70d319853fe42abdfd2cb9, not burned yet) and `ROM 2026-09-23` on the chip in the machine (MD5
+   d2d7b027e7c6951d7dd93412a8fd9cd8, burned 2026-09-23, `MACHINE.md`); otherwise `rom.bin`'s MD5 (`firmware/rom/README.md`)
+   or the check bytes in `docs/procedures/BRING-UP.md` section 5. Before 2026-09-23 the chip held the 2021 build
+   (`eprom-captured-2026-09-18.bin/.hex`).
 5. After burning: `tests/memory/rom_verify.py` (~30 s, through the bus tester) compares every byte with
    `tools/romimage.py`'s image of `basic.img` + `monitor.img`; `memory_status.py` (~1 min) also checks the boot remap
    and the block map. Against a chip still holding the 2021 build both report the monitor half as different.

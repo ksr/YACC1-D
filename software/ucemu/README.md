@@ -17,7 +17,8 @@ python3 tests/ucemu/run.py                           # the compiler suite + test
 ```
 
 Options: `-u test.hex` another control store; `-F and|src` how a bus fight resolves (below); `-s NN` the switch
-byte; `-c disk.img` a CompactFlash image; `-l N` stop after N steps. The status line on stderr gives instructions, steps, clocks (a step is two clock
+byte; `-c disk.img` a CompactFlash image; `-l N` stop after N steps; `-V` the video card's screen and CRTC registers
+at the end, `-W` a CRTC write log, `-N` no video card (2026-09-25, `software/videomodel.h`). The status line on stderr gives instructions, steps, clocks (a step is two clock
 periods, the UCODE-COUNT-RESET step one), R3, and the bus-fight count.
 
 ## The model
@@ -90,7 +91,7 @@ The mechanical review's "two drivers" count (`tools/ucode_review.py`, rule R2) w
 ## Not modelled yet
 
 Interrupts beyond the enable/pending latches (no source raises one); IRET/IADDR/INT records run as written; the
-video card; a clock-cycle cost model per instruction
+video card's picture (the model is its bus side: display RAM, the CRTC's registers, the latch; 2026-09-25); a clock-cycle cost model per instruction
 is one step-count away (the status line has steps and clocks); comparing the interpreter's and this emulator's
 instruction traces automatically.
 
