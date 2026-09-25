@@ -7,6 +7,7 @@
 #                   twin.py, also --16, --chain, --chain16), and size the passes against Y1/OS (tests/compiler/passes.py)
 #   make cc-test    just the compiler tests (on both emulators) and the twin comparisons (y1cc.c, the passes)
 #   make os-test    Y1/OS sessions on both emulators (tests/os/run.py)
+#   make asm-test   the native assembler /BIN/ASM against the host assembler over the tree's sources (tests/asm/run.py)
 #   make bom        regenerate docs/bom/ (bills of material per card + consolidated) from the active Eagle schematics (tools/gen_bom.py)
 #   make clean
 TOOLS = software/emulator software/ucemu software/assembler software/compiler/c firmware/microcode/ucode-generator2 software/disassembler/disasm2 \
@@ -29,6 +30,7 @@ check:
 	python3 tests/compiler/passes.py
 	python3 tests/ucemu/run.py
 	python3 tests/os/run.py
+	python3 tests/asm/run.py
 	python3 tests/monload/run.py
 	python3 tests/bench/run.py
 	python3 tests/cfcard/run.py
@@ -42,6 +44,8 @@ cc-test:
 	python3 tests/ucemu/run.py
 os-test:
 	python3 tests/os/run.py
+asm-test:
+	python3 tests/asm/run.py
 clean:
 	@for d in $(TOOLS); do $(MAKE) -s -C "$$d" clean; done
 kicad:
@@ -50,4 +54,4 @@ isa:
 	python3 tools/ucode_wavedrom.py --all
 bom:
 	python3 tools/gen_bom.py
-.PHONY: all check clean kicad isa bom cc-test os-test
+.PHONY: all check clean kicad isa bom cc-test os-test asm-test

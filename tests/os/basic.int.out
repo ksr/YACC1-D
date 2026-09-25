@@ -47,6 +47,7 @@ built into the shell:
   exit           back to the ROM monitor
   cmd < in  > out  >> out  a | b | c   redirection and pipes (man shell)
 in /BIN:
+  asm  assemble: asm [-h] SRC [OUT]  (-h: Intel hex)
   awk  one-rule awk: fields, /re/ {print $N ...}, NR NF
   cat  print files (globs, - = console)   cmp  first differing byte
   cp   copy files, -r a tree               del  delete files (globs)

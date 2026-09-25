@@ -1,0 +1,72 @@
+NAME
+    asm - the YACC1 assembler (RC/asm's dialect, on the machine)
+
+SYNOPSIS
+    asm SRC [OUT]
+    asm -h SRC [OUT]
+
+DESCRIPTION
+    Assembles SRC in two passes and writes OUT. A SRC without a '.'
+    gets .ASM (asm HELLO reads HELLO.ASM). The source dialect is the
+    host assembler's (software/assembler, RC/asm with yacc1.def): what
+    y1cc writes, what the ROM monitor and BASIC are written in, and
+    the output is byte for byte what the host makes of the source.
+
+    Without -h, OUT (default: SRC without its extension) is a program
+    file: the bytes from the first address written to the last, gaps
+    filled with zeros, with load = that first address and exec = the
+    address of END (else the load address). `run OUT` or typing its
+    name runs it. The code must go up in address (an ORG back is
+    refused: use -h).
+
+    With -h, OUT (default: SRC's name + .IMG) is Intel hex, the same
+    text as the host's `asm NAME -d=yacc1` with -h: 16-byte records, a
+    new record at every ORG and DS, the end record :00000001ff.
+
+    The summary goes to stdout: "OUT: N bytes, N labels, load AAAA
+    exec AAAA". An error goes to the screen with its line number and
+    the line, and assembling goes on to find the rest; after any error
+    OUT is deleted (an older file of that name too).
+
+SOURCE
+    [label:] mnemonic [operands] [; comment], one per line. Every line
+    is upper-cased outside single quotes, so labels are case-folded
+    and "text" is upper case ('text' keeps its case). Numbers: 123,
+    0FFH, 'A'. Expressions: + - * / & ! (or), (x).0 the low byte,
+    (x).1 the high byte, $ the address, parentheses. A label used
+    before its definition counts as 1 in pass 1, so an ORG, DS or EQU
+    operand should only use labels defined above it. Directives: ORG,
+    END, EQU (a value or a register name), DB (numbers, strings),
+    DB HIGH, DW (big-endian words), DS n, INCLUDE file (two deep).
+    RC/asm's quirks are kept: a leading minus is dropped (LDAI -1 is
+    01; write 0-1), and '.' binds first (write (x+4).0, not x+4.0).
+
+OPTIONS
+    -h    write Intel hex instead of a program file
+
+LIMITS
+    16,639 bytes of labels, 5 + the name's length each (about 1,360
+    of y1cc's labels; the biggest compiler pass, cc8, has 1,326),
+    29 characters a label, 254 a line, 45 tokens an expression.
+    Files up to 64K (Y1/OS keeps 16-bit positions). Not supported
+    (errors here, accepted by RC/asm): MACRO/ENDM, PUBLIC, EXTERN, LIB,
+    '/' on values beyond 16 bits, an EQU value outside -65535..65535,
+    a label or code past $FFFF. OUT is written through Y1/OS's one
+    write handle: asm cannot run inside a > redirect or a pipe (it
+    says "asm: cannot create OUT").
+
+EXAMPLES
+    asm HELLO.ASM             HELLO, a program: `run HELLO` runs it
+    asm -h MONITOR.ASM M.IMG  the ROM monitor as Intel hex
+    asm /S/CAT.ASM /T/MYCAT   a program into another directory
+
+NOTES
+    Written for Y1/OS 2026-09-25 (P8X had a native assembler for its
+    own ISA; this one is new). The instruction table is generated from
+    software/assembler/yacc1.def (tools/gen_y1_optab.py), so it cannot
+    drift from the host assembler; tests/asm compares the two on every
+    source in the tree. Speed on the emulators: about 1,500 lines of
+    y1cc output (27K) in 13M instructions.
+
+SEE ALSO
+    run, load, shell, hello
