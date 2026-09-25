@@ -8,6 +8,7 @@
 
    Reading:   h = fopen(path); while ((c = fgetc(h)) != 65535) ...; fclose(h);      byte-wise through the OS buffer
               while ((n = fread(h, buf512))) ...                                     whole sectors into your buffer
+              while ((n = freadn(h, buf, size))) ...                                 up to size bytes (READN, 2026-09-25)
    Writing:   h = fcreate(path, load, exec); fputc(h, c) / fwrite(h, buf, n) / fputs(h, s); fclose(h) registers it
               (one file may be open for writing at a time, and a shell > or pipe is one; a same-named file is
               replaced when the new one is closed)
@@ -48,6 +49,8 @@ int stdio() { return sys(SYS_STDIO); }
 void osexit(int status) { sys(SYS_EXIT, status); }                 /* 2026-09-25: never returns */
 int osexec(char *path, char *args) { return sys(SYS_EXEC, path, args); }   /* returns only when path cannot run */
 int fseek(int h, int hi, int lo) { return sys(SYS_SEEK, h, hi, lo); }     /* 24-bit position hi:lo; 1 done */
+int freadn(int h, char *buf, int n) { return sys(SYS_READN, h, buf, n); }  /* 2026-09-25: up to n bytes, never
+                                                        past the position's sector's end; 0 at the end */
 
 int fputs(int h, char *s) {                 /* a string (no newline added); returns the bytes written */
     int n;

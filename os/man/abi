@@ -44,6 +44,7 @@ DESCRIPTION
          7 SYS_DELETE   15 SYS_RENAME
     and in SYSTAB2 only (2026-09-25):
         22 SYS_EXIT     23 SYS_EXEC     24 SYS_SEEK
+        25 SYS_READN (2026-09-25)
     STATUS $0F0E: the status the last program left (0, or EXIT's).
     CONIN/CONST are stdin and CONOUT stdout, which the shell redirects
     (y1cc --os compiles getchar/putchar/puts to them); KEYIN is always

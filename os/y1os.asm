@@ -237,8 +237,8 @@ systab_init:                    ; SYSTAB2's contents, copied at boot (lib_abi.c 
         DW h_exit               ; 22 (2026-09-25; SYSTAB2 only)
         DW h_exec               ; 23
         DW h_seek               ; 24
-        DW 0                    ; 25..31: not in use yet
-        DW 0
+        DW h_readn              ; 25 (2026-09-25)
+        DW 0                    ; 26..31: not in use yet
         DW 0
         DW 0
         DW 0
@@ -270,6 +270,12 @@ h_write:    LDR R3,SYSARG2
             LDR R3,SYSARG0
             LDR R5,SYSARG1
             JSR fs_write
+            BR retres
+h_readn:    LDR R3,SYSARG2          ; READN (2026-09-25)
+            STR R3,FW_N
+            LDR R3,SYSARG0
+            LDR R5,SYSARG1
+            JSR fs_readn
             BR retres
 h_putc:     LDR R3,SYSARG0
             LDA SYSARG1+1           ; the byte: the low half of the big-endian word
@@ -1752,6 +1758,152 @@ fg_end: MVIW R3,0FFFFH
         LDAI 255
         RET
 
+; fs_readn (READN, 2026-09-25; y1os.c fs_readn): handle R3, buffer R5, FW_N bytes -> R3 = the bytes put in the buffer:
+; up to FW_N, the bytes that many fs_getc would give, but never past the end of the position's sector; 0 at the end,
+; for FW_N = 0 and for anything but a read handle. The first byte comes through fs_getc (the sector into the handle's
+; buffer, the checks, the position), the rest of that sector is copied from the buffer. Clobbers R3-R7.
+fs_readn:
+        STR R5,FW_P
+        LDR R6,FW_N             ; nothing asked: 0
+        MVRLA R6
+        MVAT
+        MVRHA R6
+        ORT
+        BRZ ret0
+        JSR fs_getc             ; R3 = the byte (65535: the end), R5 -> it in the handle's buffer, R4 -> the record
+        MVRHA R3
+        BRNZ ret0
+        LDR R7,FW_P             ; buf[0]
+        MVRLA R3
+        STAVR R7
+        INCR R7
+        STR R7,FW_P
+        INCR R5                 ; R5 -> the next byte in the handle's buffer
+        MVRLA R4                ; R3 = the position now
+        ANDI 0F0H
+        ORI H_POS
+        MVARL R4
+        LDAVR R4
+        MVARH R3
+        INCR R4
+        LDAVR R4
+        MVARL R3
+        BRNZ rdn_in             ; position & 511 = 0: that byte ended its sector
+        MVRHA R3
+        ANDI 1
+        BRZ ret1
+rdn_in: MVRLA R3                ; R6 = 512 - (position & 511): the rest of the sector
+        INVA
+        MVARL R6
+        MVRHA R3
+        INVA
+        ANDI 1
+        MVARH R6
+        INCR R6
+        MVRLA R4                ; the last sector (bits 16-23 and 9-15 as the length's): up to the length instead
+        ANDI 0F0H
+        ORI H_POSX
+        MVARL R4
+        LDAVR R4
+        MVAT
+        INCR R4                 ; H_LENX
+        LDAVR R4
+        BRNEQ rdn_n
+        MVRLA R4
+        ANDI 0F0H
+        ORI H_LEN
+        MVARL R4
+        LDAVR R4
+        SHR
+        MVAT
+        MVRHA R3
+        SHR
+        BRNEQ rdn_n
+        LDAVR R4                ; R6 = the length
+        MVARH R6
+        INCR R4
+        LDAVR R4
+        MVARL R6
+        MVRLA R3                ; R7 = - the position
+        INVA
+        MVARL R7
+        MVRHA R3
+        INVA
+        MVARH R7
+        INCR R7
+        MVRLA R7                ; R6 = the length - the position
+        MVAT
+        MVRLA R6
+        ADDT
+        MVARL R6
+        MVRHA R7
+        MVAT
+        MVRHA R6
+        ADDTC
+        MVARH R6
+rdn_n:  LDR R7,FW_N             ; k = min(R6, n - 1)
+        DECR R7
+        MVRHA R7
+        MVAT
+        MVRHA R6
+        BRLT rdn_k
+        BRNEQ rdn_m
+        MVRLA R7
+        MVAT
+        MVRLA R6
+        BRLT rdn_k
+        BREQ rdn_k
+rdn_m:  MOVRR R7,R6
+rdn_k:  STR R6,FW_I
+        MVRLA R6
+        MVAT
+        MVRHA R6
+        ORT
+        BRZ rdn_d
+        LDR R7,FW_P
+rdn_cp: LDAVR R5                ; k bytes from the handle's buffer
+        STAVR R7
+        INCR R5
+        INCR R7
+        DECR R6
+        MVRLA R6
+        BRNZ rdn_cp
+        MVRHA R6
+        BRNZ rdn_cp
+        LDR R6,FW_I             ; the position + k (a sector's end at most; 0 = 64K crossed: bits 16-23 + 1)
+        MVRLA R6
+        MVAT
+        MVRLA R3
+        ADDT
+        MVARL R3
+        MVRHA R6
+        MVAT
+        MVRHA R3
+        ADDTC
+        MVARH R3
+        MVRLA R4
+        ANDI 0F0H
+        ORI H_POS
+        MVARL R4
+        MVRHA R3
+        STAVR R4
+        INCR R4
+        MVRLA R3
+        STAVR R4
+        BRNZ rdn_d
+        MVRHA R3
+        BRNZ rdn_d
+        MVRLA R4
+        ANDI 0F0H
+        ORI H_POSX
+        MVARL R4
+        LDAVR R4
+        ADDI 1
+        STAVR R4
+rdn_d:  LDR R3,FW_I             ; k + 1
+        INCR R3
+        BR retr3
+
 ; fs_readdir: directory handle R3, buffer R5 -> ACC = R3 = 1 with the next live entry (32 bytes) in the buffer, 0 at
 ; the end (the $00 mark moves the position to the end), for another handle, on a card error. Clobbers R3-R7.
 fs_readdir:
@@ -2218,8 +2370,10 @@ ap_new: MVIW R3,0               ; no such file (or a directory: fs_create refuse
         LDR R3,AP_PATH
         BR fs_create
 
-; fs_write: handle R3, buffer R5, FW_N bytes -> R3 = the bytes written (fs_putc each; stops at the first refused).
-; Clobbers R3-R7.
+; fs_write: handle R3, buffer R5, FW_N bytes -> R3 = the bytes written (as fs_putc takes them; stops at the first
+; refused). Since 2026-09-25 (y1os.c fs_write) each fs_putc is followed by a copy of what fits in the rest of its
+; sector straight into the handle's buffer: the same bytes, positions and card writes, a byte-copy loop instead of a
+; fs_putc per byte. Clobbers R3-R7.
 fs_write:
         STR R3,FW_H
         STR R5,FW_P
@@ -2241,10 +2395,134 @@ fw_go:  LDR R5,FW_P
         INCR R5
         STR R5,FW_P
         LDR R3,FW_H
-        JSR fs_putc
+        JSR fs_putc             ; R4 -> the handle's record, R5 -> the byte in its buffer
         LDR R3,FW_I
         BRZ retr3
         INCR R3
+        STR R3,FW_I
+        MVRLA R4                ; the last 64K before 16M (fs_putc's limit): byte by byte
+        ANDI 0F0H
+        ORI H_POSX
+        MVARL R4
+        LDAVR R4
+        LDTI 255
+        BREQ fw_lp
+        MVRLA R4                ; R6 = the position
+        ANDI 0F0H
+        ORI H_POS
+        MVARL R4
+        LDAVR R4
+        MVARH R6
+        INCR R4
+        LDAVR R4
+        MVARL R6
+        BRNZ fwf_in             ; position & 511 = 0: a full sector (the next fs_putc writes it)
+        MVRHA R6
+        ANDI 1
+        BRZ fw_lp
+fwf_in: INCR R5                 ; where the rest goes, and the position
+        STR R5,FW_D
+        STR R6,FW_Q
+        MVRLA R6                ; R7 = 512 - (position & 511): the rest of the sector
+        INVA
+        MVARL R7
+        MVRHA R6
+        INVA
+        ANDI 1
+        MVARH R7
+        INCR R7
+        MVRLA R3                ; R3 = n - i
+        INVA
+        MVARL R3
+        MVRHA R3
+        INVA
+        MVARH R3
+        INCR R3
+        LDR R6,FW_N
+        MVRLA R3
+        MVAT
+        MVRLA R6
+        ADDT
+        MVARL R3
+        MVRHA R3
+        MVAT
+        MVRHA R6
+        ADDTC
+        MVARH R3
+        MOVRR R7,R6             ; k = min(R7, R3)
+        MVRHA R3
+        MVAT
+        MVRHA R6
+        BRLT fwf_k
+        BRNEQ fwf_m
+        MVRLA R3
+        MVAT
+        MVRLA R6
+        BRLT fwf_k
+        BREQ fwf_k
+fwf_m:  MOVRR R3,R6
+fwf_k:  LDR R3,FW_I
+        MVRLA R6
+        MVAT
+        MVRHA R6
+        ORT
+        BRZ fw_lp               ; nothing left
+        STR R6,FW_K
+        LDR R5,FW_P
+        LDR R7,FW_D
+fwf_cp: LDAVR R5                ; k bytes into the buffer
+        STAVR R7
+        INCR R5
+        INCR R7
+        DECR R6
+        MVRLA R6
+        BRNZ fwf_cp
+        MVRHA R6
+        BRNZ fwf_cp
+        STR R5,FW_P
+        LDR R6,FW_K             ; i + k
+        MVRLA R6
+        MVAT
+        MVRLA R3
+        ADDT
+        MVARL R3
+        MVRHA R6
+        MVAT
+        MVRHA R3
+        ADDTC
+        MVARH R3
+        STR R3,FW_I
+        LDR R3,FW_Q             ; the position + k (0 = 64K crossed: bits 16-23 + 1)
+        MVRLA R6
+        MVAT
+        MVRLA R3
+        ADDT
+        MVARL R3
+        MVRHA R6
+        MVAT
+        MVRHA R3
+        ADDTC
+        MVARH R3
+        MVRLA R4
+        ANDI 0F0H
+        ORI H_POS
+        MVARL R4
+        MVRHA R3
+        STAVR R4
+        INCR R4
+        MVRLA R3
+        STAVR R4
+        BRNZ fwf_n
+        MVRHA R3
+        BRNZ fwf_n
+        MVRLA R4
+        ANDI 0F0H
+        ORI H_POSX
+        MVARL R4
+        LDAVR R4
+        ADDI 1
+        STAVR R4
+fwf_n:  LDR R3,FW_I
         BR fw_lp
 
 ; new_slot: where CLOSE registers the file: the replaced file's own slot if it still holds that file (a del or ren
@@ -3725,6 +4003,9 @@ FW_H:       DS 2                ; fs_write
 FW_P:       DS 2
 FW_N:       DS 2
 FW_I:       DS 2
+FW_D:       DS 2                ; fs_write's copy (2026-09-25): into the buffer, the position, the count
+FW_Q:       DS 2
+FW_K:       DS 2
 CL_REC:     DS 2                ; fs_close
 CL_CUR:     DS 2
 CL_LBA:     DS 2

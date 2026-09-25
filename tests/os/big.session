@@ -6,6 +6,10 @@ bigr /BIG1
 bigr -s /BIG1
 bigr -s /BIG2
 bigr -k /BIG2
+bigr -n /BIG2
+bigw -v /BIG3 70
+bigr /BIG3
+bigr -n /BIG3
 cat /BIG1 > /COPY1
 dir /COPY1
 echo tail >> /BIG2

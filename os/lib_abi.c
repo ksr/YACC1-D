@@ -77,4 +77,7 @@
                              a program returns) and path runs with args (up to 127 characters) as its command tail */
 #define SYS_SEEK     24   /* (handle, hi, lo) -> 1: a read handle's position is now hi:lo (24 bits: hi 0..255), not
                              past the length; 0 not a read handle, past the end, a card error */
-#define SYS_LAST     24
+#define SYS_READN    25   /* (handle, buf, n) -> the bytes put in buf: up to n, the bytes n GETCs would give, but
+                             never past the end of the position's sector (so fewer than n before the end too); 0 at
+                             the end, for n = 0, for anything but a read handle; mixes with GETC and SEEK */
+#define SYS_LAST     25

@@ -39,7 +39,7 @@ LIMITS = {"basic": (8000000, 120000000),         # instructions (int) / microcod
           "pipe": (13000000, 180000000),         # 9.8M / 136M needed: every byte crosses CONOUT, then CONIN
           "pack": (120000000, 1600000000),       # 2026-09-25: the C OS needs ~70M (cmp of two 56K files alone ~45M)
           "badhandle": (6000000, 90000000),
-          "big": (200000000, 3000000000)}        # 2026-09-25: 72K + 144K written, read back 5 times, copied, appended      # 2026-09-23: writes and reads through bad handles, empty loads         # <= 30M / <= 420M needed (2026-09-23, two-step pack): ~430 sectors moved
+          "big": (600000000, 9000000000)}        # 2026-09-25: 72K + 144K written, read back 5 times, copied, appended; + a 72K file in odd pieces, READN twice (asm OS 117M / 1.8G, the C OS 324M / 5.6G)      # 2026-09-23: writes and reads through bad handles, empty loads         # <= 30M / <= 420M needed (2026-09-23, two-step pack): ~430 sectors moved
 DEFAULT_LIMIT = (12000000, 200000000)
 
 # host-side checks on the disk image a session leaves behind: ("fsck",) must pass; ("ls", path, present, absent)
@@ -57,6 +57,7 @@ HOST = {
     "big": [("fsck",),                          # 2026-09-25: files over 64K and 128K (24-bit positions)
             ("data", "/BIG1", pattern(70 * 1024 + 7)),
             ("data", "/COPY1", pattern(70 * 1024 + 7)),
+            ("data", "/BIG3", pattern(70 * 1024 + 7)),      # 2026-09-25: WRITE in odd pieces
             ("data", "/BIG2", pattern(140 * 1024 + 7) + b"tail\n")],
     "badhandle": [("fsck",), ("boot",), ("same", []),       # 2026-09-23: nothing written through a bad handle
                   ("data", "/BADH.TXT", b"ABC")],

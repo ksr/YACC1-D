@@ -141,7 +141,7 @@ buffer and position; **one write handle at a time**.
 | 2 | `SYS_GETC` | `(handle)` → next byte, 65535 at the end |
 | 3 | `SYS_CLOSE` | `(handle)` → 1; a written file is registered in its directory here (last sector flushed, entry written, free pointer moved) |
 | 4 | `SYS_CREATE` | `(path, load, exec)` → handle, 0 cannot (a same-named file is replaced; refused while another write is open) |
-| 5 | `SYS_WRITE` | `(handle, buf, n)` → bytes written |
+| 5 | `SYS_WRITE` | `(handle, buf, n)` → bytes written (the assembly OS copies what fits in the rest of each sector at once since 2026-09-25: the same bytes and card writes as a PUTC per byte) |
 | 6 | `SYS_PUTC` | `(handle, byte)` → 1, 0 cannot (not the write handle, 16M - 1 bytes reached) |
 | 7 | `SYS_DELETE` | `(path)` → 1 tombstoned, 0 not a file |
 | 8 | `SYS_MKDIR` | `(path)` → 1, 0 cannot (exists, parent missing, no slot, a write is open) |
@@ -161,6 +161,7 @@ buffer and position; **one write handle at a time**.
 | 22 | `SYS_EXIT` | `(status)` → does not return (2026-09-25): the program ends from any depth, on any stack, as if main had returned; `STATUS` ($0F0E) = status when it has ended, for the next program to read. `lib_fs.c`: `osexit()` |
 | 23 | `SYS_EXEC` | `(path, args)` → 0 when path cannot be run (over 63 characters, not found, not a file, does not load into $5000-$CFFF); else does not return: the caller ends and path runs with args as its tail, in the same shell command (`>` and `|` stay). `osexec()`. The native compiler's passes chain with it |
 | 24 | `SYS_SEEK` | `(handle, hi, lo)` → 1: a read handle at position hi:lo (24 bits), not past the end; 0 otherwise. `fseek()` |
+| 25 | `SYS_READN` | `(handle, buf, n)` → the bytes put in `buf`: up to n, the bytes n GETCs would give, never past the end of the position's sector; 0 at the end, for n = 0, for anything but a read handle (2026-09-25; mixes with GETC and SEEK). `freadn()`: a program's own buffer at a syscall per block (the native compiler's passes) |
 
 Writing goes to the volume's free pointer (boot block bytes 4–5, kept in step on disk): `CREATE` takes the handle
 and remembers the directory and the name, `PUTC`/`WRITE` fill the handle's sector buffer and flush full sectors,

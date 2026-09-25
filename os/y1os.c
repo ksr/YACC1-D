@@ -340,6 +340,21 @@ int fs_getc(int h) {            /* the next byte through the handle's own buffer
     return b[pos & 511];
 }
 
+int fs_readn(int h, char *buf, int n) {     /* READN (2026-09-25): up to n bytes into buf, the bytes n GETCs would give,
+                                   but never past the end of the position's sector; the count, 0 at the end (and for
+                                   anything but a read handle). A program's own buffer then costs a syscall per block
+                                   instead of one per byte. (y1os.asm fs_readn: the first byte through fs_getc, the
+                                   rest of its sector copied from the buffer: the same bytes and position) */
+    int i, c;
+    for (i = 0; i < n; i++) {
+        c = fs_getc(h);
+        if (c == 65535) return i;
+        buf[i] = c;
+        if (!(h_pos[h] & 511)) return i + 1;    /* that byte ended its sector */
+    }
+    return n;
+}
+
 int fs_readdir(int h, char *buf) {  /* the next live entry (32 bytes) -> buf; 0 at the end */
     int s, o, i, pos, len; char *b;
     if (mode_of(h) != M_DIR) return 0;
@@ -428,7 +443,9 @@ int fs_append(char *path) {
     return h;
 }
 
-int fs_write(int h, char *buf, int n) {
+int fs_write(int h, char *buf, int n) {     /* the bytes as fs_putc takes them, stopping at the first refused
+                                   (y1os.asm fs_write since 2026-09-25: after each fs_putc what fits in the rest of its
+                                   sector is copied straight into the buffer - the same bytes, positions, card writes) */
     int i;
     for (i = 0; i < n; i++) if (!fs_putc(h, buf[i])) return i;
     return n;
@@ -625,6 +642,7 @@ void h_const()   { pokew(SYSRES, con_st()); }
 void h_conout()  { con_out(peekw(SYSARG0)); }                     /* SYSRES untouched: it returns nothing */
 void h_keyin()   { pokew(SYSRES, key_in()); }
 void h_seek()    { pokew(SYSRES, fs_seek(peekw(SYSARG0), peekw(SYSARG1), peekw(SYSARG2))); }
+void h_readn()   { pokew(SYSRES, fs_readn(peekw(SYSARG0), peekw(SYSARG1), peekw(SYSARG2))); }
 void h_exit() {                 /* EXIT(status): back to run_prog, as if the program had returned */
     ex_code = peekw(SYSARG0);
     call(stub + 11);
@@ -677,6 +695,7 @@ void install() {                /* SYSTAB2 <- the handlers, then its first 22 wo
     pokew(SYSTAB2 + 2 * SYS_EXIT, funcaddr(h_exit));
     pokew(SYSTAB2 + 2 * SYS_EXEC, funcaddr(h_exec));
     pokew(SYSTAB2 + 2 * SYS_SEEK, funcaddr(h_seek));
+    pokew(SYSTAB2 + 2 * SYS_READN, funcaddr(h_readn));
     i = &os_sp; stub[3] = i >> 8; stub[4] = i; stub[12] = i >> 8; stub[13] = i;
     i = &ex_addr; stub[6] = i >> 8; stub[7] = i;
     for (i = 0; i < 2 * (SYS_OLD + 1); i++) poke(SYSTAB + i, peek(SYSTAB2 + i));

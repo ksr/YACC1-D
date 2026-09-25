@@ -134,7 +134,7 @@ result is a full 16-bit word (no carry bit): 1/0 for done/cannot, a handle or 0,
 | 2 | GETC | handle | the next byte through the handle's own sector buffer; 65535 at the end |
 | 3 | CLOSE | handle | 1; for a written file this writes the last sector, the directory entry and the free pointer |
 | 4 | CREATE | path, load, exec | handle, or 0 (bad path/name, parent missing, another write open - also a `>` or a pipe of the shell - a directory of that name); a same-named FILE is replaced at CLOSE (its entry overwritten in place) |
-| 5 | WRITE | handle, buf, n | bytes written |
+| 5 | WRITE | handle, buf, n | bytes written (since 2026-09-25 the assembly OS copies what fits in the rest of each sector in one go: the same bytes, positions and card writes as a PUTC per byte) |
 | 6 | PUTC | handle, byte | 1, or 0 (not the write handle, 16M - 1 bytes reached) |
 | 7 | DELETE | path | 1 tombstoned, 0 not a file |
 | 8 | MKDIR | path | 1, or 0 (exists, parent missing, directory full, a write open) |
@@ -154,6 +154,7 @@ result is a full 16-bit word (no carry bit): 1/0 for done/cannot, a handle or 0,
 | 22 | EXIT | status | (2026-09-25, SYSTAB2) does not return: the program ends at once, from any depth and on any stack, as if its main had returned (its files closed, a pending write registered); STATUS = status |
 | 23 | EXEC | path, args | (2026-09-25, SYSTAB2) 0 when path is over 63 characters, not found, not a file, or does not load into $5000-$CFFF (the `load` rule); else does not return: the caller ends as with EXIT(0) and path is loaded and run with args (0 = none; up to 127 characters) as its command tail, in the same shell command (a `>` or a pipe stays) |
 | 24 | SEEK | handle, hi, lo | (2026-09-25, SYSTAB2) 1: the read handle's position is now hi:lo (24 bits), not past its length; 0 for another handle, past the end, a card error. Inside a sector that sector is read into the handle's buffer |
+| 25 | READN | handle, buf, n | (2026-09-25, SYSTAB2) the bytes put in buf: up to n, the bytes n GETCs would give, but never past the end of the position's sector (so a call can return fewer than n before the end of the file); 0 at the end, for n = 0 and for anything but a read handle. Mixes freely with GETC and SEEK. A program's own small buffer then costs a syscall per block instead of one per byte (below) |
 
 **Two tables** (2026-09-25). SYSTAB's 22 slots were all in use and ARGBUF follows it, so it cannot grow; moving it
 would have broken every program compiled before (they read `SYSTAB + 2n`). So the OS now fills SYSTAB2, 32 entries at
@@ -211,6 +212,17 @@ native compiler"); a program could only end by returning from main. Two syscalls
 - **SEEK(handle, hi, lo)** positions a read handle (24 bits). The compiler's lexer needs it: a `/BIN` source nests
   `#include`s five deep, and with four handles, one of them writing, only three can be open, so `target_inc.c`
   closes the outermost file and later opens it again and SEEKs to where it was.
+- **READN(handle, buf, n)** (25, 2026-09-25) and a faster **WRITE**: the compiler's passes read and wrote their work
+  files a byte and a syscall at a time, and the OS's GETC/PUTC path (the syscall, the handle checks, the 24-bit
+  position) was about 100 instructions a byte: a third of a compile. Now `software/compiler/c/target_io.c` keeps a
+  64- or 128-byte buffer each way and fills it with READN, empties it with WRITE. READN takes its first byte through
+  the ordinary GETC path (the sector into the handle's buffer, the end, the checks) and copies the rest of that
+  sector straight out of the handle's buffer; WRITE puts each byte through PUTC as before, then copies what fits in
+  the rest of that sector straight in (`y1os.asm` `fs_readn`, `fs_write`; `y1os.c` keeps the plain loops as the
+  specification, READN a loop of `fs_getc` that stops at a sector's end: the same results). A sector's bytes cost
+  seven instructions each instead of a hundred. `tests/os/big.session` (`bigw -v`, `bigr -n`) writes a 70K file
+  in pieces of 0-1,000 bytes and reads the 70K and the 140K file back with READN in sizes 1-600 mixed with GETC,
+  checking every count; the host checks the bytes; both kernels, both emulators.
 
 Tests: `tests/os/exec.session` (`tests/os/exe.c`, also built with `--stack 0xCFFF` as `/EXES`): EXIT from three
 recursive calls deep and from a program on its own stack, STATUS as the next program sees it, a chain of four EXECs
@@ -243,10 +255,10 @@ void main() {                                   /* print a file, sector-wise */
 }
 ```
 
-`lib_fs.c`: `fopen fread fgetc fclose fcreate fwrite fputc fputs fdelete fmkdir frmdir opendir readdir fresolve
-fentry getcwd chdir frename conin constat keyin stdio`, the `ent_*` accessors, and `argword(tail, out, max)` to take
-the next word of the command tail. Input comes in two kinds since the shell has pipes: DATA is `conin()`, stdin (a
-`<` file, a pipe, else the console), 65535 at its end or at Ctrl-D, so a filter is
+`lib_fs.c`: `fopen fread freadn fgetc fclose fcreate fwrite fputc fputs fdelete fmkdir frmdir opendir readdir
+fresolve fentry getcwd chdir frename conin constat keyin stdio osexit osexec fseek`, the `ent_*` accessors, and
+`argword(tail, out, max)` to take the next word of the command tail. Input comes in two kinds since the shell has
+pipes: DATA is `conin()`, stdin (a `<` file, a pipe, else the console), 65535 at its end or at Ctrl-D, so a filter is
 `while ((c = conin()) != 65535) ...`; a KEY the user presses in answer to the program (`--More--`, `vi`, `dump`'s
 next page) is `keyin()`, always the keyboard. (`getchar()` under `--os` is CONIN too, with 0 at the end of input.)
 Output is `putchar`/`puts`; an error message is `eputs()` from `lib_err.c`, which writes to the screen even under
