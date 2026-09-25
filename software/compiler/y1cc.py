@@ -138,8 +138,23 @@ def lex(src, path="<src>", included=None, macros=None):
         if c == "\n": line += 1; i += 1; continue
         if c in " \t\r\f": i += 1; continue
         if c == "#":                                    # preprocessor line: #define, #include; others ignored
-            eol = src.find("\n", i); eol = n if eol < 0 else eol
-            parts = src[i:eol].split(None, 2)
+            # its text up to the newline: a /* */ comment in it is one space and may go on over newlines (the line
+            # then ends at the newline after it), a // comment ends it, neither inside quotes (2026-09-25: a comment
+            # from a #define line onto the next left the next line to be lexed as code)
+            eol, text, nl, q = i, [], 0, None
+            while eol < n and src[eol] != "\n":
+                ch = src[eol]
+                if not q and src.startswith("/*", eol):
+                    k = src.find("*/", eol + 2)
+                    if k < 0: err("unterminated comment")
+                    nl += src.count("\n", eol, k); text.append(" "); eol = k + 2; continue
+                if not q and src.startswith("//", eol):
+                    eol = src.find("\n", eol); eol = n if eol < 0 else eol; break
+                if q:
+                    if ch == q: q = None
+                elif ch in "\"'": q = ch
+                text.append(ch); eol += 1
+            parts = "".join(text).split(None, 2)
             if parts and parts[0] == "#define" and len(parts) >= 3:
                 v = parts[2].split()[0]
                 try: macros[parts[1]] = int(v, 0)
@@ -154,7 +169,7 @@ def lex(src, path="<src>", included=None, macros=None):
                     included.add(inc)
                     sub = lex(open(inc).read(), inc, included, macros)
                     toks.extend(sub[:-1])               # drop its eof
-            i = eol; continue
+            line += nl; i = eol; continue
         if src.startswith("//", i):
             eol = src.find("\n", i); eol = n if eol < 0 else eol
             body = src[i + 2:eol].lstrip()               # "//#define NAME value" (p8cc style) also honoured

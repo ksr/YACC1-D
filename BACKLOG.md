@@ -309,9 +309,11 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
        cc9 could delete them, at the cost of bytes in the tightest pass.
      - The bigger passes compiling themselves natively (only pass 4 is in the test; cc8's source needs 740K of disk
        and y1cc.c does not fit the passes' tables at all).
-     - y1cc: a block comment that starts on a `#define` line and continues on the next is not skipped (the next line
-       is lexed: `$` in it was "bad character", found in `os/lib_abi.c` 2026-09-25; the comment was moved above
-       the `#define`s).
+     - (done 2026-09-25: y1cc: a block comment that starts on a `#define` line and continues on the next was not
+       skipped (the next line was lexed: `$` in it was "bad character", found in `os/lib_abi.c`). Now a directive's
+       `/* */` comment is one space and may go on over newlines, a `//` ends the directive, neither inside quotes
+       - y1cc.py, y1cc.c and cc1 alike; `tests/compiler/dircomment.c`, `dircomline.c` (the line numbers after it);
+       os/lib_abi.c's EXIT/EXEC/SEEK comments are back beside their `#define`s.)
   5. (done 2026-09-25: **the on-target assembler** `/BIN/ASM`, wave 3 of os/PORT-PLAN.md - byte-identical to the host
      assembler on the corpus, the nine passes' assembly among it; its 16,640-byte symbol pool holds cc8's 1,326
      labels, the most of any pass. The host assembler's label table: done 2026-09-24, 8,191 labels with a clear error

@@ -71,13 +71,10 @@
 #define SYS_KEYIN    20   /* () -> a key: ALWAYS the console, no echo; 65535 at Ctrl-D (pager, vi, dump, examine) */
 #define SYS_STDIO    21   /* () -> bit 0 stdin redirected, bit 1 stdout redirected (the last in SYSTAB; 22.. SYSTAB2) */
 /* 22..: in SYSTAB2 only (y1cc's sys() reaches them with a constant number), 2026-09-25 */
-/* 22 EXIT (status) -> does not return: the program ends as if main returned; STATUS = status.
-   23 EXEC (path, args) -> 0 when path is not a program that loads into $5000-$CFFF (or the path is over 63
-      characters); else does not return: the caller ends (its files closed as when a program returns) and path runs
-      with args (up to 127 characters) as its command tail.
-   24 SEEK (handle, hi, lo) -> 1: a read handle's position is now hi:lo (24 bits: hi 0..255), not past the length;
-      0 not a read handle, past the end, a card error */
-#define SYS_EXIT     22
-#define SYS_EXEC     23
-#define SYS_SEEK     24
+#define SYS_EXIT     22   /* (status) -> does not return: the program ends as if main returned; STATUS = status */
+#define SYS_EXEC     23   /* (path, args) -> 0 when path is not a program that loads into $5000-$CFFF (or the path
+                             is over 63 characters); else does not return: the caller ends (its files closed as when
+                             a program returns) and path runs with args (up to 127 characters) as its command tail */
+#define SYS_SEEK     24   /* (handle, hi, lo) -> 1: a read handle's position is now hi:lo (24 bits: hi 0..255), not
+                             past the length; 0 not a read handle, past the end, a card error */
 #define SYS_LAST     24

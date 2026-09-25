@@ -283,6 +283,7 @@ int ppn;
 int incl_off[INCLS_MAX];
 int nincl;
 char dirbuf[DIR_MAX];
+int dir_lines;                  /* the newlines inside the comments of the directive read last */
 char idbuf[ID_MAX];
 char pbuf[LINE_MAX];
 char p2buf[LINE_MAX];
@@ -461,7 +462,7 @@ void put_tok(int kind, int val, int line);
 void lex_one(void);
 void lx_directive(void);
 void lx_linecomment(void);
-void lx_blockcomment(void);
+int lx_blockcomment(void);
 void lx_ident(void);
 void lx_number(void);
 void lx_char(void);
@@ -837,10 +838,10 @@ void lex_one(void) {
         }
         if (c == 10) { f_line[fdep]++; lx_adv(); continue; }
         if (c == ' ' || c == 9 || c == 13 || c == 12) { lx_adv(); continue; }
-        if (c == '#') { lx_directive(); continue; }
+        if (c == '#') { c = fdep; lx_directive(); f_line[c] = f_line[c] + dir_lines; continue; }
         c1 = lx_peek(1);
         if (c == '/' && c1 == '/') { lx_linecomment(); continue; }
-        if (c == '/' && c1 == '*') { lx_blockcomment(); continue; }
+        if (c == '/' && c1 == '*') { f_line[fdep] = f_line[fdep] + lx_blockcomment(); continue; }
         if (is_alpha(c) || c == '_') { lx_ident(); return; }
         if (is_digit(c)) { lx_number(); return; }
         if (c == 39) { lx_char(); return; }
@@ -860,14 +861,23 @@ int split_word(char *s, int i, char *out) {         /* the whitespace-free word 
     return i;
 }
 void lx_directive(void) {                           /* a preprocessor line: #define, #include; others ignored */
-    int n; int c; int i; int j; int ok; int v; int id; int k; int found;
-    n = 0;
-    for (;;) {
+    int n; int c; int i; int j; int ok; int v; int id; int k; int found; int q;
+    n = 0; q = 0; dir_lines = 0;
+    for (;;) {                                      /* up to the newline: a comment is one space and may go on over
+                                                       newlines (the line then ends at the newline after it), a //
+                                                       comment ends it, neither inside quotes (2026-09-25: a comment
+                                                       from a #define line onto the next was lexed as code there) */
         c = lx_peek(0);
         if (c == 256 || c == 10) break;
+        if (!q && c == '/' && lx_peek(1) == '*') { dir_lines = dir_lines + lx_blockcomment(); c = ' '; } else if (!q && c == '/' && lx_peek(1) == '/') {
+            for (;;) { c = lx_peek(0); if (c == 256 || c == 10) break; lx_adv(); }
+            break;
+        } else {
+            if (q) { if (c == q) q = 0; } else if (c == '"' || c == 39) q = c;
+            lx_adv();
+        }
         if (n >= DIR_MAX - 1) lx_err("preprocessor line too long");
         dirbuf[n] = c; n++;
-        lx_adv();
     }
     dirbuf[n] = 0;
     i = skip_space(dirbuf, 0);
@@ -940,7 +950,7 @@ void lx_linecomment(void) {                         /* // ... ; "//#define NAME 
     k = intern(pbuf);
     nm_mac[k] = 1; nm_macv[k] = v;
 }
-void lx_blockcomment(void) {
+int lx_blockcomment(void) {                         /* past a comment: its newlines (the caller counts them) */
     int c; int lines;
     lx_adv(); lx_adv();
     lines = 0;
@@ -951,7 +961,7 @@ void lx_blockcomment(void) {
         if (c == 10) lines++;
         lx_adv();
     }
-    f_line[fdep] = f_line[fdep] + lines;
+    return lines;
 }
 void lx_ident(void) {
     int n; int c; int id;
