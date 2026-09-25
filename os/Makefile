@@ -71,6 +71,11 @@ $(B)/y1os-c.bin: y1os.c lib_abi.c lib_fs.c $(ROOT)/software/compiler/y1cc.py $(R
 	  printf "y1os (C): %d bytes image (%d of 32 sectors) + %d data = %d of 16384 (\$$1000-\$$4FFF)\n" $$i $$(( (i + 511) / 512 )) $$d $$((i + d)); \
 	  if [ $$((i + d)) -gt 16384 ] || [ $$i -gt 16384 ]; then echo "y1os: over its 16K (the programs start at \$$5000)"; rm -f $@; exit 1; fi
 
+# /BIN/ASM's instruction table is generated from the host assembler's yacc1.def (tools/gen_y1_optab.py, 2026-09-25)
+asm_optab.c: $(DEF) $(ROOT)/tools/gen_y1_optab.py
+	python3 $(ROOT)/tools/gen_y1_optab.py
+$(B)/bin/asm.bin: asm_optab.c
+
 $(B)/bin/%.bin: commands/%.c $(LIBS) $(ROOT)/software/compiler/y1cc.py $(B)/xisa-sel
 	@mkdir -p $(B)/bin && cp $(DEF) $(B)/bin/ && echo -h > $(B)/bin/rcasm.rc
 	@$(CC) $< -o $(B)/bin/$*.asm --org 0x5000 --os $(CCX)
