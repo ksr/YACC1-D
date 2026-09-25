@@ -1,6 +1,9 @@
 placement memory-v2.0-standoff-b.kicad_pcb: OK - no overlaps, pads 0.5 mm inside the edge, X1 / JP1 / U$1 group as built, J2 oriented for a straight ribbon, nothing tall under the adapter or the ribbon, standoff holes clear, ROM keep-clear zone empty and away from the adapter
     adapter x 83.19-127.19, y 63.52-123.52 (print grid x 65.4-109.4, y 53.5-113.5); header edge x 83.19, slot edge x 127.19
     J2 pin 1 (78.71, 117.65), pins y 69.39-117.65, odd row x 78.71, even row x 76.17, courtyard to x 82.44 (0.75 mm before the adapter's header edge)
+    J2 shroud x 72.88-82.00, plug envelope x 71.38-83.50 / y 62.68-124.36 (18 mm tall); 1.19 mm from the shroud to the adapter's header edge; ribbon between the plugs ~5-8 cm (minimum ~35 mm)
+    NOTE (option made before the J2 plug-envelope rule): J2's plug envelope reaches 0.31 mm under the adapter
+    NOTE (option made before the J2 plug-envelope rule): J2's shroud only 1.19 mm from the adapter's header edge (rule 3.0)
     H1 (98.49, 119.52) = print grid (80.7, 109.5): nearest pad IC34.4 10.0 mm, nearest body IC34 9.7 mm
     H2 (98.49, 67.52) = print grid (80.7, 57.5): nearest pad IC33.11 4.9 mm, nearest body IC33 4.6 mm
     under the adapter (low parts only): C11, C19, C2, C26, C28, C29, C6, IC11, IC15, IC2, IC31, IC33, IC34, IC5

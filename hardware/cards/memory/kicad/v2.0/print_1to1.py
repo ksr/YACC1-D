@@ -114,7 +114,8 @@ def main(src, out):
     # ribbon zone, ROM keep-clear zone
     rect(d["ribbon"], ORANGE, None, 0.8, (3, 2))
     rz = d["rom"]
-    rect((rz[0], rz[1], min(rz[2], ex1), rz[3]), colors.Color(0.85, 0.55, 0.0), None, 0.9, (4, 2))
+    rz = (max(rz[0], ex0), max(rz[1], ey0), min(rz[2], ex1), min(rz[3], ey1))     # the zone past an edge is air
+    rect(rz, colors.Color(0.85, 0.55, 0.0), None, 0.9, (4, 2))
     # parts
     for f in d["fps"]:
         if f["hole"]:
@@ -145,26 +146,56 @@ def main(src, out):
              anchor="c", angle=90 if tall else 0)
     # the ROM label
     rom = fps[d["rom_ref"]]["box"]
-    text("ROM - keep clear, removable", X((rom[0] + rom[2]) / 2) - 1.8 * mm, Y((rom[1] + rom[3]) / 2), 6.5,
-         "Helvetica-Bold", colors.Color(0.6, 0.35, 0.0), "c", 90)
+    if rom[3] - rom[1] > rom[2] - rom[0]:                  # standing along y
+        text("ROM - keep clear, removable", X((rom[0] + rom[2]) / 2) - 1.8 * mm, Y((rom[1] + rom[3]) / 2), 6.5,
+             "Helvetica-Bold", colors.Color(0.6, 0.35, 0.0), "c", 90)
+    else:
+        text("ROM - keep clear, removable", X((rom[0] + rom[2]) / 2), Y((rom[1] + rom[3]) / 2) + 1.2 * mm, 6.5,
+             "Helvetica-Bold", colors.Color(0.6, 0.35, 0.0), "c")
     text("keep-clear zone", X(rz[0]) + 0.8 * mm, Y(rz[3]) + 1.2 * mm, 5.5,
          color=colors.Color(0.6, 0.35, 0.0))
-    # J2 labels
+    # J2 = the IDE header ON THIS BOARD: solid, thick outline, its plug envelope dashed
     j2p1 = [p for p in fps["J2"]["pads"] if p["n"] == "1"][0]
+    rect(j2["shroud"], RED, None, 1.6)
+    if j2.get("plug"):
+        rect(j2["plug"], RED, None, 0.6, (2, 1.5))
     text("J2 PIN 1", X(j2p1["x"]) - 1.6 * mm, Y(j2p1["y"]) - 5.2 * mm, 6.5, "Helvetica-Bold", RED, "r")
-    text("J2 (IDE, pin 20 fitted)", X(j2["shroud"][0]) - 1.0 * mm, Y((j2["shroud"][1] + j2["shroud"][3]) / 2), 6,
-         "Helvetica-Bold", RED, "c", 90)
-    text("ribbon (arches up to the adapter)", X(d["ribbon"][2]) - 0.8 * mm, Y(d["ribbon"][1]) - 2.8 * mm, 5.5,
-         color=colors.Color(0.7, 0.4, 0.0), anchor="r")
+    jm = (j2["shroud"][1] + j2["shroud"][3]) / 2
+    lbl = "J2 - IDE HEADER ON THIS BOARD (pin 1 "
+    xl = X(j2["shroud"][0]) - 1.2 * mm
+    wl = c.stringWidth(lbl + "  )", "Helvetica-Bold", 6.5)
+    text(lbl, xl, Y(jm) - wl / 2, 6.5, "Helvetica-Bold", RED, "l", 90)
+    c.setFillColor(RED)
+    c.rect(xl - 4.4, Y(jm) - wl / 2 + c.stringWidth(lbl, "Helvetica-Bold", 6.5) + 0.8, 4.2, 4.2, stroke=0, fill=1)
+    text(")", xl, Y(jm) - wl / 2 + c.stringWidth(lbl + "  ", "Helvetica-Bold", 6.5) + 1.0, 6.5, "Helvetica-Bold",
+         RED, "l", 90)
     # the adapter
     o = ad["outline"]
     rect(o, BLUE, ADFILL, 1.3)
-    rect(ad["shroud"], BLUE, None, 0.6)
+    rect(ad["shroud"], BLUE, None, 0.9, (3, 2))                  # the adapter's own header: dashed (15 mm up)
+    text("ADAPTER'S IDE HEADER (on the adapter, 15 mm above)", X(ad["shroud"][0]) + 1.6 * mm,
+         (Y(o[1]) + Y(o[3])) / 2, 5.5, "Helvetica-Bold", BLUE, "c", 90)
     c.setStrokeColor(BLUE)
     c.setLineWidth(3.0)
     c.line(X(ad["slot_x"]), Y(o[1]), X(ad["slot_x"]), Y(o[3]))
-    text("CF SLOT EDGE (card pushed in toward the bus)", X(ad["slot_x"]) - 1.4 * mm, (Y(o[1]) + Y(o[3])) / 2,
-         5.5, "Helvetica-Bold", BLUE, "c", 90)
+    text("CF CARD INSERTS HERE (into the adapter)", X(ad["slot_x"]) - 1.4 * mm, (Y(o[1]) + Y(o[3])) / 2,
+         6, "Helvetica-Bold", BLUE, "c", 90)
+    # the ribbon: arrows from J2 up to the adapter's header
+    RIB = colors.Color(0.45, 0.45, 0.45)
+    jx, hx0 = j2["px"] - 1.27, (ad["shroud"][0] + ad["shroud"][2]) / 2
+    c.saveState()
+    c.setStrokeColor(RIB)
+    c.setFillColor(RIB)
+    c.setLineWidth(0.9)
+    for yy in (j2["shroud"][1] + 8.0, jm, j2["shroud"][3] - 8.0):
+        c.line(X(jx), Y(yy), X(hx0) - 1.2 * mm, Y(yy))
+        p = c.beginPath()
+        p.moveTo(X(hx0), Y(yy))
+        p.lineTo(X(hx0) - 1.6 * mm, Y(yy) + 0.8 * mm)
+        p.lineTo(X(hx0) - 1.6 * mm, Y(yy) - 0.8 * mm)
+        p.close()
+        c.drawPath(p, stroke=0, fill=1)
+    c.restoreState()
     for k, (outer, inner) in enumerate(ad["pins"]):
         for (x, y) in (outer, inner):
             c.setStrokeColor(BLUE)
@@ -173,8 +204,6 @@ def main(src, out):
     (ox, oy), (ix, iy) = ad["pins"][0]
     c.setLineWidth(0.9)
     c.circle((X(ox) + X(ix)) / 2, Y(oy), 2.2 * mm, stroke=1, fill=0)
-    text("CF ADAPTER %s ON STANDOFFS" % d["hx"]["name"].split()[0], X(ad["shroud"][2]) + 1.0 * mm,
-         Y((o[1] + o[3]) / 2) - 1.0 * mm, 6, "Helvetica-Bold", BLUE)
     text("ADAPTER PIN 1 END", X(ad["shroud"][2]) + 1.2 * mm, Y(oy) - 1.0 * mm, 6.5, "Helvetica-Bold", BLUE)
     (tx, ty), _ = ad["pins"][9]
     text("col. 10: pin 20 missing (key)", X(ad["shroud"][2]) + 1.0 * mm, Y(ty) - 0.8 * mm, 5, color=BLUE)
@@ -200,6 +229,31 @@ def main(src, out):
     c.setStrokeColor(colors.black)
     c.setLineWidth(1.0)
     c.rect(X(ex0), Y(ey1), (ex1 - ex0) * mm, (ey1 - ey0) * mm, stroke=1, fill=0)
+    # callouts under the board, each with a leader to what it names
+    calls = [
+        ("J2 = the IDE header ON THIS BOARD (solid red, pin 1 = square pad); with its ribbon plug it stands ~%g mm; "
+         "plug envelope dashed red" % d.get("plug_h", 18), RED, (jx, j2["shroud"][1] + 4.5)),
+        ("SHORT 40-WIRE RIBBON, pin 1 to pin 1 (%s between the plugs): the grey arrows, J2 -> the adapter's header"
+         % d.get("ribbon_text", "~5-8 cm"), colors.Color(0.4, 0.4, 0.4), ((j2["shroud"][2] + o[0]) / 2, j2["shroud"][3] - 8.0)),
+        ("ADAPTER'S IDE HEADER (dashed blue): on the %s adapter, 15 mm above on standoffs H1 / H2 - the adapter does NOT "
+         "plug into J2" % d["hx"]["name"].split()[0], BLUE, (hx0, o[3] - 3.0)),
+        ("CF CARD INSERTS HERE (into the adapter): the thick blue slot edge; the card is pushed in toward the bus",
+         BLUE, (ad["slot_x"], o[3] - 6.0)),
+    ]
+    def badge(x, y, n, col):                              # a numbered marker: the callout below says what it is
+        c.saveState()
+        c.setFillColor(colors.white)
+        c.setStrokeColor(col)
+        c.setLineWidth(0.8)
+        c.circle(x, y, 1.9 * mm, stroke=1, fill=1)
+        c.restoreState()
+        text(str(n), x, y - 0.8 * mm, 7, "Helvetica-Bold", col, "c")
+
+    for k, (s_, col, (tx, ty)) in enumerate(calls):
+        yb = Y(ey1) - (6.5 + 4.4 * k) * mm
+        badge(X(ex0) + 2 * mm, yb + 0.8 * mm, k + 1, col)
+        text(s_, X(ex0) + 5 * mm, yb, 6.3, "Helvetica-Bold", col)
+        badge(X(tx), Y(ty), k + 1, col)
     # the numbers, right of the board
     xs = X(ex1) + 8 * mm
     yy = Y(ey0) + 1 * mm
@@ -214,8 +268,9 @@ def main(src, out):
         ("J2 pin 1: x %.1f  y %.1f (square pad)" % (gx(j2p1["x"]), gy(j2p1["y"])), None),
         ("J2 pins y %.1f-%.1f, odd row x %.1f, even x %.1f" % (gy(j2["py1"] - 48.26), gy(j2["py1"]), gx(j2["px"]),
                                                               gx(j2["px"] - 2.54)), None),
-        ("ROM %s keep-clear x %.1f-%.1f, y %.1f-%.1f" % (d["rom_ref"], gx(rz[0]), gx(min(rz[2], ex1)), gy(rz[1]),
-                                                           gy(rz[3])), None),
+        ("ROM %s keep-clear x %.1f-%.1f, y %.1f-%.1f" % (d["rom_ref"], gx(rz[0]), gx(rz[2]), gy(rz[1]), gy(rz[3])),
+         None),
+        ("  (on the board; past an edge it is free air)", None),
         ("", None),
         ("Standoffs", "Helvetica-Bold"),
         ("M3 hex %g mm female-female (5.5 AF)," % d["standoff"], None),
@@ -246,8 +301,9 @@ def main(src, out):
     # ---------------------------------------------------------------------------------------------------------- page 2
     text("Side view at 1:1 - the height stack (section along x, seen from the y-max end; card component side up)",
          12 * mm, PH - 10 * mm, 12, "Helvetica-Bold")
-    text("Heights are typical figures, not measured: box header 9.0, IDC plug on it ~13, socketed DIP 8.5-9.5, "
-         "disc cap ~8-10, adapter 1.6 thick, CF holder + card ~8 on the adapter.", 12 * mm, PH - 15 * mm, 7)
+    text("Heights are typical figures, not measured: box header 9, IDC plug on it +9 (~18), plug body ~1.5 wider than "
+         "the shroud each side, socketed DIP 8.5-9.5, adapter 1.6 thick, CF holder + card ~6-8 on the adapter.",
+         12 * mm, PH - 15 * mm, 7)
     Z0 = 100.0                                    # card top surface: mm from the page bottom
     Xs = lambda x: (L0 + (x - ex0)) * mm
     Zs = lambda z: (Z0 + z) * mm
@@ -265,63 +321,75 @@ def main(src, out):
 
     so = d["standoff"]
     box(ex0, ex1, -1.6, 0, colors.black, colors.Color(0.3, 0.6, 0.3))
-    text("memory card (1.6 mm)", Xs(ex1) - 2 * mm, Zs(-1.6) - 3.2 * mm, 6.5, anchor="r")
+    text("memory card (1.6 mm)", Xs(ex0 + 14), Zs(-1.6) - 3.2 * mm, 6.5)
     box(ex0 - 8.0, ex0 + 11.0, -6.0, 5.5, colors.black, colors.Color(0.8, 0.8, 0.8))
     text("X1", Xs(ex0 + 1.5), Zs(1), 6.5, "Helvetica-Bold", anchor="c")
-    # low parts: sockets + DIPs along the card (outside J2 and under the adapter)
-    box(ex0 + 14, j2["shroud"][0] - 1, 0, 9.0, colors.grey, colors.Color(0.9, 0.9, 0.9), dash=(2, 1))
+    # low parts: sockets + DIPs along the card (the bus side of J2 and under the adapter)
+    pe = j2.get("plug") or (j2["shroud"][0] - 1.5, 0, j2["shroud"][2] + 1.5, 0)
+    ph = d.get("plug_h", 18.0)
+    box(ex0 + 14, pe[0] - 0.3, 0, 9.0, colors.grey, colors.Color(0.9, 0.9, 0.9), dash=(2, 1))
     text("socketed DIPs ~9", Xs(ex0 + 30), Zs(4), 6, anchor="c")
     box(ad["outline"][0] + 1, ad["outline"][2] - 1, 0, 9.0, colors.grey, colors.Color(0.9, 0.9, 0.9), dash=(2, 1))
-    text("DIPs under the adapter ~9", Xs((ad["outline"][0] + ad["outline"][2]) / 2), Zs(4), 6, anchor="c")
-    # J2 + plug
-    box(j2["shroud"][0], j2["shroud"][2], 0, 9.0, RED, ORANGE, 0.8)
-    box(j2["px"] - 4.3, j2["px"] + 1.8, 3.0, 13.0, RED, None, 0.6, (2, 1))
-    text("J2 9.0", Xs(j2["px"] - 1.27), Zs(4.5), 6, "Helvetica-Bold", RED, "c")
-    text("plug ~13", Xs(j2["px"] - 1.27), Zs(10.5), 5.5, color=RED, anchor="c")
-    # standoffs + adapter
+    text("DIPs under the adapter ~9", Xs(ad["holes"][0][0] + 3.5), Zs(4), 6)
+    # J2 (on this board) + its ribbon plug, and the plug envelope
+    box(j2["shroud"][0], j2["shroud"][2], 0, 9.0, RED, ORANGE, 1.0)
+    box(pe[0], pe[2], 5.0, ph, RED, colors.Color(1.0, 0.85, 0.75), 0.7, (2, 1))
+    text("J2 ON THIS BOARD, 9", Xs(pe[0]) - 1 * mm, Zs(3.0), 5.5, "Helvetica-Bold", RED, "r")
+    text("its plug, top ~%g" % ph, Xs(j2["px"] - 1.27), Zs(ph - 4.0), 5.5, color=RED, anchor="c")
+    text("plug envelope +%.1f each side" % d.get("plug_side", 1.5), Xs(pe[0]) - 1 * mm, Zs(ph - 1.5), 5.5, color=RED,
+         anchor="r")
+    # standoffs + adapter + its own header and plug + the CF card in its holder
     hx = ad["holes"][0][0]
     box(hx - 2.75, hx + 2.75, 0, so, BLUE, colors.Color(0.85, 0.88, 1.0), 0.6)
     box(hx - 1.6, hx + 1.6, -1.6 - 2.5, -1.6, BLUE, None, 0.5)
-    text("M3 standoff %g" % so, Xs(hx) + 3.6 * mm, Zs(so / 2), 6.5, "Helvetica-Bold", BLUE)
+    text("M3 standoff %g" % so, Xs(hx) + 3.6 * mm, Zs(so - 4.0), 6.5, "Helvetica-Bold", BLUE)
     text("screw/nut + washer ~3 below", Xs(hx) + 3.6 * mm, Zs(-4.2), 5.5, color=BLUE)
     o = ad["outline"]
     box(o[0], o[2], so, so + 1.6, BLUE, colors.Color(0.55, 0.7, 1.0), 0.8)
     top = so + 1.6
     sh = ad["shroud"]
-    box(sh[0], sh[2], top, top + 9.0, BLUE, None, 0.8)
-    box(sh[0] + 1.2, sh[2] - 1.2, top + 3.0, top + 13.0, BLUE, None, 0.6, (2, 1))
+    box(sh[0], sh[2], top, top + 9.0, BLUE, colors.Color(0.85, 0.9, 1.0), 0.8)
+    box(sh[0] - 1.5, sh[2] + 1.5, top + 4.0, top + 18.0, BLUE, None, 0.7, (2, 1))
+    text("the adapter's OWN header (9) + plug, top ~%.0f" % (top + 18.0), Xs(sh[2] + 1.5) + 1.0 * mm, Zs(top + 14.0),
+         5.5, color=BLUE)
     box(o[0] + 14, o[2], top, top + 8.0, BLUE, None, 0.6, (3, 1.5))
-    text("CF holder + card ~8", Xs((o[0] + 14 + o[2]) / 2), Zs(top + 3.5), 6, color=BLUE, anchor="c")
-    text("adapter 1.6", Xs(o[2]) + 1.5 * mm, Zs(so), 6, color=BLUE)
-    # ribbon arch
+    box(o[2] - 38.0, o[2] + 4.0, top + 2.5, top + 5.8, colors.black, colors.Color(0.75, 0.75, 0.75), 0.6)
+    text("CF card in its holder (pushed in from the slot edge, toward the bus)", Xs(o[2] - 19.0), Zs(top + 9.5), 5.5,
+         anchor="c")
+    text("adapter 1.6", Xs(o[2]) + 5.5 * mm, Zs(so), 6, color=BLUE)
+    # the ribbon: up out of J2's plug, a loop, down into the adapter's plug
     c.saveState()
     c.setStrokeColor(colors.Color(0.5, 0.5, 0.5))
-    c.setLineWidth(1.6)
-    p = c.beginPath()
+    c.setLineWidth(1.8)
     x_a, x_b = j2["px"] - 1.27, (sh[0] + sh[2]) / 2
-    zt = top + 13.0 + 4.0
-    p.moveTo(Xs(x_a), Zs(13.0))
-    p.curveTo(Xs(x_a), Zs(zt + 2), Xs(x_b), Zs(zt + 2), Xs(x_b), Zs(top + 13.0))
+    zt = top + 18.0 + 6.0
+    p = c.beginPath()
+    p.moveTo(Xs(x_a), Zs(ph))
+    p.curveTo(Xs(x_a), Zs(zt + 3), Xs(x_b), Zs(zt + 3), Xs(x_b), Zs(top + 18.0))
     c.drawPath(p, stroke=1, fill=0)
     c.restoreState()
-    text("40-way ribbon, ~8-10 cm between the plugs", Xs(x_a) - 2 * mm, Zs(zt + 1.5), 6, color=colors.grey, anchor="r")
+    text("SHORT 40-WIRE RIBBON, pin 1 to pin 1, %s between the plugs (min. ~%.0f mm)"
+         % (d.get("ribbon_text", "~5-8 cm"), d.get("ribbon_min", 40)), Xs(x_a) - 3 * mm, Zs(zt + 1.5), 6,
+         "Helvetica-Bold", colors.Color(0.4, 0.4, 0.4), "r")
     # height marks
-    for z, s in ((top + 8.0, "CF card top %.1f" % (top + 8.0)), (top + 13.0, "adapter's plug %.1f" % (top + 13.0)),
-                 (zt + 1.5, "ribbon loop ~%.0f" % (zt + 1.5))):
+    for z, s_ in ((ph, "J2's plug top ~%.0f" % ph), (top + 5.8, "CF card top ~%.0f" % (top + 5.8)),
+                  (top + 18.0, "adapter's plug top ~%.0f" % (top + 18.0)), (zt + 1.5, "ribbon loop ~%.0f" % (zt + 1.5))):
         c.setStrokeColor(colors.Color(0.6, 0.2, 0.6))
         c.setLineWidth(0.3)
         c.setDash(1, 1)
         c.line(Xs(ex0), Zs(z), Xs(ex1 + 6), Zs(z))
         c.setDash()
-        text(s + " mm above the card", Xs(ex1) + 7 * mm, Zs(z) - 0.8 * mm, 6.3, color=colors.Color(0.6, 0.2, 0.6))
+        text(s_ + " mm above the card", Xs(ex1) + 7 * mm, Zs(z) - 0.8 * mm, 6.3, color=colors.Color(0.6, 0.2, 0.6))
     # notes
     notes = [
+        "J2 is the IDE header ON THIS BOARD. The CF adapter does NOT plug into it: the adapter sits on two %g mm M3 standoffs "
+        "and has its OWN IDE header; a short 40-wire ribbon (%s) joins the two, pin 1 to pin 1." % (so, d.get("ribbon_text", "")),
         "Standoffs: %g mm M3 hex female-female (5.5 mm across flats) + M3 x 6 screws and washers (or %g mm male-female "
-        "with a nut under the card); %g mm keeps ~3.5 mm" % (so, so, so),
-        "between socketed DIPs (~9 mm) and the adapter's pin tails (~2-2.5 mm under it). %g mm standoffs lower the stack by "
-        "3 mm but leave only ~0.5-1 mm over socketed DIPs." % d["standoff_alt"],
-        "Total height above the card: CF card top ~%.0f mm, the plug on the adapter's header ~%.0f mm, the ribbon loop "
-        "~%.0f mm; below the card: screw heads / nuts ~3 mm." % (top + 8.0, top + 13.0, zt + 1.5),
+        "with a nut under the card); %g mm keeps ~3.5 mm between socketed DIPs (~9 mm)" % (so, so, so),
+        "and the adapter's pin tails (~2-2.5 mm under it). J2 with its plug stands ~%.0f mm, taller than the standoffs: "
+        "its plug envelope stays outside the adapter outline." % ph,
+        "Total height above the card: CF card ~%.0f mm, the plug on the adapter's header ~%.0f mm, the ribbon loop "
+        "~%.0f mm; below the card: screw heads / nuts ~3 mm." % (top + 5.8, top + 18.0, zt + 1.5),
         "Slot pitch of the card cage: NOT KNOWN - if the neighbour card sits closer than ~%.0f mm above this card's "
         "component side, leave that slot empty." % (zt + 3),
         "Pin 20: the adapter has no pin 20 (key). J2 has it fitted: use a ribbon whose plugs have pin 20 OPEN, or pull "
@@ -329,7 +397,7 @@ def main(src, out):
         "Power: the adapter takes +5 V through its power pads, by a short cable from J3 (+5V, G, G, nc) - pad order to "
         "be confirmed on the adapter.",
     ]
-    yy = 42 * mm
+    yy = 52 * mm
     for s in notes:
         text(s, 12 * mm, yy, 7)
         yy -= 4.2 * mm

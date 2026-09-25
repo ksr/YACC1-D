@@ -107,10 +107,38 @@ def j2(px, py1):
     return {"J2": (px - G / 2, py1 - 19 * G / 2, J2_ROT)}
 
 
-def j2_geom(px, py1):
-    return dict(px=px, py1=py1, shroud=(px - 5.83, py1 - 53.47, px + 3.29, py1 + 5.21),
-                court=(px - 6.22, py1 - 53.86, px + 3.68, py1 + 5.60), xa=px + 3.68 + J2_GAP,
+# J2 WITH ITS PLUG (coordinator / Ken, 2026-09-24, after the review of the first options): a shrouded header is ~9 mm
+# tall and the IDC plug on it another ~9 mm (~18 mm, taller than the 15 mm standoffs), and the plug body is wider than
+# the shroud (~1-1.5 mm each side). So the PLUG ENVELOPE (the shroud + 1.5 mm all round, 18 mm tall) stays clear of
+# the adapter outline and of every other part's body, and the adapter's header edge stands ~3-5 mm from J2's shroud
+# so the ribbon can fold up out of J2's plug and down into the adapter's (on the adapter's header, ~15 + 1.6 + 9 mm up).
+# Options a / b were made before this rule (J2_GAP 0.8 mm from J2's courtyard = 1.19 mm from its shroud): the record.
+PLUG_SIDE = 1.5             # the IDC plug body past the shroud, each side, mm
+PLUG_H = 18.0               # J2 + its plug above the card, mm
+J2_SHROUD_GAP = 3.0         # J2's shroud to the adapter's header edge (Ken: ~3-5 mm), options c / d / e
+RIBBON = "~5-8 cm"          # the ribbon between the two plugs (see ribbon_length() and the README)
+
+
+def j2_geom(px, py1, gap=None):
+    """J2's geometry for pad 1 at (px, py1); the adapter's header edge xa = J2's courtyard + J2_GAP (a / b) or J2's
+    shroud + gap (the plug-envelope options)"""
+    sh = (px - 5.83, py1 - 53.47, px + 3.29, py1 + 5.21)
+    return dict(px=px, py1=py1, shroud=sh,
+                court=(px - 6.22, py1 - 53.86, px + 3.68, py1 + 5.60),
+                plug=(sh[0] - PLUG_SIDE, sh[1] - PLUG_SIDE, sh[2] + PLUG_SIDE, sh[3] + PLUG_SIDE),
+                xa=px + 3.68 + J2_GAP if gap is None else px + 3.29 + gap, gap=gap,
                 yc=py1 - 19 * G / 2)
+
+
+def ribbon_length(jg, ad, standoff=15.0):
+    """the ribbon between the two plugs, mm: straight up out of J2's plug (top at PLUG_H), over, and down into the
+    adapter's plug (on the adapter's header: standoff + 1.6 board + 9 header + 9 plug), with a loop ~6 mm above the
+    higher plug; the bends as quarter circles. The minimum; a real cable wants ~1-2 cm more to plug in comfortably"""
+    top_a = standoff + 1.6 + 9.0 + 9.0
+    loop = top_a + 6.0
+    dx = (ad["shroud"][0] + ad["shroud"][2]) / 2 - (jg["px"] - G / 2)
+    r = min(dx / 2, 6.0)
+    return (loop - PLUG_H - r) + (loop - top_a - r) + max(dx - 2 * r, 0) + math.pi * r
 
 
 def ribbon_zone(jg, ad):
@@ -211,6 +239,99 @@ OPTIONS["b"] = dict(
 
 for _k, _o in OPTIONS.items():
     _jg = j2_geom(*_o["j2"])
+    _o["jg"] = _jg
+    _o["adapter"] = adapter(_jg["xa"], _jg["yc"])
+    _o["silk"] = silk(_jg, _o["adapter"])
+
+
+# =====================================================================================================================
+# c / d / e (Ken, 2026-09-24, later: "I am OK to move the IDE connector and CF card towards the top edge as long as the
+# ROM stays uncovered - it might help reduce vias"). Same concept (J2 parallel to X1, just beside the adapter's header
+# edge on the bus side, straight ribbon, adapter on two standoffs, slot toward the top edge), but J2 and the adapter go
+# AS FAR TOWARD THE TOP EDGE AS THEY CAN, with J2's plug envelope clear of the adapter (J2_SHROUD_GAP): J2's odd row at
+# x 144.75 (the last 1.27 mm grid column that keeps the slot edge on the board), the adapter x 151.04-195.04, its CF
+# slot edge 0.49 mm inside the top edge (x 195.53). The card then flows as the top-edge board did (43 vias):
+# X1 | column 1 (TMP registers, address buffers) | column 2 (glue, IC5) | column 3 (the memories) | J2 | the adapter
+# over the CF chips: J2 is no longer a wall between the bus and the memories; only the CF section's own lines (DATA0-7,
+# IO-ADDR, strobes, reset, ~15) pass it, round its ends or between its pins. Column 3 closes up by 6.35 mm against the
+# top-edge board to leave J2's plug envelope free (its 28-pin bodies end at x 137.1, the envelope starts at 137.4).
+# The three differ in where the ROM IC13 goes (it shares 23 bus lines with the RAMs IC1 / IC2):
+#   c  ROM horizontal at the TOP EDGE beside the adapter, between it and the LEDs (y = 124 side); J2 mid-card
+#   d  ROM in the MEMORY COLUMN with the RAMs, its bottom row (the RAMs right above it, IC15 at the top), below J2's
+#      pin-1 end; J2 mid-card
+#   e  ROM in the MEMORY COLUMN with the RAMs, its top row (under the U$1 jumpers), above J2's pin-39 end; J2 and the
+#      adapter toward the y = 124 side (as far as the LEDs allow), the block decode IC7 / IC4 and the port decode IC30
+#      in the top-edge corner beside the jumpers
+# (A fourth, the ROM at the top edge in the JP1 corner with the adapter toward the LEDs, routed worst: 113 vias.)
+COL2X = 74.93                # column 2 pin-1 column (top-edge board 76.20)
+COL3X = 102.87               # column 3 pin-1 column (top-edge board 109.22)
+PXT = 144.75                 # J2's odd row: xa = 151.04, slot edge 195.04
+COL2 = merge(row("IC14", COL2X, Y[0]), row("IC6", COL2X, Y[1]), row("IC5", COL2X, Y[2]), row("IC11", COL2X, Y[3]),
+             row("IC12", COL2X, Y[4]), row("IC10", COL2X, Y[5]), row("IC3", COL2X, Y[6]))
+LEDR = {"R14": (167.64, 116.84, 0), "R2": (167.64, 121.92, 0)}
+
+
+def cf_under(ad, ic4=True, ic33="h1"):
+    """the CF section under the adapter (sockets + disc caps + axial resistors only): the header half between the two
+    standoffs holds IC32 (DA latch, near J2 pins 33-36), IC31 (strobes, near pins 23 / 25) and IC34 (data buffer,
+    beside D0-D7 = pins 3-17, the pin-1 end); the slot half holds IC4 beside the y-min standoff H2 (ic4), IC33 (reset /
+    enable / ACT) beside the y-max one H1 (ic33 "h1") or H2 ("h2"), and between them the pull-ups R10-R13 and RN9"""
+    xa, y0 = ad["xa"], ad["outline"][1]
+    cfx = xa + 6.98                     # header half: caps at xa + 1.90
+    slot = xa + 26.03                   # slot half: caps at xa + 20.95, 5.15 mm from the standoff centre line
+    out = merge(row("IC32", cfx, y0 + 17.78), row("IC31", cfx, y0 + 31.75), row("IC34", cfx, y0 + 45.72),
+                row("IC33", slot, y0 + (55.88 if ic33 == "h1" else 6.35)),
+                {"R%d" % (10 + k): (xa + 28.57 + 3.81 * k, y0 + 19.05, 90) for k in range(4)},
+                {"RN9": (xa + 41.27, y0 + 38.1, 90)})
+    if ic4:
+        out.update(row("IC4", slot, y0 + 6.35))
+    return out
+
+
+def j3_c30(ad, c30):
+    """J3 just outside the adapter's y-min edge beside the power pads (as in a), C30 (10 uF, tall) at c30"""
+    return {"J3": (ad["xa"] + 10.79, ad["outline"][1] - 2.56, 90), "C30": c30}
+
+
+def _new(k, py1, title, place):
+    jg = j2_geom(PXT, py1, J2_SHROUD_GAP)
+    ad = adapter(jg["xa"], jg["yc"])
+    OPTIONS[k] = dict(title=title % (ad["outline"][0], ad["outline"][2]), j2=(PXT, py1), gap=J2_SHROUD_GAP,
+                      place=merge(COL1, FIXED, j2(PXT, py1), COL2, LEDR, place(ad)))
+
+
+_new("c", 83.36, "J2 / adapter at the top edge (x %.1f-%.1f), ROM beside the adapter at the top edge (y = 124 side)",
+     lambda ad: merge(
+         row("IC1", COL3X, 43.18), row("IC2", COL3X, 64.77), row("IC15", COL3X, 86.36),
+         row("IC30", COL3X, 104.14),                                         # CF port decode, on X1's side of J2
+         {"IC13": (158.75 + 16.51, 104.14, "h"), "C3": (146.05, 104.14, 90)},  # ROM: zone x 148-202, y 93-115
+         row("IC7", 153.67, 16.51), j3_c30(ad, (175.26, 25.4, 0)), cf_under(ad),
+         {"JP2": (143.51, 119.38, 0)}))                                      # past J2's pin-1 end, out of the way
+_new("d", 83.36, "J2 / adapter at the top edge (x %.1f-%.1f), ROM in the memory column (bottom row) with the RAMs",
+     lambda ad: merge(
+         row("IC15", COL3X, 43.18), row("IC1", COL3X, 64.77), row("IC2", COL3X, 83.82),   # the RAMs next to the ROM
+         {"IC13": (COL3X + 16.51, 104.14, "h"), "C3": (110.49, 118.11, 0)},  # ROM: zone x 92-147, y 93-115
+         row("IC30", 157.48, 101.6),                                         # past J2's pin-1 end, below the adapter
+         row("IC7", 153.67, 16.51), j3_c30(ad, (175.26, 25.4, 0)), cf_under(ad),
+         {"JP2": (190.5, 111.76, 0)}))
+# d: IC5 (the memory data buffer) one row nearer the memories and the ROM (column 2, fifth row; IC12 takes its place),
+# IC2's cap C2 steps down to clear it. The first placement (IC1 / IC2 / IC15 / ROM top to bottom, IC5 in the third
+# row) never completed: BDATA5 / BDATA7 were left at the RAMs in all of 17 route orders
+OPTIONS["d"]["place"].update(merge(row("IC12", COL2X, Y[2]), row("IC5", COL2X, Y[4])))
+OPTIONS["d"]["place"]["C2"] = (97.79, 88.9, 90)
+_new("e", 110.03, "J2 / adapter at the top edge (x %.1f-%.1f) toward the LEDs, ROM in the memory column (top row)",
+     lambda ad: merge(
+         {"IC13": (COL3X + 16.51, 42.72, "h"), "C3": (97.79, 57.79, 90)},   # ROM: zone x 92-147, y 32-54
+         row("IC1", COL3X, 64.77), row("IC2", COL3X, 86.36), row("IC15", COL3X, 104.14),
+         row("IC7", 162.56, 17.78), row("IC4", 162.56, 31.75), row("IC30", 162.56, 44.45),
+         j3_c30(ad, (187.96, 52.07, 0)), cf_under(ad, ic4=False),
+         {"JP2": (143.51, 120.02, 90)}))
+# e: column 2 takes IC5 (20 pins) at its sixth row, clear of the ROM zone; IC2's cap C2 steps up to clear it
+OPTIONS["e"]["place"].update(merge(row("IC12", COL2X, Y[2]), row("IC10", COL2X, Y[4]), row("IC5", COL2X, Y[5])))
+OPTIONS["e"]["place"].update({"C2": (97.79, 83.82, 90), "R14": (158.75, 118.11, 0), "R2": (158.75, 121.92, 0)})
+
+for _k, _o in OPTIONS.items():
+    _jg = j2_geom(*_o["j2"], _o.get("gap"))
     _o["jg"] = _jg
     _o["adapter"] = adapter(_jg["xa"], _jg["yc"])
     _o["silk"] = silk(_jg, _o["adapter"])

@@ -26,6 +26,8 @@ Run with KiCad's bundled Python (pcbnew); build.sh does, per option:
         top; the 7 mm keep-out on every copper layer), the ROM (IC13) not under the adapter / a standoff / the ribbon
         and its keep-clear zone (10 mm past both short ends, 2 mm along the long sides) empty
   gen_standoff.py geom <pcb> <opt> <out.json>      -> the geometry the 1:1 print needs (print_1to1.py, system python)
+  gen_standoff.py shuffle <dsn> <seed> <out.dsn>   -> the DSN with its components listed in another order (seed 0:
+        unchanged); build.sh routes each option in several orders and keeps the best (see shuffle())
   gen_standoff.py dsn / ses / stats / airwire / review   -> gen_relayout.py's (the trial route, same settings)
 """
 import os, sys, re, json, math
@@ -195,30 +197,49 @@ def build(opt, netfile, out=None):
             ol.Append(FM(hx + r * math.cos(a)), FM(hy + r * math.sin(a)))
         b.Add(z)
         circle(hx, hy, SP.HEX_R + 0.3, pcbnew.F_SilkS, 0.15)              # where the standoff stands
-    # the adapter on F.Fab (placement PDF) and User.Drawings (review render: duplicated onto the silk of a copy)
+    # the adapter on F.Fab (placement PDF) and User.Drawings (review render: duplicated onto the silk of a copy).
+    # J2 (on THIS board) solid and thick; the adapter's own header (on the adapter, 15 mm up) dashed; a ribbon arrow
+    # from one to the other; J2's plug envelope dashed; the CF slot edge thick, labelled where the card goes in
+    rz = rom_zone_from(fps[SP.ROM], pcbnew)
+    x0, y0, x1, y1 = ad["outline"]
+    jx = jg["px"] - SP.G / 2                                # J2's centre line
+    hx = (ad["shroud"][0] + ad["shroud"][2]) / 2            # the adapter header's centre line
+    ymid = (jg["shroud"][1] + jg["shroud"][3]) / 2
     for layer in (pcbnew.F_Fab, pcbnew.Dwgs_User):
         rect(ad["outline"], layer, 0.3)
-        rect(ad["shroud"], layer, 0.15)
-        line((ad["slot_x"], ad["outline"][1]), (ad["slot_x"], ad["outline"][3]), layer, 0.6)
+        rect(ad["shroud"], layer, dash=True)
+        line((ad["slot_x"], y0), (ad["slot_x"], y1), layer, 0.6)
         rect(ad["pwr"], layer, dash=True)
         rect(SP.ribbon_zone(jg, ad), layer, dash=True)
-        for hx, hy in ad["holes"]:
-            circle(hx, hy, SP.HX["hole_dia"] / 2, layer, 0.15)
-            circle(hx, hy, SP.HEX_R, layer, 0.15)
+        rect(jg["shroud"], layer, 0.4)
+        rect(jg["plug"], layer, dash=True)
+        for hx_, hy_ in ad["holes"]:
+            circle(hx_, hy_, SP.HX["hole_dia"] / 2, layer, 0.15)
+            circle(hx_, hy_, SP.HEX_R, layer, 0.15)
         for (ox, oy), (ix, iy) in ad["pins"][:1]:
             circle(ox, oy, 0.6, layer, 0.15)
             circle(ix, iy, 0.6, layer, 0.15)
-        rz = rom_zone_from(fps[SP.ROM], pcbnew)
+        for yy in (jg["shroud"][1] + 8.0, ymid, jg["shroud"][3] - 8.0):       # the ribbon: J2 -> adapter header
+            line((jx, yy), (hx, yy), layer, 0.25)
+            line((hx, yy), (hx - 1.2, yy - 0.7), layer, 0.25)
+            line((hx, yy), (hx - 1.2, yy + 0.7), layer, 0.25)
         rect(rz, layer, dash=True)
-    x0, y0, x1, y1 = ad["outline"]
-    text("CF ADAPTER %s on 2 x M3 %g mm standoffs (H1, H2); the CF slot opens at this edge ->" % (SP.HX["name"],
-         SP.STANDOFF), x1 - 2.0, (y0 + y1) / 2, 1.0, 90, pcbnew.F_Fab, "c")
+        text("J2 - IDE HEADER ON THIS BOARD (pin 1 = square pad)", jg["shroud"][0] + 1.0, ymid, 0.9, 90, layer, "c")
+        text("ADAPTER'S IDE HEADER (on the adapter, 15 mm above)", ad["shroud"][0] + 1.25, (y0 + y1) / 2, 0.9, 90,
+             layer, "c")
+        text("SHORT 40-WIRE RIBBON, pin 1 to pin 1 (%s)" % SP.RIBBON, (jg["shroud"][2] + x0) / 2 - 0.2,
+             (jg["shroud"][1] + ymid) / 2 + 4.0, 0.8, 90, layer, "c")
+        text("CF CARD INSERTS HERE (into the adapter)", x1 - 1.4, (y0 + y1) / 2, 1.0, 90, layer, "c")
+    text("CF ADAPTER %s on 2 x M3 %g mm standoffs (H1, H2)" % (SP.HX["name"], SP.STANDOFF), x1 - 3.4, (y0 + y1) / 2,
+         0.9, 90, pcbnew.F_Fab, "c")
+    text("J2 plug envelope (%g mm tall)" % SP.PLUG_H, jx, jg["plug"][1] - 0.9, 0.7, 0, pcbnew.F_Fab, "c")
     text("adapter pin-1 end", ad["xa"] + 5.9, ad["pin1_end_y"] + 1.8, 0.8, 0, pcbnew.F_Fab, "c")
     text("power pads (approx.)", ad["pwr"][2] + 0.6, (ad["pwr"][1] + ad["pwr"][3]) / 2, 0.8, 90, pcbnew.F_Fab, "c")
     text("ROM: keep clear, removable", (rz[0] + rz[2]) / 2, rz[1] + 1.5, 1.0, 0, pcbnew.F_Fab, "c")
     text("Option %s: %s" % (opt.upper(), O["title"]), 20.0, 7.0, 1.5, 0, pcbnew.Dwgs_User)
-    text("Solid: the %s adapter 15 mm above the card; dashed: ribbon zone, power pads, ROM keep-clear zone"
-         % SP.HX["name"], 20.0, 128.0, 1.2, 0, pcbnew.Dwgs_User)
+    text("J2 (solid) = the IDE header ON THIS BOARD; the %s adapter (outline) and ITS OWN IDE header (dashed) sit 15 mm "
+         "above on standoffs, joined to J2 by a short ribbon (arrows); dashed: J2's plug envelope, ribbon zone, power "
+         "pads, ROM keep-clear zone" % SP.HX["name"], 20.0, 128.0, 1.0, 0, pcbnew.Dwgs_User)
     # silkscreen: the note, the adapter's four corners as L marks, PIN 1 at the adapter's pin-1 end
     text("CF ADAPTER ON STANDOFFS", (x0 + x1) / 2, y1 - 1.2, 1.0, 0, pcbnew.F_SilkS, "c")
     L = 3.0
@@ -325,6 +346,22 @@ def check(pcb, opt):
     if boxes["J2"][2] > ad["outline"][0] - 0.3:
         probs.append("J2 reaches under the adapter (courtyard x %.2f, adapter edge %.2f)" % (boxes["J2"][2],
                                                                                             ad["outline"][0]))
+    # J2's plug envelope (the shroud + PLUG_SIDE all round, PLUG_H tall): clear of the adapter outline, the adapter's
+    # header edge J2_SHROUD_GAP from J2's shroud (the ribbon folds up out of J2's plug and down into the adapter's),
+    # and no other part's body inside it. Options made before the rule (a, b: no "gap") get a note, not a failure
+    pe, sgap = jg["plug"], ad["outline"][0] - jg["shroud"][2]
+    pnotes = []
+    if inter(pe, ad["outline"]):
+        pnotes.append("J2's plug envelope reaches %.2f mm under the adapter" % (pe[2] - ad["outline"][0]))
+    if sgap < SP.J2_SHROUD_GAP - 1e-6:
+        pnotes.append("J2's shroud only %.2f mm from the adapter's header edge (rule %.1f)" % (sgap, SP.J2_SHROUD_GAP))
+    for r in parts:
+        if r != "J2" and inter(boxes[r], pe):
+            pnotes.append("%s inside J2's plug envelope" % r)
+    if O.get("gap") is None:
+        notes += ["NOTE (option made before the J2 plug-envelope rule): " + x for x in pnotes]
+    else:
+        probs += pnotes
     # nothing tall under the adapter or the ribbon
     rz = SP.ribbon_zone(jg, ad)
     for r in TALL:
@@ -389,6 +426,12 @@ def check(pcb, opt):
     print("    J2 pin 1 (%.2f, %.2f), pins y %.2f-%.2f, odd row x %.2f, even row x %.2f, courtyard to x %.2f (%.2f mm "
           "before the adapter's header edge)" % (j2["1"][0], j2["1"][1], min(ys), max(ys), j2["1"][0], j2["2"][0],
                                                 boxes["J2"][2], ad["outline"][0] - boxes["J2"][2]))
+    print("    J2 shroud x %.2f-%.2f, plug envelope x %.2f-%.2f / y %.2f-%.2f (%.0f mm tall); %.2f mm from the shroud to "
+          "the adapter's header edge; ribbon between the plugs %s (minimum ~%.0f mm)"
+          % (jg["shroud"][0], jg["shroud"][2], pe[0], pe[2], pe[1], pe[3], SP.PLUG_H, sgap, SP.RIBBON,
+             SP.ribbon_length(jg, ad, SP.STANDOFF)))
+    for x in notes:
+        print("    " + x)
     for s in hole_near:
         print("    " + s)
     print("    under the adapter (low parts only): %s" % ", ".join(under))
@@ -421,9 +464,38 @@ def geom(pcb, opt, out, stats=None):
     d = dict(opt=opt, title=O["title"], edge=outline(b),
              fps=fps, adapter=ad, j2=jg, ribbon=SP.ribbon_zone(jg, ad), rom=rom_zone_from(fprom, pcbnew),
              rom_ref=SP.ROM, hx=SP.HX, standoff=SP.STANDOFF, standoff_alt=SP.STANDOFF_ALT, hex_r=SP.HEX_R,
-             keepout_d=SP.KEEPOUT_D, stats=json.load(open(stats)) if stats and os.path.exists(stats) else None)
+             keepout_d=SP.KEEPOUT_D, plug_h=SP.PLUG_H, plug_side=SP.PLUG_SIDE, ribbon_text=SP.RIBBON,
+             ribbon_min=SP.ribbon_length(jg, ad, SP.STANDOFF), stats=json.load(open(stats)) if stats and os.path.exists(stats) else None)
     json.dump(d, open(out, "w"), indent=1)
     print("geom -> %s" % os.path.basename(out))
+
+
+def shuffle(dsn, seed, out):
+    """the same DSN with the components of its (placement ...) section in another order (seed 0 = unchanged).
+    Freerouting 1.9 gives the same result for the same file (its pass limit changes nothing: it stops by itself), but
+    the order in which the DSN lists the components changes its route (the order of the nets does not). The trial
+    route of an option is the best of a few orders: same placement, same rules, only the listing order differs"""
+    import random
+    t = open(dsn).read()
+    j = t.index("(placement") + len("(placement")
+    comps, k = [], j
+    while re.compile(r"\s*\(component\b").match(t, k):
+        a = t.index("(component", k)
+        depth, q = 0, a
+        while True:
+            if t[q] == "(":
+                depth += 1
+            elif t[q] == ")":
+                depth -= 1
+                if depth == 0:
+                    break
+            q += 1
+        comps.append(t[a:q + 1])
+        k = q + 1
+    if int(seed):
+        random.Random(int(seed)).shuffle(comps)
+    open(out, "w").write(t[:j] + "".join("\n    " + c for c in comps) + t[k:])
+    print("shuffle %s: %d component groups, seed %s" % (os.path.basename(out), len(comps), seed))
 
 
 if __name__ == "__main__":
@@ -442,6 +514,8 @@ if __name__ == "__main__":
         print("airwire %s: %.0f mm, %d connections on %d signal nets" % (os.path.basename(sys.argv[2]), tot, conns, nn))
     elif cmd == "review":
         GM.review_copy(sys.argv[2], sys.argv[3], sys.argv[4])
+    elif cmd == "shuffle":
+        shuffle(sys.argv[2], sys.argv[3], sys.argv[4])
     elif cmd == "dsn":
         GR.dsn(sys.argv[2], sys.argv[3])
     elif cmd == "ses":

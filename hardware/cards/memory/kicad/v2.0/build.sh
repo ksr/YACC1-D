@@ -5,12 +5,13 @@
 #
 #   hardware/cards/memory/kicad/v2.0/build.sh               verify the committed standoff options + trial routes,
 #                                                             their review images and 1:1 PDFs, the top-edge record
-#   STANDOFF="a b" hardware/cards/memory/kicad/v2.0/build.sh  + regenerate the standoff option boards and route each
-#                                                             anew: one Freerouting run per pass count in SMP (default
-#                                                             "20 30 40 60", in parallel; where Freerouting stops
-#                                                             changes the result), the best kept (fewest unrouted,
+#   STANDOFF="c d e" hardware/cards/memory/kicad/v2.0/build.sh + regenerate those standoff option boards and route
+#                                                             each anew: one Freerouting run per DSN component order
+#                                                             in SEEDS (default "0 1 2 3 4 5 6 7", in parallel;
+#                                                             Freerouting 1.9 repeats itself for one file, the order
+#                                                             changes the route), the best kept (fewest unrouted,
 #                                                             then vias, then length); NOROUTE=1 keeps the committed
-#                                                             trial routes
+#                                                             trial routes; OPTS limits the options (default a-e)
 #   The TOP-EDGE record (options-top-edge-J2/: the re-layout options A/B/C with J2 at the top edge and the board
 #   finished from option B, fab files included - Ken's pick until the standoff decision):
 #   FROM=trial hardware/cards/memory/kicad/v2.0/build.sh    + remake options-top-edge-J2/memory-v2.0.kicad_pcb from
@@ -28,7 +29,7 @@
 # 2 ERC (must equal v1.3's list + the one designed-in SRST single-pin label; the six bus labels that became global lose
 #   their v1.3 "isolated label" warnings)
 # 3 (RELAYOUT) per top-edge option: board, plane refill, placement check, DRC, airwire, review images, trial route
-# s per standoff option (a, b): (STANDOFF: board, refill, trial routes) placement check (gen_standoff.py check), DRC
+# s per standoff option (a-e): (STANDOFF: board, refill, trial routes) placement check (gen_standoff.py check), DRC
 #   with schematic parity, airwire, trial-route numbers, review render / placement plot / trial plot, 1:1 PDF
 # k (KEEPCOPPER) the keep-copper record
 # 4 (FROM=trial / ROUTE=1) the top-edge record's finished board: finish_v2.py make (through vias, via clean-up, collinear merge, adapter
@@ -57,7 +58,8 @@ RT="$T/reports"
 BRD="$T/$P.kicad_pcb"
 RELAYOUT=${RELAYOUT:-""}
 STANDOFF=${STANDOFF:-""}
-SMP=${SMP:-"20 30 40 60"}           # the standoff trial routes: one Freerouting run per pass count, in parallel
+SEEDS=${SEEDS:-"0 1 2 3 4 5 6 7"}   # the standoff trial routes: one Freerouting run per DSN component order, in
+                                    # parallel (gen_standoff.py shuffle; seed 0 = as exported), the best kept
 MP=${MP:-30}
 KEEPCOPPER=${KEEPCOPPER:-""}
 ROUTES=${ROUTES:-4}
@@ -211,7 +213,7 @@ for o in $RELAYOUT; do
 done
 
 # s: the STANDOFF options (Ken 2026-09-24: the CF adapter on two standoffs on the card; Ken picks one)
-for o in a b; do
+for o in ${OPTS:-a b c d e}; do
   B="$P-standoff-$o.kicad_pcb"
   TR="$P-standoff-$o-trial.kicad_pcb"
   echo "== s$o  standoff option $o =="
@@ -226,13 +228,15 @@ for o in a b; do
   drc_parity "$B" "$P-standoff-$o.kicad_pro" "$P-standoff-$o.kicad_dru" "$R/standoff-$o-drc.json"
   parity_new "$R/standoff-$o-drc.json" | tee -a "$R/standoff-$o-placement-check.txt" || fail=1
   if echo " $STANDOFF " | grep -q " $o " && [ -z "$NOROUTE" ]; then
-    echo "== s$o  trial route: Freerouting runs of $SMP passes =="
+    echo "== s$o  trial route: Freerouting runs in the component orders $SEEDS ($MP passes) =="
+    mkdir -p "$TMP/s$o"
+    "$PYK" gen_standoff.py dsn "$B" "$TMP/s$o/$o.dsn" 2>&1 | q | sed 's/^/  /'
     i=0
-    for mp in $SMP; do
+    for sd in $SEEDS; do
       i=$((i + 1))
       mkdir -p "$TMP/s$o$i"
-      "$PYK" gen_standoff.py dsn "$B" "$TMP/s$o$i/$o.dsn" 2>&1 | q | sed 's/^/  /'
-      ( MP=$mp; freeroute "$TMP/s$o$i/$o.dsn" "$TMP/s$o$i/$o.ses" "$TMP/s$o$i/freerouting.log" ) &
+      python3 gen_standoff.py shuffle "$TMP/s$o/$o.dsn" "$sd" "$TMP/s$o$i/$o.dsn" > /dev/null
+      ( freeroute "$TMP/s$o$i/$o.dsn" "$TMP/s$o$i/$o.ses" "$TMP/s$o$i/freerouting.log" ) &
     done
     wait
     : > "$TMP/s$o-routes.txt"
@@ -248,14 +252,14 @@ for o in a b; do
         u=$(sed -n 's/.*after Freerouting: \([0-9]*\).*/\1/p' "$TMP/s$o$i/stats.txt")
         v=$(sed -n 's/^  vias: \([0-9]*\).*/\1/p' "$TMP/s$o$i/stats.txt")
         l=$(sed -n 's/^  track length: \([0-9]*\) mm.*/\1/p' "$TMP/s$o$i/stats.txt")
-        echo "  run $i ($(echo $SMP | cut -d' ' -f$i) passes): unrouted $u, vias $v, track $l mm"
+        echo "  run $i (order $(echo $SEEDS | cut -d' ' -f$i)): unrouted $u, vias $v, track $l mm"
         echo "$u $v $l $i" >> "$TMP/s$o-routes.txt"
       fi
       i=$((i + 1))
     done
     pick=$(sort -n -k1,1 -k2,2 -k3,3 "$TMP/s$o-routes.txt" | head -1 | awk '{print $4}')
     if [ -n "$pick" ]; then
-      echo "  kept: run $pick"
+      echo "  kept: run $pick (order $(echo $SEEDS | cut -d' ' -f$pick))" | tee "$R/standoff-$o-order.txt"
       cp "$TMP/s$o$pick/t.kicad_pcb" "$TR"
       cp "$TMP/s$o$pick/freerouting.log" "$R/standoff-$o-freerouting.log"
       cp "$P-standoff-$o.kicad_pro" "$P-standoff-$o-trial.kicad_pro"

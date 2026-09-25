@@ -6,8 +6,14 @@ schematic: v1.3 53 parts / 169 nets  +  CF section 21 parts / 27 own nets, 69 pi
            KiCad v2.0 schematic: 70 parts, 186 nets, 33 unconnected pins: MATCH
 board memory-v2.0-standoff-a.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
 board memory-v2.0-standoff-b.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
+board memory-v2.0-standoff-c.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
+board memory-v2.0-standoff-d.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
+board memory-v2.0-standoff-e.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
 board memory-v2.0-standoff-a-trial.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
 board memory-v2.0-standoff-b-trial.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
+board memory-v2.0-standoff-c-trial.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
+board memory-v2.0-standoff-d-trial.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
+board memory-v2.0-standoff-e-trial.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
 board memory-v2.0.kicad_pcb: 70 footprints, 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
 board memory-v2.0-relayout-a.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23]: MATCH
 board memory-v2.0-relayout-b.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23]: MATCH

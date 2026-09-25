@@ -1,0 +1,9 @@
+trial route memory-v2.0-standoff-e-trial.kicad_pcb:
+  unrouted connections after Freerouting: 0
+  vias: 72
+  track length: 12579 mm (F.Cu 7042, B.Cu 5537; placement airwire 11118 mm over 329 connections)
+  track widths (mm: segments): {0.25: 2039}
+  DRC copper violations: none
+  DRC inherited: 2 (X1's mounting holes in X1's own keepout, as on the built card)
+  DRC cosmetic (silkscreen, Eagle library texts): {'lib_footprint_mismatch': 1, 'silk_edge_clearance': 5, 'silk_over_copper': 199, 'silk_overlap': 26, 'text_height': 2, 'text_thickness': 1}
+     schematic parity: 49 items (built v1.3: 220, all inherited Eagle values/fields); new: none
