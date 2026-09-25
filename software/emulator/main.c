@@ -83,8 +83,21 @@ int pushpopdepth;
 int pushpoprdepth;
 bool carry;
 int firstSwitchRead = 1; // What is this
-int exit_on_halt = 0;           /* YACC1-D 2026-09-22: -x, for scripted runs (compiler tests): quiet load, exit at HALT */
+/* -S (YACC1-D 2026-09-25): the stack watch. A program built with y1cc --stack ADDR starts with MVIW R1,ADDR; every
+   such MVIW R1 into the Y1/OS program area ($5000-$CFFF) starts a segment, and the lowest R1 seen in that area
+   during the segment is reported on stderr when the next one starts and at exit ("stack N: $top down to $low,
+   B bytes, the instructions from the MVIW to the last one run with R1 in the area"): the deepest point of each program's own stack (tests/native,
+   the compiler passes) */
+int stackwatch = 0, sseg = 0;
+unsigned sstart = 0, smin = 0x10000;
 unsigned long icount = 0;       /* instructions executed (reported at a -x HALT) */
+unsigned long sicount = 0, slast = 0;  /* -S: icount when the segment started, when R1 was last in the area */
+void stack_report(void) {
+    if (stackwatch && sseg && smin < 0x10000)
+        fprintf(stderr, "stack %d: $%04X down to $%04X, %u bytes, %lu instructions\n", sseg, sstart, smin,
+                sstart - smin, slast - sicount + 1);
+}
+int exit_on_halt = 0;           /* YACC1-D 2026-09-22: -x, for scripted runs (compiler tests): quiet load, exit at HALT */
 unsigned long ilimit = 0;       /* -l N: stop after N instructions (scripted runs of code that never HALTs) */
 
 /* Intel HEX read/write functions, Paul Stoffregen, paul@ece.orst.edu */
@@ -433,6 +446,7 @@ void print_usage(const char *progname) {
     printf("  -x           Scripted run: no load/dump chatter, HALT exits (instruction count on stderr)\n");
     printf("  -c image     Attach a CompactFlash image on ports P8/P9 (created zero-filled if missing)\n");
     printf("  -l N         Stop after N instructions (with -x: status on stderr)\n");
+    printf("  -S           Stack watch: the lowest R1 in $5000-$CFFF after each MVIW R1 into that area, on stderr\n");
 }
 
 int main(int argc, char** argv) {
@@ -451,6 +465,8 @@ int main(int argc, char** argv) {
             return EXIT_SUCCESS;
         } else if (strcmp(argv[arg], "-m") == 0) {
             load_standard = true;
+        } else if (strcmp(argv[arg], "-S") == 0) {
+            stackwatch = 1; atexit(stack_report);
         } else if (strcmp(argv[arg], "-x") == 0) {
             exit_on_halt = 1;
         } else if (strcmp(argv[arg], "-l") == 0 && arg + 1 < argc) {
@@ -504,6 +520,10 @@ int main(int argc, char** argv) {
 
         ins = memory_read(register_read_word(PC));
         icount++;
+        if (stackwatch) {
+            unsigned sp = register_read_word(1);
+            if (sp >= 0x5000 && sp < 0xD000) { slast = icount; if (sp < smin) smin = sp; }
+        }
         if (ilimit && icount > ilimit) {
             fflush(stdout);
             fprintf(stderr, "instruction limit reached at %04x after %lu instructions, R3=%04x\n", registers[PC].word, icount - 1, register_read_word(3));
@@ -706,6 +726,9 @@ int main(int argc, char** argv) {
                 register_inc(PC);
                 register_write_lo(reg, memory_read(register_read_word(PC)));
                 register_inc(PC);
+                if (stackwatch && reg == 1 && register_read_word(1) >= 0x5000 && register_read_word(1) < 0xD000) {
+                    stack_report(); sseg++; sstart = register_read_word(1); smin = 0x10000; sicount = icount;
+                }
                 break;
 
             case MVRLA + REG0:

@@ -8,7 +8,7 @@
    parses, so its lexer errors come before any parse error (y1cc.c, which lexes as it parses, can report a parse
    error first: one of its documented differences, not this pass's).
 
-   W.opt  src\0 out\0 org(2) flags(1)                         (flags: OPT_* in pdefs.h)
+   W.opt  src\0 out\0 org(2) flags(1) stack(2)               (flags: OPT_* in pdefs.h; stack: --stack ADDR or 0)
    W.tok  per token: kind(1) value(2); T_LINE(1) line(2) before a token on a new line; the last token is T_EOF
           (value 0)
    W.nam  count(2), then each name's text\0 (id 1 = "int": the predefined names first, then the identifiers in the
@@ -473,14 +473,14 @@ int has_arg(char *w) {                              /* the index + 1 of the firs
     return 0;
 }
 void y1cc_main(void) {
-    int i; int n; int ok; int dot; int sep; int org; int flags;
+    int i; int n; int ok; int dot; int sep; int org; int flags; int stack;
     p_args();
     for (i = 1; i <= NM_PREDEF; i++) { intern(predef[i]); nm_out[i] = i; }   /* their ids are fixed (pdefs.h) */
     nout = NM_PREDEF;
     n = io_argc() - 1;                              /* the user's words are 1..n (0 is the work prefix) */
     if (n > 0) io_arg(1, srcpath, LINE_MAX);
     if (n == 0 || srcpath[0] == '-')
-        fail("usage: y1cc prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [--os] [--xisa] [-l]");
+        fail("usage: y1cc prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [--os] [--xisa] [--stack ADDR] [-l]");
     sep = 0; dot = 0;                               /* os.path.splitext: the extension of the last path element */
     for (i = 0; srcpath[i]; i++) { if (srcpath[i] == '/') sep = i + 1; }
     for (i = sep; srcpath[i]; i++) if (srcpath[i] == '.') dot = i;
@@ -505,9 +505,17 @@ void y1cc_main(void) {
     if (has_arg("--os")) flags = flags | OPT_OS;
     if (has_arg("-l")) flags = flags | OPT_LIST;
     if (has_arg("--xisa")) flags = flags | OPT_XISA;
+    stack = 0;
+    i = has_arg("--stack");
+    if (i) {
+        if (i >= n) fail("y1cc: --stack needs an address");
+        io_arg(i + 1, argw, LINE_MAX);
+        stack = parse_int0(argw, &ok);
+        if (!ok || !stack) fail("y1cc: --stack: not a number");
+    }
     lx_push(srcpath);
     wopen(".opt");
-    ws(srcpath); ws(outpath); wi(org); wb(flags);
+    ws(srcpath); ws(outpath); wi(org); wb(flags); wi(stack);
     wclose();
     wopen(".tok");
     while (lex_one()) {}

@@ -11,6 +11,8 @@
 #   make test       tests/os/run.py: scripted sessions on both emulators against expected transcripts
 #   make clean
 #   make sizes      each /BIN program's size (image + uninitialised data) against the 32K program area
+#   make passes     the native C compiler (2026-09-25): the nine passes of software/compiler/c (target/NAME.c) as
+#                   Y1/OS programs build/cc/NAME.bin, each on its own stack from $CFFF down (y1cc --stack)
 # The OS: y1os.asm (hand-written, 2026-09-23) is assembled with strings.txt made into numeric DB lines by
 # mkstrings.py (the assembler upper-cases its source); its image must end below its RAM at $4A00. y1os.c (y1cc
 # --os) is the same OS in C, image + data below $5000. Both are installed with `p8xfs.py boot` as build/y1os.bin.
@@ -38,6 +40,11 @@ CMDS   = $(patsubst commands/%.c,$(B)/bin/%.bin,$(wildcard commands/*.c))
 FILES  = $(wildcard disk/*)
 LIBS   = $(wildcard lib_*.c)
 MANS   = $(wildcard man/*)
+CDIR   = $(ROOT)/software/compiler/c
+PASSN  = lex parse decl calls layout stmt sema emit final
+PASSES = $(PASSN:%=$(B)/cc/%.bin)
+PSTACK = 0xCFFF
+PSRC   = $(wildcard $(CDIR)/*.c $(CDIR)/*.h $(CDIR)/ylim/*.h)
 DOCS   = docs/mddemo.md:MDDEMO.MD README.md:OS.MD ../software/compiler/README.md:Y1CC.MD ../docs/system/OS-PLAN.md:OSPLAN.MD PORT-PLAN.md:PORT.MD
 
 all: disk.img
@@ -84,6 +91,16 @@ $(B)/bin/%.bin: commands/%.c $(LIBS) $(ROOT)/software/compiler/y1cc.py $(B)/xisa
 	@t=$$(( $$(wc -c < $@) + $$(awk '/^(zpad|bss_start):/{b=1} b && $$2=="DS"{s+=($$3 ~ /^[0-9]+$$/) ? $$3 : 255} END{print s+0}' $(B)/bin/$*.asm) )); \
 	  if [ $$t -gt 32768 ]; then echo "$*: $$t bytes, over the 32K program area"; rm -f $@; exit 1; fi
 
+# the compiler passes: every table and static frame from the image up, the stack from $(PSTACK) down to them
+# (tests/compiler/passes.py measures the room between; tests/native/run.py watches the stack on the emulator)
+$(B)/cc/%.bin: $(CDIR)/target/%.c $(PSRC) $(LIBS) $(ROOT)/software/compiler/y1cc.py $(B)/xisa-sel
+	@mkdir -p $(B)/cc && cp $(DEF) $(B)/cc/ && echo -h > $(B)/cc/rcasm.rc
+	@$(CC) $< -o $(B)/cc/$*.asm --org 0x5000 --os --stack $(PSTACK) $(CCX)
+	@cd $(B)/cc && ../../$(ASM) $* -d=yacc1 > $*.lst && grep -q "^0 Errors" $*.lst || { grep -i "err" $(B)/cc/$*.lst | head; exit 1; }
+	@$(I2B) $(B)/cc/$*.img $@ --base 0x5000
+
+passes: $(PASSES)
+
 disk.img: $(B)/y1os.bin $(CMDS) $(FILES) $(MANS) $(foreach d,$(DOCS),$(firstword $(subst :, ,$(d)))) Makefile
 	@rm -f $@
 	$(FS) create $@ --sectors 2048
@@ -110,5 +127,5 @@ test: disk.img
 	python3 $(ROOT)/tests/os/run.py
 clean:
 	rm -rf $(B) disk.img
-.PHONY: all sizes run run-int test clean FORCE
+.PHONY: all sizes passes run run-int test clean FORCE
 FORCE:

@@ -34,6 +34,8 @@ char v_serr[VARS_MAX];
 int nvars;
 int fmain;
 int opt_xisa;                   /* --xisa: the page (above) */
+int opt_stack;                  /* --stack ADDR (2026-09-25): main switches stacks (stk_rec, stk_out) */
+int stk;                        /* opt_stack while main is compiled, else 0 */
 int v_name[VARS_MAX];
 int v_zc[VARS_MAX];             /* how often each variable is named */
 char v_ini[VARS_MAX];           /* a global with an initializer (data, not BSS) */
@@ -75,6 +77,8 @@ void br(int sym);
 int tcopy(int e);
 void hole_tree(void);
 void gen_stmt(int s);
+void stk_out(void);
+void ret_rec(void);
 void gen_switch(int e, int body);
 void relabel(int first);
 void compile_func(int fn);
@@ -137,7 +141,8 @@ void gen_stmt(int s) {
     if (k == N_EMPTY) return;
     if (k == N_RETURN) {
         if (na[s]) hole1(H_RET, na[s]);
-        wb(R_CODE); wb(MN_RET); wb(F_0);
+        stk_out();
+        ret_rec();
         return;
     }
     if (k == N_IF) {
@@ -227,6 +232,12 @@ void gen_switch(int e, int body) {
     ldef(end);
 }
 
+/* --stack: main's first records MOVRR R1,R5 / MVIW R1,(ADDR) / PUSHR R5, and before each RET of main POPR R5 /
+   MOVRR R5,R1 (as record bytes: a wb() per byte costs y1cc's code about 9 bytes each) */
+char stk_rec[] = {R_CODE, MN_MOVRR, F_RR, 1, 5, R_CODE, MN_MVIW, F_RN, 1, R_CODE, MN_PUSHR, F_R, 5,
+                  R_CODE, MN_POPR, F_R, 5, R_CODE, MN_MOVRR, F_RR, 5, 1};
+void ret_rec(void) { wb(R_CODE); wb(MN_RET); wb(F_0); }
+void stk_out(void) { if (stk) warrc(stk_rec + 13, 9); }
 /* ---- functions (y1cc.c compile_func; the function's record is loaded, rec_h its N_FUNC node) ------------------ */
 void compile_func(int fn) {
     int i; int v;
@@ -235,8 +246,14 @@ void compile_func(int fn) {
     wb(R_FUNC); wi(fn); wi(f_name[fn]); wi(f_rbase[fn]); wb(f_rptr[fn]);
     wb(R_FLABEL); wi(fn);
     if (opt_xisa && f_live[fn] == 1) { wb(R_MACRO); wb(M_ZP); }
-    if (f_name[fn] == NM_MAIN) { wb(R_MACRO); wb(M_BSSCLR); }
+    stk = 0;
+    if (f_name[fn] == NM_MAIN) {
+        stk = opt_stack;
+        if (stk) { warrc(stk_rec, 9); wi(stk); warrc(stk_rec + 9, 4); }
+        wb(R_MACRO); wb(M_BSSCLR);
+    }
     gen_stmt(nd[rec_h]);
+    if (stk) { stk_out(); ret_rec(); }              /* always, as y1cc.py does */
     wb(R_RETIF);
     for (i = 0; i < f_vn[fn]; i++) {
         v = f_vfirst[fn] + i;
@@ -250,10 +267,10 @@ void compile_func(int fn) {
 }
 void load_sym(void) {                              /* W.sym (cc5_layout.c): the columns this pass needs */
     int h; int ns; int nm; int n;
-    h = ropen(".opt");                              /* the options: only --xisa matters here */
+    h = ropen(".opt");                              /* the options: --xisa and --stack matter here */
     while (rb(h) % 256) {}
     while (rb(h) % 256) {}
-    ri(h); opt_xisa = (rb(h) & OPT_XISA) != 0;
+    ri(h); opt_xisa = (rb(h) & OPT_XISA) != 0; opt_stack = ri(h);
     io_close(h);
     h = ropen(".sym");
     fmain = ri(h); nglob = ri(h); ns = ri(h); nm = ri(h); nfuncs = ri(h); nvars = ri(h);

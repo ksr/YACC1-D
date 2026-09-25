@@ -15,6 +15,7 @@ python3 software/compiler/y1cc.py prog.c -o prog.asm --vector   # for the monito
 python3 software/compiler/y1cc.py prog.c -o prog.asm --org 0x5000 --os   # a Y1/OS program (os/Makefile): console via the OS
 python3 software/compiler/y1cc.py prog.c -o prog.asm --boot     # for the emulator, stand-alone
 python3 software/compiler/y1cc.py prog.c -o prog.asm --xisa     # + LDZ/STZ/ADDIW/SHL16 (2026-09-24 microcode), below
+python3 software/compiler/y1cc.py prog.c -o prog.asm --org 0x5000 --os --stack 0xCFFF   # main on its own stack (below)
 cd <dir with rcasm.rc + yacc1.def> && ../software/assembler/asm prog -d=yacc1 > prog.lst   # -> prog.img (Intel hex)
 software/emulator/emulator -x -f prog.img                       # runs it, exits at HALT (--boot images)
 python3 tests/compiler/run.py                                    # the test suite (make cc-test)
@@ -154,6 +155,23 @@ and big-endian words in memory. There is no 16-bit ALU and no indexed addressing
   arguments, nested `sys()` in arguments. Constant folding got a fix the same day: the operator table was an eager
   dictionary that evaluated `a // b` for every fold, so any constant expression with a zero right operand
   (`SYSTAB + 2 * SYS_OPEN`) crashed the compiler.
+- **`--stack ADDR`** (2026-09-25): `main` moves the program onto a stack of its own. Its first lines (after the
+  `--xisa` page load, before the BSS clear) are `MOVRR R1,R5 / MVIW R1,ADDR / PUSHR R5`: the caller's SP is the
+  first word on the new stack (ADDR-1..ADDR); every `return` in `main`, and its end whether or not the last
+  statement returned (4 dead bytes then, the price of an unconditional rule the passes can follow), is
+  `POPR R5 / MOVRR R5,R1 / RET`, so the RET pops the caller's return address from the caller's own stack and the
+  shell or monitor finds its stack as it left it. R3 (the result) is untouched. Everything else runs on the new
+  stack: return addresses, pushed operands, parked arguments, recursion's frame saves, and the Y1/OS syscall
+  handlers (they run on the caller's stack). Why: the monitor's stack is 768 bytes ($0C00-$0EFF, the handle buffers
+  below it), shared with the shell and the syscalls, and the compiler's parser alone needs 1.2K on the corpus;
+  a Y1/OS program owns $5000-$CFFF, so `--stack 0xCFFF` puts its stack at the top of its own area, above its
+  tables. The option was chosen over the OS giving every program the area's top (a `/BIN` command whose data
+  reached $CFFF would collide with it). Nothing checks for overflow at run time; the instruction-level emulator's
+  `-S` (stack watch) reports the lowest SP a `--stack` program reached, which `tests/native/run.py` compares with
+  each pass's last byte of data. Without the option the output is byte-identical (`diffcheck.py`);
+  `tests/compiler/stack.c` (`// y1cc: --stack 0xC7FF`: the saved SP, 40 levels of recursion on the new stack, an
+  early return) runs on both emulators, `twin.py`/`--chain` cover it, and `twinfuzz.py` adds `--stack` to every fifth
+  random program.
 - Never emitted: `BR16Z BR16NZ BRNC` (no microcode), `BRVR` (not needed yet), `LDZ STZ ADDIW SHL16` without `--xisa`,
   negative numbers (the assembler silently drops the sign), labels over 29 characters (crash the assembler), or
   two labels differing only in case (the assembler folds case; the compiler mangles and uniquifies).
@@ -464,6 +482,10 @@ data (tables, static frames), and measures the stack (below). 2026-09-24, in byt
 | cc8 emit | 25,197 | 1,427 | 26,624 | 3,617 | 424 | 30,665 | 2,103 | 1,326 |
 | cc9 final | 16,714 | 1,930 | 18,644 | 13,749 | 100 | 32,493 | 275 | 1,178 |
 
+(2026-09-25, built as the native compiler is, with `--stack 0xCFFF`, and with target_io.c's upper-case `/LIB` names:
+free cc1 717, cc2 2,231, cc3 10,588, cc4 14,301, cc5 6,220, cc6 201, cc7 525, cc8 2,082, cc9 211; the stack
+prologue and epilogue cost cc6 135 bytes of code, the other passes 11.)
+
 (Updated after `--xisa`, same day: cc6 grew by the page planning (2.9K of code, 3.3K of tables), cc9 kept its room
 because five of its macros became cc8's instructions; the table before it had cc6 at 26,206 and cc9 at 244 free. The
 same passes compiled with `--xisa` are in the section "--xisa" above: 101,884 bytes of code instead of 123,811.)
@@ -499,14 +521,15 @@ The deepest points are the "stack" column. They grow with nesting: about 144 byt
 (its recursive descent: `((((1))))` 12 levels deep takes cc2 to 2,004 bytes), 62 per level of operators in cc8
 (`x + (x + (...))`), 28 in cc7, 16 in cc6; the other passes do not recurse on the input.
 
-*Where it goes* (BACKLOG step 2, not built): at the top of each pass's own program area, growing down from $CFFF
-towards its tables, which end at $5000 + image + tables; the "free" column is the room beyond the deepest point
-measured (cc2: about 15 more levels of parentheses than the corpus uses, cc8 about 45 levels of operators). Not the
+*Where it goes* (built 2026-09-25): at the top of each pass's own program area, growing down from $CFFF towards
+its tables, which end at $5000 + image + tables; the "free" column is the room beyond the deepest point measured
+(cc2: about 15 more levels of parentheses than the corpus uses, cc8 about 45 levels of operators). Not the
 monitor's $0C00-$0EFF: that 768 bytes is shared with the shell that runs the program and with every syscall, and
-cc2 alone needs 1,202 on the corpus. Two ways to get there, neither done: (a) y1cc takes `--stack ADDR`: main saves
-the caller's R1, loads ADDR and puts the old R1 back before it returns (a few bytes, only when the option is given;
-a change to y1cc.py, so Ken's decision); (b) Y1/OS's `run` gives every program the top of the program area as its
-stack (simpler, but a /BIN command whose data reaches $CFFF would then collide with it).
+cc2 alone needs 1,202 on the corpus. Ken chose (2026-09-25) y1cc's `--stack ADDR` ("How the generated code works"
+above) over Y1/OS giving every program the area's top: `os/Makefile passes` builds each pass with `--stack 0xCFFF`
+(`build/cc/NAME.bin`), and passes.py measures that build. On the emulator, `tests/native/run.py` runs the passes
+under Y1/OS with the stack watch (`emulator -S`) and checks that each one's deepest point stays above its last
+byte of data (below, "Native").
 
 ### What is left for native
 
@@ -526,6 +549,23 @@ stack (simpler, but a /BIN command whose data reaches $CFFF would then collide w
   on-target assembler is there (2026-09-25: `/BIN/ASM`, which takes cc8's 1,326 labels; its sources, like the passes'
   intermediate files, stop at 64K); and the code size work (every byte y1cc saves shrinks the passes too, and cc7
   and cc9 are within 600 bytes of the limit, cc1 within 1.1K).
+
+### Native: the passes on the emulated YACC1 (2026-09-25)
+
+`tests/native/run.py` builds the passes as Y1/OS programs (`make -C os passes`: `build/cc/NAME.bin`, each with
+`--stack 0xCFFF`), puts them on a copy of the OS disk as `/LIB/CC/CC1`..`CC9` with `/LIB/Y1CCRT.TXT` (the runtime
+text cc9 reads) and `/LIB/Y1LIB.C` (`#include "y1lib.c"` falls back to `/LIB`; target_io.c upper-cases a `/LIB`
+name, as the Makefiles put files on a disk), boots Y1/OS on the instruction-level emulator and runs the nine in
+turn on each program (`run /LIB/CC/CC1 /OUT/W /SRC/fib.c -o /OUT/FIB.ASM`, then `run /LIB/CC/CC2 /OUT/W` ...). The
+assembly they write is compared with y1cc.py's on the Mac. First run, 2026-09-25: **target_io.c, compiled since
+2026-09-24 and never run, worked at once**, and 10 of 10 programs (hello, fib, sieve, calls, globals, chars,
+structs, switch, rfact, stack) came out byte-identical to y1cc.py (the header's date is `0000-00-00 00:00`: Y1/OS
+has no clock). hello takes 5.7M instructions, the others 24-39M; cc1 (the lexer, a syscall per source byte) and cc9
+(the text, a syscall per output byte) take most of it.
+
+The stack: `emulator -S` reports each pass's lowest SP; the deepest on those ten was cc2 at $CC8F (880 bytes,
+rfact's expressions), everything else under 250 bytes, and every pass kept at least 272 bytes between its stack and
+its last byte of data (cc9: data to $CEC6, stack down to $CFD7; cc6 330, cc7 651, cc1 780).
 
 **y1cc.c stays** as the single-program C twin: it is what the passes were cut from, `twin.py` keeps it identical to
 y1cc.py, and it is the quicker program to read. A change to y1cc.py now has two C counterparts to follow it; once

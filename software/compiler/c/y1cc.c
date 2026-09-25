@@ -388,6 +388,7 @@ int opt_brur;
 int opt_os;
 int opt_list;
 int opt_xisa;
+int opt_stack;                  /* --stack ADDR (2026-09-25): main's own stack; 0 = the caller's */
 int zused;                       /* --xisa: the page holds at least one variable */
 int cur_fn;
 int cur_vfirst;
@@ -607,6 +608,7 @@ void collect_decls(int s, int fn);
 void layout_func(int fn);
 void compile_func(int fn);
 void emit_bss_clear(void);
+void ret_ins(void);
 void declare_global(int g);
 void emit_globals(void);
 void const_data(int g, int pass);
@@ -2620,7 +2622,7 @@ void gen_stmt(int s) {
             gen_expr(na[s]);
             if (f_rbase[cur_fn] == K_CHAR && f_rptr[cur_fn] == 0 && !is_narrow(na[s])) { insn("LDAI", 0); insr("MVARH", 3); }
         }
-        ins0("RET");
+        ret_ins();
         return;
     }
     if (k == N_IF) {
@@ -2807,8 +2809,12 @@ void compile_func(int fn) {
     start = nraw;
     lb[0] = 0; bcat(lb, lpool + f_lab[fn]); bchr(lb, ':'); code_line(lb);
     if (f_root[fn]) zreload();                 /* --xisa: main and the funcaddr() entries set the page register */
+    if (f_name[fn] == NM_MAIN && opt_stack) {       /* --stack: the caller's SP saved on the program's own stack */
+        insrs("MOVRR", 1, "R5"); insrn("MVIW", 1, opt_stack); insr("PUSHR", 5);
+    }
     if (f_name[fn] == NM_MAIN) emit_bss_clear();
     gen_stmt(nd[f_body[fn]]);
+    if (f_name[fn] == NM_MAIN && opt_stack) ret_ins();  /* --stack: always (dead after a final return: 4 bytes) */
     if (!last_ret) ins0("RET");
     for (i = 0; i < f_vn[fn]; i++) {
         if (v_zp[f_vfirst[fn] + i]) continue;       /* --xisa: the page's variables come at the end of the BSS */
@@ -2818,6 +2824,10 @@ void compile_func(int fn) {
     f_stat[fn] = nraw - start;
     corder[ncorder] = fn; ncorder++;
     nn = mark;                                      /* the nodes made while generating are not needed any more */
+}
+void ret_ins(void) {                                /* RET; in main with --stack the caller's SP first */
+    if (f_name[cur_fn] == NM_MAIN && opt_stack) { insr("POPR", 5); insrs("MOVRR", 5, "R1"); }
+    ins0("RET");
 }
 void emit_bss_clear(void) {                         /* main clears every DS slot (bss_start..bss_end): 20 bytes */
     int loop; int go; int done;
@@ -3244,7 +3254,7 @@ void y1cc_main(void) {
     n = io_argc();
     if (n > 0) io_arg(0, srcpath, LINE_MAX);
     if (n == 0 || srcpath[0] == '-')
-        fail("usage: y1cc prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [--os] [--xisa] [-l]");
+        fail("usage: y1cc prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [--os] [--xisa] [--stack ADDR] [-l]");
     sep = 0; dot = 0;                               /* os.path.splitext: the extension of the last path element */
     for (i = 0; srcpath[i]; i++) { if (srcpath[i] == '/') sep = i + 1; }
     for (i = sep; srcpath[i]; i++) if (srcpath[i] == '.') dot = i;
@@ -3268,6 +3278,14 @@ void y1cc_main(void) {
     opt_os = has_arg("--os") != 0;
     opt_list = has_arg("-l") != 0;
     opt_xisa = has_arg("--xisa") != 0;
+    opt_stack = 0;
+    i = has_arg("--stack");
+    if (i) {
+        if (i >= n) fail("y1cc: --stack needs an address");
+        io_arg(i, argw, LINE_MAX);
+        opt_stack = parse_int0(argw, &ok);
+        if (!ok || !opt_stack) fail("y1cc: --stack: not a number");
+    }
     lbase = LBASE_NONE;
     lx_push(srcpath);
     program();

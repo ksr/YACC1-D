@@ -925,6 +925,7 @@ void load_structs(void) {                           /* W.sym: the struct tags an
     io_close(h);
 }
 char rlen[] = {0, 0, 2, 3, 2, 0, 4, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0};   /* operand bytes of cc6's simple records */
+char flen[] = {0, 1, 2, 2, 0, 3, 3, 2, 0, 1};       /* operand bytes of cc6's R_CODE forms (F_A, F_RA: never) */
 void y1cc_main(void) {
     int c; int hk; int r; int r2; int sym; int when; int n; int i; int narrow; int h;
     p_args();
@@ -942,7 +943,7 @@ void y1cc_main(void) {
         if (c == R_ERROR) { rs(inh, ebuf, EBUF_MAX); io_fail(ebuf); }   /* cc6's deferred error: its turn now */
         if (c != R_HOLE) {
             wb(c);
-            if (c == R_CODE) { wb(rb(inh)); r = rb(inh); wb(r); if (r == F_L) copy(2); }
+            if (c == R_CODE) { wb(rb(inh)); r = rb(inh); wb(r); copy(flen[r]); }
             else if (c == R_FUNC) {
                 copy(2); cur_name = ri(inh); cur_rbase = ri(inh); cur_rptr = rb(inh);
                 wi(cur_name); wi(cur_rbase); wb(cur_rptr);

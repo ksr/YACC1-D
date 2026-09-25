@@ -244,6 +244,7 @@ def main():
         src = os.path.join(BUILD, "f%04d.c" % k)
         open(src, "w").write(g.program())
         opts = rnd.choice([["--boot"], [], ["--os", "--org", "0x5000"], ["--no-brur", "--boot"], ["--vector"]]) + X
+        if k % 5 == 2: opts = opts + ["--stack", "0xC7FF"]      # 2026-09-25 (not drawn: the seeds' programs stay)
         p = run([sys.executable, PY, src] + opts, src[:-2] + ".py.asm")
         c = run([TWIN, src] + opts, src[:-2] + ".c.asm")
         if p[0] == 0 and c[0] == 0 and p[1] == c[1]: same += 1

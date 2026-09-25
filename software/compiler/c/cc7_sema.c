@@ -480,6 +480,7 @@ void analyse(void) {
 
 /* ---- the stream -------------------------------------------------------------------------------------------------- */
 char rlen[] = {0, 0, 2, 3, 2, 0, 4, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0};   /* operand bytes of cc6's simple records */
+char flen[] = {0, 1, 2, 2, 0, 3, 3, 2, 0, 1};       /* operand bytes of cc6's R_CODE forms (F_A, F_RA: never) */
 void copy(int n) { while (n) { wb(rb(inh)); n--; } }
 void y1cc_main(void) {
     int c; int hk; int n; int e; int k; int b; int one;
@@ -497,7 +498,7 @@ void y1cc_main(void) {
             cur_vfirst = f_vfirst[cur_fn]; cur_vn = f_vn[cur_fn];
             continue;
         }
-        if (c == R_CODE) { wb(rb(inh)); k = rb(inh); wb(k); if (k == F_L) copy(2); continue; }
+        if (c == R_CODE) { wb(rb(inh)); k = rb(inh); wb(k); copy(flen[k]); continue; }
         if (c != R_HOLE) { copy(rlen[c]); continue; }
         hk = rb(inh); wb(hk);
         if (hk == H_COND) copy(5);

@@ -155,6 +155,7 @@ From the docstring and `README.md`, with the instructions involved:
 | `--os` | a Y1/OS program (2026-09-23; `os/Makefile` uses it for the OS and every `/BIN` command): `putchar`/`puts` go through the OS syscall CONOUT (19) and `getchar` through CONIN (17), so the shell can redirect them; `getchar` still returns 0 at the end of input; R3/R4 are kept across both (`software/compiler/README.md`). Without it the console runtime is unchanged |
 | `--no-brur` | never emit `BRUR` ($AD): a `switch` is always a compare chain. For a machine whose sequencer EEPROM lacks the 2026-09-22 microcode (it was reloaded that evening, so this is now a bench-verification option) |
 | `--xisa` | (2026-09-24) use `LDZ`/`STZ` (the variable page, R6 = page register), `ADDIW`, `SHL16` (section 4). Needs the 2026-09-24 microcode on the machine (`BACKLOG.md`: reload the sequencer EEPROM, then `tests/bench`); the emulators have it. Opt-in until the bench has passed |
+| `--stack ADDR` | (2026-09-25) `main` runs on a stack of its own that starts at ADDR (the first byte pushed; it grows down): `main` begins `MOVRR R1,R5 / MVIW R1,ADDR / PUSHR R5` (after the `--xisa` page load) and every return from `main`, and its end, is `POPR R5 / MOVRR R5,R1 / RET`, so the caller's stack (the shell's or the monitor's, $0C00-$0EFF) is untouched and gets its SP back. Recursion's frame saves and every syscall then use the new stack. For programs that need more than the 768-byte monitor stack: the native compiler's passes are built with `--stack 0xCFFF` (`os/Makefile passes`), their tables below, the stack above. Without it the output is unchanged (`diffcheck.py`); `tests/compiler/stack.c` is its test |
 | `-l` | print the line count and per-function instruction counts |
 
 Options are recognised anywhere after the source file; the source file must be the first argument.
@@ -326,7 +327,8 @@ Things the example shows: every variable is a memory slot; a comparison against 
 ## 10. Known limitations and gotchas
 
 - Recursion costs a frame copy per call inside a cycle (about 123 steps per frame word inline) and stack: 2 bytes +
-  the frame per level, in the monitor's 768-byte stack ($0C00-$0EFF), unchecked. No reentrancy (an interrupt handler
+  the frame per level, in the monitor's 768-byte stack ($0C00-$0EFF) unless `--stack` gives the program its own,
+  unchecked either way (the instruction-level emulator's `-S` reports how deep a `--stack` program went). No reentrancy (an interrupt handler
   in C would share the static frames).
 - `int` is unsigned: `<`, `/`, `%` and `>>` are unsigned; `-1` is 65535; signed compares would need bit 15 flipped
   first (`BACKLOG.md`).

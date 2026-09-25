@@ -2,7 +2,8 @@
 """passes.py - the multi-pass y1cc against the Y1/OS program area (2026-09-24; software/compiler/README.md, "The
 multi-pass compiler"). For each of the nine passes (software/compiler/c/cc1_lex.c .. cc9_final.c):
 
-  1. the Y1/OS program: y1cc.py compiles the pass as an --os program at $5000 (software/compiler/c/target/NAME.c:
+  1. the Y1/OS program: y1cc.py compiles the pass as an --os program at $5000 with its stack at $CFFF (--stack, as
+     os/Makefile builds the native compiler since 2026-09-25) (software/compiler/c/target/NAME.c:
      its Y1/OS table sizes ylim/NAME.h, the Y1/OS I/O layer target_io.c, the pass), the host assembler assembles it
      (0 errors, its label count), and the bytes are counted: code + data = the image (checked against the
      assembler's Object Code), + the uninitialised data (the tables, the static frames of every function) = what the
@@ -36,6 +37,7 @@ PASSES = [(1, "cc1_lex", "lex"), (2, "cc2_parse", "parse"), (3, "cc3_decl", "dec
           (5, "cc5_layout", "layout"), (6, "cc6_stmt", "stmt"), (7, "cc7_sema", "sema"), (8, "cc8_emit", "emit"),
           (9, "cc9_final", "final")]
 AREA = 0xD000 - 0x5000
+PSTACK = "0xCFFF"           # y1cc --stack: each pass's own stack from the top of the area down (os/Makefile PSTACK, 2026-09-25)
 SYSCALL_STACK = 64          # what a Y1/OS syscall handler may push below the caller (an allowance, not measured)
 BIOS_STACK = 16             # a ROM routine called with bios()
 HOST_PATHPOOL = 1200        # the capacity run's path pool (Mac paths are absolute); every other table is Y1/OS's
@@ -51,7 +53,8 @@ def build_target(src, lim):
     os.makedirs(B, exist_ok=True)
     shutil.copy(twin.DEF, B); open(os.path.join(B, "rcasm.rc"), "w").write("-h\n")
     c = os.path.join(CDIR, "target", lim + ".c")
-    r = sh([sys.executable, PY, c, "-o", os.path.join(B, lim + ".asm"), "--org", "0x5000", "--os"] + XISA, cwd=ROOT)
+    r = sh([sys.executable, PY, c, "-o", os.path.join(B, lim + ".asm"), "--org", "0x5000", "--os", "--stack", PSTACK] + XISA,
+           cwd=ROOT)
     if r.returncode: sys.exit("passes: y1cc.py cannot compile %s: %s" % (src, r.stderr.strip()))
     r = sh([ASM, lim, "-d=yacc1"], cwd=B)
     m = {k: re.search(p, r.stdout) for k, p in (("errors", r"(\d+) Errors"), ("labels", r"(\d+) Labels"),

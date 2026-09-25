@@ -67,7 +67,7 @@ Execution model (the part that is YACC1-specific)
   * The carry flag is used only inside ADDT/ADDTC pairs with nothing but register moves between them (the idiom
     the monitor's do_add16 proved on the hardware); plain shifts and subtracts never feed a following carry op.
 
-Usage:  y1cc.py prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [--os] [--xisa] [-l]
+Usage:  y1cc.py prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [--os] [--xisa] [--stack ADDR] [-l]
   --org     load address (default $3000: $1000-$1FFF is BASIC's token buffer, which the monitor's boot clears,
             and the monitor's T tests scribble at $2000). main is first: the monitor's `G3000` calls it (JSRUR R7,
             monitor of 2026-09-22) and its RET returns to the command loop.
@@ -87,6 +87,12 @@ Usage:  y1cc.py prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-br
             sys(), the console helpers, rt_fsave/rt_frest); ADDIW Rn,#w for 16-bit constant adds; SHL16 R3 for << 1.
             R6 is then reserved: rt_divmod keeps its remainder in R5. Needs the 2026-09-24 microcode on the machine.
             Without the option the output is exactly what it was.
+  --stack ADDR  (2026-09-25) main runs on a stack of its own that starts at ADDR (the first byte pushed; it grows
+            down): main begins `MOVRR R1,R5 / MVIW R1,ADDR / PUSHR R5` and every return from main is
+            `POPR R5 / MOVRR R5,R1 / RET`, so the caller's stack (the shell's, the monitor's) is as it was. For
+            programs that need more than the 768-byte monitor stack (the native compiler's passes). The end of main
+            always gets that epilogue (4 dead bytes after a final return). Without the option the output is exactly
+            what it was.
   -l        print the line count / a summary
 """
 import sys, os, re, time
@@ -536,8 +542,9 @@ class Var:
 
 
 class Gen:
-    def __init__(self, org=ORG_DEFAULT, boot=False, vector=False, brur=True, osmode=False, xisa=False):
+    def __init__(self, org=ORG_DEFAULT, boot=False, vector=False, brur=True, osmode=False, xisa=False, stack=0):
         self.org, self.boot, self.vector, self.brur, self.osmode, self.xisa = org, boot, vector, brur, osmode, xisa
+        self.stack = stack    # --stack ADDR (2026-09-25): main runs on its own stack from ADDR down; 0 = the caller's
         self.zset = set(); self.zvars = set(); self.zframes = set(); self.zused = False; self.roots = set()
         self.code = []; self.data = []; self.bss = []
         self.globals = {}     # name -> Var
@@ -1325,7 +1332,7 @@ class Gen:
                 self.gen_expr(s[1])
                 if self.funcs[self.func][:2] == ("char", 0) and not self.is_narrow(s[1]):
                     self.ins("LDAI", "0"); self.ins("MVARH", "R3")
-            self.ins("RET")
+            self.ret()
         elif k == "if":
             els = self.lbl("Lelse"); end = self.lbl("Lend")
             self.gen_cond(s[1], els if s[3] else end, False)
@@ -1460,11 +1467,20 @@ class Gen:
         start = len(self.code)
         self.emit("%s:" % self.flabel[name])
         if name in self.roots: self.zreload()     # --xisa: main and the funcaddr() entries set the page register
+        if name == "main" and self.stack:         # --stack: the caller's SP saved on the program's own stack
+            self.ins("MOVRR", "R1,R5"); self.ins("MVIW", "R1,%d" % self.stack); self.ins("PUSHR", "R5")
         if name == "main": self.emit_bss_clear()
         self.gen_stmt(body)
+        if name == "main" and self.stack: self.ret()      # --stack: always (dead after a final return: 4 bytes)
         if not self.code[-1].strip() == "RET": self.ins("RET")
         for v in self.locals.values(): self.bss.append("%s: DS %d" % (v.label, v.size()))
         self.stats[name] = len(self.code) - start
+
+    def ret(self):
+        """RET; in main with --stack (2026-09-25) the caller's SP comes back first (R3, the result, is kept)."""
+        if self.func == "main" and self.stack:
+            self.ins("POPR", "R5"); self.ins("MOVRR", "R5,R1")
+        self.ins("RET")
 
     def emit_bss_clear(self):
         """C promises zero-initialised globals; the image carries no bytes for them (DS), and RAM powers up random
@@ -1795,8 +1811,8 @@ class Gen:
                 self.emit("; runtime " + h); self.emit(*R[h])
 
 
-def compile_src(src, path, org=ORG_DEFAULT, boot=False, vector=False, brur=True, osmode=False, xisa=False):
-    g = Gen(org, boot, vector, brur, osmode, xisa)
+def compile_src(src, path, org=ORG_DEFAULT, boot=False, vector=False, brur=True, osmode=False, xisa=False, stack=0):
+    g = Gen(org, boot, vector, brur, osmode, xisa, stack)
     g.gen_program(P(lex(src, path)).program(), os.path.basename(path))
     return "\n".join(g.code) + "\n", g
 
@@ -1808,7 +1824,15 @@ def main():
     if "-o" in a: out = a[a.index("-o") + 1]
     if "--org" in a: org = int(a[a.index("--org") + 1], 0)
     if "--boot" in a: boot = True
-    text, g = compile_src(open(src).read(), src, org, boot, "--vector" in a, "--no-brur" not in a, "--os" in a, "--xisa" in a)
+    stack = 0
+    if "--stack" in a:
+        i = a.index("--stack")
+        if i + 1 >= len(a): sys.exit("y1cc: --stack needs an address")
+        try: stack = int(a[i + 1], 0) & 0xFFFF
+        except ValueError: sys.exit("y1cc: --stack: not a number")
+        if not stack: sys.exit("y1cc: --stack: not a number")
+    text, g = compile_src(open(src).read(), src, org, boot, "--vector" in a, "--no-brur" not in a, "--os" in a, "--xisa" in a,
+                          stack)
     open(out, "w").write(text)
     if "-l" in a:
         print("y1cc: %s -> %s: %d lines; functions: %s" % (src, out, len(text.splitlines()),

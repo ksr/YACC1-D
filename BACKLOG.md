@@ -284,10 +284,12 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
      y1cc.py and assembled fits $5000-$CFFF with its Y1/OS tables and its measured stack, the tightest cc9 with 244
      bytes to spare; with those tables the chain compiles the whole corpus but y1cc.c (`tests/compiler/passes.py`,
      in `make check`). software/compiler/README.md, "The multi-pass compiler".)
-  2. A stack for the native compiler — measured (passes.py: 84-1,202 bytes on the corpus, cc2 about 144 more per
-     level of parentheses, cc8 62 per level of operators) and placed: at the top of each pass's program area,
-     growing down to its tables. To build: either y1cc `--stack ADDR` (main saves R1, loads ADDR, restores it;
-     a y1cc.py change, Ken's call) or Y1/OS's `run` giving every program the area's top as its stack.
+  2. (done 2026-09-25: **a stack for the native compiler** - y1cc `--stack ADDR` (Ken's choice) in y1cc.py, y1cc.c
+     and the passes: main saves the caller's SP on its own stack at ADDR and puts it back at every return; the
+     passes are built with `--stack 0xCFFF` (`make -C os passes`), and `tests/native/run.py` runs them under Y1/OS
+     with the emulator's stack watch (`emulator -S`): every pass stays above its data (measured 2026-09-24 in
+     passes.py: 84-1,202 bytes on the corpus, cc2 about 144 more per level of parentheses, cc8 62 per level of
+     operators).)
   3. Y1/OS: an exit syscall (`io_fail`/`io_done` HALT today); files over 64K (16-bit positions: y1os.c's
      intermediate files and the passes' own assembly are 70-250K; 111 of 125 compiles stay under 64K); an
      `#include` deeper than three open files (four handles, one writing) needs `target_io.c` to close and reopen

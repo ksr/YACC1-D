@@ -43,6 +43,17 @@ int io_getc(int h) {
     return c;
 }
 void io_close(int h) { fclose(h); }
+void io_lib(char *name, char *out, int max) {      /* /LIB/NAME: upper case, as the Makefiles put files on a disk */
+    int i; int j; int c;
+    out[0] = '/'; out[1] = 'L'; out[2] = 'I'; out[3] = 'B'; out[4] = '/';
+    i = 5;
+    for (j = 0; name[j] && i < max - 1; j++) {
+        c = name[j];
+        if (c >= 'a' && c <= 'z') c = c - 32;
+        out[i] = c; i++;
+    }
+    out[i] = 0;
+}
 int io_find(char *name, char *from, char *out, int max) {
     int i; int n; int j;
     n = 0;
@@ -51,21 +62,11 @@ int io_find(char *name, char *from, char *out, int max) {
     for (j = 0; name[j] && i < max - 1; j++) { out[i] = name[j]; i++; }
     out[i] = 0;
     if (fresolve(out, 0)) return 1;
-    out[0] = '/'; out[1] = 'L'; out[2] = 'I'; out[3] = 'B'; out[4] = '/';
-    i = 5;
-    for (j = 0; name[j] && i < max - 1; j++) { out[i] = name[j]; i++; }
-    out[i] = 0;
+    io_lib(name, out, max);
     return fresolve(out, 0);
 }
 void io_fail(char *msg) { puts(msg); halt(); }
 void io_out(int c) { putchar(c); }
-void io_lib(char *name, char *out, int max) {      /* /LIB/name */
-    int i; int j;
-    out[0] = '/'; out[1] = 'L'; out[2] = 'I'; out[3] = 'B'; out[4] = '/';
-    i = 5;
-    for (j = 0; name[j] && i < max - 1; j++) { out[i] = name[j]; i++; }
-    out[i] = 0;
-}
 int twh;
 int io_wopen(char *path) { twh = fcreate(path, 0, 0); return twh != 0; }
 void io_wput(int c) { fputc(twh, c); }
