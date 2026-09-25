@@ -165,7 +165,9 @@ Options are recognised anywhere after the source file; the source file must be t
 - **On the machine itself (native, 2026-09-25)**: under Y1/OS, `cc prog.c -o prog.asm --org 0x5000 --os` runs the
   multi-pass compiler (`/LIB/CC/CC1`..`CC9`, chained with the syscall EXEC) and writes the same assembly as y1cc.py
   (only the header's date differs); `asm prog.asm` makes the program. So far on the emulators (Y1/OS needs the CF
-  interface); `software/compiler/README.md` "Native", `tests/native/run.py`.
+  interface, the passes the 2026-09-24 microcode); `software/compiler/README.md` "Native", `tests/native/run.py` (27
+  programs byte-identical to the host toolchain, the compiler's own pass 4 among them). Slow: about 32 us an
+  instruction at 1 MHz, so hello.c takes 3.7 minutes to compile and assemble, fib.c 18, cat.c an hour.
 
 - **Interpreter, stand-alone**: compile with `--boot`, `emulator -x -f prog.img [< input]`; stdout is the program's
   output, stderr ends with `HALT at aaaa after N instructions, R3=xxxx`. `-l N` caps the instruction count.

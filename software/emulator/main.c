@@ -83,19 +83,21 @@ int pushpopdepth;
 int pushpoprdepth;
 bool carry;
 int firstSwitchRead = 1; // What is this
-/* -S (YACC1-D 2026-09-25): the stack watch. A program built with y1cc --stack ADDR starts with MVIW R1,ADDR; every
-   such MVIW R1 into the Y1/OS program area ($5000-$CFFF) starts a segment, and the lowest R1 seen in that area
-   during the segment is reported on stderr when the next one starts and at exit ("stack N: $top down to $low,
-   B bytes, the instructions from the MVIW to the last one run with R1 in the area"): the deepest point of each program's own stack (tests/native,
-   the compiler passes) */
+/* -S (YACC1-D 2026-09-25): the program watch. Every JSRUR to $5000 is Y1/OS starting a program (run_prog; a program
+   that EXECs another ends and the next starts the same way) and begins a segment; at the next one and at exit a line
+   on stderr reports it: "program N: I instructions" from its first to its last instruction in the program area
+   $5000-$CFFF (the syscalls between included), and, for a program on its own stack (y1cc --stack: MVIW R1 into the
+   area), ", stack $top down to $low, B bytes", the deepest point it reached (tests/native: the compiler passes
+   against their data) */
 int stackwatch = 0, sseg = 0;
 unsigned sstart = 0, smin = 0x10000;
 unsigned long icount = 0;       /* instructions executed (reported at a -x HALT) */
-unsigned long sicount = 0, slast = 0;  /* -S: icount when the segment started, when R1 was last in the area */
+unsigned long sicount = 0, slast = 0;  /* -S: icount when the program started, when it last ran an instruction */
 void stack_report(void) {
-    if (stackwatch && sseg && smin < 0x10000)
-        fprintf(stderr, "stack %d: $%04X down to $%04X, %u bytes, %lu instructions\n", sseg, sstart, smin,
-                sstart - smin, slast - sicount + 1);
+    if (!stackwatch || !sseg) return;
+    fprintf(stderr, "program %d: %lu instructions", sseg, slast - sicount + 1);
+    if (sstart && smin < 0x10000) fprintf(stderr, ", stack $%04X down to $%04X, %u bytes", sstart, smin, sstart - smin);
+    fprintf(stderr, "\n");
 }
 int exit_on_halt = 0;           /* YACC1-D 2026-09-22: -x, for scripted runs (compiler tests): quiet load, exit at HALT */
 unsigned long ilimit = 0;       /* -l N: stop after N instructions (scripted runs of code that never HALTs) */
@@ -446,7 +448,7 @@ void print_usage(const char *progname) {
     printf("  -x           Scripted run: no load/dump chatter, HALT exits (instruction count on stderr)\n");
     printf("  -c image     Attach a CompactFlash image on ports P8/P9 (created zero-filled if missing)\n");
     printf("  -l N         Stop after N instructions (with -x: status on stderr)\n");
-    printf("  -S           Stack watch: the lowest R1 in $5000-$CFFF after each MVIW R1 into that area, on stderr\n");
+    printf("  -S           Program watch: per program Y1/OS starts (JSRUR $5000) its instructions and own stack, on stderr\n");
 }
 
 int main(int argc, char** argv) {
@@ -521,8 +523,9 @@ int main(int argc, char** argv) {
         ins = memory_read(register_read_word(PC));
         icount++;
         if (stackwatch) {
-            unsigned sp = register_read_word(1);
-            if (sp >= 0x5000 && sp < 0xD000) { slast = icount; if (sp < smin) smin = sp; }
+            unsigned sp = register_read_word(1), pc = register_read_word(PC);
+            if (pc >= 0x5000 && pc < 0xD000) slast = icount;
+            if (sstart && sp >= 0x5000 && sp < 0xD000 && sp < smin) smin = sp;
         }
         if (ilimit && icount > ilimit) {
             fflush(stdout);
@@ -635,6 +638,9 @@ int main(int argc, char** argv) {
                 /* YACC1-D 2026-09-22: PC <- Rn (the bytes were swapped here; the microcode copies hi to hi) */
                 register_write_hi(PC, register_read_hi(reg));
                 register_write_lo(PC, register_read_lo(reg));
+                if (stackwatch && register_read_word(PC) == 0x5000) {   /* -S: Y1/OS starts a program */
+                    stack_report(); sseg++; sstart = 0; smin = 0x10000; sicount = icount; slast = icount;
+                }
 
                 //printf("jsr opcode pc[%04x]\n", registers[PC].word);
                 //printf("bad opcode [%02x] pc[%04x]\n", ins, register_read_word(PC));
@@ -726,9 +732,8 @@ int main(int argc, char** argv) {
                 register_inc(PC);
                 register_write_lo(reg, memory_read(register_read_word(PC)));
                 register_inc(PC);
-                if (stackwatch && reg == 1 && register_read_word(1) >= 0x5000 && register_read_word(1) < 0xD000) {
-                    stack_report(); sseg++; sstart = register_read_word(1); smin = 0x10000; sicount = icount;
-                }
+                if (stackwatch && reg == 1 && register_read_word(1) >= 0x5000 && register_read_word(1) < 0xD000)
+                    sstart = register_read_word(1);     /* the program's own stack */
                 break;
 
             case MVRLA + REG0:

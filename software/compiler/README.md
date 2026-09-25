@@ -168,7 +168,7 @@ and big-endian words in memory. There is no 16-bit ALU and no indexed addressing
   a Y1/OS program owns $5000-$CFFF, so `--stack 0xCFFF` puts its stack at the top of its own area, above its
   tables. The option was chosen over the OS giving every program the area's top (a `/BIN` command whose data
   reached $CFFF would collide with it). Nothing checks for overflow at run time; the instruction-level emulator's
-  `-S` (stack watch) reports the lowest SP a `--stack` program reached, which `tests/native/run.py` compares with
+  `-S` (program watch) reports the lowest SP a `--stack` program reached, which `tests/native/run.py` compares with
   each pass's last byte of data. Without the option the output is byte-identical (`diffcheck.py`);
   `tests/compiler/stack.c` (`// y1cc: --stack 0xC7FF`: the saved SP, 40 levels of recursion on the new stack, an
   early return) runs on both emulators, `twin.py`/`--chain` cover it, and `twinfuzz.py` adds `--stack` to every fifth
@@ -529,7 +529,7 @@ monitor's $0C00-$0EFF: that 768 bytes is shared with the shell that runs the pro
 cc2 alone needs 1,202 on the corpus. Ken chose (2026-09-25) y1cc's `--stack ADDR` ("How the generated code works"
 above) over Y1/OS giving every program the area's top: `os/Makefile passes` builds each pass with `--stack 0xCFFF`
 (`build/cc/NAME.bin`), and passes.py measures that build. On the emulator, `tests/native/run.py` runs the passes
-under Y1/OS with the stack watch (`emulator -S`) and checks that each one's deepest point stays above its last
+under Y1/OS with the program watch (`emulator -S`) and checks that each one's deepest point stays above its last
 byte of data (below, "Native").
 
 ### What was left for native (all done 2026-09-25)
@@ -576,7 +576,36 @@ run FIB
 - **The stack**: `emulator -S` reports each pass's lowest SP; the deepest on the ten was cc2 at $CC8F (880 bytes,
   rfact's expressions), everything else under 250 bytes, and every pass kept at least 1,476 bytes between its stack
   and its last byte of data (cc1; 272 before the passes were built with `--xisa`).
-- `tests/native/run.py` is the test (below, and `make check`).
+- **The test** (`tests/native/run.py`, in `make check` and `make native-test`): 27 compiles on the instruction-level
+  emulator, 4 of them (hello, fib, echo, cat) also on the microcode emulator (`--all-uc`: all 27, 27 of 27 on
+  2026-09-25 in 1.53G instructions, 25.4G steps, 49.2G clocks: 13.7 hours at 1 MHz, 18 minutes of emulation):
+  every `tests/compiler` program that compiles (with its own flags: `--stack`, `--no-brur`, `--xisa`), fib again
+  with `--xisa`, the `/BIN` commands hello, echo, cat and wc, and **the compiler's own pass 4** (`c/target/calls.c`:
+  the native compiler compiling itself). Each is compiled by `cc` in its source directory (the sources are on the
+  disk under `/R` as in the repository), assembled by `/BIN/ASM` and, when it can run under the OS, run with its
+  output redirected to a file. The host then checks, 27 of 27 on 2026-09-25: the assembly is byte-identical to
+  y1cc.py's (the date masked), the program file byte-identical to the host toolchain's (y1cc.py + the host assembler
+  + img2bin; the four commands also to the Makefile's `/BIN` builds), and the output is the test's `.out` (or, for a
+  command, what `/BIN`'s own build prints in the same session). The deepest stack of any pass kept 1,474 bytes of
+  room above its data (cc1).
+- **How long** (instructions on the instruction-level emulator; the microcode emulator counted 16.6 steps and 32.1
+  clocks an instruction on the same work, so at 1 MHz an instruction is about 32 us):
+
+  | program | compile | assemble | run | at 1 MHz |
+  |---|---|---|---|---|
+  | hello.c (9 lines) | 5.8M | 0.9M | 2.5K | 3 min 40 s |
+  | fib.c | 28.1M | 5.8M | 163K | 18 min |
+  | echo.c (`/BIN/ECHO`) | 11.7M | 0.6M | 1K | 6 min 50 s |
+  | cat.c (5 nested `#include`s) | 92.4M | 13.6M | 94K | 58 min |
+  | wc.c | 107.7M | 16.8M | 254K | 1 h 08 min |
+  | xisa.c (the biggest test) | 132.9M | 28.4M | 97K | 1 h 28 min |
+  | pass 4 of the compiler (`target/calls.c`, 60K of assembly) | 216.8M | 35.2M | - | 2 h 18 min |
+  | all 27 | 1,269M | 225M | 2.3M | about 13 h |
+
+  About 5,000-10,000 instructions per line of C: the passes pass their work through files a byte and a syscall at a
+  time, and cc9 alone (the assembly text, written a byte at a time through the OS) is about 40% of each compile,
+  cc1 (the lexer, a byte and a syscall at a time) about a fifth, the other seven 4-8% each. The obvious speedup: whole sectors through
+  `fread`/`fwrite` in `target_io.c` and `pcommon.c` instead of a syscall per byte (BACKLOG).
 
 **y1cc.c stays** as the single-program C twin: it is what the passes were cut from, `twin.py` keeps it identical to
 y1cc.py, and it is the quicker program to read. A change to y1cc.py now has two C counterparts to follow it; once

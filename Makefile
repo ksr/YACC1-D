@@ -5,9 +5,11 @@
 #                   then run the C compiler's test programs on the emulator (tests/compiler/run.py), compare
 #                   y1cc.py with its C twin and with the multi-pass compiler over the whole corpus (tests/compiler/
 #                   twin.py, also --16, --chain, --chain16), and size the passes against Y1/OS (tests/compiler/passes.py);
-#                   the Y1/OS sessions, the native assembler against the host one and under Y1/OS (tests/asm/run.py --target)
+#                   the Y1/OS sessions, the native assembler against the host one and under Y1/OS (tests/asm/run.py --target),
+#                   C compiled, assembled and run under Y1/OS by the native compiler and assembler (tests/native/run.py)
 #   make cc-test    just the compiler tests (on both emulators) and the twin comparisons (y1cc.c, the passes)
 #   make os-test    Y1/OS sessions on both emulators (tests/os/run.py)
+#   make native-test  the native compiler under Y1/OS on both emulators (tests/native/run.py; --all-uc: ~20 min)
 #   make asm-test   the native assembler /BIN/ASM against the host assembler over the tree's sources, then under Y1/OS on
 #                   both emulators (tests/asm/run.py --target)
 #   make bom        regenerate docs/bom/ (bills of material per card + consolidated) from the active Eagle schematics (tools/gen_bom.py)
@@ -33,6 +35,7 @@ check:
 	python3 tests/ucemu/run.py
 	python3 tests/os/run.py
 	python3 tests/asm/run.py --target
+	python3 tests/native/run.py
 	python3 tests/monload/run.py
 	python3 tests/bench/run.py
 	python3 tests/cfcard/run.py
@@ -48,6 +51,8 @@ os-test:
 	python3 tests/os/run.py
 asm-test:
 	python3 tests/asm/run.py --target
+native-test:
+	python3 tests/native/run.py
 clean:
 	@for d in $(TOOLS); do $(MAKE) -s -C "$$d" clean; done
 kicad:
@@ -56,4 +61,4 @@ isa:
 	python3 tools/ucode_wavedrom.py --all
 bom:
 	python3 tools/gen_bom.py
-.PHONY: all check clean kicad isa bom cc-test os-test asm-test
+.PHONY: all check clean kicad isa bom cc-test os-test asm-test native-test

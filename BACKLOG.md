@@ -286,7 +286,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   2. (done 2026-09-25: **a stack for the native compiler** - y1cc `--stack ADDR` (Ken's choice) in y1cc.py, y1cc.c
      and the passes: main saves the caller's SP on its own stack at ADDR and puts it back at every return; the
      passes are built with `--stack 0xCFFF` (`make -C os passes`), and `tests/native/run.py` runs them under Y1/OS
-     with the emulator's stack watch (`emulator -S`): every pass stays above its data (measured 2026-09-24 in
+     with the emulator's program watch (`emulator -S`): every pass stays above its data (measured 2026-09-24 in
      passes.py: 84-1,202 bytes on the corpus, cc2 about 144 more per level of parentheses, cc8 62 per level of
      operators).)
   3. (done 2026-09-25: **Y1/OS for the compiler** - files over 64K (24-bit positions and lengths in both kernels,
@@ -295,7 +295,23 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
      (`c/target_inc.c`), `/LIB/Y1CCRT.TXT` and `/LIB/Y1LIB.C` on the disk. The passes are built with `--xisa` since:
      with the chaining and the include stack cc1, cc6 and cc9 no longer fit 32K without it.)
   4. (done 2026-09-25: **the passes run under Y1/OS** - one by one and chained by `cc`, on the emulators;
-     `tests/native/run.py`.)
+     `tests/native/run.py`: 27 programs compiled by `cc`, assembled by `/BIN/ASM` and run under Y1/OS, the tests,
+     four `/BIN` commands and the compiler's own pass 4 among them, byte-identical to the host toolchain; about 32 us
+     an instruction at 1 MHz, so hello 3.7 minutes, fib 18, cat.c an hour, pass 4 2.3 hours - software/compiler/
+     README.md "Native".) Follow-ups:
+     - Speed: the passes read and write their files a byte and a syscall at a time (cc9, the text, is ~40% of a
+       compile, cc1 ~19%); whole sectors through `fread`/`fwrite` in `target_io.c` / `pcommon.c` would cut most of
+       the OS's share.
+     - The passes need the 2026-09-24 microcode (`--xisa`) since the chaining and the lexer's include stack: without
+       it cc1, cc6 and cc9 are 26-985 bytes over 32K. So the machine needs the EEPROM reload and `tests/bench` (the
+       --xisa item below) before it can compile, besides the CF interface Y1/OS itself needs.
+     - The work files `CCW.*` stay in the current directory (replaced by the next compile; pack reclaims the space);
+       cc9 could delete them, at the cost of bytes in the tightest pass.
+     - The bigger passes compiling themselves natively (only pass 4 is in the test; cc8's source needs 740K of disk
+       and y1cc.c does not fit the passes' tables at all).
+     - y1cc: a block comment that starts on a `#define` line and continues on the next is not skipped (the next line
+       is lexed: `$` in it was "bad character", found in `os/lib_abi.c` 2026-09-25; the comment was moved above
+       the `#define`s).
   5. (done 2026-09-25: **the on-target assembler** `/BIN/ASM`, wave 3 of os/PORT-PLAN.md - byte-identical to the host
      assembler on the corpus, the nine passes' assembly among it; its 16,640-byte symbol pool holds cc8's 1,326
      labels, the most of any pass. The host assembler's label table: done 2026-09-24, 8,191 labels with a clear error
