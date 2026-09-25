@@ -21,7 +21,7 @@ DESCRIPTION
     /BIN/CMP.
 
 LIMITS
-    None beyond the OS's: a file over 64K cannot be opened.
+    None beyond the OS's: files up to 16M.
 
 EXAMPLES
     cmp /FRUIT.TXT /FRUIT2.TXT   cmp: files differ: byte 55, line 5

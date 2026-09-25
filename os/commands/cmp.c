@@ -5,7 +5,7 @@
        cmp: EOF on file2        (file2 is a prefix of file1)
    Ported from P8X os/commands/cmp.c 2026-09-23, changes: both files are streamed side by side through two Y1/OS
    read handles (the P8X BIOS had ONE read stream, so file1 was read into an 8K buffer first and was limited to
-   8K); no size limit but the OS's 64K per file; y1lib putnum/putstr. */
+   8K); no size limit but the OS's 16M per file (64K until 2026-09-25); y1lib putnum/putstr. */
 #include "../lib_fs.c"
 #include "../lib_err.c"
 #include "y1lib.c"

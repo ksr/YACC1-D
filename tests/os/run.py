@@ -15,8 +15,9 @@ does). The comparison starts at "BOOT FROM CF" and ends after the OS says "bye" 
 Every run boots a fresh COPY of os/disk.img (tests/os/build/NAME.TAG.img): the emulators write the CF image in place
 (software/cfmodel.h), and since 2026-09-23 the OS writes files. After a session listed in HOST the copy is checked
 from the host side with tools/p8xfs.py (fsck, ls, get + compare), which proves the OS's writes are what the host
-tool would have written. The per-emulator step limits (LIMITS) end a run: after `exit` the monitor spins on an
-empty console until the limit, so a limit is a wall-clock budget, not a pass/fail line.
+tool would have written. The per-emulator step limits (LIMITS) are a budget: a session must say "bye" inside it. After
+`exit` the script sends the monitor's `0` command, which ends the run (since 2026-09-25; before, the monitor spun on
+an empty console until the limit).
 """
 import os, sys, glob, subprocess, shutil, re
 
@@ -36,8 +37,9 @@ LIMITS = {"basic": (8000000, 120000000),         # instructions (int) / microcod
           "wave2": (9000000, 130000000),         # 5.7M / 79M needed; 5.9M / 49M with --os
           "redirect": (4000000, 60000000),       # 1.9M / 27M needed (2026-09-23)
           "pipe": (13000000, 180000000),         # 9.8M / 136M needed: every byte crosses CONOUT, then CONIN
-          "pack": (34000000, 480000000),
-          "badhandle": (6000000, 90000000)}      # 2026-09-23: writes and reads through bad handles, empty loads         # <= 30M / <= 420M needed (2026-09-23, two-step pack): ~430 sectors moved
+          "pack": (120000000, 1600000000),       # 2026-09-25: the C OS needs ~70M (cmp of two 56K files alone ~45M)
+          "badhandle": (6000000, 90000000),
+          "big": (200000000, 3000000000)}        # 2026-09-25: 72K + 144K written, read back 5 times, copied, appended      # 2026-09-23: writes and reads through bad handles, empty loads         # <= 30M / <= 420M needed (2026-09-23, two-step pack): ~430 sectors moved
 DEFAULT_LIMIT = (12000000, 200000000)
 
 # host-side checks on the disk image a session leaves behind: ("fsck",) must pass; ("ls", path, present, absent)
@@ -46,7 +48,16 @@ DEFAULT_LIMIT = (12000000, 200000000)
 # ("packed",) = no dead sector: the free pointer is DATA_V2 + the sectors of every live extent (files and
 # subdirectories), computed from the image; ("same", gone) = every file of the pristine os/disk.img is still there
 # with the same bytes, load and exec address, except the paths in gone, which must be absent (2026-09-23, pack)
+def pattern(n):
+    """big.session (2026-09-25): bigw.c's bytes, byte i = (lo ^ (lo >> 8) ^ hi * 37) & 255, i = hi * 65536 + lo"""
+    return bytes(((i & 0xFFFF) ^ ((i & 0xFFFF) >> 8) ^ ((i >> 16) * 37)) & 255 for i in range(n))
+
+
 HOST = {
+    "big": [("fsck",),                          # 2026-09-25: files over 64K and 128K (24-bit positions)
+            ("data", "/BIG1", pattern(70 * 1024 + 7)),
+            ("data", "/COPY1", pattern(70 * 1024 + 7)),
+            ("data", "/BIG2", pattern(140 * 1024 + 7) + b"tail\n")],
     "badhandle": [("fsck",), ("boot",), ("same", []),       # 2026-09-23: nothing written through a bad handle
                   ("data", "/BADH.TXT", b"ABC")],
     "api": [("fsck",), ("get", "/COPY.TXT", "os/disk/README.TXT", 0)],
@@ -92,7 +103,8 @@ HOST = {
 
 # extra files a session's disk copy gets before it boots (2026-09-23): (host source, disk name, load/exec); a .c
 # source is compiled first with y1cc --os at $5000, as os/Makefile compiles /BIN commands
-EXTRA = {"badhandle": [("badh.c", "/BADH", 0x5000), ("", "/ZERO.BIN", 0x6000)]}
+EXTRA = {"badhandle": [("badh.c", "/BADH", 0x5000), ("", "/ZERO.BIN", 0x6000)],
+         "big": [("bigw.c", "/BIGW", 0x5000), ("bigr.c", "/BIGR", 0x5000)]}
 
 
 def extras(name, img):
@@ -148,8 +160,14 @@ def mask(name, s):
     return line.sub(lambda m: num.sub("N", m.group(1)), s)
 
 
+MON_EXIT = 0xF10E           # the monitor's `0` command (cmd_exit): the session's last line; the instruction-level emulator
+                            # stops at its $00 byte, the microcode one with -E (2026-09-25: the limits no longer have to
+                            # be run out after `exit`)
+
+
 def transcript(emu, limit, img, script):
-    p = subprocess.Popen([emu, "-x", "-m", "-c", img, "-l", str(limit)], stdin=subprocess.PIPE,
+    stop = ["-E", "%X" % MON_EXIT] if emu.endswith("y1ucemu") else []
+    p = subprocess.Popen([emu, "-x", "-m", "-c", img, "-l", str(limit)] + stop, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     try: out, err = p.communicate(script, timeout=900)
     except subprocess.TimeoutExpired: p.kill(); out, err = p.communicate(); return None, "timeout"
@@ -321,7 +339,7 @@ def main():
     for sess in sorted(glob.glob(os.path.join(HERE, "*.session"))):
         name = os.path.basename(sess)[:-8]
         if only and name not in only: continue
-        script = b"O\n" + open(sess, "rb").read()
+        script = b"O\n" + open(sess, "rb").read() + b"0\n"
         for (tag, emu), limit in zip(EMUS, LIMITS.get(name, DEFAULT_LIMIT)):
             img = os.path.join(BUILD, "%s.%s.img" % (name, tag))
             shutil.copy(os.path.join(OS, "disk.img"), img)

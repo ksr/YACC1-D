@@ -24,10 +24,13 @@ make -C os test         # tests/os/run.py: scripted sessions on both emulators a
 The monitor's `O` command (ROM, `firmware/monitor/monitor.asm`) initialises the card (SET FEATURES, 8-bit mode),
 reads the boot block (LBA 0) to $1000, checks the `P8` signature and OSCNT, reads LBA 1..OSCNT to $1000 and JSRURs
 it. `y1os.asm` starts at `ORG 1000H` with its entry (`os_start`), so the monitor lands on it; `exit` RETs and the
-monitor's prompt is back. `tools/p8xfs.py boot disk.img build/y1os.bin` installs it: **7,151 bytes = 14 of the 32
-reserved sectors** (v0.2, 2026-09-23; the C version is 14,619 bytes = 29 sectors, 12,204 = 24 before redirection and
-pipes, and v0 was 5,136). Its image must end below its RAM at $4A00 (the Makefile checks and prints it: 7,711 bytes
-free between them today); the C version's image plus data must end below $5000 (16,043 of 16,384). At boot the OS
+monitor's prompt is back. `tools/p8xfs.py boot disk.img build/y1os.bin` installs it: **7,447 bytes = 15 of the 32
+reserved sectors** (2026-09-25 with 24-bit files; 7,151 on 2026-09-23 (v0.2); the C version is 13,149 bytes = 26
+sectors compiled with `--xisa`, 14,619 = 29 without on 2026-09-23, 12,204 = 24 before redirection and pipes, and v0
+was 5,136). Its image must end below its RAM at $4A00 (the Makefile checks and prints it: 7,401 bytes free between
+them); the C version's image plus data must end below $4FC0 (14,848 of 16,320). Since 2026-09-25 the C version is
+always compiled with `y1cc --xisa`: with 24-bit files it no longer fitted without (it is the specification and runs
+on the emulators; the machine runs the assembly OS). At boot the OS
 clears its RAM $4A00-$4FFF (the C clears its BSS: the same effect, the handle table and the redirect state zeroed),
 fills the syscall table (below), and reads the boot block again for the free-sector pointer;
 it keeps that pointer in RAM and reads it again after every program returns (`read_free()` in `run_prog()`, since
@@ -124,13 +127,13 @@ result is a full 16-bit word (no carry bit): 1/0 for done/cannot, a handle or 0,
 
 | n | Name | Arguments | Result |
 |---|---|---|---|
-| 0 | OPEN | path | handle 1..4, or 0 (not found, a directory, over 64K, no handle free) |
+| 0 | OPEN | path | handle 1..4, or 0 (not found, a directory, 16M or more, no handle free) |
 | 1 | READ | handle, buf (512) | bytes put in buf: the whole sector holding the position, straight from the card; 0 at the end |
 | 2 | GETC | handle | the next byte through the handle's own sector buffer; 65535 at the end |
 | 3 | CLOSE | handle | 1; for a written file this writes the last sector, the directory entry and the free pointer |
 | 4 | CREATE | path, load, exec | handle, or 0 (bad path/name, parent missing, another write open - also a `>` or a pipe of the shell - a directory of that name); a same-named FILE is replaced at CLOSE (its entry overwritten in place) |
 | 5 | WRITE | handle, buf, n | bytes written |
-| 6 | PUTC | handle, byte | 1, or 0 (not the write handle, 64K reached) |
+| 6 | PUTC | handle, byte | 1, or 0 (not the write handle, 16M - 1 bytes reached) |
 | 7 | DELETE | path | 1 tombstoned, 0 not a file |
 | 8 | MKDIR | path | 1, or 0 (exists, parent missing, directory full, a write open) |
 | 9 | RMDIR | path | 1, or 0 (not a directory, not empty, `.`/`..`/root) |
@@ -150,7 +153,13 @@ result is a full 16-bit word (no carry bit): 1/0 for done/cannot, a handle or 0,
 All 22 slots are in use. The next syscall needs the table moved, since ARGBUF follows it: the plan (BACKLOG.md) is a
 32-entry table at $4FC0-$4FFF, which the assembly OS keeps free, with `SYSTAB` changed in `lib_abi.c` and `y1cc.py`.
 
-Handles: four, each with its own 512-byte buffer and 16-bit position (so a file over 64K cannot be opened). A
+Handles: four, each with its own 512-byte buffer and a **24-bit position and length** (since 2026-09-25: a file is up
+to 16M - 1 bytes; with the 16-bit positions before, a file over 64K could not be opened or written past 64K). The
+syscalls did not change for it: a program reads until GETC's 65535 or READ's 0 and never sees a position, so every
+program reads and writes any size unchanged; the length's bits 16-23 are the entry's byte 18, P8XFS's "64K
+multiples" (`dir` has always shown them), and byte 19 must be 0. `tests/os/big.session` writes a 70K and a 140K file
+(`tests/os/bigw.c`), reads them back byte-wise and sector-wise (`bigr.c`), copies one with `cat >` and appends to the
+other with `>>`, on both emulators and with both kernels; the host checks every byte (`p8xfs.py get`) and `fsck`. A
 read handle serves `GETC` (byte-wise, buffered) and `READ` (sector-wise into the caller's buffer; the position then
 sits at the end of that sector, so mix the two only at sector boundaries); a directory handle serves `READDIR` (and
 `READ` for the raw sectors). **One write handle at a time**: `CREATE` allocates at the volume's free pointer (boot
@@ -269,7 +278,7 @@ Intel hex the host writes. Errors are reported with their line numbers and the o
 table (`asm_optab.c`) is generated from `yacc1.def` by `tools/gen_y1_optab.py` (the Makefile regenerates it), so the
 two assemblers cannot disagree about an instruction. The image is 13,178 bytes and the symbol table takes the rest of
 the program area, 16,640 bytes (5 + the name's length a label: the biggest compiler pass's 1,326 labels fit); sources
-are limited to 64K by the OS's 16-bit file positions, and the output needs the one write handle, so `asm` does not
+are up to 16M (24-bit file positions since 2026-09-25; 64K before), and the output needs the one write handle, so `asm` does not
 run inside a `>` or a pipe. `tests/asm/run.py` compares it with RC/asm on 297 sources (built for the Mac against an
 emulation of these syscalls) and, with `--target`, runs it under Y1/OS on both emulators: y1cc programs assembled and
 run, the monitor assembled to `firmware/monitor/monitor.img`. Speed (instruction-level emulator): `hello`'s 82 lines
@@ -341,11 +350,11 @@ image is byte-identical, and that the next file lands at the new free pointer.
 | $0F10–$0F12 | CFLBA0..2, the sector for CFREAD/CFWRITE (ROM variables) |
 | $0F14–$0F3F | SYSTAB, the syscall jump table (22 entries, all used since 2026-09-23) |
 | $0F40–$0FBF | ARGBUF, a program's command tail (127 chars + NUL; the upper half overlays the monitor's idle line buffer) |
-| $1000–$2BEE | the OS image (`y1os.asm`, 7,151 bytes, 2026-09-23); the Makefile fails the build if it reaches $4A00 |
-| $2BE1–$49FF | free (7,711 bytes) |
+| $1000–$2D16 | the OS image (`y1os.asm`, 7,447 bytes, 2026-09-25); the Makefile fails the build if it reaches $4A00 |
+| $2D17–$49FF | free (7,401 bytes) |
 | $4A00–$4F0F | the OS's RAM, cleared at boot: line $4A00 (page-aligned), path, path copy, the entry, name buffers; the pipeline table $4B80; the sector buffer $4C00 (512-aligned); the handle records $4E00 (page-aligned, 16 bytes each); the variables $4E50-$4F0F |
 | $4F10–$4FFF | free; $4FC0-$4FFF is kept for a 32-entry SYSTAB (BACKLOG) |
-| (C OS) | `y1os.c` instead: image 14,619 bytes and data 1,424 in $1000-$4EAA, which the Makefile checks against $4FFF |
+| (C OS) | `y1os.c` instead (`--xisa`): image 13,149 bytes and data 1,699 in $1000-$49FF, which the Makefile checks against $4FBF |
 | $5000–$CFFF | programs |
 
 ## Inside
@@ -373,7 +382,7 @@ The assembly-specific parts are in the next section.)
   with `--os` the OS's own `putchar`/`puts` ARE the CONOUT syscall. So the console handlers and everything they call
   (`con_out`, `con_in`, `key_in`, `con_st`, `fs_putc`, `fs_getc`, `mode_of`, `hb`, `cfread`, `cfwrite`) must never
   print, directly or through anything: a handler would re-enter itself on the frame in use. Their errors are return
-  codes (a byte that cannot be written - full disk, 64K - is dropped silently); the shell's messages use `eputs()`,
+  codes (a byte that cannot be written - full disk, 16M - is dropped silently); the shell's messages use `eputs()`,
   the raw console. `y1cc` cannot check this: calls through SYSTAB are invisible to its call graph.
 - The shell parses a line in place (`split()`): commands split at `|`, the redirect names NUL-terminated where
   they stand; `stage()` opens a command's input and output, `run_cmd()` runs it, `io_reset()` closes both.

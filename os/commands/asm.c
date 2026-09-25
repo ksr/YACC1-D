@@ -23,8 +23,8 @@
    values beyond 16 bits, an EQU value outside -65535..65535, a label or a byte past $FFFF. RC/asm stores those or
    carries on; nothing in the tree (y1cc's output, the firmware, the OS) uses them.
    Limits: the symbol table is POOL bytes, 5 + the name's length a label (the biggest compiler pass, cc8: 1,326
-   labels in 16,206 bytes); 45 tokens an expression, 32 characters a token; files up to 64K (Y1/OS positions are
-   16-bit). OUT is written through Y1/OS's one write handle, so asm cannot run under a > redirect or in a pipe.
+   labels in 16,206 bytes); 45 tokens an expression, 32 characters a token; files up to 16M (Y1/OS positions are
+   24-bit since 2026-09-25; 16-bit, so 64K, before). OUT is written through Y1/OS's one write handle, so asm cannot run under a > redirect or in a pipe.
    Size (2026-09-25): 13,178 bytes of image + 19,121 of data (the pool 16,640) = 32,299 of the 32,768 of $5000-$CFFF;
    with --xisa 11,779 + 19,376.
    Host build: tests/asm/host_asm.c compiles this file on the Mac against a Y1/OS syscall emulator (host_sys.c);
@@ -307,7 +307,7 @@ void getnum(char *s, char *e) {              /* the value of the text s..e in xh
 /* ---- output ---- */
 void oput(char c) {
     obuf[on++] = c;
-    if (on == 64) { if (fwrite(oh, obuf, 64) != 64) fatal("write failed (disk full, or 64K)", 0); on = 0; }
+    if (on == 64) { if (fwrite(oh, obuf, 64) != 64) fatal("write failed (disk full, or 16M)", 0); on = 0; }
 }
 void ohexb(int b) { oput(hexd((b >> 4) & 15)); oput(hexd(b & 15)); }
 void flush() {                               /* RC/asm write_line (pass 2, -h): the pending record */
@@ -554,7 +554,7 @@ void main() {
         runpass(2);
         flush();
         if (hexo) for (s = ":00000001ff\n"; *s; s++) oput(*s);
-        if (on && fwrite(oh, obuf, on) != on) fatal("write failed (disk full, or 64K)", 0);
+        if (on && fwrite(oh, obuf, on) != on) fatal("write failed (disk full, or 16M)", 0);
         fclose(oh);
         if (errs) fdelete(outn);
     }

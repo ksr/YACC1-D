@@ -25,8 +25,9 @@
    4, LE16) and CLOSE registers the file (name, start, length, load, exec) in the first free directory slot and
    moves the free pointer - as tools/p8xfs.py does, so the host tool reads what the OS wrote and vice versa.
    Directory entries are the 32-byte P8XFS v2 records, little-endian on disk (le16()/put16() assemble them
-   byte-wise; the YACC1's own words are big-endian, which never matters here). Files over 64K cannot be opened
-   (16-bit positions). A file a program leaves open is closed by the shell when the program returns. The console
+   byte-wise; the YACC1's own words are big-endian, which never matters here). Positions and lengths are 24 bits
+   (since 2026-09-25; 16 before, and a file over 64K could not be opened): a file is up to 16M - 1 bytes, its entry's
+   byte 18 holding bits 16-23 as P8XFS's "64K multiples". A file a program leaves open is closed by the shell when the program returns. The console
    syscalls CONIN (no echo, through the ROM's UARTINNE vector added the same day) and CONST let a program read
    its input the way the P8X filters do.
 
@@ -77,6 +78,7 @@ char e_raw[32];                 /* the record as read (its name space-padded at 
 /* the handle table */
 char h_mode[5];
 int h_lba[5], h_len[5], h_pos[5], h_cur[5];   /* start LBA; length (dir: extent bytes); position; sector in hb(h) */
+char h_lenx[5], h_posx[5];      /* bits 16-23 of the length and the position (24-bit files, 2026-09-25) */
 int wh;                         /* the write handle in use, 0 none: CREATE/MKDIR allocate at free_lba, so one at a time */
 int w_dlba, w_dsecs, w_load, w_exec;          /* the write handle's directory and header */
 char w_name[13];
@@ -130,7 +132,8 @@ void put_name(int o, char *nm) {    /* the name field of the entry at sbuf[o] <-
     for (i = 0; i < 12; i++) { sbuf[o + i] = *nm ? *nm : ' '; if (*nm) nm++; }
 }
 
-/* write an entry into sbuf[o]: name (NUL-terminated), start, length (< 64K), load, exec, flags; the rest zero */
+/* write an entry into sbuf[o]: name (NUL-terminated), start, length (its low 16 bits: fs_close sets byte 18), load,
+   exec, flags; the rest zero */
 void set_entry(int o, char *nm, int start, int len, int load, int exec, int flags) {
     int i;
     put_name(o, nm);
@@ -258,13 +261,14 @@ int open_ent(int mode) {        /* a handle on the entry in e_* (a file for M_RE
     int h;
     h = new_handle();
     if (!h) return 0;
-    h_mode[h] = mode; h_lba[h] = e_lba; h_pos[h] = 0; h_cur[h] = NOSEC;
+    h_mode[h] = mode; h_lba[h] = e_lba; h_pos[h] = 0; h_cur[h] = NOSEC; h_posx[h] = 0;
     h_len[h] = mode == M_DIR ? e_secs << 9 : e_len;
+    h_lenx[h] = mode == M_DIR ? 0 : e_lenhi;
     return h;
 }
 
 int fs_open(char *path) {
-    if (!resolve(path) || e_flags != F_FILE || e_lenhi) return 0;
+    if (!resolve(path) || e_flags != F_FILE || e_raw[19]) return 0;     /* 16M and more: not (24-bit positions) */
     return open_ent(M_READ);
 }
 
@@ -276,31 +280,40 @@ int fs_opendir(char *path) {
 /* (the handle fields are copied into locals below: an indexed h_pos[h] costs y1cc ~25 bytes per access, a local 3) */
 int mode_of(int h) { return h < 1 || h > NH ? M_FREE : h_mode[h]; }
 
+/* positions and lengths are 24 bits (2026-09-25): h_posx/h_lenx hold bits 16-23, a sector number is 16 bits */
+int at_end(int h) {             /* position >= length */
+    int px, lx;
+    px = h_posx[h]; lx = h_lenx[h];
+    if (px != lx) return px > lx;
+    return h_pos[h] >= h_len[h];
+}
+int sec_of(int x, int p) { return (x << 7) | (p >> 9); }   /* the sector number of the position x:p */
+
 /* the sector holding the position -> buf (512 bytes); returns the bytes of the file in it, 0 at the end.
    The position moves to the end of that sector: sector-wise and byte-wise reads mix only at sector boundaries. */
 int fs_read(int h, char *buf) {
-    int s, n, len, m;
+    int s, m;
     m = mode_of(h);
-    if (m == M_FREE || m == M_WRITE) return 0;
-    len = h_len[h];
-    if (h_pos[h] >= len) return 0;
-    s = h_pos[h] >> 9;
+    if (m == M_FREE || m == M_WRITE || at_end(h)) return 0;
+    s = sec_of(h_posx[h], h_pos[h]);
     if (cfread(h_lba[h] + s, buf)) return 0;
-    s = s << 9;
-    n = len - s;
-    if (n > 512) n = 512;
-    h_pos[h] = s + n;
-    return n;
+    if (s == sec_of(h_lenx[h], h_len[h])) {    /* the last, partial sector: the position is the length */
+        h_pos[h] = h_len[h];
+        return h_len[h] & 511;
+    }
+    s++;
+    h_posx[h] = s >> 7; h_pos[h] = s << 9;
+    return 512;
 }
 
 int fs_getc(int h) {            /* the next byte through the handle's own buffer; 65535 at the end */
     int s, pos; char *b;
-    if (mode_of(h) != M_READ) return 65535;
+    if (mode_of(h) != M_READ || at_end(h)) return 65535;
     pos = h_pos[h];
-    if (pos >= h_len[h]) return 65535;
-    s = pos >> 9; b = hb(h);
+    s = sec_of(h_posx[h], pos); b = hb(h);
     if (s != h_cur[h]) { if (cfread(h_lba[h] + s, b)) return 65535; h_cur[h] = s; }
     h_pos[h] = pos + 1;
+    if (pos == 65535) h_posx[h]++;
     return b[pos & 511];
 }
 
@@ -337,7 +350,7 @@ int fs_create(char *path, int load, int exec) {
     }
     h = new_handle();
     if (!h) return 0;
-    h_mode[h] = M_WRITE; h_lba[h] = free_lba; h_len[h] = 0; h_pos[h] = 0; h_cur[h] = 0;
+    h_mode[h] = M_WRITE; h_lba[h] = free_lba; h_len[h] = 0; h_pos[h] = 0; h_cur[h] = 0; h_posx[h] = 0;
     memset(hb(h), 0, 512);
     strcpy(w_name, leaf);
     w_dlba = p_lba; w_dsecs = p_secs; w_load = load; w_exec = exec;
@@ -346,20 +359,21 @@ int fs_create(char *path, int load, int exec) {
 }
 
 int fs_putc(int h, int c) {     /* append a byte; a full buffer goes to the card when the next byte arrives */
-    int o, pos; char *b;
+    int o, pos, x; char *b;
     if (!wh || h != wh) return 0;   /* only the open write handle: with none open, h = 0 used to pass (0 == 0) and
                                        wrote hb(0) = $0200, then that buffer to LBA 0, the boot block (fixed 2026-09-23) */
-    pos = h_pos[h];
-    if (pos == 65535) return 0;
+    pos = h_pos[h]; x = h_posx[h];
+    if (pos == 65535 && x == 255) return 0;     /* 16M - 1 bytes (24-bit positions; 64K until 2026-09-25) */
     b = hb(h);
     o = pos & 511;
-    if (o == 0 && pos) {
+    if (o == 0 && (pos || x)) {
         if (cfwrite(h_lba[h] + h_cur[h], b)) return 0;
         h_cur[h] = h_cur[h] + 1;
         memset(b, 0, 512);
     }
     b[o] = c;
     h_pos[h] = pos + 1;
+    if (pos == 65535) h_posx[h] = x + 1;
     return 1;
 }
 
@@ -369,13 +383,13 @@ int fs_putc(int h, int c) {     /* append a byte; a full buffer goes to the card
    handle continues IN PLACE; otherwise the old sectors are copied to the free pointer first (copy-then-extend,
    as P8X does). Either way no byte of the old file changes (in place, only bytes past its length are written),
    and CLOSE writes the new entry over the old one (fs_create's replace-at-close), so an append that fails or
-   never closes leaves the old file intact. Files over 64K cannot be appended to (16-bit positions). */
+   never closes leaves the old file intact. Files of 16M and more cannot be appended to (24-bit positions). */
 int fs_append(char *path) {
-    int h, olba, len, n, s, base; char *b;
+    int h, olba, len, lenx, n, s, base; char *b;
     if (!resolve(path) || e_flags != F_FILE) return fs_create(path, 0, 0);   /* (a directory: fs_create refuses) */
-    if (e_lenhi) return 0;
-    olba = e_lba; len = e_len;
-    n = len >> 9; if (len & 511) n++;
+    if (e_raw[19]) return 0;
+    olba = e_lba; len = e_len; lenx = e_lenhi;
+    n = e_secs; if (!len && !lenx) n = 0;       /* ceil(length / 512): e_secs, but 0 for an empty file */
     base = n && olba + e_secs == free_lba ? olba : free_lba;
     h = fs_create(path, e_load, e_exec);
     if (!h) return 0;
@@ -387,7 +401,7 @@ int fs_append(char *path) {
         }
     }
     if (n) h_cur[h] = n - 1;                                /* the buffer holds the last (partial or full) sector */
-    h_pos[h] = len;
+    h_pos[h] = len; h_posx[h] = lenx;
     return h;
 }
 
@@ -416,6 +430,7 @@ int fs_close(int h) {           /* a write: flush the last sector, register the 
         ok = 0; lba = h_lba[h]; cur = h_cur[h];
         if (!cfwrite(lba + cur, hb(h)) && new_slot()) {
             set_entry(e_off, w_name, lba, h_pos[h], w_load, w_exec, F_FILE);
+            sbuf[e_off + 18] = h_posx[h];       /* the length's bits 16-23 (P8XFS: 64K multiples) */
             if (!cfwrite(e_slba, sbuf)) { free_lba = lba + cur + 1; write_free(); ok = 1; }
         }
         wh = 0;
@@ -503,7 +518,7 @@ int fs_entry(char *buf) {       /* the entry the last lookup found (OPEN, OPENDI
    CONOUT syscall (and getchar CONIN). So the handlers below and everything they call - con_out, con_in, key_in,
    con_st, fs_putc, fs_getc, mode_of, hb, cfread, cfwrite - must never call putchar/puts/putstr/putnum/crlf or
    anything that does: a handler would re-enter itself, or a function on its path, on the frame in use. Their
-   errors are return codes only (a byte lost at a full disk or at 64K is silently dropped). Messages go through
+   errors are return codes only (a byte lost at a full disk or at 16M is silently dropped). Messages go through
    eputs(), which is the raw console too. */
 void con_out(int c) {           /* CONOUT: the > / >> / pipe file, else the raw console (never putchar: see above) */
     if (so_h) fs_putc(so_h, c);
@@ -627,7 +642,6 @@ int dir_of(char *path) {                /* a directory handle for the shell, wit
 int file_of(char *path) {               /* a read handle for the shell */
     if (!resolve(path)) { eputs("not found"); return 0; }
     if (e_flags != F_FILE) { eputs("is a directory"); return 0; }
-    if (e_lenhi) { eputs("too big"); return 0; }
     return open_ent(M_READ);
 }
 

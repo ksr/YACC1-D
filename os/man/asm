@@ -48,7 +48,7 @@ LIMITS
     16,639 bytes of labels, 5 + the name's length each (about 1,360
     of y1cc's labels; the biggest compiler pass, cc8, has 1,326),
     29 characters a label, 254 a line, 45 tokens an expression.
-    Files up to 64K (Y1/OS keeps 16-bit positions). Not supported
+    Files up to 16M (Y1/OS keeps 24-bit positions). Not supported
     (errors here, accepted by RC/asm): MACRO/ENDM, PUBLIC, EXTERN, LIB,
     '/' on values beyond 16 bits, an EQU value outside -65535..65535,
     a label or code past $FFFF. OUT is written through Y1/OS's one

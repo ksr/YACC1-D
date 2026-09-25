@@ -15,7 +15,7 @@ DESCRIPTION
 
     Reading
         fopen(path)             a read handle; 0 = not found, a
-                                directory, 64K or more, none free
+                                directory, 16M or more, none free
         fgetc(h)                the next byte, 65535 at the end
         fread(h, buf)           the next whole sector into buf (512),
                                 the byte count, 0 at the end; mix with
@@ -39,6 +39,8 @@ DESCRIPTION
         fentry(ent)             the entry the last call found
         ent_isfile ent_isdir ent_lba ent_load ent_exec (e)
         ent_len(e)              the low 16 bits; e[18] counts 64Ks
+        ent_lenx(e)             bits 16-23 (e[18]): files are up to
+                                16M - 1 (24-bit positions, 2026-09-25)
         ent_name(e, out)        the name, unpadded (out: 13 bytes)
     Console
         conin()                 DATA: the next byte of stdin, no echo

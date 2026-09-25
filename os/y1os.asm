@@ -67,6 +67,8 @@ H_POS:      EQU 1               ; a handle's record (16 bytes at HTAB + 16h): +0
 H_LEN:      EQU 3               ;   position, length (a directory: its extent's bytes), the sector held in the
 H_CUR:      EQU 5               ;   buffer (65535 none), the start LBA. Because HTAB is page-aligned and the
 H_LBA:      EQU 7               ;   records 16-aligned, `MVRLA R4 / ANDI 0F0H / ORI H_x / MVARL R4` reaches field x
+H_POSX:     EQU 9               ; bits 16-23 of the position and of the length (24-bit files, 2026-09-25): the
+H_LENX:     EQU 10              ;   sector of a position x:p is x << 7 | p >> 9 (secno), 16 bits
 SI_EMPTY:   EQU 255             ; si_h of a pipe stage after one that wrote its own > file: empty input
 
         ORG 1000H
@@ -600,6 +602,17 @@ c32_lp: LDAVR R4
         BRNZ c32_lp
         RET
 
+; eq34: ACC = 1 when R3 == R4 (16 bits), else 0. Clobbers TMP.
+eq34:   MVRLA R4
+        MVAT
+        MVRLA R3
+        BRNEQ ret0a
+        MVRHA R4
+        MVAT
+        MVRHA R3
+        BRNEQ ret0a
+        BR ret1a
+
 ; add34: R3 += R4 (16 bits). Clobbers ACC, TMP.
 add34:  MVRLA R4
         MVAT
@@ -750,8 +763,8 @@ pnm_st: STAVR R3
         BRNZ pnm_lp
         RET
 
-; set_entry: the entry at R3 <- name R5, start SE_LBA, length SE_LEN, load SE_LOAD, exec SE_EXEC, flags SE_FLAG;
-; every other byte 0. Clobbers R3-R6, ACC.
+; set_entry: the entry at R3 <- name R5, start SE_LBA, length SE_LEN (the low 16 bits: fs_close sets byte 18), load
+; SE_LOAD, exec SE_EXEC, flags SE_FLAG; every other byte 0. Clobbers R3-R6, ACC.
 set_entry:
         JSR put_name            ; R3 -> byte 12
         LDR R4,SE_LBA
@@ -1235,20 +1248,29 @@ oe_l:   INCR R4                 ; length
         INCR R4
         MVRLA R5
         STAVR R4
+        INCR R4                 ; the position's bits 16-23: 0
+        LDIVR R4,0
+        INCR R4                 ; the length's: a file's byte 18, a directory's 0
+        LDA OE_MODE
+        LDTI M_DIR
+        LDAI 0
+        BREQ oe_x
+        LDA ERAW+18
+oe_x:   STAVR R4
         LDA OE_H
         BR reta
 
 ; =====================================================================================================================
 ; The file layer (y1os.c fs_*): what the shell's commands and the syscalls share.
 ; =====================================================================================================================
-; fs_open: the path at R3 -> ACC = R3 = a read handle, 0 (not found, not a file, 64K or more, no handle free).
+; fs_open: the path at R3 -> ACC = R3 = a read handle, 0 (not found, not a file, 16M or more, no handle free).
 fs_open:
         JSR resolve
         BRZ ret0
         LDA ERAW+24
         LDTI F_FILE
         BRNEQ ret0
-        LDA ERAW+18
+        LDA ERAW+19
         BRNZ ret0
         LDAI M_READ
         BR open_ent
@@ -1263,83 +1285,134 @@ fs_opendir:
         LDAI M_DIR
         BR open_ent
 
+; hpos: R4 -> a handle's record (any byte of it) -> R4 -> its mode byte, R3 = the position's low 16 bits, HX = its
+; bits 16-23, R6 = the length's low 16 bits, ACC = 1 when the position is at or past the length (24 bits), else 0.
+; Clobbers R7, TMP.
+hpos:   MVRLA R4
+        ANDI 0F0H
+        ORI H_POSX
+        MVARL R4
+        LDAVR R4
+        STA HX
+        INCR R4                 ; bits 16-23 first: position < length there, or > there, decides
+        LDAVR R4
+        MVAT
+        LDA HX
+        BRLT hp_lo
+        BRNEQ hp_lo
+        MVIB R7,0               ; (equal: the low 16 bits decide)
+        BR hp_ld
+hp_lo:  MVIB R7,1               ; decided by bits 16-23: R7.lo = 1 before, and ACC = HX > TMP below
+hp_ld:  MVRLA R4
+        ANDI 0F0H
+        MVARL R4
+        INCR R4
+        LDAVR R4
+        MVARH R3
+        INCR R4
+        LDAVR R4
+        MVARL R3
+        INCR R4
+        LDAVR R4
+        MVARH R6
+        INCR R4
+        LDAVR R4
+        MVARL R6
+        MVRLA R4
+        ANDI 0F0H
+        MVARL R4
+        MVRLA R7
+        BRZ hp_16
+        LDA HX                  ; bits 16-23 differ: at the end when the position's are the greater
+        BRGT ret1a
+        BR ret0a
+hp_16:  MVRHA R6                ; position >= length (16 bits)
+        MVAT
+        MVRHA R3
+        BRLT ret0a
+        BRNEQ ret1a
+        MVRLA R6
+        MVAT
+        MVRLA R3
+        BRLT ret0a
+ret1a:  LDAI 1
+        RET
+ret0a:  LDAI 0
+        RET
+
+; secno: ACC = bits 16-23 x, R3 = the low 16 bits p of a position -> R6 = its sector, x << 7 | p >> 9. Clobbers TMP.
+secno:  PUSH
+        SHR
+        MVARH R6
+        POP
+        ANDI 1
+        BRZ sn_0
+        LDAI 80H
+sn_0:   MVAT
+        MVRHA R3
+        SHR
+        ORT
+        MVARL R6
+        RET
+
 ; fs_read: handle R3 (read or directory), buffer R5 -> R3 = the bytes of the file in the sector holding the
-; position, read straight into the buffer; the position moves to the end of that sector. 0 at the end, for another
-; handle, on a card error. Clobbers R3-R7.
+; position, read straight into the buffer; the position moves to the end of that sector (the length, in the last
+; one). 0 at the end, for another handle, on a card error. Clobbers R3-R7.
 fs_read:
         JSR mode_of
         BRZ ret0
         LDTI M_WRITE
         BREQ ret0
-        MOVRR R5,R7             ; the destination
-        INCR R4                 ; R3 = the position, R5 = the length
-        LDAVR R4
-        MVARH R3
-        INCR R4
-        LDAVR R4
-        MVARL R3
-        INCR R4
-        LDAVR R4
-        MVARH R5
-        INCR R4
-        LDAVR R4
-        MVARL R5
-        MVRHA R5                ; position >= length: 0
-        MVAT
-        MVRHA R3
-        BRLT fr_in
-        BRNEQ ret0
-        MVRLA R5
-        MVAT
-        MVRLA R3
-        BRLT fr_in
-        BR ret0
-fr_in:  MVRLA R4                ; R6 = start + position / 512
-        ANDI 0F0H
+        STR R5,FR_BUF
+        JSR hpos                ; R3 = the position, HX; R6 = the length; at the end: 0
+        BRNZ ret0
+        LDA HX                  ; s = the position's sector
+        JSR secno
+        STR R6,FR_S
+        MVRLA R4                ; R6 = start + s
         ORI H_LBA
         MVARL R4
         LDAVR R4
-        MVARH R6
+        MVARH R7
         INCR R4
         LDAVR R4
-        MVARL R6
-        MVRHA R3
-        SHR
+        MVARL R7
+        MVRLA R7
         MVAT
         MVRLA R6
         ADDT
         MVARL R6
+        MVRHA R7
+        MVAT
         MVRHA R6
-        ADDIC 0
+        ADDTC
         MVARH R6
+        LDR R7,FR_BUF
         JSR cfrd
         BRNZ ret0
-        MVRHA R3                ; R3 = s = the sector's first byte (position & ~511)
-        ANDI 0FEH
-        MVARH R3
-        LDAI 0
-        MVARL R3
-        MVRHA R3                ; R6 = n = length - s (s's low byte is 0: no borrow)
-        MVAT
-        MVRHA R5
-        SUBT
-        MVARH R6
+        JSR hpos                ; the length's sector: is s the last one?
+        MOVRR R6,R3
+        MVRLA R4
+        ORI H_LENX
+        MVARL R4
+        LDAVR R4
+        JSR secno               ; R6 = the length's sector, R3 = the length
+        LDR R5,FR_S
         MVRLA R5
-        MVARL R6
-        MVRHA R6                ; n = 512 at most
-        LDTI 2
-        BRLT fr_n
-        BRNEQ fr_512
-        MVRLA R6
-        BRZ fr_n
-fr_512: MVIW R6,512
-fr_n:   MVRHA R6                ; position = s + n
         MVAT
-        MVRHA R3
-        ADDT
-        MVARH R3
         MVRLA R6
-        MVARL R3
+        BRNEQ fr_512
+        MVRHA R5
+        MVAT
+        MVRHA R6
+        BRNEQ fr_512
+        MVRLA R4                ; the last: position = length (bits 16-23 too), R3 = length & 511
+        ANDI 0F0H
+        ORI H_LENX
+        MVARL R4
+        LDAVR R4
+        DECR R4
+        STAVR R4
         MVRLA R4
         ANDI 0F0H
         ORI H_POS
@@ -1349,24 +1422,68 @@ fr_n:   MVRHA R6                ; position = s + n
         INCR R4
         MVRLA R3
         STAVR R4
-        MOVRR R6,R3
+        MVRHA R3
+        ANDI 1
+        MVARH R3
+        BR retr3
+fr_512: INCR R5                 ; not the last: position = (s + 1) * 512, R3 = 512
+        MVRLA R4
+        ANDI 0F0H
+        ORI H_POS
+        MVARL R4
+        MVRLA R5                ;   bits 8-15: (s + 1) << 1, bits 0-7: 0
+        SHL
+        STAVR R4
+        INCR R4
+        LDIVR R4,0
+        MVRLA R5                ;   bits 16-23: (s + 1) >> 7
+        ANDI 80H
+        BRZ fr_x
+        LDAI 1
+fr_x:   MVAT
+        MVRHA R5
+        SHL
+        ORT
+        MVAT
+        MVRLA R4
+        ANDI 0F0H
+        ORI H_POSX
+        MVARL R4
+        MVTA
+        STAVR R4
+        MVIW R3,512
         BR retr3
 
 ; fs_getc: read handle R3 -> R3 = its next byte through the handle's buffer, 65535 at the end (and for anything
-; that is not a read handle, and on a card error). CONIN's path: no variables, no printing. Clobbers R4-R7.
+; that is not a read handle, and on a card error). CONIN's path: no variables but HX, no printing. Clobbers R4-R7.
+; (y1os.c compares the sector with the buffer's at every byte; here only on a sector boundary: the same result.)
 fs_getc:
         JSR mode_of
         LDTI M_READ
         BRNEQ fg_end
         MVRLA R3
         JSR hbuf                ; R5 = the buffer
-        INCR R4                 ; R3 = the position
+        MVRLA R4                ; HX = the position's bits 16-23, TMP = the length's
+        ORI H_POSX
+        MVARL R4
+        LDAVR R4
+        STA HX
+        INCR R4
+        LDAVR R4
+        MVAT
+        MVRLA R4                ; R3 = the position's low 16 bits
+        ANDI 0F0H
+        ORI H_POS
+        MVARL R4
         LDAVR R4
         MVARH R3
         INCR R4
         LDAVR R4
         MVARL R3
-        INCR R4                 ; position >= length: the end
+        LDA HX                  ; position >= length (24 bits): the end
+        BRLT fg_in
+        BRNEQ fg_end
+        INCR R4
         LDAVR R4
         MVAT
         MVRHA R3
@@ -1378,47 +1495,57 @@ fs_getc:
         MVRLA R3
         BRLT fg_in
         BR fg_end
-fg_in:  MVRLA R4                ; the sector s = position / 512 in the buffer already?
-        ANDI 0F0H
+fg_in:  MVRLA R3                ; inside a sector the buffer holds it (only a GETC of the byte before leaves the
+        BRNZ fg_hav             ; position there: OPEN, READ and a sector's last byte leave it on a boundary)
+        MVRHA R3
+        ANDI 1
+        BRNZ fg_hav
+        LDA HX                  ; on a boundary: the sector s = x << 7 | p >> 9 in the buffer already?
+        JSR secno
+        MVRLA R4
         ORI H_CUR
         MVARL R4
         LDAVR R4
-        BRNZ fg_rd              ; (65535 = none; s < 128)
+        MVAT
+        MVRHA R6
+        BRNEQ fg_rd
         INCR R4
         LDAVR R4
         MVAT
-        MVRHA R3
-        SHR
+        MVRLA R6
         BREQ fg_hav
 fg_rd:  MVRLA R4                ; read it: start + s
         ANDI 0F0H
         ORI H_LBA
         MVARL R4
         LDAVR R4
-        MVARH R6
+        MVARH R7
         INCR R4
         LDAVR R4
-        MVARL R6
-        MVRHA R3
-        SHR
+        MVARL R7
+        MVRLA R7
         MVAT
         MVRLA R6
         ADDT
         MVARL R6
+        MVRHA R7
+        MVAT
         MVRHA R6
-        ADDIC 0
+        ADDTC
         MVARH R6
         MOVRR R5,R7
         JSR cfrd
         BRNZ fg_end
-        MVRLA R4                ; cur = s
+        LDA HX                  ; cur = s
+        JSR secno
+        MVRLA R4
         ANDI 0F0H
         ORI H_CUR
         MVARL R4
-        LDIVR R4,0
+        MVRHA R6
+        STAVR R4
         INCR R4
-        MVRHA R3
-        SHR
+        MVRLA R6
         STAVR R4
 fg_hav: MVRHA R3                ; R5 -> buffer + (position & 511)
         ANDI 1
@@ -1428,7 +1555,7 @@ fg_hav: MVRHA R3                ; R5 -> buffer + (position & 511)
         MVARH R5
         MVRLA R3
         MVARL R5
-        INCR R3                 ; position + 1
+        INCR R3                 ; position + 1 (24 bits)
         MVRLA R4
         ANDI 0F0H
         ORI H_POS
@@ -1438,7 +1565,17 @@ fg_hav: MVRHA R3                ; R5 -> buffer + (position & 511)
         INCR R4
         MVRLA R3
         STAVR R4
-        LDAVR R5
+        BRNZ fg_by
+        MVRHA R3
+        BRNZ fg_by
+        MVRLA R4
+        ANDI 0F0H
+        ORI H_POSX
+        MVARL R4
+        LDA HX
+        ADDI 1
+        STAVR R4
+fg_by:  LDAVR R5
         BR reta
 fg_end: MVIW R3,0FFFFH
         LDAI 255
@@ -1614,6 +1751,8 @@ fc_new: JSR new_handle
         INCR R4
         MVRLA R5
         STAVR R4
+        INCR R4                 ; the position's bits 16-23
+        LDIVR R4,0
         LDA WH
         JSR hbuf
         JSR zero512
@@ -1632,8 +1771,9 @@ fc_new: JSR new_handle
         BR reta
 
 ; fs_putc: append the byte in ACC through write handle R3 (the 16-bit word must equal WH, and one must be open) ->
-; ACC = R3 = 1, 0 (not the open write handle, 65535 bytes reached, a card error). A full buffer goes to the card when the next byte
-; arrives. CONOUT's path: only PC_BYTE, no printing. Clobbers R4-R7, TMP.
+; ACC = R3 = 1, 0 (not the open write handle, 16M - 1 bytes reached (24-bit positions; 64K until 2026-09-25), a card
+; error). A full buffer goes to the card when the next byte arrives. CONOUT's path: only PC_BYTE and PC_X, no
+; printing. Clobbers R4-R7, TMP.
 fs_putc:
         STA PC_BYTE
         LDA WH
@@ -1647,23 +1787,36 @@ fs_putc:
         JSR hbuf                ; R5 = the buffer
         MVRLA R3
         JSR hrec
+        MVRLA R4                ; PC_X = the position's bits 16-23
+        ORI H_POSX
+        MVARL R4
+        LDAVR R4
+        STA PC_X
+        MVRLA R4
+        ANDI 0F0H
+        MVARL R4
         INCR R4                 ; R3 = the position
         LDAVR R4
         MVARH R3
         INCR R4
         LDAVR R4
         MVARL R3
-        LDTI 255                ; 65535: full
+        LDTI 255                ; 16M - 1: full
         BRNEQ fp_1
         MVRHA R3
+        BRNEQ fp_1
+        LDA PC_X
         BREQ ret0
 fp_1:   MVRLA R3                ; position & 511 == 0 and position != 0: flush the full buffer first
         BRNZ fp_put
         MVRHA R3
-        BRZ fp_put
         ANDI 1
         BRNZ fp_put
-        MVRLA R4                ; R6 = start + cur
+        MVRHA R3
+        BRNZ fp_fl
+        LDA PC_X
+        BRZ fp_put
+fp_fl:  MVRLA R4                ; R6 = start + cur
         ANDI 0F0H
         ORI H_CUR
         MVARL R4
@@ -1720,7 +1873,7 @@ fp_put: MVRHA R3                ; buffer[position & 511] = the byte
         MVARL R5
         LDA PC_BYTE
         STAVR R5
-        INCR R3                 ; position + 1
+        INCR R3                 ; position + 1 (24 bits)
         MVRLA R4
         ANDI 0F0H
         ORI H_POS
@@ -1730,12 +1883,22 @@ fp_put: MVRHA R3                ; buffer[position & 511] = the byte
         INCR R4
         MVRLA R3
         STAVR R4
+        BRNZ ret1
+        MVRHA R3
+        BRNZ ret1
+        MVRLA R4
+        ANDI 0F0H
+        ORI H_POSX
+        MVARL R4
+        LDA PC_X
+        ADDI 1
+        STAVR R4
         BR ret1
 
 ; fs_append (the shell's >>, not a syscall): the path at R3 -> ACC = R3 = a write handle positioned at the end of
 ; the file (a new file if there is none). When the file's extent ends at the free pointer the handle continues in
 ; place; otherwise its sectors are copied to the free pointer first. The old file is untouched either way until
-; CLOSE writes the new entry over the old one. 0: a directory of that name, 64K or more, a card error, no handle.
+; CLOSE writes the new entry over the old one. 0: a directory of that name, 16M or more, a card error, no handle.
 ; Clobbers R3-R7.
 fs_append:
         STR R3,AP_PATH
@@ -1744,28 +1907,29 @@ fs_append:
         LDA ERAW+24
         LDTI F_FILE
         BRNEQ ap_new
-        LDA ERAW+18
+        LDA ERAW+19
         BRNZ ret0
         LDR R3,E_LBA
         STR R3,AP_OLBA
         LDR R3,E_LEN
         STR R3,AP_LEN
-        MVRHA R3                ; n = ceil(len / 512)
-        SHR
-        MVARL R4
-        LDAI 0
-        MVARH R4
+        LDA ERAW+18
+        STA AP_LENX
+        LDR R4,E_SECS           ; n = ceil(length / 512) = e_secs, but 0 for an empty file
         MVRLA R3
-        BRNZ ap_i
+        BRNZ ap_nn
         MVRHA R3
-        ANDI 1
-        BRZ ap_nn
-ap_i:   INCR R4
-ap_nn:   STR R4,AP_N
+        BRNZ ap_nn
+        LDA AP_LENX
+        BRNZ ap_nn
+        MVIW R4,0
+ap_nn:  STR R4,AP_N
         LDR R5,FREE_LBA         ; base = n && olba + e_secs == free_lba ? olba : free_lba
         MVRLA R4
-        BRZ ap_b                ; (n <= 128)
-        LDR R3,AP_OLBA
+        BRNZ ap_i
+        MVRHA R4
+        BRZ ap_b
+ap_i:   LDR R3,AP_OLBA
         LDR R4,E_SECS
         JSR add34
         MVRLA R3
@@ -1798,10 +1962,9 @@ ap_b:   STR R5,AP_BASE
         MVIW R3,0
         STR R3,AP_S
 ap_lp:  LDR R3,AP_S             ; for s < n: read old sector s; unless it is the last or the file stays in
-        LDA AP_N+1              ; place, write it at base + s (the last one stays in the buffer)
-        MVAT
-        MVRLA R3
-        BREQ ap_dn
+        LDR R4,AP_N             ; place, write it at base + s (the last one stays in the buffer)
+        JSR eq34
+        BRNZ ap_dn
         LDR R4,AP_OLBA
         JSR add34
         MOVRR R3,R6
@@ -1812,10 +1975,9 @@ ap_lp:  LDR R3,AP_S             ; for s < n: read old sector s; unless it is the
         BRNZ ap_ab
         LDR R3,AP_S
         INCR R3
-        LDA AP_N+1
-        MVAT
-        MVRLA R3
-        BREQ ap_nx
+        LDR R4,AP_N
+        JSR eq34
+        BRNZ ap_nx
         LDR R3,AP_BASE
         LDR R4,AP_OLBA
         MVRLA R3
@@ -1838,12 +2000,12 @@ ap_nx:  LDR R3,AP_S
         INCR R3
         STR R3,AP_S
         BR ap_lp
-ap_dn:  LDA AP_N+1              ; if n: cur = n - 1; position = len
+ap_dn:  LDR R3,AP_N              ; if n: cur = n - 1; position = length (24 bits)
+        MVRLA R3
+        BRNZ ap_d1
+        MVRHA R3
         BRZ ap_p
-        MVARL R3
-        LDAI 0
-        MVARH R3
-        DECR R3
+ap_d1:  DECR R3
         LDA WH
         JSR hrec
         MVRLA R4
@@ -1857,6 +2019,12 @@ ap_dn:  LDA AP_N+1              ; if n: cur = n - 1; position = len
 ap_p:   LDA WH
         JSR hrec
         MVRLA R4
+        ORI H_POSX
+        MVARL R4
+        LDA AP_LENX
+        STAVR R4
+        MVRLA R4
+        ANDI 0F0H
         ORI H_POS
         MVARL R4
         LDR R3,AP_LEN
@@ -2022,6 +2190,19 @@ fcl_w:  STR R4,CL_REC
         MVARH R3
         MVIW R5,WNAME
         JSR set_entry
+        LDR R3,E_OFF            ; the length's bits 16-23 (P8XFS: its 64K multiples) at byte 18
+        MVRHA R3
+        ADDI (SBUF).1
+        MVARH R3
+        MVRLA R3
+        ADDI 18
+        MVARL R3
+        LDR R4,CL_REC
+        MVRLA R4
+        ORI H_POSX
+        MVARL R4
+        LDAVR R4
+        STAVR R3
         LDR R6,E_SLBA
         MVIW R7,SBUF
         JSR cfwr
@@ -2508,13 +2689,8 @@ file_of:
         BR ret0
 fo_1:   LDA ERAW+24
         LDTI F_FILE
-        BREQ fo_2
+        BREQ fo_3
         MVIW R3,S_ISDIR
-        JSR eputs
-        BR ret0
-fo_2:   LDA ERAW+18
-        BRZ fo_3
-        MVIW R3,S_TOOBIG
         JSR eputs
         BR ret0
 fo_3:   LDAI M_READ
@@ -3342,6 +3518,8 @@ SE_LOAD:    DS 2
 SE_EXEC:    DS 2
 CR_LOAD:    DS 2                ; fs_create's load and exec
 CR_EXEC:    DS 2
+FR_BUF:     DS 2                ; fs_read
+FR_S:       DS 2
 RD_BUF:     DS 2                ; fs_readdir
 RD_LEN:     DS 2
 FW_H:       DS 2                ; fs_write
@@ -3403,6 +3581,9 @@ NM_N:       DS 1                ; name_is's counts
 NM_SP:      DS 1
 SE_FLAG:    DS 1
 PC_BYTE:    DS 1                ; fs_putc's byte
+PC_X:       DS 1                ; fs_putc: the position's bits 16-23
+HX:         DS 1                ; hpos: the position's bits 16-23 (fs_read, fs_getc)
+AP_LENX:    DS 1                ; fs_append: the length's bits 16-23
 OE_MODE:    DS 1                ; open_ent
 OE_H:       DS 1
 CL_OK:      DS 1                ; fs_close

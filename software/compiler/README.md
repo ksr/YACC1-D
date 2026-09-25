@@ -533,7 +533,8 @@ byte of data (below, "Native").
 
 ### What is left for native
 
-- **Files over 64K.** Y1/OS keeps a 16-bit position per handle. 111 of the corpus's 125 compiles keep every
+- (done 2026-09-25: Y1/OS positions and lengths are 24 bits, files up to 16M.) **Files over 64K.** Y1/OS kept a
+  16-bit position per handle. 111 of the corpus's 125 compiles keep every
   intermediate file and the output under 64K; 14 do not: y1os.c (`W.se` 174K, its assembly 152K), md.c, awk.c,
   grep.c and vi.c (their `W.se`, 75-88K: the annotated trees take 43 bytes a node, a tighter format would bring these
   four under) and the passes compiling themselves (their assembly 68-251K). Either Y1/OS grows 32-bit positions (the

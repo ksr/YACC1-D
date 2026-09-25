@@ -57,7 +57,9 @@ int fputs(int h, char *s) {                 /* a string (no newline added); retu
 int ent_isfile(char *e) { return e[24] == 1; }
 int ent_isdir(char *e) { return e[24] == 2; }
 int ent_lba(char *e) { return e[12] | (e[13] << 8); }
-int ent_len(char *e) { return e[16] | (e[17] << 8); }     /* the low 16 bits; e[18] counts 64K multiples */
+int ent_len(char *e) { return e[16] | (e[17] << 8); }     /* the low 16 bits; e[18] counts 64K multiples (bits
+                                                               16-23: Y1/OS files are up to 16M - 1 since 2026-09-25) */
+int ent_lenx(char *e) { return e[18]; }                   /* bits 16-23 of the length (2026-09-25) */
 int ent_load(char *e) { return e[20] | (e[21] << 8); }
 int ent_exec(char *e) { return e[22] | (e[23] << 8); }
 void ent_name(char *e, char *out) {         /* the name without its space padding, NUL-terminated (13 bytes) */

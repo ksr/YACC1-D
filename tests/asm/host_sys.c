@@ -1,7 +1,8 @@
 /* host_sys.c - the Y1/OS syscalls /BIN/ASM uses, emulated on the Mac for host_asm.c (2026-09-25): OPEN READ GETC
    CLOSE CREATE WRITE PUTC DELETE with Y1/OS's results (handles 1..4, one of them writing; 65535 at the end of a
-   file; 0 for "cannot"), bios(CHAROUT) to stderr, argstr() = the command line after the program name. Unlike Y1/OS
-   a file may be over 64K (the corpus has 250K compiler passes); set Y1_64K=1 to refuse those as the OS does.
+   file; 0 for "cannot"), bios(CHAROUT) to stderr, argstr() = the command line after the program name. A file may be
+   over 64K (the corpus has 250K compiler passes), as on Y1/OS since 2026-09-25 (24-bit positions); Y1_64K=1 refuses
+   those as the OS did before.
    After the run the exit status is 1 if the assembler counted errors, and the load/exec of the file it created is
    printed to stderr as "host_sys: created NAME load XXXX exec XXXX" (Y1/OS keeps them in the directory entry).
    POSIX calls only: the other translation unit defines fopen, fread... (lib_fs.c) with Y1/OS meanings. */

@@ -78,7 +78,7 @@ CR or NUL ends it). The first word is lower-cased and matched; the rest of the l
 | anything else | `try_bin`: the word upper-cased, looked up as `/BIN/NAME`, then as `NAME` in the current directory; a file is loaded and run with the rest of the line as arguments; otherwise `what?` |
 
 Paths: components 1..12 characters (`name too long` otherwise); a trailing `/` is accepted; `not found`, `not a
-directory`, `is a directory`, `too big` (over 64K) are the errors. **Names are case-sensitive** and stored as the host
+directory`, `is a directory` are the errors (`too big`, over 64K, until 2026-09-25). **Names are case-sensitive** and stored as the host
 tool writes them; the Makefile puts programs in `/BIN` in upper case, which is why the implicit lookup upper-cases
 the command word (so `hello a b c` finds `/BIN/HELLO`). Load-address rule (`load_file`): a program must load at or
 above `TPA` = $5000 and end below `TPATOP` = $D000, else `bad load address or size`.
@@ -136,13 +136,13 @@ buffer and position; **one write handle at a time**.
 
 | n | Name | Arguments → result (`lib_abi.c`) |
 |---|---|---|
-| 0 | `SYS_OPEN` | `(path)` → handle 1..4, 0 not found / not a file / no handle free / over 64K |
+| 0 | `SYS_OPEN` | `(path)` → handle 1..4, 0 not found / not a file / no handle free / 16M or more (64K until 2026-09-25) |
 | 1 | `SYS_READ` | `(handle, buf512)` → bytes put in `buf` from the sector holding the position; 0 at the end |
 | 2 | `SYS_GETC` | `(handle)` → next byte, 65535 at the end |
 | 3 | `SYS_CLOSE` | `(handle)` → 1; a written file is registered in its directory here (last sector flushed, entry written, free pointer moved) |
 | 4 | `SYS_CREATE` | `(path, load, exec)` → handle, 0 cannot (a same-named file is replaced; refused while another write is open) |
 | 5 | `SYS_WRITE` | `(handle, buf, n)` → bytes written |
-| 6 | `SYS_PUTC` | `(handle, byte)` → 1, 0 cannot |
+| 6 | `SYS_PUTC` | `(handle, byte)` → 1, 0 cannot (not the write handle, 16M - 1 bytes reached) |
 | 7 | `SYS_DELETE` | `(path)` → 1 tombstoned, 0 not a file |
 | 8 | `SYS_MKDIR` | `(path)` → 1, 0 cannot (exists, parent missing, no slot, a write is open) |
 | 9 | `SYS_RMDIR` | `(path)` → 1, 0 not a directory or not empty |
@@ -163,7 +163,12 @@ Writing goes to the volume's free pointer (boot block bytes 4–5, kept in step 
 and remembers the directory and the name, `PUTC`/`WRITE` fill the handle's sector buffer and flush full sectors,
 `CLOSE` writes the last (possibly partial) sector, registers `(name, start, length, load, exec, $01)` in the first
 free slot of the directory, and advances the free pointer — the same layout `p8xfs.py` writes, so the host tool
-reads what the OS wrote and vice versa. Files over 64K cannot be opened (16-bit positions). `tests/compiler/syscall.c`
+reads what the OS wrote and vice versa. **Positions and lengths are 24 bits** (2026-09-25; 16 before, when a file
+over 64K could not be opened): a file is up to 16M - 1 bytes, the entry's byte 18 holding bits 16-23; the syscalls
+did not change (a program that reads until GETC's 65535 or READ's 0 never sees a position), so every program works
+unchanged and reads or writes any size; `tests/os/big.session` writes a 70K and a 140K file, reads them back
+byte-wise and sector-wise, copies one through `cat >` and appends to the other, on both emulators with both kernels,
+and the host checks every byte with `p8xfs.py get` and `fsck`. `tests/compiler/syscall.c`
 is a stand-alone model of the whole mechanism (handlers, `funcaddr`, nested `sys()` calls).
 
 ### Redirection and pipes (2026-09-23)
@@ -250,7 +255,7 @@ The 32-byte directory entry (`pack_at`/`unpack_at`, `take_entry`/`set_entry`):
 |---|---|---|
 | 0 | 12 | name, ASCII, space-padded, **case preserved**; the host tool silently truncates a longer name to 12 (aliasing another with the same first 12 bytes — `--strict` makes that an error); the OS refuses names over 12 |
 | 12 | 4 | start LBA (`<I`; the OS reads the low 16 bits and writes the high 16 as 0) |
-| 16 | 4 | length in bytes (`<I`; the OS reads the low 16 bits and byte 18 as "×64K", so `dir` shows files up to 16 MB and `cat`/`load`/open refuse them) |
+| 16 | 4 | length in bytes (`<I`; the OS uses the low 24 bits, byte 18 being "×64K", so files are up to 16 MB - 1 since 2026-09-25; before, it refused to open anything over 64K; byte 19 must be 0) |
 | 20 | 2 | load address (`<H`; `p8xfs.py put --load`, default $B000 — always give `--load 0x5000` for the YACC1) |
 | 22 | 2 | exec address (`<H`; `--exec`) |
 | 24 | 1 | flags: `$00` end of directory, `$01` file, `$02` directory, `$FF` deleted |

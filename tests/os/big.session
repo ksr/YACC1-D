@@ -1,0 +1,13 @@
+bigw /BIG1 70
+bigw /BIG2 140
+dir /BIG1
+dir /BIG2
+bigr /BIG1
+bigr -s /BIG1
+bigr -s /BIG2
+cat /BIG1 > /COPY1
+dir /COPY1
+echo tail >> /BIG2
+dir /BIG2
+bigr -s /BIG2
+exit

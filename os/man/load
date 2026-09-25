@@ -15,7 +15,7 @@ DESCRIPTION
     The file must fit the program area: a load address below $5000, or
     an end past $CFFF, is refused with "bad load address or size", so
     the OS ($1000..$4FFF) and the monitor are never overwritten. Other
-    errors: "not found", "is a directory", "too big" (64K or more).
+    errors: "not found", "is a directory".
 
 EXAMPLES
     load /BIN/HELLO        loaded 132 bytes at $5000

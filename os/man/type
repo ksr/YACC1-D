@@ -9,7 +9,7 @@ DESCRIPTION
     cat, which needs nothing in /BIN. type always runs the built-in
     (there is no /BIN/TYPE), while cat runs /BIN/CAT when it exists and
     this built-in only when it does not. Errors: "not found", "is a
-    directory", "too big" (64K or more). type is a shell built-in.
+    directory". Files of any size (up to 16M). type is a shell built-in.
 
 LIMITS
     One file: no globs, no "-", no console input.

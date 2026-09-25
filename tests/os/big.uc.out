@@ -1,0 +1,42 @@
+BOOT FROM CF
+Y1/OS v0.2 (2026-09-23)  P8XFS v2
+/> 
+
+/> bigw /BIG1 70
+
+bigw: 71687 bytes to /BIG1
+/> bigw /BIG2 140
+
+bigw: 143367 bytes to /BIG2
+/> dir /BIG1
+
+  71687  BIG1
+/> dir /BIG2
+
+ 143367  BIG2
+/> bigr /BIG1
+
+bigr: 71687 bytes, pattern ok
+/> bigr -s /BIG1
+
+bigr: 71687 bytes, pattern ok
+/> bigr -s /BIG2
+
+bigr: 143367 bytes, pattern ok
+/> cat /BIG1 > /COPY1
+
+/> dir /COPY1
+
+  71687  COPY1
+/> echo tail >> /BIG2
+
+/> dir /BIG2
+
+ 143372  BIG2
+/> bigr -s /BIG2
+
+bigr: 143372 bytes, first difference at 143367
+/> exit
+
+bye
+>

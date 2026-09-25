@@ -290,8 +290,9 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
      with the emulator's stack watch (`emulator -S`): every pass stays above its data (measured 2026-09-24 in
      passes.py: 84-1,202 bytes on the corpus, cc2 about 144 more per level of parentheses, cc8 62 per level of
      operators).)
-  3. Y1/OS: an exit syscall (`io_fail`/`io_done` HALT today); files over 64K (16-bit positions: y1os.c's
-     intermediate files and the passes' own assembly are 70-250K; 111 of 125 compiles stay under 64K); an
+  3. Y1/OS: an exit syscall (`io_fail`/`io_done` HALT today); (done 2026-09-25: files over 64K - 24-bit positions
+     and lengths in both kernels, `tests/os/big.session`; y1os.c's intermediate files and the passes' own assembly
+     are 70-250K); an
      `#include` deeper than three open files (four handles, one writing) needs `target_io.c` to close and reopen
      the outer file; a way to run the nine passes in turn (no exec: a shell script facility or a driver);
      `lib/y1ccrt.txt` on the disk as `/LIB/Y1CCRT.TXT`.
