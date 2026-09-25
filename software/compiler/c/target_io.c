@@ -4,9 +4,14 @@
    - the command line is the tail argstr() hands a program, split into words at spaces;
    - #include "name" looks beside the including file, then in /LIB (the name upper-cased, as the Makefiles put files
      on a disk: #include "y1lib.c" finds /LIB/Y1LIB.C); cc9 reads the runtime text from /LIB/Y1CCRT.TXT;
-   - the source files are read through io_open/io_getc/io_close, which are NOT here: target_rd.c has the plain ones
-     (each a handle) and target_inc.c those of the lexer, which nests #includes deeper than Y1/OS's handles allow;
-     each target/NAME.c includes one of them;
+   - the source files are read through io_open/io_getc/io_close: io_getc is here, the rest is NOT: target_rd.c has
+     the plain ones (each a handle) and target_inc.c those of the lexer, which nests #includes deeper than Y1/OS's
+     handles allow; each target/NAME.c includes one of them;
+   - buffered (2026-09-25): io_getc takes the next byte from the buffer of the handle read last (rh: the bytes
+     rp..re-1) and calls io_slow (target_rd.c / target_inc.c) only to switch handles or to refill, with the syscall
+     READN (up to IO_RB bytes, never past a sector); io_wput collects IO_WB bytes for one WRITE. A syscall per byte
+     (GETC, PUTC) was most of a compile's time. IO_RB and IO_WB are in each pass's ylim/NAME.h (RAM: 4 * IO_RB +
+     IO_WB bytes; the output and every open file are the same bytes as before);
    - the three output sections of y1cc.c (io_create/io_put/io_finish) are in target_sec.c, which only target.c
      includes (the passes write their files with io_wopen/io_wput/io_wclose and would only carry its buffers);
    - there is no clock, so the header's date is 0000-00-00 00:00;
@@ -66,12 +71,31 @@ int io_find(char *name, char *from, char *out, int max) {
     io_lib(name, out, max);
     return fresolve(out, 0);
 }
-void io_fail(char *msg) { eputs(msg); osexit(1); }        /* on the screen; the chain stops (STATUS 1) */
+int rh;                                             /* the reads: the handle read last (io_slow's number), */
+char *rp;                                           /* its next byte in the buffer, */
+char *re;                                           /* the end of its bytes there */
+int io_slow(int h);
+int io_getc(int h) {
+    char *p;
+    if (h == rh) { p = rp; if (p != re) { rp = p + 1; return *p; } }
+    return io_slow(h);
+}
+int twh;                                            /* the writes: the one file open for writing, */
+char twb[IO_WB];                                    /* its bytes not written yet: twb..wp-1 */
+char *wp;
+void io_wflush(void) { if (wp != twb) fwrite(twh, twb, wp - twb); wp = twb; }
+void io_fail(char *msg) { if (twh) io_wflush(); eputs(msg); osexit(1); }   /* on the screen; the chain stops
+                                                    (STATUS 1); EXIT closes the file with every byte written */
 void io_out(int c) { putchar(c); }
-int twh;
-int io_wopen(char *path) { twh = fcreate(path, 0, 0); return twh != 0; }
-void io_wput(int c) { fputc(twh, c); }
-void io_wclose(void) { fclose(twh); twh = 0; }
+int io_wopen(char *path) { twh = fcreate(path, 0, 0); wp = twb; return twh != 0; }
+void io_wput(int c) { *wp = c; wp++; if (wp == twb + IO_WB) io_wflush(); }
+void io_wputs(char *s) {
+    char *p; char *e;
+    p = wp; e = twb + IO_WB;
+    while (*s) { *p = *s; p++; s++; if (p == e) { wp = p; io_wflush(); p = wp; } }
+    wp = p;
+}
+void io_wclose(void) { io_wflush(); fclose(twh); twh = 0; }
 void io_next(void) {                                /* the next pass, with the work prefix; the last returns */
     if (!io_next_pass[0]) return;
     argword(argstr(), targs, 127);

@@ -46,7 +46,14 @@ int lit_next[LITS_MAX];
 int lit_hash[HASH_SIZE];
 int nlits;
 
-/* the stack of open files, each with a 4-byte lookahead */
+/* the stack of open files, each with a lookahead of up to 3 bytes (lx_peek(2) is the farthest: lx_char, the
+   three-byte operators); the current file's is la0..la2 (nla of them) and fh its handle (2026-09-25: an array
+   element per byte read was a third of the lexer's time), the outer ones' in f_la */
+int la0;
+int la1;
+int la2;
+int nla;
+int fh;
 int fdep;
 int f_h[INCL_DEPTH];
 int f_line[INCL_DEPTH];
@@ -77,6 +84,7 @@ int esc_val(int c);
 int is_pyspace(int c);
 void lx_push(char *path);
 int lx_peek(int k);
+int lx_peek0(void);
 void lx_adv(void);
 void lx_err(char *msg);
 void lx_err2(char *msg, char *arg);
@@ -102,7 +110,8 @@ int is_pyspace(int c) { return c == ' ' || (c >= 9 && c <= 13) || (c >= 28 && c 
 int intern(char *s) {
     int h; int i; int id; char *p;
     h = 0;
-    for (p = s; *p; p++) h = (h * 31 + (*p & 255)) % HASH_SIZE;
+    for (p = s; *p; p++) h = (h * 4 + h + (*p & 255)) & 16383;    /* (2026-09-25: a mask, not a multiply and */
+    h = h & (HASH_SIZE - 1);                        /* a division a character; the ids do not depend on the hash) */
     for (id = nm_hash[h]; id; id = nm_next[id]) if (s_eq(npool + nm_off[id], s)) return id;
     if (nnames + 1 >= NAMES_MAX) fail("y1cc: too many names (NAMES_MAX)");
     nnames++; id = nnames;
@@ -117,8 +126,9 @@ int intern(char *s) {
 }
 int lit_intern(char *buf, int n) {
     int h; int i; int id; int same;
-    h = n % HASH_SIZE;
-    for (i = 0; i < n; i++) h = (h * 31 + (buf[i] & 255)) % HASH_SIZE;
+    h = n;
+    for (i = 0; i < n; i++) h = (h * 4 + h + (buf[i] & 255)) & 16383;
+    h = h & (HASH_SIZE - 1);
     for (id = lit_hash[h]; id; id = lit_next[id]) {
         if (lit_len[id] == n) {
             same = 1;
@@ -189,27 +199,37 @@ void lx_push(char *path) {
     if (!h) { e_start("y1cc: cannot open "); e_s(path); e_go(); }
     if (fdep || f_h[0]) {
         if (fdep + 1 >= INCL_DEPTH) fail("y1cc: #include nested too deep (INCL_DEPTH)");
+        i = fdep * 4;                               /* the including file's lookahead waits in f_la */
+        f_la[i] = la0; f_la[i + 1] = la1; f_la[i + 2] = la2; f_nla[fdep] = nla;
         fdep++;
     }
-    f_h[fdep] = h; f_line[fdep] = 1; f_nla[fdep] = 0; f_path[fdep] = ppn;
+    f_h[fdep] = h; f_line[fdep] = 1; f_path[fdep] = ppn;
+    fh = h; nla = 0;
     for (i = 0; path[i]; i++) {
         if (ppn >= PATHPOOL - 1) fail("y1cc: path pool full (PATHPOOL)");
         ppool[ppn] = path[i]; ppn++;
     }
     ppool[ppn] = 0; ppn++;
 }
-int lx_peek(int k) {                                /* the byte k ahead in the current file; 256 = its end */
-    int b;
-    b = fdep * 4;
-    while (f_nla[fdep] <= k) { f_la[b + f_nla[fdep]] = io_getc(f_h[fdep]); f_nla[fdep]++; }
-    return f_la[b + k];
+int lx_peek0(void) {                                /* the next byte of the current file; 256 = its end */
+    if (!nla) { la0 = io_getc(fh); nla = 1; }
+    return la0;
+}
+int lx_peek(int k) {                                /* the byte k (0..2) ahead in the current file; 256 = its end */
+    int c;
+    while (nla <= k) {
+        c = io_getc(fh);
+        if (nla == 0) la0 = c; else if (nla == 1) la1 = c; else la2 = c;
+        nla++;
+    }
+    if (k == 0) return la0;
+    if (k == 1) return la1;
+    return la2;
 }
 void lx_adv(void) {
-    int b; int i;
-    lx_peek(0);
-    b = fdep * 4;
-    for (i = 1; i < f_nla[fdep]; i++) f_la[b + i - 1] = f_la[b + i];
-    f_nla[fdep]--;
+    if (!nla) { io_getc(fh); return; }              /* (read and dropped, as lx_peek0() then the shift did) */
+    la0 = la1; la1 = la2;
+    nla--;
 }
 void lx_err(char *msg) {                            /* y1cc.py: "y1cc: path:line: msg" */
     e_start("y1cc: "); e_s(ppool + f_path[fdep]); e_s(":"); e_n(f_line[fdep]); e_s(": "); e_s(msg); e_go();
@@ -224,9 +244,15 @@ void put_tok(int kind, int val, int line) {
 int lex_one(void) {                                 /* one token; 0 at the end of the source */
     int c; int c1;
     for (;;) {
-        c = lx_peek(0);
+        c = lx_peek0();
         if (c == 256) {
-            if (fdep > 0) { io_close(f_h[fdep]); fdep--; continue; }
+            if (fdep > 0) {
+                io_close(f_h[fdep]); fdep--;
+                c = fdep * 4;                       /* the including file's lookahead back */
+                la0 = f_la[c]; la1 = f_la[c + 1]; la2 = f_la[c + 2]; nla = f_nla[fdep];
+                fh = f_h[fdep];
+                continue;
+            }
             put_tok(T_EOF, 0, f_line[0]); return 0;
         }
         if (c == 10) { f_line[fdep]++; lx_adv(); continue; }
@@ -261,11 +287,10 @@ void lx_directive(void) {                           /* a preprocessor line: #def
                                                        newlines (the line then ends at the newline after it), a //
                                                        comment ends it, neither inside quotes (2026-09-25: a comment
                                                        from a #define line onto the next was lexed as code there) */
-        c = lx_peek(0);
+        c = lx_peek0();
         if (c == 256 || c == 10) break;
-        if (!q && c == '/' && lx_peek(1) == '*') { dir_lines = dir_lines + lx_blockcomment(); c = ' '; }
-        else if (!q && c == '/' && lx_peek(1) == '/') {
-            for (;;) { c = lx_peek(0); if (c == 256 || c == 10) break; lx_adv(); }
+        if (!q && c == '/' && lx_peek(1) == '*') { dir_lines = dir_lines + lx_blockcomment(); c = ' '; } else if (!q && c == '/' && lx_peek(1) == '/') {
+            for (;;) { c = lx_peek0(); if (c == 256 || c == 10) break; lx_adv(); }
             break;
         } else {
             if (q) { if (c == q) q = 0; } else if (c == '"' || c == 39) q = c;
@@ -322,7 +347,7 @@ void lx_linecomment(void) {                         /* // ... ; "//#define NAME 
     lx_adv(); lx_adv();
     n = 0;
     for (;;) {
-        c = lx_peek(0);
+        c = lx_peek0();
         if (c == 256 || c == 10) break;
         if (n < DIR_MAX - 1) { dirbuf[n] = c; n++; }
         lx_adv();
@@ -350,7 +375,7 @@ int lx_blockcomment(void) {                         /* past a comment: its newli
     lx_adv(); lx_adv();
     lines = 0;
     for (;;) {
-        c = lx_peek(0);
+        c = lx_peek0();
         if (c == 256) lx_err("unterminated comment");
         if (c == '*' && lx_peek(1) == '/') { lx_adv(); lx_adv(); break; }
         if (c == 10) lines++;
@@ -362,7 +387,7 @@ void lx_ident(void) {
     int n; int c; int id;
     n = 0;
     for (;;) {
-        c = lx_peek(0);
+        c = lx_peek0();
         if (!(is_alnum(c) || c == '_')) break;
         if (n >= ID_MAX - 1) lx_err("identifier too long");
         idbuf[n] = c; n++;
@@ -378,11 +403,11 @@ void lx_ident(void) {
 void lx_number(void) {
     int n; int c; int v; int d; int big;
     n = 0; v = 0; big = 0;
-    if (lx_peek(0) == '0' && (lx_peek(1) == 'x' || lx_peek(1) == 'X')) {
+    if (lx_peek0() == '0' && (lx_peek(1) == 'x' || lx_peek(1) == 'X')) {
         idbuf[0] = '0'; idbuf[1] = lx_peek(1); n = 2;
         lx_adv(); lx_adv();
         for (;;) {
-            c = lx_peek(0);
+            c = lx_peek0();
             d = 99;
             if (is_digit(c)) d = c - '0';
             else if (c >= 'a' && c <= 'f') d = c - 'a' + 10;
@@ -395,7 +420,7 @@ void lx_number(void) {
         if (n == 2) lx_err("bad hex constant");
     } else {
         for (;;) {
-            c = lx_peek(0);
+            c = lx_peek0();
             if (!is_digit(c)) break;
             d = c - '0';
             if (v > 6553 || (v == 6553 && d > 5)) big = 1; else v = v * 10 + d;
@@ -428,7 +453,7 @@ void lx_string(void) {
     lx_adv();
     n = 0;
     for (;;) {
-        c = lx_peek(0);
+        c = lx_peek0();
         if (c == 256) lx_err("unterminated string");
         if (c == '"') { lx_adv(); break; }
         if (n >= STRLIT_MAX) lx_err("string literal too long (STRLIT_MAX)");
@@ -444,19 +469,31 @@ void lx_string(void) {
     }
     put_tok(T_STR, lit_intern(sbuf, n), f_line[fdep]);
 }
+char ophead[96];                /* (2026-09-25) the first operator (optext order) starting with byte 32 + i, 0 none, */
+char opnext[O_LAST + 1];        /* and the next one starting with the same byte: lx_punct tries only those */
+void op_chains(void) {
+    int op; int c; char *t;
+    for (op = O_LAST; op >= 1; op--) {
+        t = optext[op]; c = (t[0] & 255) - 32;
+        opnext[op] = ophead[c]; ophead[c] = op;
+    }
+}
 void lx_punct(void) {
-    int op; char *t; int k; int ok;
-    for (op = 1; op <= O_LAST; op++) {
+    int op; char *t; int k; int ok; int c;
+    c = lx_peek0();
+    op = 0;
+    if (c > 32 && c < 128) op = ophead[c - 32] & 255;
+    for (; op; op = opnext[op] & 255) {
         t = optext[op];
         ok = 1;
-        for (k = 0; t[k]; k++) if (lx_peek(k) != (t[k] & 255)) ok = 0;
+        for (k = 1; t[k]; k++) if (lx_peek(k) != (t[k] & 255)) ok = 0;
         if (ok) {
             put_tok(T_OP, op, f_line[fdep]);
             for (k = 0; t[k]; k++) lx_adv();
             return;
         }
     }
-    tbuf[0] = 39; tbuf[1] = lx_peek(0); tbuf[2] = 39; tbuf[3] = 0;
+    tbuf[0] = 39; tbuf[1] = lx_peek0(); tbuf[2] = 39; tbuf[3] = 0;
     lx_err2("bad character ", tbuf);
 }
 
@@ -486,6 +523,7 @@ int has_arg(char *w) {                              /* the index + 1 of the firs
 void y1cc_main(void) {
     int i; int n; int ok; int dot; int sep; int org; int flags; int stack;
     p_args();
+    op_chains();
     for (i = 1; i <= NM_PREDEF; i++) { intern(predef[i]); nm_out[i] = i; }   /* their ids are fixed (pdefs.h) */
     nout = NM_PREDEF;
     n = io_argc() - 1;                              /* the user's words are 1..n (0 is the work prefix) */

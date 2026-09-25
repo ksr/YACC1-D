@@ -46,7 +46,7 @@ Q.IMG: 210 bytes, 11 labels, load 3000 exec 3000
 QUIRKS: 210 bytes, 11 labels, load 3000 exec 3000
 /S> asm CC4.ASM
 
-CC4: 5154 bytes, 402 labels, load 5000 exec 5000
+CC4: 5551 bytes, 442 labels, load 5000 exec 5000
 /S> asm ERR.ASM
 
 asm: 3: undefined label: NOTHERE
@@ -62,8 +62,8 @@ usage: asm [-h] SRC [OUT]
 
    2584  CAT  @5000
   27706  CAT.ASM  @B000
-   5154  CC4  @5000
-  60697  CC4.ASM  @B000
+   5551  CC4  @5000
+  65973  CC4.ASM  @B000
      67  ECHOX  @5000
    1112  ECHOX.ASM  @B000
     135  ERR.ASM  @B000

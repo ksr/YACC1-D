@@ -211,7 +211,8 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   asm's, the P8X `disasm.c` driver loop); `vi` done 2026-09-23. Then BASIC as /BIN/BASIC.
 - `/BIN/ASM` follow-ups (2026-09-25): (1) speed - 13.4M instructions for `cat`'s 1,499 lines (y1cc's code for the
   per-character line scan is ~40% of it, the mnemonic hash and pattern matching most of the rest; a hand-written
-  assembly twin, as P8X has, would be the big step); (2) sources over 64K - every compiler pass's assembly is
+  assembly twin, as P8X has, would be the big step; 12.9M since `getln`'s quicker test the same day, and with the
+  compiler 2.7x faster the assembler is now 30% of compile + assemble); (2) sources over 64K - every compiler pass's assembly is
   110-257K, so a pass assembled on the machine needs 32-bit file positions in Y1/OS (or y1cc writing a pass as
   several files for INCLUDE); (3) what RC/asm accepts and asm refuses (MACRO, PUBLIC/EXTERN/LIB, '/' beyond 16 bits,
   EQU values beyond 16 bits) - nothing in the tree uses them; (4) `asm` inside a `>` or a pipe needs the OS's second
@@ -299,9 +300,18 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
      four `/BIN` commands and the compiler's own pass 4 among them, byte-identical to the host toolchain; about 32 us
      an instruction at 1 MHz, so hello 3.7 minutes, fib 18, cat.c an hour, pass 4 2.3 hours - software/compiler/
      README.md "Native".) Follow-ups:
-     - Speed: the passes read and write their files a byte and a syscall at a time (cc9, the text, is ~40% of a
-       compile, cc1 ~19%); whole sectors through `fread`/`fwrite` in `target_io.c` / `pcommon.c` would cut most of
-       the OS's share.
+     - (done 2026-09-25: **speed** - the passes' I/O buffered through the new syscall READN and a WRITE that copies
+       a sector's rest at once (both kernels, `tests/os/big.session`), and the hot spots `tests/native/profile.py`
+       (the emulator's `-P` PC histogram) showed: cc9 made the code text in all three section readings, parsed each
+       line three times, divided twice a digit; cc1's lookahead array, operator search and per-character hash; cc2's
+       token calls; cc4's matrix multiplies. Compiles 2.7x faster (all 27 of tests/native: 1,269M -> 468M
+       instructions), compile + assemble 2.2x (13.3 h -> 6.2 h at 1 MHz); cat.c 57 -> 24 minutes, pass 4 2.2 h -> 57
+       min. software/compiler/README.md "Native".) Left, largest first: `/BIN/ASM` is now 30% of compile + assemble
+       (`getln`, a third of it, ~50 instructions a source byte; `hash`, `asmcmd`, `same`); cc9's text building
+       (`mn_arg`, `Ls`, `bcat`: ~20% of a compile); the ROM loading each pass and `main`'s BSS clear (~2M a compile,
+       half of hello's time); cc2's parser; cc7's and cc8's records a byte at a time. The passes' room shrank for
+       it: cc1 314 bytes free, cc9 463 (`passes.py`), and `/BIN/ASM`'s symbol pool grew to 17,088 bytes (cc8's
+       labels need 16,925; the assembler fills 32,755 of 32,768).
      - The passes need the 2026-09-24 microcode (`--xisa`) since the chaining and the lexer's include stack: without
        it cc1, cc6 and cc9 are 26-985 bytes over 32K. So the machine needs the EEPROM reload and `tests/bench` (the
        --xisa item below) before it can compile, besides the CF interface Y1/OS itself needs.

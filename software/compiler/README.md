@@ -288,7 +288,7 @@ python3 tests/compiler/twin.py [--16]    # the twin test (make check, make cc-te
 | `c/y1cc.c` | the compiler, 3,122 lines: lexer, parser, AST, code generator, peephole, runtime text, driver (`y1cc_main`) |
 | `c/io.h` | the host interface: everything outside y1cc.c goes through these twelve functions (five more for the passes, below) |
 | `c/host_io.c` | io.h on the Mac (stdio, `getcwd`, `main(argc, argv)`), plain host C |
-| `c/target_io.c` | io.h on Y1/OS over `os/lib_fs.c` (the file syscalls), in the subset; compiled, not yet run; the three output sections, which only y1cc.c uses, are in `c/target_sec.c` (so the passes do not carry its buffers) |
+| `c/target_io.c` | io.h on Y1/OS over `os/lib_fs.c` (the file syscalls), in the subset; run by the native compiler's passes since 2026-09-25, buffered (READN, WRITE) the same day, with `c/target_rd.c` or `c/target_inc.c` (the reads); the three output sections, which only y1cc.c uses, are in `c/target_sec.c` (so the passes do not carry its buffers) |
 | `c/host.c`, `c/target.c` | the two translation units: limits + (target I/O) + `#include "y1cc.c"` |
 | `c/limits_host.h`, `c/limits_y1.h` | the table sizes (#define numbers only: y1cc's preprocessor has no `#if`) |
 | `c/host16.c` | the check build `y1cc16`: `#define int unsigned short` and `-funsigned-char` |
@@ -422,7 +422,8 @@ removes the files. On Y1/OS (2026-09-25) `/BIN/CC` does the same with the syscal
 Shared source: `pdefs.h` (every number: token and node kinds, record codes, mnemonics, macros...), `pcommon.c`
 (strings, errors, the file primitives: bytes, words, strings, whole table columns), `pnames.c` (the names' text),
 `past.c` (reading `W.ast`), `plabel.c` (a label's text from its owner); the I/O is `io.h` as for y1cc.c, grown by
-`io_wopen`/`io_wput`/`io_wclose` (one file written at a time, as Y1/OS allows), `io_done` and `io_lib`. The builds:
+`io_wopen`/`io_wput`/`io_wclose` (one file written at a time, as Y1/OS allows), `io_done` and `io_lib`, and on
+2026-09-25 `io_wputs` (a string) and `io_skip` (bytes read past), for the buffered Y1/OS layer. The builds:
 `hostp.c` / `host16p.c` (a pass on the Mac and its 16-bit check build, `-DPASS="cc1_lex.c"`), `plim_host.h` (the
 Mac's table sizes), `ylim/NAME.h` and `target/NAME.c` (each pass's Y1/OS table sizes and its Y1/OS translation unit,
 as `target.c` is y1cc.c's), `stackprobe.c` (passes.py's stack probe), `lib/y1ccrt.txt` (the runtime helpers' text).
@@ -490,6 +491,15 @@ prologue and epilogue cost cc6 135 bytes of code, the other passes 11.)
 (Updated after `--xisa`, same day: cc6 grew by the page planning (2.9K of code, 3.3K of tables), cc9 kept its room
 because five of its macros became cc8's instructions; the table before it had cc6 at 26,206 and cc9 at 244 free. The
 same passes compiled with `--xisa` are in the section "--xisa" above: 101,884 bytes of code instead of 123,811.)
+
+(2026-09-25, the passes as the native compiler is built - `--xisa`, `--stack 0xCFFF` - after the buffered I/O and
+the speed work, `passes.py`: code, image, tables, free: cc1 12,134, 13,733, 18,631, 314; cc2 14,892, 15,630, 12,271,
+3,663; cc3 7,115, 8,134, 12,771, 11,775; cc4 5,090, 5,562, 14,034, 13,086; cc5 7,481, 8,063, 18,110, 6,509; cc6
+9,886, 10,611, 20,347, 1,214; cc7 13,614, 14,106, 17,152, 1,313; cc8 22,470, 23,949, 4,026, 4,365; cc9 15,927,
+17,899, 14,302, 463. Before them cc1 had 1,417 free, cc9 1,539, cc6 1,991, cc7 2,257. The buffers take 128-256 bytes a
+pass; `VARS_MAX` went from 380 to 400 in cc5-cc7 and cc9, because the passes' own sources (they compile themselves)
+now have 384 variables in cc8's. With `--xisa` the tables start on a page boundary, so a pass's room moves in steps
+of 256 as its image crosses one: cc9's image is 21 bytes below the next, cc1's 91.)
 
 Every pass fits. The nine together are 123,811 bytes of code against y1cc.c's 75,445: each carries the shared
 utilities and file code, and the work split across passes costs its intermediate records. What made them fit: the
@@ -568,6 +578,15 @@ run FIB
 - **The I/O layer**: `c/target_io.c` (every pass: the command line, `/LIB`, the output file, EXIT/EXEC) with
   `c/target_rd.c` (plain reads: passes 2-9) or `c/target_inc.c` (the lexer: a stack of virtual handles, the three
   innermost real, the others closed and SEEKed back to on the way out; the /BIN sources nest five `#include`s).
+  **Buffered** since 2026-09-25 (a syscall per byte read or written was a third of a compile): `io_getc` takes the
+  next byte from a buffer of `IO_RB` bytes that the syscall READN fills (Y1/OS's 25th, `os/README.md`: up to n bytes,
+  never past a sector); `io_wput` collects `IO_WB` bytes for one WRITE, `io_wputs` a whole line (cc9). `IO_RB` and
+  `IO_WB` are in each pass's `ylim/NAME.h` (64 or 128; cc1 and cc9, the fullest, 64). One read buffer is enough: a pass
+  reads one file at a time (`target_rd.c`: the buffer belongs to the handle read first; another one, only ever read on
+  the way to an error message, goes byte by byte), and the lexer switches files only at an `#include` and at an
+  included file's end (`target_inc.c`: the file it leaves gives back the bytes it has not had and is SEEKed there when
+  it is read again). `io_skip` (io.h, for the passes that skip function bodies in `W.ast`) moves through the buffer a
+  block at a time. The files' bytes are the same as before.
 - **First run**, 2026-09-25: target_io.c, compiled since 2026-09-24 and never run, worked at once: the passes run
   one by one with the shell's `run` compiled hello, fib, sieve, calls, globals, chars, structs, switch, rfact and
   stack byte-identically to y1cc.py (the header's date is `0000-00-00 00:00`: Y1/OS has no clock); then chained
@@ -575,7 +594,8 @@ run FIB
   92M; cc1 (the lexer, a syscall per source byte) and cc9 (the text, a syscall per output byte) take most of it.
 - **The stack**: `emulator -S` reports each pass's lowest SP; the deepest on the ten was cc2 at $CC8F (880 bytes,
   rfact's expressions), everything else under 250 bytes, and every pass kept at least 1,476 bytes between its stack
-  and its last byte of data (cc1; 272 before the passes were built with `--xisa`).
+  and its last byte of data (cc1; 272 before the passes were built with `--xisa`). Since the buffered I/O and the
+  speed work (2026-09-25) the least is 373 bytes (cc1), then cc9 518 (passes.py: 314 and 463 free, below).
 - **The test** (`tests/native/run.py`, in `make check` and `make native-test`): 27 compiles on the instruction-level
   emulator, 4 of them (hello, fib, echo, cat) also on the microcode emulator (`--all-uc`: all 27, 27 of 27 on
   2026-09-25 in 1.53G instructions, 25.4G steps, 49.2G clocks: 13.7 hours at 1 MHz, 18 minutes of emulation):
@@ -587,25 +607,51 @@ run FIB
   y1cc.py's (the date masked), the program file byte-identical to the host toolchain's (y1cc.py + the host assembler
   + img2bin; the four commands also to the Makefile's `/BIN` builds), and the output is the test's `.out` (or, for a
   command, what `/BIN`'s own build prints in the same session). The deepest stack of any pass kept 1,474 bytes of
-  room above its data (cc1).
+  room above its data (cc1); 373 since 2026-09-25's buffers (above).
 - **How long** (instructions on the instruction-level emulator; the microcode emulator counted 16.6 steps and 32.1
-  clocks an instruction on the same work, so at 1 MHz an instruction is about 32 us):
+  clocks an instruction on hello, fib, echo and cat before 2026-09-25's speed work, 16.7 and 32.4 after, so at 1 MHz
+  an instruction is about 32 us). Before and after the buffered I/O and the passes' hot spots (2026-09-25, the same
+  27 programs in the same session, `tests/native/run.py --int`):
 
-  | program | compile | assemble | run | at 1 MHz |
-  |---|---|---|---|---|
-  | hello.c (9 lines) | 5.8M | 0.9M | 2.5K | 3 min 40 s |
-  | fib.c | 28.1M | 5.8M | 163K | 18 min |
-  | echo.c (`/BIN/ECHO`) | 11.7M | 0.6M | 1K | 6 min 50 s |
-  | cat.c (5 nested `#include`s) | 92.4M | 13.6M | 94K | 58 min |
-  | wc.c | 107.7M | 16.8M | 254K | 1 h 08 min |
-  | xisa.c (the biggest test) | 132.9M | 28.4M | 97K | 1 h 28 min |
-  | pass 4 of the compiler (`target/calls.c`, 60K of assembly) | 216.8M | 35.2M | - | 2 h 18 min |
-  | all 27 | 1,269M | 225M | 2.3M | about 13 h |
+  | program | compile before | after | assemble before | after | all | at 1 MHz before | after | compile alone |
+  |---|---|---|---|---|---|---|---|---|
+  | hello.c (9 lines) | 5.8M | 3.5M | 0.9M | 0.8M | 1.5x | 3 min 32 s | 2 min 20 s | 1.6x |
+  | fib.c | 28.1M | 10.9M | 5.8M | 5.5M | 2.1x | 18 min 09 s | 8 min 51 s | 2.6x |
+  | echo.c (`/BIN/ECHO`) | 11.7M | 5.1M | 0.6M | 0.6M | 2.2x | 6 min 36 s | 3 min 05 s | 2.3x |
+  | cat.c (5 nested `#include`s) | 92.4M | 31.3M | 13.6M | 12.9M | 2.4x | 56 min 40 s | 23 min 50 s | 3.0x |
+  | wc.c | 107.7M | 36.4M | 16.8M | 16.0M | 2.4x | 1 h 06 min | 28 min 18 s | 3.0x |
+  | xisa.c (the biggest test) | 132.9M | 50.0M | 28.4M | 27.3M | 2.1x | 1 h 26 min | 41 min 44 s | 2.7x |
+  | pass 4 of the compiler (`target/calls.c` as of 2026-09-25 morning, 60K of assembly) | 216.8M | 72.6M | 35.2M | 33.5M | 2.4x | 2 h 14 min | 57 min | 3.0x |
+  | all 27 | 1,269M | 468M | 225M | 217M | 2.2x | 13 h 19 min | 6 h 09 min | 2.7x |
 
-  About 5,000-10,000 instructions per line of C: the passes pass their work through files a byte and a syscall at a
-  time, and cc9 alone (the assembly text, written a byte at a time through the OS) is about 40% of each compile,
-  cc1 (the lexer, a byte and a syscall at a time) about a fifth, the other seven 4-8% each. The obvious speedup: whole sectors through
-  `fread`/`fwrite` in `target_io.c` and `pcommon.c` instead of a syscall per byte (BACKLOG).
+  (Pass 4's row compiles the same source both times; the test compiles the tree's own `calls.c`, which the I/O work
+  itself grew: 78.8M + 35.7M now.) The microcode emulator's clocks agree: hello, fib, echo and cat with their runs
+  took 5.26G clocks before, 2.45G after (2.1x).
+
+  Where the time went, and what was done (`tests/native/profile.py`: the emulator's PC histogram, `emulator -P`,
+  turned into instructions per function of every pass, the assembler and the OS):
+  - **The OS's byte path**: GETC/PUTC were about 100 instructions a byte with the syscall, the handle checks and
+    the 24-bit position, a fifth of all the time and most of cc3-cc8's; now READN and WRITE copy a sector's bytes at
+    7 instructions each (`os/README.md`) and the passes' buffers cost about 30 (`io_getc`'s fast path).
+  - **cc9 made every code line's text three times**, once per section, and dropped it twice: it now reads past an
+    instruction record in the data and BSS readings (`r_skip`). Its peephole parsed each line three times (now once:
+    the pending line's words are kept); `bnum` did two divisions a digit (now subtraction by powers of ten, `pnum`);
+    `bcat`/`bchr`/`s_len` indexed (now pointer walks, and the instruction builders append at the line's end, `Ls`);
+    `lcand` built a label with a `bchr` per character. cc9: 33.5M -> 9.2M on cat.c.
+  - **cc1** kept the lookahead in an array indexed by the include depth (a third of the lexer's time; now three
+    variables, saved and restored at an `#include`), tried all 45 operators for every punctuation mark (now a chain
+    per first byte, `op_chains`), and hashed every name with a multiply and a division per character (now `5h + c`
+    and a mask: the tables are 128/256 entries). cc1: 22.4M -> 5.1M on cat.c.
+  - **cc2**: `tk`/`tv`/`is_op`/`is_kw` call `need_tok` only when the token is not read yet (a third of the parser's
+    time); **cc4**: the reach matrix's closure walks row pointers (it multiplied by the row length per bit and per
+    byte); **cc5**: `lhash` as cc1's; `rarr`/`warr` and the `skip`s through pointers and `io_skip`.
+  - **/BIN/ASM**: `getln` tests a character against `;`, `:` and the quotes only when it is at most `;` (5% of the
+    assembler). The assembler is now the biggest single step (30%): `getln` (a third of it: each source byte is
+    copied, upper-cased and parsed, about 50 instructions), `hash`, `asmcmd`, `same`; the assembly text itself
+    (cc9 writes 60-260K and the assembler reads it twice) is the design's cost.
+  - Left: each pass's load by the ROM and `main`'s BSS clear (about 2M instructions a compile: half of hello's
+    time), cc9's text building (`mn_arg`, `Ls`, `bcat`: about 20% of a compile), cc2's parser, cc7's and cc8's table
+    and tree records (`wi`/`ri` a byte at a time through `io_wput`/`io_getc`).
 
 **y1cc.c stays** as the single-program C twin: it is what the passes were cut from, `twin.py` keeps it identical to
 y1cc.py, and it is the quicker program to read. A change to y1cc.py now has two C counterparts to follow it; once

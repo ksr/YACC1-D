@@ -37,13 +37,14 @@ void load_s1(void) {                                /* W.s1 (cc3_decl.c): the fu
     ns = ri(h); nm = ri(h); nfuncs = ri(h); ri(h);
     if (nfuncs >= FUNCS_MAX || nfuncs >= REACH_ROW * 8 || (nfuncs + 1) * REACH_ROW > REACH_BYTES)
         fail("y1cc: too many functions (FUNCS_MAX, REACH_ROW, REACH_BYTES)");
-    skip(h, ns * 8 + nm * 9);
-    rarr(h, f_name + 1, nfuncs); skip(h, nfuncs * 5); rarr(h, f_body + 1, nfuncs);
+    io_skip(h, ns * 8 + nm * 9);
+    rarr(h, f_name + 1, nfuncs); io_skip(h, nfuncs * 5); rarr(h, f_body + 1, nfuncs);
     io_close(h);
     for (i = 1; i <= nfuncs; i++) nm_fn[f_name[i]] = i;
 }
 void y1cc_main(void) {
     int h; int i; int j; int k; int t; int d; int f; int r; int c; int n; int kd; int a; int from; int m;
+    char *rk; char *ra; char *p; char *q; int kb; int km;
     p_args();
     names_load();
     load_s1();
@@ -65,12 +66,18 @@ void y1cc_main(void) {
                 }
             }
         }
-        skip(h, rec_ndecl * 4); skip(h, rec_blen);
+        io_skip(h, rec_ndecl * 4); io_skip(h, rec_blen);
     }
     io_close(h);
-    for (k = 1; k <= nfuncs; k++)                   /* Warshall: reach = the transitive closure of the direct calls */
-        for (i = 1; i <= nfuncs; i++)
-            if (bit(i, k)) for (j = 0; j < REACH_ROW; j++) rbits[i * REACH_ROW + j] = rbits[i * REACH_ROW + j] | rbits[k * REACH_ROW + j];
+    for (k = 1; k <= nfuncs; k++) {                 /* Warshall: reach = the transitive closure of the direct calls */
+        rk = rbits + k * REACH_ROW;                 /* (row pointers, not a multiply per bit and per byte: 2026-09-25) */
+        kb = k >> 3; km = 1 << (k & 7);
+        ra = rbits + REACH_ROW;
+        for (i = 1; i <= nfuncs; i++) {
+            if (ra[kb] & km) { p = ra; q = rk; for (j = 0; j < REACH_ROW; j++) { *p = *p | *q; p++; q++; } }
+            ra = ra + REACH_ROW;
+        }
+    }
     if (bit(f, f)) {                                /* main cannot be part of a cycle */
         for (i = 0; i < nwlist; i++)                /* sorted by name, as y1cc.py prints them */
             for (j = i + 1; j < nwlist; j++)
@@ -112,7 +119,7 @@ void y1cc_main(void) {
             for (j = 0; ebuf[j]; j++) perr_msg[j] = ebuf[j];
             perr_msg[j] = 0;
         }
-        skip(h, rec_ndecl * 4); skip(h, rec_blen);
+        io_skip(h, rec_ndecl * 4); io_skip(h, rec_blen);
     }
     io_close(h);
     if (perr_key) fail(perr_msg);

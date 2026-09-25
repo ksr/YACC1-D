@@ -58,6 +58,8 @@ int io_getc(int h) {
     return c == EOF ? 256 : c;
 }
 
+void io_skip(int h, int n) { fseek(files[h], n, SEEK_CUR); }
+
 void io_close(int h) {
     if (h > 0 && h < NFILES && files[h]) { fclose(files[h]); files[h] = 0; }
 }
@@ -171,6 +173,7 @@ int io_wopen(char *path) {
 }
 
 void io_wput(int c) { fputc(c, wfile); }
+void io_wputs(char *s) { fputs(s, wfile); }
 
 void io_wclose(void) {
     if (wfile && fclose(wfile) != 0) { fputs("y1cc: cannot write an intermediate file\n", stderr); exit(1); }

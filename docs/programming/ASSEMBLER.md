@@ -275,15 +275,17 @@ asm -h MONITOR.ASM M.IMG   an output name; a source name without '.' gets .ASM
   pattern it tries) and name the line in its own file; after an error the output file is deleted (RC/asm writes
   it anyway); a missing INCLUDE file is an error (RC/asm prints a message and goes on); lines of 100-254 characters
   work (quirk 12).
-- **Limits**: 16,640 bytes of symbol table, 5 + the name's length a label (y1cc's labels average 7 characters: about
-  1,360; the biggest compiler pass, cc8, has 1,326 in 16,206 bytes); 29 characters a label, 45 tokens an
+- **Limits**: 17,088 bytes of symbol table (16,640 until 2026-09-25, when cc8's buffered I/O outgrew it), 5 + the
+  name's length a label (y1cc's labels average 7 characters: about 1,400; the biggest compiler pass, cc8, has 1,383
+  in 16,925 bytes); 29 characters a label, 45 tokens an
   expression, 32 characters a token; source files up to 64K (Y1/OS's positions are 16 bits); the program file
-  needs the code to go up in address (else `-h`). 13,178 bytes of code and tables + 19,121 of data = 32,299 of the
-  32K program area ($5000-$CFFF); 11,779 + 19,376 built with `--xisa`. The output takes Y1/OS's one write handle,
+  needs the code to go up in address (else `-h`). 13,186 bytes of code and tables + 19,569 of data = 32,755 of the
+  32K program area ($5000-$CFFF). The output takes Y1/OS's one write handle,
   so `asm` does not work inside a `>` or a pipe ("cannot create").
 - **Speed** (instruction-level emulator; the microcode emulator takes ~17 steps an instruction): `hello`'s 82 lines
   0.85M instructions, `cat`'s 1,499 lines 13.4M, the monitor's 1,535 lines to hex 13.7M, compiler pass cc4
-  (`--xisa`, 3,037 lines, 58,585 bytes: the only pass under 64K) 34.6M.
+  (`--xisa`, 3,037 lines, 58,585 bytes: the only pass under 64K) 34.6M. 2026-09-25: `getln` tests a character
+  against `;`, `:` and the quotes only when it is at most `;`: `cat` 12.9M; `getln` is still a third of the time.
 - **Tests**: `tests/asm/run.py` (in `make check`, `make asm-test`) builds `asm.c` for the Mac with the YACC1's
   integer types against an emulation of the Y1/OS syscalls (`tests/asm/host_asm.c`, `host_sys.c`) and compares it
   with RC/asm on every source in the tree - each y1cc compile of `tests/compiler/corpus.py` plain and `--xisa` (262,

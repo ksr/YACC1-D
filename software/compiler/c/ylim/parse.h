@@ -6,3 +6,5 @@
 #define LINE_MAX     128
 #define ID_MAX       64
 #define EBUF_MAX     256
+#define IO_RB        128           /* target_io.c (2026-09-25): the bytes read ahead (one buffer), */
+#define IO_WB        128           /* and for the file being written */

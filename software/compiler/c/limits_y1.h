@@ -28,3 +28,5 @@
 #define PARK_MAX 32             /* arguments waiting on the stack, all calls being generated */
 #define CASES_MAX 64            /* cases of one switch */
 #define EBUF_MAX 300            /* an error message */
+#define IO_RB        128           /* target_io.c (2026-09-25): the bytes read ahead (one buffer), */
+#define IO_WB        128           /* and for the file being written */

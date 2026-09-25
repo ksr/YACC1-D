@@ -98,7 +98,13 @@ int st_of(int base) {                               /* the struct a tag names (t
 }
 
 /* ---- labels: y1cc.c ulabel(), with the text made again from the owner (plabel.c) when it is compared --------- */
-int lhash(char *s) { int h; h = 0; while (*s) { h = (h * 31 + lower(*s & 255)) % HASH_SIZE; s++; } return h; }
+int lhash(char *s) {                                /* (2026-09-25: a mask, not a multiply and a division a
+                                                       character; only which labels are alike matters, not the chains) */
+    int h; int c;
+    h = 0;
+    while (*s) { c = *s & 255; if (c >= 'A' && c <= 'Z') c = c + 32; h = (h * 4 + h + c) & 16383; s++; }
+    return h & (HASH_SIZE - 1);
+}
 int ul_find(char *s) {                              /* case-folded membership */
     int id; int i;
     for (id = ul_hash[lhash(s)]; id; id = ul_next[id]) {
@@ -244,7 +250,7 @@ void y1cc_main(void) {
         r = 0;
         if (rec_ne == 1 && nk[d] == N_FUNC) { r = fn_of(d); if (!f_live[r]) nd_++; }
         if (r && f_live[r] && f_body[r] == rec_ord) {
-            skip(h, rec_ncall * 7); layout_func(h, r); skip(h, rec_blen);
+            io_skip(h, rec_ncall * 7); layout_func(h, r); io_skip(h, rec_blen);
         } else rec_skip(h);
     }
     io_close(h);

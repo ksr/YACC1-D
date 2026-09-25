@@ -48,8 +48,8 @@ int rec_head(int h) {                               /* 1 with the heads loaded, 
 }
 void rec_body(int h) {
     int i;
-    skip(h, rec_ncall * 7); skip(h, rec_ndecl * 4);
+    io_skip(h, rec_ncall * 7); io_skip(h, rec_ndecl * 4);
     if (rec_n >= NODES_MAX) fail("y1cc: function too big (NODES_MAX)");
     for (i = rec_h + 1; i <= rec_n; i++) rec_node(h, i);
 }
-void rec_skip(int h) { skip(h, rec_ncall * 7); skip(h, rec_ndecl * 4); skip(h, rec_blen); }
+void rec_skip(int h) { io_skip(h, rec_ncall * 7); io_skip(h, rec_ndecl * 4); io_skip(h, rec_blen); }

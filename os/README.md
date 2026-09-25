@@ -336,8 +336,9 @@ program file `HELLO` (the bytes from the first address to the last, gaps as zero
 exec address in its directory entry), which `run HELLO` loads and calls; `asm -h HELLO.ASM` writes `HELLO.IMG`, the
 Intel hex the host writes. Errors are reported with their line numbers and the output is deleted. Its instruction
 table (`asm_optab.c`) is generated from `yacc1.def` by `tools/gen_y1_optab.py` (the Makefile regenerates it), so the
-two assemblers cannot disagree about an instruction. The image is 13,178 bytes and the symbol table takes the rest of
-the program area, 16,640 bytes (5 + the name's length a label: the biggest compiler pass's 1,326 labels fit); sources
+two assemblers cannot disagree about an instruction. The image is 13,186 bytes and the symbol table takes the rest of
+the program area, 17,088 bytes (5 + the name's length a label: the biggest compiler pass's 1,383 labels fit; 16,640
+until 2026-09-25, when cc8's buffered I/O outgrew it); sources
 are up to 16M (24-bit file positions since 2026-09-25; 64K before), and the output needs the one write handle, so `asm` does not
 run inside a `>` or a pipe. `tests/asm/run.py` compares it with RC/asm on 297 sources (built for the Mac against an
 emulation of these syscalls) and, with `--target`, runs it under Y1/OS on both emulators: y1cc programs assembled and

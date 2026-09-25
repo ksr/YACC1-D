@@ -544,13 +544,13 @@ void load_sym(void) {                               /* W.sym (cc5_layout.c), W.c
     h = ropen(".lit");
     nlits = ri(h);
     if (nlits >= LITS_MAX) fail("y1cc: too many string literals (LITS_MAX)");
-    for (i = 1; i <= nlits; i++) { n = ri(h); lit_len[i] = n; skip(h, n); }
+    for (i = 1; i <= nlits; i++) { n = ri(h); lit_len[i] = n; io_skip(h, n); }
     io_close(h);
     h = ropen(".cg");                               /* the reach rows (cc4_calls.c) */
     nfuncs = ri(h); n = ri(h);
     if (nfuncs >= FUNCS_MAX || n > REACH_ROW || (nfuncs + 1) * REACH_ROW > REACH_BYTES)
         fail("y1cc: too many functions (FUNCS_MAX, REACH_ROW, REACH_BYTES)");
-    skip(h, nfuncs);
+    io_skip(h, nfuncs);
     for (i = 1; i <= nfuncs; i++) rarrc(h, rbits + i * REACH_ROW, n);
     io_close(h);
     h = ropen(".sym");

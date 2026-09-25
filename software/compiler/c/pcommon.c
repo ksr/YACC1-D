@@ -14,6 +14,7 @@ int s_cmp(char *a, char *b);
 void bcat(char *buf, char *s);
 void bchr(char *buf, int c);
 void bnum(char *buf, int n);
+void pnum(char *d, int n);
 int is_alpha(int c);
 int is_digit(int c);
 int is_alnum(int c);
@@ -39,7 +40,6 @@ void rarr(int h, int *a, int n);
 void rarrc(int h, char *a, int n);
 void warr(int *a, int n);
 void warrc(char *a, int n);
-void skip(int h, int n);
 void nm_fetch(int id, char *buf);
 void p_args(void);
 
@@ -48,7 +48,8 @@ char enbuf[12];
 char wdir[LINE_MAX];            /* the work prefix: every intermediate file is wdir + an extension */
 char wpbuf[LINE_MAX];
 
-int s_len(char *s) { int n; n = 0; while (s[n]) n++; return n; }
+int s_len(char *s) { char *p; p = s; while (*p) p++; return p - s; }   /* (pointer walks: y1cc's s[n] costs an add
+                                                       per character; 2026-09-25) */
 int s_eq(char *a, char *b) { while (*a && *a == *b) { a++; b++; } return *a == *b; }
 int s_starts(char *s, char *p) { while (*p) { if (*s != *p) return 0; s++; p++; } return 1; }
 int s_cmp(char *a, char *b) {                       /* 0 equal, 1 a < b, 2 a > b (byte order, as Python sorts) */
@@ -58,24 +59,32 @@ int s_cmp(char *a, char *b) {                       /* 0 equal, 1 a < b, 2 a > b
     return 2;
 }
 void bcat(char *buf, char *s) {
-    int n;
-    n = s_len(buf);
-    while (*s) { if (n >= LINE_MAX - 1) fail("y1cc: line too long"); buf[n] = *s; n++; s++; }
-    buf[n] = 0;
+    char *p; char *e;
+    p = buf; while (*p) p++;
+    e = buf + LINE_MAX - 1;
+    while (*s) { if (p >= e) fail("y1cc: line too long"); *p = *s; p++; s++; }
+    *p = 0;
 }
 void bchr(char *buf, int c) {
-    int n;
-    n = s_len(buf);
-    if (n >= LINE_MAX - 1) fail("y1cc: line too long");
-    buf[n] = c; buf[n + 1] = 0;
+    char *p;
+    p = buf; while (*p) p++;
+    if (p >= buf + LINE_MAX - 1) fail("y1cc: line too long");
+    *p = c; p[1] = 0;
 }
-void bnum(char *buf, int n) {                       /* decimal, n >= 0 */
-    char d[8]; int k;
-    k = 0;
-    if (n == 0) { bchr(buf, '0'); return; }
-    while (n > 0) { d[k] = '0' + n % 10; k++; n = n / 10; }
-    while (k > 0) { k--; bchr(buf, d[k]); }
+int pten[] = {10000, 1000, 100, 10, 1};
+void pnum(char *d, int n) {                         /* n in decimal into d (up to 6 bytes with the NUL), by
+                                                       subtraction: two divisions a digit were a good part of cc9's
+                                                       time (2026-09-25) */
+    int i; int c; int p; char *s;
+    s = d;
+    for (i = 0; i < 5; i++) {
+        p = pten[i]; c = '0';
+        while (n >= p) { n = n - p; c++; }
+        if (c != '0' || d != s || i == 4) { *d = c; d++; }
+    }
+    *d = 0;
 }
+void bnum(char *buf, int n) { char d[8]; pnum(d, n); bcat(buf, d); }   /* decimal, n >= 0 */
 int is_alpha(int c) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'); }
 int is_digit(int c) { return c >= '0' && c <= '9'; }
 int is_alnum(int c) { return is_alpha(c) || is_digit(c); }
@@ -128,11 +137,10 @@ void ws(char *s) { while (*s) { io_wput(*s & 255); s++; } io_wput(0); }
 void wclose(void) { io_wclose(); }
 /* whole columns: n words / bytes of a table (the tables go through the files a column at a time: one call per
    column is much less code than a statement per field) */
-void rarr(int h, int *a, int n) { int i; for (i = 0; i < n; i++) a[i] = ri(h); }
-void rarrc(int h, char *a, int n) { int i; for (i = 0; i < n; i++) a[i] = rb(h); }
-void warr(int *a, int n) { int i; for (i = 0; i < n; i++) wi(a[i]); }
-void warrc(char *a, int n) { int i; for (i = 0; i < n; i++) wb(a[i]); }
-void skip(int h, int n) { while (n) { rb(h); n--; } }
+void rarr(int h, int *a, int n) { while (n) { *a = ri(h); a++; n--; } }
+void rarrc(int h, char *a, int n) { while (n) { *a = io_getc(h); a++; n--; } }
+void warr(int *a, int n) { while (n) { wi(*a); a++; n--; } }
+void warrc(char *a, int n) { while (n) { io_wput(*a & 255); a++; n--; } }
 
 /* the text of name id (1..) from the .nam file, for an error message: the passes after cc2 keep no name text */
 void nm_fetch(int id, char *buf) {

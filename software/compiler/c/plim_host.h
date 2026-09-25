@@ -4,7 +4,7 @@
    (NAME)" error. */
 #define NAMES_MAX 4000          /* names (identifiers, keywords, tags, #define names) */
 #define NAMEPOOL 32000          /* their text */
-#define HASH_SIZE 1021          /* hash chains of names, literals, labels */
+#define HASH_SIZE 1024          /* hash chains of names, literals, labels (a power of two: h & (HASH_SIZE - 1)) */
 #define STRPOOL 32000           /* string literal bytes (each distinct literal once) */
 #define LITS_MAX 2000           /* distinct string literals */
 #define STRLIT_MAX 1024         /* bytes in one string literal */

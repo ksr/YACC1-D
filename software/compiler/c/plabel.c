@@ -21,10 +21,16 @@ void lwant(int own, char *buf) {                    /* the text y1cc.c asked ula
     bcat(buf, nm_text(v_name[own]));
 }
 void lcand(char *want, int n, char *out) {          /* sanitised; want[:29], or want[:24] + "_n" */
-    int i; int k;
-    lqbuf[0] = 0;
-    if (!want[0] || is_digit(want[0])) bchr(lqbuf, '_');
-    for (i = 0; want[i]; i++) { if (is_alnum(want[i]) || want[i] == '_') bchr(lqbuf, want[i]); else bchr(lqbuf, '_'); }
+    int i; int k; int c; char *q;
+    q = lqbuf;                                      /* (a pointer, not bchr per character: 2026-09-25) */
+    if (!want[0] || is_digit(want[0])) { *q = '_'; q++; }
+    while (*want) {
+        c = *want & 255;
+        if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_')) c = '_';
+        if (q >= lqbuf + LINE_MAX - 1) fail("y1cc: line too long");
+        *q = c; q++; want++;
+    }
+    *q = 0;
     k = n ? LABEL_MAX - 5 : LABEL_MAX;
     for (i = 0; i < k && lqbuf[i]; i++) out[i] = lqbuf[i];
     out[i] = 0;

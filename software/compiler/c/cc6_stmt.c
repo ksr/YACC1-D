@@ -276,21 +276,21 @@ void load_sym(void) {                              /* W.sym (cc5_layout.c): the 
     fmain = ri(h); nglob = ri(h); ns = ri(h); nm = ri(h); nfuncs = ri(h); nvars = ri(h);
     if (nfuncs >= FUNCS_MAX) fail("y1cc: too many functions (FUNCS_MAX)");
     if (nvars >= VARS_MAX) fail("y1cc: too many variables (VARS_MAX)");
-    skip(h, ns * 8 + nm * 9);                       /* the structs and members */
+    io_skip(h, ns * 8 + nm * 9);                       /* the structs and members */
     n = nfuncs;
-    rarr(h, f_name + 1, n); rarr(h, f_rbase + 1, n); rarrc(h, f_rptr + 1, n); skip(h, n * 2);
+    rarr(h, f_name + 1, n); rarr(h, f_rbase + 1, n); rarrc(h, f_rptr + 1, n); io_skip(h, n * 2);
     rarr(h, f_body + 1, n); rarrc(h, f_live + 1, n); rarr(h, f_vfirst + 1, n); rarr(h, f_vn + 1, n);
-    skip(h, n * 4);
+    io_skip(h, n * 4);
     n = nvars;
-    rarr(h, v_name + 1, n); rarr(h, v_base + 1, n); skip(h, n * 4); rarr(h, v_size_ + 1, n); rarrc(h, v_serr + 1, n);
+    rarr(h, v_name + 1, n); rarr(h, v_base + 1, n); io_skip(h, n * 4); rarr(h, v_size_ + 1, n); rarrc(h, v_serr + 1, n);
     io_close(h);
     if (!opt_xisa) return;
     h = ropen(".cg");                               /* the reach rows (cc4_calls.c): who reaches itself */
-    n = ri(h); nm = ri(h); skip(h, n);
+    n = ri(h); nm = ri(h); io_skip(h, n);
     for (ns = 1; ns <= n; ns++) {
-        skip(h, ns >> 3);
+        io_skip(h, ns >> 3);
         if ((rb(h) >> (ns & 7)) & 1) f_rec[ns] = 1;
-        skip(h, nm - (ns >> 3) - 1);
+        io_skip(h, nm - (ns >> 3) - 1);
     }
     io_close(h);
 }

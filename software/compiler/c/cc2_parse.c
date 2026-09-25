@@ -131,10 +131,20 @@ void need_tok(int i) {
         tk_have++;
     }
 }
-int tk(int d) { need_tok(ti + d); return tk_kind[(ti + d) & 7]; }
-int tv(int d) { need_tok(ti + d); return tk_val[(ti + d) & 7]; }
-int is_op(int d, int op) { return tk(d) == T_OP && tv(d) == op; }
-int is_kw(int d, int kw) { return tk(d) == T_KW && tv(d) == kw; }
+/* (the token asked for is usually read already: need_tok only when not, and one index for kind and value,
+   2026-09-25: these four were a third of the parser's time) */
+int tk(int d) { d = ti + d; if (tk_have <= d) need_tok(d); return tk_kind[d & 7]; }
+int tv(int d) { d = ti + d; if (tk_have <= d) need_tok(d); return tk_val[d & 7]; }
+int is_op(int d, int op) {
+    d = ti + d; if (tk_have <= d) need_tok(d);
+    d = d & 7;
+    return tk_kind[d] == T_OP && tk_val[d] == op;
+}
+int is_kw(int d, int kw) {
+    d = ti + d; if (tk_have <= d) need_tok(d);
+    d = d & 7;
+    return tk_kind[d] == T_KW && tk_val[d] == kw;
+}
 void perr(char *msg) {                              /* "y1cc: line N: msg" */
     need_tok(ti);
     e_start("y1cc: line "); e_n(tk_line[ti & 7]); e_s(": "); e_s(msg); e_go();

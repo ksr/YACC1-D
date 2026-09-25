@@ -13,6 +13,7 @@
      io_open(path)              open a file for reading: a handle (1..), or 0 when it cannot be read
      io_getc(h)                 the next byte 0..255, or 256 at the end of the file
      io_close(h)
+     io_skip(h, n)              n bytes read past (2026-09-25: the passes skip whole function bodies)
      io_find(name, from, out, max)   #include "name" written in file `from`: look beside `from`, then in the
                                 compiler's library directory (software/compiler/lib on the host); 1 = found, with
                                 the file's canonical path (the same file always gets the same text) in out
@@ -25,6 +26,7 @@
    Y1/OS allows
      io_wopen(path)             create path for writing (replacing a file of that name); 1 = fine
      io_wput(c)                 append byte c to it
+     io_wputs(s)                append the NUL-terminated string s to it, not its NUL (2026-09-25: cc9's lines)
      io_wclose()                close it
    The console and the rest
      io_out(c)                  one byte to standard output (the -l summary)
@@ -39,6 +41,7 @@ void io_arg(int i, char *buf, int max);
 int io_open(char *path);
 int io_getc(int h);
 void io_close(int h);
+void io_skip(int h, int n);
 int io_find(char *name, char *from, char *out, int max);
 int io_create(char *path);
 void io_put(int s, int c);
@@ -48,6 +51,7 @@ void io_fail(char *msg);
 void io_date(char *buf);
 int io_wopen(char *path);
 void io_wput(int c);
+void io_wputs(char *s);
 void io_wclose(void);
 void io_done(void);
 void io_lib(char *name, char *out, int max);

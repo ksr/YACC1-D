@@ -75,10 +75,16 @@ char tbuf[LINE_MAX];
 char pend[PEND_MAX * LINE_MAX];
 int npend;
 int dbn;
-char pmn_a[WORD_MAX];
-char parg_a[LINE_MAX];
-char pmn_b[WORD_MAX];
-char parg_b[LINE_MAX];
+char pmn_1[WORD_MAX];           /* the peephole's two parsed lines (mn_arg): a = the last pending line (valid when */
+char parg_1[LINE_MAX];          /* ptop_ok), b = the line arriving (valid for pp_push when pb_ok); a pushed line's */
+char pmn_2[WORD_MAX];           /* words become a's by swapping the pointers (2026-09-25: each line was parsed three */
+char parg_2[LINE_MAX];          /* times) */
+char *pmn_a;
+char *parg_a;
+char *pmn_b;
+char *parg_b;
+int ptop_ok;
+int pb_st;                      /* the arriving line, for pp_push: 0 not looked at, 1 an instruction (parsed), 2 not one */
 int cs_val[CASES_MAX];
 int cs_lab[CASES_MAX];
 
@@ -115,6 +121,7 @@ void kadd(char *buf, int off);
 void r_addr(char *buf);
 void bnum32(char *buf, int hi, int lo);
 void r_code(void);
+void r_skip(void);
 void add_const(int k);
 void add_const_text(char *t);
 void shl1(void);
@@ -162,7 +169,7 @@ int sym_num(int sym) {                              /* the number of a cc6 / cc8
 /* ---- output: sections, lines, the streaming peephole (y1cc.c) ------------------------------------------------ */
 void sec_line(int s, char *t) {                     /* only the section being written reaches the file */
     if (s != sec) return;
-    while (*t) { io_wput(*t & 255); t++; }
+    io_wputs(t);
     io_wput(10);
     nlines++;
 }
@@ -177,17 +184,17 @@ void db_byte(int b) {                               /* DB lines of 16 numbers (t
 void db_end(void) { if (dbn) { data_line(db); dbn = 0; } }
 int is_ins(char *l) { return s_starts(l, "        "); }
 int mn_arg(char *l, char *mn, char *arg) {          /* y1cc.py parts(): l.strip().split(None, 1) */
-    int i; int n; int e;
-    i = skip_space(l, 0);
-    n = 0;                                          /* (the word is only compared with mnemonics: cut it short) */
-    while (l[i] && !is_pyspace(l[i] & 255)) { if (n < WORD_MAX - 1) { mn[n] = l[i]; n++; } i++; }
-    mn[n] = 0;
-    i = skip_space(l, i);
-    e = s_len(l);
-    while (e > i && is_pyspace(l[e - 1] & 255)) e--;
-    n = 0;
-    while (i < e) { arg[n] = l[i]; n++; i++; }
-    arg[n] = 0;
+    char *p; char *e; char *m; int c;               /* (pointers, and a space test only below '!': 2026-09-25) */
+    p = l;
+    while ((c = *p & 255) && c <= 32 && is_pyspace(c)) p++;
+    m = mn;                                         /* (the word is only compared with mnemonics: cut it short) */
+    while ((c = *p & 255) && (c > 32 || !is_pyspace(c))) { if (m < mn + WORD_MAX - 1) { *m = c; m++; } p++; }
+    *m = 0;
+    while ((c = *p & 255) && c <= 32 && is_pyspace(c)) p++;
+    e = p; while (*e) e++;
+    while (e > p && (*(e - 1) & 255) <= 32 && is_pyspace(*(e - 1) & 255)) e--;
+    while (p < e) { *arg = *p; arg++; p++; }
+    *arg = 0;
     return 1;
 }
 void code_line(char *b) {                           /* one line of code: counted raw, then through the peephole */
@@ -204,20 +211,25 @@ int lsk(char *m) {                                  /* the peephole's word loads
     if (m[0] == 'S' && m[1] == 'T') return k + 1;
     return 0;
 }
+char *pslot(int i) { char *p; p = pend; while (i) { p = p + LINE_MAX; i--; } return p; }   /* pending line i */
 void peep(char *b) {
     char *a; int i; int ka; int kb;
+    pb_st = 0;
     for (;;) {
         if (npend == 0) break;
-        a = pend + (npend - 1) * LINE_MAX;
-        if (!is_ins(a)) break;
-        mn_arg(a, pmn_a, parg_a);
-        if (is_ins(b)) {
-            mn_arg(b, pmn_b, parg_b);
+        a = pslot(npend - 1);
+        if (!ptop_ok) {                             /* (ptop_ok: the last pending line is an instruction, parsed) */
+            if (!is_ins(a)) break;
+            mn_arg(a, pmn_a, parg_a); ptop_ok = 1;
+        }
+        if (!pb_st) { pb_st = 2; if (is_ins(b)) { mn_arg(b, pmn_b, parg_b); pb_st = 1; } }
+        if (pb_st == 1) {
             ka = lsk(pmn_a); kb = lsk(pmn_b);       /* LDR 1, STR 2, LDZ 3, STZ 4 (--xisa), other 0 */
             if ((kb & 1) && ka == kb + 1 && s_eq(parg_a, parg_b) && s_starts(parg_a, "R3,"))
                 return;                             /* store then reload: drop the reload */
             if ((kb & 1) && ka && (ka + 1) / 2 == (kb + 1) / 2 && s_starts(parg_a, "R3,") &&
                 s_starts(parg_b, "R4,") && s_eq(parg_b + 3, parg_a + 3)) {
+                pb_st = 0;
                 pp_push("        MOVRR R3,R4");
                 return;
             }
@@ -227,49 +239,62 @@ void peep(char *b) {
         }
         if (s_eq(pmn_a, "BR")) {                    /* a jump to the next line */
             i = skip_space(b, 0);
-            if (s_starts(b + i, parg_a) && b[i + s_len(parg_a)] == ':') { npend--; continue; }
+            if (s_starts(b + i, parg_a) && b[i + s_len(parg_a)] == ':') { npend--; ptop_ok = 0; continue; }
         }
         break;
     }
     pp_push(b);
 }
 void pp_push(char *b) {
-    int i; int n; char *d;
-    mn_arg(b, pmn_b, parg_b);
-    if (!(is_ins(b) && s_eq(pmn_b, "BR"))) pp_flush(); /* only a BR can still be removed by a later line */
+    int i; char *d; char *t; int ins;
+    if (pb_st) ins = pb_st == 1;
+    else { ins = is_ins(b); if (ins) mn_arg(b, pmn_b, parg_b); }
+    pb_st = 0;
+    if (!(ins && s_eq(pmn_b, "BR"))) pp_flush(); /* only a BR can still be removed by a later line */
     if (npend >= PEND_MAX) {                        /* never in practice: write the oldest */
         sec_line(0, pend);
         for (i = 1; i < npend; i++) {
-            d = pend + (i - 1) * LINE_MAX;
-            for (n = 0; pend[i * LINE_MAX + n]; n++) d[n] = pend[i * LINE_MAX + n];
-            d[n] = 0;
+            d = pslot(i - 1); t = pslot(i);
+            while (*t) { *d = *t; d++; t++; }
+            *d = 0;
         }
         npend--;
     }
-    d = pend + npend * LINE_MAX;
-    i = 0;
-    while (b[i]) { d[i] = b[i]; i++; }
-    d[i] = 0;
+    d = pslot(npend);
+    while (*b) { *d = *b; d++; b++; }
+    *d = 0;
     npend++;
+    t = pmn_a; pmn_a = pmn_b; pmn_b = t;            /* its words are the new last pending line's */
+    t = parg_a; parg_a = parg_b; parg_b = t;
+    ptop_ok = ins;
 }
 void pp_flush(void) {
     int i;
-    for (i = 0; i < npend; i++) sec_line(0, pend + i * LINE_MAX);
+    for (i = 0; i < npend; i++) sec_line(0, pslot(i));
     npend = 0;
 }
 
 /* instruction builders: "        MN args" */
-void L(char *mn) { lb[0] = 0; bcat(lb, "        "); bcat(lb, mn); }
-void Lsp(void) { bchr(lb, ' '); }
-void Lr(int r) { bchr(lb, 'R'); bchr(lb, '0' + r); }
+/* (2026-09-25: they append at lp, the end of lb, instead of finding it again for every piece; lp catches up with
+   what bcat/bchr added meanwhile, so the two can mix after L) */
+char *lp;
+void Ls(char *s) {
+    while (*lp) lp++;
+    while (*s) { if (lp >= lb + LINE_MAX - 1) fail("y1cc: line too long"); *lp = *s; lp++; s++; }
+    *lp = 0;
+}
+void L(char *mn) { lb[0] = 0; lp = lb; Ls("        "); Ls(mn); }
+void Lsp(void) { Ls(" "); }
+void Lr(int r) { char t[3]; t[0] = 'R'; t[1] = '0' + r; t[2] = 0; Ls(t); }
+void Ln(int n) { char d[8]; pnum(d, n); Ls(d); }
 void Lend(void) { code_line(lb); }
 void ins0(char *mn) { L(mn); Lend(); }
 void insr(char *mn, int r) { L(mn); Lsp(); Lr(r); Lend(); }
-void insn(char *mn, int n) { L(mn); Lsp(); bnum(lb, n); Lend(); }
+void insn(char *mn, int n) { L(mn); Lsp(); Ln(n); Lend(); }
 void insl(char *mn, int lab) { L(mn); Lsp(); blab(lb, lab); Lend(); }
-void inss(char *mn, char *s) { L(mn); Lsp(); bcat(lb, s); Lend(); }
-void insrn(char *mn, int r, int n) { L(mn); Lsp(); Lr(r); bchr(lb, ','); bnum(lb, n); Lend(); }
-void insrs(char *mn, int r, char *s) { L(mn); Lsp(); Lr(r); bchr(lb, ','); bcat(lb, s); Lend(); }
+void inss(char *mn, char *s) { L(mn); Lsp(); Ls(s); Lend(); }
+void insrn(char *mn, int r, int n) { L(mn); Lsp(); Lr(r); Ls(","); Ln(n); Lend(); }
+void insrs(char *mn, int r, char *s) { L(mn); Lsp(); Lr(r); Ls(","); Ls(s); Lend(); }
 void label_def(int lab) { lb[0] = 0; blab(lb, lab); bchr(lb, ':'); code_line(lb); }
 void kadd(char *buf, int off) { if (off) { bchr(buf, '+'); bnum(buf, off); } }
 
@@ -296,6 +321,16 @@ void bnum32(char *buf, int hi, int lo) {            /* hi:lo in decimal (long di
         if (!nz) break;
     }
     while (k > 0) { k--; bchr(buf, d[k]); }
+}
+char fskip[] = {0, 1, 2, 2, 3, 3, 3, 2, 4, 1};       /* r_skip: an operand's bytes by format F_0..F_P (an address:
+                                                       its kind and id, then the count of its terms) */
+void r_skip(void) {                                 /* an R_CODE record read past (the data and BSS readings: code
+                                                       lines are dropped there, and making their text took most of
+                                                       cc9's time, 2026-09-25) */
+    int f;
+    rb(inh); f = rb(inh);
+    io_skip(inh, fskip[f]);
+    if (f == F_A || f == F_RA) io_skip(inh, rb(inh) << 2);
 }
 void r_code(void) {
     int mn; int f; int n;
@@ -507,14 +542,14 @@ void stream(char *ext) {                            /* one reading of W.dat or W
     for (;;) {
         c = rb(inh);
         if (c == 256) break;
-        if (c == R_CODE) r_code();
-        else if (c == R_LDEF) label_def(sym_num(ri(inh)));
+        if (c == R_CODE) { if (sec) r_skip(); else r_code(); }     /* code text only for the code section */
+        else if (c == R_LDEF) { a = ri(inh); if (!sec) label_def(sym_num(a)); }
         else if (c == R_ALLOC) {
             a = ri(inh); b = rb(inh);
             n = lbl(b);
             if (a >= SYM7) { if (a - SYM7 >= LKIND_MAX) fail("y1cc: too many labels in one function (LKIND_MAX)"); map7[a - SYM7] = n; }
             else { if (a >= LKIND_MAX) fail("y1cc: too many labels in one function (LKIND_MAX)"); map5[a] = n; }
-        } else if (c == R_FLABEL) { lb[0] = 0; bcat(lb, flab(ri(inh))); bchr(lb, ':'); code_line(lb); }
+        } else if (c == R_FLABEL) { a = ri(inh); if (!sec) { lb[0] = 0; bcat(lb, flab(a)); bchr(lb, ':'); code_line(lb); } }
         else if (c == R_TEXT) { a = rb(inh); rs(inh, lb, LINE_MAX); sec_line(a, lb); }
         else if (c == R_DSVAR) {
             a = ri(inh); b = ri(inh);
@@ -529,7 +564,7 @@ void stream(char *ext) {                            /* one reading of W.dat or W
             db_end();
         } else if (c == R_NEED) used[rb(inh)] = 1;
         else if (c == R_MACRO) r_macro();
-        else if (c == R_RETIF) { if (!last_ret) ins0("RET"); }
+        else if (c == R_RETIF) { if (!sec && !last_ret) ins0("RET"); }
         else if (c == R_FUNC) {
             cur_fn = ri(inh); ri(inh); ri(inh); rb(inh);
             fbase = nl + 1; fstart = nraw;
@@ -597,7 +632,7 @@ void load_all(void) {
     if (nfuncs >= FUNCS_MAX) fail("y1cc: too many functions (FUNCS_MAX)");
     if (ndrop >= DROPS_MAX) fail("y1cc: too many dropped functions (DROPS_MAX)");
     rarr(h, v_name + 1, nvars); rarr(h, v_fn + 1, nvars); rarrc(h, v_ln + 1, nvars);
-    rarr(h, f_name + 1, nfuncs); rarrc(h, f_ln + 1, nfuncs); skip(h, nfuncs);
+    rarr(h, f_name + 1, nfuncs); rarrc(h, f_ln + 1, nfuncs); io_skip(h, nfuncs);
     rarr(h, drop_nm, ndrop);
     io_close(h);
     if (opt_flags & OPT_XISA) { h = ropen(".zp"); zused = rb(h); rarrc(h, zbits, nvars / 8 + 1); io_close(h); }
@@ -617,6 +652,7 @@ void out_n(int n) { tbuf[0] = 0; bnum(tbuf, n); out_s(tbuf); }
 void y1cc_main(void) {
     int i; int r; int p;
     p_args();
+    pmn_a = pmn_1; parg_a = parg_1; pmn_b = pmn_2; parg_b = parg_2;
     load_all();
     if (!io_wopen(outpath)) { e_start("y1cc: cannot write "); e_s(outpath); e_go(); }
     for (sec = 0; sec < 3; sec++) {

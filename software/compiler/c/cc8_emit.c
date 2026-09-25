@@ -920,7 +920,7 @@ void load_structs(void) {                           /* W.sym: the struct tags an
     ri(h); ri(h);
     nstructs = ri(h);
     if (nstructs >= STRUCTS_MAX) fail("y1cc: too many structs (STRUCTS_MAX)");
-    skip(h, 6);
+    io_skip(h, 6);
     rarr(h, s_tag + 1, nstructs); rarr(h, s_size + 1, nstructs);
     io_close(h);
 }

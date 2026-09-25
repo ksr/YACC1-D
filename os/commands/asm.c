@@ -22,18 +22,18 @@
    Not supported (an error here): MACRO/ENDM, PUBLIC, EXTERN, LIB PROC/ENDP, INCLUDE more than two deep, '/' on
    values beyond 16 bits, an EQU value outside -65535..65535, a label or a byte past $FFFF. RC/asm stores those or
    carries on; nothing in the tree (y1cc's output, the firmware, the OS) uses them.
-   Limits: the symbol table is POOL bytes, 5 + the name's length a label (the biggest compiler pass, cc8: 1,326
-   labels in 16,206 bytes); 45 tokens an expression, 32 characters a token; files up to 16M (Y1/OS positions are
-   24-bit since 2026-09-25; 16-bit, so 64K, before). OUT is written through Y1/OS's one write handle, so asm cannot run under a > redirect or in a pipe.
-   Size (2026-09-25): 13,178 bytes of image + 19,121 of data (the pool 16,640) = 32,299 of the 32,768 of $5000-$CFFF;
-   with --xisa 11,779 + 19,376.
+   Limits: the symbol table is POOL bytes, 5 + the name's length a label (the biggest compiler pass, cc8: 1,383
+   labels in 16,925 bytes since 2026-09-25, when its buffered I/O added 57); 45 tokens an expression, 32
+   characters a token; files up to 16M (Y1/OS positions are 24-bit since 2026-09-25; 16-bit, so 64K, before). OUT is written through Y1/OS's one write handle, so asm cannot run under a > redirect or in a pipe.
+   Size (2026-09-25): 13,186 bytes of image + 19,569 of data (the pool 17,088) = 32,755 of the 32,768 of $5000-$CFFF
+   (the pool was 16,640 until cc8 outgrew it the same day).
    Host build: tests/asm/host_asm.c compiles this file on the Mac against a Y1/OS syscall emulator (host_sys.c);
    tests/asm/run.py compares it with RC/asm over the tree's corpus. y1cc subset: no recursion, int unsigned. */
 #include "../lib_fs.c"
 #include "../lib_err.c"
 #include "../asm_optab.c"
 
-#define POOL 16640        /* symbol table bytes: what the 32K program area leaves, with a margin */
+#define POOL 17088        /* symbol table bytes: what the 32K program area leaves, with a margin */
 #define NHASH 256         /* its chain heads */
 #define NT 48             /* expression token records (RC/asm has 1024) */
 
@@ -472,15 +472,17 @@ int getln() {                                /* the next line: 0 at the end of t
             c = *sp++;
         }
         *r++ = c;
-        if (c == 39) m = !m;                 /* makeupper: upper case outside single quotes */
-        else if (!m && c >= 'a' && c <= 'z') c = c - 32;
+        if (c >= 'a') { if (c <= 'z' && !m) c = c - 32; }     /* makeupper: upper case outside single quotes */
+        else if (c == 39) m = !m;
         *p++ = c;
-        if (!e) {                            /* parse: the comment (';') and the label (':') outside quotes */
-            if (!c) e = p - 1;
-            else if (c == 34 || c == 39) q = q == c ? 0 : c;
-            else if (!q) { if (c == ';') e = p - 1; else if (c == ':' && !t) t = p - 1; }
+        if (c <= ';') {                      /* (above ';' nothing below matters: 2026-09-25, a third of asm's time) */
+            if (!e) {                        /* parse: the comment (';') and the label (':') outside quotes */
+                if (!c) e = p - 1;
+                else if (c == 34 || c == 39) q = q == c ? 0 : c;
+                else if (!q) { if (c == ';') e = p - 1; else if (c == ':' && !t) t = p - 1; }
+            }
+            if (c == 10) break;
         }
-        if (c == 10) break;
     }
     *p = *r = 0;
     if (p == ln) return 0;
