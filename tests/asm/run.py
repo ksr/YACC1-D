@@ -192,6 +192,7 @@ def main():
           "an ORG back), %d rejected by both assemblers, %d FAILED" % (len(items), counts.get("ok", 0),
           counts.get("ok-hex", 0), counts.get("error", 0), counts.get("FAIL", 0)))
     if "--target" in sys.argv:
+        sys.stdout.flush()
         rc = subprocess.run([sys.executable, os.path.join(HERE, "target.py")]).returncode
         if rc: fails.append(("target", "the emulator runs failed"))
     sys.exit(1 if fails else 0)

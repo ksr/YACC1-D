@@ -1,0 +1,17 @@
+cd /S
+asm HELLO.ASM
+run HELLO one two
+asm -h HELLO.ASM
+asm ECHOX.ASM
+ECHOX echo, assembled on the machine
+asm CAT.ASM
+run CAT /FRUIT.TXT
+asm -h MONITOR.ASM MON.IMG
+asm -h ISA.ASM
+asm -h QUIRKS.ASM Q.IMG
+asm QUIRKS
+asm ERR.ASM
+asm NOSUCH
+asm
+dir
+exit
