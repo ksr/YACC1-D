@@ -360,6 +360,9 @@ about 24 bytes of code per line of C.
    programs in a row, `/LIB/y1ccrt.txt` on the disk: below, "What is left for native".
 5. *The on-target assembler* (BACKLOG wave 3): the compiler emits assembly text; the machine needs an assembler
    (the host assembler's label table now holds 8,191, enough for any single pass) before a program compiled on it can run.
+   Done 2026-09-25: `/BIN/ASM` (`os/commands/asm.c`, `docs/programming/ASSEMBLER.md` section 10) is byte-identical to
+   the host assembler on the whole corpus, and its symbol table holds cc8's 1,326 labels; on the emulator it has
+   assembled pass cc4 (`--xisa`, 58,585 bytes, the one pass under 64K) under Y1/OS (`tests/asm/target.py`).
 
 ## The multi-pass compiler (2026-09-24)
 
@@ -519,9 +522,10 @@ stack (simpler, but a /BIN command whose data reaches $CFFF would then collide w
   or a small driver; there is no exec), `lib/y1ccrt.txt` on the disk as `/LIB/Y1CCRT.TXT`, room on the disk for the
   intermediate files (cc8's source compiling itself: 740K, of which `W.se` 231K and the assembly 251K), and the
   stack (above).
-- **Then** run each pass on the emulator under Y1/OS (`target_io.c` is compiled, never run), then the chain; then the
-  on-target assembler (BACKLOG wave 3: cc8, the biggest pass, has 1,283 labels) and the code size work (every byte
-  y1cc saves shrinks the passes too, and cc7 and cc9 are within 600 bytes of the limit, cc1 within 1.1K).
+- **Then** run each pass on the emulator under Y1/OS (`target_io.c` is compiled, never run), then the chain; the
+  on-target assembler is there (2026-09-25: `/BIN/ASM`, which takes cc8's 1,326 labels; its sources, like the passes'
+  intermediate files, stop at 64K); and the code size work (every byte y1cc saves shrinks the passes too, and cc7
+  and cc9 are within 600 bytes of the limit, cc1 within 1.1K).
 
 **y1cc.c stays** as the single-program C twin: it is what the passes were cut from, `twin.py` keeps it identical to
 y1cc.py, and it is the quicker program to read. A change to y1cc.py now has two C counterparts to follow it; once

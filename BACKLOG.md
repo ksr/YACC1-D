@@ -206,8 +206,20 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   uniq sed awk cmp diff md touch del mv tree find dir grep cp (cat2 retired); man pages in `os/man/` -> /MAN, Markdown
   docs -> /DOCS, sample data /FRUIT.TXT /FRUIT2.TXT; the shell runs /BIN/NAME before a built-in of the same name;
   `tests/os/wave1.session`, `wave2.session` with host-side p8xfs checks. Status per command in PORT-PLAN section 2.)
-- Wave 3 of the port: `asm` (on-target assembler for the RC/asm dialect, table generated from `yacc1.def`), a YACC1
-  `disasm`; `vi` is being ported separately. Then BASIC as /BIN/BASIC. The assembly OS has 18 sectors of headroom in the
+- Wave 3 of the port: (done 2026-09-25: **`asm`**, the on-target assembler for the RC/asm dialect, table generated from
+  `yacc1.def` - `os/README.md` "asm", `tests/asm`), a YACC1 `disasm` (next: a table generated from `yacc1.def` like
+  asm's, the P8X `disasm.c` driver loop); `vi` done 2026-09-23. Then BASIC as /BIN/BASIC.
+- `/BIN/ASM` follow-ups (2026-09-25): (1) speed - 13.4M instructions for `cat`'s 1,499 lines (y1cc's code for the
+  per-character line scan is ~40% of it, the mnemonic hash and pattern matching most of the rest; a hand-written
+  assembly twin, as P8X has, would be the big step); (2) sources over 64K - every compiler pass's assembly is
+  110-257K, so a pass assembled on the machine needs 32-bit file positions in Y1/OS (or y1cc writing a pass as
+  several files for INCLUDE); (3) what RC/asm accepts and asm refuses (MACRO, PUBLIC/EXTERN/LIB, '/' beyond 16 bits,
+  EQU values beyond 16 bits) - nothing in the tree uses them; (4) `asm` inside a `>` or a pipe needs the OS's second
+  write handle ("Y1/OS still to write", above).
+- RC/asm (host) aborts on a line whose text after the label or the leading blanks, up to the comment, is 100
+  characters or more (`trim()`/`parse()` copy it into `char tmp[100]`, and macOS's fortified strcpy traps; found
+  2026-09-25 writing `tests/asm/src/quirks.asm`); y1cc's lines are shorter, and /BIN/ASM takes 254. A
+  `tools/patched_files.txt` fix to the host, with `make -C software/assembler check` and `tests/asm` after it. The assembly OS has 18 sectors of headroom in the
   16K reserve (LBA 1..32) and 7,711 bytes free below its RAM (2026-09-23, v0.2).
 - (done 2026-09-23: **redirection and pipes** — `cmd [< in] [> out | >> out] [| cmd ...]`, up to 4 commands, clauses
   after the arguments, quotes protect `| < >`; `y1cc --os` makes putchar/puts the new syscall CONOUT (19) and getchar
@@ -282,9 +294,12 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
      the outer file; a way to run the nine passes in turn (no exec: a shell script facility or a driver);
      `lib/y1ccrt.txt` on the disk as `/LIB/Y1CCRT.TXT`.
   4. Run a pass on the emulator under Y1/OS (`c/target_io.c` is compiled, never run), then the whole chain.
-  5. The on-target assembler (wave 3 of os/PORT-PLAN.md) (the host assembler's label table: done 2026-09-24,
-     8,191 labels with a clear error when full, was 1,000 with no check) before it can assemble a pass
-     this size (cc8: 1,283 labels, 25,936 bytes).
+  5. (done 2026-09-25: **the on-target assembler** `/BIN/ASM`, wave 3 of os/PORT-PLAN.md - byte-identical to the host
+     assembler on the corpus, the nine passes' assembly among it; its 16,640-byte symbol pool holds cc8's 1,326
+     labels, the most of any pass. The host assembler's label table: done 2026-09-24, 8,191 labels with a clear error
+     when full, was 1,000 with no check.) Left before a pass is assembled on the machine: its assembly is 110-257K
+     and Y1/OS files stop at 64K (step 3), and the speed (about 9,000 instructions a line: BACKLOG "Disk operating
+     system", the /BIN/ASM follow-ups).
   6. Code size of what y1cc emits (the bullet below): every byte saved there shrinks the native compiler too — cc6,
      cc7 and cc9 are within 600 bytes of the 32K (cc6 since the --xisa page planning); the nine passes are 124K of code
      against y1cc.c's 75K, 102K when compiled with `--xisa` (2026-09-24: every pass then has 2-15K free).

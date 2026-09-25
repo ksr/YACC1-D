@@ -114,7 +114,9 @@ void main() {
   default $F000 keeps any stub out).
 - Put on the disk: `python3 tools/p8xfs.py put disk.img hello.bin --name /BIN/HELLO --load 0x5000 --exec 0x5000`
   (the Makefile does this for every `commands/*.c`, upper-casing the name), or from the machine `save /BIN/HELLO
-  5000 len` after loading it another way.
+  5000 len` after loading it another way. Since 2026-09-25 the last three steps can happen on the machine: put
+  `hello.asm` on the disk and `asm HELLO.ASM /BIN/HELLO` (`/BIN/ASM`, `man asm`) writes the same program file,
+  load and exec address included.
 - Arguments: `argstr()` returns the NUL-terminated tail at ARGBUF ($0F40, up to 127 characters). Console output is
   the compiler's `putchar`/`puts` (with `--os` the CONOUT syscall, which the shell redirects; without it BIOS
   `CHAROUT` on the machine and on ucemu, port 2 on the interpreter); input for a filter is `sys(SYS_CONIN)` (stdin:

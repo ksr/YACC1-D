@@ -65,8 +65,8 @@ NOTES
     own ISA; this one is new). The instruction table is generated from
     software/assembler/yacc1.def (tools/gen_y1_optab.py), so it cannot
     drift from the host assembler; tests/asm compares the two on every
-    source in the tree. Speed on the emulators: about 1,500 lines of
-    y1cc output (27K) in 13M instructions.
+    source in the tree. Speed: 1,499 lines of y1cc output (27K, cat)
+    in 13.4M instructions.
 
 SEE ALSO
     run, load, shell, hello

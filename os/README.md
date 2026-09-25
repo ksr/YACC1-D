@@ -223,6 +223,7 @@ names, globs and `-` (the console until Ctrl-D) work wherever a command reads te
 
 | Command | Does |
 |---|---|
+| `asm [-h] SRC [OUT]` | the assembler (2026-09-25, below): RC/asm's dialect to a program file, or Intel hex with `-h` |
 | `awk [-F c] 'prog' [file...]` | one rule: `/re/ {print $1, $NF, NR, NF, "text"}` |
 | `cat [file\|glob\|-]...` | print files byte-exact, or the console |
 | `cmp f1 f2` | the first differing byte and line, or silence |
@@ -257,6 +258,23 @@ names, globs and `-` (the console until Ctrl-D) work wherever a command reads te
 Also on the disk: `/MAN` (the pages, from `os/man/`), `/DOCS` (this README as `OS.MD`, the compiler README as
 `Y1CC.MD`, `OSPLAN.MD`, `PORT.MD` and `MDDEMO.MD`, md's own sample), and `/FRUIT.TXT` + `/FRUIT2.TXT`, seven lines of
 sample data for trying the filters (`sort`, `uniq`, `awk`, `diff` ... the man pages' examples use them).
+
+### `asm` (2026-09-25)
+
+`/BIN/ASM` (`commands/asm.c`) assembles on the machine what the host assembler (`software/assembler`, RC/asm with
+`yacc1.def`) assembles on the Mac, byte for byte: y1cc's output, the ROM monitor, the OS. `asm HELLO.ASM` writes the
+program file `HELLO` (the bytes from the first address to the last, gaps as zeros, with the load address and END's
+exec address in its directory entry), which `run HELLO` loads and calls; `asm -h HELLO.ASM` writes `HELLO.IMG`, the
+Intel hex the host writes. Errors are reported with their line numbers and the output is deleted. Its instruction
+table (`asm_optab.c`) is generated from `yacc1.def` by `tools/gen_y1_optab.py` (the Makefile regenerates it), so the
+two assemblers cannot disagree about an instruction. The image is 13,178 bytes and the symbol table takes the rest of
+the program area, 16,640 bytes (5 + the name's length a label: the biggest compiler pass's 1,326 labels fit); sources
+are limited to 64K by the OS's 16-bit file positions, and the output needs the one write handle, so `asm` does not
+run inside a `>` or a pipe. `tests/asm/run.py` compares it with RC/asm on 297 sources (built for the Mac against an
+emulation of these syscalls) and, with `--target`, runs it under Y1/OS on both emulators: y1cc programs assembled and
+run, the monitor assembled to `firmware/monitor/monitor.img`. Speed (instruction-level emulator): `hello`'s 82 lines
+0.85M instructions, `cat`'s 1,499 lines (27,540 bytes) 13.4M, the monitor's 1,535 lines to hex 13.7M; the microcode
+emulator takes ~17 steps an instruction. `man asm`, and `docs/programming/ASSEMBLER.md` section 10.
 
 ### `pack` (2026-09-23)
 
@@ -414,6 +432,6 @@ intact (fsck, the boot block, every pristine file byte-identical); against the o
 
 FORMAT and FSCK on the target (the host
 tool has them), seek, a second write handle (so `cp` works inside a `>` or a pipe), concurrent pipes (they run one
-after the other through temp files), `2>` (errors always go to the screen), the command history, the P8X development
-tools (`asm`, a YACC1 `disasm`; `os/PORT-PLAN.md` wave 3), BASIC as `/BIN/BASIC`, and the CF interface in hardware (planned on
+after the other through temp files), `2>` (errors always go to the screen), the command history, a YACC1 `disasm` (`os/PORT-PLAN.md`
+wave 3; `asm` is there since 2026-09-25), BASIC as `/BIN/BASIC`, and the CF interface in hardware (planned on
 the memory card), all in BACKLOG.md.

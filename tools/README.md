@@ -17,6 +17,9 @@ the PDF generators, and the KiCad conversion:
   optionally byte-compares two gerber sets. Takes a gerber zip or a whole order archive (nested zips are searched).
   First used 2026-09-24 on the memory card (`hardware/cards/memory/eagle/v1.3/README.md`).
 - `verify_processing.py` — builds the Processing command sender with the Processing 4 CLI and re-compiles it with warnings on.
+- `gen_y1_optab.py` — generates `os/asm_optab.c`, the instruction table of the native assembler `/BIN/ASM`, from
+  `software/assembler/yacc1.def` (2026-09-25; `os/Makefile` runs it, `--check` fails when the file is stale:
+  `tests/asm/run.py`). It compiles each `.def` construction line with a copy of RC/asm's `Translate()`.
 
 _Contents migrated 2026-09-19; MIGRATION.md at the repo root says which copy each item came from._
 

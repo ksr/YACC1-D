@@ -4,7 +4,8 @@
 #   make check      audit the tree + rebuild firmware/microcode/sketches and diff against the committed images,
 #                   then run the C compiler's test programs on the emulator (tests/compiler/run.py), compare
 #                   y1cc.py with its C twin and with the multi-pass compiler over the whole corpus (tests/compiler/
-#                   twin.py, also --16, --chain, --chain16), and size the passes against Y1/OS (tests/compiler/passes.py)
+#                   twin.py, also --16, --chain, --chain16), and size the passes against Y1/OS (tests/compiler/passes.py);
+#                   the Y1/OS sessions, the native assembler against the host one and under Y1/OS (tests/asm/run.py --target)
 #   make cc-test    just the compiler tests (on both emulators) and the twin comparisons (y1cc.c, the passes)
 #   make os-test    Y1/OS sessions on both emulators (tests/os/run.py)
 #   make asm-test   the native assembler /BIN/ASM against the host assembler over the tree's sources, then under Y1/OS on

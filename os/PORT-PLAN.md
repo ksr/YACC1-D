@@ -169,7 +169,7 @@ none of these will ever run as written.
 |---|---|---|---|---|---|---|---|---|---|
 | vi | `os/commands/vi.c` | 442 | 15,837 (9,040 of it the text buffer) | modal VT100 editor: hjkl, i/a/A/o, x, dd, u, /pat, :w :q :wq | CONIN CONOUT FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE; apath | **own: outn** (decimal printer for ANSI args) | raw key without echo; `RDBUF` | **PORT WITH CHANGES**: `outn` iterative (10 lines); key read = no-echo vector (item F); ~13K on Y1, fits with room for a bigger buffer | IN PROGRESS in a separate session (2026-09-23): os/commands/vi.c |
 | edit | `apps/p8xedit.asm` | 783 asm | 1,602 | line editor (L/A/I/D/W/Q), 12K buffer, root dir only | BIOS file calls | — | P8X assembly only, no C source | **PORT WITH CHANGES = rewrite in C** (~250 new lines: the command loop is trivial once `vi`'s file load/save code exists) — or skip it, `vi` supersedes it. Recommend: skip unless a non-VT100 terminal is in use | DEFERRED (wave 3; vi covers it) |
-| asm | `apps/asm.c` + `apps/opctab.c` (generated) | 542 + 141 | 9,945 (C); asm twin 4,065 | two-pass P8X assembler on-target; hashed symbol table at `$A800..$D140` (1,664 symbols), `;#use` includes | FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE FDELETE FFIND FSDIRBUF SYS_GETCWD CONOUT PUTS | none | the P8X ISA table, the P8X source syntax (`.org/.byte/.word`, `LDP1 #`, `(P3+d)`), symbol-table addresses above `$D000` | **PORT WITH CHANGES (major)**: keep the two-pass driver, symbol hash and file plumbing; replace the opcode table with one generated from `yacc1.def` and the operand parser with the RC/asm dialect y1cc emits (`ORG/DB/DW/DS`, `MVIW Rn,imm`, `LDR R3,label`, case-folded labels <=29 chars). Tables must move under `$D000`: with ~8K of code there is room for ~1,000 symbols at `$A000..$CFFF`. Output must be a load-address-tagged /BIN file (item E). ~400 lines changed + a ~100-line generator | DEFERRED (wave 3) |
+| asm | `apps/asm.c` + `apps/opctab.c` (generated) | 542 + 141 | 9,945 (C); asm twin 4,065 | two-pass P8X assembler on-target; hashed symbol table at `$A800..$D140` (1,664 symbols), `;#use` includes | FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE FDELETE FFIND FSDIRBUF SYS_GETCWD CONOUT PUTS | none | the P8X ISA table, the P8X source syntax (`.org/.byte/.word`, `LDP1 #`, `(P3+d)`), symbol-table addresses above `$D000` | **PORT WITH CHANGES (major)**: keep the two-pass driver, symbol hash and file plumbing; replace the opcode table with one generated from `yacc1.def` and the operand parser with the RC/asm dialect y1cc emits (`ORG/DB/DW/DS`, `MVIW Rn,imm`, `LDR R3,label`, case-folded labels <=29 chars). Tables must move under `$D000`: with ~8K of code there is room for ~1,000 symbols at `$A000..$CFFF`. Output must be a load-address-tagged /BIN file (item E). ~400 lines changed + a ~100-line generator | **DONE 2026-09-25 (wave 3), written new rather than ported**: `os/commands/asm.c` (569 lines) copies RC/asm itself (`software/assembler`: its line handling, pattern matching and token-by-token expression evaluator, quirks included) rather than P8X's assembler, whose syntax is another; kept from P8X: two passes, a hashed symbol table, a generated table (`tools/gen_y1_optab.py` from `yacc1.def`, 371 lines). 13,178 bytes + a 16,640-byte symbol pool (cc8's 1,326 labels fit); program file (load/exec from item E's `create`) or Intel hex; byte-identical to RC/asm on 297 sources (`tests/asm`) |
 | cc | `apps/cc.c` (twin of `apps/p8xcc.asm` 10,182 B; host `compiler/p8cc.c` 2,174 lines) | 1,178 | 21,306 + ~11K of tables at `$D400..$F000` | native C compiler emitting P8X assembly | FRESOLVE FOPEN FGETB FSDIRBUF SYS_GETCWD | **21 recursive functions** (recursive-descent parser: `gexpr gterm gfact gunary stmt st_if st_while st_for funcdef ...`) | P8X back end; tables above `$D000`; ~32K total | **DEFER**. Blocked twice: y1cc has no stack-frame mode (the parser cannot compile) and the back end would have to be y1cc.py's (R3 accumulator, static frames) rewritten in C. That is the self-hosting milestone, not a port; expect ~1,500 new lines and a fit problem against 32K (P8X needed 39.8K of TPA plus tables) | DEFERRED (as the verdict) |
 | basic | `basic/basic.c` (+ `glkwtab.c`); asm `basic/p8xbasic.asm` 9,347 B | 1,166 | 21,775 (C) | P8X BASIC with GL graphics keywords | CONIN CONOUT FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE FCREATE FFIND FLOADAT SYS_GETCWD + GL | **9 recursive functions** (`expr term factor stmt stmtline st_if st_run parget rgbtail`) | GL keyword table, P8X file calls, `PROG` at fixed addresses | **SKIP the P8X BASIC.** OS-PLAN phase 3 already decides: the YACC1's *own* ROM BASIC is re-assembled at a TPA address as `/BIN/BASIC`. `basic.c` only becomes interesting if that BASIC is ever replaced; it would need the parser de-recursed or y1cc stack frames, and the GL half (`T_LINE`, `T_GL`, `IMAGE`...) stripped | SKIPPED (as the verdict) |
 
@@ -323,13 +323,16 @@ decide whether `/BIN/DIR` replaces the built-in `dir` (it is 7.3K p8cc, ~6K on Y
 - `vi` (~80 lines: `outn`, no-echo key, file API). ~13K image; the text buffer can grow from 9K to ~16K.
 - `asm` (~400 lines changed + ~100-line table generator from `yacc1.def`): the on-target assembler for the
   RC/asm dialect y1cc emits. Size: ~8K code + symbol table under `$D000` (~1,000 symbols at `$A000..$CFFF`).
-  Needs item E (load/exec on `create`).
+  Needs item E (load/exec on `create`). **DONE 2026-09-25** (`/BIN/ASM`, `os/README.md` "asm"): 569 lines of C
+  written after RC/asm itself + a 371-line generator; 13,178 bytes of code (not ~8K: y1cc's code runs ~24 bytes a
+  line) and a 16,640-byte symbol pool, about 1,360 of y1cc's labels; byte-identical to RC/asm on the tree's 297
+  sources (`tests/asm/run.py`) and run under Y1/OS on both emulators (`--target`).
 - `edit`: skip (P8X assembly only; `vi` covers it) unless a ~250-line C rewrite is wanted for dumb terminals.
 - `cc`: DEFER (needs y1cc stack frames and a YACC1 back end in C; the 32K TPA is also too small for the P8X
   design's tables — the P8X needed ~40K + tables). Track under the compiler backlog, not the port.
 - `basic`: SKIP the P8X one; OS-PLAN phase 3 relocates the YACC1 ROM BASIC as `/BIN/BASIC`.
-- Sizes against the 32K area: every wave-1/2 command < 16K; `vi` ~13K; `asm` ~8K + tables; `cc` ~32K
-  (does not fit); `basic.c` ~18K + program buffer (fits, if it were ever wanted).
+- Sizes against the 32K area: every wave-1/2 command < 16K; `vi` ~13K; `asm` ~8K + tables (built: 13,178 +
+  19,121 = 32,299); `cc` ~32K (does not fit); `basic.c` ~18K + program buffer (fits, if it were ever wanted).
 
 ### Deferred (graphics / video-card era)
 `write`, `finder`, `sheet` (console re-implementations are plausible once a screen + keyboard exist, phase 4);
@@ -368,7 +371,7 @@ are pure text-in/text-out and their P8X expectations transfer verbatim).
 | directory | 3 (dir find tree) | 3 with changes (iterative walk) |
 | system / P8X-specific | 2 (disasm kermit) | 2 skip |
 | graphics or WM | 17 | 3 defer (write finder sheet), 14 skip |
-| development tool | 5 (vi + asm cc basic edit) | vi + asm with changes, edit rewrite-or-skip, cc defer, basic skip |
+| development tool | 5 (vi + asm cc basic edit) | vi + asm with changes (both done; asm written new after RC/asm), edit rewrite-or-skip, cc defer, basic skip |
 | **total** | **50** (46 in os/commands + 4 apps) | **20 as-is, 9 with changes, 5 defer, 16 skip** |
 | shared libs | 18 | 4 as-is, 6 with changes, 2 replace, 6 skip |
 | shell built-ins (OS side) | 17 on P8X, 8 on Y1/OS | write support + path/sh/make later (BACKLOG) |
@@ -466,4 +469,5 @@ its new directory), both on both emulators, wave2 with host-side p8xfs checks (f
 files fetched and compared).
 
 Not done here: `vi` (a separate session), wave 3 (`asm`, a YACC1 `disasm`), redirection/pipes (the shell: until
-then a filter reads files or the console), and everything section 2 marks DEFERRED or SKIPPED.
+then a filter reads files or the console), and everything section 2 marks DEFERRED or SKIPPED. (Since then: `vi`,
+redirection and pipes 2026-09-23, `asm` 2026-09-25; a YACC1 `disasm` is still to write.)

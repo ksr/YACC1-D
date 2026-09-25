@@ -373,11 +373,10 @@ Notes:
   L-8); the ISR has not been exercised from this tree.
 - The interpreter: `INTE`/`INTD` do nothing, `IADDR` skips its two operand bytes, `IRET` and `INT` are bad opcodes
   (`main.c`).
-- **Assembler trap: `IADDR addr` with an odd low byte assembles to opcode $FF.** `yacc1.def` encodes it as
-  `FE|1 hi(1) lo(1)`, and `|1` ORs the operand word's low bits into the opcode byte without shifting (RC/asm manual,
-  `asm.txt`); checked 2026-09-23: `IADDR 1234H` → `FE 12 34` but `IADDR 1235H` → `FF 12 35`. The monitor's
-  `iaddr isrcode` ($FF90) happens to be even. The line should read `FE hi(1) lo(1)` like `BR`. (Reported here; the
-  `.def` is not this document's to change.)
+- (Fixed 2026-09-23, commit 69db58d.) `IADDR addr` with an odd low byte assembled to opcode $FF: `yacc1.def` encoded
+  it as `FE|1 hi(1) lo(1)`, and `|1` ORs the operand word's low bits into the opcode byte without shifting (RC/asm
+  manual, `asm.txt`), so `IADDR 1235H` gave `FF 12 35`. The line reads `FE  hi(1) lo(1)` now, like `BR`: `IADDR
+  1235H` → `FE 12 35` (checked 2026-09-25). The monitor's `iaddr isrcode` ($FF90) is even, so the ROM was unaffected.
 - `HALT` on the machine halts in step 6 of the record; on both emulators `-x` mode exits with a status line
   (`HALT at aaaa after N instructions, R3=xxxx`; ucemu adds steps, clocks and the bus-fight count).
 

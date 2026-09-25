@@ -1,7 +1,8 @@
 # The YACC1 cross assembler (RC/asm, YACC1 port)
 
 How to assemble YACC1 programs on the Mac with `software/assembler`, what it accepts, what it produces, and its
-traps. Written 2026-09-23 from the YACC1-D tree.
+traps. Written 2026-09-23 from the YACC1-D tree. Since 2026-09-25 the same dialect assembles on the machine too:
+`/BIN/ASM` under Y1/OS, section 10.
 
 Sources: `software/assembler/README.md`, `asm.txt` (Michael H. Riley's RC/asm 2.2 manual, the `.def` format and the
 output formats), `asm.c` / `asmcmds.c` (option handling, the `.prg`/`.img` switch, the 2026-09-22 `DS` fix),
@@ -120,8 +121,9 @@ table with `-x`. `firmware/monitor/monitor.lst` is the reference example (`f05b:
    that began before it and so loaded at the wrong address. Fixed 2026-09-22 in `asmcmds.c` (`write_line()` after
    `\B`, "flush the pending hex record so bytes after a DS start a new record"); `tools/patched_files.txt` records it.
    The firmware never uses `DS`, so the burned images are unchanged (`make check` proves it).
-6. **`IADDR` with an odd operand assembles to opcode $FF** because its pattern is `FE|1 hi(1) lo(1)` (`|1` ORs the
-   operand into the opcode byte): `IADDR 1235H` → `FF 12 35` (checked 2026-09-23). See the ISA reference section 9.
+6. (Fixed 2026-09-23 in `yacc1.def`, commit 69db58d.) `IADDR` with an odd operand assembled to opcode $FF because its
+   pattern was `FE|1 hi(1) lo(1)` (`|1` ORs the operand into the opcode byte): `IADDR 1235H` gave `FF 12 35`. The line
+   is `FE  hi(1) lo(1)` now: `IADDR 1235H` → `FE 12 35` (checked 2026-09-25).
 7. Two labels differing only in case collide (quirk 1); the compiler uniquifies its labels for that reason.
 8. The `-d` option consumes the following argument (section 2).
 9. Missing `yacc1.def` or a missing source name used to crash; since 2026-09-20 they print a message (`asm.c`).
@@ -133,6 +135,11 @@ table with `-x`. `firmware/monitor/monitor.lst` is the reference example (`f05b:
     `ORG`/`DS`/`EQU` backward. y1cc `--xisa` aligns its variable page with `zpad: DS (256-(zpad).0)&255` (the label
     on the same line counts as defined). Every firmware image, bench image and test program assembles to the same
     bytes as before (`tools/verify_firmware.py`, `tests/bench`, `tests/os`, `tests/compiler/passes.py`).
+12. **A line of 100 characters or more aborts the assembler** (found 2026-09-25): `trim()` and `parse()` copy the text
+    after the leading blanks / after the label, up to the comment, into `char tmp[100]`, and macOS's fortified
+    `strcpy` stops the program (exit status 133, no output). y1cc's instructions are far shorter (its longest lines,
+    109 characters, are comments, cut before the copy); the native assembler (section 10) takes 254.
+    BACKLOG has the fix.
 
 ## 7. The four worked examples in `tests/assembler/`
 
@@ -208,7 +215,7 @@ Reading the tree's entries with that key:
 | `PUSHR`/`JSRUR`/`BRUR \{regs}` / `07 \1`, `06 \1`, `AD \1` | opcode, then the register number in the low nibble |
 | `BRVR \{regs}` / `D8\|1` | one byte, register in the opcode |
 | `OUTI \{ports},\B` / `70\|1 \2` | $70 OR port, then the byte |
-| `IADDR \W` / `FE\|1  hi(1) lo(1)` | the buggy one (quirk 6); should be `FE hi(1) lo(1)` |
+| `IADDR \W` / `FE  hi(1) lo(1)` | $FE, then the word (it was `FE\|1`, quirk 6) |
 
 To add an instruction: give it a number in `software/opcodes.h` (the generator, both emulators and the disassembler
 include it), microcode in the generator (`firmware/microcode/README.md`: `make regen`, then load the EEPROM), a case
@@ -230,3 +237,60 @@ a pattern that is a prefix of another with the same operand shape.
 - Loading RAM on the real machine has no path yet: the monitor has no hex loader (`BACKLOG.md`: `tools/monload.py`
   through the `E` command is planned), so today a program reaches the machine only in the ROM socket or, once the
   card exists, from the CF card.
+
+## 10. The native assembler, /BIN/ASM (2026-09-25)
+
+The same dialect on the machine: `os/commands/asm.c`, a Y1/OS program (`man asm`, `os/README.md` "asm"), written
+after RC/asm's own code (not the P8X assembler, whose syntax is another) so that it makes the same bytes of the same
+source, quirks and all.
+
+```
+asm HELLO.ASM              HELLO: a program file (first to last address, gaps zero; load, exec = END or load)
+asm -h HELLO.ASM           HELLO.IMG: Intel hex, the text of `asm HELLO -d=yacc1` with -h on the Mac
+asm -h MONITOR.ASM M.IMG   an output name; a source name without '.' gets .ASM
+```
+
+- **The table** is `os/asm_optab.c`, generated from `yacc1.def` by `tools/gen_y1_optab.py` (the `os/Makefile` rule
+  regenerates it; `tests/asm/run.py` fails if it is stale). The generator reads the file as `Read_Def_File` does
+  and compiles each construction line with a copy of `Translate()` into a few operations (a run of hex digits is one
+  constant), checked against a model of `Translate()` on random arguments; the patterns keep their order, grouped by
+  mnemonic in 64 hash chains. A construction it cannot express (`\N`, `\D`, `%`, `|n>s`, `OPTION 16BIT`) stops the
+  generator rather than producing a different assembler. To add an instruction, section 8 is all there is to do,
+  then `make -C os`.
+- **What is copied**: the line read 254 bytes at a time (`fgets(buffer, 255)`); `makeupper` (upper case outside
+  single quotes); `parse` (the comment at the first `;` outside quotes, the label before the first `:` outside
+  quotes, with RC/asm's rule that a second kind of quote inside a quote takes over); `WildMatch`/`Class_Match`
+  (first word literal, whitespace, `\B`/`\W` up to a `,` or space outside quotes with the `abs((int)v)` range test,
+  a class name as a prefix, `\L`/`\M` the rest); `get_num` with `buildTokens`/`process_tokens` in 32 bits, token
+  records shifted exactly as RC/asm shifts them - including the tokens that slide in from beyond a parenthesis'
+  range and the stale ones past the count, the dropped leading minus, `.1` as C's `/ 256`, `12H3` as hex 123;
+  pass 1 reading a forward reference as 1 and EQU setting its value in pass 1; the Intel-hex records (16 bytes, a
+  new record at ORG and DS); INCLUDE's file name taken from the raw line (two levels here).
+- **Not supported** (an error in /BIN/ASM, accepted by RC/asm; nothing in the tree uses them): MACRO/ENDM, PUBLIC,
+  EXTERN, LIB PROC/ENDP; `/` on values beyond 16 bits; an EQU value outside -65535..65535 (labels are 16 bits + a
+  sign); code or a label past $FFFF (RC/asm counts on into 17 bits); INCLUDE more than two deep (four OS handles:
+  the source, two includes, the output). RC/asm's `.prg` output and its listing, cross-reference and symbol options
+  are not there: the summary line gives the size, the label count and the addresses.
+- **Other differences**: errors are counted once per line (RC/asm can print the same undefined label for every
+  pattern it tries) and name the line in its own file; after an error the output file is deleted (RC/asm writes
+  it anyway); a missing INCLUDE file is an error (RC/asm prints a message and goes on); lines of 100-254 characters
+  work (quirk 12).
+- **Limits**: 16,640 bytes of symbol table, 5 + the name's length a label (y1cc's labels average 7 characters: about
+  1,360; the biggest compiler pass, cc8, has 1,326 in 16,206 bytes); 29 characters a label, 45 tokens an
+  expression, 32 characters a token; source files up to 64K (Y1/OS's positions are 16 bits); the program file
+  needs the code to go up in address (else `-h`). 13,178 bytes of code and tables + 19,121 of data = 32,299 of the
+  32K program area ($5000-$CFFF); 11,779 + 19,376 built with `--xisa`. The output takes Y1/OS's one write handle,
+  so `asm` does not work inside a `>` or a pipe ("cannot create").
+- **Speed** (instruction-level emulator; the microcode emulator takes ~17 steps an instruction): `hello`'s 82 lines
+  0.85M instructions, `cat`'s 1,499 lines 13.4M, the monitor's 1,535 lines to hex 13.7M, compiler pass cc4
+  (`--xisa`, 3,037 lines, 58,585 bytes: the only pass under 64K) 34.6M.
+- **Tests**: `tests/asm/run.py` (in `make check`, `make asm-test`) builds `asm.c` for the Mac with the YACC1's
+  integer types against an emulation of the Y1/OS syscalls (`tests/asm/host_asm.c`, `host_sys.c`) and compares it
+  with RC/asm on every source in the tree - each y1cc compile of `tests/compiler/corpus.py` plain and `--xisa` (262,
+  the nine compiler passes and `asm.c` itself among them), the monitor and BASIC with their candidates, monnew,
+  `tests/assembler`, `isa.asm`, `y1os.asm` with its INCLUDE, and `tests/asm/src` (`quirks.asm`: the corners above;
+  six sources both must refuse): 283 identical in hex and as program files, 1 identical in hex (`yacc1test.asm`
+  goes back in address: its program file is refused, as it must be), 13 refused by both. `--target`
+  (`tests/asm/target.py`) runs `asm` under Y1/OS on both emulators: y1cc programs assembled and run, the monitor
+  assembled to `firmware/monitor/monitor.img`, `isa.asm`, the quirks with INCLUDE, compiler pass cc4, an error;
+  every file written compared with RC/asm's output.

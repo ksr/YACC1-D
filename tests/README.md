@@ -34,6 +34,14 @@
   after the monitor's `O` command, and diffs the transcripts (`basic.int.out`, `basic.uc.out`; the latter shows the
   monitor's input echo). `make os-test`. `XISA=1 python3 tests/os/run.py` (2026-09-24) runs the same sessions with
   every `/BIN` program built by y1cc `--xisa` (`make -C os XISA=1`); the program sizes `ls`/`load` print are masked.
+- `asm/` — the native assembler `/BIN/ASM` (2026-09-25): `run.py` builds `os/commands/asm.c` for the Mac against an
+  emulation of the Y1/OS syscalls (`host_asm.c`, `host_sys.c`: int = unsigned short, unsigned char) and compares it with
+  the host assembler RC/asm on every source in the tree (the y1cc corpus plain and `--xisa`, the firmware, the
+  hand-written tests, `y1os.asm`, and `src/`: `quirks.asm` with two INCLUDE levels, six sources both must refuse), as
+  Intel hex and as program files: 297 sources, 0 different. `run.py --target` (`target.py`, `target.session`, the
+  transcripts `target.int.out`/`target.uc.out`) runs `asm` under Y1/OS on both emulators - y1cc programs assembled
+  and run, the ROM monitor, `isa.asm`, compiler pass cc4 - and compares every file it wrote with RC/asm's output.
+  `make asm-test`; both in `make check`.
 - `ucemu/` — the same programs (and `assembler/brur`) on the MICROCODE-level emulator `software/ucemu` with the monitor ROM
   loaded (`run.py`, 14/14 on 2026-09-22, `chars.ucout` = the expectation with the monitor's input echo), and `isa.asm`, a
   differential test of every instruction whose port-2 byte stream must be identical on both emulators (it is, BRDEV aside;

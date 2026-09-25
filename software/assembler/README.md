@@ -4,6 +4,11 @@ Michael H. Riley's table-driven cross assembler (`upstream/rcasm-2.2/` is his un
 for other CPUs). The YACC1 port (2020-08 → 2021-07-09) changed `asm.c asmcmds.c support.c mstrings.* header.h
 Makefile rcasm.rc` and added `yacc1.def`, the YACC1 instruction table. `asm.txt` / `asm.doc` = the manual.
 
+**Its twin on the machine** (2026-09-25): `/BIN/ASM` (`os/commands/asm.c`) assembles the same dialect under Y1/OS with
+the instruction table generated from `yacc1.def` (`tools/gen_y1_optab.py`, run by `os/Makefile`), so a change here
+reaches it on the next `make -C os`; `tests/asm/run.py` checks the two agree on every source in the tree
+(`docs/programming/ASSEMBLER.md` section 10).
+
 `yacc1.def` here is the 2025-03-14 version: the 2020-11-25 table plus a lowercase `equ` directive (the only
 difference); it is what `firmware/monitor/monnew-2025/` was assembled with. Build: `make` (plain Makefile, 2026-09-20; the NetBeans one is `Makefile.netbeans`). `make check` assembles the monitor and BASIC
 sources from `firmware/` in `build/` and diffs the images and the ROM against the committed ones; `make install` copies a
