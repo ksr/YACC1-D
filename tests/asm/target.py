@@ -14,6 +14,8 @@ The sources (in /S on the disk; a y1cc compile is made here with the options os/
   MONITOR.ASM firmware/monitor/monitor.asm, the ROM monitor: Intel hex, must be firmware/monitor/monitor.img
   ISA.ASM     tests/ucemu/isa.asm (the instruction test program, with its $F000 boot stub): Intel hex
   QUIRKS.ASM  tests/asm/src/quirks.asm with its two-level INCLUDE (quirks1.inc, quirks2.inc): Intel hex + program
+  CC4.ASM     software/compiler/c/target/calls.c (y1cc --os --xisa): pass 4 of the multi-pass C compiler, 58,585
+              bytes and 3,037 lines, the one pass whose assembly is under Y1/OS's 64K: the program file
   ERR.ASM     tests/asm/src/err_undef.asm: an error, the message, no output file
 The comparison: every program file byte-identical to RC/asm's bytes (first to last address, zero gaps) with its load
 and exec address; every .IMG byte-identical to RC/asm's .img; ERR's output absent; fsck passes. The transcripts are
@@ -33,18 +35,19 @@ import run as asmrun                              # noqa: E402  (tests/asm/run.p
 # host file -> disk name; (disk output, kind, source) for the checks: kind "bin" = a program file, "img" = Intel hex
 SOURCES = [("hello.asm", "/S/HELLO.ASM"), ("echox.asm", "/S/ECHOX.ASM"), ("cat.asm", "/S/CAT.ASM"),
            ("monitor.asm", "/S/MONITOR.ASM"), ("isa.asm", "/S/ISA.ASM"), ("quirks.asm", "/S/QUIRKS.ASM"),
-           ("quirks1.inc", "/S/quirks1.inc"), ("quirks2.inc", "/S/quirks2.inc"), ("err.asm", "/S/ERR.ASM")]
+           ("quirks1.inc", "/S/quirks1.inc"), ("quirks2.inc", "/S/quirks2.inc"), ("cc4.asm", "/S/CC4.ASM"),
+           ("err.asm", "/S/ERR.ASM")]
 OUTPUTS = [("/S/HELLO", "bin", "hello"), ("/S/HELLO.IMG", "img", "hello"), ("/S/ECHOX", "bin", "echox"),
            ("/S/CAT", "bin", "cat"), ("/S/MON.IMG", "img", "monitor"), ("/S/ISA.IMG", "img", "isa"),
-           ("/S/Q.IMG", "img", "quirks"), ("/S/QUIRKS", "bin", "quirks")]
+           ("/S/Q.IMG", "img", "quirks"), ("/S/QUIRKS", "bin", "quirks"), ("/S/CC4", "bin", "cc4")]
 ABSENT = ["/S/ERR", "/S/NOSUCH"]
-LIMITS = (50000000, 850000000)                    # instructions (int) / microcode steps (uc): ~43M / ~720M needed (2026-09-25)
+LIMITS = (90000000, 1500000000)                   # instructions (int) / microcode steps (uc): ~78M / ~1.3G needed (2026-09-25)
 
 
 def prepare():
     os.makedirs(B, exist_ok=True)
     for name, src, opts in (("hello", "os/commands/hello.c", []), ("echox", "os/commands/echo.c", ["--xisa"]),
-                            ("cat", "os/commands/cat.c", [])):
+                            ("cat", "os/commands/cat.c", []), ("cc4", "software/compiler/c/target/calls.c", ["--xisa"])):
         subprocess.run([sys.executable, Y1CC, os.path.join(ROOT, src), "-o", os.path.join(B, name + ".asm"),
                         "--org", "0x5000", "--os"] + opts, check=True)
     for name, src in (("monitor", "firmware/monitor/monitor.asm"), ("isa", "tests/ucemu/isa.asm"),
@@ -53,7 +56,7 @@ def prepare():
         shutil.copy(os.path.join(ROOT, src), os.path.join(B, name + (".inc" if src.endswith(".inc") else ".asm")))
     asmrun.prepare(B)
     want = {}
-    for name in ("hello", "echox", "cat", "monitor", "isa", "quirks"):
+    for name in ("hello", "echox", "cat", "monitor", "isa", "quirks", "cc4"):
         ok, errs, img, start = asmrun.rcasm(B, name)
         if not ok: sys.exit("RC/asm reports errors for %s: %s" % (name, errs))
         _, mem = asmrun.hexmem(img)

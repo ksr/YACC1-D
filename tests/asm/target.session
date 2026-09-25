@@ -10,6 +10,7 @@ asm -h MONITOR.ASM MON.IMG
 asm -h ISA.ASM
 asm -h QUIRKS.ASM Q.IMG
 asm QUIRKS
+asm CC4.ASM
 asm ERR.ASM
 asm NOSUCH
 asm
