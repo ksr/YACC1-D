@@ -331,8 +331,13 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
        --xisa item below) before it can compile, besides the CF interface Y1/OS itself needs.
      - The work files `CCW.*` stay in the current directory (replaced by the next compile; pack reclaims the space);
        cc9 could delete them, at the cost of bytes in the tightest pass.
-     - The bigger passes compiling themselves natively (only pass 4 is in the test; cc8's source needs 740K of disk
-       and y1cc.c does not fit the passes' tables at all).
+     - (done 2026-09-25: **the full native self-host** - `tests/native/selfhost.py`, `make selfhost`, in `make check`:
+       under Y1/OS on the instruction-level emulator the host-built CC/CC1..CC9/ASM compile and assemble the nine
+       passes, asm.c and cc.c from their sources on the disk, all eleven byte-identical to os/build; then the natively
+       built tools, installed in their place, do it again, identical again: the fixed point. Nothing had to change
+       (every table, stack and file held). 2,365M instructions a stage, about 21 hours at 1 MHz; the image grows to
+       5.7M (P8XFS: 32M at most). software/compiler/README.md "Self-host".) y1cc.c, the single-program twin, still
+       does not fit the passes' tables (833 names, 130K of source) - it is not needed natively.
      - (done 2026-09-25: y1cc: a block comment that starts on a `#define` line and continues on the next was not
        skipped (the next line was lexed: `$` in it was "bad character", found in `os/lib_abi.c`). Now a directive's
        `/* */` comment is one space and may go on over newlines, a `//` ends the directive, neither inside quotes

@@ -382,6 +382,9 @@ about 24 bytes of code per line of C.
    Done 2026-09-25: `/BIN/ASM` (`os/commands/asm.c`, `docs/programming/ASSEMBLER.md` section 10) is byte-identical to
    the host assembler on the whole corpus, and its symbol table holds cc8's 1,326 labels; on the emulator it has
    assembled pass cc4 (`--xisa`, 58,585 bytes, the one pass under 64K) under Y1/OS (`tests/asm/target.py`).
+6. *Native self-host* — done 2026-09-25: under Y1/OS on the emulator the native compiler and assembler rebuild all
+   nine passes, `/BIN/ASM` and `/BIN/CC` byte-identical to the host builds, and the rebuilt tools do it again
+   identically (below, "Self-host").
 
 ## The multi-pass compiler (2026-09-24)
 
@@ -652,6 +655,59 @@ run FIB
   - Left: each pass's load by the ROM and `main`'s BSS clear (about 2M instructions a compile: half of hello's
     time), cc9's text building (`mn_arg`, `Ls`, `bcat`: about 20% of a compile), cc2's parser, cc7's and cc8's table
     and tree records (`wi`/`ri` a byte at a time through `io_wput`/`io_getc`).
+
+### Self-host: the toolchain rebuilds itself on the emulated YACC1 (2026-09-25)
+
+**Yes, the compiler compiles itself natively.** `tests/native/selfhost.py` (`make selfhost`, and in `make check`:
+about 30 seconds on the Mac) runs, under Y1/OS on the instruction-level emulator, with the toolchain's own sources on
+the disk under `/R` as in the repository (the pass sources, `c/target/`, `c/ylim/`, `os/lib_*.c`, `os/asm_optab.c`,
+`os/commands/asm.c` and `cc.c`; `/LIB/Y1LIB.C` and `/LIB/Y1CCRT.TXT` are on the OS disk):
+
+1. **Stage 1, the native build**: the host-built `/BIN/CC` + `/LIB/CC/CC1..CC9` compile each of the nine passes
+   (`c/target/NAME.c`, `--org 0x5000 --os --stack 0xCFFF --xisa` as `os/Makefile` builds them), the assembler
+   `os/commands/asm.c` and the driver `os/commands/cc.c` (`--org 0x5000 --os`, the `/BIN` flags), each in its source
+   directory; the host-built `/BIN/ASM` assembles each into a program file. The host fetches the eleven assemblies and
+   program files off the image and compares them with `os/build` (y1cc.py + the host assembler + img2bin).
+2. **Stage 2, the fixed point**: a fresh OS disk with the natively built CC1..CC9, CC and ASM installed in place of
+   the host builds, and the same eleven compiles and assemblies again.
+
+Result, 2026-09-25, the first run: **all eleven identical to the host builds in both stages** (assembly byte for
+byte with the header's date masked, program files byte for byte), so the natively built toolchain reproduces itself
+exactly. Nothing had to change: every table held (cc1's names, cc8's 1,383 labels in `/BIN/ASM`'s 17,088-byte pool,
+asm.c's 117K of assembly), every pass kept its stack above its data (the least room: cc1 373 bytes, cc9 522, cc7
+1,333, cc6 1,259), and the 24-bit files took the biggest (cc8's source: work files 514K, `CCW.se` 248K of them, and 235K of assembly).
+
+| program | assembly | program file | compile | assemble | both | at 1 MHz |
+|---|---|---|---|---|---|---|
+| cc1 lex | 148K | 13,733 | 172.0M | 82.8M | 254.9M | 2 h 17 min |
+| cc2 parse | 161K | 15,630 | 175.4M | 94.1M | 269.5M | 2 h 25 min |
+| cc3 decl | 90K | 8,134 | 114.3M | 51.6M | 165.8M | 1 h 29 min |
+| cc4 calls | 65K | 5,562 | 84.5M | 37.9M | 122.4M | 1 h 06 min |
+| cc5 layout | 90K | 8,063 | 117.6M | 53.5M | 171.1M | 1 h 32 min |
+| cc6 stmt | 115K | 10,611 | 134.6M | 65.8M | 200.4M | 1 h 48 min |
+| cc7 sema | 157K | 14,106 | 172.1M | 90.4M | 262.5M | 2 h 21 min |
+| cc8 emit | 230K | 23,949 | 261.0M | 129.7M | 390.8M | 3 h 31 min |
+| cc9 final | 172K | 17,899 | 224.9M | 97.0M | 321.9M | 2 h 53 min |
+| /BIN/ASM (asm.c) | 117K | 13,186 | 131.7M | 58.5M | 190.2M | 1 h 42 min |
+| /BIN/CC (cc.c) | 5K | 498 | 13.1M | 2.5M | 15.6M | 8 min |
+| **the toolchain** | 1.35M | 131,371 | 1,601M | 764M | 2,365M | **21 h 17 min** |
+
+(Instructions on the instruction-level emulator, `emulator -S`; the same in stage 2, whose tools are the same bytes.
+At 1 MHz with 32.4 clocks an instruction, tests/native/run.py's ratio. The microcode emulator ran stage 1 as well
+(`selfhost.py --stage 1 --uc`, 30 minutes on the Mac): all eleven identical, 2,378M instructions with the boot and
+the shell, 40.9G steps (17.2 an instruction) and **79.3G clocks (33.4 an instruction): 22 hours at 1 MHz,
+measured**.) So on the machine one full rebuild of the toolchain by itself would take most of a day; the fixed-point
+check doubles it. Where the time goes is as for the other native compiles
+("How long", above): cc9's text and the lexer; `/BIN/ASM` is a third (`getln`, `hash`).
+
+- **The disk**: the P8XFS volume grows as the compiles write (the emulators' card model extends the image; the OS
+  has no size of its own, only the 16-bit free pointer: 32M at most). Each stage writes about 9,400 sectors (4.7M),
+  most of it work files the next compile replaces (`CCW.*`: 514K for cc8's source); at the end 5,624 sectors are
+  live (2.8M: the OS disk's 0.5M, the sources' 0.4M, the outputs and the last work files) and 5,747 reclaimable by `pack`. So a 1M card is too small; any real CF
+  card (16M and up) holds a whole stage without packing.
+- **What remains** for the real machine: the CF interface for Y1/OS, the 2026-09-24 microcode (the passes use
+  `--xisa`), and a day of run time. y1cc.c, the single-program twin, still does not fit the passes' tables (833
+  names); it is not part of the native toolchain.
 
 **y1cc.c stays** as the single-program C twin: it is what the passes were cut from, `twin.py` keeps it identical to
 y1cc.py, and it is the quicker program to read. A change to y1cc.py now has two C counterparts to follow it; once

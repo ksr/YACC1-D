@@ -167,7 +167,13 @@ Options are recognised anywhere after the source file; the source file must be t
   (only the header's date differs); `asm prog.asm` makes the program. So far on the emulators (Y1/OS needs the CF
   interface, the passes the 2026-09-24 microcode); `software/compiler/README.md` "Native", `tests/native/run.py` (27
   programs byte-identical to the host toolchain, the compiler's own pass 4 among them). Slow: about 32 us an
-  instruction at 1 MHz, so hello.c takes 3.7 minutes to compile and assemble, fib.c 18, cat.c an hour.
+  instruction at 1 MHz, so hello.c takes 2.3 minutes to compile and assemble, fib.c 9, cat.c 24 (since the
+  2026-09-25 speed work; 3.7, 18 and 57 before).
+  **It compiles itself** (2026-09-25, `tests/native/selfhost.py`, `make selfhost`): under Y1/OS the nine passes,
+  `/BIN/ASM` and `/BIN/CC` compiled and assembled natively from their sources on the disk come out byte-identical
+  to the host builds, and the natively built tools, installed in their place, reproduce themselves byte for byte
+  (the fixed point). One such rebuild is 2,365M instructions: about 21 hours at 1 MHz (`software/compiler/README.md`
+  "Self-host").
 
 - **Interpreter, stand-alone**: compile with `--boot`, `emulator -x -f prog.img [< input]`; stdout is the program's
   output, stderr ends with `HALT at aaaa after N instructions, R3=xxxx`. `-l N` caps the instruction count.
