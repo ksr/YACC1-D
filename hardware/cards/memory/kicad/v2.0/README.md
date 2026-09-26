@@ -154,8 +154,12 @@ silk or the edge, none upside down; DRC silk_overlap 0):
   (generic 40-way IDC sockets are) - a keyed IDE plug (pin 20 blocked) does not go onto J2 unless **J2's pin 20 is
   pulled**. **JP2 stays OPEN** (pin 20 = +5 V serves adapters powered through the header, not this one).
 - **Adapter power**: **J3 = +5V, G, G, nc** (pin 1 square, labelled on the silk) to the adapter's **four power pads**
-  (between its header and the H2 hole). The pad order on the adapter (probably +5V / GND / GND / +12V, floppy style) is
-  **to be confirmed by Ken** before the cable is made; +12 V is not needed by a CF card (leave it off).
+  (between its header and the H2 hole). Ken, 2026-09-26: these adapters take a **4-pin floppy (Berg / mini-power)
+  connector**: pin 1 +5V (red), 2 GND, 3 GND, 4 +12V (yellow) - the same order as J3, so the cable is **straight
+  through, pin 1 to pin 1** (J3 pin 4 is n.c., so the adapter never gets +12 V; a CF card needs none). Before making it,
+  identify the adapter's pin-1 pad (square pad / "1" / "+5V" silk, or meter: +5V beeps to the middle pin of its 3.3/5 V
+  jumper, GND to IDE pin 2). Either solder a 2.54 mm 1x4 header on the pads and use a 4-wire female-female jumper to J3,
+  or fit a Berg (2.5 mm) floppy socket and a floppy-to-2.54 lead.
 - **Heights** (15 mm standoffs): J2 + plug ~18 mm, CF card top ~22 mm, the adapter's plug ~35 mm, the ribbon loop ~42 mm
   above the card; screw heads + washers ~3 mm below. **The card cage: resolved (Ken, 2026-09-25) - nothing will be in
   front of the memory card**, the slot on its component side stays empty.
@@ -164,8 +168,8 @@ silk or the edge, none upside down; DRC silk_overlap 0):
 
 ### Open items before ordering
 
-1. **The adapter's power-pad order** (Ken to read off the adapter): decides the J3 cable (J3 itself is fixed: +5V, G, G,
-   nc).
+1. **The adapter's pin-1 power pad** (floppy pinout +5V/G/G/+12V assumed, 2026-09-26): decides only which way round
+   the straight-through J3 cable goes; the board does not depend on it (J3 is fixed: +5V, G, G, nc).
 2. **The ribbon plug's pin 20**: pin 20 open on the J2 plug, or pull J2's pin 20 (either works; decide with the cable in
    hand).
 
