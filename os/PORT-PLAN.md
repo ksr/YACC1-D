@@ -135,7 +135,7 @@ FRESOLVE + FOPEN + FGETB + SYS_GETCWD, the glob side adds FOPENDIR/FNEXT/SYS_OPE
 | Name | Src | p8cc B | Purpose | Calls | Rec | P8X-specific | Verdict | Status |
 |---|---|---|---|---|---|---|---|---|
 | disasm | 164 | 3,990 | disassemble `[start,end)` from memory | peek; lib_distab (143 P8X opcodes, generated from `genucode.OPC`) | none | the entire opcode table is the P8X ISA | **SKIP**. A YACC1 `disasm` is a new ~200-line tool whose table is generated from `software/assembler/yacc1.def` (the same generator idea as `gen_p8xdis.py`); the driver loop in `disasm.c` (hex parse, `AAAA: bb bb MNEMONIC`) is reusable | SKIPPED (as the verdict) |
-| kermit | 98 | 1,597 | file transfer over the SECOND ACIA (`$FF08/$FF09`) | FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE FDELETE + peek/poke of the ACIA | none | the 2nd serial port | **SKIP for now** (single UART on the YACC1). Revisit as DEFER if the IO card's UART becomes a second port: the packet logic is 60 lines and port-agnostic behind `a2put`/`a2get` | SKIPPED (as the verdict) |
+| kermit | 98 | 1,597 | file transfer over the SECOND ACIA (`$FF08/$FF09`) | FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE FDELETE + peek/poke of the ACIA | none | the 2nd serial port | **SKIP for now** (single UART on the YACC1). Revisit as DEFER if the IO card's UART becomes a second port: the packet logic is 60 lines and port-agnostic behind `a2put`/`a2get` | SKIPPED (as the verdict). 2026-09-26: a Y1/OS `kermit` was written instead, NOT from this one: E-Kermit 1.8 ported to y1cc, on the ONE console UART (the transfer and the terminal take turns), with assembly line routines (`os/kermit_io.asm`); `os/README.md` "kermit" |
 
 ### 2.6 Graphics or window manager (17)
 

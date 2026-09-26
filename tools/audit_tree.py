@@ -5,7 +5,7 @@ generated FABRICATED marker/index. Prints buckets, hash mismatches, unexplained 
 from disk. Run from anywhere. Exit code 1 if anything is unexplained/mismatched/missing."""
 import csv, os, hashlib, glob, collections, sys
 DST = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HAND_MADE = ("firmware/rom/eprom-captured-", "tests/video/", "tests/memory/", "hardware/cards/video/docs/", "embedded/bus-tester/readback/", "embedded/sequencer-card/readback/", "tests/sequencer/", "tests/assembler/ledcount/", "tests/assembler/brur/", "tests/assembler/romcount/", "tests/assembler/romdiag/", "docs/system/waveforms/", "embedded/sequencer-card/sequencer4/", "hardware/DESIGN-REVIEW", "software/compiler/", "tests/compiler/", "software/ucemu/", "tests/ucemu/", "mk/", "os/", "tests/os/", "tests/asm/", "tests/native/", "tests/monload/", "tests/bench/", "tests/cfcard/", "hardware/cards/cf/", "software/cfmodel.h", "software/videomodel.h", "firmware/abi/README.md", "docs/cards/", "docs/programming/", "docs/procedures/", "docs/system/ARCHITECTURE.md", "docs/system/MICROCODE.md", "docs/system/BUS.md", "docs/DOC-PLAN.md")   # session artefacts / bench tests written in YACC1-D, not from YACCS      # session artefacts that are not from YACCS
+HAND_MADE = ("firmware/rom/eprom-captured-", "tests/video/", "tests/memory/", "hardware/cards/video/docs/", "embedded/bus-tester/readback/", "embedded/sequencer-card/readback/", "tests/sequencer/", "tests/assembler/ledcount/", "tests/assembler/brur/", "tests/assembler/romcount/", "tests/assembler/romdiag/", "docs/system/waveforms/", "embedded/sequencer-card/sequencer4/", "hardware/DESIGN-REVIEW", "software/compiler/", "tests/compiler/", "software/ucemu/", "tests/ucemu/", "mk/", "os/", "tests/os/", "tests/asm/", "tests/native/", "tests/monload/", "tests/kermit/", "tests/bench/", "tests/cfcard/", "hardware/cards/cf/", "software/cfmodel.h", "software/videomodel.h", "firmware/abi/README.md", "docs/cards/", "docs/programming/", "docs/procedures/", "docs/system/ARCHITECTURE.md", "docs/system/MICROCODE.md", "docs/system/BUS.md", "docs/DOC-PLAN.md")   # session artefacts / bench tests written in YACC1-D, not from YACCS      # session artefacts that are not from YACCS
 PATCHED = {l.split("\t")[0].strip() for l in open(os.path.join(DST, "tools/patched_files.txt")) if l.strip() and not l.startswith("#")}
 def h(p):
     m = hashlib.md5()
@@ -32,6 +32,12 @@ for root, dirs, files in os.walk(DST):
         elif rel.startswith(("tools/", "migration/")) or rel in ("README.md", "MIGRATION.md", ".gitignore", ".gitattributes", "BACKLOG.md", "docs/system/MACHINE.md", "docs/system/OS-PLAN.md"): buckets["mine: tools/migration/front-page docs"] += 1
         elif f == "README.md": buckets["mine: placeholder README.md"] += 1
         elif f == "Makefile": buckets["mine: hand-written Makefile (2026-09)"] += 1
+        # third-party source kept unmodified next to its port (2026-09-26: os/upstream/ekermit-1.8, E-Kermit for
+        # /BIN/KERMIT): a folder <x>/upstream/<name>/ whose README.md says where it came from and holds its licence
+        elif "/upstream/" in rel and os.path.exists(os.path.join(DST, rel.split("/upstream/")[0], "upstream",
+                rel.split("/upstream/")[1].split("/")[0], "README.md")) and any(os.path.exists(os.path.join(DST,
+                rel.split("/upstream/")[0], "upstream", rel.split("/upstream/")[1].split("/")[0], lic))
+                for lic in ("LICENSE", "COPYING", "LICENSE.txt")): buckets["third-party: unmodified upstream source with its licence (README.md = origin, version, checksums)"] += 1
         elif rel.startswith(HAND_MADE): buckets["mine: session captures"] += 1
         elif rel.startswith("hardware/bus/blank-card/eagle/v3.2/"): buckets["mine: derived design (Blank V3.2, tools/make_blank_v32.py)"] += 1
         elif rel == "hardware/PROVENANCE.md": buckets["generated: provenance index (tools/gen_provenance.py)"] += 1

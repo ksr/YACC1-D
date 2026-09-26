@@ -58,6 +58,7 @@ in /BIN:
   echo print the arguments                 examine view/change memory
   find names matching a pattern (tree)     grep lines matching a regex; -r
   head first lines                         help this list
+  kermit file transfer on the console line: -r receive, -s send, -x server
   ls   plain directory list                man  a manual page (/MAN)
   md   render Markdown (/DOCS)             more page a file
   mv   move/rename files                   pack compact the disk: reclaim dead sectors

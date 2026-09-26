@@ -8,7 +8,8 @@
 #                   the Y1/OS sessions, the native assembler against the host one and under Y1/OS (tests/asm/run.py --target),
 #                   C compiled, assembled and run under Y1/OS by the native compiler and assembler (tests/native/run.py),
 #                   the toolchain rebuilding itself natively, twice, byte-identical (tests/native/selfhost.py)
-#                   the ROM's video unit and Y1/OS's video command on both emulators' card model (tests/video/emu.py)
+#                   the ROM's video unit and Y1/OS's video command on both emulators' card model (tests/video/emu.py),
+#                   Kermit transfers between /BIN/KERMIT and tools/y1kermit.py over a pty on both emulators (tests/kermit/run.py)
 #   make cc-test    just the compiler tests (on both emulators) and the twin comparisons (y1cc.c, the passes)
 #   make os-test    Y1/OS sessions on both emulators (tests/os/run.py)
 #   make native-test  the native compiler under Y1/OS on both emulators (tests/native/run.py; --all-uc: ~20 min)
@@ -43,6 +44,7 @@ check:
 	python3 tests/native/run.py
 	python3 tests/native/selfhost.py
 	python3 tests/monload/run.py
+	python3 tests/kermit/run.py
 	python3 tests/bench/run.py
 	python3 tests/cfcard/run.py
 	python3 tests/video/emu.py

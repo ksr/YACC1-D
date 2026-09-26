@@ -20,6 +20,20 @@ the PDF generators, and the KiCad conversion:
 - `gen_y1_optab.py` — generates `os/asm_optab.c`, the instruction table of the native assembler `/BIN/ASM`, from
   `software/assembler/yacc1.def` (2026-09-25; `os/Makefile` runs it, `--check` fails when the file is stale:
   `tests/asm/run.py`). It compiles each `.def` construction line with a copy of RC/asm's `Translate()`.
+- `y1kermit.py` — a small standard Kermit for the Mac side of the console line (2026-09-26): `send FILE...` to
+  `/BIN/KERMIT`'s `kermit -r` (or its `-x` server), `receive [DIR]` from `kermit -s`, `get NAME... [DIR]`, `finish` /
+  `bye` for the server, `term` (a plain terminal, Ctrl-] quits). The same protocol subset as `/BIN/KERMIT`: short
+  packets, window 1, block checks 1-3 (`--check`, 3 by default), control prefixing, repeat counts (`--norpt`),
+  8th-bit prefixing only when asked (`--ebq` asks), attribute packets (`--noattr`), text mode (`--text`: LF as CR
+  LF). `--port` (default: the one USB serial port that is not the sequencer's FTDI; the port is opened with
+  `monload.py`'s `Link`, pyserial), `--baud 38400`, `--maxl` (94), `--time` (the timeout it asks the other side to use,
+  10 s), `--timeout` (its own, 20 s), `-q`. Fault injection for the tests: `--corrupt N`, `--drop N`, `--nak N`,
+  `--mute N` (the Nth packet of the run damaged, not sent, NAKed, not answered). It prints what it sent and received
+  and a summary (packets, retries, NAKs, timeouts, repeats); exit 1 on failure. The fallback when C-Kermit is not at
+  hand, and what `tests/kermit/run.py` drives both emulators with; `docs/procedures/KERMIT.md` is the how-to.
+- `y1.ksc` — C-Kermit's settings for the same line (`kermit tools/y1.ksc` opens `/dev/cu.usbserial-AB0MVHSQ` at
+  38400, no flow control, carrier-watch off, binary, prefixing all, autodownload, and connects;
+  `docs/procedures/KERMIT.md` explains each).
 
 _Contents migrated 2026-09-19; MIGRATION.md at the repo root says which copy each item came from._
 

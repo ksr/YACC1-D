@@ -281,6 +281,21 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   (The `load_file` whole-sector overrun past $CFFF was fixed the same day: the check now uses the sector count.)
 - `vi` redraws the whole current line on every keystroke in insert mode (`<ESC>[r;1H` + line + `<ESC>[K`): fine on the emulators, ~80 bytes per key at 9600 baud on the machine; redraw only from the cursor, or just echo the character when appending at the end of a line.
 - Phase 4: video card v2 (6845 on ports PA/PB, 2K RAM) + PS/2 keyboard behind the console vectors.
+- **`kermit` (`/BIN/KERMIT`, 2026-09-26; `os/README.md` "kermit", `docs/procedures/KERMIT.md`)** - done on both emulators
+  against `tools/y1kermit.py` (`tests/kermit`), open:
+  - **On the machine with C-Kermit**: not run yet. To verify there: that the XR16C550's FIFO works as kermit uses it
+    (FCR = 7 at the start, 0 at the end; if it does not, packets over ~13 characters overrun at 38400: try `kermit -r
+    -l 20`, then a lower line speed), the timeouts at the real clock (poll counts calibrated for 1 MHz), C-Kermit 9.0.302
+    with `tools/y1.ksc` in all three modes, and autodownload.
+  - Not implemented (optional in the protocol; each would cost code in a program already at 27K of the 32K area):
+    **long packets** (E-Kermit's F_LP: up to 4096 characters a packet, fewer ACK round trips; a receive burst that long
+    would overrun the 16-byte FIFO at 279 clocks a character against the line's 260, so it would only help sending),
+    **sliding windows** (F_SSW; the same FIFO limit for receiving), streaming, locking shifts, RESEND/recovery of an
+    interrupted transfer, file dates in the attribute packet (Y1/OS has no dates), and the server's REMOTE commands
+    (DIR, CD, DELETE, TYPE, SPACE: each a G subcommand; now "Unimplemented server command").
+  - A timer would make the timeouts real seconds at any clock (today a count of UART polls).
+  - The instruction-level emulator's port 2 still turns `q` into end of input (item above); the UART model added for
+    kermit does not, so the two console paths of that emulator now differ in that one byte.
 - (done 2026-09-22: `yacc1.def` P8=9 typo -> P8=8.)
 
 ## C compiler (y1cc, 2026-09-22)

@@ -308,6 +308,7 @@ names, globs and `-` (the console until Ctrl-D) work wherever a command reads te
 | `head [-N] [file...]` / `tail [-N] [file...]` | the first / last N lines (10; tail up to 40) |
 | `hello [args]` | the first /BIN program |
 | `help` | the command list |
+| `kermit -r` / `-s FILE...` / `-x` | file transfer with the Mac over the console line (2026-09-26, below): receive, send, server |
 | `ls [path]` | a plain listing through opendir/readdir |
 | `man [name]` | `/MAN/NAME` through the pager; alone: the page names |
 | `md [-p] [file]` | Markdown rendered (ANSI, or plain with `-p`), paged; names are looked up in `/DOCS` too; alone: the list |
@@ -326,8 +327,71 @@ names, globs and `-` (the console until Ctrl-D) work wherever a command reads te
 
 Also on the disk: `/LIB` (2026-09-25: the compiler's passes `/LIB/CC/CC1`..`CC9`, built with `make -C os passes`,
 and `/LIB/Y1CCRT.TXT`, `/LIB/Y1LIB.C`), `/MAN` (the pages, from `os/man/`), `/DOCS` (this README as `OS.MD`, the compiler README as
-`Y1CC.MD`, `OSPLAN.MD`, `PORT.MD` and `MDDEMO.MD`, md's own sample), and `/FRUIT.TXT` + `/FRUIT2.TXT`, seven lines of
+`Y1CC.MD`, `OSPLAN.MD`, `PORT.MD`, `KERMIT.MD` (2026-09-26: the Mac side of `kermit`) and `MDDEMO.MD`, md's own sample), and `/FRUIT.TXT` + `/FRUIT2.TXT`, seven lines of
 sample data for trying the filters (`sort`, `uniq`, `awk`, `diff` ... the man pages' examples use them).
+
+### `kermit` (2026-09-26)
+
+`/BIN/KERMIT` (`commands/kermit.c`, `kermit_io.asm`) moves files between Y1/OS and the Mac over the console cable with
+the Kermit protocol: C-Kermit on the Mac (`docs/procedures/KERMIT.md`, the how-to: settings, `tools/y1.ksc`, sessions)
+or `tools/y1kermit.py`. `kermit -r` receives into the current directory, `kermit -s FILE...` sends (globs), `kermit -x`
+is a server (the Mac SENDs, GETs, FINISHes). The console IS the line, so nothing is printed while packets flow; a
+summary (each file and its size, a count) comes after. `man kermit`.
+
+**Ported from E-Kermit 1.8** (Frank da Cruz, the Kermit Project, 25 May 2021, Revised 3-Clause BSD licence; the
+unmodified sources, their download URL and checksums are in `upstream/ekermit-1.8/`): its protocol module, main loop
+and Unix I/O module, with the changes the y1cc subset forces (no function pointers: the I/O callbacks are direct
+calls; no `long`: 24-bit sizes as two ints; `int` unsigned; no `#ifdef`: the feature set fixed) and what Y1/OS and
+the machine need (timeouts and retry limits, which E-Kermit leaves to the other side; packets read by length; server
+mode; the file handling below). `kermit.c`'s header lists every change and keeps E-Kermit's notice, as its licence asks.
+
+| | |
+|---|---|
+| Protocol | short packets (up to 94), window 1 (stop-and-wait), block checks 1, 2, 3 (16-bit CRC; the sender proposes, 3 by default), control prefix `#`, repeat counts `~`, 8th-bit prefix `&` only when the other side asks (the line is 8 bits), attribute packets (size, text/binary; a refused file is skipped); server: I, S, R (GET, a glob too), G F / G L (FINISH, BYE). Not: long packets, sliding windows, streaming, locking shifts, RESEND, file dates, REMOTE commands (BACKLOG) |
+| Timeouts | what the other Kermit asks for, else 5 s; it asks for 15 s. 10 tries a packet, 60 before a transfer has started (the user is switching to the Mac). Three Ctrl-Cs while waiting cancel |
+| Files | received names: the leaf, upper case, 1..12 of `A-Z 0-9 . _ -` (NAME.EXT cut to 8.3 when too long), the name used goes back in the ACK. Data goes to `KERMIT.TMP` in the current directory and is renamed when complete: a same-named file is replaced only by a whole new one, a failed transfer leaves nothing (`-k` keeps it), `-n` never replaces (`NAME~1`..`~99`), `-a ADDR` sets load/exec. Binary by default both ways; text mode (the sender's attribute, or `-T` to send) drops / adds the CR of CR LF. Receiving takes the one write handle: not inside `>` or a pipe |
+| Size | 19,349 bytes image + 8,118 data (`--xisa`: 17,524 + 8,373), of which `kermit_io` is 530 bytes of code |
+
+**The line: `kermit_io.asm`.** At 1 MHz the YACC1 runs ~30,000 instructions a second and 38400 baud delivers a
+character every 260 us. So the UART is read by a few assembly routines, not by the ROM (whose `uartinne` turns CR into
+LF and costs a JSR a character) nor by compiled C (~1,100 clocks a character): `krx` hunts for the SOH, then reads
+LEN - 32 more characters by count in **279 clocks a character** (measured on the microcode emulator by
+`tests/kermit/run.py --calib`), and kermit switches the 16C550's 16-byte receive FIFO on for the transfer (FCR = 7,
+off again at the end, after the transmitter has emptied). Falling behind by 19 clocks a character, the FIFO absorbs a
+burst of ~220 characters: a whole 96-character packet with room to spare. Timeouts are poll counts: a pass of the
+wait loop is 191.23 clocks on average, 5,229 passes a second (measured: 1,000,111 clocks); at another clock they
+scale with it. The same file holds `ktx` (send), `kcrc`/`ksum` (the block checks, 16 instructions a byte against ~210
+in C), `kdec` (a packet's data field decoded straight into the output buffer) and `kenc` (file bytes encoded straight
+into the packet, leaving runs and 8th-bit prefixing to E-Kermit's C). y1cc has no inline assembly, so `mkkio.py`
+assembles the file at 0000H and at 1000H and writes `kermit_io.c`: the bytes as a C array, the offsets of the words
+that differ (the absolute addresses), and `#define`s for the entries and parameters. kermit.c adds the array's
+address to those words at start-up and calls the entries with `call()`; the Makefile regenerates it, `mkkio.py
+--check` catches a stale copy. The instruction-level emulator gained a UART model for it the same day
+(`software/emulator/README.md`): until then only the microcode emulator had a data-ready bit to poll.
+
+**Throughput** (the instruction-level emulator's PC histogram, less the instructions spent waiting in `kermit_io`'s
+poll loops, at 32.4 clocks an instruction and 1 MHz; `tests/kermit/run.py` prints it for the 80,793 bytes of its
+first session, six files one way then back):
+
+| | instructions a byte | bytes/s at 1 MHz | `--xisa` |
+|---|---|---|---|
+| receive (Mac to YACC1) | 118 | 263 | 113 / 273 |
+| send (YACC1 to Mac) | 132 | 234 | 126 / 245 |
+
+The CPU is the limit, not the line (38400 baud carries 3,840 characters a second). Where a received byte goes: `kdec`
+~30 instructions, the CRC ~22, `krx` ~14, the OS's WRITE and the ROM's sector writes ~20, the rest per packet (the
+ACK, the checks, the state machine). A first version with only `krx`/`ktx` in assembly did 398 and 525 instructions a
+byte (78 and 59 bytes/s).
+
+**Tests** (`tests/kermit/run.py`, in `make check`, ~2.5 minutes): on both emulators, Y1/OS on a pseudo-terminal
+against `tools/y1kermit.py`: a text file, all 256 byte values, a 70K file (over 64K), long runs, an empty file and a
+long lower-case name in one session, then all of them back with `kermit -s *`; block checks 1 and 2, 8th-bit
+prefixing both ways, text mode both ways, no attributes and no repeat counts, `-n`, `-a`; a damaged packet each way,
+a packet never sent (kermit -r times out and NAKs), an ACK never sent (kermit -s times out and sends again), three
+Ctrl-Cs; the server's SEND, GET (a glob, a lower-case name, a missing file) and FINISH. Every file is compared with
+the original on the host and, through `tools/p8xfs.py get`, on the disk image, which must pass fsck. 33 checks an
+emulator, the same with `XISA=1`, and `--calib` (the two timing figures above). **Not yet run on the machine**: the
+FIFO, the timing at the real clock and C-Kermit itself are to verify (BACKLOG).
 
 ### `video` (2026-09-25)
 

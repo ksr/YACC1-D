@@ -37,6 +37,7 @@ FTDI port; **card** = the sequencer-memory card's FTDI port; **burn** = a 28C64 
 | 12 | `python3 tests/assembler/romdiag/run.py` | the ROM diagnostic on the microcode emulator |
 | 13 | `python3 tests/monload/run.py` | the monitor's `:` loader on both emulators (error paths too) and `tools/monload.py` over a pty (2026-09-23) |
 | 14 | `python3 tests/bench/run.py` | the 15 bench programs on both emulators against their expected transcripts, the committed images, and the `--port` path over a pty (2026-09-23) |
+| 15 | `python3 tests/kermit/run.py` | `/BIN/KERMIT` against `tools/y1kermit.py` over a pty on both emulators: files both ways, options, damaged/missing packets and timeouts, the server; then `--calib`, the receive loop's and the timeouts' clocks on the microcode emulator (2026-09-26) |
 
 Shortcuts: `make cc-test` = steps 7+8, `make os-test` = step 9. `make` (all) first builds the C tools the tests need:
 `software/emulator`, `software/ucemu`, `software/assembler`, `firmware/microcode/ucode-generator2`, `software/disassembler/disasm2`,

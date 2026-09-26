@@ -1,0 +1,19 @@
+; y1.ksc - C-Kermit settings for the YACC1's console line (2026-09-26; docs/procedures/KERMIT.md)
+;   kermit tools/y1.ksc          opens the line, sets everything below, and connects (Ctrl-\ C comes back)
+; Edit the line name if the FTDI cable has another serial number (ls /dev/cu.usbserial-*; the sequencer card's
+; FTDI, usbserial-AB6WZCQX, is NOT the console).
+set modem type none               ; a direct cable, no modem
+set line /dev/cu.usbserial-AB0MVHSQ
+set speed 38400                   ; what the ROM sets the 16C550 to (8N1)
+set carrier-watch off             ; the cable carries no CD
+set flow-control none             ; no RTS/CTS wired
+set parity none                   ; 8 data bits: binary goes as it is
+set prefixing all                 ; prefix every control character (cautious works too; all is the safe one)
+set streaming off                 ; a serial line: every packet ACKed
+set window 1                      ; /BIN/KERMIT is stop-and-wait
+set block-check 3                 ; 16-bit CRC
+set file type binary              ; exact copies both ways ...
+set transfer mode manual          ; ... and no switching to text on its own
+set file names literal            ; keep FOO.TXT as FOO.TXT (converted would make it foo.txt)
+set terminal autodownload on      ; `kermit -s FILE` typed at the YACC1 starts the download by itself
+connect

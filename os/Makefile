@@ -50,7 +50,7 @@ PASSES = $(PASSN:%=$(B)/cc/%.bin)
 PSTACK = 0xCFFF
 PSRC   = $(wildcard $(CDIR)/*.c $(CDIR)/*.h $(CDIR)/ylim/*.h)
 RTLIB  = $(ROOT)/software/compiler/lib/y1ccrt.txt $(ROOT)/software/compiler/lib/y1lib.c
-DOCS   = docs/mddemo.md:MDDEMO.MD README.md:OS.MD ../software/compiler/README.md:Y1CC.MD ../docs/system/OS-PLAN.md:OSPLAN.MD PORT-PLAN.md:PORT.MD
+DOCS   = docs/mddemo.md:MDDEMO.MD README.md:OS.MD ../software/compiler/README.md:Y1CC.MD ../docs/system/OS-PLAN.md:OSPLAN.MD PORT-PLAN.md:PORT.MD ../docs/procedures/KERMIT.md:KERMIT.MD
 
 all: disk.img
 
@@ -87,6 +87,12 @@ $(B)/y1os-c.bin: y1os.c lib_abi.c lib_fs.c $(ROOT)/software/compiler/y1cc.py $(R
 asm_optab.c: $(DEF) $(ROOT)/tools/gen_y1_optab.py
 	python3 $(ROOT)/tools/gen_y1_optab.py
 $(B)/bin/asm.bin: asm_optab.c
+
+# /BIN/KERMIT's line I/O is assembly (kermit_io.asm, 2026-09-26), turned by mkkio.py into kermit_io.c: the bytes as a
+# C array and the offsets of its absolute addresses, which kermit.c relocates at start-up (y1cc has no inline asm)
+kermit_io.c: kermit_io.asm mkkio.py $(DEF)
+	python3 mkkio.py
+$(B)/bin/kermit.bin: kermit_io.c
 
 $(B)/bin/%.bin: commands/%.c $(LIBS) $(ROOT)/software/compiler/y1cc.py $(B)/xisa-sel
 	@mkdir -p $(B)/bin && cp $(DEF) $(B)/bin/ && echo -h > $(B)/bin/rcasm.rc

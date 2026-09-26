@@ -1,0 +1,82 @@
+NAME
+    kermit - send and receive files over the console line (Kermit)
+
+SYNOPSIS
+    kermit -r [-a ADDR] [-n] [-k] [-l N]
+    kermit -s FILE... [-B | -T] [-b 1|2|3|5]
+    kermit -x [-a ADDR] [-n] [-k] [-l N]
+
+DESCRIPTION
+    Moves files between Y1/OS and the computer at the other end of
+    the console cable with the Kermit protocol: C-Kermit on the Mac
+    (docs/procedures/KERMIT.md has the Mac side step by step), or
+    tools/y1kermit.py. The console and the transfer share the one
+    UART (38400 8N1, no flow control): type the kermit command here,
+    then go back to the Kermit at the other end and start its half.
+
+        kermit -r      receive: wait for the other side to SEND; the
+                       files land in the current directory
+        kermit -s F... send the files (globs work: kermit -s *.C);
+                       the other side must RECEIVE (C-Kermit starts
+                       by itself when its autodownload is on)
+        kermit -x      server: the other side can SEND, GET (a name
+                       or a glob), and FINISH or BYE, which end it
+
+    Nothing is printed while packets flow (the console IS the line);
+    at the end each file is listed with its size, and a count. Three
+    Ctrl-Cs while kermit waits for a packet cancel it.
+
+OPTIONS
+    -a ADDR   the load and exec address (hex) of the files received
+              (0 without), so a received program can be run
+    -n        never replace a file: an incoming name that exists gets
+              ~1 .. ~99 (FOO.BIN~1); without -n it is replaced
+    -k        keep a file that did not arrive whole (else deleted)
+    -l N      the longest packet I take, 20..94 (94)
+    -B / -T   send binary (the default: every byte as it is) or text
+              (LF goes as CR LF; the other side makes local lines)
+    -b N      the block check I propose when I send: 1 (6-bit sum),
+              2 (12-bit), 3 (16-bit CRC, the default), 5 (CRC on
+              every packet); the receiver may choose 1
+    -h        usage
+
+FILES
+    A received name loses any directory part, is upper-cased, and
+    keeps 1..12 of A-Z 0-9 . _ - (others become _); a longer one is
+    cut to 12 keeping a short extension (lower case name.text comes
+    as LOWER_CA.TEX). The ACK tells the sender the name used. Data
+    goes to KERMIT.TMP in the current directory, renamed when the
+    file is complete: an old file of the same name is replaced only
+    by a whole new one, and a failed transfer leaves nothing. Text
+    mode (the sender's attributes say so, or C-Kermit's text files)
+    drops the CR of CR LF. Received files get load/exec 0, or -a.
+
+PROTOCOL
+    Standard Kermit: packets up to 94 characters, window 1, block
+    checks 1, 2, 3; control prefix #, repeat counts ~, 8th-bit
+    prefix & only when the other side asks (the line is 8 bits);
+    attribute packets (size, text or binary). No long packets, no
+    sliding windows. Timeouts: what the other side asks for, else
+    5 s; 10 tries a packet, 60 before a transfer has started (five
+    minutes to start the other side). Ported from E-Kermit 1.8 (the
+    Kermit Project, Revised BSD licence).
+
+NOTES
+    kermit -r and -x write files, which takes the one write handle:
+    not inside a > or a pipe. The line is read by kermit_io, a few
+    assembly routines that poll the UART directly (the ROM's reader
+    turns CR into LF) with the 16C550's FIFO on during a transfer;
+    at 1 MHz a character costs 279 clocks against the 260 the line
+    gives, so a whole 94-character packet fits the FIFO. Timeouts
+    are poll counts calibrated for 1 MHz. Throughput is set by the
+    CPU, not the line: see os/README.md "kermit".
+    Written for Y1/OS 2026-09-26 (the P8X kermit used a second ACIA).
+
+EXAMPLES
+    kermit -r                 then on the Mac: send foo.txt
+    kermit -s *.C             then on the Mac: receive
+    kermit -x                 then: send, get REPORT.TXT, finish
+    kermit -r -a 5000         a program, runnable when it arrives
+
+SEE ALSO
+    shell, cp, save

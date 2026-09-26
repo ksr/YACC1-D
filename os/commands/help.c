@@ -2,7 +2,7 @@
      help       the list (man NAME for the page of any of them)
    Ported from P8X os/commands/help.c 2026-09-23, changes: the text is rewritten for Y1/OS (no /d1, graphics,
    kermit, make, sh; the built-ins are Y1/OS's; redirection and pipes since the same evening: man shell; pack added 2026-09-23;
-   asm and cc 2026-09-25, video 2026-09-25). Keep it
+   asm and cc 2026-09-25, video 2026-09-25, kermit 2026-09-26). Keep it
    in step with os/README.md. */
 #include "y1lib.c"
 
@@ -29,6 +29,7 @@ void main() {
     puts("  echo print the arguments                 examine view/change memory");
     puts("  find names matching a pattern (tree)     grep lines matching a regex; -r");
     puts("  head first lines                         help this list");
+    puts("  kermit file transfer on the console line: -r receive, -s send, -x server");
     puts("  ls   plain directory list                man  a manual page (/MAN)");
     puts("  md   render Markdown (/DOCS)             more page a file");
     puts("  mv   move/rename files                   pack compact the disk: reclaim dead sectors");

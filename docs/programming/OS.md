@@ -86,6 +86,17 @@ above `TPA` = $5000 and end below `TPATOP` = $D000, else `bad load address or si
 The v0 session `tests/os/basic.session` with its transcript `basic.int.out` shows the read-only commands' exact
 output (including `wc 45 1` on raw sector 45, `cd /BIN/../BIN`, and `nothere` → `what?`).
 
+### Moving files to and from the Mac: `kermit` (2026-09-26)
+
+`/BIN/KERMIT` transfers files over the console cable with the Kermit protocol, against C-Kermit on the Mac (or
+`tools/y1kermit.py`): `kermit -r` receives into the current directory, `kermit -s FILE...` sends, `kermit -x` is a
+server (SEND, GET, FINISH from the Mac). The how-to with C-Kermit's exact settings is
+[`docs/procedures/KERMIT.md`](../procedures/KERMIT.md) (`tools/y1.ksc` holds them); the program, its E-Kermit
+origin, its assembly line routines and its measured speed (about 260 bytes/s in, 240 out at 1 MHz) are in
+`os/README.md` "kermit"; `man kermit` on the machine. It reads the 16C550 directly (`os/kermit_io.asm`: LSR, then
+RBR; the FIFO on during a transfer) instead of the ROM's `UARTINNE`, which turns CR into LF and costs a JSR a
+character, and times out by counting polls calibrated for 1 MHz. `tests/kermit/run.py` runs it on both emulators.
+
 ### The disk image that ships
 
 `os/Makefile` builds `os/disk.img` (2048 sectors = 1 MB): the OS at LBA 1.. (10 sectors for v0), `/BIN/HELLO`,
@@ -297,7 +308,8 @@ feeds `O\n` + the session lines to both emulators (`emulator -x -m -c disk.img -
 disk.img -l 80000000`), cuts the transcript from `BOOT FROM CF` to the monitor prompt after `bye`, and compares
 with `NAME.int.out` / `NAME.uc.out` (the microcode transcript shows the monitor's input echo). `--update` rewrites
 the expectations after a change that was checked by eye. Part of `make check` and `make os-test` at the root. The
-committed transcripts are v0's (banner `Y1/OS v0 (2026-09-22)`).
+committed transcripts are v0's (banner `Y1/OS v0 (2026-09-22)`). `tests/kermit/run.py` (2026-09-26) boots the OS on a
+pseudo-terminal instead and moves files with `/BIN/KERMIT` against `tools/y1kermit.py` (above; also in `make check`).
 
 ## 7. The plan and the backlog (`OS-PLAN.md`, `os/PORT-PLAN.md`, `BACKLOG.md`)
 
