@@ -168,8 +168,8 @@ silk or the edge, none upside down; DRC silk_overlap 0):
 
 ### Open items before ordering
 
-1. **The adapter's pin-1 power pad** (floppy pinout +5V/G/G/+12V assumed, 2026-09-26): decides only which way round
-   the straight-through J3 cable goes; the board does not depend on it (J3 is fixed: +5V, G, G, nc).
+1. ~~The adapter's power-pad order~~ - **resolved 2026-09-26: Ken builds the power harness** from the CF-IDE adapter to
+   J3 himself (J3 is fixed: +5V, G, G, nc); the board does not depend on it.
 2. **The ribbon plug's pin 20**: pin 20 open on the J2 plug, or pull J2's pin 20 (either works; decide with the cable in
    hand).
 
