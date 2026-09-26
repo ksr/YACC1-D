@@ -26,7 +26,7 @@ Instructions: `OUTA Pn` (port ← ACC), `OUTI Pn,byte` (port ← immediate), `IN
 | Port | Today (hardware) | Interpreter (`software/emulator`) | ucemu | Proposed (`OS-PLAN.md`) |
 |---|---|---|---|---|
 | P0 | I/O card **select latch** (write): which device P1 talks to — see section 3 | stored; `$40` selects the UART path for `OUTI P1` | modelled (control latch) | unchanged |
-| P1 | I/O card **data port** for the device selected in P0 | `OUTI P1` with P0 = $40 prints; `INP P1` with P0 = 1 returns $FF once (the switches) | modelled: 16550 (stdin/stdout), switches (`-s`), LEDs (`-L`) | unchanged |
+| P1 | I/O card **data port** for the device selected in P0 | `OUTI P1`/`OUTA P1` with P0 = $40 prints; `INP P1` with P0 = 1 returns $FF once (the switches); with P0 selecting the UART (2026-09-26) RBR and LSR as ucemu models them | modelled: 16550 (stdin/stdout), switches (`-s`), LEDs (`-L`) | unchanged |
 | P2 | `-IO-SEL2` on the I/O card's header, nothing wired | **the console**: `OUTA P2` prints, `INP P2` reads a key | also a console (kept as the old shortcut) | stays the emulator console; reserved to the I/O card |
 | P3–P7 | `-IO-SEL3..7` on the header, nothing wired | nothing | nothing | reserved to the I/O card (a second UART, a printer port…); since nothing on the card uses them, probably usable by another card that decodes them itself - verify on the board first (BACKLOG, 2026-09-24) |
 | P8 | free | CF register select (`cfmodel.h`) | same | **CF register select** (write-only latch): bits 0–2 = ATA register 0–7, bit 3 = CF reset (1 = held; the ROM never sets it, the model ignores it), 4–7 ignored |
@@ -55,8 +55,9 @@ The UART registers by their offset (16550 names, `docs/datasheets/PC16550D.pdf`;
 |---|---|---|
 | `$40` (UARTA0) | RBR / THR (DLL with DLAB) | `INP P1` receives, `OUTA P1` transmits; at boot DLL ← 3 |
 | `$48` (UARTA1) | IER (DLM with DLAB) | at boot DLM ← 0 |
+| `$50` (UARTA2) | IIR / FCR | the ROM never writes FCR (no FIFO: one character of buffering); `/BIN/KERMIT` writes `$07` (FIFOs on, cleared) for a transfer and `$00` after (2026-09-26, `os/kermit_io.asm`) |
 | `$58` (UARTA3) | LCR | at boot `$80` (set DLAB) then `$03` (8N1) |
-| `$68` (UARTA5) | LSR | bit 0 data ready (`uartin`, `const`), bit 6 transmitter empty (`uartout` waits for `$40`) |
+| `$68` (UARTA5) | LSR | bit 0 data ready (`uartin`, `const`), bit 5 transmit holding register empty (`kermit_io`'s `ktx`), bit 6 transmitter empty (`uartout` waits for `$40`) |
 
 Baud: divisor 3 = **38400** (`monitor.asm`: `OUTI P1,3 ;38400`; the commented `12 ;9600` implies a 1.8432 MHz UART
 clock: 1.8432 MHz / 16 / 12 = 9600). **To verify:** the UART crystal value against the I/O card schematic

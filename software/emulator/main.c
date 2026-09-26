@@ -18,6 +18,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <poll.h>             /* YACC1-D 2026-09-26: the UART model's non-blocking data-ready poll */
 #include "../opcodes.h"
 #include <stdint.h>
 #include "../cfmodel.h"        /* YACC1-D 2026-09-22: the CompactFlash card on ports P8 (select) / P9 (data), -c image */
@@ -421,10 +422,49 @@ void enableRawMode() {
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 }
 
+/* YACC1-D 2026-09-26: the I/O card's UART (P0 = UARTCS | register << 3, P1 = its data), as software/ucemu models it:
+   RBR reads the next console byte (waits for it), LSR is $60 (THRE + TEMT) | data ready, and data ready is a
+   NON-blocking poll of stdin, so a program that polls the UART itself (/BIN/KERMIT) can time out. After 20000 empty
+   polls in a row with no input or output meanwhile, each poll waits up to 1 ms (a program idling on the line does not
+   spin the host CPU; ucemu does the same). THR writes (OUTA P1 as well as OUTI P1 while P0 = $40) print. A byte the
+   poll has buffered is the next one port 2 (mygetchar) gives, so the ROM's console and the UART share one stream.
+   CR becomes LF on this path too (as mygetchar and ucemu do); unlike port 2, 'q' is an ordinary byte here. */
+static int uart_buf = -1, uart_eof = 0;
+static long uart_idle = 0;
+static int uart_fill(int wait_ms) {             /* try to buffer one byte; 1 = something buffered or end of input */
+    struct pollfd pf = { STDIN_FILENO, POLLIN, 0 };
+    if (poll(&pf, 1, wait_ms) <= 0) return 0;
+    unsigned char c;
+    if (read(STDIN_FILENO, &c, 1) == 1) { uart_buf = (c == 0x0d) ? 0x0a : c; uart_idle = 0; return 1; }
+    uart_eof = 1; return 1;
+}
+static int uart_ready(void) {
+    if (uart_buf >= 0 || uart_eof) return 1;     /* end of input reads as "ready" with 0, as on ucemu */
+    return uart_fill(++uart_idle > 20000 ? 1 : 0);
+}
+static int uart_byte(void) {
+    if (uart_buf < 0 && !uart_eof) uart_fill(-1);
+    if (uart_buf >= 0) { int c = uart_buf; uart_buf = -1; return c; }
+    return 0;
+}
+static uint8_t uart_read(uint8_t sel) {          /* INP P1 while P0 selects the UART */
+    switch ((sel >> 3) & 7) {
+        case 0: return (uint8_t)uart_byte();     /* RBR */
+        case 2: return 0x01;                     /* IIR: no interrupt pending */
+        case 5: return 0x60 | (uart_ready() ? 1 : 0);   /* LSR */
+        default: return 0x00;
+    }
+}
+
 char mygetchar() {
     enableRawMode();
     char c;
 
+    if (uart_buf >= 0) {                        /* a byte the UART poll took first */
+        c = (char)uart_buf; uart_buf = -1;
+        return c == 'q' ? 0 : c;
+    }
+    if (uart_eof) return 0;
     while (read(STDIN_FILENO, &c, 1) == 1 && c != 'q') {
         /*    if (iscntrl(c)) {
               printf("%d\n", c);
@@ -444,6 +484,7 @@ char mygetchar() {
 }
 
 void myputchar(char c) {
+    uart_idle = 0;                              /* output ends an idle run (the UART poll's back-off) */
     write(STDOUT_FILENO, &c, 1);
     //printf("me\n");
 }
@@ -896,6 +937,7 @@ int main(int argc, char** argv) {
                     myputchar(port[portaddr]);
                     DEBUG_PRINTF(" ");
                 }
+                if (portaddr == 1 && port[0] == 0x40) myputchar(port[1]);   /* 2026-09-26: THR */
                 if (portaddr == CF_PORT_SEL || portaddr == CF_PORT_DATA) cf_io_write(portaddr, acc);
                 break;
 
@@ -982,6 +1024,7 @@ int main(int argc, char** argv) {
                     firstSwitchRead = 0;
                     acc = 0xff;
                 }
+                if (portaddr == 1 && (port[0] & 0x40)) acc = uart_read(port[0]);   /* 2026-09-26: the UART */
                 if (portaddr == 2) {
                     acc = mygetchar(); // get a char
                     

@@ -49,20 +49,25 @@ Behaviour worth knowing (`main.c`):
   LF; 0 at end of input). **A `q` byte ends input**: `mygetchar()` returns 0 on it (`main.c`), so a program that
   reads a `q` from a redirected stdin sees end of input, not the letter. `OUTI P1` prints when P0 holds `$40` (the UART THR path). All other
   ports are plain bytes.
+- **The UART** (2026-09-26, for `/BIN/KERMIT`): `INP P1` while P0 selects the 16550 (`$40 | register << 3`) reads RBR
+  (the next console byte) and LSR (`$60` | data ready, a non-blocking poll of stdin; after 20,000 empty polls each waits
+  up to 1 ms), as ucemu does; `OUTA P1` with P0 = `$40` prints too. It shares the input stream with port 2, and `q` is
+  an ordinary byte on this path. So a program that polls the UART itself can time out on both emulators.
 - **`BRDEV` never branches**, so the monitor's `uartout`/`uartin` and the compiler runtime's `rt_putc`/`rt_getc`
   take their port-2 branch — this is the whole reason the same image runs here and on the machine.
 - Writes above `$DFFF` print `Rom Write`, dump the registers and exit.
 - An interactive debugger is wired to `HALT` (without `-x`) and to `PC == $0000`: keys `C` continue, `S` single-step
   (prints opcode, PC, ACC, TMP, R3, R7 per instruction), `R` run, `J` step over the current call depth, `D` dump
   $0200, $0F80, $0400, $1000 and the registers. `HALT` without `-x` prints those dumps too.
-- `INP P1` returns `$FF` once when P0 = 1 (the first switch read); `INP P8`/`INP P9` go to the CF model (`$FF` from
-  P8, the write-only select, and from P9 with no image); `INP` of other ports leaves ACC unchanged.
+- `INP P1` returns `$FF` once when P0 = 1 (the first switch read), the UART's registers while P0 selects it (above);
+  `INP P8`/`INP P9` go to the CF model (`$FF` from P8, the write-only select, and from P9 with no image); `INP` of other
+  ports leaves ACC unchanged.
 - Bad opcodes (`$00`, `$A5`, `$AE`, `$80–$8F`, `$F8–$FA`, `BR16Z/NZ`, `IRET`, `INT`) print `bad opcode [xx] pc[aaaa]`
   and exit.
 
 What it does **not** model (the ISA reference has the full table): `BRDEV` on hardware, the carry flip-flop's loads
 on SUB and on the plain shifts, R2 as the operand-address register, the suppressed loads of R0, bus fights,
-timing, FORCE-ROM, interrupts, the UART's status bits, the video card. (`LDTVR`/`STTVR`, which ran here without
+timing, FORCE-ROM, interrupts, the UART's baud rate, FIFO and error bits (LSR is only data ready + transmitter empty). (`LDTVR`/`STTVR`, which ran here without
 microcode, are gone: since 2026-09-24 their opcodes are `ADDIW`/`SHL16`, and $80-$8F `LDZ`/`STZ`, implemented as the
 microcode does them.) Since 2026-09-22 `BRVR` (indirect jump, Rn += 2), `JSRUR` (PC ← Rn, bytes no
 longer swapped) and `BRUR` follow the microcode (`tools/patched_files.txt`).
@@ -206,3 +211,7 @@ Exit codes: every runner exits 1 on any failure, so they chain in `make check` (
 The microcode emulator can now be driven by a live program on a pseudo-terminal, not only by a finished input file: its
 UART status read no longer blocks waiting for input (see `software/ucemu/README.md`). `tests/monload/run.py` relays a pty
 to `y1ucemu -x -m` and runs `tools/monload.py` against it, the same way it would talk to the machine's UART.
+`tests/kermit/run.py` (2026-09-26) does the same on BOTH emulators with Y1/OS booted: `/BIN/KERMIT` on the emulated
+machine, `tools/y1kermit.py` on the pty. Neither emulator models the line's speed: a byte is there as soon as the host
+wrote it, so what a real 38400-baud line and FIFO do to the receive loop is checked by arithmetic and by the
+microcode emulator's clock count (`run.py --calib`), not by a run.
