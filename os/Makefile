@@ -83,10 +83,21 @@ $(B)/y1os-c.bin: y1os.c lib_abi.c lib_fs.c $(ROOT)/software/compiler/y1cc.py $(R
 	  printf "y1os (C): %d bytes image (%d of 32 sectors) + %d data = %d of 16320 (\$$1000-\$$4FBF)\n" $$i $$(( (i + 511) / 512 )) $$d $$((i + d)); \
 	  if [ $$((i + d)) -gt 16320 ] || [ $$i -gt 16320 ]; then echo "y1os: over its 16K less SYSTAB2 (\$$4FC0-\$$4FFF; the programs start at \$$5000)"; rm -f $@; exit 1; fi
 
-# /BIN/ASM's instruction table is generated from the host assembler's yacc1.def (tools/gen_y1_optab.py, 2026-09-25)
+# /BIN/ASM's instruction table is generated from the host assembler's yacc1.def (tools/gen_y1_optab.py, 2026-09-25):
+# asm_optab.c for the C assembler (commands/asm.c) and commands-asm/asmtab.inc for the assembly-language one, both
+# written by one run of the generator
 asm_optab.c: $(DEF) $(ROOT)/tools/gen_y1_optab.py
 	python3 $(ROOT)/tools/gen_y1_optab.py
+commands-asm/asmtab.inc: $(DEF) $(ROOT)/tools/gen_y1_optab.py
+	python3 $(ROOT)/tools/gen_y1_optab.py
 $(B)/bin/asm.bin: asm_optab.c
+
+# the assembler in YACC1 assembly (commands-asm/asm.asm, 2026-09-26): assembled by the host assembler at $5000
+ASMA   = $(B)/asma/asm.bin
+$(ASMA): commands-asm/asm.asm commands-asm/asmtab.inc $(DEF)
+	@mkdir -p $(B)/asma && cp $(DEF) commands-asm/asm.asm commands-asm/asmtab.inc $(B)/asma/ && printf -- "-h\n-l\n" > $(B)/asma/rcasm.rc
+	@cd $(B)/asma && ../../$(ASM) asm -d=yacc1 > asm.lst && grep -q "^0 Errors" asm.lst || { grep "ERR" $(B)/asma/asm.lst | head; exit 1; }
+	@$(I2B) $(B)/asma/asm.img $@ --base 0x5000
 
 # /BIN/KERMIT's line I/O is assembly (kermit_io.asm, 2026-09-26), turned by mkkio.py into kermit_io.c: the bytes as a
 # C array and the offsets of its absolute addresses, which kermit.c relocates at start-up (y1cc has no inline asm)
@@ -112,7 +123,7 @@ $(B)/cc/%.bin: $(CDIR)/target/%.c $(PSRC) $(LIBS) $(ROOT)/software/compiler/y1cc
 
 passes: $(PASSES)
 
-disk.img: $(B)/y1os.bin $(CMDS) $(PASSES) $(RTLIB) $(FILES) $(MANS) $(foreach d,$(DOCS),$(firstword $(subst :, ,$(d)))) Makefile
+disk.img: $(B)/y1os.bin $(CMDS) $(ASMA) $(PASSES) $(RTLIB) $(FILES) $(MANS) $(foreach d,$(DOCS),$(firstword $(subst :, ,$(d)))) Makefile
 	@rm -f $@
 	$(FS) create $@ --sectors 2048
 	$(FS) boot $@ $(B)/y1os.bin
