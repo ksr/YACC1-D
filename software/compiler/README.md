@@ -382,6 +382,8 @@ about 24 bytes of code per line of C.
    Done 2026-09-25: `/BIN/ASM` (`os/commands/asm.c`, `docs/programming/ASSEMBLER.md` section 10) is byte-identical to
    the host assembler on the whole corpus, and its symbol table holds cc8's 1,326 labels; on the emulator it has
    assembled pass cc4 (`--xisa`, 58,585 bytes, the one pass under 64K) under Y1/OS (`tests/asm/target.py`).
+   2026-09-26: `/BIN/ASM` is the same assembler hand-written in YACC1 assembly (`os/commands-asm/asm.asm`, about five
+   times faster, a 20,292-byte label table); asm.c, its specification, is `/BIN/ASMC`.
 6. *Native self-host* — done 2026-09-25: under Y1/OS on the emulator the native compiler and assembler rebuild all
    nine passes, `/BIN/ASM` and `/BIN/CC` byte-identical to the host builds, and the rebuilt tools do it again
    identically (below, "Self-host").
@@ -565,7 +567,7 @@ byte of data (below, "Native").
 
 ```
 cc /SRC/FIB.C -o FIB.ASM --org 0x5000 --os      # under Y1/OS: y1cc's command line, the nine passes chained
-asm FIB.ASM                                     # /BIN/ASM: the program file FIB
+asm FIB.ASM                                     # /BIN/ASM: the program file FIB (asmc: the C build, the same)
 run FIB
 ```
 
@@ -649,9 +651,18 @@ run FIB
     time); **cc4**: the reach matrix's closure walks row pointers (it multiplied by the row length per bit and per
     byte); **cc5**: `lhash` as cc1's; `rarr`/`warr` and the `skip`s through pointers and `io_skip`.
   - **/BIN/ASM**: `getln` tests a character against `;`, `:` and the quotes only when it is at most `;` (5% of the
-    assembler). The assembler is now the biggest single step (30%): `getln` (a third of it: each source byte is
+    assembler). The assembler was then the biggest single step (30%): `getln` (a third of it: each source byte is
     copied, upper-cased and parsed, about 50 instructions), `hash`, `asmcmd`, `same`; the assembly text itself
     (cc9 writes 60-260K and the assembler reads it twice) is the design's cost.
+    **2026-09-26: `/BIN/ASM` in YACC1 assembly** (`os/commands-asm/asm.asm`, the same behaviour byte for byte; the C
+    build is `/BIN/ASMC`; `docs/programming/ASSEMBLER.md` section 10): the same 27 programs,
+
+    | | assemble | compile and assemble | at 1 MHz | the assembler's share |
+    |---|---|---|---|---|
+    | `/BIN/ASM` = asm.c (2026-09-25) | 216.5M | 687.4M | 6 h 11 min | 31% |
+    | `/BIN/ASM` = asm.asm (2026-09-26) | 46.5M | 517.4M | 4 h 39 min | 9% |
+
+    (cat.c: 12.9M -> 2.8M to assemble; pass 4: 35.7M -> 7.5M.) The compiler's passes are now 90% of a native build.
   - Left: each pass's load by the ROM and `main`'s BSS clear (about 2M instructions a compile: half of hello's
     time), cc9's text building (`mn_arg`, `Ls`, `bcat`: about 20% of a compile), cc2's parser, cc7's and cc8's table
     and tree records (`wi`/`ri` a byte at a time through `io_wput`/`io_getc`).
@@ -661,7 +672,7 @@ run FIB
 **Yes, the compiler compiles itself natively.** `tests/native/selfhost.py` (`make selfhost`, and in `make check`:
 about 30 seconds on the Mac) runs, under Y1/OS on the instruction-level emulator, with the toolchain's own sources on
 the disk under `/R` as in the repository (the pass sources, `c/target/`, `c/ylim/`, `os/lib_*.c`, `os/asm_optab.c`,
-`os/commands/asm.c` and `cc.c`; `/LIB/Y1LIB.C` and `/LIB/Y1CCRT.TXT` are on the OS disk):
+`os/commands/asm.c` and `cc.c`, and since 2026-09-26 `os/commands-asm/asm.asm` with `asmtab.inc`; `/LIB/Y1LIB.C` and `/LIB/Y1CCRT.TXT` are on the OS disk):
 
 1. **Stage 1, the native build**: the host-built `/BIN/CC` + `/LIB/CC/CC1..CC9` compile each of the nine passes
    (`c/target/NAME.c`, `--org 0x5000 --os --stack 0xCFFF --xisa` as `os/Makefile` builds them), the assembler
@@ -698,7 +709,33 @@ At 1 MHz with 32.4 clocks an instruction, tests/native/run.py's ratio. The micro
 the shell, 40.9G steps (17.2 an instruction) and **79.3G clocks (33.4 an instruction): 22 hours at 1 MHz,
 measured**.) So on the machine one full rebuild of the toolchain by itself would take most of a day; the fixed-point
 check doubles it. Where the time goes is as for the other native compiles
-("How long", above): cc9's text and the lexer; `/BIN/ASM` is a third (`getln`, `hash`).
+("How long", above): cc9's text and the lexer; `/BIN/ASM` was a third (`getln`, `hash`).
+
+**2026-09-26: `/BIN/ASM` in YACC1 assembly.** The self-host now rebuilds twelve programs: the eleven above (asm.c's
+build installed as `/BIN/ASMC`) and the hand-written assembler `os/commands-asm/asm.asm`, which the native `/BIN/ASM`
+assembles in its own directory (its `INCLUDE asmtab.inc`); stage 2 installs the native builds of both assemblers,
+and all twelve come out identical again: the fixed point holds with the assembly-language assembler. One stage:
+
+| program | assemble with asm.c | with asm.asm | faster | both, at 1 MHz: before | after |
+|---|---|---|---|---|---|
+| cc1 lex | 82.8M | 16.6M | 5.0x | 2 h 17 min | 1 h 41 min |
+| cc2 parse | 94.1M | 18.8M | 5.0x | 2 h 25 min | 1 h 44 min |
+| cc3 decl | 51.6M | 10.1M | 5.1x | 1 h 29 min | 1 h 07 min |
+| cc4 calls | 37.9M | 7.2M | 5.3x | 1 h 06 min | 50 min |
+| cc5 layout | 53.5M | 10.2M | 5.2x | 1 h 32 min | 1 h 09 min |
+| cc6 stmt | 65.8M | 12.8M | 5.1x | 1 h 48 min | 1 h 19 min |
+| cc7 sema | 90.4M | 17.7M | 5.1x | 2 h 21 min | 1 h 42 min |
+| cc8 emit | 129.7M | 26.4M | 4.9x | 3 h 31 min | 2 h 35 min |
+| cc9 final | 97.0M | 19.9M | 4.9x | 2 h 53 min | 2 h 12 min |
+| asm.c (`/BIN/ASMC`) | 58.5M | 13.1M | 4.5x | 1 h 42 min | 1 h 18 min |
+| cc.c (`/BIN/CC`) | 2.5M | 0.6M | 4.1x | 8 min | 7 min |
+| **the eleven** | 763.8M | 153.4M | **5.0x** | **21 h 17 min** | **15 h 47 min** |
+| asm.asm (`/BIN/ASM`, assembled only) | 42.8M | 9.3M | 4.6x | 23 min | 5 min |
+| **the toolchain now** | | | | | **15 h 52 min** (1,764M instructions) |
+
+(Compiling is unchanged, 1,601M; the assembler's share of a stage fell from 32% to 9%. At 1 MHz with 32.4 clocks an
+instruction; asm.asm itself runs at 29.4 clocks an instruction on the microcode emulator, so its hours are a little
+less than shown.)
 
 - **The disk**: the P8XFS volume grows as the compiles write (the emulators' card model extends the image; the OS
   has no size of its own, only the 16-bit free pointer: 32M at most). Each stage writes about 9,400 sectors (4.7M),

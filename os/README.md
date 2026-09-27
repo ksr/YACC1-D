@@ -240,7 +240,12 @@ length[4] load[2] exec[2] flags (1 file, 2 directory, $FF deleted, 0 end of dire
 `os/commands/*.c`, compiled with `--org 0x5000 --os` (the transient area starts at $5000 and runs to $CFFF) and put
 with `--load 0x5000 --exec 0x5000`. A program is an ordinary y1cc program: `main` returns to the shell, output is the
 compiler's `putchar`/`puts`, which `--os` sends through the CONOUT syscall so that the shell can redirect it,
-`argstr()` is its command tail, and files come from `#include "../lib_fs.c"` (which includes `lib_abi.c`):
+`argstr()` is its command tail, and files come from `#include "../lib_fs.c"` (which includes `lib_abi.c`).
+(A command can also be hand-written YACC1 assembly in `os/commands-asm/`, assembled at $5000 by the host assembler:
+`asm.asm`, `/BIN/ASM`, is the one so far. It calls the syscalls as y1cc's `sys()` does - the arguments into
+SYSARG0..2 as big-endian words, `LDR R7,SYSTAB+2n` (SYSTAB2 for 22 and up) / `JSRUR R7`, the result from SYSRES,
+R3..R7, ACC and TMP clobbered - reads its tail at ARGBUF, returns with RET, and must clear its own variables; its
+header lists the conventions.) A C command:
 
 ```c
 #include "../lib_fs.c"
@@ -291,6 +296,7 @@ names, globs and `-` (the console until Ctrl-D) work wherever a command reads te
 | Command | Does |
 |---|---|
 | `asm [-h] SRC [OUT]` | the assembler (2026-09-25, below): RC/asm's dialect to a program file, or Intel hex with `-h` |
+| `asmc [-h] SRC [OUT]` | the same assembler built from its C source, the specification (2026-09-26, below) |
 | `awk [-F c] 'prog' [file...]` | one rule: `/re/ {print $1, $NF, NR, NF, "text"}` |
 | `cc prog.c [-o prog.asm] [y1cc options]` | the C compiler (2026-09-25): y1cc's nine passes, `/LIB/CC/CC1`..`CC9`, chained with EXEC; the assembly is byte-identical to y1cc.py's (`man cc`, `software/compiler/README.md` "Native") |
 | `cat [file\|glob\|-]...` | print files byte-exact, or the console |
@@ -405,23 +411,36 @@ covers it; a `>` file or a pipe is not the console and is not mirrored. On an ol
 command says the ROM has no video driver and changes nothing. The addresses are `#define`d in `lib_abi.c`;
 `man video`; tested by `tests/video/emu.py` on both emulators.
 
-### `asm` (2026-09-25)
+### `asm` (2026-09-25) and `asmc` (2026-09-26)
 
-`/BIN/ASM` (`commands/asm.c`) assembles on the machine what the host assembler (`software/assembler`, RC/asm with
-`yacc1.def`) assembles on the Mac, byte for byte: y1cc's output, the ROM monitor, the OS. `asm HELLO.ASM` writes the
-program file `HELLO` (the bytes from the first address to the last, gaps as zeros, with the load address and END's
-exec address in its directory entry), which `run HELLO` loads and calls; `asm -h HELLO.ASM` writes `HELLO.IMG`, the
-Intel hex the host writes. Errors are reported with their line numbers and the output is deleted. Its instruction
-table (`asm_optab.c`) is generated from `yacc1.def` by `tools/gen_y1_optab.py` (the Makefile regenerates it), so the
-two assemblers cannot disagree about an instruction. The image is 13,186 bytes and the symbol table takes the rest of
-the program area, 17,088 bytes (5 + the name's length a label: the biggest compiler pass's 1,383 labels fit; 16,640
-until 2026-09-25, when cc8's buffered I/O outgrew it); sources
-are up to 16M (24-bit file positions since 2026-09-25; 64K before), and the output needs the one write handle, so `asm` does not
-run inside a `>` or a pipe. `tests/asm/run.py` compares it with RC/asm on 297 sources (built for the Mac against an
-emulation of these syscalls) and, with `--target`, runs it under Y1/OS on both emulators: y1cc programs assembled and
-run, the monitor assembled to `firmware/monitor/monitor.img`. Speed (instruction-level emulator): `hello`'s 82 lines
-0.85M instructions, `cat`'s 1,499 lines (27,540 bytes) 13.4M, the monitor's 1,535 lines to hex 13.7M; the microcode
-emulator takes ~17 steps an instruction. `man asm`, and `docs/programming/ASSEMBLER.md` section 10.
+`/BIN/ASM` assembles on the machine what the host assembler (`software/assembler`, RC/asm with `yacc1.def`)
+assembles on the Mac, byte for byte: y1cc's output, the ROM monitor, the OS. `asm HELLO.ASM` writes the program file
+`HELLO` (the bytes from the first address to the last, gaps as zeros, with the load address and END's exec address in
+its directory entry), which `run HELLO` loads and calls; `asm -h HELLO.ASM` writes `HELLO.IMG`, the Intel hex the host
+writes. Errors are reported with their line numbers and the output is deleted. Sources are up to 16M (24-bit file
+positions since 2026-09-25; 64K before), and the output needs the one write handle, so `asm` does not run inside a
+`>` or a pipe.
+
+It exists twice, and the two behave identically (the same command line, messages, files and exit behaviour):
+
+- **`/BIN/ASM`** since 2026-09-26 is `commands-asm/asm.asm`, the assembler hand-written in YACC1 assembly: 9,239 bytes,
+  a 20,292-byte symbol table (5 + the name's length a label: about 1,660 of y1cc's labels; the biggest compiler pass,
+  cc8, has 1,383), and 4.3-5.3 times faster than the C build (`cat`'s 1,504 lines of y1cc output in 2.75M
+  instructions, 1 min 29 s at 1 MHz; compiler pass cc8's 235K in 26.4M). It uses the 2026-09-24 microcode's ADDIW and
+  SHL16, as the native compiler's passes do. Built by the host assembler (`make`: `build/asma`), its instruction table
+  `commands-asm/asmtab.inc` INCLUDEd.
+- **`/BIN/ASMC`** is `commands/asm.c` (the `/BIN/ASM` of 2026-09-25): **the specification** - asm.asm was written from
+  it routine by routine, and a change of behaviour goes into both. 13,186 bytes + 19,569 of data, a 17,088-byte symbol
+  table (16,640 until 2026-09-25, when cc8's buffered I/O outgrew it).
+
+Both instruction tables (`asm_optab.c`, `commands-asm/asmtab.inc`) are generated from `yacc1.def` by
+`tools/gen_y1_optab.py` (the Makefile regenerates them), so the assemblers cannot disagree about an instruction.
+`tests/asm/run.py` compares asm.c with RC/asm on 336 sources (built for the Mac against an emulation of these
+syscalls), then runs `/BIN/ASM` under Y1/OS on the same sources and compares its messages and files with asm.c's
+(`--uc`: 27 of them on the microcode emulator too); with `--target` it runs `/BIN/ASM` in scripted sessions on both
+emulators: y1cc programs assembled and run, the monitor assembled to `firmware/monitor/monitor.img`.
+`tests/native/selfhost.py` has both rebuild themselves natively (the fixed point). `man asm`, `man asmc`, and
+`docs/programming/ASSEMBLER.md` section 10.
 
 ### `pack` (2026-09-23)
 

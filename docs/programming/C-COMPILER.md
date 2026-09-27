@@ -173,7 +173,8 @@ Options are recognised anywhere after the source file; the source file must be t
   `/BIN/ASM` and `/BIN/CC` compiled and assembled natively from their sources on the disk come out byte-identical
   to the host builds, and the natively built tools, installed in their place, reproduce themselves byte for byte
   (the fixed point). One such rebuild is 2,365M instructions: about 21 hours at 1 MHz (`software/compiler/README.md`
-  "Self-host").
+  "Self-host"); since 2026-09-26, with `/BIN/ASM` hand-written in YACC1 assembly (`os/commands-asm/asm.asm`, asm.c's
+  build is `/BIN/ASMC`), 1,764M with asm.asm's own assembly: 15 h 52 min.
 
 - **Interpreter, stand-alone**: compile with `--boot`, `emulator -x -f prog.img [< input]`; stdout is the program's
   output, stderr ends with `HALT at aaaa after N instructions, R3=xxxx`. `-l N` caps the instruction count.

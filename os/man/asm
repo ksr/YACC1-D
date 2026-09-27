@@ -45,8 +45,8 @@ OPTIONS
     -h    write Intel hex instead of a program file
 
 LIMITS
-    16,639 bytes of labels, 5 + the name's length each (about 1,360
-    of y1cc's labels; the biggest compiler pass, cc8, has 1,326),
+    20,292 bytes of labels, 5 + the name's length each (about 1,660
+    of y1cc's labels; the biggest compiler pass, cc8, has 1,383),
     29 characters a label, 254 a line, 45 tokens an expression.
     Files up to 16M (Y1/OS keeps 24-bit positions). Not supported
     (errors here, accepted by RC/asm): MACRO/ENDM, PUBLIC, EXTERN, LIB,
@@ -61,12 +61,16 @@ EXAMPLES
     asm /S/CAT.ASM /T/MYCAT   a program into another directory
 
 NOTES
-    Written for Y1/OS 2026-09-25 (P8X had a native assembler for its
-    own ISA; this one is new). The instruction table is generated from
-    software/assembler/yacc1.def (tools/gen_y1_optab.py), so it cannot
-    drift from the host assembler; tests/asm compares the two on every
-    source in the tree. Speed: 1,499 lines of y1cc output (27K, cat)
-    in 13.4M instructions.
+    Written for Y1/OS 2026-09-25 in C (os/commands/asm.c, now asmc, the
+    specification), and 2026-09-26 again in YACC1 assembly
+    (os/commands-asm/asm.asm): this asm, which behaves exactly as asmc
+    and is about five times faster, with a bigger label table. It
+    needs the 2026-09-24 microcode (ADDIW, SHL16). The instruction
+    tables are generated from software/assembler/yacc1.def
+    (tools/gen_y1_optab.py), so they cannot drift from the host
+    assembler; tests/asm compares the host assembler, asmc and asm on
+    every source in the tree. Speed: 1,504 lines of y1cc output (27K,
+    cat) in 2.75M instructions, 1 min 29 s at 1 MHz (asmc: 12.8M).
 
 SEE ALSO
-    run, load, shell, hello
+    asmc, cc, run, load, shell, hello

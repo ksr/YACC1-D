@@ -1,6 +1,8 @@
-/* asm.c - the native YACC1 assembler, /BIN/ASM (2026-09-25): RC/asm's source dialect (software/assembler, the
-   assembler y1cc's output and the firmware are written for) on the machine, and byte for byte what the host
-   assembler makes of the same source.
+/* asm.c - the native YACC1 assembler, /BIN/ASM (2026-09-25), /BIN/ASMC since 2026-09-26: RC/asm's source dialect
+   (software/assembler, the assembler y1cc's output and the firmware are written for) on the machine, and byte for
+   byte what the host assembler makes of the same source. It is THE SPECIFICATION of /BIN/ASM, the same program
+   hand-written in YACC1 assembly (os/commands-asm/asm.asm, ~5x faster, a 20,292-byte symbol table): any change of
+   behaviour goes into both, and tests/asm/run.py checks that they print and write the same on every source.
      asm [-h] SRC [OUT]
        SRC   the source; a name without '.' gets ".ASM" (asm HELLO reads HELLO.ASM)
        OUT   a program file (the default: SRC without its extension): the bytes from the first address written to

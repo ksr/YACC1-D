@@ -223,12 +223,16 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Wave 3 of the port: (done 2026-09-25: **`asm`**, the on-target assembler for the RC/asm dialect, table generated from
   `yacc1.def` - `os/README.md` "asm", `tests/asm`), a YACC1 `disasm` (next: a table generated from `yacc1.def` like
   asm's, the P8X `disasm.c` driver loop); `vi` done 2026-09-23. Then BASIC as /BIN/BASIC.
-- `/BIN/ASM` follow-ups (2026-09-25): (1) speed - 13.4M instructions for `cat`'s 1,499 lines (y1cc's code for the
-  per-character line scan is ~40% of it, the mnemonic hash and pattern matching most of the rest; a hand-written
-  assembly twin, as P8X has, would be the big step; 12.9M since `getln`'s quicker test the same day, and with the
-  compiler 2.7x faster the assembler is now 30% of compile + assemble); (2) sources over 64K - every compiler pass's assembly is
-  110-257K, so a pass assembled on the machine needs 32-bit file positions in Y1/OS (or y1cc writing a pass as
-  several files for INCLUDE); (3) what RC/asm accepts and asm refuses (MACRO, PUBLIC/EXTERN/LIB, '/' beyond 16 bits,
+- `/BIN/ASM` follow-ups (2026-09-25): (1) speed - (done 2026-09-26: **`/BIN/ASM` in YACC1 assembly**,
+  `os/commands-asm/asm.asm`, identical to asm.c - now `/BIN/ASMC`, the specification - on the whole `tests/asm` corpus
+  and in the self-host's fixed point; 4.3-5.3x fewer instructions, 5.2x in clocks: `cat` 12.8M -> 2.75M, cc8's 235K
+  129.7M -> 26.4M; a native build's assembling 217M -> 46.5M, 9% of it; the self-host's stage 21 h 17 min -> 15 h 47
+  min at 1 MHz; the label table 17,088 -> 20,292 bytes; `docs/programming/ASSEMBLER.md` section 10). Left in asm.asm,
+  a few percent each (`tests/native/profile.py`): the label hash over the whole name (the last four characters and
+  the length chain as well), 512 chains (-1.7 records a lookup, 512 bytes of table), hashing the mnemonic in the
+  getln loop, unrolling `gl_lp`; the ROM's sector reads are 12% and fixed. Keep asm.c and asm.asm in step: a
+  change of behaviour goes into both, `tests/asm/run.py` compares them; (2) sources over 64K - (done 2026-09-25:
+  24-bit positions); (3) what RC/asm accepts and asm refuses (MACRO, PUBLIC/EXTERN/LIB, '/' beyond 16 bits,
   EQU values beyond 16 bits) - nothing in the tree uses them; (4) `asm` inside a `>` or a pipe needs the OS's second
   write handle ("Y1/OS still to write", above).
 - RC/asm (host) aborts on a line whose text after the label or the leading blanks, up to the comment, is 100
@@ -337,10 +341,11 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
        instructions), compile + assemble 2.2x (13.3 h -> 6.2 h at 1 MHz); cat.c 57 -> 24 minutes, pass 4 2.2 h -> 57
        min. software/compiler/README.md "Native".) Left, largest first: `/BIN/ASM` is now 30% of compile + assemble
        (`getln`, a third of it, ~50 instructions a source byte; `hash`, `asmcmd`, `same`); cc9's text building
-       (`mn_arg`, `Ls`, `bcat`: ~20% of a compile); the ROM loading each pass and `main`'s BSS clear (~2M a compile,
+       (`mn_arg`, `Ls`, `bcat`: ~20% of a compile) - (the assembler: done 2026-09-26, asm.asm, 9% of compile + assemble
+       now); the ROM loading each pass and `main`'s BSS clear (~2M a compile,
        half of hello's time); cc2's parser; cc7's and cc8's records a byte at a time. The passes' room shrank for
        it: cc1 314 bytes free, cc9 463 (`passes.py`), and `/BIN/ASM`'s symbol pool grew to 17,088 bytes (cc8's
-       labels need 16,925; the assembler fills 32,755 of 32,768).
+       labels need 16,925; the assembler fills 32,755 of 32,768; asm.asm's table is 20,292 since 2026-09-26).
      - The passes need the 2026-09-24 microcode (`--xisa`) since the chaining and the lexer's include stack: without
        it cc1, cc6 and cc9 are 26-985 bytes over 32K. So the machine needs the EEPROM reload and `tests/bench` (the
        --xisa item below) before it can compile, besides the CF interface Y1/OS itself needs.

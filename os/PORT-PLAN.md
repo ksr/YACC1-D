@@ -326,7 +326,9 @@ decide whether `/BIN/DIR` replaces the built-in `dir` (it is 7.3K p8cc, ~6K on Y
   Needs item E (load/exec on `create`). **DONE 2026-09-25** (`/BIN/ASM`, `os/README.md` "asm"): 569 lines of C
   written after RC/asm itself + a 371-line generator; 13,178 bytes of code (not ~8K: y1cc's code runs ~24 bytes a
   line) and a 16,640-byte symbol pool, about 1,360 of y1cc's labels (17,088 since the same evening: cc8 grew); byte-identical to RC/asm on the tree's 297
-  sources (`tests/asm/run.py`) and run under Y1/OS on both emulators (`--target`).
+  sources (`tests/asm/run.py`) and run under Y1/OS on both emulators (`--target`). 2026-09-26: the P8X way done
+  too - an assembly twin, `os/commands-asm/asm.asm` (9,239 bytes, 20,292 of symbol table, ~5x faster), is now
+  `/BIN/ASM`, asm.c's build `/BIN/ASMC`.
 - `edit`: skip (P8X assembly only; `vi` covers it) unless a ~250-line C rewrite is wanted for dumb terminals.
 - `cc`: DEFER (needs y1cc stack frames and a YACC1 back end in C; the 32K TPA is also too small for the P8X
   design's tables — the P8X needed ~40K + tables). Track under the compiler backlog, not the port.

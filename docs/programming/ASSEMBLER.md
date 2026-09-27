@@ -238,11 +238,21 @@ a pattern that is a prefix of another with the same operand shape.
   through the `E` command is planned), so today a program reaches the machine only in the ROM socket or, once the
   card exists, from the CF card.
 
-## 10. The native assembler, /BIN/ASM (2026-09-25)
+## 10. The native assembler, /BIN/ASM (2026-09-25; in YACC1 assembly since 2026-09-26)
 
-The same dialect on the machine: `os/commands/asm.c`, a Y1/OS program (`man asm`, `os/README.md` "asm"), written
-after RC/asm's own code (not the P8X assembler, whose syntax is another) so that it makes the same bytes of the same
-source, quirks and all.
+The same dialect on the machine, in two versions that behave identically (`man asm`, `man asmc`, `os/README.md`
+"asm"), written after RC/asm's own code (not the P8X assembler, whose syntax is another) so that they make the same
+bytes of the same source, quirks and all:
+
+| | `/BIN/ASM` | `/BIN/ASMC` |
+|---|---|---|
+| source | `os/commands-asm/asm.asm`, hand-written YACC1 assembly (2026-09-26) | `os/commands/asm.c`, compiled by y1cc (2026-09-25) |
+| role | the assembler everything uses (`cc`'s users, `tests/native`, the self-host) | **the specification**: asm.asm was written from it routine by routine; any change of behaviour goes into both |
+| instruction table | `os/commands-asm/asmtab.inc` (INCLUDEd) | `os/asm_optab.c` (#included) |
+| size | 9,239 bytes of program file | 13,186 bytes + 19,569 of data |
+| symbol table | **20,292 bytes** (about 1,660 of y1cc's labels) | 17,088 bytes (about 1,400) |
+| speed (instructions, cat's 1,504 lines) | 2.75M: 1 min 29 s at 1 MHz | 12.8M: 6 min 55 s |
+| needs | the 2026-09-24 microcode (ADDIW, SHL16; so does the native compiler) | any microcode (compiled without `--xisa`, as every /BIN command) |
 
 ```
 asm HELLO.ASM              HELLO: a program file (first to last address, gaps zero; load, exec = END or load)
@@ -250,8 +260,11 @@ asm -h HELLO.ASM           HELLO.IMG: Intel hex, the text of `asm HELLO -d=yacc1
 asm -h MONITOR.ASM M.IMG   an output name; a source name without '.' gets .ASM
 ```
 
-- **The table** is `os/asm_optab.c`, generated from `yacc1.def` by `tools/gen_y1_optab.py` (the `os/Makefile` rule
-  regenerates it; `tests/asm/run.py` fails if it is stale). The generator reads the file as `Read_Def_File` does
+- **The table** is `os/asm_optab.c` (asm.c) and `os/commands-asm/asmtab.inc` (asm.asm), both generated from
+  `yacc1.def` by one run of `tools/gen_y1_optab.py` (the `os/Makefile` rules regenerate them; `tests/asm/run.py`
+  fails if either is stale). The assembly table is laid out for its reader: 64 mnemonic chains under the hash
+  `h = rotl8(h) + c` from a seed the generator picks (at most 3 records a chain), each name followed by a 127, and
+  a register or port class as a direct table by the name's second character. The generator reads the file as `Read_Def_File` does
   and compiles each construction line with a copy of `Translate()` into a few operations (a run of hex digits is one
   constant), checked against a model of `Translate()` on random arguments; the patterns keep their order, grouped by
   mnemonic in 64 hash chains. A construction it cannot express (`\N`, `\D`, `%`, `|n>s`, `OPTION 16BIT`) stops the
@@ -275,20 +288,56 @@ asm -h MONITOR.ASM M.IMG   an output name; a source name without '.' gets .ASM
   pattern it tries) and name the line in its own file; after an error the output file is deleted (RC/asm writes
   it anyway); a missing INCLUDE file is an error (RC/asm prints a message and goes on); lines of 100-254 characters
   work (quirk 12).
-- **Limits**: 17,088 bytes of symbol table (16,640 until 2026-09-25, when cc8's buffered I/O outgrew it), 5 + the
-  name's length a label (y1cc's labels average 7 characters: about 1,400; the biggest compiler pass, cc8, has 1,383
-  in 16,925 bytes); 29 characters a label, 45 tokens an
-  expression, 32 characters a token; source files up to 64K (Y1/OS's positions are 16 bits); the program file
-  needs the code to go up in address (else `-h`). 13,186 bytes of code and tables + 19,569 of data = 32,755 of the
-  32K program area ($5000-$CFFF). The output takes Y1/OS's one write handle,
-  so `asm` does not work inside a `>` or a pipe ("cannot create").
-- **Speed** (instruction-level emulator; the microcode emulator takes ~17 steps an instruction): `hello`'s 82 lines
-  0.85M instructions, `cat`'s 1,499 lines 13.4M, the monitor's 1,535 lines to hex 13.7M, compiler pass cc4
-  (`--xisa`, 3,037 lines, 58,585 bytes: the only pass under 64K) 34.6M. 2026-09-25: `getln` tests a character
-  against `;`, `:` and the quotes only when it is at most `;`: `cat` 12.9M; `getln` is still a third of the time.
+- **Limits**: the symbol table is 20,292 bytes in `/BIN/ASM` (17,088 in `/BIN/ASMC`: 16,640 until 2026-09-25,
+  when cc8's buffered I/O outgrew it), 5 + the name's length a label (y1cc's labels average 7 characters: about
+  1,660 labels, 1,400 in ASMC; the biggest compiler pass, cc8, has 1,383 in 16,925 bytes, 83% of ASM's table);
+  29 characters a label, 254 a line, 45 tokens an expression, 32 characters a token; source files up to 16M
+  (Y1/OS's positions are 24 bits since 2026-09-25); the program file needs the code to go up in address (else
+  `-h`). A source that fills ASMC's table can fill ASM's too a little later, with its own error on its own line:
+  y1cc.c itself compiled (4,186 labels) is refused by both (`tests/asm`). The output takes Y1/OS's one write
+  handle, so neither works inside a `>` or a pipe ("cannot create").
+- **asm.asm** (`os/commands-asm/asm.asm`, 2026-09-26; its header has the conventions): every routine names the asm.c
+  function it implements. What makes it fast: the source is read a sector at a time with READ straight into its
+  buffer and each line scanned where it lies, 8 instructions a byte, with a translation table that upper-cases and
+  maps the characters `parse()` must see to 0, and two 0 sentinels (the end of the data read, the line's 254th
+  byte), so the loop tests nothing else; a line that runs past the data is moved into the page before the buffer,
+  so the raw line (for the error messages and INCLUDE's name) is always the bytes in the buffer; a comment is
+  scanned only for its line feed; leading blanks are skipped (put into `ln` only when the line has a label).
+  Tokens are cut in place in `ln` (a token with a blank inside - RC/asm skips blanks inside a token - sends the
+  expression to asm.c's copying tokenizer, which writes the same records from the start); the records are
+  asm.c's, 8 bytes apart, shifted exactly as there, stale ones included; `(label).0` and `(label).1`, y1cc's
+  `--xisa` page offsets, are computed at once when the five records are the usual ones, with the same records left
+  behind (the general algorithm runs when the stale record after them is an operator: `tests/asm/src/err_stale.asm`).
+  Labels: 256 chains of `len|flags next value name` records, the name stored backwards so the compare starts where
+  y1cc's labels differ. An INCLUDE keeps the outer file's position and SEEKs back to it. It uses ADDIW and SHL16
+  (the 2026-09-24 microcode), never R2, and the shell's stack (~20 bytes deep); the page-aligned tables and
+  buffers are at $C400-$CFFF, its variables after the code, the symbol table between.
+- **Speed** (instructions on the instruction-level emulator, program file; the monitor to hex; each figure includes
+  the OS's and the ROM's work for the file I/O, 15-25%; at 1 MHz with 32.4 clocks an instruction):
+
+  | source | lines | bytes | `/BIN/ASMC` | `/BIN/ASM` | faster | an instruction a byte | at 1 MHz |
+  |---|---|---|---|---|---|---|---|
+  | hello (y1cc) | 82 | 1,652 | 0.88M | 0.20M | 4.3x | 124 | 28 s -> 6 s |
+  | cat (y1cc) | 1,504 | 27,706 | 12.8M | 2.75M | 4.7x | 99 | 6 min 55 s -> 1 min 29 s |
+  | the ROM monitor (-h) | 1,972 | 46,179 | 17.3M | 3.96M | 4.4x | 86 | 9 min 20 s -> 2 min 08 s |
+  | cc4 (y1cc `--xisa`) | 3,404 | 65,973 | 37.8M | 7.18M | 5.3x | 109 | 20 min 25 s -> 3 min 52 s |
+  | cc8 (y1cc `--xisa`, the biggest pass) | 11,897 | 235,482 | 129.7M | 26.4M | 4.9x | 112 | 1 h 10 min -> 14 min 15 s |
+
+  The microcode emulator (cat, each in a session of its own less an empty one): ASM 2.85M instructions and 83.9M
+  clocks (29.4 an instruction: hand-written code has fewer of the long instructions), ASMC 12.9M and 435.5M
+  (33.7): 5.2x in real time, no bus fights. A native compile (`tests/native/run.py`'s 27 programs): assembling
+  217M -> 46.5M instructions, compile and assemble 687M -> 517M (6 h 11 min -> 4 h 39 min at 1 MHz). The self-host
+  (`tests/native/selfhost.py`, one stage): assembling 764M -> 153M, the eleven C programs 21 h 17 min -> 15 h 47 min,
+  15 h 52 min with asm.asm's own assembly (software/compiler/README.md). Where ASM's time goes now
+  (`tests/native/profile.py`): reading lines 20%, the ROM's sector reads 12%, the mnemonic 12%, tokens 15%,
+  matching 10%, labels 9%, the operations 8%, output 5%.
 - **Tests**: `tests/asm/run.py` (in `make check`, `make asm-test`) builds `asm.c` for the Mac with the YACC1's
   integer types against an emulation of the Y1/OS syscalls (`tests/asm/host_asm.c`, `host_sys.c`) and compares it
-  with RC/asm on every source in the tree - each y1cc compile of `tests/compiler/corpus.py` plain and `--xisa` (262,
+  with RC/asm on every source in the tree; then it runs `/BIN/ASM` (asm.asm) under Y1/OS on the instruction-level
+  emulator on the same 336 sources, with -h and to a program file (disks of 72 sources, the sessions in parallel,
+  20 seconds), and its messages, summary and files must be what asm.c gives for the same command line: 334
+  identical, 2 refused by both where ASMC's table is full (`--uc`: 27 of them on the microcode emulator too, 2
+  minutes) - each y1cc compile of `tests/compiler/corpus.py` plain and `--xisa` (262,
   the nine compiler passes and `asm.c` itself among them), the monitor and BASIC with their candidates, monnew,
   `tests/assembler`, `isa.asm`, `y1os.asm` with its INCLUDE, and `tests/asm/src` (`quirks.asm`: the corners above;
   six sources both must refuse): 283 identical in hex and as program files, 1 identical in hex (`yacc1test.asm`

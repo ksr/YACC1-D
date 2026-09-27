@@ -34,7 +34,9 @@
   after the monitor's `O` command, and diffs the transcripts (`basic.int.out`, `basic.uc.out`; the latter shows the
   monitor's input echo). `make os-test`. `XISA=1 python3 tests/os/run.py` (2026-09-24) runs the same sessions with
   every `/BIN` program built by y1cc `--xisa` (`make -C os XISA=1`); the program sizes `ls`/`load` print are masked.
-- `asm/` — the native assembler `/BIN/ASM` (2026-09-25): `run.py` builds `os/commands/asm.c` for the Mac against an
+- `asm/` — the native assemblers `/BIN/ASMC` (asm.c, 2026-09-25) and `/BIN/ASM` (asm.asm, in YACC1 assembly, 2026-09-26;
+  `run.py` also runs it under Y1/OS on the instruction-level emulator on the whole corpus and compares its messages
+  and files with asm.c's, `--uc` 27 sources on the microcode emulator too): `run.py` builds `os/commands/asm.c` for the Mac against an
   emulation of the Y1/OS syscalls (`host_asm.c`, `host_sys.c`: int = unsigned short, unsigned char) and compares it with
   the host assembler RC/asm on every source in the tree (the y1cc corpus plain and `--xisa`, the firmware, the
   hand-written tests, `y1os.asm`, and `src/`: `quirks.asm` with two INCLUDE levels, six sources both must refuse), as
