@@ -2,7 +2,7 @@
      help       the list (man NAME for the page of any of them)
    Ported from P8X os/commands/help.c 2026-09-23, changes: the text is rewritten for Y1/OS (no /d1, graphics,
    kermit, make, sh; the built-ins are Y1/OS's; redirection and pipes since the same evening: man shell; pack added 2026-09-23;
-   asm and cc 2026-09-25, video 2026-09-25, kermit 2026-09-26). Keep it
+   asm and cc 2026-09-25, video 2026-09-25, kermit 2026-09-26, asmc 2026-09-26). Keep it
    in step with os/README.md. */
 #include "y1lib.c"
 
@@ -19,7 +19,7 @@ void main() {
     puts("  exit           back to the ROM monitor");
     puts("  cmd < in  > out  >> out  a | b | c   redirection and pipes (man shell)");
     puts("in /BIN:");
-    puts("  asm  assemble: asm [-h] SRC [OUT]  (-h: Intel hex)");
+    puts("  asm  assemble: asm [-h] SRC [OUT]  (-h: Intel hex)   asmc the same, in C");
     puts("  awk  one-rule awk: fields, /re/ {print $N ...}, NR NF");
     puts("  cat  print files (globs, - = console)   cmp  first differing byte");
     puts("  cc   compile C: cc prog.c -o prog.asm --org 0x5000 --os  (then asm)");

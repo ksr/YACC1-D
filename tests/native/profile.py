@@ -82,7 +82,7 @@ def main():
 
     def prog_labels(p, w):
         if w == "cc": f = os.path.join(OS, "build/bin/cc.asm")
-        elif w == "asm": f = os.path.join(OS, "build/bin/asm.asm")
+        elif w == "asm": f = os.path.join(OS, "build/asma/asm.asm")      # /BIN/ASM: commands-asm/asm.asm (2026-09-26)
         elif w.startswith("cc"): f = os.path.join(OS, "build/cc", run.PASSN[int(w[2:]) - 1] + ".asm")
         else: return []
         if f not in cache: cache[f] = labels_of(f, os.path.basename(f)[:-4])

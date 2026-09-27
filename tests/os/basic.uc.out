@@ -65,7 +65,7 @@ built into the shell:
   exit           back to the ROM monitor
   cmd < in  > out  >> out  a | b | c   redirection and pipes (man shell)
 in /BIN:
-  asm  assemble: asm [-h] SRC [OUT]  (-h: Intel hex)
+  asm  assemble: asm [-h] SRC [OUT]  (-h: Intel hex)   asmc the same, in C
   awk  one-rule awk: fields, /re/ {print $N ...}, NR NF
   cat  print files (globs, - = console)   cmp  first differing byte
   cc   compile C: cc prog.c -o prog.asm --org 0x5000 --os  (then asm)

@@ -22,7 +22,8 @@
 # y1cc --os (2026-09-23) for every program: putchar/puts/getchar are the OS syscalls CONOUT/CONIN,
 # which the shell redirects (> >> < |); a program built without it would write past a redirect to the screen.
 # Programs: os/commands/*.c -> /BIN/NAME (upper case), compiled at TPA $5000; they #include the os/lib_*.c
-# libraries. Files in os/disk/ go to the root, os/man/NAME to /MAN/NAME (upper case: `man` upper-cases the name),
+# libraries. The one exception (2026-09-26): /BIN/ASM is the assembler in YACC1 assembly, commands-asm/asm.asm
+# (build/asma/asm.bin), and commands/asm.c - its specification, the same program in C - is /BIN/ASMC. Files in os/disk/ go to the root, os/man/NAME to /MAN/NAME (upper case: `man` upper-cases the name),
 # and the Markdown documents in DOCS to /DOCS for `md` (host file = disk name). The native C compiler (2026-09-25):
 # /BIN/CC (commands/cc.c) runs the passes /LIB/CC/CC1..CC9 (make passes), which read /LIB/Y1CCRT.TXT and /LIB/Y1LIB.C.
 OS    ?= asm
@@ -87,9 +88,9 @@ $(B)/y1os-c.bin: y1os.c lib_abi.c lib_fs.c $(ROOT)/software/compiler/y1cc.py $(R
 # asm_optab.c for the C assembler (commands/asm.c) and commands-asm/asmtab.inc for the assembly-language one, both
 # written by one run of the generator
 asm_optab.c: $(DEF) $(ROOT)/tools/gen_y1_optab.py
-	python3 $(ROOT)/tools/gen_y1_optab.py
+	python3 $(ROOT)/tools/gen_y1_optab.py && touch $@
 commands-asm/asmtab.inc: $(DEF) $(ROOT)/tools/gen_y1_optab.py
-	python3 $(ROOT)/tools/gen_y1_optab.py
+	python3 $(ROOT)/tools/gen_y1_optab.py && touch $@
 $(B)/bin/asm.bin: asm_optab.c
 
 # the assembler in YACC1 assembly (commands-asm/asm.asm, 2026-09-26): assembled by the host assembler at $5000
@@ -128,7 +129,9 @@ disk.img: $(B)/y1os.bin $(CMDS) $(ASMA) $(PASSES) $(RTLIB) $(FILES) $(MANS) $(fo
 	$(FS) create $@ --sectors 2048
 	$(FS) boot $@ $(B)/y1os.bin
 	$(FS) mkdir $@ /BIN
-	@for c in $(CMDS); do n=$$(basename $$c .bin | tr a-z A-Z); $(FS) put $@ $$c --name /BIN/$$n --load 0x5000 --exec 0x5000; done
+	@for c in $(CMDS); do n=$$(basename $$c .bin | tr a-z A-Z); [ $$n = ASM ] && n=ASMC; \
+	  $(FS) put $@ $$c --name /BIN/$$n --load 0x5000 --exec 0x5000; done
+	$(FS) put $@ $(ASMA) --name /BIN/ASM --load 0x5000 --exec 0x5000
 	@for f in $(FILES); do $(FS) put $@ $$f --name /$$(basename $$f); done
 	$(FS) mkdir $@ /MAN
 	@for f in $(MANS); do $(FS) put $@ $$f --name /MAN/$$(basename $$f | tr a-z A-Z); done
@@ -140,10 +143,12 @@ disk.img: $(B)/y1os.bin $(CMDS) $(ASMA) $(PASSES) $(RTLIB) $(FILES) $(MANS) $(fo
 	@n=1; for p in $(PASSN); do $(FS) put $@ $(B)/cc/$$p.bin --name /LIB/CC/CC$$n --load 0x5000 --exec 0x5000; n=$$((n + 1)); done
 	$(FS) tree $@
 
-sizes: $(CMDS)
+sizes: $(CMDS) $(ASMA)
 	@for c in $(CMDS); do n=$$(basename $$c .bin); b=$$(wc -c < $$c); \
 	  d=$$(awk '/^(zpad|bss_start):/{f=1} f && $$2=="DS"{s+=($$3 ~ /^[0-9]+$$/) ? $$3 : 255} END{print s+0}' $(B)/bin/$$n.asm); \
-	  printf "%-8s %6d image + %6d data = %6d of 32768\n" $$n $$b $$d $$((b + d)); done
+	  [ $$n = asm ] && n=asmc; printf "%-8s %6d image + %6d data = %6d of 32768\n" $$n $$b $$d $$((b + d)); done
+	@b=$$(wc -c < $(ASMA)); p=$$(( 0xC400 - 0x$$(awk '/ POOL:/{print $$2}' $(B)/asma/asm.lst | tr -d :) )); \
+	  printf "asm      %6d image, %d of variables and buffers, a symbol table of %d bytes (commands-asm/asm.asm)\n" $$b $$((32768 - b - p)) $$p
 
 run: disk.img
 	$(ROOT)/software/ucemu/y1ucemu -m -c disk.img

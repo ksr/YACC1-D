@@ -8,19 +8,23 @@ os/commands/asm.c and cc.c; /LIB/Y1LIB.C and /LIB/Y1CCRT.TXT are on the OS disk 
 
   - each of the nine passes, software/compiler/c/target/NAME.c, with os/Makefile's flags for them
     (--org 0x5000 --os --stack 0xCFFF --xisa), and
-  - the assembler os/commands/asm.c and the driver os/commands/cc.c, with the /BIN flags (--org 0x5000 --os),
+  - the assembler os/commands/asm.c (/BIN/ASMC) and the driver os/commands/cc.c, with the /BIN flags
+    (--org 0x5000 --os),
 
-and the host-built /BIN/ASM assembles each one into a program file. The host fetches the eleven assemblies and program
+and the host-built /BIN/ASM assembles each one into a program file; and /BIN/ASM assembles its own source, the
+assembler in YACC1 assembly os/commands-asm/asm.asm with its INCLUDE asmtab.inc (2026-09-26: since then /BIN/ASM is
+that program and asm.c, its specification, is /BIN/ASMC; both are rebuilt here). The host fetches the eleven assemblies and program
 files off the image (tools/p8xfs.py get) and compares them byte for byte with os/build (the Makefile's host builds:
 y1cc.py + the host assembler + img2bin; the assembly with the header's date masked, Y1/OS has no clock).
 
 Stage 2 (the fixed point): a fresh copy of the OS disk with the NATIVELY built CC1..CC9 (in /LIB/CC), CC and ASM (in
-/BIN) in place of the host-built ones (taken off stage 1's image), and the same eleven compiles and assemblies again:
+/BIN; ASMC from asm.c, ASM from asm.asm) in place of the host-built ones (taken off stage 1's image), and the same
+eleven compiles and twelve assemblies again:
 every output must again be the host's, byte for byte. Then the YACC1 toolchain reproduces itself with no host
 involved (the host only puts the sources on the disk and reads the results).
 
   selfhost.py [name ...] [--stage 1|2] [--uc] [-v] [--keep]
-    name       only these programs (lex parse decl calls layout stmt sema emit final asm cc; default: all eleven);
+    name       only these programs (lex parse decl calls layout stmt sema emit final asm cc asma; default: all twelve);
                stage 2 then installs host builds for the programs not rebuilt
     --stage N  only stage N (stage 2 alone installs the host builds: a check of the procedure, not of the fixed point)
     --uc       stage 1 also on the microcode emulator (the clocks; all eleven: about 30 minutes, 79G clocks)
@@ -45,8 +49,15 @@ BFLAGS = "--org 0x5000 --os"                         # os/Makefile, a /BIN comma
 CDIR = "software/compiler/c"
 # name, source, flags, the host build in os/build, where it goes on the disk
 PROGS = [(n, CDIR + "/target/%s.c" % n, PFLAGS, "cc/" + n, "/LIB/CC/CC%d" % (i + 1)) for i, n in enumerate(run.PASSN)]
-PROGS += [("asm", "os/commands/asm.c", BFLAGS, "bin/asm", "/BIN/ASM"),
-          ("cc", "os/commands/cc.c", BFLAGS, "bin/cc", "/BIN/CC")]
+PROGS += [("asm", "os/commands/asm.c", BFLAGS, "bin/asm", "/BIN/ASMC"),
+          ("cc", "os/commands/cc.c", BFLAGS, "bin/cc", "/BIN/CC"),
+          # (2026-09-26) the assembler in YACC1 assembly: only assembled (flags None), by the native /BIN/ASM itself
+          ("asma", "os/commands-asm/asm.asm", None, "asma/asm", "/BIN/ASM")]
+
+
+def steps(p):
+    """the programs Y1/OS starts for p: cc and its nine passes and asm for a C program, asm alone for asm.asm"""
+    return 11 if p[2] is not None else 1
 
 
 def sources():
@@ -59,6 +70,7 @@ def sources():
     for f in os.listdir(OS):
         if f.startswith("lib_") and f.endswith(".c"): files.add("os/" + f)
     files.add("os/asm_optab.c")
+    files.add("os/commands-asm/asmtab.inc")
     for f in files:
         if len(os.path.basename(f)) > 12: sys.exit("selfhost: %s: a name over P8XFS's 12 characters" % f)
     return sorted(files)
@@ -88,6 +100,9 @@ def script(progs):
     lines = ["O"]
     for p in progs:
         N = p[0].upper()
+        if p[2] is None:                              # assembly source: assembled where it lies (its INCLUDE)
+            lines += ["cd /R/" + os.path.dirname(p[1]), "asm %s /OUT/%s/%s" % (os.path.basename(p[1]), N, N), "cd /"]
+            continue
         lines += ["cd /R/" + os.path.dirname(p[1]),
                   "cc %s -o /OUT/%s/%s.ASM %s" % (os.path.basename(p[1]), N, N, p[2]),
                   "cd /",
@@ -96,7 +111,7 @@ def script(progs):
 
 
 def host(p):
-    return (open(os.path.join(OS, "build", p[3] + ".asm"), encoding="latin1").read(),
+    return (open(os.path.join(OS, "build", p[3] + ".asm"), encoding="latin1").read() if p[2] is not None else None,
             open(os.path.join(OS, "build", p[3] + ".bin"), "rb").read())
 
 
@@ -110,8 +125,9 @@ def check(img, p):
     want_asm, want_bin = host(p)
     N = p[0].upper(); D = "/OUT/%s/%s" % (N, N)
     fails = []
-    ga = run.get(img, D + ".ASM")
-    if ga is None: fails.append("no " + D + ".ASM")
+    ga = run.get(img, D + ".ASM") if want_asm is not None else b""
+    if want_asm is None: pass                         # asm.asm: its program file only
+    elif ga is None: fails.append("no " + D + ".ASM")
     elif run.corpus.normalize(ga.decode("latin1")) != run.corpus.normalize(want_asm):
         fails.append("assembly differs (%d / %d bytes)" % (len(ga), len(want_asm)))
     gb = run.get(img, D)
@@ -160,23 +176,23 @@ def stage(k, progs, native, verbose):
     if out is None: return 1, got, 0
     segs = [(int(m.group(1)), m.group(3)) for m in re.finditer(
         r"program \d+: (\d+) instructions(, stack \$[0-9A-F]+ down to \$([0-9A-F]+))?", err)]
-    if len(segs) != 11 * len(progs):
+    if len(segs) != sum(steps(p) for p in progs):
         print("stage %d: expected %d programs started, the watch saw %d:\n%s\n%s" % (
-            k, 11 * len(progs), len(segs), out[-2000:], err[-1500:]))
+            k, sum(steps(p) for p in progs), len(segs), out[-2000:], err[-1500:]))
         return 1, got, 0
-    print("stage %d%s  %11s %11s %11s   %-18s %s" % (k, " (native CC1..CC9, CC, ASM)" if k == 2 else " (host-built tools)",
+    print("stage %d%s  %11s %11s %11s   %-18s %s" % (k, " (native CC1..CC9, CC, ASMC, ASM)" if k == 2 else " (host-built tools)",
                                                   "compile", "assemble", "both", "at 1 MHz", "result"))
-    tot = [0, 0]; low = {}
+    tot = [0, 0]; low = {}; at = 0
     for i, p in enumerate(progs):
-        st = segs[11 * i: 11 * i + 11]
-        comp = sum(s[0] for s in st[:10]); a = st[10][0]; tot[0] += comp; tot[1] += a
-        for j in range(9):
+        st = segs[at: at + steps(p)]; at += steps(p)
+        comp = sum(s[0] for s in st[:-1]); a = st[-1][0]; tot[0] += comp; tot[1] += a
+        for j in range(9 if p[2] is not None else 0):
             if st[1 + j][1]:
                 n = run.PASSN[j]; low[n] = min(low.get(n, 0x10000), int(st[1 + j][1], 16))
         fails, ga, gb = check(img, p)
         if not fails: got[p[0]] = gb
         bad += len(fails) > 0
-        print("  %-8s %-9s %11d %11d %11d   %-18s %s" % (p[0], "(%dK)" % ((len(ga) + 512) // 1024), comp, a,
+        print("  %-8s %-9s %11d %11d %11d   %-18s %s" % (p[0], "(%dK)" % ((len(ga) + 512) // 1024) if ga else "(asm)", comp, a,
                                                         comp + a, hm(comp + a),
                                                         "; ".join(fails) or "identical (%d bytes)" % len(gb)))
     print("  %-18s %11d %11d %11d   %s" % ("all", tot[0], tot[1], sum(tot), hm(sum(tot))))

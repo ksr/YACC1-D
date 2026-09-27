@@ -1,0 +1,21 @@
+NAME
+    asmc - the YACC1 assembler, the C build (the same as asm)
+
+SYNOPSIS
+    asmc SRC [OUT]
+    asmc -h SRC [OUT]
+
+DESCRIPTION
+    The same program as asm: the same command line, source dialect,
+    output files, messages and exit behaviour (man asm). asm is the
+    assembler written in YACC1 assembly (os/commands-asm/asm.asm,
+    2026-09-26); asmc is os/commands/asm.c compiled by the C compiler,
+    the specification asm.asm was written from. Both are kept in step:
+    any change of behaviour goes into both, and tests/asm checks that
+    they print and write the same on every source in the tree.
+
+    asmc is about five times slower than asm and its symbol table is
+    smaller: 17,088 bytes (asm: 20,292).
+
+SEE ALSO
+    asm, cc
