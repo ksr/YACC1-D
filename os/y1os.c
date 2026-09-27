@@ -329,7 +329,11 @@ int fs_seek(int h, int hi, int lo) {    /* SEEK (2026-09-25): a read handle's po
     return 1;
 }
 
-int fs_getc(int h) {            /* the next byte through the handle's own buffer; 65535 at the end */
+int fs_getc(int h) {            /* the next byte through the handle's own buffer; 65535 at the end. (y1os.asm
+                                   compares s with h_cur only on a sector boundary and trusts the buffer inside a
+                                   sector - OPEN, READ, SEEK and a sector's last byte leave the position on a
+                                   boundary or load the sector: the same bytes. Its compare read h_lba instead of
+                                   h_cur 2026-09-25..27, stale bytes where s == h_lba: tests/os/rdnlow.session) */
     int s, pos; char *b;
     if (mode_of(h) != M_READ || at_end(h)) return 65535;
     pos = h_pos[h];

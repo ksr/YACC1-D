@@ -276,6 +276,18 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   open used to write $0200 and then LBA 0, the boot block; `load`/`run` of an empty file refused with "bad load address
   or size"; `tests/os/badhandle.session` + `badh.c`, host checks fsck, boot block, pristine files. The asm image is
   7,151 bytes.)
+- (done 2026-09-27: **the "READN gives stale data" report** (from the `/BIN/ASM` work, 2026-09-26) - not READN:
+  the READN trial of `asm.asm` (`READN(fh, SDATA, 512)` in `gs_rd`) kept the skip it needs after a SEEK with READ
+  (`GL_SKIP`: READ starts at the sector's start, READN at the position), so after every INCLUDE it lost the outer
+  file's next bytes (tests/asm QUIRKS.ASM, first run or not); READ is what `asm.asm` uses. The hunt found a real bug
+  next to it, in `y1os.asm` only: since 6a42b9f (2026-09-25, 24-bit positions) `fs_getc`'s sector-boundary compare
+  read the handle's start LBA instead of its buffered sector (a missing `ANDI 0F0H`), so GETC and READN re-read a
+  sector at nearly every boundary and returned the buffer's stale bytes for the sector whose number equals the
+  file's start LBA - only possible for a file longer than its start LBA in sectors, which no disk made from
+  `os/disk.img` can hold (the free pointer is past 1,100 on 2,048 sectors), so no test or native compile ever met it.
+  Fixed; READN's exact contract documented (os/README.md, docs/programming/OS.md, man fs); `tests/os/rdn.session`
+  (`rdn.c`: every READN count and byte against the contract in the mixed patterns) and `rdnlow.session` (a fresh
+  volume, a 40K file at LBA 37: failed at byte 18,944 before the fix), both kernels, both emulators.)
 - `software/emulator` (instruction level) treats a lower-case `q` on the console as end of input (`mygetchar()`,
   an old quit key): a command line containing `q` (`uniq`, `sed s/q/x/`) is cut there. Sessions use `UNIQ` and `Q`
   until it is fixed; the microcode emulator has no such quirk.

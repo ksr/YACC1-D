@@ -13,7 +13,8 @@ emulator and NAME.uc.out for the microcode emulator (the latter shows the monito
 does). The comparison starts at "BOOT FROM CF" and ends after the OS says "bye" and the monitor prompt returns.
 
 Every run boots a fresh COPY of os/disk.img (tests/os/build/NAME.TAG.img): the emulators write the CF image in place
-(software/cfmodel.h), and since 2026-09-23 the OS writes files. After a session listed in HOST the copy is checked
+(software/cfmodel.h), and since 2026-09-23 the OS writes files. A session in FRESH boots a newly created volume
+instead (2026-09-27: files at the first data LBAs, which os/disk.img has taken). After a session listed in HOST the copy is checked
 from the host side with tools/p8xfs.py (fsck, ls, get + compare), which proves the OS's writes are what the host
 tool would have written. The per-emulator step limits (LIMITS) are a budget: a session must say "bye" inside it. After
 `exit` the script sends the monitor's `0` command, which ends the run (since 2026-09-25; before, the monitor spun on
@@ -39,6 +40,8 @@ LIMITS = {"basic": (8000000, 120000000),         # instructions (int) / microcod
           "pipe": (13000000, 180000000),         # 9.8M / 136M needed: every byte crosses CONOUT, then CONIN
           "pack": (120000000, 1600000000),       # 2026-09-25: the C OS needs ~70M (cmp of two 56K files alone ~45M)
           "badhandle": (6000000, 90000000),
+          "rdn": (300000000, 5000000000),        # 2026-09-27: READN against its contract; asm OS 36M / 0.53G, C OS 149M / 2.5G
+          "rdnlow": (160000000, 2600000000),     # 2026-09-27: a fresh volume; asm OS 17M / 0.24G, C OS 77M / 1.3G
           "big": (600000000, 9000000000)}        # 2026-09-25: 72K + 144K written, read back 5 times, copied, appended; + a 72K file in odd pieces, READN twice (asm OS 117M / 1.8G, the C OS 324M / 5.6G)      # 2026-09-23: writes and reads through bad handles, empty loads         # <= 30M / <= 420M needed (2026-09-23, two-step pack): ~430 sectors moved
 DEFAULT_LIMIT = (12000000, 200000000)
 
@@ -48,6 +51,11 @@ DEFAULT_LIMIT = (12000000, 200000000)
 # ("packed",) = no dead sector: the free pointer is DATA_V2 + the sectors of every live extent (files and
 # subdirectories), computed from the image; ("same", gone) = every file of the pristine os/disk.img is still there
 # with the same bytes, load and exec address, except the paths in gone, which must be absent (2026-09-23, pack)
+def rpattern(n, seed):
+    """rdn.session (2026-09-27): rdn.c's bytes, byte i = (lo ^ (lo >> 8) ^ hi * 37 ^ seed) & 255"""
+    return bytes(b ^ seed for b in pattern(n))
+
+
 def pattern(n):
     """big.session (2026-09-25): bigw.c's bytes, byte i = (lo ^ (lo >> 8) ^ hi * 37) & 255, i = hi * 65536 + lo"""
     return bytes(((i & 0xFFFF) ^ ((i & 0xFFFF) >> 8) ^ ((i >> 16) * 37)) & 255 for i in range(n))
@@ -59,6 +67,10 @@ HOST = {
             ("data", "/COPY1", pattern(70 * 1024 + 7)),
             ("data", "/BIG3", pattern(70 * 1024 + 7)),      # 2026-09-25: WRITE in odd pieces
             ("data", "/BIG2", pattern(140 * 1024 + 7) + b"tail\n")],
+    "rdn": [("fsck",),                          # 2026-09-27: WRITE in odd pieces; a file replaced at close
+            ("data", "/RA", rpattern(66 * 1024 + 13, 1)),
+            ("data", "/RB", rpattern(2 * 1024 + 13, 3))],
+    "rdnlow": [("fsck",), ("data", "/RF", rpattern(40 * 1024 + 13, 5)), ("data", "/RG", rpattern(3 * 1024 + 13, 6))],
     "badhandle": [("fsck",), ("boot",), ("same", []),       # 2026-09-23: nothing written through a bad handle
                   ("data", "/BADH.TXT", b"ABC")],
     "api": [("fsck",), ("get", "/COPY.TXT", "os/disk/README.TXT", 0)],
@@ -106,9 +118,31 @@ HOST = {
 # source is compiled first with y1cc --os at $5000, as os/Makefile compiles /BIN commands
 EXTRA = {"badhandle": [("badh.c", "/BADH", 0x5000), ("", "/ZERO.BIN", 0x6000)],
          "big": [("bigw.c", "/BIGW", 0x5000), ("bigr.c", "/BIGR", 0x5000)],
+         "rdn": [("rdn.c", "/RDN", 0x5000)],
+         "rdnlow": [("rdn.c", "/RDN", 0x5000)],
          "systab": [("systab.c", "/SYSTAB", 0x5000)],
          "exec": [("exe.c", "/EXE", 0x5000), ("exe.c", "/EXES", 0x5000, ["--stack", "0xCFFF"]),
                   ("", "/BIG.TXT", 0xC000, 20000)]}
+
+
+# sessions that boot a FRESH volume (p8xfs create, the selected OS's build/y1os.bin, then these files in order, then
+# EXTRA's) instead of a copy of os/disk.img (2026-09-27). rdnlow: /RF lands at the first data LBA, 37, and is longer
+# than 37 sectors, so one of its sectors has the number of its start LBA - on os/disk.img the free pointer is past
+# LBA 1,100 and no file can be that long. y1os.asm's fs_getc compared that sector with the start LBA instead of the
+# buffer's sector (2026-09-25..27) and returned the buffer's stale bytes for it.
+FRESH = {"rdnlow": [(lambda: rpattern(40 * 1024 + 13, 5), "/RF")]}
+
+
+def fresh(name, img):
+    if os.path.exists(img): os.remove(img)
+    for args in (("create", img, "--sectors", "2048"), ("boot", img, os.path.join(OS, "build/y1os.bin"))):
+        rc, out = p8xfs(*args)
+        if rc: sys.exit("%s: %s" % (args[0], out))
+    for data, disk in FRESH[name]:
+        host = os.path.join(BUILD, "fresh-%s.bin" % disk.strip("/").replace("/", "-"))
+        open(host, "wb").write(data())
+        rc, out = p8xfs("put", img, host, "--name", disk)
+        if rc: sys.exit("put %s: %s" % (disk, out))
 
 
 def extras(name, img):
@@ -350,7 +384,8 @@ def main():
         script = b"O\n" + open(sess, "rb").read() + b"0\n"
         for (tag, emu), limit in zip(EMUS, LIMITS.get(name, DEFAULT_LIMIT)):
             img = os.path.join(BUILD, "%s.%s.img" % (name, tag))
-            shutil.copy(os.path.join(OS, "disk.img"), img)
+            if name in FRESH: fresh(name, img)
+            else: shutil.copy(os.path.join(OS, "disk.img"), img)
             extras(name, img)
             got, status = transcript(emu, limit, img, script)
             if got is not None: got = mask(name, got)

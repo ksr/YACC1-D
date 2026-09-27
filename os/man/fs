@@ -20,11 +20,16 @@ DESCRIPTION
         fread(h, buf)           the next whole sector into buf (512),
                                 the byte count, 0 at the end; mix with
                                 fgetc only at sector boundaries
-        freadn(h, buf, n)       up to n bytes into buf, never past the
-                                end of the position's sector; the
-                                count, 0 at the end; mixes with fgetc
-                                (a buffer of your own: one syscall a
-                                block, not one a byte)
+        freadn(h, buf, n)       up to n bytes into buf from the
+                                position (after an fseek too: unlike
+                                fread, not from the sector's start),
+                                never past the end of the position's
+                                sector: the count is exactly the least
+                                of n, the rest of the sector and the
+                                rest of the file; 0 only at the end,
+                                for n = 0, for a bad handle; mixes
+                                with fgetc, fseek and fread (a buffer
+                                of your own: one syscall a block)
         fseek(h, hi, lo)        a read handle to position hi:lo (24
                                 bits), not past the end; 1 = done
         fclose(h)

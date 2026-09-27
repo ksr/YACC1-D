@@ -154,7 +154,7 @@ result is a full 16-bit word (no carry bit): 1/0 for done/cannot, a handle or 0,
 | 22 | EXIT | status | (2026-09-25, SYSTAB2) does not return: the program ends at once, from any depth and on any stack, as if its main had returned (its files closed, a pending write registered); STATUS = status |
 | 23 | EXEC | path, args | (2026-09-25, SYSTAB2) 0 when path is over 63 characters, not found, not a file, or does not load into $5000-$CFFF (the `load` rule); else does not return: the caller ends as with EXIT(0) and path is loaded and run with args (0 = none; up to 127 characters) as its command tail, in the same shell command (a `>` or a pipe stays) |
 | 24 | SEEK | handle, hi, lo | (2026-09-25, SYSTAB2) 1: the read handle's position is now hi:lo (24 bits), not past its length; 0 for another handle, past the end, a card error. Inside a sector that sector is read into the handle's buffer |
-| 25 | READN | handle, buf, n | (2026-09-25, SYSTAB2) the bytes put in buf: up to n, the bytes n GETCs would give, but never past the end of the position's sector (so a call can return fewer than n before the end of the file); 0 at the end, for n = 0 and for anything but a read handle. Mixes freely with GETC and SEEK. A program's own small buffer then costs a syscall per block instead of one per byte (below) |
+| 25 | READN | handle, buf, n | (2026-09-25, SYSTAB2) the bytes put in buf: up to n, the bytes n GETCs would give **from the position** (after a SEEK into a sector too: READ is the one that starts at the sector's start), but never past the end of the position's sector: exactly the least of n, the rest of the sector and the rest of the file (so a call can return fewer than n before the end of the file); 0 only at the end, for n = 0 and for anything but a read handle. Mixes freely with GETC, SEEK and READ. A program's own small buffer then costs a syscall per block instead of one per byte (below) |
 
 **Two tables** (2026-09-25). SYSTAB's 22 slots were all in use and ARGBUF follows it, so it cannot grow; moving it
 would have broken every program compiled before (they read `SYSTAB + 2n`). So the OS now fills SYSTAB2, 32 entries at
@@ -223,6 +223,34 @@ native compiler"); a program could only end by returning from main. Two syscalls
   seven instructions each instead of a hundred. `tests/os/big.session` (`bigw -v`, `bigr -n`) writes a 70K file
   in pieces of 0-1,000 bytes and reads the 70K and the 140K file back with READN in sizes 1-600 mixed with GETC,
   checking every count; the host checks the bytes; both kernels, both emulators.
+- **READN's contract, exactly** (2026-09-27): the count is the least of n, 512 - (position & 511) and length -
+  position; fewer than n only at a sector's or the file's end, 0 only at the file's end, for n = 0 and for a handle
+  that is not open for reading (0, over 4, closed, a write or a directory handle). The bytes are the file's from the
+  position, and the position moves past them, so GETC, READN, SEEK and READ mix in any order (a READ after a READN
+  inside a sector gives that whole sector again from its start, then the position is the next sector's). A program
+  moving from READ to READN must drop what it did to skip from a sector's start to the position after a SEEK: the
+  READN trial of `/BIN/ASM` (2026-09-26, `READN(fh, SDATA, 512)` in `asm.asm`'s `gs_rd`) kept its `GL_SKIP`, so after
+  every INCLUDE it threw away the first bytes of the outer file's rest and its NPOS ran behind (tests/asm's
+  QUIRKS.ASM: duplicate labels, a garbage label; everything without INCLUDE, CC4.ASM and a 171K source among them,
+  byte-identical): that was the "stale data" reported, not the OS. `tests/os/rdn.session` (`tests/os/rdn.c`) pins the
+  contract: every count and byte of READNs in nine sizes mixed with GETC over a 66K file, after SEEKs to boundaries,
+  into sectors, around 64K, to the end and past it, mixed with READ; right after the WRITE of the same file (in
+  pieces of 0-1,000 bytes); twice in one session; on two handles in turn; a file opened on the handle another file
+  just left its sector 0 in; a file replaced at CLOSE read again; the zero cases. Both kernels, both emulators.
+- **The handles' sector buffers** (a fix, 2026-09-27). A read handle's buffer holds one sector of its file, whose
+  number (0 = the file's first) the record keeps (`H_CUR`, `h_cur`): OPEN sets it to none, SEEK into a sector and
+  GETC/READN fill it. `y1os.c` compares the position's sector with it at every GETC; `y1os.asm` only at a sector
+  boundary (inside a sector the buffer holds it). From 2026-09-25 (the 24-bit positions, 6a42b9f) that compare in
+  `y1os.asm`'s `fs_getc` lacked an `ANDI 0F0H` and read the handle's start LBA instead of `H_CUR` whenever the
+  position's bits 8-23 were below the length's. So GETC and READN (whose first byte is a GETC) read the sector again
+  at nearly every boundary - right, but a CF read per 512 bytes that the buffer did not need - and at the one sector
+  whose number equals the file's start LBA they used the buffer as it was, holding the sector before: 512 stale
+  bytes. READ never goes through the buffer and was right. It needs a file longer, in sectors, than its start LBA:
+  on a fresh volume a file at LBA 37 over 18.5K. On `os/disk.img` and every disk the tests make from it the free
+  pointer is past LBA 1,100 and on a 2,048-sector volume no file starting below LBA 1,024 can be that long (none of
+  the image's own files is), so no test, native compile or self-host met it - which is why they all stayed
+  byte-identical. `tests/os/rdnlow.session` boots a newly created volume with a 40K file at LBA 37 (tests/os/run.py
+  `FRESH`); before the fix every read of it went wrong at byte 18,944. Fixed in `y1os.asm` (`y1os.c` was right).
 
 Tests: `tests/os/exec.session` (`tests/os/exe.c`, also built with `--stack 0xCFFF` as `/EXES`): EXIT from three
 recursive calls deep and from a program on its own stack, STATUS as the next program sees it, a chain of four EXECs

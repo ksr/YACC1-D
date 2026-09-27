@@ -1672,17 +1672,19 @@ fs_getc:
         MVRLA R3
         BRLT fg_in
         BR fg_end
-fg_in:  MVRLA R3                ; inside a sector the buffer holds it (only a GETC of the byte before leaves the
-        BRNZ fg_hav             ; position there: OPEN, READ and a sector's last byte leave it on a boundary)
+fg_in:  MVRLA R3                ; inside a sector the buffer holds it (only a GETC or READN of the bytes before, or a
+        BRNZ fg_hav             ; SEEK, which loads it, leave the position there: OPEN, READ and a sector's last
+                                ; byte leave it on a boundary)
         MVRHA R3
         ANDI 1
         BRNZ fg_hav
         LDA HX                  ; on a boundary: the sector s = x << 7 | p >> 9 in the buffer already?
         JSR secno
-        MVRLA R4
-        ORI H_CUR
-        MVARL R4
-        LDAVR R4
+        MVRLA R4                ; (R4 is at +2, +3 or +4 here, so the ANDI is needed: without it, 2026-09-25..27, the
+        ANDI 0F0H               ; compare read H_LBA whenever the position's bits 8-23 were below the length's - a
+        ORI H_CUR               ; sector read again at nearly every boundary, and the sector whose number is the
+        MVARL R4                ; file's start LBA taken from the buffer, which held another (the one before):
+        LDAVR R4                ; stale bytes. os/README.md "the handles' sector buffers", tests/os/rdn.session)
         MVAT
         MVRHA R6
         BRNEQ fg_rd
