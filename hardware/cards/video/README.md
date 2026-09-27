@@ -34,3 +34,5 @@ Known issues and findings:
 
 Bench state: RN2 back to the design's 10k (Ken 2026-09-21; it had been 1k since the 2026-09-18 tests — with the rail
 unpowered the value never mattered; quick RAM test 8/8 with 10k); +5V and VCC joined by a wire (Ken 2026-09-21). No 6845 fitted.
+
+Reference: `docs/BYTE 6845.pdf` - a BYTE magazine article on the 6845 CRTC (Ken's copy, added 2026-09-26).
