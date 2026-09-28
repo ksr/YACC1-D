@@ -22,9 +22,10 @@ ARDUINO_CLI = [ "/opt/homebrew/bin/arduino-cli", "/usr/local/bin/arduino-cli", o
                 "/Applications/Arduino IDE.app/Contents/Resources/app/lib/backend/resources/arduino-cli"]
 CONSOLE, SEQUENCER = "/dev/cu.usbserial-AB0MVHSQ", "/dev/cu.usbserial-AB6WZCQX"
 
-def run(cmd):
+def run(cmd, env=None):
     try:
-        r = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=60,
+                           env=dict(os.environ, **env) if env else None)
         return r.returncode, (r.stdout + r.stderr).strip()
     except (OSError, subprocess.TimeoutExpired) as e:
         return 1, str(e)
@@ -54,6 +55,16 @@ if rc == 0:
     state = "behind %s, ahead %s, %d uncommitted" % (behind or "?", ahead or "?", ndirty)
     check(G, "in step with GitHub", rc2 == 0 and behind == "0" and ahead == "0" and ndirty == 0, state,
           "git pull (behind) / git push (ahead); commit or stash uncommitted work", False)
+    # CLAUDE.md: push after each commit. A dry-run push authenticates but sends nothing; with no prompt allowed, a
+    # Mac without a stored login fails here instead of at the first real push ("could not read Username").
+    rc5, out = run(["git", "-C", ROOT, "push", "--dry-run", "origin", "HEAD:main"], {"GIT_TERMINAL_PROMPT": "0"})
+    pushable = rc5 == 0 or "[rejected]" in out           # rejected = authenticated, just behind: git pull first
+    gh = shutil.which("gh")
+    rc6, _ = run([gh, "auth", "status"]) if gh else (1, "")
+    check(G, "can push to GitHub", pushable, "gh logged in" if gh and rc6 == 0 else "",
+          "brew install gh && gh auth login  (GitHub.com, HTTPS, authenticate Git: Yes, web browser)", True)
+check(G, "pyserial (monload, ucode_send, bench)", importlib.util.find_spec("serial"), "",
+      "python3 -m pip install --user pyserial", True)
 check(G, "reportlab (1:1 print PDFs)", importlib.util.find_spec("reportlab"), "",
       "python3 -m pip install --user reportlab", False)
 
