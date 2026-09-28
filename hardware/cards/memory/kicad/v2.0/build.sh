@@ -61,7 +61,7 @@
 HERE=$(cd "$(dirname "$0")" && pwd)
 PYK=/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3
 CLI=/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli
-INK=/Applications/Inkscape.app/Contents/MacOS/inkscape
+INK="${INK:-/Applications/Inkscape.app/Contents/MacOS/inkscape}"
 FRJAR="${FRJAR:-$HOME/freerouting/freerouting.jar}"
 WATCHDOG=${WATCHDOG:-1800}
 P=memory-v2.0

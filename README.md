@@ -1,6 +1,12 @@
 # YACC1-D — the definitive YACC1 tree
 
-**Status: tree created at ~/Developer/YACC1-D on 2026-09-19. Nothing migrated yet. No git yet. The copy under YACCS/YACC1-D is the retired strawman.**
+**Status (2026-09-27):** the single source of truth, on GitHub at `github.com/ksr/YACC1-D` (migrated from YACCS
+2026-09-19/20; the copy under YACCS/YACC1-D is the retired strawman). What is in the machine today:
+`docs/system/MACHINE.md`; what is open: `BACKLOG.md`.
+
+**Working on it (either of Ken's Macs, and for Claude):** `CLAUDE.md` has the standing rules, the machine facts that
+bite, where things are and how to build and test. On a new Mac: clone, then `python3 tools/setup_check.py` to see which
+tools are missing.
 
 YACC1 ("Yet Another Custom CPU") is the hand-built TTL computer: a 96-pin bus, a memory card, an
 ALU card, register cards, an I/O card, a two-board sequencer, a bus tester, and (in progress) a

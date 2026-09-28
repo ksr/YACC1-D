@@ -1,0 +1,97 @@
+# CLAUDE.md — working on YACC1-D
+
+YACC1-D is the single-source repository for Ken Rother's **YACC1**, a hand-built 8-bit TTL CPU (8-bit ACC/TMP,
+16-bit registers R0-R7, microcoded), and everything around it: the card designs, the microcode, the monitor ROM,
+BASIC, the Y1/OS disk operating system, the C compiler y1cc, emulators and bench tools. Ken develops on two Macs;
+this file is what a Claude session on either machine needs before touching anything. `README.md` is the tour of the
+tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually in the machine today.
+
+## Standing rules (Ken's)
+
+- **Commit to `main`** with conventional commits (`feat:`, `fix:`, `docs:`, `chore:`, `test:`…) and **push after each
+  commit**. No branches or PRs unless Ken asks. Stage explicit paths (never `git add -A` / `git add .`): other work
+  may be in the tree. End every commit message with the co-author line the session's attribution instructions give.
+- **Never modify `~/Documents/YACCS`** (the historical archive the tree was migrated from; it only exists on Ken's
+  first Mac and the repo does not need it).
+- **Migrated files** (sources that came from YACCS, e.g. `software/emulator/main.c`, `software/assembler/*`,
+  `firmware/monitor/monitor.asm`, the microcode generator) are edited only with a dated note in
+  `tools/patched_files.txt`.
+- **`python3 tools/audit_tree.py` must report 0 unexplained** files after every commit.
+- **Y1/OS has two kernels kept in step**: `os/y1os.asm` (the real one) and `os/y1os.c` (the specification, `make -C os
+  OS=c`). Every OS change goes into both; `tests/os` runs with both.
+- **Y1/OS and its commands are not kept in sync with the P8X project** (`~/Developer/p8x`, a sibling machine); P8X is
+  read-only reference.
+- **The ROM and the microcode are burned/loaded by Ken at the machine.** Build and verify images
+  (`tools/verify_firmware.py`), mark them "not burned/loaded" in the docs, and leave the hardware step to him.
+- **Background work runs on Opus**, and must leave nothing running when it finishes (no emulators, routers or
+  `until …; do sleep` wait loops).
+- New `/BIN` commands need a man page (`os/man/NAME`) and a `help` line; Y1/OS disk docs changing size changes the
+  `tests/os` pack transcript's size lines (`python3 tests/os/run.py pack --update`, only size lines may change).
+- Ken likes explanations that teach: say what was done, why, and what it means for the machine.
+
+## Machine facts that bite
+
+- **R2 is the hidden operand-address register** the microcode uses for LDA/STA/LDR/STR: programs must never use it
+  (the emulators have a separate register, so misuse only fails on the real machine). R0 = PC, R1 = SP.
+- Words are big-endian in memory; P8XFS on-disk fields are little-endian.
+- **BRVR is an indirect jump**; JSRUR calls through a register; BRUR ($AD) jumps to Rn.
+- The ALU's carry flip-flop latches carry-out **OR** shift-out; the microcode clears shift-out before every add/subtract
+  (the 2026-09-23 carry fix). Carry rules for code generators: `software/compiler/README.md`.
+- Four extra instructions (2026-09-24, `--xisa`): `LDZ`/`STZ Rn,d` ($80+n/$88+n, variable page = R6 high byte),
+  `ADDIW Rn,#w` ($C0+n), `SHL16 Rn` ($C8+n). The native toolchain (compiler passes, /BIN/ASM) needs them.
+- Memory map: ROM $E000-$FFFF (BASIC $E000, monitor $F000, BIOS vectors $FFC0-$FFFC, video entry $FFBC); monitor RAM
+  $0C00-$0FFF (stack $0C00-$0EFF, variables $0F00.., SYSTAB $0F14, ARGBUF $0F40, video flags $0FF0-$0FF7); Y1/OS at
+  $1000, OS RAM $4A00, SYSTAB2 $4FC0; programs (TPA) $5000-$CFFF; video RAM $D000-$D7FF, 6845 CRTC $D800 (address) /
+  $D802 (data), odd addresses there = the JP1 latch (never write them).
+- I/O ports: P0/P1 = the I/O card (control latch + data: UART, switches, LEDs, LCD, TIL311); P2-P7 decoded by it but
+  unused; **P8/P9 = CompactFlash** (register select / data); PA-PF free. Console: 16550 UART, 38400 8N1.
+- Serial ports on the Mac (FTDI serial numbers, the same on both Macs): console `/dev/cu.usbserial-AB0MVHSQ`,
+  sequencer card (microcode loader) `/dev/cu.usbserial-AB6WZCQX`. Clock 1 MHz; ~32 clocks per instruction.
+
+## Where things are
+
+| | |
+|---|---|
+| Card designs | `hardware/cards/<card>/{eagle,kicad}/<version>/` (deprecated versions under `deprecated/`, never edited); theory of operation in `docs/cards/` |
+| Microcode | `firmware/microcode/ucode-generator2/` (C generator → `test.hex`); `docs/system/MICROCODE.md` |
+| Monitor, BASIC, ROM image | `firmware/monitor/monitor.asm`, `firmware/basic/`, `firmware/rom/shipped/rom.bin` (+ README with what is burned) |
+| Assembler (host) | `software/assembler/` (RC/asm + `yacc1.def`); quirks in `docs/programming/ASSEMBLER.md` |
+| C compiler | `software/compiler/y1cc.py` (reference), `software/compiler/c/` (C twin `y1cc.c`, the nine passes `cc1..cc9`) |
+| Emulators | `software/emulator/` (instruction level), `software/ucemu/` (microcode level, steps `test.hex` through card models) |
+| Y1/OS | `os/` (kernels, `commands/` in C, `commands-asm/asm.asm`, `man/`, `Makefile` → `os/disk.img`) |
+| Machine tools | `tools/ucode_send.py` (microcode loader), `tools/monload.py` (monitor `:` loader), `tools/cfcard.py` (write a CF card), `tools/y1kermit.py` + `tools/y1.ksc` (Kermit), `tools/setup_check.py` (is this Mac set up?) |
+| Arduino sketches | `embedded/` (built against the vendored `embedded/libraries/` only) |
+
+## Build and test
+
+```
+python3 tools/setup_check.py     # on a new Mac: which tools are missing and what each is for
+make                             # build the C tools
+make check                       # everything (~11 min): audit, firmware/microcode/sketches rebuilt and diffed,
+                                 # compiler, twins, OS sessions, native compile, self-host, asm, video, kermit
+make -C os                       # os/disk.img;  make -C os run  boots it on the microcode emulator (O at the monitor)
+make os-test | cc-test | native-test | selfhost | asm-test
+```
+
+The known non-pass line in `make check` is the Arduino work-in-progress sketch `bus-driver-mcp23x17-wip` (marked
+expected). Board builds (`hardware/cards/*/kicad/*/build.sh`) need KiCad 10, Inkscape (`INK=`), Java and Freerouting
+(`FRJAR=`, default `~/freerouting/freerouting.jar`).
+
+## At the machine (Ken's steps)
+
+- **Microcode**: `python3 tools/ucode_send.py --all`, then press START on the sequencer card (the tool resets it via
+  DTR first); it verifies the load.
+- **Bench**: reset the YACC1, then `python3 tests/bench/run.py --port /dev/cu.usbserial-AB0MVHSQ` (logs in
+  `tests/bench/logs/`).
+- **ROM**: Ken burns `firmware/rom/shipped/rom.bin` (28C64, offset 0 = $E000) with Visual Minipro; the banner shows the
+  build date.
+- **Console**: `screen /dev/cu.usbserial-AB0MVHSQ 38400`, or C-Kermit (`kermit tools/y1.ksc`) which also transfers files
+  (`docs/procedures/KERMIT.md`).
+- Procedures: `docs/procedures/BRING-UP.md`, `CF-CARD.md`, `TESTING.md`; video card bring-up `docs/cards/video.md` §8.
+
+## Two Macs
+
+GitHub (`github.com/ksr/YACC1-D`) is the hub: `git pull` before starting, commit and push when done, never leave
+uncommitted work on one Mac. Only one Mac can have the YACC1's USB-serial adapters plugged in at a time; the other
+can do everything except bench runs and microcode loads. Claude's own memory is per machine: this file is the part
+that travels.
