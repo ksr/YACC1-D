@@ -1,6 +1,6 @@
 # Fabricated boards
 
-Generated 2026-09-24 by `tools/gen_fabricated.py` from `tools/fabricated.py` (edit the table, then re-run).
+Generated 2026-09-27 by `tools/gen_fabricated.py` from `tools/fabricated.py` (edit the table, then re-run).
 Every revision folder under `hardware/` is listed; the ones with status **in-machine** or **fabricated** also carry a `FABRICATED` marker file.
 "presumed" means the only evidence is that the folder sat in `PCB/Production` in the old tree.
 Fabrication output (gerber zips, CAM jobs, drill/photoplotter logs, order invoices) lives in `hardware/fab/<card>/<rev>/`; the Eagle folder keeps only the design. Where the tree holds no fab output the board was most likely ordered by uploading the `.brd` straight to OSH Park, so the `.brd` in the design folder IS what was sent.
@@ -127,7 +127,7 @@ Fabrication output (gerber zips, CAM jobs, drill/photoplotter logs, order invoic
 | Revision | Status | Design | Files sent to fab | Note |
 |---|---|---|---|---|
 | 1.1 | in-machine (Ken 2026-09-20) | `cards/register/eagle/v1.1` | `cards/register/eagle/v1.1/fab/` CAMOutputs/ | PCB/Production, 2020-08-31; CAMOutputs in v1.1/fab. The Working 'Index Registers 1.2' folder held byte-identical copies of the 1.1 files renamed 1.2 plus a notes file asking whether bus direction should follow -RD-SEL; folded in here 2026-09-20 (only the notes were new). No 1.2 design exists |
-| 1.0 | fabricated | `cards/register/eagle/deprecated/v1.0` | `cards/register/eagle/deprecated/v1.0/fab/` CAMOutputs/ | PCB/Production until 2020-08 |
+| 1.0 | fabricated | `cards/register/eagle/deprecated/v1.0` | `cards/register/eagle/deprecated/v1.0/fab/` CAMOutputs/ | PCB/Production until 2020-08. JLCPCB order 2000765A-Y6 (2020-06-17, 2 layers; Ken's archive filed 2026-09-27 as fab/jlcpcb-order-2000765A-Y6.rar): its 11 gerber/drill files are byte-identical to fab/CAMOutputs/GerberFiles (and to the v1.0-no-address variant's, whose board file is identical) |
 | 1.0 | fabricated | `cards/register/eagle/deprecated/v1.0-no-address` | `cards/register/eagle/deprecated/v1.0-no-address/fab/` CAMOutputs/ | PCB/Production until 2021-01 ("no address" variant) |
 
 ### sequencer-logic

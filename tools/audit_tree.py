@@ -28,6 +28,8 @@ for root, dirs, files in os.walk(DST):
         # the built memory card v1.3: Ken's Fusion export (~/Downloads 2026-09-24, not from YACCS; filed as eagle/v1.3-fusion-export-2026-09-24,
         # renamed to eagle/v1.3 the same day). Checked before the run log, which still lists the earlier save's 2026-09-20 copies at this path
         elif rel.startswith("hardware/cards/memory/eagle/v1.3/") and "/pdf/" not in rel and f != "README.md": buckets["mine: Fusion export of the built card from Ken (~/Downloads 2026-09-24, not from YACCS)"] += 1
+        # the register card v1.0's JLCPCB order archive (Ken's ~/Desktop/2000765A_Y6.rar, filed 2026-09-27, not from YACCS)
+        elif rel == "hardware/cards/register/eagle/deprecated/v1.0/fab/jlcpcb-order-2000765A-Y6.rar": buckets["mine: JLCPCB order archives from Ken (not from YACCS)"] += 1
         elif rel in logged: buckets["extra sources (kicad pilot, Arduino libs, eagle conv)"] += 1
         elif rel.startswith(("tools/", "migration/")) or rel in ("README.md", "CLAUDE.md", "MIGRATION.md", ".gitignore", ".gitattributes", "BACKLOG.md", "docs/system/MACHINE.md", "docs/system/OS-PLAN.md"): buckets["mine: tools/migration/front-page docs"] += 1
         elif f == "README.md": buckets["mine: placeholder README.md"] += 1
