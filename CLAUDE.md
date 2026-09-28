@@ -66,7 +66,8 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
 
 ```
 python3 tools/setup_check.py     # on a new Mac: which tools are missing and what each is for
-make                             # build the C tools
+make                             # build the C tools - REQUIRED before make check (on a fresh clone check stops
+                                 # at the compiler tests: "missing software/emulator/emulator")
 make check                       # everything (~11 min): audit, firmware/microcode/sketches rebuilt and diffed,
                                  # compiler, twins, OS sessions, native compile, self-host, asm, video, kermit
 make -C os                       # os/disk.img;  make -C os run  boots it on the microcode emulator (O at the monitor)
