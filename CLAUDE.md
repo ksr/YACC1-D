@@ -96,3 +96,19 @@ GitHub (`github.com/ksr/YACC1-D`) is the hub: `git pull` before starting, commit
 uncommitted work on one Mac. Only one Mac can have the YACC1's USB-serial adapters plugged in at a time; the other
 can do everything except bench runs and microcode loads. Claude's own memory is per machine: this file is the part
 that travels.
+
+### Starting and ending a session
+
+Claude's conversation history and memory stay on the Mac where they happened; the commits and `BACKLOG.md` are how
+one Mac's session learns what the other did. So, without being asked:
+
+- **At the start of a session**: `git fetch` and `git status`. If the tree is behind and clean, `git pull --ff-only`;
+  if it has uncommitted changes or has diverged, stop and tell Ken before touching anything. Then summarize for Ken
+  the commits that arrived (`git log` of the new range, subjects plus anything the messages leave open), and read
+  `BACKLOG.md` for the open items those commits touch, before starting on his request.
+- **When Ken says he is switching Macs or stopping** (and at the end of any piece of work): commit and push everything
+  finished; write anything unfinished - a half-done change, a decision still pending, the next step agreed in the
+  conversation - into `BACKLOG.md` (dated, under the section it belongs to) and commit and push that too. Nothing may
+  exist only in the conversation or only in one Mac's working tree. Leave nothing running.
+- If the other Mac's session may still be working (Ken says so, or commits keep arriving), do not edit the same files;
+  ask Ken which machine owns the work.
