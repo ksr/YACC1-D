@@ -406,8 +406,8 @@ def main(src, out):
         "memory card), so the ~%.0f mm stack has the room it needs." % (zt + 3),
         "Pin 20: the adapter has no pin 20 (key). J2 has it fitted: use a ribbon whose plugs have pin 20 OPEN, or pull "
         "J2's pin 20. JP2 (pin 20 = +5 V) stays OPEN.",
-        "Power: the adapter takes +5 V through its power pads, by a short cable from J3 (+5V, G, G, nc) - pad order to "
-        "be confirmed on the adapter.",
+        "Power: the adapter takes +5 V through its power pads (floppy order +5V, G, G, +12V) by a short straight-through "
+        "cable from J3 (+5V, G, G, nc): pin 1 to pin 1, so +12 V meets J3's open pin (Ken, 2026-09-26).",
     ]
     yy = 52 * mm
     for s in notes:

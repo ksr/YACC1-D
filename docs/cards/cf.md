@@ -34,7 +34,8 @@ driver: `cfwait`, `cfinit`, `cfread`, `cfwrite`), `software/cfmodel.h` (the emul
   to the bus connector) feeds it through a **short straight 40-wire ribbon, pin 1 to pin 1** (pin 20 open on the J2
   plug, or J2's pin 20 pulled). The adapter takes +5 V through its four power pads by a short cable from **J3** (+5V, G,
   G, nc); **JP2** (IDE pin 20 = +5 V) stays open for the HX-2118P. Open before ordering (that folder's README): the
-  adapter's power-pad order, the ribbon plug's pin 20. The memory card today uses no I/O signals: IO-ADDR0..3, -IO-RD
+  ribbon plug's pin 20 (the adapter's power pads: a floppy pinout in J3's order, straight-through cable, resolved
+  2026-09-26). The memory card today uses no I/O signals: IO-ADDR0..3, -IO-RD
   and -IO-WR are on its connector but unwired (`docs/cards/memory.md`). The ROM in the machine (`ROM 2026-09-23`) and
   both emulators already use P8/P9, so nothing on the software side changes.
 - **The CF-to-IDE adapter: the HX-2118P** (Ken, 2026-09-24/25, measured and checked with a 1:1 print), on standoffs as

@@ -347,8 +347,8 @@ memory card stays empty (Ken, 2026-09-25), so the ~35-44 mm stack needs no other
 100 nF per IC (C1-C19 and C24 for the built card's 20 ICs, as built; C25-C29 for the five CF chips) and C30 (10 uF
 bulk at the adapter power header J3). The built card's C20-C23, four 100 nF with no IC beside them (v1.3 has them in
 the cap row between C19 and C24, plain VCC-GND caps), were **removed from v2.0 (Ken, 2026-09-24)**: 70 parts instead of
-74. Open before ordering (its README): the adapter's power-pad order (the J3 cable), and the ribbon plug's pin 20 (open,
-or pull J2's pin 20).
+74. Open before ordering (its README): the ribbon plug's pin 20 (open, or pull J2's pin 20). The adapter's power-pad
+order was resolved 2026-09-26: a floppy pinout in J3's order, so the J3 cable is straight through (Ken's harness).
 
 Open ideas from `eagle/deprecated/v1.3-do-not-use/Notes.md`, `BACKLOG.md` and the reviews, for a v1.4:
 

@@ -156,8 +156,9 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   0 unrouted, 69 through vias, DRC 0 copper violations / 0 unconnected, planes one piece each, netlist proof MATCH,
   silkscreen tidied (adapter outline, standoff holes H1/H2, "CF CARD INSERTS HERE", J3 / JP2 / LED labels); gerbers +
   NPTH/PTH drill zip, renders, placement PDF, BOM (+ standoffs, screws, washers, ribbon), JLCPCB order note (as order
-  2000765A), 1:1 print. **Open before ordering:** the adapter's power-pad order (the J3 cable), the ribbon plug's pin
-  20 (open, or pull J2's pin 20). Resolved 2026-09-25: the card-cage slot in front of the memory card stays empty, so
+  2000765A), 1:1 print. **Open before ordering:** the ribbon plug's pin 20 (open, or pull J2's pin
+  20). Resolved 2026-09-26: the adapter's power pads are a floppy pinout in J3's order, so the J3 cable is straight
+  through (Ken builds it). Resolved 2026-09-25: the card-cage slot in front of the memory card stays empty, so
   the ~35-44 mm stack does not matter. Before that (2026-09-24 evening): five standoff placements A-E trial-routed
   with 1:1 check prints (records in the folder).
   Earlier the same day: **memory card v2.0 ROUTED, fab files ready, NOT ORDERED**: `hardware/cards/memory/kicad/v2.0`

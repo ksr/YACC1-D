@@ -1082,7 +1082,8 @@ HARDWARE = [   # the BOM's mechanical lines (not in the schematic): Refs, Value,
     ("HW3", "M3 flat washer 7 mm OD", "hardware", "4"),
     ("HW4", "40-wire IDE ribbon ~5-8 cm between two 40-way IDC plugs, crimped alike (pin 1 to pin 1); pin 20 OPEN "
             "on the J2 plug (or pull J2 pin 20)", "hardware", "1"),
-    ("HW5", "adapter power cable J3 (+5V G G nc) -> the adapter's four power pads (pad order: confirm on the adapter)",
+    ("HW5", "adapter power cable J3 (+5V G G nc) -> the adapter's four power pads (floppy order +5V G G +12V): "
+            "straight through, pin 1 to pin 1; find the adapter's pin-1 pad",
      "hardware", "1"),
     ("HW6", "HX-2118P CF-to-IDE adapter (40-pin male header, no pin 20)", "hardware", "1"),
 ]

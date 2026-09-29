@@ -6,7 +6,8 @@
 straight 40-wire ribbon from **J2, the card's own IDE header, parallel to the bus connector X1**; the ROM uncovered in
 the top row of the memory column. Routed (0 unrouted, **69 through vias**, 12,783 mm), DRC 0 copper violations and 0
 unconnected, planes one piece each, netlist proof MATCH, silkscreen tidied, fab files made: see **"The v2.0 board"**
-below. Open before ordering: the adapter's **power-pad order** (the J3 cable) and the ribbon plug's **pin 20**.
+below. Open before ordering: only the ribbon plug's **pin 20** (the adapter's power-pad order was resolved 2026-09-26:
+floppy pinout, a straight-through cable from J3, Ken's harness).
 
 The records: the five standoff placement options A-E with their trial routes and 1:1 check prints ("The standoff
 options", "The standoff options C / D / E"), and the board finished earlier on 2026-09-24 from top-edge option B (J2 at
@@ -388,8 +389,9 @@ geometry `gen_standoff.py geom` reads out of the board; `build.sh` regenerates b
 1. **Pin 1 of the adapter's header: CONFIRMED by Ken** (2026-09-24): a straight standard 40-pin ribbon, pin 1 to pin 1,
    joins J2 to the adapter as drawn (the adapter's pin 1 at the left end of its outer row, viewed component side up
    with the header at the top; the missing pin 20 is the 10th of the inner row from the left).
-2. **Adapter power pads**: their order (+5V / GND / GND / +12V?) and exact position; J3 is +5V, G, G, nc (pin 1 square).
-   Make the J3 cable to match (+12 V is not needed by a CF card).
+2. ~~Adapter power pads~~ **RESOLVED (Ken, 2026-09-26)**: a 4-pin floppy (Berg) pinout, +5V / GND / GND / +12V, the
+   same order as J3 (+5V, G, G, nc; pin 1 square), so the cable is straight through, pin 1 to pin 1, and the adapter
+   never sees +12 V. Ken builds the harness; only the adapter's pin-1 pad is left to spot when making it.
 3. **Ribbon**: ~8-10 cm between the two plugs (the loop on page 2), 40-way, **pin 20 open at the J2 plug** (or J2's pin
    20 pulled); plugs crimped alike, stripe on the pin-1 (y-max) end. Buy or crimp; the length is best tried with the
    print and the adapter on real standoffs.
@@ -862,5 +864,5 @@ time, so each plain run rewrites them (no other change). It reads `../v1.3` (thr
   D (77 vias, 12,502 mm) and E (72 vias, 12,579 mm), 0 DRC copper violations.
 - **Top-edge record (option B finished board): PASS** as before - 0 unrouted, 43 through vias, 11,779 mm, DRC 0 copper
   violations, planes one piece each, silkscreen clean (`options-top-edge-J2/reports/memory-v2.0-final.txt`).
-- **Not ordered**: Ken picked E (2026-09-25), finished as the v2.0 board; open before ordering: the adapter's
-  power-pad order, the ribbon plug's pin 20.
+- **Not ordered**: Ken picked E (2026-09-25), finished as the v2.0 board; open before ordering: the ribbon
+  plug's pin 20 (the power-pad order: resolved 2026-09-26).
