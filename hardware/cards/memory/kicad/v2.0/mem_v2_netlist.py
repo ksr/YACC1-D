@@ -1,4 +1,5 @@
-"""mem_v2_netlist.py - the YACC1 memory card v2.0 circuit: the built v1.3 unchanged + the CompactFlash section (2026-09-24).
+"""mem_v2_netlist.py - the YACC1 memory card v2.0 circuit: the built v1.3 + the CompactFlash section (2026-09-24) + the ROM
+write-protect jumper JP3 (2026-09-29, rule 7).
 
 THE single source of what v2.0 adds. Plain Python, no KiCad import.
 
@@ -11,8 +12,9 @@ THE single source of what v2.0 adds. Plain Python, no KiCad import.
                                      pin on VCC, one on GND, nothing else)
          + CF section                hardware/cards/cf/kicad/v1.0/cf_netlist.py (the standalone CF card v1.0), transformed
                                      by the explicit rules below - nothing else is added or changed.
+         + JP3                       rule 7 (2026-09-29): the ROM write-protect jumper on IC13's -WE.
 
-Rules (Ken's decisions, 2026-09-24):
+Rules (Ken's decisions, 2026-09-24; rule 7 2026-09-29):
   1. The CF card v1.0 circuit AS DRAWN, including its own port decoder U1 (74LS138, G1 = IO-ADDR3, Y0 = P8, Y1 = P9):
      the CF stays on I/O ports P8 (register-select latch, write) / P9 (data, read/write), which the ROM in the machine
      and both emulators (software/cfmodel.h, firmware/monitor/monitor.asm) already use.
@@ -33,6 +35,14 @@ Rules (Ken's decisions, 2026-09-24):
      checks that each of the four is on VCC and GND only on v1.3 and takes them out; nothing else of v1.3 changes.
      The committed option / trial-route / keep-copper boards are records made BEFORE the removal and still carry the
      four (check_netlist.py checks them against the schematic + exactly these four, as on v1.3).
+  7. The ROM write-protect jumper JP3 (Ken, 2026-09-29; design review M2, hardware/DESIGN-REVIEW-NOTES-datapath.md):
+     on v1.3 the 28C64's -WE (IC13 pin 27) is -MEM-WR re-buffered (IC6 pin 4, the net that also feeds the RAMs'
+     -WE, IC1/IC2 pin 27), so any store while the ROM is selected - every address during FORCE-ROM - writes the
+     EEPROM. v2.0 takes IC13 pin 27 off that net onto its own, ROM-WE (a sheet-3 local label), and JP3 (a 3-pin
+     header, the same symbol and footprint as v1.3's JP1) picks: 1-2 = WRITE (pin 1 on the -WE net: as v1.3),
+     2-3 = PROTECT (pin 3 on VCC: -WE held high). expected() checks that the v1.3 net holding IC13.27 is exactly
+     IC1.27, IC2.27, IC6.4, IC13.27 before it moves the pin. Boards made before this rule (the standoff options,
+     their trial routes, the records) have no JP3; check_netlist.py checks them against the schematic without it.
 The CF section's own nets keep their cf_netlist.py names (on sheet 7 of the schematic, so KiCad calls them
 /Sheet 7/<name>); the shared ones are global labels / power symbols with the memory card's names.
 """
@@ -82,6 +92,46 @@ REMOVED = {
 }
 REMOVED_DATE = "2026-09-24"
 REMOVED_NETS = {"1": "GND", "2": "VCC"}      # every removed part: pin -> v1.3 net, and no other pin
+
+# rule 7: the ROM write-protect jumper
+WP_REF = "JP3"
+WP_PART = ("PINHD-1X3", "memory-v1.3-eagle:1X03")   # value, footprint: v1.3's JP1
+WP_NET = "/Sheet 3/ROM-WE"                         # IC13 pin 27 + JP3 pin 2
+WP_DATE = "2026-09-29"
+WE_PINS = {("IC1", "27"), ("IC2", "27"), ("IC6", "4"), ("IC13", "27")}   # the v1.3 net holding IC13.27, exactly
+
+
+def wp_apply(nets):
+    """rule 7 on {net: set((ref, pin))}: IC13.27 -> WP_NET with JP3.2, JP3.1 onto the -WE net, JP3.3 onto VCC.
+    -> the -WE net's name (the v1.3 name, KiCad's Net-(...) after a pin)"""
+    we = [n for n, s in nets.items() if ("IC13", "27") in s]
+    if len(we) != 1 or nets[we[0]] != WE_PINS:
+        raise SystemExit("rule 7: the net of IC13.27 is %s, expected %s"
+                         % ([sorted(nets[n]) for n in we], sorted(WE_PINS)))
+    we = we[0]
+    nets[we] = (nets[we] - {("IC13", "27")}) | {(WP_REF, "1")}
+    nets[WP_NET] = {("IC13", "27"), (WP_REF, "2")}
+    nets["VCC"] = nets["VCC"] | {(WP_REF, "3")}
+    return we
+
+
+def wp_undo(nets):
+    """the inverse of wp_apply(): the nets of a board made before rule 7"""
+    nets = {n: set(s) for n, s in nets.items()}
+    we = [n for n, s in nets.items() if (WP_REF, "1") in s][0]
+    nets[we] = (nets[we] - {(WP_REF, "1")}) | {("IC13", "27")}
+    del nets[WP_NET]
+    nets["VCC"] = nets["VCC"] - {(WP_REF, "3")}
+    return nets
+
+
+def wp_undo_nodes(nodes):
+    """{(ref, pin): net} of the schematic -> the same for a board made before rule 7 (the standoff / re-layout option
+    boards: JP3 enters the finished board only, finish_v2.add_wp()): IC13.27 back on the -WE net, no JP3 pins"""
+    nodes = {k: v for k, v in nodes.items() if k[0] != WP_REF}
+    nodes[("IC13", "27")] = nodes[("IC1", "27")]
+    return nodes
+
 
 # nets shared with the v1.3 part of the card: global labels (or power symbols) on sheet 7, same names as v1.3
 SHARED = (["DATA%d" % i for i in range(8)] + ["IO-ADDR%d" % i for i in range(4)] + ["-IO-RD", "-IO-WR", "-RESET"])
@@ -179,7 +229,7 @@ def removed_pins(v13_nets, v13_parts):
 
 
 def expected(v13_nets, v13_parts):
-    """v2.0 = v1.3 - REMOVED + CF section.
+    """v2.0 = v1.3 - REMOVED + CF section + rule 7 (JP3).
     v13_nets: {name: set((ref, pin))} of the v1.3 schematic netlist (every net, including one-pin and unconnected-()
     ones); v13_parts: {ref: (value, footprint)}.
     -> (nets {name: set}, parts {ref: (value, footprint)}, lone set((ref, pin)) = pins KiCad must leave unconnected,
@@ -217,7 +267,13 @@ def expected(v13_nets, v13_parts):
         nets.setdefault(full, set()).update(conns)
     for ref, pins in NO_CONNECT.items():
         lone |= {(ref, p) for p in pins}
+    we = wp_apply(nets)
+    notes.append("rule 7 (%s): IC13.27 off %s (IC1/IC2 pin 27, IC6 pin 4) onto %s with JP3.2; JP3.1 on %s, JP3.3 on "
+                 "VCC" % (WP_DATE, we, WP_NET, we))
     parts = {r: v for r, v in v13_parts.items() if r not in REMOVED}
+    if WP_REF in parts:
+        raise SystemExit("reference %s collides with v1.3" % WP_REF)
+    parts[WP_REF] = WP_PART
     for ref, (value, sym, fp, note) in PARTS.items():
         if ref in parts:
             raise SystemExit("reference %s collides with v1.3" % ref)

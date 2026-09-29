@@ -261,7 +261,8 @@ From `firmware/rom/README.md`, `firmware/abi/README.md`, and a byte comparison o
 - Handling (memory `Build Notes.md`): one machined 28-pin socket soldered in IC13; keep each EEPROM in its own milled socket and
   move the pair, not the bare chip.
 - The write-enable hazard (section 3.1, M2): the 28C64 is written by any `-MEM-WR` while it is selected, including during
-  FORCE-ROM. A scratch chip is the right one for the M2 bench experiment.
+  FORCE-ROM. A scratch chip is the right one for the M2 bench experiment. (Memory card v2.0, not built yet, has the
+  write-protect jumper JP3: 2-3 PROTECT, 1-2 WRITE.)
 
 ---
 

@@ -9,4 +9,4 @@ placement memory-v2.0-standoff-a.kicad_pcb: OK - no overlaps, pads 0.5 mm inside
     under the adapter (low parts only): C1, C2, C26, C27, C29, C6, IC1, IC15, IC2, IC31, IC32, IC34, IC5
     ROM IC13 keep-clear zone x 172.0-193.7, y 44.8-99.0, holds: nothing; 44.8 mm from the adapter
 airwire memory-v2.0-standoff-a.kicad_pcb: 11507 mm, 329 connections on 146 signal nets
-     schematic parity: 49 items (built v1.3: 220, all inherited Eagle values/fields); new: none
+     schematic parity: 51 items (built v1.3: 220, all inherited Eagle values/fields; + 2 = JP3 missing / IC13.27 on -WE, made before JP3 (rule 7)); new: none

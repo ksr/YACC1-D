@@ -1,28 +1,29 @@
 schematic: v1.3 53 parts / 169 nets  +  CF section 21 parts / 27 own nets, 69 pins joined onto 17 shared nets
-           expected v2.0: 70 parts, 186 named/auto nets holding 687 pins, 33 unconnected pins (10 v1.3 + 23 CF no-connect)
+           expected v2.0: 71 parts, 187 named/auto nets holding 690 pins, 33 unconnected pins (10 v1.3 + 23 CF no-connect)
            v1.3 C20, C21, C22, C23 removed (2026-09-24): each pin 1 on GND, pin 2 on VCC, nothing else; GND/VCC lose those 8 pins
            v1.3 IO-ADDR0-3, -IO-RD, -IO-WR = X1 C7-C10, B25, B26 only (sheet-1 local labels); now global
            CF card X1: 27 bus pins on 17 nets, each on the same-named net of the memory card's X1
-           KiCad v2.0 schematic: 70 parts, 186 nets, 33 unconnected pins: MATCH
-board memory-v2.0-standoff-a.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
-board memory-v2.0-standoff-b.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
-board memory-v2.0-standoff-c.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
-board memory-v2.0-standoff-d.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
-board memory-v2.0-standoff-e.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
-board memory-v2.0-standoff-a-trial.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
-board memory-v2.0-standoff-b-trial.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
-board memory-v2.0-standoff-c-trial.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
-board memory-v2.0-standoff-d-trial.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
-board memory-v2.0-standoff-e-trial.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
-board memory-v2.0.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
-board options-top-edge-J2/memory-v2.0.kicad_pcb: 70 footprints, 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
-board options-top-edge-J2/memory-v2.0-relayout-a.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23]: MATCH
-board options-top-edge-J2/memory-v2.0-relayout-b.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23]: MATCH
-board options-top-edge-J2/memory-v2.0-relayout-c.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23]: MATCH
-board options-top-edge-J2/memory-v2.0-relayout-a-trial.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23]: MATCH
-board options-top-edge-J2/memory-v2.0-relayout-b-trial.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23]: MATCH
-board options-top-edge-J2/memory-v2.0-relayout-c-trial.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23]: MATCH
-board options-keep-copper/memory-v2.0-option-a.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23]: MATCH
-board options-keep-copper/memory-v2.0-option-b.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23]: MATCH
-board options-keep-copper/memory-v2.0-option-c.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23]: MATCH
-RESULT: MATCH (v2.0 = v1.3 - C20/C21/C22/C23 + the CF section, pin for pin; every board = the schematic (9 record board(s) made before the removal = the schematic + exactly C20/C21/C22/C23 as on v1.3))
+           rule 7 (2026-09-29): IC13.27 off Net-(IC1-~{WE}) (IC1/IC2 pin 27, IC6 pin 4) onto /Sheet 3/ROM-WE with JP3.2; JP3.1 on Net-(IC1-~{WE}), JP3.3 on VCC
+           KiCad v2.0 schematic: 71 parts, 187 nets, 33 unconnected pins: MATCH
+board memory-v2.0-standoff-a.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [before JP3]: MATCH
+board memory-v2.0-standoff-b.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [before JP3]: MATCH
+board memory-v2.0-standoff-c.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [before JP3]: MATCH
+board memory-v2.0-standoff-d.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [before JP3]: MATCH
+board memory-v2.0-standoff-e.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [before JP3]: MATCH
+board memory-v2.0-standoff-a-trial.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [before JP3]: MATCH
+board memory-v2.0-standoff-b-trial.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [before JP3]: MATCH
+board memory-v2.0-standoff-c-trial.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [before JP3]: MATCH
+board memory-v2.0-standoff-d-trial.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [before JP3]: MATCH
+board memory-v2.0-standoff-e-trial.kicad_pcb: 70 footprints + H1/H2 (board-only standoff holes), 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [before JP3]: MATCH
+board memory-v2.0.kicad_pcb: 71 footprints + H1/H2 (board-only standoff holes), 187 nets / 690 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [final]: MATCH
+board options-top-edge-J2/memory-v2.0.kicad_pcb: 70 footprints, 186 nets / 687 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [before JP3]: MATCH
+board options-top-edge-J2/memory-v2.0-relayout-a.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23 and before JP3]: MATCH
+board options-top-edge-J2/memory-v2.0-relayout-b.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23 and before JP3]: MATCH
+board options-top-edge-J2/memory-v2.0-relayout-c.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23 and before JP3]: MATCH
+board options-top-edge-J2/memory-v2.0-relayout-a-trial.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23 and before JP3]: MATCH
+board options-top-edge-J2/memory-v2.0-relayout-b-trial.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23 and before JP3]: MATCH
+board options-top-edge-J2/memory-v2.0-relayout-c-trial.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23 and before JP3]: MATCH
+board options-keep-copper/memory-v2.0-option-a.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23 and before JP3]: MATCH
+board options-keep-copper/memory-v2.0-option-b.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23 and before JP3]: MATCH
+board options-keep-copper/memory-v2.0-option-c.kicad_pcb: 74 footprints, 186 nets / 695 pads, 33 unconnected pads (+ 11 pinless v1.3 pads) [record, before the removal of C20, C21, C22, C23 and before JP3]: MATCH
+RESULT: MATCH (v2.0 = v1.3 - C20/C21/C22/C23 + the CF section + JP3, pin for pin; every board = the schematic (9 record board(s) made before the removal = the schematic + exactly C20/C21/C22/C23 as on v1.3))

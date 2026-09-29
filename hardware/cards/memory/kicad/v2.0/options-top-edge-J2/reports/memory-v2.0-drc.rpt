@@ -1,5 +1,5 @@
 ** Drc report for memory-v2.0.kicad_pcb **
-** Created on 2026-09-25T08:17:11 **
+** Created on 2026-09-29T04:41:43 **
 ** Report includes: Errors, Warnings, Exclusions **
 
 ** Found 208 DRC violations **
@@ -833,7 +833,7 @@
 
 ** Found 0 unconnected pads **
 
-** Found 49 Footprint errors **
+** Found 51 Footprint errors **
 [footprint_symbol_mismatch]: Value (C1) doesn't match symbol value ()
     Local override; warning
     @(104.1100 mm, 42.7200 mm): Footprint C1
@@ -942,9 +942,14 @@
 [footprint_symbol_mismatch]: Value (IC13) doesn't match symbol value ()
     Local override; warning
     @(125.7000 mm, 85.9000 mm): Footprint IC13
+[net_conflict]: Pad net (Net-(IC1-~{WE})) doesn't match net given by schematic (/Sheet 3/ROM-WE)
+    Local override; warning
+    @(111.7300 mm, 78.2800 mm): PTH pad 27 [Net-(IC1-~{WE})] of IC13
 [footprint_symbol_mismatch]: Value (IC14) doesn't match symbol value (74LS04N)
     Local override; warning
     @(83.7900 mm, 23.6700 mm): Footprint IC14
+[missing_footprint]: Missing footprint JP3 (PINHD-1X3)
+    Local override; warning
 [footprint_symbol_mismatch]: Value (IC8) doesn't match symbol value (74LS244N)
     Local override; warning
     @(52.0400 mm, 93.5200 mm): Footprint IC8

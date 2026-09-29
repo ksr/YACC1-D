@@ -82,7 +82,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - **HIGH (untested), video v1.1: 6845 E clock** derived from C1/R1 discharged by a 7416 open-collector output with no pull-up;
   unreliable at run speed. Goes with the RS-to-A1 change and the 7416 pull-ups before a CRTC is fitted.
 - **MED**: 28C64 -WE is raw -MEM-WR (any store during FORCE-ROM writes the EEPROM; the monitor is safe only because its first
-  instruction jumps above $8000); reset does not reload the pipeline (stale word on the bus during reset, with FORCE-ROM active);
+  instruction jumps above $8000; **memory v2.0 has the write-protect jumper JP3, 2026-09-29**); reset does not reload the pipeline (stale word on the bus during reset, with FORCE-ROM active);
   no power-on reset anywhere (FORCE-ROM, counters, carry undefined until the button); register card IC34 is a CD4077 driven by LS
   levels; count strobe = OR(-Rx-RDSEL, -REG-UP) counts a deselected register on a REG-RD-ID change; the register card drives $FFFF
   onto DATA0-15 on every increment step, overlapping -MEM-RD (327 steps); one-step memory windows before leading-edge latches
@@ -152,8 +152,10 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   **2026-09-25: memory card v2.0 FINISHED FOR FABRICATION, NOT ORDERED** (`hardware/cards/memory/kicad/v2.0`, README
   "The v2.0 board"): Ken picked **standoff option E** - the CF-to-IDE adapter (HX-2118P: 60 x 44 mm, 2 M3 holes 52 mm
   apart at the header end, no pin 20) on two 15 mm M3 standoffs over the CF chips at the free top edge, J2 parallel to
-  X1 with a short straight ribbon, the ROM uncovered in the top row of the memory column. `memory-v2.0.kicad_pcb`:
-  0 unrouted, 69 through vias, DRC 0 copper violations / 0 unconnected, planes one piece each, netlist proof MATCH,
+  X1 with a short straight ribbon, the ROM uncovered in the top row of the memory column. **2026-09-29: + JP3, the ROM
+  write-protect jumper** (design review M2; 1-2 WRITE, 2-3 PROTECT), added locally beside the ROM, the rest of the
+  route unchanged. `memory-v2.0.kicad_pcb`:
+  0 unrouted, 72 through vias, DRC 0 copper violations / 0 unconnected, planes one piece each, netlist proof MATCH,
   silkscreen tidied (adapter outline, standoff holes H1/H2, "CF CARD INSERTS HERE", J3 / JP2 / LED labels); gerbers +
   NPTH/PTH drill zip, renders, placement PDF, BOM (+ standoffs, screws, washers, ribbon), JLCPCB order note (as order
   2000765A), 1:1 print. **Open before ordering:** the ribbon plug's pin 20 (open, or pull J2's pin

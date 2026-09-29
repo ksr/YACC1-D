@@ -15,6 +15,8 @@ Called "base" / "v1.3" below. This script:
            - project/sheet-file names memory-v1.3 -> memory-v2.0 and the title blocks,
            - sheet 1: the IO-ADDR0-3 / -IO-RD / -IO-WR labels on X1 become global labels (sheet 7 uses those nets)
              and a note says so,
+           - sheet 3: JP3, the ROM write-protect jumper (mem_v2_netlist.py rule 7, Ken 2026-09-29): IC13 pin 27 off
+             the -WE net onto ROM-WE through JP3 (add_wp_jumper()),
            - sheet 1: the four removed caps C20-C23 (mem_v2_netlist.REMOVED, Ken 2026-09-24) taken out of the row of
              caps C19-C24 (remove_parts(): the symbols go, the GND and VCC rails that ran through their pins become
              one wire each from C19 to C24, the junctions at the removed pins go),
@@ -128,6 +130,70 @@ def remove_parts(t, refs):
     return t, done
 
 
+def add_wp_jumper(t):
+    """rule 7 (mem_v2_netlist.py, Ken 2026-09-29) on sheet 3: the wire from the -WE junction (IC6 pin 4's net, x 207.01)
+    to IC13 pin 27 (262.89, 220.98) is split through JP3 (v1.3 JP1's symbol and footprint, drawn rotated 180 so its
+    pins face right at x 246.38): the -WE side goes down x 207.01 to pin 1 (y 231.14), IC13 pin 27 is the local
+    label ROM-WE to pin 2 (y 228.6: down from pin 27, then left), pin 3 (y 226.06) goes right to a VCC symbol.
+    -> text"""
+    P27, CORNER = (262.89, 220.98), (207.01, 220.98)
+    m = re.search(r'\t\(wire \(pts \(xy 262\.89 220\.98\) \(xy 207\.01 220\.98\)\)( \(stroke[^\n]*?\)) \(uuid "([^"]+)"\)\)\n', t)
+    assert m, "sheet 3: the IC13 pin 27 wire (262.89, 220.98)-(207.01, 220.98) not found"
+    stroke = m.group(1)
+    path = re.search(r'\(reference "IC13"\)', t) and re.search(
+        r'\(path "([^"]+)" \(reference "IC13"\)', t).group(1)
+    X, Y = 243.84, 228.6                                   # JP3 at rotation 180: pins at (X + 2.54, Y + 2.54 / Y / Y - 2.54)
+    px = X + G
+    p1, p2, p3 = (px, Y + G), (px, Y), (px, Y - G)
+    U = lambda k: gen_cf.U("memory-v2.0", "wp", k)
+    F = gen_cf.f
+
+    def wire(a, b, k):
+        return '\t(wire (pts (xy %s %s) (xy %s %s))%s (uuid "%s"))\n' % (F(a[0]), F(a[1]), F(b[0]), F(b[1]), stroke, U(k))
+    vx = 252.73                                            # the VCC symbol, right of JP3's body (x up to 250.19)
+    new = (wire(CORNER, (CORNER[0], p1[1]), "w1") + wire((CORNER[0], p1[1]), p1, "w2")
+           + wire(P27, (P27[0], p2[1]), "w4") + wire((P27[0], p2[1]), p2, "w5")
+           + wire(p3, (vx, p3[1]), "w6"))
+    t = t.replace(m.group(0), new)
+    sym = ('\t(symbol (lib_id "memory-v1.3-eagle:pinhead_PINHD-1X3") (at %s %s 180) (unit 1)\n'
+           '\t\t(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no) (uuid "%s")\n'
+           '\t\t(property "Reference" "%s" (at %s %s 0) (effects (font (size 1.778 1.778) (thickness 0.1422)) (justify left bottom)))\n'
+           '\t\t(property "Value" "%s" (at %s %s 0) (effects (font (size 1.778 1.778) (thickness 0.1422)) (justify left bottom)))\n'
+           '\t\t(property "Footprint" "%s" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))\n'
+           '\t\t(property "Datasheet" "" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))\n'
+           '\t\t(pin "1" (uuid "%s"))\n\t\t(pin "2" (uuid "%s"))\n\t\t(pin "3" (uuid "%s"))\n'
+           '\t\t(instances (project "memory-v2.0" (path "%s" (reference "%s") (unit 1))))\n\t)\n'
+           % (F(X), F(Y), U("sym"), NL.WP_REF, F(X - 1.27), F(Y - 6.35), NL.WP_PART[0], F(X - 1.27), F(Y + 7.62),
+              NL.WP_PART[1], F(X), F(Y), F(X), F(Y), U("pin1"), U("pin2"), U("pin3"), path, NL.WP_REF))
+    vy = p3[1] - G                                         # supply1_VCC: its pin 2.54 below the symbol origin
+    vcc = ('\t(symbol (lib_id "memory-v1.3-eagle:supply1_VCC") (at %s %s 0) (unit 1)\n'
+           '\t\t(exclude_from_sim no) (in_bom no) (on_board no) (dnp no) (uuid "%s")\n'
+           '\t\t(property "Reference" "#P+11" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))\n'
+           '\t\t(property "Value" "VCC" (at %s %s 0) (effects (font (size 1.778 1.778) (thickness 0.1422)) (justify left bottom)))\n'
+           '\t\t(property "Footprint" "" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))\n'
+           '\t\t(property "Datasheet" "" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))\n'
+           '\t\t(pin "1" (uuid "%s"))\n'
+           '\t\t(instances (project "memory-v2.0" (path "%s" (reference "#P+11") (unit 1))))\n\t)\n'
+           % (F(vx), F(vy), U("vcc"), F(vx), F(vy), F(vx + 1.27), F(vy - 1.27), F(vx), F(vy), F(vx), F(vy),
+              U("vccpin"), path))
+    label = ('\t(label "ROM-WE" (at 254 %s 0) (fields_autoplaced yes) (effects (font (size 1.778 1.778)) '
+             '(justify left bottom)) (uuid "%s"))\n' % (F(p2[1]), U("label")))
+    txt = ("JP3 (v2.0, Ken %s): ROM write protect (design review M2).\n"
+           "1-2 = WRITE: IC13 -WE = -MEM-WR, as on v1.3.  2-3 = PROTECT: -WE held at VCC.\n"
+           "Fitted on 2-3: burn the 28C64 in a programmer; 1-2 only to write it in place." % NL.WP_DATE)
+    note = ('\t(text %s (exclude_from_sim no) (at 208.28 241.3 0) (effects (font (size 1.778 1.778) (thickness 0.254)) '
+            '(justify left top)) (uuid "%s"))\n' % (gen_cf.q(txt), U("note")))
+    # the symbol definition: v1.3 sheet 2 embeds it (JP1); sheet 3 has none
+    s2 = open(os.path.join(V13, "%s-sheet2.kicad_sch" % OLD)).read()
+    d = re.search(r'\t\t\(symbol "memory-v1\.3-eagle:pinhead_PINHD-1X3"\n[\s\S]*?\n\t\t\)\n', s2).group(0)
+    assert '"memory-v1.3-eagle:pinhead_PINHD-1X3"' not in t
+    i = t.index("\t(lib_symbols\n") + len("\t(lib_symbols\n")
+    t = t[:i] + d + t[i:]
+    t = t.rstrip()
+    assert t.endswith(")")
+    return t[:-1] + sym + vcc + label + note + ")\n"
+
+
 def copy_v13_sheets():
     removed = []
     for n in range(1, 7):
@@ -136,6 +202,9 @@ def copy_v13_sheets():
         note = "Unchanged from the built v1.3 (Fusion export 2026-09-24, Memory V1.3.sch sheet %d)" % n
         t, gone = remove_parts(t, NL.REMOVED)
         removed += gone
+        if n == 3:
+            note = "v1.3 sheet 3 + JP3, the ROM write-protect jumper on IC13 -WE (rule 7, %s)" % NL.WP_DATE
+            t = add_wp_jumper(t)
         if n == 1:
             note = "v1.3 sheet 1: 6 bus labels global (CF, sheet 7), C20-C23 removed, + note"
             cnt = 0

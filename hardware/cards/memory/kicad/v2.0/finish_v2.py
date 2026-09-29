@@ -838,6 +838,20 @@ def jlc(pcb, note=JLC):
 #   finish_v2.py bom-hw <bom.csv>                 -> the BOM + H1 / H2 (board features, no part) + the mechanical
 #                                                    hardware lines (standoffs, screws, washers, ribbon, power cable)
 # =====================================================================================================================
+# rule 7 (mem_v2_netlist.py, Ken 2026-09-29): the ROM write-protect jumper JP3, added to the finished board by add_wp()
+# as a local change - every other part and track as routed. JP3 (v1.3 JP1's footprint 1X03, pads in a row) sits in the
+# free patch above-left of the ROM, outside its keep-clear zone; pad 3 is on VCC through the In2 plane (no track).
+# Coordinates in mm (board). The -WE net (IC6.4 -> IC13.27 on F.Cu, IC13.27 -> IC1/IC2 pin 27 on B.Cu) no longer
+# meets at IC13.27: its F.Cu track ends at a new via at WP_WEVIA onto the same B.Cu run down to IC1/IC2.
+WP_AT = (96.04, 27.30)                   # JP3 pad 2; pads 1 / 3 at x -/+ 2.54
+WP_WEVIA = (104.44, 38.60)               # -WE: F.Cu from IC6 -> via -> B.Cu x 104.44 down to IC1/IC2 pin 27
+WP_ROMVIA = (96.04, 36.80)               # ROM-WE: IC13.27 -> F.Cu under the pin row (y 36.8) -> via -> B.Cu to pad 2
+WP_P1VIA = (93.50, 37.60)                # JP3 pad 1 -> B.Cu -> via -> F.Cu onto the -WE run at y 39.23
+WP_TEXT = [("JP3 ROM WE", 95.7, 20.2), ("1-2 WRITE", 95.7, 21.8), ("2-3 PROT", 95.7, 23.4),
+           ("1", 93.5, 29.7)]            # + JP3's pin 1 under pad 1 (RN8's own "1" sits just right of JP3 pad 3); silk, 0.8 mm, in
+                                         # the free patch above JP3: 8.3 mm between IC14's outline and U$1's "0X8000"
+                                         # ("2-3 PROTECT" is 8.6 mm); a line's box is 1.46 mm tall
+WP_RN8_REF = (116.0, 27.575)             # RN8's reference moves right along its row: at x 100.9 it met JP3's outline
 E_OPT = "e"
 E_DATE = "2026-09-25"
 E_NUDGE = {}                  # placement nudges on the final board: none (every part where standoff option E has it)
@@ -882,6 +896,119 @@ def _silk_line_clipped(b, a, c, w=E_SILK_W, gap=0.2):
                 out.append((pts[start], pts[k - 1]))
             start = None
     return out
+
+
+def add_wp(pcb):
+    """rule 7 on the finished board: JP3 placed, IC13.27 onto ROM-WE, the -WE tracks re-joined past IC13.27 through a
+    via, the three new connections routed; refill. A board that has JP3 already is left alone. -> True if changed"""
+    import pcbnew
+    b = pcbnew.LoadBoard(pcb)
+    fps = {f.GetReference(): f for f in b.GetFootprints()}
+    if NL.WP_REF in fps:
+        print("add_wp: %s has %s already" % (os.path.basename(pcb), NL.WP_REF))
+        return False
+    FM, T = pcbnew.FromMM, pcbnew.ToMM
+    at = lambda it: (round(T(it.x), 2), round(T(it.y), 2))
+    exact = {}                                   # the replaced tracks' end points to the nm: the new ones meet them there
+    P = lambda x, y: exact.get((round(x, 2), round(y, 2))) or pcbnew.VECTOR2I(FM(x), FM(y))
+    ic13 = {p.GetNumber(): p for p in fps["IC13"].Pads()}
+    we = ic13["27"].GetNet()
+    wename = we.GetNetname()
+    assert {(f.GetParentFootprint().GetReference(), f.GetNumber()) for f in
+            [p for fp in b.GetFootprints() for p in fp.Pads() if p.GetNetname() == wename]} == NL.WE_PINS, wename
+    # the -WE tracks this changes, found by their end points (the routed board, 2026-09-25)
+    drop = {("F", (105.38, 35.1), (101.25, 39.23)), ("B", (105.38, 35.1), (104.44, 36.04)),
+            ("B", (104.44, 36.04), (104.44, 55.75)), ("F", (84.74, 39.23), (101.25, 39.23))}
+    LN = {pcbnew.F_Cu: "F", pcbnew.B_Cu: "B"}
+    gone = []
+    for t in list(b.GetTracks()):
+        if t.Type() == pcbnew.PCB_TRACE_T and t.GetNetname() == wename:
+            k = (LN.get(t.GetLayer()), at(t.GetStart()), at(t.GetEnd()))
+            k2 = (k[0], k[2], k[1])
+            if k in drop or k2 in drop:
+                gone.append(t)
+    if len(gone) != len(drop):
+        raise SystemExit("add_wp: found %d of the %d -WE tracks: this is not the committed board's route (FINAL=route "
+                         "SEEDS=15). JP3's position and its three connections are drawn for that route; on another "
+                         "route place JP3 anew (WP_* above)" % (len(gone), len(drop)))
+    for t in gone:
+        for e in (t.GetStart(), t.GetEnd()):
+            exact[at(e)] = pcbnew.VECTOR2I(e.x, e.y)
+        b.Remove(t)
+    rom = pcbnew.NETINFO_ITEM(b, NL.WP_NET)
+    b.Add(rom)
+    vcc = b.FindNet("VCC")
+    # JP3: v1.3 JP1's footprint, linked to the sheet-3 symbol gen_mem_v2.add_wp_jumper() draws
+    fp = pcbnew.FootprintLoad(os.path.join(HERE, "memory-v1.3-eagle.pretty"), "1X03")
+    fp.SetFPIDAsString(NL.WP_PART[1])
+    fp.SetReference(NL.WP_REF)
+    fp.SetValue(NL.WP_PART[0])
+    sheet3 = fps["IC13"].GetPath().AsString().split("/")[1]
+    fp.SetPath(pcbnew.KIID_PATH("/%s/%s" % (sheet3, GM.gen_cf.U("memory-v2.0", "wp", "sym"))))
+    fp.SetSheetname(fps["IC13"].GetSheetname())
+    fp.SetSheetfile(fps["IC13"].GetSheetfile())
+    b.Add(fp)
+    fp.SetPosition(P(*WP_AT))
+    pads = {p.GetNumber(): p for p in fp.Pads()}
+    got = {n: at(p.GetPosition()) for n, p in pads.items()}
+    x, y = WP_AT
+    assert got == {"1": (round(x - 2.54, 2), y), "2": (x, y), "3": (round(x + 2.54, 2), y)}, got
+    pads["1"].SetNet(we)
+    pads["2"].SetNet(rom)
+    pads["3"].SetNet(vcc)
+    ic13["27"].SetNet(rom)
+    ref = fp.Reference()
+    ref.SetVisible(False)                          # the silk line below names it
+    fp.Value().SetLayer(pcbnew.F_Fab)
+    fp.Value().SetVisible(False)
+    w = FM(0.25)
+
+    def seg(a, c, layer, net):
+        t = pcbnew.PCB_TRACK(b)
+        t.SetStart(P(*a)); t.SetEnd(P(*c)); t.SetLayer(layer); t.SetWidth(w); t.SetNet(net)
+        b.Add(t)
+
+    def via(a, net):
+        v = pcbnew.PCB_VIA(b)
+        v.SetPosition(P(*a)); v.SetDrill(FM(0.4)); v.SetWidth(FM(0.8)); v.SetNet(net)
+        v.SetViaType(pcbnew.VIATYPE_THROUGH)
+        b.Add(v)
+    F_, B_ = pcbnew.F_Cu, pcbnew.B_Cu
+    # -WE past IC13.27: IC6's F.Cu run, split at the pad-1 tap, then a via onto the B.Cu run to IC1/IC2
+    tap = (WP_P1VIA[0], 39.23)
+    seg((84.74, 39.23), tap, F_, we)
+    seg(tap, (101.25, 39.23), F_, we)
+    seg((101.25, 39.23), (101.88, WP_WEVIA[1]), F_, we)
+    seg((101.88, WP_WEVIA[1]), WP_WEVIA, F_, we)
+    via(WP_WEVIA, we)
+    seg(WP_WEVIA, (104.44, 55.75), B_, we)
+    # JP3 pad 1 -> the -WE run
+    seg(tap, WP_P1VIA, F_, we)
+    via(WP_P1VIA, we)
+    seg(WP_P1VIA, (WP_P1VIA[0], y), B_, we)
+    # ROM-WE: IC13.27 -> JP3 pad 2
+    seg((105.38, 35.1), (103.68, WP_ROMVIA[1]), F_, rom)
+    seg((103.68, WP_ROMVIA[1]), WP_ROMVIA, F_, rom)
+    via(WP_ROMVIA, rom)
+    seg(WP_ROMVIA, (x, y), B_, rom)
+    for s_, tx_, ty_ in WP_TEXT:
+        tx = pcbnew.PCB_TEXT(b)
+        tx.SetText(s_); tx.SetLayer(pcbnew.F_SilkS)
+        tx.SetTextSize(pcbnew.VECTOR2I(FM(0.8), FM(0.8))); tx.SetTextThickness(FM(0.15))
+        tx.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_CENTER); tx.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_CENTER)
+        tx.SetPosition(pcbnew.VECTOR2I(FM(tx_), FM(ty_)))
+        b.Add(tx)
+    fps["RN8"].Reference().SetPosition(pcbnew.VECTOR2I(FM(WP_RN8_REF[0]), FM(WP_RN8_REF[1])))
+    pcbnew.SaveBoard(pcb, b)
+    t = open(pcb).read()
+    t2 = re.sub(r'(\t\t\(date ")[^"]*("\))', lambda m: m.group(1) + NL.WP_DATE + m.group(2), t, count=1)
+    t2 = t2.replace('(comment 3 "4 layers', '(comment 4 "JP3 = ROM write protect: 1-2 WRITE, 2-3 PROTECT (%s)")\n\t\t'
+                    '(comment 3 "4 layers' % NL.WP_DATE, 1)
+    open(pcb, "w").write(t2)
+    GM.refill(pcb)
+    print("add_wp: %s + %s at (%.2f, %.2f): IC13.27 -> %s, -WE re-joined through a via at %s, 3 connections routed "
+          "(%d -WE tracks replaced)" % (os.path.basename(pcb), NL.WP_REF, x, y, NL.WP_NET, WP_WEVIA, len(gone)))
+    return True
 
 
 def make_e(routed, out):
@@ -1036,6 +1163,7 @@ def make_e(routed, out):
     if stuck:
         print("silk tidy: %d text(s) with no free spot: %s" % (len(stuck), stuck))
     GM.refill(out)
+    add_wp(out)                                   # rule 7 (2026-09-29): the ROM write-protect jumper, locally
 
 
 def drill_check(pcb):
@@ -1116,6 +1244,8 @@ if __name__ == "__main__":
         make(sys.argv[2], sys.argv[3])
     elif cmd == "make-e":
         make_e(sys.argv[2], sys.argv[3])
+    elif cmd == "wp":
+        add_wp(sys.argv[2])
     elif cmd == "fab-e":
         fab(sys.argv[2], separate_th=True, note=JLC_E)
         ok = drill_check(sys.argv[2])
