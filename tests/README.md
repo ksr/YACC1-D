@@ -44,6 +44,12 @@
   transcripts `target.int.out`/`target.uc.out`) runs `asm` under Y1/OS on both emulators - y1cc programs assembled
   and run, the ROM monitor, `isa.asm`, compiler pass cc4 - and compares every file it wrote with RC/asm's output.
   `make asm-test`; both in `make check`.
+- `disasm/` — `/BIN/DISASM` (os/commands/disasm.c, 2026-09-29): `run.py` builds it for the Mac (`host_disasm.c`,
+  `host_sys.c`: int = unsigned short, OPEN/GETC/CLOSE/ENTRY/SEEK and peek emulated) and round-trips - `disasm -s`,
+  RC/asm, the same bytes, the listing true to them - over tests/asm's corpus, every program of the OS build, the ROM
+  from memory, random bytes and every opcode + operand byte (382, ~20 s), then START/COUNT ranges and the errors;
+  `tools/gen_y1_distab.py --check` first. The run on Y1/OS is `tests/os/disasm.session`. `make disasm-test`; in
+  `make check`.
 - `ucemu/` — the same programs (and `assembler/brur`) on the MICROCODE-level emulator `software/ucemu` with the monitor ROM
   loaded (`run.py`, 14/14 on 2026-09-22, `chars.ucout` = the expectation with the monitor's input echo), and `isa.asm`, a
   differential test of every instruction whose port-2 byte stream must be identical on both emulators (it is, BRDEV aside;

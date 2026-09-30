@@ -334,6 +334,7 @@ names, globs and `-` (the console until Ctrl-D) work wherever a command reads te
 | `dep addr b b...` | store hex bytes |
 | `diff f1 f2` | the differing block: `< ` lines of f1, `> ` lines of f2 (150 lines per file) |
 | `dir [-R] [-S] [path\|glob]` | sorted listing with sizes and load addresses; `-S` by size; `-R` every directory below, `ls -R` style |
+| `disasm [-s] FILE [START [COUNT]]` / `disasm [-s] -m ADDR [COUNT]` | the disassembler (2026-09-29, below): a program file as if loaded, or memory; lines that `asm` takes back (`-s`: the source alone) |
 | `dump addr` | hex + ASCII, 256 bytes a key |
 | `echo text` | print the argument tail |
 | `examine addr` | show and change bytes one at a time |
@@ -462,13 +463,58 @@ It exists twice, and the two behave identically (the same command line, messages
   table (16,640 until 2026-09-25, when cc8's buffered I/O outgrew it).
 
 Both instruction tables (`asm_optab.c`, `commands-asm/asmtab.inc`) are generated from `yacc1.def` by
-`tools/gen_y1_optab.py` (the Makefile regenerates them), so the assemblers cannot disagree about an instruction.
+`tools/gen_y1_optab.py` (the Makefile regenerates them), so the assemblers cannot disagree about an instruction; the
+disassembler's (`dis_optab.c`, below) comes from the same file.
 `tests/asm/run.py` compares asm.c with RC/asm on 336 sources (built for the Mac against an emulation of these
 syscalls), then runs `/BIN/ASM` under Y1/OS on the same sources and compares its messages and files with asm.c's
 (`--uc`: 27 of them on the microcode emulator too); with `--target` it runs `/BIN/ASM` in scripted sessions on both
 emulators: y1cc programs assembled and run, the monitor assembled to `firmware/monitor/monitor.img`.
 `tests/native/selfhost.py` has both rebuild themselves natively (the fixed point). `man asm`, `man asmc`, and
 `docs/programming/ASSEMBLER.md` section 10.
+
+### `disasm` (2026-09-29)
+
+`/BIN/DISASM` (`commands/disasm.c`, 6,107 bytes + 230 of data) turns machine code back into the source the assemblers
+take, one instruction a line with its address and bytes:
+
+```
+disasm /BIN/HELLO            5000  1B 50 90  MVIW R3,5090H      a program file as if loaded (its load address)
+disasm /BIN/HELLO 5010 10    16 bytes of it from 5010 (START and COUNT in hex)
+disasm -m F000 20            memory: F000  A0 F0 03  BR 0F003H ... (the ROM monitor; COUNT 40 by default)
+disasm -s P > P.ASM          the source alone (an ORG, then the instructions): asm P.ASM Q gives P's bytes again
+```
+
+The instruction text is exactly RC/asm's dialect: hex numbers with an `H` and a `0` before a letter (`0FFH`, `0F000H`;
+never a minus, which RC/asm drops), registers `R0`..`R7`, ports `P0`..`PF`. A byte that begins no instruction is a
+`DB` line: not an opcode (00 A5 AE F8 F9 FA FF), an operand byte whose fixed bits are wrong (`JSRUR` with a register
+byte over 7), or an instruction cut off by the end of the bytes. So everything disasm prints reassembles to the bytes
+it came from, data included - which is what its test proves. The file is read with GETC, not loaded, so disasm (at
+$5000 like every command) can show any program, itself too; `-m` reads memory with `peek`. It decodes linearly from
+where it starts (no following of jumps: data between code comes out as instructions or DBs). Output is stdout (`>`,
+`|`), errors go to the screen. `man disasm`.
+
+**The table is generated, like the assemblers'.** `tools/gen_y1_distab.py` reads `yacc1.def` with the assembler
+generator's own functions (the `.def` reader and its copy of RC/asm's `Translate()`), then runs each construction
+backwards: an instruction is a pattern that writes only bytes and whose first byte depends on nothing but its
+register/port operands (so the directives, `DW` and `DB HIGH` are out), and each operand bit is traced to the one
+output bit it lands on. Every byte becomes FIXED bits plus FIELDS (`MVIB \{regs},\B` / `10|1 \2` = 00010rrr and a byte;
+`POPR` / `08 \1<4&f0` = 08 and 0rrr0000; `MOVRR Rx,Ry` / `0F |2<4|1` = 0F and 0yyy0xxx), which `disasm.c` checks and
+extracts - it knows no opcode by name. The register class is decoded for R0..R7 only (RC/asm also takes R8 and R9, which
+spill into the next opcode: `MVIB R8` is `MVIW R0`'s $18); then no two instructions share an opcode, which the
+generator checks, together with every register/port combination round-tripping through the table and every opcode
+agreeing with `software/opcodes.h` (the emulators' and microcode generator's numbers). A new instruction in
+`yacc1.def` is disassembled after `make -C os` (which regenerates `dis_optab.c`); one whose bytes are not a bit-for-bit
+copy of its operands stops the generator. 78 instructions, 249 opcodes; the LDZ/STZ/ADDIW/SHL16 of 2026-09-24 and BRUR
+among them.
+
+**Tests.** `tests/disasm/run.py` (`make disasm-test`, in `make check`, ~20 s) builds `disasm.c` for the Mac (int =
+unsigned short, the few syscalls emulated: `host_disasm.c`, `host_sys.c`) and round-trips: `disasm -s`, RC/asm, the
+same bytes, and the listing must be the `-s` lines behind a true address and bytes. On the 326 sources of `tests/asm`'s
+corpus RC/asm accepts, the 47 programs of the OS build (`/BIN`, asm.asm, the nine compiler passes, the OS image), the
+ROM at $E000 and its monitor half from memory, random bytes and every opcode followed by every operand byte: 382 of
+382, 5.9 million lines; plus START/COUNT ranges and the errors. `tests/os/disasm.session` runs it under Y1/OS on both
+emulators on `tests/os/dis.asm` (every operand form, then DBs): a file, a range, memory after `load`, `| wc`, the
+errors, and `disasm -s` reassembled by `/BIN/ASM` on the machine and compared with `cmp`: identical.
 
 ### `pack` (2026-09-23)
 
@@ -627,6 +673,5 @@ intact (fsck, the boot block, every pristine file byte-identical); against the o
 
 FORMAT and FSCK on the target (the host
 tool has them), a second write handle (so `cp` works inside a `>` or a pipe), concurrent pipes (they run one
-after the other through temp files), `2>` (errors always go to the screen), the command history, a YACC1 `disasm` (`os/PORT-PLAN.md`
-wave 3; `asm` is there since 2026-09-25), BASIC as `/BIN/BASIC`, and the CF interface in hardware (planned on
+after the other through temp files), `2>` (errors always go to the screen), the command history, BASIC as `/BIN/BASIC`, and the CF interface in hardware (planned on
 the memory card), all in BACKLOG.md.

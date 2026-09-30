@@ -134,7 +134,7 @@ FRESOLVE + FOPEN + FGETB + SYS_GETCWD, the glob side adds FOPENDIR/FNEXT/SYS_OPE
 
 | Name | Src | p8cc B | Purpose | Calls | Rec | P8X-specific | Verdict | Status |
 |---|---|---|---|---|---|---|---|---|
-| disasm | 164 | 3,990 | disassemble `[start,end)` from memory | peek; lib_distab (143 P8X opcodes, generated from `genucode.OPC`) | none | the entire opcode table is the P8X ISA | **SKIP**. A YACC1 `disasm` is a new ~200-line tool whose table is generated from `software/assembler/yacc1.def` (the same generator idea as `gen_p8xdis.py`); the driver loop in `disasm.c` (hex parse, `AAAA: bb bb MNEMONIC`) is reusable | SKIPPED (as the verdict) |
+| disasm | 164 | 3,990 | disassemble `[start,end)` from memory | peek; lib_distab (143 P8X opcodes, generated from `genucode.OPC`) | none | the entire opcode table is the P8X ISA | **SKIP**. A YACC1 `disasm` is a new ~200-line tool whose table is generated from `software/assembler/yacc1.def` (the same generator idea as `gen_p8xdis.py`); the driver loop in `disasm.c` (hex parse, `AAAA: bb bb MNEMONIC`) is reusable | SKIPPED (as the verdict). 2026-09-29: the YACC1 `disasm` written as planned, NOT ported: `os/commands/disasm.c`, its table `os/dis_optab.c` generated from `yacc1.def` by `tools/gen_y1_distab.py`, P8X's driver loop kept in outline; it reads a program file (or `-m` memory) and prints lines `asm` reassembles (`os/README.md` "disasm") |
 | kermit | 98 | 1,597 | file transfer over the SECOND ACIA (`$FF08/$FF09`) | FRESOLVE FOPEN FGETB FWOPEN FPUTB FCLOSE FDELETE + peek/poke of the ACIA | none | the 2nd serial port | **SKIP for now** (single UART on the YACC1). Revisit as DEFER if the IO card's UART becomes a second port: the packet logic is 60 lines and port-agnostic behind `a2put`/`a2get` | SKIPPED (as the verdict). 2026-09-26: a Y1/OS `kermit` was written instead, NOT from this one: E-Kermit 1.8 ported to y1cc, on the ONE console UART (the transfer and the terminal take turns), with assembly line routines (`os/kermit_io.asm`); `os/README.md` "kermit" |
 
 ### 2.6 Graphics or window manager (17)
@@ -191,7 +191,7 @@ machine and is out of scope.
 | lib_rdline | 35 | uniq sed | none | **PORT AS-IS** | DONE |
 | lib_streq | 17 | uniq mv | none | **PORT AS-IS** (or use `y1lib.c`'s `strcmp`) | DROPPED: y1lib.c strcmp |
 | lib_err | 29 | most commands | none | **PORT WITH CHANGES**: `eputs()` writes to the *console* (raw `PUTS`/`CONOUT`) so `?errors` never land in a `>` file; on the Y1 that is `bios(CHAROUT, ...)` per byte — 10 lines. Matters only once redirection exists | CHANGED: putchar-based at first; since 2026-09-23 (redirection) bios(CHAROUT) per byte, as planned |
-| lib_distab | 8 (generated) | disasm | — | **SKIP** (P8X opcodes) | SKIPPED |
+| lib_distab | 8 (generated) | disasm | — | **SKIP** (P8X opcodes) | SKIPPED; the YACC1 equivalent is `os/dis_optab.c` (2026-09-29, generated from `yacc1.def`) |
 | lib_gfx, lib_g3d, lib_g3cam | 187 / 603 / 100 | graphics | glbyt/glwrd (mutual) | **SKIP** | SKIPPED |
 | lib_wm, lib_ptr, lib_ps2 | 297 / 158 / 153 | desk paint finder sheet term write | none | **SKIP** (WM, xterm mouse reports, PS/2 window `$FF58`) | SKIPPED |
 
@@ -341,7 +341,7 @@ decide whether `/BIN/DIR` replaces the built-in `dir` (it is 7.3K p8cc, ~6K on Y
 `kermit` (second UART). 4 commands.
 
 ### Skipped (P8X-specific)
-`disasm` (P8X ISA; write a YACC1 one from `yacc1.def` later), `screen`, `term`, and the 13 GL/WM programs
+`disasm` (P8X ISA; a YACC1 one from `yacc1.def` was written 2026-09-29), `screen`, `term`, and the 13 GL/WM programs
 `camera clsave cube gl house image page rotate tri paint desk wdesk` plus the libs `gfx g3d g3cam wm ptr ps2
 distab`. 16 commands.
 
@@ -472,4 +472,4 @@ files fetched and compared).
 
 Not done here: `vi` (a separate session), wave 3 (`asm`, a YACC1 `disasm`), redirection/pipes (the shell: until
 then a filter reads files or the console), and everything section 2 marks DEFERRED or SKIPPED. (Since then: `vi`,
-redirection and pipes 2026-09-23, `asm` 2026-09-25; a YACC1 `disasm` is still to write.)
+redirection and pipes 2026-09-23, `asm` 2026-09-25, a YACC1 `disasm` 2026-09-29.)

@@ -80,7 +80,7 @@ YACC1-D/
 │   └── libraries/            vendored: YACC_Common_header.h (bus table), Adafruit_MCP23017 1.1.0
 ├── tools/                    host scripts: setup_check, verify_firmware/embedded, ucode_send, monload, cfcard,
 │                             y1kermit, p8xfs, the KiCad/Eagle tooling, the tree audit
-├── tests/                    os, compiler, native (self-host), asm, bench (the machine), monload, kermit,
+├── tests/                    os, compiler, native (self-host), asm, disasm, bench (the machine), monload, kermit,
 │                             cfcard, video, sequencer, ucemu, memory, assembler, bus-tester-scripts
 ├── mk/                       shared make fragments
 ├── migration/                the 2026-09-19/20 migration's inventory, plan and logs

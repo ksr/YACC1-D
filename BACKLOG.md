@@ -226,8 +226,20 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   docs -> /DOCS, sample data /FRUIT.TXT /FRUIT2.TXT; the shell runs /BIN/NAME before a built-in of the same name;
   `tests/os/wave1.session`, `wave2.session` with host-side p8xfs checks. Status per command in PORT-PLAN section 2.)
 - Wave 3 of the port: (done 2026-09-25: **`asm`**, the on-target assembler for the RC/asm dialect, table generated from
-  `yacc1.def` - `os/README.md` "asm", `tests/asm`), a YACC1 `disasm` (next: a table generated from `yacc1.def` like
-  asm's, the P8X `disasm.c` driver loop); `vi` done 2026-09-23. Then BASIC as /BIN/BASIC.
+  `yacc1.def` - `os/README.md` "asm", `tests/asm`), (done 2026-09-29: **`disasm`**, `os/commands/disasm.c`, 6,107
+  bytes: `disasm [-s] FILE [START [COUNT]]` / `-m ADDR [COUNT]`, lines in RC/asm's dialect that reassemble byte for
+  byte, unknown bytes as DB; its table `os/dis_optab.c` generated from `yacc1.def` by `tools/gen_y1_distab.py`, which
+  runs the assembler generator's Translate() backwards and checks every opcode against `software/opcodes.h`;
+  `tests/disasm/run.py` round-trips 382 programs/sources/ROM/synthetic files through RC/asm, `tests/os/disasm.session`
+  reassembles its output with /BIN/ASM under Y1/OS - `os/README.md` "disasm"); `vi` done 2026-09-23. Then BASIC as
+  /BIN/BASIC.
+  - disasm follow-ups (2026-09-29, none needed for it to work): (1) labels - a second pass that names every branch/JSR
+    target inside the range (`L5003:`) and prints `BR L5003`, so `-s` output reads like source and can be edited and
+    moved (today it reassembles only at the same address); (2) not yet run on the machine (no CF card yet): nothing in
+    it is machine-specific beyond peek and the syscalls every command uses; (3) seen in passing: `tests/compiler/passes.py`
+    lists `os/commands/help.c` (STRPOOL: its strings), `os/commands/kermit.c` and `tests/os/rdn.c` (NODES_MAX) as not
+    fitting the native passes' tables, besides y1cc.c - help.c already before disasm's line was added; the docs name
+    only y1cc.c, and none of these is built natively today.
 - `/BIN/ASM` follow-ups (2026-09-25): (1) speed - (done 2026-09-26: **`/BIN/ASM` in YACC1 assembly**,
   `os/commands-asm/asm.asm`, identical to asm.c - now `/BIN/ASMC`, the specification - on the whole `tests/asm` corpus
   and in the self-host's fixed point; 4.3-5.3x fewer instructions, 5.2x in clocks: `cat` 12.8M -> 2.75M, cc8's 235K

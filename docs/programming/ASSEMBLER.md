@@ -219,7 +219,9 @@ Reading the tree's entries with that key:
 
 To add an instruction: give it a number in `software/opcodes.h` (the generator, both emulators and the disassembler
 include it), microcode in the generator (`firmware/microcode/README.md`: `make regen`, then load the EEPROM), a case
-in `software/emulator/main.c`, and two lines here. `BRUR` on 2026-09-22 is the worked example of exactly that
+in `software/emulator/main.c`, and two lines here. `make -C os` then regenerates the native assemblers' tables and
+the disassembler's (`/BIN/DISASM`, `os/dis_optab.c` by `tools/gen_y1_distab.py`, 2026-09-29), which also checks the
+new opcode against `software/opcodes.h`; `disasm` prints it in this dialect, so `disasm -s` output assembles back. `BRUR` on 2026-09-22 is the worked example of exactly that
 (`tools/patched_files.txt`: `opcodes.h`, `branch.c`, `yacc1.def`, `main.c`, `test.hex`); `tests/assembler/brur`
 is its test. Keep the mnemonic order in the file irrelevant (patterns are matched, not searched in order) but avoid
 a pattern that is a prefix of another with the same operand shape.

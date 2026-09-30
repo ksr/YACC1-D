@@ -37,6 +37,7 @@ FTDI port; **card** = the sequencer-memory card's FTDI port; **burn** = a 28C64 
 | 12 | `python3 tests/assembler/romdiag/run.py` | the ROM diagnostic on the microcode emulator |
 | 13 | `python3 tests/monload/run.py` | the monitor's `:` loader on both emulators (error paths too) and `tools/monload.py` over a pty (2026-09-23) |
 | 14 | `python3 tests/bench/run.py` | the 15 bench programs on both emulators against their expected transcripts, the committed images, and the `--port` path over a pty (2026-09-23) |
+| - | `python3 tests/disasm/run.py` | `/BIN/DISASM` round trip (2026-09-29): its output reassembled by RC/asm gives the same bytes, over tests/asm's corpus, the OS build's programs, the ROM and synthetic bytes (section 3.10) |
 | 15 | `python3 tests/kermit/run.py` | `/BIN/KERMIT` against `tools/y1kermit.py` over a pty on both emulators: files both ways, options, damaged/missing packets and timeouts, the server; then `--calib`, the receive loop's and the timeouts' clocks on the microcode emulator (2026-09-26) |
 
 Shortcuts: `make cc-test` = steps 7+8, `make os-test` = step 9. `make` (all) first builds the C tools the tests need:
@@ -216,6 +217,14 @@ with `command_sender_8` and the variable dumps should show the loop variables. N
 is not among this document's files and is left as it is.)
 
 ---
+
+### 3.10 `tests/disasm/` - the disassembler round trip (no hardware)
+
+- **Proves:** `/BIN/DISASM` (`os/commands/disasm.c`) prints only what the assembler turns back into the same bytes, and
+  its table (`os/dis_optab.c`) is current with `yacc1.def`.
+- **Run:** `python3 tests/disasm/run.py [-v] [--quick] [--only NAME]` (= `make disasm-test`; `--quick` skips the y1cc corpus).
+- **Pass looks like:** `gen_y1_distab: os/dis_optab.c is current`, `... 382 ok, 0 FAILED; 5901847 instructions and DBs`,
+  `START/COUNT and errors: 168 runs, 0 FAILED`. Under Y1/OS: `tests/os/disasm.session` (section 3.3).
 
 ## 4. The verification tools under `tools/`
 
