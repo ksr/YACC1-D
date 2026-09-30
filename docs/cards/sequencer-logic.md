@@ -155,8 +155,10 @@ That is how an interrupt substitutes opcode $FF (INT) for whatever the memory de
 N$23` (IC9) and `N$34..N$37` (IC8) feed IC15 (74*244, enabled by `-BUS-EN`) whose outputs are `CADDR6..9` and `CADDR10..13`.
 The IR therefore latches on the **rising edge of LD-INS-REG**, i.e. at the start of the step that asserts it, and the
 memory card sees the new opcode address ~50 ns later; the pipeline latch at the end of that step already reads the new
-record. The generator makes steps 0..5 identical in every record (`startInstruction()` + `loadNextInstruction()`,
-`main.c`), which is why steps 0..2 can run "from the previous opcode's record" without harm.
+record. The generator makes the prologue identical in every record (`startInstruction()` + `loadNextInstruction()`,
+`main.c`), which is why the steps up to the LD-INS-REG step can run "from the previous opcode's record" without harm:
+since 2026-09-29 the prologue is three steps with LD-INS-REG in step 1, so steps 0..1 run from the previous record
+(before: six steps, LD-INS-REG in step 2, steps 0..2; `docs/system/MICROCODE.md` 5.6).
 
 **Reset and bus enable.** IC36C: `-RESET` = NOT `RESET` (bus C30). IC36D: `-BUS-EN` = NOT `READY` (bus C28, and the
 OC of every pipeline 374 and of IC15/IC35). IC37A/D and IC36E form the three-inverter delay `RESET -> N$44 -> N$42 ->
@@ -336,9 +338,10 @@ The model is `MICROCODE-REVIEW-NOTES.md` section 1.1, confirmed against the sche
   (M-7). Step 0 of the next record is latched from the short QA pulse the counter makes before its second asynchronous
   clear (M-8) — margin is fine with HC/LS parts (a 374 needs ~15–20 ns) but it is a race to remember before changing clock
   or logic family.
-- **Steps 0..2 belong to the previous record**: the IR changes ~50 ns into the LD-INS-REG step, so the next pipeline latch
-  already fetches from the new record. The six-step common prologue (L-1) exists so that this hand-over is invisible; the
-  review's 3-step prologue would save ~22 % of all executed steps.
+- **The steps up to LD-INS-REG belong to the previous record**: the IR changes ~50 ns into the LD-INS-REG step, so the
+  next pipeline latch already fetches from the new record. The common prologue exists so that this hand-over is
+  invisible; since 2026-09-29 it is the review's three steps (L-1, steps 0..1 from the previous record), which saved
+  2-3 steps an instruction.
 - **BR-TEST is level-sampled** (3.4): `BR-COND` must be stable through the whole BR-TEST step. The generator sets the ALU
   function one step before BR-TEST in every conditional branch (`branch.c`); JSR/RET/IRET/INT assert both in the same step
   with ALU = 0 (D0 = VCC on the ALU's mux), which is safe only because the result is a constant 1 (M-5).
@@ -467,7 +470,7 @@ HALT LED.
 3. A power-on reset (RC or supervisor into the IC32 latch) — S1.
 4. Correct the design files to the fitted parts (74HC193 counters at least) and record the oscillator frequency in the BOM.
 5. Keep JP2 or replace it with a solder link labelled "do not fit"; document JP3's two-jumper rule on the silk.
-6. Optional: the 3-step fetch prologue is a microcode change, not a card change, but if the IR is ever brought out for a
+6. Optional (the 3-step fetch prologue, a microcode change, was made 2026-09-29): if the IR is ever brought out for a
    debugger, bring out `CADDR6..13` and `LD-INS-REG1` together.
 
 Related documents: `docs/cards/sequencer-memory.md` (the other half, the ATmega firmware and loader),

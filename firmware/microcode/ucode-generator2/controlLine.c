@@ -24,6 +24,8 @@ unsigned char cntlMemory[MEMORY_SIZE] = {}; // RAM Image
 unsigned char currentLine[BYTES_PER_LINE] = {}; // 
 
 int eolInfo[INSTRUCTIONS] = {0,};
+int pendingRelease = 0;     /* YACC1-D 2026-09-29: set by loadNextInstruction(): check the first body line */
+void releaseIfNeeded();
 int ucodeLine = 0;
 int currentUcodeBlock = -1;
 
@@ -56,6 +58,11 @@ void clearCurrentLine() {
 void writeCurrentLine() {
     int lineToWrite;
     int dup;
+
+    if (pendingRelease) {   /* YACC1-D 2026-09-29: the first line after the three-step prologue */
+        pendingRelease = 0;
+        releaseIfNeeded();
+    }
 #ifdef DEBUG
     printf("Write line [%d]\n", ucodeLine);
 #endif 

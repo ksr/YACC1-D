@@ -249,8 +249,9 @@ Receive (`uartin`): poll LSR bit 0 (DR), then read RBR; the monitor turns CR int
 FIFO: the ROM never writes FCR (register 2), so after reset the XR16C550 runs as a 16450 (one character of receive
 buffering; `tools/monload.py` paces its characters for that). `/BIN/KERMIT` (2026-09-26, `os/kermit_io.asm`) writes
 FCR = $07 (FIFOs on and cleared) for a transfer and $00 when it ends, after LSR bit 6 says the transmitter is empty:
-its receive loop takes 279 clocks a character against the 260 the line gives at 38400 baud and 1 MHz, and relies on
-the 16-byte receive FIFO to absorb a 96-character packet. **To verify on the machine** (BACKLOG.md "kermit").
+its receive loop takes 229 clocks a character against the 260 the line gives at 38400 baud and 1 MHz with the
+microcode of 2026-09-29 (the three-step fetch prologue), so the FIFO is margin; with the older microcode it took 279
+and relied on the 16-byte receive FIFO to absorb a 96-character packet. **To verify on the machine** (BACKLOG.md "kermit").
 
 ### 4.2 Switches, LEDs, TIL311
 

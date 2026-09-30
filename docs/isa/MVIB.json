@@ -2,11 +2,11 @@
  "signal": [
   {
    "name": "uCODE CLK",
-   "wave": "p..........."
+   "wave": "p........."
   },
   {
    "name": "step",
-   "wave": "============",
+   "wave": "==========",
    "data": [
     "0",
     "1",
@@ -17,58 +17,56 @@
     "6",
     "7",
     "8",
-    "9",
-    "10",
-    "11"
+    "9"
    ]
   },
   {},
   {
    "name": "-VMA",
-   "wave": "l...........",
+   "wave": "l.........",
    "phase": -0.05
   },
   {
    "name": "-MEM-RD",
-   "wave": "hl..........",
+   "wave": "l.hl......",
    "phase": -0.05
   },
   {},
   {
    "name": "-REG-FUNC-RD",
-   "wave": "h...lh...lh.",
+   "wave": "h.lh...lh.",
    "phase": -0.05
   },
   {
    "name": "-REG-FUNC-LD",
-   "wave": "h.....l..h..",
+   "wave": "h...l..h..",
    "phase": -0.05
   },
   {
    "name": "-REG-UP",
-   "wave": "h...lh...lh.",
+   "wave": "h.lh...lh.",
    "phase": -0.05
   },
   {
    "name": "REG-LD-LO",
-   "wave": "l......hl...",
+   "wave": "l....hl...",
    "phase": -0.05
   },
   {},
   {
    "name": "LD-INS-REG",
-   "wave": "l.hl........",
+   "wave": "lhl.......",
    "phase": -0.05
   },
   {
    "name": "UCODE-COUNT-RESET",
-   "wave": "l..........h",
+   "wave": "l........h",
    "phase": -0.05
   },
   {},
   {
    "name": "REG-LD-ID[3:0]",
-   "wave": "=.....=.....",
+   "wave": "=...=.....",
    "phase": -0.05,
    "data": [
     "0",
@@ -78,7 +76,7 @@
   {},
   {
    "name": "ADDRESS BUS",
-   "wave": "=....=....=.",
+   "wave": "=..=....=.",
    "phase": -0.16999999999999998,
    "data": [
     "PC",
@@ -88,7 +86,7 @@
   },
   {
    "name": "DATA BUS",
-   "wave": "z=...=....=.",
+   "wave": "=.z=....=.",
    "phase": -0.47,
    "data": [
     "M[PC]",
@@ -98,7 +96,7 @@
   },
   {
    "name": "IR",
-   "wave": "=.=.........",
+   "wave": "==........",
    "phase": -0.05,
    "data": [
     "IR",
@@ -107,7 +105,7 @@
   },
   {
    "name": "ACC",
-   "wave": "=...........",
+   "wave": "=.........",
    "phase": -0.05,
    "data": [
     "ACC"
@@ -115,7 +113,7 @@
   },
   {
    "name": "PC (R0)",
-   "wave": "=....=....=.",
+   "wave": "=..=....=.",
    "phase": -0.05,
    "data": [
     "PC",
@@ -125,7 +123,7 @@
   }
  ],
  "head": {
-  "text": "MVIB Rn  (opcodes $10-$17, drawn for R2 = $12)  -  12 microcode steps",
+  "text": "MVIB Rn  (opcodes $10-$17, drawn for R2 = $12)  -  10 microcode steps",
   "tick": 0
  },
  "config": {

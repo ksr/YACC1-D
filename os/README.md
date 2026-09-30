@@ -390,11 +390,12 @@ mode; the file handling below). `kermit.c`'s header lists every change and keeps
 **The line: `kermit_io.asm`.** At 1 MHz the YACC1 runs ~30,000 instructions a second and 38400 baud delivers a
 character every 260 us. So the UART is read by a few assembly routines, not by the ROM (whose `uartinne` turns CR into
 LF and costs a JSR a character) nor by compiled C (~1,100 clocks a character): `krx` hunts for the SOH, then reads
-LEN - 32 more characters by count in **279 clocks a character** (measured on the microcode emulator by
+LEN - 32 more characters by count in **229 clocks a character** (measured on the microcode emulator by
 `tests/kermit/run.py --calib`), and kermit switches the 16C550's 16-byte receive FIFO on for the transfer (FCR = 7,
-off again at the end, after the transmitter has emptied). Falling behind by 19 clocks a character, the FIFO absorbs a
-burst of ~220 characters: a whole 96-character packet with room to spare. Timeouts are poll counts: a pass of the
-wait loop is 191.23 clocks on average, 5,229 passes a second (measured: 1,000,111 clocks); at another clock they
+off again at the end, after the transmitter has emptied). That keeps ahead of the line by 31 clocks a character, so
+the FIFO is margin; before the three-step fetch prologue of 2026-09-29 the loop took 279 clocks, fell behind by 19
+a character, and relied on the FIFO to absorb a burst of ~220 characters. Timeouts are poll counts: a pass of the
+wait loop is 161.20 clocks on average, 6,203 passes a second (measured: 1,000,079 clocks); at another clock they
 scale with it. The same file holds `ktx` (send), `kcrc`/`ksum` (the block checks, 16 instructions a byte against ~210
 in C), `kdec` (a packet's data field decoded straight into the output buffer) and `kenc` (file bytes encoded straight
 into the packet, leaving runs and 8th-bit prefixing to E-Kermit's C). y1cc has no inline assembly, so `mkkio.py`

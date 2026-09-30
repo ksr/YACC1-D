@@ -7,9 +7,10 @@ steps of bus fights until COUNT-FAULT stopped the clock. Now each gets the HALT 
 test.hex:
   1. no record is all-zero;
   2. each undefined opcode, fetched from the ROM at reset on the microcode emulator, HALTs after its fetch with no
-     bus fight (the same 7 steps as HALT, $03, which is run too as the reference).
+     bus fight, in the same number of steps as HALT ($03, run first as the reference: 7 steps with the six-step fetch
+     prologue, 4 since the three-step one of 2026-09-29).
 """
-import os, sys, subprocess, tempfile
+import os, re, sys, subprocess, tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
@@ -23,6 +24,7 @@ zero = ["$%02X" % o for o, d in sorted(records.items()) if set(d) == {"0"}]
 print("%-34s %s" % ("all-zero records in test.hex", "none" if not zero else "FAIL " + " ".join(zero)))
 ok &= not zero
 
+halt_steps = None
 with tempfile.TemporaryDirectory() as tmp:
     for op in [0x03] + UNDEFINED:
         img = os.path.join(tmp, "op.hex")          # one byte at $F000: reset fetches it through FORCE-ROM
@@ -31,7 +33,9 @@ with tempfile.TemporaryDirectory() as tmp:
         r = subprocess.run([EMU, "-x", "-l", "2000", "-u", HEX, "-f", img], stdin=subprocess.DEVNULL,
                            capture_output=True, text=True)
         status = r.stderr.strip().splitlines()[-1] if r.stderr.strip() else "(no status)"
-        good = status.startswith("HALT at F000 after 1 instructions, 7 steps") and "bus fights: 0 " in status
+        m = re.match(r"HALT at F000 after 1 instructions, (\d+) steps", status)
+        if op == 0x03 and m: halt_steps = m.group(1)
+        good = bool(m) and m.group(1) == halt_steps and "bus fights: 0 " in status
         print("%-34s %s" % ("$%02X%s" % (op, " (HALT)" if op == 0x03 else ""), "PASS" if good else "FAIL: " + status))
         ok &= good
 

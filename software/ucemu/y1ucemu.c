@@ -382,7 +382,7 @@ static void do_step(void) {
     if (on(w, s_ld_ins_reg)) {
         int do_int = int_pending && int_enabled;
         ir = do_int ? 0xFF : (uint8_t)(prev.data & 0xFF);
-        w = ucode[ir][step];                                   /* this step's word really came from the old record; the generator makes steps 0..5 identical in every record, so the new one serves */
+        w = ucode[ir][step];                                   /* this step's word really came from the old record; the generator makes the prologue (steps 0..2 since 2026-09-29, 0..5 before) identical in every record, so the new one serves (tests/ucemu/prologue.py) */
         ninstr++; last_fetch_pc = prev.addr;
         if (exit_pc >= 0 && last_fetch_pc == exit_pc) halted = 1;     /* -E: stop when execution reaches this address */
         if (trace) fprintf(stderr, "%04X %-6s($%02X) ACC=%02X TMP=%04X C=%d R1=%04X R2=%04X R3=%04X R4=%04X R5=%04X R6=%04X R7=%04X\n",

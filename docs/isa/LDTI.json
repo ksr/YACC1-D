@@ -2,11 +2,11 @@
  "signal": [
   {
    "name": "uCODE CLK",
-   "wave": "p.........."
+   "wave": "p........"
   },
   {
    "name": "step",
-   "wave": "===========",
+   "wave": "=========",
    "data": [
     "0",
     "1",
@@ -16,54 +16,52 @@
     "5",
     "6",
     "7",
-    "8",
-    "9",
-    "10"
+    "8"
    ]
   },
   {},
   {
    "name": "-VMA",
-   "wave": "l..........",
+   "wave": "l........",
    "phase": -0.05
   },
   {
    "name": "-MEM-RD",
-   "wave": "hl.........",
+   "wave": "l.hl.....",
    "phase": -0.05
   },
   {},
   {
    "name": "-REG-FUNC-RD",
-   "wave": "h...lh..lh.",
+   "wave": "h.lh..lh.",
    "phase": -0.05
   },
   {
    "name": "-REG-UP",
-   "wave": "h...lh..lh.",
+   "wave": "h.lh..lh.",
    "phase": -0.05
   },
   {
    "name": "-TMP-REG-LD0",
-   "wave": "h.....lh...",
+   "wave": "h...lh...",
    "phase": -0.05
   },
   {},
   {
    "name": "LD-INS-REG",
-   "wave": "l.hl.......",
+   "wave": "lhl......",
    "phase": -0.05
   },
   {
    "name": "UCODE-COUNT-RESET",
-   "wave": "l.........h",
+   "wave": "l.......h",
    "phase": -0.05
   },
   {},
   {},
   {
    "name": "ADDRESS BUS",
-   "wave": "=....=...=.",
+   "wave": "=..=...=.",
    "phase": -0.16999999999999998,
    "data": [
     "PC",
@@ -73,7 +71,7 @@
   },
   {
    "name": "DATA BUS",
-   "wave": "z=...=...=.",
+   "wave": "=.z=...=.",
    "phase": -0.47,
    "data": [
     "M[PC]",
@@ -83,7 +81,7 @@
   },
   {
    "name": "IR",
-   "wave": "=.=........",
+   "wave": "==.......",
    "phase": -0.05,
    "data": [
     "IR",
@@ -92,7 +90,7 @@
   },
   {
    "name": "ACC",
-   "wave": "=..........",
+   "wave": "=........",
    "phase": -0.05,
    "data": [
     "ACC"
@@ -100,7 +98,7 @@
   },
   {
    "name": "TMP",
-   "wave": "=.....=....",
+   "wave": "=...=....",
    "phase": -0.05,
    "data": [
     "TMP",
@@ -109,7 +107,7 @@
   },
   {
    "name": "PC (R0)",
-   "wave": "=....=...=.",
+   "wave": "=..=...=.",
    "phase": -0.05,
    "data": [
     "PC",
@@ -119,7 +117,7 @@
   }
  ],
  "head": {
-  "text": "LDTI  (opcode $0D)  -  11 microcode steps",
+  "text": "LDTI  (opcode $0D)  -  9 microcode steps",
   "tick": 0
  },
  "config": {

@@ -2,6 +2,8 @@
 #   make          build ./ucodegen (includes resolve via ../../opcodes.h -> tools/layout_links.py)
 #   make check    generate into build/ and diff against the committed test.hex (fails on difference)
 #   make regen    run ./ucodegen here: rewrites test.123 / test.hex / test.hexz beside it (what the loader sends)
+#   make prologue6  the same microcode with the six-step fetch prologue used until 2026-09-29, in build/p6/test.hex
+#                 (for loading in two stages or going back: tools/ucode_send.py --all --hex <that file>)
 #   make clean
 CC     ?= cc
 CFLAGS ?= -O2 -Wall -fno-common
@@ -16,6 +18,9 @@ check: ucodegen
 	 if cmp -s test.hex ../test.hex; then echo "test.hex: IDENTICAL to the committed microcode image"; else echo "test.hex: DIFFERS"; exit 1; fi
 regen: ucodegen
 	./ucodegen > /dev/null && ls -la test.hex test.123
+prologue6: $(SRC) $(wildcard *.h) ../yaccsignaldefine.h ../yaccsignaldata2.h ../../../software/opcodes.h
+	@mkdir -p build/p6 && $(CC) $(CFLAGS) -DPROLOGUE6 -o build/p6/ucodegen $(SRC) && cd build/p6 && ./ucodegen > gen.log && \
+	 echo "six-step prologue image: $(CURDIR)/build/p6/test.hex"
 clean:
 	rm -rf ucodegen build
 .PHONY: all check regen clean

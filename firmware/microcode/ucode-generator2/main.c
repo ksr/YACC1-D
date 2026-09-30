@@ -26,6 +26,10 @@ void accumulatorInstructions();
 void doMemory();
 void haltRecord(int ins);
 int recordEmpty(int ins);
+extern unsigned char currentLine[];
+extern int pendingRelease;                  /* YACC1-D 2026-09-29: the three-step prologue (loadNextInstruction) */
+unsigned char releaseLine[BYTES_PER_LINE];
+int releasesWritten = 0;
 
 
 //#define DEBUG 1
@@ -118,8 +122,11 @@ void startInstruction(int instruction) {
     if (instruction == 0) {
         setSignal("OUT-OFF");
     }
+#ifdef PROLOGUE6
     writeCurrentLine(); // KEN maybe only need these 2 extra Lines 0&1 for Instruction 0 so maybe test
     //writeCurrentLine(); step 7
+#endif
+    /* YACC1-D 2026-09-29: the three-step prologue has no idle step 0: loadNextInstruction() writes it */
 }
 
 /* 
@@ -192,6 +199,9 @@ void loadNextInstruction() {
     //increment Reg 0
 
     //initCurrentLine(); // not needed, load next instruction is always done at start of instruction and initCurrentLIne is called
+#ifdef PROLOGUE6
+    /* the 2016-2026 prologue, six steps: 0 idle (written by startInstruction), 1 -MEM-RD, 2 + LD-INS-REG, 3 -MEM-RD,
+       4 PC++ with -MEM-RD still on (review M-1: memory and the register card's $FFFF both drive the bus), 5 release */
     putMemAtRegOnBus(PC);
     setSignal("LD-INS-REG"); // rising or falling?
     writeCurrentLine();
@@ -199,6 +209,56 @@ void loadNextInstruction() {
     writeCurrentLine(); // -reg-up is rising edge
     incrementReg(PC);
     clearSignal("-MEM-RD"); //STEP 9 DO NOT LEAVE DATA BUS DRIVEN WITH INSTRUCTION FETCHED FROM MEM  
+#else
+    /* YACC1-D 2026-09-29: the three-step prologue (design review L-1, which also removes M-1 from the fetch).
+     *   step 0  -MEM-RD at PC                  the opcode is read; step 0 lasts three clocks (after the reset step)
+     *   step 1  -MEM-RD, LD-INS-REG            the IR latches at this step's LEADING edge the byte step 0 left on the
+     *                                          bus; -MEM-RD stays on through the step as hold time
+     *   step 2  -REG-FUNC-RD, -REG-UP on PC    no -MEM-RD any more, so the register card's $FFFF drives alone
+     * Steps 0 and 1 come from the PREVIOUS opcode's record (the IR changes in step 1, the new record's words appear
+     * from step 2), so they must be identical in every record - they are, all records run this code - and step 2 is
+     * too. The PC counts when -REG-UP rises at the end of step 2. The old prologue ended with a release step that
+     * dropped -REG-UP and -REG-FUNC-RD with the selection unchanged; here the record's first body step follows
+     * directly, which is the same thing whenever that step keeps REG-RD-ID = PC and asserts no -REG-UP/-REG-DN or
+     * -2-BYTE-OPERAND-SEL (else the register select could change while -REG-UP is still low, and a decoder glitch
+     * would count another register). writeCurrentLine() checks the first body line and writes the release step in
+     * front of it only when it is not such a line (releaseIfNeeded, below). */
+    putMemAtRegOnBus(PC);                   // step 0
+    setSignal("LD-INS-REG");
+    writeCurrentLine();                     // step 1
+    clearSignal("LD-INS-REG");
+    clearSignal("-MEM-RD");
+    setRdId(PC);
+    setSignal("-REG-FUNC-RD");
+    setSignal("-REG-UP");
+    writeCurrentLine();                     // step 2
+    clearSignal("-REG-UP");
+    clearSignal("-REG-FUNC-RD");
+    memcpy(releaseLine, currentLine, sizeof releaseLine);
+    pendingRelease = 1;
+#endif
+}
+
+/* YACC1-D 2026-09-29: true when the line in currentLine asserts the signal */
+int lineHas(char *signal) {
+    int n = findSignal(signal);
+    int byte = (signals[n].chip - 1) * PORTS_PER_CHIP + signals[n].port;
+    int bit = (currentLine[byte] >> signals[n].bit) & 1;
+    return signals[n].name[0] == '-' ? !bit : bit;
+}
+
+/* YACC1-D 2026-09-29: called by writeCurrentLine() for the first line after the three-step prologue: unless that line
+ * keeps the register selection on PC with no count strobe (see loadNextInstruction), write the release step first */
+void releaseIfNeeded() {
+    int rdId = lineHas("REG-RD-ID0") | lineHas("REG-RD-ID1") << 1 | lineHas("REG-RD-ID2") << 2 | lineHas("REG-RD-ID3") << 3;
+    if (rdId == PC && !lineHas("-REG-UP") && !lineHas("-REG-DN") && !lineHas("-2-BYTE-OPERAND-SEL"))
+        return;
+    unsigned char body[BYTES_PER_LINE];
+    memcpy(body, currentLine, sizeof body);
+    memcpy(currentLine, releaseLine, sizeof body);
+    writeCurrentLine();                     // step 3: the release (pendingRelease is already 0)
+    memcpy(currentLine, body, sizeof body);
+    releasesWritten++;
 }
 
 /* might be an issue if current setRdId reg is different from one here */
@@ -407,6 +467,9 @@ int main(int argc, char** argv) {
     }
 #endif
     dumpCntlMemory();
+#ifndef PROLOGUE6
+    printf("three-step prologue: %d records needed the release step\n", releasesWritten);
+#endif
     printf("Done\n");
     return (EXIT_SUCCESS);
 }
@@ -443,6 +506,9 @@ void basicTest() {
     endInstruction();
 
     dumpCntlMemory();
+#ifndef PROLOGUE6
+    printf("three-step prologue: %d records needed the release step\n", releasesWritten);
+#endif
     printf("Done\n");
 
 }

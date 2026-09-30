@@ -127,11 +127,12 @@ The server does SEND, GET, FINISH and BYE (both end it; C-Kermit's `bye` also cl
   C-Kermit's transfer display. Either way kermit sends or gets an error packet, deletes the partial file and prints why.
 - **Nothing starts**: kermit waits 5 minutes for the first packet (sending an NAK, or its S packet again, every 5 s:
   that is the `#N3`-like noise seen in CONNECT) and then gives up with "Too many retries".
-- **Transfers stall with many retries**: the receive side of the YACC1 at 1 MHz reads a character in 279 clocks while
-  the line brings one every 260, so it relies on the 16C550's 16-byte receive FIFO, which kermit switches on for a
-  transfer (and off after). If the FIFO does not work on the card, a packet longer than ~13 characters overruns:
-  `kermit -r -l 20` (the shortest packets) is the test; C-Kermit's first packet (~25 characters) would still be too
-  long, so then the line speed has to come down (the ROM sets 38400).
+- **Transfers stall with many retries**: the receive side of the YACC1 at 1 MHz reads a character in 229 clocks while
+  the line brings one every 260 (with the microcode of 2026-09-29, the three-step fetch prologue; with the older
+  microcode it was 279 clocks and depended on the 16C550's 16-byte receive FIFO, which kermit switches on for a
+  transfer and off after). With the older microcode and a FIFO that does not work, a packet longer than ~13
+  characters overruns: `kermit -r -l 20` (the shortest packets) is the test; otherwise bring the line speed down (the
+  ROM sets 38400). Reload the microcode (`tools/ucode_send.py --all`) and the loop keeps up without the FIFO.
 - **Speed**: at 1 MHz about 260 bytes/s to the YACC1 and 240 bytes/s from it (the CPU, not the line: ~120-130
   instructions a byte; `os/README.md` "kermit"). A 10K file takes about 40 s.
 

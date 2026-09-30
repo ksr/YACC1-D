@@ -2,11 +2,11 @@
  "signal": [
   {
    "name": "uCODE CLK",
-   "wave": "p........"
+   "wave": "p......"
   },
   {
    "name": "step",
-   "wave": "=========",
+   "wave": "=======",
    "data": [
     "0",
     "1",
@@ -14,48 +14,46 @@
     "3",
     "4",
     "5",
-    "6",
-    "7",
-    "8"
+    "6"
    ]
   },
   {},
   {
    "name": "-VMA",
-   "wave": "l........",
+   "wave": "l......",
    "phase": -0.05
   },
   {
    "name": "-MEM-RD",
-   "wave": "hl....h..",
+   "wave": "l.h....",
    "phase": -0.05
   },
   {},
   {
    "name": "-REG-FUNC-RD",
-   "wave": "h...lhlh.",
+   "wave": "h.lhlh.",
    "phase": -0.05
   },
   {
    "name": "-REG-UP",
-   "wave": "h...lhlh.",
+   "wave": "h.lhlh.",
    "phase": -0.05
   },
   {},
   {
    "name": "LD-INS-REG",
-   "wave": "l.hl.....",
+   "wave": "lhl....",
    "phase": -0.05
   },
   {
    "name": "UCODE-COUNT-RESET",
-   "wave": "l.......h",
+   "wave": "l.....h",
    "phase": -0.05
   },
   {},
   {
    "name": "REG-RD-ID[3:0]",
-   "wave": "=.....=..",
+   "wave": "=...=..",
    "phase": -0.05,
    "data": [
     "0",
@@ -65,7 +63,7 @@
   {},
   {
    "name": "ADDRESS BUS",
-   "wave": "=....=...",
+   "wave": "=..=...",
    "phase": -0.16999999999999998,
    "data": [
     "PC",
@@ -74,16 +72,15 @@
   },
   {
    "name": "DATA BUS",
-   "wave": "z=...=z..",
+   "wave": "=.z....",
    "phase": -0.47,
    "data": [
-    "M[PC]",
-    "M[PC+1]"
+    "M[PC]"
    ]
   },
   {
    "name": "IR",
-   "wave": "=.=......",
+   "wave": "==.....",
    "phase": -0.05,
    "data": [
     "IR",
@@ -92,7 +89,7 @@
   },
   {
    "name": "ACC",
-   "wave": "=........",
+   "wave": "=......",
    "phase": -0.05,
    "data": [
     "ACC"
@@ -100,7 +97,7 @@
   },
   {
    "name": "PC (R0)",
-   "wave": "=....=...",
+   "wave": "=..=...",
    "phase": -0.05,
    "data": [
     "PC",
@@ -109,7 +106,7 @@
   }
  ],
  "head": {
-  "text": "INCR Rn  (opcodes $50-$57, drawn for R2 = $52)  -  9 microcode steps",
+  "text": "INCR Rn  (opcodes $50-$57, drawn for R2 = $52)  -  7 microcode steps",
   "tick": 0
  },
  "config": {

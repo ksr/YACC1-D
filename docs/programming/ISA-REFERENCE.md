@@ -21,9 +21,11 @@ idioms). A scratch assembly of the encodings below was checked with `software/as
   `byte` = an 8-bit value, `addr` = a 16-bit value (assembled high byte first). Where an operand goes into its own
   byte the table says which nibble.
 - **Bytes**: instruction length including operands.
-- **Steps**: microcode steps of the record as generated (counted from `docs/isa/steps.txt`, one line per step). Every
-  record begins with the same 6-step fetch prologue (`main.c` `startInstruction` + `loadNextInstruction`: read the
-  opcode into the instruction register, increment R0) and ends with a `UCODE-COUNT-RESET` step. A step is two clock
+- **Steps**: microcode steps of the record as generated (counted from `docs/isa/steps.txt`, one line per step; the
+  column was recomputed from `test.hex` on 2026-09-29). Every record begins with the same 3-step fetch prologue
+  (`main.c` `startInstruction` + `loadNextInstruction`: read the opcode into the instruction register, increment R0;
+  six steps until 2026-09-29, so each count was 2 or 3 higher before; `docs/system/MICROCODE.md` 5.6) and ends with a
+  `UCODE-COUNT-RESET` step. A step is two clock
   periods and the reset step one, so an N-step instruction costs 2N−1 clocks (`y1ucemu.c` header, review note 1.1).
   Family members differ by at most one step (duplicate-line elision, review L-5); the table gives the common value
   and the notes the exception.
@@ -38,9 +40,9 @@ nibble `REG-LD-ID`. That is why `POPR` encodes its register as `n<<4` and `MOVRR
 
 ## 2. The instruction cycle in brief
 
-Each record's steps 0..5 fetch the next opcode: the address bus follows R0, `-MEM-RD` puts the byte on the bus,
-`LD-INS-REG` latches it into the instruction register, `-REG-UP` increments R0 (`main.c` `loadNextInstruction`).
-Because the instruction register changes early in the `LD-INS-REG` step, steps 0..2 of every record are actually
+Each record's steps 0..2 fetch the next opcode: the address bus follows R0, `-MEM-RD` puts the byte on the bus,
+`LD-INS-REG` latches it into the instruction register, `-REG-UP` increments R0 (`main.c` `loadNextInstruction`; six
+steps until 2026-09-29). Because the instruction register changes early in the `LD-INS-REG` step, steps 0..1 of every record are actually
 executed from the *previous* opcode's record; the generator makes those steps identical everywhere so it does not
 matter (review 1.1). Operand bytes are then read the same way (address = R0, `-MEM-RD`, R0++), and the work happens
 in the steps that follow. Nothing is pipelined across instructions.
@@ -49,15 +51,15 @@ in the steps that follow. Nothing is pipelined across instructions.
 
 | Opcode | Mnemonic | Bytes | Steps | Description |
 |---|---|---|---|---|
-| $0E | `LDAI byte` | 2 | 12 | ACC ← byte |
-| $0D | `LDTI byte` | 2 | 11 | TMP ← byte |
-| $40+n | `LDAVR Rn` | 1 | 11 (R0: 10) | ACC ← [Rn] (the byte at the address in Rn; Rn unchanged) |
-| $48+n | `STAVR Rn` | 1 | 12 | [Rn] ← ACC |
-| $E4 | `LDA addr` | 3 | 22 | R2 ← addr; ACC ← [R2] |
-| $E5 | `STA addr` | 3 | 23 | R2 ← addr; [R2] ← ACC |
-| $E6 | `LDT addr` | 3 | 21 | R2 ← addr; TMP ← [R2] |
-| $E7 | `STT addr` | 3 | 22 | R2 ← addr; [R2] ← TMP |
-| $D0+n | `LDIVR Rn,byte` | 2 | 15 | [Rn] ← byte (through TMP1) |
+| $0E | `LDAI byte` | 2 | 10 | ACC ← byte |
+| $0D | `LDTI byte` | 2 | 9 | TMP ← byte |
+| $40+n | `LDAVR Rn` | 1 | 8 | ACC ← [Rn] (the byte at the address in Rn; Rn unchanged) |
+| $48+n | `STAVR Rn` | 1 | 9 | [Rn] ← ACC |
+| $E4 | `LDA addr` | 3 | 20 | R2 ← addr; ACC ← [R2] |
+| $E5 | `STA addr` | 3 | 21 | R2 ← addr; [R2] ← ACC |
+| $E6 | `LDT addr` | 3 | 19 | R2 ← addr; TMP ← [R2] |
+| $E7 | `STT addr` | 3 | 20 | R2 ← addr; [R2] ← TMP |
+| $D0+n | `LDIVR Rn,byte` | 2 | 13 | [Rn] ← byte (through TMP1) |
 
 Notes:
 
@@ -82,19 +84,19 @@ Notes:
 
 | Opcode | Mnemonic | Bytes | Steps | Description |
 |---|---|---|---|---|
-| $0F | `MOVRR Rs,Rd` | 2 | 17 | Rd ← Rs (16 bits). Operand byte = `(d<<4) \| s` |
-| $10+n | `MVIB Rn,byte` | 2 | 12 | Rn.lo ← byte (high byte unchanged) |
-| $18+n | `MVIW Rn,addr` | 3 | 17 | Rn ← addr (high byte first, then low) |
-| $20+n | `MVRLA Rn` | 1 | 10 | ACC ← Rn.lo |
-| $28+n | `MVRHA Rn` | 1 | 10 | ACC ← Rn.hi |
-| $30+n | `MVARL Rn` | 1 | 12 | Rn.lo ← ACC |
-| $38+n | `MVARH Rn` | 1 | 12 | Rn.hi ← ACC |
-| $0B | `MVAT` | 1 | 10 | TMP ← ACC |
-| $0C | `MVTA` | 1 | 11 | ACC ← TMP |
-| $F0+n | `LDR Rn,addr` | 3 | 30 | R2 ← addr; Rn.hi ← [R2]; Rn.lo ← [R2+1]; R2 ← addr+1 |
-| $E8+n | `STR Rn,addr` | 3 | 32 (R2: 31) | R2 ← addr; [R2] ← Rn.hi; [R2+1] ← Rn.lo; R2 ← addr+1 |
-| $50+n | `INCR Rn` | 1 | 9 | Rn ← Rn+1 |
-| $58+n | `DECR Rn` | 1 | 10 | Rn ← Rn−1 |
+| $0F | `MOVRR Rs,Rd` | 2 | 15 | Rd ← Rs (16 bits). Operand byte = `(d<<4) \| s` |
+| $10+n | `MVIB Rn,byte` | 2 | 10 | Rn.lo ← byte (high byte unchanged) |
+| $18+n | `MVIW Rn,addr` | 3 | 15 | Rn ← addr (high byte first, then low) |
+| $20+n | `MVRLA Rn` | 1 | 8 (R0: 7) | ACC ← Rn.lo |
+| $28+n | `MVRHA Rn` | 1 | 8 (R0: 7) | ACC ← Rn.hi |
+| $30+n | `MVARL Rn` | 1 | 9 | Rn.lo ← ACC |
+| $38+n | `MVARH Rn` | 1 | 9 | Rn.hi ← ACC |
+| $0B | `MVAT` | 1 | 7 | TMP ← ACC |
+| $0C | `MVTA` | 1 | 8 | ACC ← TMP |
+| $F0+n | `LDR Rn,addr` | 3 | 28 | R2 ← addr; Rn.hi ← [R2]; Rn.lo ← [R2+1]; R2 ← addr+1 |
+| $E8+n | `STR Rn,addr` | 3 | 30 (R2: 29) | R2 ← addr; [R2] ← Rn.hi; [R2+1] ← Rn.lo; R2 ← addr+1 |
+| $50+n | `INCR Rn` | 1 | 7 | Rn ← Rn+1 |
+| $58+n | `DECR Rn` | 1 | 8 (R0: 7) | Rn ← Rn−1 |
 
 Notes:
 
@@ -129,10 +131,10 @@ and 925 doublings 8 bytes.
 
 | Opcode | Mnemonic | Bytes | Steps | Description |
 |---|---|---|---|---|
-| $80+n | `LDZ Rn,d` | 2 | 30 | R2 ← R6.hi:d; Rn.hi ← [R2]; R2++; Rn.lo ← [R2]. The word at offset d of the page R6.hi |
-| $88+n | `STZ Rn,d` | 2 | 31 (R2: 30) | R2 ← R6.hi:d; [R2] ← Rn.hi; R2++; [R2] ← Rn.lo |
-| $C0+n | `ADDIW Rn,w` | 3 | 46 | Rn ← Rn + w (16 bits, w high byte first); ACC ← the result's high byte; carry ← carry out of bit 15 |
-| $C8+n | `SHL16 Rn` | 1 | 35 | Rn ← Rn << 1 (bit 0 ← 0); ACC ← the result's high byte; carry ← the old bit 15 |
+| $80+n | `LDZ Rn,d` | 2 | 28 | R2 ← R6.hi:d; Rn.hi ← [R2]; R2++; Rn.lo ← [R2]. The word at offset d of the page R6.hi |
+| $88+n | `STZ Rn,d` | 2 | 29 (R2: 28) | R2 ← R6.hi:d; [R2] ← Rn.hi; R2++; [R2] ← Rn.lo |
+| $C0+n | `ADDIW Rn,w` | 3 | 44 | Rn ← Rn + w (16 bits, w high byte first); ACC ← the result's high byte; carry ← carry out of bit 15 |
+| $C8+n | `SHL16 Rn` | 1 | 33 (R0: 32) | Rn ← Rn << 1 (bit 0 ← 0); ACC ← the result's high byte; carry ← the old bit 15 |
 
 - **The page register is R6**, and only its **high byte** counts: `MVIW R6,page` with a 256-byte-aligned `page`
   (y1cc: `MVIW R6,zpage`). `d` is a byte offset 0..255, so one page holds 128 words; the words are big-endian like
@@ -167,13 +169,13 @@ and 925 doublings 8 bytes.
 
 | Opcode | Mnemonic | Bytes | Steps | Description |
 |---|---|---|---|---|
-| $04 | `JSR addr` | 3 | 31 | push PC (hi at [R1], R1−−, lo at [R1], R1−−); PC ← addr |
-| $05 | `RET` | 1 | 20 | R1++; PC.lo ← [R1]; R1++; PC.hi ← [R1] |
-| $06 | `JSRUR Rn` | 2 | 32 | push PC (as `JSR`); PC ← Rn. Operand byte = n (low nibble) |
-| $07 | `PUSHR Rn` | 2 | 33 | [R1] ← Rn.hi; R1−−; [R1] ← Rn.lo; R1−−. Operand byte = n (low nibble) |
-| $08 | `POPR Rn` | 2 | 28 | R1++; Rn.lo ← [R1]; R1++; Rn.hi ← [R1]. Operand byte = n<<4 (high nibble) |
-| $09 | `PUSH` | 1 | 15 | [R1] ← ACC; R1−− |
-| $0A | `POP` | 1 | 13 | R1++; ACC ← [R1] |
+| $04 | `JSR addr` | 3 | 29 | push PC (hi at [R1], R1−−, lo at [R1], R1−−); PC ← addr |
+| $05 | `RET` | 1 | 18 | R1++; PC.lo ← [R1]; R1++; PC.hi ← [R1] |
+| $06 | `JSRUR Rn` | 2 | 30 | push PC (as `JSR`); PC ← Rn. Operand byte = n (low nibble) |
+| $07 | `PUSHR Rn` | 2 | 31 | [R1] ← Rn.hi; R1−−; [R1] ← Rn.lo; R1−−. Operand byte = n (low nibble) |
+| $08 | `POPR Rn` | 2 | 26 | R1++; Rn.lo ← [R1]; R1++; Rn.hi ← [R1]. Operand byte = n<<4 (high nibble) |
+| $09 | `PUSH` | 1 | 12 | [R1] ← ACC; R1−− |
+| $0A | `POP` | 1 | 11 | R1++; ACC ← [R1] |
 
 Notes:
 
@@ -207,24 +209,24 @@ card's `ALU0..2` (`CodeGen.h`: 0 DATA, 1 SUB, 2 AND, 3 OR, 4 XOR, 5 SHIFT, 6 ZER
 |---|---|---|---|---|---|
 | $B0 | `ADDI byte` | 2 | 12 | ACC ← ACC + byte | ← carry out |
 | $E2 | `ADDIC byte` | 2 | 12 | ACC ← ACC + byte + carry | ← carry out |
-| $B8 | `ADDT` | 1 | 11 | ACC ← ACC + TMP | ← carry out |
-| $E3 | `ADDTC` | 1 | 11 | ACC ← ACC + TMP + carry | ← carry out |
+| $B8 | `ADDT` | 1 | 10 | ACC ← ACC + TMP | ← carry out |
+| $E3 | `ADDTC` | 1 | 10 | ACC ← ACC + TMP + carry | ← carry out |
 | $B1 | `SUBI byte` | 2 | 12 | ACC ← ACC − byte | ← borrow (hardware only, see note) |
-| $B9 | `SUBT` | 1 | 11 | ACC ← ACC − TMP | ← borrow (hardware only) |
-| $B3 | `ANDI byte` | 2 | 12 | ACC ← ACC & byte | unchanged |
-| $BB | `ANDT` | 1 | 11 | ACC ← ACC & TMP | unchanged |
-| $B2 | `ORI byte` | 2 | 12 | ACC ← ACC \| byte | unchanged |
-| $BA | `ORT` | 1 | 11 | ACC ← ACC \| TMP | unchanged |
-| $B4 | `XORI byte` | 2 | 12 | ACC ← ACC ^ byte | unchanged |
-| $BC | `XORT` | 1 | 11 | ACC ← ACC ^ TMP | unchanged |
-| $B5 | `INVA` | 1 | 10 | ACC ← ~ACC (DATA function with `-AC-LD-INV`) | unchanged |
-| $B6 | `SHL` | 1 | 16 | ACC ← ACC << 1, bit 0 ← 0 | ← old bit 7 (hardware only) |
-| $B7 | `SHR` | 1 | 16 | ACC ← ACC >> 1, bit 7 ← 0 | ← old bit 0 (hardware only) |
-| $BD | `RSHL` | 1 | 15 | rotate left within 8 bits (bit 0 ← old bit 7) | ← old bit 7 (hardware only) |
-| $BE | `RSHR` | 1 | 16 | rotate right within 8 bits (bit 7 ← old bit 0) | ← old bit 0 (hardware only) |
-| $BF | `PSHR` | 1 | 16 | arithmetic shift right (bit 7 propagates) | ← old bit 0 (hardware only) |
-| $E0 | `CSHL` | 1 | 16 | rotate left through carry: bit 0 ← carry | ← old bit 7 |
-| $E1 | `CSHR` | 1 | 16 | rotate right through carry: bit 7 ← carry | ← old bit 0 |
+| $B9 | `SUBT` | 1 | 10 | ACC ← ACC − TMP | ← borrow (hardware only) |
+| $B3 | `ANDI byte` | 2 | 10 | ACC ← ACC & byte | unchanged |
+| $BB | `ANDT` | 1 | 8 | ACC ← ACC & TMP | unchanged |
+| $B2 | `ORI byte` | 2 | 10 | ACC ← ACC \| byte | unchanged |
+| $BA | `ORT` | 1 | 8 | ACC ← ACC \| TMP | unchanged |
+| $B4 | `XORI byte` | 2 | 10 | ACC ← ACC ^ byte | unchanged |
+| $BC | `XORT` | 1 | 8 | ACC ← ACC ^ TMP | unchanged |
+| $B5 | `INVA` | 1 | 7 | ACC ← ~ACC (DATA function with `-AC-LD-INV`) | unchanged |
+| $B6 | `SHL` | 1 | 13 | ACC ← ACC << 1, bit 0 ← 0 | ← old bit 7 (hardware only) |
+| $B7 | `SHR` | 1 | 13 | ACC ← ACC >> 1, bit 7 ← 0 | ← old bit 0 (hardware only) |
+| $BD | `RSHL` | 1 | 12 | rotate left within 8 bits (bit 0 ← old bit 7) | ← old bit 7 (hardware only) |
+| $BE | `RSHR` | 1 | 13 | rotate right within 8 bits (bit 7 ← old bit 0) | ← old bit 0 (hardware only) |
+| $BF | `PSHR` | 1 | 13 | arithmetic shift right (bit 7 propagates) | ← old bit 0 (hardware only) |
+| $E0 | `CSHL` | 1 | 13 | rotate left through carry: bit 0 ← carry | ← old bit 7 |
+| $E1 | `CSHR` | 1 | 13 | rotate right through carry: bit 7 ← carry | ← old bit 0 |
 
 Notes:
 
@@ -259,23 +261,23 @@ gated by that latch; `branch.c` `branch()`, review 1.1). There are no relative b
 
 | Opcode | Mnemonic | Bytes | Steps | Branches when | Condition source (ALU mux `CodeGen.h`) |
 |---|---|---|---|---|---|
-| $A0 | `BR addr` | 3 | 21 | always | `ALUBR` (D0 = VCC) |
-| $A1 | `BRZ addr` | 3 | 21 | ACC == 0 | `ALUZ` (D4: BDATA0..7 == 0 with `-AC-RD`) |
-| $A2 | `BRNZ addr` | 3 | 21 | ACC != 0 | `ALUZ` inverted |
-| $A3 | `BRINH addr` | 3 | 21 | the input-switch line is high | `ALUIN` (D5) |
-| $A4 | `BRINL addr` | 3 | 21 | the input-switch line is low | `ALUIN` inverted |
+| $A0 | `BR addr` | 3 | 19 | always | `ALUBR` (D0 = VCC) |
+| $A1 | `BRZ addr` | 3 | 19 | ACC == 0 | `ALUZ` (D4: BDATA0..7 == 0 with `-AC-RD`) |
+| $A2 | `BRNZ addr` | 3 | 19 | ACC != 0 | `ALUZ` inverted |
+| $A3 | `BRINH addr` | 3 | 19 | the input-switch line is high | `ALUIN` (D5) |
+| $A4 | `BRINL addr` | 3 | 19 | the input-switch line is low | `ALUIN` inverted |
 | $A5 | — (`BRNC` planned) | — | — | **no microcode** | |
-| $A6 | `BRC addr` | 3 | 21 | carry flip-flop set | `ALUCS` (D7) |
-| $A7 | `BRLT addr` | 3 | 21 | ACC < TMP (unsigned) | `ALULT` (D3: TMP > ACC) |
-| $A8 | `BREQ addr` | 3 | 21 | ACC == TMP | `ALUEQ` (D2) |
-| $A9 | `BRGT addr` | 3 | 21 | ACC > TMP (unsigned) | `ALUGT` (D1: TMP < ACC) |
-| $AA | `BRNEQ addr` | 3 | 21 | ACC != TMP | `ALUEQ` inverted |
-| $AB | `BR16Z addr` | 3 | 21 | **broken** (never branches on hardware, review H-3) | `ALU16Z` (D6) |
-| $AC | `BR16NZ addr` | 3 | 21 | **broken** (always branches on hardware, H-3) | `ALU16Z` inverted |
-| $AD | `BRUR Rn` | 2 | 20 | always: PC ← Rn. Operand byte = n (low nibble) | `ALUBR` |
+| $A6 | `BRC addr` | 3 | 19 | carry flip-flop set | `ALUCS` (D7) |
+| $A7 | `BRLT addr` | 3 | 19 | ACC < TMP (unsigned) | `ALULT` (D3: TMP > ACC) |
+| $A8 | `BREQ addr` | 3 | 19 | ACC == TMP | `ALUEQ` (D2) |
+| $A9 | `BRGT addr` | 3 | 19 | ACC > TMP (unsigned) | `ALUGT` (D1: TMP < ACC) |
+| $AA | `BRNEQ addr` | 3 | 19 | ACC != TMP | `ALUEQ` inverted |
+| $AB | `BR16Z addr` | 3 | 19 | **broken** (never branches on hardware, review H-3) | `ALU16Z` (D6) |
+| $AC | `BR16NZ addr` | 3 | 19 | **broken** (always branches on hardware, H-3) | `ALU16Z` inverted |
+| $AD | `BRUR Rn` | 2 | 18 | always: PC ← Rn. Operand byte = n (low nibble) | `ALUBR` |
 | $AE | — | — | — | **no microcode** | |
-| $AF | `BRDEV addr` | 3 | 21 | always on the hardware and on ucemu; **never on the interpreter** | `ALUBR` |
-| $D8+n | `BRVR Rn` | 1 | 22 (R0: 21) | always: PC ← the word at [Rn] (high byte first); Rn ← Rn+2 | `ALUBR` |
+| $AF | `BRDEV addr` | 3 | 19 | always on the hardware and on ucemu; **never on the interpreter** | `ALUBR` |
+| $D8+n | `BRVR Rn` | 1 | 19 | always: PC ← the word at [Rn] (high byte first); Rn ← Rn+2 | `ALUBR` |
 
 Notes:
 
@@ -320,11 +322,11 @@ Notes:
 
 | Opcode | Mnemonic | Bytes | Steps | Description |
 |---|---|---|---|---|
-| $60+p | `OUTA Pp` | 1 | 12 | port p ← ACC |
-| $70+p | `OUTI Pp,byte` | 2 | 14 (P0: 13) | port p ← byte (memory → port directly, ACC unchanged) |
-| $90+p | `INP Pp` | 1 | 12 | ACC ← port p |
-| $01 | `ON` | 1 | 8 | the OUT latch (ON/OFF LED) on |
-| $02 | `OFF` | 1 | 8 | OUT latch off |
+| $60+p | `OUTA Pp` | 1 | 9 | port p ← ACC |
+| $70+p | `OUTI Pp,byte` | 2 | 12 (P0: 11) | port p ← byte (memory → port directly, ACC unchanged) |
+| $90+p | `INP Pp` | 1 | 9 | ACC ← port p |
+| $01 | `ON` | 1 | 5 | the OUT latch (ON/OFF LED) on |
+| $02 | `OFF` | 1 | 5 | OUT latch off |
 
 Notes:
 
@@ -352,13 +354,13 @@ Notes:
 
 | Opcode | Mnemonic | Bytes | Steps | Description |
 |---|---|---|---|---|
-| $00 | (`START`) | — | 8 | the reset record: fetch + PC++ with `OUT-OFF`. Not an assembler mnemonic. Executed as an opcode it is a 1-byte NOP that clears the OUT LED (the interpreter reports it as a bad opcode) |
-| $03 | `HALT` | 1 | 8 | `SOFT-HALT` stops the clock; the front-panel CONT resumes in the reset step. The emulators exit here with `-x` |
-| $FB | `INTE` | 1 | 9 | enable interrupts (`INT-EN`) |
-| $FC | `INTD` | 1 | 9 | disable interrupts (`INT-START`) — also clears a pending interrupt (review M-6) |
-| $FE | `IADDR addr` | 3 | 16 | interrupt vector ← addr |
-| $FF | (`INT`) | — | 30 | forced by hardware when an interrupt is pending and enabled: `INT-START`, PC−1, push PC, PC ← vector. Not an assembler mnemonic |
-| $FD | `IRET` | 1 | 22 | pop PC as `RET`, then `INT-EN` |
+| $00 | (`START`) | — | 5 | the reset record: fetch + PC++ with `OUT-OFF`. Not an assembler mnemonic. Executed as an opcode it is a 1-byte NOP that clears the OUT LED (the interpreter reports it as a bad opcode) |
+| $03 | `HALT` | 1 | 5 | `SOFT-HALT` stops the clock; the front-panel CONT resumes in the reset step. The emulators exit here with `-x` |
+| $FB | `INTE` | 1 | 6 | enable interrupts (`INT-EN`) |
+| $FC | `INTD` | 1 | 6 | disable interrupts (`INT-START`) — also clears a pending interrupt (review M-6) |
+| $FE | `IADDR addr` | 3 | 14 | interrupt vector ← addr |
+| $FF | (`INT`) | — | 27 | forced by hardware when an interrupt is pending and enabled: `INT-START`, PC−1, push PC, PC ← vector. Not an assembler mnemonic |
+| $FD | `IRET` | 1 | 20 | pop PC as `RET`, then `INT-EN` |
 
 Notes:
 

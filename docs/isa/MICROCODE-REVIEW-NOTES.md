@@ -22,6 +22,11 @@ pushed $21CC; a taken BRZ landed on offset $00 and the monitor could not print a
 (`branch.c`); the regenerated `test.hex` runs the monitor, the compiler suite and `tests/ucemu/isa.asm` with 0 bus fights.
 The sequencer EEPROM was reloaded with it the same evening (`tools/ucode_send.py --all`). H-3 (BR16Z/NZ) stands; the emulator reproduces it too.
 
+**Status 2026-09-29 (later):** L-1 applied: the fetch prologue is three steps (`docs/system/MICROCODE.md` 5.6), which
+also removes M-1 from the fetch (372 increment steps with `-MEM-RD` on before, 116 left, all in operand fetches); the
+first body step gets the old release step only where it changes the register selection or counts (55 records). Not
+yet loaded.
+
 **Status 2026-09-29:** H-4 fixed in the generator: every record left all-zero ($A5, $AE, $F8-$FA once BRUR and the
 2026-09-24 instructions filled the rest) gets the HALT record (`docs/system/MICROCODE.md` 5.4); not yet loaded.
 
@@ -51,7 +56,8 @@ Sequencer-logic v2.1 (`hardware/cards/sequencer-logic/kicad/v2.1/reports/netlist
 - The IR feeds `CADDR6..13` through IC15. Because the IR changes ~50 ns into the `LD-INS-REG` step and the next pipeline
   latch reads ROM[new opcode, next step], **steps 0, 1 and 2 of every record are executed with the PREVIOUS opcode in the
   IR** (they come from the previous instruction's record), and the fetched opcode's own record takes over at step 3. The
-  generator makes steps 0..5 identical in all records (`startInstruction` + `loadNextInstruction`), which is why this works
+  generator makes steps 0..5 identical in all records (`startInstruction` + `loadNextInstruction`; since 2026-09-29 the
+  three-step prologue of L-1: LD-INS-REG in step 1, steps 0..2 identical, the new record from step 2), which is why this works
   and why record $00 (START) is the reset vector: RESET clears the IR (IC8/IC9 CLR) and the index registers.
 - Operand register: 74LS374 IC6, clocked by `OPERAND-CLK` (leading edge). With `-2-BYTE-OPERAND-SEL` asserted, IC5 drives
   `REG-RD-ID0..3` = operand bits 0..3 and `REG-LD-ID0..3` = operand bits 4..7 onto the bus instead of the pipeline's fields

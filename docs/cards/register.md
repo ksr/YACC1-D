@@ -158,7 +158,8 @@ MVARH and MVIW's first byte (DATA0..7 -> the high byte), JSR/PUSHR pushing PC.hi
 a same-card register-to-register move cannot swap (R3, a constraint, unused); reading with `-REG-RD-HI` and `-HL-SWAP` puts the
 high byte on DATA0..7 and leaves the low byte inside the card; and — the important one — **the transceivers open on the
 selects alone**: a step with `-REG-FUNC-RD` and a matching ID but no read strobe drives `ADATA` = the pull-ups = **$FFFF onto
-DATA0..15** through two 74*245 (M-1: every increment step in every fetch does this, 327 steps, overlapping `-MEM-RD`; H-1 was
+DATA0..15** through two 74*245 (M-1: every increment step in every fetch did this, 327 steps overlapping `-MEM-RD`; the
+three-step fetch prologue of 2026-09-29 took it out of the fetch, 116 operand-fetch steps are left; H-1 was
 this with PC.hi and SP through the swap path during PUSHR's stack writes).
 
 ### 3.4 Sheet 5 — the address-enable gate and the pull-ups
@@ -189,7 +190,7 @@ Findings and status on 2026-09-23:
 | Finding | On this card | Status |
 |---|---|---|
 | H-1 PUSHR (microcode) | the record left `-REG-FUNC-RD`, `-REG-RD-HI`/`-REG-RD-LO` and `-HL-SWAP` on after `-2-BYTE-OPERAND-SEL` was released, so this card drove PC.hi (swap path) and then SP (both lanes) onto DATA while TMP1 drove the byte to be written: the pushed word was corrupted (the emulator: PUSHR $ABCD pushed $21CC) | **fixed in the generator 2026-09-22**, verified on `software/ucemu`, EEPROM reloaded; bench check pending (`tests/ucemu/isa.asm` on the machine) |
-| M-1: $FFFF on the bus in every increment step | 3.3: `-REG-FUNC-RD` without a read strobe opens IC35/IC36 with ADATA = pull-ups; 327 steps overlap `-MEM-RD` (a sustained short between the memory card's 245 and these) | **open**, functionally harmless (nothing latches in those steps); the fix is in the microcode (release `-MEM-RD` before `-REG-UP`) |
+| M-1: $FFFF on the bus in every increment step | 3.3: `-REG-FUNC-RD` without a read strobe opens IC35/IC36 with ADATA = pull-ups; 327 steps overlap `-MEM-RD` (a sustained short between the memory card's 245 and these) | **partly fixed 2026-09-29** in the generator (not yet loaded): the fetch no longer does it (three-step prologue); 116 operand-fetch steps in 78 records still do; functionally harmless (nothing latches in those steps); the rest of the fix is the same (release `-MEM-RD` before `-REG-UP`) |
 | M-4: source register changed while its read strobe stays on (PUSHR 17->18, STR 21->22) | same-card 139 outputs switching: a few ns of overlap | symptom of H-1/M-1, not a card fault |
 | R2: count strobe = OR(select, strobe) counts a deselected register on an ID change | 3.2: if `-REG-UP` is low and the decoder deselects the register, the OR output rises and the register counts | **latent**: `incrementReg()` has no select-only set-up line; the review scanned all 218 records — no case today; the author's own comment at `main.c:202` flags it |
 | R1: CD4077 driven by LS levels, ~100 ns in the enable/direction path | 3.3: IC34 inputs `-RESET` and `-HL-SWAP` come from the sequencer (74HC parts on the built logic card: rail-to-rail, moot), `-RDSEL`/`-LDSEL` come from IC32 — which the photo shows as a **74LS139N** (the other two 139s are SN74HC139N): LS VOH 2.7 V minimum against the 4077's 3.5 V VIH | **open** (MED): works on these parts; a meter on IC34 pins 6, 12, 13 when inactive settles it (**To verify**) |
@@ -263,7 +264,8 @@ ends. **To verify:** the cap positions on both cards against this table (all thr
    or a stuck carry between chips (`N$11`, `N$13`, `N$15`).
 5. Reset does not clear the registers: `RESET` (IC34A output) must reach ~5 V when `-RESET` is low; if it sits at 2–3 V
    the 4077's threshold is the problem (R1).
-6. Bus fights: a mid-rail level on DATA0..7 during fetch step 4 (M-1) is expected; one during a register *load* is not
+6. Bus fights: a mid-rail level on DATA0..7 while an operand fetch increments the PC (M-1; in the fetch itself only with
+   microcode older than 2026-09-29, step 4) is expected; one during a register *load* is not
    — check `N$42`/`N$1` (IC34D/IC31C): both RDSEL and LDSEL on this card should close the transceivers.
 7. Two cards answering at once (both J-headers coded the same): every read gives an AND of two registers — check the cap
    positions.

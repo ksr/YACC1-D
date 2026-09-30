@@ -3,9 +3,9 @@
 ; the block checks, and the data field encoded and decoded.
 ;
 ; Why assembly: at 1 MHz the YACC1 runs ~30,000 instructions a second, and 38400 baud brings a character every 260 us.
-; The loop below takes 279 clocks a character when one is waiting, so with the 16C550's 16-byte receive FIFO switched
-; on (kermit.c does it) it falls behind by 7% and a burst of ~220 characters fits; a whole 96-character packet is
-; safe. The same loop compiled from C by y1cc took ~1,100 clocks a character: a burst of ~21 would have overflowed
+; The loop below takes 229 clocks a character when one is waiting (279 before the 2026-09-29 three-step fetch
+; prologue), so it keeps ahead of the line by 31 clocks a character; the 16C550's 16-byte receive FIFO, which kermit.c
+; switches on, is margin (with the six-step prologue it was needed: 7% behind, a burst of ~220 characters fitted). The same loop compiled from C by y1cc took ~1,100 clocks a character: a burst of ~21 would have overflowed
 ; the FIFO, and C-Kermit's first packet alone is ~26. The other routines are here for speed alone: with only krx and
 ; ktx in assembly kermit spent 398 instructions a received byte and 525 a sent one, most of them in the CRC and in
 ; E-Kermit's encode/decode loops as y1cc compiles them; with these, 118 and 132 (os/README.md "kermit").
@@ -41,11 +41,11 @@
 ; routine is not used here because it turns CR into LF and costs a JSR per character.
 ;
 ; Time: there is no timer, so a timeout is a count of polls. One pass of the wait loop (OUTI, INP, ANDI, BRNZ, DECR,
-; MVRLA, BRNZ) is 25+23+23+41+19+19+41 = 191 clocks (a record of N microcode steps is 2N - 1 clocks), every 256th
-; pass 60 more: 191.23 on average, so PPS = 5229 passes are one second at 1 MHz (the microcode emulator measures
-; 1,000,111 clocks: tests/kermit/run.py --calib). At another clock every timeout scales with it. The emulators poll
+; MVRLA, BRNZ) is 21+17+19+37+15+15+37 = 161 clocks (a record of N microcode steps is 2N - 1 clocks), every 256th
+; pass 52 more: 161.20 on average, so PPS = 6203 passes are one second at 1 MHz (the microcode emulator measures
+; 1,000,079 clocks: tests/kermit/run.py --calib). Before the 2026-09-29 three-step fetch prologue: 191.23, PPS 5229. At another clock every timeout scales with it. The emulators poll
 ; much faster than 1 MHz for the first 20,000 empty polls (~3.8 s of the machine's time) after any input or output,
-; then each poll waits up to 1 ms there (~5 times the machine's 191 us): a 2 s timeout passes at once, a 5 s one
+; then each poll waits up to 1 ms there (~6 times the machine's 161 us): a 2 s timeout passes at once, a 5 s one
 ; takes about 6 s.
 ;
 ; Registers (krx): R3 the result, R4 seconds, R5 the poll budget, R6 the count, R7 the buffer; ACC and TMP. Every
@@ -56,8 +56,8 @@
 
 U_RBR:  EQU 40H                 ; UARTCS | 0 << 3: RBR (read) / THR (write)
 U_LSR:  EQU 68H                 ; UARTCS | 5 << 3: line status
-PPS:    EQU 5229                ; wait-loop passes a second at 1 MHz (above)
-GAP:    EQU 10458               ; the budget for the rest of a packet once its SOH is in: ~2 s of waiting
+PPS:    EQU 6203                ; wait-loop passes a second at 1 MHz (above)
+GAP:    EQU 12406               ; the budget for the rest of a packet once its SOH is in: ~2 s of waiting
 
         ORG 0000H               ; (os/mkkio.py assembles it here and at 1000H)
         BR krx
@@ -135,7 +135,7 @@ lgot:   OUTI P0,U_RBR
         INCR R3                 ; the result: n + 1 bytes stored
         MVIW R6,0
         MVARL R6                ; n bytes to come
-body:   OUTI P0,U_LSR           ; 279 clocks a character when it is already there
+body:   OUTI P0,U_LSR           ; 229 clocks a character when it is already there
         INP  P1
         ANDI 1
         BRZ  bwait

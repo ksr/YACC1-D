@@ -193,6 +193,8 @@ def main():
         forms = asm_forms(); rows = []
         for op in sorted(names):
             if not any(recs.get(op, [])): rows.append((op, names[op], "", "", 0, None, "no microcode")); continue
+            if op != 0x03 and recs.get(op) == recs.get(0x03):       # 2026-09-29 (H-4): an undefined opcode gets HALT's record
+                rows.append((op, names[op], "", "", 0, None, "undefined: HALT's record")); continue
             steps, ok = render(op, out, sig, recs, names, forms)
             syn, nbytes = forms.get(names[op], ("", ""))
             rows.append((op, names[op], syn, nbytes, steps, names[op] + ".svg" if ok else None, "" if ok else "render failed"))
@@ -206,7 +208,7 @@ def main():
                     "| Opcode | Mnemonic | Operands | Bytes | Microcode steps | Diagram |\n|---|---|---|---|---|---|\n")
             for op, nm, syn, nb, steps, svg, note in rows:
                 f.write("| $%02X | %s | %s | %s | %s | %s |\n" % (op, nm, syn, nb, steps or "", ("[%s](%s)" % (svg, svg)) if svg else note))
-        done = sum(1 for r in rows if r[5]); print("\n%d opcodes: %d diagrams, %d without microcode, index %s" % (len(rows), done, sum(1 for r in rows if r[6] == "no microcode"), os.path.join(out, "README.md")))
+        done = sum(1 for r in rows if r[5]); print("\n%d opcodes: %d diagrams, %d without microcode, %d undefined (HALT's record), index %s" % (len(rows), done, sum(1 for r in rows if r[6] == "no microcode"), sum(1 for r in rows if r[6] == "undefined: HALT's record"), os.path.join(out, "README.md")))
         return
     for a in args:
         op = byname.get(a.upper(), None) if not a.lower().startswith("0x") else int(a, 16)

@@ -4,7 +4,9 @@
   1. differential send: a cache that differs from test.hex in a few records -> exactly those records reach the
      card, with the right bytes, and the cache ends up equal to test.hex (minus the '!' sentinel)
   2. --all send: all 256 records reach the card
-  3. --boot-check's dump comparison on the 2026-09-21 run-mode transcript against the tree's test.hex
+  3. --boot-check's dump comparison on the 2026-09-21 run-mode transcript against the five records it dumped, as the
+     tree generated them before the 2026-09-29 three-step fetch prologue (boot-2026-09-21-records.hex; the tree's
+     test.hex has since changed every record's prologue, so it cannot be the reference for a 2026-09-21 dump)
 """
 import os, sys, subprocess, tempfile, importlib.util
 
@@ -62,7 +64,8 @@ def main():
     # 3. boot transcript comparison
     spec = importlib.util.spec_from_file_location("ucode_send", SEND); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
     text = open(os.path.join(HERE, "boot-run-mode-2026-09-21-sequencer4.log"), encoding="latin1").read()
-    checked, bad = m.check_dumps(text, recs)
+    pinned = {int(l[3:5], 16): l for l in open(os.path.join(HERE, "boot-2026-09-21-records.hex")) if l.startswith("%")}
+    checked, bad = m.check_dumps(text, pinned)
     # that transcript predates the 2026-09-22 PUSHR fix (H-1), so instruction $07 differs and nothing else may
     other = [b for b in bad if not b.startswith("$07 ")]
     if checked != 5 * 64 or other or not bad: print("FAIL boot-check: %d lines, %d mismatches %s" % (checked, len(bad), (other or bad)[:3])); failed += 1

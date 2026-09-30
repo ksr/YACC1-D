@@ -5,789 +5,575 @@ the hardware model behind them is the one used for `docs/isa/` (pipeline registe
 memory writes happen while -MEM-WR is low, the address bus follows the register selected by ADDR-REG-ID).
 Register families are checked on every member (all 256 records that hold microcode).
 
-Totals by rule: L1 8, R2 3, S1 460
+Totals by rule: L1 8, R2 3, S1 259
 
 | Opcode | Mnemonic | Steps | Findings |
 |---|---|---|---|
-| $00 | START | 8 | S1 x2 |
-| $01 | ON | 8 | S1 x2 |
-| $02 | OFF | 8 | S1 x2 |
-| $03 | HALT | 8 | S1 x1 |
-| $04 | JSR | 31 | S1 x3 |
-| $05 | RET | 20 | S1 x3 |
-| $06 | JSRUR | 32 | S1 x2 |
-| $07 | PUSHR | 33 | S1 x8 |
-| $08 | POPR | 28 | S1 x4 |
-| $09 | PUSH | 15 | S1 x1 |
-| $0A | POP | 13 | S1 x2 |
-| $0B | MVAT | 10 | S1 x1 |
-| $0C | MVTA | 11 | S1 x1 |
-| $0D | LDTI | 11 | S1 x1 |
-| $0E | LDAI | 12 | S1 x1 |
-| $0F | MOVRR | 17 | R2 x3, S1 x3 |
-| $10 | MVIB | 12 | S1 x1 |
-| $11 | MVIB R1 | 12 | S1 x1 |
-| $12 | MVIB R2 | 12 | S1 x1 |
-| $13 | MVIB R3 | 12 | S1 x1 |
-| $14 | MVIB R4 | 12 | S1 x1 |
-| $15 | MVIB R5 | 12 | S1 x1 |
-| $16 | MVIB R6 | 12 | S1 x1 |
-| $17 | MVIB R7 | 12 | S1 x1 |
-| $18 | MVIW | 17 | S1 x1 |
-| $19 | MVIW R1 | 17 | S1 x1 |
-| $1A | MVIW R2 | 17 | S1 x1 |
-| $1B | MVIW R3 | 17 | S1 x1 |
-| $1C | MVIW R4 | 17 | S1 x1 |
-| $1D | MVIW R5 | 17 | S1 x1 |
-| $1E | MVIW R6 | 17 | S1 x1 |
-| $1F | MVIW R7 | 17 | S1 x1 |
-| $20 | MVRLA | 10 | S1 x1 |
-| $21 | MVRLA R1 | 10 | S1 x1 |
-| $22 | MVRLA R2 | 10 | S1 x1 |
-| $23 | MVRLA R3 | 10 | S1 x1 |
-| $24 | MVRLA R4 | 10 | S1 x1 |
-| $25 | MVRLA R5 | 10 | S1 x1 |
-| $26 | MVRLA R6 | 10 | S1 x1 |
-| $27 | MVRLA R7 | 10 | S1 x1 |
-| $28 | MVRHA | 10 | S1 x1 |
-| $29 | MVRHA R1 | 10 | S1 x1 |
-| $2A | MVRHA R2 | 10 | S1 x1 |
-| $2B | MVRHA R3 | 10 | S1 x1 |
-| $2C | MVRHA R4 | 10 | S1 x1 |
-| $2D | MVRHA R5 | 10 | S1 x1 |
-| $2E | MVRHA R6 | 10 | S1 x1 |
-| $2F | MVRHA R7 | 10 | S1 x1 |
-| $30 | MVARL | 12 | S1 x1 |
-| $31 | MVARL R1 | 12 | S1 x1 |
-| $32 | MVARL R2 | 12 | S1 x1 |
-| $33 | MVARL R3 | 12 | S1 x1 |
-| $34 | MVARL R4 | 12 | S1 x1 |
-| $35 | MVARL R5 | 12 | S1 x1 |
-| $36 | MVARL R6 | 12 | S1 x1 |
-| $37 | MVARL R7 | 12 | S1 x1 |
-| $38 | MVARH | 12 | S1 x1 |
-| $39 | MVARH R1 | 12 | S1 x1 |
-| $3A | MVARH R2 | 12 | S1 x1 |
-| $3B | MVARH R3 | 12 | S1 x1 |
-| $3C | MVARH R4 | 12 | S1 x1 |
-| $3D | MVARH R5 | 12 | S1 x1 |
-| $3E | MVARH R6 | 12 | S1 x1 |
-| $3F | MVARH R7 | 12 | S1 x1 |
-| $40 | LDAVR | 10 | S1 x1 |
-| $41 | LDAVR R1 | 11 | S1 x1 |
-| $42 | LDAVR R2 | 11 | S1 x1 |
-| $43 | LDAVR R3 | 11 | S1 x1 |
-| $44 | LDAVR R4 | 11 | S1 x1 |
-| $45 | LDAVR R5 | 11 | S1 x1 |
-| $46 | LDAVR R6 | 11 | S1 x1 |
-| $47 | LDAVR R7 | 11 | S1 x1 |
-| $48 | STAVR | 12 | S1 x1 |
-| $49 | STAVR R1 | 12 | S1 x1 |
-| $4A | STAVR R2 | 12 | S1 x1 |
-| $4B | STAVR R3 | 12 | S1 x1 |
-| $4C | STAVR R4 | 12 | S1 x1 |
-| $4D | STAVR R5 | 12 | S1 x1 |
-| $4E | STAVR R6 | 12 | S1 x1 |
-| $4F | STAVR R7 | 12 | S1 x1 |
-| $50 | INCR | 9 | S1 x2 |
-| $51 | INCR R1 | 9 | S1 x2 |
-| $52 | INCR R2 | 9 | S1 x2 |
-| $53 | INCR R3 | 9 | S1 x2 |
-| $54 | INCR R4 | 9 | S1 x2 |
-| $55 | INCR R5 | 9 | S1 x2 |
-| $56 | INCR R6 | 9 | S1 x2 |
-| $57 | INCR R7 | 9 | S1 x2 |
-| $58 | DECR | 10 | S1 x2 |
-| $59 | DECR R1 | 10 | S1 x2 |
-| $5A | DECR R2 | 10 | S1 x2 |
-| $5B | DECR R3 | 10 | S1 x2 |
-| $5C | DECR R4 | 10 | S1 x2 |
-| $5D | DECR R5 | 10 | S1 x2 |
-| $5E | DECR R6 | 10 | S1 x2 |
-| $5F | DECR R7 | 10 | S1 x2 |
-| $60 | OUTA | 12 | S1 x1 |
-| $61 | OP61 | 12 | S1 x1 |
-| $62 | OP62 | 12 | S1 x1 |
-| $63 | OP63 | 12 | S1 x1 |
-| $64 | OP64 | 12 | S1 x1 |
-| $65 | OP65 | 12 | S1 x1 |
-| $66 | OP66 | 12 | S1 x1 |
-| $67 | OP67 | 12 | S1 x1 |
-| $68 | OP68 | 12 | S1 x1 |
-| $69 | OP69 | 12 | S1 x1 |
-| $6A | OP6A | 12 | S1 x1 |
-| $6B | OP6B | 12 | S1 x1 |
-| $6C | OP6C | 12 | S1 x1 |
-| $6D | OP6D | 12 | S1 x1 |
-| $6E | OP6E | 12 | S1 x1 |
-| $6F | OP6F | 12 | S1 x1 |
-| $70 | OUTI | 13 | S1 x2 |
-| $71 | OP71 | 14 | S1 x2 |
-| $72 | OP72 | 14 | S1 x2 |
-| $73 | OP73 | 14 | S1 x2 |
-| $74 | OP74 | 14 | S1 x2 |
-| $75 | OP75 | 14 | S1 x2 |
-| $76 | OP76 | 14 | S1 x2 |
-| $77 | OP77 | 14 | S1 x2 |
-| $78 | OP78 | 14 | S1 x2 |
-| $79 | OP79 | 14 | S1 x2 |
-| $7A | OP7A | 14 | S1 x2 |
-| $7B | OP7B | 14 | S1 x2 |
-| $7C | OP7C | 14 | S1 x2 |
-| $7D | OP7D | 14 | S1 x2 |
-| $7E | OP7E | 14 | S1 x2 |
-| $7F | OP7F | 14 | S1 x2 |
-| $80 | LDZ | 30 | S1 x4 |
-| $81 | LDZ R1 | 30 | S1 x4 |
-| $82 | LDZ R2 | 30 | S1 x4 |
-| $83 | LDZ R3 | 30 | S1 x4 |
-| $84 | LDZ R4 | 30 | S1 x4 |
-| $85 | LDZ R5 | 30 | S1 x4 |
-| $86 | LDZ R6 | 30 | S1 x4 |
-| $87 | LDZ R7 | 30 | S1 x4 |
-| $88 | STZ | 31 | S1 x4 |
-| $89 | STZ R1 | 31 | S1 x4 |
-| $8A | STZ R2 | 30 | S1 x4 |
-| $8B | STZ R3 | 31 | S1 x4 |
-| $8C | STZ R4 | 31 | S1 x4 |
-| $8D | STZ R5 | 31 | S1 x4 |
-| $8E | STZ R6 | 31 | S1 x4 |
-| $8F | STZ R7 | 31 | S1 x4 |
-| $90 | INP | 12 | S1 x1 |
-| $91 | OP91 | 12 | S1 x1 |
-| $92 | OP92 | 12 | S1 x1 |
-| $93 | OP93 | 12 | S1 x1 |
-| $94 | OP94 | 12 | S1 x1 |
-| $95 | OP95 | 12 | S1 x1 |
-| $96 | OP96 | 12 | S1 x1 |
-| $97 | OP97 | 12 | S1 x1 |
-| $98 | OP98 | 12 | S1 x1 |
-| $99 | OP99 | 12 | S1 x1 |
-| $9A | OP9A | 12 | S1 x1 |
-| $9B | OP9B | 12 | S1 x1 |
-| $9C | OP9C | 12 | S1 x1 |
-| $9D | OP9D | 12 | S1 x1 |
-| $9E | OP9E | 12 | S1 x1 |
-| $9F | OP9F | 12 | S1 x1 |
-| $A0 | BR | 21 | S1 x2 |
-| $A1 | BRZ | 21 | S1 x2 |
-| $A2 | BRNZ | 21 | S1 x2 |
-| $A3 | BRINH | 21 | S1 x2 |
-| $A4 | BRINL | 21 | S1 x2 |
-| $A5 | BRNC | 8 | S1 x1 |
-| $A6 | BRC | 21 | S1 x2 |
-| $A7 | BRLT | 21 | S1 x2 |
-| $A8 | BREQ | 21 | S1 x2 |
-| $A9 | BRGT | 21 | S1 x2 |
-| $AA | BRNEQ | 21 | S1 x2 |
-| $AB | BR16Z | 21 | S1 x2 |
-| $AC | BR16NZ | 21 | S1 x2 |
-| $AD | BRUR | 20 | S1 x2 |
-| $AE | OPAE | 8 | S1 x1 |
-| $AF | BRDEV | 21 | S1 x2 |
-| $B0 | ADDI | 14 | S1 x1 |
-| $B1 | SUBI | 14 | S1 x1 |
-| $B2 | ORI | 12 | S1 x1 |
-| $B3 | ANDI | 12 | S1 x1 |
-| $B4 | XORI | 12 | S1 x1 |
-| $B5 | INVA | 10 | S1 x1 |
-| $B6 | SHL | 16 | L1 x1, S1 x1 |
-| $B7 | SHR | 16 | L1 x1, S1 x1 |
-| $B8 | ADDT | 13 | S1 x1 |
-| $B9 | SUBT | 13 | S1 x1 |
-| $BA | ORT | 11 | S1 x1 |
-| $BB | ANDT | 11 | S1 x1 |
-| $BC | XORT | 11 | S1 x1 |
-| $BD | RSHL | 15 | L1 x1, S1 x1 |
-| $BE | RSHR | 16 | L1 x1, S1 x1 |
-| $BF | PSHR | 16 | L1 x1, S1 x1 |
-| $C0 | ADDIW | 46 | S1 x3 |
-| $C1 | ADDIW R1 | 46 | S1 x3 |
-| $C2 | ADDIW R2 | 46 | S1 x3 |
-| $C3 | ADDIW R3 | 46 | S1 x3 |
-| $C4 | ADDIW R4 | 46 | S1 x3 |
-| $C5 | ADDIW R5 | 46 | S1 x3 |
-| $C6 | ADDIW R6 | 46 | S1 x3 |
-| $C7 | ADDIW R7 | 46 | S1 x3 |
-| $C8 | SHL16 | 35 | S1 x1 |
-| $C9 | SHL16 R1 | 35 | S1 x1 |
-| $CA | SHL16 R2 | 35 | S1 x1 |
-| $CB | SHL16 R3 | 35 | S1 x1 |
-| $CC | SHL16 R4 | 35 | S1 x1 |
-| $CD | SHL16 R5 | 35 | S1 x1 |
-| $CE | SHL16 R6 | 35 | S1 x1 |
-| $CF | SHL16 R7 | 35 | S1 x1 |
-| $D0 | LDIVR | 15 | S1 x3 |
-| $D1 | LDIVR R1 | 15 | S1 x3 |
-| $D2 | LDIVR R2 | 15 | S1 x3 |
-| $D3 | LDIVR R3 | 15 | S1 x3 |
-| $D4 | LDIVR R4 | 15 | S1 x3 |
-| $D5 | LDIVR R5 | 15 | S1 x3 |
-| $D6 | LDIVR R6 | 15 | S1 x3 |
-| $D7 | LDIVR R7 | 15 | S1 x3 |
-| $D8 | BRVR | 21 | S1 x2 |
-| $D9 | BRVR R1 | 22 | S1 x2 |
-| $DA | BRVR R2 | 22 | S1 x2 |
-| $DB | BRVR R3 | 22 | S1 x2 |
-| $DC | BRVR R4 | 22 | S1 x2 |
-| $DD | BRVR R5 | 22 | S1 x2 |
-| $DE | BRVR R6 | 22 | S1 x2 |
-| $DF | BRVR R7 | 22 | S1 x2 |
-| $E0 | CSHL | 16 | L1 x1, S1 x1 |
-| $E1 | CSHR | 16 | L1 x1, S1 x1 |
-| $E2 | ADDIC | 14 | S1 x1 |
-| $E3 | ADDTC | 13 | S1 x1 |
-| $E4 | LDA | 22 | S1 x3 |
-| $E5 | STA | 23 | S1 x3 |
-| $E6 | LDT | 21 | S1 x3 |
-| $E7 | STT | 22 | S1 x4 |
-| $E8 | STR | 32 | S1 x3 |
-| $E9 | STR R1 | 32 | S1 x3 |
-| $EA | STR R2 | 31 | S1 x3 |
-| $EB | STR R3 | 32 | S1 x3 |
-| $EC | STR R4 | 32 | S1 x3 |
-| $ED | STR R5 | 32 | S1 x3 |
-| $EE | STR R6 | 32 | S1 x3 |
-| $EF | STR R7 | 32 | S1 x3 |
-| $F0 | LDR | 30 | S1 x3 |
-| $F1 | LDR R1 | 30 | S1 x3 |
-| $F2 | LDR R2 | 30 | S1 x3 |
-| $F3 | LDR R3 | 30 | S1 x3 |
-| $F4 | LDR R4 | 30 | S1 x3 |
-| $F5 | LDR R5 | 30 | S1 x3 |
-| $F6 | LDR R6 | 30 | S1 x3 |
-| $F7 | LDR R7 | 30 | S1 x3 |
-| $F8 | OPF8 | 8 | S1 x1 |
-| $F9 | OPF9 | 8 | S1 x1 |
-| $FA | OPFA | 8 | S1 x1 |
-| $FB | INTE | 9 | S1 x2 |
-| $FC | INTD | 9 | S1 x2 |
-| $FD | IRET | 22 | S1 x3 |
-| $FE | IADDR | 16 | S1 x2 |
-| $FF | INT | 30 | L1 x1, S1 x4 |
+| $00 | START | 5 | S1 x1 |
+| $01 | ON | 5 | S1 x1 |
+| $02 | OFF | 5 | S1 x1 |
+| $03 | HALT | 5 | clean |
+| $04 | JSR | 29 | S1 x2 |
+| $05 | RET | 18 | S1 x3 |
+| $06 | JSRUR | 30 | S1 x1 |
+| $07 | PUSHR | 31 | S1 x7 |
+| $08 | POPR | 26 | S1 x3 |
+| $09 | PUSH | 12 | clean |
+| $0A | POP | 11 | S1 x2 |
+| $0B | MVAT | 7 | clean |
+| $0C | MVTA | 8 | clean |
+| $0D | LDTI | 9 | clean |
+| $0E | LDAI | 10 | clean |
+| $0F | MOVRR | 15 | R2 x3, S1 x2 |
+| $10 | MVIB | 10 | clean |
+| $11 | MVIB R1 | 10 | clean |
+| $12 | MVIB R2 | 10 | clean |
+| $13 | MVIB R3 | 10 | clean |
+| $14 | MVIB R4 | 10 | clean |
+| $15 | MVIB R5 | 10 | clean |
+| $16 | MVIB R6 | 10 | clean |
+| $17 | MVIB R7 | 10 | clean |
+| $18 | MVIW | 15 | clean |
+| $19 | MVIW R1 | 15 | clean |
+| $1A | MVIW R2 | 15 | clean |
+| $1B | MVIW R3 | 15 | clean |
+| $1C | MVIW R4 | 15 | clean |
+| $1D | MVIW R5 | 15 | clean |
+| $1E | MVIW R6 | 15 | clean |
+| $1F | MVIW R7 | 15 | clean |
+| $20 | MVRLA | 7 | clean |
+| $21 | MVRLA R1 | 8 | S1 x1 |
+| $22 | MVRLA R2 | 8 | S1 x1 |
+| $23 | MVRLA R3 | 8 | S1 x1 |
+| $24 | MVRLA R4 | 8 | S1 x1 |
+| $25 | MVRLA R5 | 8 | S1 x1 |
+| $26 | MVRLA R6 | 8 | S1 x1 |
+| $27 | MVRLA R7 | 8 | S1 x1 |
+| $28 | MVRHA | 7 | clean |
+| $29 | MVRHA R1 | 8 | S1 x1 |
+| $2A | MVRHA R2 | 8 | S1 x1 |
+| $2B | MVRHA R3 | 8 | S1 x1 |
+| $2C | MVRHA R4 | 8 | S1 x1 |
+| $2D | MVRHA R5 | 8 | S1 x1 |
+| $2E | MVRHA R6 | 8 | S1 x1 |
+| $2F | MVRHA R7 | 8 | S1 x1 |
+| $30 | MVARL | 9 | clean |
+| $31 | MVARL R1 | 9 | clean |
+| $32 | MVARL R2 | 9 | clean |
+| $33 | MVARL R3 | 9 | clean |
+| $34 | MVARL R4 | 9 | clean |
+| $35 | MVARL R5 | 9 | clean |
+| $36 | MVARL R6 | 9 | clean |
+| $37 | MVARL R7 | 9 | clean |
+| $38 | MVARH | 9 | clean |
+| $39 | MVARH R1 | 9 | clean |
+| $3A | MVARH R2 | 9 | clean |
+| $3B | MVARH R3 | 9 | clean |
+| $3C | MVARH R4 | 9 | clean |
+| $3D | MVARH R5 | 9 | clean |
+| $3E | MVARH R6 | 9 | clean |
+| $3F | MVARH R7 | 9 | clean |
+| $40 | LDAVR | 8 | clean |
+| $41 | LDAVR R1 | 8 | clean |
+| $42 | LDAVR R2 | 8 | clean |
+| $43 | LDAVR R3 | 8 | clean |
+| $44 | LDAVR R4 | 8 | clean |
+| $45 | LDAVR R5 | 8 | clean |
+| $46 | LDAVR R6 | 8 | clean |
+| $47 | LDAVR R7 | 8 | clean |
+| $48 | STAVR | 9 | clean |
+| $49 | STAVR R1 | 9 | clean |
+| $4A | STAVR R2 | 9 | clean |
+| $4B | STAVR R3 | 9 | clean |
+| $4C | STAVR R4 | 9 | clean |
+| $4D | STAVR R5 | 9 | clean |
+| $4E | STAVR R6 | 9 | clean |
+| $4F | STAVR R7 | 9 | clean |
+| $50 | INCR | 7 | S1 x2 |
+| $51 | INCR R1 | 7 | S1 x2 |
+| $52 | INCR R2 | 7 | S1 x2 |
+| $53 | INCR R3 | 7 | S1 x2 |
+| $54 | INCR R4 | 7 | S1 x2 |
+| $55 | INCR R5 | 7 | S1 x2 |
+| $56 | INCR R6 | 7 | S1 x2 |
+| $57 | INCR R7 | 7 | S1 x2 |
+| $58 | DECR | 7 | S1 x1 |
+| $59 | DECR R1 | 8 | S1 x2 |
+| $5A | DECR R2 | 8 | S1 x2 |
+| $5B | DECR R3 | 8 | S1 x2 |
+| $5C | DECR R4 | 8 | S1 x2 |
+| $5D | DECR R5 | 8 | S1 x2 |
+| $5E | DECR R6 | 8 | S1 x2 |
+| $5F | DECR R7 | 8 | S1 x2 |
+| $60 | OUTA | 9 | clean |
+| $61 | OP61 | 9 | clean |
+| $62 | OP62 | 9 | clean |
+| $63 | OP63 | 9 | clean |
+| $64 | OP64 | 9 | clean |
+| $65 | OP65 | 9 | clean |
+| $66 | OP66 | 9 | clean |
+| $67 | OP67 | 9 | clean |
+| $68 | OP68 | 9 | clean |
+| $69 | OP69 | 9 | clean |
+| $6A | OP6A | 9 | clean |
+| $6B | OP6B | 9 | clean |
+| $6C | OP6C | 9 | clean |
+| $6D | OP6D | 9 | clean |
+| $6E | OP6E | 9 | clean |
+| $6F | OP6F | 9 | clean |
+| $70 | OUTI | 11 | S1 x1 |
+| $71 | OP71 | 12 | S1 x1 |
+| $72 | OP72 | 12 | S1 x1 |
+| $73 | OP73 | 12 | S1 x1 |
+| $74 | OP74 | 12 | S1 x1 |
+| $75 | OP75 | 12 | S1 x1 |
+| $76 | OP76 | 12 | S1 x1 |
+| $77 | OP77 | 12 | S1 x1 |
+| $78 | OP78 | 12 | S1 x1 |
+| $79 | OP79 | 12 | S1 x1 |
+| $7A | OP7A | 12 | S1 x1 |
+| $7B | OP7B | 12 | S1 x1 |
+| $7C | OP7C | 12 | S1 x1 |
+| $7D | OP7D | 12 | S1 x1 |
+| $7E | OP7E | 12 | S1 x1 |
+| $7F | OP7F | 12 | S1 x1 |
+| $80 | LDZ | 28 | S1 x4 |
+| $81 | LDZ R1 | 28 | S1 x4 |
+| $82 | LDZ R2 | 28 | S1 x4 |
+| $83 | LDZ R3 | 28 | S1 x4 |
+| $84 | LDZ R4 | 28 | S1 x4 |
+| $85 | LDZ R5 | 28 | S1 x4 |
+| $86 | LDZ R6 | 28 | S1 x4 |
+| $87 | LDZ R7 | 28 | S1 x4 |
+| $88 | STZ | 29 | S1 x4 |
+| $89 | STZ R1 | 29 | S1 x4 |
+| $8A | STZ R2 | 28 | S1 x4 |
+| $8B | STZ R3 | 29 | S1 x4 |
+| $8C | STZ R4 | 29 | S1 x4 |
+| $8D | STZ R5 | 29 | S1 x4 |
+| $8E | STZ R6 | 29 | S1 x4 |
+| $8F | STZ R7 | 29 | S1 x4 |
+| $90 | INP | 9 | clean |
+| $91 | OP91 | 9 | clean |
+| $92 | OP92 | 9 | clean |
+| $93 | OP93 | 9 | clean |
+| $94 | OP94 | 9 | clean |
+| $95 | OP95 | 9 | clean |
+| $96 | OP96 | 9 | clean |
+| $97 | OP97 | 9 | clean |
+| $98 | OP98 | 9 | clean |
+| $99 | OP99 | 9 | clean |
+| $9A | OP9A | 9 | clean |
+| $9B | OP9B | 9 | clean |
+| $9C | OP9C | 9 | clean |
+| $9D | OP9D | 9 | clean |
+| $9E | OP9E | 9 | clean |
+| $9F | OP9F | 9 | clean |
+| $A0 | BR | 19 | S1 x1 |
+| $A1 | BRZ | 19 | S1 x1 |
+| $A2 | BRNZ | 19 | S1 x1 |
+| $A3 | BRINH | 19 | S1 x1 |
+| $A4 | BRINL | 19 | S1 x1 |
+| $A5 | BRNC | 5 | clean |
+| $A6 | BRC | 19 | S1 x1 |
+| $A7 | BRLT | 19 | S1 x1 |
+| $A8 | BREQ | 19 | S1 x1 |
+| $A9 | BRGT | 19 | S1 x1 |
+| $AA | BRNEQ | 19 | S1 x1 |
+| $AB | BR16Z | 19 | S1 x1 |
+| $AC | BR16NZ | 19 | S1 x1 |
+| $AD | BRUR | 18 | S1 x1 |
+| $AE | OPAE | 5 | clean |
+| $AF | BRDEV | 19 | S1 x1 |
+| $B0 | ADDI | 12 | clean |
+| $B1 | SUBI | 12 | clean |
+| $B2 | ORI | 10 | clean |
+| $B3 | ANDI | 10 | clean |
+| $B4 | XORI | 10 | clean |
+| $B5 | INVA | 7 | clean |
+| $B6 | SHL | 13 | L1 x1 |
+| $B7 | SHR | 13 | L1 x1 |
+| $B8 | ADDT | 10 | clean |
+| $B9 | SUBT | 10 | clean |
+| $BA | ORT | 8 | clean |
+| $BB | ANDT | 8 | clean |
+| $BC | XORT | 8 | clean |
+| $BD | RSHL | 12 | L1 x1 |
+| $BE | RSHR | 13 | L1 x1 |
+| $BF | PSHR | 13 | L1 x1 |
+| $C0 | ADDIW | 44 | S1 x2 |
+| $C1 | ADDIW R1 | 44 | S1 x2 |
+| $C2 | ADDIW R2 | 44 | S1 x2 |
+| $C3 | ADDIW R3 | 44 | S1 x2 |
+| $C4 | ADDIW R4 | 44 | S1 x2 |
+| $C5 | ADDIW R5 | 44 | S1 x2 |
+| $C6 | ADDIW R6 | 44 | S1 x2 |
+| $C7 | ADDIW R7 | 44 | S1 x2 |
+| $C8 | SHL16 | 32 | clean |
+| $C9 | SHL16 R1 | 33 | S1 x1 |
+| $CA | SHL16 R2 | 33 | S1 x1 |
+| $CB | SHL16 R3 | 33 | S1 x1 |
+| $CC | SHL16 R4 | 33 | S1 x1 |
+| $CD | SHL16 R5 | 33 | S1 x1 |
+| $CE | SHL16 R6 | 33 | S1 x1 |
+| $CF | SHL16 R7 | 33 | S1 x1 |
+| $D0 | LDIVR | 13 | S1 x2 |
+| $D1 | LDIVR R1 | 13 | S1 x2 |
+| $D2 | LDIVR R2 | 13 | S1 x2 |
+| $D3 | LDIVR R3 | 13 | S1 x2 |
+| $D4 | LDIVR R4 | 13 | S1 x2 |
+| $D5 | LDIVR R5 | 13 | S1 x2 |
+| $D6 | LDIVR R6 | 13 | S1 x2 |
+| $D7 | LDIVR R7 | 13 | S1 x2 |
+| $D8 | BRVR | 19 | S1 x1 |
+| $D9 | BRVR R1 | 19 | S1 x1 |
+| $DA | BRVR R2 | 19 | S1 x1 |
+| $DB | BRVR R3 | 19 | S1 x1 |
+| $DC | BRVR R4 | 19 | S1 x1 |
+| $DD | BRVR R5 | 19 | S1 x1 |
+| $DE | BRVR R6 | 19 | S1 x1 |
+| $DF | BRVR R7 | 19 | S1 x1 |
+| $E0 | CSHL | 13 | L1 x1 |
+| $E1 | CSHR | 13 | L1 x1 |
+| $E2 | ADDIC | 12 | clean |
+| $E3 | ADDTC | 10 | clean |
+| $E4 | LDA | 20 | S1 x2 |
+| $E5 | STA | 21 | S1 x2 |
+| $E6 | LDT | 19 | S1 x2 |
+| $E7 | STT | 20 | S1 x3 |
+| $E8 | STR | 30 | S1 x2 |
+| $E9 | STR R1 | 30 | S1 x2 |
+| $EA | STR R2 | 29 | S1 x2 |
+| $EB | STR R3 | 30 | S1 x2 |
+| $EC | STR R4 | 30 | S1 x2 |
+| $ED | STR R5 | 30 | S1 x2 |
+| $EE | STR R6 | 30 | S1 x2 |
+| $EF | STR R7 | 30 | S1 x2 |
+| $F0 | LDR | 28 | S1 x2 |
+| $F1 | LDR R1 | 28 | S1 x2 |
+| $F2 | LDR R2 | 28 | S1 x2 |
+| $F3 | LDR R3 | 28 | S1 x2 |
+| $F4 | LDR R4 | 28 | S1 x2 |
+| $F5 | LDR R5 | 28 | S1 x2 |
+| $F6 | LDR R6 | 28 | S1 x2 |
+| $F7 | LDR R7 | 28 | S1 x2 |
+| $F8 | OPF8 | 5 | clean |
+| $F9 | OPF9 | 5 | clean |
+| $FA | OPFA | 5 | clean |
+| $FB | INTE | 6 | S1 x1 |
+| $FC | INTD | 6 | S1 x1 |
+| $FD | IRET | 20 | S1 x3 |
+| $FE | IADDR | 14 | S1 x1 |
+| $FF | INT | 27 | L1 x1, S1 x3 |
 
 ## Details (idle steps S1 listed as counts only)
 
-### $00 START (8 steps)  idle steps: [0, 6]
+### $00 START (5 steps)  idle steps: [3]
 
-### $01 ON (8 steps)  idle steps: [0, 6]
+### $01 ON (5 steps)  idle steps: [3]
 
-### $02 OFF (8 steps)  idle steps: [0, 6]
+### $02 OFF (5 steps)  idle steps: [3]
 
-### $03 HALT (8 steps)  idle steps: [0]
+### $04 JSR (29 steps)  idle steps: [9, 23]
 
-### $04 JSR (31 steps)  idle steps: [0, 11, 25]
+### $05 RET (18 steps)  idle steps: [3, 5, 13]
 
-### $05 RET (20 steps)  idle steps: [0, 7, 15]
+### $06 JSRUR (30 steps)  idle steps: [25]
 
-### $06 JSRUR (32 steps)  idle steps: [0, 27]
+### $07 PUSHR (31 steps)  idle steps: [7, 11, 15, 18, 22, 26, 29]
 
-### $07 PUSHR (33 steps)  idle steps: [0, 9, 13, 17, 20, 24, 28, 31]
+### $08 POPR (26 steps)  idle steps: [6, 8, 10]
 
-### $08 POPR (28 steps)  idle steps: [0, 8, 10, 12]
+### $0A POP (11 steps)  idle steps: [3, 5]
 
-### $09 PUSH (15 steps)  idle steps: [0]
-
-### $0A POP (13 steps)  idle steps: [0, 7]
-
-### $0B MVAT (10 steps)  idle steps: [0]
-
-### $0C MVTA (11 steps)  idle steps: [0]
-
-### $0D LDTI (11 steps)  idle steps: [0]
-
-### $0E LDAI (12 steps)  idle steps: [0]
-
-### $0F MOVRR (17 steps)  idle steps: [0, 8, 10]
+### $0F MOVRR (15 steps)  idle steps: [6, 8]
+- R2 step 10: several data-bus drivers at once: ['-REG-RD-LO', '-REG-RD-HI']
+- R2 step 11: several data-bus drivers at once: ['-REG-RD-LO', '-REG-RD-HI']
 - R2 step 12: several data-bus drivers at once: ['-REG-RD-LO', '-REG-RD-HI']
-- R2 step 13: several data-bus drivers at once: ['-REG-RD-LO', '-REG-RD-HI']
-- R2 step 14: several data-bus drivers at once: ['-REG-RD-LO', '-REG-RD-HI']
 
-### $10 MVIB (12 steps)  idle steps: [0]
+### $21 MVRLA R1 (8 steps)  idle steps: [3]
 
-### $11 MVIB R1 (12 steps)  idle steps: [0]
+### $22 MVRLA R2 (8 steps)  idle steps: [3]
 
-### $12 MVIB R2 (12 steps)  idle steps: [0]
+### $23 MVRLA R3 (8 steps)  idle steps: [3]
 
-### $13 MVIB R3 (12 steps)  idle steps: [0]
+### $24 MVRLA R4 (8 steps)  idle steps: [3]
 
-### $14 MVIB R4 (12 steps)  idle steps: [0]
+### $25 MVRLA R5 (8 steps)  idle steps: [3]
 
-### $15 MVIB R5 (12 steps)  idle steps: [0]
+### $26 MVRLA R6 (8 steps)  idle steps: [3]
 
-### $16 MVIB R6 (12 steps)  idle steps: [0]
+### $27 MVRLA R7 (8 steps)  idle steps: [3]
 
-### $17 MVIB R7 (12 steps)  idle steps: [0]
+### $29 MVRHA R1 (8 steps)  idle steps: [3]
 
-### $18 MVIW (17 steps)  idle steps: [0]
+### $2A MVRHA R2 (8 steps)  idle steps: [3]
 
-### $19 MVIW R1 (17 steps)  idle steps: [0]
+### $2B MVRHA R3 (8 steps)  idle steps: [3]
 
-### $1A MVIW R2 (17 steps)  idle steps: [0]
+### $2C MVRHA R4 (8 steps)  idle steps: [3]
 
-### $1B MVIW R3 (17 steps)  idle steps: [0]
+### $2D MVRHA R5 (8 steps)  idle steps: [3]
 
-### $1C MVIW R4 (17 steps)  idle steps: [0]
+### $2E MVRHA R6 (8 steps)  idle steps: [3]
 
-### $1D MVIW R5 (17 steps)  idle steps: [0]
+### $2F MVRHA R7 (8 steps)  idle steps: [3]
 
-### $1E MVIW R6 (17 steps)  idle steps: [0]
+### $50 INCR (7 steps)  idle steps: [3, 5]
 
-### $1F MVIW R7 (17 steps)  idle steps: [0]
+### $51 INCR R1 (7 steps)  idle steps: [3, 5]
 
-### $20 MVRLA (10 steps)  idle steps: [0]
+### $52 INCR R2 (7 steps)  idle steps: [3, 5]
 
-### $21 MVRLA R1 (10 steps)  idle steps: [0]
+### $53 INCR R3 (7 steps)  idle steps: [3, 5]
 
-### $22 MVRLA R2 (10 steps)  idle steps: [0]
+### $54 INCR R4 (7 steps)  idle steps: [3, 5]
 
-### $23 MVRLA R3 (10 steps)  idle steps: [0]
+### $55 INCR R5 (7 steps)  idle steps: [3, 5]
 
-### $24 MVRLA R4 (10 steps)  idle steps: [0]
+### $56 INCR R6 (7 steps)  idle steps: [3, 5]
 
-### $25 MVRLA R5 (10 steps)  idle steps: [0]
+### $57 INCR R7 (7 steps)  idle steps: [3, 5]
 
-### $26 MVRLA R6 (10 steps)  idle steps: [0]
+### $58 DECR (7 steps)  idle steps: [5]
 
-### $27 MVRLA R7 (10 steps)  idle steps: [0]
+### $59 DECR R1 (8 steps)  idle steps: [3, 6]
 
-### $28 MVRHA (10 steps)  idle steps: [0]
+### $5A DECR R2 (8 steps)  idle steps: [3, 6]
 
-### $29 MVRHA R1 (10 steps)  idle steps: [0]
+### $5B DECR R3 (8 steps)  idle steps: [3, 6]
 
-### $2A MVRHA R2 (10 steps)  idle steps: [0]
+### $5C DECR R4 (8 steps)  idle steps: [3, 6]
 
-### $2B MVRHA R3 (10 steps)  idle steps: [0]
+### $5D DECR R5 (8 steps)  idle steps: [3, 6]
 
-### $2C MVRHA R4 (10 steps)  idle steps: [0]
+### $5E DECR R6 (8 steps)  idle steps: [3, 6]
 
-### $2D MVRHA R5 (10 steps)  idle steps: [0]
+### $5F DECR R7 (8 steps)  idle steps: [3, 6]
 
-### $2E MVRHA R6 (10 steps)  idle steps: [0]
+### $70 OUTI (11 steps)  idle steps: [9]
 
-### $2F MVRHA R7 (10 steps)  idle steps: [0]
+### $71 OP71 (12 steps)  idle steps: [10]
 
-### $30 MVARL (12 steps)  idle steps: [0]
+### $72 OP72 (12 steps)  idle steps: [10]
 
-### $31 MVARL R1 (12 steps)  idle steps: [0]
+### $73 OP73 (12 steps)  idle steps: [10]
 
-### $32 MVARL R2 (12 steps)  idle steps: [0]
+### $74 OP74 (12 steps)  idle steps: [10]
 
-### $33 MVARL R3 (12 steps)  idle steps: [0]
+### $75 OP75 (12 steps)  idle steps: [10]
 
-### $34 MVARL R4 (12 steps)  idle steps: [0]
+### $76 OP76 (12 steps)  idle steps: [10]
 
-### $35 MVARL R5 (12 steps)  idle steps: [0]
+### $77 OP77 (12 steps)  idle steps: [10]
 
-### $36 MVARL R6 (12 steps)  idle steps: [0]
+### $78 OP78 (12 steps)  idle steps: [10]
 
-### $37 MVARL R7 (12 steps)  idle steps: [0]
+### $79 OP79 (12 steps)  idle steps: [10]
 
-### $38 MVARH (12 steps)  idle steps: [0]
+### $7A OP7A (12 steps)  idle steps: [10]
 
-### $39 MVARH R1 (12 steps)  idle steps: [0]
+### $7B OP7B (12 steps)  idle steps: [10]
 
-### $3A MVARH R2 (12 steps)  idle steps: [0]
+### $7C OP7C (12 steps)  idle steps: [10]
 
-### $3B MVARH R3 (12 steps)  idle steps: [0]
+### $7D OP7D (12 steps)  idle steps: [10]
 
-### $3C MVARH R4 (12 steps)  idle steps: [0]
+### $7E OP7E (12 steps)  idle steps: [10]
 
-### $3D MVARH R5 (12 steps)  idle steps: [0]
+### $7F OP7F (12 steps)  idle steps: [10]
 
-### $3E MVARH R6 (12 steps)  idle steps: [0]
+### $80 LDZ (28 steps)  idle steps: [3, 7, 12, 14]
 
-### $3F MVARH R7 (12 steps)  idle steps: [0]
+### $81 LDZ R1 (28 steps)  idle steps: [3, 7, 12, 14]
 
-### $40 LDAVR (10 steps)  idle steps: [0]
+### $82 LDZ R2 (28 steps)  idle steps: [3, 7, 12, 14]
 
-### $41 LDAVR R1 (11 steps)  idle steps: [0]
+### $83 LDZ R3 (28 steps)  idle steps: [3, 7, 12, 14]
 
-### $42 LDAVR R2 (11 steps)  idle steps: [0]
+### $84 LDZ R4 (28 steps)  idle steps: [3, 7, 12, 14]
 
-### $43 LDAVR R3 (11 steps)  idle steps: [0]
+### $85 LDZ R5 (28 steps)  idle steps: [3, 7, 12, 14]
 
-### $44 LDAVR R4 (11 steps)  idle steps: [0]
+### $86 LDZ R6 (28 steps)  idle steps: [3, 7, 12, 14]
 
-### $45 LDAVR R5 (11 steps)  idle steps: [0]
+### $87 LDZ R7 (28 steps)  idle steps: [3, 7, 12, 14]
 
-### $46 LDAVR R6 (11 steps)  idle steps: [0]
+### $88 STZ (29 steps)  idle steps: [3, 7, 12, 14]
 
-### $47 LDAVR R7 (11 steps)  idle steps: [0]
+### $89 STZ R1 (29 steps)  idle steps: [3, 7, 12, 14]
 
-### $48 STAVR (12 steps)  idle steps: [0]
+### $8A STZ R2 (28 steps)  idle steps: [3, 7, 12, 14]
 
-### $49 STAVR R1 (12 steps)  idle steps: [0]
+### $8B STZ R3 (29 steps)  idle steps: [3, 7, 12, 14]
 
-### $4A STAVR R2 (12 steps)  idle steps: [0]
+### $8C STZ R4 (29 steps)  idle steps: [3, 7, 12, 14]
 
-### $4B STAVR R3 (12 steps)  idle steps: [0]
+### $8D STZ R5 (29 steps)  idle steps: [3, 7, 12, 14]
 
-### $4C STAVR R4 (12 steps)  idle steps: [0]
+### $8E STZ R6 (29 steps)  idle steps: [3, 7, 12, 14]
 
-### $4D STAVR R5 (12 steps)  idle steps: [0]
+### $8F STZ R7 (29 steps)  idle steps: [3, 7, 12, 14]
 
-### $4E STAVR R6 (12 steps)  idle steps: [0]
+### $A0 BR (19 steps)  idle steps: [10]
 
-### $4F STAVR R7 (12 steps)  idle steps: [0]
+### $A1 BRZ (19 steps)  idle steps: [10]
 
-### $50 INCR (9 steps)  idle steps: [0, 7]
+### $A2 BRNZ (19 steps)  idle steps: [10]
 
-### $51 INCR R1 (9 steps)  idle steps: [0, 7]
+### $A3 BRINH (19 steps)  idle steps: [10]
 
-### $52 INCR R2 (9 steps)  idle steps: [0, 7]
+### $A4 BRINL (19 steps)  idle steps: [10]
 
-### $53 INCR R3 (9 steps)  idle steps: [0, 7]
+### $A6 BRC (19 steps)  idle steps: [10]
 
-### $54 INCR R4 (9 steps)  idle steps: [0, 7]
+### $A7 BRLT (19 steps)  idle steps: [10]
 
-### $55 INCR R5 (9 steps)  idle steps: [0, 7]
+### $A8 BREQ (19 steps)  idle steps: [10]
 
-### $56 INCR R6 (9 steps)  idle steps: [0, 7]
+### $A9 BRGT (19 steps)  idle steps: [10]
 
-### $57 INCR R7 (9 steps)  idle steps: [0, 7]
+### $AA BRNEQ (19 steps)  idle steps: [10]
 
-### $58 DECR (10 steps)  idle steps: [0, 8]
+### $AB BR16Z (19 steps)  idle steps: [10]
 
-### $59 DECR R1 (10 steps)  idle steps: [0, 8]
+### $AC BR16NZ (19 steps)  idle steps: [10]
 
-### $5A DECR R2 (10 steps)  idle steps: [0, 8]
+### $AD BRUR (18 steps)  idle steps: [13]
 
-### $5B DECR R3 (10 steps)  idle steps: [0, 8]
+### $AF BRDEV (19 steps)  idle steps: [10]
 
-### $5C DECR R4 (10 steps)  idle steps: [0, 8]
+### $B6 SHL (13 steps)
+- L1 step 10: load ['-AC-LD'] with nothing driving the data bus
 
-### $5D DECR R5 (10 steps)  idle steps: [0, 8]
+### $B7 SHR (13 steps)
+- L1 step 10: load ['-AC-LD'] with nothing driving the data bus
 
-### $5E DECR R6 (10 steps)  idle steps: [0, 8]
+### $BD RSHL (12 steps)
+- L1 step 9: load ['-AC-LD'] with nothing driving the data bus
 
-### $5F DECR R7 (10 steps)  idle steps: [0, 8]
+### $BE RSHR (13 steps)
+- L1 step 10: load ['-AC-LD'] with nothing driving the data bus
 
-### $60 OUTA (12 steps)  idle steps: [0]
+### $BF PSHR (13 steps)
+- L1 step 10: load ['-AC-LD'] with nothing driving the data bus
 
-### $61 OP61 (12 steps)  idle steps: [0]
+### $C0 ADDIW (44 steps)  idle steps: [6, 8]
 
-### $62 OP62 (12 steps)  idle steps: [0]
+### $C1 ADDIW R1 (44 steps)  idle steps: [6, 8]
 
-### $63 OP63 (12 steps)  idle steps: [0]
+### $C2 ADDIW R2 (44 steps)  idle steps: [6, 8]
 
-### $64 OP64 (12 steps)  idle steps: [0]
+### $C3 ADDIW R3 (44 steps)  idle steps: [6, 8]
 
-### $65 OP65 (12 steps)  idle steps: [0]
+### $C4 ADDIW R4 (44 steps)  idle steps: [6, 8]
 
-### $66 OP66 (12 steps)  idle steps: [0]
+### $C5 ADDIW R5 (44 steps)  idle steps: [6, 8]
 
-### $67 OP67 (12 steps)  idle steps: [0]
+### $C6 ADDIW R6 (44 steps)  idle steps: [6, 8]
 
-### $68 OP68 (12 steps)  idle steps: [0]
+### $C7 ADDIW R7 (44 steps)  idle steps: [6, 8]
 
-### $69 OP69 (12 steps)  idle steps: [0]
+### $C9 SHL16 R1 (33 steps)  idle steps: [3]
 
-### $6A OP6A (12 steps)  idle steps: [0]
+### $CA SHL16 R2 (33 steps)  idle steps: [3]
 
-### $6B OP6B (12 steps)  idle steps: [0]
+### $CB SHL16 R3 (33 steps)  idle steps: [3]
 
-### $6C OP6C (12 steps)  idle steps: [0]
+### $CC SHL16 R4 (33 steps)  idle steps: [3]
 
-### $6D OP6D (12 steps)  idle steps: [0]
+### $CD SHL16 R5 (33 steps)  idle steps: [3]
 
-### $6E OP6E (12 steps)  idle steps: [0]
+### $CE SHL16 R6 (33 steps)  idle steps: [3]
 
-### $6F OP6F (12 steps)  idle steps: [0]
+### $CF SHL16 R7 (33 steps)  idle steps: [3]
 
-### $70 OUTI (13 steps)  idle steps: [0, 11]
+### $D0 LDIVR (13 steps)  idle steps: [9, 11]
 
-### $71 OP71 (14 steps)  idle steps: [0, 12]
+### $D1 LDIVR R1 (13 steps)  idle steps: [9, 11]
 
-### $72 OP72 (14 steps)  idle steps: [0, 12]
+### $D2 LDIVR R2 (13 steps)  idle steps: [9, 11]
 
-### $73 OP73 (14 steps)  idle steps: [0, 12]
+### $D3 LDIVR R3 (13 steps)  idle steps: [9, 11]
 
-### $74 OP74 (14 steps)  idle steps: [0, 12]
+### $D4 LDIVR R4 (13 steps)  idle steps: [9, 11]
 
-### $75 OP75 (14 steps)  idle steps: [0, 12]
+### $D5 LDIVR R5 (13 steps)  idle steps: [9, 11]
 
-### $76 OP76 (14 steps)  idle steps: [0, 12]
+### $D6 LDIVR R6 (13 steps)  idle steps: [9, 11]
 
-### $77 OP77 (14 steps)  idle steps: [0, 12]
+### $D7 LDIVR R7 (13 steps)  idle steps: [9, 11]
 
-### $78 OP78 (14 steps)  idle steps: [0, 12]
+### $D8 BRVR (19 steps)  idle steps: [10]
 
-### $79 OP79 (14 steps)  idle steps: [0, 12]
+### $D9 BRVR R1 (19 steps)  idle steps: [10]
 
-### $7A OP7A (14 steps)  idle steps: [0, 12]
+### $DA BRVR R2 (19 steps)  idle steps: [10]
 
-### $7B OP7B (14 steps)  idle steps: [0, 12]
+### $DB BRVR R3 (19 steps)  idle steps: [10]
 
-### $7C OP7C (14 steps)  idle steps: [0, 12]
+### $DC BRVR R4 (19 steps)  idle steps: [10]
 
-### $7D OP7D (14 steps)  idle steps: [0, 12]
+### $DD BRVR R5 (19 steps)  idle steps: [10]
 
-### $7E OP7E (14 steps)  idle steps: [0, 12]
+### $DE BRVR R6 (19 steps)  idle steps: [10]
 
-### $7F OP7F (14 steps)  idle steps: [0, 12]
+### $DF BRVR R7 (19 steps)  idle steps: [10]
 
-### $80 LDZ (30 steps)  idle steps: [0, 9, 14, 16]
+### $E0 CSHL (13 steps)
+- L1 step 10: load ['-AC-LD'] with nothing driving the data bus
 
-### $81 LDZ R1 (30 steps)  idle steps: [0, 9, 14, 16]
+### $E1 CSHR (13 steps)
+- L1 step 10: load ['-AC-LD'] with nothing driving the data bus
 
-### $82 LDZ R2 (30 steps)  idle steps: [0, 9, 14, 16]
+### $E4 LDA (20 steps)  idle steps: [12, 14]
 
-### $83 LDZ R3 (30 steps)  idle steps: [0, 9, 14, 16]
+### $E5 STA (21 steps)  idle steps: [12, 14]
 
-### $84 LDZ R4 (30 steps)  idle steps: [0, 9, 14, 16]
+### $E6 LDT (19 steps)  idle steps: [12, 14]
 
-### $85 LDZ R5 (30 steps)  idle steps: [0, 9, 14, 16]
+### $E7 STT (20 steps)  idle steps: [12, 14, 18]
 
-### $86 LDZ R6 (30 steps)  idle steps: [0, 9, 14, 16]
+### $E8 STR (30 steps)  idle steps: [13, 15]
 
-### $87 LDZ R7 (30 steps)  idle steps: [0, 9, 14, 16]
+### $E9 STR R1 (30 steps)  idle steps: [13, 15]
 
-### $88 STZ (31 steps)  idle steps: [0, 9, 14, 16]
+### $EA STR R2 (29 steps)  idle steps: [13, 15]
 
-### $89 STZ R1 (31 steps)  idle steps: [0, 9, 14, 16]
+### $EB STR R3 (30 steps)  idle steps: [13, 15]
 
-### $8A STZ R2 (30 steps)  idle steps: [0, 9, 14, 16]
+### $EC STR R4 (30 steps)  idle steps: [13, 15]
 
-### $8B STZ R3 (31 steps)  idle steps: [0, 9, 14, 16]
+### $ED STR R5 (30 steps)  idle steps: [13, 15]
 
-### $8C STZ R4 (31 steps)  idle steps: [0, 9, 14, 16]
+### $EE STR R6 (30 steps)  idle steps: [13, 15]
 
-### $8D STZ R5 (31 steps)  idle steps: [0, 9, 14, 16]
+### $EF STR R7 (30 steps)  idle steps: [13, 15]
 
-### $8E STZ R6 (31 steps)  idle steps: [0, 9, 14, 16]
+### $F0 LDR (28 steps)  idle steps: [12, 14]
 
-### $8F STZ R7 (31 steps)  idle steps: [0, 9, 14, 16]
+### $F1 LDR R1 (28 steps)  idle steps: [12, 14]
 
-### $90 INP (12 steps)  idle steps: [0]
+### $F2 LDR R2 (28 steps)  idle steps: [12, 14]
 
-### $91 OP91 (12 steps)  idle steps: [0]
+### $F3 LDR R3 (28 steps)  idle steps: [12, 14]
 
-### $92 OP92 (12 steps)  idle steps: [0]
+### $F4 LDR R4 (28 steps)  idle steps: [12, 14]
 
-### $93 OP93 (12 steps)  idle steps: [0]
+### $F5 LDR R5 (28 steps)  idle steps: [12, 14]
 
-### $94 OP94 (12 steps)  idle steps: [0]
+### $F6 LDR R6 (28 steps)  idle steps: [12, 14]
 
-### $95 OP95 (12 steps)  idle steps: [0]
+### $F7 LDR R7 (28 steps)  idle steps: [12, 14]
 
-### $96 OP96 (12 steps)  idle steps: [0]
+### $FB INTE (6 steps)  idle steps: [4]
 
-### $97 OP97 (12 steps)  idle steps: [0]
+### $FC INTD (6 steps)  idle steps: [4]
 
-### $98 OP98 (12 steps)  idle steps: [0]
+### $FD IRET (20 steps)  idle steps: [3, 5, 13]
 
-### $99 OP99 (12 steps)  idle steps: [0]
+### $FE IADDR (14 steps)  idle steps: [12]
 
-### $9A OP9A (12 steps)  idle steps: [0]
-
-### $9B OP9B (12 steps)  idle steps: [0]
-
-### $9C OP9C (12 steps)  idle steps: [0]
-
-### $9D OP9D (12 steps)  idle steps: [0]
-
-### $9E OP9E (12 steps)  idle steps: [0]
-
-### $9F OP9F (12 steps)  idle steps: [0]
-
-### $A0 BR (21 steps)  idle steps: [0, 12]
-
-### $A1 BRZ (21 steps)  idle steps: [0, 12]
-
-### $A2 BRNZ (21 steps)  idle steps: [0, 12]
-
-### $A3 BRINH (21 steps)  idle steps: [0, 12]
-
-### $A4 BRINL (21 steps)  idle steps: [0, 12]
-
-### $A5 BRNC (8 steps)  idle steps: [0]
-
-### $A6 BRC (21 steps)  idle steps: [0, 12]
-
-### $A7 BRLT (21 steps)  idle steps: [0, 12]
-
-### $A8 BREQ (21 steps)  idle steps: [0, 12]
-
-### $A9 BRGT (21 steps)  idle steps: [0, 12]
-
-### $AA BRNEQ (21 steps)  idle steps: [0, 12]
-
-### $AB BR16Z (21 steps)  idle steps: [0, 12]
-
-### $AC BR16NZ (21 steps)  idle steps: [0, 12]
-
-### $AD BRUR (20 steps)  idle steps: [0, 15]
-
-### $AE OPAE (8 steps)  idle steps: [0]
-
-### $AF BRDEV (21 steps)  idle steps: [0, 12]
-
-### $B0 ADDI (14 steps)  idle steps: [0]
-
-### $B1 SUBI (14 steps)  idle steps: [0]
-
-### $B2 ORI (12 steps)  idle steps: [0]
-
-### $B3 ANDI (12 steps)  idle steps: [0]
-
-### $B4 XORI (12 steps)  idle steps: [0]
-
-### $B5 INVA (10 steps)  idle steps: [0]
-
-### $B6 SHL (16 steps)  idle steps: [0]
-- L1 step 13: load ['-AC-LD'] with nothing driving the data bus
-
-### $B7 SHR (16 steps)  idle steps: [0]
-- L1 step 13: load ['-AC-LD'] with nothing driving the data bus
-
-### $B8 ADDT (13 steps)  idle steps: [0]
-
-### $B9 SUBT (13 steps)  idle steps: [0]
-
-### $BA ORT (11 steps)  idle steps: [0]
-
-### $BB ANDT (11 steps)  idle steps: [0]
-
-### $BC XORT (11 steps)  idle steps: [0]
-
-### $BD RSHL (15 steps)  idle steps: [0]
-- L1 step 12: load ['-AC-LD'] with nothing driving the data bus
-
-### $BE RSHR (16 steps)  idle steps: [0]
-- L1 step 13: load ['-AC-LD'] with nothing driving the data bus
-
-### $BF PSHR (16 steps)  idle steps: [0]
-- L1 step 13: load ['-AC-LD'] with nothing driving the data bus
-
-### $C0 ADDIW (46 steps)  idle steps: [0, 8, 10]
-
-### $C1 ADDIW R1 (46 steps)  idle steps: [0, 8, 10]
-
-### $C2 ADDIW R2 (46 steps)  idle steps: [0, 8, 10]
-
-### $C3 ADDIW R3 (46 steps)  idle steps: [0, 8, 10]
-
-### $C4 ADDIW R4 (46 steps)  idle steps: [0, 8, 10]
-
-### $C5 ADDIW R5 (46 steps)  idle steps: [0, 8, 10]
-
-### $C6 ADDIW R6 (46 steps)  idle steps: [0, 8, 10]
-
-### $C7 ADDIW R7 (46 steps)  idle steps: [0, 8, 10]
-
-### $C8 SHL16 (35 steps)  idle steps: [0]
-
-### $C9 SHL16 R1 (35 steps)  idle steps: [0]
-
-### $CA SHL16 R2 (35 steps)  idle steps: [0]
-
-### $CB SHL16 R3 (35 steps)  idle steps: [0]
-
-### $CC SHL16 R4 (35 steps)  idle steps: [0]
-
-### $CD SHL16 R5 (35 steps)  idle steps: [0]
-
-### $CE SHL16 R6 (35 steps)  idle steps: [0]
-
-### $CF SHL16 R7 (35 steps)  idle steps: [0]
-
-### $D0 LDIVR (15 steps)  idle steps: [0, 11, 13]
-
-### $D1 LDIVR R1 (15 steps)  idle steps: [0, 11, 13]
-
-### $D2 LDIVR R2 (15 steps)  idle steps: [0, 11, 13]
-
-### $D3 LDIVR R3 (15 steps)  idle steps: [0, 11, 13]
-
-### $D4 LDIVR R4 (15 steps)  idle steps: [0, 11, 13]
-
-### $D5 LDIVR R5 (15 steps)  idle steps: [0, 11, 13]
-
-### $D6 LDIVR R6 (15 steps)  idle steps: [0, 11, 13]
-
-### $D7 LDIVR R7 (15 steps)  idle steps: [0, 11, 13]
-
-### $D8 BRVR (21 steps)  idle steps: [0, 12]
-
-### $D9 BRVR R1 (22 steps)  idle steps: [0, 13]
-
-### $DA BRVR R2 (22 steps)  idle steps: [0, 13]
-
-### $DB BRVR R3 (22 steps)  idle steps: [0, 13]
-
-### $DC BRVR R4 (22 steps)  idle steps: [0, 13]
-
-### $DD BRVR R5 (22 steps)  idle steps: [0, 13]
-
-### $DE BRVR R6 (22 steps)  idle steps: [0, 13]
-
-### $DF BRVR R7 (22 steps)  idle steps: [0, 13]
-
-### $E0 CSHL (16 steps)  idle steps: [0]
-- L1 step 13: load ['-AC-LD'] with nothing driving the data bus
-
-### $E1 CSHR (16 steps)  idle steps: [0]
-- L1 step 13: load ['-AC-LD'] with nothing driving the data bus
-
-### $E2 ADDIC (14 steps)  idle steps: [0]
-
-### $E3 ADDTC (13 steps)  idle steps: [0]
-
-### $E4 LDA (22 steps)  idle steps: [0, 14, 16]
-
-### $E5 STA (23 steps)  idle steps: [0, 14, 16]
-
-### $E6 LDT (21 steps)  idle steps: [0, 14, 16]
-
-### $E7 STT (22 steps)  idle steps: [0, 14, 16, 20]
-
-### $E8 STR (32 steps)  idle steps: [0, 15, 17]
-
-### $E9 STR R1 (32 steps)  idle steps: [0, 15, 17]
-
-### $EA STR R2 (31 steps)  idle steps: [0, 15, 17]
-
-### $EB STR R3 (32 steps)  idle steps: [0, 15, 17]
-
-### $EC STR R4 (32 steps)  idle steps: [0, 15, 17]
-
-### $ED STR R5 (32 steps)  idle steps: [0, 15, 17]
-
-### $EE STR R6 (32 steps)  idle steps: [0, 15, 17]
-
-### $EF STR R7 (32 steps)  idle steps: [0, 15, 17]
-
-### $F0 LDR (30 steps)  idle steps: [0, 14, 16]
-
-### $F1 LDR R1 (30 steps)  idle steps: [0, 14, 16]
-
-### $F2 LDR R2 (30 steps)  idle steps: [0, 14, 16]
-
-### $F3 LDR R3 (30 steps)  idle steps: [0, 14, 16]
-
-### $F4 LDR R4 (30 steps)  idle steps: [0, 14, 16]
-
-### $F5 LDR R5 (30 steps)  idle steps: [0, 14, 16]
-
-### $F6 LDR R6 (30 steps)  idle steps: [0, 14, 16]
-
-### $F7 LDR R7 (30 steps)  idle steps: [0, 14, 16]
-
-### $F8 OPF8 (8 steps)  idle steps: [0]
-
-### $F9 OPF9 (8 steps)  idle steps: [0]
-
-### $FA OPFA (8 steps)  idle steps: [0]
-
-### $FB INTE (9 steps)  idle steps: [0, 7]
-
-### $FC INTD (9 steps)  idle steps: [0, 7]
-
-### $FD IRET (22 steps)  idle steps: [0, 7, 15]
-
-### $FE IADDR (16 steps)  idle steps: [0, 14]
-
-### $FF INT (30 steps)  idle steps: [0, 7, 10, 24]
-- L1 step 27: load ['REG-LD-LO', 'REG-LD-HI'] with nothing driving the data bus
+### $FF INT (27 steps)  idle steps: [4, 7, 21]
+- L1 step 24: load ['REG-LD-LO', 'REG-LD-HI'] with nothing driving the data bus
 

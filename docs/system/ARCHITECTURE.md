@@ -339,25 +339,27 @@ the reset step (`y1ucemu.c` `nclocks`).
 ### 5.3 The instruction register latches early, so three steps belong to the previous opcode
 
 The IR clocks on `LD-INS-REG AND RUN` at the **leading** edge of `LD-INS-REG`, i.e. ~50 ns into the step that asserts
-it. The next pipeline latch already reads `ROM[new opcode, next step]`. So steps 0, 1 and 2 of every record execute
-with the *previous* opcode's record, and the fetched opcode's own record takes over at step 3. It works because the
-generator writes the same six-step prologue into every record (`main.c` `startInstruction()` + `loadNextInstruction()`):
+it. The next pipeline latch already reads `ROM[new opcode, next step]`. So steps 0 and 1 of every record execute
+with the *previous* opcode's record, and the fetched opcode's own record takes over at step 2. It works because the
+generator writes the same three-step prologue into every record (`main.c` `startInstruction()` +
+`loadNextInstruction()`; since 2026-09-29, `docs/system/MICROCODE.md` 5.6):
 
 | Step | Signals (`docs/isa/steps.txt`, any opcode) | What happens |
 |---|---|---|
-| 0 | `-VMA`, ADDR-REG-ID = 0 | idle (the record's "common word"; instruction $00 adds OUT-OFF) |
-| 1 | `-MEM-RD` | memory at [PC] onto DATA0..7 |
-| 2 | `-MEM-RD`, `LD-INS-REG` | IR ← DATA0..7 (leading edge: the value of step 1) |
-| 3 | `-MEM-RD` | hold; the new record is now being read |
-| 4 | `-REG-FUNC-RD`, `-REG-UP`, `-MEM-RD` | PC++ (count at the trailing edge); M-1 weak drive against memory |
-| 5 | `-MEM-RD` | hold |
+| 0 | `-MEM-RD`, ADDR-REG-ID = 0 | memory at [PC] onto DATA0..7 (three clocks: it follows the one-clock reset step; instruction $00 adds OUT-OFF) |
+| 1 | `-MEM-RD`, `LD-INS-REG` | IR ← DATA0..7 (leading edge: the value of step 0); the read holds through the step |
+| 2 | `-REG-FUNC-RD`, `-REG-UP` | PC++ (count when `-REG-UP` rises); memory no longer drives, so no M-1 overlap |
+| (3) | release | only in the 55 records whose first body step selects another register or counts |
+
+Until 2026-09-29 the prologue was six steps: 0 idle, 1 `-MEM-RD`, 2 + `LD-INS-REG` (the new record took over at step
+3), 3 hold, 4 PC++ with `-MEM-RD` still on (M-1), 5 hold. Steps 3 and 5 held nothing (review L-1).
 
 The IR's D inputs come from IC2 (DATA0..7) while `DO-INT` is low or from IC1 (all VCC = $FF) while it is high: that is
 how an interrupt substitutes opcode $FF (section 9). RESET clears the IR, so record $00 (START) is the reset vector:
 its body is just this prologue with OUT-OFF, i.e. "fetch from PC = 0 and go" (`main.c` `startInstruction(0)`).
 
-Review L-1 shows the prologue could be three steps (the IR has its data at the leading edge of step 2, so steps 3 and 5
-hold nothing), worth ~22 % of all executed steps; that change has not been made.
+The three-step prologue (review L-1) made every instruction 2-3 steps shorter: 1,434 -> 1,226 steps over the 85
+opcodes, ~18 % fewer clocks in compiled code on the microcode emulator.
 
 ### 5.4 Operand register, two-byte opcodes, branch and interrupt registers
 
@@ -606,6 +608,9 @@ long rather than two (M-8). Note how nothing depends on the ALU "finishing": the
 the whole set-up is one step (two clock periods) before the latch.
 
 ### OUTA P1 ($61, 12 steps, `io.c` "OUT ACCUM")
+
+(As generated with the six-step prologue; since 2026-09-29 the prologue is steps 0-2 and the body below starts at step
+3: 9 steps.)
 
 | Step | Word (besides `-VMA`, ADDR-REG-ID = 0) | On the bus / in the latches |
 |---|---|---|

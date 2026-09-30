@@ -59,6 +59,6 @@
   empty file, a name to clean; block checks 1-2, 8th-bit prefixing, text mode, `-n`, `-a`; damaged, missing and
   unanswered packets both ways, three Ctrl-Cs; the server's SEND/GET/FINISH. Files compared on the host and on the
   disk image (`p8xfs.py get`, fsck); the throughput from the instruction-level emulator's PC histogram; `--calib`
-  checks `os/kermit_io.asm`'s timing on the microcode emulator (a timeout second = 1,000,111 clocks, 279 clocks a
-  received character). In `make check` (~2.5 minutes).
+  checks `os/kermit_io.asm`'s timing on the microcode emulator (a timeout second = 1,000,079 clocks, 229 clocks a
+  received character, since the 2026-09-29 three-step fetch prologue). In `make check` (~2.5 minutes).
 - Hardware findings of 2026-09 (memory-card block map, EPROM identity, video-card write-through) are in the card READMEs.

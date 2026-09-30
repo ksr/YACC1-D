@@ -233,10 +233,11 @@ story from the machine's side. The points a microcode author needs:
    clock long (every strobe in it is half length, M-7) and the next record's step 0 is three clocks long (M-8, a
    ~50 ns race that works with LS parts). The generator always makes the reset step a pure hold step
    (`endInstruction()` writes the current line, then the same line plus the reset bit).
-3. **The IR latches at the leading edge of `LD-INS-REG`** (step 2 of the prologue), so steps 0..2 of the record that
-   is nominally running come from the previous opcode's record, and the new record takes over at step 3. Hence the
-   rule the generator enforces by construction: **steps 0..5 are identical in every record** (`startInstruction()` +
-   `loadNextInstruction()`), and any redesign of the prologue must keep at least the first two steps common (L-1).
+3. **The IR latches at the leading edge of `LD-INS-REG`** (step 1 of the prologue since 2026-09-29, step 2 before),
+   so the steps up to and including that one come from the previous opcode's record, and the new record takes over at
+   the next step (2; it was 3). Hence the rule the generator enforces by construction: **steps 0..2 are identical in
+   every record** (`startInstruction()` + `loadNextInstruction()`; with the six-step prologue it was steps 0..5),
+   checked by `tests/ucemu/prologue.py`. Section 5.6 has the prologue step by step.
 4. **The two-byte operand path**: `OPERAND-CLK` latches the byte after the opcode; while `-2-BYTE-OPERAND-SEL` is
    asserted IC5 puts `operand[3:0]` on `REG-RD-ID` and `operand[7:4]` on `REG-LD-ID` instead of the pipeline's IC4
    (`y1ucemu.c` `compute()`: `if (on(w, s_two_byte)) { rd_id = operand & 0x0F; ld_id = operand >> 4; }`). MOVRR,
@@ -377,33 +378,90 @@ one-byte NOP) or with `SOFT-HALT`; the halt was chosen so a stray fetch is seen,
 
 ### 5.5 Record lengths
 
-From `docs/isa/README.md` (steps per record after the 2026-09-22 regeneration; families are one row):
+Steps per record since the three-step fetch prologue of 2026-09-29, with the six-step count in brackets (families as
+their R0 member; `docs/isa/README.md` has the diagrams; the undefined opcodes are HALT's record, section 5.4):
 
-| Steps | Opcodes |
+| Steps | Opcodes (steps with the six-step prologue) |
 |---|---|
-| 8 | START, ON, OFF, HALT |
-| 9 | INCR, INTE, INTD |
-| 10 | DECR, MVAT, MVRLA, MVRHA, INVA |
-| 11 | MVTA, LDTI, LDAVR, ADDT, SUBT, ORT, ANDT, XORT, ADDTC |
-| 12 | LDAI, MVIB, MVARL, MVARH, STAVR, OUTA, INP, ADDI, SUBI, ORI, ANDI, XORI, ADDIC |
-| 13 | OUTI, POP |
-| 15 | PUSH, LDIVR, RSHL |
-| 16 | SHL, SHR, RSHR, PSHR, CSHL, CSHR, IADDR |
-| 17 | MOVRR, MVIW |
-| 20 | RET, **BRUR** |
-| 21 | BR, BRZ, BRNZ, BRINH, BRINL, BRC, BRLT, BREQ, BRGT, BRNEQ, BR16Z, BR16NZ, BRDEV, LDT |
-| 22 | BRVR, LDA, STT, IRET |
-| 23 | STA |
-| 28 | POPR |
-| 30 | LDR, INT, **LDZ** (2026-09-24) |
-| 31 | JSR, STR, **STZ** (STZ R2: 30) |
-| 35 | **SHL16** (2026-09-24) |
-| 46 | **ADDIW** (2026-09-24) |
-| 32 | JSRUR |
-| 33 | PUSHR |
+| 5 | START (8), ON (8), OFF (8), HALT (8), BRNC (8), OPCODE_AE (8), OPCODE_F8 (8), OPCODE_F9 (8), OPCODE_FA (8) |
+| 6 | INTE (9), INTD (9) |
+| 7 | MVAT (10), MVRLA (10), MVRHA (10), INCR (9), DECR (10), INVA (10) |
+| 8 | MVTA (11), LDAVR (10), ORT (11), ANDT (11), XORT (11) |
+| 9 | LDTI (11), MVARL (12), MVARH (12), STAVR (12), OUTA (12), INP (12) |
+| 10 | LDAI (12), MVIB (12), ORI (12), ANDI (12), XORI (12), ADDT (13), SUBT (13), ADDTC (13) |
+| 11 | POP (13), OUTI (13) |
+| 12 | PUSH (15), ADDI (14), SUBI (14), RSHL (15), ADDIC (14) |
+| 13 | SHL (16), SHR (16), RSHR (16), PSHR (16), LDIVR (15), CSHL (16), CSHR (16) |
+| 14 | IADDR (16) |
+| 15 | MOVRR (17), MVIW (17) |
+| 18 | RET (20), BRUR (20) |
+| 19 | BR (21), BRZ (21), BRNZ (21), BRINH (21), BRINL (21), BRC (21), BRLT (21), BREQ (21), BRGT (21), BRNEQ (21), BR16Z (21), BR16NZ (21), BRDEV (21), BRVR (21), LDT (21) |
+| 20 | LDA (22), STT (22), IRET (22) |
+| 21 | STA (23) |
+| 26 | POPR (28) |
+| 27 | INT (30) |
+| 28 | LDZ (30), LDR (30) |
+| 29 | JSR (31), STZ (31) |
+| 30 | JSRUR (32), STR (32) |
+| 31 | PUSHR (33) |
+| 32 | SHL16 (35) |
+| 44 | ADDIW (46) |
+
+Summed over the 85 opcodes of `software/opcodes.h`: 1,434 steps before, 1,226 after. A record of N steps takes 2N - 1
+clocks (the reset step is one clock, M-7), so an instruction is 4-6 clocks shorter: `tests/ucemu/run.py`'s `xisa`
+program ran in 2,157,017 clocks against 2,621,365 (-17.7 %), `os/kermit_io.asm`'s wait loop in 161 against 191.
 
 Review section 5 estimates ~30 % of executed steps removable (22 % from the six-step prologue alone) and gives a
-per-opcode "achievable" column; none of it has been applied.
+per-opcode "achievable" column. Applied so far: the three-step prologue (L-1, section 5.6). Still open: the idle
+steps elsewhere (`ucode_review.py` S1, 259 left), `-IO-ADDR-LD` (L-2), and M-1 in the operand fetches (below).
+
+### 5.6 The fetch prologue (three steps since 2026-09-29)
+
+Every record starts with the fetch of the next opcode (`loadNextInstruction()`). Until 2026-09-29 it took six steps:
+0 idle, 1 `-MEM-RD`, 2 + `LD-INS-REG`, 3 `-MEM-RD` hold, 4 PC++ with `-MEM-RD` still on, 5 release with `-MEM-RD`.
+Steps 3 and 5 did nothing a latch needed, and step 4 had the memory card's LS245 driving the opcode against the
+register card's LS245s driving $FFFF (`-REG-FUNC-RD` without a read strobe) - review M-1, in every instruction. The
+review's L-1 proposed three steps, and that is what the generator writes now:
+
+| Step | Signals | Why |
+|---|---|---|
+| 0 | `-MEM-RD`, ADDR = PC | the opcode on the bus; step 0 is three clocks long (it follows the one-clock reset step) |
+| 1 | `-MEM-RD`, `LD-INS-REG` | the IR takes, at this step's **leading** edge, what step 0 left on the bus; `-MEM-RD` stays on through the step as hold time |
+| 2 | `-REG-FUNC-RD`, `-REG-UP`, RD-ID = PC | PC++ when `-REG-UP` rises at the end of the step; no `-MEM-RD`: the register card's $FFFF drives alone (no M-1) |
+| (3) | release: step 2 without `-REG-UP`/`-REG-FUNC-RD` | only in 55 records, below |
+
+Why it is safe:
+- **Records change hands at step 2.** The IR changes early in step 1, so the words of steps 0 and 1 are read from the
+  previous opcode's record and the new record's from step 2 (section 4, rule 3). All three steps are the same in every
+  record (START, $00, also has `OUT-OFF` in every step, as always: a flip-flop set, harmless a step late).
+- **Memory time** is unchanged where it matters: the address has been on the bus since the previous record (the
+  `-VMA` hack keeps ADDR-REG-ID = PC driven; after a taken branch the PC was loaded at least 2.5 steps before the IR's
+  edge), and `-MEM-RD` is on for the three clocks of step 0 before the edge.
+- **The count edge.** A 74LS192 counts when (select OR `-REG-UP`) rises (section 1.2 of the review notes). The old
+  release step dropped `-REG-UP` and `-REG-FUNC-RD` together with the selection unchanged. Now the record's first body
+  step follows step 2 directly, which is the same thing as long as that step keeps REG-RD-ID = PC and asserts no
+  `-REG-UP`, `-REG-DN` or `-2-BYTE-OPERAND-SEL`; otherwise the register selection could change while `-REG-UP` is
+  still low, and a decoder glitch would count another register. `writeCurrentLine()` checks the first body line and,
+  for the 55 records where it does not qualify (a first body step that selects another register or counts: MVRLA/MVRHA
+  and INCR/DECR of R1-R7, INCR R0, RET/POP/IRET's `SP++`, LDZ/STZ's read of R6, SHL16), writes the old release step in
+  front of it (`releaseIfNeeded()` in `main.c`).
+- **No latch reads the prologue's bus.** In the six-step prologue, step 5 was a read at the new PC, and a body whose
+  first line was also "`-MEM-RD` at PC" merged into it (the generator drops a line equal to the one before). Every
+  body sets up its own read now; `tests/ucemu/prologue.py` checks that no first body line holds a leading-edge latch.
+  That lost merge is why 153 records save two steps rather than three.
+
+**Checked** on the microcode emulator (`software/ucemu`, which applies the leading/trailing-edge model of section 4):
+the compiler suite and `--xisa` (23/23 each), the emulated bench (`isa`'s byte stream), romcount, romdiag, video,
+monload, cfcard and kermit (timeouts recalibrated: `os/kermit_io.asm` PPS 5229 -> 6203), with 0 bus fights wherever
+the run counts them; the OS sessions (32/32 on both emulators), the native tool chain and the disassembler pass too, and
+`make check` is green. The self-host's estimate at 1 MHz went from 31 h 45 min to 26 h 51 min for both stages (27.4
+clocks an instruction on the microcode emulator's native session against 32.4). `make prologue6` in the generator folder builds the previous image
+(byte-identical to the one committed before the change, `-DPROLOGUE6`) for loading in two stages or going back:
+`python3 tools/ucode_send.py --all --hex firmware/microcode/ucode-generator2/build/p6/test.hex`.
+
+**Not changed**: M-1 in the operand fetches. 116 steps in 78 records (LDAI and the other immediates, the branches,
+JSR, LDA/STA...) still increment the PC with `-MEM-RD` on; the fix is the same (drop `-MEM-RD` before `incrementReg`
+in those paths) and would save a step in some of them.
 
 ---
 
@@ -456,7 +514,8 @@ jump tables needed a plain register jump (`docs/system/MACHINE.md`, `BACKLOG.md`
    "BRUR Rn = PC <- Rn (2 bytes, register in the operand byte like JSRUR)".
 2. **`software/assembler/yacc1.def`** line 89: `BRUR \{regs}` — the two-byte form, register number in the operand byte.
 3. **`branch.c`**: a new block after JSRUR. It is JSRUR without the "save pc to stack" part, and its steps
-   (`docs/isa/steps.txt`, `docs/isa/BRUR.svg`) read:
+   (`docs/isa/steps.txt`, `docs/isa/BRUR.svg`) read, as built that day with the six-step prologue (since 2026-09-29
+   the body starts at step 3 with its own read step; section 5.6):
 
    | Step | Signals | Why |
    |---|---|---|
@@ -503,6 +562,8 @@ $88, ADDIW $C0, SHL16 $C8; OUTVR/LDTVR/STTVR removed), `yacc1.def`, the interpre
 - `register.c`: LDR's and STR's second halves (from "R2 holds the address" to the end) became `loadRegFromIR()` and
   `storeRegAtIR()`, the same lines in the same order, so $E8–$F7 did not change by a bit. `zpageAddress()` builds the
   address from the page register `ZP` = R6 (`CodeGen.h`):
+
+  (Step numbers as built with the six-step prologue; since 2026-09-29 the body is three steps earlier, section 5.6.)
 
   | Step (LDZ R3) | Signals | Why |
   |---|---|---|
@@ -612,7 +673,8 @@ JSR does, which would also remove the TMP1 detour.
 Status on 2026-09-23 (`DOC-PLAN.md` rule 7): H-1 and H-2 **fixed in the generator and loaded** into the EEPROM on
 2026-09-22 (`tools/ucode_send.py --all`); `tests/ucemu/isa.asm`, the compiler suite and the monitor from reset run with
 0 fights over 6 million steps on the model; the bench checks (`tests/assembler/brur`, `isa.asm`'s byte stream, then the
-monitor from ROM) are pending. H-3 open; H-4 open (fixed in the generator 2026-09-29, section 5.4); M-1 (weak drives) unchanged.
+monitor from ROM) are pending. H-3 open; H-4 open (fixed in the generator 2026-09-29, section 5.4); M-1 out of the fetch since the three-step prologue
+(2026-09-29, section 5.6), 116 operand-fetch steps left.
 
 ---
 
@@ -706,7 +768,7 @@ against the previous image on 2026-09-21 by the same five-instruction dump (`doc
 | record | the 64-step microprogram of one opcode (`startUcodeBlock`/`endUcodeBlock`) |
 | step, line | one 8-byte control word; "line" is the generator's word (`writeCurrentLine`), "step" the hardware's (CADDR0..5) |
 | word | the 64 control bits of a step |
-| prologue | steps 0..5, identical in every record: fetch the opcode and increment the PC |
+| prologue | steps 0..2 (0..5 until 2026-09-29), identical in every record: fetch the opcode and increment the PC (section 5.6) |
 | leading / trailing edge | the falling / rising edge of an active-low strobe, i.e. the start / end of the step that asserts it |
 | set-up, strobe, release | the generator's three-line pattern around every strobe |
 | bus fight | two drivers with different values on one data lane in one step (`y1ucemu -w`) |
