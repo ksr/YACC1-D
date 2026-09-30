@@ -4,6 +4,12 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 `docs/system/MACHINE.md`. Which revisions exist and were fabricated: `hardware/FABRICATED.md`.
 
 ## Hardware — designed, not built
+- **Memory card: the FORCE-ROM race fix (review M1, Ken 2026-09-30) - a 470 Ω pull-down on ADDR15.** Undriven, A15
+  floats high, so IC12 is clocked ~40 ns before the real address arrives. v1.3 in the machine: fit 470 Ω from IC10 pin 4
+  to IC10 pin 7 on the solder side (Ken; `docs/cards/memory.md` 4.1 has the why, the value and the check); read the bus
+  tester's RN4 value first (pull-ups on the address lines: 10 kΩ is fine, 1 kΩ is not). v2.0: in the design. Then,
+  optional and separate: drop the `-VMA`-in-every-step hack from the microcode generator (a reload) so the chip selects
+  are qualified by -VMA again.
 - **Ports P2-P7 are probably free for another card** (noted 2026-09-24). The I/O card's 74LS138 (IC5, strapped to
   P0-P7) decodes all eight, but only P0 (control) and P1 (data) are used, each picked by a jumper on the IO-ADDR /
   DATA-ADDR headers; -IO-SEL2..7 go only to those headers and drive nothing. So a card decoding P2-P7 itself should not

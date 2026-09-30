@@ -28,6 +28,8 @@ Not in the machine: the two bring-up cards (Mem Switch, Mem Register), the two b
 - Low RAM $0000–$7FFF; high half decoded per 4K block by IC7 into the 3x8 jumper header: jumper up = high RAM, down = ROM, none = undecoded.
 - Fitted: $8000–$CFFF → RAM (5 jumpers up), **$D000–$DFFF → no jumper (undecoded, reserved for the video card)**, $E000–$FFFF → ROM (2 jumpers down).
 - FORCE-ROM boot remap: after -RESET the ROM appears at every address until the first access with ADDR15 high.
+- **Planned, not fitted (2026-09-30): a 470 Ω pull-down from IC10 pin 4 (ADDR15) to IC10 pin 7 (GND)**, the fix for the
+  FORCE-ROM race (review M1; `docs/cards/memory.md` 4.1). Until it is fitted the microcode's `-VMA` in every step masks it.
 - Reading an undecoded block returns the last value left on the bus (looks like RAM that echoes the last write).
 - A jumper wire from IC7 pin 4 is present but unconnected; purpose not remembered (Ken 2026-09-20) — see BACKLOG.
 

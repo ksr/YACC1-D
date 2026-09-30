@@ -642,7 +642,7 @@ Per `DOC-PLAN.md` rule 7 (`docs/isa/MICROCODE-REVIEW-NOTES.md`, `hardware/DESIGN
 | H-3 | BR16Z/BR16NZ cannot work: BDATA8..15 are pull-ups under `-AC-RD` | **open** (nothing uses them) |
 | H-4 | 37 opcodes have all-zero records; an all-zero word asserts every active-low line for 61 steps ($80–$8F, $A5, $AE, $C0–$CF, $F8–$FA; $AD is now BRUR) | **open** |
 | H-5 | sequencer IC11 gate B appears to drive ADDR-REG-ID0..3 low permanently in the netlist | **To verify** on the board (scope C3 during a PUSH) — the 2026-09-22/23 `romcount` run used only PC-relative addressing plus DECR/BRNZ, so it does not settle it |
-| M1 | FORCE-ROM clock races the address drivers; masked by `-VMA` in every step | **open**, masked |
+| M1 | FORCE-ROM clock races the address drivers; masked by `-VMA` in every step | fix designed 2026-09-30: 470 Ω pull-down on ADDR15 (v2.0 design; v1.3 bodge not fitted, `docs/cards/memory.md` 4.1); masked until then |
 | M2 | 28C64 `-WE` = raw `-MEM-WR`; a store during FORCE-ROM writes the EEPROM | **open** |
 | S1 | no power-on reset | **open** |
 | 1.1/4.1 | 17 bus lines driven regardless of `-BUS-EN`; the bus tester drives everything push-pull at boot | **open** (v2.2 "CPU off" switch in BACKLOG) |

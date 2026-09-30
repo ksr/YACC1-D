@@ -13,6 +13,8 @@ Verified on hardware 2026-09-18 with the bus tester; the burned EEPROM is `firmw
   the card's own chips is selected, instead of by -VMA, so it stays off the bus in undecoded blocks (the video card's
   $D000). The TMP registers IC26–IC29 and RN5/RN6 are placed and routed. KiCad conversion (proven): `kicad/v1.3/`.
   (Filed first as `eagle/v1.3-fusion-export-2026-09-24/`, renamed to `v1.3` the same day.)
+  **Planned modification (2026-09-30, not fitted): a 470 Ω pull-down from IC10 pin 4 (ADDR15) to IC10 pin 7 (GND)** on
+  the solder side, the fix for the FORCE-ROM race (design review M1): `docs/cards/memory.md` section 4.1.
 - `kicad/v2.0/` – memory card v2.0 design: the built v1.3 + the CompactFlash interface on P8/P9. Schematic proven. With the
   built card's copper kept the CF section did not fit, so Ken decided (2026-09-24) to lay the whole card out again:
   three re-layout options with J2 at the top edge; B was picked and routed (fab files), then Ken decided the same day
