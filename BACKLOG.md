@@ -48,18 +48,19 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   $D800-$DFFF) and a CRTC table assuming a 10 MHz dot clock, 5-dot characters, 80 x 24
   (`vcrtab`); read the crystal, confirm with `tests/video/hold_address.py`, adjust with the monitor's `VR` by hand, then
   in the table. The character EPROM's order is assumed 2513-style (ASCII bits 0-5); read the 2732 to confirm.
-- **Sequencer microcode: three changes waiting for one EEPROM** (`firmware/microcode/ucode-generator2/test.hex`; `cache` =
+- **Sequencer microcode: four changes waiting for one EEPROM** (`firmware/microcode/ucode-generator2/test.hex`; `cache` =
   what the EEPROM holds, the 2026-09-23 image): (a) `LDZ`/`STZ`/`ADDIW`/`SHL16` (2026-09-24, 32 new records $80-$8F,
   $C0-$CF), (b) the undefined opcodes $A5, $AE, $F8-$FA get HALT's record (2026-09-29, H-4), (c) the three-step fetch
-  prologue (2026-09-29, `docs/system/MICROCODE.md` 5.6: every record changes, instructions 2-3 steps shorter). Load in
-  two stages so a failure points at its change:
+  prologue (2026-09-29, `docs/system/MICROCODE.md` 5.6: every record changes, instructions 2-3 steps shorter), (d) M-1:
+  every step that counts a register is written without `-MEM-RD` (2026-09-29, the same section; 116 steps, one bit
+  each). Load in two stages so a failure points at its change:
   1. `make -C firmware/microcode/ucode-generator2 prologue6`, then
      `python3 tools/ucode_send.py --all --hex firmware/microcode/ucode-generator2/build/p6/test.hex` (Ken; START), reset,
      `python3 tests/bench/run.py --port /dev/cu.usbserial-AB0MVHSQ`: (a) + (b) with the old prologue. `isa` checks the
      four instructions byte by byte (the machine must print exactly `expected/isa.uc.out`), `xisa` is compiled C using
      them (y1cc `--xisa`: the page register R6, a recursive frame in the page, ADDIW, SHL16, R6 reloaded after the ROM's
      charout).
-  2. `python3 tools/ucode_send.py --all` (the tree's image, + (c)), START, reset, the bench again: every test must print
+  2. `python3 tools/ucode_send.py --all` (the tree's image, + (c) and (d)), START, reset, the bench again: every test must print
      the same; then the monitor, BASIC, Y1/OS from CF and a kermit transfer (its timeouts were recalibrated for (c):
      `os/kermit_io.asm` PPS 6203 - with the old microcode they are 16% long, harmless). If stage 2 fails where stage 1
      passed, stage 1's image is the way back.
@@ -102,8 +103,8 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   card in reset; video character clock is a ~50 ns runt; TMP registers latch on the leading edge (microcode must present the
   source a step early - it does).
 - **LOW / speed**: (done 2026-09-29 in the generator, NOT YET LOADED: the fetch prologue is 3 steps, `docs/system/MICROCODE.md`
-  5.6; compiled code ~18% fewer clocks on the emulator.) Still open: 259 idle steps, M-1 in the 116 operand-fetch increment
-  steps (drop `-MEM-RD` before `incrementReg`), `-IO-ADDR-LD` (L-2); the rest of the ~30% tabulated per opcode in the microcode notes; emulator mismatches listed there (BRVR, JSRUR byte order, carry on SUB/shifts, R0-load suppression).
+  5.6; compiled code ~18% fewer clocks on the emulator.) (Also done, the same day: M-1 in the 116 operand-fetch
+  increment steps, section 5.6 there.) Still open: 259 idle steps, `-IO-ADDR-LD` (L-2); the rest of the ~30% tabulated per opcode in the microcode notes; emulator mismatches listed there (BRVR, JSRUR byte order, carry on SUB/shifts, R0-load suppression).
 - Timing-diagram model (`tools/ucode_wavedrom.py`) corrections from the review: IR/operand/branch/TMP/ACC latch on the LEADING
   edge of their strobe; one step = two clocks; steps 0-2 run with the previous opcode in the IR; -REG-RD-LO/HI are byte lanes.
   To fold into the generator when the diagrams are next regenerated.

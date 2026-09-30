@@ -25,7 +25,9 @@ The sequencer EEPROM was reloaded with it the same evening (`tools/ucode_send.py
 **Status 2026-09-29 (later):** L-1 applied: the fetch prologue is three steps (`docs/system/MICROCODE.md` 5.6), which
 also removes M-1 from the fetch (372 increment steps with `-MEM-RD` on before, 116 left, all in operand fetches); the
 first body step gets the old release step only where it changes the register selection or counts (55 records). Not
-yet loaded.
+yet loaded. Then M-1 in the operand fetches too: every step that counts a register is written without `-MEM-RD`
+(`m1Mask()`, 116 steps, one bit each, no length change); M-1 is gone from the whole store (`tests/ucemu/prologue.py`
+rule 5). Not yet loaded.
 
 **Status 2026-09-29:** H-4 fixed in the generator: every record left all-zero ($A5, $AE, $F8-$FA once BRUR and the
 2026-09-24 instructions filled the rest) gets the HALT record (`docs/system/MICROCODE.md` 5.4); not yet loaded.

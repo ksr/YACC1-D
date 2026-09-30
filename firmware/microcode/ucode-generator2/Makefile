@@ -2,7 +2,8 @@
 #   make          build ./ucodegen (includes resolve via ../../opcodes.h -> tools/layout_links.py)
 #   make check    generate into build/ and diff against the committed test.hex (fails on difference)
 #   make regen    run ./ucodegen here: rewrites test.123 / test.hex / test.hexz beside it (what the loader sends)
-#   make prologue6  the same microcode with the six-step fetch prologue used until 2026-09-29, in build/p6/test.hex
+#   make prologue6  the microcode as it was before 2026-09-29's fetch-prologue and M-1 changes (six-step prologue; with
+#                 LDZ/STZ/ADDIW/SHL16 and the H-4 fix; = the image committed at b98aec2), in build/p6/test.hex
 #                 (for loading in two stages or going back: tools/ucode_send.py --all --hex <that file>)
 #   make clean
 CC     ?= cc

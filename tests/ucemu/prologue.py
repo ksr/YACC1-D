@@ -14,6 +14,9 @@ Checks every one of the 256 records of the control store (default: the tree's te
      meet a change of register selection (a decoder glitch would count another register);
   4. the first body line (step 3, or 4 after a release) has no leading-edge latch: such a latch takes the bus the
      previous step left, which is now the prologue's, not memory at the new PC as in the six-step prologue.
+  5. (review M-1, the whole control store) no step that counts a register (-REG-FUNC-RD with -REG-UP or -REG-DN, which
+     opens the register card's transceivers onto DATA0..15 = $FFFF) also has -MEM-RD, and no leading-edge latch sits
+     in the step after one (it would take that $FFFF).
 With --compare, prints the steps saved per record against an older image.
 """
 import os, sys
@@ -76,6 +79,17 @@ def main():
                 fails.append("$%02X step 3 changes the register selection or counts right after PC++: %s" % (op, asserted(b)))
         latches = [n for n in LEADING_EDGE if on(st[first], n)]
         if latches: fails.append("$%02X step %d (first body line) latches %s from the prologue's bus" % (op, first, latches))
+    ncount = 0
+    for op in range(256):
+        st = recs[op]
+        for i in range(length(st)):
+            w = st[i]
+            if on(w, "-REG-FUNC-RD") and (on(w, "-REG-UP") or on(w, "-REG-DN")):
+                ncount += 1
+                if on(w, "-MEM-RD"): fails.append("$%02X step %d counts a register with -MEM-RD on (M-1)" % (op, i))
+                latches = [n for n in LEADING_EDGE if i + 1 < 64 and on(st[i + 1], n)]
+                if latches: fails.append("$%02X step %d latches %s from a count step's $FFFF" % (op, i + 1, latches))
+    print("count steps: %d, M-1 (count with -MEM-RD) and latches after them: %s" % (ncount, "none" if not any("M-1" in f or "count step" in f for f in fails) else "see below"))
     print("records: 256, prologue identical in all: %s, release step in %d, first-body-line rules: %s"
           % ("yes" if not any("differ" in f for f in fails) else "NO", nrel, "ok" if not fails else "see below"))
     if old:

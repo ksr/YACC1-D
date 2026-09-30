@@ -30,6 +30,8 @@ extern unsigned char currentLine[];
 extern int pendingRelease;                  /* YACC1-D 2026-09-29: the three-step prologue (loadNextInstruction) */
 unsigned char releaseLine[BYTES_PER_LINE];
 int releasesWritten = 0;
+int m1Masked = 0;                           /* YACC1-D 2026-09-29: count steps written without -MEM-RD (m1Mask) */
+int lineHas(char *signal);
 
 
 //#define DEBUG 1
@@ -245,6 +247,30 @@ int lineHas(char *signal) {
     int byte = (signals[n].chip - 1) * PORTS_PER_CHIP + signals[n].port;
     int bit = (currentLine[byte] >> signals[n].bit) & 1;
     return signals[n].name[0] == '-' ? !bit : bit;
+}
+
+/* YACC1-D 2026-09-29 (design review M-1): a step that counts a register (-REG-FUNC-RD with -REG-UP or -REG-DN) opens
+ * the register card's transceivers with no read strobe, so the card drives $FFFF onto DATA0..15; if -MEM-RD is on in
+ * that step, the memory card's LS245 drives against it. The generator's sequences read an operand, latch it, hold,
+ * then increment the address register with -MEM-RD still on; nothing uses the bus of the increment step (the checks:
+ * tests/ucemu/prologue.py rule 5 - no load or write in that step, no leading-edge latch in the next). So
+ * writeCurrentLine() writes such a line without -MEM-RD and puts -MEM-RD back into the current line afterwards: the
+ * step after still reads at the new address, as before. Only that bit of those steps changes, no step count.
+ * -DPROLOGUE6 (the image before 2026-09-29's prologue and M-1 work) keeps the old words. */
+int m1Mask() {
+#ifdef PROLOGUE6
+    return 0;
+#else
+    if (!(lineHas("-REG-FUNC-RD") && (lineHas("-REG-UP") || lineHas("-REG-DN")) && lineHas("-MEM-RD")))
+        return 0;
+    clearSignal("-MEM-RD");
+    m1Masked++;
+    return 1;
+#endif
+}
+
+void m1Unmask() {
+    setSignal("-MEM-RD");
 }
 
 /* YACC1-D 2026-09-29: called by writeCurrentLine() for the first line after the three-step prologue: unless that line
@@ -469,6 +495,7 @@ int main(int argc, char** argv) {
     dumpCntlMemory();
 #ifndef PROLOGUE6
     printf("three-step prologue: %d records needed the release step\n", releasesWritten);
+    printf("M-1: %d count steps written without -MEM-RD\n", m1Masked);
 #endif
     printf("Done\n");
     return (EXIT_SUCCESS);
@@ -508,6 +535,7 @@ void basicTest() {
     dumpCntlMemory();
 #ifndef PROLOGUE6
     printf("three-step prologue: %d records needed the release step\n", releasesWritten);
+    printf("M-1: %d count steps written without -MEM-RD\n", m1Masked);
 #endif
     printf("Done\n");
 

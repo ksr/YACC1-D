@@ -55,14 +55,26 @@ void clearCurrentLine() {
         currentLine[i] = 0;
 }
 
-void writeCurrentLine() {
-    int lineToWrite;
-    int dup;
+static void writeLine();
+int m1Mask();
+void m1Unmask();
 
+void writeCurrentLine() {
     if (pendingRelease) {   /* YACC1-D 2026-09-29: the first line after the three-step prologue */
         pendingRelease = 0;
         releaseIfNeeded();
     }
+    /* YACC1-D 2026-09-29 (review M-1): a line that counts a register is written without -MEM-RD (main.c m1Mask) */
+    int masked = m1Mask();
+    writeLine();
+    if (masked)
+        m1Unmask();
+}
+
+static void writeLine() {
+    int lineToWrite;
+    int dup;
+
 #ifdef DEBUG
     printf("Write line [%d]\n", ucodeLine);
 #endif 

@@ -413,7 +413,7 @@ program ran in 2,157,017 clocks against 2,621,365 (-17.7 %), `os/kermit_io.asm`'
 
 Review section 5 estimates ~30 % of executed steps removable (22 % from the six-step prologue alone) and gives a
 per-opcode "achievable" column. Applied so far: the three-step prologue (L-1, section 5.6). Still open: the idle
-steps elsewhere (`ucode_review.py` S1, 259 left), `-IO-ADDR-LD` (L-2), and M-1 in the operand fetches (below).
+steps elsewhere (`ucode_review.py` S1, 259 left) and `-IO-ADDR-LD` (L-2). M-1 is fixed everywhere (below).
 
 ### 5.6 The fetch prologue (three steps since 2026-09-29)
 
@@ -455,13 +455,19 @@ the compiler suite and `--xisa` (23/23 each), the emulated bench (`isa`'s byte s
 monload, cfcard and kermit (timeouts recalibrated: `os/kermit_io.asm` PPS 5229 -> 6203), with 0 bus fights wherever
 the run counts them; the OS sessions (32/32 on both emulators), the native tool chain and the disassembler pass too, and
 `make check` is green. The self-host's estimate at 1 MHz went from 31 h 45 min to 26 h 51 min for both stages (27.4
-clocks an instruction on the microcode emulator's native session against 32.4). `make prologue6` in the generator folder builds the previous image
+clocks an instruction on the microcode emulator's native session against 32.4). `make prologue6` in the generator folder builds the image as it was before this and the M-1 change below
 (byte-identical to the one committed before the change, `-DPROLOGUE6`) for loading in two stages or going back:
 `python3 tools/ucode_send.py --all --hex firmware/microcode/ucode-generator2/build/p6/test.hex`.
 
-**Not changed**: M-1 in the operand fetches. 116 steps in 78 records (LDAI and the other immediates, the branches,
-JSR, LDA/STA...) still increment the PC with `-MEM-RD` on; the fix is the same (drop `-MEM-RD` before `incrementReg`
-in those paths) and would save a step in some of them.
+**M-1 in the operand fetches** (the same day, after the prologue). 116 steps in 78 records (LDAI and the other
+immediates, MVIB/MVIW, the branches, JSR, LDA/STA/LDT/STT, STR, LDZ's R2++, RET/POPR/IRET's SP++, BRVR's Rn++)
+incremented a register with `-MEM-RD` still on: the same LS245-against-$FFFF overlap. The pattern everywhere is read,
+latch (or level load), hold, increment, then read the next byte at the new address; nothing uses the bus of the
+increment step. `writeCurrentLine()` now writes any line that counts a register without `-MEM-RD` (`m1Mask()` in
+`main.c`) and leaves `-MEM-RD` in the current line, so the next step reads as before. Exactly those 116 steps changed,
+by that one bit; no record changed length (it is an electrical fix, not a speed one). `tests/ucemu/prologue.py` rule 5
+checks the whole store: no count step with `-MEM-RD` (500 count steps), and no leading-edge latch right after one (it
+would take the $FFFF).
 
 ---
 
@@ -673,8 +679,8 @@ JSR does, which would also remove the TMP1 detour.
 Status on 2026-09-23 (`DOC-PLAN.md` rule 7): H-1 and H-2 **fixed in the generator and loaded** into the EEPROM on
 2026-09-22 (`tools/ucode_send.py --all`); `tests/ucemu/isa.asm`, the compiler suite and the monitor from reset run with
 0 fights over 6 million steps on the model; the bench checks (`tests/assembler/brur`, `isa.asm`'s byte stream, then the
-monitor from ROM) are pending. H-3 open; H-4 open (fixed in the generator 2026-09-29, section 5.4); M-1 out of the fetch since the three-step prologue
-(2026-09-29, section 5.6), 116 operand-fetch steps left.
+monitor from ROM) are pending. H-3 open; H-4 open (fixed in the generator 2026-09-29, section 5.4); M-1 fixed in the generator 2026-09-29 (the fetch
+by the three-step prologue, the 116 operand-fetch steps by `m1Mask()`; section 5.6), not yet loaded.
 
 ---
 
