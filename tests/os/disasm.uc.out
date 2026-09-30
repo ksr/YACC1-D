@@ -1,0 +1,109 @@
+BOOT FROM CF
+Y1/OS v0.2 (2026-09-23)  P8XFS v2
+/> 
+
+/> disasm
+
+usage: disasm [-s] FILE [START [COUNT]]   disasm [-s] -m ADDR [COUNT]   (hex; -s: source only)
+/> disasm /DIS
+
+C000  19 CF FF  MVIW R1,0CFFFH
+C003  0E 05     LDAI 05H
+C005  13 A5     MVIB R3,0A5H
+C007  0F 54     MOVRR R4,R5
+C009  08 60     POPR R6
+C00B  07 07     PUSHR R7
+C00D  06 03     JSRUR R3
+C00F  AD 04     BRUR R4
+C011  71 80     OUTI P1,80H
+C013  9A        INP PA
+C014  6F        OUTA PF
+C015  83 10     LDZ R3,10H
+C017  8D FE     STZ R5,0FEH
+C019  C7 12 34  ADDIW R7,1234H
+C01C  CA        SHL16 R2
+C01D  F3 C0 00  LDR R3,0C000H
+C020  EC FF FE  STR R4,0FFFEH
+C023  04 10 00  JSR 1000H
+C026  A2 C0 00  BRNZ 0C000H
+C029  05        RET
+C02A  00        DB 00H
+C02B  06        DB 06H
+C02C  08        DB 08H
+C02D  04        DB 04H
+C02E  12        DB 12H
+/> disasm /DIS C009 6
+
+C009  08 60     POPR R6
+C00B  07 07     PUSHR R7
+C00D  06 03     JSRUR R3
+/> disasm -s /DIS > /D.ASM
+
+/> cat /D.ASM
+
+        ORG 0C000H
+        MVIW R1,0CFFFH
+        LDAI 05H
+        MVIB R3,0A5H
+        MOVRR R4,R5
+        POPR R6
+        PUSHR R7
+        JSRUR R3
+        BRUR R4
+        OUTI P1,80H
+        INP PA
+        OUTA PF
+        LDZ R3,10H
+        STZ R5,0FEH
+        ADDIW R7,1234H
+        SHL16 R2
+        LDR R3,0C000H
+        STR R4,0FFFEH
+        JSR 1000H
+        BRNZ 0C000H
+        RET
+        DB 00H
+        DB 06H
+        DB 08H
+        DB 04H
+        DB 12H
+/> asm /D.ASM /D2
+
+/D2: 47 bytes, 0 labels, load c000 exec c000
+/> cmp /DIS /D2
+
+/> dir /D2
+
+     47  D2  @C000
+/> load /DIS
+
+loaded 47 bytes at $C000
+/> disasm -m C000 7
+
+C000  19 CF FF  MVIW R1,0CFFFH
+C003  0E 05     LDAI 05H
+C005  13 A5     MVIB R3,0A5H
+/> disasm -m c02b 3
+
+C02B  06        DB 06H
+C02C  08        DB 08H
+C02D  04 12 00  JSR 1200H
+/> disasm /DIS | wc
+
+25 121 646
+/> disasm /NOPE
+
+disasm: not found: /NOPE
+/> disasm -m 12345
+
+disasm: bad address: 12345
+/> disasm /DIS 4000
+
+disasm: START is not in the file: 4000
+/> disasm -x
+
+usage: disasm [-s] FILE [START [COUNT]]   disasm [-s] -m ADDR [COUNT]   (hex; -s: source only)
+/> exit
+
+bye
+>

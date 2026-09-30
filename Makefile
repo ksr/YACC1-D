@@ -6,12 +6,15 @@
 #                   y1cc.py with its C twin and with the multi-pass compiler over the whole corpus (tests/compiler/
 #                   twin.py, also --16, --chain, --chain16), and size the passes against Y1/OS (tests/compiler/passes.py);
 #                   the Y1/OS sessions, the native assembler against the host one and under Y1/OS (tests/asm/run.py --target),
+#                   the disassembler /BIN/DISASM reassembled byte for byte over the same corpus, the programs and the ROM
+#                   (tests/disasm/run.py),
 #                   C compiled, assembled and run under Y1/OS by the native compiler and assembler (tests/native/run.py),
 #                   the toolchain rebuilding itself natively, twice, byte-identical (tests/native/selfhost.py)
 #                   the ROM's video unit and Y1/OS's video command on both emulators' card model (tests/video/emu.py),
 #                   Kermit transfers between /BIN/KERMIT and tools/y1kermit.py over a pty on both emulators (tests/kermit/run.py)
 #   make cc-test    just the compiler tests (on both emulators) and the twin comparisons (y1cc.c, the passes)
 #   make os-test    Y1/OS sessions on both emulators (tests/os/run.py)
+#   make disasm-test  /BIN/DISASM's round trip: disassemble, reassemble with RC/asm, compare (tests/disasm/run.py, ~20 s)
 #   make native-test  the native compiler under Y1/OS on both emulators (tests/native/run.py; --all-uc: ~20 min)
 #   make selfhost   the full native self-host (also in check): under Y1/OS on the instruction-level emulator the nine
 #                   passes, /BIN/ASM and /BIN/CC compiled and assembled natively, byte-identical to the host builds,
@@ -42,6 +45,7 @@ check:
 	python3 tests/ucemu/undefined.py
 	python3 tests/os/run.py
 	python3 tests/asm/run.py --target
+	python3 tests/disasm/run.py
 	python3 tests/native/run.py
 	python3 tests/native/selfhost.py
 	python3 tests/monload/run.py
@@ -62,6 +66,8 @@ os-test:
 	python3 tests/os/run.py
 asm-test:
 	python3 tests/asm/run.py --target
+disasm-test:
+	python3 tests/disasm/run.py
 native-test:
 	python3 tests/native/run.py
 selfhost:
@@ -74,4 +80,4 @@ isa:
 	python3 tools/ucode_wavedrom.py --all
 bom:
 	python3 tools/gen_bom.py
-.PHONY: all check clean kicad isa bom cc-test os-test asm-test native-test selfhost
+.PHONY: all check clean kicad isa bom cc-test os-test asm-test disasm-test native-test selfhost

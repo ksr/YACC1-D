@@ -1,0 +1,17 @@
+disasm
+disasm /DIS
+disasm /DIS C009 6
+disasm -s /DIS > /D.ASM
+cat /D.ASM
+asm /D.ASM /D2
+cmp /DIS /D2
+dir /D2
+load /DIS
+disasm -m C000 7
+disasm -m c02b 3
+disasm /DIS | wc
+disasm /NOPE
+disasm -m 12345
+disasm /DIS 4000
+disasm -x
+exit

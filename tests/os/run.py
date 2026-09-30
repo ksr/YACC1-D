@@ -115,12 +115,14 @@ HOST = {
 
 
 # extra files a session's disk copy gets before it boots (2026-09-23): (host source, disk name, load/exec); a .c
-# source is compiled first with y1cc --os at $5000, as os/Makefile compiles /BIN commands
+# source is compiled first with y1cc --os at $5000, as os/Makefile compiles /BIN commands; a .asm source (2026-09-29)
+# is assembled by RC/asm and flattened from the load address (its ORG)
 EXTRA = {"badhandle": [("badh.c", "/BADH", 0x5000), ("", "/ZERO.BIN", 0x6000)],
          "big": [("bigw.c", "/BIGW", 0x5000), ("bigr.c", "/BIGR", 0x5000)],
          "rdn": [("rdn.c", "/RDN", 0x5000)],
          "rdnlow": [("rdn.c", "/RDN", 0x5000)],
          "systab": [("systab.c", "/SYSTAB", 0x5000)],
+         "disasm": [("dis.asm", "/DIS", 0xC000)],        # 2026-09-29: RC/asm's bytes for disasm to show
          "exec": [("exe.c", "/EXE", 0x5000), ("exe.c", "/EXES", 0x5000, ["--stack", "0xCFFF"]),
                   ("", "/BIG.TXT", 0xC000, 20000)]}
 
@@ -150,7 +152,18 @@ def extras(name, img):
         src, disk, addr = e[:3]
         more = e[3] if len(e) > 3 and isinstance(e[3], list) else []     # (2026-09-25) extra y1cc flags
         fill = e[3] if len(e) > 3 and isinstance(e[3], int) else 0       # or the size of a zero-filled file
-        if src.endswith(".c"):
+        if src.endswith(".asm"):
+            base = os.path.splitext(src)[0]
+            shutil.copy(os.path.join(ROOT, "software/assembler/yacc1.def"), BUILD)
+            open(os.path.join(BUILD, "rcasm.rc"), "w").write("-h\n")
+            shutil.copy(os.path.join(HERE, src), BUILD)
+            lst = subprocess.run([os.path.join(ROOT, "software/assembler/asm"), base, "-d=yacc1"], cwd=BUILD,
+                                 capture_output=True, text=True).stdout
+            if "\n0 Errors" not in lst: sys.exit("%s: assembler errors" % src)
+            host = os.path.join(BUILD, base + ".bin")
+            subprocess.run([sys.executable, os.path.join(ROOT, "tools/img2bin.py"), os.path.join(BUILD, base + ".img"),
+                            host, "--base", hex(addr)], check=True, capture_output=True)
+        elif src.endswith(".c"):
             base = os.path.splitext(src)[0]
             shutil.copy(os.path.join(ROOT, "software/assembler/yacc1.def"), BUILD)
             open(os.path.join(BUILD, "rcasm.rc"), "w").write("-h\n")
