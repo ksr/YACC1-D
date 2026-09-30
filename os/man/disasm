@@ -1,0 +1,73 @@
+NAME
+    disasm - the YACC1 disassembler: machine code back to source
+
+SYNOPSIS
+    disasm [-s] FILE [START [COUNT]]
+    disasm [-s] -m ADDR [COUNT]
+
+DESCRIPTION
+    Shows machine code as instructions, one a line:
+
+        AAAA  bb bb bb  MNEMONIC OPERANDS
+        C000  19 CF FF  MVIW R1,0CFFFH
+        C003  0E 05     LDAI 05H
+
+    the address, the instruction's bytes, then the instruction in the
+    assembler's own dialect (asm, asmc and RC/asm on the Mac): numbers
+    in hex with an H and a 0 before a letter (05H, 0FFH, 0F000H),
+    registers R0..R7, ports P0..PF. Every line assembles back to the
+    same bytes.
+
+    FILE is a program file shown as if loaded: the addresses start at
+    the load address in its directory entry (where load and run put
+    it; /BIN programs load at 5000), or at START, and go to the end of
+    the file or for COUNT bytes. The file is read, not loaded, so
+    disasm can show any program, itself included (disasm /BIN/DISASM).
+
+    -m shows memory from ADDR instead, COUNT bytes (default 40): the
+    ROM monitor (disasm -m F000 20), the OS (1000), a program you
+    loaded (load it, then disasm -m its address).
+
+    START, ADDR and COUNT are hex. The instructions shown are the ones
+    that START inside the range; the last is completed past its end
+    while there are bytes (to the file's end; up to FFFF in memory).
+
+    A byte that begins no instruction is shown as a DB line (DB 00H):
+    a byte that is no opcode (00 A5 AE F8 F9 FA FF), an instruction
+    whose operand byte cannot be (JSRUR with a register byte over 7),
+    or an instruction cut off by the end of the file. Data between the
+    code comes out as instructions or DBs; either way it assembles back
+    to the same bytes. disasm does not follow jumps or tell code from
+    data: it decodes from where it starts.
+
+    The output is ordinary output, so > and | work (disasm F | more,
+    disasm F > F.LST); errors go to the screen: "disasm: not found:
+    F", "disasm: bad address: X", "disasm: bad count: X", "disasm:
+    START is not in the file: X". disasm is /BIN/DISASM.
+
+OPTIONS
+    -s    source only: an ORG line, then the instructions indented,
+          without addresses and bytes - a file asm takes back
+    -m    memory instead of a file
+
+EXAMPLES
+    disasm /BIN/HELLO           the first /BIN program, all of it
+    disasm /BIN/HELLO 5010 10   16 bytes of it from 5010
+    disasm -m F000 20           the ROM monitor's first instructions
+    disasm -m FFC0 40           the ROM's BIOS vectors
+    disasm /BIN/HELLO | more    a page at a time
+    disasm -s P > P.ASM         then asm P.ASM Q: Q is P again (cmp P Q)
+
+NOTES
+    The instruction table is generated from yacc1.def, the file the
+    assemblers' tables come from (tools/gen_y1_distab.py), so disasm
+    knows every instruction they know - the 2026-09-24 LDZ, STZ,
+    ADDIW and SHL16 and BRUR among them - and cannot disagree with
+    them. Registers R8 and R9, which RC/asm accepts, are not
+    registers of the machine: their bytes read as other instructions.
+    New for the YACC1 2026-09-29 (the P8X disasm decodes the P8X's
+    instructions; only its idea of a table generated from the
+    assembler's is kept).
+
+SEE ALSO
+    asm, dump, examine, load, mon

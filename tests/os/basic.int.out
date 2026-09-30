@@ -54,6 +54,7 @@ in /BIN:
   cc   compile C: cc prog.c -o prog.asm --org 0x5000 --os  (then asm)
   cp   copy files, -r a tree               del  delete files (globs)
   dep  deposit hex bytes into memory       diff line differences
+  disasm disassemble: disasm [-s] FILE [START [COUNT]], -m ADDR [COUNT] memory
   dir  list, sorted; -R -S, globs          dump hex dump, a page a key
   echo print the arguments                 examine view/change memory
   find names matching a pattern (tree)     grep lines matching a regex; -r

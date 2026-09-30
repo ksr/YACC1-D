@@ -93,6 +93,12 @@ commands-asm/asmtab.inc: $(DEF) $(ROOT)/tools/gen_y1_optab.py
 	python3 $(ROOT)/tools/gen_y1_optab.py && touch $@
 $(B)/bin/asm.bin: asm_optab.c
 
+# /BIN/DISASM's decode table is generated from the same yacc1.def (tools/gen_y1_distab.py, 2026-09-29), with the
+# assembler table generator's reading of it, so disasm and the assemblers cannot disagree about an instruction
+dis_optab.c: $(DEF) $(ROOT)/tools/gen_y1_distab.py $(ROOT)/tools/gen_y1_optab.py $(ROOT)/software/opcodes.h
+	python3 $(ROOT)/tools/gen_y1_distab.py && touch $@
+$(B)/bin/disasm.bin: dis_optab.c
+
 # the assembler in YACC1 assembly (commands-asm/asm.asm, 2026-09-26): assembled by the host assembler at $5000
 ASMA   = $(B)/asma/asm.bin
 $(ASMA): commands-asm/asm.asm commands-asm/asmtab.inc $(DEF)
