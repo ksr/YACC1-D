@@ -39,6 +39,7 @@ check:
 	python3 tests/compiler/twin.py --chain16
 	python3 tests/compiler/passes.py
 	python3 tests/ucemu/run.py
+	python3 tests/ucemu/undefined.py
 	python3 tests/os/run.py
 	python3 tests/asm/run.py --target
 	python3 tests/native/run.py
@@ -56,6 +57,7 @@ cc-test:
 	python3 tests/compiler/twin.py
 	python3 tests/compiler/twin.py --chain
 	python3 tests/ucemu/run.py
+	python3 tests/ucemu/undefined.py
 os-test:
 	python3 tests/os/run.py
 asm-test:

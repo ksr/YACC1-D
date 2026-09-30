@@ -22,6 +22,9 @@ pushed $21CC; a taken BRZ landed on offset $00 and the monitor could not print a
 (`branch.c`); the regenerated `test.hex` runs the monitor, the compiler suite and `tests/ucemu/isa.asm` with 0 bus fights.
 The sequencer EEPROM was reloaded with it the same evening (`tools/ucode_send.py --all`). H-3 (BR16Z/NZ) stands; the emulator reproduces it too.
 
+**Status 2026-09-29:** H-4 fixed in the generator: every record left all-zero ($A5, $AE, $F8-$FA once BRUR and the
+2026-09-24 instructions filled the rest) gets the HALT record (`docs/system/MICROCODE.md` 5.4); not yet loaded.
+
 ## 1. What the hardware actually does (the model behind every finding)
 
 ### 1.1 Sequencer: one microcode step = two clock periods, and step 0 is shared with the previous opcode

@@ -355,17 +355,25 @@ records and steps moved. The program prints a "dup found" line for each filtered
 
 ### 5.4 Records that are never written
 
+**Fixed 2026-09-29 (H-4):** after generating every instruction, `main()` gives each record still all-zero the HALT
+record (`haltRecord()`, the same code as HALT $03: the fetch, then `SOFT-HALT`), so a stray fetch of $A5, $AE or
+$F8-$FA stops the machine cleanly with the PC past the byte (CONT resumes at the next one) instead of the storm
+described below; both emulators also stop on an undefined opcode. Exactly those 5 records changed; `tests/ucemu/undefined.py`
+(in `make check`) requires no all-zero record and runs each on the model: HALT after 7 steps, 0 bus fights (the old
+image: 124 fights, then COUNT-FAULT). Not yet in the EEPROM: it goes in with the next `ucode_send.py --all`. The
+history:
+
 `main()` never emits $A5 (BRNC was planned), $AE and $F8–$FA: **5 all-zero records** remain in `test.hex` since
 2026-09-24 (38 before BRUR filled $AD on 2026-09-22; 37 until `LDZ`/`STZ`/`ADDIW`/`SHL16` filled $80–$8F and $C0–$CF,
 where OUTVR and LDTVR/STTVR had never had microcode — section 7a). Because active-low signals are stored as
 1 = inactive, an all-zero word asserts `-REG-FUNC-RD, -REG-FUNC-LD, -REG-RD-LO/HI, -REG-UP, -REG-DN, -MEM-RD, -MEM-WR,
 -IO-RD, -IO-WR, -TMP-REG-RD0/1, -TMP-REG-LD0/1, -ALU-FUNC, -AC-LD-INV, -AC-RD, -AC-LD, -SR-LD, -HL-SWAP, -BRANCH-RD,
 -INT-JMP, -2-BYTE-OPERAND-SEL, -INTA` and `-VMA` together; fetching such an opcode runs steps 3..63 of that storm until
-`COUNT-FAULT` stops the clock (review H-4, HIGH, open). (Until 2026-09-24 the assembler would emit LDTVR/STTVR/OUTVR
+`COUNT-FAULT` stops the clock (review H-4, HIGH; fixed 2026-09-29, above). (Until 2026-09-24 the assembler would emit LDTVR/STTVR/OUTVR
 and the instruction-level emulator ran LDTVR/STTVR, so a program that worked there could do this on the hardware; those
-mnemonics are gone.) The proposed
-fix is a one-line loop in `main()`: fill every unwritten record with the idle word plus `UCODE-COUNT-RESET` at step 3
-(an illegal opcode becomes a one-byte NOP) or with `SOFT-HALT`.
+mnemonics are gone.) The review
+proposed filling every unwritten record with the idle word plus `UCODE-COUNT-RESET` (an illegal opcode becomes a
+one-byte NOP) or with `SOFT-HALT`; the halt was chosen so a stray fetch is seen, not silently skipped.
 
 ### 5.5 Record lengths
 
@@ -604,7 +612,7 @@ JSR does, which would also remove the TMP1 detour.
 Status on 2026-09-23 (`DOC-PLAN.md` rule 7): H-1 and H-2 **fixed in the generator and loaded** into the EEPROM on
 2026-09-22 (`tools/ucode_send.py --all`); `tests/ucemu/isa.asm`, the compiler suite and the monitor from reset run with
 0 fights over 6 million steps on the model; the bench checks (`tests/assembler/brur`, `isa.asm`'s byte stream, then the
-monitor from ROM) are pending. H-3 open; H-4 open; M-1 (weak drives) unchanged.
+monitor from ROM) are pending. H-3 open; H-4 open (fixed in the generator 2026-09-29, section 5.4); M-1 (weak drives) unchanged.
 
 ---
 

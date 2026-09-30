@@ -67,5 +67,6 @@ Plan for the disk operating system, CF card and the port/memory maps: `OS-PLAN.m
    machine (`tests/bench/logs/bench-2026-09-23-1855.log`).
 7. OPEN 2026-09-24: the tree's microcode gained `LDZ Rn,d` / `STZ Rn,d` ($80-$8F, the word at R6.hi:d), `ADDIW Rn,#w`
    ($C0-$C7) and `SHL16 Rn` ($C8-$CF) (`docs/programming/ISA-REFERENCE.md`); until the EEPROM is reloaded those 32
-   records are the old all-zero words on the machine (review H-4). Reload with `tools/ucode_send.py --all` (Ken, at the
+   records are the old all-zero words on the machine (review H-4), and so are $A5, $AE, $F8-$FA (given the HALT record in
+   the tree 2026-09-29, `docs/system/MICROCODE.md` 5.4). Reload with `tools/ucode_send.py --all` (Ken, at the
    machine), then run `tests/bench/run.py --port ...`: `isa` now checks the four instructions.

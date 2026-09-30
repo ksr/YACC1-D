@@ -62,9 +62,11 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 ## Design review 2026-09-21 (reports: `hardware/DESIGN-REVIEW.md`, `hardware/DESIGN-REVIEW-NOTES-datapath.md`,
 `hardware/DESIGN-REVIEW-NOTES-control-io.md`, `docs/isa/MICROCODE-REVIEW.md`, `docs/isa/MICROCODE-REVIEW-NOTES.md`)
 Items below were traced to nets/pins or to test.hex and spot-checked; the reports give the evidence and a bench check each.
-- **HIGH, microcode: 38 undefined opcodes are all-zero words** ($80-$8F, $A5, $AD, $AE, $C0-$CF, $F8-$FA). An all-zero word asserts
-  every active-low line (-MEM-RD and -MEM-WR together, every register strobe) for 61 steps: a bus fight on any stray opcode.
-  Fix in `firmware/microcode/ucode-generator2`: fill undefined opcodes with an inactive word + UCODE-COUNT-RESET (a 1-step trap).
+- (done 2026-09-29 in the tree, NOT YET LOADED: **HIGH, microcode: undefined opcodes were all-zero words** ($80-$8F, $A5, $AD,
+  $AE, $C0-$CF, $F8-$FA; BRUR and the four xisa instructions filled all but five). An all-zero word asserts every active-low
+  line (-MEM-RD and -MEM-WR together, every register strobe) for 61 steps. The generator now gives $A5, $AE, $F8-$FA the HALT
+  record (`docs/system/MICROCODE.md` 5.4, `tests/ucemu/undefined.py`); it reaches the EEPROM with the next
+  `tools/ucode_send.py --all`, the same reload as the xisa instructions.)
 - **HIGH, microcode: PUSHR** writes both stack bytes while the register card and TMP1 both drive the data bus (read strobes never
   cleared); **BRZ/BRNZ/BR16Z/BR16NZ** keep -AC-RD on while -BRANCH-RD loads the PC; BR16Z/NZ cannot work (BDATA8-15 are pull-ups
   under -AC-RD). None exercised by `ledcount`; bench order in the notes: IC11 scope check, then BRZ, then PUSHR.

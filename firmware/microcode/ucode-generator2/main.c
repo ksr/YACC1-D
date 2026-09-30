@@ -24,6 +24,8 @@ void registerOnlyInstructions();
 void ioInstructions();
 void accumulatorInstructions();
 void doMemory();
+void haltRecord(int ins);
+int recordEmpty(int ins);
 
 
 //#define DEBUG 1
@@ -248,6 +250,26 @@ void putBustoRegMem(int reg, char *source) { // Source is either Accumulator TMP
 
 }
 
+/* YACC1-D 2026-09-29: the HALT record (the fetch, then SOFT-HALT), also used for every undefined opcode (H-4) */
+void haltRecord(int ins) {
+    startInstruction(ins);
+    loadNextInstruction();
+    initCurrentLine();
+    setSignal("SOFT-HALT");
+    writeCurrentLine();
+    endInstruction();
+    showCntlMemory(ins);
+}
+
+/* YACC1-D 2026-09-29: true when nothing has written the opcode's record (all 64 lines still zero) */
+int recordEmpty(int ins) {
+    extern unsigned char cntlMemory[];
+    for (int i = 0; i < INSTRUCTION_SIZE; i++)
+        if (cntlMemory[ins * INSTRUCTION_SIZE + i])
+            return 0;
+    return 1;
+}
+
 const char *g_argv0 = "";   /* YACC1-D 2026-09-20: for exe_relative() in controlLine.c */
 int main(int argc, char** argv) {
     g_argv0 = argv[0];
@@ -264,14 +286,8 @@ int main(int argc, char** argv) {
     showCntlMemory(0);
 
     // HALT
-    startInstruction(HALT);
-    loadNextInstruction();
-    initCurrentLine();
-    setSignal("SOFT-HALT");
-    writeCurrentLine();
-    endInstruction();
-    showCntlMemory(HALT);
-    
+    haltRecord(HALT);
+
     branchInstructions();
 
     registerOnlyInstructions();
@@ -281,6 +297,15 @@ int main(int argc, char** argv) {
     accumulatorInstructions();
 
     doMemory();
+
+    /* YACC1-D 2026-09-29 (design review H-4): an opcode nothing above generates used to keep an all-zero record, and
+     * the control lines are active-low, so a zero word asserts every strobe at once (-MEM-RD with -MEM-WR, every
+     * register and TMP load and read, -AC-RD, -BRANCH-RD...) for 61 steps until COUNT-FAULT stops the clock - a bus
+     * fight on any stray fetch of $A5, $AE, $F8-$FA. Give every such opcode the HALT record: the machine stops with
+     * the PC past the byte, CONT resumes at the next one, as both emulators stop on an undefined opcode. */
+    for (int ins = 0; ins < INSTRUCTIONS_TO_OUTPUT; ins++)
+        if (recordEmpty(ins))
+            haltRecord(ins);
 
 
 

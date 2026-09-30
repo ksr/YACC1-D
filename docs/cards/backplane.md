@@ -166,7 +166,7 @@ TMP, accumulator, shift register) need their data on the bus *before* the strobe
 | S1 (datapath) | MED | no power-on reset: -RESET (c30) is a manual RS latch; every card's reset-dependent state is undefined until the button | Open |
 | M-1 (microcode review) | MED | `-REG-FUNC-RD` without lane strobes puts $FFFF on DATA0..15 through the register card's transceivers in 327 steps while memory also drives (fetch step 4 of every instruction): a permanent, functionally harmless contention that the emulator counts as "weak" drives | Open; "the machine lives with it" |
 | H-1 / H-2 | HIGH | the two real data-bus fights (PUSHR; BRZ/BRNZ/BR16Z/BR16NZ) | **Fixed** in the generator and loaded 2026-09-22; H-3 (BR16Z/NZ) stands |
-| H-4 | HIGH | 38 all-zero opcode records assert every active-low line at once for 61 steps | Open in the generator |
+| H-4 | HIGH | 38 all-zero opcode records assert every active-low line at once for 61 steps | **Fixed** in the generator 2026-09-29 (the last five get the HALT record); not yet loaded |
 | H-5 | HIGH (to check on the board) | sequencer IC11 gate B may drive ADDR-REG-ID0..3 low permanently against IC18 | **To verify:** scope c3 during a single-stepped `PUSH` (bench item 1 of the microcode review) |
 | -RUN (c29) | doc | unconnected on every card | spare pin |
 | backplane values | LOW | C1..C8 value blank | To record |
