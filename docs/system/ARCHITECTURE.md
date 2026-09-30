@@ -359,7 +359,8 @@ how an interrupt substitutes opcode $FF (section 9). RESET clears the IR, so rec
 its body is just this prologue with OUT-OFF, i.e. "fetch from PC = 0 and go" (`main.c` `startInstruction(0)`).
 
 The three-step prologue (review L-1) made every instruction 2-3 steps shorter: 1,434 -> 1,226 steps over the 85
-opcodes, ~18 % fewer clocks in compiled code on the microcode emulator.
+opcodes, ~18 % fewer clocks in compiled code on the microcode emulator; the idle-step pass the same day took it to
+1,173 (~3 % more; `docs/system/MICROCODE.md` 5.7).
 
 ### 5.4 Operand register, two-byte opcodes, branch and interrupt registers
 

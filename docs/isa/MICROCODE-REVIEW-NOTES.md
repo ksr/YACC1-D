@@ -27,7 +27,8 @@ also removes M-1 from the fetch (372 increment steps with `-MEM-RD` on before, 1
 first body step gets the old release step only where it changes the register selection or counts (55 records). Not
 yet loaded. Then M-1 in the operand fetches too: every step that counts a register is written without `-MEM-RD`
 (`m1Mask()`, 116 steps, one bit each, no length change); M-1 is gone from the whole store (`tests/ucemu/prologue.py`
-rule 5). Not yet loaded.
+rule 5). Not yet loaded. Then S1: 152 of the 259 idle steps removed by a rule-checked pass (`docs/system/MICROCODE.md`
+5.7, `tests/ucemu/idle.py`); 107 kept where an edge needs them. Not yet loaded.
 
 **Status 2026-09-29:** H-4 fixed in the generator: every record left all-zero ($A5, $AE, $F8-$FA once BRUR and the
 2026-09-24 instructions filled the rest) gets the HALT record (`docs/system/MICROCODE.md` 5.4); not yet loaded.

@@ -27,11 +27,14 @@ void doMemory();
 void haltRecord(int ins);
 int recordEmpty(int ins);
 extern unsigned char currentLine[];
+extern unsigned char cntlMemory[];
+extern int eolInfo[];
 extern int pendingRelease;                  /* YACC1-D 2026-09-29: the three-step prologue (loadNextInstruction) */
 unsigned char releaseLine[BYTES_PER_LINE];
 int releasesWritten = 0;
 int m1Masked = 0;                           /* YACC1-D 2026-09-29: count steps written without -MEM-RD (m1Mask) */
 int lineHas(char *signal);
+void removeIdleSteps();
 
 
 //#define DEBUG 1
@@ -356,6 +359,123 @@ int recordEmpty(int ins) {
     return 1;
 }
 
+/* YACC1-D 2026-09-29: idle steps (design review S1, tools/ucode_review.py: nothing asserted but -VMA) removed after
+ * generation where the hardware does not need them. The generator's set-up / strobe / release pattern leaves a step
+ * with nothing asserted between many pairs of steps; taking it out makes its two neighbours P and N adjacent, so what
+ * P switches off and N switches on now happen on the same edge. That is harmless unless an edge needs the idle step:
+ *   - P ends a trailing-edge strobe (REG-LD-LO/HI: 74LS192 LOAD is level-sensitive; -MEM-WR, -IO-WR): the idle step
+ *     is its hold time;
+ *   - N has a leading-edge latch (IR, operand, branch, INT, TMP, AC, shift register): it would take P's bus instead
+ *     of the idle step's;
+ *   - N loads or writes (REG-LD-LO/HI, -MEM-WR, -IO-WR): selects, address and data must settle a step before;
+ *   - P counts (-REG-UP/-REG-DN) and N changes REG-RD-ID or -2-BYTE-OPERAND-SEL: the count edge would meet a change
+ *     of register selection, and a decoder glitch would count another register (the rule of the three-step
+ *     prologue, releaseIfNeeded above);
+ *   - N counts and its register selection is not already P's (or P counts too: the two counts would merge);
+ *   - -2-BYTE-OPERAND-SEL starts in N (it replaces REG-RD-ID/REG-LD-ID: the same selection change);
+ *   - I/O (-IO-RD reads the UART's FIFO, -IO-ADDR-LD), BR-TEST (a level-sampled latch), INT-EN/INT-START/-INTA or
+ *     SOFT-HALT in P or N; OUT-ON/OUT-OFF in the idle step unless P and N have the same;
+ *   - N is the reset step with anything but the reset bit (M-7: its strobes would be one clock long);
+ *   - the idle step's selection (ADDR-REG-ID, REG-RD-ID, REG-LD-ID, ALU, IOADDR) is neither P's nor N's: it is a
+ *     set-up step of its own.
+ * One data-bus driver switching off and another on at the same edge (review A3: a few ns of overlap) is allowed, as
+ * at many step boundaries already. Steps 0-2 (the prologue, common to all records) are never touched. The pass
+ * removes one step at a time and re-checks the new neighbours. -DKEEPIDLE (and -DPROLOGUE6) leave the records as
+ * written; tests/ucemu/idle.py checks the result against that image with its own copy of these rules. */
+static int wHas(const unsigned char *w, char *signal) {
+    int n = findSignal(signal);
+    int byte = (signals[n].chip - 1) * PORTS_PER_CHIP + signals[n].port;
+    int bit = (w[byte] >> signals[n].bit) & 1;
+    return signals[n].name[0] == '-' ? !bit : bit;
+}
+
+static int wField(const unsigned char *w, char *prefix) {
+    char name[32];
+    int v = 0;
+    for (int i = 0; i < 4; i++) {
+        snprintf(name, sizeof name, "%s%d", prefix, i);
+        if (findSignal(name) >= 0 && wHas(w, name))
+            v |= 1 << i;
+    }
+    return v;
+}
+
+static int wAny(const unsigned char *w, char **list) {
+    for (int i = 0; list[i]; i++)
+        if (wHas(w, list[i]))
+            return 1;
+    return 0;
+}
+
+static int wIdle(const unsigned char *w) {
+    for (int i = 0; strlen(signals[i].name) != 0; i++) {
+        char *n = signals[i].name;
+        if (!strcmp(n, "-VMA") || !strcmp(n, "OUT-OFF") || !strcmp(n, "OUT-ON") || !strcmp(n, "SPARE3"))
+            continue;
+        if (!strncmp(n, "ADDR-REG-ID", 11) || !strncmp(n, "REG-RD-ID", 9) || !strncmp(n, "REG-LD-ID", 9) ||
+            !strncmp(n, "IOADDR", 6) || (!strncmp(n, "ALU", 3) && strlen(n) == 4))
+            continue;       /* selection fields: not "asserted" */
+        if (wHas(w, n))
+            return 0;
+    }
+    return 1;
+}
+
+static int sameSelection(const unsigned char *a, const unsigned char *b) {
+    return wField(a, "ADDR-REG-ID") == wField(b, "ADDR-REG-ID") && wField(a, "REG-RD-ID") == wField(b, "REG-RD-ID") &&
+           wField(a, "REG-LD-ID") == wField(b, "REG-LD-ID") && wField(a, "ALU") == wField(b, "ALU") &&
+           wField(a, "IOADDR") == wField(b, "IOADDR");
+}
+
+static char *LEADING[] = {"LD-INS-REG", "OPERAND-CLK", "BRANCH-LD-LO", "BRANCH-LD-HI", "INT-LD-LO", "INT-LD-HI",
+                          "-TMP-REG-LD0", "-TMP-REG-LD1", "-AC-LD", "-SR-LD", 0};
+static char *TRAILING[] = {"REG-LD-LO", "REG-LD-HI", "-MEM-WR", "-IO-WR", 0};
+static char *COUNTS[] = {"-REG-UP", "-REG-DN", 0};
+static char *ACTIONS[] = {"BR-TEST", "INT-EN", "INT-START", "SOFT-HALT", "-INTA", "-IO-ADDR-LD", "-IO-RD", "-IO-WR", 0};
+
+static int idleRemovable(const unsigned char *p, const unsigned char *i, const unsigned char *n) {
+    if (!wIdle(i)) return 0;
+    if (wAny(p, TRAILING) || wAny(n, LEADING) || wAny(n, TRAILING)) return 0;
+    if (wAny(p, ACTIONS) || wAny(n, ACTIONS)) return 0;
+    if (wHas(i, "OUT-ON") != wHas(p, "OUT-ON") || wHas(i, "OUT-ON") != wHas(n, "OUT-ON")) return 0;
+    if (wHas(i, "OUT-OFF") != wHas(p, "OUT-OFF") || wHas(i, "OUT-OFF") != wHas(n, "OUT-OFF")) return 0;
+    if (wHas(n, "UCODE-COUNT-RESET")) {                 /* the reset step must be a pure hold */
+        unsigned char t[BYTES_PER_LINE];
+        memcpy(t, n, sizeof t);
+        int r = findSignal("UCODE-COUNT-RESET");
+        t[(signals[r].chip - 1) * PORTS_PER_CHIP + signals[r].port] ^= 1 << signals[r].bit;   /* active-high: clear it */
+        if (!wIdle(t)) return 0;
+    }
+    int rdP = wField(p, "REG-RD-ID"), rdN = wField(n, "REG-RD-ID");
+    int twoP = wHas(p, "-2-BYTE-OPERAND-SEL"), twoN = wHas(n, "-2-BYTE-OPERAND-SEL");
+    if (wAny(p, COUNTS) && (rdN != rdP || twoN)) return 0;
+    if (wAny(n, COUNTS) && (rdN != rdP || twoN != twoP || wAny(p, COUNTS))) return 0;
+    if (twoN && !twoP) return 0;
+    if (!sameSelection(i, p) && !sameSelection(i, n)) return 0;
+    return 1;
+}
+
+int idleRemoved = 0;
+
+void removeIdleSteps() {
+    for (int op = 0; op < INSTRUCTIONS_TO_OUTPUT; op++) {
+        unsigned char *rec = cntlMemory + op * INSTRUCTION_SIZE;
+        int len = eolInfo[op];
+        for (int i = 3; i < len - 1; ) {
+            if (idleRemovable(rec + (i - 1) * BYTES_PER_LINE, rec + i * BYTES_PER_LINE, rec + (i + 1) * BYTES_PER_LINE)) {
+                memmove(rec + i * BYTES_PER_LINE, rec + (i + 1) * BYTES_PER_LINE, (len - i - 1) * BYTES_PER_LINE);
+                len--;
+                memset(rec + len * BYTES_PER_LINE, 0, BYTES_PER_LINE);
+                idleRemoved++;
+                if (i > 3) i--;                     /* the new pair (i-1, i) may free the step before */
+            } else
+                i++;
+        }
+        eolInfo[op] = len;
+    }
+    printf("idle steps removed: %d\n", idleRemoved);
+}
+
 const char *g_argv0 = "";   /* YACC1-D 2026-09-20: for exe_relative() in controlLine.c */
 int main(int argc, char** argv) {
     g_argv0 = argv[0];
@@ -392,6 +512,10 @@ int main(int argc, char** argv) {
     for (int ins = 0; ins < INSTRUCTIONS_TO_OUTPUT; ins++)
         if (recordEmpty(ins))
             haltRecord(ins);
+
+#if !defined(PROLOGUE6) && !defined(KEEPIDLE)
+    removeIdleSteps();      /* YACC1-D 2026-09-29: the idle steps that can go (below) */
+#endif
 
 
 

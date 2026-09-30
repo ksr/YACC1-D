@@ -32,9 +32,9 @@ involved (the host only puts the sources on the disk and reads the results).
 
 On the instruction-level emulator (and with --uc stage 1 on the microcode emulator, ~70x slower). The program watch
 (`emulator -S`) gives each step's instructions, and each pass's deepest stack, which must stay above its last byte of
-data (bss_end). The estimate at 1 MHz takes 27.4 clocks an instruction (the microcode emulator's ratio on
-tests/native/run.py's programs with the three-step fetch prologue of 2026-09-29; 32.4 on 2026-09-25 with the six-step
-one) and a clock of 1 us. About 30 seconds for the 4.7G
+data (bss_end). The estimate at 1 MHz takes 26.1 clocks an instruction (the microcode emulator's ratio on
+tests/native/run.py's programs with the microcode of 2026-09-29: three-step fetch prologue and idle steps; 32.4 on
+2026-09-25 before them) and a clock of 1 us. About 30 seconds for the 4.7G
 instructions of both stages: in `make check`, and alone `make selfhost`.
 """
 import os, sys, re, subprocess, shutil
@@ -44,9 +44,9 @@ import run                                           # sh, get, the emulator, co
 
 ROOT, OS, FS = run.ROOT, run.OS, run.FS
 BUILD = os.path.join(HERE, "build", "selfhost")
-CPI = 27.4                                           # clocks an instruction (tests/native/run.py's uc ratio with the tree's
-                                                     # microcode, three-step fetch prologue 2026-09-29; 32.4 with the six-step
-                                                     # one, which the machine's EEPROM holds until it is reloaded)
+CPI = 26.1                                           # clocks an instruction (tests/native/run.py's uc ratio with the tree's
+                                                     # microcode of 2026-09-29: three-step prologue 27.4, + idle steps 26.1;
+                                                     # 32.4 with the old one, which the EEPROM holds until it is reloaded)
 PFLAGS = "--org 0x5000 --os --stack 0xCFFF --xisa"  # os/Makefile, the passes
 BFLAGS = "--org 0x5000 --os"                         # os/Makefile, a /BIN command (make without XISA=1)
 CDIR = "software/compiler/c"

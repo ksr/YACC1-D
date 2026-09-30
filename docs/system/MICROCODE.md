@@ -378,42 +378,44 @@ one-byte NOP) or with `SOFT-HALT`; the halt was chosen so a stray fetch is seen,
 
 ### 5.5 Record lengths
 
-Steps per record since the three-step fetch prologue of 2026-09-29, with the six-step count in brackets (families as
-their R0 member; `docs/isa/README.md` has the diagrams; the undefined opcodes are HALT's record, section 5.4):
+Steps per record with the microcode of 2026-09-29 (the three-step fetch prologue, section 5.6, and the idle-step pass,
+section 5.7), with the count before those changes in brackets (families as their R0 member; `docs/isa/README.md`
+has the diagrams; the undefined opcodes are HALT's record, section 5.4):
 
-| Steps | Opcodes (steps with the six-step prologue) |
+| Steps | Opcodes (steps before 2026-09-29: six-step prologue, idle steps) |
 |---|---|
-| 5 | START (8), ON (8), OFF (8), HALT (8), BRNC (8), OPCODE_AE (8), OPCODE_F8 (8), OPCODE_F9 (8), OPCODE_FA (8) |
-| 6 | INTE (9), INTD (9) |
-| 7 | MVAT (10), MVRLA (10), MVRHA (10), INCR (9), DECR (10), INVA (10) |
+| 4 | START (8) |
+| 5 | ON (8), OFF (8), HALT (8) |
+| 6 | INCR (9), DECR (10), INTE (9), INTD (9) |
+| 7 | MVAT (10), MVRLA (10), MVRHA (10), INVA (10) |
 | 8 | MVTA (11), LDAVR (10), ORT (11), ANDT (11), XORT (11) |
 | 9 | LDTI (11), MVARL (12), MVARH (12), STAVR (12), OUTA (12), INP (12) |
-| 10 | LDAI (12), MVIB (12), ORI (12), ANDI (12), XORI (12), ADDT (13), SUBT (13), ADDTC (13) |
-| 11 | POP (13), OUTI (13) |
+| 10 | POP (13), LDAI (12), MVIB (12), OUTI (13), ORI (12), ANDI (12), XORI (12), ADDT (13), SUBT (13), ADDTC (13) |
+| 11 | LDIVR (15) |
 | 12 | PUSH (15), ADDI (14), SUBI (14), RSHL (15), ADDIC (14) |
-| 13 | SHL (16), SHR (16), RSHR (16), PSHR (16), LDIVR (15), CSHL (16), CSHR (16) |
-| 14 | IADDR (16) |
-| 15 | MOVRR (17), MVIW (17) |
-| 18 | RET (20), BRUR (20) |
-| 19 | BR (21), BRZ (21), BRNZ (21), BRINH (21), BRINL (21), BRC (21), BRLT (21), BREQ (21), BRGT (21), BRNEQ (21), BR16Z (21), BR16NZ (21), BRDEV (21), BRVR (21), LDT (21) |
-| 20 | LDA (22), STT (22), IRET (22) |
-| 21 | STA (23) |
-| 26 | POPR (28) |
-| 27 | INT (30) |
-| 28 | LDZ (30), LDR (30) |
-| 29 | JSR (31), STZ (31) |
-| 30 | JSRUR (32), STR (32) |
-| 31 | PUSHR (33) |
+| 13 | SHL (16), SHR (16), RSHR (16), PSHR (16), CSHL (16), CSHR (16), IADDR (16) |
+| 14 | MOVRR (17) |
+| 15 | MVIW (17) |
+| 17 | RET (20), LDT (21), STT (22) |
+| 18 | BR (21), BRZ (21), BRNZ (21), BRINH (21), BRINL (21), BRC (21), BRLT (21), BREQ (21), BRGT (21), BRNEQ (21), BR16Z (21), BR16NZ (21), BRUR (20), BRDEV (21), BRVR (21), LDA (22) |
+| 19 | STA (23), IRET (22) |
+| 24 | POPR (28) |
+| 26 | PUSHR (33), LDZ (30), LDR (30), INT (30) |
+| 27 | STZ (31) |
+| 28 | JSR (31), STR (32) |
+| 30 | JSRUR (32) |
 | 32 | SHL16 (35) |
-| 44 | ADDIW (46) |
+| 42 | ADDIW (46) |
 
-Summed over the 85 opcodes of `software/opcodes.h`: 1,434 steps before, 1,226 after. A record of N steps takes 2N - 1
-clocks (the reset step is one clock, M-7), so an instruction is 4-6 clocks shorter: `tests/ucemu/run.py`'s `xisa`
-program ran in 2,157,017 clocks against 2,621,365 (-17.7 %), `os/kermit_io.asm`'s wait loop in 161 against 191.
+Summed over the 85 opcodes of `software/opcodes.h`: 1,434 steps before, 1,226 after the prologue, 1,173 after the
+idle steps (-18 %). A record of N steps takes 2N - 1 clocks (the reset step is one clock, M-7). `tests/ucemu/run.py`'s
+`xisa` program: 2,621,365 clocks -> 2,157,017 (prologue) -> 2,089,999 (idle steps); `os/kermit_io.asm`'s wait loop
+191 -> 161 -> 153 clocks.
 
 Review section 5 estimates ~30 % of executed steps removable (22 % from the six-step prologue alone) and gives a
-per-opcode "achievable" column. Applied so far: the three-step prologue (L-1, section 5.6). Still open: the idle
-steps elsewhere (`ucode_review.py` S1, 259 left) and `-IO-ADDR-LD` (L-2). M-1 is fixed everywhere (below).
+per-opcode "achievable" column. Applied: the three-step prologue (L-1, section 5.6) and the idle steps that can go
+(S1, section 5.7). Still open: `-IO-ADDR-LD` (L-2) and the hold steps that are not idle (below). M-1 is fixed
+everywhere (section 5.6).
 
 ### 5.6 The fetch prologue (three steps since 2026-09-29)
 
@@ -470,6 +472,43 @@ checks the whole store: no count step with `-MEM-RD` (500 count steps), and no l
 would take the $FFFF).
 
 ---
+
+### 5.7 Idle steps (2026-09-29)
+
+`tools/ucode_review.py` rule S1 counts the steps where nothing is asserted but `-VMA`: 259 after the prologue change.
+The generator's set-up / strobe / release pattern leaves one between many pairs of steps. Taking one out makes its
+neighbours P and N adjacent, so what P switches off and N switches on happen on the same edge - harmless unless an edge
+needs that step. `removeIdleSteps()` in `main.c` runs after every record is written and keeps an idle step when:
+
+| Rule | Why the step is needed |
+|---|---|
+| P ends REG-LD-LO/HI, `-MEM-WR` or `-IO-WR` | the hold after a trailing-edge strobe (74LS192 LOAD is level-sensitive; a write needs address and data stable past its end) |
+| N has a leading-edge latch (IR, operand, branch, INT, TMP, AC, shift register) | the latch takes the previous step's bus: it would take P's instead |
+| N loads or writes | selects, address and data settle a step before the strobe |
+| P counts and N changes REG-RD-ID or `-2-BYTE-OPERAND-SEL` | the count edge would meet a register-selection change: a decoder glitch counts another register (the rule of section 5.6) |
+| N counts and its register selection is not P's, or P counts too | the same glitch at the start; two counts would merge into one |
+| `-2-BYTE-OPERAND-SEL` starts in N | it replaces the ID fields: a selection change |
+| I/O (`-IO-RD` pops the UART's FIFO, `-IO-ADDR-LD`), `BR-TEST` (level-sampled), INT-EN/INT-START/`-INTA`, SOFT-HALT in P or N; OUT-ON/OUT-OFF in the step but not in P and N (ON, OFF) | actions left as they were |
+| N is the reset step with anything but the reset bit | M-7: its strobes would be one clock long |
+| the step's selection fields (ADDR-REG-ID, REG-RD-ID, REG-LD-ID, ALU, IOADDR) are neither P's nor N's | it is a set-up step of its own |
+
+One data-bus driver switching off and another on at the same edge (review A3, a few ns of overlap) is allowed; the
+machine already does it at many boundaries, the fetch's step 1 -> 2 among them. The prologue (steps 0-2) is never
+touched. The pass removes one step at a time and re-checks the new neighbours.
+
+**Result**: 152 of the 259 removed, 107 kept (68 count-edge releases, 28 before a count whose selection is not yet
+stable, the rest next to I/O, `BR-TEST`, INT or halt actions, and ON/OFF's OUT step). 82 records save one step, 31 two,
+one three and one five (PUSHR, 31 -> 26). Compiled code gains ~3 % on top of the prologue's ~18 %.
+
+**Checked**: `tests/ucemu/idle.py` builds the generator with `-DKEEPIDLE` (the records before the pass, byte-identical
+to the image committed before it, `d7af02a`) and checks, with its own copy of the rules, that every record is that
+record minus idle steps, that every removal satisfies the rules, that the prologue is untouched, and that no idle step
+left would pass them. `make check` on the emulators (the native session: 27.4 -> 26.1 clocks an instruction); `os/kermit_io.asm` recalibrated (PPS 6528: 1,000,176 clocks a
+second, 217 clocks a received character). `make prologue6` still builds `b98aec2`'s image.
+
+**Not done**: hold steps that are not idle - e.g. LDTI's step after its TMP latch, which keeps `-MEM-RD` a second
+step although the latch took its data at the leading edge of the step before. Those need a per-signal decision
+(hold time of each latch) rather than a pattern rule.
 
 ## 6. Reading the timing diagrams (`docs/isa/`)
 

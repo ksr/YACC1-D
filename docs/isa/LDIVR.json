@@ -2,11 +2,11 @@
  "signal": [
   {
    "name": "uCODE CLK",
-   "wave": "p............"
+   "wave": "p.........."
   },
   {
    "name": "step",
-   "wave": "=============",
+   "wave": "===========",
    "data": [
     "0",
     "1",
@@ -18,63 +18,61 @@
     "7",
     "8",
     "9",
-    "10",
-    "11",
-    "12"
+    "10"
    ]
   },
   {},
   {
    "name": "-VMA",
-   "wave": "l............",
+   "wave": "l..........",
    "phase": -0.05
   },
   {
    "name": "-MEM-RD",
-   "wave": "l.hl..h......",
+   "wave": "l.hl..h....",
    "phase": -0.05
   },
   {
    "name": "-MEM-WR",
-   "wave": "h......lh....",
+   "wave": "h......lh..",
    "phase": -0.05
   },
   {},
   {
    "name": "-REG-FUNC-RD",
-   "wave": "h.lh......lh.",
+   "wave": "h.lh.....lh",
    "phase": -0.05
   },
   {
    "name": "-REG-UP",
-   "wave": "h.lh......lh.",
+   "wave": "h.lh.....lh",
    "phase": -0.05
   },
   {
    "name": "-TMP-REG-RD1",
-   "wave": "h.....l..h...",
+   "wave": "h.....l..h.",
    "phase": -0.05
   },
   {
    "name": "-TMP-REG-LD1",
-   "wave": "h...lh.......",
+   "wave": "h...lh.....",
    "phase": -0.05
   },
   {},
   {
    "name": "LD-INS-REG",
-   "wave": "lhl..........",
+   "wave": "lhl........",
    "phase": -0.05
   },
   {
    "name": "UCODE-COUNT-RESET",
-   "wave": "l...........h",
+   "wave": "l.........h",
    "phase": -0.05
   },
   {},
   {
    "name": "ADDR-REG-ID[3:0]",
-   "wave": "=.....=......",
+   "wave": "=.....=....",
    "phase": -0.05,
    "data": [
     "0",
@@ -84,7 +82,7 @@
   {},
   {
    "name": "ADDRESS BUS",
-   "wave": "=..=..=......",
+   "wave": "=..=..=....",
    "phase": -0.16999999999999998,
    "data": [
     "PC",
@@ -94,7 +92,7 @@
   },
   {
    "name": "DATA BUS",
-   "wave": "=.z=..=..z...",
+   "wave": "=.z=..=..z.",
    "phase": -0.47,
    "data": [
     "M[PC]",
@@ -104,7 +102,7 @@
   },
   {
    "name": "IR",
-   "wave": "==...........",
+   "wave": "==.........",
    "phase": -0.05,
    "data": [
     "IR",
@@ -113,7 +111,7 @@
   },
   {
    "name": "ACC",
-   "wave": "=............",
+   "wave": "=..........",
    "phase": -0.05,
    "data": [
     "ACC"
@@ -121,7 +119,7 @@
   },
   {
    "name": "TMP",
-   "wave": "=...=........",
+   "wave": "=...=......",
    "phase": -0.05,
    "data": [
     "TMP",
@@ -130,7 +128,7 @@
   },
   {
    "name": "PC (R0)",
-   "wave": "=..=.......=.",
+   "wave": "=..=......=",
    "phase": -0.05,
    "data": [
     "PC",
@@ -140,7 +138,7 @@
   }
  ],
  "head": {
-  "text": "LDIVR Rn  (opcodes $D0-$D7, drawn for R2 = $D2)  -  13 microcode steps",
+  "text": "LDIVR Rn  (opcodes $D0-$D7, drawn for R2 = $D2)  -  11 microcode steps",
   "tick": 0
  },
  "config": {

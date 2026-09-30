@@ -44,6 +44,7 @@ check:
 	python3 tests/ucemu/run.py
 	python3 tests/ucemu/undefined.py
 	python3 tests/ucemu/prologue.py
+	python3 tests/ucemu/idle.py
 	python3 tests/os/run.py
 	python3 tests/asm/run.py --target
 	python3 tests/disasm/run.py
@@ -64,6 +65,7 @@ cc-test:
 	python3 tests/ucemu/run.py
 	python3 tests/ucemu/undefined.py
 	python3 tests/ucemu/prologue.py
+	python3 tests/ucemu/idle.py
 os-test:
 	python3 tests/os/run.py
 asm-test:

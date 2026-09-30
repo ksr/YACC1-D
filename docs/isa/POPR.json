@@ -2,11 +2,11 @@
  "signal": [
   {
    "name": "uCODE CLK",
-   "wave": "p.........."
+   "wave": "p........."
   },
   {
    "name": "step",
-   "wave": "===========",
+   "wave": "==========",
    "data": [
     "0",
     "1",
@@ -17,58 +17,57 @@
     "6",
     "7",
     "8",
-    "9",
-    "10"
+    "9"
    ]
   },
   {},
   {
    "name": "-VMA",
-   "wave": "l..........",
+   "wave": "l.........",
    "phase": -0.05
   },
   {
    "name": "-MEM-RD",
-   "wave": "l.h...l....",
+   "wave": "l.h..l....",
    "phase": -0.05
   },
   {},
   {
    "name": "-REG-FUNC-RD",
-   "wave": "h.lhlh.....",
+   "wave": "h.lhlh....",
    "phase": -0.05
   },
   {
    "name": "-REG-UP",
-   "wave": "h.lhlh.....",
+   "wave": "h.lhlh....",
    "phase": -0.05
   },
   {},
   {
    "name": "-ALU-FUNC",
-   "wave": "h......l...",
+   "wave": "h.....l...",
    "phase": -0.05
   },
   {
    "name": "-AC-LD",
-   "wave": "h.......lh.",
+   "wave": "h......lh.",
    "phase": -0.05
   },
   {},
   {
    "name": "LD-INS-REG",
-   "wave": "lhl........",
+   "wave": "lhl.......",
    "phase": -0.05
   },
   {
    "name": "UCODE-COUNT-RESET",
-   "wave": "l.........h",
+   "wave": "l........h",
    "phase": -0.05
   },
   {},
   {
    "name": "ADDR-REG-ID[3:0]",
-   "wave": "=.....=....",
+   "wave": "=....=....",
    "phase": -0.05,
    "data": [
     "0",
@@ -77,7 +76,7 @@
   },
   {
    "name": "REG-RD-ID[3:0]",
-   "wave": "=...=......",
+   "wave": "=...=.....",
    "phase": -0.05,
    "data": [
     "0",
@@ -87,7 +86,7 @@
   {},
   {
    "name": "ADDRESS BUS",
-   "wave": "=..=..=....",
+   "wave": "=..=.=....",
    "phase": -0.16999999999999998,
    "data": [
     "PC",
@@ -97,7 +96,7 @@
   },
   {
    "name": "DATA BUS",
-   "wave": "=.z...=....",
+   "wave": "=.z..=....",
    "phase": -0.47,
    "data": [
     "M[PC]",
@@ -106,7 +105,7 @@
   },
   {
    "name": "IR",
-   "wave": "==.........",
+   "wave": "==........",
    "phase": -0.05,
    "data": [
     "IR",
@@ -115,7 +114,7 @@
   },
   {
    "name": "ACC",
-   "wave": "=.......=..",
+   "wave": "=......=..",
    "phase": -0.05,
    "data": [
     "ACC",
@@ -124,7 +123,7 @@
   },
   {
    "name": "PC (R0)",
-   "wave": "=..=.......",
+   "wave": "=..=......",
    "phase": -0.05,
    "data": [
     "PC",
@@ -133,7 +132,7 @@
   }
  ],
  "head": {
-  "text": "POPR Rn  (opcodes $08-$0F, drawn for R2 = $0A)  -  11 microcode steps",
+  "text": "POPR Rn  (opcodes $08-$0F, drawn for R2 = $0A)  -  10 microcode steps",
   "tick": 0
  },
  "config": {

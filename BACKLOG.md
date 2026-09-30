@@ -48,21 +48,21 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   $D800-$DFFF) and a CRTC table assuming a 10 MHz dot clock, 5-dot characters, 80 x 24
   (`vcrtab`); read the crystal, confirm with `tests/video/hold_address.py`, adjust with the monitor's `VR` by hand, then
   in the table. The character EPROM's order is assumed 2513-style (ASCII bits 0-5); read the 2732 to confirm.
-- **Sequencer microcode: four changes waiting for one EEPROM** (`firmware/microcode/ucode-generator2/test.hex`; `cache` =
+- **Sequencer microcode: five changes waiting for one EEPROM** (`firmware/microcode/ucode-generator2/test.hex`; `cache` =
   what the EEPROM holds, the 2026-09-23 image): (a) `LDZ`/`STZ`/`ADDIW`/`SHL16` (2026-09-24, 32 new records $80-$8F,
   $C0-$CF), (b) the undefined opcodes $A5, $AE, $F8-$FA get HALT's record (2026-09-29, H-4), (c) the three-step fetch
   prologue (2026-09-29, `docs/system/MICROCODE.md` 5.6: every record changes, instructions 2-3 steps shorter), (d) M-1:
   every step that counts a register is written without `-MEM-RD` (2026-09-29, the same section; 116 steps, one bit
-  each). Load in two stages so a failure points at its change:
+  each), (e) 152 idle steps removed (2026-09-29, 5.7 there). Load in two stages so a failure points at its change:
   1. `make -C firmware/microcode/ucode-generator2 prologue6`, then
      `python3 tools/ucode_send.py --all --hex firmware/microcode/ucode-generator2/build/p6/test.hex` (Ken; START), reset,
      `python3 tests/bench/run.py --port /dev/cu.usbserial-AB0MVHSQ`: (a) + (b) with the old prologue. `isa` checks the
      four instructions byte by byte (the machine must print exactly `expected/isa.uc.out`), `xisa` is compiled C using
      them (y1cc `--xisa`: the page register R6, a recursive frame in the page, ADDIW, SHL16, R6 reloaded after the ROM's
      charout).
-  2. `python3 tools/ucode_send.py --all` (the tree's image, + (c) and (d)), START, reset, the bench again: every test must print
+  2. `python3 tools/ucode_send.py --all` (the tree's image, + (c), (d) and (e)), START, reset, the bench again: every test must print
      the same; then the monitor, BASIC, Y1/OS from CF and a kermit transfer (its timeouts were recalibrated for (c):
-     `os/kermit_io.asm` PPS 6203 - with the old microcode they are 16% long, harmless). If stage 2 fails where stage 1
+     `os/kermit_io.asm` PPS 6528 - with the old microcode they are 25% long, harmless). If stage 2 fails where stage 1
      passed, stage 1's image is the way back.
   When `xisa` passes, make `--xisa` y1cc's default (below, "C compiler").
 - **Monitor + BASIC 8afde21** (2021-09, `firmware/*/candidates/2021-09-8afde21`): `charavail` BIOS vector ($FFEC),
@@ -104,7 +104,8 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   source a step early - it does).
 - **LOW / speed**: (done 2026-09-29 in the generator, NOT YET LOADED: the fetch prologue is 3 steps, `docs/system/MICROCODE.md`
   5.6; compiled code ~18% fewer clocks on the emulator.) (Also done, the same day: M-1 in the 116 operand-fetch
-  increment steps, section 5.6 there.) Still open: 259 idle steps, `-IO-ADDR-LD` (L-2); the rest of the ~30% tabulated per opcode in the microcode notes; emulator mismatches listed there (BRVR, JSRUR byte order, carry on SUB/shifts, R0-load suppression).
+  increment steps, section 5.6 there, and 152 of the 259 idle steps, section 5.7, ~3% more.) Still open: hold steps
+  that are not idle (5.7 "Not done"), `-IO-ADDR-LD` (L-2); the rest of the ~30% tabulated per opcode in the microcode notes; emulator mismatches listed there (BRVR, JSRUR byte order, carry on SUB/shifts, R0-load suppression).
 - Timing-diagram model (`tools/ucode_wavedrom.py`) corrections from the review: IR/operand/branch/TMP/ACC latch on the LEADING
   edge of their strobe; one step = two clocks; steps 0-2 run with the previous opcode in the IR; -REG-RD-LO/HI are byte lanes.
   To fold into the generator when the diagrams are next regenerated.
@@ -335,7 +336,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   - Not implemented (optional in the protocol; each would cost code in a program already at 27K of the 32K area):
     **long packets** (E-Kermit's F_LP: up to 4096 characters a packet, fewer ACK round trips; with the six-step fetch
     prologue a receive burst that long would overrun the 16-byte FIFO at 279 clocks a character against the line's 260;
-    with the three-step one of 2026-09-29 the loop takes 229 and keeps up, so receiving becomes possible once the
+    with the three-step one of 2026-09-29 the loop takes 217 and keeps up, so receiving becomes possible once the
     microcode is reloaded - the packet buffer is the remaining limit), **sliding windows** (F_SSW; the same), streaming, locking shifts, RESEND/recovery of an
     interrupted transfer, file dates in the attribute packet (Y1/OS has no dates), and the server's REMOTE commands
     (DIR, CD, DELETE, TYPE, SPACE: each a G subcommand; now "Unimplemented server command").
