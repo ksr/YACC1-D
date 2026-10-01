@@ -20,7 +20,8 @@ Verified on hardware 2026-09-18 with the bus tester; the burned EEPROM is `firmw
   three re-layout options with J2 at the top edge; B was picked and routed (fab files), then Ken decided the same day
   that the CF adapter (HX-2118P) mounts on two M3 standoffs on the card with J2 parallel to X1: standoff options A / B,
   then C / D / E with the adapter at the free top edge; **Ken picked E (2026-09-25): `memory-v2.0.kicad_pcb`, finished
-  for fabrication, not ordered**; 2026-09-29 + **JP3, the ROM write-protect jumper** (design review M2). The top-edge
+  for fabrication, not ordered**; 2026-09-29 + **JP3, the ROM write-protect jumper** (design review M2); 2026-09-30 +
+  **R15, the ADDR15 pull-down** (470 Ω, the FORCE-ROM race fix, design review M1). The top-edge
   board is kept as a record in `options-top-edge-J2/`.
 - `eagle/deprecated/v1.3-do-not-use/` – **DO NOT USE: earlier save (notes 2025-03-06, board 2021-03-17), NOT the built
   card** (found 2026-09-24; it was `eagle/v1.3/` until Ken renamed and deprecated it the same day): no IC15

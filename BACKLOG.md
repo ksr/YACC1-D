@@ -7,7 +7,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Memory card: the FORCE-ROM race fix (review M1, Ken 2026-09-30) - a 470 Ω pull-down on ADDR15.** Undriven, A15
   floats high, so IC12 is clocked ~40 ns before the real address arrives. v1.3 in the machine: fit 470 Ω from IC10 pin 4
   to IC10 pin 7 on the solder side (Ken; `docs/cards/memory.md` 4.1 has the why, the value and the check); read the bus
-  tester's RN4 value first (pull-ups on the address lines: 10 kΩ is fine, 1 kΩ is not). v2.0: in the design. Then,
+  tester's RN4 value first (pull-ups on the address lines: 10 kΩ is fine, 1 kΩ is not). v2.0: **done** - R15 (470 Ω,
+  beside the bus connector, pin 1 on the ADDR15 track; `hardware/cards/memory/kicad/v2.0` README). Then,
   optional and separate: drop the `-VMA`-in-every-step hack from the microcode generator (a reload) so the chip selects
   are qualified by -VMA again.
 - **Ports P2-P7 are probably free for another card** (noted 2026-09-24). The I/O card's 74LS138 (IC5, strapped to
@@ -175,7 +176,9 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   apart at the header end, no pin 20) on two 15 mm M3 standoffs over the CF chips at the free top edge, J2 parallel to
   X1 with a short straight ribbon, the ROM uncovered in the top row of the memory column. **2026-09-29: + JP3, the ROM
   write-protect jumper** (design review M2; 1-2 WRITE, 2-3 PROTECT), added locally beside the ROM, the rest of the
-  route unchanged. `memory-v2.0.kicad_pcb`:
+  route unchanged. **2026-09-30: + R15, the 470 Ω ADDR15 pull-down** (design review M1, the FORCE-ROM race),
+  added locally beside the bus connector (pad 1 on the ADDR15 track, which was split there; no via). **The 1:1 print
+  changed again (JP3, then R15): reprint it before ordering.** `memory-v2.0.kicad_pcb`:
   0 unrouted, 72 through vias, DRC 0 copper violations / 0 unconnected, planes one piece each, netlist proof MATCH,
   silkscreen tidied (adapter outline, standoff holes H1/H2, "CF CARD INSERTS HERE", J3 / JP2 / LED labels); gerbers +
   NPTH/PTH drill zip, renders, placement PDF, BOM (+ standoffs, screws, washers, ribbon), JLCPCB order note (as order

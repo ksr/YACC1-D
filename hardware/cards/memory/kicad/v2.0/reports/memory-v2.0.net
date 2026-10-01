@@ -1,8 +1,8 @@
 (export
 	(version "E")
 	(design
-		(source "/Users/ken/Developer/YACC1-D/hardware/cards/memory/kicad/v2.0/memory-v2.0.kicad_sch")
-		(date "2026-09-29T04:40:13")
+		(source "/Users/ksr77/Developer/YACC1-D/hardware/cards/memory/kicad/v2.0/memory-v2.0.kicad_sch")
+		(date "2026-09-30T09:59:00")
 		(tool "Eeschema 10.0.6")
 		(sheet
 			(number "1")
@@ -112,7 +112,7 @@
 				(source "memory-v2.0-sheet2.kicad_sch")
 				(comment
 					(number "1")
-					(value "Unchanged from the built v1.3 (Fusion export 2026-09-24, Memory V1.3.sch sheet 2)")
+					(value "v1.3 sheet 2 + R15, the ADDR15 pull-down: the FORCE-ROM race fix (rule 8, 2026-09-30)")
 				)
 				(comment
 					(number "2")
@@ -3105,6 +3105,60 @@
 						)
 						(pin
 							(num "3")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R15")
+			(value "470")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(description "ADDR15 pull-down: FORCE-ROM race fix (review M1)")
+			(fields
+				(field
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "ADDR15 pull-down: FORCE-ROM race fix (review M1)")
+			)
+			(libsource
+				(lib "Device")
+				(part "R")
+				(description "Resistor")
+			)
+			(property
+				(name "Sheetname")
+				(value "Sheet 2")
+			)
+			(property
+				(name "Sheetfile")
+				(value "memory-v2.0-sheet2.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "R res resistor")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "R_*")
+			)
+			(sheetpath
+				(names "/Sheet 2/")
+				(tstamps "/35468cab-567a-8772-871a-8015ceda3737/")
+			)
+			(tstamps "0be55403-3f3b-50ff-b618-a9dd1378a2d7")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
 						)
 					)
 				)
@@ -11869,6 +11923,11 @@
 				(pintype "input")
 			)
 			(node
+				(ref "R15")
+				(pin "1")
+				(pintype "passive")
+			)
+			(node
 				(ref "X1")
 				(pin "A18")
 				(pinfunction "B_A18")
@@ -13908,6 +13967,11 @@
 				(ref "PWR0")
 				(pin "K")
 				(pinfunction "C_K")
+				(pintype "passive")
+			)
+			(node
+				(ref "R15")
+				(pin "2")
 				(pintype "passive")
 			)
 			(node

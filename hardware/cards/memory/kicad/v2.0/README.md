@@ -1,14 +1,16 @@
 # memory-v2.0 — the built memory card v1.3 + the CompactFlash interface (KiCad design)
 
-**Status 2026-09-29: THE v2.0 BOARD IS STANDOFF OPTION E (Ken's pick), FINISHED FOR FABRICATION - NOT ORDERED;
-2026-09-29: + JP3, the ROM write-protect jumper** ("The ROM write-protect jumper JP3" below).
+**Status 2026-09-30: THE v2.0 BOARD IS STANDOFF OPTION E (Ken's pick), FINISHED FOR FABRICATION - NOT ORDERED;
+2026-09-29: + JP3, the ROM write-protect jumper; 2026-09-30: + R15, the ADDR15 pull-down** ("The ROM write-protect
+jumper JP3" and "The ADDR15 pull-down R15" below).
 `memory-v2.0.kicad_pcb` (beside the schematic, sharing `memory-v2.0.kicad_pro` / `.kicad_dru`): the CF-to-IDE adapter
 (an **HX-2118P**, measured) **flat on two 15 mm M3 standoffs** over the CF chips at the free top edge, fed by a short
 straight 40-wire ribbon from **J2, the card's own IDE header, parallel to the bus connector X1**; the ROM uncovered in
 the top row of the memory column. Routed (0 unrouted, **72 through vias**, 12,808 mm), DRC 0 copper violations and 0
 unconnected, planes one piece each, netlist proof MATCH, silkscreen tidied, fab files made: see **"The v2.0 board"**
 below. Open before ordering: only the ribbon plug's **pin 20** (the adapter's power-pad order was resolved 2026-09-26:
-floppy pinout, a straight-through cable from J3, Ken's harness).
+floppy pinout, a straight-through cable from J3, Ken's harness). **The 1:1 print changed with JP3 and again with R15:
+reprint `memory-v2.0-1to1.pdf` before ordering.**
 
 The records: the five standoff placement options A-E with their trial routes and 1:1 check prints ("The standoff
 options", "The standoff options C / D / E"), and the board finished earlier on 2026-09-24 from top-edge option B (J2 at
@@ -96,6 +98,34 @@ there JP3 would have to be placed anew. Boards made before rule 7 (the standoff 
 records) keep IC13 pin 27 on -WE; the netlist proof and the DRC parity gate check them against the schematic without
 JP3 and require JP3 on this board.
 
+### The ADDR15 pull-down R15 (Ken, 2026-09-30; `mem_v2_netlist.py` rule 8)
+
+**Why.** The fix for design review M1, the FORCE-ROM race: between bus cycles nothing drives ADDR15 and an undriven LS
+input reads high, so IC12's clock (ADDR15 · VMA · BUS-EN) can clear FORCE-ROM before the real address arrives; 470 Ω
+to GND holds the line low until a driver puts a 1 on it. The why, the value and the loads: `docs/cards/memory.md`
+section 4.1.
+
+**What.** **R15, 470 Ω, 1/4 W**, from **ADDR15** (pin 1) to **GND** (pin 2). The same part as the CF section's R10-R14
+(`Device:R`, footprint `Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal`), and the next free reference
+(the built card has R2, the CF section R10-R14). `pd_apply()` checks that the net ADDR15 is exactly IC10 pin 4 (the
+FORCE-ROM clock gate), IC9 pin 17 (the address buffer) and X1 pin A18 (the bus) before it adds R15. On the schematic
+(sheet 2, the FORCE-ROM logic; `gen_mem_v2.add_pulldown()`) R15 hangs from the ADDR15 wire into IC10B pin 4 through a
+junction, with a GND symbol and a note ("R15 470: ADDR15 pull-down, FORCE-ROM race fix ...").
+
+**On the board** (`finish_v2.add_pd()`, run by `make-e` after `add_wp()` and by `finish_v2.py pd`): a **local change**,
+like JP3. Nothing near IC10 or IC9 has room for a 12 x 3 mm resistor without moving parts, so a search of the committed
+route for a spot where R15's courtyard meets no other part and both pads keep 0.2 mm from every other net found one:
+**the strip between the bus connector X1 and the cap column C16 / C4**, R15 lying parallel to X1 with **pad 1 at
+(32.58, 65.56) right on the ADDR15 track** (its 45-degree F.Cu run from X1 A18 towards IC9) and **pad 2 at
+(32.58, 75.72) on GND**, which reaches the In1.Cu plane through its thermal relief like the card's other GND pads.
+**Copper: the one ADDR15 track under pad 1 is split at the pad centre into two; nothing else is added (no track, no
+via), every other track of the route is unchanged.** Clearance from pad 1 / pad 2 to the nearest other net: 0.36 /
+0.33 mm (ADDR14 / ADDR11, F.Cu). Silk: **"R15" and "470"** inside its body outline (0.8 mm, reading upward); C16's
+reference moves from the left of C16 (now under R15's pad 1) to its right, between C16 and IC28. `add_pd()` is drawn
+for this route and stops with an error on any other, as `add_wp()` does. Boards made before rule 8 (every board but
+this one) have no R15: the netlist proof and the DRC parity gate check them against the schematic without it and
+require R15 on this board.
+
 **Which route.** Two candidates, compared by `build.sh`'s rule (fewest unrouted, then vias, then length):
 
 | route | unrouted | vias | track |
@@ -146,17 +176,17 @@ silk or the edge, none upside down; DRC silk_overlap 0):
 | | **v2.0 board (standoff E)** | the top-edge record | the built card v1.3 (its own rules) |
 |---|---|---|---|
 | unrouted | **0** | 0 | 0 |
-| vias | **72**, all through, 0.8 / 0.4 mm (69 + JP3's 3) | 43 | (0.4572 / 0.254 mm) |
-| track | **2,044 segments, 12,808 mm** (F.Cu 6,853 / B.Cu 5,955), all 0.25 mm; placement airwire 11,130 mm | 11,779 mm | 0.1524 mm tracks |
+| vias | **72**, all through, 0.8 / 0.4 mm (69 + JP3's 3; R15 adds none) | 43 | (0.4572 / 0.254 mm) |
+| track | **2,045 segments, 12,808 mm** (F.Cu 6,853 / B.Cu 5,955; R15 splits one ADDR15 segment), all 0.25 mm; placement airwire 11,130 mm | 11,779 mm | 0.1524 mm tracks |
 | DRC copper violations | **0** (clearance, shorts, width, via, hole, edge, starved thermal, dangling, unconnected, rule areas) | 0 | 0 |
 | DRC unconnected | **0** | 0 | 0 |
-| planes | GND on In1.Cu and VCC on In2.Cu each **one piece**, ~16,400 mm2 (81 % of the board after antipads and the two 7 mm keep-outs); all **175 GND/VCC pads** on their plane through thermal reliefs | same | same stack-up |
+| planes | GND on In1.Cu and VCC on In2.Cu each **one piece**, ~16,380 mm2 (81 % of the board after antipads and the two 7 mm keep-outs); all **176 GND/VCC pads** on their plane through thermal reliefs | same | same stack-up |
 | DRC items left, all inherited | X1's two mounting holes in X1's own keepout 2/2, X1 library mismatch 1/1, X1 silk over the edge 4/4, X1 pin-number text height 2/2, Eagle-footprint silk outlines over pads (silk_over_copper) 199/199 | same | |
 | DRC silk_overlap / text_thickness | **0 / 0** | 0 / 0 | 45 / 1 |
 | schematic parity | 49 items, all the built card's inherited Eagle values/fields; **new: none** | same | 220 |
 | ERC | 99, PASS (the built card's 104 residue - 6 bus labels now global + the designed-in SRST label) | same | 104 |
-| netlist proof | **MATCH** (71 parts + the two board-only standoff holes H1 / H2, 187 nets, 690 pads) | MATCH (before JP3) | |
-| drill | 4 layers; PTH file 799 holes, 6 sizes; **NPTH file: H1 / H2 (3.2 mm) + X1's two 2.79 mm mounting holes** (`finish_v2.py drill-check`) | one drill file | |
+| netlist proof | **MATCH** (72 parts + the two board-only standoff holes H1 / H2, 187 nets, 692 pads) | MATCH (before JP3 and R15) | |
+| drill | 4 layers; PTH file 807 holes, 6 sizes; **NPTH file: H1 / H2 (3.2 mm) + X1's two 2.79 mm mounting holes** (`finish_v2.py drill-check`) | one drill file | |
 
 ### Fab outputs (`finish_v2.py fab-e`; a plain `build.sh` run regenerates them from the committed board)
 
@@ -170,7 +200,7 @@ silk or the edge, none upside down; DRC silk_overlap 0):
 | `memory-v2.0-render-top.png`, `memory-v2.0-render-bottom.png` | 3D renders (the adapter is shown by its silkscreen outline) |
 | `memory-v2.0-placement.pdf` | assembly drawing: silkscreen + F.Fab (values, the adapter drawing, PWR0) + outline, title block |
 | **`memory-v2.0-1to1.pdf`** | **the 1:1 US-Letter print of the routed board** (`print_1to1.py`: tracks F.Cu light red / B.Cu light blue, vias, parts, the adapter, holes, J2, ribbon, ROM zone; page 2 the side view and notes): print at 100 % and lay the adapter on it |
-| `memory-v2.0-schematic.pdf`, `memory-v2.0-bom.csv` | schematic (7 sheets); BOM: 35 part lines, **71 parts**, then **H1,H2** (3.2 mm NPTH mounting holes: board features, no part, Qty 0) and the **hardware lines** HW1-HW6 (below) |
+| `memory-v2.0-schematic.pdf`, `memory-v2.0-bom.csv` | schematic (7 sheets); BOM: 36 part lines, **72 parts**, then **H1,H2** (3.2 mm NPTH mounting holes: board features, no part, Qty 0) and the **hardware lines** HW1-HW6 (below) |
 | `reports/memory-v2.0-*.txt/json/rpt` | `-make.txt` (the make-e log), `-order.txt` (the route kept), `-freerouting.log` (FINAL=route only), `-placement-check.txt`, `-drc.json` / `-drc.rpt`, `-final.txt`, `-fab.txt` |
 
 ### Assembly notes
@@ -186,6 +216,9 @@ silk or the edge, none upside down; DRC silk_overlap 0):
   standoffs (screws + washers from above), the ribbon into the adapter's header, the J3 cable to its power pads.
 - **JP3**: fit its jumper cap on **2-3 (PROTECT)**; 1-2 only to write the 28C64 in place. Never run with no cap
   (the ROM's -WE would float).
+- **R15** (470 Ω, 1/4 W, yellow-violet-brown): an ordinary axial resistor lying flat between X1 and C16 / C4, either
+  way round. Before using the bus tester with this card, read the tester's RN4 value (its address-line pull-ups): with
+  10 kΩ the idle A15 sits at ~0.2 V, fine; with 1 kΩ it would be ~1.6 V (`docs/cards/memory.md` 4.1).
 - **Pin 20**: the adapter has no pin 20 (key). J2 has it fitted. Use a ribbon whose **J2-end plug has pin 20 open**
   (generic 40-way IDC sockets are) - a keyed IDE plug (pin 20 blocked) does not go onto J2 unless **J2's pin 20 is
   pulled**. **JP2 stays OPEN** (pin 20 = +5 V serves adapters powered through the header, not this one).
@@ -220,7 +253,7 @@ Resolved: ~~the card-cage slot pitch vs the ~35 mm stack height~~ - nothing in f
   IO-ADDR0-3, -IO-RD, -IO-WR became global labels (sheet 7 uses them) and a note says so; **C20-C23 are taken out of
   sheet 1's cap row** (the symbols go; the GND and VCC rails through their pins become one wire each from C19 to C24,
   their four + four junctions go; `gen_mem_v2.py` `remove_parts()`); **sheet 3 gets JP3** (IC13 pin 27 onto ROM-WE,
-  above); title blocks say v2.0.
+  above); **sheet 2 gets R15** (ADDR15 to GND, above); title blocks say v2.0.
   **Sheet 7** is the CF section, drawn with the CF card's own sheet writer (`gen_cf.py`, class `Sheet`), nets shared
   with sheets 1-6 as boxed global labels. **IC15** (74ALS11, gate A = AND(-LO-RAM, -HI-RAM, -ROM-CS) -> IC5 pin 19,
   the 74LS245's enable) is part of the built card's schematic. The circuit is unchanged by the re-layout.
@@ -267,11 +300,12 @@ U$1, X1):
 | C30 | C6 | 10 uF bulk beside J3 | radial D5 |
 
 Added on the built card's side (rule 7, Ken 2026-09-29): **JP3**, ROM write-protect jumper, 3-pin header
-(`PINHD-1X3`, `memory-v1.3-eagle:1X03`, the same part as JP1).
+(`PINHD-1X3`, `memory-v1.3-eagle:1X03`, the same part as JP1). (Rule 8, Ken 2026-09-30): **R15**, 470 Ω ADDR15
+pull-down (`Device:R`, `R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal`, the same part as R10-R14).
 
 Dropped from the CF card: X1 (bus connector, shared), **LED3 + R6 (DASP LED, Ken)**, **LED1 + R7 (PWR LED: the
-memory card already has PWR0 + R2 330R)**. Everything through-hole. BOM: `memory-v2.0-bom.csv` (35 lines, **71 parts**:
-the built card's 53 - C20-C23 + the CF section's 21 + JP3; built-card parts keep their converted Eagle values, e.g. `74*32`,
+memory card already has PWR0 + R2 330R)**. Everything through-hole. BOM: `memory-v2.0-bom.csv` (36 lines, **72 parts**:
+the built card's 53 - C20-C23 + the CF section's 21 + JP3 + R15; built-card parts keep their converted Eagle values, e.g. `74*32`,
 `C-US`, whose line is now `C1-C19,C24` x 20).
 
 ## The standoff options (Ken, 2026-09-24: the CF adapter on standoffs on the card)
@@ -838,7 +872,7 @@ DATA8-15 bundle (DRC: A 11 shorts / 4 clearance / 63 mask bridges, B 12 / 1 / 50
 | `memory-v2.0-standoff-{a,b,c,d,e}-trial.kicad_pcb` / `.kicad_pro` / `.kicad_dru` | their trial routes |
 | **`memory-v2.0-standoff-{a,b,c,d,e}-1to1.pdf`** | **the 1:1 check prints** |
 | `memory-v2.0-standoff-{a,b,c,d,e}-render-top.png`, `-placement.png`, `-trial.png` | 3D render with the adapter, 2D placement / airwire plot, trial-route copper plot |
-| `memory-v2.0-schematic.pdf`, `memory-v2.0-bom.csv` | schematic plot, bill of materials (71 parts; then H1/H2, board-only holes, no part, and the hardware lines HW1-HW6) |
+| `memory-v2.0-schematic.pdf`, `memory-v2.0-bom.csv` | schematic plot, bill of materials (72 parts; then H1/H2, board-only holes, no part, and the hardware lines HW1-HW6) |
 | `memory-v1.3-eagle.kicad_sym`, `.pretty/`, `sym-lib-table`, `fp-lib-table` | the built card's converted libraries, copied (same nickname `memory-v1.3-eagle`; was `memory-v1.3-fusion-export-2026-09-24-eagle` before the rename, see below) |
 | `options-top-edge-J2/` | **the top-edge record**: `memory-v2.0.kicad_pcb` (the board finished from option B, + `.kicad_pro` / `.kicad_dru`) and its fab outputs (`memory-v2.0-gerbers.zip`, `gerbers/`, `memory-v2.0-jlcpcb-order.txt`, `memory-v2.0-render-{top,bottom}.png`, `memory-v2.0-placement.pdf`); the three re-layout placements `memory-v2.0-relayout-{a,b,c}.kicad_pcb` / `.kicad_pro` / `.kicad_dru`, their trial routes `-trial.*` and images `-render-top.png`, `-placement.png`, `-trial.png`; `reports/` (`memory-v2.0-final.txt`, `-drc.json` / `-drc.rpt`, `-make.txt`, `-placement-check.txt`, per option `relayout-X-*`) |
 | `placements.py`, `space_check.py`, `options-keep-copper/` | the blocked keep-the-built-copper options (record, above) |
@@ -854,10 +888,10 @@ DATA8-15 bundle (DRC: A 11 shorts / 4 clearance / 63 mask bridges, B 12 / 1 / 50
                                                                   # top-edge record (~10 min; no routing)
     FINAL=trial hardware/cards/memory/kicad/v2.0/build.sh         # remake memory-v2.0.kicad_pcb from standoff E's
                                                                   # committed trial route (72 vias) - stops at add_wp
-                                                                  # (JP3 is drawn for the route of order 15)
+                                                                  # (JP3 and R15 are drawn for the route of order 15)
     FINAL=route SEEDS=15 hardware/cards/memory/kicad/v2.0/build.sh    # route standoff E again in component order 15
                                                                   # (the committed board's route) and remake the board
-                                                                  # (make-e, then add_wp: JP3);
+                                                                  # (make-e, then add_wp: JP3, add_pd: R15);
                                                                   # other SEEDS: those orders, the best kept
     STANDOFF="c d e" hardware/cards/memory/kicad/v2.0/build.sh    # regenerate those standoff boards and route each
                                                                   # anew (one Freerouting run per DSN component order
@@ -882,19 +916,21 @@ time, so each plain run rewrites them (no other change). It reads `../v1.3` (thr
 `../../../cf/kicad/v1.0/cf_netlist.py` + `gen_cf.py` (read-only); Freerouting from `~/freerouting/freerouting.jar`
 (`FRJAR=`), watchdog `WATCHDOG=` s.
 
-## Results (build of 2026-09-29: the v2.0 board with JP3 + the standoff options A-E)
+## Results (build of 2026-09-30: the v2.0 board with JP3 and R15 + the standoff options A-E)
 
-- **The v2.0 board (standoff E + JP3): PASS** - 0 unrouted, 72 through vias, 12,808 mm, DRC 0 copper violations / 0
+- **The v2.0 board (standoff E + JP3 + R15): PASS** - 0 unrouted, 72 through vias, 12,808 mm, DRC 0 copper violations / 0
   unconnected, planes one piece each, silkscreen clean, H1 / H2 in the NPTH drill file, placement check OK, netlist
   proof MATCH (`reports/memory-v2.0-final.txt`, `-placement-check.txt`, `-fab.txt`). Not ordered.
 - **Netlist proof: MATCH.** v2.0 schematic = the built v1.3 (53 parts, 169 nets, IC15 included) minus C20-C23 (each
   checked to be pin 1 GND / pin 2 VCC and nothing else on v1.3) + CF section (21 parts, 27 own nets, 69 pins on 17
   shared nets) + JP3 (rule 7: the v1.3 net of IC13.27 checked to be exactly IC1.27, IC2.27, IC6.4, IC13.27 before
-  the pin moves): 71 parts, 187 nets, 690 pins, 33 unconnected pins (10 v1.3 + 23 documented CF no-connects). The
-  v2.0 board equals the schematic pad for pad plus the two board-only standoff holes H1/H2, and must carry JP3; the
-  five standoff boards and their trial routes (made before JP3) equal the schematic without rule 7, plus H1/H2;
-  the top-edge finished board equals the schematic without rule 7; the three top-edge re-layout boards, their trial routes and the
-  three keep-copper boards (records made before the removal) equal the schematic without rule 7 plus exactly C20-C23
+  the pin moves) + R15 (rule 8: the net ADDR15 checked to be exactly IC10.4, IC9.17, X1.A18 before R15 joins it):
+  72 parts, 187 nets, 692 pins, 33 unconnected pins (10 v1.3 + 23 documented CF no-connects). The
+  v2.0 board equals the schematic pad for pad plus the two board-only standoff holes H1/H2, and must carry JP3 and R15;
+  the five standoff boards and their trial routes (made before JP3 and R15) equal the schematic without rules 7 and 8,
+  plus H1/H2; the top-edge finished board equals the schematic without rules 7 and 8; the three top-edge re-layout
+  boards, their trial routes and the three keep-copper boards (records made before the removal) equal the schematic
+  without rules 7 and 8 plus exactly C20-C23
   as on v1.3
   (`reports/netlist-proof.txt`).
 - **ERC: PASS** (99 vs the built card's 104, all explained: `reports/erc-summary.txt`).
@@ -903,7 +939,7 @@ time, so each plain run rewrites them (no other change). It reads `../v1.3` (thr
   ribbon, the standoff holes clear (A / B: nearest pad 4.9 mm, body 4.6 mm; C-E: pad 4.2 mm, body 3.5 mm from a hole
   centre), the ROM keep-clear zone empty and away from the adapter (A / B 44.8 mm, C 4.6, D 5.8, E 5.1 mm); C-E: J2's
   plug envelope clear (A / B: NOTE, made before that rule); schematic parity: nothing new (beyond the two items of a
-  board made before JP3: JP3 missing, IC13 pad 27 on -WE).
+  board made before JP3 and R15: JP3 missing, IC13 pad 27 on -WE, R15 missing).
 - **Standoff trial routes: complete** for A (94 vias, 13,540 mm), B (100 vias, 13,748 mm), C (82 vias, 14,096 mm),
   D (77 vias, 12,502 mm) and E (72 vias, 12,579 mm), 0 DRC copper violations.
 - **Top-edge record (option B finished board): PASS** as before - 0 unrouted, 43 through vias, 11,779 mm, DRC 0 copper

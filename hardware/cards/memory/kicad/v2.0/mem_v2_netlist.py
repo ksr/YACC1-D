@@ -1,5 +1,5 @@
 """mem_v2_netlist.py - the YACC1 memory card v2.0 circuit: the built v1.3 + the CompactFlash section (2026-09-24) + the ROM
-write-protect jumper JP3 (2026-09-29, rule 7).
+write-protect jumper JP3 (2026-09-29, rule 7) + the ADDR15 pull-down R15 (2026-09-30, rule 8).
 
 THE single source of what v2.0 adds. Plain Python, no KiCad import.
 
@@ -13,8 +13,9 @@ THE single source of what v2.0 adds. Plain Python, no KiCad import.
          + CF section                hardware/cards/cf/kicad/v1.0/cf_netlist.py (the standalone CF card v1.0), transformed
                                      by the explicit rules below - nothing else is added or changed.
          + JP3                       rule 7 (2026-09-29): the ROM write-protect jumper on IC13's -WE.
+         + R15                       rule 8 (2026-09-30): 470 ohm from ADDR15 to GND, the FORCE-ROM race fix.
 
-Rules (Ken's decisions, 2026-09-24; rule 7 2026-09-29):
+Rules (Ken's decisions, 2026-09-24; rule 7 2026-09-29; rule 8 2026-09-30):
   1. The CF card v1.0 circuit AS DRAWN, including its own port decoder U1 (74LS138, G1 = IO-ADDR3, Y0 = P8, Y1 = P9):
      the CF stays on I/O ports P8 (register-select latch, write) / P9 (data, read/write), which the ROM in the machine
      and both emulators (software/cfmodel.h, firmware/monitor/monitor.asm) already use.
@@ -43,6 +44,16 @@ Rules (Ken's decisions, 2026-09-24; rule 7 2026-09-29):
      2-3 = PROTECT (pin 3 on VCC: -WE held high). expected() checks that the v1.3 net holding IC13.27 is exactly
      IC1.27, IC2.27, IC6.4, IC13.27 before it moves the pin. Boards made before this rule (the standoff options,
      their trial routes, the records) have no JP3; check_netlist.py checks them against the schematic without it.
+  8. The ADDR15 pull-down R15 (Ken, 2026-09-30; design review M1, the FORCE-ROM race; docs/cards/memory.md section
+     4.1): IC12's clock is ADDR15 . VMA . BUS-EN, meant to clear FORCE-ROM on the first bus cycle that addresses the
+     upper 32K. Nothing drives the address bus between cycles and an undriven LS input reads high, so the clock term
+     can go true when -VMA falls, before the real address ($0000 after reset) arrives. R15, 470 ohm from ADDR15 to
+     GND, holds the line low while nothing drives it (~0.42 V with the ~0.9 mA of every input on it; a register-card
+     244 driving it high supplies ~10 mA). A through-hole 1/4 W resistor, the same symbol and footprint as the CF
+     section's R10-R14; the next free reference (v1.3 has R2, the CF section R10-R14). pd_apply() checks that the
+     net ADDR15 is exactly IC10 pin 4, IC9 pin 17 and X1 pin A18 before it adds pin 1 there and pin 2 to GND. Boards
+     made before this rule (every board but the v2.0 board) have no R15; check_netlist.py checks them against the
+     schematic without it (pd_undo()).
 The CF section's own nets keep their cf_netlist.py names (on sheet 7 of the schematic, so KiCad calls them
 /Sheet 7/<name>); the shared ones are global labels / power symbols with the memory card's names.
 """
@@ -131,6 +142,40 @@ def wp_undo_nodes(nodes):
     nodes = {k: v for k, v in nodes.items() if k[0] != WP_REF}
     nodes[("IC13", "27")] = nodes[("IC1", "27")]
     return nodes
+
+
+# rule 8: the ADDR15 pull-down (the FORCE-ROM race fix, design review M1)
+PD_REF = "R15"
+PD_PART = ("470", "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")   # value, footprint: as R10-R14
+PD_SYM = "Device:R"                                                                    # the symbol of R10-R14
+PD_NOTE = "ADDR15 pull-down: FORCE-ROM race fix (review M1)"
+PD_NET = "ADDR15"                                  # R15 pin 1; pin 2 on GND
+PD_DATE = "2026-09-30"
+A15_PINS = {("IC10", "4"), ("IC9", "17"), ("X1", "A18")}   # the v1.3 net ADDR15, exactly
+
+
+def pd_apply(nets):
+    """rule 8 on {net: set((ref, pin))}: R15 pin 1 onto ADDR15, pin 2 onto GND. The net ADDR15 must be exactly
+    A15_PINS (IC10 pin 4 = IC12's clock gate, IC9 pin 17 = the address buffer, X1 A18 = the bus)"""
+    if nets.get(PD_NET) != A15_PINS:
+        raise SystemExit("rule 8: the net %s is %s, expected %s" % (PD_NET, sorted(nets.get(PD_NET, ())),
+                                                                   sorted(A15_PINS)))
+    nets[PD_NET] = nets[PD_NET] | {(PD_REF, "1")}
+    nets["GND"] = nets["GND"] | {(PD_REF, "2")}
+
+
+def pd_undo(nets):
+    """the inverse of pd_apply(): the nets of a board made before rule 8"""
+    nets = {n: set(s) for n, s in nets.items()}
+    nets[PD_NET] = nets[PD_NET] - {(PD_REF, "1")}
+    nets["GND"] = nets["GND"] - {(PD_REF, "2")}
+    return nets
+
+
+def pd_undo_nodes(nodes):
+    """{(ref, pin): net} of the schematic -> the same for a board made before rule 8 (the standoff / re-layout option
+    boards: R15 enters the finished board only, finish_v2.add_pd()): no R15 pins"""
+    return {k: v for k, v in nodes.items() if k[0] != PD_REF}
 
 
 # nets shared with the v1.3 part of the card: global labels (or power symbols) on sheet 7, same names as v1.3
@@ -229,7 +274,7 @@ def removed_pins(v13_nets, v13_parts):
 
 
 def expected(v13_nets, v13_parts):
-    """v2.0 = v1.3 - REMOVED + CF section + rule 7 (JP3).
+    """v2.0 = v1.3 - REMOVED + CF section + rule 7 (JP3) + rule 8 (R15).
     v13_nets: {name: set((ref, pin))} of the v1.3 schematic netlist (every net, including one-pin and unconnected-()
     ones); v13_parts: {ref: (value, footprint)}.
     -> (nets {name: set}, parts {ref: (value, footprint)}, lone set((ref, pin)) = pins KiCad must leave unconnected,
@@ -270,10 +315,14 @@ def expected(v13_nets, v13_parts):
     we = wp_apply(nets)
     notes.append("rule 7 (%s): IC13.27 off %s (IC1/IC2 pin 27, IC6 pin 4) onto %s with JP3.2; JP3.1 on %s, JP3.3 on "
                  "VCC" % (WP_DATE, we, WP_NET, we))
+    pd_apply(nets)
+    notes.append("rule 8 (%s): %s %s ohm, pin 1 on %s (IC10 pin 4, IC9 pin 17, X1 A18), pin 2 on GND"
+                 % (PD_DATE, PD_REF, PD_PART[0], PD_NET))
     parts = {r: v for r, v in v13_parts.items() if r not in REMOVED}
-    if WP_REF in parts:
-        raise SystemExit("reference %s collides with v1.3" % WP_REF)
-    parts[WP_REF] = WP_PART
+    for ref, part in ((WP_REF, WP_PART), (PD_REF, PD_PART)):
+        if ref in parts or ref in PARTS:
+            raise SystemExit("reference %s collides with v1.3 or the CF section" % ref)
+        parts[ref] = part
     for ref, (value, sym, fp, note) in PARTS.items():
         if ref in parts:
             raise SystemExit("reference %s collides with v1.3" % ref)

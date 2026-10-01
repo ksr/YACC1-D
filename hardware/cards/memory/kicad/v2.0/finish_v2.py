@@ -852,6 +852,19 @@ WP_TEXT = [("JP3 ROM WE", 95.7, 20.2), ("1-2 WRITE", 95.7, 21.8), ("2-3 PROT", 9
                                          # the free patch above JP3: 8.3 mm between IC14's outline and U$1's "0X8000"
                                          # ("2-3 PROTECT" is 8.6 mm); a line's box is 1.46 mm tall
 WP_RN8_REF = (116.0, 27.575)             # RN8's reference moves right along its row: at x 100.9 it met JP3's outline
+# rule 8 (mem_v2_netlist.py, Ken 2026-09-30): the ADDR15 pull-down R15 (470 ohm, the FORCE-ROM race fix, review M1),
+# added to the finished board by add_pd() as a local change after add_wp() - every other part and track as routed. R15
+# (Resistor_THT R_Axial_DIN0207 P10.16, as R10-R14) stands vertical in the strip between X1 and the cap column C16 / C4,
+# the one spot near ADDR15 where its courtyard meets no other part and both pads clear every other net (a search of the
+# committed route, 2026-09-30; nothing near IC10 / IC9 has room). Pad 1 sits ON the ADDR15 track's 45-degree F.Cu run
+# from X1 A18 towards IC9 (PD_TRACK): that track is split at the pad centre into two, no other copper is added. Pad 2
+# (GND, 10.16 mm below) reaches the In1.Cu plane through its thermal relief, as the card's other GND pads.
+PD_TRACK = ((31.33, 64.31), (38.78, 71.76))    # the ADDR15 F.Cu segment (X1 A18 -> IC9 pin 17), its end points
+PD_X = 32.58                                    # R15 pad 1: x; y on PD_TRACK (65.56); pad 2 at y + 10.16 (75.72)
+PD_REF_AT = (32.58, 71.70)                      # silk 0.8 mm, in the body outline (y 67.37-73.91), rotation 90 (reads
+PD_TEXT = [("470", 32.58, 68.95)]               # upward): "R15" then "470" above it
+PD_C16_REF = (38.07, 65.58)                     # C16's reference (centred) moves right of C16, between its outline and
+                                                # IC28's: its spot left of C16 is under R15's pad 1
 E_OPT = "e"
 E_DATE = "2026-09-25"
 E_NUDGE = {}                  # placement nudges on the final board: none (every part where standoff option E has it)
@@ -1011,6 +1024,91 @@ def add_wp(pcb):
     return True
 
 
+def add_pd(pcb):
+    """rule 8 on the finished board: R15 placed with pad 1 on the ADDR15 track (the track split there), pad 2 on GND
+    (the plane); silk "R15" / "470" in its body outline; C16's reference moved out of its way; refill. A board that has
+    R15 already is left alone. -> True if changed"""
+    import pcbnew
+    b = pcbnew.LoadBoard(pcb)
+    fps = {f.GetReference(): f for f in b.GetFootprints()}
+    if NL.PD_REF in fps:
+        print("add_pd: %s has %s already" % (os.path.basename(pcb), NL.PD_REF))
+        return False
+    FM, T = pcbnew.FromMM, pcbnew.ToMM
+    a15 = b.FindNet(NL.PD_NET)
+    assert {(p.GetParentFootprint().GetReference(), p.GetNumber()) for fp in b.GetFootprints() for p in fp.Pads()
+            if p.GetNetname() == NL.PD_NET} == NL.A15_PINS, "the board's ADDR15 pads are not IC10.4, IC9.17, X1.A18"
+    near = lambda v, q: abs(T(v.x) - q[0]) < 0.01 and abs(T(v.y) - q[1]) < 0.01
+    gone = [tr for tr in b.GetTracks() if tr.Type() == pcbnew.PCB_TRACE_T and tr.GetNetname() == NL.PD_NET
+            and tr.GetLayer() == pcbnew.F_Cu and any(near(tr.GetStart(), a) and near(tr.GetEnd(), c)
+                                                      for a, c in (PD_TRACK, PD_TRACK[::-1]))]
+    if len(gone) != 1:
+        raise SystemExit("add_pd: the ADDR15 track %s-%s is not there: this is not the committed board's route (FINAL="
+                         "route SEEDS=15). R15's position is drawn for that route; on another route place it anew "
+                         "(PD_* above)" % PD_TRACK)
+    tr = gone[0]
+    s, e = tr.GetStart(), tr.GetEnd()
+    if s.x > e.x:
+        s, e = e, s
+    assert e.x - s.x == e.y - s.y, "the ADDR15 run is not at 45 degrees"
+    px = FM(PD_X)
+    p1 = pcbnew.VECTOR2I(px, s.y + (px - s.x))                # exactly on the track's centre line
+    width, layer = tr.GetWidth(), tr.GetLayer()
+    b.Remove(tr)
+    for a, c in ((s, p1), (p1, e)):
+        n = pcbnew.PCB_TRACK(b)
+        n.SetStart(a); n.SetEnd(c); n.SetLayer(layer); n.SetWidth(width); n.SetNet(a15)
+        b.Add(n)
+    lib, name = NL.PD_PART[1].split(":")
+    fp = pcbnew.FootprintLoad(os.path.join(GM.KFP, lib + ".pretty"), name)
+    fp.SetFPIDAsString(NL.PD_PART[1])
+    fp.SetReference(NL.PD_REF)
+    fp.SetValue(NL.PD_PART[0])
+    fp.SetField("Description", NL.PD_NOTE)
+    sheet2 = fps["IC7"].GetPath().AsString().split("/")[1]   # IC7 is on sheet 2 only
+    fp.SetPath(pcbnew.KIID_PATH("/%s/%s" % (sheet2, GM.gen_cf.U("memory-v2.0", "pd", "sym"))))
+    fp.SetSheetname(fps["IC7"].GetSheetname())
+    fp.SetSheetfile(fps["IC7"].GetSheetfile())
+    b.Add(fp)
+    fp.SetOrientationDegrees(270)                           # pad 2 below pad 1
+    fp.SetPosition(p1)
+    pads = {p.GetNumber(): p for p in fp.Pads()}
+    got = {n: (p.GetPosition().x, p.GetPosition().y) for n, p in pads.items()}
+    assert got == {"1": (p1.x, p1.y), "2": (p1.x, p1.y + FM(10.16))}, got
+    pads["1"].SetNet(a15)
+    pads["2"].SetNet(b.FindNet("GND"))
+
+    def style(tx, x, y):
+        tx.SetLayer(pcbnew.F_SilkS)
+        tx.SetTextSize(pcbnew.VECTOR2I(FM(0.8), FM(0.8))); tx.SetTextThickness(FM(0.15))
+        tx.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_CENTER); tx.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_CENTER)
+        tx.SetTextAngleDegrees(90)
+        tx.SetPosition(pcbnew.VECTOR2I(FM(x), FM(y)))
+    ref = fp.Reference()
+    ref.SetVisible(True)
+    style(ref, *PD_REF_AT)
+    for s_, tx_, ty_ in PD_TEXT:
+        tx = pcbnew.PCB_TEXT(b)
+        tx.SetText(s_)
+        style(tx, tx_, ty_)
+        b.Add(tx)
+    c16 = fps["C16"].Reference()
+    c16.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_CENTER); c16.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_CENTER)
+    c16.SetPosition(pcbnew.VECTOR2I(FM(PD_C16_REF[0]), FM(PD_C16_REF[1])))
+    pcbnew.SaveBoard(pcb, b)
+    t = open(pcb).read()
+    t2 = re.sub(r'(\t\t\(date ")[^"]*("\))', lambda m: m.group(1) + NL.PD_DATE + m.group(2), t, count=1)
+    t2 = t2.replace('(comment 4 "JP3', '(comment 5 "R15 470 = ADDR15 pull-down, the FORCE-ROM race fix (%s)")\n\t\t'
+                    '(comment 4 "JP3' % NL.PD_DATE, 1)
+    open(pcb, "w").write(t2)
+    GM.refill(pcb)
+    print("add_pd: %s + %s (%s) at (%.2f, %.2f), pad 2 (%.2f, %.2f) on GND: pad 1 on the ADDR15 F.Cu run %s-%s, that "
+          "track split at the pad (1 track replaced by 2, no via)" % (
+              os.path.basename(pcb), NL.PD_REF, NL.PD_PART[0], T(p1.x), T(p1.y), T(p1.x), T(p1.y) + 10.16,
+              PD_TRACK[0], PD_TRACK[1]))
+    return True
+
+
 def make_e(routed, out):
     import pcbnew
     sys.path.insert(0, HERE)
@@ -1164,6 +1262,7 @@ def make_e(routed, out):
         print("silk tidy: %d text(s) with no free spot: %s" % (len(stuck), stuck))
     GM.refill(out)
     add_wp(out)                                   # rule 7 (2026-09-29): the ROM write-protect jumper, locally
+    add_pd(out)                                   # rule 8 (2026-09-30): the ADDR15 pull-down, locally
 
 
 def drill_check(pcb):
@@ -1246,6 +1345,8 @@ if __name__ == "__main__":
         make_e(sys.argv[2], sys.argv[3])
     elif cmd == "wp":
         add_wp(sys.argv[2])
+    elif cmd == "pd":
+        add_pd(sys.argv[2])
     elif cmd == "fab-e":
         fab(sys.argv[2], separate_th=True, note=JLC_E)
         ok = drill_check(sys.argv[2])

@@ -242,7 +242,7 @@ Findings that concern this card, with their status on 2026-09-23:
 
 | ID | Severity | Finding | Status 2026-09-23 |
 |---|---|---|---|
-| M1 (`DESIGN-REVIEW-NOTES-datapath.md`) | HIGH, masked | FORCE-ROM's clock is ADDR15·VMA·BUS-EN (three gates, ~35 ns after -VMA falls) while the register card needs ~75 ns to drive the address after -VMA; between cycles the address bus floats high, so the first -VMA after reset would clear FORCE-ROM regardless of the address. Masked since 2020 by the generator asserting -VMA in **every** step (`main.c:102,115` "Hack prevent ROM mapping from triggering"), which keeps the address bus driven at all times — and thereby removes the -VMA qualification from every chip select on this card (IC7 G2A and -LO-RAM are permanently active; on the built card IC5's enable follows the chip selects through IC15, in the earlier save it was -VMA itself). | **Fix designed 2026-09-30: a 470 Ω pull-down on ADDR15** (section 4.1): on v2.0 in the design, on the built v1.3 as a two-pin bodge (not fitted yet). Until then masked, as before: Open. Hazard returns if any microcode line drops -VMA or the tester drives -VMA with the address bus tri-stated. The tester tests pass because the tester drives the address before it lowers -VMA. |
+| M1 (`DESIGN-REVIEW-NOTES-datapath.md`) | HIGH, masked | FORCE-ROM's clock is ADDR15·VMA·BUS-EN (three gates, ~35 ns after -VMA falls) while the register card needs ~75 ns to drive the address after -VMA; between cycles the address bus floats high, so the first -VMA after reset would clear FORCE-ROM regardless of the address. Masked since 2020 by the generator asserting -VMA in **every** step (`main.c:102,115` "Hack prevent ROM mapping from triggering"), which keeps the address bus driven at all times — and thereby removes the -VMA qualification from every chip select on this card (IC7 G2A and -LO-RAM are permanently active; on the built card IC5's enable follows the chip selects through IC15, in the earlier save it was -VMA itself). | **Fix designed 2026-09-30: a 470 Ω pull-down on ADDR15** (section 4.1): on v2.0 in the design (R15), on the built v1.3 as a two-pin bodge (not fitted yet). Until then masked, as before: Open. Hazard returns if any microcode line drops -VMA or the tester drives -VMA with the address bus tri-stated. The tester tests pass because the tester drives the address before it lowers -VMA. |
 | M2 | MED | The 28C64's -WE is raw -MEM-WR (N$4), with no write-protect jumper; during FORCE-ROM every address selects block $F, so a store before the first jump above $8000 writes the EEPROM; any later stray write into $E000-$FFFF does too, and a 28C64 then spends ~10 ms in an internal write cycle during which reads return the poll bits (code executing from ROM crashes). | Open on the built v1.3. **Fixed on v2.0 (2026-09-29): JP3**, a 3-pin write-protect jumper on IC13 pin 27 (1-2 = WRITE, -WE = -MEM-WR as on v1.3; 2-3 = PROTECT, -WE held at VCC; fitted on 2-3), which also closes the reset-time window of finding 1.3 below. The shipped monitor is safe by construction (`BR eprom` first). The ROM was byte-identical to the sources on 2026-09-18 and again in the 2026-09-21 full test (`tests/memory/full-run-2026-09-21.log`, phase A and F), so it has not happened yet or the fitted chip has data protection. **To verify:** whether the fitted 28C64 has software data protection enabled (read the chip's part marking/datasheet). |
 | 1.3 (`DESIGN-REVIEW-NOTES-control-io.md`) | MED | The sequencer's pipeline is not reloaded while reset is asserted, only on its release; during reset the bus carries the last or power-up control word. With FORCE-ROM active and a stale word that has -MEM-WR and -VMA asserted, that is an EEPROM write during reset (same path as M2). | Open (a sequencer v2.2 item). Bench: scope B24 and C12 during power-up and with RESET held; run `tools/verify_firmware.py` after a batch of power cycles. |
 | M3 | MED | TMP registers latch on the leading edge of -TMP-REG-LDn; correct only under the microcode's source-one-step-early rule. `moveRegtoTmp` in `branch.c:14-22` breaks the rule but has no callers. | Open, latent. |
@@ -275,7 +275,11 @@ resistor while A15 is high, so any 1/4 W part. The bus tester has pull-**ups** o
 recorded): with the usual 10 kΩ, an idle A15 sits at ~0.2 V and the tester still drives it high; if RN4 is 1 kΩ the
 idle level would be ~1.6 V - **read RN4 before using the bus tester with the pull-down fitted**.
 
-**On v2.0**: in the design (`hardware/cards/memory/kicad/v2.0/README.md`).
+**On v2.0**: in the design as **R15** (470 Ω, 1/4 W axial, the same part as the CF section's R10-R14;
+`mem_v2_netlist.py` rule 8, schematic sheet 2 beside the ADDR15 wire into IC10B). On the board it stands in the
+strip between the bus connector X1 and the cap column (C16 / C4), pin 1 on the ADDR15 track that runs from X1 pin
+A18 to IC9 (pad 1 at x 32.58 / y 65.56 mm, pad 2 10.16 mm below it), pin 2 on the GND plane
+(`hardware/cards/memory/kicad/v2.0/README.md`, "The ADDR15 pull-down R15").
 
 **On the built v1.3 (a bodge, not fitted yet)**: a 470 Ω resistor on the solder side from **IC10 pin 4** (ADDR15, the
 FORCE-ROM clock input itself) to **IC10 pin 7** (GND). Both are on the same side of the 14-pin IC10, three pins
@@ -383,7 +387,8 @@ memory card stays empty (Ken, 2026-09-25), so the ~35-44 mm stack needs no other
 100 nF per IC (C1-C19 and C24 for the built card's 20 ICs, as built; C25-C29 for the five CF chips) and C30 (10 uF
 bulk at the adapter power header J3). The built card's C20-C23, four 100 nF with no IC beside them (v1.3 has them in
 the cap row between C19 and C24, plain VCC-GND caps), were **removed from v2.0 (Ken, 2026-09-24)**. **JP3, the ROM write-protect
-jumper** (M2, Ken 2026-09-29), was added beside the ROM: 71 parts. Open before ordering (its README): the ribbon plug's pin 20 (open, or pull J2's pin 20). The adapter's power-pad
+jumper** (M2, Ken 2026-09-29), was added beside the ROM, and **R15, the 470 Ω ADDR15 pull-down** (M1, Ken
+2026-09-30, section 4.1) beside the bus connector: 72 parts. Open before ordering (its README): the ribbon plug's pin 20 (open, or pull J2's pin 20). The adapter's power-pad
 order was resolved 2026-09-26: a floppy pinout in J3's order, so the J3 cable is straight through (Ken's harness).
 
 Open ideas from `eagle/deprecated/v1.3-do-not-use/Notes.md`, `BACKLOG.md` and the reviews, for a v1.4:
@@ -396,7 +401,7 @@ Open ideas from `eagle/deprecated/v1.3-do-not-use/Notes.md`, `BACKLOG.md` and th
    single block ($F000) carry either half, freeing $E000 for RAM (OS-PLAN's variant B moves video, not ROM, so this
    is independent).
 3. **Hard-jumper a boot-loader enable** (Notes): a way to force or defeat FORCE-ROM from a header for bench work.
-4. ~~**Fix M1 properly**~~ **Done on v2.0 and as a v1.3 bodge (Ken, 2026-09-30): a 470 Ω pull-down on ADDR15**
+4. ~~**Fix M1 properly**~~ **Done on v2.0 (R15) and as a v1.3 bodge (Ken, 2026-09-30): a 470 Ω pull-down on ADDR15**
    (section 4.1), rather than clocking IC12 from the trailing edge or a delayed -VMA: one resistor, no logic change.
    With it fitted, the microcode can stop asserting -VMA in every step and the chip selects regain their -VMA gating.
 5. **Pull-ups on the strobe inputs** (M5) or on the backplane (control/IO 5.1), so the EEPROM -WE has a defined level

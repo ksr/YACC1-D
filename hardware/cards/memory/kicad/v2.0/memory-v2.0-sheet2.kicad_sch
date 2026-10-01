@@ -4,8 +4,148 @@
 	(generator_version "1.0")
 	(uuid "35468cab-567a-8772-871a-8015ceda3737")
 	(paper "A4")
-	(title_block (title "memory-v2.0 sheet 2") (date "2026-09-24") (rev "v2.0") (comment 1 "Unchanged from the built v1.3 (Fusion export 2026-09-24, Memory V1.3.sch sheet 2)"))
+	(title_block (title "memory-v2.0 sheet 2") (date "2026-09-24") (rev "v2.0") (comment 1 "v1.3 sheet 2 + R15, the ADDR15 pull-down: the FORCE-ROM race fix (rule 8, 2026-09-30)"))
 	(lib_symbols
+		(symbol "Device:R"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "R"
+				(at 2.032 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "R"
+				(at 0 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at -1.778 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Resistor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "R res resistor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "R_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "R_0_1"
+				(rectangle
+					(start -1.016 -2.54)
+					(end 1.016 2.54)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "R_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 1.27)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 1.27)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "memory-v1.3-eagle:74xx-us_74x00_N_pwrhidden"
 			(pin_names (hide yes))
 			(exclude_from_sim no) (in_bom yes) (on_board yes)
@@ -763,7 +903,11 @@
 	(wire (pts (xy 142.24 39.37) (xy 144.78 39.37)) (stroke (width 0) (type default)) (uuid "244bf9ee-e417-1c73-6faa-f6127454bd87"))
 	(wire (pts (xy 144.78 41.91) (xy 144.78 39.37)) (stroke (width 0) (type default)) (uuid "06930393-b75d-9ef2-4d94-c61b44ac909d"))
 	(junction (at 144.78 39.37) (diameter 0) (color 0 0 0 0) (uuid "9d3153b9-a4e1-2456-5bff-29827c2827db"))
-	(wire (pts (xy 116.84 36.83) (xy 66.04 36.83)) (stroke (width 0) (type default)) (uuid "4c528a1a-098e-b85a-0969-8ec4924c9f92"))
+	(wire (pts (xy 116.84 36.83) (xy 71.12 36.83)) (stroke (width 0) (type default)) (uuid "c0855d7c-1eb1-5928-919a-7b1540b3e794"))
+	(wire (pts (xy 71.12 36.83) (xy 66.04 36.83)) (stroke (width 0) (type default)) (uuid "74801c85-01b2-5489-a49d-f20ac39f45a7"))
+	(wire (pts (xy 71.12 36.83) (xy 71.12 27.94)) (stroke (width 0) (type default)) (uuid "215775b4-a5d1-532e-b5ad-6e0d3a39e8bc"))
+	(wire (pts (xy 78.74 27.94) (xy 83.82 27.94)) (stroke (width 0) (type default)) (uuid "8adbe5e8-ac18-5807-84a2-85926a4ad9fc"))
+	(junction (at 71.12 36.83) (diameter 0) (color 0 0 0 0) (uuid "bc6dce96-5d55-51d8-b8c4-205330fc8b4b"))
 	(wire (pts (xy 116.84 41.91) (xy 111.76 41.91)) (stroke (width 0) (type default)) (uuid "db6321c0-3b7b-0706-ac33-a916429a42b8"))
 	(wire (pts (xy 111.76 49.53) (xy 111.76 41.91)) (stroke (width 0) (type default)) (uuid "a5c40f6b-f18c-6a9e-59ba-e47ca5390550"))
 	(wire (pts (xy 111.76 49.53) (xy 106.68 49.53)) (stroke (width 0) (type default)) (uuid "5143d57a-500c-3345-7c08-f70e6548a164"))
@@ -943,4 +1087,25 @@
 	(label "ROM6" (at 109.22 135.89 0) (fields_autoplaced yes) (effects (font (size 1.778 1.778)) (justify left bottom)) (uuid "cef2d941-1ec4-c969-2f6a-2d567a349352"))
 	(label "ROM5" (at 106.68 133.35 0) (fields_autoplaced yes) (effects (font (size 1.778 1.778)) (justify left bottom)) (uuid "facd20af-8fee-58ac-dfeb-51802c7c1b83"))
 	(label "ROM4" (at 106.68 130.81 0) (fields_autoplaced yes) (effects (font (size 1.778 1.778)) (justify left bottom)) (uuid "1d3cd961-34a9-9c88-1162-2de819753cfc"))
+	(symbol (lib_id "Device:R") (at 74.93 27.94 90) (unit 1)
+		(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no) (uuid "0be55403-3f3b-50ff-b618-a9dd1378a2d7")
+		(property "Reference" "R15" (at 74.93 23.114 90) (effects (font (size 1.778 1.778) (thickness 0.1422))))
+		(property "Value" "470" (at 74.93 30.861 90) (effects (font (size 1.778 1.778) (thickness 0.1422))))
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" (at 74.93 27.94 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Datasheet" "" (at 74.93 27.94 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Description" "ADDR15 pull-down: FORCE-ROM race fix (review M1)" (at 74.93 27.94 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(pin "1" (uuid "d7479973-80e3-5ded-9c87-567c2101c970"))
+		(pin "2" (uuid "f8e65a7b-e2ca-5de3-99c7-201ad4d49ce3"))
+		(instances (project "memory-v2.0" (path "/42231b4d-4c5f-cebb-da74-8d622a2f1dd4/35468cab-567a-8772-871a-8015ceda3737" (reference "R15") (unit 1))))
+	)
+	(symbol (lib_id "memory-v1.3-eagle:supply1_GND") (at 83.82 30.48 0) (unit 1)
+		(exclude_from_sim no) (in_bom no) (on_board no) (dnp no) (uuid "95bbf8ce-ceaa-5e80-8ba6-b118def56c75")
+		(property "Reference" "#GND11" (at 83.82 30.48 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Value" "GND" (at 81.28 33.02 0) (effects (font (size 1.778 1.778) (thickness 0.1422)) (justify left bottom)))
+		(property "Footprint" "" (at 83.82 30.48 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Datasheet" "" (at 83.82 30.48 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(pin "1" (uuid "5ce8a16f-fd3b-5dae-9cd0-5863c307c897"))
+		(instances (project "memory-v2.0" (path "/42231b4d-4c5f-cebb-da74-8d622a2f1dd4/35468cab-567a-8772-871a-8015ceda3737" (reference "#GND11") (unit 1))))
+	)
+	(text "R15 470: ADDR15 pull-down, FORCE-ROM race fix\n(review M1, 2026-09-30); docs/cards/memory.md 4.1\nUndriven, ADDR15 would float high and clock IC12\nbefore the real address arrives; R15 holds it low\nuntil a driver puts a 1 on A15." (exclude_from_sim no) (at 88.9 13.97 0) (effects (font (size 1.524 1.524) (thickness 0.2032)) (justify left top)) (uuid "2aa9f841-73ae-5f03-aa81-47a97425ae62"))
 )

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """check_netlist.py - prove the memory card v2.0 schematic (and each board) = the built v1.3 minus C20-C23 + the CF
-section + JP3 (rule 7, the ROM write-protect jumper).
+section + JP3 (rule 7, the ROM write-protect jumper) + R15 (rule 8, the ADDR15 pull-down).
 
 "v1.3" below = the built card, ../v1.3 (build.sh passes its netlist and board).
 
@@ -20,7 +20,8 @@ What must hold, exactly (mem_v2_netlist.expected() builds the expectation):
              shared name); there is no other net; every pin KiCad leaves unconnected is either unconnected on v1.3 or a
              documented CF no-connect, and nothing else is unconnected; every part is v1.3's (same value, footprint)
              or a CF part (value, footprint of cf_netlist.py) or JP3 (rule 7: IC13.27 on ROM-WE with JP3.2, JP3.1
-             on the -WE net, JP3.3 on VCC; mem_v2_netlist.wp_apply()), and nothing else.
+             on the -WE net, JP3.3 on VCC; mem_v2_netlist.wp_apply()) or R15 (rule 8: pin 1 on ADDR15, which must be
+             exactly IC10.4, IC9.17, X1.A18 before, pin 2 on GND; mem_v2_netlist.pd_apply()), and nothing else.
   board      every pad of every footprint is on exactly the net the v2.0 schematic gives that pin (same names), the
              pads with no net are exactly the schematic's unconnected pins + the v1.3 pads no schematic pin names
              (X1's mounting holes, and the unused gate pins the
@@ -29,8 +30,10 @@ What must hold, exactly (mem_v2_netlist.expected() builds the expectation):
              most the two standoff holes H1 / H2 of the CF adapter (the standoff options, gen_standoff.py): board-only
              footprints holding nothing but a non-plated hole with no net (is_mech()).
              The boards before --records must equal the schematic. THE v2.0 board (memory-v2.0.kicad_pcb) must carry
-             JP3; every other board that has no JP3 was made before rule 7 (2026-09-29: the standoff options and their
-             trial routes, the records) and must equal the schematic WITHOUT rule 7 (mem_v2_netlist.wp_undo()).
+             JP3 and R15; every other board that has no JP3 was made before rule 7 (2026-09-29: the standoff options
+             and their trial routes, the records) and must equal the schematic WITHOUT rule 7
+             (mem_v2_netlist.wp_undo()); likewise a board with no R15 was made before rule 8 (2026-09-30: every board
+             but the v2.0 board) and is checked WITHOUT rule 8 (mem_v2_netlist.pd_undo()).
   records    the boards after --records (re-layout options, trial routes, keep-copper options) were made BEFORE C20-C23
              were removed: each must equal the schematic PLUS exactly C20-C23 as on the v1.3 board (same footprint and
              value, pin 1 on GND, pin 2 on VCC), nothing else. A record board without the four is checked like the
@@ -148,13 +151,18 @@ def check_board(pcb, sch_nets, sch_lone, sch_parts, v13_board, gone=None, need_w
     parts too, on those nets (footprint and value as on the v1.3 board)."""
     v13_parts, v13_nonet = board_parts(v13_board)
     kind = "final"
-    if NL.WP_REF not in board_parts(pcb)[0]:
-        if need_wp:
-            print("board %s: no %s - THE v2.0 board must carry rule 7: MISMATCH" % (os.path.basename(pcb), NL.WP_REF))
-            return False
-        sch_nets = NL.wp_undo(sch_nets)
-        sch_parts = {r: v for r, v in sch_parts.items() if r != NL.WP_REF}
-        kind = "before JP3"
+    has = board_parts(pcb)[0]
+    before = []
+    for ref, rule, undo in ((NL.WP_REF, 7, NL.wp_undo), (NL.PD_REF, 8, NL.pd_undo)):
+        if ref not in has:
+            if need_wp:
+                print("board %s: no %s - THE v2.0 board must carry rule %d: MISMATCH" % (os.path.basename(pcb), ref, rule))
+                return False
+            sch_nets = undo(sch_nets)
+            sch_parts = {r: v for r, v in sch_parts.items() if r != ref}
+            before.append(ref)
+    if before:
+        kind = "before " + " and ".join(before)
     if gone:
         sch_nets = {n: set(s) for n, s in sch_nets.items()}
         for rp, n in gone.items():
@@ -163,7 +171,7 @@ def check_board(pcb, sch_nets, sch_lone, sch_parts, v13_board, gone=None, need_w
         for r in {r for r, p in gone}:
             sch_parts[r] = v13_parts[r]
         kind = "record, before the removal of %s%s" % (", ".join(sorted({r for r, p in gone})),
-                                                        " and before JP3" if kind != "final" else "")
+                                                        " and " + kind if kind != "final" else "")
     pinless = {rp for rp in v13_nonet if rp not in sch_lone and not any(rp in s for s in sch_nets.values())}
     root = sparse(open(pcb).read())[0]
     parts, nets, alone, bad, mech = {}, collections.defaultdict(set), set(), [], []
@@ -240,7 +248,7 @@ if __name__ == "__main__":
         nrec += rec
         oks.append(check_board(p, sn, sl, sp, sys.argv[3], gone if rec else None))
     good = ok and all(oks)
-    print("RESULT:", "MATCH (v2.0 = v1.3 - %s + the CF section + JP3, pin for pin%s%s)" % (
+    print("RESULT:", "MATCH (v2.0 = v1.3 - %s + the CF section + JP3 + R15, pin for pin%s%s)" % (
         "/".join(sorted(NL.REMOVED)), "; every board = the schematic" if oks else "",
         " (%d record board(s) made before the removal = the schematic + exactly %s as on v1.3)"
         % (nrec, "/".join(sorted(NL.REMOVED))) if nrec else "") if good else "MISMATCH")

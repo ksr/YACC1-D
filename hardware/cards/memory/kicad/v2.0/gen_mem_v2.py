@@ -17,6 +17,8 @@ Called "base" / "v1.3" below. This script:
              and a note says so,
            - sheet 3: JP3, the ROM write-protect jumper (mem_v2_netlist.py rule 7, Ken 2026-09-29): IC13 pin 27 off
              the -WE net onto ROM-WE through JP3 (add_wp_jumper()),
+           - sheet 2: R15, the ADDR15 pull-down (mem_v2_netlist.py rule 8, Ken 2026-09-30; the FORCE-ROM race fix):
+             470 ohm from the ADDR15 wire to GND, above the wire (add_pulldown()),
            - sheet 1: the four removed caps C20-C23 (mem_v2_netlist.REMOVED, Ken 2026-09-24) taken out of the row of
              caps C19-C24 (remove_parts(): the symbols go, the GND and VCC rails that ran through their pins become
              one wire each from C19 to C24, the junctions at the removed pins go),
@@ -194,6 +196,66 @@ def add_wp_jumper(t):
     return t[:-1] + sym + vcc + label + note + ")\n"
 
 
+def add_pulldown(t):
+    """rule 8 (mem_v2_netlist.py, Ken 2026-09-30) on sheet 2, the FORCE-ROM logic: R15 (Device:R, as R10-R14) from the
+    ADDR15 wire (the global label at (66.04, 36.83) -> IC10B pin 4 at (116.84, 36.83)) to GND. The wire is split at
+    x 71.12 (a junction), a wire goes up to y 27.94, R15 lies horizontal there (rotation 90: pin 1 left at x 71.12,
+    pin 2 right at x 78.74), a wire on to a GND symbol at x 83.82; a note beside it says why. -> text"""
+    m = re.search(r'\t\(wire \(pts \(xy 116\.84 36\.83\) \(xy 66\.04 36\.83\)\)( \(stroke[^\n]*?\)) \(uuid "([^"]+)"\)\)\n', t)
+    assert m, "sheet 2: the ADDR15 wire (116.84, 36.83)-(66.04, 36.83) not found"
+    assert '(global_label "ADDR15" (shape passive) (at 66.04 36.83 180)' in t, "sheet 2: the ADDR15 label moved"
+    stroke = m.group(1)
+    path = re.search(r'\(path "([^"]+)" \(reference "IC7"\)', t).group(1)     # sheet 2's instance path
+    JX, WY, RY = 71.12, 36.83, 27.94                       # the junction on the wire; R15's row
+    RX = JX + 1.5 * G                                      # R15's centre: pins at x RX -/+ 3.81 (Device:R, rotation 90)
+    P2 = (RX + 1.5 * G, RY)                               # pin 2; the GND symbol 2 grid steps right of it
+    GX = P2[0] + 2 * G
+    U = lambda k: gen_cf.U("memory-v2.0", "pd", k)
+    F = gen_cf.f
+
+    def wire(a, b, k):
+        return '\t(wire (pts (xy %s %s) (xy %s %s))%s (uuid "%s"))\n' % (F(a[0]), F(a[1]), F(b[0]), F(b[1]), stroke, U(k))
+    new = (wire((116.84, WY), (JX, WY), "w1") + wire((JX, WY), (66.04, WY), "w2") + wire((JX, WY), (JX, RY), "w3") + wire(P2, (GX, RY), "w4")
+           + '\t(junction (at %s %s) (diameter 0) (color 0 0 0 0) (uuid "%s"))\n' % (F(JX), F(WY), U("junction")))
+    t = t.replace(m.group(0), new)
+    sym = ('\t(symbol (lib_id "%s") (at %s %s 90) (unit 1)\n'
+           '\t\t(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no) (uuid "%s")\n'
+           '\t\t(property "Reference" "%s" (at %s %s 90) (effects (font (size 1.778 1.778) (thickness 0.1422))))\n'
+           '\t\t(property "Value" "%s" (at %s %s 90) (effects (font (size 1.778 1.778) (thickness 0.1422))))\n'
+           '\t\t(property "Footprint" "%s" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))\n'
+           '\t\t(property "Datasheet" "" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))\n'
+           '\t\t(property "Description" %s (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))\n'
+           '\t\t(pin "1" (uuid "%s"))\n\t\t(pin "2" (uuid "%s"))\n'
+           '\t\t(instances (project "memory-v2.0" (path "%s" (reference "%s") (unit 1))))\n\t)\n'
+           % (NL.PD_SYM, F(RX), F(RY), U("sym"), NL.PD_REF, F(RX), F(RY - 4.826), NL.PD_PART[0], F(RX), F(RY + 2.921),
+              NL.PD_PART[1], F(RX), F(RY), F(RX), F(RY), gen_cf.q(NL.PD_NOTE), F(RX), F(RY), U("pin1"), U("pin2"),
+              path, NL.PD_REF))
+    gy = RY + G                                            # supply1_GND: its pin 2.54 above the symbol origin
+    gnd = ('\t(symbol (lib_id "memory-v1.3-eagle:supply1_GND") (at %s %s 0) (unit 1)\n'
+           '\t\t(exclude_from_sim no) (in_bom no) (on_board no) (dnp no) (uuid "%s")\n'
+           '\t\t(property "Reference" "#GND11" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))\n'
+           '\t\t(property "Value" "GND" (at %s %s 0) (effects (font (size 1.778 1.778) (thickness 0.1422)) (justify left bottom)))\n'
+           '\t\t(property "Footprint" "" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))\n'
+           '\t\t(property "Datasheet" "" (at %s %s 0) (effects (font (size 1.27 1.27)) (hide yes)))\n'
+           '\t\t(pin "1" (uuid "%s"))\n'
+           '\t\t(instances (project "memory-v2.0" (path "%s" (reference "#GND11") (unit 1))))\n\t)\n'
+           % (F(GX), F(gy), U("gnd"), F(GX), F(gy), F(GX - G), F(gy + G), F(GX), F(gy), F(GX), F(gy),
+              U("gndpin"), path))
+    txt = ("%s %s: ADDR15 pull-down, FORCE-ROM race fix\n(review M1, %s); docs/cards/memory.md 4.1\n"
+           "Undriven, ADDR15 would float high and clock IC12\nbefore the real address arrives; R15 holds it low\n"
+           "until a driver puts a 1 on A15." % (NL.PD_REF, NL.PD_PART[0], NL.PD_DATE))
+    note = ('\t(text %s (exclude_from_sim no) (at %s 13.97 0) (effects (font (size 1.524 1.524) (thickness 0.2032)) '
+            '(justify left top)) (uuid "%s"))\n' % (gen_cf.q(txt), F(GX + 2 * G), U("note")))
+    # the symbol definition: the KiCad standard Device:R (as sheet 7's R10-R14); sheet 2 has none
+    assert '"%s"' % NL.PD_SYM not in t
+    d = "\n".join("\t" + x if x else x for x in gen_cf.std_symbol(NL.PD_SYM).text.split("\n")) + "\n"
+    i = t.index("\t(lib_symbols\n") + len("\t(lib_symbols\n")
+    t = t[:i] + d + t[i:]
+    t = t.rstrip()
+    assert t.endswith(")")
+    return t[:-1] + sym + gnd + note + ")\n"
+
+
 def copy_v13_sheets():
     removed = []
     for n in range(1, 7):
@@ -205,6 +267,9 @@ def copy_v13_sheets():
         if n == 3:
             note = "v1.3 sheet 3 + JP3, the ROM write-protect jumper on IC13 -WE (rule 7, %s)" % NL.WP_DATE
             t = add_wp_jumper(t)
+        if n == 2:
+            note = "v1.3 sheet 2 + R15, the ADDR15 pull-down: the FORCE-ROM race fix (rule 8, %s)" % NL.PD_DATE
+            t = add_pulldown(t)
         if n == 1:
             note = "v1.3 sheet 1: 6 bus labels global (CF, sheet 7), C20-C23 removed, + note"
             cnt = 0

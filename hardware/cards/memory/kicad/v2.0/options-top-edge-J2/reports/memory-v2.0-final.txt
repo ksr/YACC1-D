@@ -11,4 +11,4 @@ silkscreen texts: 0 touching a pad/via/other silk/the edge []; 0 upside down []
   -> PASS
   DRC by type, v2.0 / built v1.3 (its own rules): items_not_allowed 2/2, lib_footprint_mismatch 1/1, silk_edge_clearance 4/4, silk_over_copper 199/199, silk_overlap 0/45, text_height 2/2, text_thickness 0/1
   DRC unconnected, v2.0 / built v1.3: 0/0
-     schematic parity: 51 items (built v1.3: 220, all inherited Eagle values/fields; + 2 = JP3 missing / IC13.27 on -WE, made before JP3 (rule 7)); new: none
+     schematic parity: 52 items (built v1.3: 220, all inherited Eagle values/fields; + 2 = JP3 missing / IC13.27 on -WE, made before JP3 (rule 7); + 1 = R15 missing, made before R15 (rule 8)); new: none

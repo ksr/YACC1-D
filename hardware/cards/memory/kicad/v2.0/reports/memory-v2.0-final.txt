@@ -1,12 +1,12 @@
 final board memory-v2.0.kicad_pcb:
   unrouted: 0
   vias: 72 (all through vias: yes)
-  track: 2044 segments, 12808 mm (F.Cu 6853, B.Cu 5955; placement airwire 11130 mm), widths {0.25: 2044}
+  track: 2045 segments, 12808 mm (F.Cu 6853, B.Cu 5955; placement airwire 11130 mm), widths {0.25: 2045}
   DRC copper violations: none
   DRC inherited: 2 (X1's two mounting holes in X1's own keepout, as on the built card)
   DRC cosmetic: {'lib_footprint_mismatch': 1, 'silk_edge_clearance': 4, 'silk_over_copper': 199, 'text_height': 2}
-  power pads: 175 GND/VCC pads, all on their plane (in the 0 above)
-  planes: GND on In1.Cu: 1 piece(s), 16398 mm2 = 81 % of the board; VCC on In2.Cu: 1 piece(s), 16374 mm2 = 81 % of the board
+  power pads: 176 GND/VCC pads, all on their plane (in the 0 above)
+  planes: GND on In1.Cu: 1 piece(s), 16392 mm2 = 81 % of the board; VCC on In2.Cu: 1 piece(s), 16366 mm2 = 81 % of the board
 silkscreen texts: 0 touching a pad/via/other silk/the edge []; 0 upside down []
   -> PASS
   DRC by type, v2.0 / built v1.3 (its own rules): items_not_allowed 2/2, lib_footprint_mismatch 1/1, silk_edge_clearance 4/4, silk_over_copper 199/199, silk_overlap 0/45, text_height 2/2, text_thickness 0/1

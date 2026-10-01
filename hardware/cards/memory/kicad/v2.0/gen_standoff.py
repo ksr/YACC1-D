@@ -59,6 +59,7 @@ def build(opt, netfile, out=None):
     P = lambda x, y: VECTOR2I(FM(x), FM(y))
     nodes, paths = GM.read_netlist(netfile)
     nodes = NL.wp_undo_nodes(nodes)                      # a placement from before JP3 (rule 7)
+    nodes = NL.pd_undo_nodes(nodes)                      # and before R15 (rule 8)
     out = out or fname(opt)
     src = open(os.path.join(GM.V13, GM.OLD + ".kicad_pcb")).read()
     assert src.count('"%s"' % GM.TITLE_OLD) == 1

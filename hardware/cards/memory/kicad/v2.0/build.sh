@@ -141,14 +141,17 @@ drc_parity() {
 # exactly those four as extra footprints (mem_v2_netlist.REMOVED)
 # parity_new <drc.json> [record] prewp: a board made before rule 7 (JP3, 2026-09-29: every board but the v2.0 board)
 # may also carry exactly its two items: JP3 missing, IC13 pad 27 still on the -WE net instead of ROM-WE
+# parity_new <drc.json> [record] [prewp] prepd: a board made before rule 8 (R15, the ADDR15 pull-down, 2026-09-30:
+# every board but the v2.0 board) may also carry exactly its one item: R15 missing
 parity_new() {
-  python3 - "$1" "$TMP/v1.3-drc.json" "$2" "$3" <<'EOF'
+  python3 - "$1" "$TMP/v1.3-drc.json" "$2" "$3" "$4" <<'EOF'
 import json, sys
 sys.path.insert(0, ".")
-from mem_v2_netlist import REMOVED, WP_REF, WP_PART, WP_NET
+from mem_v2_netlist import REMOVED, WP_REF, WP_PART, WP_NET, PD_REF, PD_PART
 d, b = json.load(open(sys.argv[1])), json.load(open(sys.argv[2]))
 record = "record" in sys.argv[3:]
 prewp = "prewp" in sys.argv[3:]
+prepd = "prepd" in sys.argv[3:]
 bpar = {(x["type"], x["description"]) for x in b.get("schematic_parity", []) if x["type"] != "net_conflict"}
 rem = lambda x: x["type"] == "extra_footprint" and all(i["description"] in ["Footprint " + r for r in REMOVED]
                                                        for i in x["items"])
@@ -157,13 +160,17 @@ wp = lambda x: (x["type"] == "missing_footprint" and x["description"] == "Missin
                 and [i["description"].split()[-1] + "." + i["description"].split()[2] for i in x["items"]] == ["IC13.27"])
 par = d.get("schematic_parity", [])
 old = [x for x in par if rem(x)] if record else []
+pd = lambda x: x["type"] == "missing_footprint" and x["description"] == "Missing footprint %s (%s)" % (PD_REF, PD_PART[0])
 pre = [x for x in par if wp(x)] if prewp else []
-new = [x["description"] for x in par if (x["type"], x["description"]) not in bpar and x not in old and x not in pre]
-print("     schematic parity: %d items (built v1.3: %d, all inherited Eagle values/fields%s%s); new: %s"
+prd = [x for x in par if pd(x)] if prepd else []
+new = [x["description"] for x in par if (x["type"], x["description"]) not in bpar and x not in old and x not in pre
+       and x not in prd]
+print("     schematic parity: %d items (built v1.3: %d, all inherited Eagle values/fields%s%s%s); new: %s"
       % (len(par), len(b.get("schematic_parity", [])),
          "; + %d = %s, on this record board made before their removal" % (
              len(old), "/".join(sorted(i["description"].split()[-1] for x in old for i in x["items"]))) if old else "",
          "; + %d = JP3 missing / IC13.27 on -WE, made before JP3 (rule 7)" % len(pre) if pre else "",
+         "; + %d = R15 missing, made before R15 (rule 8)" % len(prd) if prd else "",
          new or "none"))
 sys.exit(1 if new else 0)
 EOF
@@ -242,7 +249,7 @@ for o in $RELAYOUT; do
   grep -q ": OK" "$RT/relayout-$o-placement-check.txt" || fail=1
   "$PYK" gen_relayout.py airwire "$B" 2>&1 | q | tee -a "$RT/relayout-$o-placement-check.txt" | sed 's/^/  /'
   drc_parity "$B" "$T/$P-relayout-$o.kicad_pro" "$T/$P-relayout-$o.kicad_dru" "$RT/relayout-$o-drc.json"
-  parity_new "$RT/relayout-$o-drc.json" record prewp | tee -a "$RT/relayout-$o-placement-check.txt" || fail=1
+  parity_new "$RT/relayout-$o-drc.json" record prewp prepd | tee -a "$RT/relayout-$o-placement-check.txt" || fail=1
   "$PYK" gen_mem_v2.py review "$B" "$TMP/r.kicad_pcb" render 2>&1 | q
   "$CLI" pcb render --side top --width 2000 --height 1400 -o "$T/$P-relayout-$o-render-top.png" "$TMP/r.kicad_pcb" >/dev/null 2>&1 \
     && echo "  render -> $P-relayout-$o-render-top.png"
@@ -268,7 +275,7 @@ for o in $RELAYOUT; do
   if [ -f "$TR" ]; then
     drc_parity "$TR" "$T/$P-relayout-$o.kicad_pro" "$T/$P-relayout-$o.kicad_dru" "$RT/relayout-$o-trial-drc.json"
     { "$PYK" gen_relayout.py stats "$TR" "$RT/relayout-$o-trial-drc.json" "$o" 2>&1 | q
-      parity_new "$RT/relayout-$o-trial-drc.json" record prewp; } | tee "$RT/relayout-$o-trial.txt" | sed 's/^/  /'
+      parity_new "$RT/relayout-$o-trial-drc.json" record prewp prepd; } | tee "$RT/relayout-$o-trial.txt" | sed 's/^/  /'
     grep -q "new: none" "$RT/relayout-$o-trial.txt" || fail=1
     "$CLI" pcb export svg --mode-single --page-size-mode 2 --exclude-drawing-sheet \
       -l Edge.Cuts,F.Cu,B.Cu,F.Silkscreen -o "$TMP/t.svg" "$TR" >/dev/null 2>&1
@@ -291,7 +298,7 @@ for o in ${OPTS:-a b c d e}; do
   grep -q ": OK" "$R/standoff-$o-placement-check.txt" || fail=1
   "$PYK" gen_standoff.py airwire "$B" 2>&1 | q | tee -a "$R/standoff-$o-placement-check.txt" | sed 's/^/  /'
   drc_parity "$B" "$P-standoff-$o.kicad_pro" "$P-standoff-$o.kicad_dru" "$R/standoff-$o-drc.json"
-  parity_new "$R/standoff-$o-drc.json" prewp | tee -a "$R/standoff-$o-placement-check.txt" || fail=1
+  parity_new "$R/standoff-$o-drc.json" prewp prepd | tee -a "$R/standoff-$o-placement-check.txt" || fail=1
   if echo " $STANDOFF " | grep -q " $o " && [ -z "$NOROUTE" ]; then
     echo "== s$o  trial route: Freerouting runs in the component orders $SEEDS ($MP passes) =="
     if route_best "$o" "$TR" "$R/standoff-$o"; then
@@ -304,7 +311,7 @@ for o in ${OPTS:-a b c d e}; do
   if [ -f "$TR" ]; then
     drc_parity "$TR" "$P-standoff-$o.kicad_pro" "$P-standoff-$o.kicad_dru" "$R/standoff-$o-trial-drc.json"
     { "$PYK" gen_standoff.py stats "$TR" "$R/standoff-$o-trial-drc.json" "$o" "$TMP/s$o-stats.json" 2>&1 | q
-      parity_new "$R/standoff-$o-trial-drc.json" prewp; } | tee "$R/standoff-$o-trial.txt" | sed 's/^/  /'
+      parity_new "$R/standoff-$o-trial-drc.json" prewp prepd; } | tee "$R/standoff-$o-trial.txt" | sed 's/^/  /'
     grep -q "new: none" "$R/standoff-$o-trial.txt" || fail=1
     grep -q "DRC copper violations: none" "$R/standoff-$o-trial.txt" || fail=1
     "$CLI" pcb export svg --mode-single --page-size-mode 2 --exclude-drawing-sheet \
@@ -451,7 +458,7 @@ print("  DRC by type, v2.0 / built v1.3 (its own rules): %s"
 print("  DRC unconnected, v2.0 / built v1.3: %d/%d" % (len(d.get("unconnected_items", [])),
                                                         len(b.get("unconnected_items", []))))
 EOF
-  parity_new "$RT/$P-drc.json" prewp; } | tee "$RT/$P-final.txt" | sed 's/^/  /'
+  parity_new "$RT/$P-drc.json" prewp prepd; } | tee "$RT/$P-final.txt" | sed 's/^/  /'
 grep -q -- "-> PASS" "$RT/$P-final.txt" || fail=1
 grep -q "new: none" "$RT/$P-final.txt" || fail=1
 
