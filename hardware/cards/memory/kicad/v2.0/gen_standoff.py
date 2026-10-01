@@ -6,7 +6,7 @@ adapter's measured geometry and the clearance figures.
 
 Run with KiCad's bundled Python (pcbnew); build.sh does, per option:
 
-  gen_standoff.py board <opt> <schematic .net>     -> memory-v2.0-standoff-<opt>.kicad_pcb (+ .kicad_pro, .kicad_dru)
+  gen_standoff.py board <opt> <schematic .net>     -> options-standoff/memory-v2.0-standoff-<opt>.kicad_pcb (+ .kicad_pro, .kicad_dru)
         the built board with every track and via removed (outline, X1 and its mounting holes, the In1 GND / In2 VCC
         planes kept), every pad on its v2.0 schematic net, the CF footprints added, C20-C23 left off (removed from
         the circuit, Ken 2026-09-24: these boards equal the schematic exactly), every part except X1 placed from
@@ -47,7 +47,7 @@ TALL = dict(GM.TALL, J2="IDE header + ribbon plug, ~13 mm", J3="power header + c
 
 
 def fname(opt, kind="kicad_pcb"):
-    return os.path.join(HERE, "%s-standoff-%s.%s" % (PROJ, opt, kind))
+    return os.path.join(HERE, "options-standoff", "%s-standoff-%s.%s" % (PROJ, opt, kind))   # 2026-10-01: in options-standoff/
 
 
 # ---------------------------------------------------------------------------------------------------------------------

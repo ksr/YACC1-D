@@ -48,7 +48,7 @@ every track, via, arc and zone is byte-identical, and `NOROUTE=1 build.sh` passe
 
 ## The v2.0 board: standoff option E, finished for fabrication (Ken's pick, 2026-09-25)
 
-`memory-v2.0.kicad_pcb`, made by `finish_v2.py make-e` from a route of `memory-v2.0-standoff-e.kicad_pcb` (the
+`memory-v2.0.kicad_pcb`, made by `finish_v2.py make-e` from a route of `options-standoff/memory-v2.0-standoff-e.kicad_pcb` (the
 placement of option E, unchanged: "The standoff options C / D / E" below). **NOT ORDERED.**
 
 **The placement (option E).** X1 | column 1 (the TMP registers IC27 / IC29 / IC26 / IC28, the address buffers IC9 /
@@ -130,7 +130,7 @@ require R15 on this board.
 
 | route | unrouted | vias | track |
 |---|---|---|---|
-| E's committed trial route (`memory-v2.0-standoff-e-trial.kicad_pcb`, best of DSN component orders 0-7) | 0 | 72 | 12,579 mm |
+| E's committed trial route (`options-standoff/memory-v2.0-standoff-e-trial.kicad_pcb`, best of DSN component orders 0-7) | 0 | 72 | 12,579 mm |
 | **20 new Freerouting runs, component orders 8-27 (same settings: 30 passes, `-oit 100`, one thread)** | 0 in 10 of 20 (69-92 vias) | **69** (order 15) | 12,668-12,856 mm (complete runs) |
 
 **Order 15 is kept: 69 vias, 12,783 mm** (3 vias fewer, 204 mm = 1.6 % more track). The new runs shared the machine
@@ -433,15 +433,16 @@ of the card free under the U$1 jumpers, at the cost of 6 more vias and the adapt
 Trial route (both): Freerouting 1.9 on a two-signal-layer copy (planes carry GND/VCC), one run per pass count 20 / 30 /
 40 / 60 in parallel (where Freerouting stops changes the result; all four agreed this time), the best kept (fewest
 unrouted, then vias, then length); the session imported onto the 4-layer board, planes refilled, DRC with schematic
-parity (`reports/standoff-X-trial.txt`, `-trial-drc.json`). **Routability proof only**: no clean-up, no silkscreen tidy
+parity (`options-standoff/reports/standoff-X-trial.txt`, `-trial-drc.json`). **Routability proof only**: no clean-up, no silkscreen tidy
 (silk_overlap 41 cosmetic items: option boards).
 
-Files per option X: `memory-v2.0-standoff-X.kicad_pcb` / `.kicad_pro` / `.kicad_dru` (the placement, unrouted),
+Files per option X, all in `options-standoff/` (since 2026-10-01; they were at the top level when the options were
+reviewed): `memory-v2.0-standoff-X.kicad_pcb` / `.kicad_pro` / `.kicad_dru` (the placement, unrouted),
 `memory-v2.0-standoff-X-trial.kicad_pcb` (+ `.kicad_pro`, `.kicad_dru`: the trial route),
 `memory-v2.0-standoff-X-render-top.png` (3D, the adapter drawn on the silk of a review copy),
 `memory-v2.0-standoff-X-placement.png` (outline, silk, adapter, ribbon zone, ROM zone, airwires),
 `memory-v2.0-standoff-X-trial.png` (the trial route: F.Cu red, B.Cu blue),
-**`memory-v2.0-standoff-X-1to1.pdf`** (below), `reports/standoff-X-placement-check.txt`, `-drc.json`, `-trial.txt`,
+**`memory-v2.0-standoff-X-1to1.pdf`** (below), `options-standoff/reports/standoff-X-placement-check.txt`, `-drc.json`, `-trial.txt`,
 `-trial-drc.json`, `-freerouting.log`.
 
 ### The 1:1 check prints (`memory-v2.0-standoff-a-1to1.pdf`, `-b-1to1.pdf`)
@@ -553,7 +554,7 @@ limit changes nothing (it stops by itself; A's four pass counts all agreed), and
 The order in which the DSN lists the **components** does change the route, by +/- 15 vias for the same placement. So
 each option is now routed in **8 component orders** (`gen_standoff.py shuffle`, `SEEDS` in `build.sh`, seed 0 = as
 exported) in parallel and the best is kept (fewest unrouted, then vias, then length); the order kept is in
-`reports/standoff-X-order.txt`. A and B keep their trials of the earlier method (records). One more lesson from the
+`options-standoff/reports/standoff-X-order.txt`. A and B keep their trials of the earlier method (records). One more lesson from the
 trials: **placement details matter at this density** - D's first placement (ROM, IC15 and the RAMs in another order,
 IC5 two rows higher) never completed in 17 orders (BDATA5 / BDATA7 at the RAMs); putting the RAMs next to the ROM and
 IC5 beside them fixed it and cut the airwire to the lowest of all options. A fourth arrangement, the ROM at the top edge
@@ -868,15 +869,12 @@ DATA8-15 bundle (DRC: A 11 shorts / 4 clearance / 63 mask bridges, B 12 / 1 / 50
 | `memory-v2.0.kicad_sch`, `-sheet1..7.kicad_sch`, `.kicad_pro`, `.kicad_dru` | schematic (sheets 1-6 built v1.3, sheet 7 CF), project with the re-layout rules (shared by the v2.0 board) |
 | **`memory-v2.0.kicad_pcb`** | **THE v2.0 BOARD** (standoff option E, routed, finished; not ordered) |
 | **`memory-v2.0-gerbers.zip`**, `gerbers/`, `memory-v2.0-jlcpcb-order.txt`, `memory-v2.0-render-{top,bottom}.png`, `memory-v2.0-placement.pdf`, **`memory-v2.0-1to1.pdf`** | its fab outputs ("Fab outputs" above) |
-| **`memory-v2.0-standoff-{a,b,c,d,e}.kicad_pcb`** / `.kicad_pro` / `.kicad_dru` | **the five standoff options** (placed, unrouted, re-layout rules) |
-| `memory-v2.0-standoff-{a,b,c,d,e}-trial.kicad_pcb` / `.kicad_pro` / `.kicad_dru` | their trial routes |
-| **`memory-v2.0-standoff-{a,b,c,d,e}-1to1.pdf`** | **the 1:1 check prints** |
-| `memory-v2.0-standoff-{a,b,c,d,e}-render-top.png`, `-placement.png`, `-trial.png` | 3D render with the adapter, 2D placement / airwire plot, trial-route copper plot |
+| `options-standoff/` | **the standoff record** (moved out of the top level 2026-10-01): the five options `memory-v2.0-standoff-{a,b,c,d,e}.kicad_pcb` / `.kicad_pro` / `.kicad_dru` (placed, unrouted, re-layout rules), their trial routes `-trial.*` (E's is what the v2.0 board was made from), the **1:1 check prints** `-1to1.pdf`, the images `-render-top.png` (3D with the adapter), `-placement.png` (placement / airwires), `-trial.png` (trial-route copper); `reports/` per option `standoff-X-placement-check.txt`, `-drc.json`, `-trial.txt`, `-trial-drc.json`, `-freerouting.log` (C-E also `-order.txt`). `build.sh` still re-checks every one of them |
 | `memory-v2.0-schematic.pdf`, `memory-v2.0-bom.csv` | schematic plot, bill of materials (72 parts; then H1/H2, board-only holes, no part, and the hardware lines HW1-HW6) |
 | `memory-v1.3-eagle.kicad_sym`, `.pretty/`, `sym-lib-table`, `fp-lib-table` | the built card's converted libraries, copied (same nickname `memory-v1.3-eagle`; was `memory-v1.3-fusion-export-2026-09-24-eagle` before the rename, see below) |
 | `options-top-edge-J2/` | **the top-edge record**: `memory-v2.0.kicad_pcb` (the board finished from option B, + `.kicad_pro` / `.kicad_dru`) and its fab outputs (`memory-v2.0-gerbers.zip`, `gerbers/`, `memory-v2.0-jlcpcb-order.txt`, `memory-v2.0-render-{top,bottom}.png`, `memory-v2.0-placement.pdf`); the three re-layout placements `memory-v2.0-relayout-{a,b,c}.kicad_pcb` / `.kicad_pro` / `.kicad_dru`, their trial routes `-trial.*` and images `-render-top.png`, `-placement.png`, `-trial.png`; `reports/` (`memory-v2.0-final.txt`, `-drc.json` / `-drc.rpt`, `-make.txt`, `-placement-check.txt`, per option `relayout-X-*`) |
 | `placements.py`, `space_check.py`, `options-keep-copper/` | the blocked keep-the-built-copper options (record, above) |
-| `reports/` | the v2.0 board's `memory-v2.0-make.txt`, `-order.txt`, `-placement-check.txt`, `-drc.json` / `-drc.rpt`, `-final.txt`, `-fab.txt`; ERC (`.rpt`, `.json`, `erc-summary.txt`), netlist (`.net`), `netlist-proof.txt`; per standoff option `standoff-X-placement-check.txt`, `-drc.json`, `-trial.txt`, `-trial-drc.json`, `-freerouting.log` (C-E also `-order.txt`: the route order kept) |
+| `reports/` | the v2.0 board's `memory-v2.0-make.txt`, `-order.txt`, `-placement-check.txt`, `-drc.json` / `-drc.rpt`, `-final.txt`, `-fab.txt`; ERC (`.rpt`, `.json`, `erc-summary.txt`), netlist (`.net`), `netlist-proof.txt` (the standoff options' reports are in `options-standoff/reports/`) |
 
 ## Rebuild
 
@@ -934,7 +932,7 @@ time, so each plain run rewrites them (no other change). It reads `../v1.3` (thr
   as on v1.3
   (`reports/netlist-proof.txt`).
 - **ERC: PASS** (99 vs the built card's 104, all explained: `reports/erc-summary.txt`).
-- **Standoff placements: OK** for A-E (`reports/standoff-X-placement-check.txt`): no overlaps, pads 0.5 mm inside
+- **Standoff placements: OK** for A-E (`options-standoff/reports/standoff-X-placement-check.txt`): no overlaps, pads 0.5 mm inside
   the edge, X1 / JP1 / U$1 group as built, J2 oriented for a straight ribbon, nothing tall under the adapter or the
   ribbon, the standoff holes clear (A / B: nearest pad 4.9 mm, body 4.6 mm; C-E: pad 4.2 mm, body 3.5 mm from a hole
   centre), the ROM keep-clear zone empty and away from the adapter (A / B 44.8 mm, C 4.6, D 5.8, E 5.1 mm); C-E: J2's

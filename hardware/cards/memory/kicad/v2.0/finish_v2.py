@@ -824,7 +824,7 @@ def jlc(pcb, note=JLC):
 # THE v2.0 BOARD: standoff option E (Ken's pick, 2026-09-25) -> memory-v2.0.kicad_pcb beside the schematic
 #
 #   finish_v2.py make-e <routed.kicad_pcb> <out>  -> the final board from a routed standoff-E board (the committed trial
-#        route memory-v2.0-standoff-e-trial.kicad_pcb, or a new Freerouting run of memory-v2.0-standoff-e.kicad_pcb):
+#        route options-standoff/memory-v2.0-standoff-e-trial.kicad_pcb, or a new Freerouting run of options-standoff/memory-v2.0-standoff-e.kicad_pcb):
 #        every via a through via, via clean-up + collinear merge (cleanup() above), the option's review drawings
 #        (User.Drawings: a copy of the F.Fab ones + the option captions) taken off, F.Fab keeps the adapter drawing for
 #        the placement PDF; the silkscreen made for fabrication (E_* below): the adapter outline (clipped around pads,

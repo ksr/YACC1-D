@@ -1,8 +1,8 @@
 #!/bin/sh
 # build.sh - build and verify the YACC1 memory card v2.0: the schematic (the built v1.3 + the CF section), THE v2.0
 # BOARD memory-v2.0.kicad_pcb (Ken 2026-09-25: standoff option E, finished for fabrication, NOT ORDERED) with its fab
-# outputs, the five STANDOFF placement options (the CF adapter on two standoffs on the card, J2 parallel to X1) with
-# their trial routes and 1:1 prints, and the records. The built card = ../v1.3 ("v1.3" below).
+# outputs, the five STANDOFF placement options (the CF adapter on two standoffs on the card, J2 parallel to X1; in
+# options-standoff/) with their trial routes and 1:1 prints, and the records. The built card = ../v1.3 ("v1.3" below).
 #
 #   hardware/cards/memory/kicad/v2.0/build.sh               verify the committed v2.0 board (placement check, DRC with
 #                                                             schematic parity, finish_v2.py verify, netlist proof)
@@ -69,6 +69,8 @@ R="$HERE/reports"
 K="$HERE/options-keep-copper"
 T="$HERE/options-top-edge-J2"          # the top-edge record (re-layout A/B/C + the board finished from B)
 RT="$T/reports"
+S="$HERE/options-standoff"           # the standoff options A-E (records: placements, trial routes, prints; 2026-10-01 moved here)
+RS="$S/reports"
 BRD="$T/$P.kicad_pcb"
 RELAYOUT=${RELAYOUT:-""}
 STANDOFF=${STANDOFF:-""}
@@ -200,7 +202,7 @@ freeroute() {   # freeroute <dsn> <ses> <log>: Freerouting 1.9, one thread, MP p
 # run's numbers) and <prefix>-freerouting.log
 route_best() {
   o=$1; out=$2; rp=$3
-  B="$P-standoff-$o.kicad_pcb"
+  B="$S/$P-standoff-$o.kicad_pcb"
   rm -rf "$TMP/s$o"*; mkdir -p "$TMP/s$o"
   "$PYK" gen_standoff.py dsn "$B" "$TMP/s$o/$o.dsn" 2>&1 | q | sed 's/^/  /'
   i=0
@@ -217,7 +219,7 @@ route_best() {
   while [ $i -le "$n" ]; do
     if [ -f "$TMP/s$o$i/$o.ses" ]; then
       "$PYK" gen_standoff.py ses "$B" "$TMP/s$o$i/$o.ses" "$TMP/s$o$i/t.kicad_pcb" 2>&1 | q | sed 's/^/  /'
-      cp "$P-standoff-$o.kicad_pro" "$TMP/s$o$i/t.kicad_pro"; cp "$P-standoff-$o.kicad_dru" "$TMP/s$o$i/t.kicad_dru"
+      cp "$S/$P-standoff-$o.kicad_pro" "$TMP/s$o$i/t.kicad_pro"; cp "$S/$P-standoff-$o.kicad_dru" "$TMP/s$o$i/t.kicad_dru"
       "$PYK" gen_standoff.py refill "$TMP/s$o$i/t.kicad_pcb" 2>&1 | q
       "$CLI" pcb drc --severity-all --format json -o "$TMP/s$o$i/drc.json" "$TMP/s$o$i/t.kicad_pcb" >/dev/null 2>&1
       "$PYK" gen_standoff.py stats "$TMP/s$o$i/t.kicad_pcb" "$TMP/s$o$i/drc.json" "$o" 2>&1 | q > "$TMP/s$o$i/stats.txt"
@@ -284,51 +286,51 @@ for o in $RELAYOUT; do
   fi
 done
 
-# s: the STANDOFF options (Ken 2026-09-24: the CF adapter on two standoffs on the card; Ken picks one)
+# s: the STANDOFF options (Ken 2026-09-24: the CF adapter on two standoffs on the card; Ken picked E), in options-standoff/
 for o in ${OPTS:-a b c d e}; do
-  B="$P-standoff-$o.kicad_pcb"
-  TR="$P-standoff-$o-trial.kicad_pcb"
+  B="$S/$P-standoff-$o.kicad_pcb"
+  TR="$S/$P-standoff-$o-trial.kicad_pcb"
   echo "== s$o  standoff option $o =="
   if echo " $STANDOFF " | grep -q " $o "; then
     "$PYK" gen_standoff.py board "$o" "$R/$P.net" 2>&1 | q | sed 's/^/  /' || { fail=1; continue; }
     "$PYK" gen_standoff.py refill "$B" 2>&1 | q
   fi
   [ -f "$B" ] || { echo "  $B missing"; fail=1; continue; }
-  "$PYK" gen_standoff.py check "$B" "$o" 2>&1 | q | tee "$R/standoff-$o-placement-check.txt" | sed 's/^/  /'
-  grep -q ": OK" "$R/standoff-$o-placement-check.txt" || fail=1
-  "$PYK" gen_standoff.py airwire "$B" 2>&1 | q | tee -a "$R/standoff-$o-placement-check.txt" | sed 's/^/  /'
-  drc_parity "$B" "$P-standoff-$o.kicad_pro" "$P-standoff-$o.kicad_dru" "$R/standoff-$o-drc.json"
-  parity_new "$R/standoff-$o-drc.json" prewp prepd | tee -a "$R/standoff-$o-placement-check.txt" || fail=1
+  "$PYK" gen_standoff.py check "$B" "$o" 2>&1 | q | tee "$RS/standoff-$o-placement-check.txt" | sed 's/^/  /'
+  grep -q ": OK" "$RS/standoff-$o-placement-check.txt" || fail=1
+  "$PYK" gen_standoff.py airwire "$B" 2>&1 | q | tee -a "$RS/standoff-$o-placement-check.txt" | sed 's/^/  /'
+  drc_parity "$B" "$S/$P-standoff-$o.kicad_pro" "$S/$P-standoff-$o.kicad_dru" "$RS/standoff-$o-drc.json"
+  parity_new "$RS/standoff-$o-drc.json" prewp prepd | tee -a "$RS/standoff-$o-placement-check.txt" || fail=1
   if echo " $STANDOFF " | grep -q " $o " && [ -z "$NOROUTE" ]; then
     echo "== s$o  trial route: Freerouting runs in the component orders $SEEDS ($MP passes) =="
-    if route_best "$o" "$TR" "$R/standoff-$o"; then
-      cp "$P-standoff-$o.kicad_pro" "$P-standoff-$o-trial.kicad_pro"
-      cp "$P-standoff-$o.kicad_dru" "$P-standoff-$o-trial.kicad_dru"
+    if route_best "$o" "$TR" "$RS/standoff-$o"; then
+      cp "$S/$P-standoff-$o.kicad_pro" "$S/$P-standoff-$o-trial.kicad_pro"
+      cp "$S/$P-standoff-$o.kicad_dru" "$S/$P-standoff-$o-trial.kicad_dru"
     else
       echo "  TRIAL ROUTE FAILED (no session file)"; fail=1
     fi
   fi
   if [ -f "$TR" ]; then
-    drc_parity "$TR" "$P-standoff-$o.kicad_pro" "$P-standoff-$o.kicad_dru" "$R/standoff-$o-trial-drc.json"
-    { "$PYK" gen_standoff.py stats "$TR" "$R/standoff-$o-trial-drc.json" "$o" "$TMP/s$o-stats.json" 2>&1 | q
-      parity_new "$R/standoff-$o-trial-drc.json" prewp prepd; } | tee "$R/standoff-$o-trial.txt" | sed 's/^/  /'
-    grep -q "new: none" "$R/standoff-$o-trial.txt" || fail=1
-    grep -q "DRC copper violations: none" "$R/standoff-$o-trial.txt" || fail=1
+    drc_parity "$TR" "$S/$P-standoff-$o.kicad_pro" "$S/$P-standoff-$o.kicad_dru" "$RS/standoff-$o-trial-drc.json"
+    { "$PYK" gen_standoff.py stats "$TR" "$RS/standoff-$o-trial-drc.json" "$o" "$TMP/s$o-stats.json" 2>&1 | q
+      parity_new "$RS/standoff-$o-trial-drc.json" prewp prepd; } | tee "$RS/standoff-$o-trial.txt" | sed 's/^/  /'
+    grep -q "new: none" "$RS/standoff-$o-trial.txt" || fail=1
+    grep -q "DRC copper violations: none" "$RS/standoff-$o-trial.txt" || fail=1
     "$CLI" pcb export svg --mode-single --page-size-mode 2 --exclude-drawing-sheet \
       -l Edge.Cuts,F.Cu,B.Cu,F.Silkscreen -o "$TMP/t.svg" "$TR" >/dev/null 2>&1
     "$INK" "$TMP/t.svg" --export-type=png --export-width=2400 --export-background=white \
-      --export-filename="$HERE/$P-standoff-$o-trial.png" >/dev/null 2>&1 && echo "  plot   -> $P-standoff-$o-trial.png"
+      --export-filename="$S/$P-standoff-$o-trial.png" >/dev/null 2>&1 && echo "  plot   -> $P-standoff-$o-trial.png"
   fi
   "$PYK" gen_standoff.py review "$B" "$TMP/r.kicad_pcb" render 2>&1 | q
-  "$CLI" pcb render --side top --width 2000 --height 1400 -o "$HERE/$P-standoff-$o-render-top.png" "$TMP/r.kicad_pcb" >/dev/null 2>&1 \
+  "$CLI" pcb render --side top --width 2000 --height 1400 -o "$S/$P-standoff-$o-render-top.png" "$TMP/r.kicad_pcb" >/dev/null 2>&1 \
     && echo "  render -> $P-standoff-$o-render-top.png"
   "$PYK" gen_standoff.py review "$B" "$TMP/p2.kicad_pcb" plot 2>&1 | q | sed 's/^/  /'
   "$CLI" pcb export svg --mode-single --page-size-mode 2 --exclude-drawing-sheet \
     -l Edge.Cuts,F.Cu,B.Cu,F.Silkscreen,User.Drawings,User.Eco1 -o "$TMP/p2.svg" "$TMP/p2.kicad_pcb" >/dev/null 2>&1
   "$INK" "$TMP/p2.svg" --export-type=png --export-width=2400 --export-background=white \
-    --export-filename="$HERE/$P-standoff-$o-placement.png" >/dev/null 2>&1 && echo "  plot   -> $P-standoff-$o-placement.png"
+    --export-filename="$S/$P-standoff-$o-placement.png" >/dev/null 2>&1 && echo "  plot   -> $P-standoff-$o-placement.png"
   "$PYK" gen_standoff.py geom "$B" "$o" "$TMP/s$o-geom.json" "$TMP/s$o-stats.json" 2>&1 | q | sed 's/^/  /'
-  python3 print_1to1.py "$TMP/s$o-geom.json" "$HERE/$P-standoff-$o-1to1.pdf" 2>&1 | sed 's/^/  /'
+  python3 print_1to1.py "$TMP/s$o-geom.json" "$S/$P-standoff-$o-1to1.pdf" 2>&1 | sed 's/^/  /'
 done
 
 # f: THE v2.0 BOARD (Ken 2026-09-25: standoff option E) = memory-v2.0.kicad_pcb beside the schematic. A plain run
@@ -344,8 +346,8 @@ if [ "$FINAL" = "route" ]; then
   fi
 elif [ "$FINAL" = "trial" ]; then
   echo "== f  the v2.0 board from standoff E's committed trial route =="
-  "$PYK" finish_v2.py make-e "$P-standoff-e-trial.kicad_pcb" "$FB" 2>&1 | q | tee "$R/$P-make.txt" | sed 's/^/  /'
-  echo "  kept: the committed trial route memory-v2.0-standoff-e-trial.kicad_pcb" > "$R/$P-order.txt"
+  "$PYK" finish_v2.py make-e "$S/$P-standoff-e-trial.kicad_pcb" "$FB" 2>&1 | q | tee "$R/$P-make.txt" | sed 's/^/  /'
+  echo "  kept: the committed trial route options-standoff/memory-v2.0-standoff-e-trial.kicad_pcb" > "$R/$P-order.txt"
 fi
 echo "== f  the v2.0 board ($P.kicad_pcb): placement, DRC, verify, fab outputs, 1:1 print =="
 if [ -f "$FB" ]; then
@@ -464,7 +466,7 @@ grep -q "new: none" "$RT/$P-final.txt" || fail=1
 
 echo "== 6  netlist proof =="
 finals=""
-for f in "$P"-standoff-?.kicad_pcb "$P"-standoff-?-trial.kicad_pcb "$FB" "$BRD"; do
+for f in "$S/$P"-standoff-?.kicad_pcb "$S/$P"-standoff-?-trial.kicad_pcb "$FB" "$BRD"; do
   [ -f "$f" ] && finals="$finals $f"
 done
 for f in "$T/$P"-relayout-?.kicad_pcb "$T/$P"-relayout-?-trial.kicad_pcb "$K"/$P-option-?.kicad_pcb; do

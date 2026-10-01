@@ -5,7 +5,7 @@ card v2.0: lay the CF-to-IDE adapter (HX-2118P) on the print and see where its h
     python3 print_1to1.py <geometry .json> <out .pdf>
 
 The JSON comes from gen_standoff.py geom (KiCad's python reads the board; this script needs only reportlab, which the
-system python3 has). build.sh writes memory-v2.0-standoff-<opt>-1to1.pdf beside the renders.
+system python3 has). build.sh writes options-standoff/memory-v2.0-standoff-<opt>-1to1.pdf beside the renders.
 
 Page 1: the board at 1:1, component side up, the bus-connector edge (X1) on the left, the JP1 end at the top; a 10 mm
 grid numbered in mm from the bus-connector edge (x) and from the JP1 end (y) - the same grid as the first fit print
