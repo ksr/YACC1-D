@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* calls.c - parameters, nested calls, argument-evaluation hazards, char params/returns, globals across calls */
 #include "y1lib.c"
 

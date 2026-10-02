@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """tests/video/emu.py - the ROM's video unit and Y1/OS's /BIN/VIDEO on both emulators (2026-09-25).
 
   emu.py [name ...] [-v]      run the cases (all by default); -v prints each run's console output and screen

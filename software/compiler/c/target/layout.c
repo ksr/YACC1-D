@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* target/layout.c - pass 5, the labels and frames (cc5_layout.c), as a Y1/OS program: its Y1/OS table sizes, the Y1/OS I/O layer,
    the pass. os/Makefile builds it for the disk (/LIB/CC/CCn: the native compiler, 2026-09-25), y1cc.py compiles it
    for tests/compiler/passes.py, and the corpus (tests/compiler/corpus.py) has it: the passes compile themselves,

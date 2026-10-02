@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 #include "y1lib.c"
 int fibs[25];
 int gcd(int a, int b) { int t; while (b) { t = a % b; a = b; b = t; } return a; }

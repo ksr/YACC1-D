@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Regenerate hardware/FABRICATED.md and the FABRICATED marker file in every fabricated revision folder
 from tools/fabricated.py. Run from the repo root. Removes stale markers first."""
 import os, sys, time, collections

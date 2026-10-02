@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* mv.c - move or rename files: mv src dst
      mv OLD.TXT NEW.TXT    rename in place (the directory entry is renamed: nothing is copied)
      mv A.TXT /T           into a directory: /T/A.TXT

@@ -1,3 +1,6 @@
+/*
+ * Author: Ken Rother (original)
+ */
 
 #define CLOCK 13
 #define UCODE_CLOCK 12

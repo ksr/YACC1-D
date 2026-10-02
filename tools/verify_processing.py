@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Build the current Processing sketch (embedded/command-sender/command_sender_8) with the Processing 4 command-line
 builder, then compile the generated Java once more with Processing's bundled Eclipse compiler with warnings on, so the
 sketch is held to the same "zero warnings" bar as the C tools and the Arduino sketches.

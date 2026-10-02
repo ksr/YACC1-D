@@ -1,4 +1,6 @@
 #!/bin/sh
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 # build.sh - build and verify the YACC1 CF card v1.0 from cf_netlist.py (2026-09-23).
 #
 #   hardware/cards/cf/kicad/v1.0/build.sh            full build (Freerouting takes a few minutes)

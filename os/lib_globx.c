@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* lib_globx.c - expand a filename glob into the list of matching files (Y1/OS, 2026-09-23).
      glob_expand(pat, out, maxn) -> count
        pat    the pattern word (ends at NUL or space), e.g. "*.C" (the current directory) or "/MAN/C*"

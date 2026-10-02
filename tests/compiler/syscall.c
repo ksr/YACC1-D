@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* syscall.c - the sys() and funcaddr() builtins (2026-09-23): what Y1/OS does at boot (fill SYSTAB with
    funcaddr(handler)) and what a /BIN command does (sys(n, a, b, c) -> SYSRES), in one stand-alone program.
    no-oracle: SYSTAB/SYSARG/SYSRES are fixed RAM addresses ($0F14 / $0F06.. / $0F0C) and JSRUR is the machine's. */

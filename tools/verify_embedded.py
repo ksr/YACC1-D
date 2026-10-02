@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Compile every Arduino sketch under embedded/ with arduino-cli (board: Arduino Uno / ATmega328) against ONLY the
 vendored libraries in embedded/libraries (a private user-libraries dir keeps ~/Documents/Arduino/libraries out of it).
 Sketch folders whose name does not match their main .ino are copied to a scratch dir under the right name first

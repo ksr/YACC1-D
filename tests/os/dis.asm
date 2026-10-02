@@ -1,3 +1,5 @@
+; Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 ; dis.asm - the known program of tests/os/disasm.session (2026-09-29): every operand form /BIN/DISASM prints, at
 ; $C000 (above disasm itself at $5000, inside the `load` range $5000-$CFFF), then bytes that begin no instruction.
 ; tests/os/run.py assembles it with RC/asm (EXTRA) and puts it on the disk as /DIS (load C000).

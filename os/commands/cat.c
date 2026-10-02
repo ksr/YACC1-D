@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* cat.c - print files, or copy the console to the output: the plain filter.
      cat FILE ...     each file in turn (globs such as *.TXT or /MAN/C* expand to the matching files)
      cat A - B        "-" is the console: A, then what is typed up to Ctrl-D, then B

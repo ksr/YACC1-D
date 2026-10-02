@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* stack.c (2026-09-25) - y1cc --stack ADDR: main moves the stack to ADDR and puts the caller's SP back on every
    return. The recursion below pushes its frames on the new stack; the word main saved (the boot stub's SP after
    its JSR, $0EFD) is the first thing on it, at ADDR-1..ADDR; the deepest point reached is found by the $A5 fill

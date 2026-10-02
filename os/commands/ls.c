@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* ls.c - list a directory through the OS file API (2026-09-23): opendir / readdir and the entry accessors.
      ls [PATH]   name, <DIR> or the size, the load address of a program, then the count ('.' and '..' skipped) */
 #include "../lib_fs.c"

@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* target_sec.c - the three output sections of y1cc.c on Y1/OS (split from target_io.c 2026-09-24, so that the passes,
    which write their files through io_wopen/io_wput/io_wclose, do not carry these buffers): section 0 (code) goes
    straight into the output file; sections 1 and 2 (data, uninitialised data) wait in RAM (TSEC bytes each) and are

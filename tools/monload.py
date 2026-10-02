@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """monload.py - send a program to the YACC1's RAM through the ROM monitor's ':' Intel-hex loader (2026-09-23),
 then optionally run it and show its console output.
 

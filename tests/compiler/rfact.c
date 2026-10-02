@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* rfact.c - recursion (2026-09-24): self-recursive functions with int and char parameters and locals, recursion
    depth 50, a recursive call inside an expression (n * fact(n - 1)), two recursive calls in one expression (fib),
    and a recursive call inside the arguments of another (ackermann: the earlier argument waits on the stack). */

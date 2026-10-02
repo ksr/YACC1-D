@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Post-process the kicad-cli Eagle board import into a finished project board.
 
 Run with KiCad's bundled Python (it needs the pcbnew module):

@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* dep.c - deposit hex bytes into memory: dep addr b b b ...
      dep 8000 A9 01 60   store $A9, $01, $60 from $8000
      dep -h              usage

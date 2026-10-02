@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* dircomment.c - comments on preprocessor lines (2026-09-25): a block comment that starts on a #define or #include
    line and goes on over the next lines is one space, and the directive ends at the newline after it (until then the
    next lines were lexed as code: os/lib_abi.c's '$' was a "bad character"); a // comment ends a directive; inside

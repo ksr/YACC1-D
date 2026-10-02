@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """passes.py - the multi-pass y1cc against the Y1/OS program area (2026-09-24; software/compiler/README.md, "The
 multi-pass compiler"). For each of the nine passes (software/compiler/c/cc1_lex.c .. cc9_final.c):
 

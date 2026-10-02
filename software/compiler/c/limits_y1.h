@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* limits_y1.h - the table sizes of y1cc.c as a Y1/OS program (target.c, compiled by y1cc.py for the size report and
    the road to a native compiler; software/compiler/README.md). Sized for what a pass of a native compiler could keep
    in the 32K program area next to its code, not for compiling big programs: the whole-program AST (NODES_MAX) is

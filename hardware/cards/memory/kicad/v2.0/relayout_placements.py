@@ -1,3 +1,5 @@
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """relayout_placements.py - the RE-LAYOUT placement options of the memory card v2.0 (2026-09-24). Plain data + plain
 geometry (no KiCad import): read by gen_relayout.py, which builds one board per option.
 

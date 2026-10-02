@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Convert an Eagle 9.x XML schematic (.sch) into a KiCad 9/10 hierarchical schematic.
 
 Written for the YACC1 Memory card v1.3 conversion (YACCS/kicad). Behaviour:

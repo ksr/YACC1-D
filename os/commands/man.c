@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* man.c - show a manual page: man name  ->  the text of /MAN/NAME, a screen at a time.
      man cat      the page for cat (the name is upper-cased: the Makefile installs the pages as /MAN/CAT ...)
      man man      this command's own page

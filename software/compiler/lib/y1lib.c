@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* y1lib.c - a tiny library for y1cc programs (2026-09-22). Included textually: #include "y1lib.c"
    Functions main() never calls are dropped by the compiler, so including it costs nothing unused.
    int is 16-bit unsigned, char 8-bit unsigned; console output goes through putchar(). */

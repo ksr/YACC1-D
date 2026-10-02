@@ -1,3 +1,5 @@
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """placements.py - the placement options of the memory card v2.0 board (2026-09-24). Plain data, read by gen_mem_v2.py.
 
 Coordinates are the built v1.3 board's (mm, y down; outline x 17.72..195.55, y 10.00..124.02, bus connector X1 on the left

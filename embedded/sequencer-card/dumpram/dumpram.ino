@@ -1,3 +1,8 @@
+/*
+ * Author: Ken Rother (original)
+ * Changes: Claude (Anthropic), 2026 - see tools/patched_files.txt
+ */
+
 // Sequencer Memory card code
 // Mode Determined by UCODESWITCH
 //Mode 1 download uCode from serial line and store in EEPROM, press STARTSWITCH to begin (READY and LOADING LEDs ON)

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Hold one address on the bus (with -VMA and, optionally, -MEM-RD asserted) so a meter or scope can be put on the
 video card's decode pins. The port must stay open: the bus tester resets when it is closed.
 usage: hold_address.py HEXADDR [--rd]      then press Enter to release

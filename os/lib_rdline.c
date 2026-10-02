@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* lib_rdline.c - read one line of the input (Y1/OS, 2026-09-23).
      readline(buf)  the next line into buf (LF ends it and is not stored, CR is dropped, 255 characters kept, the
                     rest of a longer line read and dropped), NUL-terminated; 1 = a line, 0 = the input had ended

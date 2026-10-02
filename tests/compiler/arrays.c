@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* arrays.c - int and char arrays, global tables, pointer walks, index expressions, string tables */
 #include "y1lib.c"
 

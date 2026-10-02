@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """mock_card.py - a fake Sequencer4 in download mode on a pseudo-terminal, for testing tools/ucode_send.py.
 
   mock_card.py OUTFILE      prints the pty's slave path on the first stdout line, then speaks the card's protocol:

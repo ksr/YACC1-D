@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* switch.c - switch/case/default: byte compare chain, 16-bit chain, dense jump table (BRUR), sparse cases,
    fall-through, break, default first/absent, switch inside a loop with continue, nested switches, char subject */
 #include "y1lib.c"

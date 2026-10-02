@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* bigw.c - tests/os/big.session's writer (2026-09-25, 24-bit file positions): write a file over 64K with a pattern
    the host check recomputes, byte i = (lo ^ (lo >> 8) ^ hi * 37) & 255 for i = hi * 65536 + lo.
      bigw PATH K      K * 1024 + 7 bytes, 512 at a time through WRITE (the last 7 on their own)

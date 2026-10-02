@@ -34,7 +34,7 @@ QUIRKS: 210 bytes, 11 labels, load 3000 exec 3000
 /S> 
 CC4: 5551 bytes, 442 labels, load 5000 exec 5000
 /S> 
-asm: 3: undefined label: NOTHERE
+asm: 5: undefined label: NOTHERE
           LDAI nothere
 asm: 1 error, no ERR
 /S> 
@@ -48,19 +48,19 @@ usage: asm [-h] SRC [OUT]
   65973  CC4.ASM  @B000
      67  ECHOX  @5000
    1112  ECHOX.ASM  @B000
-    135  ERR.ASM  @B000
+    202  ERR.ASM  @B000
     144  HELLO  @5000
    1652  HELLO.ASM  @B000
     408  HELLO.IMG  @5000
-  12902  ISA.ASM  @B000
+  12969  ISA.ASM  @B000
    2216  ISA.IMG  @3000
   10906  MON.IMG  @F000
-  46179  MONITOR.ASM  @B000
+  46278  MONITOR.ASM  @B000
     624  Q.IMG  @3000
     549  QUIRKS  @3000
-   3258  QUIRKS.ASM  @B000
-    160  quirks1.inc  @B000
-     72  quirks2.inc  @B000
+   3325  QUIRKS.ASM  @B000
+    227  quirks1.inc  @B000
+    139  quirks2.inc  @B000
 /S> 
 bye
 >

@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* sed.c - substitute on every line: sed s/re/new/[g] [file ...]
      sed s/foo/bar/ FILE     the first "foo" of each line becomes "bar"
      sed s/o+/0/g FILE       every match (regex: . * + ? ^ $, lib_regex.c)

@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* pack.c - compact the volume: pack [-v]
      pack        slide every live file and directory extent down over the dead sectors (deleted and replaced
                  files, the pipes' temp files, copied >> appends, removed directories), then lower the free pointer

@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* asm.c - the native YACC1 assembler, /BIN/ASM (2026-09-25), /BIN/ASMC since 2026-09-26: RC/asm's source dialect
    (software/assembler, the assembler y1cc's output and the firmware are written for) on the machine, and byte for
    byte what the host assembler makes of the same source. It is THE SPECIFICATION of /BIN/ASM, the same program

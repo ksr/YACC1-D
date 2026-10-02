@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* sort.c - sort lines in ascending byte order: the files named, or the console.
      sort FILE ...    the lines of all of them, sorted, one stream (globs, "-" = the console)
    Holds up to 200 lines of up to 79 characters (longer lines are cut, extra lines dropped with a warning at the

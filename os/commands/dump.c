@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* dump.c - hex dump of memory, 256 bytes a page: dump addr
      dump 5000     16 rows of  AAAA: bb bb ... bb  cccccccccccccccc  then a key: '.' (or q, or Ctrl-D) quits,
                    anything else shows the next 256 bytes

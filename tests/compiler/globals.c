@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* globals.c - initialised globals of every shape, pointers to them, #define, static/const/unsigned spellings */
 #include "y1lib.c"
 

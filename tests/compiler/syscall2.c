@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* syscall2.c (2026-09-25) - sys() numbers 22..31: y1cc takes them through SYSTAB2 ($4FC0, the 32-entry table Y1/OS
    keeps in its RAM; SYSTAB at $0F14 holds only 0..21, ARGBUF follows it). The program fills both tables as the OS
    does at boot and calls through each: a constant 0..21 still reads SYSTAB, 22..31 read SYSTAB2.

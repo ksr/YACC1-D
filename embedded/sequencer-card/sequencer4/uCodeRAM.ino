@@ -1,4 +1,9 @@
 /*
+ * Author: Ken Rother (original: Sequencer3 2021-08 + IO.ino 2024-07)
+ * Changes: Claude (Anthropic), 2026 - see git history
+ */
+
+/*
    manage uCode RAM
 */
 

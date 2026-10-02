@@ -1,3 +1,5 @@
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 # YACC1 emulator — plain make, no NetBeans needed.
 #   make            build ./emulator
 #   make run        run it with the shipped ROM (BASIC at $E000 + monitor at $F000), the image that is in the machine

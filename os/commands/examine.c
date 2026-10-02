@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* examine.c - view and change memory a byte at a time: examine addr
      examine 5000   shows  5000: vv  and reads keys (keyin, no echo; what is typed is echoed by examine):
                       Enter            keep the byte, go to the next address

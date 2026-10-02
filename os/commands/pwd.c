@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* pwd.c - print the current directory.
      pwd        the path, e.g. /BIN
      pwd -h     usage

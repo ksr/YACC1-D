@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """cfcard.py - put a Y1/OS disk image on a real CompactFlash card from the Mac, or read one back (2026-09-23).
 
   cfcard.py list                               the external physical disks macOS sees (a CF card in a USB reader)

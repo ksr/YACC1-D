@@ -1,3 +1,5 @@
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 # y1ucemu - the microcode-level YACC1 emulator (steps the control store the sequencer card holds).
 #   make          build ./y1ucemu
 #   make test     run tests/ucemu/run.py (the compiler suite + brur on this emulator, against the interpreter's expectations)

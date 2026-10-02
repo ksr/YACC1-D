@@ -1,3 +1,5 @@
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """cf_netlist.py - the YACC1 CompactFlash card v1.0: THE single source of its circuit (2026-09-23).
 
 gen_cf.py reads this module to write the KiCad schematic and to build the board; nothing else defines the circuit.

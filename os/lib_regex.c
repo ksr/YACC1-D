@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* lib_regex.c - the basic regular expressions of grep, sed and awk (Y1/OS, 2026-09-23).
      .        any single character
      c* c+ c? zero or more / one or more / zero or one of the character (or '.') before it

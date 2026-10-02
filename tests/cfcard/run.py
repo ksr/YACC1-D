@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """tests/cfcard/run.py - tools/cfcard.py without a card: write and read an image through a stand-in file, and check that
 the tool refuses the Mac's internal disk (disk0) before anything is written."""
 import os, sys, subprocess, tempfile, shutil

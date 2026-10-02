@@ -1,3 +1,5 @@
+; Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 ; =====================================================================================================================
 ; kermit_io.asm - /BIN/KERMIT's line I/O and per-byte loops (2026-09-26): packets in and out of the console UART,
 ; the block checks, and the data field encoded and decoded.

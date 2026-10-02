@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* cc4_calls.c - pass 4 of the multi-pass y1cc (2026-09-24): the call graph. y1cc.c's build_reach and the
    liveness of gen_program: which function can reach which (main must not be recursive), the roots named in
    funcaddr(), the functions that get compiled. It works on the call lists cc2 wrote into W.ast (every call of a

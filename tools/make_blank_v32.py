@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Derive hardware/bus/blank-card/eagle/v3.2/ from v3.1/ by renaming the four C3-C6 bus nets to the Bus V3.2 names
 (and the bus ribbon label + silk title). Pure text substitution on the Eagle XML; see the v3.2 README."""
 import re, os, xml.etree.ElementTree as ET

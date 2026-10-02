@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Index the YACCS tree and report what is unique where. Read-only."""
 import os, sys, hashlib, time, collections, json, signal
 SF_DATALESS = 0x40000000

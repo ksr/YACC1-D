@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* structs.c (no-oracle: host struct padding and byte order differ) - struct/union members, pointers to structs, arrays of structs, nested member access */
 #include "y1lib.c"
 

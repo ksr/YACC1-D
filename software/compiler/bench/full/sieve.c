@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* sieve, written for y1cc: library putnum, ++/+=, break, char-sized flags and a char loop counter */
 #include "y1lib.c"
 #define N 200

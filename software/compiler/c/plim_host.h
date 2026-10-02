@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* plim_host.h - the table sizes of the passes on the Mac (hostp.c, host16p.c): big enough for the whole corpus and
    for y1cc.c compiling itself; generic names, each pass uses the ones it has tables for (software/compiler/README.md,
    "The passes"; the Y1/OS sizes, one file per pass, are in ylim/). Every overflow is a clean "y1cc: too many ...

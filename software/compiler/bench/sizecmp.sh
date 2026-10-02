@@ -1,4 +1,6 @@
 #!/bin/sh
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 # sizecmp.sh - the same C source through the P8X toolchain (p8cc.py + p8xasm.py) and the YACC1 one (y1cc.py + asm):
 # binary size of each (code + data + uninitialised variables, so both count the same things), the YACC1 emulator's
 # instruction count, and whether the YACC1 output equals the host C compiler's (tests/compiler/host_shim.h).

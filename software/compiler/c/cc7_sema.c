@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* cc7_sema.c - pass 7 of the multi-pass y1cc (2026-09-24): the expression analysis. For every hole in W.st it
    works out what y1cc.c's code generator would ask about each node of the tree - the constant value (fold), the
    type (type_of), the lvalue type (type_lval), the variable a name is (vinfo), the member a .m / ->m is

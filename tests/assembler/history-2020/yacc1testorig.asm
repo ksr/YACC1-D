@@ -1,3 +1,5 @@
+; Author: Ken Rother (original)
+
 	movi R3,0fh
 test:   movi R2,01234h
         movdb R4,01234h

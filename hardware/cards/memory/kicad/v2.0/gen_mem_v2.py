@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """gen_mem_v2.py - write the KiCad schematic and the placement-option boards of the YACC1 memory card v2.0 (2026-09-24).
 
 Run with KiCad's bundled Python (the board half needs pcbnew); build.sh does that:

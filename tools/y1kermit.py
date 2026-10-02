@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """y1kermit.py - a small standard Kermit for the Mac side of the YACC1's console line (2026-09-26): send files to
 /BIN/KERMIT, receive them from it, talk to its server mode. The fallback when C-Kermit is not at hand, and what
 tests/kermit/run.py drives the emulators with.

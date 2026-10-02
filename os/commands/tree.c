@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* tree.c - the directory tree, depth first and indented: tree [dir]
      tree        everything under the current directory: two spaces per level, a '/' after a directory
      tree /BIN   under that directory

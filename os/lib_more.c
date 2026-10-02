@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* lib_more.c - the --More-- pager shared by more, man and md (Y1/OS, 2026-09-23).
      pgc(c)    print c; after every PGLINES (23) line feeds show "--More--" and wait for a key (keyin, no echo):
                space or any other key = the next page, Enter = one more line, q or Q = quit (pgquit = 1, and pgc prints

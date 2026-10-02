@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Mechanical design review of every ACTIVE card from its KiCad netlist (kicad/<rev>/reports/netlist.net, which carries
 pin types from the Eagle symbols) and board. Looks for the class of fault found on the video card on 2026-09-20/21:
 

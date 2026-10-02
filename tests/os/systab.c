@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* systab.c - tests/os/systab.session's program (2026-09-25): the OS fills SYSTAB2 ($4FC0, 32 entries) and copies its
    first 22 to SYSTAB ($0F14, what every program compiled before reads); a constant sys() number 0..21 goes through
    SYSTAB, 22..31 through SYSTAB2 (y1cc). Prints how many of 0..21 agree (and are set), which of 22..31 are set,

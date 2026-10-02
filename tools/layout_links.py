@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Create the symlinks that let the migrated C tools build UNCHANGED in the YACC1-D layout.
 The sources still use the relative paths of the old 'Software/' tree:
   software/emulator/main.c              #include "../opcodes.h"            -> software/opcodes.h (real file, fine)

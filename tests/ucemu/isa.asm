@@ -1,3 +1,5 @@
+; Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 ; isa.asm - differential test of the ISA: every arithmetic, logic, shift, compare, register, memory and stack
 ; instruction, each result written raw to port 2. Run on the instruction-level emulator and on the microcode-level
 ; emulator; the two byte streams must be identical (tests/ucemu/run.py does that). Expected values in comments.

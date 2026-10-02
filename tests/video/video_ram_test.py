@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Video card RAM read/write test through the Bus Test Card.
 
 Card map (hardware/cards/video/README.md): the card decodes the $D000 2K block; the LOW half ($D000-$D3FF) is the

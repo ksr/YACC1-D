@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* cc6_stmt.c - pass 6 of the multi-pass y1cc (2026-09-24): the statements. y1cc.c's compile_func and gen_stmt for
    every live function, main first: labels, branches, loops, switch case labels, the frames' DS lines; each
    expression becomes a hole (R_HOLE) holding its tree, which cc7 annotates and cc8 turns into code in place.

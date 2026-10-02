@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Every file in YACC1-D must be explained: a plan row (hash re-checked), an extra source from migrate_run.py's
 log, a hand-made file (tools/, migration/, front-page docs, placeholder README.md, session captures), or a
 generated FABRICATED marker/index. Prints buckets, hash mismatches, unexplained files, and plan rows missing

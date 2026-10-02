@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """finish_v2.py - the board finished from top-edge option B of the YACC1 memory card v2.0:
 options-top-edge-J2/memory-v2.0.kicad_pcb (Ken's pick, 2026-09-24, of the re-layout with J2 at the top edge,
 relayout_placements.py OPTIONS["b"]; superseded the same day by the standoff decision - gen_standoff.py - and kept, with

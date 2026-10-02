@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Full overnight test of the memory card and the video card's display RAM through the Bus Test Card.
 
 Phases (each prints PASS/FAIL and a running line of progress; ~20 min with the blocks-1 firmware, ~10 h per byte):

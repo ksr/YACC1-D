@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* rcalc.c - a recursive-descent expression evaluator (2026-09-24): expr -> term -> factor -> ( expr ), the shape of
    the parser a self-hosting compiler needs. Unsigned 16-bit, like int. Grammar:
      expr   = term { ('+' | '-') term }

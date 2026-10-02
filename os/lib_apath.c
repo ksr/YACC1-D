@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* lib_apath.c - make a path absolute (Y1/OS, 2026-09-23).
      abspath(out, a) -> the characters of a used (the word ends at NUL or space)
        out  <- the absolute path: the current directory (getcwd) + "/" + a when a is relative, then "." components

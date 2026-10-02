@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """mkkio.py - os/kermit_io.asm -> os/kermit_io.c, /BIN/KERMIT's line I/O as a relocatable C byte array (2026-09-26).
 
   python3 mkkio.py              write os/kermit_io.c (os/Makefile runs it when the .asm changes)

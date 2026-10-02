@@ -1,4 +1,6 @@
 #!/bin/sh
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 # build.sh - build and verify the YACC1 memory card v2.0: the schematic (the built v1.3 + the CF section), THE v2.0
 # BOARD memory-v2.0.kicad_pcb (Ken 2026-09-25: standoff option E, finished for fabrication, NOT ORDERED) with its fab
 # outputs, the five STANDOFF placement options (the CF adapter on two standoffs on the card, J2 parallel to X1; in

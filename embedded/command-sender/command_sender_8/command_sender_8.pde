@@ -1,3 +1,8 @@
+/*
+ * Author: Ken Rother (original)
+ * Changes: Claude (Anthropic), 2026 - see tools/patched_files.txt
+ */
+
 /* YACC1-D 2026-09-20: unused imports removed (ActionEvent/ActionListener, JFrame, JPanel, JMenu*, JButton,
  * JToggleButton, Color, JTabbedPane, Date, java.util.*). 'import java.io.*' also went: since Java 14 it brings in
  * java.io.Serial, which made 'Serial' ambiguous and stopped the sketch building under Processing 4. */

@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* ylim/sema.h - the Y1/OS table sizes of cc7_sema.c (the expression analysis) (software/compiler/README.md, "The passes": sizes).
    Each overflow is a clean "y1cc: too many ... (NAME)" error; tests/compiler/passes.py measures what fits. */
 #define LITS_MAX     160

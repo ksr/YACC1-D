@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* rlocals.c - recursion with big frames (2026-09-24): local arrays and structs in recursive functions (frames over
    8 bytes go through rt_fsave/rt_frest), an odd-sized frame, pointers to a local passed to a NON-recursive helper
    (allowed: the helper cannot re-enter), a global pointer walk, and tower of Hanoi. */

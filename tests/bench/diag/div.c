@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* div.c - bench diagnostic (2026-09-23): arith.c hung on the machine in putnum(64836) (b-a), while putnum(700)
    worked. Prints every step in hex only (puthex needs no division), one line at a time, so a hang shows where. */
 #include "y1lib.c"

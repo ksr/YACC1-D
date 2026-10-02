@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* rmutual.c - mutual recursion (2026-09-24): even/odd, a three-function cycle, a cycle entered from two places,
    and a non-recursive helper called from inside a cycle (its frame needs no saving). */
 #include "y1lib.c"

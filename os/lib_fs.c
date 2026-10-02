@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* lib_fs.c - the Y1/OS file API for programs (2026-09-23): C wrappers around the syscalls, for /BIN commands.
    #include "../lib_fs.c" (it includes lib_abi.c itself: the numbers, the RAM addresses). Each wrapper is one
    sys() call (y1cc: the arguments go to SYSARG0..2, the OS handler in SYSTAB is JSRURed, SYSRES comes back), so a

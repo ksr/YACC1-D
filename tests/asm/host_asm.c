@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* host_asm.c - /BIN/ASM (os/commands/asm.c) built for the Mac, for tests/asm/run.py (2026-09-25).
    The same source as the Y1/OS program, with the YACC1's integer types (int = unsigned short here, char unsigned by
    -funsigned-char: the trick software/compiler/c/host16.c plays) and the y1cc builtins it uses - sys(), bios(),

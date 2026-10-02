@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* host_shim.h - lets the host C compiler act as an ORACLE for the y1cc test programs (run.py --oracle):
    int becomes 16-bit unsigned, char is unsigned (-funsigned-char), the console builtins map to stdio.
    Programs that touch the machine (peek/poke/inp/outp/bios) are excluded from the oracle (they say so). */

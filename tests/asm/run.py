@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """The native assembler /BIN/ASM (os/commands/asm.c) against the host assembler RC/asm (software/assembler), 2026-09-25.
 
   run.py [-v] [--only SUBSTR] [--no-native] [--uc] [--target]

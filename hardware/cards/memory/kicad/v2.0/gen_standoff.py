@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """gen_standoff.py - the STANDOFF placement options of the YACC1 memory card v2.0 (Ken, 2026-09-24): the CF-to-IDE
 adapter (HX-2118P) on two M3 standoffs on the card, J2 parallel to the bus connector X1 about 1/3 of the way to the top
 edge, a short straight IDE ribbon from J2 up to the adapter's header. standoff_placements.py holds the options, the

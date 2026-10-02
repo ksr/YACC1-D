@@ -1,3 +1,5 @@
+; Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 ; err_stale.asm - a stale token record (tests/asm/run.py, 2026-09-26): RC/asm's token list keeps the records past
 ; its count from the expression before, and a later (x).0 reads them: after the bad expression on line 7, record 5
 ; is an operator, so lines 8 and 9 are bad expressions too in RC/asm (and in both native assemblers: asm.asm's fast path

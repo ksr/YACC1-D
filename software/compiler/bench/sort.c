@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 int a[32];
 void putnum(int n) { char buf[6]; int i; i = 0; if (n == 0) { putchar('0'); return; }
     while (n) { buf[i] = '0' + n % 10; n = n / 10; i = i + 1; } while (i) { i = i - 1; putchar(buf[i]); } }

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """y1cc test runner: compile every tests/compiler/*.c, assemble it, run it on the emulator, compare the output.
 
   run.py [name ...] [--oracle] [--keep] [--xisa]

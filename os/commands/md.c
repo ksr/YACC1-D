@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* md.c - render a Markdown file on the console, a screen at a time.
      md FILE.MD       styled with ANSI SGR escapes: bold headings (h1/h2 underlined), dim code, wrapped prose
      md -p FILE.MD    plain: the same layout without escapes (dumb terminals, tests)

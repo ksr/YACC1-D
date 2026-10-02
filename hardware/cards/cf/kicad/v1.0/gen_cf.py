@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """gen_cf.py - write the KiCad schematic, board and project of the YACC1 CF card v1.0 from cf_netlist.py.
 
 Run with KiCad's bundled Python (the board half needs the pcbnew module):

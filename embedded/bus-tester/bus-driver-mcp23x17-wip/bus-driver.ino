@@ -1,3 +1,6 @@
+/*
+ * Author: Ken Rother (original)
+ */
 
 /*
    SET ARDUINO MONITOR TO "No Line Ending"

@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* del.c - delete files: del name [name ...]
      del A.TXT /T/B.TXT   tombstone each file (the sectors come back with /BIN/PACK)
      del *.BAK            a glob deletes every matching file in that directory

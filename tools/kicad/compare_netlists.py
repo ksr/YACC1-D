@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Prove the converted KiCad schematic matches the imported Eagle board, pad for pad.
 
 usage: compare_netlists.py <schematic netlist .net (kicad-cli sch export netlist --format kicadsexpr)> <board .kicad_pcb>

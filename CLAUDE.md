@@ -25,6 +25,11 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
   (`tools/verify_firmware.py`), mark them "not burned/loaded" in the docs, and leave the hardware step to him.
 - **Background work runs on Opus**, and must leave nothing running when it finishes (no emulators, routers or
   `until …; do sleep` wait loops).
+- **Every source file starts with an authorship header** (Ken, 2026-10-02): `tools/authors.tsv` says who wrote each
+  file and `python3 tools/author_headers.py --check` (in `make check`) enforces it. A new source file Claude writes: add
+  `path<TAB>claude<TAB>written in YACC1-D` to `tools/authors.tsv` and run `tools/author_headers.py --apply`; never
+  re-label Ken's code as Claude's (a changed file of Ken's keeps "Author: Ken Rother", with the change in
+  `tools/patched_files.txt`). Third-party and generated files get no header.
 - New `/BIN` commands need a man page (`os/man/NAME`) and a `help` line; Y1/OS disk docs changing size changes the
   `tests/os` pack transcript's size lines (`python3 tests/os/run.py pack --update`, only size lines may change).
 - Ken likes explanations that teach: say what was done, why, and what it means for the machine.

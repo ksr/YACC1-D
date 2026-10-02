@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* limits_host.h - the table sizes of y1cc.c on the Mac (host.c). Big enough for the whole corpus AND for y1cc.c
    compiling itself (tests/compiler/twin.py); every overflow is a clean "y1cc: too many ..." error naming the limit.
    The count of each table's entries; the bytes in brackets are what the table costs on the YACC1 (2-byte ints). */

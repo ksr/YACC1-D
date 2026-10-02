@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* pcommon.c - what every pass of the multi-pass y1cc shares (2026-09-24): string and number helpers, the error
    message buffer, and the intermediate files (bytes, 16-bit big-endian words, NUL-terminated strings) over io.h.
    In the y1cc subset, like y1cc.c (whose rules it keeps: every value 0..65535, bytes from char arrays masked with

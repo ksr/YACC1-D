@@ -1,4 +1,8 @@
 /*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
+/*
  * y1ucemu.c - a microcode-level emulator of the YACC1 (2026-09-22).
  *
  * The other emulator (software/emulator) interprets instructions: it knows what ADDI does. This one does not. It

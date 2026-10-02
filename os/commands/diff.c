@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* diff.c - the lines that differ between two files: diff file1 file2
      prints the lines only in file1 as "< line" and then those only in file2 as "> line"; nothing when equal
    It skips the common leading and trailing lines and reports the block between them: one changed, inserted or

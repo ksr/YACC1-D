@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* cmp.c - compare two files byte for byte: cmp file1 file2
      silent when they are the same; otherwise one of
        cmp: files differ: byte N, line M

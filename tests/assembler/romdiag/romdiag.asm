@@ -1,3 +1,5 @@
+; Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 ; romdiag.asm - a ROM-resident instruction check paced by the input switch (2026-09-22), for the bench after the
 ; microcode reload: romcount's count phase lit every LED on the machine.  Cause found with the first build of this
 ; ROM: the bring-up machine has ONE index-register card (R0..R3); R4..R7 read as a floating bus ($FF).  This build

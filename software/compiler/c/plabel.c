@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* plabel.c - the text of a variable's or function's label, made again from its owner (cc5_layout.c, cc9_final.c).
    y1cc.c's ulabel(want) gives the want - "g_" + name for a global, "f_" + name for a function, function + "_" +
    name for a parameter or local - sanitised (a character that is not a letter, digit or '_' becomes '_', a leading

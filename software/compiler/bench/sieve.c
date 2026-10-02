@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* primes below 200: common subset of p8cc and y1cc (no ++ += ?: switch #include) */
 char flags[200];
 void putnum(int n) { char buf[6]; int i; i = 0; if (n == 0) { putchar('0'); return; }

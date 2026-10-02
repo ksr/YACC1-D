@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """tests/kermit/run.py - /BIN/KERMIT against tools/y1kermit.py on both emulators, through a pseudo-terminal
 (2026-09-26).
 

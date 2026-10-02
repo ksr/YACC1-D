@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* vi.c - a minimal modal VT100 screen editor for Y1/OS (2026-09-23): the P8X /bin/vi, ported to y1cc and the
    Y1/OS file API (os/commands/VI-PORT-NOTES.md has what changed and why).
      vi NAME          edit NAME (a new, empty buffer when it does not exist)

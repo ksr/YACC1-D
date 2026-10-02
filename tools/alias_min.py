@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Minimal reproduction of the video-card write-through fault.
 
 A write to $0010 (block 0, A0=0) also writes the video RAM cell at $D010.

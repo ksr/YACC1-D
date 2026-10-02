@@ -1,3 +1,7 @@
+/*
+ * Author: Ken Rother (original)
+ */
+
 #define NUMBER_OF_CONTROLLERS 6
 #define PINS_PER_PORT 8
 #define BITS_PER_CONTROLLER 16

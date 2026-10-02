@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* find.c - the paths of the entries whose names match: find pattern [dir]
      find .TXT        every file or directory under the current one whose name CONTAINS ".TXT" (as typed)
      find *.C         ... whose name matches the glob (* and ?, case folded: lib_glob.c)

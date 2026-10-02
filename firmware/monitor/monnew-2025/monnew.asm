@@ -1,3 +1,5 @@
+; Author: Ken Rother (original)
+
 ; Simple Monitor Program for YACC1-2020
 ; Supports: 
 ; 1) Display a memory location (D command)

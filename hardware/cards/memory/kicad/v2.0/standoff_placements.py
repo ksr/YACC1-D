@@ -1,3 +1,5 @@
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """standoff_placements.py - the STANDOFF placement options of the memory card v2.0 (Ken, 2026-09-24): the CF-to-IDE
 adapter (an HX-2118P) mounts flat on two M3 standoffs ON the memory card, fed by a short straight IDE ribbon from J2.
 Plain data + plain geometry (no KiCad import): read by gen_standoff.py (boards, checks) and print_1to1.py (the 1:1

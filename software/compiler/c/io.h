@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* io.h - the host interface of y1cc.c (2026-09-24).
 
    y1cc.c calls nothing else outside itself: no libc, no syscalls. host_io.c implements this on the Mac with stdio;

@@ -1,3 +1,5 @@
+; Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 ; =====================================================================================================================
 ; asm.asm - /BIN/ASM, the native YACC1 assembler hand-written in YACC1 assembly (2026-09-26).
 ;

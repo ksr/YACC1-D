@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Mechanical review of the microcode of every opcode, from test.hex + the signal table, using what the hardware does:
    - the pipeline registers apply a step's control word for the whole step; a bus write happens while -MEM-WR (or
      -IO-WR) is low, so the ADDRESS and the DATA must not change while it is asserted (a change = a glitch write to

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """mkstrings.py - os/strings.txt -> an assembler include of NUL-terminated byte strings (2026-09-23).
 
   python3 mkstrings.py strings.txt > build/asm/y1os_str.inc

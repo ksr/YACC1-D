@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* lib_glob.c - filename wildcard match for /BIN commands (Y1/OS, 2026-09-23).
      gmatch(p, s)   1 when the pattern p matches the WHOLE name s, else 0
    `*` matches any run of characters (none included), `?` exactly one; any other character matches itself with

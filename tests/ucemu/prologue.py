@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """The three-step fetch prologue (2026-09-29, design review L-1) holds the rules the hardware needs.
 
   prologue.py [test.hex] [--compare OLD.hex]

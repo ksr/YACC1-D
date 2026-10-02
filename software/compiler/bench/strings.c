@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 char buf[40];
 int strlen(char *s) { int n; n = 0; while (s[n]) n = n + 1; return n; }
 int strcmp(char *a, char *b) { while (*a && *a == *b) { a = a + 1; b = b + 1; } if (*a == *b) return 0; if (*a > *b) return 1; return 65535; }

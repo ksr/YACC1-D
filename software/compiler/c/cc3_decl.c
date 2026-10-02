@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* cc3_decl.c - pass 3 of the multi-pass y1cc (2026-09-24): the declarations. y1cc.c's gen_program up to the
    check for main(): the struct/union layouts, the function table, the globals (their labels) and the global data.
 

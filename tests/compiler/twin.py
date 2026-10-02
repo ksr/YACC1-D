@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """twin.py - y1cc.py against its C twin software/compiler/c/y1cc (2026-09-24): the whole compile corpus
 (tests/compiler/corpus.py: the compiler tests in four option sets, the bench sources, os/y1os.c, every /BIN command,
 tests/os programs, and software/compiler/c/target.c = y1cc.c compiling itself) through both compilers; the assembly

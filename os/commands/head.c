@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* head.c - the first lines of the files named, or of the console.
      head FILE        the first 10 lines
      head -5 FILE     the first 5

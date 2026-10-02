@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* exe.c - tests/os/exec.session's program (2026-09-25): the syscalls EXIT, EXEC and SEEK.
      exe x N      print N, then EXIT(N) from three calls deep (main's RET never runs)
      exe c N      print "chain N"; then EXEC /EXE "c N-1" while N > 0: a chain of N + 1 programs in one command

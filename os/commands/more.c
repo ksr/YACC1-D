@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* more.c - page the files named, or the console, 23 lines at a time.
      more FILE ...   after each 23 lines: --More-- and a key (keyin, no echo): space = the next page,
                      Enter = one more line, q = quit

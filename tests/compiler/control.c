@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* control.c - conditions and loops: every relation, both byte and word operands, && || !, break/continue */
 #include "y1lib.c"
 

@@ -1,3 +1,5 @@
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 # YACC1 microcode generator — plain make (NetBeans one: Makefile.netbeans).
 #   make          build ./ucodegen (includes resolve via ../../opcodes.h -> tools/layout_links.py)
 #   make check    generate into build/ and diff against the committed test.hex (fails on difference)

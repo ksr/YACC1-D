@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* rdn.c - tests/os/rdn.session (2026-09-27): READN's contract in the patterns that mix it with everything else, so
    that a stale sector buffer, position or count shows. Every file it writes holds a seeded pattern, byte i =
    (lo ^ (lo >> 8) ^ hi * 37 ^ seed) & 255 for i = hi * 65536 + lo, so bytes of another file (or of another place in

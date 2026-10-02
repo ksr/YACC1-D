@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """gen_y1_optab.py - the native assembler's instruction table, generated from software/assembler/yacc1.def
 (2026-09-25), so that /BIN/ASM (os/commands/asm.c) and the host assembler (software/assembler, RC/asm) can never
 disagree about an instruction.

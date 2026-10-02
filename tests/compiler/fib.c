@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* fib.c - fibonacci, gcd, decimal/hex printing, a small table of squares and their digit sums */
 #include "y1lib.c"
 

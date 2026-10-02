@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Give every .rtf note outside archive/ a Markdown twin beside it (same name, .md), so the notes are readable and
 diffable in git. The .rtf stays the original; the .md is GENERATED (re-run after editing an .rtf; edit the .md only
 once you retire the .rtf). Uses macOS `textutil` for the RTF -> text step. Idempotent; removes twins whose .rtf is gone."""

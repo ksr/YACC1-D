@@ -1,3 +1,8 @@
+/*
+ * Author: Ken Rother (original)
+ * Changes: Claude (Anthropic), 2026 - see tools/patched_files.txt
+ */
+
 /* 
  * File:   main.c
  * Author: ken

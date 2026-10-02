@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Convert EVERY Eagle design under hardware/ (active and deprecated revisions) into a KiCad 10 project.
 
 For each Eagle .sch/.brd pair (or a lone .sch / .brd) this makes, next to the Eagle folder,

@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* badh.c - tests/os/badhandle.session's program (2026-09-23): write and read through handles that are not open for
    that, and show that every call is refused and nothing is written: PUTC/WRITE on 0 (with no write open: that used to
    write $0200 and then the boot block), on a read, a directory, a closed and out-of-range handles; GETC/READ/READDIR on

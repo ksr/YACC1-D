@@ -1,3 +1,5 @@
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 # Y1/OS - the YACC1 disk operating system (docs/system/OS-PLAN.md), built with the tree's own tools.
 #   make            y1os.bin (the OS image), the /BIN programs, and disk.img (a P8XFS v2 volume with all of it)
 #   make OS=c       the same with the C OS (y1os.c, the specification) instead of the assembly one (y1os.asm, the

@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* io.c - the machine builtins: peek/poke/peekw/pokew on RAM, outp to the console port, sizeof.  no-oracle */
 #include "y1lib.c"
 

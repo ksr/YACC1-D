@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """The y1cc compile corpus (2026-09-24): every C program the tree compiles, with the option sets the Makefiles and test
 runners use, plus a few extra option combinations for coverage. Shared by
 

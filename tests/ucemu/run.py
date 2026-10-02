@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Run the compiler test programs (and tests/assembler/brur) on the MICROCODE-level emulator (software/ucemu) and
 compare with the expectations the instruction-level emulator established (tests/compiler/NAME.out).
 

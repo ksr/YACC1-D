@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* dir.c - list a directory, sorted: dir [-R] [-S] [path|glob]
      dir              the current directory, by name
      dir /BIN         a directory by path;  dir FILE  that one file's line

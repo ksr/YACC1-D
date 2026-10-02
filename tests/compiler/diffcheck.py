@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """diffcheck.py - differential proof for a y1cc.py change (2026-09-24, written for the recursion support): compile the
 whole corpus (tests/compiler/corpus.py: the compiler tests in four option sets, the bench sources, the Y1/OS C kernel,
 every /BIN command, the OS test programs) with an OLD y1cc.py taken from git and with the working one, and diff.

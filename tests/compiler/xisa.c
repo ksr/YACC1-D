@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* xisa.c (2026-09-24) - the --xisa code on purpose: LDZ/STZ of the page's variables (and LDR/STR of the ones that
    did not fit: there are more than 256 bytes of word variables here), a recursive function whose whole frame is in
    the page (its inline frame save/restore uses LDZ/STZ R4), one with a frame over 8 bytes (rt_fsave/rt_frest, which

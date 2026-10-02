@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* lib_abi.c - the YACC1 ROM (monitor + BIOS) addresses a program or the OS uses, from firmware/monitor/monitor.asm
    (2026-09-22), and since 2026-09-23 the Y1/OS syscall interface (numbers and RAM addresses; the C wrappers are in
    lib_fs.c). Use with y1cc's bios(addr, r7, acc): R7 and ACC are set, the routine is JSRed, ACC comes back.

@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* disasm.c - the YACC1 disassembler, /BIN/DISASM (2026-09-29): machine code back to the source the assemblers take.
      disasm [-s] FILE [START [COUNT]]    a program file as if loaded: from its load address (the directory entry's,
                                          where `load` and `run` put it; /BIN programs load at 5000), or from START,

@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* y1os.c - Y1/OS v0.1 (2026-09-23; v0 2026-09-22): a RAM-resident shell and file layer over a P8XFS v2 volume, for
    the YACC1. Loaded from the CompactFlash card (LBA 1.., OSCNT sectors) to $1000 by the monitor's O command, which
    JSRURs it; `exit` returns to the monitor. Written in C for y1cc (static frames: nothing here recurses; paths are

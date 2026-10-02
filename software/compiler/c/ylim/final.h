@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* ylim/final.h - the Y1/OS table sizes of cc9_final.c (the assembly text) (software/compiler/README.md, "The passes": sizes).
    Each overflow is a clean "y1cc: too many ... (NAME)" error; tests/compiler/passes.py measures what fits. */
 #define NAMES_MAX    400

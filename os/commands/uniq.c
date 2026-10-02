@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* uniq.c - drop adjacent repeated lines: the files named, or the console.
      uniq FILE ...    each line unless it equals the one before (sort first to drop every repeat)
    Lines are cut at 255 characters (lib_rdline.c).

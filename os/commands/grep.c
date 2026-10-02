@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* grep.c - print the lines that match a regular expression: grep [-r] regex [file ...]
      grep ^al FILE        lines of FILE that start with "al" (regex: . * + ? ^ $, lib_regex.c)
      grep x.*y *.TXT      every matching file; with more than one file each line is prefixed "NAME:"

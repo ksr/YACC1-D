@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* video.c - the video card from Y1/OS (2026-09-25): mirror the console on it, clear it, start it.
      video          status: card found or not, mirroring, the CRTC cursor, the text cursor
      video on       mirror the console on the screen (every byte the ROM's CHAROUT sends, so the OS, the shell and

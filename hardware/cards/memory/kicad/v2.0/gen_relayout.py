@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """gen_relayout.py - the RE-LAYOUT boards of the YACC1 memory card v2.0 (2026-09-24): the whole card placed again from
 scratch with the CF section designed in, and a trial autoroute of each placement option.
 

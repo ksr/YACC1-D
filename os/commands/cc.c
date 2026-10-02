@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* cc.c - the native C compiler's command (2026-09-25): y1cc on the machine.
      cc prog.c [-o prog.asm] [--org N] [--boot] [--vector] [--no-brur] [--os] [--xisa] [--stack N] [-l]
    The options are y1cc's (software/compiler/README.md); the assembly goes to prog.asm (or -o), which /BIN/ASM then

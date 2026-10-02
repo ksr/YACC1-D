@@ -1,4 +1,9 @@
 /*
+ * Author: Ken Rother (original: Sequencer3 2021-08 + IO.ino 2024-07)
+ * Changes: Claude (Anthropic), 2026 - see git history
+ */
+
+/*
    Microcode EEPROM access - Sequencer4 (YACC1-D 2026-09-21).
 
    The EEPROM is two 64K I2C devices (0x56 = instructions 0-127, 0x57 = 128-255; 512 bytes per instruction, so an

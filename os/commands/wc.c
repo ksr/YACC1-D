@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* wc.c - count lines, words and bytes: "lines words bytes" of the files named, or of the console.
      wc FILE ...    the files (globs expand; "-" = the console) counted as one stream: one line of totals
      wc             the console up to Ctrl-D

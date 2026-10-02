@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* sieve.c - primes below 200 (the classic), plus a little string work */
 #include "y1lib.c"
 

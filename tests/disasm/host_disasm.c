@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* host_disasm.c - /BIN/DISASM (os/commands/disasm.c) built for the Mac, for tests/disasm/run.py (2026-09-29).
    The same source as the Y1/OS program with the YACC1's integer types (int = unsigned short, char unsigned by
    -funsigned-char: the trick tests/asm/host_asm.c plays) and the y1cc builtins and syscalls it uses supplied by

@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* y1ccp.c - the host driver of the multi-pass y1cc (2026-09-24): the same command line as y1cc.py and y1cc, runs
    the nine passes cc1..cc9 (beside this program) in a temporary directory, stops at the first that fails (that
    pass has printed the message), and removes the intermediate files (kept with Y1CCP_KEEP=dir). Named y1ccpX it

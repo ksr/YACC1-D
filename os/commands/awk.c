@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* awk.c - a small awk: one rule over the fields of each line.
      awk [-F c] '[/re/] [{print items}]' [file ...]
    pattern  /regex/ (lib_regex.c: . * + ? ^ $) or none = every line; a pattern with no action prints the line

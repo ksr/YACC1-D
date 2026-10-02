@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """twinfuzz.py - random C programs in the y1cc subset through y1cc.py and the C twin (2026-09-24); the assembly (or the
 error message) must be the same. A complement to twin.py: the corpus is real programs, this is every operator,
 type and statement shape mixed at random, including recursion, switch tables, struct members, pointer arithmetic,

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """The generator's idle-step pass (2026-09-29, review S1) removed only what the hardware does not need.
 
   idle.py [test.hex]

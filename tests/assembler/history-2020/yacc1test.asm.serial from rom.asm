@@ -1,3 +1,4 @@
+; Author: Ken Rother (original)
 
 UARTA0:       EQU 000h
 UARTA1:       EQU 008h

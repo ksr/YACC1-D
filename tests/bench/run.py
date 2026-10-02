@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """tests/bench/run.py - the bench test set (2026-09-23): programs loaded into RAM through the ROM monitor's ':' loader,
 run with G3000, their console output compared with the transcript the microcode-level emulator produces.
 

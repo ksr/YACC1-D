@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Dry-run migration from the YACCS tree into YACC1-D. Writes NOTHING except reports.
 
 usage: migrate_dryrun.py <index.json from inventory.py> <report dir>

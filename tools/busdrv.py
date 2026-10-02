@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Minimal host driver for the YACC1 Bus Test Card (bus-driver.ino).
 
 Wire protocol (from bus-driver.ino):

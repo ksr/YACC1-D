@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Remove files that an earlier migrate_run.py placed but the CURRENT plan no longer wants (after a rules change).
 Reads every migration/run-log-*.tsv; a 'copied' destination is stale when it is neither in dryrun-plan.tsv nor
 one of migrate_run.py's EXTRA sources. Then prunes empty dirs under hardware/ and archive/. Never touches

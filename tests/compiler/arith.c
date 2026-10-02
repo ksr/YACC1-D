@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* arith.c - 16-bit arithmetic through the runtime helpers and the inline sequences */
 #include "y1lib.c"
 

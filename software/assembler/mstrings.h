@@ -1,3 +1,7 @@
+/*
+ * Author: Michael H. Riley (RC/asm 2.2); YACC1 port: Ken Rother
+ */
+
 void replace(char* buffer,char* search,char* rpl);
 extern unsigned char ord(char x);
 extern int length(char *instr);

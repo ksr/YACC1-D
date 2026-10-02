@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* touch.c - create empty files that do not exist yet: touch name [name ...]
      touch A.TXT B.TXT   each missing name becomes a 0-byte file; an existing file (or directory) is left alone
    Y1/OS keeps no timestamps, so there is nothing to update on an existing file. No globs (a pattern could only

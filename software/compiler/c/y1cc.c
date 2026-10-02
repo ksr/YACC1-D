@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* y1cc.c - the C twin of y1cc.py (2026-09-24): a C compiler for the YACC1, written in the C subset y1cc accepts.
 
    It produces the same assembly as software/compiler/y1cc.py, byte for byte (tests/compiler/twin.py compiles the

@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* lib_stdin.c - "the files named, else the console" input for the /BIN filters (Y1/OS, 2026-09-23).
      openarg(tail) -> 0 no file named (the console), 1 ready, 2 a name was not found (gbad points at it)
        tail   the rest of the command line: every word is a file, a glob (expanded, lib_globx.c), or "-" for the

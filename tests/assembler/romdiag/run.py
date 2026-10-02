@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """tests/assembler/romdiag/run.py - assemble romdiag.asm, compare with the committed image/binary, and step it through
 its stages on the microcode emulator with the input line flipped every 100,000 steps."""
 import os, sys, shutil, subprocess, tempfile

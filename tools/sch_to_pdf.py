@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Make a PDF of every Eagle schematic under hardware/ (active AND deprecated revisions).
 
 Route: tools/kicad/eagle_sch_to_kicad.py (Eagle 6+ XML .sch -> KiCad schematic, in a scratch dir)

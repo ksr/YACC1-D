@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Verify the memory card's ROM against the sources: read $E000-$FFFF through the Bus Test Card and compare every byte
 with the image tools/romimage.py assembles from firmware/basic/basic.img + firmware/monitor/monitor.img (what the emulator
 loads). ~30 s with the blocks-1 firmware. Prints the mismatches (if any) and writes the readback to

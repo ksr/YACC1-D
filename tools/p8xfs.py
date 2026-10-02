@@ -1,3 +1,5 @@
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 # Copied from the P8X tree (p8x/tools/p8xfs.py, Ken Rother) on 2026-09-22 so YACC1-D builds its own P8XFS v2 disk images;
 # a FORK: the two trees are not kept in sync (Ken, 2026-09-22); only the on-disk format stays compatible so images can be shared.
 #!/usr/bin/env python3

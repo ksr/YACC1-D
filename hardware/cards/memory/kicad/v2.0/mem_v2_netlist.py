@@ -1,3 +1,5 @@
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """mem_v2_netlist.py - the YACC1 memory card v2.0 circuit: the built v1.3 + the CompactFlash section (2026-09-24) + the ROM
 write-protect jumper JP3 (2026-09-29, rule 7) + the ADDR15 pull-down R15 (2026-09-30, rule 8).
 

@@ -1,3 +1,5 @@
+; Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 ; =====================================================================================================================
 ; y1os.asm - Y1/OS v0.2 (2026-09-23): the YACC1 disk operating system, hand-written in YACC1 assembly.
 ;

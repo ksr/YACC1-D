@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* chars.c - char semantics: 8-bit wrap on store, zero-extension on load, byte compares, getchar/putchar */
 #include "y1lib.c"
 

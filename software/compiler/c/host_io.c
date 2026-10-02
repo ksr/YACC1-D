@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* host_io.c - io.h on the Mac (2026-09-24): stdio, the command line, getcwd for canonical #include paths.
    This file is host C (it is never compiled by y1cc); y1cc.c reaches the outside world only through it.
 

@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* pnames.c - the names' text in memory, for the passes that make labels from them (cc3, cc4, cc5): W.nam loaded whole.
    NAMES_MAX / NAMEPOOL come from the pass's limits. */
 char npool[NAMEPOOL];

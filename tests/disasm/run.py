@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """/BIN/DISASM (os/commands/disasm.c) against the assembler: disassemble, reassemble, compare (2026-09-29).
 
   run.py [-v] [--only SUBSTR] [--quick]

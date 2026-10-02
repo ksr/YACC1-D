@@ -1,3 +1,8 @@
+/*
+ * Author: Michael H. Riley (RC/asm 2.2); YACC1 port: Ken Rother
+ * Changes: Claude (Anthropic), 2026 - see tools/patched_files.txt
+ */
+
 #ifdef SUPPORT
 #define prefix
 #else

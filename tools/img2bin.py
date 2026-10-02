@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """img2bin.py - Intel-hex (.img from the assembler) -> flat binary, for p8xfs.py (boot / put need raw bytes).
 
   img2bin.py in.img out.bin [--base 0x1000] [--end 0xF000] [--fill 0xFF] [--size 8192]

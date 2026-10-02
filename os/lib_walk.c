@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* lib_walk.c - walk a directory tree without recursion (Y1/OS, 2026-09-23): tree, find, dir -R, grep -r, cp -r.
      walk_open(path)  start at a directory (relative or absolute; "" = the current one); 1 ok, 0 not a directory
      walk_next()      the next entry, depth first in directory order ("." and ".." skipped); 1 = one in

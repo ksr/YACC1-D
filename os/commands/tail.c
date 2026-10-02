@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* tail.c - the last lines of the files named, or of the console.
      tail FILE        the last 10 lines
      tail -5 FILE     the last 5 (1..40)

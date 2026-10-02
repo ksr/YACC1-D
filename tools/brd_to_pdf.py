@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Make a multi-page PDF of every Eagle board under hardware/ (active AND deprecated revisions).
 
 Route: KiCad's bundled python loads the Eagle .brd through pcbnew.PCB_IO_MGR (the same Eagle importer

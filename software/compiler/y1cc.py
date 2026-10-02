@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """y1cc - a small C cross-compiler for the YACC1 (2026-09-22).
 
 Emits YACC1 assembly for software/assembler (RC/asm, yacc1.def); the assembler turns it into an Intel-hex .img that

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Y1/OS tests: build os/disk.img, boot it on both emulators with a scripted console session, compare transcripts.
 
   run.py [name ...] [--keep] [--update]

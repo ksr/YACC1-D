@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* cp.c - copy files, or a directory tree: cp [-r] src dst
      cp A.TXT B.TXT       a copy of the file (its load and exec addresses kept, so a copied program runs)
      cp A.TXT /T          into a directory: /T/A.TXT

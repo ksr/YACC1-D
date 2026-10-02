@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """tests/sequencer/run.py - exercise tools/ucode_send.py against mock_card.py (no hardware).
 
   1. differential send: a cache that differs from test.hex in a few records -> exactly those records reach the

@@ -1,4 +1,8 @@
 /*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
+/*
  * videomodel.h - the video card model shared by both YACC1 emulators (2026-09-25).
  *
  * The card (docs/cards/video.md) answers in the 4K block $D000-$DFFF: with ADDR11 low the CPU port of the IDT7134

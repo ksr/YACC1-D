@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """hardware/PROVENANCE.md: for every board version folder under hardware/, where it came from in the old
 YACCS tree and how old its files REALLY are.
 

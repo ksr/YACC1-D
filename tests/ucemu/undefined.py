@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Undefined opcodes halt cleanly (design review H-4, fixed 2026-09-29).
 
 Until 2026-09-29 the microcode generator left the records of opcodes it never generates all-zero, and every control

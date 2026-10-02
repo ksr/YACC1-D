@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """gen_y1_distab.py - the disassembler's instruction table, generated from software/assembler/yacc1.def (2026-09-29),
 so that /BIN/DISASM (os/commands/disasm.c) decodes exactly what the assemblers (RC/asm on the Mac, /BIN/ASM and
 /BIN/ASMC on the machine) encode: the three read the same file and cannot drift apart.

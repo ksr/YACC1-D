@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """tests/native/run.py - C compiled, assembled and run on the emulated YACC1 (2026-09-25): the first native builds.
 
 Under Y1/OS, on a copy of the OS disk (which carries the compiler since 2026-09-25: /BIN/CC, the passes

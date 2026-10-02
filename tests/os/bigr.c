@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* bigr.c - tests/os/big.session's reader (2026-09-25, 24-bit file positions): read a file written by bigw.c back
    and check it against the same pattern, byte i = (lo ^ (lo >> 8) ^ hi * 37) & 255 for i = hi * 65536 + lo.
      bigr PATH        byte by byte (GETC)

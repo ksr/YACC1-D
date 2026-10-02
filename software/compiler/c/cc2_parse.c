@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* cc2_parse.c - pass 2 of the multi-pass y1cc (2026-09-24): the parser, from W.tok to the AST. y1cc.c's parser
    (y1cc.py's class P) and its constant folding, unchanged in what they accept and in their messages.
 

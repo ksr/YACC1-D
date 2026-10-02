@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* cc8_emit.c - pass 8 of the multi-pass y1cc (2026-09-24): the expression code generator. Every hole in W.se is
    replaced by its code: y1cc.c's gen_expr, gen_assign, gen_bin, gen_cond, gen_call..., function by function, with
    two changes. The analysis they ask (fold, type_of, type_lval, vinfo, struct_member, sizeof, the call graph) is

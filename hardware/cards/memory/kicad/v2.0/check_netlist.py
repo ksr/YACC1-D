@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """check_netlist.py - prove the memory card v2.0 schematic (and each board) = the built v1.3 minus C20-C23 + the CF
 section + JP3 (rule 7, the ROM write-protect jumper) + R15 (rule 8, the ADDR15 pull-down).
 

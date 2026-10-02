@@ -1,3 +1,5 @@
+# Author: Ken Rother (original)
+
 # bus-tester test-vector generator — plain make (NetBeans one: Makefile.netbeans).
 #   make        build ./gen ;  make run   print the generated script to stdout (redirect into a script file)
 CC     ?= cc

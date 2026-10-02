@@ -1,3 +1,5 @@
+; Author: Ken Rother (original)
+
 ;
 ; Basic Interpreter Entry points
 ;

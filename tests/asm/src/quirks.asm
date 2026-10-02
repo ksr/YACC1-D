@@ -1,3 +1,5 @@
+; Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 ; quirks.asm - RC/asm dialect corners for tests/asm/run.py (2026-09-25): every line here assembles in RC/asm
 ; (software/assembler) with 0 errors, and /BIN/ASM must produce the same bytes. Not a program: never run.
         ORG 3000H

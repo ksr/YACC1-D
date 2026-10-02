@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 #include "y1lib.c"
 int a[32];
 void bubble(int *v, char n) {

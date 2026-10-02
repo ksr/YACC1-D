@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Check that an Eagle board file is the design a fab house actually received, by comparing it with the CAM output.
 
 Reads the Eagle .brd (XML) and the gerber/drill set (a zip; a zip nested inside the given zip is searched too, so a

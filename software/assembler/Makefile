@@ -1,3 +1,5 @@
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 # RC/asm v2.2, YACC1 port — plain make (the NetBeans-generated one is Makefile.netbeans).
 #   make            build ./asm
 #   make check      assemble firmware/monitor/monitor.asm and firmware/basic/basic.asm in build/ and diff the

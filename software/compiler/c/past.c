@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* past.c - reading W.ast (cc2_parse.c has the format) for cc3..cc6: one top-level record at a time, into node
    arrays with the record's own ids 1..n. rec_head() loads the heads (nodes 1..h: everything but a function's
    body); then either rec_body() (the lists skipped, the body loaded) or rec_skip() (the lists and the body

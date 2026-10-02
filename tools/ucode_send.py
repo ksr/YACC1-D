@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """ucode_send.py - load the microcode into the sequencer card's EEPROM over its serial port (2026-09-22).
 
 A Python replacement for the Processing sketch embedded/sequencer-card/microcode-loader/simple_microcode_sender_64,

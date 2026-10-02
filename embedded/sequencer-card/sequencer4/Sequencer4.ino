@@ -1,3 +1,8 @@
+/*
+ * Author: Ken Rother (original: Sequencer3 2021-08 + IO.ino 2024-07)
+ * Changes: Claude (Anthropic), 2026 - see git history
+ */
+
 // Sequencer Memory card code - Sequencer4 (YACC1-D 2026-09-21, from Sequencer3 2021-08 + IO.ino 2024-07)
 //   400 kHz I2C, block EEPROM reads (32 bytes/transaction), EEPROM page writes, no test-pattern fill on boot,
 //   and the EEPROM-to-RAM copy is read back and compared before READY is raised (FAULT blinks 6 on a mismatch).

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """setup_check.py - is this Mac set up to work on YACC1-D? (2026-09-27)
 
 Checks, without installing or changing anything, the tools each kind of work needs and prints what is present, what

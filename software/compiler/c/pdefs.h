@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* pdefs.h - the numbers shared by the passes of the multi-pass y1cc (2026-09-24; software/compiler/README.md,
    "The passes"). #define lines only (y1cc's preprocessor has nothing else). The first half is y1cc.c's: token kinds,
    predefined names, operators, AST node kinds, label kinds, runtime helpers, the machine. The second half is the

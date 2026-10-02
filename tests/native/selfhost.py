@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """tests/native/selfhost.py - the YACC1 toolchain rebuilds itself under Y1/OS on the emulated YACC1 (2026-09-25).
 
 Stage 1 (the native build): on a copy of the OS disk, with the toolchain's own sources on it under /R (as they are in

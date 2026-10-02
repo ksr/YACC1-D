@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Timing diagrams for the YACC1 ISA, generated from the microcode.
 
 Control levels come straight from firmware/microcode/ucode-generator2/test.hex (64 steps x 64 signals per opcode,

@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* target_rd.c - the source-file reads of io.h on Y1/OS (2026-09-25, from target_io.c): one Y1/OS handle per open
    file. Included by the passes that are not the lexer (target/NAME.c); the lexer, which nests #includes, has
    target_inc.c instead.

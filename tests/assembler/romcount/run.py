@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """tests/assembler/romcount/run.py - assemble romcount.asm, compare with the committed image and binary, and run it on
 the microcode emulator with the input-switch line low (mirror the switches) and high (count from the switch value)."""
 import os, sys, shutil, subprocess, tempfile

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """space_check.py - does the CF section fit on the BUILT memory card with all of its copper kept? (2026-09-24)
 
 Run with KiCad's bundled Python (pcbnew, PIL):

@@ -1,3 +1,5 @@
+; Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 ; romcount.asm - a ROM-resident program to prove the EPROM tool chain (2026-09-22): burn it into the 28C64 in place of
 ; the monitor, reset the machine, and it runs from $F000 without the monitor.
 ;

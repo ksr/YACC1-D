@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* cc1_lex.c - pass 1 of the multi-pass y1cc (2026-09-24): the command line, the preprocessor and the lexer.
    y1cc.c's y1cc_main (options) and lexer, unchanged in what they accept and in their messages.
 

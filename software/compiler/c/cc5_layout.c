@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* cc5_layout.c - pass 5 of the multi-pass y1cc (2026-09-24): the labels and the frames. y1cc.c's declare_global
    labels and layout_func for every live function, in source order: the label of each global, of each function and
    of each parameter and local (unique ignoring case), their types and sizes, each function's frame size, and the

@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* stackprobe.c - how deep a pass's stack goes on the YACC1, measured by running the pass on the Mac (2026-09-24,
    tests/compiler/passes.py). Host C only. The pass is compiled with -finstrument-functions, so every function entry
    and exit calls the two hooks below; they keep a shadow of the YACC1 stack: entering g from f adds the bytes the

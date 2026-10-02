@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* cc9_final.c - pass 9 of the multi-pass y1cc (2026-09-24): the assembly text. It reads the global data stream
    (W.dat, cc3) and the code stream (W.em, cc8) three times, once per section of the output - code, data,
    uninitialised data - and on every reading numbers the generated labels in stream order (R_ALLOC, R_STRUSE and the

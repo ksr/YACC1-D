@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """/BIN/ASM under Y1/OS on both emulators (2026-09-25; /BIN/ASM is os/commands-asm/asm.asm since 2026-09-26, the C
 build os/commands/asm.c is /BIN/ASMC): sources on a copy of os/disk.img, target.session assembles
 them with `asm` (and runs two of the results), then the files it wrote are fetched from the image and compared with

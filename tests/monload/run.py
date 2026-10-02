@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """tests/monload/run.py - the monitor's ':' Intel-hex loader (2026-09-23) and tools/monload.py.
 
   1. a compiled C program (tests/compiler/hello.c) sent as its .img then G3000, on both emulators: one '.' per data

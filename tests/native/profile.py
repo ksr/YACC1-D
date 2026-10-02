@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """tests/native/profile.py - where the native compiler's time goes (2026-09-25): instructions per function.
 
 Runs programs of tests/native/run.py's list through the native compiler and assembler on the instruction-level

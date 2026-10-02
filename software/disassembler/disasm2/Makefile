@@ -1,3 +1,5 @@
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 # YACC1 microcode disassembler — plain make (NetBeans one: Makefile.netbeans).
 #   make            build ./disasm2
 #   make run        disassemble every opcode of firmware/microcode/ucode-generator2/test.123 (found relative to the binary)

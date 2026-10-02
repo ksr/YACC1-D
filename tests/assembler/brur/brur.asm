@@ -1,3 +1,5 @@
+; Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 ; brur.asm - test of BRUR Rn (opcode $AD, 2026-09-22): PC <- Rn, no return address, Rn unchanged.
 ; Prints "AB" then a computed jump through a table of addresses picks "C", then a loop counts 0..3 through
 ; BRUR-based dispatch and prints the digits, then HALT. Expected console output: ABC0123

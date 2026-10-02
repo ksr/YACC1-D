@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Rebuild the firmware from the migrated sources in a scratch dir and diff against the committed images.
 Proves the tree can reproduce what is in the machine. Never writes into the tree.
   1. software/assembler  -> asm ; assemble firmware/monitor/monitor.asm + firmware/basic/basic.asm with yacc1.def

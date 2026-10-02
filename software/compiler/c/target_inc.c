@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* target_inc.c - the source-file reads of io.h for the lexer on Y1/OS (2026-09-25): #include nests deeper than
    Y1/OS's handles allow. Y1/OS has four handles and the lexer writes W.tok through one of them, so three files can be
    open for reading; a /BIN command's source nests five deep (cat.c, lib_stdin.c, lib_globx.c, lib_fs.c, lib_abi.c).

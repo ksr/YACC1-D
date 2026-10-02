@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """sch_overlaps.py - measure overlapping text in KiCad schematics (.kicad_sch).
 
     python3 tools/kicad/sch_overlaps.py [options] <file.kicad_sch | dir> ...

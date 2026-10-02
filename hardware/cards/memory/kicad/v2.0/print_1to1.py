@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """print_1to1.py - the 1:1 printable check sheet (US Letter, landscape) of a standoff placement option of the memory
 card v2.0: lay the CF-to-IDE adapter (HX-2118P) on the print and see where its holes, header and slot land.
 

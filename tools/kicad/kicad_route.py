@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """kicad_route.py - shared routing/finishing steps for generated 2-layer YACC1 KiCad cards.
 
 Run with KiCad's bundled Python (pcbnew):

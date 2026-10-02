@@ -1,3 +1,8 @@
+/*
+ * Author: Ken Rother (original: Sequencer3 2021-08 + IO.ino 2024-07)
+ * Changes: Claude (Anthropic), 2026 - see git history
+ */
+
 #define NUMBER_OF_CONTROLLERS 6
 #define PINS_PER_PORT 8
 #define BITS_PER_CONTROLLER 16

@@ -1,3 +1,5 @@
+; Author: Ken Rother (original)
+
 ;
 ; BIOS Entry Points in monitor.asm
 ;

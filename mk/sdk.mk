@@ -1,3 +1,5 @@
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 # Shared by the C tools' Makefiles (2026-09-22). macOS 27's Command Line Tools SDK (MacOSX.sdk -> 27.0) carries
 # tbd files the Xcode 17 linker rejects ("tapi error: malformed file ... unknown architecture arm64e.x1"), so every
 # link fails. If a trivial link fails with the default SDK, fall back to the newest older SDK that is installed.

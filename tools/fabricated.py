@@ -1,3 +1,5 @@
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """The single table of which YACC1 board revisions were actually fabricated. Edit THIS, then run
 tools/gen_fabricated.py to regenerate hardware/FABRICATED.md and the FABRICATED marker files.
 

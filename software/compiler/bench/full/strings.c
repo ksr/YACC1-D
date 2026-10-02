@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 #include "y1lib.c"
 char buf[40];
 void reverse(char *s) { char *e, t; e = s + strlen(s) - 1; while (s < e) { t = *s; *s++ = *e; *e-- = t; } }

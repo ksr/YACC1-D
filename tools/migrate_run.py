@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Execute the migration plan produced by migrate_dryrun.py. The source tree is READ ONLY.
 
 usage: migrate_run.py <migration dir> [--src ~/Documents/YACCS] [--dst ~/Developer/YACC1-D]

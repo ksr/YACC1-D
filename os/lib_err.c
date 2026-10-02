@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* lib_err.c - eputs(s): an error message and a line feed on the RAW console; eput2(s, t): s then t, one message
    (Y1/OS, 2026-09-23).
    Since the shell has redirection and pipes (2026-09-23) putchar is the CONOUT syscall, which follows stdout into a

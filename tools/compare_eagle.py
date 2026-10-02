@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Compare two Eagle designs (schematic and, if present, board) and say whether the newer one has anything new.
 
 usage: compare_eagle.py <A.sch> <B.sch>      (boards are found by swapping the extension)

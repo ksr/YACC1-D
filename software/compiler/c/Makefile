@@ -1,3 +1,5 @@
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 # software/compiler/c - y1cc in C: y1cc.c (the single-program twin of y1cc.py, 2026-09-24) and the multi-pass
 # compiler cc1..cc9 (the same compiler split into nine programs that each fit the Y1/OS program area, 2026-09-24)
 #   make          build ./y1cc and ./y1cc16, the passes ./cc1..cc9 and ./cc1_16..cc9_16, the drivers ./y1ccp, ./y1ccp16

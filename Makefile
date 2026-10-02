@@ -1,3 +1,5 @@
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 # YACC1-D top level — builds every C tool and runs every proof.
 #   make            build emulator, assembler, the C twin of the C compiler (software/compiler/c), microcode generator,
 #                   disassembler, uBASIC, vector generator
@@ -30,6 +32,7 @@ all:
 	@for d in $(TOOLS); do echo "== $$d"; $(MAKE) -s -C "$$d" all || exit 1; done
 check:
 	python3 tools/audit_tree.py
+	python3 tools/author_headers.py --check
 	python3 tools/verify_firmware.py
 	python3 tools/verify_embedded.py
 	python3 tools/verify_processing.py

@@ -1,4 +1,8 @@
 /*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
+/*
  * cfmodel.h - the CompactFlash card model shared by both YACC1 emulators (2026-09-22).
  *
  * The card (docs/system/OS-PLAN.md, decision 1) sits in I/O space on two ports: P8 is a write-only register-select

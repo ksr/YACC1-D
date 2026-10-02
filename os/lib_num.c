@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* lib_num.c - 32-bit counts on a 16-bit int (Y1/OS, 2026-09-23): wc's counters, dir's sizes.
      inc32(c)         c[0] = high word, c[1] = low word; add one
      put32(hi, lo, w) print hi:lo in decimal, right-justified in w columns (0 = no padding)

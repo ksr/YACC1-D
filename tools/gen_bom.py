@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """gen_bom.py - bills of material for the YACC1 from the ACTIVE Eagle schematics (2026-09-23).
 
 Parses the <part> elements of every schematic that is in the machine (docs/system/MACHINE.md, hardware/FABRICATED.md)

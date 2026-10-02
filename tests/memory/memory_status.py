@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Quick status of the memory card (and whatever else answers on the bus) through the Bus Test Card.
 
 What it reports, in order:

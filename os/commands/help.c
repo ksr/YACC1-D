@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
+ */
+
 /* help.c - the Y1/OS command reference: the shell's built-ins and the /BIN programs, one line each.
      help       the list (man NAME for the page of any of them)
    Ported from P8X os/commands/help.c 2026-09-23, changes: the text is rewritten for Y1/OS (no /d1, graphics,

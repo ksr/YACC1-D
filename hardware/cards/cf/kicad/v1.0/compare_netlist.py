@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """compare_netlist.py - prove the generated schematic AND board implement cf_netlist.py, pin for pin.
 
 usage: compare_netlist.py <schematic netlist .net> <board .kicad_pcb>

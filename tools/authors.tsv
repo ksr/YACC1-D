@@ -1,0 +1,387 @@
+# tools/authors.tsv - who wrote each source file (tools/author_headers.py; Ken 2026-10-02). Columns: path,
+# category (ken / ken+claude / ken-derived / claude / claude-p8x get a header; third-party / generated do not),
+# note (for ken-derived: what it was made from). Edit a line to correct a file, then --apply.
+Makefile	claude	written in YACC1-D
+embedded/bus-tester/bus-driver-mcp23x17-wip/bus-driver.ino	ken	from YACCS (migration/ plan or run log)
+embedded/bus-tester/bus-driver/bus-driver.ino	ken+claude	from YACCS; Claude's changes in tools/patched_files.txt
+embedded/bus-tester/bus-monitor/bus-monitor.ino	ken+claude	from YACCS; Claude's changes in tools/patched_files.txt
+embedded/bus-tester/bus-test/bus-test.ino	ken+claude	from YACCS; Claude's changes in tools/patched_files.txt
+embedded/bus-tester/led-switch-test/led-switch-test.ino	ken+claude	from YACCS; Claude's changes in tools/patched_files.txt
+embedded/clocker/clocker.ino	ken	from YACCS (migration/ plan or run log)
+embedded/command-sender/command_sender_8/command_sender_8.pde	ken+claude	from YACCS; Claude's changes in tools/patched_files.txt
+embedded/libraries/Adafruit_MCP23017_Arduino_Library/Adafruit_MCP23017.cpp	third-party	kept as published, with its own licence header
+embedded/libraries/Adafruit_MCP23017_Arduino_Library/Adafruit_MCP23017.h	third-party	kept as published, with its own licence header
+embedded/libraries/Adafruit_MCP23017_Arduino_Library/examples/button/button.ino	third-party	kept as published, with its own licence header
+embedded/libraries/Adafruit_MCP23017_Arduino_Library/examples/interrupt/interrupt.ino	third-party	kept as published, with its own licence header
+embedded/libraries/Adafruit_MCP23017_Arduino_Library/examples/toggle/toggle.ino	third-party	kept as published, with its own licence header
+embedded/libraries/YACC/YACC_Common_header-pre3-2.h	ken	from YACCS (migration/ plan or run log)
+embedded/libraries/YACC/YACC_Common_header.h	ken	from YACCS (migration/ plan or run log)
+embedded/libraries/extEEPROM/examples/eepromReadWrite/eepromReadWrite.ino	third-party	kept as published, with its own licence header
+embedded/libraries/extEEPROM/examples/eepromTest/eepromTest.ino	third-party	kept as published, with its own licence header
+embedded/libraries/extEEPROM/examples/eepromTest_Wire1/eepromTest_Wire1.ino	third-party	kept as published, with its own licence header
+embedded/libraries/extEEPROM/extEEPROM.cpp	third-party	kept as published, with its own licence header
+embedded/libraries/extEEPROM/extEEPROM.h	third-party	kept as published, with its own licence header
+embedded/sequencer-card/dumpram/dumpram.ino	ken+claude	from YACCS; Claude's changes in tools/patched_files.txt
+embedded/sequencer-card/microcode-loader/simple_microcode_sender_64/simple_microcode_sender_64.pde	ken	from YACCS (migration/ plan or run log)
+embedded/sequencer-card/sequencer4/IO.ino	ken-derived	Sequencer3 2021-08 + IO.ino 2024-07
+embedded/sequencer-card/sequencer4/Sequencer4.ino	ken-derived	Sequencer3 2021-08 + IO.ino 2024-07
+embedded/sequencer-card/sequencer4/YACC_Common_headera.h	ken-derived	Sequencer3 2021-08 + IO.ino 2024-07
+embedded/sequencer-card/sequencer4/download.ino	ken-derived	Sequencer3 2021-08 + IO.ino 2024-07
+embedded/sequencer-card/sequencer4/uCodeRAM.ino	ken-derived	Sequencer3 2021-08 + IO.ino 2024-07
+embedded/sequencer-card/sequencer4/uCodeROM.ino	ken-derived	Sequencer3 2021-08 + IO.ino 2024-07
+firmware/basic/basic.asm	ken	from YACCS (migration/ plan or run log)
+firmware/basic/candidates/2021-09-02-3bcacf3-not-working/basic.asm	ken	from YACCS (migration/ plan or run log)
+firmware/basic/candidates/2021-09-8afde21/basic.asm	ken	from YACCS (migration/ plan or run log)
+firmware/basic/candidates/basic.asmold.asm	ken	from YACCS (migration/ plan or run log)
+firmware/microcode/ucode-generator2/CodeGen.h	ken+claude	from YACCS; Claude's changes in tools/patched_files.txt
+firmware/microcode/ucode-generator2/Makefile	claude	Claude's (the YACCS records list it: the KiCad pilot / a plain Makefile)
+firmware/microcode/ucode-generator2/accumulator.c	ken+claude	from YACCS; Claude's changes in tools/patched_files.txt
+firmware/microcode/ucode-generator2/branch.c	ken+claude	from YACCS; Claude's changes in tools/patched_files.txt
+firmware/microcode/ucode-generator2/code.h	ken+claude	from YACCS; Claude's changes in tools/patched_files.txt
+firmware/microcode/ucode-generator2/controlLine.c	ken+claude	from YACCS; Claude's changes in tools/patched_files.txt
+firmware/microcode/ucode-generator2/io.c	ken	from YACCS (migration/ plan or run log)
+firmware/microcode/ucode-generator2/main.c	ken+claude	from YACCS; Claude's changes in tools/patched_files.txt
+firmware/microcode/ucode-generator2/memory.c	ken	from YACCS (migration/ plan or run log)
+firmware/microcode/ucode-generator2/register.c	ken+claude	from YACCS; Claude's changes in tools/patched_files.txt
+firmware/microcode/yaccsignaldata2.h	ken+claude	from YACCS; Claude's changes in tools/patched_files.txt
+firmware/microcode/yaccsignaldefine.h	ken	from YACCS (migration/ plan or run log)
+firmware/monitor/candidates/2021-09-02-3bcacf3-not-working/monitor.asm	ken	from YACCS (migration/ plan or run log)
+firmware/monitor/candidates/2021-09-8afde21/monitor.asm	ken	from YACCS (migration/ plan or run log)
+firmware/monitor/monitor.asm	ken+claude	from YACCS; Claude's changes in tools/patched_files.txt
+firmware/monitor/monnew-2025/monnew.asm	ken	from YACCS (migration/ plan or run log)
+hardware/cards/cf/kicad/v1.0/build.sh	claude	written in YACC1-D
+hardware/cards/cf/kicad/v1.0/cf_netlist.py	claude	written in YACC1-D
+hardware/cards/cf/kicad/v1.0/compare_netlist.py	claude	written in YACC1-D
+hardware/cards/cf/kicad/v1.0/gen_cf.py	claude	written in YACC1-D
+hardware/cards/memory/kicad/v2.0/build.sh	claude	written in YACC1-D
+hardware/cards/memory/kicad/v2.0/check_netlist.py	claude	written in YACC1-D
+hardware/cards/memory/kicad/v2.0/finish_v2.py	claude	written in YACC1-D
+hardware/cards/memory/kicad/v2.0/gen_mem_v2.py	claude	written in YACC1-D
+hardware/cards/memory/kicad/v2.0/gen_relayout.py	claude	written in YACC1-D
+hardware/cards/memory/kicad/v2.0/gen_standoff.py	claude	written in YACC1-D
+hardware/cards/memory/kicad/v2.0/mem_v2_netlist.py	claude	written in YACC1-D
+hardware/cards/memory/kicad/v2.0/placements.py	claude	written in YACC1-D
+hardware/cards/memory/kicad/v2.0/print_1to1.py	claude	written in YACC1-D
+hardware/cards/memory/kicad/v2.0/relayout_placements.py	claude	written in YACC1-D
+hardware/cards/memory/kicad/v2.0/space_check.py	claude	written in YACC1-D
+hardware/cards/memory/kicad/v2.0/standoff_placements.py	claude	written in YACC1-D
+mk/sdk.mk	claude	written in YACC1-D
+os/Makefile	claude	written in YACC1-D
+os/asm_optab.c	generated	its generator's GENERATED line says where it comes from
+os/commands-asm/asm.asm	claude	written in YACC1-D
+os/commands-asm/asmtab.inc	generated	its generator's GENERATED line says where it comes from
+os/commands/asm.c	claude	written in YACC1-D
+os/commands/awk.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/cat.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/cc.c	claude	written in YACC1-D
+os/commands/cmp.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/cp.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/del.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/dep.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/diff.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/dir.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/disasm.c	claude	written in YACC1-D
+os/commands/dump.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/echo.c	claude	written in YACC1-D
+os/commands/examine.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/find.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/grep.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/head.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/hello.c	claude	written in YACC1-D
+os/commands/help.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/kermit.c	third-party	E-Kermit 1.8 (Columbia University) adapted by Claude; its licence header stays
+os/commands/ls.c	claude	written in YACC1-D
+os/commands/man.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/md.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/more.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/mv.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/pack.c	claude	written in YACC1-D
+os/commands/pwd.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/sed.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/sort.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/tail.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/touch.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/tree.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/uniq.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/vi.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/commands/video.c	claude	written in YACC1-D
+os/commands/wc.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/dis_optab.c	generated	its generator's GENERATED line says where it comes from
+os/kermit_io.asm	claude	written in YACC1-D
+os/kermit_io.c	generated	its generator's GENERATED line says where it comes from
+os/lib_abi.c	claude	written in YACC1-D
+os/lib_apath.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/lib_err.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/lib_fs.c	claude	written in YACC1-D
+os/lib_glob.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/lib_globx.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/lib_more.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/lib_num.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/lib_rdline.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/lib_regex.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/lib_stdin.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/lib_walk.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
+os/mkkio.py	claude	written in YACC1-D
+os/mkstrings.py	claude	written in YACC1-D
+os/upstream/ekermit-1.8/archives.sh	third-party	kept as published, with its own licence header
+os/upstream/ekermit-1.8/cdefs.h	third-party	kept as published, with its own licence header
+os/upstream/ekermit-1.8/debug.h	third-party	kept as published, with its own licence header
+os/upstream/ekermit-1.8/kermit.c	third-party	kept as published, with its own licence header
+os/upstream/ekermit-1.8/kermit.h	third-party	kept as published, with its own licence header
+os/upstream/ekermit-1.8/main.c	third-party	kept as published, with its own licence header
+os/upstream/ekermit-1.8/makefile	third-party	kept as published, with its own licence header
+os/upstream/ekermit-1.8/platform.h	third-party	kept as published, with its own licence header
+os/upstream/ekermit-1.8/unix.h	third-party	kept as published, with its own licence header
+os/upstream/ekermit-1.8/unixio.c	third-party	kept as published, with its own licence header
+os/y1os.asm	claude	written in YACC1-D
+os/y1os.c	claude	written in YACC1-D
+software/assembler/Makefile	claude	Claude's (the YACCS records list it: the KiCad pilot / a plain Makefile)
+software/assembler/asm.c	rcasm+claude	RC/asm 2.2 (Michael H. Riley), Ken's YACC1 port
+software/assembler/asmcmds.c	rcasm+claude	RC/asm 2.2 (Michael H. Riley), Ken's YACC1 port
+software/assembler/header.h	rcasm+claude	RC/asm 2.2 (Michael H. Riley), Ken's YACC1 port
+software/assembler/mstrings.c	rcasm+claude	RC/asm 2.2 (Michael H. Riley), Ken's YACC1 port
+software/assembler/mstrings.h	rcasm	RC/asm 2.2 (Michael H. Riley), Ken's YACC1 port
+software/assembler/support.c	rcasm+claude	RC/asm 2.2 (Michael H. Riley), Ken's YACC1 port
+software/assembler/upstream/rcasm-2.2/6502.asm	third-party	kept as published, with its own licence header
+software/assembler/upstream/rcasm-2.2/8080.asm	third-party	kept as published, with its own licence header
+software/assembler/upstream/rcasm-2.2/Makefile	third-party	kept as published, with its own licence header
+software/assembler/upstream/rcasm-2.2/asm.c	third-party	kept as published, with its own licence header
+software/assembler/upstream/rcasm-2.2/asmcmds.c	third-party	kept as published, with its own licence header
+software/assembler/upstream/rcasm-2.2/header.h	third-party	kept as published, with its own licence header
+software/assembler/upstream/rcasm-2.2/makeswitch.c	third-party	kept as published, with its own licence header
+software/assembler/upstream/rcasm-2.2/mstrings.c	third-party	kept as published, with its own licence header
+software/assembler/upstream/rcasm-2.2/mstrings.h	third-party	kept as published, with its own licence header
+software/assembler/upstream/rcasm-2.2/rclink.c	third-party	kept as published, with its own licence header
+software/assembler/upstream/rcasm-2.2/support.c	third-party	kept as published, with its own licence header
+software/assembler/upstream/rcasm-2.2/test.asm	third-party	kept as published, with its own licence header
+software/cfmodel.h	claude	written in YACC1-D
+software/compiler/bench/fib.c	claude	written in YACC1-D
+software/compiler/bench/full/fib.c	claude	written in YACC1-D
+software/compiler/bench/full/sieve.c	claude	written in YACC1-D
+software/compiler/bench/full/sort.c	claude	written in YACC1-D
+software/compiler/bench/full/strings.c	claude	written in YACC1-D
+software/compiler/bench/sieve.c	claude	written in YACC1-D
+software/compiler/bench/sizecmp.sh	claude	written in YACC1-D
+software/compiler/bench/sort.c	claude	written in YACC1-D
+software/compiler/bench/strings.c	claude	written in YACC1-D
+software/compiler/c/Makefile	claude	written in YACC1-D
+software/compiler/c/cc1_lex.c	claude	written in YACC1-D
+software/compiler/c/cc2_parse.c	claude	written in YACC1-D
+software/compiler/c/cc3_decl.c	claude	written in YACC1-D
+software/compiler/c/cc4_calls.c	claude	written in YACC1-D
+software/compiler/c/cc5_layout.c	claude	written in YACC1-D
+software/compiler/c/cc6_stmt.c	claude	written in YACC1-D
+software/compiler/c/cc7_sema.c	claude	written in YACC1-D
+software/compiler/c/cc8_emit.c	claude	written in YACC1-D
+software/compiler/c/cc9_final.c	claude	written in YACC1-D
+software/compiler/c/host.c	claude	written in YACC1-D
+software/compiler/c/host16.c	claude	written in YACC1-D
+software/compiler/c/host16p.c	claude	written in YACC1-D
+software/compiler/c/host_io.c	claude	written in YACC1-D
+software/compiler/c/hostp.c	claude	written in YACC1-D
+software/compiler/c/io.h	claude	written in YACC1-D
+software/compiler/c/limits_host.h	claude	written in YACC1-D
+software/compiler/c/limits_y1.h	claude	written in YACC1-D
+software/compiler/c/past.c	claude	written in YACC1-D
+software/compiler/c/pcommon.c	claude	written in YACC1-D
+software/compiler/c/pdefs.h	claude	written in YACC1-D
+software/compiler/c/plabel.c	claude	written in YACC1-D
+software/compiler/c/plim_host.h	claude	written in YACC1-D
+software/compiler/c/pnames.c	claude	written in YACC1-D
+software/compiler/c/stackprobe.c	claude	written in YACC1-D
+software/compiler/c/target.c	claude	written in YACC1-D
+software/compiler/c/target/calls.c	claude	written in YACC1-D
+software/compiler/c/target/decl.c	claude	written in YACC1-D
+software/compiler/c/target/emit.c	claude	written in YACC1-D
+software/compiler/c/target/final.c	claude	written in YACC1-D
+software/compiler/c/target/layout.c	claude	written in YACC1-D
+software/compiler/c/target/lex.c	claude	written in YACC1-D
+software/compiler/c/target/parse.c	claude	written in YACC1-D
+software/compiler/c/target/sema.c	claude	written in YACC1-D
+software/compiler/c/target/stmt.c	claude	written in YACC1-D
+software/compiler/c/target_inc.c	claude	written in YACC1-D
+software/compiler/c/target_io.c	claude	written in YACC1-D
+software/compiler/c/target_rd.c	claude	written in YACC1-D
+software/compiler/c/target_sec.c	claude	written in YACC1-D
+software/compiler/c/y1cc.c	claude	written in YACC1-D
+software/compiler/c/y1ccp.c	claude	written in YACC1-D
+software/compiler/c/ylim/calls.h	claude	written in YACC1-D
+software/compiler/c/ylim/decl.h	claude	written in YACC1-D
+software/compiler/c/ylim/emit.h	claude	written in YACC1-D
+software/compiler/c/ylim/final.h	claude	written in YACC1-D
+software/compiler/c/ylim/layout.h	claude	written in YACC1-D
+software/compiler/c/ylim/lex.h	claude	written in YACC1-D
+software/compiler/c/ylim/parse.h	claude	written in YACC1-D
+software/compiler/c/ylim/sema.h	claude	written in YACC1-D
+software/compiler/c/ylim/stmt.h	claude	written in YACC1-D
+software/compiler/lib/y1lib.c	claude	written in YACC1-D
+software/compiler/y1cc.py	claude	written in YACC1-D
+software/disassembler/disasm2/Makefile	claude	Claude's (the YACCS records list it: the KiCad pilot / a plain Makefile)
+software/disassembler/disasm2/code.h	ken	from YACCS (migration/ plan or run log)
+software/disassembler/disasm2/main.c	ken+claude	from YACCS; Claude's changes in tools/patched_files.txt
+software/disassembler/disasm2/yaccsignal.h.old.h	ken	from YACCS (migration/ plan or run log)
+software/emulator/Makefile	claude	written in YACC1-D
+software/emulator/main.c	ken+claude	from YACCS; Claude's changes in tools/patched_files.txt
+software/opcodes.h	ken+claude	from YACCS; Claude's changes in tools/patched_files.txt
+software/ubasic-c/ubasic-master-orig/Makefile	third-party	kept as published, with its own licence header
+software/ubasic-c/ubasic-master-orig/tests.c	third-party	kept as published, with its own licence header
+software/ubasic-c/ubasic-master-orig/tokenizer.c	third-party	kept as published, with its own licence header
+software/ubasic-c/ubasic-master-orig/tokenizer.h	third-party	kept as published, with its own licence header
+software/ubasic-c/ubasic-master-orig/ubasic.c	third-party	kept as published, with its own licence header
+software/ubasic-c/ubasic-master-orig/ubasic.h	third-party	kept as published, with its own licence header
+software/ubasic-c/ubasic-master-orig/use-ubasic.c	third-party	kept as published, with its own licence header
+software/ubasic-c/ubasic-master-orig/vartype.h	third-party	kept as published, with its own licence header
+software/ubasic-c/ubasic-master/Makefile	third-party	kept as published, with its own licence header
+software/ubasic-c/ubasic-master/tests.c	third-party	kept as published, with its own licence header
+software/ubasic-c/ubasic-master/tokenizer.c	third-party	kept as published, with its own licence header
+software/ubasic-c/ubasic-master/tokenizer.h	third-party	kept as published, with its own licence header
+software/ubasic-c/ubasic-master/ubasic.c	third-party	kept as published, with its own licence header
+software/ubasic-c/ubasic-master/ubasic.h	third-party	kept as published, with its own licence header
+software/ubasic-c/ubasic-master/use-ubasic.c	third-party	kept as published, with its own licence header
+software/ubasic-c/ubasic-master/vartype.h	third-party	kept as published, with its own licence header
+software/ucemu/Makefile	claude	written in YACC1-D
+software/ucemu/y1ucemu.c	claude	written in YACC1-D
+software/videomodel.h	claude	written in YACC1-D
+tests/asm/host_asm.c	claude	written in YACC1-D
+tests/asm/host_sys.c	claude	written in YACC1-D
+tests/asm/run.py	claude	written in YACC1-D
+tests/asm/src/err_dup.asm	claude	written in YACC1-D
+tests/asm/src/err_expr.asm	claude	written in YACC1-D
+tests/asm/src/err_long.asm	claude	written in YACC1-D
+tests/asm/src/err_opcode.asm	claude	written in YACC1-D
+tests/asm/src/err_range.asm	claude	written in YACC1-D
+tests/asm/src/err_stale.asm	claude	written in YACC1-D
+tests/asm/src/err_undef.asm	claude	written in YACC1-D
+tests/asm/src/quirks.asm	claude	written in YACC1-D
+tests/asm/src/quirks1.inc	claude	written in YACC1-D
+tests/asm/src/quirks2.inc	claude	written in YACC1-D
+tests/asm/target.py	claude	written in YACC1-D
+tests/assembler/brur/brur.asm	claude	written in YACC1-D
+tests/assembler/history-2020/yacc1test copy 2.asm	ken	from YACCS (migration/ plan or run log)
+tests/assembler/history-2020/yacc1test copy 2.asm.prepushpop.asm	ken	from YACCS (migration/ plan or run log)
+tests/assembler/history-2020/yacc1test copy.asm	ken	from YACCS (migration/ plan or run log)
+tests/assembler/history-2020/yacc1test.asm serial out jsr.asm	ken	from YACCS (migration/ plan or run log)
+tests/assembler/history-2020/yacc1test.asm.basic jsr test.asm	ken	from YACCS (migration/ plan or run log)
+tests/assembler/history-2020/yacc1test.asm.basic serial no mem.asm	ken	from YACCS (migration/ plan or run log)
+tests/assembler/history-2020/yacc1test.asm.basicio.asm	ken	from YACCS (migration/ plan or run log)
+tests/assembler/history-2020/yacc1test.asm.major test.asm	ken	from YACCS (migration/ plan or run log)
+tests/assembler/history-2020/yacc1test.asm.ok.asm	ken	from YACCS (migration/ plan or run log)
+tests/assembler/history-2020/yacc1test.asm.quich ring shift teset.asm	ken	from YACCS (migration/ plan or run log)
+tests/assembler/history-2020/yacc1test.asm.serial from rom.asm	ken	from YACCS (migration/ plan or run log)
+tests/assembler/history-2020/yacc1test.asm.with ram.asm	ken	from YACCS (migration/ plan or run log)
+tests/assembler/history-2020/yacc1testorig.asm	ken	from YACCS (migration/ plan or run log)
+tests/assembler/ledcount/ledcount.asm	claude	written in YACC1-D
+tests/assembler/romcount/romcount.asm	claude	written in YACC1-D
+tests/assembler/romcount/run.py	claude	written in YACC1-D
+tests/assembler/romdiag/romdiag.asm	claude	written in YACC1-D
+tests/assembler/romdiag/run.py	claude	written in YACC1-D
+tests/assembler/yacc1test.asm	ken	from YACCS (migration/ plan or run log)
+tests/bench/diag/div.c	claude	written in YACC1-D
+tests/bench/run.py	claude	written in YACC1-D
+tests/bus-tester-scripts/Gen Test Vectors/gen test vectors/Makefile	ken	from YACCS (migration/ plan or run log)
+tests/bus-tester-scripts/Gen Test Vectors/gen test vectors/main.c	ken	from YACCS (migration/ plan or run log)
+tests/cfcard/run.py	claude	written in YACC1-D
+tests/compiler/adjstr.c	claude	written in YACC1-D
+tests/compiler/arith.c	claude	written in YACC1-D
+tests/compiler/arrays.c	claude	written in YACC1-D
+tests/compiler/bigconst.c	claude	written in YACC1-D
+tests/compiler/calls.c	claude	written in YACC1-D
+tests/compiler/chars.c	claude	written in YACC1-D
+tests/compiler/control.c	claude	written in YACC1-D
+tests/compiler/corpus.py	claude	written in YACC1-D
+tests/compiler/diffcheck.py	claude	written in YACC1-D
+tests/compiler/dircomline.c	claude	written in YACC1-D
+tests/compiler/dircomment.c	claude	written in YACC1-D
+tests/compiler/fib.c	claude	written in YACC1-D
+tests/compiler/globals.c	claude	written in YACC1-D
+tests/compiler/hello.c	claude	written in YACC1-D
+tests/compiler/host_shim.h	claude	written in YACC1-D
+tests/compiler/io.c	claude	written in YACC1-D
+tests/compiler/passes.py	claude	written in YACC1-D
+tests/compiler/rcalc.c	claude	written in YACC1-D
+tests/compiler/recurse.c	claude	written in YACC1-D
+tests/compiler/rfact.c	claude	written in YACC1-D
+tests/compiler/rlocals.c	claude	written in YACC1-D
+tests/compiler/rmain.c	claude	written in YACC1-D
+tests/compiler/rmutual.c	claude	written in YACC1-D
+tests/compiler/run.py	claude	written in YACC1-D
+tests/compiler/sieve.c	claude	written in YACC1-D
+tests/compiler/stack.c	claude	written in YACC1-D
+tests/compiler/structs.c	claude	written in YACC1-D
+tests/compiler/switch.c	claude	written in YACC1-D
+tests/compiler/switchnb.c	claude	written in YACC1-D
+tests/compiler/sysbig.c	claude	written in YACC1-D
+tests/compiler/syscall.c	claude	written in YACC1-D
+tests/compiler/syscall2.c	claude	written in YACC1-D
+tests/compiler/twin.py	claude	written in YACC1-D
+tests/compiler/twinfuzz.py	claude	written in YACC1-D
+tests/compiler/xisa.c	claude	written in YACC1-D
+tests/disasm/host_disasm.c	claude	written in YACC1-D
+tests/disasm/host_sys.c	claude	written in YACC1-D
+tests/disasm/run.py	claude	written in YACC1-D
+tests/kermit/run.py	claude	written in YACC1-D
+tests/memory/memory_full_test.py	claude	written in YACC1-D
+tests/memory/memory_status.py	claude	written in YACC1-D
+tests/memory/rom_verify.py	claude	written in YACC1-D
+tests/monload/run.py	claude	written in YACC1-D
+tests/native/profile.py	claude	written in YACC1-D
+tests/native/run.py	claude	written in YACC1-D
+tests/native/selfhost.py	claude	written in YACC1-D
+tests/os/badh.c	claude	written in YACC1-D
+tests/os/bigr.c	claude	written in YACC1-D
+tests/os/bigw.c	claude	written in YACC1-D
+tests/os/dis.asm	claude	written in YACC1-D
+tests/os/exe.c	claude	written in YACC1-D
+tests/os/rdn.c	claude	written in YACC1-D
+tests/os/run.py	claude	written in YACC1-D
+tests/os/systab.c	claude	written in YACC1-D
+tests/sequencer/mock_card.py	claude	written in YACC1-D
+tests/sequencer/run.py	claude	written in YACC1-D
+tests/ucemu/idle.py	claude	written in YACC1-D
+tests/ucemu/isa.asm	claude	written in YACC1-D
+tests/ucemu/prologue.py	claude	written in YACC1-D
+tests/ucemu/run.py	claude	written in YACC1-D
+tests/ucemu/undefined.py	claude	written in YACC1-D
+tests/video/emu.py	claude	written in YACC1-D
+tests/video/hold_address.py	claude	written in YACC1-D
+tests/video/video_ram_test.py	claude	written in YACC1-D
+tools/alias_min.py	claude	written in YACC1-D
+tools/audit_tree.py	claude	written in YACC1-D
+tools/brd_to_pdf.py	claude	written in YACC1-D
+tools/busdrv.py	claude	written in YACC1-D
+tools/cfcard.py	claude	written in YACC1-D
+tools/compare_eagle.py	claude	written in YACC1-D
+tools/design_review.py	claude	written in YACC1-D
+tools/eagle_to_kicad_all.py	claude	written in YACC1-D
+tools/fabricated.py	claude	written in YACC1-D
+tools/gen_bom.py	claude	written in YACC1-D
+tools/gen_fabricated.py	claude	written in YACC1-D
+tools/gen_provenance.py	claude	written in YACC1-D
+tools/gen_y1_distab.py	claude	written in YACC1-D
+tools/gen_y1_optab.py	claude	written in YACC1-D
+tools/img2bin.py	claude	written in YACC1-D
+tools/inventory.py	claude	written in YACC1-D
+tools/kicad/compare_netlists.py	claude	Claude's (the YACCS records list it: the KiCad pilot / a plain Makefile)
+tools/kicad/eagle_sch_to_kicad.py	claude	Claude's (the YACCS records list it: the KiCad pilot / a plain Makefile)
+tools/kicad/finish_board.py	claude	Claude's (the YACCS records list it: the KiCad pilot / a plain Makefile)
+tools/kicad/kicad_route.py	claude	Claude's (the YACCS records list it: the KiCad pilot / a plain Makefile)
+tools/kicad/sch_overlaps.py	claude	Claude's (the YACCS records list it: the KiCad pilot / a plain Makefile)
+tools/layout_links.py	claude	written in YACC1-D
+tools/make_blank_v32.py	claude	written in YACC1-D
+tools/migrate_dryrun.py	claude	written in YACC1-D
+tools/migrate_purge.py	claude	written in YACC1-D
+tools/migrate_run.py	claude	written in YACC1-D
+tools/monload.py	claude	written in YACC1-D
+tools/p8xfs.py	claude	written in YACC1-D
+tools/romimage.py	claude	written in YACC1-D
+tools/rtf_to_md.py	claude	written in YACC1-D
+tools/sch_to_pdf.py	claude	written in YACC1-D
+tools/setup_check.py	claude	written in YACC1-D
+tools/ucode_review.py	claude	written in YACC1-D
+tools/ucode_send.py	claude	written in YACC1-D
+tools/ucode_wavedrom.py	claude	written in YACC1-D
+tools/verify_embedded.py	claude	written in YACC1-D
+tools/verify_fab_vs_brd.py	claude	written in YACC1-D
+tools/verify_firmware.py	claude	written in YACC1-D
+tools/verify_processing.py	claude	written in YACC1-D
+tools/y1kermit.py	claude	written in YACC1-D

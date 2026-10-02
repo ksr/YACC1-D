@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """The memory card's 8K ROM image ($E000-$FFFF) built from the SOURCES the emulator loads: firmware/basic/basic.img at
 $E000 and firmware/monitor/monitor.img at $F000 (both Intel hex), gaps filled with $FF as on an unprogrammed EEPROM.
 Tests compare the chip against this, so "ROM PASS" means "the chip holds exactly what the emulator runs"."""

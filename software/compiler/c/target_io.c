@@ -1,3 +1,7 @@
+/*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
 /* target_io.c - io.h for Y1/OS (2026-09-24), in the y1cc subset: the file syscalls through os/lib_fs.c. Every pass
    of the native compiler is built with it (target/NAME.c), and y1cc.c is compiled with it for the self-compile proof
    (target.c). First run 2026-09-25 (tests/native/run.py). Its choices:
