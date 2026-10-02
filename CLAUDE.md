@@ -119,3 +119,20 @@ one Mac's session learns what the other did. So, without being asked:
   exist only in the conversation or only in one Mac's working tree. Leave nothing running.
 - If the other Mac's session may still be working (Ken says so, or commits keep arriving), do not edit the same files;
   ask Ken which machine owns the work.
+
+### The main Mac (Ken, 2026-10-02)
+
+Ken's **second Mac becomes the book of record**; the first Mac (the one with `~/Documents/YACCS`, where the work of
+2026-09 was done) will be used less. The repositories need no moving - GitHub holds them - but these lived only on the
+first Mac. On the second Mac, check them with `python3 tools/setup_check.py` and this list:
+
+| What | On the first Mac | On the second Mac |
+|---|---|---|
+| The machine's USB cables (console + sequencer FTDI) | plugged in there | plug them in here; the `/dev/cu.usbserial-…` names come from the FTDI serial numbers and stay the same |
+| ROM programming (TL866, 28C64) | `minipro` (Homebrew) and Visual Minipro in Parallels | `brew install minipro` (setup_check checks it); no Windows VM needed |
+| Freerouting (board routing only) | `~/freerouting/freerouting.jar` | copy the jar to the same path, or set `FRJAR=` |
+| Claude's memory | the per-machine memory folder | travels as the mirror in the P8X repo's `docs/memory/` (committed 2026-10-02 on its `graphics-card` branch); for YACC1 work this file is enough |
+| P8X (`~/Developer/p8x`) | checked out on `graphics-card` | `git clone` and `git checkout graphics-card` to continue where it was |
+| The website snapshot (`~/Developer/cottageworker-site`, private) | the nightly launchd job runs there | move it: that repo's README, "Moving the nightly job" - install it here, remove it there, never both |
+| `~/Documents/YACCS` (frozen archive, 3.7 MB) | the only copy | optional: copy it for safekeeping; YACC1-D does not need it |
+| Arduino IDE library copy | `~/Documents/Arduino/libraries/YACC` | only for the IDE: `cp -R embedded/libraries/YACC ~/Documents/Arduino/libraries/` |

@@ -103,6 +103,9 @@ check(G, "YACC library for the Arduino IDE (optional)", os.path.isdir(ide_lib), 
 G = "the YACC1 machine (USB-serial; one Mac at a time)"
 check(G, "console FTDI " + CONSOLE, os.path.exists(CONSOLE), "", "plug in the I/O card's FTDI cable (macOS has the driver)")
 check(G, "sequencer FTDI " + SEQUENCER, os.path.exists(SEQUENCER), "", "plug in the sequencer card's FTDI cable")
+mp = shutil.which("minipro")
+check(G, "minipro (TL866 programmer: burns the ROM, 28C64)", mp, mp or "",
+      "brew install minipro  (CLAUDE.md \"At the machine\": ROM; Visual Minipro in a Windows VM also works)")
 kermit = shutil.which("kermit")
 check(G, "C-Kermit (file transfer, docs/procedures/KERMIT.md)", kermit, kermit or "", "brew install c-kermit")
 check(G, "screen (plain console)", shutil.which("screen"), "", "part of macOS")
