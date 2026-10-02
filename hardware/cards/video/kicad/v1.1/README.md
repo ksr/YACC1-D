@@ -14,6 +14,10 @@ record of what was built) with the project renamed to `video-v1.1`. `tools/eagle
    to C28, joins the two former copper islands. Netlist proof vs the board: **MATCH, 116/116 nets**; DRC has no clearance,
    short or dangling-track finding; 0 unconnected items.
 
+2. **Silkscreen title "YACC1 Video Card V1.1"** (Ken, 2026-10-02; it still read V1.0 from the conversion). Text only:
+   DRC identical by type before and after (229 cosmetic findings, 0 unconnected); `reports/drc.json` and the two
+   renders regenerated.
+
 Still to do in this master (see BACKLOG): move the 6845 RS from A0 to A1 (`../../docs/fix-6845-register-select.md`),
 pull-ups on the 7416 outputs.
 
