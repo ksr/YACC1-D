@@ -4,7 +4,11 @@
 the old `YACCS/` folders on 2026-09-19/20. What is in the machine today: `docs/system/MACHINE.md`; which board
 revisions exist and were made: `hardware/FABRICATED.md`; what is open: `BACKLOG.md`.
 
-**Working on it (either of Ken's Macs, and for Claude):** `CLAUDE.md` has the standing rules, the machine facts that
+**Who made it:** YACC1 is my project: I designed and built the hardware and wrote the original microcode, monitor,
+Tiny BASIC and emulator. Claude, Anthropic's AI, has been directly involved in the design, coding and documentation
+since 2026; the header at the top of every source file says who wrote it. — Ken Rother
+
+**Working on it:** `CLAUDE.md` (the working notes for Claude sessions) has the standing rules, the machine facts that
 bite, where things are and how to build and test. On a new Mac: clone, `python3 tools/setup_check.py` (which tools are
 missing, and the command for each), `make` (the C tools), then `make check`.
 

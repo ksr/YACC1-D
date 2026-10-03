@@ -32,6 +32,14 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
   `tools/patched_files.txt`). Third-party and generated files get no header.
 - New `/BIN` commands need a man page (`os/man/NAME`) and a `help` line; Y1/OS disk docs changing size changes the
   `tests/os` pack transcript's size lines (`python3 tests/os/run.py pack --update`, only size lines may change).
+- **The documentation's voice (Ken, 2026-10-02): everything reads as Ken's own project documentation.** Write the
+  plain documentation voice - the subject is the machine, the card, the document ("The v2.0 board uses standoff option
+  E (chosen 2026-09-25)"), procedures in the imperative ("Burn `rom.bin` ..."), "I" only where a person must be in the
+  sentence. Never narrate who asked for what: no "Ken asked / Ken's pick / Ken decided / at Ken's request", no
+  "Claude", "this session", "the agent", "the user". Keep the facts, dates and commit hashes. Claude's part is stated
+  once, in `README.md` ("Who made it") and the project site's home page, and in the authorship headers. Exempt: this
+  file, the authorship headers and `tools/authors.tsv`, commit messages, `deprecated/` and `archive/`, third-party and
+  generated files, and Ken's own comments in his code.
 - Ken likes explanations that teach: say what was done, why, and what it means for the machine.
 
 ## Machine facts that bite
