@@ -1,0 +1,131 @@
+site_name: YACC1 — Yet Another Custom CPU
+site_description: A hand-built 8-bit TTL computer, its microcode, ROM, operating system and C compiler.
+site_author: Ken Rother
+repo_url: https://github.com/ksr/YACC1-D
+repo_name: ksr/YACC1-D
+edit_uri: blob/main/
+docs_dir: stage
+site_dir: site
+use_directory_urls: true
+copyright: "YACC1 by Ken Rother — <a href=\"https://cottageworker.com\">cottageworker.com</a>."
+not_in_nav: |
+  /docs/isa/*.md
+hooks:
+  - hooks.py
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue grey
+      accent: amber
+      toggle: {icon: material/brightness-7, name: Dark mode}
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue grey
+      accent: amber
+      toggle: {icon: material/brightness-4, name: Light mode}
+
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - tables
+  - toc: {permalink: true}
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.details
+
+nav:
+  - Home: index.md
+  - The machine:
+      - What is in it today: docs/system/MACHINE.md
+      - Architecture: docs/system/ARCHITECTURE.md
+      - The bus: docs/system/BUS.md
+      - Microcode: docs/system/MICROCODE.md
+      - Disk OS plan: docs/system/OS-PLAN.md
+      - Boards fabricated: hardware/FABRICATED.md
+      - Hardware tree: hardware/README.md
+  - Cards:
+      - Overview: docs/cards/README.md
+      - Backplane and bus: docs/cards/backplane.md
+      - Sequencer logic: docs/cards/sequencer-logic.md
+      - Sequencer memory: docs/cards/sequencer-memory.md
+      - ALU: docs/cards/alu.md
+      - Index registers: docs/cards/register.md
+      - Memory: docs/cards/memory.md
+      - I/O: docs/cards/io.md
+      - Video: docs/cards/video.md
+      - CompactFlash: docs/cards/cf.md
+      - Bus tester: docs/cards/bus-tester.md
+      - 16-byte switch ROM: docs/cards/mem-switch.md
+      - 16-byte RAM latch: docs/cards/mem-register.md
+      - Address + TMP (retired): docs/cards/address-tmp.md
+      - Protocard: docs/cards/protocard.md
+  - Programming:
+      - Overview: docs/programming/README.md
+      - Instruction set: docs/programming/ISA-REFERENCE.md
+      - Memory map: docs/programming/MEMORY-MAP.md
+      - I/O ports: docs/programming/IO-PORTS.md
+      - Monitor ROM: docs/programming/MONITOR.md
+      - Assembler: docs/programming/ASSEMBLER.md
+      - C compiler: docs/programming/C-COMPILER.md
+      - Y1/OS: docs/programming/OS.md
+      - Emulators: docs/programming/EMULATORS.md
+      - Tool chain: docs/programming/TOOLCHAIN.md
+  - Software:
+      - Y1/OS: os/README.md
+      - y1cc C compiler: software/compiler/README.md
+      - RC/asm assembler: software/assembler/README.md
+      - Instruction-level emulator: software/emulator/README.md
+      - Microcode emulator: software/ucemu/README.md
+      - Microcode disassembler: software/disassembler/README.md
+      - Firmware: firmware/README.md
+      - Arduino firmware: embedded/README.md
+      - Tools: tools/README.md
+      - Tests: tests/README.md
+  - Microcode diagrams:
+      - Timing diagrams: docs/isa/README.md
+      - Microcode review: docs/isa/MICROCODE-REVIEW.md
+      - Review notes: docs/isa/MICROCODE-REVIEW-NOTES.md
+  - Procedures:
+      - Overview: docs/procedures/README.md
+      - Bring-up: docs/procedures/BRING-UP.md
+      - Testing: docs/procedures/TESTING.md
+      - CompactFlash cards: docs/procedures/CF-CARD.md
+      - Kermit file transfer: docs/procedures/KERMIT.md
+      - System build notes: docs/procedures/System Build Notes.md
+  - Bills of materials:
+      - Overview: docs/bom/README.md
+      - ALU: docs/bom/alu.md
+      - Backplane: docs/bom/backplane.md
+      - Bus tester: docs/bom/bus-tester.md
+      - EEPROM adaptor: docs/bom/eeprom-adaptor.md
+      - I/O: docs/bom/io.md
+      - Memory: docs/bom/memory.md
+      - Index registers: docs/bom/register.md
+      - Sequencer logic: docs/bom/sequencer-logic.md
+      - Sequencer memory: docs/bom/sequencer-memory.md
+      - Video: docs/bom/video.md
+      - Switch ROM: docs/bom/mem-switch.md
+      - RAM latch: docs/bom/mem-register.md
+  - Status and backlog: BACKLOG.md
+  - Working on the code: repository.md
+  - History and references:
+      - History: docs/history/README.md
+      - Status in 2021: docs/history/status-2021.md
+      - Readme in 2021: docs/history/readme-2021.md
+      - References: docs/references/README.md
+      - Datasheets: docs/datasheets/README.md
+      - Documentation plan: docs/DOC-PLAN.md

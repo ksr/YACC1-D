@@ -76,6 +76,7 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
 | Y1/OS | `os/` (kernels, `commands/` in C, `commands-asm/asm.asm`, `man/`, `Makefile` → `os/disk.img`) |
 | Machine tools | `tools/ucode_send.py` (microcode loader), `tools/monload.py` (monitor `:` loader), `tools/cfcard.py` (write a CF card), `tools/y1kermit.py` + `tools/y1.ksc` (Kermit), `tools/setup_check.py` (is this Mac set up?) |
 | Arduino sketches | `embedded/` (built against the vendored `embedded/libraries/` only) |
+| Project website | `website/` (MkDocs + Material over the docs; `website/build.sh [serve|publish]`, `website/README.md`); not published yet |
 
 ## Build and test
 
