@@ -8,7 +8,7 @@ bit positions from firmware/microcode/yaccsignaldata2.h). On top of that a small
 LS-era parts - see TIMING) places the bus responses: what the register card puts on the address bus, when memory data
 is valid, when the instruction register / accumulator / PC actually change. Rendered with wavedrom-cli (npx).
 
-usage: ucode_wavedrom.py --all [--out DIR]            every opcode in firmware/opcodes.h -> docs/isa/<MNEMONIC>.svg + README.md index\n       ucode_wavedrom.py OPCODE [OPCODE ...] [--out DIR]   e.g. ucode_wavedrom.py ADDI 0xB0
+usage: ucode_wavedrom.py --all [--out DIR]            every opcode in firmware/opcodes.h -> docs/isa/<MNEMONIC>.svg + README.md index\n       ucode_wavedrom.py --notes [--out DIR]          re-apply the wrapped notes block to the finished SVGs (no WaveDrom run)\n       ucode_wavedrom.py OPCODE [OPCODE ...] [--out DIR]   e.g. ucode_wavedrom.py ADDI 0xB0
 """
 import os, re, sys, json, subprocess
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -152,13 +152,29 @@ NOTES = ["Control levels are read from firmware/microcode/ucode-generator2/test.
          "  memory data is valid %d%% of a step after the address and -MEM-RD are both stable (62256 / 28C64); loads (IR, ACC, PC increment) take effect at the trailing edge of their pulse;" % (TIMING["mem"] * 100),
          "  'z' = nothing driving the bus; register values are labels only (PC+1, R1.lo, 'target' once a register was loaded from the bus). Timing constants: tools/ucode_wavedrom.py TIMING."]
 
+NOTE_ATTRS = 'text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#000"'
+
 def add_notes(svg_path, lines):
-    """append a centred multi-line notes block under the rendered diagram (WaveDrom's footer is one centred line)"""
+    """append a centred multi-line notes block under the rendered diagram (WaveDrom's footer is one centred line).
+    2026-10-02: each note is wrapped to the diagram's width (11 px Helvetica, taken as 7.2 px a character; before, the long notes
+    ran off both edges), and an existing notes block is replaced, so this can be re-run on finished SVGs (--notes)."""
+    import textwrap
     s = open(svg_path).read()
     m = re.search(r'<svg[^>]*\sheight="(\d+)"', s); h = int(m.group(1))
     wm = re.search(r'<svg[^>]*\swidth="(\d+)"', s); w = int(wm.group(1))
-    lh, top = 14, h + 10; extra = top + lh * len(lines) + 8 - h
-    text = "".join('<text x="%d" y="%d" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#000">%s</text>' % (w // 2, top + lh * i, l.strip().replace("&", "&amp;").replace("<", "&lt;")) for i, l in enumerate(lines))
+    old = re.findall(r'<text x="\d+" y="(\d+)" %s>[^<]*</text>' % re.escape(NOTE_ATTRS), s)
+    if old:                                              # notes added before: take them out, back to the diagram's height
+        s = re.sub(r'<text x="\d+" y="\d+" %s>[^<]*</text>' % re.escape(NOTE_ATTRS), "", s)
+        h0 = int(old[0]) - 10
+        s = re.sub(r'(<svg[^>]*\sheight=")%d"' % h, lambda mm: mm.group(1) + str(h0) + '"', s, count=1)
+        s = re.sub(r'viewBox="0 0 (\d+) %d"' % h, lambda mm: 'viewBox="0 0 %s %d"' % (mm.group(1), h0), s, count=1)
+        h = h0
+    width = max(40, int((w - 30) / 7.2))                # conservative: ~7 px a character at 11 px (paths are wide)
+    wrapped = []
+    for l in lines:
+        wrapped += textwrap.wrap(l.strip(), width) or [""]
+    lh, top = 14, h + 10; extra = top + lh * len(wrapped) + 8 - h
+    text = "".join('<text x="%d" y="%d" %s>%s</text>' % (w // 2, top + lh * i, NOTE_ATTRS, l.replace("&", "&amp;").replace("<", "&lt;")) for i, l in enumerate(wrapped))
     s = re.sub(r'(<svg[^>]*\sheight=")%d"' % h, lambda mm: mm.group(1) + str(h + extra) + '"', s, count=1)
     s = re.sub(r'viewBox="0 0 (\d+) %d"' % h, lambda mm: 'viewBox="0 0 %s %d"' % (mm.group(1), h + extra), s, count=1)
     s = s.replace("</svg>", text + "</svg>")
@@ -190,6 +206,11 @@ def main():
     args = sys.argv[1:]; out = os.path.join(ROOT, "docs/isa")
     if "--out" in args: out = args[args.index("--out") + 1]; args = [a for a in args if a not in ("--out", out)]
     os.makedirs(out, exist_ok=True)
+    if "--notes" in args:                                # 2026-10-02: re-apply the notes block to the finished SVGs only
+        n = 0
+        for f in sorted(os.listdir(out)):
+            if f.endswith(".svg"): add_notes(os.path.join(out, f), NOTES); n += 1
+        print("notes re-applied to %d diagrams in %s" % (n, out)); return
     sig, recs, names = signal_table(), microcode(), opcode_names(); byname = {v: k for k, v in names.items()}
     if "--all" in args:
         forms = asm_forms(); rows = []
