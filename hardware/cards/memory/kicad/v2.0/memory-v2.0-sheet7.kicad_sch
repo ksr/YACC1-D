@@ -7333,7 +7333,7 @@
 	(wire (pts (xy 299.72 207.01) (xy 299.72 212.09)) (stroke (width 0) (type default)) (uuid "22c097a1-9483-5092-8d27-de8b5edfa80a"))
 	(label "ACTK" (at 299.72 212.09 270) (effects (font (size 1.27 1.27)) (justify right bottom)) (uuid "3bed9045-dde5-538f-963e-0077f691a75d"))
 	(wire (pts (xy 299.72 199.39) (xy 299.72 194.31)) (stroke (width 0) (type default)) (uuid "4250e73c-5692-5a56-ae03-35e72e1423d3"))
-	(text "ACT: any P9 access (the buffer\nenable). No PWR LED here: the\ncard has PWR0 + R2 (sheet 1).\nNo DASP LED on v2.0 (Ken)." (exclude_from_sim no) (at 271.78 226.06 0) (effects (font (size 1.27 1.27)) (justify left top)) (uuid "9dcc1bce-6c9d-5035-86fc-4d4699a063a8"))
+	(text "ACT: any P9 access (the buffer\nenable). No PWR LED here: the\ncard has PWR0 + R2 (sheet 1).\nNo DASP LED on v2.0." (exclude_from_sim no) (at 271.78 226.06 0) (effects (font (size 1.27 1.27)) (justify left top)) (uuid "9dcc1bce-6c9d-5035-86fc-4d4699a063a8"))
 	(rectangle (start 12.7 137.16) (end 144.78 193.04) (stroke (width 0.2) (type dash) (color 72 72 160 1)) (fill (type none)) (uuid "07340625-e906-5449-a924-28272174845e"))
 	(text "POWER + DECOUPLING (one 100 nF per new IC)" (exclude_from_sim no) (at 13.97 138.43 0) (effects (font (size 2 2) (bold yes)) (justify left top)) (uuid "562cd78f-092b-59cc-b8c6-e29f4e6c4f1b"))
 	(symbol (lib_id "Device:C") (at 20.32 165.1 0) (unit 1) (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no) (uuid "7aa30673-04a8-5ef4-af94-c75a32a83388")

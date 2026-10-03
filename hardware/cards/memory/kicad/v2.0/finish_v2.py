@@ -1328,7 +1328,7 @@ def bom_hw(csvfile):
     print("bom: + H1/H2 (board features, no part) + %d hardware lines" % (len(HARDWARE) - 1))
 
 
-JLC_E = JLC.replace("*** NOT ORDERED ***", "*** NOT ORDERED ***\nThe v2.0 board: standoff option E (Ken, 2026-09-25)."
+JLC_E = JLC.replace("*** NOT ORDERED ***", "*** NOT ORDERED ***\nThe v2.0 board: standoff option E (chosen 2026-09-25)."
                     ).replace(
     "  plus F_Mask, B_Mask, F_Silkscreen, B_Silkscreen, Edge_Cuts, the Excellon drill file(s) and the drill map.",
     "  plus F_Mask, B_Mask, F_Silkscreen, B_Silkscreen, Edge_Cuts, the Excellon drill files (%(name)s-PTH.drl plated,\n"

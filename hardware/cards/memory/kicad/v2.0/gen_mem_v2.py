@@ -182,7 +182,7 @@ def add_wp_jumper(t):
               U("vccpin"), path))
     label = ('\t(label "ROM-WE" (at 254 %s 0) (fields_autoplaced yes) (effects (font (size 1.778 1.778)) '
              '(justify left bottom)) (uuid "%s"))\n' % (F(p2[1]), U("label")))
-    txt = ("JP3 (v2.0, Ken %s): ROM write protect (design review M2).\n"
+    txt = ("JP3 (v2.0, %s): ROM write protect (design review M2).\n"
            "1-2 = WRITE: IC13 -WE = -MEM-WR, as on v1.3.  2-3 = PROTECT: -WE held at VCC.\n"
            "Fitted on 2-3: burn the 28C64 in a programmer; 1-2 only to write it in place." % NL.WP_DATE)
     note = ('\t(text %s (exclude_from_sim no) (at 208.28 241.3 0) (effects (font (size 1.778 1.778) (thickness 0.254)) '
@@ -287,7 +287,7 @@ def copy_v13_sheets():
                    "enabled by IO-ADDR3). DATA0-7 reach its data buffer IC34 and latch IC32. v1.3 used none of the I/O\n"
                    "signals: the six labels above were X1-only local labels and are global labels now.\n"
                    "C20-C23 (v1.3: four 100 nF with no IC beside them, in the cap row between C19 and C24) are removed\n"
-                   "on v2.0 (Ken, %s); every IC keeps its own 100 nF." % NL.REMOVED_DATE)
+                   "on v2.0 (%s); every IC keeps its own 100 nF." % NL.REMOVED_DATE)
             t = t.rstrip()
             assert t.endswith(")")
             t = t[:-1] + ('\t(text %s (exclude_from_sim no) (at 111.76 236.22 0) (effects (font (size 1.778 1.778) '
@@ -407,7 +407,7 @@ def build_sheet7():
     S.part("R14", 1, gx(118), gx(73))
     S.part("LED1", 1, gx(118), gx(80), rot=90)
     S.text(gx(107), gx(89), "ACT: any P9 access (the buffer\nenable). No PWR LED here: the\n"
-           "card has PWR0 + R2 (sheet 1).\nNo DASP LED on v2.0 (Ken).", size=1.27)
+           "card has PWR0 + R2 (sheet 1).\nNo DASP LED on v2.0.", size=1.27)
     # --- power + decoupling ------------------------------------------------------------------------------------------
     S.box(gx(5), gx(54), gx(57), gx(76), "POWER + DECOUPLING (one 100 nF per new IC)")
     for i, c in enumerate(("C25", "C26", "C27", "C28", "C29")):

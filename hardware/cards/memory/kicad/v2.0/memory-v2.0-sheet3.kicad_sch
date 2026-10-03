@@ -823,5 +823,5 @@
 		(instances (project "memory-v2.0" (path "/42231b4d-4c5f-cebb-da74-8d622a2f1dd4/84e875fa-3717-f8e6-26e7-02d6fa9bd086" (reference "#P+11") (unit 1))))
 	)
 	(label "ROM-WE" (at 254 228.6 0) (fields_autoplaced yes) (effects (font (size 1.778 1.778)) (justify left bottom)) (uuid "113315d2-1c4a-5f9d-8111-9151c5503711"))
-	(text "JP3 (v2.0, Ken 2026-09-29): ROM write protect (design review M2).\n1-2 = WRITE: IC13 -WE = -MEM-WR, as on v1.3.  2-3 = PROTECT: -WE held at VCC.\nFitted on 2-3: burn the 28C64 in a programmer; 1-2 only to write it in place." (exclude_from_sim no) (at 208.28 241.3 0) (effects (font (size 1.778 1.778) (thickness 0.254)) (justify left top)) (uuid "c36ba1eb-84d0-513a-943b-d3e8fd74c231"))
+	(text "JP3 (v2.0, 2026-09-29): ROM write protect (design review M2).\n1-2 = WRITE: IC13 -WE = -MEM-WR, as on v1.3.  2-3 = PROTECT: -WE held at VCC.\nFitted on 2-3: burn the 28C64 in a programmer; 1-2 only to write it in place." (exclude_from_sim no) (at 208.28 241.3 0) (effects (font (size 1.778 1.778) (thickness 0.254)) (justify left top)) (uuid "c36ba1eb-84d0-513a-943b-d3e8fd74c231"))
 )
