@@ -39,13 +39,13 @@ _Contents migrated 2026-09-19; MIGRATION.md at the repo root says which copy eac
 
 ## Already here (written during the 2026-09 bring-up session; they existed nowhere else)
 
-- `author_headers.py` + `authors.tsv` — the authorship header at the top of every source file (Ken, 2026-10-02):
+- `author_headers.py` + `authors.tsv` — the authorship header at the top of every source file (2026-10-02):
   `authors.tsv` = each file's author category (Ken / Ken + Claude's logged changes / Claude / Claude's P8X ports / RC/asm
   with Ken's port / third-party and generated: no header) and why; `--check` (in `make check`) fails on a missing or
   stale header or a source file not in the table, `--apply` writes them, `--classify` adds new files to the table.
 - `setup_check.py` — is this Mac set up for YACC1-D? Reports the tools each kind of work needs (core build/tests,
   board design, Arduino sketches, the machine's USB-serial ports, C-Kermit) and how to get what is missing; installs
-  nothing (2026-09-27, for Ken's second Mac; see ../CLAUDE.md "Two Macs")
+  nothing (2026-09-27, for the second Mac; see ../CLAUDE.md "Two Macs")
 - `busdrv.py` — Python client for the Bus Test Card (19200 baud, `CMD:OPERAND#`); readmem/writemem/dump helpers
 - `alias_min.py` — minimal reproduction of the video card block-0/9 write-through fault
 - `inventory.py` — hashes every file under YACCS and reports what is unique where (used to build MIGRATION.md)

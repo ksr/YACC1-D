@@ -418,7 +418,7 @@ What the tree records:
   (MIGRATION.md: the `mech parts` folder was iCloud-evicted; five files came across). The slot geometry above implies a
   card every 45° rather than a linear pitch.
 - **Bus jumpers**: the horizontal (V3.2, 231 × 115 mm, 4-layer) and vertical (V3.0, 76 × 114 mm) jumper boards were
-  built for an older bus arrangement and are not fitted ("obsolete", Ken 2026-09-20; `docs/system/MACHINE.md`).
+  built for an older bus arrangement and are not fitted ("obsolete", 2026-09-20; `docs/system/MACHINE.md`).
 - **Fasteners**: the tree does not say what screws hold the connectors or whether they are metal or nylon
   (`hardware/mechanical/README.md` is a one-line index). **To verify:** connector screw size and material, card
   retention, and how the sequencer-memory card is mounted relative to the logic card (ribbon length).

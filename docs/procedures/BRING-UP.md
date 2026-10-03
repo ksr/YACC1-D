@@ -71,7 +71,7 @@ From the card `Build Notes.md` files (memory, bus tester; the text is the same o
   jumper (`docs/bom/bus-tester.md`, `docs/bom/sequencer-memory.md`). The bus-tester build notes say: jumper FTDI-VCC only when
   the card is being run **off** the bus; remove it when the card is on a powered bus. `hardware/DESIGN-REVIEW-NOTES-control-io.md`
   2.2 says why: closed on the bus it parallels the FTDI's 5 V with the backplane rail.
-- The video card as designed had its `+5V` net fed by nothing (`hardware/cards/video/README.md`); Ken joined `+5V` to `VCC`
+- The video card as designed had its `+5V` net fed by nothing (`hardware/cards/video/README.md`); `+5V` was joined to `VCC`
   with a wire on 2026-09-21. Do not remove that wire: IC1, IC2, RN2 and every decoupling capacitor on the card hang off it.
 
 ### 2.1 What happens at power-up (why the machine is not usable for the first minute)
@@ -188,7 +188,7 @@ The procedure, from `tools/ucode_send.py`'s docstring and `embedded/sequencer-ca
 3. **Run the sender first**, then press `START`:
    ```
    python3 tools/ucode_send.py                # finds the single /dev/cu.usbserial* or usbmodem*; --port to choose
-   python3 tools/ucode_send.py --all          # every record regardless of the cache (what Ken did 2026-09-22)
+   python3 tools/ucode_send.py --all          # every record regardless of the cache (what the 2026-09-22 reload used)
    ```
    The order matters because opening the FTDI port resets the ATmega (DTR). The sender says it is waiting; press `START`;
    the card answers with a `>>` prompt before every instruction.
@@ -230,7 +230,7 @@ From `firmware/rom/README.md`, `firmware/abi/README.md`, and a byte comparison o
   (Intel hex) by `python3 tools/img2bin.py firmware/rom/shipped/rom firmware/rom/shipped/rom.bin --base 0xE000 --end 0x10000 --fill 0xFF --size 8192`.
 - `tools/verify_firmware.py` (or `make -C software/assembler check`) proves the image reproduces from `firmware/monitor/monitor.asm`
   and `firmware/basic/basic.asm` before you burn it.
-- **The chip in the machine holds the 2026-09-23 build since that day** (burned by Ken, first boot the same afternoon). Before, it held the 2021 build (captured 2026-09-18 through the bus tester as
+- **The chip in the machine holds the 2026-09-23 build since that day** (burned that day, first boot the same afternoon). Before, it held the 2021 build (captured 2026-09-18 through the bus tester as
   `firmware/rom/eprom-captured-2026-09-18.bin`). The 2026 image differs in the monitor half only ($F021..$FFFF);
   the BASIC half is identical. The differences that matter: the `G` command is now `JSRUR R7` (a call; the program returns
   with `RET`) instead of `BRVR R7` (an indirect jump through the word at the address, so `G AAAA` never ran the code at AAAA);
@@ -521,7 +521,7 @@ $D800-$DFFF without the CRTC. What is known to be wrong before the 6845 goes in:
    blank. Confirm: scope IC19 pin 8 against IC28 pin 2; look for glyph bits on IC24 pin 13.
 5. (6.3) 74LS outputs driving 74HC inputs (IC28): measure the high level at IC28 pin 2.
 
-Design master is now `hardware/cards/video/kicad/v1.1/` (Ken, 2026-09-21); the Eagle folder is the record of the built board.
+Design master is now `hardware/cards/video/kicad/v1.1/` (2026-09-21); the Eagle folder is the record of the built board.
 
 ---
 

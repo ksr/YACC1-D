@@ -113,7 +113,7 @@ card, `docs/cards/cf.md`); the emulators model it (`software/cfmodel.h`). Writin
   record was lost, 2026-09-22) and sends `%` cc ii + 1024 hex digits (the trailing `-` of `test.hex` is not sent),
   `!` at the end. Only records that differ from `firmware/microcode/ucode-generator2/cache` (what the card holds) go
   out unless `--all`; the cache is updated record by record, so an interrupted load resumes by re-running. 115200
-  baud; `--delay` default 2 ms per character. Ken loaded the 2026-09-22 image with `--all` (`firmware/microcode/README.md`).
+  baud; `--delay` default 2 ms per character. The 2026-09-22 image was loaded with `--all` (`firmware/microcode/README.md`).
   Bench order (2026-09-22, settled): UCODESWITCH to DOWNLOAD, **run the tool first**, then press START. Opening the FTDI
   port resets the ATmega through DTR (the standard Arduino auto-reset, C19 on the card), so a START pressed before the
   tool opens the port is undone and has to be pressed again.

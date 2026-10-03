@@ -8,7 +8,7 @@ System build order, EEPROM programming, microcode loading, bus-tester usage (fro
 | `TESTING.md` | the complete test inventory (written 2026-09-23): every test under `tests/`, the root `make check`, the `tools/verify_*.py` / `audit_tree.py` / `gen_bom.py --check` tools, the emulators' scripted modes, and what the machine has proven on the bench so far |
 | `CF-CARD.md` | putting Y1/OS on a real CompactFlash card from the Mac (`tools/cfcard.py`), reading one back, safety (2026-09-23) |
 | `KERMIT.md` | moving files between the Mac and Y1/OS over the console line: C-Kermit's settings (`tools/y1.ksc`), terminal and transfer, both directions, the server, trouble, `tools/y1kermit.py` (2026-09-26) |
-| `System Build Notes.md` (+ `.rtf`) | Ken's 2025 build order for the boards (the .rtf is the original) |
+| `System Build Notes.md` (+ `.rtf`) | the 2025 build order for the boards (the .rtf is the original) |
 | `BUS Driver Commands - Google Docs.pdf` | the bus-tester script language as sent by `embedded/command-sender` (LET/FOR/NEXT, labels, expected values, DUMP) |
 
 _The PDF and the build notes were migrated 2026-09-19; MIGRATION.md at the repo root says which copy each item came from._

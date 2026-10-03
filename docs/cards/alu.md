@@ -46,7 +46,7 @@ through the ALU (they count up and down themselves); the TMP registers moved to 
    IC24/IC25 74*85 (BDATA vs ACO), V1/V2 4078 zero detect, IN, C/SHIFT ---> IC26 74*251 --XOR AC-LD-INV--> BR-COND (C24)
 ```
 
-Fabricated 2020-11-29, in the machine (`hardware/FABRICATED.md`, Ken 2026-09-20). `media/alu v3.2 top.jpeg` shows it
+Fabricated 2020-11-29, in the machine (`hardware/FABRICATED.md`, confirmed 2026-09-20). `media/alu v3.2 top.jpeg` shows it
 built with 74HC parts (SN74HC244N/245N/374N/153N/138N/74N/86N/32N, CD74HC194E, CD74HC283E, CD74HC85E, MC74HC08AN,
 CD4078BE for V1/V2) where the schematic says `74*xxN` — see 4.5.
 
@@ -308,7 +308,7 @@ any BOM generated from them should be corrected. **To verify:** the chip marking
 | V3.1, V3.1-resubmit, V3.1-buried-vias | 2020-07-07/08 | IN/OUT active high in the schematic; `-VMA` marked unused; JP1 added for the IC26 enable question; three fab variants (buried vias, a resubmit without) | `eagle/deprecated/v3.1*/Notes.md` |
 | V3.2 | 2020-11-29 | IC32 pins 4/5 flipped; AC and BDATA swapped in the add/sub circuit (BDATA into the XOR array, AC into the adders); CO/BO gated with `-ADD/SUB`; JP2 for the carry clock (`-AC-LD` or `AC-LD`); IC10 DIR driven from `-AC-RD` (a board mod on 3.1, done in 3.2); the shift-register D0/D7 mod (28/5–30/12, 28/11–29/15) carried into production; net names re-saved to Bus V3.2 | `eagle/v3.2/Notes.md`, `hardware/FABRICATED.md`; **in the machine** |
 | "ALU-V3.3" folder | – | the V3.2 design with the bus ribbon label reverted, nothing else (`NEWER-DESIGNS-vs-ACTIVE.txt`: 0 differences); folded away 2026-09-20 | README |
-| ALU-V3.3-16 | 2021-09 | a 16-bit ALU experiment with its own assembler/emulator; deleted from this tree 2026-09-20 on Ken's instruction ("useless"), still in YACCS | README |
+| ALU-V3.3-16 | 2021-09 | a 16-bit ALU experiment with its own assembler/emulator; deleted from this tree 2026-09-20 as "useless", still in YACCS | README |
 
 `Notes.md` items still open: "Retest Shift register functionality", "Retest Carry/Shift register", "How to clear carry
 shift? - ADD INSTRUCTION" (the compiler uses `LDAI 0 / CSHL`, `BACKLOG.md`), "Test SUBT".

@@ -2,7 +2,7 @@
 
 EXECUTED 2026-09-19 by `tools/migrate_run.py` from the plan in `migration/dryrun-plan.tsv` (built by `tools/migrate_dryrun.py`, which is this map in executable form). 1,859 files copied and hash-verified, 3,288 duplicates recorded instead of copied, 7 large files listed in `migration/large-files-manifest.tsv`. This is the map. "Authoritative" means: the newest copy found anywhere
 under `YACCS/`, established by modification time and content hash across all copies
-(inventory script: `tools/inventory.py`, to be migrated from the session scratchpad).
+(inventory script: `tools/inventory.py`, to be migrated from the bring-up scratchpad).
 
 Abbreviations for source copies:
 - **GV** = `YACCS/YACC gitversion/YACC1-2020` (2025-03 checkout of the git repo, plus June-2025 PCB work)
@@ -12,7 +12,7 @@ Abbreviations for source copies:
 
 ## hardware/
 
-**Layout rule (Ken 2026-09-20):** `hardware/cards/<card>/eagle/<rev>/` holds the ACTIVE version (table `ACTIVE` in
+**Layout rule (2026-09-20):** `hardware/cards/<card>/eagle/<rev>/` holds the ACTIVE version (table `ACTIVE` in
 `tools/migrate_dryrun.py`) and any newer design never ordered; every lower version goes to `eagle/deprecated/<rev>/`.
 Fab output → `<rev>/fab/`, BOM exports → `<rev>/bom/`. Fabricated revisions carry a `FABRICATED` marker;
 `archive/superseded-revisions/` holds only designs that were never built. The table is `tools/fabricated.py`, rendered as `hardware/FABRICATED.md`.
@@ -27,8 +27,8 @@ count as fabricated-then-superseded and were recovered from those snapshots.
 | bus/bus-jumper-horizontal | GV `PCB/Production/Bus Jumper Horizontal V3.2` | |
 | bus/bus-jumper-vertical | GV Production `Bus Jumper Vertical V3.0` (fabricated) + Working V3.1 (design only) | 2020-08 snapshot copy → `v3.0-2020-08` |
 | bus/blank-card | GV `PCB/Working - Under Develolpment/Blank-V3.1` (June-2025 gerbers) | |
-| cards/memory | `YACCS/kicad/memory-card-v1.3` (KiCad, proven) + GV `.../Memory v1.3` (Eagle) | **v1.3 is FABRICATED and in the machine** (ordered 2025-06, never moved to PCB/Production); v1.2 (Production) → `eagle/v1.2`, v1.0/v1.1 recovered from the snapshots → `eagle/v1.0`, `v1.1`, all fabricated; `test/Memory V1.3.txt` is a duplicate of the v1.3 .sch. 2026-09-24: the GV v1.3 folder turned out to be an EARLIER SAVE, not the built card; it is now `eagle/deprecated/v1.3-do-not-use` and `eagle/v1.3` is Ken's Fusion export of the built card (not from YACCS) |
-| cards/alu | GV Production `ALU-V3.2` = **the built ALU** (`eagle/v3.2`) | GV Working `ALU-V3.3` = V3.2 with a stale bus label → folded (skip); fabricated V3.0-2layer, V3.1, V3.1-resubmit, V3.1-buried-vias → `eagle/deprecated/`; `ALU-V3.3-16*` (16-bit experiment) → **deleted, Ken 2026-09-20**; "notused" → archive |
+| cards/memory | `YACCS/kicad/memory-card-v1.3` (KiCad, proven) + GV `.../Memory v1.3` (Eagle) | **v1.3 is FABRICATED and in the machine** (ordered 2025-06, never moved to PCB/Production); v1.2 (Production) → `eagle/v1.2`, v1.0/v1.1 recovered from the snapshots → `eagle/v1.0`, `v1.1`, all fabricated; `test/Memory V1.3.txt` is a duplicate of the v1.3 .sch. 2026-09-24: the GV v1.3 folder turned out to be an EARLIER SAVE, not the built card; it is now `eagle/deprecated/v1.3-do-not-use` and `eagle/v1.3` is the Fusion 360 export of the built card (not from YACCS) |
+| cards/alu | GV Production `ALU-V3.2` = **the built ALU** (`eagle/v3.2`) | GV Working `ALU-V3.3` = V3.2 with a stale bus label → folded (skip); fabricated V3.0-2layer, V3.1, V3.1-resubmit, V3.1-buried-vias → `eagle/deprecated/`; `ALU-V3.3-16*` (16-bit experiment) → **deleted 2026-09-20**; "notused" → archive |
 | cards/sequencer-logic | GV Production + Working `Sequencer-Logic-v2.1` (identical, merged into `eagle/v2.1`) | v2.0 (fabricated, from snapshots) → `eagle/v2.0`; V1.0 → archive |
 | cards/sequencer-memory | GV Production + Working `Sequencer-Memory-V2.1` (identical, merged into `eagle/v2.1`) | V2.0 (fabricated) → `eagle/v2.0`; V1.0 → archive |
 | cards/register | GV Production `Index Registers 1.1` = built card (`eagle/v1.1`); Working 1.2 = design only | 1.0 and "no address 1.0" (fabricated, from snapshots) → `eagle/v1.0`, `v1.0-no-address` |
@@ -36,7 +36,7 @@ count as fabricated-then-superseded and were recovered from those snapshots.
 | cards/bus-tester | GV Production `Bus Tester V3.1` = built card (`eagle/v3.1`); Working V3.11 = board-only design | "Bus Tester orig" = the 2016 TESTER-PROD-V1.1 board = **the test board in use** → `eagle/v1.1`; V3.1/V3.11 never ordered; gen-1 TESTER-PROD → archive |
 | cards/video | `YACCS/video/Video_1.0.sch` + `Blank V3.1.brd` (Fusion export 2026-09-18) | **Fusion 360 is the master**; open issues: CS/RS on A0, missing pull-ups, the block-0/9 write-through fault |
 | cards/mem-switch, mem-register | GV `PCB/Production/Mem Switch V1.1`, `Mem Register V1.0` | Mem Switch V1.0 (fabricated) → `eagle/v1.0` |
-| cards/sequencer-memory/accessories/eeprom-adaptor | 24 `PCB/Working - Under Develolpment/eeprom adaptor` | accessory of the sequencer-memory card: plugs into IC9 to take a larger EEPROM (Ken 2026-09-20); only 24 has the OSH Park invoice (→ `fab/`) |
+| cards/sequencer-memory/accessories/eeprom-adaptor | 24 `PCB/Working - Under Develolpment/eeprom adaptor` | accessory of the sequencer-memory card: plugs into IC9 to take a larger EEPROM (2026-09-20); only 24 has the OSH Park invoice (→ `fab/`) |
 | cards/protocard | GV `PCB/Production/PROTOCARD-PROD-V1.0` | |
 | cards/address-tmp | 2021-01 snapshot `Production/Old & obsolete/Address and TMP-V1.0` (fabricated, retired card) | GV Working copy (edited sch) → `eagle/v1.0-working-edits` |
 | cards/io | (see above) IO 1.0 (fabricated, from snapshots) → `eagle/v1.0` | |
@@ -51,7 +51,7 @@ count as fabricated-then-superseded and were recovered from those snapshots.
 | monitor/monitor.asm | 24 or 20 `Software-vs/Assembler/monitor.asm` (= git ff7d85a, **what is burned**) | NG/GV copy = 3bcacf3 "not working"; `Software pre vs` = 8afde21 (ON/OFF + break-in, never burned) → keep as `monitor/candidates/` |
 | monitor/monnew.asm | 20 `Software/Assembler/monnew.asm` (2025-03-14) + its `yacc1.def` | small D/M/B monitor draft; only in 20 |
 | basic/basic.asm | same three-way choice as monitor; ff7d85a is burned | |
-| rom/shipped | 24 `Software-vs/Assembler/rom` (byte-identical to the EPROM captured 2026-09-18) + capture files from the session scratchpad | add `verify.py` (bus-tester capture vs image) |
+| rom/shipped | 24 `Software-vs/Assembler/rom` (byte-identical to the EPROM captured 2026-09-18) + capture files from the bring-up scratchpad | add `verify.py` (bus-tester capture vs image) |
 | rom/makerom | `Software-vs/Assembler/makerom` | |
 | microcode | 24 `Software/Sequencer Card/uCode-Generator2` + `yaccsignaldata2.h`, `yaccsignaldefine.h` | v1 generator + its `yaccsignaldata.h` → archive; `test.hex` = the image (regenerated byte-identical); `cache.old` dropped |
 | abi | derived from `basic.asm` header (BIOS vectors $FFC0..), `monitor.asm` header (ports, variables) | new doc |
@@ -64,7 +64,7 @@ count as fabricated-then-superseded and were recovered from those snapshots.
 | emulator | 24 `Software/emulator/main.c` (2026-06-03, adds -m/-f) | only in 24 |
 | disassembler | 24 `Software/Sequencer Card/disasm2` (2024-06-25) | `disasm` (v1, 32-step) → archive |
 | ubasic-c | 24 `Software-vs/ubasic-master` (2024-06-28) | `ubasic-master-orig` = upstream reference |
-| (16-bit experiment) | `Software/Assembler-16`, `emulator-16`, `opcodes-16.h`, `PCB/.../ALU-V3.3-16*` | **NOT migrated**: deleted on Ken's instruction 2026-09-20 ("useless"); still in YACCS |
+| (16-bit experiment) | `Software/Assembler-16`, `emulator-16`, `opcodes-16.h`, `PCB/.../ALU-V3.3-16*` | **NOT migrated**: deleted 2026-09-20 as "useless"; still in YACCS |
 | software/opcodes.h | 24 `Software/opcodes.h` (2024-06-19) | shared by emulator, disasm2, microcode gen; `tools/layout_links.py` symlinks keep the old relative includes working |
 
 ## embedded/
@@ -80,7 +80,7 @@ count as fabricated-then-superseded and were recovered from those snapshots.
 
 ## tools/
 
-From the 2026-09 session scratchpad (to be copied in): `busdrv.py`, `alias_min.py`, `eagle_sch_to_kicad.py`,
+From the 2026-09 bring-up scratchpad (to be copied in): `busdrv.py`, `alias_min.py`, `eagle_sch_to_kicad.py`,
 `compare_netlists.py`, `finish_board.py`, `inventory.py`. The KiCad tools already live in
 `YACCS/kicad/memory-card-v1.3/tools/`.
 
@@ -92,7 +92,7 @@ From the 2026-09 session scratchpad (to be copied in): `busdrv.py`, `alias_min.p
 | logic analyser settings | same tree, `ramtest.logicsettings` |
 | assembler test programs | GV `Software/Assembler/yacc1test.asm` + `old/yacc1test*.asm` variants; NG `test_output.txt` (2026-05-26 run) |
 | EPROM/EEPROM tests | `Software-vs/Old-obselete/Memory Card/test EPROM`, `Test EEPROM/mem.ino` |
-| hardware findings 2026-09 | session notes: memory-card block map, EPROM identity, video-card D1/D2 pins, block-0/9 write-through |
+| hardware findings 2026-09 | bring-up notes: memory-card block map, EPROM identity, video-card D1/D2 pins, block-0/9 write-through |
 
 ## docs/
 
@@ -122,7 +122,7 @@ per image/installer (name, version, SHA-256, size, where the bytes live), nothin
 ## Not migrated (out of scope or junk)
 
 - `YACC1-2026` (empty skeleton; every one of its 596 files verified byte-identical to a copy elsewhere
-  or to a Finder duplicate beside it, 2026-09-19; Ken is deleting it), `dir struct` (its mkdir script)
+  or to a Finder duplicate beside it, 2026-09-19; to be deleted), `dir struct` (its mkdir script)
 - Eagle autosave/backup files (`*.b#N`, `*.s#N`), NetBeans `build/`, `dist/`, `nbproject/`, `*.dSYM`, `.DS_Store`
 - Finder duplicates in `YACC1-2026/PCB/Production` (`... 2.brd`, `CAMOutputs 2`)
 - `Dear TSA.docx`

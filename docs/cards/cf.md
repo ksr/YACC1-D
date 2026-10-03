@@ -20,13 +20,13 @@ driver: `cfwait`, `cfinit`, `cfread`, `cfwrite`), `software/cfmodel.h` (the emul
 - **The CF card v1.0** (`hardware/cards/cf/kicad/v1.0/`) is the interface as a card of its own: five chips (U1 74LS138,
   U2 74LS32, U3 74LS175, U4 74LS08, U5 74LS245) and a 40-pin IDE header, decoding **P8/P9**. Routed and checked, never
   ordered. It is the reference circuit this document describes, with its reference designators.
-- **Plan (Ken, 2026-09-24):** the same circuit goes onto the **memory card** and stays **I/O-mapped on P8/P9**, not
+- **Plan (2026-09-24):** the same circuit goes onto the **memory card** and stays **I/O-mapped on P8/P9**, not
   memory-mapped: `hardware/cards/memory/kicad/v2.0/` (schematic proven). On the card as actually built
-  (`hardware/cards/memory/eagle/v1.3/`, Ken's Fusion export; not the earlier save the plan was first drawn on, now
+  (`hardware/cards/memory/eagle/v1.3/`, the Fusion 360 export; not the earlier save the plan was first drawn on, now
   `eagle/deprecated/v1.3-do-not-use/`) the TMP registers' data tracks cross the free area, so with that copper kept the
-  CF chips did not fit, and Ken decided to lay the whole memory card out again with the CF section designed in. A first
+  CF chips did not fit, so the whole memory card is laid out again with the CF section designed in. A first
   finished board (J2 at the top edge, a TAODAN adapter standing on it) was superseded the same day and is kept as a
-  record. **The v2.0 board (Ken's pick 2026-09-25, standoff option E, finished for fabrication, NOT ORDERED):**
+  record. **The v2.0 board (chosen 2026-09-25, standoff option E, finished for fabrication, NOT ORDERED):**
   `memory-v2.0.kicad_pcb` with its gerbers, NPTH/PTH drill, renders, placement PDF, BOM, JLCPCB order note and a 1:1
   print. The CF chips (the CF card's U1-U5 are IC30-IC34 there) sit under the adapter; the adapter, an **HX-2118P**
   CF-to-IDE (60 x 44 mm, male 40-pin header, **no pin 20**), mounts flat **on two 15 mm M3 standoffs** (holes H1 / H2,
@@ -38,7 +38,7 @@ driver: `cfwait`, `cfinit`, `cfread`, `cfwrite`), `software/cfmodel.h` (the emul
   2026-09-26). The memory card today uses no I/O signals: IO-ADDR0..3, -IO-RD
   and -IO-WR are on its connector but unwired (`docs/cards/memory.md`). The ROM in the machine (`ROM 2026-09-23`) and
   both emulators already use P8/P9, so nothing on the software side changes.
-- **The CF-to-IDE adapter: the HX-2118P** (Ken, 2026-09-24/25, measured and checked with a 1:1 print), on standoffs as
+- **The CF-to-IDE adapter: the HX-2118P** (2026-09-24/25, measured and checked with a 1:1 print), on standoffs as
   above. Considered before it: a **SinLoon CF-IDE** adapter on a short ribbon, and the **TAODAN CF-IDE40 V2.0** (70 x
   63 mm, a female 40-pin socket that plugs straight onto a male IDE header, standing perpendicular to the card and
   needing ~75 mm free on the component side) - the latter was the adapter of the superseded top-edge board.
@@ -266,9 +266,9 @@ reset path (U3 Q4, U4 gate 2).
 - 2026-09-24: the memory card v2.0 re-laid out with the CF section; a top-edge board (TAODAN adapter on J2) finished,
   then superseded by the standoff decision (HX-2118P on two M3 standoffs on the card, a short ribbon from J2); five
   standoff placements trial-routed.
-- 2026-09-25: Ken picked standoff option E; `hardware/cards/memory/kicad/v2.0/memory-v2.0.kicad_pcb` finished for
+- 2026-09-25: standoff option E chosen; `hardware/cards/memory/kicad/v2.0/memory-v2.0.kicad_pcb` finished for
   fabrication (routed, silkscreen, fab files), not ordered. The card cage slot in front of the memory card stays empty
-  (Ken), so the ~35-44 mm stack of adapter, plug and ribbon needs no other clearance.
+  (decided 2026-09-25), so the ~35-44 mm stack of adapter, plug and ribbon needs no other clearance.
 
 For a next revision: a second drive (the P8X card has two headers), `INTRQ` to the bus `-INT` if the OS ever wants
 interrupt-driven transfers, and a CF socket on the card itself instead of the adapter (surface-mount on most

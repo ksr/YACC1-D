@@ -15,7 +15,7 @@ emulators run it), `BACKLOG.md`.
 ## 1. Two monitors: the chip and the tree
 
 - **On the chip** (memory card, 28C64): the 2026-09-23 afternoon build (banner `ROM 2026-09-23`, MD5
-  d2d7b027e7c6951d7dd93412a8fd9cd8, CF driver on P8/P9), burned by Ken 2026-09-23 (`docs/system/MACHINE.md`). Before
+  d2d7b027e7c6951d7dd93412a8fd9cd8, CF driver on P8/P9), burned 2026-09-23 (`docs/system/MACHINE.md`). Before
   that the 2021 build (git ff7d85a), captured 2026-09-18 as `firmware/rom/eprom-captured-2026-09-18.bin/.hex`,
   byte-identical to the 2021 sources.
 - **In the tree** (`firmware/rom/shipped/rom`, since 2026-09-25): `ROM 2026-09-25`, **not burned yet** — the chip's
@@ -263,7 +263,7 @@ card by itself** until the card is debugged (`VIDAUTO EQU 0`). All of it is plai
 **Equates** (one edit each, top of `monitor.asm`): `VIDAUTO` 0, `VIDRAM` $D000, `VIDSIZE` 2048, `VCOLS` 80, `VROWS` 24,
 `VCRTCA` $D800 (6845 address register) and `VCRTCD` $D802 (data register). The CRTC addresses follow the card
 (ADDR11 selects the CRTC half, A1 the register after the RS-to-A1 bench fix): video RAM $D000-$D7FF, 6845 half
-$D800-$DFFF, confirmed by Ken 2026-09-25. Geometry: the 2K the CPU reaches holds 80 x 24 = 1,920 characters, one byte each; the card
+$D800-$DFFF, confirmed 2026-09-25. Geometry: the 2K the CPU reaches holds 80 x 24 = 1,920 characters, one byte each; the card
 latches bits 0-5 (a 64-glyph character EPROM) and bit 7 (inverse); the driver stores ASCII with lower case moved up
 ($60-$7F → $40-$5F), which a 2513-style character set (code = ASCII bits 0-5) shows as sent. **Assumed**, not read from
 the card: the character EPROM's contents (nothing in the tree) and the dot clock (the crystal has no value in the

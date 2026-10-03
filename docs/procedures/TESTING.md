@@ -178,7 +178,7 @@ an address above $8000 (`--boot` stub) so that the FORCE-ROM remap is released e
 | `memory_full_test.py [port] [--log F]` | A ROM; B address lines (unique byte at $0000 and at every 1<<n, read after all writes: an open or shorted address line shows in seconds); C RAM $0000-$7FFF and $8000-$CFFF address-derived pattern written in one sweep, verified in a second (retention); D the inverted pattern; E video RAM (both patterns, neighbour isolation, the block-0/9 write-through checks, read stability); F ROM again and nothing answers at $D800-$DFFF | ~20 min with blocks-1 (~10 h per byte) | `full-run-2026-09-21.log`: **14/14 PASS**, 53,248 cells x 2 patterns, 0 bad, in 0.3 h |
 
 The four logs beside them tell the day's story: `attempt1-linkdrop` (the USB port vanished mid-sweep, which is why `busdrv.py`
-now reopens and resends), `attempt2-stopped-for-reflash` (stopped by Ken after 157 min to flash the blocks-1 firmware),
+now reopens and resends), `attempt2-stopped-for-reflash` (stopped by hand after 157 min to flash the blocks-1 firmware),
 `blocks-13of14` (first blocks-1 run; F2 failed because the test expected the $D800 block to echo the bus and the card, with no
 CRTC, gives `00 FF` instead - the test was corrected), then the clean 14/14.
 

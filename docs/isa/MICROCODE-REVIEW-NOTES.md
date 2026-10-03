@@ -1,6 +1,6 @@
 # Microcode review notes — every opcode against the hardware (2026-09-21)
 
-Reviewer: Claude (Fable 5.1), working from the tree only; nothing was run on the machine and the microcode was not modified.
+Review made from the tree only; nothing was run on the machine and the microcode was not modified.
 
 Inputs: `docs/isa/steps.txt` (all 218 records, every step), `docs/isa/MICROCODE-REVIEW.md` (the mechanical pass),
 `firmware/microcode/ucode-generator2/*.c` (intent), `firmware/microcode/yaccsignaldata2.h`, `software/emulator/main.c`

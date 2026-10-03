@@ -64,7 +64,7 @@ to the terminal raw and the cursor column is then off, as on P8X).
 Built with `y1cc.py os/commands/vi.c --org 0x5000` + `asm vi -d=yacc1` (0 errors, 5,985 bytes) +
 `img2bin.py --base 0x5000`. Sessions fed as `O\n` + keys, `emulator -x -m -c disk -l N` / `y1ucemu ... -l N`.
 
-1. The requested run, both emulators: `vi /README.TXT`, `j`, `o`, "Added by vi on the YACC1.", Esc, `:x /T.TXT`,
+1. The acceptance run, both emulators: `vi /README.TXT`, `j`, `o`, "Added by vi on the YACC1.", Esc, `:x /T.TXT`,
    `cat /T.TXT`, `exit`. Transcript tail (escapes stripped):
    ```
    /> cat /T.TXT

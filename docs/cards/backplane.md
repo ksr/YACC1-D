@@ -137,7 +137,7 @@ Two `MABC96R` connectors X3 and X4 wired pin-for-pin (nets N$4.. joining X3.An t
 jumper JP1 (`JP1Q`): each side has its own power LED and the rails can be split. The horizontal board is 231 x 115 mm,
 4-layer (V3.2, "Increase trace width spacing and add layers" over the 2-layer V3.0); the vertical 76 x 114 mm 2-layer
 (V3.0; a V3.1 board file corrects only the silkscreen). They linked two backplane connectors in an older bus
-arrangement; **built, not fitted, obsolete** (Ken 2026-09-20, both READMEs). `media/double bus.jpeg` shows the
+arrangement; **built, not fitted, obsolete** (2026-09-20, both READMEs). `media/double bus.jpeg` shows the
 arrangement they belonged to.
 
 ### 3.5 Mechanical (`hardware/mechanical/`)

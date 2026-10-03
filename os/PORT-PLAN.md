@@ -4,7 +4,7 @@ Survey date 2026-09-23; **waves 0-2 done the same day (section 8, and the Status
 `lib_*.c` helpers), `p8x/os/man/` (86 pages), the P8X shell's built-in dispatch (`p8x/os/p8xos.asm`
 `DISPATCH:`/`KWTAB`), `p8x/os/run.sh` (what lands on the disk), and the development tools under `p8x/apps/`,
 `p8x/basic/`, `p8x/compiler/`. Target: Y1/OS (`os/y1os.c`, programs at `$5000..$CFFF` = 32K, y1cc static
-frames, serial console only). The port is a **fork** (Ken, 2026-09-22/23): nothing is kept in sync with P8X
+frames, serial console only). The port is a **fork** (decided 2026-09-22/23): nothing is kept in sync with P8X
 afterwards, so the P8X sources are a starting point, not a shared tree.
 
 Sizes quoted as "p8cc B" are the P8X binaries built for this survey with `clib.py` + `p8cc.py` + `p8xasm.py`

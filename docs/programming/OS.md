@@ -19,7 +19,7 @@ by the ROM monitor's `O` command. **v0** (2026-09-22, `os/README.md`) was read-o
 (2026-09-23, `y1os.c` header) adds the file layer (`fs_*`), write support (save/del/ren/mkdir/rmdir), handles, and a
 syscall table through which programs use the same functions. Everything is **proven on the emulators only** — the CF
 card is not built (`docs/system/MACHINE.md`). Y1/OS is the YACC1's own from here on: **it is not kept in step with
-P8X/OS, and neither are the programs brought over** (Ken, 2026-09-22/23, `os/README.md`, `os/PORT-PLAN.md`). Only the
+P8X/OS, and neither are the programs brought over** (decided 2026-09-22/23, `os/README.md`, `os/PORT-PLAN.md`). Only the
 on-disk format is shared, so `tools/p8xfs.py` (a fork of the P8X tool) builds the images and images can be exchanged.
 
 State on 2026-09-23 morning: `y1os.c` references `os/lib_fs.c` (C wrappers `fopen()`… over `sys()`) which does not

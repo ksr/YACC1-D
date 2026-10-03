@@ -8,4 +8,4 @@ and as the rendered picture (`.svg`, opens in any browser).
 They were migrated as Safari web archives of the WaveDrom editor page (`Utilities/Waveforms/*.webarchive` in YACCS);
 those carried 600 KB of the site's JavaScript each, including Google's public analytics key, which GitHub's secret
 scanning flagged on 2026-09-21. The archives were removed (skip rule in `tools/migrate_dryrun.py`) and the two diagrams
-extracted from them; nothing of Ken's was lost.
+extracted from them; nothing of the original diagrams was lost.

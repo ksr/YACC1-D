@@ -4,9 +4,9 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 `docs/system/MACHINE.md`. Which revisions exist and were fabricated: `hardware/FABRICATED.md`.
 
 ## Hardware — designed, not built
-- **Memory card: the FORCE-ROM race fix (review M1, Ken 2026-09-30) - a 470 Ω pull-down on ADDR15.** Undriven, A15
+- **Memory card: the FORCE-ROM race fix (review M1, 2026-09-30) - a 470 Ω pull-down on ADDR15.** Undriven, A15
   floats high, so IC12 is clocked ~40 ns before the real address arrives. v1.3 in the machine: fit 470 Ω from IC10 pin 4
-  to IC10 pin 7 on the solder side (Ken; `docs/cards/memory.md` 4.1 has the why, the value and the check); read the bus
+  to IC10 pin 7 on the solder side (`docs/cards/memory.md` 4.1 has the why, the value and the check); read the bus
   tester's RN4 value first (pull-ups on the address lines: 10 kΩ is fine, 1 kΩ is not). v2.0: **done** - R15 (470 Ω,
   beside the bus connector, pin 1 on the ADDR15 track; `hardware/cards/memory/kicad/v2.0` README). Then,
   optional and separate: drop the `-VMA`-in-every-step hack from the microcode generator (a reload) so the chip selects
@@ -40,7 +40,7 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Index Registers**: notes ask whether bus direction should follow -RD-SEL (the same question as the IO buffer).
 - **Memory v1.3 notes**: "should TMP registers move to the ALU", hard-jumper a boot-loader enable, 4K-block EEPROM select.
 - **Sequencer logic notes**: expose ucode-count-reset / instruction number for an external debugger; HALT LED.
-- **Memory card**: the unconnected jumper wire on IC7 pin 4 — purpose not remembered (Ken 2026-09-20); trace it on the board or remove it.
+- **Memory card**: the unconnected jumper wire on IC7 pin 4 — purpose not remembered (2026-09-20); trace it on the board or remove it.
 
 ## Firmware — written, not burned / loaded
 - **ROM 2026-09-25: the video unit (not burned)** — `firmware/rom/shipped/rom.bin` (MD5 3ebc6789...): the $D000 probe at
@@ -51,7 +51,7 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Video auto-start: `VIDAUTO EQU 1`** in `firmware/monitor/monitor.asm` once the card is debugged (6845 fitted with
   the RS-to-A1 fix, E one-shot and 7416 pull-ups sorted, a picture from `V I`): reset then programs the CRTC, clears the
   screen and turns mirroring on. Rebuild, `tools/verify_firmware.py`, burn.
-- **Video: settle the CRTC timing** — the ROM uses $D800/$D802 (confirmed by Ken 2026-09-25: RAM $D000-$D7FF, 6845
+- **Video: settle the CRTC timing** — the ROM uses $D800/$D802 (confirmed 2026-09-25: RAM $D000-$D7FF, 6845
   $D800-$DFFF) and a CRTC table assuming a 10 MHz dot clock, 5-dot characters, 80 x 24
   (`vcrtab`); read the crystal, confirm with `tests/video/hold_address.py`, adjust with the monitor's `VR` by hand, then
   in the table. The character EPROM's order is assumed 2513-style (ASCII bits 0-5); read the 2732 to confirm.
@@ -62,7 +62,7 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   every step that counts a register is written without `-MEM-RD` (2026-09-29, the same section; 116 steps, one bit
   each), (e) 152 idle steps removed (2026-09-29, 5.7 there). Load in two stages so a failure points at its change:
   1. `make -C firmware/microcode/ucode-generator2 prologue6`, then
-     `python3 tools/ucode_send.py --all --hex firmware/microcode/ucode-generator2/build/p6/test.hex` (Ken; START), reset,
+     `python3 tools/ucode_send.py --all --hex firmware/microcode/ucode-generator2/build/p6/test.hex` (at the machine: press START), reset,
      `python3 tests/bench/run.py --port /dev/cu.usbserial-AB0MVHSQ`: (a) + (b) with the old prologue. `isa` checks the
      four instructions byte by byte (the machine must print exactly `expected/isa.uc.out`), `xisa` is compiled C using
      them (y1cc `--xisa`: the page register R6, a recursive frame in the page, ADDIW, SHL16, R6 reloaded after the ROM's
@@ -118,7 +118,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   To fold into the generator when the diagrams are next regenerated.
 
 ## Software
-- **BASIC `OUTP port,value` / `INP port,var`** (asked 2026-09-23): both keywords tokenise, but `exe_outp_stmt` and
+- **BASIC `OUTP port,value` / `INP port,var`** (open since 2026-09-23): both keywords tokenise, but `exe_outp_stmt` and
   `exe_inp_stmt` in `firmware/basic/basic.asm` only eat the keyword - no port access, so BASIC cannot drive the LEDs or read
   the switches (POKE cannot: they are I/O ports, P0 select + P1 data). The port is in the opcode (`OUTA Pn` $60+n, `INP Pn`
   $90+n), so a run-time port needs `OUTA/INP Pn` + `RET` built in RAM and called, or a 16-entry jump table. `INP` like
@@ -132,7 +132,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   2016 register-card codes (REG-FUNC-LD, REG-BRD-LD-ID, WDATA/RDATAL) which are not in the 2020 bus table, where the card
   select became REG-LD-ID2..3 / ADDR-REG-ID0..3; the `fix` converter only maps BUS-WR. Rewrite it against the current
   signal table before generating vectors for the 2020 Index Register cards.
-- **Replace the Processing command sender with a Python host** (Ken, 2026-09-20). `embedded/command-sender/command_sender_8`
+- **Replace the Processing command sender with a Python host** (2026-09-20). `embedded/command-sender/command_sender_8`
   builds again under Processing 4.5.6 (2026-09-20 fixes) but is a dead end. `tools/busdrv.py` already speaks the bus tester's
   `CMD:OPERAND#` / `>>` protocol; still needed is the script interpreter from the sketch: `//` comments, `:label` + `GOTO`,
   `LET`, `FOR`/`NEXT`, `DUMP start end`, `WAIT`, `DUMPVARS`/`DUMPLABELS`, and `CMD:OP#EXPECTED!VAR` return-value matching
@@ -150,7 +150,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   `embedded/*/readback/`)
 - (done 2026-09-20: `tools/verify_embedded.py`, 12 sketches compile against the vendored libraries)
 - (done 2026-09-24: the tree's `eagle/v1.3` board turned out NOT to be the ordered one (now `eagle/deprecated/v1.3-do-not-use/`);
-  Ken's Fusion export of the built card is `hardware/cards/memory/eagle/v1.3/` (filed first as `v1.3-fusion-export-2026-09-24`),
+  the Fusion 360 export of the built card is `hardware/cards/memory/eagle/v1.3/` (filed first as `v1.3-fusion-export-2026-09-24`),
   proven hole for hole and track for track against the 2025 gerbers (JLCPCB order 2000765A) by `tools/verify_fab_vs_brd.py`; it
   adds IC15, the 74245 enable from the chip selects.)
 - (answered 2026-09-20: jumper boards not fitted/obsolete, EEPROM adaptor fitted, two register cards, RN2 = 1k; bus tester
@@ -172,7 +172,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   Card-preparation procedure written: `docs/procedures/CF-CARD.md`. A move of the interface onto an I/O card v2.0 on
   ports P4/P5 was designed 2026-09-23 and dropped 2026-09-24 (6eeb259, 65851b0).)
   **2026-09-25: memory card v2.0 FINISHED FOR FABRICATION, NOT ORDERED** (`hardware/cards/memory/kicad/v2.0`, README
-  "The v2.0 board"): Ken picked **standoff option E** - the CF-to-IDE adapter (HX-2118P: 60 x 44 mm, 2 M3 holes 52 mm
+  "The v2.0 board"): **standoff option E** (chosen 2026-09-25) - the CF-to-IDE adapter (HX-2118P: 60 x 44 mm, 2 M3 holes 52 mm
   apart at the header end, no pin 20) on two 15 mm M3 standoffs over the CF chips at the free top edge, J2 parallel to
   X1 with a short straight ribbon, the ROM uncovered in the top row of the memory column. **2026-09-29: + JP3, the ROM
   write-protect jumper** (design review M2; 1-2 WRITE, 2-3 PROTECT), added locally beside the ROM, the rest of the
@@ -184,18 +184,18 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   NPTH/PTH drill zip, renders, placement PDF, BOM (+ standoffs, screws, washers, ribbon), JLCPCB order note (as order
   2000765A), 1:1 print. **Open before ordering:** the ribbon plug's pin 20 (open, or pull J2's pin
   20). Resolved 2026-09-26: the adapter's power pads are a floppy pinout in J3's order, so the J3 cable is straight
-  through (Ken builds it). Resolved 2026-09-25: the card-cage slot in front of the memory card stays empty, so
+  through (a harness built by hand). Resolved 2026-09-25: the card-cage slot in front of the memory card stays empty, so
   the ~35-44 mm stack does not matter. Before that (2026-09-24 evening): five standoff placements A-E trial-routed
   with 1:1 check prints (records in the folder).
   Earlier the same day: **memory card v2.0 ROUTED, fab files ready, NOT ORDERED**: `hardware/cards/memory/kicad/v2.0`
   (built memory card + CF on P8/P9, schematic proven) did not fit with the built card's copper kept, so the whole card
   was laid out again (same circuit, outline, X1, 4-layer GND/VCC planes; 0.25 mm tracks / 0.2 mm clearance / 0.8-0.4 mm
-  vias). Ken picked option B (TMP registers at the bus connector, CF column at the top edge, J2 centred);
+  vias). Option B was chosen (TMP registers at the bus connector, CF column at the top edge, J2 centred);
   `memory-v2.0.kicad_pcb` is routed (0 unrouted, 43 through vias, DRC 0 copper violations), silkscreen tidied, gerbers
   + drill zip, renders, placement PDF, BOM and the JLCPCB order note (4 layers, 1.6 mm, as order 2000765A) are in the
   folder. **Before ordering**, the open items in its README: J2 pin-1/key vs the chosen adapter, J3 pinout vs the
   adapter's power cable, socket heights under a TAODAN overhang, which backplane slot (TAODAN needs ~75 mm free).
-  C20-C23 (four spare 100 nF with no IC): removed (Ken 2026-09-24), board and fab files re-made. Earlier plan:
+  C20-C23 (four spare 100 nF with no IC): removed (2026-09-24), board and fab files re-made. Earlier plan:
   design the CF interface onto the **memory card** (more room, chips spaced far apart),
   kept I/O-mapped on **P8/P9** with the CF card v1.0 circuit (own 74LS138 enabled by IO-ADDR3, 74LS32, 74LS175, 74LS08,
   74LS245, 40-pin IDE header); the memory card's IO-ADDR0-3, -IO-RD and -IO-WR pins are on its connector but unwired
@@ -369,7 +369,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
      y1cc.py and assembled fits $5000-$CFFF with its Y1/OS tables and its measured stack, the tightest cc9 with 244
      bytes to spare; with those tables the chain compiles the whole corpus but y1cc.c (`tests/compiler/passes.py`,
      in `make check`). software/compiler/README.md, "The multi-pass compiler".)
-  2. (done 2026-09-25: **a stack for the native compiler** - y1cc `--stack ADDR` (Ken's choice) in y1cc.py, y1cc.c
+  2. (done 2026-09-25: **a stack for the native compiler** - y1cc `--stack ADDR` (the chosen design) in y1cc.py, y1cc.c
      and the passes: main saves the caller's SP on its own stack at ADDR and puts it back at every return; the
      passes are built with `--stack 0xCFFF` (`make -C os passes`), and `tests/native/run.py` runs them under Y1/OS
      with the emulator's program watch (`emulator -S`): every pass stays above its data (measured 2026-09-24 in
@@ -428,7 +428,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
      counterparts to follow), then can go.
 - y1cc.py: a function defined twice is not an error — both definitions are laid out and the last is compiled twice
   under the second label (`f_f_1:` twice, which the assembler rejects); y1cc.c and the passes compile it once. Make it
-  an error like "global declared twice" (a y1cc.py change: Ken's call; the C versions follow). Found 2026-09-24.
+  an error like "global declared twice" (a y1cc.py change, still to be decided; the C versions follow). Found 2026-09-24.
 - (done 2026-09-23: the rebuilt ROM is burned — `ROM 2026-09-23`, MD5 d2d7b027…, = `firmware/rom/shipped/rom.bin`; monitor
   G = `JSRUR R7`, so `--vector` is only for a 2021 chip.) Still to do: re-capture it with `tests/memory/rom_verify.py`
   (no read-back of the new chip is in the tree yet).

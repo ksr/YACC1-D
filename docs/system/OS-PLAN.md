@@ -2,7 +2,7 @@
 
 Bring the P8X system (a RAM-resident OS loaded from CompactFlash, a hierarchical filesystem, a shell, C commands in
 `/bin`) to the YACC1. Serial console first; the video card and a PS/2 keyboard come later behind the same console
-vectors. BASIC leaves the ROM and returns as a `/bin` command. Ken's decisions in this file; the phases at the end
+vectors. BASIC leaves the ROM and returns as a `/bin` command. The decisions are in this file; the phases at the end
 are the order of work. Nothing here is built yet.
 
 ## Decisions

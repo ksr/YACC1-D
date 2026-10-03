@@ -541,8 +541,8 @@ The deepest points are the "stack" column. They grow with nesting: about 144 byt
 its tables, which end at $5000 + image + tables; the "free" column is the room beyond the deepest point measured
 (cc2: about 15 more levels of parentheses than the corpus uses, cc8 about 45 levels of operators). Not the
 monitor's $0C00-$0EFF: that 768 bytes is shared with the shell that runs the program and with every syscall, and
-cc2 alone needs 1,202 on the corpus. Ken chose (2026-09-25) y1cc's `--stack ADDR` ("How the generated code works"
-above) over Y1/OS giving every program the area's top: `os/Makefile passes` builds each pass with `--stack 0xCFFF`
+cc2 alone needs 1,202 on the corpus. y1cc's `--stack ADDR` ("How the generated code works"
+above) was chosen (2026-09-25) over Y1/OS giving every program the area's top: `os/Makefile passes` builds each pass with `--stack 0xCFFF`
 (`build/cc/NAME.bin`), and passes.py measures that build. On the emulator, `tests/native/run.py` runs the passes
 under Y1/OS with the program watch (`emulator -S`) and checks that each one's deepest point stays above its last
 byte of data (below, "Native").

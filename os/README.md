@@ -6,7 +6,7 @@ Started 2026-09-22 from the plan in `docs/system/OS-PLAN.md`: **v0 (2026-09-22) 
 rewritten in YACC1 assembly (`y1os.asm`), half the size and 1.3-1.9x faster** (the CF hardware, planned on the
 memory card, is not built yet). `y1os.c`, the C version for `software/compiler/y1cc.py`, stays as the specification: `make -C os OS=c` builds
 and installs it instead, and both pass the same tests (below, "The assembly OS"). Y1/OS is the YACC1's own
-from here on: it is not kept in step with P8X/OS, and neither are the programs brought over (Ken, 2026-09-22).
+from here on: it is not kept in step with P8X/OS, and neither are the programs brought over (decided 2026-09-22).
 Only the on-disk format is shared, so `tools/p8xfs.py` (a fork of the P8X tool) builds the images and reads back
 what the OS writes.
 

@@ -153,7 +153,7 @@ pins of IC17-IC28 (Eagle supplies those from the VCC symbol). `+5V` feeds IC1, I
 R12, C16 and every decoupling capacitor — and reaches no connector pin. The KiCad netlist proof
 (`kicad/v1.0-fusion-export-2026-09-18/README.md`: "MISMATCH (115/117 nets)", the two rails listed) found it on
 2026-09-20; on the bench IC1, IC2 and the jumper pull-ups had been running on phantom power through input clamp
-diodes, which is what produced the write-through fault below. Ken joined the rails with a wire on 2026-09-21; the
+diodes, which is what produced the write-through fault below. The rails were joined with a wire on 2026-09-21; the
 v1.1 master folds `+5V` into `VCC` with a joining track (proof 116/116).
 
 ## 4. Timing and the design-review findings
@@ -177,7 +177,7 @@ least 450 ns (280 ns for the faster grades, per the review) for each register ac
 | README | HIGH | write-through fault of 2026-09-18: a write to block 0 or 9 landed in the video RAM regardless of BOARDSEL | **Resolved 2026-09-21**: cause was the unpowered rail; `tests/video/video_ram_test.py` 8/8, `tools/alias_min.py` clean |
 | DESIGN-REVIEW.md (mechanical) | MED | open-collector nets N$5 (IC27 p8) and N$16 (IC27 p10) without pull-up | Same as the 7416 item |
 | README / FABRICATED.md | LOW | inherits Blank V3.1's pre-V3.2 names on C3-C6 | Harmless (unused pins); start the next card from Blank V3.2 |
-| Naming (this document) | doc | the README, the fix document and the reviews quoted the CRTC at `$D400`/`$D402` | **Resolved 2026-09-25 (Ken): video RAM is $D000-$D7FF (2K), the 6845/latch half $D800-$DFFF** - the netlist reading; the fix document and README are corrected; the ROM (2026-09-25) already uses $D800/$D802. `video_ram_test.py` tests $D000-$D3FF only; the monitor's `VF`/`VD` check covers all 2K |
+| Naming (this document) | doc | the README, the fix document and the reviews quoted the CRTC at `$D400`/`$D402` | **Resolved 2026-09-25: video RAM is $D000-$D7FF (2K), the 6845/latch half $D800-$DFFF** - the netlist reading; the fix document and README are corrected; the ROM (2026-09-25) already uses $D800/$D802. `video_ram_test.py` tests $D000-$D3FF only; the monitor's `VF`/`VD` check covers all 2K |
 
 The memory-side conventions (floating LS inputs read high while the sequencer is off the bus; no pull-ups on the
 backplane) apply here as on every card; this card adds the open-collector nets to the list of lines that depend on
@@ -206,7 +206,7 @@ What was done, in order (`tests/video/README.md`, README, MACHINE.md):
 1. 2026-09-18: card installed, two bent pins straightened, RN2 changed to 1k while chasing a fault; the bus-tester
    RAM test showed the **write-through fault** — writes to $0010/$9010 (block 0 or 9, A0 = 0, A11 = 0) also landed in
    $D010. `tools/alias_min.py` is the 20-line reproduction.
-2. 2026-09-20: the KiCad conversion's netlist proof reported the two 5 V nets; 2026-09-21 Ken joined them with a wire.
+2. 2026-09-20: the KiCad conversion's netlist proof reported the two 5 V nets; 2026-09-21 they were joined with a wire.
 3. 2026-09-21: `tests/video/video_ram_test.py` **8/8 PASS**, quick and full (1K, patterns, inverse, neighbour
    isolation, the four write-through checks, read stability with memory traffic in between — necessary because
    $D000 is undecoded on the memory card and a floating bus can fake a good read); RN2 restored to 10k, quick test
@@ -228,7 +228,7 @@ If it misbehaves:
 
 | Rev | Date | Status | Notes |
 |---|---|---|---|
-| V1.0 | designed in Fusion 360 (Ken), export 2026-09-18 | **built, in the machine** without CRTC | drawn on Blank V3.1; the board file was exported under the template's name and stored as `Video_1.0.brd`; no fab files in the tree (`hardware/FABRICATED.md`: "none in tree") |
+| V1.0 | designed in Fusion 360, export 2026-09-18 | **built, in the machine** without CRTC | drawn on Blank V3.1; the board file was exported under the template's name and stored as `Video_1.0.brd`; no fab files in the tree (`hardware/FABRICATED.md`: "none in tree") |
 | v1.1 | KiCad master since 2026-09-21 | design only | `+5V` folded into `VCC` with a joining track (proof 116/116, DRC clean). To do before ordering: RS from A0 to A1, pull-ups on the 7416 outputs (BACKLOG) |
 
 Beyond v1.1, `docs/system/OS-PLAN.md` decision 2 changes the architecture: **video card v2 puts the 6845 registers on
@@ -276,4 +276,4 @@ crystal/C1 values belong in that redesign whichever interface it keeps.
 
 `VB aaaa bb ..` writes raw bytes anywhere in $D000-$DFFF (glyph codes, inverse video with bit 7, or the CRTC at
 $D800/$D802); **never an odd address above $D800**: that is the JP1 latch, which drives the bus even on a write
-(finding 6.4). The addresses are confirmed (Ken, 2026-09-25): RAM $D000-$D7FF, 6845 $D800/$D802.
+(finding 6.4). The addresses are confirmed (2026-09-25): RAM $D000-$D7FF, 6845 $D800/$D802.

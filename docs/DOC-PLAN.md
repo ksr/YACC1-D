@@ -1,9 +1,9 @@
 # Documentation plan and conventions (started 2026-09-23)
 
-Ken asked for complete hardware documentation of the YACC1: theory of operation, programming guides, bills of
-material, procedures. The tree already holds the facts (schematics, card READMEs, the design review, the microcode
-generator and its signal tables, the microcode-level emulator, the monitor source, the compiler, the tests); this
-work turns them into readable documents. Written from tree commit b77c299 onward.
+Complete hardware documentation of the YACC1: theory of operation, programming guides, bills of material,
+procedures. The facts are already in the tree (schematics, card READMEs, the design review, the microcode generator
+and its signal tables, the microcode-level emulator, the monitor source, the compiler, the tests); these documents
+turn them into readable form. Written from tree commit b77c299 onward.
 
 ## Where things go
 

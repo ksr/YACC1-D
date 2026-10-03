@@ -102,7 +102,7 @@ Three decoders, one per bus field, each a 74*139 half with its enable formed by 
 A jumper across pins 1–2 of a header makes the card answer to ID2..3 = 00 (R0..R3), across 3–4 to 01 (R4..R7), 5–6 to
 10 (R8..R11), 7–8 to 11 (R12..R15). The three headers of one card must carry the same code, because the microcode sends the
 same number in all three fields (section 2). Bits 2..3 exist for four cards; the machine has two (`MACHINE.md`: "selected by
-ADDR-REG-ID2..3 via each card's J3", Ken 2026-09-20). The gen-1 note "Arrange so board select can either be driven from
+ADDR-REG-ID2..3 via each card's J3", confirmed 2026-09-20). The gen-1 note "Arrange so board select can either be driven from
 unused 1 to become 3rd addr-reg signal" became this scheme (`NOTES-Update from old project.md`).
 
 Note the asymmetry the review relies on: **reads and counts share one select** (`-Rn-RDSEL` from `-REG-FUNC-RD` + REG-RD-ID),
@@ -221,7 +221,7 @@ the second card (only one card was photographed) and the 4077's part.
 | PWR LED | R1 330 | – | – |
 | X1 | DIN 41612 | any slot | any slot |
 
-`docs/system/MACHINE.md` (Ken 2026-09-20): "two cards: R0–R3 and R4–R7, selected by ADDR-REG-ID2..3 via each card's J3".
+`docs/system/MACHINE.md` (confirmed 2026-09-20): "two cards: R0–R3 and R4–R7, selected by ADDR-REG-ID2..3 via each card's J3".
 The pin numbering of the coding above is from the schematic (J1 pin 1 = IC32A Y0); the silk prints `0` and `3` at the header
 ends. **To verify:** the cap positions on both cards against this table (all three headers of a card must agree).
 

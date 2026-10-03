@@ -13,7 +13,7 @@
   Monitor half 3,947 of 4,096 bytes (149 free: $FF15-$FF8F and $FFA2-$FFBB). **MD5 (rom.bin)
   3ebc67898f70d319853fe42abdfd2cb9**; `tools/verify_firmware.py`: FIRMWARE VERIFIED. The chip in the machine is still
   `ROM 2026-09-23` (d2d7b027, below), and everything else in the tree still works with it: Y1/OS's `video` command
-  says that ROM has no driver. Ken burns the new one when ready; afterwards $FFBC reads $04 (the old chip: $FF).
+  says that ROM has no driver. Burn the new one when ready; afterwards $FFBC reads $04 (the old chip: $FF).
 - `shipped/rom.bin` — the same image as a flat 8,192-byte file for a chip programmer (Visual Minipro / minipro, device
   28C64): `python3 tools/img2bin.py firmware/rom/shipped/rom firmware/rom/shipped/rom.bin --base 0xE000 --end 0x10000 --fill 0xFF --size 8192`.
   Offset 0 = $E000; bytes the sources never write are $FF like a blank part. Checked 2026-09-22: its BASIC half is

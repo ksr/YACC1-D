@@ -12,7 +12,7 @@ The source tree `~/Documents/YACCS` was never modified. Everything here is repro
 | `copy-duplicates.txt` | identical content that deliberately exists at two places in the current tree |
 | `conflicts-relative-path.txt` | 28 paths whose content differed between the four current copies; newest was copied, the losers are under `archive/conflict-losers/` |
 | `same-name-different-content.txt` | 179 file names with more than one distinct content anywhere in YACCS |
-| `production-boards.txt` | fabricated revision per card (PCB/Production, corrected by Ken) |
+| `production-boards.txt` | fabricated revision per card (PCB/Production, corrected by hand) |
 | `large-files-manifest.tsv` | 7 files > 50 MB kept OUT of the tree (no LFS): path, size, sha256, where the bytes are |
 | `unclassified.txt`, `conflicts-destination.txt` | both empty: every file was claimed, no two sources fought over one target |
 
@@ -32,7 +32,7 @@ deduplicated by content into `archive/`; Eagle `.sch`/`.brd` pairs are never spl
 is committed. Second pass (same day): every FABRICATED revision was moved from `archive/` to its card folder
 (see `hardware/FABRICATED.md`); the 193 files that pass vacated were deleted from this tree and re-copied to
 their new places, then every plan row was re-verified. Third pass: fab output (63 files) routed into `<rev>/fab/` and BOM exports into `<rev>/bom/`. Fourth pass (2026-09-20):
-Ken's ACTIVE version per card applied - lower versions moved to `eagle/deprecated/<rev>/` (227 files re-placed), same
+The ACTIVE version per card applied - lower versions moved to `eagle/deprecated/<rev>/` (227 files re-placed), same
 purge / recopy / verify cycle each time. Fifth pass (2026-09-20): the inventory had been SKIPPING every `CAMOutputs`
 directory (2,984 files, the Fusion CAM output of every 2020 board); re-indexed as `yaccs-index-2026-09-20.json`, re-planned,
 661 more files copied into the `<rev>/fab/` folders, everything re-verified. `yaccs-index-2026-09-19.json` is kept for the record.

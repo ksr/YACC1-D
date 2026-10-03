@@ -20,4 +20,4 @@ build UNCHANGED here. Verified 2026-09-20 (`make check`): all six compile; the a
 `test.hex` byte-identical. Deliberate source edits are listed in `tools/patched_files.txt`.
 
 Firmware sources (monitor, BASIC, ROM images, microcode) live under `firmware/`, not here. The 2021 16-bit
-experiment (Assembler-16, emulator-16) was deleted on Ken's instruction 2026-09-20.
+experiment (Assembler-16, emulator-16) was deleted 2026-09-20.

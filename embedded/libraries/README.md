@@ -27,5 +27,5 @@ from `~/Documents/Arduino/old-libraries/` so that sketch still compiles.
 
 **Builds use these copies, not the Arduino IDE's folder** (`tools/verify_embedded.py` points arduino-cli at this directory
 only). For the Arduino IDE on a new Mac, copy the YACC library in once: `cp -R embedded/libraries/YACC
-~/Documents/Arduino/libraries/` (2026-09-27: the repo copy is identical to Ken's; the IDE's Adafruit_MCP23017 may be newer
+~/Documents/Arduino/libraries/` (2026-09-27: the repo copy is identical to the IDE folder's; the IDE's Adafruit_MCP23017 may be newer
 than the 1.1.0 kept here, which the sketches need).

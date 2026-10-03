@@ -6,7 +6,7 @@ remap, and the two 16-bit TMP registers that the microcode uses as scratch words
 Written 2026-09-23 from the YACC1-D tree; **revised 2026-09-24 for the built card** (below).
 
 Sources: `hardware/cards/memory/eagle/v1.3/Memory V1.3.sch` and `.brd` (**the built card**:
-Ken's Fusion 360 export of the design JLCPCB fabricated on 2025-06-27, proven against the order's gerbers by
+the Fusion 360 export of the design JLCPCB fabricated on 2025-06-27, proven against the order's gerbers by
 `tools/verify_fab_vs_brd.py`; parts and nets parsed from the Eagle XML; KiCad conversion with netlist proof 116/116 in
 `hardware/cards/memory/kicad/v1.3/`), `hardware/cards/memory/eagle/deprecated/v1.3-do-not-use/Notes.md` (the notes
 kept with the earlier save), `hardware/cards/memory/README.md`,
@@ -254,7 +254,7 @@ Findings that concern this card, with their status on 2026-09-23:
 | S1 | MED, system | No power-on reset anywhere: -RESET is a manual RS latch on the sequencer, so FORCE-ROM is undefined at power-up until the button is pressed. | Open. |
 | H-1 / H-2 (`docs/isa/MICROCODE-REVIEW-NOTES.md`) | HIGH, microcode | PUSHR wrote both stack bytes while TMP1 (this card's IC28/IC29) and the register card both drove the data bus; BRZ/BRNZ loaded the PC while the ALU still drove the bus. Not faults of this card, but TMP1 is one of the fighting drivers in H-1. | **Fixed** in the generator 2026-09-22 and loaded into the sequencer EEPROM the same evening (MACHINE.md, BACKLOG). H-3 (BR16Z/NZ) stands. |
 
-### 4.1 The M1 fix: a 470 Ω pull-down on ADDR15 (Ken, 2026-09-30)
+### 4.1 The M1 fix: a 470 Ω pull-down on ADDR15 (2026-09-30)
 
 **Why a pull-down.** IC12's clock is ADDR15 · VMA · BUS-EN, and it is meant to clear FORCE-ROM on the first bus cycle
 that really addresses the upper 32K. The race is that nothing drives the address bus between cycles (the register
@@ -363,19 +363,19 @@ What to measure if it misbehaves:
 | v1.0 | 2020-06 | fabricated, retired | first card; IN/OUT bus signals were still active-low in the template ("converted from active low to Active HI ... not used in memory board") |
 | v1.1 | 2020-06-19 (files still named V1.0) | fabricated, retired | adds the boot ROM remap: IC11 74LS157 + IC12 74LS74 FORCE-ROM ("Add memory map ROM to 0x0000 until 0xf000 is accessed") |
 | v1.2 | 2020-11-29 | fabricated (built), retired 2021 | -VMA arrives on the bus (Blank V3.1 note): -VMA enables IC5, gates IC7 (pin 4) and the low-RAM -CS; the remap trigger moves from BADDR15 to raw ADDR15; "RN3&4 BADDR pull-ups not needed, leave in design"; the 7400 removed then added back for -LO-RAM. `media/memory v1.2 top.jpeg` and `... solder.jpeg` are photographs of this build |
-| v1.3 | design 2021-03-17, boards ordered 2025-06-27 (JLCPCB 2000765A, 4 layers) | **in the machine** | "ARGH": the 3x8 jumper block on IC7's outputs with pull-ups so any 4K block can be removed from the map (for memory-mapped I/O — the video card uses it); IC15 74ALS11 so the 74245 is enabled only by the card's own chip selects; TMP registers on the board. Built design = `eagle/v1.3` (Ken's Fusion export of 2026-09-24, verified against JLCPCB order 2000765A; KiCad `kicad/v1.3`, netlist proof 116/116). `eagle/deprecated/v1.3-do-not-use` is an earlier save, do not use (no IC15, TMP off the board; KiCad `kicad/deprecated/v1.3-do-not-use`, 115/115) |
+| v1.3 | design 2021-03-17, boards ordered 2025-06-27 (JLCPCB 2000765A, 4 layers) | **in the machine** | "ARGH": the 3x8 jumper block on IC7's outputs with pull-ups so any 4K block can be removed from the map (for memory-mapped I/O — the video card uses it); IC15 74ALS11 so the 74245 is enabled only by the card's own chip selects; TMP registers on the board. Built design = `eagle/v1.3` (the Fusion 360 export of 2026-09-24, verified against JLCPCB order 2000765A; KiCad `kicad/v1.3`, netlist proof 116/116). `eagle/deprecated/v1.3-do-not-use` is an earlier save, do not use (no IC15, TMP off the board; KiCad `kicad/deprecated/v1.3-do-not-use`, 115/115) |
 
 **v2.0 (2026-09-25: finished for fabrication, NOT ORDERED):** the CompactFlash interface on this card:
 `hardware/cards/memory/kicad/v2.0/` = the built v1.3 card plus the CF card v1.0 circuit ([`cf.md`](cf.md)), I/O-mapped
 on ports P8/P9 as the ROM and the emulators use them; it would be the first use of the IO-ADDR0..3, -IO-RD and -IO-WR
 pins this card leaves unwired today. The schematic is done and proven, but the card has less room than the earlier save
 suggested: the built card routes the TMP high byte (DATA8-15) as a bundle of tracks across the lower right of the
-board, and with its copper kept no placement of the five CF chips was found (the best packing fits four). Ken decided
-(2026-09-24) to lay the whole card out again with the CF section designed in: same circuit, outline, bus connector and
+board, and with its copper kept no placement of the five CF chips was found (the best packing fits four). So the whole card
+is laid out again (decided 2026-09-24) with the CF section designed in: same circuit, outline, bus connector and
 4-layer GND/VCC planes, new placement and copper. A first finished board (the IDE header J2 at the top edge, a TAODAN
 adapter standing on it) was superseded the same day by the **standoff decision**: the CF-to-IDE adapter (an HX-2118P,
 60 x 44 mm, no pin 20) mounts flat **on two 15 mm M3 standoffs on this card**, fed from J2 (parallel to the bus
-connector) by a short straight 40-wire ribbon; five placements were trial-routed and **Ken picked option E
+connector) by a short straight 40-wire ribbon; five placements were trial-routed and **option E was chosen
 (2026-09-25)**: the TMP registers and address buffers beside the bus connector, the glue column, the memory column
 with the **ROM IC13 in its top row, uncovered and removable** (a keep-clear zone around it), J2, and the adapter over
 the CF chips at the free top edge (its CF slot at that edge), the block decode IC7 / IC4 and the port decode IC30 in
@@ -383,17 +383,17 @@ the JP1 corner beside the U$1 jumpers. The board `memory-v2.0.kicad_pcb` is rout
 12.8 m of 0.25 mm track; DRC 0 copper violations, 0 unconnected; planes one piece each; netlist proof MATCH), its
 silkscreen shows where the adapter goes, and its gerbers, NPTH/PTH drill, renders, placement PDF, BOM (with the
 standoffs, screws and ribbon), JLCPCB order note and a 1:1 print are in that folder. The card cage slot in front of the
-memory card stays empty (Ken, 2026-09-25), so the ~35-44 mm stack needs no other clearance. **Decoupling on v2.0:** one
+memory card stays empty (decided 2026-09-25), so the ~35-44 mm stack needs no other clearance. **Decoupling on v2.0:** one
 100 nF per IC (C1-C19 and C24 for the built card's 20 ICs, as built; C25-C29 for the five CF chips) and C30 (10 uF
 bulk at the adapter power header J3). The built card's C20-C23, four 100 nF with no IC beside them (v1.3 has them in
-the cap row between C19 and C24, plain VCC-GND caps), were **removed from v2.0 (Ken, 2026-09-24)**. **JP3, the ROM write-protect
-jumper** (M2, Ken 2026-09-29), was added beside the ROM, and **R15, the 470 Ω ADDR15 pull-down** (M1, Ken
+the cap row between C19 and C24, plain VCC-GND caps), were **removed from v2.0 (2026-09-24)**. **JP3, the ROM write-protect
+jumper** (M2, 2026-09-29), was added beside the ROM, and **R15, the 470 Ω ADDR15 pull-down** (M1,
 2026-09-30, section 4.1) beside the bus connector: 72 parts. Open before ordering (its README): the ribbon plug's pin 20 (open, or pull J2's pin 20). The adapter's power-pad
-order was resolved 2026-09-26: a floppy pinout in J3's order, so the J3 cable is straight through (Ken's harness).
+order was resolved 2026-09-26: a floppy pinout in J3's order, so the J3 cable is straight through (a hand-made harness).
 
 Open ideas from `eagle/deprecated/v1.3-do-not-use/Notes.md`, `BACKLOG.md` and the reviews, for a v1.4:
 
-1. ~~**Gate the EEPROM write (M2).**~~ **Done on v2.0 (Ken, 2026-09-29): the write-protect jumper JP3** on IC13 pin 27
+1. ~~**Gate the EEPROM write (M2).**~~ **Done on v2.0 (2026-09-29): the write-protect jumper JP3** on IC13 pin 27
    (1-2 WRITE, 2-3 PROTECT; v1.3 JP1's 3-pin header), rather than -WE = -MEM-WR OR FORCE-ROM, which would still let a
    stray store after boot through. On PROTECT it also closes the reset-time window of finding 1.3.
 2. **The 4K-block EEPROM select** ("Jump select by 4k block EEPROM", Notes): today the EEPROM's A12 is BADDR12, so the
@@ -401,7 +401,7 @@ Open ideas from `eagle/deprecated/v1.3-do-not-use/Notes.md`, `BACKLOG.md` and th
    single block ($F000) carry either half, freeing $E000 for RAM (OS-PLAN's variant B moves video, not ROM, so this
    is independent).
 3. **Hard-jumper a boot-loader enable** (Notes): a way to force or defeat FORCE-ROM from a header for bench work.
-4. ~~**Fix M1 properly**~~ **Done on v2.0 (R15) and as a v1.3 bodge (Ken, 2026-09-30): a 470 Ω pull-down on ADDR15**
+4. ~~**Fix M1 properly**~~ **Done on v2.0 (R15) and as a v1.3 bodge (2026-09-30): a 470 Ω pull-down on ADDR15**
    (section 4.1), rather than clocking IC12 from the trailing edge or a delayed -VMA: one resistor, no logic change.
    With it fitted, the microcode can stop asserting -VMA in every step and the chip selects regain their -VMA gating.
 5. **Pull-ups on the strobe inputs** (M5) or on the backplane (control/IO 5.1), so the EEPROM -WE has a defined level

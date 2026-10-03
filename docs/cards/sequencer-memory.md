@@ -47,7 +47,7 @@ In DOWNLOAD mode the same ATmega receives a new image over its FTDI serial heade
                                      -CS / -OE / -WE  <---------------------+
 ```
 
-Fabricated 2020-12-01 (V2.1, `hardware/FABRICATED.md`), in the machine with the adaptor fitted in IC9 (Ken 2026-09-20,
+Fabricated 2020-12-01 (V2.1, `hardware/FABRICATED.md`), in the machine with the adaptor fitted in IC9 (confirmed 2026-09-20,
 `docs/system/MACHINE.md`). The photo `media/sequencer memory v2.1 top.jpeg` shows Alliance AS6C62256-55PCN SRAMs,
 MCP23017-E/SP expanders, an Atmel ATmega328P-PU, and two Microchip 24LC512 on the orange adaptor board.
 
@@ -174,7 +174,7 @@ A 29 x 16 mm board with two AT24C*P footprints sharing SDA, SCL, VCC, GND and WP
 socket: IC1 with A0 = A1 = A2 = VCC (address 7, 0x57) and IC2 with A0 = GND, A1 = A2 = VCC (address 6, 0x56). It exists
 because the microcode needs 128 KB and the largest 8-pin 24Cxx is 64 KB (24LC512): two of them, selected by the low
 address bit of the device address, give one 128 KB store. Designed 2020-12-19/21, one OSH Park order (rmD8XYsD, 2024-06-19,
-three boards), fitted (Ken 2026-09-20). The photo shows two 24LC512 (one E/P, one I/P) on it. The mechanical design review
+three boards), fitted (confirmed 2026-09-20). The photo shows two 24LC512 (one E/P, one I/P) on it. The mechanical design review
 flags the adaptor's VCC/GND as "no source" — expected, the socket pins are its supply (`hardware/DESIGN-REVIEW.md`); it has
 no decoupling of its own (the card's C1..C14 are nearby). `docs/datasheets/24lc512.pdf` is the part's datasheet.
 
@@ -251,7 +251,7 @@ stray `-` would be an Unexpected Char, FAULT blinking 5).
 `test.hex` format (`firmware/microcode/README.md`, `ucode_send.py load_records()`): 256 lines `%ccii<1024 hex digits>-`
 in instruction order, then a line `!`. `test.hexz` is byte-identical (the Processing sender's file name); `cache` is what
 was last sent — the loader sends only records that differ from it and rewrites it as it goes, so an interrupted load
-resumes; `--all` sends everything (what Ken chose for the 2026-09-22 reload: "six records differed, all 256 sent").
+resumes; `--all` sends everything (what the 2026-09-22 reload used: "six records differed, all 256 sent").
 
 Host-side sequence (`ucode_send.py` docstring): UCODE to DOWNLOAD, reset the card (LOADING comes on), start the sender
 (opening the port resets the ATmega through DTR — hence sender first), press START, wait; then UCODE back to WRITEMEM,
