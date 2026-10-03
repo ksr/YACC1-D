@@ -90,7 +90,7 @@ YACC1-D/
 ├── migration/                the 2026-09-19/20 migration's inventory, plan and logs
 ├── vm/                       manifests of VMs and legacy installers (the images live outside git)
 ├── media/                    photos of the boards
-├── website/                  the project website: MkDocs over these docs (website/README.md; not published yet)
+├── website/                  the project website: MkDocs over these docs (website/README.md), live at yacc1.cottageworker.com
 └── archive/                  frozen, never edited: gen1-2015-2018 (the first YACC1), superseded-revisions,
                               eagle-projects, third-party, conflict-losers (older duplicates from the migration)
 ```
