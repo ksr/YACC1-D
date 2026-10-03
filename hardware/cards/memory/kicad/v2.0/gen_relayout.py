@@ -4,7 +4,7 @@
 """gen_relayout.py - the RE-LAYOUT boards of the YACC1 memory card v2.0 (2026-09-24): the whole card placed again from
 scratch with the CF section designed in, and a trial autoroute of each placement option.
 
-Ken's decision (2026-09-24): keep the circuit (the v2.0 netlist exactly: the built card v1.3 incl. IC15 + the CF
+The decision (2026-09-24): keep the circuit (the v2.0 netlist exactly: the built card v1.3 incl. IC15 + the CF
 section), discard the built card's placement and copper. Kept from the built card: the board outline, the bus connector
 X1 (position, orientation, its mounting holes; the card plugs into the same backplane), the 4-layer stack-up with the
 solid In1 GND and In2 VCC planes (their outlines too). Signals on F.Cu and B.Cu only; every IC power pin reaches its
@@ -42,7 +42,7 @@ PROJ = GM.PROJ
 CLI = GM.CLI
 G = 2.54
 
-# the re-layout design rules (Ken 2026-09-24: wider than the built card's 6 mil tracks / 5 mil clearance)
+# the re-layout design rules (2026-09-24: wider than the built card's 6 mil tracks / 5 mil clearance)
 RULES = dict(track=0.25, clearance=0.2, via=0.8, via_drill=0.4, edge=0.5, hole_to_hole=0.5, hole_clearance=0.25,
              annular=0.2, plane_clearance=0.3, thermal_gap=0.4, thermal_spoke=0.5)
 DRU = """(version 1)
@@ -65,7 +65,7 @@ DRU = """(version 1)
 """
 
 
-# the top-edge options and the board made from option B (the record since the standoff decision, Ken 2026-09-24)
+# the top-edge options and the board made from option B (the record since the standoff decision, 2026-09-24)
 TOPEDGE = os.path.join(HERE, "options-top-edge-J2")
 
 
@@ -170,7 +170,7 @@ def build(opt, netfile, out=None):
         fps[ref] = fp
     for ref, fp in fps.items():
         if ref in NL.REMOVED:
-            # C20-C23: removed from the schematic after these option boards were made (Ken 2026-09-24); the option
+            # C20-C23: removed from the schematic after these option boards were made (2026-09-24); the option
             # boards are the review record from before, so they keep them as the built board has them (path, GND /
             # VCC pads); finish_v2.py make takes them off the final board
             got = {p.GetNumber(): p.GetNetname() for p in fp.Pads()}

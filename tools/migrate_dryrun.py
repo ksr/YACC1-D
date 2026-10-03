@@ -70,12 +70,12 @@ RULES = [
     (GV, W + "Memory v1.3/Memory V1.2.pro", "", "skip"),
     (GV, W + "Memory v1.3/Memory V1.2.pdf", "", "skip"),   # Eagle print of the earlier V1.2 state; Production v1.2 has its own
     (GV, W + "Memory v1.3/Memory V1.2.brd.old.brd", "hardware/cards/memory/eagle/v1.2/", "copy"),   # earlier V1.2 layout (31 parts, 2020-09-01) -> with V1.2
-    (GV, W + "Memory v1.3/", "hardware/cards/memory/eagle/deprecated/v1.3-do-not-use/", "copy"),   # an EARLIER SAVE of v1.3, not the built card (Ken 2026-09-24); the built card eagle/v1.3/ is his Fusion export, not from YACCS
+    (GV, W + "Memory v1.3/", "hardware/cards/memory/eagle/deprecated/v1.3-do-not-use/", "copy"),   # an EARLIER SAVE of v1.3, not the built card (2026-09-24); the built card eagle/v1.3/ is the Fusion 360 export, not from YACCS
     (GV, P + "Memory v1.2/", "hardware/cards/memory/eagle/v1.2/", "copy"),                     # fabricated
     (GV, P + "Memory v1.1/", "archive/superseded-revisions/memory-v1.1/", "archive"),
     (GV, P + "Memory v1.0/", "archive/superseded-revisions/memory-v1.0/", "archive"),
     (GV, P + "Basic Memory/", "archive/gen1-2015-2018/boards/basic-memory/", "archive"),
-    # 16-bit ALU experiment (Sept 2021): DELETED from YACC1-D on Ken's instruction 2026-09-20 ("all of the -16 work is useless");
+    # 16-bit ALU experiment (Sept 2021): DELETED from YACC1-D 2026-09-20 ("all of the -16 work is useless");
     # the originals stay in YACCS (YACC1-2020/2024 Working, three snapshots: 'ok' routed 09-24, 'copy' + main unrouted 09-29)
     (None, W + "ALU-V3.3-16/", "", "skip"),
     (None, W + "ALU-V3.3-16 ok/", "", "skip"),
@@ -108,7 +108,7 @@ RULES = [
     (GV, P + "Index Registers 1.1/Notes.rtf", "", "skip"),   # superseded by the 1.2 notes above (a strict superset)
     (GV, P + "Index Registers 1.1/", "hardware/cards/register/eagle/v1.1/", "copy"),           # fabricated
     (GV, P + "IO-V-1.1/Notes.rtf", "", "skip"),   # superseded by the Working notes (strict superset)
-    (GV, P + "IO-V-1.1/", "hardware/cards/io/eagle/v1.1/", "copy"),            # the built card (Ken 2026-09-19)
+    (GV, P + "IO-V-1.1/", "hardware/cards/io/eagle/v1.1/", "copy"),            # the built card (confirmed 2026-09-19)
     # The Working IO-V-1.1 (sch/brd bytes 2020-07-31) is electrically and physically the Production board; only 4 net names differ
     # (old Bus V3.1 names). Its Notes.rtf is the richer one (adds the 'next version V1.2' ideas) -> keep just that.
     (GV, W + "IO-V-1.1/Notes.rtf", "hardware/cards/io/eagle/v1.1/", "copy"),
@@ -120,14 +120,14 @@ RULES = [
     (GV, P + "Bus Tester V3.1/Notes.rtf", "", "skip"),   # superseded by the V3.11 notes (strict superset)
     (GV, P + "Bus Tester V3.1/", "hardware/cards/bus-tester/eagle/v3.1/", "copy"),             # fabricated
     (GV, W + "Bus Tester V3.1/", "", "skip"),   # identical to Production V3.1 incl. the same CAM run; only two pick-and-place .txt differ (timestamps)
-    (GV, P + "Bus Tester orig/", "hardware/cards/bus-tester/eagle/v1.1/", "copy"),             # = TESTER-PROD-V1.1 (2016) gerbers; the test board in use (Ken 2026-09-20)
+    (GV, P + "Bus Tester orig/", "hardware/cards/bus-tester/eagle/v1.1/", "copy"),             # = TESTER-PROD-V1.1 (2016) gerbers; the test board in use (confirmed 2026-09-20)
     (GV, P + "Mem Switch V1.1/test.ctl", "", "drop"),    # generic Eagle autorouter control file; one copy kept in hardware/libraries/eagle/
     (GV, P + "Mem Switch V1.1/", "hardware/cards/mem-switch/eagle/v1.1/", "copy"),
     (GV, P + "Mem Switch V1.0/Notes.rtf", "", "drop"),   # = the Blank V3.1 template's own note (adding -VMA to the bus), not about this card
     (GV, P + "Mem Switch V1.0/", "hardware/cards/mem-switch/eagle/v1.0/", "copy"),             # fabricated
     (GV, P + "Mem Register V1.0/test.ctl", "", "drop"),
     (GV, P + "Mem Register V1.0/", "hardware/cards/mem-register/eagle/v1.0/", "copy"),
-    # EEPROM adaptor = accessory of the sequencer-memory card: plugs into IC9 (EEPROM) to take a larger EEPROM (Ken 2026-09-20)
+    # EEPROM adaptor = accessory of the sequencer-memory card: plugs into IC9 (EEPROM) to take a larger EEPROM (2026-09-20)
     (C24, W + "eeprom adaptor/oshpark-order-invoice-rmD8XYsD.pdf", "hardware/cards/sequencer-memory/accessories/eeprom-adaptor/fab/", "copy"),
     (C24, W + "eeprom adaptor/", "hardware/cards/sequencer-memory/accessories/eeprom-adaptor/", "copy"),
     (GV, P + "PROTOCARD-PROD-V1.0/", "hardware/cards/protocard/eagle/v1.0/", "copy"),
@@ -240,7 +240,7 @@ RULES = [
     (C24, "Software-vs/ubasic-master/Makefile", "software/ubasic-c/ubasic-master/Makefile.netbeans", "copy"),
     (C24, "Software-vs/ubasic-master/", "software/ubasic-c/ubasic-master/", "copy"),
     (C24, "Software-vs/ubasic-master-orig/", "software/ubasic-c/ubasic-master-orig/", "copy"),
-    # 16-bit software experiment (Sept 2021): DELETED on Ken's instruction 2026-09-20; originals stay in YACCS
+    # 16-bit software experiment (Sept 2021): DELETED 2026-09-20; originals stay in YACCS
     (None, "Software/Assembler-16/", "", "skip"),
     (None, "Software/emulator-16/", "", "skip"),
     (None, "Software/opcodes-16.h", "", "skip"),
@@ -343,10 +343,10 @@ FABRICATED = {}
 for _c,_f,_r,_st,_cf,_n in _fab.FABRICATED:
     if _st == 'in-machine': FABRICATED[_c] = (_r, _n)
 
-# ACTIVE version per card (Ken 2026-09-20). Anything numerically lower is deprecated.
+# ACTIVE version per card (2026-09-20). Anything numerically lower is deprecated.
 ACTIVE = {"memory": 1.3, "mem-switch": 1.1, "mem-register": 1.0, "bus-tester": 1.1, "video": 1.0, "alu": 3.2, "io": 1.1,
           "register": 1.1, "sequencer-memory": 2.1, "sequencer-logic": 2.1, "backplane": 2.0,
-          # not in Ken's list - assumed (only one, or the Production one):
+          # not in the list - assumed (only one, or the Production one):
           "protocard": 1.0, "blank-card": 3.1, "bus-template": 3.2,
           "bus-jumper-horizontal": 3.2, "bus-jumper-vertical": 3.0, "address-tmp": 99}   # address-tmp: retired card, everything deprecated
 def rev_num(rev):
@@ -432,7 +432,7 @@ def main(index_path, outdir):
                     if is_junk(os.path.relpath(src, base)):
                         break
                     plan.append((dest + os.path.relpath(src, base), src, "archive", e["md5"])); claimed.add(src); break
-    # ---- LAYOUT PASS (Ken 2026-09-20): hardware/<cards|bus>/<card>/eagle/<rev>/...
+    # ---- LAYOUT PASS (2026-09-20): hardware/<cards|bus>/<card>/eagle/<rev>/...
     #      rev below the ACTIVE version  -> .../eagle/deprecated/<rev>/...
     #      rev == active or newer design -> stays at .../eagle/<rev>/...
     #      fab output (gerber zips/dirs, CAM jobs, drill/photoplot logs, invoices) -> <that rev folder>/fab/X

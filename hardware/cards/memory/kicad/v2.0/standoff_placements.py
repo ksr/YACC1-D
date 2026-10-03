@@ -1,6 +1,6 @@
 # Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
 
-"""standoff_placements.py - the STANDOFF placement options of the memory card v2.0 (Ken, 2026-09-24): the CF-to-IDE
+"""standoff_placements.py - the STANDOFF placement options of the memory card v2.0 (2026-09-24): the CF-to-IDE
 adapter (an HX-2118P) mounts flat on two M3 standoffs ON the memory card, fed by a short straight IDE ribbon from J2.
 Plain data + plain geometry (no KiCad import): read by gen_standoff.py (boards, checks) and print_1to1.py (the 1:1
 print, through the geometry JSON gen_standoff.py writes).
@@ -9,7 +9,7 @@ Board coordinates as everywhere in this folder (mm, y down): outline x 17.747..1
 the bus connector X1's edge, x = 195.5 the card's FREE TOP EDGE in the cage; y = 10 is the JP1 end (where the top-edge
 options had JP2), y = 124 the other side edge (the PWR LED corner).
 
-Ken's decisions (2026-09-24):
+The decisions (2026-09-24):
   - J2 runs PARALLEL to X1 (its long axis along y), about 1/3 of the way from the bus edge to the top edge (pin rows at
     board x ~ 77 +/- 10 mm), just BESIDE the adapter's header edge on the bus-connector side, not under the adapter.
   - The adapter sits above the card on two standoffs, its header edge toward the bus connector, its CF slot toward
@@ -19,13 +19,13 @@ Ken's decisions (2026-09-24):
   - The LEDs stay where they are (the free top-edge corner at y = 124); X1, the outline, JP1 and the U$1 block
     jumpers stay where the built card has them.
 
-The adapter, as measured from Ken's photo and checked by Ken with a 1:1 print (the "view": component side up, IDE
+The adapter, as measured from a photo and checked with a 1:1 print (the "view": component side up, IDE
 header at the top; view x to the right along the header edge, view y down from the header edge):
   board 60.0 (along the header) x 44.0 mm; male 2x20 2.54 mm shrouded header along one 60 mm edge, pin 20 MISSING (the
   key: no +5 V through IDE pin 20); two M3 holes only, both at the header end, 52.0 mm apart (+/- 0.7), centred on the
   header, 15.3 mm from the header edge, 4.0 mm in from the side edges; the CF slot opens at the far edge (44 mm from
   the header edge); four unpopulated power pads in a row between the header and the holes, just inboard of the
-  RIGHT-hand hole (probably +5V / GND / GND / +12V, floppy style: Ken to confirm); pin 1 at the LEFT end of the header.
+  RIGHT-hand hole (probably +5V / GND / GND / +12V, floppy style: to confirm); pin 1 at the LEFT end of the header.
 
 View -> board (the adapter turned so that its header edge faces the bus connector and its slot the top edge, component
 side still up): view "up" (toward the header edge) = board -x, so view "left" = board +y. Hence board x = XA + view y,
@@ -109,7 +109,7 @@ def j2(px, py1):
     return {"J2": (px - G / 2, py1 - 19 * G / 2, J2_ROT)}
 
 
-# J2 WITH ITS PLUG (coordinator / Ken, 2026-09-24, after the review of the first options): a shrouded header is ~9 mm
+# J2 WITH ITS PLUG (2026-09-24, after the review of the first options): a shrouded header is ~9 mm
 # tall and the IDC plug on it another ~9 mm (~18 mm, taller than the 15 mm standoffs), and the plug body is wider than
 # the shroud (~1-1.5 mm each side). So the PLUG ENVELOPE (the shroud + 1.5 mm all round, 18 mm tall) stays clear of
 # the adapter outline and of every other part's body, and the adapter's header edge stands ~3-5 mm from J2's shroud
@@ -117,7 +117,7 @@ def j2(px, py1):
 # Options a / b were made before this rule (J2_GAP 0.8 mm from J2's courtyard = 1.19 mm from its shroud): the record.
 PLUG_SIDE = 1.5             # the IDC plug body past the shroud, each side, mm
 PLUG_H = 18.0               # J2 + its plug above the card, mm
-J2_SHROUD_GAP = 3.0         # J2's shroud to the adapter's header edge (Ken: ~3-5 mm), options c / d / e
+J2_SHROUD_GAP = 3.0         # J2's shroud to the adapter's header edge (target: ~3-5 mm), options c / d / e
 RIBBON = "~5-8 cm"          # the ribbon between the two plugs (see ribbon_length() and the README)
 
 
@@ -163,7 +163,7 @@ COL1 = merge(row("IC27", C1, Y[0]), row("IC29", C1, Y[1]), row("IC26", C1, Y[2])
              row("IC9", C1, Y[4]), row("IC8", C1, Y[5]),
              {"RN5": (C1 + 10.16, 105.41, 0), "RN6": (C1 + 10.16, 110.49, 0)})
 FIXED = merge(UBLOCK_BUILT, {"JP1": (25.37, 14.78, 0)},
-              {"PWR0": (191.74, 120.19, 180), "LED1": (182.88, 120.19, 180)})     # the LEDs stay (Ken)
+              {"PWR0": (191.74, 120.19, 180), "LED1": (182.88, 120.19, 180)})     # the LEDs stay
 CFX = 89.79                  # the CF column: pin-1 column of its horizontal DIPs (their caps 5.08 mm left)
 MEMX = 121.92                # the RAM / glue column under and beside the adapter's slot half
 # the top-edge column: the block decode (IC7, IC4) beside the U$1 jumpers and IC18, the ROM standing vertical at the
@@ -247,8 +247,8 @@ for _k, _o in OPTIONS.items():
 
 
 # =====================================================================================================================
-# c / d / e (Ken, 2026-09-24, later: "I am OK to move the IDE connector and CF card towards the top edge as long as the
-# ROM stays uncovered - it might help reduce vias"). Same concept (J2 parallel to X1, just beside the adapter's header
+# c / d / e (2026-09-24, later: the IDE connector and CF card may move towards the top edge as long as the
+# ROM stays uncovered - it might help reduce vias). Same concept (J2 parallel to X1, just beside the adapter's header
 # edge on the bus side, straight ribbon, adapter on two standoffs, slot toward the top edge), but J2 and the adapter go
 # AS FAR TOWARD THE TOP EDGE AS THEY CAN, with J2's plug envelope clear of the adapter (J2_SHROUD_GAP): J2's odd row at
 # x 144.75 (the last 1.27 mm grid column that keeps the slot edge on the board), the adapter x 151.04-195.04, its CF

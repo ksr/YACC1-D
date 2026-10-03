@@ -6,7 +6,7 @@ write-protect jumper JP3 (2026-09-29, rule 7) + the ADDR15 pull-down R15 (2026-0
 THE single source of what v2.0 adds. Plain Python, no KiCad import.
 
     v2.0 = v1.3 as built             the netlist KiCad extracts from ../v1.3 (the conversion of
-                                     Ken's Fusion export of the card JLCPCB fabricated, IC15 included; proved pin for pin
+                                     the Fusion 360 export of the card JLCPCB fabricated, IC15 included; proved pin for pin
                                      against its Eagle board, and that board against the order's gerbers - see
                                      hardware/cards/memory/eagle/v1.3/README.md). Called "v1.3"
                                      below. Not restated here: check_netlist.py exports it fresh and compares.
@@ -17,7 +17,7 @@ THE single source of what v2.0 adds. Plain Python, no KiCad import.
          + JP3                       rule 7 (2026-09-29): the ROM write-protect jumper on IC13's -WE.
          + R15                       rule 8 (2026-09-30): 470 ohm from ADDR15 to GND, the FORCE-ROM race fix.
 
-Rules (Ken's decisions, 2026-09-24; rule 7 2026-09-29; rule 8 2026-09-30):
+Rules (decided 2026-09-24; rule 7 2026-09-29; rule 8 2026-09-30):
   1. The CF card v1.0 circuit AS DRAWN, including its own port decoder U1 (74LS138, G1 = IO-ADDR3, Y0 = P8, Y1 = P9):
      the CF stays on I/O ports P8 (register-select latch, write) / P9 (data, read/write), which the ROM in the machine
      and both emulators (software/cfmodel.h, firmware/monitor/monitor.asm) already use.
@@ -26,19 +26,19 @@ Rules (Ken's decisions, 2026-09-24; rule 7 2026-09-29; rule 8 2026-09-30):
      same-named net of the memory card's X1). On v1.3, IO-ADDR0-3, -IO-RD and -IO-WR reach only X1 (sheet-1 local
      labels); on v2.0 they are global labels, because sheet 7 uses them. -RESET (IC12 PRE) and DATA0-7 were global
      already.
-  3. The CF card's DASP LED (LED3 + R6) is DROPPED (Ken); -DASP keeps its 10k pull-up.
+  3. The CF card's DASP LED (LED3 + R6) is DROPPED; -DASP keeps its 10k pull-up.
   4. The CF card's PWR LED (LED1 + R7) is DROPPED: the memory card v1.3 already has one (PWR0 + R2 330R).
   5. Every other CF part is kept with its value, KiCad symbol and footprint, renamed so nothing collides with v1.3
      (v1.3 uses IC1-IC15, IC18, IC26-IC29, C1-C24, R2, RN5-RN8, JP1, PWR0, U$1, X1): REFMAP below.
      The CF card's per-IC 100 nF caps stay one per IC (C25-C29) and its 10 uF bulk cap (C30) stays beside the adapter
      power header.
-  6. C20, C21, C22 and C23 are REMOVED (Ken, 2026-09-24: "get rid of unused capacitors on the memory card"): the
+  6. C20, C21, C22 and C23 are REMOVED (2026-09-24, as unused capacitors on the memory card): the
      built card's four 100 nF caps with no IC beside them, which v2.0 had kept only as spare plane-to-plane
      decoupling. Every IC keeps its own 100 nF (C1-C19, C24, C25-C29) and C30 (10 uF bulk at J3) stays. expected()
      checks that each of the four is on VCC and GND only on v1.3 and takes them out; nothing else of v1.3 changes.
      The committed option / trial-route / keep-copper boards are records made BEFORE the removal and still carry the
      four (check_netlist.py checks them against the schematic + exactly these four, as on v1.3).
-  7. The ROM write-protect jumper JP3 (Ken, 2026-09-29; design review M2, hardware/DESIGN-REVIEW-NOTES-datapath.md):
+  7. The ROM write-protect jumper JP3 (2026-09-29; design review M2, hardware/DESIGN-REVIEW-NOTES-datapath.md):
      on v1.3 the 28C64's -WE (IC13 pin 27) is -MEM-WR re-buffered (IC6 pin 4, the net that also feeds the RAMs'
      -WE, IC1/IC2 pin 27), so any store while the ROM is selected - every address during FORCE-ROM - writes the
      EEPROM. v2.0 takes IC13 pin 27 off that net onto its own, ROM-WE (a sheet-3 local label), and JP3 (a 3-pin
@@ -46,7 +46,7 @@ Rules (Ken's decisions, 2026-09-24; rule 7 2026-09-29; rule 8 2026-09-30):
      2-3 = PROTECT (pin 3 on VCC: -WE held high). expected() checks that the v1.3 net holding IC13.27 is exactly
      IC1.27, IC2.27, IC6.4, IC13.27 before it moves the pin. Boards made before this rule (the standoff options,
      their trial routes, the records) have no JP3; check_netlist.py checks them against the schematic without it.
-  8. The ADDR15 pull-down R15 (Ken, 2026-09-30; design review M1, the FORCE-ROM race; docs/cards/memory.md section
+  8. The ADDR15 pull-down R15 (2026-09-30; design review M1, the FORCE-ROM race; docs/cards/memory.md section
      4.1): IC12's clock is ADDR15 . VMA . BUS-EN, meant to clear FORCE-ROM on the first bus cycle that addresses the
      upper 32K. Nothing drives the address bus between cycles and an undriven LS input reads high, so the clock term
      can go true when -VMA falls, before the real address ($0000 after reset) arrives. R15, 470 ohm from ADDR15 to
@@ -93,7 +93,7 @@ DROPPED = {
     "X1": "bus connector: the memory card's X1 carries the same bus nets",
     "LED1": "PWR LED: the memory card has PWR0 + R2",
     "R7": "PWR LED resistor",
-    "LED3": "DASP LED (dropped, Ken 2026-09-24)",
+    "LED3": "DASP LED (dropped 2026-09-24)",
     "R6": "DASP LED resistor",
 }
 # v1.3 parts taken out of v2.0 (rule 6): ref -> why. Their pins on v1.3: pin 1 GND, pin 2 VCC (checked by expected())

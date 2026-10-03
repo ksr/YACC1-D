@@ -3,7 +3,7 @@
 """relayout_placements.py - the RE-LAYOUT placement options of the memory card v2.0 (2026-09-24). Plain data + plain
 geometry (no KiCad import): read by gen_relayout.py, which builds one board per option.
 
-Ken's decision (2026-09-24): lay out the whole card again with the CF section designed in. The circuit stays the v2.0
+The decision (2026-09-24): lay out the whole card again with the CF section designed in. The circuit stays the v2.0
 netlist exactly (the built card v1.3 incl. IC15 + the CF section); the built card's placement and copper are discarded.
 Kept from the built card: the board outline (177.8 x 114.0 mm), the bus connector X1 (position, orientation, its two
 mounting holes) - the card plugs into the same backplane - and the 4-layer stack-up with the In1 GND / In2 VCC planes.
@@ -106,7 +106,7 @@ def j2(pin1_y):
 # C20-C23: the built card has these four 100 nF caps with no IC beside them (C20-C22 in a column below C19, C23 under
 # the ROM); the re-layout options kept them as plane-to-plane decoupling spread over the board: C20/C21 at the bus
 # connector's two power groups (X1 A1-C2 / A31-C32), C22/C23 at the far end of the planes. REMOVED from the circuit
-# afterwards (Ken, 2026-09-24: mem_v2_netlist.REMOVED): the option boards and trial routes are the review record from
+# afterwards (2026-09-24: mem_v2_netlist.REMOVED): the option boards and trial routes are the review record from
 # before and keep them (so these positions stay); finish_v2.py make takes them off the final board.
 SPARE_A = {"C20": (35.56, 117.47, 90), "C21": (35.56, 16.51, 90), "C22": (179.07, 121.92, 0), "C23": (146.05, 121.29, 0)}
 SPARE_B = {"C20": (35.56, 117.47, 90), "C21": (35.56, 16.51, 90), "C22": (179.07, 13.97, 0), "C23": (146.05, 121.29, 0)}

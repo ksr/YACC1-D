@@ -2,7 +2,7 @@
 # Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
 
 # build.sh - build and verify the YACC1 memory card v2.0: the schematic (the built v1.3 + the CF section), THE v2.0
-# BOARD memory-v2.0.kicad_pcb (Ken 2026-09-25: standoff option E, finished for fabrication, NOT ORDERED) with its fab
+# BOARD memory-v2.0.kicad_pcb (2026-09-25: standoff option E, finished for fabrication, NOT ORDERED) with its fab
 # outputs, the five STANDOFF placement options (the CF adapter on two standoffs on the card, J2 parallel to X1; in
 # options-standoff/) with their trial routes and 1:1 prints, and the records. The built card = ../v1.3 ("v1.3" below).
 #
@@ -25,7 +25,7 @@
 #                                                             then vias, then length); NOROUTE=1 keeps the committed
 #                                                             trial routes; OPTS limits the options (default a-e)
 #   The TOP-EDGE record (options-top-edge-J2/: the re-layout options A/B/C with J2 at the top edge and the board
-#   finished from option B, fab files included - Ken's pick until the standoff decision):
+#   finished from option B, fab files included - the choice until the standoff decision):
 #   FROM=trial hardware/cards/memory/kicad/v2.0/build.sh    + remake options-top-edge-J2/memory-v2.0.kicad_pcb from
 #                                                             the committed option-B trial route (+ its fab outputs)
 #   ROUTE=1 hardware/cards/memory/kicad/v2.0/build.sh       + route top-edge option B anew (ROUTES runs, default 4)
@@ -55,7 +55,7 @@
 #   other silk / the edge, none upside down; no parity item beyond the built card's inherited Eagle values/fields
 # 6 netlist proof: v2.0 schematic = v1.3 - C20-C23 + CF section; the v2.0 board, the standoff boards, their trial
 #   routes and the top-edge finished board = the schematic (the standoff boards + H1/H2, board-only standoff holes); the option boards,
-#   trial routes and keep-copper boards (records, made before C20-C23 were removed, Ken 2026-09-24) = the schematic +
+#   trial routes and keep-copper boards (records, made before C20-C23 were removed 2026-09-24) = the schematic +
 #   exactly C20-C23 as on v1.3 (check_netlist.py)
 # 7 schematic PDF, BOM (+ H1/H2 and the hardware lines: finish_v2.py bom-hw); (FROM / ROUTE) the top-edge record's fab outputs: gerbers/ + drill + zip, renders, placement
 #   PDF, the JLCPCB order note
@@ -288,7 +288,7 @@ for o in $RELAYOUT; do
   fi
 done
 
-# s: the STANDOFF options (Ken 2026-09-24: the CF adapter on two standoffs on the card; Ken picked E), in options-standoff/
+# s: the STANDOFF options (2026-09-24: the CF adapter on two standoffs on the card; E chosen 2026-09-25), in options-standoff/
 for o in ${OPTS:-a b c d e}; do
   B="$S/$P-standoff-$o.kicad_pcb"
   TR="$S/$P-standoff-$o-trial.kicad_pcb"
@@ -335,7 +335,7 @@ for o in ${OPTS:-a b c d e}; do
   python3 print_1to1.py "$TMP/s$o-geom.json" "$S/$P-standoff-$o-1to1.pdf" 2>&1 | sed 's/^/  /'
 done
 
-# f: THE v2.0 BOARD (Ken 2026-09-25: standoff option E) = memory-v2.0.kicad_pcb beside the schematic. A plain run
+# f: THE v2.0 BOARD (2026-09-25: standoff option E) = memory-v2.0.kicad_pcb beside the schematic. A plain run
 # verifies the committed board and regenerates its fab outputs; FINAL=trial remakes it from E's committed trial route,
 # FINAL=route routes E's placement anew in the orders $SEEDS and makes it from the best (finish_v2.py make-e)
 FB="$HERE/$P.kicad_pcb"

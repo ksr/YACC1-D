@@ -4,7 +4,7 @@
 """setup_check.py - is this Mac set up to work on YACC1-D? (2026-09-27)
 
 Checks, without installing or changing anything, the tools each kind of work needs and prints what is present, what
-is missing and how to get it. Ken develops on two Macs; run this on a fresh clone (CLAUDE.md "Two Macs").
+is missing and how to get it. Development happens on two Macs; run this on a fresh clone (CLAUDE.md "Two Macs").
 
     python3 tools/setup_check.py          # everything
     python3 tools/setup_check.py --quiet  # only what is missing

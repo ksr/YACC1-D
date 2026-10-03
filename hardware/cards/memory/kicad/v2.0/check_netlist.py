@@ -11,7 +11,7 @@ usage: check_netlist.py <v2.0 schematic .net> <v1.3 schematic .net> <v1.3 .kicad
        (both .net files from: kicad-cli sch export netlist --format kicadsexpr <root .kicad_sch>)
 
 What must hold, exactly (mem_v2_netlist.expected() builds the expectation):
-  schematic  every part of v1.3 but the REMOVED four (C20-C23, Ken 2026-09-24) is in v2.0; each removed one was on
+  schematic  every part of v1.3 but the REMOVED four (C20-C23, 2026-09-24) is in v2.0; each removed one was on
              v1.3 a capacitor with pin 1 on GND and pin 2 on VCC and nothing else (mem_v2_netlist.removed_pins());
              every net of v1.3 is in v2.0 with the same pins (less the removed caps' pins) and the same name, except that
                - IO-ADDR0-3 / -IO-RD / -IO-WR (v1.3: sheet-1 local labels on X1 only) are global now and ALSO carry

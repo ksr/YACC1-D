@@ -9,7 +9,7 @@ Run with KiCad's bundled Python (the board half needs pcbnew); build.sh does tha
     ... gen_mem_v2.py board a <net>   (one placement option; placements.py holds the options)
 
 v2.0 = the BUILT memory card v1.3 + the CompactFlash section (mem_v2_netlist.py says exactly what that is). The built
-card is ../v1.3: the KiCad conversion of Ken's Fusion export (2026-09-24) of the design JLCPCB fabricated on
+card is ../v1.3: the KiCad conversion of the Fusion 360 export (2026-09-24) of the design JLCPCB fabricated on
 2025-06-27 (proven against the order's gerbers, hardware/cards/memory/eagle/v1.3/README.md).
 Called "base" / "v1.3" below. This script:
 
@@ -17,11 +17,11 @@ Called "base" / "v1.3" below. This script:
            - project/sheet-file names memory-v1.3 -> memory-v2.0 and the title blocks,
            - sheet 1: the IO-ADDR0-3 / -IO-RD / -IO-WR labels on X1 become global labels (sheet 7 uses those nets)
              and a note says so,
-           - sheet 3: JP3, the ROM write-protect jumper (mem_v2_netlist.py rule 7, Ken 2026-09-29): IC13 pin 27 off
+           - sheet 3: JP3, the ROM write-protect jumper (mem_v2_netlist.py rule 7, 2026-09-29): IC13 pin 27 off
              the -WE net onto ROM-WE through JP3 (add_wp_jumper()),
-           - sheet 2: R15, the ADDR15 pull-down (mem_v2_netlist.py rule 8, Ken 2026-09-30; the FORCE-ROM race fix):
+           - sheet 2: R15, the ADDR15 pull-down (mem_v2_netlist.py rule 8, 2026-09-30; the FORCE-ROM race fix):
              470 ohm from the ADDR15 wire to GND, above the wire (add_pulldown()),
-           - sheet 1: the four removed caps C20-C23 (mem_v2_netlist.REMOVED, Ken 2026-09-24) taken out of the row of
+           - sheet 1: the four removed caps C20-C23 (mem_v2_netlist.REMOVED, 2026-09-24) taken out of the row of
              caps C19-C24 (remove_parts(): the symbols go, the GND and VCC rails that ran through their pins become
              one wire each from C19 to C24, the junctions at the removed pins go),
          adds sheet 7 = the CF section, drawn with the CF card's own sheet writer (hardware/cards/cf/kicad/v1.0/gen_cf.py,
@@ -38,7 +38,7 @@ Called "base" / "v1.3" below. This script:
          is NOT routed here: ratsnest only (the blocked keep-copper record; the re-layout is gen_relayout.py).
   locked / check / review   the steps after the board: see build.sh.
 
-Since Ken's re-layout decision (2026-09-24) the "board" half is the RECORD of the blocked keep-the-built-copper options
+Since the re-layout decision (2026-09-24) the "board" half is the RECORD of the blocked keep-the-built-copper options
 (placements.py, written to options-keep-copper/, regenerated only with KEEPCOPPER="a b c" build.sh); the re-layout
 boards come from gen_relayout.py, which reuses this file's netlist, footprint and review helpers.
 """
@@ -135,7 +135,7 @@ def remove_parts(t, refs):
 
 
 def add_wp_jumper(t):
-    """rule 7 (mem_v2_netlist.py, Ken 2026-09-29) on sheet 3: the wire from the -WE junction (IC6 pin 4's net, x 207.01)
+    """rule 7 (mem_v2_netlist.py, 2026-09-29) on sheet 3: the wire from the -WE junction (IC6 pin 4's net, x 207.01)
     to IC13 pin 27 (262.89, 220.98) is split through JP3 (v1.3 JP1's symbol and footprint, drawn rotated 180 so its
     pins face right at x 246.38): the -WE side goes down x 207.01 to pin 1 (y 231.14), IC13 pin 27 is the local
     label ROM-WE to pin 2 (y 228.6: down from pin 27, then left), pin 3 (y 226.06) goes right to a VCC symbol.
@@ -199,7 +199,7 @@ def add_wp_jumper(t):
 
 
 def add_pulldown(t):
-    """rule 8 (mem_v2_netlist.py, Ken 2026-09-30) on sheet 2, the FORCE-ROM logic: R15 (Device:R, as R10-R14) from the
+    """rule 8 (mem_v2_netlist.py, 2026-09-30) on sheet 2, the FORCE-ROM logic: R15 (Device:R, as R10-R14) from the
     ADDR15 wire (the global label at (66.04, 36.83) -> IC10B pin 4 at (116.84, 36.83)) to GND. The wire is split at
     x 71.12 (a junction), a wire goes up to y 27.94, R15 lies horizontal there (rotation 90: pin 1 left at x 71.12,
     pin 2 right at x 78.74), a wire on to a GND symbol at x 83.82; a note beside it says why. -> text"""
@@ -523,7 +523,7 @@ def header_geometry(O):
 # row by ~10 mm. Below it, and beside the header on the side it faces (unknown until the adapter is in hand: both
 # sides are kept low), nothing may be taller than ~8 mm.
 TAODAN_LEN = 70.0
-LOW_BEYOND = 12.0      # keep-low distance beyond each end of the pin row, along the axis (Ken: ~12 mm)
+LOW_BEYOND = 12.0      # keep-low distance beyond each end of the pin row, along the axis (target: ~12 mm)
 LOW_SIDE = 7.0         # keep-low half-width either side of the header centre line (shroud 4.45 + ~2.5 mm)
 TALL = {"C30": "10 uF radial, ~11 mm", "LED1": "5 mm LED, ~8.6 mm", "PWR0": "5 mm LED, ~8.6 mm",
         "JP2": "pin header + shunt, ~8.5 mm", "J3": "power header + cable plug", "JP1": "pin header + shunt",
@@ -604,7 +604,7 @@ def build_board(opt, netfile, out=None):
         fps[ref] = fp
     for ref, fp in fps.items():
         if ref in NL.REMOVED:
-            # C20-C23, removed from the schematic after this record was made (Ken 2026-09-24): the record keeps them as
+            # C20-C23, removed from the schematic after this record was made (2026-09-24): the record keeps them as
             # the built board has them (its symbol path, pads on GND / VCC), as when it was made
             got = {p.GetNumber(): p.GetNetname() for p in fp.Pads()}
             if got != NL.REMOVED_NETS:

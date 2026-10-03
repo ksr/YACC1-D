@@ -1,6 +1,6 @@
 # memory-v2.0 — the built memory card v1.3 + the CompactFlash interface (KiCad design)
 
-**Status 2026-09-30: THE v2.0 BOARD IS STANDOFF OPTION E (Ken's pick), FINISHED FOR FABRICATION - NOT ORDERED;
+**Status 2026-09-30: THE v2.0 BOARD IS STANDOFF OPTION E (chosen 2026-09-25), FINISHED FOR FABRICATION - NOT ORDERED;
 2026-09-29: + JP3, the ROM write-protect jumper; 2026-09-30: + R15, the ADDR15 pull-down** ("The ROM write-protect
 jumper JP3" and "The ADDR15 pull-down R15" below).
 `memory-v2.0.kicad_pcb` (beside the schematic, sharing `memory-v2.0.kicad_pro` / `.kicad_dru`): the CF-to-IDE adapter
@@ -9,7 +9,7 @@ straight 40-wire ribbon from **J2, the card's own IDE header, parallel to the bu
 the top row of the memory column. Routed (0 unrouted, **72 through vias**, 12,808 mm), DRC 0 copper violations and 0
 unconnected, planes one piece each, netlist proof MATCH, silkscreen tidied, fab files made: see **"The v2.0 board"**
 below. Open before ordering: only the ribbon plug's **pin 20** (the adapter's power-pad order was resolved 2026-09-26:
-floppy pinout, a straight-through cable from J3, Ken's harness). **The 1:1 print changed with JP3 and again with R15:
+floppy pinout, a straight-through cable from J3, a hand-made harness). **The 1:1 print changed with JP3 and again with R15:
 reprint `memory-v2.0-1to1.pdf` before ordering.**
 
 The records: the five standoff placement options A-E with their trial routes and 1:1 check prints ("The standoff
@@ -17,7 +17,7 @@ options", "The standoff options C / D / E"), and the board finished earlier on 2
 the free top edge, the TAODAN adapter standing on it; routed, 43 vias, fab files), **kept as a record** in
 `options-top-edge-J2/` with the three top-edge re-layout options and their trial routes ("The top-edge record").
 
-v2.0 is the memory card v1.3 **as built** (`../v1.3`: the KiCad conversion of Ken's Fusion
+v2.0 is the memory card v1.3 **as built** (`../v1.3`: the KiCad conversion of the Fusion 360
 export (2026-09-24) of the card JLCPCB fabricated on 2025-06-27, proven against the order's gerbers; 62256 x 2, 28C64, IC7 block
 decode, FORCE-ROM, IC15 buffer enable, TMP0/TMP1) **minus C20-C23** (four spare 100 nF, below) plus the CompactFlash interface of the CF card v1.0
 (`../../../cf/kicad/v1.0/`), **as drawn**: its own 74LS138 decoding **I/O ports P8 (register-select latch, write) and
@@ -29,12 +29,12 @@ section shares the memory card's X1. Theory of the CF circuit: `docs/cards/cf.md
 `MASTER` marks this folder as hand-maintained (not written by `tools/eagle_to_kicad_all.py`).
 
 History: the first v2.0 (0c2e15e) was drawn on what was then `../v1.3` (now `../deprecated/v1.3-do-not-use`), an
-earlier save of the design without IC15 and without the TMP registers' copper. Rebuilt on the real design (Ken's Fusion
+earlier save of the design without IC15 and without the TMP registers' copper. Rebuilt on the real design (the Fusion 360
 export, 4365de6), the CF section no longer fitted beside the built card's copper (its DATA8-15 bundle crosses the free
-area): options A/B/C with the built copper kept were all blocked. **Ken's decision, 2026-09-24: re-lay the whole card**
+area): options A/B/C with the built copper kept were all blocked. **Decided 2026-09-24: re-lay the whole card**
 (way 4 of that list). The blocked options are kept as a record in `options-keep-copper/` (below).
 
-Rename, 2026-09-24 (Ken): the built card's folders `eagle/v1.3-fusion-export-2026-09-24` and
+Rename, 2026-09-24: the built card's folders `eagle/v1.3-fusion-export-2026-09-24` and
 `kicad/v1.3-fusion-export-2026-09-24` became `eagle/v1.3` and `kicad/v1.3`; the earlier save moved to
 `eagle/deprecated/v1.3-do-not-use` (KiCad `kicad/deprecated/v1.3-do-not-use`). The conversion was regenerated under its
 new project name `memory-v1.3`, so its library nickname is now `memory-v1.3-eagle` and, because the converter derives
@@ -46,7 +46,7 @@ keep-copper records) the 53 v1.3 footprints' library ids and schematic paths wer
 every track, via, arc and zone is byte-identical, and `NOROUTE=1 build.sh` passes with the same numbers as before
 (0 unrouted, 43 vias, no copper violation, no new parity item, netlist proof MATCH for all nine boards).
 
-## The v2.0 board: standoff option E, finished for fabrication (Ken's pick, 2026-09-25)
+## The v2.0 board: standoff option E, finished for fabrication (chosen 2026-09-25)
 
 `memory-v2.0.kicad_pcb`, made by `finish_v2.py make-e` from a route of `options-standoff/memory-v2.0-standoff-e.kicad_pcb` (the
 placement of option E, unchanged: "The standoff options C / D / E" below). **NOT ORDERED.**
@@ -66,7 +66,7 @@ pin-1 end, OPEN by default** (the HX-2118P has no pin 20). `gen_standoff.py chec
 (`reports/memory-v2.0-placement-check.txt`). No part was moved after routing (`finish_v2.E_NUDGE` is empty); the only
 changes are silkscreen texts (below).
 
-### The ROM write-protect jumper JP3 (Ken, 2026-09-29; `mem_v2_netlist.py` rule 7)
+### The ROM write-protect jumper JP3 (2026-09-29; `mem_v2_netlist.py` rule 7)
 
 **Why.** On v1.3 the 28C64's -WE (IC13 pin 27) is -MEM-WR re-buffered by IC6, the same net as the RAMs' -WE, with
 nothing to stop a write: any store while the ROM is selected writes the EEPROM - and during FORCE-ROM *every* address
@@ -80,7 +80,7 @@ monitor avoids it only by jumping above $8000 first; the reset-time window (find
 | JP3 | IC13 -WE | use |
 |---|---|---|
 | **2-3 PROTECT** (fit it here) | held at VCC: the EEPROM can only be read | always, in the machine |
-| 1-2 WRITE | -MEM-WR, exactly as v1.3 | only to write the 28C64 in place (nothing does today: Ken burns it in a programmer) |
+| 1-2 WRITE | -MEM-WR, exactly as v1.3 | only to write the 28C64 in place (nothing does today: it is burned in a programmer) |
 | no cap | floating: **do not run without one** | |
 
 JP3 is v1.3 JP1's part (3-pin header, footprint `1X03`, BOM line "JP1,JP3"). On the schematic (sheet 3,
@@ -98,7 +98,7 @@ there JP3 would have to be placed anew. Boards made before rule 7 (the standoff 
 records) keep IC13 pin 27 on -WE; the netlist proof and the DRC parity gate check them against the schematic without
 JP3 and require JP3 on this board.
 
-### The ADDR15 pull-down R15 (Ken, 2026-09-30; `mem_v2_netlist.py` rule 8)
+### The ADDR15 pull-down R15 (2026-09-30; `mem_v2_netlist.py` rule 8)
 
 **Why.** The fix for design review M1, the FORCE-ROM race: between bus cycles nothing drives ADDR15 and an undriven LS
 input reads high, so IC12's clock (ADDR15 · VMA · BUS-EN) can clear FORCE-ROM before the real address arrives; 470 Ω
@@ -223,27 +223,27 @@ silk or the edge, none upside down; DRC silk_overlap 0):
   (generic 40-way IDC sockets are) - a keyed IDE plug (pin 20 blocked) does not go onto J2 unless **J2's pin 20 is
   pulled**. **JP2 stays OPEN** (pin 20 = +5 V serves adapters powered through the header, not this one).
 - **Adapter power**: **J3 = +5V, G, G, nc** (pin 1 square, labelled on the silk) to the adapter's **four power pads**
-  (between its header and the H2 hole). Ken, 2026-09-26: these adapters take a **4-pin floppy (Berg / mini-power)
+  (between its header and the H2 hole). Confirmed 2026-09-26: these adapters take a **4-pin floppy (Berg / mini-power)
   connector**: pin 1 +5V (red), 2 GND, 3 GND, 4 +12V (yellow) - the same order as J3, so the cable is **straight
   through, pin 1 to pin 1** (J3 pin 4 is n.c., so the adapter never gets +12 V; a CF card needs none). Before making it,
   identify the adapter's pin-1 pad (square pad / "1" / "+5V" silk, or meter: +5V beeps to the middle pin of its 3.3/5 V
   jumper, GND to IDE pin 2). Either solder a 2.54 mm 1x4 header on the pads and use a 4-wire female-female jumper to J3,
   or fit a Berg (2.5 mm) floppy socket and a floppy-to-2.54 lead.
 - **Heights** (15 mm standoffs): J2 + plug ~18 mm, CF card top ~22 mm, the adapter's plug ~35 mm, the ribbon loop ~42 mm
-  above the card; screw heads + washers ~3 mm below. **The card cage: resolved (Ken, 2026-09-25) - nothing will be in
+  above the card; screw heads + washers ~3 mm below. **The card cage: resolved (2026-09-25) - nothing will be in
   front of the memory card**, the slot on its component side stays empty.
 - **The ROM** IC13 stays reachable: nothing above it, 10 mm free past both short ends (lever it out, or a 28-pin ZIF
   socket later).
 
 ### Open items before ordering
 
-1. ~~The adapter's power-pad order~~ - **resolved 2026-09-26: Ken builds the power harness** from the CF-IDE adapter to
-   J3 himself (J3 is fixed: +5V, G, G, nc); the board does not depend on it.
+1. ~~The adapter's power-pad order~~ - **resolved 2026-09-26: the power harness** from the CF-IDE adapter to
+   J3 is made by hand (J3 is fixed: +5V, G, G, nc); the board does not depend on it.
 2. **The ribbon plug's pin 20**: pin 20 open on the J2 plug, or pull J2's pin 20 (either works; decide with the cable in
    hand).
 
-Resolved: ~~the card-cage slot pitch vs the ~35 mm stack height~~ - nothing in front of the memory card (Ken,
-2026-09-25). Confirmed earlier: the adapter's pin 1 (straight ribbon, pin 1 to pin 1).
+Resolved: ~~the card-cage slot pitch vs the ~35 mm stack height~~ - nothing in front of the memory card
+(2026-09-25). Confirmed earlier: the adapter's pin 1 (straight ribbon, pin 1 to pin 1).
 
 **NOT ORDERED.**
 
@@ -273,7 +273,7 @@ its IO-ADDR-HL strap at P0-P7 (it would otherwise also answer P8/P9).
 
 ### Part-list delta (built v1.3 -> v2.0)
 
-**Removed (Ken, 2026-09-24: "get rid of unused capacitors on the memory card"):** **C20, C21, C22, C23**, the built
+**Removed (2026-09-24, the unused capacitors on the memory card):** **C20, C21, C22, C23**, the built
 card's four 100 nF (`C-US`, `C025-025X050`) with no IC beside them: on v1.3 they sit in the cap row between C19 and
 C24, pin 1 on GND, pin 2 on VCC, nothing else. v2.0 had kept them only as spare plane-to-plane decoupling (C20/C21 at
 X1's two power groups, C22/C23 at the far end of the planes). Every IC keeps its own 100 nF (C1-C19 and C24 for the
@@ -299,16 +299,16 @@ U$1, X1):
 | C25-C29 | C1-C5 | 100 nF, one per new IC | disc 5 mm |
 | C30 | C6 | 10 uF bulk beside J3 | radial D5 |
 
-Added on the built card's side (rule 7, Ken 2026-09-29): **JP3**, ROM write-protect jumper, 3-pin header
-(`PINHD-1X3`, `memory-v1.3-eagle:1X03`, the same part as JP1). (Rule 8, Ken 2026-09-30): **R15**, 470 Ω ADDR15
+Added on the built card's side (rule 7, 2026-09-29): **JP3**, ROM write-protect jumper, 3-pin header
+(`PINHD-1X3`, `memory-v1.3-eagle:1X03`, the same part as JP1). (Rule 8, 2026-09-30): **R15**, 470 Ω ADDR15
 pull-down (`Device:R`, `R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal`, the same part as R10-R14).
 
-Dropped from the CF card: X1 (bus connector, shared), **LED3 + R6 (DASP LED, Ken)**, **LED1 + R7 (PWR LED: the
+Dropped from the CF card: X1 (bus connector, shared), **LED3 + R6 (DASP LED, not wanted)**, **LED1 + R7 (PWR LED: the
 memory card already has PWR0 + R2 330R)**. Everything through-hole. BOM: `memory-v2.0-bom.csv` (36 lines, **72 parts**:
 the built card's 53 - C20-C23 + the CF section's 21 + JP3 + R15; built-card parts keep their converted Eagle values, e.g. `74*32`,
 `C-US`, whose line is now `C1-C19,C24` x 20).
 
-## The standoff options (Ken, 2026-09-24: the CF adapter on standoffs on the card)
+## The standoff options (2026-09-24: the CF adapter on standoffs on the card)
 
 ### The decision
 
@@ -318,13 +318,13 @@ the built card's 53 - C20-C23 + the CF section's 21 + JP3 + R15; built-card part
 - **J2 runs parallel to X1** (long axis along y) about 1/3 of the way from the bus edge to the top edge, **just beside
   the adapter's header edge on the bus side, not under the adapter**; a short straight 40-way ribbon (two IDC plugs)
   arches from J2 up to the adapter's header.
-- **The ROM (IC13, 28C64) must stay removable** (Ken pulls and reburns it): nothing above it (adapter, standoffs,
+- **The ROM (IC13, 28C64) must stay removable** (it is pulled and reburned): nothing above it (adapter, standoffs,
   ribbon) and room around it to lever it out or fit a ZIF socket later.
 - The LEDs stay where they were (PWR0 / LED1 in the free top-edge corner at y = 124); X1, the outline, X1's mounting
   holes, JP1 and the U$1 block jumpers (RN7 / U$1 / RN8, with IC18 / C24 beside them) as before; the circuit is the
   same (netlist proof MATCH), the 4-layer stack-up and the re-layout rules are the same.
 
-### The adapter (measured from Ken's photo, confirmed by Ken with a 1:1 print)
+### The adapter (measured from a photo, confirmed with a 1:1 print)
 
 "View" = component side up, IDE header at the top.
 
@@ -335,7 +335,7 @@ the built card's 53 - C20-C23 + the CF section's 21 + JP3 + R15; built-card part
 | pin 1 | at the **left end** of the header (measured "left end of the outer row", see open question 1) |
 | holes | **two only, both at the header end**: 52.0 mm apart (+/- 0.7), centred on the header, **15.3 mm from the header edge**, ~4 mm in from the side edges, ~3.2-3.5 mm (M3) |
 | CF slot | opens at the far edge, 44 mm from the header edge |
-| power | **four unpopulated pads in a row** between the header and the holes, just inboard of the **right-hand** hole (view); probably +5V / GND / GND / +12V, floppy style (**Ken to confirm**). No power through the IDE connector (no pin 20): **J3 (+5V, G, G, nc) feeds the pads by a short cable** |
+| power | **four unpopulated pads in a row** between the header and the holes, just inboard of the **right-hand** hole (view); probably +5V / GND / GND / +12V, floppy style (**to confirm**). No power through the IDE connector (no pin 20): **J3 (+5V, G, G, nc) feeds the pads by a short cable** |
 
 **On the board** (the adapter turned so its header edge faces the bus and its slot the top edge, component side still
 up): the view's "up" is board -x, so the view's **left = board +y**: the adapter's **pin-1 end is its board y-max end**
@@ -376,14 +376,14 @@ nothing for it; it is harmless and serves other adapters.
   anything tall (J2, J3, JP1, JP2, U$1 + jumpers, C30, the LEDs, X1) is under the adapter or under the ribbon.
 - **Total height above the card (15 mm standoffs)**: adapter top 16.6 mm; CF holder + card (~8 mm) **~25 mm**; the IDC
   plug on the adapter's header **~30 mm**; the ribbon loop over it **~35 mm**. Below the card: screw heads / nuts +
-  washers ~3 mm (the solder tails already stand ~1.5-2 mm). **Card cage: RESOLVED (Ken, 2026-09-25)** - nothing
+  washers ~3 mm (the solder tails already stand ~1.5-2 mm). **Card cage: RESOLVED (2026-09-25)** - nothing
   will be in front of the memory card: the slot on its component side stays empty, so the stack height does not
   matter (it was open question 4, "slot pitch vs ~35 mm stack").
 - The adapter hangs on its header end only (both holes are there); the CF slot end is free, ~29 mm past the holes.
   Inserting a card pushes toward the bus, i.e. into the standoffs, which is fine; if it wobbles, a stick-on bumper
   under the slot end (15 mm) would steady it.
 
-### The ROM stays removable (Ken's constraint)
+### The ROM stays removable (a constraint)
 
 `gen_standoff.py check` enforces, on every option: the ROM IC13 and a **keep-clear zone of 10 mm past both short
 ends and 2 mm along both long sides** of its pads (lever it out; a 28-pin ZIF socket, ~50 x 15 mm, fits) hold **no other
@@ -397,7 +397,7 @@ the cage. Its decoupling cap C3 moved beside its long side (outside the zone) so
 
 Common to both: column 1 at the bus connector as in top-edge option B (the TMP registers IC27/IC29/IC26/IC28, the
 address buffers IC9/IC8, RN5/RN6); **J2 pin rows at board x 76.17 (even) / 78.71 (odd)** = print grid x 58.4 / 61.0
-(Ken: ~59 +/- 10 from the bus edge); the adapter's header edge at x 83.19 (0.75 mm past J2's courtyard), its slot edge at
+(target: ~59 +/- 10 from the bus edge); the adapter's header edge at x 83.19 (0.75 mm past J2's courtyard), its slot edge at
 x 127.19 (print grid x 65.4 / 109.4); **both holes at board x 98.49 = print grid x 80.7**; the **CF column** (IC30-IC34,
 horizontal DIPs, caps toward J2) right beside J2's odd row, three of its rows under the adapter's header half between
 the standoffs; the RAMs IC1/IC2 and IC5/IC15/IC11 in the column at x 122 (their left ends under the adapter's slot
@@ -458,27 +458,27 @@ Page 2: the side view at 1:1 (the height stack) and the notes (standoffs, total 
 Every page is stamped with the date and time it was made. Made by `print_1to1.py` (system python3 + reportlab) from the
 geometry `gen_standoff.py geom` reads out of the board; `build.sh` regenerates both.
 
-### Open questions (for Ken)
+### Open questions
 
-1. **Pin 1 of the adapter's header: CONFIRMED by Ken** (2026-09-24): a straight standard 40-pin ribbon, pin 1 to pin 1,
+1. **Pin 1 of the adapter's header: CONFIRMED** (2026-09-24): a straight standard 40-pin ribbon, pin 1 to pin 1,
    joins J2 to the adapter as drawn (the adapter's pin 1 at the left end of its outer row, viewed component side up
    with the header at the top; the missing pin 20 is the 10th of the inner row from the left).
-2. ~~Adapter power pads~~ **RESOLVED (Ken, 2026-09-26)**: a 4-pin floppy (Berg) pinout, +5V / GND / GND / +12V, the
+2. ~~Adapter power pads~~ **RESOLVED (2026-09-26)**: a 4-pin floppy (Berg) pinout, +5V / GND / GND / +12V, the
    same order as J3 (+5V, G, G, nc; pin 1 square), so the cable is straight through, pin 1 to pin 1, and the adapter
-   never sees +12 V. Ken builds the harness; only the adapter's pin-1 pad is left to spot when making it.
+   never sees +12 V. The harness is made by hand; only the adapter's pin-1 pad is left to spot when making it.
 3. **Ribbon**: ~8-10 cm between the two plugs (the loop on page 2), 40-way, **pin 20 open at the J2 plug** (or J2's pin
    20 pulled); plugs crimped alike, stripe on the pin-1 (y-max) end. Buy or crimp; the length is best tried with the
    print and the adapter on real standoffs.
-4. ~~Card-cage slot pitch vs. the stack height~~ **RESOLVED (Ken, 2026-09-25)**: nothing will be in front of the
+4. ~~Card-cage slot pitch vs. the stack height~~ **RESOLVED (2026-09-25)**: nothing will be in front of the
    memory card (the slot on its component side stays empty), so the ~35-44 mm stack does not matter.
 5. **Standoff length**: 15 mm proposed; 12 mm if the sockets and the adapter's pin tails allow (measure the tails).
    The finished board uses 15 mm (the BOM's hardware lines).
-6. ~~Pick A or B~~ **Ken picked E (2026-09-25)**, finished: "The v2.0 board" above.
+6. ~~Pick A or B~~ **E chosen (2026-09-25)**, finished: "The v2.0 board" above.
 
-## The standoff options C / D / E: J2 and the adapter at the top edge (Ken, 2026-09-24, later)
+## The standoff options C / D / E: J2 and the adapter at the top edge (2026-09-24, later)
 
-Ken: "I am OK to move the IDE connector and CF card towards the top edge as long as the ROM stays uncovered - it might
-help reduce vias." **Options A and B stay as they were** (above); C, D and E keep the concept (J2 parallel to X1, just
+The brief: the IDE connector and CF card may move towards the top edge as long as the ROM stays uncovered - it might
+help reduce vias. **Options A and B stay as they were** (above); C, D and E keep the concept (J2 parallel to X1, just
 beside the adapter's header edge on the bus side; the adapter on two 15 mm M3 standoffs, header edge toward the bus, CF
 slot toward the free top edge; a straight ribbon; J3 beside the power pads; NPTH 3.2 mm holes in 7 mm keep-outs; only
 low parts under the adapter; the LEDs in the free top-edge corner; JP1 and the U$1 block jumpers as built) and move J2
@@ -501,13 +501,13 @@ standoffs, and the plug body is ~1-1.5 mm wider than the shroud on each side. So
 `PLUG_SIDE`, `PLUG_H`, `J2_SHROUD_GAP`):
 
 - the envelope entirely **outside the adapter outline**, and the adapter's header edge **3.0 mm from J2's shroud**
-  (Ken: ~3-5 mm, so the ribbon can fold up out of J2's plug and down into the adapter's plug on the adapter's header,
+  (target: ~3-5 mm, so the ribbon can fold up out of J2's plug and down into the adapter's plug on the adapter's header,
   ~15 + 1.6 + 9 mm up); on C, D, E the envelope ends 1.5 mm before the adapter (x 149.54 / 151.04). The next grid step
   (4.27 mm) would cost column 3 another 1.27 mm;
 - **no other part's body inside the envelope** (on the bus side too: the plug body overhangs socketed DIPs there).
 
 **A and B predate the rule and do not meet it** (J2's shroud 1.19 mm from the adapter's header edge, the envelope
-0.31 mm under the adapter): the check prints that as a NOTE for them. If Ken picks A or B, the adapter moves 1.81 mm
+0.31 mm under the adapter): the check prints that as a NOTE for them. If A or B is picked, the adapter moves 1.81 mm
 toward the top edge (or J2 1.27 + 0.54 mm toward the bus) and the card is routed again.
 
 **The ribbon.** Straight up out of J2's plug (top ~18 mm), a loop ~6 mm above the adapter's plug (top ~35 mm), down
@@ -534,7 +534,7 @@ They differ in **where the ROM goes** (IC13 shares 23 bus lines with the RAMs IC
 
 | | **standoff-c**: ROM at the top edge beside the adapter | **standoff-d**: ROM in the memory column, bottom row | **standoff-e**: ROM in the memory column, top row |
 |---|---|---|---|
-| idea | Ken's example: the ROM horizontal at the free top edge between the adapter and the LEDs | the ROM with the RAMs (IC15, IC1, IC2, ROM top to bottom), below J2's pin-1 end | the ROM with the RAMs (ROM, IC1, IC2, IC15), under the U$1 jumpers, above J2's pin-39 end; J2 and the adapter toward the LED side |
+| idea | the proposed example: the ROM horizontal at the free top edge between the adapter and the LEDs | the ROM with the RAMs (IC15, IC1, IC2, ROM top to bottom), below J2's pin-1 end | the ROM with the RAMs (ROM, IC1, IC2, IC15), under the U$1 jumpers, above J2's pin-39 end; J2 and the adapter toward the LED side |
 | J2 (board mm) | pins y 35.10-83.36, pin 1 (144.75, 83.36) = grid (127.0, 73.3) | same as c | pins y 61.77-110.03, pin 1 (144.75, 110.03) = grid (127.0, 100.0) |
 | adapter (board / grid) | x 151.04-195.04, y 29.23-89.23 / x 133.3-177.3, y 19.2-79.2 | same as c | x 151.04-195.04, y 55.90-115.90 / x 133.3-177.3, y 45.9-105.9 |
 | **H1** (pin-1 end) | board **(166.34, 85.23)** = grid **(148.6, 75.2)** | same as c | board **(166.34, 111.90)** = grid **(148.6, 101.9)** |
@@ -560,7 +560,7 @@ IC5 two rows higher) never completed in 17 orders (BDATA5 / BDATA7 at the RAMs);
 IC5 beside them fixed it and cut the airwire to the lowest of all options. A fourth arrangement, the ROM at the top edge
 in the JP1 corner with the adapter toward the LEDs, routed worst (113 vias) and was dropped.
 
-### Recommendation: standoff-e (picked by Ken, 2026-09-25: "The v2.0 board" above)
+### Recommendation: standoff-e (chosen 2026-09-25: "The v2.0 board" above)
 
 - **Fewest vias and the most robust route**: 72 vias, -23 % against A (94) and -18 % against A's best new order (88);
   7 of its 8 route orders complete, all within 72-85 (C and D: 4 of 8). Track 12,579 mm (A 13,540).
@@ -573,7 +573,7 @@ in the JP1 corner with the adapter toward the LEDs, routed worst (113 vias) and 
 - Cost: the ROM is no longer at the top edge (it is pulled with the card out of the cage, like the RAMs).
 
 **D** is the close second: the lowest airwire of all (10,974 mm) and the shortest route (12,502 mm), 77 vias, but only
-half its route orders complete; its ROM sits at the bottom of the memory column. **C** (Ken's example: the ROM at the top
+half its route orders complete; its ROM sits at the bottom of the memory column. **C** (the proposed example: the ROM at the top
 edge beside the adapter) keeps the ROM reachable in the cage but routes worst of the three (82 vias, 14,096 mm): the
 23 ROM-RAM lines have to go round J2's pin-1 end to the top edge. **None gets near the top-edge board's 43**: J2 still
 stands between X1 and the CF chips (~15 lines cross it), the memory column gave up 6.35 mm to J2's plug envelope, and
@@ -588,17 +588,17 @@ own header (dashed blue, "on the adapter, 15 mm above"), the ribbon (grey arrows
 HERE"), with four numbered callouts under the board; page 2 is the side view described above. The A and B prints were
 remade with the same drawing (their placements and trial routes are unchanged).
 
-### Open questions (for Ken), C / D / E
+### Open questions, C / D / E
 
-1. ~~Pick one~~ **Ken picked E (2026-09-25)**; routing polish, silkscreen tidy and fab files done: "The v2.0 board"
+1. ~~Pick one~~ **E chosen (2026-09-25)**; routing polish, silkscreen tidy and fab files done: "The v2.0 board"
    above.
 2. **The J2-to-adapter gap**: 3.0 mm from J2's shroud to the adapter's header edge (the plug envelope 1.5 mm clear).
    If the real plug or the ribbon fold needs more, the next step is 4.27 mm (column 3 moves 1.27 mm toward the bus).
 3. **ROM access** (C / D / E): in C the ROM is at the top edge (reachable with the card in the cage); in D and E it is
    in the memory column, uncovered, pulled with the card out of the cage.
 4. The earlier open questions (pin 1 is confirmed; the power-pad order, the ribbon, the standoff length) hold for C, D,
-   E too; the slot pitch (~44 mm with the plug on the adapter) is resolved: nothing in front of the memory card (Ken,
-   2026-09-25).
+   E too; the slot pitch (~44 mm with the plug on the adapter) is resolved: nothing in front of the memory card
+   (2026-09-25).
 
 ## The top-edge record: the board finished from option B (`options-top-edge-J2/`)
 
@@ -631,7 +631,7 @@ time than the trial's). The trial route is better on every count (43 vias, 11,77
   (1,801 -> 1,794 segments; no geometry change). No jog worth removing was found: the optimiser pulls tracks tight.
 
 **Placement changes after the pick** (the only ones; every other part is exactly where option B has it):
-- **C20-C23 taken off** (Ken, 2026-09-24): `finish_v2.py make` drops their footprints (`drop_removed()`) after the
+- **C20-C23 taken off** (2026-09-24): `finish_v2.py make` drops their footprints (`drop_removed()`) after the
   silkscreen tidy, so no other text moves because of them, then refills the planes. Their pads were plane-only (GND /
   VCC through thermal reliefs): no track or via touched them, none was removed, the routing is unchanged (43 vias,
   1,794 segments, 11,779 mm). Made on the committed board: the result is the previous board minus exactly the four
@@ -704,12 +704,12 @@ time than the trial's). The trial route is better on every count (43 vias, 11,77
    that side empty (or use a SinLoon on a ribbon).
 
 Decided: **C20-C23** (the built card's four 100 nF with no IC beside them, kept until then as spare plane-to-plane
-decoupling): **removed** (Ken, 2026-09-24, "get rid of unused capacitors on the memory card"); schematic, board and
+decoupling): **removed** (2026-09-24, the unused capacitors on the memory card); schematic, board and
 fab files re-made (part-list delta above).
 
 **Not ordered.**
 
-## The re-layout (Ken, 2026-09-24; the rules and stack-up hold for the standoff options too)
+## The re-layout (2026-09-24; the rules and stack-up hold for the standoff options too)
 
 **Kept from the built card:** the board outline (177.8 x 114.0 mm, x 17.72-195.55 / y 10.00-124.02), the bus
 connector X1 (FABC96R, same position and orientation, its two mounting holes and keepouts: the card plugs into the same
@@ -727,7 +727,7 @@ DRC's "0 unrouted" of the trial boards includes every power pin reaching its pla
 IC, standing beside the IC's pin-1 / VCC end (the built card's arrangement): C1-C19, C24 for the built card's 20 ICs
 (same pairs as built), C25-C29 for the CF chips; C30 (10 uF) at J3. C20-C23 (the built card's four caps with no IC
 beside them) were placed in the options as plane-to-plane decoupling (C20/C21 at X1's two power groups, C22/C23 at
-the far end of the planes) and then **removed from v2.0** (Ken, 2026-09-24): they are on the option boards and trial
+the far end of the planes) and then **removed from v2.0** (2026-09-24): they are on the option boards and trial
 routes (made before), not on the final board.
 
 ### Design rules (`memory-v2.0.kicad_pro` and `memory-v2.0-relayout-X.kicad_pro` net classes + `.kicad_dru`)
@@ -756,7 +756,7 @@ the built card), row pitch 13.97 mm, 5-8 mm channels between columns. J2 (Connec
 shrouded, pin 20 present) is at rotation 0 in every option: pads at x = 189.20 (odd pins, inboard: almost every IDE
 signal is on an odd pin) and 191.74, shroud 0.6 mm inside the top edge, pin 1 toward y = 10.
 
-## Top-edge placement options (the review; Ken picked B; now the record in `options-top-edge-J2/`)
+## Top-edge placement options (the review; B was chosen; now the record in `options-top-edge-J2/`)
 
 Every option: same circuit (netlist proof MATCH, board and trial route; made before C20-C23 were removed, so every
 option board, trial route and keep-copper record still carries them: see "The records and C20-C23" below), no body overlap, every pad 0.5 mm inside the
@@ -795,7 +795,7 @@ Images per option: `memory-v2.0-relayout-X-render-top.png` (3D, the TAODAN strip
 the silk of a review copy), `memory-v2.0-relayout-X-placement.png` (2D: outline, silk, adapter zones, airwires),
 `memory-v2.0-relayout-X-trial.png` (the trial route: F.Cu red, B.Cu blue).
 
-### Recommendation: option B (picked by Ken, 2026-09-24)
+### Recommendation: option B (chosen 2026-09-24)
 
 - **Shortest wiring**: the lowest airwire (-8 % against A) and the shortest trial route (11.8 m against 12.4-12.9 m)
   at the same via count. The TMP registers, the part that sank the keep-the-copper attempt, sit where their only
@@ -832,7 +832,7 @@ silkscreen tidy and fab outputs after the pick) is done.
 
 ## The records and C20-C23
 
-C20-C23 were removed (Ken, 2026-09-24) after the re-layout options, their trial routes and the keep-copper options
+C20-C23 were removed (2026-09-24) after the re-layout options, their trial routes and the keep-copper options
 were made. Least churn: those nine boards and their renders, plots and reports are **left as they were, documented as
 pre-removal records**, not re-made. They carry the four caps exactly as the built board has them (same footprint,
 value, symbol path; pin 1 GND, pin 2 VCC); `check_netlist.py --records` checks each against the schematic + exactly
@@ -942,5 +942,5 @@ time, so each plain run rewrites them (no other change). It reads `../v1.3` (thr
   D (77 vias, 12,502 mm) and E (72 vias, 12,579 mm), 0 DRC copper violations.
 - **Top-edge record (option B finished board): PASS** as before - 0 unrouted, 43 through vias, 11,779 mm, DRC 0 copper
   violations, planes one piece each, silkscreen clean (`options-top-edge-J2/reports/memory-v2.0-final.txt`).
-- **Not ordered**: Ken picked E (2026-09-25), finished as the v2.0 board; open before ordering: the ribbon
+- **Not ordered**: E was chosen (2026-09-25), finished as the v2.0 board; open before ordering: the ribbon
   plug's pin 20 (the power-pad order: resolved 2026-09-26).

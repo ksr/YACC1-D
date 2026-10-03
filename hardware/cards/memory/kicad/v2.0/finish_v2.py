@@ -2,7 +2,7 @@
 # Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
 
 """finish_v2.py - the board finished from top-edge option B of the YACC1 memory card v2.0:
-options-top-edge-J2/memory-v2.0.kicad_pcb (Ken's pick, 2026-09-24, of the re-layout with J2 at the top edge,
+options-top-edge-J2/memory-v2.0.kicad_pcb (chosen 2026-09-24 from the re-layout with J2 at the top edge,
 relayout_placements.py OPTIONS["b"]; superseded the same day by the standoff decision - gen_standoff.py - and kept, with
 its fab files, as a record: build.sh FROM=trial / ROUTE=1 remakes it there).
 
@@ -30,7 +30,7 @@ Run with KiCad's bundled Python (pcbnew); build.sh does:
                                                    <name>-jlcpcb-order.txt (the built card's order parameters)
 
 Nothing here moves a part: the placement is option B's. The only positions that change are silkscreen texts.
-The one part change: C20-C23 (mem_v2_netlist.REMOVED, Ken 2026-09-24) are on option B's board and its trial route (both
+The one part change: C20-C23 (mem_v2_netlist.REMOVED, 2026-09-24) are on option B's board and its trial route (both
 made before the removal) and are not on the final board.
 """
 import os, sys, re, json, math, glob, shutil, zipfile, subprocess, collections
@@ -44,7 +44,7 @@ import mem_v2_netlist as NL                                 # noqa: E402
 
 PROJ = GM.PROJ
 CLI = GM.CLI
-OPT = "b"                     # Ken's pick, 2026-09-24
+OPT = "b"                     # chosen 2026-09-24
 TITLE = "YACC1 memory card v2.0"
 DATE = "2026-09-24"
 
@@ -823,7 +823,7 @@ def jlc(pcb, note=JLC):
 
 
 # =====================================================================================================================
-# THE v2.0 BOARD: standoff option E (Ken's pick, 2026-09-25) -> memory-v2.0.kicad_pcb beside the schematic
+# THE v2.0 BOARD: standoff option E (chosen 2026-09-25) -> memory-v2.0.kicad_pcb beside the schematic
 #
 #   finish_v2.py make-e <routed.kicad_pcb> <out>  -> the final board from a routed standoff-E board (the committed trial
 #        route options-standoff/memory-v2.0-standoff-e-trial.kicad_pcb, or a new Freerouting run of options-standoff/memory-v2.0-standoff-e.kicad_pcb):
@@ -840,7 +840,7 @@ def jlc(pcb, note=JLC):
 #   finish_v2.py bom-hw <bom.csv>                 -> the BOM + H1 / H2 (board features, no part) + the mechanical
 #                                                    hardware lines (standoffs, screws, washers, ribbon, power cable)
 # =====================================================================================================================
-# rule 7 (mem_v2_netlist.py, Ken 2026-09-29): the ROM write-protect jumper JP3, added to the finished board by add_wp()
+# rule 7 (mem_v2_netlist.py, 2026-09-29): the ROM write-protect jumper JP3, added to the finished board by add_wp()
 # as a local change - every other part and track as routed. JP3 (v1.3 JP1's footprint 1X03, pads in a row) sits in the
 # free patch above-left of the ROM, outside its keep-clear zone; pad 3 is on VCC through the In2 plane (no track).
 # Coordinates in mm (board). The -WE net (IC6.4 -> IC13.27 on F.Cu, IC13.27 -> IC1/IC2 pin 27 on B.Cu) no longer
@@ -854,7 +854,7 @@ WP_TEXT = [("JP3 ROM WE", 95.7, 20.2), ("1-2 WRITE", 95.7, 21.8), ("2-3 PROT", 9
                                          # the free patch above JP3: 8.3 mm between IC14's outline and U$1's "0X8000"
                                          # ("2-3 PROTECT" is 8.6 mm); a line's box is 1.46 mm tall
 WP_RN8_REF = (116.0, 27.575)             # RN8's reference moves right along its row: at x 100.9 it met JP3's outline
-# rule 8 (mem_v2_netlist.py, Ken 2026-09-30): the ADDR15 pull-down R15 (470 ohm, the FORCE-ROM race fix, review M1),
+# rule 8 (mem_v2_netlist.py, 2026-09-30): the ADDR15 pull-down R15 (470 ohm, the FORCE-ROM race fix, review M1),
 # added to the finished board by add_pd() as a local change after add_wp() - every other part and track as routed. R15
 # (Resistor_THT R_Axial_DIN0207 P10.16, as R10-R14) stands vertical in the strip between X1 and the cap column C16 / C4,
 # the one spot near ADDR15 where its courtyard meets no other part and both pads clear every other net (a search of the

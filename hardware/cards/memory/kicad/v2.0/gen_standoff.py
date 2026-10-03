@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
 
-"""gen_standoff.py - the STANDOFF placement options of the YACC1 memory card v2.0 (Ken, 2026-09-24): the CF-to-IDE
+"""gen_standoff.py - the STANDOFF placement options of the YACC1 memory card v2.0 (2026-09-24): the CF-to-IDE
 adapter (HX-2118P) on two M3 standoffs on the card, J2 parallel to the bus connector X1 about 1/3 of the way to the top
 edge, a short straight IDE ribbon from J2 up to the adapter's header. standoff_placements.py holds the options, the
 adapter's measured geometry and the clearance figures.
@@ -11,7 +11,7 @@ Run with KiCad's bundled Python (pcbnew); build.sh does, per option:
   gen_standoff.py board <opt> <schematic .net>     -> options-standoff/memory-v2.0-standoff-<opt>.kicad_pcb (+ .kicad_pro, .kicad_dru)
         the built board with every track and via removed (outline, X1 and its mounting holes, the In1 GND / In2 VCC
         planes kept), every pad on its v2.0 schematic net, the CF footprints added, C20-C23 left off (removed from
-        the circuit, Ken 2026-09-24: these boards equal the schematic exactly), every part except X1 placed from
+        the circuit, 2026-09-24: these boards equal the schematic exactly), every part except X1 placed from
         standoff_placements.py (JP1 and the U$1 block group on the built card's pads, the LEDs where option B had
         them); H1 / H2 = the adapter's two M3 standoff holes (MountingHole_3.2mm_M3, NPTH 3.2 mm, board-only
         footprints: not in the schematic, not in the BOM) each inside a 7 mm copper keep-out (rule area on all four
