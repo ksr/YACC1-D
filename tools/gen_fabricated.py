@@ -33,7 +33,7 @@ with open(os.path.join(HW, "FABRICATED.md"), "w") as f:
         cam = os.path.isdir(os.path.join(d, "CAMOutputs")); ger = os.path.isdir(os.path.join(d, "gerbers"))
         what = ", ".join(zips + (["CAMOutputs/"] if cam else []) + (["gerbers/"] if ger else [])) or "(files)"
         return "`%s/fab/` %s" % (folder, what)
-    f.write("## In the machine\n\n| Card | Revision | Design | Files sent to fab | Confirmed by | Note |\n|---|---|---|---|---|---|\n")
+    f.write("## In the machine\n\n| Card | Revision | Design | Files sent to fab | Confirmed | Note |\n|---|---|---|---|---|---|\n")
     for card, folder, rev, status, confirmed, note in FABRICATED:
         if status == "in-machine": f.write("| %s | %s | `%s` | %s | %s | %s |\n" % (card, rev, folder, fab_of(folder), confirmed, note))
     f.write("\n## Every revision, by card\n\n")

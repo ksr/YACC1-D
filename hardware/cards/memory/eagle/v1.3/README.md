@@ -1,9 +1,9 @@
 # Memory card v1.3 — the BUILT card (Fusion 360 export, 2026-09-24)
 
 This folder is the record of the memory card that is in the machine: the design JLCPCB fabricated on 2025-06-27
-(order 2000765A, 4-layer FR-4). Ken exported it from Fusion 360 on 2026-09-24 in Eagle format and it was proven
+(order 2000765A, 4-layer FR-4). It was exported from Fusion 360 on 2026-09-24 in Eagle format and it was proven
 against that order (below). It was filed first as `eagle/v1.3-fusion-export-2026-09-24/` and renamed to `eagle/v1.3/`
-the same day (Ken). The folder that used to be `eagle/v1.3/`, now `../deprecated/v1.3-do-not-use/`, is an
+the same day. The folder that used to be `eagle/v1.3/`, now `../deprecated/v1.3-do-not-use/`, is an
 **earlier save** of the same revision (notes 2025-03-06, board file 2021-03-17) and is **not** the built card: do not
 use it. See "How it differs from the earlier save" below.
 

@@ -9,4 +9,4 @@ Vertical bus jumper: links two backplane connectors (X3, X4) with a power LED pe
 - The schematic is byte-identical to the horizontal jumper's; only the board differs (76 x 114 mm vertical vs 231 mm horizontal).
 - `fab/` – CAM output as found in the old tree; `pdf/` – generated drawings.
 
-Status (Ken 2026-09-20): built, **not fitted** — the jumper boards were for an older bus arrangement and are obsolete.
+Status (2026-09-20): built, **not fitted** — the jumper boards were for an older bus arrangement and are obsolete.

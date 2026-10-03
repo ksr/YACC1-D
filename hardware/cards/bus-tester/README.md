@@ -3,7 +3,7 @@
 ATmega328 + MCP23017 port expanders driving/monitoring every bus line from a serial console (FTDI, 19200):
 the card the host scripts in `tools/busdrv.py` and `embedded/bus-tester/` talk to.
 
-- `eagle/v1.1/` – **the board in use** (Ken 2026-09-20). Board dated 2018-03-15 = the gen-1 TESTER-PROD-V1.1
+- `eagle/v1.1/` – **the board in use** (confirmed 2026-09-20). Board dated 2018-03-15 = the gen-1 TESTER-PROD-V1.1
   (its gerbers in `fab/` are byte-identical to the 2016 ones); schematic re-saved 2020-08-15. The May-2020 note in
   this folder ("FIX on PCB: join R21 to R9 to GND, 8 LEDs – reflected in schematic, PCB uses a jumper") describes the
   rework applied to this board. `Build Notes.rtf` is the bring-up procedure.

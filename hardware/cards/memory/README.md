@@ -6,7 +6,7 @@ block is left undecoded for the video card). Boot remap: FORCE-ROM (74LS74 + 74L
 every address until the first access with ADDR15 high. Also carries the 16-bit TMP registers (IC26–IC29).
 Verified on hardware 2026-09-18 with the bus tester; the burned EEPROM is `firmware/rom/`.
 
-- `eagle/v1.3/` – **the card in the machine**: Ken's Fusion 360 export (2026-09-24) of the design
+- `eagle/v1.3/` – **the card in the machine**: the Fusion 360 export (2026-09-24) of the design
   JLCPCB fabricated on 2025-06-27 (order 2000765A, 4 layers; the order archive is in `fab/`). Proven against the order's
   gerbers by `tools/verify_fab_vs_brd.py` (every hole, every track, part list, pick-and-place; see its README). Adds
   **IC15 74ALS11**: the 74245 data buffer (IC5) is enabled by AND(-LO-RAM, -HI-RAM, -ROM-CS), i.e. only while one of
@@ -16,15 +16,15 @@ Verified on hardware 2026-09-18 with the bus tester; the burned EEPROM is `firmw
   **Planned modification (2026-09-30, not fitted): a 470 Ω pull-down from IC10 pin 4 (ADDR15) to IC10 pin 7 (GND)** on
   the solder side, the fix for the FORCE-ROM race (design review M1): `docs/cards/memory.md` section 4.1.
 - `kicad/v2.0/` – memory card v2.0 design: the built v1.3 + the CompactFlash interface on P8/P9. Schematic proven. With the
-  built card's copper kept the CF section did not fit, so Ken decided (2026-09-24) to lay the whole card out again:
-  three re-layout options with J2 at the top edge; B was picked and routed (fab files), then Ken decided the same day
+  built card's copper kept the CF section did not fit, so the whole card is laid out again (decided 2026-09-24):
+  three re-layout options with J2 at the top edge; B was picked and routed (fab files), then the same day it was decided
   that the CF adapter (HX-2118P) mounts on two M3 standoffs on the card with J2 parallel to X1: standoff options A / B,
-  then C / D / E with the adapter at the free top edge; **Ken picked E (2026-09-25): `memory-v2.0.kicad_pcb`, finished
+  then C / D / E with the adapter at the free top edge; **E was chosen (2026-09-25): `memory-v2.0.kicad_pcb`, finished
   for fabrication, not ordered**; 2026-09-29 + **JP3, the ROM write-protect jumper** (design review M2); 2026-09-30 +
   **R15, the ADDR15 pull-down** (470 Ω, the FORCE-ROM race fix, design review M1). The top-edge
   board is kept as a record in `options-top-edge-J2/`.
 - `eagle/deprecated/v1.3-do-not-use/` – **DO NOT USE: earlier save (notes 2025-03-06, board 2021-03-17), NOT the built
-  card** (found 2026-09-24; it was `eagle/v1.3/` until Ken renamed and deprecated it the same day): no IC15
+  card** (found 2026-09-24; it was `eagle/v1.3/` until it was renamed and deprecated the same day): no IC15
   (IC5 pin 19 on -VMA), TMP registers and RN5/RN6 off the board and unrouted. Kept for its history: `Notes.rtf`/`.md`
   = the full change history 1.0→1.3 plus open ideas; `ROM ZSelect.circ` = Logisim model of the ROM-select logic.
   `fab/Memory V1_2025-06-27.zip` is the built card's gerber set (byte-identical to the one in the order archive);

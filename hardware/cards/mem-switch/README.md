@@ -8,4 +8,4 @@ bypass caps and (per the notes) inverted-output 74240s and switch orientation fi
 - `eagle/deprecated/v1.0/` – 2021-06-23, built and worked; superseded a month later.
 - Drawn on the Blank V3.1 template, so bus pins C3–C6 carry the pre-V3.2 names; the card does not use them.
 
-Status (Ken 2026-09-20): built and used for bring-up; **not on the bus now** — removed once the memory card worked.
+Status (2026-09-20): built and used for bring-up; **not on the bus now** — removed once the memory card worked.

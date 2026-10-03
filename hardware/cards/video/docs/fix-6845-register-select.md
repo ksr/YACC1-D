@@ -35,7 +35,7 @@ Keep the decode as it is (CRTC at even addresses, latch at odd ones) and let A1 
 | $D802 | 1 | 0 | 6845 data register |
 | $D803 | 1 | 1 | JP1 read-back latch (IC2) |
 
-(Ken, 2026-09-25: video RAM is $D000-$D7FF, the 6845 half is $D800-$DFFF. This document said $D400 until then.)
+(Confirmed 2026-09-25: video RAM is $D000-$D7FF, the 6845 half is $D800-$DFFF. This document said $D400 until then.)
 
 One connection changes: **IC17 pin 24 leaves ADDR0 and goes to ADDR1**. ADDR1 is on exactly two pins of the
 board: bus connector X1 pin A4 and the dual-port RAM IC15 pin 41. Nothing else on the card uses A1, and nothing

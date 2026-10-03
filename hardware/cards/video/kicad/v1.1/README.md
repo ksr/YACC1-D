@@ -1,6 +1,6 @@
 # video-v1.1 — KiCad design master for the video card
 
-**This is the master. Hand-maintained in KiCad 10 since 2026-09-21; Fusion 360 is abandoned for this card (Ken).**
+**This is the master. Hand-maintained in KiCad 10 since 2026-09-21; Fusion 360 is abandoned for this card.**
 Started as a copy of the proven conversion of the built card (`../v1.0-fusion-export-2026-09-18/`, which stays as the
 record of what was built) with the project renamed to `video-v1.1`. `tools/eagle_to_kicad_all.py` never writes here
 (`MASTER` marker file).
@@ -14,7 +14,7 @@ record of what was built) with the project renamed to `video-v1.1`. `tools/eagle
    to C28, joins the two former copper islands. Netlist proof vs the board: **MATCH, 116/116 nets**; DRC has no clearance,
    short or dangling-track finding; 0 unconnected items.
 
-2. **Silkscreen title "YACC1 Video Card V1.1"** (Ken, 2026-10-02; it still read V1.0 from the conversion). Text only:
+2. **Silkscreen title "YACC1 Video Card V1.1"** (2026-10-02; it still read V1.0 from the conversion). Text only:
    DRC identical by type before and after (229 cosmetic findings, 0 unconnected); `reports/drc.json` and the two
    renders regenerated.
 

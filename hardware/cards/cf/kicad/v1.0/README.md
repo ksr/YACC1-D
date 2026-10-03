@@ -1,6 +1,6 @@
 # yacc1-cf-card v1.0 — KiCad design (generated from `cf_netlist.py`)
 
-> **Not built (never ordered).** This design is the basis for the CF section planned on the memory card (Ken,
+> **Not built (never ordered).** This design is the basis for the CF section planned on the memory card (decided
 > 2026-09-24: same circuit, I/O-mapped on P8/P9, as the ROM and both emulators use; not designed yet). Theory:
 > [`docs/cards/cf.md`](../../../../../docs/cards/cf.md).
 
@@ -89,7 +89,7 @@ Freerouting is not fully deterministic: each rebuild gives a slightly different 
    marked "1" on the silk; the shroud key faces the ICs), how far its body overhangs the board and whether it clears
    R1-R4, RN1, JP1 and the LEDs, and whether it needs the card-edge side free.
 2. **Check the adapter's power input**: J2 is a plain 1x4 0.1" header, pin 1 = +5 V, 2 and 3 = GND, 4 = not
-   connected; confirm the cable/connector Ken's adapter takes (floppy Berg vs. 0.1") and the pin order. Fit JP1 only
+   connected; confirm the cable/connector the adapter in hand takes (floppy Berg vs. 0.1") and the pin order. Fit JP1 only
    if the adapter takes +5 V on IDE pin 20 (many do not, and pin 20 is the key position on keyed cables).
 3. LED colours and the 1k series resistors (~2.5 mA) to taste.
 4. Optional hand tidying: placement is functional, not beautiful (IC row at the connector, pull-ups beside J1, LEDs
