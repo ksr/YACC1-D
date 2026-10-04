@@ -719,7 +719,9 @@ Status on 2026-09-23 (`DOC-PLAN.md` rule 7): H-1 and H-2 **fixed in the generato
 2026-09-22 (`tools/ucode_send.py --all`); `tests/ucemu/isa.asm`, the compiler suite and the monitor from reset run with
 0 fights over 6 million steps on the model; the bench checks (`tests/assembler/brur`, `isa.asm`'s byte stream, then the
 monitor from ROM) are pending. H-3 open; H-4 open (fixed in the generator 2026-09-29, section 5.4); M-1 fixed in the generator 2026-09-29 (the fetch
-by the three-step prologue, the 116 operand-fetch steps by `m1Mask()`; section 5.6), not yet loaded.
+by the three-step prologue, the 116 operand-fetch steps by `m1Mask()`; section 5.6), loaded 2026-10-04: with the
+six-step prologue a $00 read back wrong at 13 addresses in $3E00-$3FFF (`tests/bench/diag/zero_readback.py`), with
+M-1 fixed at none, and `tests/bench` passes 15/15.
 
 ---
 

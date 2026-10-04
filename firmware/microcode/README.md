@@ -27,4 +27,5 @@
   `accumulator.c` (ADDIW/SHL16 from the MVRLA/ADD/MVARL/MVRHA/ADDC/MVARH steps, TMP1 holding ADDIW's high byte).
   `test.hex`/`test.hexz`/`test.123` regenerated: exactly records $80-$8F and $C0-$CF differ from the image the card
   holds (`cache`, untouched). Checked on `software/ucemu` (`tests/ucemu/isa.asm`, 0 bus fights, the same bytes as the
-  instruction-level emulator). **Reload the EEPROM** (`tools/ucode_send.py --all`) and run `tests/bench` on the machine.
+  instruction-level emulator). **In the EEPROM since 2026-10-04** (two stages, `BACKLOG.md`): `tests/bench` 15/15 on the
+  machine (`tests/bench/logs/bench-2026-10-04-1719.log`).

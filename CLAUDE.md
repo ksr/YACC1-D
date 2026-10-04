@@ -61,7 +61,7 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
 - Serial ports on the Mac (FTDI serial numbers, the same on both Macs): console `/dev/cu.usbserial-AB0MVHSQ`,
   sequencer card (microcode loader) `/dev/cu.usbserial-AB6WZCQX`. Clock 1 MHz; ~26 clocks per
   instruction on the native toolchain's workload with the tree's microcode (2026-09-29: three-step fetch prologue and
-  idle steps; 32.4 before, and the machine runs the old one until the EEPROM is reloaded).
+  idle steps; 32.4 before; the machine's EEPROM holds it since 2026-10-04).
 
 ## Where things are
 

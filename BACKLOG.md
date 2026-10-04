@@ -81,6 +81,12 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   loses that fight at some addresses. `xisa`'s page ($3F00) and frame ($409E) sit in that neighbourhood. Stage 1
   keeps the six-step prologue (M-1 in every fetch); **stage 2 removes M-1**, so it is the fix: after stage 2,
   `zero_readback.py` must find no address and `xisa` must pass.
+  **Stage 2 loaded 2026-10-04** (`ucode_send.py --all`, the tree's `test.hex`; `--boot-check`: RAM == EEPROM, 320
+  dump lines, 0 mismatches): `zero_readback.py` finds $00 refused at **0 of 512** addresses in $3E00-$3FFF (13 with
+  stage 1), and **`tests/bench` passes 15/15** with `isa` and `xisa` (`bench-2026-10-04-1719.log`). M-1 is gone on
+  the machine. Left from stage 2's list: the monitor and BASIC by hand, Y1/OS from CF (needs the CF hardware: memory
+  card v2.0) and a kermit transfer (its timeouts were recalibrated for the three-step prologue); then `--xisa` as
+  y1cc's default (below, "C compiler").
   1. `make -C firmware/microcode/ucode-generator2 prologue6`, then
      `python3 tools/ucode_send.py --all --hex firmware/microcode/ucode-generator2/build/p6/test.hex` (at the machine: press START), reset,
      `python3 tests/bench/run.py --port /dev/cu.usbserial-AB0MVHSQ`: (a) + (b) with the old prologue. `isa` checks the
@@ -91,7 +97,7 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
      the same; then the monitor, BASIC, Y1/OS from CF and a kermit transfer (its timeouts were recalibrated for (c):
      `os/kermit_io.asm` PPS 6528 - with the old microcode they are 25% long, harmless). If stage 2 fails where stage 1
      passed, stage 1's image is the way back.
-  When `xisa` passes, make `--xisa` y1cc's default (below, "C compiler").
+  `xisa` passes since 2026-10-04: make `--xisa` y1cc's default (below, "C compiler").
 - **Monitor + BASIC 8afde21** (2021-09, `firmware/*/candidates/2021-09-8afde21`): `charavail` BIOS vector ($FFEC),
   BASIC ON/OFF statements, break into a running program. Needs a hardware test, then burn and update `rom/shipped`.
 - **monnew-2025** (`firmware/monitor/monnew-2025`): small D/M/B monitor; assembled, never run on the machine.
