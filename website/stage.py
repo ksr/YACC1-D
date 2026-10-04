@@ -1,4 +1,5 @@
-# Author: Claude (Anthropic) for Ken Rother, 2026
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """Copy the YACC1-D documents the website uses into stage/, keeping each file's repository path, so the links between
 them keep working. Anything not copied is linked to GitHub by hooks.py."""
 import glob, os, shutil

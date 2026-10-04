@@ -1,5 +1,6 @@
 #!/bin/sh
-# Author: Claude (Anthropic) for Ken Rother, 2026
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 # build.sh - build the YACC1 project website (MkDocs + Material) from this repository's documents, and optionally
 #            serve it.
 #   ./build.sh          stage the docs, build into site/

@@ -1,4 +1,5 @@
-# Author: Claude (Anthropic) for Ken Rother, 2026
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """MkDocs hook: a relative link to a repository file that is not part of the site (a source, a schematic, a datasheet)
 becomes a link to that file on GitHub; an image that is not part of the site is shown from GitHub's raw files."""
 import os, posixpath, re
