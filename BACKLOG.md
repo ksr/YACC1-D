@@ -69,9 +69,18 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   (`bench-2026-10-04-1518.log`) - `isa` PASS (the four instructions byte by byte), every C program PASS; **`xisa`
   differs in one line: `deep 925`, both emulators `deep 945`**. 945 = 315 + 630; 925 is what comes out if `a` stays 1
   down the 20 levels of `deep(n, a, b, c, d, e)` (the recursive function with a 12-byte frame: rt_fsave/rt_frest,
-  R6 reloaded), so one frame word is not saved, restored or passed on the machine. Isolate it before stage 2 (a
-  bench probe printing each level's `a` .. `e`; `y1cc --xisa -S` of `deep`; the frame code against `isa`'s single
-  instructions), then fix and rerun; stage 2 waits for `xisa` to pass.
+  R6 reloaded), so one frame word is not saved, restored or passed on the machine. **Isolated the same day: not the
+  code, an address-dependent $00 read-back - review M-1.** `tests/bench/diag/deep.c`, the same recursion with every
+  level printed, gives 945 on the machine (its frame at $360E); `xisa` gives 925 every time (3 runs, logs
+  `bench-2026-10-04-1555/1556/1557`), also with `deep` run first in `main` (so no earlier test's state). A variant
+  of `xisa` would not even load: the monitor's loader refused (read back wrong) the record at $3EF0. Byte by byte:
+  only the value $00 fails there; $3000-$4FFF holds two full complementary patterns; and
+  `tests/bench/diag/zero_readback.py` finds $00 refused at 13 of 512 addresses in $3E00-$3FFF (3E7C 3EB9 3EBC 3EBD
+  3EE9 3EF1 3EF9 3EFA 3EFD 3FE9 3FF1 3FF9 3FFD - low bytes heavy in 1 bits). That is M-1: a register count with
+  `-MEM-RD` still on puts the register card's LS245s ($FFFF) on the data bus against the memory card's, and $00
+  loses that fight at some addresses. `xisa`'s page ($3F00) and frame ($409E) sit in that neighbourhood. Stage 1
+  keeps the six-step prologue (M-1 in every fetch); **stage 2 removes M-1**, so it is the fix: after stage 2,
+  `zero_readback.py` must find no address and `xisa` must pass.
   1. `make -C firmware/microcode/ucode-generator2 prologue6`, then
      `python3 tools/ucode_send.py --all --hex firmware/microcode/ucode-generator2/build/p6/test.hex` (at the machine: press START), reset,
      `python3 tests/bench/run.py --port /dev/cu.usbserial-AB0MVHSQ`: (a) + (b) with the old prologue. `isa` checks the

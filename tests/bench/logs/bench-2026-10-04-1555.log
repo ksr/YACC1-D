@@ -1,0 +1,43 @@
+tests/bench on the machine, 2026-10-04 15:55, port /dev/cu.usbserial-AB0MVHSQ, 3 ms/char
+
+==== xisa: FAIL output differs
+G
+GO ADDRESS:3000sum64 454
+locals 576
+table 21371
+t37 2369
+recs 826
+p5 4321
+r2e 999
+mul 58571
+div 8571
+div2 8571
+mod 3
+shl 192
+x4 43392
+gcd 21
+gcd2 4369
+deep 925
+ABCD
+xisa ok
+>
+---- expected (microcode emulator) ----
+sum64 454
+locals 576
+table 21371
+t37 2369
+recs 826
+p5 4321
+r2e 999
+mul 58571
+div 8571
+div2 8571
+mod 3
+shl 192
+x4 43392
+gcd 21
+gcd2 4369
+deep 945
+ABCD
+xisa ok
+
