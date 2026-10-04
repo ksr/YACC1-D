@@ -61,6 +61,10 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   prologue (2026-09-29, `docs/system/MICROCODE.md` 5.6: every record changes, instructions 2-3 steps shorter), (d) M-1:
   every step that counts a register is written without `-MEM-RD` (2026-09-29, the same section; 116 steps, one bit
   each), (e) 152 idle steps removed (2026-09-29, 5.7 there). Load in two stages so a failure points at its change:
+  **Baseline 2026-10-04, on the EEPROM's 2026-09-23 image** (`ROM 2026-09-23` in the chip): hello, brur and the 11
+  compiled C programs 13/13 PASS (`tests/bench/logs/bench-2026-10-04-1120.log`); `isa` runs the new opcodes, which
+  that image holds as all-zero words, and hangs the machine after `GO ADDRESS:3000` (every later load then gets no
+  answer: `bench-2026-10-04-1115.log`). Stage 1 below is next.
   1. `make -C firmware/microcode/ucode-generator2 prologue6`, then
      `python3 tools/ucode_send.py --all --hex firmware/microcode/ucode-generator2/build/p6/test.hex` (at the machine: press START), reset,
      `python3 tests/bench/run.py --port /dev/cu.usbserial-AB0MVHSQ`: (a) + (b) with the old prologue. `isa` checks the

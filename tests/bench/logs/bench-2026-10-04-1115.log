@@ -1,0 +1,63 @@
+tests/bench on the machine, 2026-10-04 11:15, port /dev/cu.usbserial-AB0MVHSQ, 3 ms/char
+
+==== hello: PASS
+G
+GO ADDRESS:3000Hello, YACC1!
+a b c 
+done
+>
+
+==== brur: PASS
+G
+GO ADDRESS:3000ABC0123
+>
+
+==== isa: FAIL output differs
+G
+GO ADDRESS:3000
+---- expected (microcode emulator) ----
+08 10 2C 02 66 06 05 FE 30 35 CA 35 FF F0 00 02 
+40 03 C0 C0 02 01 40 80 59 4E 59 4E 59 59 59 4E 
+59 4E 34 12 56 78 57 55 01 00 01 77 01 77 AA AA 
+55 EF BE 55 55 99 42 CD AB 42 42 56 55 44 00 00 
+12 34 56 78 78 BC DE F0 F0 A1 B2 C3 D4 F6 17 49 
+D4 40 65 13 00 5A 4E 59 00 08 42 F1 10 0F FF BC 
+DE 59 81 02 77 4E 59 00 02 01 01 80 80 48 D0 4A 
+B4 22 
+
+
+==== arith: FAIL load: record 1 answered nothing
+
+
+==== calls: FAIL load: record 1 answered nothing
+
+
+==== control: FAIL load: record 1 answered nothing
+
+
+==== arrays: FAIL load: record 1 answered nothing
+
+
+==== structs: FAIL load: record 1 answered nothing
+
+
+==== globals: FAIL load: record 1 answered nothing
+
+
+==== switch: FAIL load: record 1 answered nothing
+
+
+==== switchnb: FAIL load: record 1 answered nothing
+
+
+==== fib: FAIL load: record 1 answered nothing
+
+
+==== sieve: FAIL load: record 1 answered nothing
+
+
+==== syscall: FAIL load: record 1 answered nothing
+
+
+==== xisa: FAIL load: record 1 answered nothing
+
