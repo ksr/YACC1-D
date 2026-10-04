@@ -64,7 +64,14 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   **Baseline 2026-10-04, on the EEPROM's 2026-09-23 image** (`ROM 2026-09-23` in the chip): hello, brur and the 11
   compiled C programs 13/13 PASS (`tests/bench/logs/bench-2026-10-04-1120.log`); `isa` runs the new opcodes, which
   that image holds as all-zero words, and hangs the machine after `GO ADDRESS:3000` (every later load then gets no
-  answer: `bench-2026-10-04-1115.log`). Stage 1 below is next.
+  answer: `bench-2026-10-04-1115.log`). **Stage 1 loaded 2026-10-04** (`ucode_send.py --all --hex build/p6/test.hex`;
+  `--boot-check` against that image: RAM == EEPROM, 320 dump lines, 0 mismatches): **14/15 on the machine**
+  (`bench-2026-10-04-1518.log`) - `isa` PASS (the four instructions byte by byte), every C program PASS; **`xisa`
+  differs in one line: `deep 925`, both emulators `deep 945`**. 945 = 315 + 630; 925 is what comes out if `a` stays 1
+  down the 20 levels of `deep(n, a, b, c, d, e)` (the recursive function with a 12-byte frame: rt_fsave/rt_frest,
+  R6 reloaded), so one frame word is not saved, restored or passed on the machine. Isolate it before stage 2 (a
+  bench probe printing each level's `a` .. `e`; `y1cc --xisa -S` of `deep`; the frame code against `isa`'s single
+  instructions), then fix and rerun; stage 2 waits for `xisa` to pass.
   1. `make -C firmware/microcode/ucode-generator2 prologue6`, then
      `python3 tools/ucode_send.py --all --hex firmware/microcode/ucode-generator2/build/p6/test.hex` (at the machine: press START), reset,
      `python3 tests/bench/run.py --port /dev/cu.usbserial-AB0MVHSQ`: (a) + (b) with the old prologue. `isa` checks the
