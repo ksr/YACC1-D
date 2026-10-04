@@ -142,6 +142,6 @@ first Mac. On the second Mac, check them with `python3 tools/setup_check.py` and
 | Freerouting (board routing only) | `~/freerouting/freerouting.jar` | copy the jar to the same path, or set `FRJAR=` |
 | Claude's memory | the per-machine memory folder | travels as the mirror in the P8X repo's `docs/memory/` (committed 2026-10-02; on main since graphics-card was merged that day); for YACC1 work this file is enough |
 | P8X (`~/Developer/p8x`) | on `main` (graphics-card merged into it 2026-10-02) | `git clone`; work continues on `main` |
-| The website snapshot (`~/Developer/cottageworker-site`, private) | the nightly launchd job runs there | move it: that repo's README, "Moving the nightly job" - install it here, remove it there, never both |
+| The website (`~/Developer/cottageworker-site`, private: the nightly snapshot, the plan, and its own CLAUDE.md for working on cottageworker.com - open website sessions there, not here) | the nightly launchd job runs there | move it: that repo's README, "Moving the nightly job" - install it here, remove it there, never both |
 | `~/Documents/YACCS` (frozen archive, 3.7 MB) | the only copy | optional: copy it for safekeeping; YACC1-D does not need it |
 | Arduino IDE library copy | `~/Documents/Arduino/libraries/YACC` | only for the IDE: `cp -R embedded/libraries/YACC ~/Documents/Arduino/libraries/` |
