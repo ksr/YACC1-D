@@ -34,12 +34,20 @@ ROOT = os.path.dirname(HERE)
 GEN = os.path.join(ROOT, "firmware/microcode/ucode-generator2")
 PROMPT = b">>"
 RECORD_LEN = 1 + 2 + 2 + 1024                 # % cc ii data (the '-' is not sent)
+SEQUENCER_FTDI = "AB6WZCQX"                   # the sequencer card's FTDI serial number (the same on both Macs; the
+                                              # console's is AB0MVHSQ, tools/monload.py)
 
 
 def find_port():
+    """the sequencer card's port: the FTDI with its serial number when it is plugged in (the console may be too);
+    otherwise the only USB-serial port there is"""
     ports = sorted(glob.glob("/dev/cu.usbserial*") + glob.glob("/dev/cu.usbmodem*"))
     if not ports: sys.exit("ucode_send: no /dev/cu.usbserial* or usbmodem* port: is the sequencer card's FTDI plugged in?")
-    if len(ports) > 1: sys.exit("ucode_send: several ports, pick one with --port: " + " ".join(ports))
+    seq = [p for p in ports if SEQUENCER_FTDI in p]
+    if seq:
+        return seq[0]
+    if len(ports) > 1: sys.exit("ucode_send: several ports and none is the sequencer card's FTDI (%s), pick one with "
+                                "--port: %s" % (SEQUENCER_FTDI, " ".join(ports)))
     return ports[0]
 
 
@@ -173,7 +181,8 @@ def boot_check(args):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--port", help="serial port (default: the single /dev/cu.usbserial*)")
+    ap.add_argument("--port", help="serial port (default: the sequencer card's FTDI, usbserial-%s, or the single "
+                                   "/dev/cu.usbserial*)" % SEQUENCER_FTDI)
     ap.add_argument("--hex", default=os.path.join(GEN, "test.hex"))
     ap.add_argument("--cache", default=os.path.join(GEN, "cache"))
     ap.add_argument("--all", action="store_true", help="send all 256 records, ignoring the cache")
