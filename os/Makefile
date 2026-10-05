@@ -5,9 +5,10 @@
 #   make OS=c       the same with the C OS (y1os.c, the specification) instead of the assembly one (y1os.asm, the
 #                   default since 2026-09-23); the choice is remembered in build/os-sel, so switching rebuilds disk.img.
 #                   `OS=c python3 ../tests/os/run.py` runs the test sessions against the C OS (make inherits OS).
-#   make XISA=1     every program (the /BIN commands and the compiler passes) compiled with y1cc --xisa (2026-09-24:
-#                   LDZ/STZ + the page, ADDIW, SHL16 - needs the 2026-09-24 microcode on the machine); remembered in
-#                   build/xisa-sel like OS, so switching rebuilds. `XISA=1 python3 ../tests/os/run.py` tests that build.
+#   make NOXISA=1   every /BIN command compiled with y1cc --no-xisa (without LDZ/STZ + the page, ADDIW, SHL16: the code
+#                   for a machine without the 2026-09-24 microcode; --xisa is y1cc's default since 2026-10-04, the
+#                   compiler passes always use it); remembered in build/xisa-sel like OS, so switching rebuilds.
+#                   `NOXISA=1 python3 ../tests/os/run.py` tests that build.
 #   make run        boot it on the microcode emulator, interactive (type O at the monitor prompt)
 #   make run-int    same on the instruction-level emulator
 #   make test       tests/os/run.py: scripted sessions on both emulators against expected transcripts
@@ -29,8 +30,8 @@
 # and the Markdown documents in DOCS to /DOCS for `md` (host file = disk name). The native C compiler (2026-09-25):
 # /BIN/CC (commands/cc.c) runs the passes /LIB/CC/CC1..CC9 (make passes), which read /LIB/Y1CCRT.TXT and /LIB/Y1LIB.C.
 OS    ?= asm
-XISA  ?=
-CCX    = $(if $(XISA),--xisa)
+NOXISA ?=
+CCX    = $(if $(NOXISA),--no-xisa)
 ifneq ($(OS),asm)
 ifneq ($(OS),c)
 $(error OS must be asm (the default) or c, not "$(OS)")

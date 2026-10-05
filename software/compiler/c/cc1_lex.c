@@ -5,7 +5,7 @@
 /* cc1_lex.c - pass 1 of the multi-pass y1cc (2026-09-24): the command line, the preprocessor and the lexer.
    y1cc.c's y1cc_main (options) and lexer, unchanged in what they accept and in their messages.
 
-     cc1 W prog.c [-o prog.asm] [--org N] [--boot] [--vector] [--no-brur] [--os] [--xisa] [-l]
+     cc1 W prog.c [-o prog.asm] [--org N] [--boot] [--vector] [--no-brur] [--os] [--no-xisa] [-l]
 
    Writes W.opt (the options for the later passes), W.tok (the token stream), W.nam (the names, id order) and W.lit
    (the string literals, id order). A lexer error stops the compile here: y1cc.py lexes the whole source before it
@@ -533,7 +533,7 @@ void y1cc_main(void) {
     n = io_argc() - 1;                              /* the user's words are 1..n (0 is the work prefix) */
     if (n > 0) io_arg(1, srcpath, LINE_MAX);
     if (n == 0 || srcpath[0] == '-')
-        fail("usage: y1cc prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [--os] [--xisa] [--stack ADDR] [-l]");
+        fail("usage: y1cc prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [--os] [--no-xisa] [--stack ADDR] [-l]");
     sep = 0; dot = 0;                               /* os.path.splitext: the extension of the last path element */
     for (i = 0; srcpath[i]; i++) { if (srcpath[i] == '/') sep = i + 1; }
     for (i = sep; srcpath[i]; i++) if (srcpath[i] == '.') dot = i;
@@ -557,7 +557,7 @@ void y1cc_main(void) {
     if (!has_arg("--no-brur")) flags = flags | OPT_BRUR;
     if (has_arg("--os")) flags = flags | OPT_OS;
     if (has_arg("-l")) flags = flags | OPT_LIST;
-    if (has_arg("--xisa")) flags = flags | OPT_XISA;
+    if (!has_arg("--no-xisa")) flags = flags | OPT_XISA;    /* the default since 2026-10-04 */
     stack = 0;
     i = has_arg("--stack");
     if (i) {

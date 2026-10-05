@@ -171,7 +171,7 @@ def extras(name, img):
             open(os.path.join(BUILD, "rcasm.rc"), "w").write("-h\n")
             subprocess.run([sys.executable, os.path.join(ROOT, "software/compiler/y1cc.py"), os.path.join(HERE, src),
                             "-o", os.path.join(BUILD, base + ".asm"), "--org", "0x5000", "--os"] + more +
-                           (["--xisa"] if os.environ.get("XISA") else []), check=True)
+                           (["--no-xisa"] if os.environ.get("NOXISA") else []), check=True)
             lst = subprocess.run([os.path.join(ROOT, "software/assembler/asm"), base, "-d=yacc1"], cwd=BUILD,
                                  capture_output=True, text=True).stdout
             if "\n0 Errors" not in lst: sys.exit("%s: assembler errors" % src)
@@ -196,13 +196,14 @@ MASK = {"pack": (re.compile(r"^(pack: .*)$", re.M), re.compile(r"\d\d+"))}
 BANNER = re.compile(r"Y1/OS v[0-9.]+ \([0-9-]+\)")
 
 
-# XISA=1 (2026-09-24: the /BIN programs built with y1cc --xisa): the programs are smaller (or, the smallest, 2 bytes
-# larger), so the sizes that `ls` and `load` print are masked; everything else must be the same transcript
+# NOXISA=1 (the /BIN programs built with y1cc --no-xisa; --xisa is the default since 2026-10-04 and the transcripts
+# carry its sizes): the programs are larger (or, the smallest, 2 bytes smaller), so the sizes that `ls` and `load`
+# print are masked; everything else must be the same transcript
 XSIZES = [(re.compile(r"(?m)^(\s*)\d+(  \S+  @[0-9A-F]{4})$"), r"\1N\2"), (re.compile(r"loaded \d+ bytes"), "loaded N bytes")]
 
 
 def xmask(s):
-    if os.environ.get("XISA"):
+    if os.environ.get("NOXISA"):
         for rx, rep in XSIZES: s = rx.sub(rep, s)
     return s
 

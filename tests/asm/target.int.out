@@ -3,18 +3,18 @@ BOOT FROM CF
 /> 
 /> 
 /S> 
-HELLO: 144 bytes, 16 labels, load 5000 exec 5000
+HELLO: 146 bytes, 18 labels, load 5000 exec 5000
 /S> 
 hello from /BIN/HELLO
 args: one two
 /S> 
-HELLO.IMG: 144 bytes, 16 labels, load 5000 exec 5000
+HELLO.IMG: 146 bytes, 18 labels, load 5000 exec 5000
 /S> 
 ECHOX: 67 bytes, 9 labels, load 5000 exec 5000
 /S> 
 echo, assembled on the machine
 /S> 
-CAT: 2584 bytes, 206 labels, load 5000 exec 5000
+CAT: 2296 bytes, 208 labels, load 5000 exec 5000
 /S> 
 apple 3 red
 pear 5 green
@@ -42,16 +42,16 @@ asm: cannot open NOSUCH.ASM
 /S> 
 usage: asm [-h] SRC [OUT]
 /S> 
-   2584  CAT  @5000
-  27706  CAT.ASM  @B000
+   2296  CAT  @5000
+  28407  CAT.ASM  @B000
    5551  CC4  @5000
   65973  CC4.ASM  @B000
      67  ECHOX  @5000
    1112  ECHOX.ASM  @B000
     202  ERR.ASM  @B000
-    144  HELLO  @5000
-   1652  HELLO.ASM  @B000
-    408  HELLO.IMG  @5000
+    146  HELLO  @5000
+   1747  HELLO.ASM  @B000
+    424  HELLO.IMG  @5000
   12969  ISA.ASM  @B000
    2216  ISA.IMG  @3000
   10906  MON.IMG  @F000

@@ -19,9 +19,10 @@ multi-pass compiler"). For each of the nine passes (software/compiler/c/cc1_lex.
   3. capacity: the same chain's output is compared with y1cc.py's: identical, or which table overflowed; and how
      many compiles keep every intermediate file and the output under Y1/OS's 64K file size.
 
-  passes.py [-v] [--xisa] [--no-pxisa]   the table, the programs that do not fit (the limit that stopped them); -v:
-                          the probe's unmeasured calls, every compile with a file over 64K; --xisa: the corpus compiled
-                          with y1cc --xisa (2026-09-24: LDZ/STZ + the page, ADDIW, SHL16); the passes themselves are
+  passes.py [-v] [--no-xisa] [--no-pxisa]   the table, the programs that do not fit (the limit that stopped them); -v:
+                          the probe's unmeasured calls, every compile with a file over 64K; --no-xisa: the corpus compiled
+                          with y1cc --no-xisa (without LDZ/STZ + the page, ADDIW, SHL16, y1cc's default since
+                          2026-10-04); the passes themselves are
                           always built with --xisa, as os/Makefile builds them since 2026-09-25 (--no-pxisa: without)
 
 The program area is $5000-$CFFF (32,768 bytes): image + uninitialised data + stack must fit in it, the stack at
@@ -46,7 +47,7 @@ PXISA = ["--xisa"]          # the passes are built with --xisa (os/Makefile, 202
 SYSCALL_STACK = 64          # what a Y1/OS syscall handler may push below the caller (an allowance, not measured)
 BIOS_STACK = 16             # a ROM routine called with bios()
 HOST_PATHPOOL = 1200        # the capacity run's path pool (Mac paths are absolute); every other table is Y1/OS's
-XISA = []                   # --xisa: added to every compile
+XISA = []                   # --no-xisa: added to every compile
 
 
 def sh(cmd, **kw):
@@ -168,8 +169,8 @@ def build_probes():
 
 def main():
     verbose = "-v" in sys.argv
-    if "--xisa" in sys.argv: XISA.append("--xisa")
-    if "--no-pxisa" in sys.argv: PXISA.clear()
+    if "--no-xisa" in sys.argv: XISA.append("--no-xisa")
+    if "--no-pxisa" in sys.argv: PXISA[:] = ["--no-xisa"]
     r = sh(["make", "-s", "-C", CDIR, "passes"])
     if r.returncode: sys.exit(r.stdout + r.stderr)
     rows = []; tables = os.path.join(B, "stack")

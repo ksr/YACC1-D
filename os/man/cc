@@ -2,7 +2,7 @@ NAME
     cc - the C compiler (y1cc), on the machine
 
 SYNOPSIS
-    cc prog.c [-o prog.asm] [--org N] [--os] [--xisa] [--stack N]
+    cc prog.c [-o prog.asm] [--org N] [--os] [--no-xisa] [--stack N]
        [--boot] [--vector] [--no-brur] [-l]
 
 DESCRIPTION
@@ -18,6 +18,8 @@ DESCRIPTION
     --org 0x5000 --os is what a Y1/OS program needs (the program area
     starts at $5000; putchar and getchar go through the shell, so > and
     | work). -o names the output (default: the source's name with .asm).
+    The code uses LDZ/STZ, ADDIW and SHL16 (the microcode of
+    2026-09-24); --no-xisa leaves them out, for a machine without it.
 
     The compiler is nine programs, /LIB/CC/CC1 to CC9, run one after
     the other: cc starts CC1, and each pass EXECs the next one (they

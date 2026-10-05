@@ -9,7 +9,8 @@ the -l summary must be the same line.
 
   twin.py [-v] [--keep] [--16] [name ...]   name = a corpus path substring to run only those; --16 = the check
                                        build y1cc16 (int = unsigned short, unsigned char: the YACC1's types)
-          [--chain | --chain16] [--xisa]   the pass chain instead of y1cc.c; --xisa: every compile with --xisa
+          [--chain | --chain16] [--no-xisa]   the pass chain instead of y1cc.c; --no-xisa: every compile with --no-xisa
+                                       (--xisa is y1cc's default since 2026-10-04)
                                        (LDZ/STZ/ADDIW/SHL16 and the page, 2026-09-24)
   twin.py --size ASM                   (make target) the size of y1cc.c compiled by y1cc.py against the 32K area
 
@@ -136,7 +137,7 @@ def main():
     shutil.rmtree(BUILD, ignore_errors=True)
     for side in ("py", "c"): os.makedirs(os.path.join(BUILD, side))
     same = errs = 0; bad = []
-    xisa = ["--xisa"] if "--xisa" in av else []
+    xisa = ["--no-xisa"] if "--no-xisa" in av else []
     for i, (tag, src, opts) in enumerate(corpus.items()):
         if only and not any(o in src for o in only): continue
         opts = opts + xisa
@@ -160,7 +161,7 @@ def main():
           " (y1cc16: 16-bit int, unsigned char)" if "--16" in av else
           " (the pass chain y1ccp: cc1..cc9)" if "--chain" in av else
           " (the pass chain y1ccp16: cc1_16..cc9_16, 16-bit int, unsigned char)" if "--chain16" in av else "",
-          " --xisa" if xisa else "", same, errs, len(bad)))
+          " --no-xisa" if xisa else "", same, errs, len(bad)))
     if not keep and not bad: shutil.rmtree(BUILD, ignore_errors=True)
     sys.exit(1 if bad else 0)
 

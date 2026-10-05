@@ -70,7 +70,7 @@ Execution model (the part that is YACC1-specific)
   * The carry flag is used only inside ADDT/ADDTC pairs with nothing but register moves between them (the idiom
     the monitor's do_add16 proved on the hardware); plain shifts and subtracts never feed a following carry op.
 
-Usage:  y1cc.py prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [--os] [--xisa] [--stack ADDR] [-l]
+Usage:  y1cc.py prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [--os] [--no-xisa] [--stack ADDR] [-l]
   --org     load address (default $3000: $1000-$1FFF is BASIC's token buffer, which the monitor's boot clears,
             and the monitor's T tests scribble at $2000). main is first: the monitor's `G3000` calls it (JSRUR R7,
             monitor of 2026-09-22) and its RET returns to the command loop.
@@ -83,13 +83,14 @@ Usage:  y1cc.py prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-br
             go through the OS syscall CONOUT (19) and getchar through CONIN (17) instead of the ROM, so the shell
             can redirect them (`>`, `>>`, `<`, `|`). getchar still returns 0 at the end of input (CONIN's 65535).
             R3/R4 are preserved around the syscall. Without --os the console runtime is the ROM/port-2 one, unchanged.
-  --xisa    (2026-09-24) use the instructions added to the microcode that day: LDZ/STZ Rn,d (the word at R6.hi:d, 2
+  --no-xisa  do not use the instructions added to the microcode on 2026-09-24 (the default since 2026-10-04, when
+            the machine's EEPROM got them; `--xisa` is still accepted and changes nothing). With them: LDZ/STZ Rn,d (the word at R6.hi:d, 2
             bytes instead of LDR/STR's 3) for the hottest 2-byte variables, placed in one 256-byte page at the end of
             the BSS (zpage, aligned by `zpad: DS (256-(zpad).0)&255`), R6 = the page register (main and every
             funcaddr() entry load it, and it is reloaded after anything that leaves compiled code: bios(), call(),
             sys(), the console helpers, rt_fsave/rt_frest); ADDIW Rn,#w for 16-bit constant adds; SHL16 R3 for << 1.
             R6 is then reserved: rt_divmod keeps its remainder in R5. Needs the 2026-09-24 microcode on the machine.
-            Without the option the output is exactly what it was.
+            With --no-xisa the output is exactly what it was before 2026-09-24 (for a machine without that microcode).
   --stack ADDR  (2026-09-25) main runs on a stack of its own that starts at ADDR (the first byte pushed; it grows
             down): main begins `MOVRR R1,R5 / MVIW R1,ADDR / PUSHR R5` and every return from main is
             `POPR R5 / MOVRR R5,R1 / RET`, so the caller's stack (the shell's, the monitor's) is as it was. For
@@ -1852,7 +1853,7 @@ def main():
         try: stack = int(a[i + 1], 0) & 0xFFFF
         except ValueError: sys.exit("y1cc: --stack: not a number")
         if not stack: sys.exit("y1cc: --stack: not a number")
-    text, g = compile_src(open(src).read(), src, org, boot, "--vector" in a, "--no-brur" not in a, "--os" in a, "--xisa" in a,
+    text, g = compile_src(open(src).read(), src, org, boot, "--vector" in a, "--no-brur" not in a, "--os" in a, "--no-xisa" not in a,
                           stack)
     open(out, "w").write(text)
     if "-l" in a:

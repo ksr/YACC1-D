@@ -3270,7 +3270,7 @@ void y1cc_main(void) {
     n = io_argc();
     if (n > 0) io_arg(0, srcpath, LINE_MAX);
     if (n == 0 || srcpath[0] == '-')
-        fail("usage: y1cc prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [--os] [--xisa] [--stack ADDR] [-l]");
+        fail("usage: y1cc prog.c [-o prog.asm] [--org 0x3000] [--boot] [--vector] [--no-brur] [--os] [--no-xisa] [--stack ADDR] [-l]");
     sep = 0; dot = 0;                               /* os.path.splitext: the extension of the last path element */
     for (i = 0; srcpath[i]; i++) { if (srcpath[i] == '/') sep = i + 1; }
     for (i = sep; srcpath[i]; i++) if (srcpath[i] == '.') dot = i;
@@ -3293,7 +3293,7 @@ void y1cc_main(void) {
     opt_brur = has_arg("--no-brur") == 0;
     opt_os = has_arg("--os") != 0;
     opt_list = has_arg("-l") != 0;
-    opt_xisa = has_arg("--xisa") != 0;
+    opt_xisa = has_arg("--no-xisa") == 0;    /* the default since 2026-10-04 */
     opt_stack = 0;
     i = has_arg("--stack");
     if (i) {

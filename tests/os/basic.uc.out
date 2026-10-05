@@ -19,7 +19,7 @@ LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN hold
 
 /BIN> dir HELLO
 
-    144  HELLO  @5000
+    146  HELLO  @5000
 /BIN> pwd
 
 /BIN
@@ -50,7 +50,7 @@ what?
 
 /> load /BIN/HELLO
 
-loaded 144 bytes at $5000
+loaded 146 bytes at $5000
 /> help
 
 Y1/OS commands (man NAME for more; a /BIN program wins over a built-in of the same name)

@@ -14,7 +14,7 @@ python3 software/compiler/y1cc.py prog.c -o prog.asm            # for the machin
 python3 software/compiler/y1cc.py prog.c -o prog.asm --vector   # for the monitor as burned in 2021 (G = BRVR)
 python3 software/compiler/y1cc.py prog.c -o prog.asm --org 0x5000 --os   # a Y1/OS program (os/Makefile): console via the OS
 python3 software/compiler/y1cc.py prog.c -o prog.asm --boot     # for the emulator, stand-alone
-python3 software/compiler/y1cc.py prog.c -o prog.asm --xisa     # + LDZ/STZ/ADDIW/SHL16 (2026-09-24 microcode), below
+python3 software/compiler/y1cc.py prog.c -o prog.asm --no-xisa  # without LDZ/STZ/ADDIW/SHL16 (the default since 2026-10-04), below
 python3 software/compiler/y1cc.py prog.c -o prog.asm --org 0x5000 --os --stack 0xCFFF   # main on its own stack (below)
 cd <dir with rcasm.rc + yacc1.def> && ../software/assembler/asm prog -d=yacc1 > prog.lst   # -> prog.img (Intel hex)
 software/emulator/emulator -x -f prog.img                       # runs it, exits at HALT (--boot images)
@@ -181,9 +181,11 @@ and big-endian words in memory. There is no 16-bit ALU and no indexed addressing
 
 Four instruction families were added to the microcode on 2026-09-24 (`docs/programming/ISA-REFERENCE.md` section 4a)
 to shrink exactly what this compiler emits most: `LDZ Rn,d` / `STZ Rn,d` (2 bytes: the word at R6.hi:d),
-`ADDIW Rn,w` (3 bytes: Rn += w) and `SHL16 Rn` (1 byte: Rn <<= 1). `--xisa` uses them. **It is opt-in until the
-machine's sequencer EEPROM holds that microcode and `tests/bench` has passed on it** (`BACKLOG.md`); without it the
-output is byte-identical to before (`tests/compiler/diffcheck.py`: 126 identical + 4 errors).
+`ADDIW Rn,w` (3 bytes: Rn += w) and `SHL16 Rn` (1 byte: Rn <<= 1). `--xisa` uses them. **It is the default since
+2026-10-04**, when the machine's sequencer EEPROM got that microcode and `tests/bench` passed 15/15 on it (`xisa`
+included); `--xisa` is still accepted and changes nothing. **`--no-xisa`** writes the code without them, byte-identical
+to the output before 2026-09-24 (`tests/compiler/diffcheck.py`: 126 identical + 4 errors), for a machine without that
+microcode.
 
 - **The page.** Every uninitialised 2-byte global and every 2-byte parameter or local is a candidate; so is the whole
   frame of a function in a recursive cycle (1..256 bytes: `frame_save` and `rt_fsave` need it contiguous). A
@@ -229,10 +231,11 @@ output is byte-identical to before (`tests/compiler/diffcheck.py`: 126 identical
   like `LDR`/`STR` (they save a byte, not time). Whole programs: `bench/sort` -5.0 %, `arrays` -5.5 %, `fib`/`sieve`/
   `structs`/`rcalc` -1 to -1.5 %, `arith`/`rfact` -0.5 to -0.7 %, `strings`/`control` +0.5 to +0.7 % (the R6 reload after
   every character printed, and main's larger BSS clear).
-- **Tests**: `tests/compiler/run.py --xisa` and `tests/ucemu/run.py --xisa` (every test, both emulators, 0 bus
-  fights); `twin.py --xisa` (also `--16`, `--chain`, `--chain16`) and `twinfuzz.py --xisa`: y1cc.py, y1cc.c and the
-  passes agree; `XISA=1 python3 tests/os/run.py` (Y1/OS with every `/BIN` program built with `--xisa`, 20/20;
-  `make -C os XISA=1` builds that disk); `tests/compiler/xisa.c` (`// y1cc: --xisa`) is a test of its own and a
+- **Tests** (since 2026-10-04 the default is `--xisa`, so every test runs with it; `--no-xisa` runs the old code):
+  `tests/compiler/run.py` and `tests/ucemu/run.py` (every test, both emulators, 0 bus fights; `--no-xisa` for the
+  old code); `twin.py` (also `--16`, `--chain`, `--chain16`, each with `--no-xisa`): y1cc.py, y1cc.c and the passes
+  agree; `tests/os/run.py` (Y1/OS with every `/BIN` program built with `--xisa`; `NOXISA=1` the old build, sizes
+  masked; `make -C os NOXISA=1` builds that disk); `tests/compiler/xisa.c` (`// y1cc: --xisa`) is a test of its own and a
   `tests/bench` program for the machine.
 - In the passes: cc6 counts the identifiers while it copies each expression tree, plans the page after the last
   function and writes `W.zp` (a flag byte and a bit per variable); cc8 writes `ADDIW R4` and the `M_ZP` reloads;

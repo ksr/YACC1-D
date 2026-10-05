@@ -32,8 +32,9 @@
   proves the default output unchanged.
 - `os/` — Y1/OS: `run.py` builds `os/disk.img`, boots it on both emulators with the console script `basic.session`
   after the monitor's `O` command, and diffs the transcripts (`basic.int.out`, `basic.uc.out`; the latter shows the
-  monitor's input echo). `make os-test`. `XISA=1 python3 tests/os/run.py` (2026-09-24) runs the same sessions with
-  every `/BIN` program built by y1cc `--xisa` (`make -C os XISA=1`); the program sizes `ls`/`load` print are masked.
+  monitor's input echo). `make os-test`. `NOXISA=1 python3 tests/os/run.py` runs the same sessions with every
+  `/BIN` program built by y1cc `--no-xisa` (`make -C os NOXISA=1`; `--xisa` is the default since 2026-10-04); the
+  program sizes `ls`/`load` print are masked.
 - `asm/` — the native assemblers `/BIN/ASMC` (asm.c, 2026-09-25) and `/BIN/ASM` (asm.asm, in YACC1 assembly, 2026-09-26;
   `run.py` also runs it under Y1/OS on the instruction-level emulator on the whole corpus and compares its messages
   and files with asm.c's, `--uc` 27 sources on the microcode emulator too): `run.py` builds `os/commands/asm.c` for the Mac against an

@@ -3,7 +3,7 @@
  */
 
 /* cc.c - the native C compiler's command (2026-09-25): y1cc on the machine.
-     cc prog.c [-o prog.asm] [--org N] [--boot] [--vector] [--no-brur] [--os] [--xisa] [--stack N] [-l]
+     cc prog.c [-o prog.asm] [--org N] [--boot] [--vector] [--no-brur] [--os] [--no-xisa] [--stack N] [-l]
    The options are y1cc's (software/compiler/README.md); the assembly goes to prog.asm (or -o), which /BIN/ASM then
    turns into a program: `cc HELLO.C -o HELLO.ASM --org 0x5000 --os`, `asm HELLO.ASM`, `HELLO`.
    The compiler is nine programs, /LIB/CC/CC1 .. CC9 (the passes of software/compiler/c, each built with its stack at
@@ -22,7 +22,7 @@ void main() {
     char *a; int n;
     a = argstr();
     if (!*a) {
-        eputs("usage: cc prog.c [-o prog.asm] [--org N] [--boot] [--os] [--xisa] [--stack N] [--no-brur] [--vector] [-l]");
+        eputs("usage: cc prog.c [-o prog.asm] [--org N] [--boot] [--os] [--no-xisa] [--stack N] [--no-brur] [--vector] [-l]");
         return;
     }
     strcpy(line, "CCW ");

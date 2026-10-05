@@ -292,15 +292,15 @@ def native(items, emu, verbose):
 
 
 def y1cc_items(only):
-    """Compile the y1cc corpus (plain and --xisa) into build/c; returns [(name, dir)]."""
+    """Compile the y1cc corpus (--no-xisa and the default --xisa) into build/c; returns [(name, dir)]."""
     d = os.path.join(BUILD, "c")
     os.makedirs(d, exist_ok=True)
     jobs = []
     for n, (tag, path, opts) in enumerate(corpus.items()):
         if tag == "err": continue
         base = "%s_%s_%d" % (tag, os.path.basename(path)[:-2], n)
-        for x in ([], ["--xisa"]):
-            name = (base + ("_x" if x else "")).lower()
+        for x in (["--no-xisa"], []):
+            name = (base + ("" if x else "_x")).lower()
             if only and only not in name: continue
             jobs.append((name, path, opts + x))
 

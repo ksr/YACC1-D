@@ -11,8 +11,8 @@ fig 7 purple
 pear 5 green
 /> dir /BIN | grep VI
 
-   5997  VI  @5000
-   1279  VIDEO  @5000
+   5333  VI  @5000
+   1201  VIDEO  @5000
 /> sort < /FRUIT.TXT|UNIQ|wc > /P1.TXT
 
 /> cat /P1.TXT

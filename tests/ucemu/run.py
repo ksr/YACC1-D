@@ -4,9 +4,9 @@
 """Run the compiler test programs (and tests/assembler/brur) on the MICROCODE-level emulator (software/ucemu) and
 compare with the expectations the instruction-level emulator established (tests/compiler/NAME.out).
 
-  run.py [name ...] [--keep] [--ucode PATH] [--fight and|src] [--xisa]
+  run.py [name ...] [--keep] [--ucode PATH] [--fight and|src] [--no-xisa]
     --ucode  control store to run (default: the tree's test.hex); --fight: the emulator's -F policy
-    --xisa   compile the programs with y1cc --xisa (LDZ/STZ/ADDIW/SHL16, 2026-09-24)
+    --no-xisa  compile the programs with y1cc --no-xisa (without LDZ/STZ/ADDIW/SHL16, y1cc's default since 2026-10-04)
 
 Each program is compiled with --boot and run with the monitor ROM loaded (-m): under the microcode BRDEV always
 branches, so the runtime's console goes through the monitor's charout/uartin and the I/O card's UART model, the
@@ -31,7 +31,7 @@ def sh(cmd, **kw):
 
 
 EXTRA = []
-CCX = []                    # extra compiler flags (--xisa)
+CCX = []                    # extra compiler flags (--no-xisa)
 
 def run_image(img, inp, rom=True):
     with open(inp) if inp and os.path.exists(inp) else open(os.devnull) as f:
@@ -68,7 +68,7 @@ def main():
     av = sys.argv[1:]
     if "--ucode" in av: i = av.index("--ucode"); EXTRA.extend(["-u", av[i + 1]]); del av[i:i + 2]
     if "--fight" in av: i = av.index("--fight"); EXTRA.extend(["-F", av[i + 1]]); del av[i:i + 2]
-    if "--xisa" in av: CCX.append("--xisa")
+    if "--no-xisa" in av: CCX.append("--no-xisa")
     args = [a for a in av if not a.startswith("--")]; keep = "--keep" in av
     if not os.path.exists(EMU): sys.exit("missing %s (make -C software/ucemu)" % EMU)
     os.makedirs(BUILD, exist_ok=True)
