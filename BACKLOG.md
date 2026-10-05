@@ -480,7 +480,12 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   y1cc.c and cc1 take `--no-xisa` for the old code (`--xisa` still accepted), `os/Makefile` builds every `/BIN`
   command with it (`NOXISA=1` the old build), the harnesses take `--no-xisa` (tests/asm compiles the corpus both
   ways), 10 tests/os transcripts and 12 bench images refreshed - sizes only, outputs unchanged; (3) the passes were
-  already built with it since 2026-09-25.) Later: rely on SHL16's carry out of
+  already built with it since 2026-09-25. On the machine the same evening, every bench program as `--xisa` code:
+  15/15 across `bench-2026-10-04-2130` (hello, brur, isa, arith), `-2144` (calls) and `-2145` (calls again, then
+  control .. xisa).) **Watch: one crash in the monitor's `:` loader** (`bench-2026-10-04-2130.log`, ~2 minutes into
+  the run, during `calls` record 19: no answer, then a stream of garbage characters on the console - the CPU off
+  its program); after a reset `calls` loaded and passed twice and the next ten loads were clean. Not reproduced:
+  note the time into the session and the program if it happens again (temperature, clock, a marginal step). Later: rely on SHL16's carry out of
   bit 15 in `rt_divmod`'s double-width shift (tested on both emulators, not on the machine yet); a second page
   (a family through R6.lo would need 16 more opcodes; only 5 are left) or word offsets; drop LDZ/STZ's three idle
   microcode steps (they take 30 steps like LDR: they save a byte, not time); `ADDIW R1` for stack frames.
