@@ -43,11 +43,11 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Memory card**: the unconnected jumper wire on IC7 pin 4 — purpose not remembered (2026-09-20); trace it on the board or remove it.
 
 ## Firmware — written, not burned / loaded
-- **ROM 2026-10-07 (not burned): the video unit + BASIC's input fix** — `firmware/rom/shipped/rom.bin` (MD5 3a4ff079...; BASIC: backspace/DEL, lower case, SYNTAX ERROR instead of an endless loop, `firmware/basic/README.md`; the monitor as 2026-09-25 with the new banner date): the $D000 probe at
+- **ROM 2026-10-07 (burned 2026-10-07): the video unit + BASIC's input fix** — `firmware/rom/shipped/rom.bin` (MD5 3a4ff079...; BASIC: backspace/DEL, lower case, SYNTAX ERROR instead of an endless loop, `firmware/basic/README.md`; the monitor as 2026-09-25 with the new banner date): the $D000 probe at
   reset, the screen driver, CHAROUT mirroring (`VIDMIR` $0FF1, off at reset), the `V` command, the video entry at $FFBC
-  (`docs/programming/MONITOR.md` section 11). Burn it (Visual Minipro, 28C64) when ready, then check the banner says
-  `ROM 2026-10-07` and `VIDEO CARD FOUND`, and run the bring-up table in `docs/cards/video.md` section 8. The old chip
-  stays compatible (Y1/OS's `video` reports "no video driver").
+  (`docs/programming/MONITOR.md` section 11). Burned 2026-10-07 (`firmware/rom/README.md`; BASIC's fix checked on the
+  machine, bench hello/brur/isa/arith PASS). Still to check: the banner's `VIDEO CARD FOUND` line at power-up, then the
+  bring-up table in `docs/cards/video.md` section 8.
 - **Video auto-start: `VIDAUTO EQU 1`** in `firmware/monitor/monitor.asm` once the card is debugged (6845 fitted with
   the RS-to-A1 fix, E one-shot and 7416 pull-ups sorted, a picture from `V I`): reset then programs the CRTC, clears the
   screen and turns mirroring on. Rebuild, `tools/verify_firmware.py`, burn.
@@ -456,8 +456,8 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   under the second label (`f_f_1:` twice, which the assembler rejects); y1cc.c and the passes compile it once. Make it
   an error like "global declared twice" (a y1cc.py change, still to be decided; the C versions follow). Found 2026-09-24.
 - (done 2026-09-23: the rebuilt ROM is burned — `ROM 2026-09-23`, MD5 d2d7b027…, = `firmware/rom/shipped/rom.bin`; monitor
-  G = `JSRUR R7`, so `--vector` is only for a 2021 chip.) Still to do: re-capture it with `tests/memory/rom_verify.py`
-  (no read-back of the new chip is in the tree yet).
+  G = `JSRUR R7`, so `--vector` is only for a 2021 chip.) (The read-back: done 2026-10-07 for `ROM 2026-10-07`
+  with the TL866II+, identical to `firmware/rom/shipped/rom.bin`.)
 - (done 2026-09-22: the sequencer EEPROM holds the regenerated image — BRUR at $AD, the H-2 fix in BRZ/BRNZ/BR16Z/BR16NZ, the
   H-1 fix in PUSHR; six records differed, all 256 sent with `tools/ucode_send.py --all`; the scope look at the old image's
   bus fight was skipped.) (done 2026-09-23 evening: `tests/bench/run.py --port` 14/14 on the machine after the SHIFT-OUT carry fix; first run found the fault.) **Bench-check the reloaded microcode** (first evidence 2026-09-22/23: `tests/assembler/romcount` ran overnight from ROM — BRNZ, DECR, MVRHA, MVAT/MVTA, ADDI, OUTA/INP, BRINL — after `romdiag` had shown the bring-up machine lacked register card 1; card fitted, R7 reads correctly). The rest is ONE command since 2026-09-23: burn the ROM, then

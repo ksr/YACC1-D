@@ -18,7 +18,7 @@ emulators run it), `BACKLOG.md`.
   d2d7b027e7c6951d7dd93412a8fd9cd8, CF driver on P8/P9), burned 2026-09-23 (`docs/system/MACHINE.md`). Before
   that the 2021 build (git ff7d85a), captured 2026-09-18 as `firmware/rom/eprom-captured-2026-09-18.bin/.hex`,
   byte-identical to the 2021 sources.
-- **In the tree** (`firmware/rom/shipped/rom`, since 2026-10-07): `ROM 2026-10-07` (the 2026-09-25 monitor + BASIC's input fix), **not burned yet** — the chip's
+- **In the tree** (`firmware/rom/shipped/rom`, since 2026-10-07): `ROM 2026-10-07` (the 2026-09-25 monitor + BASIC's input fix), **burned 2026-10-07** — the 2026-09-23
   build plus the video unit (section 11: the driver, the `V` command, mirroring in CHAROUT, the video entry at $FFBC,
   the variables at $0FF0), a shorter help text and the never-called routines removed to make room (MD5 in
   `firmware/rom/README.md`). The old chip stays compatible with everything else in the tree (Y1/OS's `video` says the
@@ -231,8 +231,8 @@ asserted, `docs/isa/MICROCODE-REVIEW-NOTES.md` L-8), so the ISR path has not bee
 - **`shipped/rom.bin`** = the same as a flat 8,192-byte file for the programmer: `python3 tools/img2bin.py
   firmware/rom/shipped/rom firmware/rom/shipped/rom.bin --base 0xE000 --end 0x10000 --fill 0xFF --size 8192`. Offset
   0 = $E000; bytes the sources never write are $FF like a blank part; MD5 in `firmware/rom/README.md`. Device: 28C64, Visual Minipro / `minipro`.
-- **Telling builds apart**: the banner ends `ROM 2026-10-07` on the tree's build (not burned; MD5 in
-  `firmware/rom/README.md`; $FFBC holds $04, the video entry) and `ROM 2026-09-23` on the chip (MD5
+- **Telling builds apart**: the banner ends `ROM 2026-10-07` on the tree's build, burned 2026-10-07 (MD5 in
+  `firmware/rom/README.md`; $FFBC holds $04, the video entry) and `ROM 2026-09-23` on the chip before it (MD5
   d2d7b027e7c6951d7dd93412a8fd9cd8, CF on P8/P9; $FF at $FFBC); the 2021 chip
   prints the banner alone and has `00` at $FFEC; the 2026-09-22 build has `04` at $FFEC and `00` at $FFFC. Vector targets
   move with every monitor edit, so compare whole images by MD5.

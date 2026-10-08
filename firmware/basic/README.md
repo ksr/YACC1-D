@@ -22,7 +22,7 @@ at the monitor (prompt `>>`); `LIST`, `RUN`, `NEW`, `EXIT` are its commands, a l
 - **SYNTAX ERROR**: a character no token starts with (`!`, `@`, a control character) drops the line with that
   message; the program and the prompt are unchanged.
 
-Tested on both emulators (`software/emulator`, `software/ucemu`, `-x -m` with the keystrokes on stdin) and, for the
-hang, on the machine (`ROM 2026-09-23`, 2026-10-07: `10 print 5` at `>>` hung it). Not on the machine yet with the fix:
-burn `firmware/rom/shipped/rom.bin` (`firmware/rom/README.md`).
+Tested on both emulators (`software/emulator`, `software/ucemu`, `-x -m` with the keystrokes on stdin) and on the
+machine: with `ROM 2026-09-23`, `10 print 5` at `>>` hung it; with `ROM 2026-10-07` (burned 2026-10-07) lower-case
+lines, a string, backspaces, `LIST`, `RUN` and `50 print !` (SYNTAX ERROR) all behave as above.
 

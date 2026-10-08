@@ -14,7 +14,7 @@
   3ebc67898f70d319853fe42abdfd2cb9**; `tools/verify_firmware.py`: FIRMWARE VERIFIED. The chip in the machine is still
   `ROM 2026-09-23` (d2d7b027, below), and everything else in the tree still works with it: Y1/OS's `video` command
   says that ROM has no driver. Burn the new one when ready; afterwards $FFBC reads $04 (the old chip: $FF).
-- **2026-10-07: `shipped/rom` and `rom.bin` are `ROM 2026-10-07` — NOT BURNED.** The 2026-09-25 monitor (the video
+- **2026-10-07: `shipped/rom` and `rom.bin` are `ROM 2026-10-07` — BURNED the same day** (burned 2026-10-07 with the TL866II+ (`minipro -p AT28C64B -u -P -w`: erase, write, verify OK, software data protection on) and read back identical; the chip was once fitted reversed and powered that day - afterwards its pin test passed, a second burn verified and the read-back was identical, so it is in service). The 2026-09-25 monitor (the video
   unit above, unchanged but for the banner date) and BASIC with its line input fixed (`firmware/basic/README.md`):
   backspace and DEL take back a character, lower case is accepted (letters outside `"..."` are stored in upper
   case), and a character no token starts with gives `SYNTAX ERROR` instead of an endless loop. BASIC half 3,983 of
