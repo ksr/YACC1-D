@@ -26,3 +26,11 @@ Tested on both emulators (`software/emulator`, `software/ucemu`, `-x -m` with th
 machine: with `ROM 2026-09-23`, `10 print 5` at `>>` hung it; with `ROM 2026-10-07` (burned 2026-10-07) lower-case
 lines, a string, backspaces, `LIST`, `RUN` and `50 print !` (SYNTAX ERROR) all behave as above.
 
+**Layout (2026-10-08).** The new code (`gil_start`, `parse_token_chk`, `parse_line_syntax`, the message) sits after
+`CRLF`, at the end of BASIC; `get_inputline` keeps its original 17-byte slot as a branch to `gil_start`, and the line
+loop calls `parse_token_chk` instead of `parse_token` (same size). So everything before $EF3E is byte for byte
+ROM 2026-09-23's but those two places. The first 2026-10-07 build had the new code early in the file and moved most
+routines; on the machine `LIST` then misprinted a line number (`BACKLOG.md`, "A placement-dependent wrong value").
+Tested on the machine 2026-10-08: lower-case lines, backspaces (also inside a string and at the start of a line),
+`LIST`, `RUN`, `NEW`, `SYNTAX ERROR`, and the programs that misprinted before.
+

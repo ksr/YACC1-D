@@ -14,11 +14,11 @@
   3ebc67898f70d319853fe42abdfd2cb9**; `tools/verify_firmware.py`: FIRMWARE VERIFIED. The chip in the machine is still
   `ROM 2026-09-23` (d2d7b027, below), and everything else in the tree still works with it: Y1/OS's `video` command
   says that ROM has no driver. Burn the new one when ready; afterwards $FFBC reads $04 (the old chip: $FF).
-- **2026-10-07: `shipped/rom` and `rom.bin` are `ROM 2026-10-07` — BURNED the same day** (with the TL866II+ (`minipro -p AT28C64B -u -P -w`: erase, write, verify OK, software data protection on) and read back identical; the chip was once fitted reversed and powered that day - afterwards its pin test passed, a second burn verified and the read-back was identical, so it is in service). The 2026-09-25 monitor (the video
+- **2026-10-07: `shipped/rom` and `rom.bin` are `ROM 2026-10-07` — BURNED the same day** (with the TL866II+ (`minipro -p AT28C64B -u -P -w`: erase, write, verify OK, software data protection on) and read back identical; the chip was once fitted reversed and powered that day - afterwards its pin test passed, a second burn verified and the read-back was identical, so it is in service). **Re-burned 2026-10-08 with the 2026-10-08 layout** (MD5 122f1a937f23db61c2b53893613375e6): in the first build the new code had shifted most of BASIC by 13-20 bytes, and on the machine `LIST` then showed line 20 of `10 L=0 / 20 C=0` as 18452; with every routine back at its ROM 2026-09-23 address it lists 20 (`firmware/basic/README.md`). The 2026-09-25 monitor (the video
   unit above, unchanged but for the banner date) and BASIC with its line input fixed (`firmware/basic/README.md`):
   backspace and DEL take back a character, lower case is accepted (letters outside `"..."` are stored in upper
   case), and a character no token starts with gives `SYNTAX ERROR` instead of an endless loop. BASIC half 3,983 of
-  4,096 bytes. **MD5 (rom.bin) 3a4ff07923bff1cf752a5f67c9df3526**; `tools/verify_firmware.py`: FIRMWARE VERIFIED.
+  4,096 bytes. **MD5 (rom.bin) 122f1a937f23db61c2b53893613375e6** (the 2026-10-08 layout, below; the first 2026-10-07 build was 3a4ff07923bff1cf752a5f67c9df3526); `tools/verify_firmware.py`: FIRMWARE VERIFIED.
   **The chip in the machine is an Atmel AT28C64B** (its marking, 2026-10-07). Burn with the TL866II+ and minipro
   (`brew install minipro`; it warned firmware 04.2.86 against the 04.2.132 it expects, and worked):
   `minipro -p AT28C64B -u -P -w firmware/rom/shipped/rom.bin` - `-u` lifts the software data protection before

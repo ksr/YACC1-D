@@ -11,6 +11,17 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   beside the bus connector, pin 1 on the ADDR15 track; `hardware/cards/memory/kicad/v2.0` README). Then,
   optional and separate: drop the `-VMA`-in-every-step hack from the microcode generator (a reload) so the chip selects
   are qualified by -VMA again.
+- **A placement-dependent wrong value on the machine (2026-10-07/08, open).** With the first `ROM 2026-10-07` build
+  (MD5 3a4ff079..., BASIC's new code early in the file, most routines 13-20 bytes later than in ROM 2026-09-23),
+  `LIST` showed the line after an assignment line with $48 as its number's high byte (`10 L=0 / 20 C=0` -> 18452 =
+  $4814); both emulators showed 20, the bytes in memory were right (`$100D: 25 14 00`), `zero_readback.py` found no
+  bad $00 there, and `tests/bench/diag/listread.asm` - LIST's reads and BASIC's own `exe_itoa` called from RAM -
+  read and printed 0014 / 20 every time. Moving the new code to the end of BASIC (only the line loop's
+  `JSR parse_token_chk` and the 17-byte `get_inputline` slot differ before $EF3E) made it list 20. So some routine
+  misbehaves on the hardware only at certain addresses (in the bad build `exe_itoa` started at $E5FF, the last byte
+  of a page; `basic_list` $E6DC, `baslist37` $E966). To chase with the scope: the old image is
+  `git show f04f13e:firmware/rom/shipped/rom.bin`; the 2026-09-29 review's one-step memory windows and the counter
+  carry across a page are the first suspects.
 - **Ports P2-P7 are probably free for another card** (noted 2026-09-24). The I/O card's 74LS138 (IC5, strapped to
   P0-P7) decodes all eight, but only P0 (control) and P1 (data) are used, each picked by a jumper on the IO-ADDR /
   DATA-ADDR headers; -IO-SEL2..7 go only to those headers and drive nothing. So a card decoding P2-P7 itself should not
@@ -43,7 +54,7 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Memory card**: the unconnected jumper wire on IC7 pin 4 — purpose not remembered (2026-09-20); trace it on the board or remove it.
 
 ## Firmware — written, not burned / loaded
-- **ROM 2026-10-07 (burned 2026-10-07): the video unit + BASIC's input fix** — `firmware/rom/shipped/rom.bin` (MD5 3a4ff079...; BASIC: backspace/DEL, lower case, SYNTAX ERROR instead of an endless loop, `firmware/basic/README.md`; the monitor as 2026-09-25 with the new banner date): the $D000 probe at
+- **ROM 2026-10-07 (burned 2026-10-07): the video unit + BASIC's input fix** — `firmware/rom/shipped/rom.bin` (MD5 122f1a93..., the 2026-10-08 layout; BASIC: backspace/DEL, lower case, SYNTAX ERROR instead of an endless loop, `firmware/basic/README.md`; the monitor as 2026-09-25 with the new banner date): the $D000 probe at
   reset, the screen driver, CHAROUT mirroring (`VIDMIR` $0FF1, off at reset), the `V` command, the video entry at $FFBC
   (`docs/programming/MONITOR.md` section 11). Burned 2026-10-07 (`firmware/rom/README.md`; BASIC's fix checked on the
   machine, bench hello/brur/isa/arith PASS). Still to check: the banner's `VIDEO CARD FOUND` line at power-up, then the

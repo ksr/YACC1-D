@@ -250,7 +250,6 @@ bas_msg2: db "line not found",0,0ah,0dh
 bas_msg3: db "token not supported ",0ah,0dh
 exe_stmt_msg: db "EXE STMT ",0
 parse_cmd_error: db "UNKNOWN COMMAND",0,0ah,0DH
-parse_syntax_error: db "SYNTAX ERROR",0   ; 2026-10-07
 
 ;
 ; Basic interpreter - execution engine
@@ -2470,14 +2469,6 @@ parse_line_error:
     ldai 0
     ret
 
-parse_line_syntax:            ; 2026-10-07: see parse_line_loop
-    mviw r7,parse_syntax_error
-    jsr stringout
-    mviw r7,CRLF
-    jsr stringout
-    ldai 0
-    ret
-
 parse_code:
     LDAI TOKENIZER_LINENUM ;start with linenum token
     STAVR R3
@@ -2497,12 +2488,9 @@ parse_code:
 
 parse_line_loop:
     JSR parse_next
-    JSR parse_token
+    JSR parse_token_chk      ; 2026-10-07 (was JSR parse_token): see parse_token_chk at the end
     ldti TOKENIZER_CR
     BREQ parse_line_done
-    ldti TOKENIZER_ERROR     ; 2026-10-07: a character no token starts with (the text pointer
-    BREQ parse_line_syntax   ; does not move past it): report it and drop the line instead of
-                             ; asking for the same token forever
 
     STAVR R3
     INCR R3
@@ -3100,6 +3088,18 @@ parse_inputloop:
         mviw r3,parse_input_line
 
 ;
+; get_inputline: the 2026-10-07 version is gil_start, after CRLF below. This slot keeps the original routine's
+; 17 bytes, so CRLF and everything before it stay at their ROM 2026-09-23 addresses.
+;
+get_inputline:
+        br gil_start
+        DB 0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+;
+; STRINGS
+;
+CRLF: DB 0ah,0dh,0
+;
 ; get_inputline: read a line into the buffer at R7 (parse_input_line, $0300) up to and including the LF
 ; (uartin echoes each character and turns CR into LF).
 ; 2026-10-07: backspace ($08) and DEL ($7F) take back the last character (at the start of the line they
@@ -3107,7 +3107,7 @@ parse_inputloop:
 ; tokenizer (upper-case keywords and variables A-Z) takes lower case too. R6 low = 1 inside a string.
 ; The bounds are hex: the assembler upper-cases every source line, character literals included.
 ;
-get_inputline:
+gil_start:
         pushr r6
         mviw r6,0
 gil_loop:
@@ -3163,11 +3163,27 @@ gil_done:
         MVIW R7,CRLF
         JSR STRINGOUT
         RET
-
 ;
-; STRINGS
-;
-CRLF: DB 0ah,0dh,0
+; 2026-10-07: the new line input and the SYNTAX ERROR handler sit here, after CRLF, so every routine and string
+; before them keeps the address it had in ROM 2026-09-23.
+; parse_token_chk: parse_token, and on TOKENIZER_ERROR (a character no token starts with: the text pointer does
+; not move past it, so parse_line_loop would ask for the same token forever) drop the line: discard this call's
+; return into parse_line_loop and return from parse_line itself (its loop keeps nothing else on the stack) with
+; SYNTAX ERROR printed and 0 in ACC, as parse_line_error does. Same size at the call as JSR parse_token.
+parse_token_chk:
+    JSR parse_token
+    ldti TOKENIZER_ERROR
+    BREQ parse_line_syntax
+    ret
+parse_line_syntax:
+    popr r7                   ; the return into parse_line_loop
+    mviw r7,parse_syntax_error
+    jsr stringout
+    mviw r7,CRLF
+    jsr stringout
+    ldai 0
+    ret
+parse_syntax_error: db "SYNTAX ERROR",0   ; 2026-10-07
 ;
 
       ORG 0EF00h
