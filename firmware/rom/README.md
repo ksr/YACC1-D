@@ -19,9 +19,12 @@
   backspace and DEL take back a character, lower case is accepted (letters outside `"..."` are stored in upper
   case), and a character no token starts with gives `SYNTAX ERROR` instead of an endless loop. BASIC half 3,983 of
   4,096 bytes. **MD5 (rom.bin) 3a4ff07923bff1cf752a5f67c9df3526**; `tools/verify_firmware.py`: FIRMWARE VERIFIED.
-  Burn with the TL866II+ and minipro (device name from the chip's marking, e.g. `AT28C64B`):
-  `minipro -p AT28C64B -w firmware/rom/shipped/rom.bin`, then read back and compare
-  (`minipro -p AT28C64B -r /tmp/rb.bin && cmp /tmp/rb.bin firmware/rom/shipped/rom.bin`).
+  **The chip in the machine is an Atmel AT28C64B** (its marking, 2026-10-07). Burn with the TL866II+ and minipro
+  (`brew install minipro`; it warned firmware 04.2.86 against the 04.2.132 it expects, and worked):
+  `minipro -p AT28C64B -u -P -w firmware/rom/shipped/rom.bin` - `-u` lifts the software data protection before
+  writing, `-P` sets it again afterwards, so on the machine a store into $E000-$FFFF (review M2: the v1.3 card has
+  no write-protect jumper) is ignored by the chip. Nothing in the tree writes the ROM in place. Then read back and
+  compare: `minipro -p AT28C64B -r /tmp/rb.bin && cmp /tmp/rb.bin firmware/rom/shipped/rom.bin`.
 - `shipped/rom.bin` — the same image as a flat 8,192-byte file for a chip programmer (Visual Minipro / minipro, device
   28C64): `python3 tools/img2bin.py firmware/rom/shipped/rom firmware/rom/shipped/rom.bin --base 0xE000 --end 0x10000 --fill 0xFF --size 8192`.
   Offset 0 = $E000; bytes the sources never write are $FF like a blank part. Checked 2026-09-22: its BASIC half is
