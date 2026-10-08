@@ -18,7 +18,7 @@ emulators run it), `BACKLOG.md`.
   d2d7b027e7c6951d7dd93412a8fd9cd8, CF driver on P8/P9), burned 2026-09-23 (`docs/system/MACHINE.md`). Before
   that the 2021 build (git ff7d85a), captured 2026-09-18 as `firmware/rom/eprom-captured-2026-09-18.bin/.hex`,
   byte-identical to the 2021 sources.
-- **In the tree** (`firmware/rom/shipped/rom`, since 2026-09-25): `ROM 2026-09-25`, **not burned yet** — the chip's
+- **In the tree** (`firmware/rom/shipped/rom`, since 2026-10-07): `ROM 2026-10-07` (the 2026-09-25 monitor + BASIC's input fix), **not burned yet** — the chip's
   build plus the video unit (section 11: the driver, the `V` command, mirroring in CHAROUT, the video entry at $FFBC,
   the variables at $0FF0), a shorter help text and the never-called routines removed to make room (MD5 in
   `firmware/rom/README.md`). The old chip stays compatible with everything else in the tree (Y1/OS's `video` says the
@@ -46,7 +46,7 @@ chip still holding the 2021 build differs in the monitor half.
 4a. (2026-09-25) `JSR vidreset`: mirroring and the CRTC cursor off, the video cursor home, the $D000 probe
    (`VIDPRES`); with `VIDAUTO` = 1 also the CRTC table, a clear and mirroring on (section 11). `VIDAUTO` is 0: the
    card is only probed.
-5. `JSR lblink` (a long LED blink), the banner `hello` → `YACC 2020: HELLO WORLD  ROM 2026-09-25` (upper-cased by
+5. `JSR lblink` (a long LED blink), the banner `hello` → `YACC 2020: HELLO WORLD  ROM 2026-10-07` (upper-cased by
    the assembler, see [ASSEMBLER.md](ASSEMBLER.md) quirk 1), then `VIDEO CARD FOUND` when the probe found the card,
    `JSR basic_cold` (initialise the BASIC interpreter: it clears the token buffer at $1000).
 6. Proof of life: `showaddr`/`show16` of the first 16 ROM bytes at $F000, `showregs`, then the address of `tttt`
@@ -133,7 +133,7 @@ The monitor's own helpers, not vectored but at known addresses in this build (`m
 $FA68, `helpmenu` $FB12; the video driver from `vidreset` $F50F to `vcrtab` $F879 (section 11). `switchin`,
 `TIL311out`, `LONGDELAY`, `SHORTDELAY`, `switchtoggle` and `nblink` (never called) and the T-menu's help strings were
 removed 2026-09-25 for room (git history has them). Addresses in this document are from the current `monitor.lst`
-(the `ROM 2026-09-25` build); they move whenever the monitor is rebuilt, so programs use the vectors.
+(the `ROM 2026-09-25` build; the same in `ROM 2026-10-07`); they move whenever the monitor is rebuilt, so programs use the vectors.
 
 ## 5. The variables page ($0F00) and the stack
 
@@ -231,7 +231,7 @@ asserted, `docs/isa/MICROCODE-REVIEW-NOTES.md` L-8), so the ISR path has not bee
 - **`shipped/rom.bin`** = the same as a flat 8,192-byte file for the programmer: `python3 tools/img2bin.py
   firmware/rom/shipped/rom firmware/rom/shipped/rom.bin --base 0xE000 --end 0x10000 --fill 0xFF --size 8192`. Offset
   0 = $E000; bytes the sources never write are $FF like a blank part; MD5 in `firmware/rom/README.md`. Device: 28C64, Visual Minipro / `minipro`.
-- **Telling builds apart**: the banner ends `ROM 2026-09-25` on the tree's build (not burned; MD5 in
+- **Telling builds apart**: the banner ends `ROM 2026-10-07` on the tree's build (not burned; MD5 in
   `firmware/rom/README.md`; $FFBC holds $04, the video entry) and `ROM 2026-09-23` on the chip (MD5
   d2d7b027e7c6951d7dd93412a8fd9cd8, CF on P8/P9; $FF at $FFBC); the 2021 chip
   prints the banner alone and has `00` at $FFEC; the 2026-09-22 build has `04` at $FFEC and `00` at $FFFC. Vector targets

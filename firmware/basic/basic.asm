@@ -250,6 +250,7 @@ bas_msg2: db "line not found",0,0ah,0dh
 bas_msg3: db "token not supported ",0ah,0dh
 exe_stmt_msg: db "EXE STMT ",0
 parse_cmd_error: db "UNKNOWN COMMAND",0,0ah,0DH
+parse_syntax_error: db "SYNTAX ERROR",0   ; 2026-10-07
 
 ;
 ; Basic interpreter - execution engine
@@ -2469,6 +2470,14 @@ parse_line_error:
     ldai 0
     ret
 
+parse_line_syntax:            ; 2026-10-07: see parse_line_loop
+    mviw r7,parse_syntax_error
+    jsr stringout
+    mviw r7,CRLF
+    jsr stringout
+    ldai 0
+    ret
+
 parse_code:
     LDAI TOKENIZER_LINENUM ;start with linenum token
     STAVR R3
@@ -2491,6 +2500,9 @@ parse_line_loop:
     JSR parse_token
     ldti TOKENIZER_CR
     BREQ parse_line_done
+    ldti TOKENIZER_ERROR     ; 2026-10-07: a character no token starts with (the text pointer
+    BREQ parse_line_syntax   ; does not move past it): report it and drop the line instead of
+                             ; asking for the same token forever
 
     STAVR R3
     INCR R3
@@ -3087,12 +3099,67 @@ parse_inputloop:
 
         mviw r3,parse_input_line
 
+;
+; get_inputline: read a line into the buffer at R7 (parse_input_line, $0300) up to and including the LF
+; (uartin echoes each character and turns CR into LF).
+; 2026-10-07: backspace ($08) and DEL ($7F) take back the last character (at the start of the line they
+; do nothing) and erase it on the screen; letters outside "..." are stored in upper case, so the
+; tokenizer (upper-case keywords and variables A-Z) takes lower case too. R6 low = 1 inside a string.
+; The bounds are hex: the assembler upper-cases every source line, character literals included.
+;
 get_inputline:
+        pushr r6
+        mviw r6,0
+gil_loop:
         jsr uartin
+        ldti 08h
+        breq gil_bs
+        ldti 7fh
+        breq gil_del
         stavr r7
-        incr r7
+        ldti '"'
+        brneq gil_nq
+        mvrla r6            ; a quote: in or out of a string
+        xori 1
+        mvarl r6
+        br gil_next
+gil_nq:
         ldti 0ah  ;1 changed from 0a to 0D for new emulator code, changed back
-        brneq get_inputline
+        breq gil_done
+        ldti 61h            ; 'a'
+        brlt gil_next
+        ldti 7ah            ; 'z'
+        brgt gil_next
+        mvrla r6
+        brnz gil_next       ; inside a string: as typed
+        ldavr r7
+        subi 20h
+        stavr r7
+gil_next:
+        incr r7
+        br gil_loop
+gil_del:
+        ldai 08h            ; DEL echoed as itself: step back first
+        jsr uartout
+gil_bs:
+        mvrla r7
+        brz gil_loop        ; at the start of the line: nothing to take back
+        decr r7
+        ldavr r7
+        ldti '"'
+        brneq gil_erase
+        mvrla r6            ; took back a quote
+        xori 1
+        mvarl r6
+gil_erase:
+        ldai 20h            ; blank the character, then step back onto it
+        jsr uartout
+        ldai 08h
+        jsr uartout
+        br gil_loop
+gil_done:
+        incr r7
+        popr r6
         MVIW R7,CRLF
         JSR STRINGOUT
         RET

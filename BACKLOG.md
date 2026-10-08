@@ -43,10 +43,10 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Memory card**: the unconnected jumper wire on IC7 pin 4 — purpose not remembered (2026-09-20); trace it on the board or remove it.
 
 ## Firmware — written, not burned / loaded
-- **ROM 2026-09-25: the video unit (not burned)** — `firmware/rom/shipped/rom.bin` (MD5 3ebc6789...): the $D000 probe at
+- **ROM 2026-10-07 (not burned): the video unit + BASIC's input fix** — `firmware/rom/shipped/rom.bin` (MD5 3a4ff079...; BASIC: backspace/DEL, lower case, SYNTAX ERROR instead of an endless loop, `firmware/basic/README.md`; the monitor as 2026-09-25 with the new banner date): the $D000 probe at
   reset, the screen driver, CHAROUT mirroring (`VIDMIR` $0FF1, off at reset), the `V` command, the video entry at $FFBC
   (`docs/programming/MONITOR.md` section 11). Burn it (Visual Minipro, 28C64) when ready, then check the banner says
-  `ROM 2026-09-25` and `VIDEO CARD FOUND`, and run the bring-up table in `docs/cards/video.md` section 8. The old chip
+  `ROM 2026-10-07` and `VIDEO CARD FOUND`, and run the bring-up table in `docs/cards/video.md` section 8. The old chip
   stays compatible (Y1/OS's `video` reports "no video driver").
 - **Video auto-start: `VIDAUTO EQU 1`** in `firmware/monitor/monitor.asm` once the card is debugged (6845 fitted with
   the RS-to-A1 fix, E one-shot and 7416 pull-ups sorted, a picture from `V I`): reset then programs the CRTC, clears the
