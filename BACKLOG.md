@@ -160,6 +160,27 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   To fold into the generator when the diagrams are next regenerated.
 
 ## Software
+- **BASIC and monitor: unchecked areas and hazards (found 2026-10-08, `docs/programming/MEMORY-MAP.md` section 2a; none
+  fixed yet).** Each is a change to `basic.asm` or `monitor.asm` (migrated: a `tools/patched_files.txt` note), a ROM
+  build, `tools/verify_firmware.py`, a burn. Keep the 2026-10-08 layout rule: new BASIC code goes after `CRLF` at
+  the end, so the old routines keep their addresses (the address-dependent fault, below).
+  - **R2 in `exe_set_variable` / `exe_get_variable`**: they point R2 at the variable. R2 is the microcode's operand
+    address register (CLAUDE.md); it holds only because no LDA/STA/LDR/STR sits in between. Move the pointer to
+    another register (R7 is free there) - a likely source of machine-only faults.
+  - **Division by zero hangs** (`parse_div16` / `parse_mod16` loop until the remainder is below the divisor): test
+    for 0 first and stop with an error message.
+  - **FOR and GOSUB stacks unchecked**: past 10 nested FOR (6 bytes a level from $0282, pointer R4) the FOR stack
+    runs into the GOSUB stack; past 30 GOSUB (2 bytes from $02C2, R5) into the input line at $0300. Check R4 below
+    $02C0 and R5 below $0300 before a push; the words at $0280 / $02C0 are unused.
+  - **Program buffer full** ($1000-$1FFF): adding a line moves the whole 4K and drops the end, the end token
+    included, without a message; check the room first (and move only the program's length).
+  - **Line inputs unbounded**: BASIC's `get_inputline` ($0300, 256 bytes) and the monitor's `P` input
+    (`line_buffer` $0F80, 112 bytes: past it the video variables, then the BASIC program at $1000). Stop storing at
+    the limit (keep reading until LF).
+  - **The `C` command copies code**: `basic_copy` takes $0400 bytes from `BASIC_TEST` ($EF00), whose test program is
+    commented out while BASIC's code reaches $EFDD; restore a test program elsewhere or drop the command.
+  - **ARGBUF / `line_buffer` overlap** at $0F80-$0FBF (ARGBUF 128 bytes since 2026-09-23): not in use together
+    today; correct `monitor.asm`'s "64 bytes" comment, or move `line_buffer`.
 - **BASIC `OUTP port,value` / `INP port,var`** (open since 2026-09-23): both keywords tokenise, but `exe_outp_stmt` and
   `exe_inp_stmt` in `firmware/basic/basic.asm` only eat the keyword - no port access, so BASIC cannot drive the LEDs or read
   the switches (POKE cannot: they are I/O ports, P0 select + P1 data). The port is in the opcode (`OUTA Pn` $60+n, `INP Pn`
