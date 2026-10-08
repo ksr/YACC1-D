@@ -11,6 +11,11 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   beside the bus connector, pin 1 on the ADDR15 track; `hardware/cards/memory/kicad/v2.0` README). Then,
   optional and separate: drop the `-VMA`-in-every-step hack from the microcode generator (a reload) so the chip selects
   are qualified by -VMA again.
+- **BASIC: a 10-line program failed at RUN on the machine (2026-10-08, open; ROM 2026-10-07, MD5 122f1a93...).** Seen
+  at the machine after the line-input fix, not investigated yet. Next: the program's text (all ten lines), what RUN
+  printed or whether it hung, and whether it lists correctly; then run it on both emulators (`software/emulator -x -m`,
+  `software/ucemu/y1ucemu -x -m`, the keystrokes on stdin). If only the machine fails, it may be the
+  placement-dependent fault below.
 - **A placement-dependent wrong value on the machine (2026-10-07/08, open).** With the first `ROM 2026-10-07` build
   (MD5 3a4ff079..., BASIC's new code early in the file, most routines 13-20 bytes later than in ROM 2026-09-23),
   `LIST` showed the line after an assignment line with $48 as its number's high byte (`10 L=0 / 20 C=0` -> 18452 =
