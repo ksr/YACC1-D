@@ -54,6 +54,7 @@ check:
 	python3 tests/native/run.py
 	python3 tests/native/selfhost.py
 	python3 tests/monload/run.py
+	python3 tests/y1term/run.py
 	python3 tests/kermit/run.py
 	python3 tests/bench/run.py
 	python3 tests/cfcard/run.py

@@ -74,7 +74,7 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
 | C compiler | `software/compiler/y1cc.py` (reference), `software/compiler/c/` (C twin `y1cc.c`, the nine passes `cc1..cc9`) |
 | Emulators | `software/emulator/` (instruction level), `software/ucemu/` (microcode level, steps `test.hex` through card models) |
 | Y1/OS | `os/` (kernels, `commands/` in C, `commands-asm/asm.asm`, `man/`, `Makefile` → `os/disk.img`) |
-| Machine tools | `tools/ucode_send.py` (microcode loader), `tools/monload.py` (monitor `:` loader), `tools/cfcard.py` (write a CF card), `tools/y1kermit.py` + `tools/y1.ksc` (Kermit), `tools/setup_check.py` (is this Mac set up?) |
+| Machine tools | `tools/ucode_send.py` (microcode loader), `tools/monload.py` (monitor `:` loader), `tools/cfcard.py` (write a CF card), `tools/y1term.py` (terminal; types a file into BASIC, waiting for `>>` after each line), `tools/y1kermit.py` + `tools/y1.ksc` (Kermit), `tools/setup_check.py` (is this Mac set up?) |
 | Arduino sketches | `embedded/` (built against the vendored `embedded/libraries/` only) |
 | Project website | `website/` (MkDocs + Material over the docs; `website/build.sh [serve|publish]`, `website/README.md`); published at https://yacc1.cottageworker.com by `.github/workflows/website.yml` on every push to main |
 
@@ -102,7 +102,7 @@ expected). Board builds (`hardware/cards/*/kicad/*/build.sh`) need KiCad 10, Ink
   `tests/bench/logs/`).
 - **ROM**: Ken burns `firmware/rom/shipped/rom.bin` (28C64, offset 0 = $E000) with Visual Minipro; the banner shows the
   build date.
-- **Console**: `screen /dev/cu.usbserial-AB0MVHSQ 38400`, or C-Kermit (`kermit tools/y1.ksc`) which also transfers files
+- **Console**: `python3 tools/y1term.py` (Ctrl-] menu: send a BASIC file, quit), `screen /dev/cu.usbserial-AB0MVHSQ 38400`, or C-Kermit (`kermit tools/y1.ksc`) which also transfers files
   (`docs/procedures/KERMIT.md`).
 - Procedures: `docs/procedures/BRING-UP.md`, `CF-CARD.md`, `TESTING.md`; video card bring-up `docs/cards/video.md` §8.
 

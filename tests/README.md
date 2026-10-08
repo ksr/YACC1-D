@@ -55,6 +55,9 @@
   loaded (`run.py`, 14/14 on 2026-09-22, `chars.ucout` = the expectation with the monitor's input echo), and `isa.asm`, a
   differential test of every instruction whose port-2 byte stream must be identical on both emulators (it is, BRDEV aside;
   since 2026-09-24 it covers LDZ/STZ/ADDIW/SHL16 too, 114 bytes, and `tests/bench` runs it on the machine).
+- `y1term/` — `tools/y1term.py --send` against the microcode emulator through a pty (2026-10-08): `good.bas` (lower
+  case, a tab, a blank line, a `#` comment, FOR/NEXT) sent with `--new --run` must print `Hello 1 2 3 21`; `bad.bas`
+  must exit 1 naming its `print !` line as SYNTAX ERROR, the other lines stored. In `make check`.
 - `kermit/` — `/BIN/KERMIT` (2026-09-26): `run.py` boots Y1/OS on both emulators with the console on a pseudo-terminal
   and runs `tools/y1kermit.py` against `kermit -r`, `-s` and `-x`: text, all 256 byte values, a 70K file, long runs, an
   empty file, a name to clean; block checks 1-2, 8th-bit prefixing, text mode, `-n`, `-a`; damaged, missing and

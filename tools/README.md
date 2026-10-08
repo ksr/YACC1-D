@@ -20,6 +20,14 @@ the PDF generators, and the KiCad conversion:
 - `gen_y1_optab.py` — generates the instruction tables of the native assemblers from `software/assembler/yacc1.def`:
   `os/asm_optab.c` for `/BIN/ASMC` (asm.c, 2026-09-25) and `os/commands-asm/asmtab.inc` for `/BIN/ASM` (asm.asm,
   2026-09-26) (`os/Makefile` runs it, `--check` fails when either is stale: `tests/asm/run.py`). It compiles each `.def` construction line with a copy of RC/asm's `Translate()`.
+- `y1term.py` — a terminal for the console that can also type a text file into BASIC (2026-10-08): the plain
+  terminal (`python3 tools/y1term.py`, Ctrl-] for the menu: `s` send a file, `n` NEW first, `q` quit), or
+  `--send PROG.BAS [--new] [--run] [--stay]` from the command line. Each line is typed at the machine's pace
+  (`--delay`, 5 ms a character) and the next one waits for BASIC's `>>`; lines answered with SYNTAX ERROR or UNKNOWN
+  COMMAND are reported with their line number in the file. Blank lines and `#` lines are skipped, tabs become spaces,
+  lines over 200 characters are refused (BASIC's input line is unchecked). At the monitor's `>` it starts BASIC
+  with `I` first. `--log FILE` keeps everything the machine sends. Finds the console FTDI as `monload.py` does.
+  Tested by `tests/y1term/run.py` against the microcode emulator through a pty.
 - `y1kermit.py` — a small standard Kermit for the Mac side of the console line (2026-09-26): `send FILE...` to
   `/BIN/KERMIT`'s `kermit -r` (or its `-x` server), `receive [DIR]` from `kermit -s`, `get NAME... [DIR]`, `finish` /
   `bye` for the server, `term` (a plain terminal, Ctrl-] quits). The same protocol subset as `/BIN/KERMIT`: short
