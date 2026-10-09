@@ -40,6 +40,19 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     long before. **Next: a fresh 28C64 (AT28C64B) burned with `firmware/rom/shipped/rom.bin`, then T1.** If T1
     counts 1..5, retire the old chip; if not, the memory card's ROM -CE/-OE path (IC6, IC18) or its data buffer.
     The old chip holds `ROM 2026-09-23` at the moment (burned for this test).
+  - **The chip is ruled out too (2026-10-08, late):** a second AT28C64B burned with `rom.bin` (ROM 2026-10-07,
+    verified, read back identical) fitted, reset, T1 at 1 MHz with microcode stage 1: now even entry fails -
+    `10 l=0` and `20 l=l+1` answer SYNTAX ERROR, RUN prints `25#` and hangs. Worse than on 2026-10-07, when line
+    entry and LIST worked. So an electrical fault on the machine, possibly from the reversed chip (VCC/GND across
+    the ROM socket): **next, in this order**: measure VCC at the memory card (a chip's VCC-GND pins near the ROM
+    socket and at the bus connector; 4.75-5.25 V) and feel for warm chips; run `tests/bench/run.py --port ...
+    --only hello,brur,isa,arith` (programs from RAM: all passed 2026-10-08 07:40) to see whether the whole machine
+    degraded or only reads by ROM code; then the memory card's ROM -CE/-OE path (IC6, IC18), its data buffer
+    (74LS245) and the ROM socket's contacts.
+  - **The machine as left 2026-10-08 night:** clock 1 MHz; sequencer EEPROM = microcode stage 1 (`build/p6/test.hex`;
+    back to stage 2 = `python3 tools/ucode_send.py --all` once fixed); ROM socket = the second AT28C64B with ROM
+    2026-10-07 (MD5 122f1a93...); the first chip (powered reversed 2026-10-07) holds ROM 2026-09-23, set aside.
+    The machine was hung in T1 (needs a reset).
   - T1-T3 for `y1term.py --send` (upper case for ROM 2026-09-23): T1 `10 l=0 / 20 l=l+1 / 30 print l / 40 if l < 5
     then goto 20`, T2 `10 c=0 / 20 c=c+1 / 30 if c < 100 then goto 20 / 40 print c`, T3 T1's outer loop around T2's
     inner (`70 if l < 3 then goto 20`).
