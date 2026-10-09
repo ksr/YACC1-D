@@ -1,6 +1,8 @@
 # memory-v2.0 — the built memory card v1.3 + the CompactFlash interface (KiCad design)
 
-**Status 2026-09-30: THE v2.0 BOARD IS STANDOFF OPTION E (chosen 2026-09-25), FINISHED FOR FABRICATION - NOT ORDERED;
+**ORDERED from JLCPCB 2026-10-09** (Ken; `memory-v2.0-gerbers.zip`, 4 layers, the settings in `memory-v2.0-jlcpcb-order.txt`; order number not recorded yet; not yet received or built). The zip was re-verified against the board that day: every layer and both drill files match. Ordered with three items still open, by Ken's choice: the BASIC RUN fault on the machine (`BACKLOG.md`; v2.0 shares v1.3's ROM -CE/-OE path), the unexplained jumper wire on the built card's IC7 pin 4, and the ribbon plug's pin 20 (a cable choice).
+
+**Status 2026-09-30: THE v2.0 BOARD IS STANDOFF OPTION E (chosen 2026-09-25), FINISHED FOR FABRICATION;
 2026-09-29: + JP3, the ROM write-protect jumper; 2026-09-30: + R15, the ADDR15 pull-down** ("The ROM write-protect
 jumper JP3" and "The ADDR15 pull-down R15" below).
 `memory-v2.0.kicad_pcb` (beside the schematic, sharing `memory-v2.0.kicad_pro` / `.kicad_dru`): the CF-to-IDE adapter
@@ -49,7 +51,7 @@ every track, via, arc and zone is byte-identical, and `NOROUTE=1 build.sh` passe
 ## The v2.0 board: standoff option E, finished for fabrication (chosen 2026-09-25)
 
 `memory-v2.0.kicad_pcb`, made by `finish_v2.py make-e` from a route of `options-standoff/memory-v2.0-standoff-e.kicad_pcb` (the
-placement of option E, unchanged: "The standoff options C / D / E" below). **NOT ORDERED.**
+placement of option E, unchanged: "The standoff options C / D / E" below). **ORDERED 2026-10-09** (JLCPCB).
 
 **The placement (option E).** X1 | column 1 (the TMP registers IC27 / IC29 / IC26 / IC28, the address buffers IC9 /
 IC8, RN5 / RN6) | column 2 (glue, IC5) | column 3 = the memory column: **the ROM IC13 in the top row** (uncovered,
@@ -245,7 +247,7 @@ silk or the edge, none upside down; DRC silk_overlap 0):
 Resolved: ~~the card-cage slot pitch vs the ~35 mm stack height~~ - nothing in front of the memory card
 (2026-09-25). Confirmed earlier: the adapter's pin 1 (straight ribbon, pin 1 to pin 1).
 
-**NOT ORDERED.**
+**ORDERED 2026-10-09** (JLCPCB).
 
 ## What v2.0 is, relative to the built card
 
@@ -867,7 +869,7 @@ DATA8-15 bundle (DRC: A 11 shorts / 4 clearance / 63 mask bridges, B 12 / 1 / 50
 | `check_netlist.py` | the netlist proof: schematic = built v1.3 - C20-C23 + CF section; the standoff boards, their trial routes and the top-edge finished board = the schematic (+ the two board-only standoff holes H1/H2, `is_mech()`); the record boards (`--records`) = the schematic + exactly C20-C23 as on v1.3 |
 | `build.sh` | the whole pipeline; exit 0 = every gate passed |
 | `memory-v2.0.kicad_sch`, `-sheet1..7.kicad_sch`, `.kicad_pro`, `.kicad_dru` | schematic (sheets 1-6 built v1.3, sheet 7 CF), project with the re-layout rules (shared by the v2.0 board) |
-| **`memory-v2.0.kicad_pcb`** | **THE v2.0 BOARD** (standoff option E, routed, finished; not ordered) |
+| **`memory-v2.0.kicad_pcb`** | **THE v2.0 BOARD** (standoff option E, routed, finished; ordered from JLCPCB 2026-10-09) |
 | **`memory-v2.0-gerbers.zip`**, `gerbers/`, `memory-v2.0-jlcpcb-order.txt`, `memory-v2.0-render-{top,bottom}.png`, `memory-v2.0-placement.pdf`, **`memory-v2.0-1to1.pdf`** | its fab outputs ("Fab outputs" above) |
 | `options-standoff/` | **the standoff record** (moved out of the top level 2026-10-01): the five options `memory-v2.0-standoff-{a,b,c,d,e}.kicad_pcb` / `.kicad_pro` / `.kicad_dru` (placed, unrouted, re-layout rules), their trial routes `-trial.*` (E's is what the v2.0 board was made from), the **1:1 check prints** `-1to1.pdf`, the images `-render-top.png` (3D with the adapter), `-placement.png` (placement / airwires), `-trial.png` (trial-route copper); `reports/` per option `standoff-X-placement-check.txt`, `-drc.json`, `-trial.txt`, `-trial-drc.json`, `-freerouting.log` (C-E also `-order.txt`). `build.sh` still re-checks every one of them |
 | `memory-v2.0-schematic.pdf`, `memory-v2.0-bom.csv` | schematic plot, bill of materials (72 parts; then H1/H2, board-only holes, no part, and the hardware lines HW1-HW6) |

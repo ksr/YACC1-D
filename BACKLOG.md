@@ -274,7 +274,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   netlist, DRC 0 errors / 0 unconnected, gerbers ready; theory in `docs/cards/cf.md`; never ordered.
   Card-preparation procedure written: `docs/procedures/CF-CARD.md`. A move of the interface onto an I/O card v2.0 on
   ports P4/P5 was designed 2026-09-23 and dropped 2026-09-24 (6eeb259, 65851b0).)
-  **2026-09-25: memory card v2.0 FINISHED FOR FABRICATION, NOT ORDERED** (`hardware/cards/memory/kicad/v2.0`, README
+  **2026-10-09: memory card v2.0 ORDERED from JLCPCB** (order number not recorded yet). **2026-09-25: memory card v2.0 FINISHED FOR FABRICATION** (`hardware/cards/memory/kicad/v2.0`, README
   "The v2.0 board"): **standoff option E** (chosen 2026-09-25) - the CF-to-IDE adapter (HX-2118P: 60 x 44 mm, 2 M3 holes 52 mm
   apart at the header end, no pin 20) on two 15 mm M3 standoffs over the CF chips at the free top edge, J2 parallel to
   X1 with a short straight ribbon, the ROM uncovered in the top row of the memory column. **2026-09-29: + JP3, the ROM

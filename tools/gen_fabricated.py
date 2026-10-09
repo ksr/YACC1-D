@@ -28,7 +28,9 @@ with open(os.path.join(HW, "FABRICATED.md"), "w") as f:
             "the `.brd` straight to OSH Park, so the `.brd` in the design folder IS what was sent.\n\n" % time.strftime("%Y-%m-%d"))
     def fab_of(folder):
         d = os.path.join(HW, folder, "fab")
-        if not os.path.isdir(d): return "**none in tree**"
+        if not os.path.isdir(d):                         # a KiCad board keeps its order zip beside the board
+            kz = sorted(x for x in os.listdir(os.path.join(HW, folder)) if x.endswith("-gerbers.zip"))
+            return "`%s/` %s" % (folder, ", ".join(kz)) if kz else "**none in tree**"
         zips = sorted(x for x in os.listdir(d) if x.lower().endswith((".zip", ".pdf")))
         cam = os.path.isdir(os.path.join(d, "CAMOutputs")); ger = os.path.isdir(os.path.join(d, "gerbers"))
         what = ", ".join(zips + (["CAMOutputs/"] if cam else []) + (["gerbers/"] if ger else [])) or "(files)"

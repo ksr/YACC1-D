@@ -1,6 +1,6 @@
 # Fabricated boards
 
-Generated 2026-10-02 by `tools/gen_fabricated.py` from `tools/fabricated.py` (edit the table, then re-run).
+Generated 2026-10-09 by `tools/gen_fabricated.py` from `tools/fabricated.py` (edit the table, then re-run).
 Every revision folder under `hardware/` is listed; the ones with status **in-machine** or **fabricated** also carry a `FABRICATED` marker file.
 "presumed" means the only evidence is that the folder sat in `PCB/Production` in the old tree.
 Fabrication output (gerber zips, CAM jobs, drill/photoplotter logs, order invoices) lives in `hardware/fab/<card>/<rev>/`; the Eagle folder keeps only the design. Where the tree holds no fab output the board was most likely ordered by uploading the `.brd` straight to OSH Park, so the `.brd` in the design folder IS what was sent.
@@ -111,6 +111,7 @@ Fabrication output (gerber zips, CAM jobs, drill/photoplotter logs, order invoic
 | Revision | Status | Design | Files sent to fab | Note |
 |---|---|---|---|---|
 | v1.3 | in-machine (2026-09-24) | `cards/memory/eagle/v1.3` | `cards/memory/eagle/v1.3/fab/` jlcpcb-order-2000765A-Y42.zip | THE BUILT CARD: Fusion 360 export (2026-09-24) of the design JLCPCB made on 2025-06-27 (order 2000765A, 4 layers; order archive in fab/). tools/verify_fab_vs_brd.py: all 695 holes and all 1,263 top/bottom tracks are in the order's gerbers, part list and pick-and-place match. Differs from the earlier save (eagle/deprecated/v1.3-do-not-use) by IC15 74ALS11 (74245 enable = AND of the card's chip selects instead of -VMA) and the routed TMP registers IC26-IC29 + RN5/RN6. Filed as eagle/v1.3-fusion-export-2026-09-24 and renamed to eagle/v1.3 the same day. KiCad conversion in cards/memory/kicad/v1.3 |
+| v2.0 | fabricated (2026-10-09) | `cards/memory/kicad/v2.0` | `cards/memory/kicad/v2.0/` memory-v2.0-gerbers.zip | ORDERED from JLCPCB 2026-10-09 (Ken): memory-v2.0-gerbers.zip, 4 layers, settings as memory-v2.0-jlcpcb-order.txt. Order number not recorded yet; not yet received or built. The zip was re-verified against memory-v2.0.kicad_pcb the same day (every layer and both drill files). Known open items carried into the build: the BASIC RUN fault on the machine (BACKLOG; v2.0 shares v1.3's ROM -CE/-OE path), the unexplained jumper wire on the built card's IC7 pin 4, the ribbon plug's pin 20 |
 | v1.2 | fabricated | `cards/memory/eagle/deprecated/v1.2` | `cards/memory/eagle/deprecated/v1.2/fab/` CAMOutputs/ | PCB/Production, 2020-11-29 (also built). Memory V1.2.brd.old.brd = an earlier 31-part layout of V1.2 (2020-09-01) |
 | v1.1 | fabricated | `cards/memory/eagle/deprecated/v1.1` | `cards/memory/eagle/deprecated/v1.1/fab/` CAMOutputs/ | PCB/Production until 2021-01; files still NAMED V1.0 (2020-06-19) but this is revision 1.1: adds the boot ROM remap (IC11 74157 + IC12 7474 FORCE-ROM) to 1.0 |
 | v1.0 | fabricated | `cards/memory/eagle/deprecated/v1.0` | `cards/memory/eagle/deprecated/v1.0/fab/` CAMOutputs/ | PCB/Production until 2021-01 |
