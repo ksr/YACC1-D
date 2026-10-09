@@ -11,11 +11,28 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   beside the bus connector, pin 1 on the ADDR15 track; `hardware/cards/memory/kicad/v2.0` README). Then,
   optional and separate: drop the `-VMA`-in-every-step hack from the microcode generator (a reload) so the chip selects
   are qualified by -VMA again.
-- **BASIC: a 10-line program failed at RUN on the machine (2026-10-08, open; ROM 2026-10-07, MD5 122f1a93...).** Seen
-  at the machine after the line-input fix, not investigated yet. Next: the program's text (all ten lines), what RUN
-  printed or whether it hung, and whether it lists correctly; then run it on both emulators (`software/emulator -x -m`,
-  `software/ucemu/y1ucemu -x -m`, the keystrokes on stdin). If only the machine fails, it may be the
-  placement-dependent fault below.
+- **BASIC programs go wrong at RUN on the machine: a $00 read from the program buffer comes back with bits set
+  (2026-10-08, open; ROM 2026-10-07 MD5 122f1a93..., microcode stage 2).** Both emulators run every program below
+  correctly. On the machine (`tools/y1term.py --send FILE --new --run`):
+  - `10 l=0 / 20 c=0 / 30 c=c+1 / 40 if c < 32000 then goto 30 / 50 l=l+1 / 60 print l / 70 goto 20` (the program
+    that first failed) - at 32000 it would print once per ~12 minutes at 1 MHz anyway (about 850 instructions a pass
+    of lines 30-40, measured on the emulator); with `c < 100` it printed `44#` and hung.
+  - T1 `10 l=0 / 20 l=l+1 / 30 print l / 40 if l < 5 then goto 20`: at 6 MHz `1`, then `44#` and a hang (the first
+    pass after GOTO); at 1 MHz `8193` ($2001) and back to the prompt. A dump after it: L at $0116 = `01 20`, so the
+    value was STORED with $20 in its high byte. T2 `10 c=0 / 20 c=c+1 / 30 if c < 100 then goto 20 / 40 print c`
+    at 1 MHz: `44#` and a hang, C at $0104 = `02 00`.
+  - The same family as the LIST misprint (a $00 at $100F read as $48 by LIST in the first ROM 2026-10-07 build): a
+    $00 in the token buffer ($10xx), read by ROM code (`INCR R3` / `LDAVR R3`), comes back with bits set; the same
+    reads run from RAM (`tests/bench/diag/listread.asm`) and the monitor's loader (`zero_readback.py` over
+    $1000-$10FF) read it right; the result changes with the clock but 1 MHz does not cure it.
+  - **The machine had been running at 6 MHz** (found 2026-10-08; set back to 1 MHz that day). Everything in the tree
+    assumes 1 MHz (CLAUDE.md, the tools' pacing, the microcode's timing review); bench runs, the 2026-10-04 microcode
+    loads and the BASIC tests before 2026-10-08 ran at whatever clock was fitted then.
+  - **Next: reload microcode stage 1** (`python3 tools/ucode_send.py --all --hex
+    firmware/microcode/ucode-generator2/build/p6/test.hex`: the six-step prologue, no M-1 change) and run T1 at
+    1 MHz. BASIC worked on 2026-09-23 with the old microcode. If T1 counts 1-5, a stage 2 change (the three-step
+    prologue, or M-1 taking -MEM-RD off the counting steps) breaks reads by ROM code on the hardware; if not, look at
+    the memory card's ROM/RAM data path. T1-T3 are short: copy them from here into files for `y1term.py --send`.
 - **A placement-dependent wrong value on the machine (2026-10-07/08, open).** With the first `ROM 2026-10-07` build
   (MD5 3a4ff079..., BASIC's new code early in the file, most routines 13-20 bytes later than in ROM 2026-09-23),
   `LIST` showed the line after an assignment line with $48 as its number's high byte (`10 L=0 / 20 C=0` -> 18452 =
