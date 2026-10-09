@@ -1,6 +1,6 @@
 # memory-v2.0 — the built memory card v1.3 + the CompactFlash interface (KiCad design)
 
-**ORDERED from JLCPCB 2026-10-09** (Ken; `memory-v2.0-gerbers.zip`, 4 layers, the settings in `memory-v2.0-jlcpcb-order.txt`; order number not recorded yet; not yet received or built). The zip was re-verified against the board that day: every layer and both drill files match. Ordered with three items still open, by Ken's choice: the BASIC RUN fault on the machine (`BACKLOG.md`; v2.0 shares v1.3's ROM -CE/-OE path), the unexplained jumper wire on the built card's IC7 pin 4, and the ribbon plug's pin 20 (a cable choice).
+**ORDERED from JLCPCB 2026-10-09, order 2000765A-Y52** (Ken; shown by JLCPCB as Y52-2000765A; `memory-v2.0-gerbers.zip`, 4 layers, the settings in `memory-v2.0-jlcpcb-order.txt`; not yet received or built). The zip was re-verified against the board that day: every layer and both drill files match. Ordered with three items still open, by Ken's choice: the BASIC RUN fault on the machine (`BACKLOG.md`; v2.0 shares v1.3's ROM -CE/-OE path), the unexplained jumper wire on the built card's IC7 pin 4, and the ribbon plug's pin 20 (a cable choice).
 
 **Status 2026-09-30: THE v2.0 BOARD IS STANDOFF OPTION E (chosen 2026-09-25), FINISHED FOR FABRICATION;
 2026-09-29: + JP3, the ROM write-protect jumper; 2026-09-30: + R15, the ADDR15 pull-down** ("The ROM write-protect
