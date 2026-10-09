@@ -12,7 +12,7 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   optional and separate: drop the `-VMA`-in-every-step hack from the microcode generator (a reload) so the chip selects
   are qualified by -VMA again.
 - **BASIC programs go wrong at RUN on the machine: a $00 read from the program buffer comes back with bits set
-  (2026-10-08, open; ROM 2026-10-07 MD5 122f1a93..., microcode stage 2).** Both emulators run every program below
+  (2026-10-08, open; found with ROM 2026-10-07 MD5 122f1a93... and microcode stage 2; the machine runs stage 1 and ROM 2026-09-23 since that evening).** Both emulators run every program below
   correctly. On the machine (`tools/y1term.py --send FILE --new --run`):
   - `10 l=0 / 20 c=0 / 30 c=c+1 / 40 if c < 32000 then goto 30 / 50 l=l+1 / 60 print l / 70 goto 20` (the program
     that first failed) - at 32000 it would print once per ~12 minutes at 1 MHz anyway (about 850 instructions a pass
@@ -28,11 +28,21 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   - **The machine had been running at 6 MHz** (found 2026-10-08; set back to 1 MHz that day). Everything in the tree
     assumes 1 MHz (CLAUDE.md, the tools' pacing, the microcode's timing review); bench runs, the 2026-10-04 microcode
     loads and the BASIC tests before 2026-10-08 ran at whatever clock was fitted then.
-  - **Next: reload microcode stage 1** (`python3 tools/ucode_send.py --all --hex
-    firmware/microcode/ucode-generator2/build/p6/test.hex`: the six-step prologue, no M-1 change) and run T1 at
-    1 MHz. BASIC worked on 2026-09-23 with the old microcode. If T1 counts 1-5, a stage 2 change (the three-step
-    prologue, or M-1 taking -MEM-RD off the counting steps) breaks reads by ROM code on the hardware; if not, look at
-    the memory card's ROM/RAM data path. T1-T3 are short: copy them from here into files for `y1term.py --send`.
+  - **Microcode ruled out (2026-10-08):** stage 1 loaded (boot check 0 mismatches), T1 at 1 MHz printed `1`, then
+    `04#` and hung. **ROM code ruled out:** `ROM 2026-09-23` (the image BASIC worked with on 2026-09-23) burned back:
+    on the machine `10 L=0` already hung at entry, while y1ucemu with the same two images runs T1 (1..5) and LIST
+    right. So the machine changed since 2026-09-23.
+  - **Suspect: the ROM chip, damaged when it was powered fitted reversed on 2026-10-07** (it passed minipro's pin
+    test, two burns and read-backs, which test it alone). If its outputs are slow to switch off after the CPU fetches
+    from it, a RAM read straight after a ROM fetch gets the ROM's byte at the same offset ORed in: the LIST misprint
+    matches exactly (RAM $100F = $00 read as $48; ROM[$F00F] = $48), T1's $20 matches no single ROM byte (partial
+    bits), and code run from RAM (`listread.asm`) and the loader's read-back are unaffected - the ROM was deselected
+    long before. **Next: a fresh 28C64 (AT28C64B) burned with `firmware/rom/shipped/rom.bin`, then T1.** If T1
+    counts 1..5, retire the old chip; if not, the memory card's ROM -CE/-OE path (IC6, IC18) or its data buffer.
+    The old chip holds `ROM 2026-09-23` at the moment (burned for this test).
+  - T1-T3 for `y1term.py --send` (upper case for ROM 2026-09-23): T1 `10 l=0 / 20 l=l+1 / 30 print l / 40 if l < 5
+    then goto 20`, T2 `10 c=0 / 20 c=c+1 / 30 if c < 100 then goto 20 / 40 print c`, T3 T1's outer loop around T2's
+    inner (`70 if l < 3 then goto 20`).
 - **A placement-dependent wrong value on the machine (2026-10-07/08, open).** With the first `ROM 2026-10-07` build
   (MD5 3a4ff079..., BASIC's new code early in the file, most routines 13-20 bytes later than in ROM 2026-09-23),
   `LIST` showed the line after an assignment line with $48 as its number's high byte (`10 L=0 / 20 C=0` -> 18452 =
