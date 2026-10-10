@@ -98,6 +98,9 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     I/O card in: memory/TMP/registers still pass (`run-2026-10-10-with-io.log`); `tests/io/io_test.py` ALL PASS - the
     16550's registers through P0/P1, 38400 8N1, 44 bytes UART -> Mac console port, 21 bytes Mac -> UART, switches read
     $00 (driven), IN reads 0 through the ALU; LEDs/TIL311/OUT LED are visual checks (`tests/io/run-2026-10-10.log`).
+    ALU still ALL PASS with the I/O card in (`tests/alu/run-2026-10-10-with-io.log`). Front panel, watched at the
+    card with `tests/io/io_panel.py`: LEDs 0-7 each, TIL311 digits 0-F on both, the OUT LED on/off, the LCD (first
+    time driven: two lines correct), switches $00/$01/$80/$55/$AA each read right, IN up = 1 / down = 0: all OK.
     Next: the remaining cards
     back one at a time with `memory_status.py --rom /tmp/rom-2026-09-23.bin` after each.
     `memory_full_test.py` the same evening (`tests/memory/full-run-2026-10-09.log`): B address lines PASS, C and D
