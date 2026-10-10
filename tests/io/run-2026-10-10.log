@@ -1,0 +1,9 @@
+uart regs    PASS  scratch register 20 values, divisor latch and LCR read back
+uart init    PASS  divisor 3, 8N1; LSR = $60
+uart tx      PASS  44 bytes arrived on /dev/cu.usbserial-AB0MVHSQ
+uart rx      PASS  21 bytes received
+switches     PASS  S7..S0 = 00000000 ($00) - check against the toggles
+leds/TIL311 ----  check: the LEDs walked 0..7 and now show $A5 (10100101, LED7 on the left), TIL311s show 5A
+OUT         ----  check: the OUT LED blinked three times
+IN          ----  IN switch reads 0 through the ALU (only meaningful with the ALU card in)
+I/O card: ALL PASS (plus the visual checks above)

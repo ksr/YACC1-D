@@ -95,6 +95,9 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     same three still pass (`run-2026-10-10-with-alu.log`) and `tests/alu/alu_test.py` ALL PASS (accumulator, invert,
     AND/OR/XOR/ZERO, add, add with carry, subtract with borrow, the seven shifts with the bit out in the carry, every
     BR-COND condition plain and inverted, reset; IN untested, the tester cannot drive it; `tests/alu/run-2026-10-10.log`).
+    I/O card in: memory/TMP/registers still pass (`run-2026-10-10-with-io.log`); `tests/io/io_test.py` ALL PASS - the
+    16550's registers through P0/P1, 38400 8N1, 44 bytes UART -> Mac console port, 21 bytes Mac -> UART, switches read
+    $00 (driven), IN reads 0 through the ALU; LEDs/TIL311/OUT LED are visual checks (`tests/io/run-2026-10-10.log`).
     Next: the remaining cards
     back one at a time with `memory_status.py --rom /tmp/rom-2026-09-23.bin` after each.
     `memory_full_test.py` the same evening (`tests/memory/full-run-2026-10-09.log`): B address lines PASS, C and D
