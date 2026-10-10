@@ -81,10 +81,17 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   - **2026-10-09, only the bus tester and the memory card on the backplane: the memory card works.**
     `memory_status.py`: boot remap OK, low RAM OK, $8000-$CFFF RAM, $E000/$F000 ROM; the full 8K ROM read back
     through the tester is byte-identical to ROM 2026-09-23 (its "ROM mismatches" and "$F000 WRITABLE!" lines come
-    from comparing against the tree's newer image: $F123 is $68 in 2026-09-23, $04 in the tree). So one of the
-    cards pulled (registers, ALU, address/TMP, sequencer, I/O, video, bring-up cards) breaks memory cycles when it is
-    on the bus - the likeliest cause of the RUN failures and the random bench errors. Next: put the cards back one
-    at a time, `memory_status.py` after each; the first one that brings back the $A0 / random reads is the fault.
+    from comparing against the tree's newer image: $F123 is $68 in 2026-09-23, $04 in the tree; `--rom FILE` now
+    names the image on the chip).
+  - **2026-10-10, the $A0 was the tester, not a card:** with register card 1 back in, $A0 everywhere again - because
+    the tester left ADDR-REG-ID at 0, so R0 drove ADDR0..15 in every cycle with -VMA low (register.md 3.4), against
+    the tester's address; R0 = $0000 after reset, FORCE-ROM never released, every read was ROM $F000 = $A0. The
+    tester tools now select no register (`BusDriver.no_registers()`, ADDR-REG-ID = 8) and `memory_status.py` passes
+    with the register card in. So the CPU-out tests have not found a faulty card yet; the RUN failures and the random
+    bench errors are still open. Register card R0-R3: `tests/registers/register_test.py` ALL PASS (load/read 38
+    patterns, byte lanes, counting across every carry, HL-SWAP, address drive, reset;
+    `tests/registers/run-2026-10-10-card-R0-R3.log`). Next: the R4-R7 card the same way, then the remaining cards
+    back one at a time with `memory_status.py --rom /tmp/rom-2026-09-23.bin` after each.
     `memory_full_test.py` the same evening (`tests/memory/full-run-2026-10-09.log`): B address lines PASS, C and D
     every RAM byte $0000-$CFFF both patterns PASS (0 bad of 53248); A/F fail only against the tree's image, E fails
     because the video card is out. TMP0/TMP1 through the tester: PASS (38 patterns each, with the other register

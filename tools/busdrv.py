@@ -105,8 +105,16 @@ class BusDriver:
         self.cmd(name, 1)
         self.cmd(name, 0)
 
+    def no_registers(self):
+        """select no register for the address bus (ADDR-REG-ID = 8: card decode 2, no card answers). With ID 0 the
+        register card holding R0 drives ADDR0..15 whenever -BUS-EN and -VMA are low (register.md 3.4), against the
+        tester's own address - every read then returns the byte at R0's address (2026-10-09)."""
+        for i, v in enumerate((0, 0, 0, 1)):
+            self.cmd("ADDR-REG-ID%d" % i, v)
+
     # --- memory idioms, copied from command_sender_8.pde ---
     def mem_setup_read(self):
+        self.no_registers()
         self.cmd("-VMA", 1)
         self.cmd("ADDRBUS-WR-MODE", 1)
         self.cmd("DATABUS-RD-MODE", 1)

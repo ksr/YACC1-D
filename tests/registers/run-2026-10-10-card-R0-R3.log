@@ -1,0 +1,35 @@
+R0 answers
+R1 answers
+R2 answers
+R3 answers
+R4 does not answer (read $EDCB / $1234)
+R5 does not answer (read $EDCB / $1234)
+R6 does not answer (read $EDCB / $1234)
+R7 does not answer (read $EDCB / $1234)
+R0
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+R1
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+R2
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+R3
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+all
+  reset      PASS  every register $0000 after -RESET
+registers answering: R0 R1 R2 R3; ALL PASS

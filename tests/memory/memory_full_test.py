@@ -37,7 +37,7 @@ def report(name, ok, detail=""):
 bd = BusDriver(port); bd.wait_prompt(timeout=8)
 MODE = ["DATABUS-RD-MODE"]   # the data-bus direction in force, so a reopened (reset) card can be put back into it
 def setup():
-    bd.pulse("-RESET"); bd.cmd("-BUS-EN", 1); bd.cmd("-VMA", 1); bd.cmd("ADDRBUS-WR-MODE", 1); bd.cmd("DATABUS-RD-MODE", 1)
+    bd.pulse("-RESET"); bd.cmd("-BUS-EN", 1); bd.no_registers(); bd.cmd("-VMA", 1); bd.cmd("ADDRBUS-WR-MODE", 1); bd.cmd("DATABUS-RD-MODE", 1)
     bd.readmem(0xF000)   # release the boot remap (RAM contents survive the reset)
     bd.cmd(MODE[0], 1)
 def reopened():

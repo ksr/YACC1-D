@@ -30,7 +30,7 @@ def line(name, ok, detail):
 
 bd = BusDriver(port); bd.wait_prompt(timeout=8)
 t0 = time.time()
-bd.pulse("-RESET"); bd.cmd("-BUS-EN", 1); bd.cmd("-VMA", 1)
+bd.pulse("-RESET"); bd.cmd("-BUS-EN", 1); bd.no_registers(); bd.cmd("-VMA", 1)
 bd.cmd("ADDRBUS-WR-MODE", 1); bd.cmd("DATABUS-RD-MODE", 1)
 
 # --- boot remap: with A15 low the ROM's $F000 page must answer at $0000

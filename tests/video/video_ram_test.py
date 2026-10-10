@@ -32,7 +32,7 @@ def report(name, ok, detail=""):
 
 bd = BusDriver(port)
 print("waiting for the bus tester prompt ...", flush=True); bd.wait_prompt(timeout=8)
-bd.pulse("-RESET"); bd.cmd("-BUS-EN", 1); bd.cmd("-VMA", 1)
+bd.pulse("-RESET"); bd.cmd("-BUS-EN", 1); bd.no_registers(); bd.cmd("-VMA", 1)
 bd.cmd("ADDRBUS-WR-MODE", 1); bd.cmd("DATABUS-RD-MODE", 1)
 bd.readmem(0xF000)   # release the memory card's boot remap
 

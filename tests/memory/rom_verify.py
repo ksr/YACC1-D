@@ -13,7 +13,7 @@ from romimage import rom_image
 port = next((a for a in sys.argv[1:] if not a.startswith("--")), PORT)
 ref = rom_image()
 bd = BusDriver(port); bd.wait_prompt(timeout=8)
-bd.pulse("-RESET"); bd.cmd("-BUS-EN", 1); bd.cmd("-VMA", 1); bd.cmd("ADDRBUS-WR-MODE", 1); bd.cmd("DATABUS-RD-MODE", 1)
+bd.pulse("-RESET"); bd.cmd("-BUS-EN", 1); bd.no_registers(); bd.cmd("-VMA", 1); bd.cmd("ADDRBUS-WR-MODE", 1); bd.cmd("DATABUS-RD-MODE", 1)
 bd.readmem(0xF000)   # release the boot remap
 t = time.time(); got = bytes(bd.read_block(0xE000, 8192)); dt = time.time() - t
 bad = [a for a in range(8192) if got[a] != ref[a]]
