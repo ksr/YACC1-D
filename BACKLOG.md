@@ -172,6 +172,11 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   Open it in Eagle/Fusion, re-save, use as the template for every new card.
 - **Bus Tester V3.1** (`hardware/cards/bus-tester/eagle/v3.1`, 2020-07): latches drive the bus, soft bus-enable/reset,
   bypass caps; routed, CAM run, never ordered. Decide: build it, or keep the 2016 v1.1 for good.
+  Whichever is built next: **bring the OUT-LED signal (IC6 GPA4) to a jumper/header pin, with a GND pin beside it**,
+  so the card can clock the sequencer through its JP4 pin 2 (EXTERNAL-SINGLESTEP-CLK) without a wire soldered or clipped
+  to the MCP23017 (2026-10-10: the `bus-stepper` sketch single-steps the machine this way and found the POPR fault).
+  A second header pin on a spare MCP input for the sequencer's JP4 pin 3 (UCODE-COUNT-RESET) would let the stepper see
+  where each instruction ends.
 - **Video card v1.1** (`hardware/cards/video/kicad/v1.1`, the KiCad master since 2026-09-21; Fusion abandoned): DONE in the
   design — one 5 V rail (`+5V` folded into `VCC`, joining track added; proof 116/116). TO DO — move the 6845 RS from A0 to A1
   (`hardware/cards/video/docs/fix-6845-register-select.md`; bench job first), pull-ups on the 7416 outputs; then order.
