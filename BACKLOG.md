@@ -49,6 +49,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     --only hello,brur,isa,arith` (programs from RAM: all passed 2026-10-08 07:40) to see whether the whole machine
     degraded or only reads by ROM code; then the memory card's ROM -CE/-OE path (IC6, IC18), its data buffer
     (74LS245) and the ROM socket's contacts.
+  - **2026-10-09: the memory card's 74LS245 (IC5, the data-bus buffer) replaced.** Not tested yet: next, T1-T3
+    (`y1term.py --send`), then the short bench.
   - **The machine as left 2026-10-08 night:** clock 1 MHz; sequencer EEPROM = microcode stage 1 (`build/p6/test.hex`;
     back to stage 2 = `python3 tools/ucode_send.py --all` once fixed); ROM socket = the second AT28C64B with ROM
     2026-10-07 (MD5 122f1a93...); the first chip (powered reversed 2026-10-07) holds ROM 2026-09-23, set aside.
