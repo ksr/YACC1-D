@@ -11,6 +11,8 @@
 ;   R  the word built in memory below SP by single-byte PUSHes (lo then hi, as PUSHR leaves it), then POPR R3,
 ;      MOVRR R3,R7, showr7: what POPR reads from a correct stack
 ;   A  PUSHR R3 / MVIW R3,0 / POPR R3 / MOVRR R3,R7 / showr7, as before
+;   G/H  bytes 11 22 33 44 on the stack (SP+1..SP+4), POPR R3 (R6): SP before, SP after, the value (2211, SP +2);
+;      SP restored from a copy after each, so a wrong POPR cannot crash the probe
 ; Expected: every line the eight words $ABCD $1234 $0000 $FFFF $5AA5 $00FF $FF00 $8001.
 ; Load with tools/monload.py --go 3000. Hex written as numbers: the assembler upper-cases every source line.
 ;
@@ -759,6 +761,250 @@ start:
         JSR charout
         LDAI 10
         JSR charout
+        MVIW R7,s_g
+        JSR stringout
+        MOVRR R1,R5
+        LDAI 044h
+        PUSH
+        LDAI 033h
+        PUSH
+        LDAI 022h
+        PUSH
+        LDAI 011h
+        PUSH
+        MOVRR R1,R4
+        MVIW R3,0
+        POPR R3
+        MOVRR R1,R7
+        MOVRR R5,R1
+        MOVRR R7,R5
+        MOVRR R4,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        MOVRR R5,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        MOVRR R3,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        LDAI 32
+        JSR charout
+        MOVRR R1,R5
+        LDAI 044h
+        PUSH
+        LDAI 033h
+        PUSH
+        LDAI 022h
+        PUSH
+        LDAI 011h
+        PUSH
+        MOVRR R1,R4
+        MVIW R3,0
+        POPR R3
+        MOVRR R1,R7
+        MOVRR R5,R1
+        MOVRR R7,R5
+        MOVRR R4,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        MOVRR R5,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        MOVRR R3,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        LDAI 32
+        JSR charout
+        MOVRR R1,R5
+        LDAI 044h
+        PUSH
+        LDAI 033h
+        PUSH
+        LDAI 022h
+        PUSH
+        LDAI 011h
+        PUSH
+        MOVRR R1,R4
+        MVIW R3,0
+        POPR R3
+        MOVRR R1,R7
+        MOVRR R5,R1
+        MOVRR R7,R5
+        MOVRR R4,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        MOVRR R5,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        MOVRR R3,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        LDAI 32
+        JSR charout
+        MOVRR R1,R5
+        LDAI 044h
+        PUSH
+        LDAI 033h
+        PUSH
+        LDAI 022h
+        PUSH
+        LDAI 011h
+        PUSH
+        MOVRR R1,R4
+        MVIW R3,0
+        POPR R3
+        MOVRR R1,R7
+        MOVRR R5,R1
+        MOVRR R7,R5
+        MOVRR R4,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        MOVRR R5,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        MOVRR R3,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        LDAI 32
+        JSR charout
+        LDAI 13
+        JSR charout
+        LDAI 10
+        JSR charout
+        MVIW R7,s_h
+        JSR stringout
+        MOVRR R1,R5
+        LDAI 044h
+        PUSH
+        LDAI 033h
+        PUSH
+        LDAI 022h
+        PUSH
+        LDAI 011h
+        PUSH
+        MOVRR R1,R4
+        MVIW R6,0
+        POPR R6
+        MOVRR R1,R7
+        MOVRR R5,R1
+        MOVRR R7,R5
+        MOVRR R4,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        MOVRR R5,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        MOVRR R6,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        LDAI 32
+        JSR charout
+        MOVRR R1,R5
+        LDAI 044h
+        PUSH
+        LDAI 033h
+        PUSH
+        LDAI 022h
+        PUSH
+        LDAI 011h
+        PUSH
+        MOVRR R1,R4
+        MVIW R6,0
+        POPR R6
+        MOVRR R1,R7
+        MOVRR R5,R1
+        MOVRR R7,R5
+        MOVRR R4,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        MOVRR R5,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        MOVRR R6,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        LDAI 32
+        JSR charout
+        MOVRR R1,R5
+        LDAI 044h
+        PUSH
+        LDAI 033h
+        PUSH
+        LDAI 022h
+        PUSH
+        LDAI 011h
+        PUSH
+        MOVRR R1,R4
+        MVIW R6,0
+        POPR R6
+        MOVRR R1,R7
+        MOVRR R5,R1
+        MOVRR R7,R5
+        MOVRR R4,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        MOVRR R5,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        MOVRR R6,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        LDAI 32
+        JSR charout
+        MOVRR R1,R5
+        LDAI 044h
+        PUSH
+        LDAI 033h
+        PUSH
+        LDAI 022h
+        PUSH
+        LDAI 011h
+        PUSH
+        MOVRR R1,R4
+        MVIW R6,0
+        POPR R6
+        MOVRR R1,R7
+        MOVRR R5,R1
+        MOVRR R7,R5
+        MOVRR R4,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        MOVRR R5,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        MOVRR R6,R7
+        JSR showr7
+        LDAI 32
+        JSR charout
+        LDAI 32
+        JSR charout
+        LDAI 13
+        JSR charout
+        LDAI 10
+        JSR charout
         RET
 c1:     DB 0
 c2:     DB 0
@@ -767,3 +1013,5 @@ s_f:    DB 13,10,"F MOVRR R3,R7:",13,10,0
 s_w:    DB 13,10,"W BYTES PUSHR WROTE (HI LO):",13,10,0
 s_r:    DB 13,10,"R POPR OF BYTES PUSHED ONE AT A TIME:",13,10,0
 s_a:    DB 13,10,"A PUSHR/POPR R3:",13,10,0
+s_g:    DB 13,10,"G R3 SP-BEFORE SP-AFTER VALUE (EXP +2, 2211):",13,10,0
+s_h:    DB 13,10,"H R6: THE SAME:",13,10,0
