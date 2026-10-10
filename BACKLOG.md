@@ -70,6 +70,12 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     backplane contacts; the clock from the function generator (level, edges, ringing); ripple and spikes on VCC
     under load; a chip on another card that loads or drives the data bus (the reversed ROM had the supply across
     the memory card's pins).
+  - **2026-10-09, CPU out, bus tester in (flashed back to bus-driver blocks-1; its bus-monitor flash saved in
+    `embedded/bus-tester/readback/`): `memory_status.py` reads $A0 everywhere** - the first read (boot remap, $F000)
+    returns the ROM's first byte $A0, every later read the same $A0, RAM, ROM and empty blocks alike: nothing on the
+    memory card drives the data bus after that, the bus keeps its last value. The just-fitted 74LS245 (IC5) is the
+    first suspect (orientation, pins, seating), then the card's seating. Rerun `memory_status.py` after; then
+    `memory_full_test.py` (its ROM phase compares against the tree's image, while the chip holds ROM 2026-09-23).
   - **The machine as left 2026-10-09:** clock 1 MHz; sequencer EEPROM = the 2026-09-23 microcode; both AT28C64B
     chips hold ROM 2026-09-23 (one fitted); IC5 new. To return to the tree's state: `rom.bin` on a chip,
     `python3 tools/ucode_send.py --all`.
