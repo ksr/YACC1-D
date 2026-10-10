@@ -1,0 +1,10 @@
+accumulator  PASS  20 values, DATA8..15 = $FF
+invert       PASS  
+logic        PASS  AND OR XOR ZERO, 64 pairs each, carry kept
+add          PASS  12 pairs, carry out
+add carry    PASS  ADDIC/ADDTC with carry 0 and 1
+subtract     PASS  carry = borrow
+shift        PASS  SHL SHR RSHL RSHR PSHR CSHL CSHR, carry = bit out
+conditions   PASS  always, <, =, >, zero, 16-bit zero, carry; each inverted too
+reset        PASS  carry cleared
+ALU card: ALL PASS
