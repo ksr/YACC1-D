@@ -183,6 +183,9 @@ static struct comb prev, cur;
 
 /* ---- I/O card ----------------------------------------------------------------------------------------------- */
 static int scripted, trace, trace_steps, warn_fights, fight_src;
+static int bus_hold;             /* -H (2026-10-10): an undriven data lane keeps the last value driven on it (a CMOS bus with
+                                    no pull-ups: the memory card's 74HC245 since 2026-10-09) instead of reading $FF */
+static uint16_t held_bus = 0xFFFF;
 static int io_rd_hold = -1;     /* an I/O read is sampled once, at the leading edge of -IO-RD, and held while it stays asserted */
 static uint8_t uart_lcr, uart_ier, uart_fcr, uart_mcr, uart_scr, uart_dll, uart_dlm;
 static int in_buf = -1;   /* one byte of look-ahead from stdin, -1 = none */
@@ -308,7 +311,7 @@ static void compute(const uint8_t *w, struct comb *c) {
     /* register cards: internal bus ADATA = pull-ups unless a read buffer is enabled; transceivers open when exactly
        one of RDSEL/LDSEL selects the card (straight, or swapped with -HL-SWAP) */
     int func_rd = on(w, s_reg_func_rd), func_ld = on(w, s_reg_func_ld), swap = on(w, s_hl_swap);
-    int rd_card = c->rd_id >> 2, ld_card = c->ld_id >> 2;
+    int rd_card = c->rd_id >> 2, ld_card = c->ld_id >> 2, weak = 0;
     uint16_t adata = 0xFFFF;
     if (func_rd && !REG_PRESENT(c->rd_id & 7)) { c->adata = 0xFFFF; c->adata_valid = 1; }   /* no card: nothing drives */
     else if (func_rd) {
@@ -318,7 +321,7 @@ static void compute(const uint8_t *w, struct comb *c) {
         c->adata = adata; c->adata_valid = 1;
         if (!(func_ld && ld_card == rd_card)) {                              /* not an internal same-card copy */
             int strobed = on(w, s_reg_rd_lo) || on(w, s_reg_rd_hi);
-            if (!strobed) weak_drives++;                                      /* pull-ups through the transceivers */
+            if (!strobed) { weak_drives++; weak = 1; }                        /* pull-ups through the transceivers */
             else if (!swap) { DRIVE_LO(adata & 0xFF, "REG"); DRIVE_HI(adata >> 8, "REG"); }
             else DRIVE_LO(adata >> 8, "REG(swap)");
         }
@@ -327,6 +330,10 @@ static void compute(const uint8_t *w, struct comb *c) {
     if (alu_drives) {                                                          /* the ALU: AC on DATA0..7, pull-ups on DATA8..15 */
         if (fight_src && others_lo) { fights_total++; if (fights[ir][step]++ == 0) { fights_kinds++; if (warn_fights) fprintf(stderr, "bus fight (ALU drive ignored, -F src): %s ($%02X) step %d\n", opname[ir] ? opname[ir] : "?", ir, step); } }
         else { DRIVE_LO(acc, "ACC"); if (!(fight_src && others_hi)) DRIVE_HI(0xFF, "ACC(FF)"); }
+    }
+    if (bus_hold) {                                     /* -H: undriven lanes keep their charge; driven ones refresh it */
+        if (lo_n || weak) held_bus = (uint16_t)((held_bus & 0xFF00) | (lo_n ? (lo_val & 0xFF) : 0xFF)); else lo_val = held_bus & 0xFF;
+        if (hi_n || weak) held_bus = (uint16_t)((held_bus & 0x00FF) | ((hi_n ? (hi_val & 0xFF) : 0xFF) << 8)); else hi_val = held_bus >> 8;
     }
     c->data = (uint16_t)((hi_val << 8) | (lo_val & 0xFF));
     c->data_lo_driven = lo_n; c->data_hi_driven = hi_n;
@@ -515,6 +522,7 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "-t")) trace = 1;
         else if (!strcmp(argv[i], "-T")) trace_steps = 1;
         else if (!strcmp(argv[i], "-w")) warn_fights = 1;
+        else if (!strcmp(argv[i], "-H")) bus_hold = 1;
         else if (!strcmp(argv[i], "-F") && i + 1 < argc) { i++; fight_src = !strcmp(argv[i], "src"); if (!fight_src && strcmp(argv[i], "and")) { fprintf(stderr, "y1ucemu: -F and|src\n"); return 1; } }
         else if (!strcmp(argv[i], "-s") && i + 1 < argc) switches = (int)strtol(argv[++i], NULL, 0);
         else if (!strcmp(argv[i], "-i") && i + 1 < argc) in_line = (int)strtol(argv[++i], NULL, 0) & 1;

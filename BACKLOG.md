@@ -108,6 +108,18 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     asserted, COUNT-FAULT stops the clock - the frozen bus word the bus-monitor showed; `bench-2026-10-10-1216.log`). So
     bench images built with `--xisa` cannot run on that microcode, and the 2026-10-09 bench on it proves nothing.
     Stage 2 (`test.hex`) loaded again the same day (boot check 0 mismatches); next: `rom.bin` burned, bench, T1-T3.
+  - **2026-10-10, the tree's pair (ROM 2026-10-07 `rom.bin` on both chips + stage 2): POPR is broken on the
+    machine.** Bench (`bench-2026-10-10-1352.log` at 3 ms/char lost the `3` of `G3000` at 1 MHz - use `--delay 6`;
+    `bench-2026-10-10-1359.log` at 6 ms): hello, brur PASS; isa: the PUSHR/POPR word wrong ($99B3 for $ABCD); every
+    compiled program prints wrong DECIMAL numbers (hex right): rt_divmod pops words. `tests/bench/diag/pushr.asm`
+    (loaded with `monload.py --delay 6 --go 3000`) separates it: MVIW+showr7, MOVRR across cards and the two bytes
+    PUSHR writes are all right; POPR of a correct stack (built with single-byte PUSHes) loads wrong, data-dependent
+    values (`00AB 4A12 2700 C0FF 5A3C ...` for `ABCD 1234 0000 FFFF 5AA5 ...`); single-byte PUSH/POP right. Both
+    emulators right; `y1ucemu -H` (new: an undriven bus keeps its last value) still right. POPR loads through
+    -2-BYTE-OPERAND-SEL (the register number from the sequencer's operand register) and, for the high byte, -HL-SWAP.
+    The same microcode passed the bench 15/15 on 2026-10-04 at 6 MHz; since then the clock went to 1 MHz (10-08) and
+    the memory card's IC5 became a 74HC245 (10-09). Next: the probe at 6 MHz (and lower), and the operand-register
+    path on the sequencer (OPERAND-CLK latch, the -2-BYTE-OPERAND-SEL mux).
     Next: the remaining cards
     back one at a time with `memory_status.py --rom /tmp/rom-2026-09-23.bin` after each.
     `memory_full_test.py` the same evening (`tests/memory/full-run-2026-10-09.log`): B address lines PASS, C and D
