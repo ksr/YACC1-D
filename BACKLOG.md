@@ -87,7 +87,10 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     at a time, `memory_status.py` after each; the first one that brings back the $A0 / random reads is the fault.
     `memory_full_test.py` the same evening (`tests/memory/full-run-2026-10-09.log`): B address lines PASS, C and D
     every RAM byte $0000-$CFFF both patterns PASS (0 bad of 53248); A/F fail only against the tree's image, E fails
-    because the video card is out.
+    because the video card is out. TMP0/TMP1 through the tester: PASS (38 patterns each, with the other register
+    holding the complement; both latch on the leading edge of -TMP-REG-LDn, finding M3). With only these two cards
+    the undriven data bus keeps the last value driven (seconds; nothing pulls it up), so a tester read of an address
+    nothing answers returns the previous value - which is also how "$A0 everywhere" looks.
   - **The machine as left 2026-10-09:** clock 1 MHz; sequencer EEPROM = the 2026-09-23 microcode; both AT28C64B
     chips hold ROM 2026-09-23 (one fitted); IC5 new. To return to the tree's state: `rom.bin` on a chip,
     `python3 tools/ucode_send.py --all`.
