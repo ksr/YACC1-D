@@ -1,0 +1,20 @@
+tests/bench on the machine, 2026-10-10 12:16, port /dev/cu.usbserial-AB0MVHSQ, 3 ms/char
+
+==== hello: FAIL output differs
+G
+GO ADDRESS:3000Hello, YACC1!
+
+---- expected (microcode emulator) ----
+Hello, YACC1!
+a b c 
+done
+
+
+==== brur: FAIL load: record 1 answered nothing
+
+
+==== isa: FAIL load: record 1 answered nothing
+
+
+==== arith: FAIL load: record 1 answered nothing
+

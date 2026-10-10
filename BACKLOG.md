@@ -103,6 +103,11 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     time driven: two lines correct), switches $00/$01/$80/$55/$AA each read right, IN up = 1 / down = 0: all OK.
     Afterwards the bus tester was flashed back to bus-monitor (the saved 2026-10-09 image, verified) to listen
     while the machine runs. Next: sequencer and CPU back, tree ROM + stage 2 microcode, boot check, bench, T1-T3.
+    2026-10-10, CPU back with the 2026-09-23 ROM + microcode: boots to the monitor, but the bench's hello hung at
+    $3022 = $8B (`STZ`, an `--xisa` instruction the 2026-09-23 microcode does not have: an empty record, every strobe
+    asserted, COUNT-FAULT stops the clock - the frozen bus word the bus-monitor showed; `bench-2026-10-10-1216.log`). So
+    bench images built with `--xisa` cannot run on that microcode, and the 2026-10-09 bench on it proves nothing.
+    Stage 2 (`test.hex`) loaded again the same day (boot check 0 mismatches); next: `rom.bin` burned, bench, T1-T3.
     Next: the remaining cards
     back one at a time with `memory_status.py --rom /tmp/rom-2026-09-23.bin` after each.
     `memory_full_test.py` the same evening (`tests/memory/full-run-2026-10-09.log`): B address lines PASS, C and D

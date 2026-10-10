@@ -34,8 +34,9 @@ ROOT = os.path.dirname(HERE)
 GEN = os.path.join(ROOT, "firmware/microcode/ucode-generator2")
 PROMPT = b">>"
 RECORD_LEN = 1 + 2 + 2 + 1024                 # % cc ii data (the '-' is not sent)
-SEQUENCER_FTDI = "AB6WZCQX"                   # the sequencer card's FTDI serial number (the same on both Macs; the
-                                              # console's is AB0MVHSQ, tools/monload.py)
+SEQUENCER_FTDI = "AL00FSLF"                   # the sequencer card's own FTDI (2026-10-10: a second adapter, so the bus
+                                              # tester can stay on AB6WZCQX; the console's is AB0MVHSQ, tools/monload.py)
+OLD_SEQUENCER_FTDI = "AB6WZCQX"               # the cable shared with the bus tester before 2026-10-10
 
 
 def find_port():
@@ -43,7 +44,7 @@ def find_port():
     otherwise the only USB-serial port there is"""
     ports = sorted(glob.glob("/dev/cu.usbserial*") + glob.glob("/dev/cu.usbmodem*"))
     if not ports: sys.exit("ucode_send: no /dev/cu.usbserial* or usbmodem* port: is the sequencer card's FTDI plugged in?")
-    seq = [p for p in ports if SEQUENCER_FTDI in p]
+    seq = [p for p in ports if SEQUENCER_FTDI in p] or [p for p in ports if OLD_SEQUENCER_FTDI in p]
     if seq:
         return seq[0]
     if len(ports) > 1: sys.exit("ucode_send: several ports and none is the sequencer card's FTDI (%s), pick one with "

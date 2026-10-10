@@ -59,7 +59,8 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
 - I/O ports: P0/P1 = the I/O card (control latch + data: UART, switches, LEDs, LCD, TIL311); P2-P7 decoded by it but
   unused; **P8/P9 = CompactFlash** (register select / data); PA-PF free. Console: 16550 UART, 38400 8N1.
 - Serial ports on the Mac (FTDI serial numbers, the same on both Macs): console `/dev/cu.usbserial-AB0MVHSQ`,
-  sequencer card (microcode loader) `/dev/cu.usbserial-AB6WZCQX`. Clock 1 MHz; ~26 clocks per
+  sequencer card (microcode loader) `/dev/cu.usbserial-AL00FSLF` (its own adapter since 2026-10-10), bus tester
+  `/dev/cu.usbserial-AB6WZCQX` (the sequencer's cable before; `tools/ucode_send.py` still falls back to it). Clock 1 MHz; ~26 clocks per
   instruction on the native toolchain's workload with the tree's microcode (2026-09-29: three-step fetch prologue and
   idle steps; 32.4 before; the machine's EEPROM holds it since 2026-10-04).
 

@@ -28,10 +28,16 @@ tests/monload/run.py exercises this tool against the microcode emulator through 
 import os, sys, time, glob, argparse, select
 
 SEQUENCER_FTDI = "AB6WZCQX"
+CONSOLE_FTDI = "AB0MVHSQ"      # 2026-10-10: the console's own adapter; with the sequencer's second FTDI (AL00FSLF) and the
+NOT_CONSOLE = ("AB6WZCQX", "AL00FSLF")   # bus tester both plugged in, the console is picked by its serial number
 
 
 def find_port():
-    ports = [p for p in sorted(glob.glob("/dev/cu.usbserial*") + glob.glob("/dev/cu.usbmodem*")) if SEQUENCER_FTDI not in p]
+    ports = sorted(glob.glob("/dev/cu.usbserial*") + glob.glob("/dev/cu.usbmodem*"))
+    con = [p for p in ports if CONSOLE_FTDI in p]
+    if con:
+        return con[0]
+    ports = [p for p in ports if not any(n in p for n in NOT_CONSOLE)]
     if not ports: sys.exit("monload: no USB serial port for the console (the sequencer's FTDI is excluded): use --port")
     if len(ports) > 1: sys.exit("monload: several ports, pick the console with --port: " + " ".join(ports))
     return ports[0]
