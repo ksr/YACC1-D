@@ -10,7 +10,8 @@ What it reports, in order:
   block map    every 4K block $8000-$FFFF classified as RAM (write/read works), ROM (matches the image, writes ignored),
                VIDEO ($D000-$D7FF if a video card answers) or undecoded (reads echo the last bus value)
   expected     $8000-$CFFF RAM, $D000 video / undecoded, $E000-$FFFF ROM (docs/system/MACHINE.md jumper table)
-usage: memory_status.py [port]
+usage: memory_status.py [port] [--rom FILE]
+  --rom FILE  compare the ROM against FILE (an 8K image, e.g. the one burned on the chip) instead of the tree's
 """
 import sys, os, time
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "tools"))
@@ -19,7 +20,10 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
 from romimage import rom_image
 rom = rom_image()   # built from firmware/basic/basic.img + firmware/monitor/monitor.img, what the emulator loads
 assert len(rom) == 8192
-port = next((a for a in sys.argv[1:] if not a.startswith("--")), PORT)
+args = sys.argv[1:]
+if "--rom" in args:   # the image actually burned on the chip, when it is not the tree's
+    rom = open(args.pop(args.index("--rom") + 1), "rb").read(); args.remove("--rom"); assert len(rom) == 8192
+port = next((a for a in args if not a.startswith("--")), PORT)
 ok_all = True
 def line(name, ok, detail):
     global ok_all; ok_all &= ok; print("%-14s %s  %s" % (name, "OK  " if ok else "FAIL", detail), flush=True)

@@ -12,7 +12,8 @@ Phases (each prints PASS/FAIL and a running line of progress; ~20 min with the b
   D. the same with the inverted pattern (every bit exercised both ways)
   E. video RAM $D000-$D3FF: both patterns, neighbour isolation, the block-0/9 write-through checks, read stability
   F. ROM again (the RAM sweeps must not have disturbed it) and a check that nothing answers at $D800-$DFFF
-usage: memory_full_test.py [port] [--log FILE]
+usage: memory_full_test.py [port] [--log FILE] [--rom FILE]
+  --rom FILE  compare the ROM against FILE (an 8K image, e.g. the one burned on the chip) instead of the tree's
 """
 import sys, os, time
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "tools"))
@@ -23,6 +24,8 @@ rom = rom_image()   # built from firmware/basic/basic.img + firmware/monitor/mon
 args = sys.argv[1:]
 logf = open(args.pop(args.index("--log") + 1), "a") if "--log" in args else None
 if "--log" in args: args.remove("--log")
+if "--rom" in args:   # the image actually burned on the chip, when it is not the tree's
+    rom = open(args.pop(args.index("--rom") + 1), "rb").read(); args.remove("--rom"); assert len(rom) == 8192
 port = next((a for a in args if not a.startswith("--")), PORT)
 results = []; T0 = time.time()
 def out(msg):
