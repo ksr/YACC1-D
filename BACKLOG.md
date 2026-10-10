@@ -49,12 +49,21 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     --only hello,brur,isa,arith` (programs from RAM: all passed 2026-10-08 07:40) to see whether the whole machine
     degraded or only reads by ROM code; then the memory card's ROM -CE/-OE path (IC6, IC18), its data buffer
     (74LS245) and the ROM socket's contacts.
-  - **2026-10-09: the memory card's 74LS245 (IC5, the data-bus buffer) replaced.** Not tested yet: next, T1-T3
-    (`y1term.py --send`), then the short bench.
-  - **The machine as left 2026-10-08 night:** clock 1 MHz; sequencer EEPROM = microcode stage 1 (`build/p6/test.hex`;
-    back to stage 2 = `python3 tools/ucode_send.py --all` once fixed); ROM socket = the second AT28C64B with ROM
-    2026-10-07 (MD5 122f1a93...); the first chip (powered reversed 2026-10-07) holds ROM 2026-09-23, set aside.
-    The machine was hung in T1 (needs a reset).
+  - **2026-10-09: the memory card's 74LS245 (IC5, the data-bus buffer) replaced** - no change: `10 l=0` and
+    `20 l=l+1` SYNTAX ERROR at entry, RUN `25=TOKEN NOT SUPPORTED / EXE STMT` and a halt (its register dump:
+    R2 = $0FF1, VIDMIR - the new CHAROUT's `LDA VIDMIR` changes R2 on the machine, as CLAUDE.md says; BASIC keeps
+    nothing in R2 across a print, so not the cause).
+  - **2026-10-09: the 2026-09-23 pair put back - it fails: a hardware fault, independent of the software.**
+    ROM 2026-09-23 (MD5 d2d7b027..., the help has no V) and the microcode the EEPROM held on 2026-09-23 (the cache
+    at 9000a22, staged as `/tmp/ucode-2026-09-23.hex` with the `!` sentinel; boot check 0 mismatches), clock 1 MHz:
+    `10 L=0` hangs at entry. The same pair ran BASIC and passed the bench 14/14 on this machine on 2026-09-23, and
+    y1ucemu runs T1-T3 right with it (and with the tree pair, ROM 2026-10-07 + stage 2). Next: VCC at the memory
+    card (4.75-5.25 V, ripple), the ROM socket and the ROM -CE/-OE path (IC6, IC18), anything that ran hot when the
+    chip was reversed; the 2026-09-23 bench images (`git show 9000a22:tests/bench/images/...`, no --xisa) run from
+    RAM to see how far it reaches. Afterwards back to the tree pair: burn `rom.bin`, `ucode_send.py --all`.
+  - **The machine as left 2026-10-09:** clock 1 MHz; sequencer EEPROM = the 2026-09-23 microcode; both AT28C64B
+    chips hold ROM 2026-09-23 (one fitted); IC5 new. To return to the tree's state: `rom.bin` on a chip,
+    `python3 tools/ucode_send.py --all`.
   - T1-T3 for `y1term.py --send` (upper case for ROM 2026-09-23): T1 `10 l=0 / 20 l=l+1 / 30 print l / 40 if l < 5
     then goto 20`, T2 `10 c=0 / 20 c=c+1 / 30 if c < 100 then goto 20 / 40 print c`, T3 T1's outer loop around T2's
     inner (`70 if l < 3 then goto 20`).
