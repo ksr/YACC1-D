@@ -295,7 +295,12 @@ the pipeline fields on the three 4-bit select buses:
 | IC11A | DEST-ADDR | operand bits 4..7 -> ADDR-REG-ID0..3 |
 | IC11B | GND (enabled) | inputs GND; **outputs not connected** (no net on the schematic pins, no copper on pads 3/5/7/9 in the `.brd`) |
 
-IC31B: `-ONE-OPERAND-SEL` = NOT `-2-BYTE-OPERAND-SEL`, so exactly one of IC4/IC5 drives at any time. This matches the
+IC31B: `-ONE-OPERAND-SEL` = NOT `-2-BYTE-OPERAND-SEL`, so exactly one of IC4/IC5 drives at any time. **The same
+`-ONE-OPERAND-SEL` enables IC18B, but nothing takes its place on ADDR-REG-ID** (IC18A/IC11A wait for `SRC-ADDR`/`DEST-ADDR`):
+while `-2-BYTE-OPERAND-SEL` is asserted ADDR-REG-ID0..3 float. Found 2026-10-10 by single-stepping the machine with the bus
+tester as the clock: POPR's stack reads in those steps saw ADDR-REG-ID = 15 and address $FFFF once the lines drifted
+(a 1 MHz step is long enough, a 6 MHz one is not); POPR now reads through TMP1 (`MICROCODE.md` section 3, item 4). A
+card revision could enable IC18B whenever neither `SRC-ADDR` nor `DEST-ADDR` is asserted. This matches the
 assembler's encoding (`software/assembler/yacc1.def`): MOVRR's byte is (dst<<4)|src, PUSHR/JSRUR/BRUR use the low nibble,
 POPR uses reg<<4.
 

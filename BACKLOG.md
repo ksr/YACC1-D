@@ -134,9 +134,11 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     SP and $0EFC/$0EFD. At 6 MHz the floating lines still hold 1 (SP) from the step before; at 1 MHz they drift to
     15 - the slow-clock POPR fault, the wrong decimal numbers and BASIC's RUN failures. JP1 was not it (reseated, no
     change; its SRC-ADDR/DEST-ADDR are still unverified). The emulators take ADDR-REG-ID from the word and miss it.
-    Fix chosen: (proposed) POPR through TMP1 - read [SP] with the pipeline's ADDR-REG-ID into TMP1, then
-    `-2-BYTE-OPERAND-SEL` with TMP1 as the source - plus both emulators modelling the floating select (address
-    $FFFF while `-2-BYTE-OPERAND-SEL`), so `make check` sees this class. Hardware alternative: IC18B's enable to GND
+    **FIXED 2026-10-10 in the microcode** (record $08 reloaded, boot check 0 mismatches; the probe all right at
+    1 MHz): POPR through TMP1 - read [SP] with the pipeline's ADDR-REG-ID into TMP1, then
+    `-2-BYTE-OPERAND-SEL` with TMP1 as the source - and `y1ucemu` models the floating select (address $FFFF while
+    `-2-BYTE-OPERAND-SEL`; `-O` the old model), so `make check` sees this class: with the old POPR it fails the isa
+    test as the machine did, with the new one every check passes. Hardware alternative: IC18B's enable to GND
     (a cut and a jumper; conflicts with IC18A/IC11A if SRC-ADDR/DEST-ADDR ever assert).
     Next: the remaining cards
     back one at a time with `memory_status.py --rom /tmp/rom-2026-09-23.bin` after each.

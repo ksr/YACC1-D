@@ -751,12 +751,24 @@ void branchInstructions() {
     writeCurrentLine();
     incrementReg(PC);
 
+    /* YACC1-D 2026-10-10: each stack byte goes through TMP1. While -2-BYTE-OPERAND-SEL is asserted the sequencer
+       drives no ADDR-REG-ID (its IC18B is enabled by -ONE-OPERAND-SEL = NOT -2-BYTE-OPERAND-SEL), so the old POPR,
+       which read [SP] with -2-BYTE-OPERAND-SEL on, addressed whatever the floating lines held: SP for a short step
+       (6 MHz), no register ($FFFF) once they drifted (1 MHz) - found single-stepping the machine (BACKLOG.md). Now
+       [SP] is read with the pipeline's ADDR-REG-ID into TMP1 (leading-edge latch: the byte is on the bus a step
+       before -TMP-REG-LD1), and only then -2-BYTE-OPERAND-SEL names the register, loaded from TMP1 with no memory
+       access (TMP1's DATA0..7 = the byte; the high byte goes through the -HL-SWAP path as before). */
     incrementReg(SP);
     putMemAtRegOnBus(SP);
+    setSignal("-TMP-REG-LD1");
+    writeCurrentLine();
+    clearSignal("-TMP-REG-LD1");
+    clearSignal("-MEM-RD");
+    writeCurrentLine();
+    setSignal("-TMP-REG-RD1");
     setSignal("-2-BYTE-OPERAND-SEL");
     writeCurrentLine();
     setSignal("-REG-FUNC-LD");
-
     writeCurrentLine();
     setSignal("REG-LD-LO");
     writeCurrentLine();
@@ -765,12 +777,19 @@ void branchInstructions() {
     clearSignal("-REG-FUNC-LD");
     writeCurrentLine();
     clearSignal("-2-BYTE-OPERAND-SEL");
+    clearSignal("-TMP-REG-RD1");
     writeCurrentLine();
 
     incrementReg(SP);
+    putMemAtRegOnBus(SP);
+    setSignal("-TMP-REG-LD1");
+    writeCurrentLine();
+    clearSignal("-TMP-REG-LD1");
+    clearSignal("-MEM-RD");
+    writeCurrentLine();
+    setSignal("-TMP-REG-RD1");
     setSignal("-2-BYTE-OPERAND-SEL");
     writeCurrentLine();
-    putMemAtRegOnBus(SP);
     setSignal("-REG-FUNC-LD");
     setSignal("-HL-SWAP");
     writeCurrentLine();
@@ -779,6 +798,10 @@ void branchInstructions() {
     clearSignal("REG-LD-HI");
     writeCurrentLine();
     clearSignal("-REG-FUNC-LD");
+    writeCurrentLine();
+    clearSignal("-HL-SWAP");
+    clearSignal("-2-BYTE-OPERAND-SEL");
+    clearSignal("-TMP-REG-RD1");
     writeCurrentLine();
 
     endInstruction();

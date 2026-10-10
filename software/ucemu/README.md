@@ -18,7 +18,7 @@ python3 tests/ucemu/run.py                           # the compiler suite + test
 
 Options: `-u test.hex` another control store; `-F and|src` how a bus fight resolves (below); `-s NN` the switch
 byte; `-c disk.img` a CompactFlash image; `-l N` stop after N steps; `-V` the video card's screen and CRTC registers
-at the end, `-W` a CRTC write log, `-N` no video card (2026-09-25, `software/videomodel.h`). The status line on stderr gives instructions, steps, clocks (a step is two clock
+at the end, `-W` a CRTC write log, `-N` no video card (2026-09-25, `software/videomodel.h`); `-H` an undriven data lane keeps its last value; `-O` the old address model (2026-10-10: by default nothing drives ADDR-REG-ID while `-2-BYTE-OPERAND-SEL` is asserted - the sequencer's IC18B is off - and the address reads $FFFF, as the machine did; this caught POPR, fixed in the microcode the same day). The status line on stderr gives instructions, steps, clocks (a step is two clock
 periods, the UCODE-COUNT-RESET step one), R3, and the bus-fight count.
 
 ## The model

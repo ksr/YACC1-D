@@ -44,6 +44,11 @@
  *        stderr as they change; -l N stop after N steps
  *   -V   print the video card's screen and CRTC registers on stderr at the end; -W log CRTC register writes; -N no
  *        video card ($D000-$DFFF undriven: reads the pull-ups' $FF, writes lost). software/videomodel.h (2026-09-25)
+ *   -H   (2026-10-10) an undriven data lane keeps the last value driven on it (a CMOS bus without pull-ups) instead
+ *        of reading $FF
+ *   -O   (2026-10-10) the old address model: ADDR-REG-ID from the word even while -2-BYTE-OPERAND-SEL is asserted. By
+ *        default that select is undriven then (the sequencer's IC18B is off), modelled as no register: address $FFFF -
+ *        the slow-clock POPR fault the machine showed at 1 MHz (BACKLOG.md)
  * Console: the I/O card's UART (P0 = UARTCS|register, P1 = data) is stdin/stdout, as on the machine; reading with
  * nothing left returns 0 with "data ready" set so a program's EOF test sees 0. Port 2 is also a console (the old
  * emulator's shortcut), so hand-written programs that OUTA P2 still print.
@@ -183,7 +188,8 @@ static struct comb prev, cur;
 
 /* ---- I/O card ----------------------------------------------------------------------------------------------- */
 static int scripted, trace, trace_steps, warn_fights, fight_src;
-static int bus_hold;             /* -H (2026-10-10): an undriven data lane keeps the last value driven on it (a CMOS bus with
+static int bus_hold;
+static int old_addr_sel;          /* -O: ADDR-REG-ID from the word even under -2-BYTE-OPERAND-SEL (the model before 2026-10-10) */             /* -H (2026-10-10): an undriven data lane keeps the last value driven on it (a CMOS bus with
                                     no pull-ups: the memory card's 74HC245 since 2026-10-09) instead of reading $FF */
 static uint16_t held_bus = 0xFFFF;
 static int io_rd_hold = -1;     /* an I/O read is sampled once, at the leading edge of -IO-RD, and held while it stays asserted */
@@ -285,6 +291,12 @@ static void compute(const uint8_t *w, struct comb *c) {
     int addr_id = field(w, s_addr_id) & 7;
     int vma = on(w, s_vma);
     uint16_t a = REG_PRESENT(addr_id) ? reg[addr_id] : 0xFFFF;
+    /* 2026-10-10: the sequencer's IC18B (the pipeline's ADDR-REG-ID onto the bus) is enabled by -ONE-OPERAND-SEL =
+       NOT -2-BYTE-OPERAND-SEL, so while -2-BYTE-OPERAND-SEL is asserted nothing drives ADDR-REG-ID (IC18A/IC11A,
+       operand -> ADDR-REG-ID, need SRC-ADDR/DEST-ADDR, which the microcode never asserts). On the machine the lines
+       hold their last value for a short step and drift to 15 (no register: address $FFFF) in a long one - POPR read
+       $FFFF at 1 MHz (BACKLOG.md). Modelled as the worst case: no register on the address bus. -O: the old model. */
+    if (on(w, s_two_byte) && !old_addr_sel) a = 0xFFFF;
     c->addr = force_rom ? (a | 0xF000) : a;                                     /* FORCE-ROM: BADDR12..15 high */
     if (vma && (a & 0x8000)) force_rom = 0;
     /* data bus: collect the drivers of each byte lane */
@@ -523,6 +535,7 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "-T")) trace_steps = 1;
         else if (!strcmp(argv[i], "-w")) warn_fights = 1;
         else if (!strcmp(argv[i], "-H")) bus_hold = 1;
+        else if (!strcmp(argv[i], "-O")) old_addr_sel = 1;
         else if (!strcmp(argv[i], "-F") && i + 1 < argc) { i++; fight_src = !strcmp(argv[i], "src"); if (!fight_src && strcmp(argv[i], "and")) { fprintf(stderr, "y1ucemu: -F and|src\n"); return 1; } }
         else if (!strcmp(argv[i], "-s") && i + 1 < argc) switches = (int)strtol(argv[++i], NULL, 0);
         else if (!strcmp(argv[i], "-i") && i + 1 < argc) in_line = (int)strtol(argv[++i], NULL, 0) & 1;
@@ -536,7 +549,7 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "-V")) vid.dump = 1;
         else if (!strcmp(argv[i], "-W")) vid.log = 1;
         else if (!strcmp(argv[i], "-N")) vid.absent = 1;
-        else { fprintf(stderr, "usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-i 0|1] [-I N] [-R 1|2] [-L] [-E ADDR] [-l N] [-V] [-W] [-N]\n"); return 1; }
+        else { fprintf(stderr, "usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-i 0|1] [-I N] [-R 1|2] [-L] [-E ADDR] [-l N] [-V] [-W] [-N] [-H] [-O]\n"); return 1; }
     }
     resolve_signals();
     load_opnames(exe_dir);

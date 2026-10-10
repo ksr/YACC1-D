@@ -244,6 +244,11 @@ story from the machine's side. The points a microcode author needs:
    PUSHR, POPR, JSRUR and BRUR are the users; `yacc1.def` encodes the operand accordingly. The bit is released
    before the record ends, and the moment it is released the pipeline's own (usually zero) fields return — which is
    how PUSHR's high-byte write found itself reading PC (H-1, section 8).
+   **While the bit is asserted nothing drives ADDR-REG-ID** (IC18B, the pipeline's field, is enabled by
+   `-ONE-OPERAND-SEL`, and the operand paths IC18A/IC11A need `SRC-ADDR`/`DEST-ADDR`, never asserted): no memory access
+   may happen in those steps. The lines keep their last value for a short step and drift to 15 (no register, address
+   $FFFF) in a long one - POPR read [SP] that way and failed at 1 MHz but not at 6 MHz until 2026-10-10, when it was
+   changed to read through TMP1 first. `software/ucemu` models the undriven select (`-O` the old model).
 5. **Branch-taken latch and the R0 gate**: `BR-TEST` with `BR-COND` sets a level-sensitive latch that is cleared by
    `UCODE-COUNT-RESET`; loads whose `REG-LD-ID` is 0 reach the register card only while the latch is set. Every
    unconditional PC load therefore carries `BR-TEST` with ALU code 0 (`branch.c` JSR, RET, INT, IRET, BRUR, `branch()`).
