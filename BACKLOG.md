@@ -11,7 +11,7 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   beside the bus connector, pin 1 on the ADDR15 track; `hardware/cards/memory/kicad/v2.0` README). Then,
   optional and separate: drop the `-VMA`-in-every-step hack from the microcode generator (a reload) so the chip selects
   are qualified by -VMA again.
-- **BASIC programs go wrong at RUN on the machine: a $00 read from the program buffer comes back with bits set
+- **RESOLVED 2026-10-10 (the POPR microcode fix, end of this item): BASIC programs go wrong at RUN on the machine: a $00 read from the program buffer comes back with bits set
   (2026-10-08, open; found with ROM 2026-10-07 MD5 122f1a93... and microcode stage 2; the machine runs stage 1 and ROM 2026-09-23 since that evening).** Both emulators run every program below
   correctly. On the machine (`tools/y1term.py --send FILE --new --run`):
   - `10 l=0 / 20 c=0 / 30 c=c+1 / 40 if c < 32000 then goto 30 / 50 l=l+1 / 60 print l / 70 goto 20` (the program
