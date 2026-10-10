@@ -139,7 +139,11 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     `-2-BYTE-OPERAND-SEL` with TMP1 as the source - and `y1ucemu` models the floating select (address $FFFF while
     `-2-BYTE-OPERAND-SEL`; `-O` the old model), so `make check` sees this class: with the old POPR it fails the isa
     test as the machine did, with the new one every check passes. **On the machine at 1 MHz: the bench 15/15**
-    (`bench-2026-10-10-1912.log`; 13 of 15 failed before the fix). Next: BASIC T1-T3 and `baslook.bas` at 1 MHz. Hardware alternative: IC18B's enable to GND
+    (`bench-2026-10-10-1912.log`; 13 of 15 failed before the fix). **BASIC at 1 MHz: T1 (prints 1..5), T2 (counts to
+    100), T3 (nested loops, 1 2 3) all right through `tools/y1term.py --send ... --new --run` - the RUN fault of
+    2026-10-08 is resolved.** Open from this hunt: the cards were never faulty (the "$A0 everywhere" was the tester
+    leaving R0 on the address bus); the sequencer card revision note (IC18B enable); `baslook.bas` (the 32000-count
+    loop) is in the tree root, untracked. Hardware alternative: IC18B's enable to GND
     (a cut and a jumper; conflicts with IC18A/IC11A if SRC-ADDR/DEST-ADDR ever assert).
     Next: the remaining cards
     back one at a time with `memory_status.py --rom /tmp/rom-2026-09-23.bin` after each.
