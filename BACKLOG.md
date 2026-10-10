@@ -76,6 +76,15 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     memory card drives the data bus after that, the bus keeps its last value. The just-fitted 74LS245 (IC5) is the
     first suspect (orientation, pins, seating), then the card's seating. Rerun `memory_status.py` after; then
     `memory_full_test.py` (its ROM phase compares against the tree's image, while the chip holds ROM 2026-09-23).
+    Unchanged after reseating every chip and fitting a new 74HC245 as IC5. With the tester's outputs off the data
+    bus reads $FF and the address bus $FFFF (pull-ups only), so no card drives either bus at idle.
+  - **2026-10-09, only the bus tester and the memory card on the backplane: the memory card works.**
+    `memory_status.py`: boot remap OK, low RAM OK, $8000-$CFFF RAM, $E000/$F000 ROM; the full 8K ROM read back
+    through the tester is byte-identical to ROM 2026-09-23 (its "ROM mismatches" and "$F000 WRITABLE!" lines come
+    from comparing against the tree's newer image: $F123 is $68 in 2026-09-23, $04 in the tree). So one of the
+    cards pulled (registers, ALU, address/TMP, sequencer, I/O, video, bring-up cards) breaks memory cycles when it is
+    on the bus - the likeliest cause of the RUN failures and the random bench errors. Next: put the cards back one
+    at a time, `memory_status.py` after each; the first one that brings back the $A0 / random reads is the fault.
   - **The machine as left 2026-10-09:** clock 1 MHz; sequencer EEPROM = the 2026-09-23 microcode; both AT28C64B
     chips hold ROM 2026-09-23 (one fitted); IC5 new. To return to the tree's state: `rom.bin` on a chip,
     `python3 tools/ucode_send.py --all`.
