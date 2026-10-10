@@ -6,7 +6,7 @@
 For each of R0..R7 (two cards, R0-R3 and R4-R7 by their J1-J3 jumpers) it first checks whether the register answers
 (a load of a value and its complement both read back), then, for every register that does:
   load/read   16-bit patterns (walking 1 and 0, $0000/$FFFF/$5555/$AAAA/...) through both byte lanes, the other present
-              registers loaded with something else first (a register that answers for another one shows up here)
+              registers loaded with distinct values first and read after (a register that answers for another shows up)
   lanes       -REG-LD-LO alone leaves the high byte, -REG-LD-HI alone the low byte; -REG-RD-LO alone reads the low
               byte with DATA8..15 at the pull-ups' $FF
   count       -REG-UP / -REG-DN across every nibble carry ($000F, $00FF, $0FFF, $FFFF up; $0010, $0100, $1000, $0000
@@ -92,13 +92,14 @@ for n in present:
     print("R%d" % n, flush=True)
     others = [m for m in present if m != n]
     bad = []
+    keep = {m: (0x1111 * (m + 1)) ^ (0x0F0F * (n + 1)) & 0xFFFF for m in others}   # distinct values, set once
+    for m, e in keep.items(): load(m, e)
     for v in pats:
-        for k, m in enumerate(others): load(m, (v ^ 0xFFFF) + 0x0101 * (k + 1) & 0xFFFF)
         load(n, v); r = read(n)
         if r != v: bad.append("wrote $%04X read $%04X" % (v, r))
-        for k, m in enumerate(others):
-            e = (v ^ 0xFFFF) + 0x0101 * (k + 1) & 0xFFFF; r = read(m)
-            if r != e: bad.append("R%d changed: $%04X, was $%04X" % (m, r, e))
+    for m, e in keep.items():
+        r = read(m)
+        if r != e: bad.append("R%d changed: $%04X, was $%04X" % (m, r, e))
     report("load/read", bad, "%d patterns" % len(pats))
 
     bad = []

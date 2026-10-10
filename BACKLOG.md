@@ -90,7 +90,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     with the register card in. So the CPU-out tests have not found a faulty card yet; the RUN failures and the random
     bench errors are still open. Register card R0-R3: `tests/registers/register_test.py` ALL PASS (load/read 38
     patterns, byte lanes, counting across every carry, HL-SWAP, address drive, reset;
-    `tests/registers/run-2026-10-10-card-R0-R3.log`). Next: the R4-R7 card the same way, then the remaining cards
+    `tests/registers/run-2026-10-10-card-R0-R3.log`). Both register cards in: `memory_status.py`, `tests/memory/tmp_test.py`
+    and `register_test.py` on R0-R7 ALL PASS (`tests/registers/run-2026-10-10-two-cards.log`). Next: the remaining cards
     back one at a time with `memory_status.py --rom /tmp/rom-2026-09-23.bin` after each.
     `memory_full_test.py` the same evening (`tests/memory/full-run-2026-10-09.log`): B address lines PASS, C and D
     every RAM byte $0000-$CFFF both patterns PASS (0 bad of 53248); A/F fail only against the tree's image, E fails
