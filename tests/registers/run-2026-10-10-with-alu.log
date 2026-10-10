@@ -1,0 +1,80 @@
+== memory_status
+boot remap     OK    read $0000-$000F after reset = ROM $F000 page
+ROM            OK    all 8192 bytes $E000-$FFFF = basic.img + monitor.img
+low RAM        OK    8 spots $0000-$7FF0
+$8000 block    OK    RAM   (expected RAM)
+$9000 block    OK    RAM   (expected RAM)
+$A000 block    OK    RAM   (expected RAM)
+$B000 block    OK    RAM   (expected RAM)
+$C000 block    OK    RAM   (expected RAM)
+$D000 block    OK    undecoded/odd (F7 89)   (expected VIDEO/undecoded)
+$E000 block    OK    ROM   (expected ROM)
+$F000 block    OK    ROM   (expected ROM)
+
+ALL OK in 53 s
+== tmp_test
+TMP0 load/read  PASS  38 patterns
+TMP1 load/read  PASS  38 patterns
+TMP0 edge       PASS  $3C3C
+TMP1 edge       PASS  $3C3C
+TMP registers: ALL PASS
+== register_test
+R0 answers
+R1 answers
+R2 answers
+R3 answers
+R4 answers
+R5 answers
+R6 answers
+R7 answers
+R0
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+R1
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+R2
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+R3
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+R4
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+R5
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+R6
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+R7
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+all
+  reset      PASS  every register $0000 after -RESET
+registers answering: R0 R1 R2 R3 R4 R5 R6 R7; ALL PASS
