@@ -118,8 +118,13 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     emulators right; `y1ucemu -H` (new: an undriven bus keeps its last value) still right. POPR loads through
     -2-BYTE-OPERAND-SEL (the register number from the sequencer's operand register) and, for the high byte, -HL-SWAP.
     The same microcode passed the bench 15/15 on 2026-10-04 at 6 MHz; since then the clock went to 1 MHz (10-08) and
-    the memory card's IC5 became a 74HC245 (10-09). Next: the probe at 6 MHz (and lower), and the operand-register
-    path on the sequencer (OPERAND-CLK latch, the -2-BYTE-OPERAND-SEL mux).
+    the memory card's IC5 became a 74HC245 (10-09). **At 6 MHz (function generator in QG1, pin 8 clock / pin 7 GND)
+    the probe is all right and the bench is 15/15** (`bench-2026-10-10-1602.log`): the fault needs the SLOW clock -
+    a node held only by charge, which survives a 6 MHz step and drifts in a 1 MHz one. Suspect: sequencer JP1 (2x2,
+    logic card <-> memory card) carrying SRC-ADDR/DEST-ADDR from the microcode RAM into the pipeline (`docs/cards/
+    sequencer-logic.md` 3.6, "To verify: JP1 mated"). Unmated, those HC374 D inputs float; when they drift low the
+    operand register drives ADDR-REG-ID against the pipeline (IC18A/IC11A), and POPR's stack read goes to another
+    register's address. Next: check JP1, then the probe at 1 MHz.
     Next: the remaining cards
     back one at a time with `memory_status.py --rom /tmp/rom-2026-09-23.bin` after each.
     `memory_full_test.py` the same evening (`tests/memory/full-run-2026-10-09.log`): B address lines PASS, C and D
