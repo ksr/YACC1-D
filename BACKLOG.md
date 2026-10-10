@@ -125,6 +125,19 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     sequencer-logic.md` 3.6, "To verify: JP1 mated"). Unmated, those HC374 D inputs float; when they drift low the
     operand register drives ADDR-REG-ID against the pipeline (IC18A/IC11A), and POPR's stack read goes to another
     register's address. Next: check JP1, then the probe at 1 MHz.
+  - **2026-10-10, FOUND by single-stepping (the bus tester as the clock: `bus-stepper`, `tools/busstep.py`,
+    `tests/bench/diag/poprloop.asm`): while `-2-BYTE-OPERAND-SEL` is asserted nothing drives ADDR-REG-ID.** The
+    sequencer logic card's IC18B (the pipeline's ADDR-REG-ID onto the bus) is enabled by `-ONE-OPERAND-SEL` = NOT
+    `-2-BYTE-OPERAND-SEL` (`docs/cards/sequencer-logic.md` 3.6), and IC18A/IC11A (operand -> ADDR-REG-ID) are off
+    (SRC-ADDR/DEST-ADDR idle). POPR is the only instruction that reads memory in those steps (10-14, 18-23): the
+    stepped bus shows ADDR-REG-ID = 15, address $FFFF, data $05 (the ROM's last byte) where the microcode asks for
+    SP and $0EFC/$0EFD. At 6 MHz the floating lines still hold 1 (SP) from the step before; at 1 MHz they drift to
+    15 - the slow-clock POPR fault, the wrong decimal numbers and BASIC's RUN failures. JP1 was not it (reseated, no
+    change; its SRC-ADDR/DEST-ADDR are still unverified). The emulators take ADDR-REG-ID from the word and miss it.
+    Fix chosen: (proposed) POPR through TMP1 - read [SP] with the pipeline's ADDR-REG-ID into TMP1, then
+    `-2-BYTE-OPERAND-SEL` with TMP1 as the source - plus both emulators modelling the floating select (address
+    $FFFF while `-2-BYTE-OPERAND-SEL`), so `make check` sees this class. Hardware alternative: IC18B's enable to GND
+    (a cut and a jumper; conflicts with IC18A/IC11A if SRC-ADDR/DEST-ADDR ever assert).
     Next: the remaining cards
     back one at a time with `memory_status.py --rom /tmp/rom-2026-09-23.bin` after each.
     `memory_full_test.py` the same evening (`tests/memory/full-run-2026-10-09.log`): B address lines PASS, C and D
