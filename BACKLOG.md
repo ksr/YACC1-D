@@ -85,6 +85,9 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     cards pulled (registers, ALU, address/TMP, sequencer, I/O, video, bring-up cards) breaks memory cycles when it is
     on the bus - the likeliest cause of the RUN failures and the random bench errors. Next: put the cards back one
     at a time, `memory_status.py` after each; the first one that brings back the $A0 / random reads is the fault.
+    `memory_full_test.py` the same evening (`tests/memory/full-run-2026-10-09.log`): B address lines PASS, C and D
+    every RAM byte $0000-$CFFF both patterns PASS (0 bad of 53248); A/F fail only against the tree's image, E fails
+    because the video card is out.
   - **The machine as left 2026-10-09:** clock 1 MHz; sequencer EEPROM = the 2026-09-23 microcode; both AT28C64B
     chips hold ROM 2026-09-23 (one fitted); IC5 new. To return to the tree's state: `rom.bin` on a chip,
     `python3 tools/ucode_send.py --all`.

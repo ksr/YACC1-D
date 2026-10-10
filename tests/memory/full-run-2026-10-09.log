@@ -1,0 +1,40 @@
+22:49:33  start: port /dev/cu.usbserial-AB6WZCQX
+22:50:00  A. ROM $E000-$FFFF = basic.img + monitor.img   FAIL  8192 bytes, 3206 differ: ECC5, ECC6, EF3E, EF3F, EF40, EF41, EF42, EF43 (27 s)
+22:50:05  B. address lines A0-A15 independent            PASS  17 cells
+22:50:46     write 1FFF  (0.7 min)
+22:51:27     write 3FFF  (1.4 min)
+22:52:08     write 5FFF  (2.0 min)
+22:52:49     write 7FFF  (2.7 min)
+22:53:30     write 9FFF  (3.4 min)
+22:54:11     write BFFF  (4.1 min)
+22:54:58     verify 1FFF  0 bad so far  (4.9 min)
+22:55:24     verify 3FFF  0 bad so far  (5.3 min)
+22:55:51     verify 5FFF  0 bad so far  (5.8 min)
+22:56:17     verify 7FFF  0 bad so far  (6.2 min)
+22:56:44     verify 9FFF  0 bad so far  (6.6 min)
+22:57:11     verify BFFF  0 bad so far  (7.1 min)
+22:57:24  C. RAM $0000-$7FFF + $8000-$CFFF pattern 1     PASS  53248 cells, 0 bad (7.3 min)
+22:58:05     write 1FFF  (0.7 min)
+22:58:46     write 3FFF  (1.4 min)
+22:59:27     write 5FFF  (2.0 min)
+23:00:07     write 7FFF  (2.7 min)
+23:00:48     write 9FFF  (3.4 min)
+23:01:29     write BFFF  (4.1 min)
+23:02:16     verify 1FFF  0 bad so far  (4.9 min)
+23:02:43     verify 3FFF  0 bad so far  (5.3 min)
+23:03:09     verify 5FFF  0 bad so far  (5.8 min)
+23:03:36     verify 7FFF  0 bad so far  (6.2 min)
+23:04:03     verify 9FFF  0 bad so far  (6.6 min)
+23:04:29     verify BFFF  0 bad so far  (7.1 min)
+23:04:42  D. RAM inverted pattern                        PASS  53248 cells, 0 bad (7.3 min)
+23:04:51  E1. video RAM pattern                          FAIL  1020 bad: ['D000=C3', 'D001=C3', 'D002=C3', 'D003=C3', 'D004=C3', 'D005=C3']
+23:04:59  E2. video RAM inverted                         FAIL  1020 bad: ['D000=BC', 'D001=BC', 'D002=BC', 'D003=BC', 'D004=BC', 'D005=BC']
+23:05:08  E3. video single cell, neighbours clear        FAIL  D154=A5, D157=A5, D151=A5, D15D=A5, D145=A5, D175=A5, D115=A5, D1D5=A5, D055=A5, D355=A5
+23:05:09  E4. write to 0010 must not reach D010          FAIL  D010 = FF
+23:05:09  E4. write to 9010 must not reach D010          FAIL  D010 = EE
+23:05:10  E4. write to 0011 must not reach D010          FAIL  D010 = AF
+23:05:11  E4. write to 1010 must not reach D010          FAIL  D010 = FF
+23:05:27  E5. video read stability                       FAIL  
+23:05:53  F. ROM again after the RAM sweeps              FAIL  8192 bytes, 3206 differ: ECC5, ECC6, EF3E, EF3F, EF40, EF41, EF42, EF43 (27 s)
+23:05:55  F2. $D800-$DFFF: nothing answers (no CRTC fitted) PASS  reads 00 FF after writing 77 / 88
+23:05:55  DONE: 4/14 passed in 0.3 h
