@@ -101,6 +101,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     ALU still ALL PASS with the I/O card in (`tests/alu/run-2026-10-10-with-io.log`). Front panel, watched at the
     card with `tests/io/io_panel.py`: LEDs 0-7 each, TIL311 digits 0-F on both, the OUT LED on/off, the LCD (first
     time driven: two lines correct), switches $00/$01/$80/$55/$AA each read right, IN up = 1 / down = 0: all OK.
+    Afterwards the bus tester was flashed back to bus-monitor (the saved 2026-10-09 image, verified) to listen
+    while the machine runs. Next: sequencer and CPU back, tree ROM + stage 2 microcode, boot check, bench, T1-T3.
     Next: the remaining cards
     back one at a time with `memory_status.py --rom /tmp/rom-2026-09-23.bin` after each.
     `memory_full_test.py` the same evening (`tests/memory/full-run-2026-10-09.log`): B address lines PASS, C and D
