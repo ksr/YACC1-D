@@ -308,6 +308,12 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   To fold into the generator when the diagrams are next regenerated.
 
 ## Software
+- **BASIC: a break key (2026-10-10, not started).** The ROM's BASIC has no way to stop a running program short of
+  reset (found running `baslook.bas`, a 32000-count loop, at 1 MHz). Plan: at the start of every statement check the
+  UART for a waiting character through the ROM's no-wait vectors (`CONST`/`UARTINNE`); on Ctrl-C (and/or Esc - to
+  decide) print `BREAK` and return to the `>>` prompt with the program kept, any other key ignored. Cost: one status
+  read per statement. Precedent: `firmware/basic/candidates/2021-09-8afde21/` (break-in via `charavail`, never burned).
+  Needs a ROM burn: emulators and `make check` first.
 - **BASIC and monitor: unchecked areas and hazards (found 2026-10-08, `docs/programming/MEMORY-MAP.md` section 2a; none
   fixed yet).** Each is a change to `basic.asm` or `monitor.asm` (migrated: a `tools/patched_files.txt` note), a ROM
   build, `tools/verify_firmware.py`, a burn. Keep the 2026-10-08 layout rule: new BASIC code goes after `CRLF` at
