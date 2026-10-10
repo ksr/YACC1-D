@@ -61,6 +61,15 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     card (4.75-5.25 V, ripple), the ROM socket and the ROM -CE/-OE path (IC6, IC18), anything that ran hot when the
     chip was reversed; the 2026-09-23 bench images (`git show 9000a22:tests/bench/images/...`, no --xisa) run from
     RAM to see how far it reaches. Afterwards back to the tree pair: burn `rom.bin`, `ucode_send.py --all`.
+  - **2026-10-09: VCC at the memory card reads good (meter). The 2026-09-23 bench images (`git show
+    9000a22:tests/bench/images/...`, with the 2026-09-23 microcode) run from RAM: 10 of 14 pass; isa differs (its
+    first 35 bytes right, a rerun printed 2 bytes, wrong in D2+D5 and D0+D1+D2+D6), switch prints garbled text
+    (`heL?oworld###` for hello world: bit 5 lost in the `l`), sieve prints `000`, syscall's load got no answer.** So
+    the fault is no longer limited to reads by ROM code: random data bits fail across programs, and it is getting
+    worse. Not one data line (the bits vary). Next (hands-on, scope / bus tester): reseat every card and look at the
+    backplane contacts; the clock from the function generator (level, edges, ringing); ripple and spikes on VCC
+    under load; a chip on another card that loads or drives the data bus (the reversed ROM had the supply across
+    the memory card's pins).
   - **The machine as left 2026-10-09:** clock 1 MHz; sequencer EEPROM = the 2026-09-23 microcode; both AT28C64B
     chips hold ROM 2026-09-23 (one fitted); IC5 new. To return to the tree's state: `rom.bin` on a chip,
     `python3 tools/ucode_send.py --all`.
