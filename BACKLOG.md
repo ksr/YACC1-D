@@ -319,6 +319,24 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   adds IC15, the 74245 enable from the chip selects.)
 - (answered 2026-09-20: jumper boards not fitted/obsolete, EEPROM adaptor fitted, two register cards, RN2 = 1k; bus tester
   firmware settled 2026-09-21 by reading the flash out; sequencer likewise = Sequencer3) — no **(confirm)** marks left.
+- **Microcode diagnostic suite (designed 2026-10-10, not built; on hold until the standard suite has run with the
+  CPU back in).** A control store that is not the ISA but a chain of test records, run at full clock speed:
+  - Mechanism: no literal field and no microcode branch, so constants are built with the ALU (ZERO, INVA, shifts, OR
+    through a scratch register) and registers (cleared by -RESET, counted); the "branch" is R0 preset to the FAIL record
+    number, a compare, BR-TEST letting a register load into R0 only when the condition holds (R0 = next test), then
+    LD-INS-REG from R0.lo with UCODE-COUNT-RESET (step 0 of that record). A record that resets the step counter without
+    LD-INS-REG repeats itself (loops). FAIL record: failing test number on the TIL311s, OUT LED on, held. End record:
+    pass counter on the LEDs, back to test 1 (soak).
+  - Tests: 0 constants; 1 registers (patterns, moves within/between cards, counting carries); 2 ALU pairs with the
+    equality condition; 3 TMP0/TMP1; 4 RAM $0000-$CFFF address pattern and inverse; 5 ROM checksum; 6 fetch stress (R0
+    on the address bus, read, count, back to back); 7 I/O. Each in an ISA-timed form (source one step before the latch)
+    and a tight form (same step): a pair that splits shows the margin. Clocked from the function generator, the
+    frequency at which each test first fails ranks the slow paths.
+  - Build: `tools/udiag.py` (Python, signal table read from `yaccsignaldata2.h`, 256-record test.hex, unused records
+    HALT), checked on `y1ucemu -u ... -T -L -w` (and with a broken card model it must stop at the right test) in `make
+    check`; loaded with `ucode_send.py` (only the differing records, ~40), the ISA back with `--all`. A second FTDI on
+    the sequencer's loader is planned, so the tester can stay on as bus-monitor: `ucode_send.py` must find it.
+  - First version: tests 0, 1, 4, 5, 6 plus FAIL/pass reporting.
 
 ## Tree / docs
 - (done 2026-09-20: every `.rtf` outside archive has a Markdown twin; `tools/rtf_to_md.py`)
