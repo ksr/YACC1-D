@@ -42,6 +42,8 @@ def main(argv=None):
     ap.add_argument("--disk", help="a CompactFlash image (y1ucemu -c)")
     ap.add_argument("--no-rom", action="store_true", help="no BASIC + monitor ROM (y1ucemu without -m): an image is the ROM")
     ap.add_argument("--no-video", action="store_true", help="no video card (y1ucemu -N)")
+    ap.add_argument("--video-rev", metavar="REV", help="the video card at gate level from its netlist (y1ucemu -G REV): v1.0 = "
+                                                       "as fitted; `software/ucemu/y1ucemu -G list` names the others")
     ap.add_argument("--emu-arg", action="append", default=[], help="another y1ucemu option, as it is (repeatable), e.g. --emu-arg=-H")
     ap.add_argument("--emu", default=None, help="the emulator (default software/ucemu/y1ucemu)")
     ap.add_argument("--sym", action="append", default=[], help="symbols from an RC/asm listing (repeatable; default the monitor's and BASIC's)")
@@ -65,6 +67,7 @@ def main(argv=None):
     if a.ucode: args += ["-u", os.path.abspath(a.ucode)]
     if a.disk: args += ["-c", os.path.abspath(a.disk)]
     if a.no_video: args += ["-N"]
+    if a.video_rev: args += ["-G", a.video_rev]
     args += a.emu_arg
     log = open(a.log, "w") if a.log else (open(os.devnull, "w") if ui == "tui" else None)
     kw = {"exe": a.emu} if a.emu else {}

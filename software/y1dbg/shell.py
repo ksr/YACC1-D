@@ -12,7 +12,7 @@
   m [ADDR] [LEN]     memory dump (hex LEN, default 80)       poke ADDR BB [BB...]
   d [ADDR] [N]       disassemble N instructions (default 16, at PC)
   trace [N]          the last N instructions run (default 20)
-  screen             the video screen as text                video        the CRTC registers
+  screen             the video screen as text                video        the CRTC registers, the card model
   key TEXT           type into the UART (\\n = Enter, \\e = Esc, \\xHH a byte, \\\\ a backslash)
   console            the UART's output since the last `console`
   waitfor TEXT [S]   run until the UART prints TEXT (at most S seconds, default the timeout); for scripts
@@ -167,8 +167,10 @@ class Shell:
             return "\n".join([head, border] + ["|%s|" % l for l in sc["lines"]] + [border])
         if cmd == "video":
             v = e.ok("video")
+            card = "behavioural model" if v.get("model", "behavioural") == "behavioural" else \
+                "%s at gate level, %d bus events" % (v["model"], v.get("events", 0))
             return "CRTC " + " ".join("%02X" % r if w else "--" for r, w in zip(v["regs"], v["written"])) + \
-                "  (R0..R17, -- = never written); address register = R%d" % v["sel"]
+                "  (R0..R17, -- = never written); address register = R%d; card: %s" % (v["sel"], card)
         if cmd == "key":
             r = e.ok("key " + rest); return "typed %d" % r["queued"]
         if cmd == "console":

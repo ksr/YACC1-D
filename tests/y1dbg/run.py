@@ -23,6 +23,9 @@ the terminal UI in a pseudo-terminal) and checks:
             glyphs), a breakpoint by command, keys typed into the UART (V I, V M1, H) appearing in the state's video RAM
             with the CRTC's geometry and cursor and in the console, pause, the memory window following `sp`, quit
   webstop   the web server ends cleanly, the emulator with it: SIGTERM during a run, SIGINT, and `q` typed as a command
+  gate      --video-rev passes the gate-level card through (y1ucemu -G): with v1.0 the monitor's VR0E 12 / VR0E reads 12
+            back and `video` says "v1.0 at gate level, 0 bus events"; with v1.0-no-rs (no RS fix) R14 is never written
+            and `video` counts the undriven reads; an unknown revision ends y1dbg with an error; nothing left running
 """
 import os, re, sys, time, socket, subprocess, select, struct, json, signal, urllib.request, urllib.error
 
@@ -345,9 +348,30 @@ def case_webstop():
     check("webstop", emulators() <= before, "left running: %s" % (emulators() - before))
 
 
+def case_gate():
+    before = emulators()
+    cmds = "until cmdloop; key VR0E 12\\nVR0E\\nVS\\n; waitfor MIRROR 00  CRTC 60; video"
+    got = {}
+    for rev in ("v1.0", "v1.0-no-rs"):
+        r = subprocess.run([sys.executable, os.path.join(ROOT, "software/y1dbg"), "--video-rev", rev, "-c", cmds],
+                           capture_output=True, text=True, timeout=120)
+        if VERBOSE: print(r.stdout + r.stderr)
+        got[rev] = (r.returncode, re.search(r"^CRTC .*$", r.stdout, re.M))
+    ok = got["v1.0"][0] == 0 and got["v1.0"][1] and got["v1.0"][1].group(0).split()[15] == "12" and \
+        "card: v1.0 at gate level, 0 bus events" in got["v1.0"][1].group(0)
+    check("gate", bool(ok), "%r" % got["v1.0"][1])
+    m = got["v1.0-no-rs"][1]
+    ok = got["v1.0-no-rs"][0] == 0 and m and m.group(0).split()[15] == "--" and re.search(r"card: v1\.0-no-rs at gate level, [1-9]\d* bus events", m.group(0))
+    check("gate", bool(ok), "%r" % m)
+    r = subprocess.run([sys.executable, os.path.join(ROOT, "software/y1dbg"), "--video-rev", "v9", "-c", "r"], capture_output=True, text=True, timeout=60)
+    check("gate", r.returncode == 2 and "-G list" in r.stderr, r.stderr)
+    time.sleep(0.2)
+    check("gate", emulators() <= before, "left running: %s" % (emulators() - before))
+
+
 CASES = {"break": case_break, "video": case_video, "basic": case_basic, "pause": case_pause, "reset": case_reset,
          "cli": case_cli, "gone": case_gone, "tui": case_tui,
-         "web": case_web, "webstop": case_webstop}
+         "web": case_web, "webstop": case_webstop, "gate": case_gate}
 names = [a for a in sys.argv[1:] if not a.startswith("-")] or list(CASES)
 for n in names:
     CASES[n]()
