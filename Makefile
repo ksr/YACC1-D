@@ -14,6 +14,7 @@
 #                   the toolchain rebuilding itself natively, twice, byte-identical (tests/native/selfhost.py)
 #                   the ROM's video unit and Y1/OS's video command on both emulators' card model (tests/video/emu.py),
 #                   Kermit transfers between /BIN/KERMIT and tools/y1kermit.py over a pty on both emulators (tests/kermit/run.py)
+#                   the debugger: y1ucemu's debug server and software/y1dbg, scripted and its UI in a pty (tests/y1dbg/run.py)
 #   make cc-test    just the compiler tests (on both emulators) and the twin comparisons (y1cc.c, the passes)
 #   make os-test    Y1/OS sessions on both emulators (tests/os/run.py)
 #   make disasm-test  /BIN/DISASM's round trip: disassemble, reassemble with RC/asm, compare (tests/disasm/run.py, ~20 s)
@@ -48,6 +49,7 @@ check:
 	python3 tests/ucemu/undefined.py
 	python3 tests/ucemu/prologue.py
 	python3 tests/ucemu/idle.py
+	python3 tests/y1dbg/run.py
 	python3 tests/os/run.py
 	python3 tests/asm/run.py --target
 	python3 tests/disasm/run.py

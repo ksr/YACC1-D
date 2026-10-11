@@ -242,6 +242,12 @@ software/ubasic-c/ubasic-master/vartype.h	third-party	kept as published, with it
 software/ucemu/Makefile	claude	written in YACC1-D
 software/ucemu/y1ucemu.c	claude	written in YACC1-D
 software/videomodel.h	claude	written in YACC1-D
+software/y1dbg/__init__.py	claude	written in YACC1-D
+software/y1dbg/__main__.py	claude	written in YACC1-D
+software/y1dbg/debugger.py	claude	written in YACC1-D
+software/y1dbg/emu.py	claude	written in YACC1-D
+software/y1dbg/shell.py	claude	written in YACC1-D
+software/y1dbg/tui.py	claude	written in YACC1-D
 tests/asm/host_asm.c	claude	written in YACC1-D
 tests/asm/host_sys.c	claude	written in YACC1-D
 tests/asm/run.py	claude	written in YACC1-D
@@ -394,6 +400,7 @@ tests/bench/diag/zero_readback.py	claude	written in YACC1-D
 tests/bench/diag/listread.asm	claude	written in YACC1-D
 tools/y1term.py	claude	written in YACC1-D
 tests/y1term/run.py	claude	written in YACC1-D
+tests/y1dbg/run.py	claude	written in YACC1-D
 tests/registers/register_test.py	claude	written in YACC1-D
 tests/memory/tmp_test.py	claude	written in YACC1-D
 tests/alu/alu_test.py	claude	written in YACC1-D
