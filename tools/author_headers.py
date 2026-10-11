@@ -35,7 +35,7 @@ SKIP_DIRS = ("archive/", "migration/", "vm/", "media/")
 THIRD_PARTY = ("embedded/libraries/Adafruit_MCP23017_Arduino_Library/", "embedded/libraries/extEEPROM/",
                "os/upstream/", "software/ubasic-c/", "software/assembler/upstream/")
 THIRD_PARTY_FILES = {"os/commands/kermit.c": "E-Kermit 1.8 (Columbia University) adapted by Claude; its licence header stays"}
-GENERATED = {"os/asm_optab.c", "os/dis_optab.c", "os/kermit_io.c", "os/commands-asm/asmtab.inc"}
+GENERATED = {"os/asm_optab.c", "os/dis_optab.c", "os/kermit_io.c", "os/commands-asm/asmtab.inc", "software/ucemu/videogate.h"}
 # os/PORT-PLAN.md sections 2 and 8: the P8X commands and shared libraries ported to Y1/OS (waves 0-2, vi)
 P8X = {"os/commands/%s.c" % n for n in ("pwd help dep dump examine cat wc head tail more sort uniq sed awk cmp diff "
                                         "man md touch del mv cp dir find tree grep vi").split()} | \
