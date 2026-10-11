@@ -1,3 +1,5 @@
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+
 """The browser debugger: a local web server (standard library only) around the same Shell as the terminal UI.
 
   python3 software/y1dbg --ui web [--port 8803]      then open http://127.0.0.1:8803/

@@ -19,8 +19,12 @@ the terminal UI in a pseudo-terminal) and checks:
   cli       python3 software/y1dbg -c "...": the commands' output, exit 0, and no emulator left running
   gone      the emulator exits when the debugger closes, and when the connection just drops in the middle of a run
   tui       the curses UI in a pty: the screen pane shows what BASIC printed (snap), q quits, nothing left running
+  web       the browser debugger (--ui web --port 0, driven with urllib, no browser): the page, the font (tools/vidsim.py's
+            glyphs), a breakpoint by command, keys typed into the UART (V I, V M1, H) appearing in the state's video RAM
+            with the CRTC's geometry and cursor and in the console, pause, the memory window following `sp`, quit
+  webstop   the web server ends cleanly, the emulator with it: SIGTERM during a run, SIGINT, and `q` typed as a command
 """
-import os, re, sys, time, socket, subprocess, select, struct
+import os, re, sys, time, socket, subprocess, select, struct, json, signal, urllib.request, urllib.error
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
@@ -28,6 +32,9 @@ sys.path.insert(0, os.path.join(ROOT, "software"))
 from y1dbg.emu import Emulator                      # noqa: E402
 from y1dbg.debugger import Symbols, screen          # noqa: E402
 from y1dbg.shell import Shell                       # noqa: E402
+from y1dbg.web import key_escape                    # noqa: E402
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+import vidsim                                       # noqa: E402
 
 VERBOSE = "-v" in sys.argv
 MON = os.path.join(ROOT, "firmware/monitor/monitor.lst")
@@ -235,8 +242,112 @@ def case_tui():
     check("tui", emulators() <= before, "left running: %s" % (emulators() - before))
 
 
+def web_start():
+    """python3 software/y1dbg --ui web --port 0 -> (process, base URL)"""
+    p = subprocess.Popen([sys.executable, os.path.join(ROOT, "software/y1dbg"), "--ui", "web", "--port", "0"],
+                         stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+    line = p.stdout.readline()
+    m = re.search(r"http://127\.0\.0\.1:(\d+)/", line)
+    if not m:
+        p.kill(); p.wait(); raise RuntimeError("no URL from --ui web: %r" % line)
+    return p, "http://127.0.0.1:%s" % m.group(1)
+
+
+def http(base, path, body=None):
+    """GET (body None) or POST JSON -> (status, parsed JSON or text)"""
+    req = urllib.request.Request(base + path, data=None if body is None else json.dumps(body).encode(),
+                                 headers={"Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            data = r.read().decode(); code = r.status; ctype = r.headers.get("Content-Type", "")
+    except urllib.error.HTTPError as e:
+        data = e.read().decode(); code = e.code; ctype = e.headers.get("Content-Type", "")
+    return code, json.loads(data) if ctype.startswith("application/json") else data
+
+
+def web_until(base, pred, secs=30):
+    """poll /api/state until pred(state) (as the page does), at most secs; -> the last state"""
+    end = time.time() + secs
+    while True:
+        _, st = http(base, "/api/state")
+        if pred(st) or time.time() > end: return st
+        time.sleep(0.1)
+
+
+def web_gone(p, secs=10):
+    try: p.wait(secs); return True
+    except subprocess.TimeoutExpired: p.kill(); p.wait(); return False
+
+
+def case_web():
+    before = emulators()
+    p, base = web_start()
+    try:
+        code, page = http(base, "/")
+        check("web", code == 200 and "<canvas" in page and "/api/state" in page, "page %d" % code)
+        code, f = http(base, "/api/font")
+        check("web", code == 200 and f["dots"] == 5 and len(f["glyphs"]) == 64 and
+              all(f["glyphs"][c] == vidsim.font_rows(c) for c in range(64)), "font %d" % code)
+        check("web", key_escape("a b\\\r~") == "a\\x20b\\\\\\x0D~", key_escape("a b\\\r~"))
+        _, r = http(base, "/api/cmd", {"cmd": "b cmdloop"})
+        _, r2 = http(base, "/api/cmd", {"cmd": "c"})
+        st = web_until(base, lambda s: s["status"]["state"] != "running")
+        ok = r["out"].startswith("breakpoint %04X <cmdloop>" % CMDLOOP) and r2["out"] == "running" and \
+            st["status"]["pc"] == CMDLOOP and st["status"]["reason"] == "breakpoint %04X" % CMDLOOP and \
+            st["code"][0]["a"] == CMDLOOP and st["code"][0]["bp"] and st["code"][0]["l"] == "cmdloop" and \
+            st["breaks"] == [{"a": CMDLOOP, "s": "cmdloop"}] and any(l.startswith("breakpoint %04X" % CMDLOOP) for l in st["out"]["lines"])
+        check("web", ok, json.dumps(st["status"]) + " " + json.dumps(st["code"][:2]))
+        http(base, "/api/cmd", {"cmd": "bd all"})
+        _, k = http(base, "/api/key", {"text": "VI\rVM1\rH"})
+        http(base, "/api/cmd", {"cmd": "c"})
+        st = web_until(base, lambda s: s["console"]["lines"] and any("INTEL-HEX LOAD" in l for l in s["console"]["lines"]))
+        v = st["video"]; g = v["geom"]; sc = screen(v)
+        ok = k["queued"] == 8 and st["status"]["state"] == "running" and g["crtc"] and g["cols"] == 80 and g["rows"] == 24 and \
+            g["lines"] == 8 and g["cursor"] is not None and g["cursor"]["blink"] == 32 and len(v["ram"]) == 4096 and \
+            any("INTEL-HEX LOAD" in l for l in sc["lines"]) and v["regs"][:3] == [0x7E, 0x50, 0x62]
+        check("web", ok, "%r %r" % (k, g))
+        _, again = http(base, "/api/state?con=%d&log=%d" % (st["console"]["total"], st["out"]["total"]))
+        check("web", again["console"]["lines"] is None and again["out"]["lines"] is None, "unchanged console/log resent")
+        _, r = http(base, "/api/cmd", {"cmd": "pause"})
+        _, regs = http(base, "/api/cmd", {"cmd": "r"})
+        code, _ = http(base, "/api/mem", {"addr": "sp"})
+        code2, bad = http(base, "/api/mem", {"addr": "nosuchname"})
+        st = web_until(base, lambda s: True)
+        ok = r["out"].startswith("paused") and regs["out"].startswith("PC=") and code == 200 and code2 == 400 and \
+            st["status"]["state"] == "stopped" and st["mem"]["expr"] == "sp" and st["mem"]["addr"] == st["regs"]["r"][1] and \
+            len(st["mem"]["hex"]) == 512
+        check("web", ok, "%r %r %d %r %r" % (r, regs["out"][:40], code2, bad, st["mem"]["expr"]))
+        code, _ = http(base, "/api/quit", {})
+        check("web", code == 200 and web_gone(p) and p.returncode == 0, "quit: exit %r" % p.returncode)
+    finally:
+        if p.poll() is None: p.kill(); p.wait()
+    time.sleep(0.2)
+    check("web", emulators() <= before, "left running: %s" % (emulators() - before))
+
+
+def case_webstop():
+    before = emulators()
+    for how in ("SIGTERM", "SIGINT", "q"):
+        p, base = web_start()
+        try:
+            if how == "SIGTERM":
+                http(base, "/api/cmd", {"cmd": "c"}); time.sleep(0.3)
+                p.send_signal(signal.SIGTERM)
+            elif how == "SIGINT":
+                p.send_signal(signal.SIGINT)
+            else:
+                http(base, "/api/cmd", {"cmd": "q"})
+            gone = web_gone(p)
+            check("webstop", gone and p.returncode == 0, "%s: exit %r" % (how, p.returncode))
+        finally:
+            if p.poll() is None: p.kill(); p.wait()
+    time.sleep(0.2)
+    check("webstop", emulators() <= before, "left running: %s" % (emulators() - before))
+
+
 CASES = {"break": case_break, "video": case_video, "basic": case_basic, "pause": case_pause, "reset": case_reset,
-         "cli": case_cli, "gone": case_gone, "tui": case_tui}
+         "cli": case_cli, "gone": case_gone, "tui": case_tui,
+         "web": case_web, "webstop": case_webstop}
 names = [a for a in sys.argv[1:] if not a.startswith("-")] or list(CASES)
 for n in names:
     CASES[n]()

@@ -3,11 +3,13 @@
 """y1dbg - the YACC1 debugger: the microcode-level emulator (software/ucemu/y1ucemu -D) with a live video screen.
 
   python3 software/y1dbg [options]            (or, in software/: python3 -m y1dbg)
+  python3 software/y1dbg --ui web             the browser debugger on http://127.0.0.1:8803/
 
 Starts y1ucemu with the tree's control store and ROM (BASIC + monitor, as -m does), stopped at the reset, with the
-monitor's and BASIC's symbols loaded, and opens the terminal UI. With -c or --script the commands run first and their
-output is printed; then the UI opens only with --ui tui (the default without commands), so a script ends and the
-emulator with it. `help` in the UI lists the commands; software/y1dbg/README.md has the rest.
+monitor's and BASIC's symbols loaded, and opens the terminal UI (or, with --ui web, serves the browser debugger on
+127.0.0.1). With -c or --script the commands run first and their output is printed; then a UI opens only with --ui tui
+or web (tui is the default without commands), so a script ends and the emulator with it. `help` in the UI lists the
+commands; software/y1dbg/README.md has the rest.
 """
 import argparse, os, sys
 
@@ -45,7 +47,10 @@ def main(argv=None):
     ap.add_argument("--sym", action="append", default=[], help="symbols from an RC/asm listing (repeatable; default the monitor's and BASIC's)")
     ap.add_argument("-c", "--command", action="append", default=[], help="commands to run, separated by ';' (repeatable)")
     ap.add_argument("--script", help="a file of commands, one a line")
-    ap.add_argument("--ui", choices=["tui", "none"], help="tui (the default without -c/--script) or none")
+    ap.add_argument("--ui", choices=["tui", "web", "none"], help="tui (the default without -c/--script), web (the browser) or none")
+    ap.add_argument("--port", type=int, default=None, help="--ui web: the port on 127.0.0.1 (default 8803; 0 = any free port)")
+    ap.add_argument("--chargen", help="--ui web: draw with this 2732 character-generator image (read from the card's EPROM) "
+                                      "instead of tools/vidsim.py's font")
     ap.add_argument("--timeout", type=float, default=60.0, help="seconds a scripted c / until / waitfor may run (default 60)")
     ap.add_argument("--log", help="the emulator's stderr to this file (the UI's default: discarded)")
     a = ap.parse_args(argv)
@@ -71,6 +76,7 @@ def main(argv=None):
     for f in a.sym or ([] if a.no_rom else DEF_SYMS):
         if os.path.exists(f): syms.load(f)
     sh = Shell(emu, syms, timeout=a.timeout)
+    ran = []                                           # the commands' output, for the browser's command log
     try:
         for line in lines:
             if line.strip() in ("q", "quit", "exit"): break
@@ -78,9 +84,13 @@ def main(argv=None):
             print("> " + line)
             if out: print(out)
             sys.stdout.flush()
+            ran += ["> " + line] + ([out] if out else [])
         if ui == "tui":
             from y1dbg import tui
             tui.run(sh)
+        elif ui == "web":
+            from y1dbg import web
+            web.serve(sh, web.PORT if a.port is None else a.port, a.chargen, lambda t: print(t, flush=True), ran)
     finally:
         emu.close()
     return 0
