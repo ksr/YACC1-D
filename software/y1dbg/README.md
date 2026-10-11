@@ -3,12 +3,13 @@
 `y1dbg` (2026-10-11) is an interactive debugger for the microcode-level emulator `software/ucemu/y1ucemu`, with the
 video card's screen drawn live beside the registers, the code and the UART console. The machine stays in C: started
 with `-D`, `y1ucemu` runs a small debug server on 127.0.0.1, and this package (Python, standard library only) is the
-front end. The command language is the one of the System-5 emulator in the ELF repository (`s5emu`'s `shell.py`),
-adapted to the YACC1; the same language will drive the browser debugger (phase 2, `BACKLOG.md`).
+front end, in a terminal (curses) or in a browser. The command language is the one of the System-5 emulator in the
+ELF repository (`s5emu`'s `shell.py`), adapted to the YACC1, and is the same in both UIs and in scripts.
 
 ```
 make -C software/ucemu                       # the emulator (the top-level make builds it too)
 python3 software/y1dbg                       # the terminal UI: the ROM loaded, stopped at the reset
+python3 software/y1dbg --ui web              # the browser UI: open http://127.0.0.1:8803/
 python3 software/y1dbg -f prog.img           # + a program image (y1ucemu -f), e.g. then: until 3000 ... or b 3000; key G3000
 python3 software/y1dbg --disk os/disk.img    # + Y1/OS's CF image: key O boots it
 python3 software/y1dbg -c "b cmdloop; c; r; screen"     # commands, their output on stdout, then exit
@@ -19,7 +20,7 @@ cd software && python3 -m y1dbg              # the same, as a module
 Options: `-f FILE` (repeatable), `-u test.hex`, `--disk IMAGE`, `--no-rom` (no `-m`: an image is the ROM),
 `--no-video` (`-N`), `--emu-arg=-H` (any other `y1ucemu` option), `--sym FILE` (symbols; the default is the monitor's
 and BASIC's listings), `-c "cmd; cmd"` (repeatable; `\;` is a semicolon inside a command), `--script FILE`, `--ui
-tui|none`, `--timeout S` (how long a scripted `c`, `until` or `waitfor` may run, default 60 s; then the machine is
+tui|web|none`, `--port N` and `--chargen FILE` (the browser UI, below), `--timeout S` (how long a scripted `c`, `until` or `waitfor` may run, default 60 s; then the machine is
 paused), `--log FILE` (the emulator's stderr, e.g. with `--emu-arg=-w` the bus fights). The emulator ends when the
 debugger does, however it ends: the server exits when its connection closes.
 
@@ -27,8 +28,9 @@ debugger does, however it ends: the server exits when its connection closes.
 |---|---|
 | `emu.py` | starts `y1ucemu -D 0`, reads the port it prints, connects; one command line out, one JSON line back |
 | `debugger.py` | symbols from RC/asm listings, address parsing, the disassembler, the screen as text |
-| `shell.py` | the command language (`help` prints it) |
+| `shell.py` | the command language (`help` prints it); `snapshot()`, one look at the machine for either UI |
 | `tui.py` | the curses UI |
+| `web.py`, `web/index.html` | the browser UI: a local HTTP server (standard library) and the page |
 | `__main__.py` | the command line |
 
 ## The command language
@@ -107,6 +109,59 @@ PC FA08  stopped (paused)  instr 3478740  clocks 86102082
 - 120 x 36 or larger shows every pane; a smaller terminal shows the screen (clipped), the console and the output, with
   the registers in the status line.
 
+## The browser UI
+
+```
+python3 software/y1dbg --ui web                         # http://127.0.0.1:8803/
+python3 software/y1dbg --ui web --port 0                # any free port (printed)
+python3 software/y1dbg --ui web --disk os/disk.img -c "key O"     # commands first, then the page
+```
+
+`--ui web` starts the emulator as the terminal UI does and serves the page on 127.0.0.1 only (port 8803 by default;
+the ELF repository's System-5 debugger uses 8802). It prints the URL; open it in a desktop browser. Ctrl-C in the
+terminal, Quit on the page, or `q` on the page's command line ends the debugger and the emulator with it. The
+commands of `-c`/`--script` run first and their output opens the page's command log.
+
+- **The screen** is the video card's picture, dot by dot on a canvas: the 2K display RAM scanned with the 6845's
+  geometry (R1 x R6 from R12:R13, R9+1 scan lines a row; 80 x 24 with 8 lines before a program sets the CRTC, as the
+  terminal UI), every character 5 dots wide as on the card (IC28 divides by 5), each dot drawn 2 x 3 pixels with a
+  dimmer third line for the scan-line look. The glyphs are the character generator's: `tools/vidsim.py`'s 2513-style
+  font (`font_rows`, the same table `vidsim.py chargen` writes for the 2732), served by `/api/font`, or with
+  `--chargen FILE` a 2732 image read from the card's EPROM. Bit 7 is inverse video, bit 6 is not wired, rows 8 and on
+  of a tall character repeat rows 0-7 (RA0..2 only), a screen reaching past the CPU's 2K shows the hatched upper half.
+  The cursor is R14:R15, lit on R10's first to R11's last scan line, and blinks as R10 bits 5-6 say: steady, off, or
+  on for half of every 16 or 32 fields, the field rate worked out from R0, R4, R5 and R9 at the ROM's 10 MHz dot clock
+  (the ROM's table: 60.1 Hz, so the monitor's cursor blinks every 0.53 s). The phosphor is green, amber or white (the
+  choice is kept in the browser).
+- **Typing:** click the screen; the keys go to the UART (as `key`): Enter = CR, Backspace = BS, Esc = ESC, Tab,
+  Ctrl-letter = its control code, pasted text as typed. The F keys stay the debugger's.
+- **Panels:** the status line (running/stopped/halted, why it stopped, PC with its symbol, the instruction and clock
+  counts); Run (F5), Pause (F6, or Esc away from the screen), Step (F7), Over (F8), Reset, Quit; the registers (R0-R7
+  with PC/SP/R2 marked, ACC, carry, TMP0/TMP1, the shift register, IR, the microcode step, the operand and branch
+  registers, FORCE-ROM, the bus fights; a value changed since the previous stop is coloured); the code from PC (labels
+  on their own lines; click a line to set or clear a breakpoint); the breakpoints and watches (delete, or add `b ADDR`
+  / `w w ADDR`); the memory window (256 bytes; the address box takes anything `m` does, and keeps it as written, so
+  `sp` follows the stack; the arrows page by 256); the UART console with a line to send; and the command line with
+  its output: the whole language, Up/Down for the history.
+- **While the machine runs** the page polls 10 times a second (twice a second when stopped); the screen, the console,
+  the counts and the registers follow the run, the code panel is greyed (where PC was).
+
+| HTTP | |
+|---|---|
+| `GET /` | the page |
+| `GET /api/font` | `dots` (5), `rows` (8), `glyphs` (64 x 8 rows, bit 4 the leftmost dot), `source` |
+| `GET /api/state?con=N&log=N` | `status`, `regs`, `code`, `breaks`, `watches`, `mem`, `video` (`ram`, `regs`, `written`, `geom`: the scan), `console` and `out` (their totals, and their lines when the total is not N) |
+| `POST /api/cmd {"cmd": ...}` | `{"out": ...}`: `Shell.exec`, as the terminal UI (`c`, `until`, `n` return `running` at once) |
+| `POST /api/key {"text": ...}` | into the UART (`key`, every byte escaped) |
+| `POST /api/mem {"addr": ...}` | the memory window's address (400 if it is not one) |
+| `POST /api/quit` | ends the debugger |
+
+One state request is seven round trips to the emulator (the console, the registers, the video card, the breakpoints,
+the watches, the code (one block read), the memory window). While the machine runs, each costs up to a millisecond (the
+server answers between 20,000-step slices), so a state is about 7 ms; the protocol needs no combined reply for 10 Hz.
+(The code panel used to be read one instruction at a time: 40 lines were 75 ms during a run. Both UIs now read it in
+one block.) `waitfor` and `sleep` typed on the page hold the emulator until they end; the page waits with them.
+
 ## The protocol (y1ucemu -D)
 
 `y1ucemu -D PORT [its other options]` loads the control store and the images, prints
@@ -154,5 +209,8 @@ measured twice, 2026-10-11): within about 1.5%, with the same status line to the
 
 `tests/y1dbg/run.py` (in `make check`): a breakpoint at `cmdloop`, the registers, `s`/`us`/`d`/`trace`, the
 monitor's video driver on the screen and poked inverse glyphs, BASIC typed through `key`, a run paused and watched,
-`reset`, the `-c` command line, the emulator's exit when the debugger closes or drops the connection, and the UI in
-a pseudo-terminal (the screen pane after BASIC printed, captured with `snap`).
+`reset`, the `-c` command line, the emulator's exit when the debugger closes or drops the connection, the UI in
+a pseudo-terminal (the screen pane after BASIC printed, captured with `snap`), and the browser UI driven over HTTP
+(`web`: the page, the font against `vidsim.py`'s, a breakpoint, `V I`/`V M1`/`H` typed and the text in the state's
+video RAM with the CRTC's geometry and blinking cursor, pause, the memory window following `sp`, quit; `webstop`: the
+server and the emulator end on SIGTERM during a run, on SIGINT, and on `q`).

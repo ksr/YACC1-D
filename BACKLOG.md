@@ -338,12 +338,16 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
     unchanged) and the Python front end: the command language (`shell.py`), the curses UI with the screen pane drawn
     from the display RAM with the 6845's geometry, registers, code, the UART console; `tests/y1dbg/run.py` in `make
     check`. `software/y1dbg/README.md`.
-  - **Phase 2, the browser debugger (not started):** a `web.py` + `index.html` port of s5emu's (a small HTTP server in
-    the standard library, the page polling it), the same command language through `Shell.exec`, the screen drawn on a
-    canvas with `tools/vidsim.py`'s real font (`font_rows`/`chargen_image`, 5 x 8 dots a character), inverse video and
-    the cursor (R10 start line and blink mode, R11 end line, R14:R15), optionally the whole raster (`vidsim.py
-    --raster`). The protocol already has what it needs (`video`, `console`, `key`, `regs`); a combined "frame" reply
-    would save round trips if 10 Hz over HTTP is slow.
+  - **Phase 2, the browser debugger - done 2026-10-11:** `python3 software/y1dbg --ui web` (http://127.0.0.1:8803/,
+    `--port N`): `web.py` + `web/index.html`, a port of s5emu's, every command through the same `Shell.exec`. The
+    screen is drawn dot by dot on a canvas with `tools/vidsim.py`'s font served by the page's server (or a 2732 dump
+    with `--chargen`), 5 dots a character, R9+1 lines a row, inverse, the cursor on R10/R11's lines with R10's blink;
+    green/amber/white phosphor; typing on the screen goes to the UART. Panels: status, registers, code, breakpoints and
+    watches, memory, the UART console, the command line. Shared with the terminal UI: `Shell.snapshot()` (the code
+    read in one block: the TUI's refresh during a run went from ~80 ms to ~6 ms) and `debugger.geometry()`. No protocol
+    change: a page state is 7 round trips, ~7 ms during a run, so a combined "frame" reply was not needed.
+    `tests/y1dbg/run.py` cases `web` and `webstop`. Not done: `vidsim.py --raster` (the whole frame with the sync
+    intervals) on the page; `waitfor`/`sleep` typed on the page block its polling until they end.
   - **Phase 3, a gate-level video card (not started):** the card from the V1.0 netlist
     (`hardware/cards/video/kicad/v1.0-fusion-export-2026-09-18/reports/netlist.net`), with the bench reworks as netlist
     edits (the RS-to-A1 fix, the +5V wire), the way s5emu's `netlist.py`/`logic.py`/`hw.py` model ELF's cards: bus

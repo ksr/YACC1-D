@@ -143,16 +143,18 @@ command and Y1/OS's `video` with `-V`/`-N`.
 
 `software/y1dbg` is an interactive debugger for the microcode emulator with the video card's screen drawn live. The
 machine stays in C: `y1ucemu -D` serves a line protocol on 127.0.0.1 (the UART's output into a buffer, its input from
-the debugger, the display RAM and CRTC registers on request), and the front end is Python, standard library only:
+the debugger, the display RAM and CRTC registers on request), and the front end is Python, standard library only, in a
+terminal or in a browser:
 
 ```
 python3 software/y1dbg                                  # the terminal UI, the ROM loaded, stopped at the reset
+python3 software/y1dbg --ui web                         # the browser UI on http://127.0.0.1:8803/ (--port N)
 python3 software/y1dbg -f prog.img                      # + a program image
 python3 software/y1dbg --disk os/disk.img               # + Y1/OS's CF image (key O boots it)
 python3 software/y1dbg -c "b cmdloop; c; key I; waitfor >>; key 10 print 42\r; key run\r; waitfor 42; console"
 ```
 
-- **Commands** (the same in the UI, in `-c`/`--script` and, later, in the browser): `s [N]`, `n` (step over a JSR or
+- **Commands** (the same in the terminal UI, the browser and `-c`/`--script`): `s [N]`, `n` (step over a JSR or
   JSRUR), `us [N]` (microcode steps), `c`, `pause`, `until ADDR`, `reset`; breakpoints `b`/`bd`/`bl`, memory watches
   `w r|w|rw ADDR`/`wd`/`wl`; `r`, `set R3=1234`, `m ADDR [LEN]`, `poke`, `d [ADDR] [N]` (the disassembler of
   `/BIN/DISASM`, from `yacc1.def`, `--xisa` instructions included), `trace [N]`; `screen` (the display as text),
@@ -162,13 +164,20 @@ python3 software/y1dbg -c "b cmdloop; c; key I; waitfor >>; key 10 print 42\r; k
   them; bit 7 inverse, the cursor from R14:R15), registers, code at PC, the UART console and the command output.
   F5 continue, F6/Esc pause, F7 step, F8 step over. While the machine runs, typed keys go to its UART and the panes
   refresh 10 times a second; Tab gives the command line the keys without stopping it.
+- **The browser UI** (`--ui web`, 2026-10-11; bound to 127.0.0.1): the screen drawn dot by dot on a canvas with the
+  character generator's font (`tools/vidsim.py`'s, or a 2732 image read from the card with `--chargen FILE`), 5 dots a
+  character, R9+1 scan lines a row, bit 7 inverse, the cursor on R10/R11's scan lines blinking at R10's rate, in a
+  green, amber or white phosphor; click the screen and the keys go to the UART. Beside it the status, the registers
+  (changes since the last stop coloured), the code from PC (click: a breakpoint), the breakpoints and watches, a memory
+  window (`sp` follows the stack), the UART console with an input line, and the command line with the whole language.
+  Run, Pause, Step, Over, Reset buttons (F5-F8). The page polls 10 times a second while the machine runs.
 - **PC** is R0 at microcode step 0, where every instruction's fetch prologue begins; breakpoints, `s` and `pause`
   stop there. A run under the debugger goes at the emulator's full speed (about 22 million steps a second).
 - The emulator exits when the debugger closes its connection, however the debugger ends.
 
 `software/y1dbg/README.md` has the keys, every command and the protocol; `tests/y1dbg/run.py` (in `make check`)
-tests both sides. Planned (`BACKLOG.md`): the browser debugger, a gate-level video card from its netlist, and the same
-debug mode in the instruction-level emulator.
+tests both sides and both UIs. Planned (`BACKLOG.md`): a gate-level video card from its netlist, and the same debug
+mode in the instruction-level emulator.
 
 ## 4. Recipes
 
