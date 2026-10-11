@@ -332,6 +332,27 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   To fold into the generator when the diagrams are next regenerated.
 
 ## Software
+- **The debugger with a live video screen (`software/y1dbg`, 2026-10-11), modelled on the ELF repository's System-5
+  emulator (`software/s5emu`: `debugger.py`, `shell.py`, `tui.py`, `web.py`).**
+  - **Phase 1 - done 2026-10-11:** `y1ucemu -D PORT` (a line/JSON debug server on 127.0.0.1; run speed without `-D`
+    unchanged) and the Python front end: the command language (`shell.py`), the curses UI with the screen pane drawn
+    from the display RAM with the 6845's geometry, registers, code, the UART console; `tests/y1dbg/run.py` in `make
+    check`. `software/y1dbg/README.md`.
+  - **Phase 2, the browser debugger (not started):** a `web.py` + `index.html` port of s5emu's (a small HTTP server in
+    the standard library, the page polling it), the same command language through `Shell.exec`, the screen drawn on a
+    canvas with `tools/vidsim.py`'s real font (`font_rows`/`chargen_image`, 5 x 8 dots a character), inverse video and
+    the cursor (R10 start line and blink mode, R11 end line, R14:R15), optionally the whole raster (`vidsim.py
+    --raster`). The protocol already has what it needs (`video`, `console`, `key`, `regs`); a combined "frame" reply
+    would save round trips if 10 Hz over HTTP is slow.
+  - **Phase 3, a gate-level video card (not started):** the card from the V1.0 netlist
+    (`hardware/cards/video/kicad/v1.0-fusion-export-2026-09-18/reports/netlist.net`), with the bench reworks as netlist
+    edits (the RS-to-A1 fix, the +5V wire), the way s5emu's `netlist.py`/`logic.py`/`hw.py` model ELF's cards: bus
+    contention and undriven reads on the card become visible. **Open question:** a gate evaluator in C inside y1ucemu
+    (fast, every bus cycle) or y1ucemu routing the card's $D000-$DFFF accesses to a Python model through the debug
+    connection (simple, slow: one round trip per access, acceptable for the monitor's video unit, not for long runs).
+  - **Later:** the same `-D` mode in the instruction-level emulator (`software/emulator/main.c`, a migrated file: a
+    dated `tools/patched_files.txt` note), so the debugger runs on either; `y1dbg --emu` already takes another
+    executable.
 - **BASIC: a break key (2026-10-10, not started).** The ROM's BASIC has no way to stop a running program short of
   reset (found running `baslook.bas`, a 32000-count loop, at 1 MHz). Plan: at the start of every statement check the
   UART for a waiting character through the ROM's no-wait vectors (`CONST`/`UARTINNE`); on Ctrl-C (and/or Esc - to

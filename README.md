@@ -73,6 +73,7 @@ YACC1-D/
 │   ├── assembler/            RC/asm + yacc1.def
 │   ├── emulator/             instruction-level emulator (the ISA reference)
 │   ├── ucemu/                microcode-level emulator (test.hex through models of the cards, CF, video)
+│   ├── y1dbg/                the debugger for ucemu (y1ucemu -D + a curses UI with the live video screen)
 │   ├── compiler/             y1cc.py, c/ (y1cc.c and the passes cc1..cc9), lib/
 │   ├── disassembler/         disasm2
 │   └── ubasic-c/             the C uBASIC the assembly BASIC was ported from
@@ -85,7 +86,7 @@ YACC1-D/
 ├── tools/                    host scripts: setup_check, verify_firmware/embedded, ucode_send, monload, cfcard,
 │                             y1kermit, p8xfs, the KiCad/Eagle tooling, the tree audit
 ├── tests/                    os, compiler, native (self-host), asm, disasm, bench (the machine), monload, kermit,
-│                             cfcard, video, sequencer, ucemu, memory, assembler, bus-tester-scripts
+│                             cfcard, video, sequencer, ucemu, y1dbg, memory, assembler, bus-tester-scripts
 ├── mk/                       shared make fragments
 ├── migration/                the 2026-09-19/20 migration's inventory, plan and logs
 ├── vm/                       manifests of VMs and legacy installers (the images live outside git)

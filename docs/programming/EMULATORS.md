@@ -103,6 +103,7 @@ Options (`y1ucemu.c` header):
 | `-V` / `-W` / `-N` | the video card, as on the interpreter (2026-09-25): the screen at the end, the CRTC write log, no card (nothing drives $D000-$DFFF: the pull-ups' $FF) |
 | `-H` | (2026-10-10) an undriven data lane keeps the last value driven on it, instead of reading $FF |
 | `-O` | (2026-10-10) the old address model; by default nothing drives ADDR-REG-ID while `-2-BYTE-OPERAND-SEL` is asserted (the sequencer's IC18B is off) and the address reads $FFFF, as on the machine |
+| `-D PORT` | (2026-10-11) the debug server for `software/y1dbg` (section 3b): no terminal, one connection on 127.0.0.1:PORT (0 = any free port, printed on stdout), one-line commands answered by one JSON line each |
 
 The model (`software/ucemu/README.md` "The model"): the sequencer (step counter, instruction register latched at the
 leading edge of `LD-INS-REG`, operand register, branch register, interrupt vector, the level-sensitive branch-taken
@@ -137,6 +138,37 @@ finds the card), the $D800-$DFFF half is the card's CRTC side (even addresses: t
 its data register at A1 = 1, as after the RS-to-A1 fix; R12-R17 read back, the rest read 0; odd addresses: the JP1
 latch, $FF). Until 2026-09-25 $D800-$DFFF was plain RAM on both. `tests/video/emu.py` drives the monitor's `V`
 command and Y1/OS's `video` with `-V`/`-N`.
+
+## 3b. The debugger: y1dbg (2026-10-11)
+
+`software/y1dbg` is an interactive debugger for the microcode emulator with the video card's screen drawn live. The
+machine stays in C: `y1ucemu -D` serves a line protocol on 127.0.0.1 (the UART's output into a buffer, its input from
+the debugger, the display RAM and CRTC registers on request), and the front end is Python, standard library only:
+
+```
+python3 software/y1dbg                                  # the terminal UI, the ROM loaded, stopped at the reset
+python3 software/y1dbg -f prog.img                      # + a program image
+python3 software/y1dbg --disk os/disk.img               # + Y1/OS's CF image (key O boots it)
+python3 software/y1dbg -c "b cmdloop; c; key I; waitfor >>; key 10 print 42\r; key run\r; waitfor 42; console"
+```
+
+- **Commands** (the same in the UI, in `-c`/`--script` and, later, in the browser): `s [N]`, `n` (step over a JSR or
+  JSRUR), `us [N]` (microcode steps), `c`, `pause`, `until ADDR`, `reset`; breakpoints `b`/`bd`/`bl`, memory watches
+  `w r|w|rw ADDR`/`wd`/`wl`; `r`, `set R3=1234`, `m ADDR [LEN]`, `poke`, `d [ADDR] [N]` (the disassembler of
+  `/BIN/DISASM`, from `yacc1.def`, `--xisa` instructions included), `trace [N]`; `screen` (the display as text),
+  `video` (the CRTC registers); `key TEXT` into the UART, `console`, `waitfor TEXT`; `sym FILE` (RC/asm listings: the
+  monitor's and BASIC's are loaded at the start), `load FILE`. Addresses are hex, `$hex`, symbols or registers.
+- **The UI** (curses): the screen pane (the 6845's R1 x R6 from R12:R13, or 80 x 24 from $D000 before a program sets
+  them; bit 7 inverse, the cursor from R14:R15), registers, code at PC, the UART console and the command output.
+  F5 continue, F6/Esc pause, F7 step, F8 step over. While the machine runs, typed keys go to its UART and the panes
+  refresh 10 times a second; Tab gives the command line the keys without stopping it.
+- **PC** is R0 at microcode step 0, where every instruction's fetch prologue begins; breakpoints, `s` and `pause`
+  stop there. A run under the debugger goes at the emulator's full speed (about 22 million steps a second).
+- The emulator exits when the debugger closes its connection, however the debugger ends.
+
+`software/y1dbg/README.md` has the keys, every command and the protocol; `tests/y1dbg/run.py` (in `make check`)
+tests both sides. Planned (`BACKLOG.md`): the browser debugger, a gate-level video card from its netlist, and the same
+debug mode in the instruction-level emulator.
 
 ## 4. Recipes
 

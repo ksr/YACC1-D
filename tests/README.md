@@ -55,6 +55,11 @@
   loaded (`run.py`, 14/14 on 2026-09-22, `chars.ucout` = the expectation with the monitor's input echo), and `isa.asm`, a
   differential test of every instruction whose port-2 byte stream must be identical on both emulators (it is, BRDEV aside;
   since 2026-09-24 it covers LDZ/STZ/ADDIW/SHL16 too, 114 bytes, and `tests/bench` runs it on the machine).
+- `y1dbg/` — the debugger (2026-10-11): `y1ucemu -D`'s debug server and `software/y1dbg` driven by script - a breakpoint
+  at the monitor's `cmdloop`, the registers, stepping, the disassembly and trace, the monitor's video driver on the
+  screen (`V I`, `V M1`) and poked inverse glyphs, BASIC typed through `key`, a run paused and stopped by a write
+  watch, reset, the `-c` command line, the emulator's exit when the debugger closes or drops the connection - and
+  the curses UI in a pty (its screen pane captured with `snap`). In `make check`.
 - `y1term/` — `tools/y1term.py --send` against the microcode emulator through a pty (2026-10-08): `good.bas` (lower
   case, a tab, a blank line, a `#` comment, FOR/NEXT) sent with `--new --run` must print `Hello 1 2 3 21`; `bad.bas`
   must exit 1 naming its `print !` line as SYNTAX ERROR, the other lines stored. In `make check`.

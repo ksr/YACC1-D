@@ -10,7 +10,7 @@ OUT = os.path.join(HERE, "stage")
 FILES = ["BACKLOG.md", "hardware/README.md", "hardware/FABRICATED.md", "os/README.md",
          "firmware/README.md", "embedded/README.md", "tools/README.md", "tests/README.md",
          "software/compiler/README.md", "software/assembler/README.md", "software/emulator/README.md",
-         "software/ucemu/README.md", "software/disassembler/README.md"]
+         "software/ucemu/README.md", "software/y1dbg/README.md", "software/disassembler/README.md"]
 GLOBS = ["docs/**/*.md", "docs/isa/*.svg", "docs/**/*.png"]
 
 shutil.rmtree(OUT, ignore_errors=True)

@@ -73,7 +73,7 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
 | Monitor, BASIC, ROM image | `firmware/monitor/monitor.asm`, `firmware/basic/`, `firmware/rom/shipped/rom.bin` (+ README with what is burned) |
 | Assembler (host) | `software/assembler/` (RC/asm + `yacc1.def`); quirks in `docs/programming/ASSEMBLER.md` |
 | C compiler | `software/compiler/y1cc.py` (reference), `software/compiler/c/` (C twin `y1cc.c`, the nine passes `cc1..cc9`) |
-| Emulators | `software/emulator/` (instruction level), `software/ucemu/` (microcode level, steps `test.hex` through card models) |
+| Emulators | `software/emulator/` (instruction level), `software/ucemu/` (microcode level, steps `test.hex` through card models); `software/y1dbg/` the debugger for the microcode one (`python3 software/y1dbg`: `y1ucemu -D` + a curses UI with the live video screen) |
 | Y1/OS | `os/` (kernels, `commands/` in C, `commands-asm/asm.asm`, `man/`, `Makefile` → `os/disk.img`) |
 | Machine tools | `tools/ucode_send.py` (microcode loader), `tools/monload.py` (monitor `:` loader), `tools/cfcard.py` (write a CF card), `tools/y1term.py` (terminal; types a file into BASIC, waiting for `>>` after each line), `tools/y1kermit.py` + `tools/y1.ksc` (Kermit), `tools/setup_check.py` (is this Mac set up?) |
 | Arduino sketches | `embedded/` (built against the vendored `embedded/libraries/` only) |
