@@ -414,6 +414,37 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
     check`; loaded with `ucode_send.py` (only the differing records, ~40), the ISA back with `--all`. A second FTDI on
     the sequencer's loader is planned, so the tester can stay on as bus-monitor: `ucode_send.py` must find it.
   - First version: tests 0, 1, 4, 5, 6 plus FAIL/pass reporting.
+- **`y1ucemu`: electrical checks on every bus - undriven when sampled, and conflicts (2026-10-11, not started).**
+  - Why: the POPR fault (fixed `ad0cef3`) passed both emulators for weeks. `y1ucemu` took ADDR-REG-ID straight from
+    the control word, but on the machine that field reaches the backplane only through the sequencer's IC18B, which
+    is off while `-2-BYTE-OPERAND-SEL` is asserted; the two-byte mode was modelled for REG-RD-ID/REG-LD-ID (sequencer
+    IC5, `y1ucemu.c` "sequencer IC5") but not for ADDR-REG-ID. And the machine agreed with the model: at 6 MHz the
+    floating select still held SP. The 2026-10-10 change makes that read return $FFFF, so it is caught only when a test's
+    output changes. Checked 2026-10-11: the pre-fix `test.hex` (`ad0cef3^`) under today's model prints `25#` and
+    hangs on T1 (the machine's symptom); under `-O` it counts 1..5.
+  - 1. **Every bus as drivers with enables**: the data lanes (done today), the address bus (today one computed value:
+    the selected register, OR $F000 under FORCE-ROM) and the select lines ADDR-REG-ID / REG-RD-ID / REG-LD-ID (today
+    taken from the word), each through the card buffers that really drive it (sequencer IC5, IC18A/IC18B, IC11A; the
+    register cards' ID decode; the FORCE-ROM gating).
+  - 2. **Undriven when sampled**: at each consumer's sampling edge every lane it takes must have a driver - trailing
+    edge for REG-LD-LO/HI, the TMP loads, the accumulator, `-MEM-WR`, `-IO-WR`; leading edge for the
+    `LEADING_EDGE` list in `tests/ucemu/prologue.py` (LD-INS-REG, OPERAND-CLK, BRANCH-LD-*, ...); a memory or I/O read
+    needs the address bus driven for the whole strobe. Report opcode, step, consumer and bus, as `-w` reports fights.
+    With item 1 this flags POPR on its first execution ("-MEM-RD, ADDR-REG-ID undriven, record $08, step 10") at any
+    clock, whether or not the wrong value changes a program's output.
+  - 3. **Conflicts**: two or more enabled drivers on any bus, whatever their values. Today's fight check counts only
+    drivers that disagree, so two outputs enabled together stay silent until the data differs; and the address bus
+    has no fight check at all (the 2026-10-10 bench case: the bus tester left ADDR-REG-ID at 0 and R0 drove the address
+    bus against the tester - every read $A0).
+  - Allow-list the deliberate cases: the register cards' pull-up reads (review M-1, 327 steps), the ALU's $FF on
+    DATA8..15.
+  - First step, measurement only: the checks in a scratch copy, the existing suites (`tests/ucemu`, `make check`)
+    run, every flag listed; then the allow-list; then `make check` fails on any new case.
+  - Limit: a logic check. Set-up/hold and races (the FORCE-ROM/A15 race, review M1) need timing; the microcode
+    diagnostic suite's clock sweep (above) is the tool for those.
+  - Related static check (probe 2026-10-11, not committed): no step may read or write memory while asserting
+    `-2-BYTE-OPERAND-SEL` (`docs/system/MICROCODE.md` 4.4). Pre-fix `test.hex`: 11 steps, all in record $08 (POPR);
+    today's: 0. A candidate `tests/ucemu/twobyte.py` beside `prologue.py` and `idle.py`.
 
 ## Tree / docs
 - (done 2026-09-20: every `.rtf` outside archive has a Markdown twin; `tools/rtf_to_md.py`)
