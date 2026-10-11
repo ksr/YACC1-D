@@ -329,6 +329,6 @@ stderr at the end, `-W` logs CRTC writes, `-N` removes the card ($D000-$DFFF rea
 
 **Bring-up on the real card** (no 6845 yet): `VS` (the banner already said whether $D000 answered); `VF55` then `VD`
 (every character `U`), `VFAA` / `VD` (`*`); `VC`, `VW0000 HELLO`, `VD`; `B D000` for the bytes; `VM1`, type, `VD`
-shows the console. After fitting the 6845 with the RS-to-A1 fix: `VR0C 12` then `VR0C` must read back `12` (R12, a
-readable register); `VI`, then a picture; adjust timing with `VR`. Details in [`docs/cards/video.md`](../cards/video.md)
-section 8.
+shows the console. After fitting the 6845 with the RS-to-A1 fix: `VR0E 12` then `VR0E` must read back `12` (R14, the cursor
+high byte: readable on every 6845; R12/R13 are write-only on Motorola's MC6845); `VI`, then a picture; adjust timing with `VR`. Details in [`docs/cards/video.md`](../cards/video.md)
+section 8 and [`docs/procedures/VIDEO-BRINGUP.md`](../procedures/VIDEO-BRINGUP.md).

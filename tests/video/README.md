@@ -4,6 +4,11 @@
 card) and Y1/OS's `video` command on both emulators, whose card model (`software/videomodel.h`) prints the screen with `-V`;
 the screen is compared with a Python model of the driver. The bench scripts below drive the real card.
 
+**Video bring-up (2026-10-10)**: `docs/procedures/VIDEO-BRINGUP.md` is the plan. `crtc_regs.py` (the 6845's register
+path through the tester), `crtc_picture.py` (a picture with the CPU out), `asm/` (the CPU programs `vram`, `crtcreg`,
+`testcard`, `vstress`, `estrobe` as `.asm` and ready-built `.img`; `asm/run.py` checks them on the microcode emulator, in
+`make check`); `tools/vidsim.py` draws what the card shows.
+
 
 `video_ram_test.py [port] [--quick]` drives the Bus Test Card (`tools/busdrv.py`, FTDI 19200) and exercises the video
 card's 1K display RAM at $D000–$D3FF: address-derived and inverted patterns over every cell, one-cell neighbour isolation

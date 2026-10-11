@@ -201,6 +201,9 @@ it.
 
 ## 6. Bring-up and test
 
+The plan from here, with the bus-tester scripts, the CPU test programs and the picture emulator:
+[`docs/procedures/VIDEO-BRINGUP.md`](../procedures/VIDEO-BRINGUP.md) (2026-10-10).
+
 What was done, in order (`tests/video/README.md`, README, MACHINE.md):
 
 1. 2026-09-18: card installed, two bent pins straightened, RN2 changed to 1k while chasing a fault; the bus-tester
@@ -269,7 +272,7 @@ crystal/C1 values belong in that redesign whichever interface it keeps.
 | 3 | `VF55`, `VD` | 24 rows of `U` (the RAM as text over the serial line); `VFAA`, `VD`: `*` everywhere. Any other character = a stuck or crossed data bit in the upper 1K too ($D400-$D7FF was never tested by `video_ram_test.py`) |
 | 4 | `VC`, `VW0000 HELLO`, `VW1700 LAST ROW`, `VD` | the text in rows 00 and 17; `B D000` shows the bytes ($48 $45 ...) |
 | 5 | `VM1`, then any command, `VD`, `VM0` | the console's own output in the screen RAM, scrolled at the bottom |
-| 6 | (6845 fitted, RS moved to A1, E fixed) `VR0C 12`, then `VR0C` | `12` read back from R12 (readable): the register interface works. `00`/`FF` = -CS, RS or E (section 4) |
+| 6 | (6845 fitted, RS moved to A1, E fixed) `VR0E 12`, then `VR0E` | `12` read back from R14 (the cursor high byte, readable on every 6845; R12/R13 are write-only on Motorola's MC6845): the register interface works. `00`/`FF` = -CS, RS or E (section 4) |
 | 7 | `VI` | the CRTC programmed from the ROM's table (`VR rr` reads back R12-R17 only); `VS` shows `CRTC 01`. Then a monitor on the DB9: sync first (`VR00 7E`, `VR02 62`, `VR04 1F`, `VR07 1C` to move it), then the text of step 4 |
 | 8 | `VM1` | from here the console shows on the screen; the CRTC cursor follows (R14/R15) |
 | 9 | (card debugged) | `VIDAUTO EQU 1`, rebuild the ROM, burn: the card starts at reset (`BACKLOG.md`) |

@@ -59,6 +59,7 @@ check:
 	python3 tests/bench/run.py
 	python3 tests/cfcard/run.py
 	python3 tests/video/emu.py
+	python3 tests/video/asm/run.py
 	python3 tests/sequencer/run.py
 	python3 tests/assembler/romcount/run.py
 	python3 tests/assembler/romdiag/run.py

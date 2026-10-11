@@ -187,8 +187,32 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Video card v1.1** (`hardware/cards/video/kicad/v1.1`, the KiCad master since 2026-09-21; Fusion abandoned): DONE in the
   design — one 5 V rail (`+5V` folded into `VCC`, joining track added; proof 116/116). TO DO — move the 6845 RS from A0 to A1
   (`hardware/cards/video/docs/fix-6845-register-select.md`; bench job first), pull-ups on the 7416 outputs; then order.
-  On the built v1.0: fit the 6845 with the RS bench fix, then the ROM's `VR0C 12` / `VR0C` read-back proves the register
-  path (`docs/cards/video.md` section 8, step 6).
+  On the built v1.0: fit the 6845 with the RS bench fix, then the ROM's `VR0E 12` / `VR0E` read-back (R14, the cursor
+  high byte: readable on every 6845; R12/R13 are write-only on Motorola's MC6845) proves the register path
+  (`docs/procedures/VIDEO-BRINGUP.md`).
+- **NEXT AT THE MACHINE: video card V1.0 bring-up (plan written 2026-10-10, nothing run yet):
+  `docs/procedures/VIDEO-BRINGUP.md`.**
+  - Phase 0 at the bench: read Q2 and SV4, read the chargen EPROM (`minipro -p 2732 -r`) and draw it with
+    `tools/vidsim.py --chargen`, or burn `firmware/video/chargen.bin`; the RS-to-A1 fix and fit the 6845; recommended
+    a 10k on IC27 pin 12 (6.1), LPSTB to GND (6.5) and 470 Ω on DB9 pin 7.
+  - Phase A, the bus tester with bus-driver, CPU out: `tests/video/crtc_regs.py`, then `tests/video/crtc_picture.py`
+    (a picture with no CPU).
+  - Phase B, the CPU: `tests/video/asm/{vram,crtcreg,testcard,vstress,estrobe}.img` with `monload.py --go 3000`, then
+    the ROM's `V` commands and `VM1`; `VIDAUTO EQU 1` last.
+  - Away from the machine: `tools/vidsim.py run/render/timing` draws the card's picture (the emulators save its state
+    with `Y1VIDSTATE`); `tests/video/asm/run.py` in `make check`.
+  - The tester scripts are untested on the machine. Decide which monitor (TV-rate, IBM 5151 or 5153: the plan's
+    "Monitors").
+- **Video card, the next revision (2026-10-10): a PS/2 keyboard interface, and the DB9 able to drive an old IBM XT
+  monitor.** Which monitor decides the timing (to ask at the machine): **IBM 5151** (MDA, mono): 18.432 kHz / 50 Hz,
+  720x350, 9-dot characters from a 16.257 MHz dot clock, DB9 1-2 GND, 6 intensity, 7 video, 8 +HSYNC, 9 -VSYNC; or **IBM
+  5153** (CGA, colour): 15.7 kHz / 60 Hz, DB9 3-6 R G B I, 8 +HSYNC, 9 +VSYNC. The v1.0/v1.1 DB9 is MDA-like (7 video,
+  8 HS, 9 VS, 1 GND) but its timing is TV rate (the ROM's table: 15.7 kHz with an assumed 10 MHz dot clock) and its
+  character is 5 dots with no gap (IC28 divides by 5) - neither syncs nor reads well on a 5151. So: a crystal for the
+  standard (16.257 MHz for MDA), a 9-dot character (counter /9, the chargen 8 bits wide plus the gap column), the
+  sync polarities and an intensity output, with the review items 6.1-6.5 and the RS/7416 fixes folded in. Keyboard:
+  PS/2 clock/data into a shift register or a small MCU, read on an I/O port behind the console vectors (OS-PLAN
+  phase 4). `tools/vidsim.py timing` checks a register table against both monitors.
 - **Sequencer logic v2.2: a "CPU off" switch** (`hardware/cards/sequencer-logic`). Today the card's outputs can never be
   silenced while the memory card is enabled: -BUS-EN is generated on the card itself (IC36 74LS04 from the sequencer's
   READY line) and is also the output enable of all nine pipeline 74LS374s and the two microcode-address 74LS244s; -RESET

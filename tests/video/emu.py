@@ -12,7 +12,7 @@ level emulator (int) and the microcode one (uc) through the monitor, as a bench 
   present   the banner says VIDEO CARD FOUND, VS reports it, mirroring is OFF by default: after VC and a help
             listing the screen is still blank
   write     VC, VW (text at a row/column, upper-cased), VB (bytes), VF + VD (the screen as text over the console),
-            VR (a CRTC register written and read back); a VW row or column out of range and a VB address outside
+            VR (a CRTC register written and read back: R14, readable on every 6845); a VW row or column out of range and a VB address outside
             $Dxxx -> ? and the rest of the line dropped (its 0 must not reach the command loop)
   mirror    VI (the CRTC table: R1/R6 = 80/24, the dump follows them), VM1, two help listings (40+ lines: the screen
             scrolls), VM0: the screen equals what a terminal model of the driver makes of the console bytes that were
@@ -110,7 +110,7 @@ def case_present(tag, emu):
 
 def case_write(tag, emu):
     out, err = run(emu, "VC\nVW0102 hello, world\nVB D0A0 41 42 43\nVW1700 bottom row [x]\nVW1800 no\n"
-                        "VR0C 12\nVR0C\nVF2E\nVD\nVB C000 41 00\nVW0050 0\n0")
+                        "VR0E 12\nVR0E\nVF2E\nVD\nVB C000 41 00\nVW0050 0\n0")
     scr = screen(err)
     vd = [l[3:] for l in out.splitlines() if re.match(r"^[0-9A-F]{2} ", l) and len(l) == 3 + COLS]
     want = ["." * COLS] * ROWS                                   # VF2E filled every byte with '.'
@@ -122,8 +122,8 @@ def case_write(tag, emu):
         s2[23].startswith("BOTTOM ROW [X] ") and all(s2[r] == " " * COLS for r in (0,) + tuple(range(3, 23)))
     check("write", tag, ok2, "VW/VB rows: %r" % (s2 and s2[:3]))
     regs = crtc(err)
-    ok3 = out.count(" ?") == 3 and regs is not None and regs[12] == "12" and "\n12\n" in out.replace("\n\r", "\n")
-    check("write", tag, ok3, "VW row 18 -> ?, VR0C 12 read back: %r" % (regs,))
+    ok3 = out.count(" ?") == 3 and regs is not None and regs[14] == "12" and "\n12\n" in out.replace("\n\r", "\n")
+    check("write", tag, ok3, "VW row 18 -> ?, VR0E 12 read back (R14): %r" % (regs,))
 
 
 def case_mirror(tag, emu):

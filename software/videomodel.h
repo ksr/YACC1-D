@@ -16,6 +16,7 @@
  *        each byte shown as its glyph under the 2513-style assumption (bits 0-5; 00-1F = @..underscore, 20-3F =
  *        blank..?), then the 18 CRTC registers
  *   -W   log every CRTC register write (and any write to the latch's odd addresses: a bus fight on the card) on stderr
+ *   Y1VIDSTATE=FILE (environment, with -V): also write the card's state for tools/vidsim.py, which draws the picture
  *   -N   no video card: $D000-$DFFF reads $FF (the ucemu model leaves the bus to its pull-ups) and ignores writes,
  *        to test the monitor's "not present" path
  *
@@ -42,7 +43,11 @@ static int vid_read(unsigned a, const uint8_t *mem) {   /* the byte a read of a 
     if (a < VID_CRTC) return mem[a];
     if (a & 1) return 0xFF;                               /* the JP1 latch, nothing jumpered */
     if (!(a & 2)) return -1;                              /* the 6845's address register is write-only */
-    if (vid.sel >= 12 && vid.sel <= 17) return vid.reg[vid.sel];   /* R12-R17 read back */
+    /* 2026-10-10: Motorola's MC6845 reads back R14/R15 (cursor) and R16/R17 (light pen) only; R12/R13 (start address)
+       are write-only there (readable on some second sources, e.g. Hitachi's HD6845S). Y1VID_R12READ=1 in the
+       environment models such a part. */
+    if (vid.sel >= 14 && vid.sel <= 17) return vid.reg[vid.sel];
+    if ((vid.sel == 12 || vid.sel == 13) && getenv("Y1VID_R12READ")) return vid.reg[vid.sel];
     return 0;                                             /* the write-only registers read 0 */
 }
 
@@ -57,7 +62,24 @@ static void vid_write(unsigned a, uint8_t v, uint8_t *mem) {
     }
 }
 
+/* 2026-10-10: with Y1VIDSTATE=FILE in the environment, the dump also writes the card's state for tools/vidsim.py (the
+   picture the card would make): the 18 CRTC registers, which were written, the selected register and the 2K display
+   RAM the CPU reaches, as text lines "regs ...", "written ...", "sel N", "ram ..." (hex). */
+static void vid_state(const uint8_t *mem) {
+    const char *path = getenv("Y1VIDSTATE");
+    if (!path || vid.absent) return;
+    FILE *f = fopen(path, "w");
+    if (!f) return;
+    fprintf(f, "regs"); for (int i = 0; i < 18; i++) fprintf(f, " %02X", vid.reg[i]);
+    fprintf(f, "\nwritten"); for (int i = 0; i < 18; i++) fprintf(f, " %d", vid.written[i]);
+    fprintf(f, "\nsel %d\nram ", vid.sel);
+    for (unsigned a = VID_BASE; a < VID_CRTC; a++) fprintf(f, "%02X", mem[a]);
+    fprintf(f, "\n");
+    fclose(f);
+}
+
 static void vid_dump(const uint8_t *mem) {
+    vid_state(mem);
     if (!vid.dump) return;
     if (vid.absent) { fprintf(stderr, "video: no card (-N)\n"); return; }
     int cols = VID_COLS, rows = VID_ROWS; unsigned start = VID_BASE;

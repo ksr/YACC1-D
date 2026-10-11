@@ -40,6 +40,7 @@ Options (`print_usage`, `main`):
 | `-V` | (2026-09-25) the video card: at exit print its screen (80 x 24 from $D000, or the CRTC's R1 x R6 from R12/R13 once written; each byte as its glyph, bits 0-5) and the 18 CRTC registers on stderr |
 | `-W` | log every CRTC register write on stderr (and writes to the latch's odd addresses) |
 | `-N` | no video card: $D000-$DFFF reads $FF, writes are lost (the monitor's "not found" path) |
+| `Y1VIDSTATE=FILE` | (environment, 2026-10-10, with `-V`) also save the card's state (CRTC registers, the 2K display RAM) for `tools/vidsim.py render`, which draws the picture; `Y1VID_R12READ=1` models a 6845 that reads R12/R13 back (Motorola's MC6845 does not: only R14-R17) |
 | `-h` | usage |
 
 Behaviour worth knowing (`main.c`):
@@ -100,6 +101,8 @@ Options (`y1ucemu.c` header):
 | `-L` | report writes to the LED board, the TIL311 displays and the ON/OFF LED on stderr as they change (`LED=25`, `TIL=25`, `ON`, `OFF`) |
 | `-l N` | stop after N **steps** |
 | `-V` / `-W` / `-N` | the video card, as on the interpreter (2026-09-25): the screen at the end, the CRTC write log, no card (nothing drives $D000-$DFFF: the pull-ups' $FF) |
+| `-H` | (2026-10-10) an undriven data lane keeps the last value driven on it, instead of reading $FF |
+| `-O` | (2026-10-10) the old address model; by default nothing drives ADDR-REG-ID while `-2-BYTE-OPERAND-SEL` is asserted (the sequencer's IC18B is off) and the address reads $FFFF, as on the machine |
 
 The model (`software/ucemu/README.md` "The model"): the sequencer (step counter, instruction register latched at the
 leading edge of `LD-INS-REG`, operand register, branch register, interrupt vector, the level-sensitive branch-taken
