@@ -9,6 +9,13 @@ path through the tester), `crtc_picture.py` (a picture with the CPU out), `asm/`
 `testcard`, `vstress`, `estrobe` as `.asm` and ready-built `.img`; `asm/run.py` checks them on the microcode emulator, in
 `make check`); `tools/vidsim.py` draws what the card shows.
 
+`gate.py` (2026-10-11, in `make check`): the card at gate level, `y1ucemu -G REV` (`docs/cards/video.md` section 9).
+`software/ucemu/videogate.h` is current; with the card as fitted (`v1.0`) the monitor's video unit, Y1/OS's `video` and
+the programs in `asm/` give the same console output, screen, CRTC registers, step counts and disk as the behavioural
+card, with 0 bus events (`crtcreg`'s two latch reads aside: floating inputs); without the RS fix (`v1.0-no-rs`) and with
+the socket empty (`v1.0-no6845`) `crtcreg` fails as the fix document predicts; without the +5V wire (`v1.0-no-5v`) a
+write to $9010 lands at $D010, the 2026-09-18 fault; the wrong fix (`v1.0-a0fix`) is a fight at $D801. About 50 s.
+
 
 `video_ram_test.py [port] [--quick]` drives the Bus Test Card (`tools/busdrv.py`, FTDI 19200) and exercises the video
 card's 1K display RAM at $D000–$D3FF: address-derived and inverted patterns over every cell, one-cell neighbour isolation

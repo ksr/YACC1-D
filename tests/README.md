@@ -16,7 +16,9 @@
 - `sequencer/` — run-mode boot transcripts of the sequencer-memory ATmega (2026-09-21): the clobbered copy with -BUS-EN
   asserted, the clean copy with the bus quiet, and the Sequencer4 boot (16 s copy, 29 s verify, RAM == EEPROM).
 - `video/` — `video_ram_test.py`, the video card's display-RAM test over the bus tester (patterns, inverse, neighbour
-  isolation, the block-0/9 write-through check, read stability); 8/8 on 2026-09-21 after the +5V/VCC join.
+  isolation, the block-0/9 write-through check, read stability); 8/8 on 2026-09-21 after the +5V/VCC join. `gate.py`
+  (2026-10-11, in `make check`): the card at gate level (`y1ucemu -G`) against the behavioural model, byte for byte
+  with 0 bus events, and without each bench rework (the RS fix, the +5V wire) the faults they fixed.
 - `basic/` — `test`, a small BASIC program (LET/FOR loops) used to exercise the interpreter.
 - `compiler/` — the C compiler's test programs (`*.c` + expected `.out`/`.in`/`.err`) and `run.py`, which compiles each with
   `software/compiler/y1cc.py --boot`, assembles it and runs it on `emulator -x`; `--oracle` regenerates the expectations with

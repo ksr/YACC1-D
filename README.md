@@ -74,6 +74,7 @@ YACC1-D/
 │   ├── emulator/             instruction-level emulator (the ISA reference)
 │   ├── ucemu/                microcode-level emulator (test.hex through models of the cards, CF, video)
 │   ├── y1dbg/                the debugger for ucemu (y1ucemu -D + a curses UI with the live video screen)
+│   ├── gatemodel/            cards at gate level from their netlists (the video card for y1ucemu -G)
 │   ├── compiler/             y1cc.py, c/ (y1cc.c and the passes cc1..cc9), lib/
 │   ├── disassembler/         disasm2
 │   └── ubasic-c/             the C uBASIC the assembly BASIC was ported from

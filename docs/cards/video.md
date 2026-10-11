@@ -6,7 +6,7 @@ separate video/HS/VS on a DB9 and as a sync signal on an RCA jack. Built once, i
 the 6845 fitted**; the RAM half is proven, the CRTC half is not.
 
 Written 2026-09-23 from the YACC1-D tree; section 8 (the ROM's driver, the `V` command, bring-up with it) added
-2026-09-25.
+2026-09-25; section 9 (the card at gate level in the microcode emulator) 2026-10-11.
 
 Sources: `hardware/cards/video/eagle/v1.0-fusion-export-2026-09-18/Video_1.0.sch` and `.brd` (the built card, as
 exported from Fusion 360; parts and nets parsed from the Eagle XML), `hardware/cards/video/kicad/v1.1/README.md` (the
@@ -280,3 +280,92 @@ crystal/C1 values belong in that redesign whichever interface it keeps.
 `VB aaaa bb ..` writes raw bytes anywhere in $D000-$DFFF (glyph codes, inverse video with bit 7, or the CRTC at
 $D800/$D802); **never an odd address above $D800**: that is the JP1 latch, which drives the bus even on a write
 (finding 6.4). The addresses are confirmed (2026-09-25): RAM $D000-$D7FF, 6845 $D800/$D802.
+
+## 9. The gate-level model in the microcode emulator (2026-10-11)
+
+`software/ucemu/y1ucemu -G v1.0` (also `--video-rev v1.0`; the debugger passes it with `python3 software/y1dbg
+--video-rev v1.0`) replaces the behavioural card of `software/videomodel.h` with this card's bus path built from its
+netlist, `hardware/cards/video/kicad/v1.0-fusion-export-2026-09-18/reports/netlist.net`, the way the ELF repository's
+System-5 emulator builds its 6845 card. Without `-G` the emulator keeps the behavioural card, and its speed is
+unchanged.
+
+### 9.1 What is modelled
+
+`software/gatemodel` (Python) reads the netlist, puts every pin the board connects differently from the schematic on
+its board net (the "ONLY ON BOARD" groups of `reports/netlist-compare.txt`: IC1 pin 14 and IC2 pin 20 are on `+5V`;
+the KiCad net names go back to the Eagle names this document uses), applies the jumper settings and the reworks as
+netlist edits, and traces back from every control and address pin of the three bus devices:
+
+| Part | On the bus path as |
+|---|---|
+| IC18 74S85 | the block compare: A = SV3 (RN2 pull-ups, SV3 5-6 fitted), B = ADDR12..15, cascade A=B = /-VMA (IC20/F): BOARDSEL |
+| IC20 74LS04 | /-VMA (section F), /ADDR11 (section E) |
+| IC1 74ALS08 | E = N$1 AND N$4 (A), BOARDSEL AND ADDR11 (B), AND ADDR0 (C: the latch), ADDR11 AND /A0 (D: the 6845) |
+| IC19 74LS00 | -CS of the 6845 (A), -CER of the RAM (B) |
+| IC27 7416 | /A0 (D), the latch's -OC (E), the one-shot's discharge (F) - open collector, no pull-ups |
+| IC26 74LS86 | N$1 = -MEM-RD XOR -MEM-WR (C) |
+| R1/C1 | the E one-shot: N$4 keeps the level it had before the strobe for the length of the access |
+| IC15 IDT7134 | bus device: the right port (-CER, -OER = -MEM-RD, R/-WR = -MEM-WR, A0R..A10R = ADDR0..10, A11R grounded) |
+| IC17 MC6845 | bus device: -CS, E, R/-W = -MEM-WR, RS; its register file stays behavioural (`videomodel.h`: R14-R17 read back, the rest read 0, the address register is write-only) |
+| IC2 74LS373 | bus device: drives DATA0..7 while -OC is low, from its D inputs (JP1, all open: they float and read as 1) |
+
+The trace refuses to build a card whose bus path reaches a part with no model, a bus data line or a device's own
+output. IC21-IC25 and IC28 (dot clock, character clock, character pipeline, character generator) are checked to be
+off it and are not simulated: the picture stays with `tools/vidsim.py`, as before. Since no data line feeds the
+decode, the decode is a pure function of ten bus inputs (ADDR0, ADDR1, ADDR11, ADDR12..15, -VMA, -MEM-RD, -MEM-WR):
+the gates are evaluated once for each of the 1024 combinations, in three-valued logic (0, 1, X; a floating TTL input
+reads 1, a floating NMOS or CMOS input X; a chip on a rail with no source drives nothing), and written into
+`software/ucemu/videogate.h`. Each microcode step looks its decode up, so the card is evaluated every step, with or
+without a strobe.
+
+### 9.2 Revisions and reworks
+
+The reworks are data in `software/gatemodel/video.py`, each with the document it comes from; `y1ucemu -G list`
+prints them.
+
+| Edit | What | Source |
+|---|---|---|
+| jumper SV3 5-6 | the block $D000 | section 3.1, the card's README |
+| short `+5V` to `VCC` | the rail wire of 2026-09-21 | section 3.7, `hardware/cards/video/README.md` |
+| lift IC17 pin 24, wire it to IC15 pin 41 | RS from ADDR0 to ADDR1 | `hardware/cards/video/docs/fix-6845-register-select.md` |
+| lift IC1 pin 13, wire it to VCC | the fix that document warns against (/A0 tied high) | the same, "Don't do that" |
+
+| `-G` | The card |
+|---|---|
+| `v1.0` | as fitted: the rail wire, a 6845 with RS on A1 - what the ROM's driver and `videomodel.h` assume |
+| `v1.0-no6845` | as in the machine today: the rail wire, the 6845 socket empty |
+| `v1.0-no-rs` | `v1.0` without the RS fix: a 6845 fitted as drawn |
+| `v1.0-no-5v` | `v1.0-no6845` without the rail wire: the card on the bench on 2026-09-18 |
+| `v1.0-drawn` | neither rework, a 6845 fitted |
+| `v1.0-a0fix` | the rail wire and the wrong fix |
+
+### 9.3 What it shows
+
+- **The card as fitted behaves as the behavioural model.** `tests/video/gate.py` runs the monitor's video unit (VS,
+  VC, VW, VB, VF, VD, VR, VI, VM1), Y1/OS's `video` command and the bring-up programs (`vram`, `crtcreg`, `testcard`,
+  `vstress`, `estrobe`) with both cards: the console output, the screen, the CRTC registers, the step counts and the
+  disk are identical, and there are no bus events, except `crtcreg`'s two deliberate reads of the JP1 latch, which
+  report its floating inputs.
+- **Without the RS fix the data register is unreachable**, as section 4 and the fix document say: `VR0E 12` writes
+  $12 into the address register, `VR0E` reads $FF (nothing drives the bus: the address register is write-only), R14
+  is never written, and `crtcreg` prints `BAD` for R14, R15 and the repeat. With the socket empty (`v1.0-no6845`)
+  `crtcreg` prints the same; only the events tell the two apart ("socket empty" against "read with RS = 0").
+- **Without the rail wire the write-through fault comes back**: with IC1, IC2 and RN2 on a rail with no source, the
+  three open SV3 inputs follow it, IC18's compare is undefined in every block with ADDR13 = 0 (0, 1, 4, 5, 8, 9, C,
+  D), and so is -CER at ADDR11 = 0. A write to $9010 lands in the display RAM at $D010. The bench saw blocks 0 and 9
+  (and not block 1, the control in `tools/alias_min.py`): which way an undefined select falls is analog; the model
+  takes it as selected and reports it.
+- **The wrong fix is a bus fight**: a read of $D801 has the 6845's data register and the latch on DATA0..7 together.
+- **The latch drives on -VMA alone** (finding 6.4 is wider than writes): its -OC has no strobe term, so in every step
+  whose address bus shows an odd address in $D800-$DFFF, IC2 drives DATA0..7, read or write or neither. The
+  microcode asserts -VMA in every step, so any step with such an address in the selected register while another
+  source drives the data bus is a fight; `-G` reports it as contention. None of the programs `tests/video/gate.py`
+  runs does it.
+
+### 9.4 What is not modelled
+
+Timing: the E pulse is taken as long enough for every access and C1 as recharged between accesses (finding 6.1 is
+a timing question: the pulse width, and whether the input current alone recharges C1 at run speed); a strobe held
+over several steps gives E in each of them. The display side (the 6845's counters, the character pipeline) is the
+picture model's. V1.1's netlist is not wired in (it is not built); the instruction-level emulator keeps the
+behavioural card.

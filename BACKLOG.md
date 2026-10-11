@@ -348,12 +348,26 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
     change: a page state is 7 round trips, ~7 ms during a run, so a combined "frame" reply was not needed.
     `tests/y1dbg/run.py` cases `web` and `webstop`. Not done: `vidsim.py --raster` (the whole frame with the sync
     intervals) on the page; `waitfor`/`sleep` typed on the page block its polling until they end.
-  - **Phase 3, a gate-level video card (not started):** the card from the V1.0 netlist
-    (`hardware/cards/video/kicad/v1.0-fusion-export-2026-09-18/reports/netlist.net`), with the bench reworks as netlist
-    edits (the RS-to-A1 fix, the +5V wire), the way s5emu's `netlist.py`/`logic.py`/`hw.py` model ELF's cards: bus
-    contention and undriven reads on the card become visible. **Open question:** a gate evaluator in C inside y1ucemu
-    (fast, every bus cycle) or y1ucemu routing the card's $D000-$DFFF accesses to a Python model through the debug
-    connection (simple, slow: one round trip per access, acceptable for the monitor's video unit, not for long runs).
+  - **Phase 3, the gate-level video card - done 2026-10-11:** `y1ucemu -G REV` (`--video-rev REV`; y1dbg
+    `--video-rev REV`). `software/gatemodel` reads the V1.0 netlist, the board's own connections
+    (`netlist-compare.txt`), the SV3 jumper and the reworks as netlist edits (the +5V wire, RS to A1, each citing its
+    document), traces the bus path (IC18, IC20, IC1, IC19, IC27, IC26, R1/C1; devices IC15's bus port, IC17's
+    register interface, the IC2 latch; IC21-IC25, IC28 checked off it) and generates `software/ucemu/videogate.h`:
+    the decode for all 1024 combinations of the ten bus inputs it reaches, looked up every step. Revisions `v1.0` (as
+    fitted), `v1.0-no6845` (the machine today), `v1.0-no-rs`, `v1.0-no-5v` (2026-09-18), `v1.0-drawn`, `v1.0-a0fix`.
+    Bus events on the card's side (contention, undriven reads, floating latch inputs, undefined selects), once per
+    (event, opcode, step). The open question was decided by measurement: generated C (a table lookup per step; 15.2 s
+    with `-G` on the 300-million-step BASIC loop) against a C gate evaluator (about 51 s) and the Python model over
+    the debug connection (hours); without `-G` 13.68 s before, 13.63 s after. `tests/video/gate.py` (in `make
+    check`): the card as fitted equals the behavioural model byte for byte on the monitor's video unit, Y1/OS's
+    `video` and the bring-up programs, 0 bus events (`crtcreg`'s latch reads aside); without the RS fix `crtcreg`
+    fails as predicted; without the wire the write-through fault returns. `docs/cards/video.md` section 9. Found: the
+    JP1 latch drives DATA0..7 on -VMA alone (no strobe term), so an odd $D8xx-$DFxx address in the selected register
+    is a fight in any step where something else drives the data bus (finding 6.4 is wider than writes). Not done:
+    timing (the E one-shot's width and C1's recharge, finding 6.1; a strobe over several steps gives E in each), the
+    v1.1 netlist (when it is built: one more revision entry), the instruction-level emulator (keeps the behavioural
+    card), JP1 settings (none fitted, so none modelled), the rest of "electrical checks on every bus" (below; this is
+    the video card's side only).
   - **Later:** the same `-D` mode in the instruction-level emulator (`software/emulator/main.c`, a migrated file: a
     dated `tools/patched_files.txt` note), so the debugger runs on either; `y1dbg --emu` already takes another
     executable.

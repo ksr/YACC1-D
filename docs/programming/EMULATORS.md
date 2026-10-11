@@ -101,6 +101,7 @@ Options (`y1ucemu.c` header):
 | `-L` | report writes to the LED board, the TIL311 displays and the ON/OFF LED on stderr as they change (`LED=25`, `TIL=25`, `ON`, `OFF`) |
 | `-l N` | stop after N **steps** |
 | `-V` / `-W` / `-N` | the video card, as on the interpreter (2026-09-25): the screen at the end, the CRTC write log, no card (nothing drives $D000-$DFFF: the pull-ups' $FF) |
+| `-G REV` | (2026-10-11; also `--video-rev REV`) the video card at gate level, from its netlist with the bench reworks as netlist edits (section 3c): `v1.0` as fitted; `-G list` names the revisions |
 | `-H` | (2026-10-10) an undriven data lane keeps the last value driven on it, instead of reading $FF |
 | `-O` | (2026-10-10) the old address model; by default nothing drives ADDR-REG-ID while `-2-BYTE-OPERAND-SEL` is asserted (the sequencer's IC18B is off) and the address reads $FFFF, as on the machine |
 | `-D PORT` | (2026-10-11) the debug server for `software/y1dbg` (section 3b): no terminal, one connection on 127.0.0.1:PORT (0 = any free port, printed on stdout), one-line commands answered by one JSON line each |
@@ -121,7 +122,8 @@ latches take the previous step's bus, trailing-edge actions the strobe step's va
 stand-alone image therefore needs the same first branch the monitor has (the compiler's `--boot` stub, `brur.asm`).
 RAM starts as `$FF` (the interpreter's is zero: this found the compiler's uncleared BSS).
 
-Not modelled yet (`README.md`): interrupts beyond the enable/pending latches (no source raises one); the video card;
+Not modelled yet (`README.md`): interrupts beyond the enable/pending latches (no source raises one); the video card's
+picture (its bus side is: sections 3a and 3c);
 a per-instruction cost table (the status line has steps and clocks); automatic trace comparison with the
 interpreter.
 
@@ -176,8 +178,34 @@ python3 software/y1dbg -c "b cmdloop; c; key I; waitfor >>; key 10 print 42\r; k
 - The emulator exits when the debugger closes its connection, however the debugger ends.
 
 `software/y1dbg/README.md` has the keys, every command and the protocol; `tests/y1dbg/run.py` (in `make check`)
-tests both sides and both UIs. Planned (`BACKLOG.md`): a gate-level video card from its netlist, and the same debug
-mode in the instruction-level emulator.
+tests both sides and both UIs. `--video-rev REV` starts the emulator with the gate-level video card (section 3c).
+Planned (`BACKLOG.md`): the same debug mode in the instruction-level emulator.
+
+## 3c. The video card at gate level (2026-10-11)
+
+`y1ucemu -G v1.0` replaces the behavioural card of section 3a with the card's bus path built from the V1.0 netlist
+(`docs/cards/video.md` section 9): `software/gatemodel` (Python: the netlist reader with the reworks as edits, the
+part library, the bus-path trace) evaluates the 74S85 block compare, the ADDR11/ADDR0 decode, the 7416s and the E
+one-shot for every combination of the ten bus inputs they reach and generates `software/ucemu/videogate.h`; each
+microcode step looks its decode up. The display RAM and the 6845's registers are shared with the behavioural model,
+so `-V`, `-W`, `vidsim` and the debugger's screen work as before.
+
+```
+software/ucemu/y1ucemu -G list                              # the revisions and their netlist edits
+software/ucemu/y1ucemu -x -m -V -G v1.0 < session.txt       # the card as fitted (rail wire, RS on A1)
+software/ucemu/y1ucemu -x -m -V -G v1.0-no-rs < session.txt # the 6845 as drawn: its data register unreachable
+python3 software/y1dbg --video-rev v1.0-no6845              # the debugger with the card as in the machine today
+```
+
+On the card's side it reports bus events as `-w` reports fights (once per event, opcode and step, a count after the
+status line): two drivers on DATA0..7 whatever their values, a CPU read that finds DATA0..7 undriven while the card
+is selected (the 6845's write-only address register, an empty socket), a read of the JP1 latch's floating inputs, an
+undefined select. With the card as fitted the monitor's video unit, Y1/OS's `video` and the bring-up programs run
+byte for byte as on the behavioural card, with no events (`tests/video/gate.py`); without the RS fix `crtcreg`
+fails as the fix document predicts, without the rail wire the 2026-09-18 write-through fault comes back. Without
+`-G` the emulator's speed is unchanged (13.68 s before, 13.63 s after on a 300-million-step BASIC loop); with it the
+same run takes 15.2 s. Decided by measurement (`software/ucemu/README.md`): a C evaluator stepping the gates every
+cycle would take about 51 s, the Python model over the debug connection hours.
 
 ## 4. Recipes
 

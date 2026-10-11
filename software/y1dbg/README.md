@@ -18,7 +18,8 @@ cd software && python3 -m y1dbg              # the same, as a module
 ```
 
 Options: `-f FILE` (repeatable), `-u test.hex`, `--disk IMAGE`, `--no-rom` (no `-m`: an image is the ROM),
-`--no-video` (`-N`), `--emu-arg=-H` (any other `y1ucemu` option), `--sym FILE` (symbols; the default is the monitor's
+`--no-video` (`-N`), `--video-rev REV` (the video card at gate level from its netlist, `y1ucemu -G REV`: `v1.0` as
+fitted, `software/ucemu/y1ucemu -G list` names the others; `docs/cards/video.md` section 9), `--emu-arg=-H` (any other `y1ucemu` option), `--sym FILE` (symbols; the default is the monitor's
 and BASIC's listings), `-c "cmd; cmd"` (repeatable; `\;` is a semicolon inside a command), `--script FILE`, `--ui
 tui|web|none`, `--port N` and `--chargen FILE` (the browser UI, below), `--timeout S` (how long a scripted `c`, `until` or `waitfor` may run, default 60 s; then the machine is
 paused), `--log FILE` (the emulator's stderr, e.g. with `--emu-arg=-w` the bus fights). The emulator ends when the
@@ -46,7 +47,7 @@ r                  registers                               set R3=1234 | set acc
 m [ADDR] [LEN]     memory dump (hex LEN, default 80)       poke ADDR BB [BB...]
 d [ADDR] [N]       disassemble N instructions (default 16, at PC)
 trace [N]          the last N instructions run (default 20)
-screen             the video screen as text                video        the CRTC registers
+screen             the video screen as text                video        the CRTC registers, the card model
 key TEXT           type into the UART (\n = Enter, \e = Esc, \xHH a byte, \\ a backslash)
 console            the UART's output since the last `console`
 waitfor TEXT [S]   run until the UART prints TEXT (at most S seconds, default the timeout); for scripts
@@ -190,7 +191,7 @@ and the status: `state` (`stopped`, `running`, `halted`), `reason` (why it last 
 | `set NAME VALUE` | as `regs` | `r0`..`r7`, `pc`, `sp`, `acc`, `tmp0`, `tmp1`, `carry`, `sreg` |
 | `key TEXT` | `queued`, `pending` | escapes `\n \r \t \e \\ \xHH`; CR becomes LF |
 | `console` | `text`, `lost` | the output since the last fetch (1 MB kept) |
-| `video` | `absent`, `sel`, `regs` (R0-R17), `written`, `ram` (hex, $D000-$D7FF) | |
+| `video` | `absent`, `model` (`behavioural` or the `-G` revision), `events` (with `-G`: the card's bus events so far), `sel`, `regs` (R0-R17), `written`, `ram` (hex, $D000-$D7FF) | |
 | `trace [N]` | `trace`: [pc, opcode, acc, carry, r0..r7] each, oldest first | the last N of 4,096 |
 | `reset` | | registers, IR and UART cleared, FORCE-ROM set; memory and the video card kept; the counts restart |
 | `load FILE` | `bytes` | Intel hex, as `-f` |
@@ -213,4 +214,6 @@ monitor's video driver on the screen and poked inverse glyphs, BASIC typed throu
 a pseudo-terminal (the screen pane after BASIC printed, captured with `snap`), and the browser UI driven over HTTP
 (`web`: the page, the font against `vidsim.py`'s, a breakpoint, `V I`/`V M1`/`H` typed and the text in the state's
 video RAM with the CRTC's geometry and blinking cursor, pause, the memory window following `sp`, quit; `webstop`: the
-server and the emulator end on SIGTERM during a run, on SIGINT, and on `q`).
+server and the emulator end on SIGTERM during a run, on SIGINT, and on `q`); `gate` (2026-10-11): `--video-rev v1.0`
+reads R14 back through the gate-level card with 0 bus events, `--video-rev v1.0-no-rs` leaves R14 unwritten and counts
+the undriven reads, an unknown revision ends y1dbg with an error, nothing left running.
