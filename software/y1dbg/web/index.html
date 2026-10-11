@@ -1,0 +1,394 @@
+<!doctype html>
+<!-- y1dbg's browser page (software/y1dbg/web.py serves it): the YACC1 screen drawn from the video card's display RAM
+     with the character generator's glyphs, the registers, code, memory, the UART console and the command line. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YACC1 Debugger</title>
+<style>
+  :root {
+    --bg: #f3f1ec; --panel: #ffffff; --ink: #1c1e21; --muted: #6a6e75; --line: #dad6cd; --accent: #2f6f5e;
+    --pc: #fff1b8; --pc-ink: #1c1e21; --bp: #c0392b; --chg: #b4541c; --field: #faf9f6;
+    --mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141619; --panel: #1c1f23; --ink: #e5e2db; --muted: #979ba3; --line: #2f3339; --accent: #6cc4a8;
+      --pc: #3c3920; --pc-ink: #f3ecc8; --bp: #e2675a; --chg: #f0a060; --field: #16181b;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141619; --panel: #1c1f23; --ink: #e5e2db; --muted: #979ba3; --line: #2f3339; --accent: #6cc4a8;
+    --pc: #3c3920; --pc-ink: #f3ecc8; --bp: #e2675a; --chg: #f0a060; --field: #16181b;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.4 system-ui, -apple-system, sans-serif; }
+  header { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--line);
+           flex-wrap: wrap; position: sticky; top: 0; background: var(--bg); z-index: 2; }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; white-space: nowrap; }
+  .status { color: var(--muted); font-family: var(--mono); font-size: 12px; }
+  #statebox { color: var(--ink); font-weight: 600; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--muted); margin-right: 6px; vertical-align: middle; }
+  .dot.run { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+  .dot.halt { background: var(--bp); }
+  .spacer { flex: 1; }
+  button, select { font: inherit; font-size: 13px; padding: 5px 12px; border-radius: 6px; border: 1px solid var(--line);
+                   background: var(--panel); color: var(--ink); cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.small { padding: 1px 7px; font-size: 12px; }
+  button kbd { font: 10px var(--mono); color: inherit; opacity: .6; margin-left: 4px; }
+  main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(380px, 540px); gap: 14px; padding: 14px 16px; }
+  @media (max-width: 1200px) { main { grid-template-columns: 1fr; } }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; min-width: 0; }
+  section h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 8px;
+               font-weight: 600; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  section h2 .info { text-transform: none; letter-spacing: 0; font-weight: 400; font-family: var(--mono); font-size: 11.5px; }
+  .col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .hint { color: var(--muted); font-size: 12px; }
+  input { font: 12.5px var(--mono); padding: 4px 7px; border: 1px solid var(--line); border-radius: 4px; background: var(--field); color: var(--ink); }
+  input:focus { outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 0; }
+
+  /* the monitor */
+  .bezel { max-width: 940px; margin: 0 auto; background: linear-gradient(#2a2b2d, #1b1c1e); border-radius: 14px; padding: 18px; box-shadow: inset 0 0 0 1px #000, 0 2px 8px rgba(0,0,0,.25); }
+  .tube { background: var(--crt-bg, #050805); border-radius: 10px; padding: 14px 16px; box-shadow: inset 0 0 40px rgba(0,0,0,.9);
+          outline: none; border: 2px solid transparent; cursor: text; }
+  .tube { position: relative; }
+  .tube.focus { border-color: var(--crt-fg, #3f6); }
+  #sink { position: absolute; left: 0; top: 0; width: 1px; height: 1px; opacity: 0; border: 0; padding: 0; resize: none; }
+  #screen { display: block; width: 100%; height: auto; image-rendering: auto; }
+  .screenbar { display: flex; gap: 10px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+  .typing { font-family: var(--mono); font-size: 11.5px; padding: 1px 7px; border-radius: 4px; border: 1px solid var(--line); color: var(--muted); }
+  .typing.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .regs { font-family: var(--mono); font-size: 13px; display: grid; grid-template-columns: repeat(4, max-content); gap: 3px 18px; }
+  .regs .wide { grid-column: 1 / -1; }
+  .regs b { color: var(--muted); font-weight: 500; }
+  .regs .chg { color: var(--chg); font-weight: 600; }
+  .regs i { font-style: normal; color: var(--accent); }
+  .code, .mem, .bplist { font-family: var(--mono); font-size: 12.5px; white-space: pre; overflow-x: auto; }
+  .code div { padding: 0 4px; border-radius: 3px; cursor: pointer; }
+  .code div.lab { color: var(--accent); cursor: default; }
+  .code div:not(.lab):hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  .code div.pc { background: var(--pc); color: var(--pc-ink); }
+  .code div.bp::before { content: "\25CF "; color: var(--bp); }
+  .code div:not(.bp)::before { content: "  "; }
+  .code.stale { opacity: .55; }
+  .bplist div { display: flex; gap: 10px; align-items: center; }
+  .bplist .sym { color: var(--accent); }
+  .row { display: flex; gap: 8px; align-items: center; }
+  .row input { flex: 1; min-width: 0; }
+  pre.term { font-family: var(--mono); font-size: 12.5px; margin: 0 0 8px; white-space: pre-wrap; overflow-y: auto;
+             background: var(--field); border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; }
+  #console { height: 210px; }
+  #out { height: 260px; }
+  .mem { font-size: 12px; }
+  .mem .a { color: var(--muted); }
+  .mem .asc { color: var(--accent); }
+  #ended { display: none; padding: 30px 16px; text-align: center; color: var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <h1>YACC1 Debugger</h1>
+  <span class="status"><span id="dot" class="dot"></span><span id="statebox">connecting</span></span>
+  <span class="status" id="reason"></span>
+  <div class="row">
+    <button id="run" class="primary" title="Continue (F5)">Run<kbd>F5</kbd></button>
+    <button id="pause" title="Pause (F6; Esc outside the screen)">Pause<kbd>F6</kbd></button>
+    <button id="step" title="Step one instruction (F7)">Step<kbd>F7</kbd></button>
+    <button id="over" title="Step over a JSR/JSRUR (F8)">Over<kbd>F8</kbd></button>
+    <button id="reset" title="The machine's reset (memory and the video card keep their contents)">Reset</button>
+  </div>
+  <span class="spacer"></span>
+  <span class="status" id="counts"></span>
+  <button id="quit" title="End the debugger and the emulator">Quit</button>
+</header>
+<div id="ended">The debugger has ended. Start it again with <code>python3 software/y1dbg --ui web</code>.</div>
+<main id="main">
+  <div class="col">
+    <section>
+      <h2>YACC1 screen <span class="info" id="geom"></span></h2>
+      <div class="bezel"><div class="tube" id="tube"><canvas id="screen" width="800" height="576"></canvas><textarea id="sink" aria-label="keys for the YACC1's UART" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea></div></div>
+      <div class="screenbar">
+        <span class="typing" id="typing">click the screen to type</span>
+        <span class="hint">Keys go to the UART: Enter = CR, Backspace = BS, Esc = ESC, Ctrl-letter = the control code.</span>
+        <span class="spacer"></span>
+        <label class="hint">phosphor <select id="phosphor"><option value="green">green</option><option value="amber">amber</option><option value="white">white</option></select></label>
+      </div>
+    </section>
+    <section>
+      <h2>Console (UART) <span class="info" id="coninfo"></span></h2>
+      <pre class="term" id="console"></pre>
+      <form class="row" id="conform"><input id="conline" autocomplete="off" placeholder="a line for the UART (Enter sends it with CR)"><button>Send</button></form>
+    </section>
+    <section>
+      <h2>Commands <span class="info">help · s · n · c · until ADDR · b ADDR · w w ADDR · m ADDR · d ADDR · set R3=1234 · trace · screen · key TEXT</span></h2>
+      <pre class="term" id="out"></pre>
+      <form class="row" id="cmdform"><input id="cmd" autocomplete="off" placeholder="debugger command (help); Up/Down for history"><button>Do</button></form>
+    </section>
+  </div>
+  <div class="col">
+    <section><h2>Registers <span class="info" id="regsinfo"></span></h2><div class="regs" id="regs"></div></section>
+    <section><h2>Code <span class="info">click a line: breakpoint</span></h2><div class="code" id="code"></div></section>
+    <section>
+      <h2>Breakpoints and watches</h2>
+      <div class="bplist" id="bps"></div>
+      <form class="row" id="bpform" style="margin-top:8px"><input id="bpaddr" placeholder="b ADDR / w w ADDR (address or symbol)"><button>Add</button></form>
+    </section>
+    <section class="mem">
+      <h2>Memory <span class="row"><button class="small" id="memprev" title="256 bytes back">&lsaquo;</button>
+        <form id="memform"><input id="memaddr" size="12" placeholder="addr, sym, sp"></form>
+        <button class="small" id="memnext" title="256 bytes on">&rsaquo;</button></span></h2>
+      <div id="mem"></div><div class="hint" id="memerr"></div>
+    </section>
+  </div>
+</main>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const hex = (v, n) => (v >>> 0).toString(16).toUpperCase().padStart(n, "0");
+const esc = s => s.replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+let S = null, inflight = false, ended = false, font = null, conTotal = -1, outTotal = -1;
+let lastStop = null, ref = null;   // the registers at the previous stop: what changed since is marked
+
+async function api(path, body) {
+  const r = await fetch(path, body === undefined ? {cache: "no-store"} : {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)});
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || r.statusText);
+  return j;
+}
+async function cmd(c) {
+  try { const r = await api("/api/cmd", {cmd: c}); if (/^(q|quit|exit)$/i.test(c.trim())) return end(); } catch (e) { note("error: " + e.message); }
+  refresh();
+}
+function note(t) { const o = $("out"); o.textContent += "\n" + t; o.scrollTop = o.scrollHeight; }
+
+/* ---------------------------------------------------------------- the screen: the card's dots on a canvas */
+const SX = 2, SY = 3;                       // canvas pixels a dot: 2 wide, 3 tall (2 lit + a dimmer scan line gap)
+const PHOSPHOR = {
+  green: {fg: [64, 255, 120], bg: [4, 10, 6], glow: "rgba(64,255,120,.55)"},
+  amber: {fg: [255, 182, 40], bg: [10, 7, 2], glow: "rgba(255,182,40,.5)"},
+  white: {fg: [228, 232, 240], bg: [8, 8, 10], glow: "rgba(220,225,255,.45)"},
+};
+let phos = "green";
+try { phos = localStorage.getItem("y1dbg.phosphor") || "green"; } catch (e) {}
+if (!PHOSPHOR[phos]) phos = "green";
+$("phosphor").value = phos;
+let ramText = null, ram = null, drawnKey = "";
+
+function setPhosphor(p) {
+  phos = p; const P = PHOSPHOR[p];
+  $("tube").style.setProperty("--crt-bg", `rgb(${P.bg})`); $("tube").style.setProperty("--crt-fg", `rgb(${P.fg})`);
+  $("screen").style.filter = `drop-shadow(0 0 2px ${P.glow})`;
+  drawnKey = "";
+  try { localStorage.setItem("y1dbg.phosphor", p); } catch (e) {}
+}
+setPhosphor(phos);
+$("phosphor").onchange = e => setPhosphor(e.target.value);
+
+function drawScreen(now) {
+  if (!S || !font) return;
+  const v = S.video, g = v.geom, cv = $("screen");
+  if (v.absent) { $("geom").textContent = "no video card (-N)"; return; }
+  const cur = g.cursor;
+  // the 6845 blinks the cursor with the field count: on for half of 16 or 32 fields
+  const on = !cur || !cur.blink || Math.floor(now / (cur.period * 500)) % 2 === 0;
+  const key = v.ram + "|" + JSON.stringify(g) + "|" + on + "|" + phos;
+  if (key === drawnKey) return;
+  drawnKey = key;
+  if (v.ram !== ramText) {
+    ramText = v.ram; ram = new Uint8Array(ramText.length / 2);
+    for (let i = 0; i < ram.length; i++) ram[i] = parseInt(ramText.substr(i * 2, 2), 16);
+  }
+  const D = font.dots, W = g.cols * D, H = g.rows * g.lines;
+  if (cv.width !== W * SX || cv.height !== H * SY) { cv.width = W * SX; cv.height = H * SY; }
+  const ctx = cv.getContext("2d"), img = ctx.createImageData(W * SX, H * SY), px = new Uint32Array(img.data.buffer);
+  const P = PHOSPHOR[phos], rgba = (c, k) => (255 << 24) | (Math.round(c[2] * k) << 16) | (Math.round(c[1] * k) << 8) | Math.round(c[0] * k);
+  const FG = rgba(P.fg, 1), FG2 = rgba(P.fg, .45), BG = rgba(P.bg, 1), HATCH = rgba([90, 40, 40], 1), stride = W * SX;
+  for (let row = 0; row < g.rows; row++) {
+    for (let col = 0; col < g.cols; col++) {
+      const ma = (g.start + row * g.cols + col) & 0xFFF;       // the 6845 scans MA0..11; the CPU reaches the lower 2K
+      const b = ma < 2048 ? ram[ma] : -1;
+      const isCur = cur && on && cur.row === row && cur.col === col;
+      for (let line = 0; line < g.lines; line++) {
+        const y = row * g.lines + line;
+        let bits = 0, inv = 0;
+        if (b >= 0) {
+          bits = font.glyphs[b & 0x3F][line & 7];                 // RA0..2 only: past line 8 the glyph repeats
+          inv = (b >> 7) & 1;                                     // bit 7 = inverse video; bit 6 is not wired
+          if (isCur && cur.first <= line && line <= cur.last) inv ^= 1;
+        }
+        for (let d = 0; d < D; d++) {
+          const x = col * D + d;
+          let c0, c1;
+          if (b < 0) { c0 = c1 = (x + y) % 4 === 0 ? HATCH : BG; }   // the upper 2K no one can write (as vidsim)
+          else if (((bits >> (D - 1 - d)) & 1) ^ inv) { c0 = FG; c1 = FG2; }
+          else c0 = c1 = BG;
+          const base = y * SY * stride + x * SX;
+          for (let sy = 0; sy < SY; sy++) {
+            const c = sy === SY - 1 ? c1 : c0, o = base + sy * stride;
+            for (let sx = 0; sx < SX; sx++) px[o + sx] = c;
+          }
+        }
+      }
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+}
+setInterval(() => drawScreen(performance.now()), 40);   // the blink phase; a redraw only when something changed
+
+/* ---------------------------------------------------------------- the panels */
+const REGNAME = ["PC", "SP", "op", "", "", "", "", ""];   // R0 = PC, R1 = SP, R2 = the microcode's operand address
+function render(s) {
+  const st = s.status, running = st.state === "running";
+  $("dot").className = "dot" + (running ? " run" : st.state === "halted" ? " halt" : "");
+  $("statebox").textContent = st.state;
+  $("reason").textContent = running ? "" : st.reason;
+  $("counts").textContent = `PC ${hex(st.pc, 4)}${st.sym ? " <" + st.sym + ">" : ""} · ${st.instr.toLocaleString()} instr · ${st.clocks.toLocaleString()} clocks`;
+  const g = s.video.geom;
+  $("geom").textContent = s.video.absent ? "no video card (-N)" :
+    `${g.cols} x ${g.rows}, ${g.lines} lines a row, from $${hex(0xD000 + (g.start & 0x7FF), 4)} (${g.crtc ? "CRTC" : "default: the CRTC not set"})` +
+    (g.cursor ? ` · cursor ${g.cursor.row},${g.cursor.col}${g.cursor.blink ? " blink/" + g.cursor.blink : ""}` : "");
+
+  // registers: values changed since the last stop are marked
+  const r = s.regs;
+  if (!running) {
+    const key = JSON.stringify([s.regs, st.pc, st.steps]);
+    if (!lastStop || lastStop.key !== key) { ref = lastStop ? lastStop.regs : null; lastStop = {key, regs: s.regs}; }
+  }
+  const val = (name, v, n, prev) => `<span><b>${name}</b> <span class="${!running && ref && prev !== v ? "chg" : ""}">${hex(v, n)}</span></span>`;
+  let h = `<span class="wide"><b>PC</b> ${hex(st.pc, 4)}${st.sym ? ` <i>&lt;${esc(st.sym)}&gt;</i>` : ""} &nbsp; <b>step</b> ${st.step}${r.force_rom ? " &nbsp; FORCE-ROM" : ""}</span>`;
+  for (let i = 0; i < 8; i++) h += val("R" + i + (REGNAME[i] ? "/" + REGNAME[i] : ""), r.r[i], 4, ref && ref.r[i]);
+  h += val("ACC", r.acc, 2, ref && ref.acc) + val("C", r.carry, 1, ref && ref.carry) + val("TMP0", r.tmp0, 4, ref && ref.tmp0) + val("TMP1", r.tmp1, 4, ref && ref.tmp1);
+  h += val("SR", r.sreg, 2, ref && ref.sreg) + val("IR", r.ir, 2, ref && ref.ir) + val("opnd", r.operand, 2, ref && ref.operand) + val("brch", r.branch, 4, ref && ref.branch);
+  h += `<span class="wide" style="color:var(--muted)">int ${r.int_en ? "on" : "off"} · LEDs ${hex(r.out_led, 2)} · bus fights ${r.fights} · ${st.steps.toLocaleString()} steps</span>`;
+  $("regs").innerHTML = h;
+  $("regsinfo").textContent = running ? "running" : "";
+
+  // code
+  const lines = [];
+  for (const l of s.code) {
+    if (l.l) lines.push(`<div class="lab">        ${esc(l.l)}:</div>`);
+    lines.push(`<div data-a="${l.a}" class="${l.a === st.pc ? "pc" : ""}${l.bp ? " bp" : ""}">${hex(l.a, 4)}  ${l.b.padEnd(9)} ${esc(l.t)}</div>`);
+  }
+  $("code").innerHTML = lines.join("");
+  $("code").className = "code" + (running ? " stale" : "");
+
+  // breakpoints and watches
+  const bp = s.breaks.map(b => `<div><button class="small" data-del="bd ${hex(b.a, 4)}" title="delete">&times;</button> b  ${hex(b.a, 4)} <span class="sym">${esc(b.s)}</span></div>`)
+    .concat(s.watches.map(w => `<div><button class="small" data-del="wd ${w.k} ${hex(w.a, 4)}" title="delete">&times;</button> w${w.k.padEnd(2)} ${hex(w.a, 4)} <span class="sym">${esc(w.s)}</span></div>`));
+  $("bps").innerHTML = bp.join("") || '<span class="hint">none</span>';
+
+  // memory
+  const m = s.mem, bytes = [];
+  for (let i = 0; i < m.hex.length; i += 2) bytes.push(parseInt(m.hex.substr(i, 2), 16));
+  let mh = "";
+  for (let i = 0; i < bytes.length; i += 16) {
+    const row = bytes.slice(i, i + 16);
+    mh += `<span class="a">${hex((m.addr + i) & 0xFFFF, 4)}</span>  ${row.map(b => hex(b, 2)).join(" ")}  <span class="asc">${esc(row.map(b => b >= 32 && b < 127 ? String.fromCharCode(b) : ".").join(""))}</span>\n`;
+  }
+  $("mem").innerHTML = mh;
+  $("memerr").textContent = m.error ? m.expr + ": " + m.error : (m.expr.toUpperCase() !== hex(m.addr, 4) ? `${m.expr} = $${hex(m.addr, 4)}` : "");
+  if (document.activeElement !== $("memaddr")) $("memaddr").value = m.expr;
+
+  // the UART console and the command output (sent only when they grew)
+  if (s.console.lines) { fill($("console"), s.console.lines.join("\n")); conTotal = s.console.total; }
+  $("coninfo").textContent = s.console.total.toLocaleString() + " bytes";
+  if (s.out.lines) { fill($("out"), s.out.lines.join("\n")); outTotal = s.out.total; }
+}
+function fill(pre, text) {
+  const atEnd = pre.scrollTop + pre.clientHeight >= pre.scrollHeight - 4;
+  pre.textContent = text; if (atEnd) pre.scrollTop = pre.scrollHeight;
+}
+
+async function refresh() {
+  if (inflight || ended) return; inflight = true;
+  try {
+    const s = await api(`/api/state?con=${conTotal}&log=${outTotal}`);
+    S = s; render(s);
+  } catch (e) {
+    $("statebox").textContent = "disconnected"; $("dot").className = "dot";
+  }
+  inflight = false;
+}
+function tick() {
+  if (ended) return;
+  refresh().then(() => setTimeout(tick, S && S.status.state === "running" ? 100 : 500));
+}
+async function end() {
+  ended = true; $("main").style.display = "none"; $("ended").style.display = "block";
+  $("statebox").textContent = "ended"; $("dot").className = "dot";
+}
+tick();
+api("/api/font").then(f => { font = f; drawnKey = ""; });
+
+/* ---------------------------------------------------------------- input */
+$("run").onclick = () => cmd("c"); $("pause").onclick = () => cmd("pause");
+$("step").onclick = () => cmd("s"); $("over").onclick = () => cmd("n"); $("reset").onclick = () => cmd("reset");
+$("quit").onclick = async () => { try { await api("/api/quit", {}); } catch (e) {} end(); };
+$("code").onclick = e => {
+  const d = e.target.closest("div[data-a]"); if (!d) return;
+  cmd((d.classList.contains("bp") ? "bd " : "b ") + hex(+d.dataset.a, 4));
+};
+$("bps").onclick = e => { const b = e.target.closest("button[data-del]"); if (b) cmd(b.dataset.del); };
+$("bpform").onsubmit = e => {
+  e.preventDefault(); const v = $("bpaddr").value.trim(); $("bpaddr").value = "";
+  if (v) cmd(/^(b|w|bd|wd)\s/i.test(v) ? v : "b " + v);
+};
+const hist = []; let hpos = 0;
+$("cmdform").onsubmit = e => {
+  e.preventDefault(); const v = $("cmd").value; $("cmd").value = "";
+  if (!v.trim()) return;
+  if (hist[hist.length - 1] !== v) hist.push(v); hpos = hist.length;
+  cmd(v);
+};
+$("cmd").addEventListener("keydown", e => {
+  if (e.key === "ArrowUp" && hist.length) { hpos = Math.max(0, hpos - 1); $("cmd").value = hist[hpos]; e.preventDefault(); }
+  else if (e.key === "ArrowDown" && hist.length) { hpos = Math.min(hist.length, hpos + 1); $("cmd").value = hist[hpos] || ""; e.preventDefault(); }
+});
+async function setMem(expr) {
+  try { await api("/api/mem", {addr: expr}); $("memerr").textContent = ""; } catch (err) { $("memerr").textContent = expr + ": " + err.message; }
+  refresh();
+}
+$("memform").onsubmit = e => { e.preventDefault(); setMem($("memaddr").value); $("memaddr").blur(); };
+$("memprev").onclick = () => S && setMem(hex((S.mem.addr - 256) & 0xFFFF, 4));
+$("memnext").onclick = () => S && setMem(hex((S.mem.addr + 256) & 0xFFFF, 4));
+
+// keys for the UART: sent in order, one request at a time, everything typed meanwhile in the next
+let keyq = "", sending = false;
+function typeKeys(t) { keyq += t; pump(); }
+async function pump() {
+  if (sending || !keyq) return;
+  sending = true; const t = keyq; keyq = "";
+  try { await api("/api/key", {text: t}); } catch (e) {}
+  sending = false;
+  if (keyq) pump(); else refresh();
+}
+$("conform").onsubmit = e => { e.preventDefault(); typeKeys($("conline").value + "\r"); $("conline").value = ""; };
+// the screen takes keys through a hidden textarea: special keys from keydown, text from input (typing, IME, paste)
+const tube = $("tube"), sink = $("sink");
+tube.addEventListener("mousedown", e => { e.preventDefault(); sink.focus(); });
+sink.addEventListener("focus", () => { tube.classList.add("focus"); $("typing").className = "typing on"; $("typing").textContent = "typing to the UART"; });
+sink.addEventListener("blur", () => { tube.classList.remove("focus"); $("typing").className = "typing"; $("typing").textContent = "click the screen to type"; });
+sink.addEventListener("keydown", e => {
+  if (/^F\d+$/.test(e.key) || e.isComposing) return;     // the F keys stay the debugger's
+  let t = null;
+  if (e.key === "Enter") t = "\r"; else if (e.key === "Backspace") t = "\b"; else if (e.key === "Escape") t = "\x1b";
+  else if (e.key === "Tab") t = "\t";
+  else if (e.ctrlKey && !e.metaKey && !e.altKey && /^[a-z@\[\\\]^_]$/i.test(e.key)) t = String.fromCharCode(e.key.toUpperCase().charCodeAt(0) & 31);
+  if (t !== null) { e.preventDefault(); typeKeys(t); }
+});
+sink.addEventListener("input", () => {
+  const t = sink.value.replace(/\r?\n/g, "\r"); sink.value = "";
+  if (t) typeKeys(t);
+});
+document.addEventListener("keydown", e => {
+  const k = {F5: "c", F6: "pause", F7: "s", F8: "n"}[e.key];
+  if (k) { e.preventDefault(); cmd(k); return; }
+  if (e.key === "Escape" && document.activeElement !== sink && S && S.status.state === "running") cmd("pause");
+});
+</script>
+</body>
+</html>

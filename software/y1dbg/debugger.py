@@ -16,7 +16,9 @@ The screen is the video card's display RAM drawn the way the card does (docs/car
 6845's R1 columns x R6 rows from start address R12:R13 once a program has written R1 and R6, else the monitor's 80 x
 24 from $D000 (as software/videomodel.h's -V); a byte's bits 0-5 pick the glyph (2513 order: $00-$1F = @ A..Z [ \\ ]
 ^ _, $20-$3F = space ! .. ?), bit 7 is inverse video, bit 6 is not wired. The 6845 scans 4K; a cell past the CPU's 2K
-shows the upper half nobody can write (#). The cursor is R14:R15 unless R10 says "off".
+shows the upper half nobody can write (#). The cursor is R14:R15 unless R10 says "off". geometry() is the scan both
+screens share: the text screen here and the browser's canvas, which also draws R9's lines a row, the cursor's R10/R11
+lines and its blink.
 """
 import os, re, sys
 
@@ -127,6 +129,17 @@ def disasm(read, a, syms=None):
     return 1, "DB " + _hb(data[0]), None
 
 
+def block_reader(read, a, n):
+    """read(addr, k) served from one read of n bytes at a (one round trip to the emulator instead of one an
+    instruction; while the machine runs each round trip waits up to a millisecond), falling back to read outside it"""
+    buf = read(a, n)
+
+    def r(x, k):
+        off = (x - a) & 0xFFFF
+        return buf[off:off + k] if off + k <= len(buf) else read(x, k)
+    return r
+
+
 def listing(read, a, count, syms=None):
     """[(addr, bytes, text)] for count instructions from a"""
     out = []
@@ -141,16 +154,45 @@ def glyph(b):
     return chr(((b + 0x20) & 0x3F) + 0x20)
 
 
+DOTCLOCK = 10e6                            # the dot clock the ROM's CRTC table assumes (tools/vidsim.py: the crystal is not in the tree)
+BLINK = {0: 0, 1: 0, 2: 16, 3: 32}           # R10 bits 5-6: steady, off, blink every 16 / 32 fields
+
+
+def geometry(v):
+    """the card's state (the server's `video` reply) -> how the card scans it: cols (R1), rows (R6), start (R12:R13),
+    lines (scan lines a row, R9+1; the glyph has 8, RA0..2 only, so from line 8 they repeat), source, field_hz (from
+    R0/R4/R5/R9 and DOTCLOCK, else 60), cursor (None, or row, col, first and last line (R10/R11), blink (fields a
+    blink period, 0 = steady), period (seconds)). Before a program has written R1 and R6: the monitor's 80 x 24 from
+    $D000, 8 lines a row. Shared by the text screen (screen()) and the browser's canvas."""
+    regs, written = v["regs"], v["written"]
+    crtc = bool(written[1] and written[6] and regs[1] and regs[6])
+    if crtc:
+        cols, rows, start = regs[1], regs[6] & 0x7F, (regs[12] & 0x3F) << 8 | regs[13]
+        lines = (regs[9] & 0x1F) + 1 if written[9] else 8
+    else:
+        cols, rows, start, lines = 80, 24, 0, 8
+    field = 60.0
+    if crtc and written[0] and written[4]:
+        total = (regs[4] + 1) * lines + (regs[5] & 0x1F)
+        if regs[0] and total: field = DOTCLOCK / 5 / (regs[0] + 1) / total
+    cursor = None
+    cur = (regs[14] & 0x3F) << 8 | regs[15]
+    mode = (regs[10] >> 5) & 3
+    if (written[10] or written[14] or written[15]) and mode != 1:
+        off = (cur - start) & 0x3FFF
+        if off < rows * cols:
+            cursor = {"row": off // cols, "col": off % cols, "addr": cur, "first": regs[10] & 0x1F, "last": regs[11] & 0x1F,
+                      "blink": BLINK[mode], "period": BLINK[mode] / field if BLINK[mode] else 0}
+    return {"cols": cols, "rows": rows, "start": start, "lines": lines, "crtc": crtc, "field_hz": round(field, 2),
+            "source": "CRTC R1/R6/R12/R13" if crtc else "default geometry", "cursor": cursor, "absent": v.get("absent", 0)}
+
+
 def screen(v):
     """the card's state (the server's `video` reply) -> dict: cols, rows, start, source, lines (text), inverse
     (per line, a list of booleans), cursor ((row, col) or None)"""
-    regs, written = v["regs"], v["written"]
+    g = geometry(v)
     ram = bytes.fromhex(v["ram"])
-    crtc = written[1] and written[6] and regs[1] and regs[6]
-    if crtc:
-        cols, rows, start = regs[1], regs[6] & 0x7F, (regs[12] & 0x3F) << 8 | regs[13]
-    else:
-        cols, rows, start = 80, 24, 0
+    cols, rows, start = g["cols"], g["rows"], g["start"]
     lines, inverse = [], []
     for r in range(rows):
         s, inv = [], []
@@ -159,11 +201,6 @@ def screen(v):
             if ma >= 2048: s.append("#"); inv.append(False); continue
             b = ram[ma]; s.append(glyph(b)); inv.append(bool(b & 0x80))
         lines.append("".join(s)); inverse.append(inv)
-    cursor = None
-    cur = (regs[14] & 0x3F) << 8 | regs[15]
-    if (written[10] or written[14] or written[15]) and (regs[10] >> 5) & 3 != 1:
-        off = (cur - start) & 0x3FFF
-        if off < rows * cols: cursor = (off // cols, off % cols)
-    return {"cols": cols, "rows": rows, "start": start, "absent": v.get("absent", 0),
-            "source": "CRTC R1/R6/R12/R13" if crtc else "default geometry", "lines": lines, "inverse": inverse,
-            "cursor": cursor}
+    cursor = (g["cursor"]["row"], g["cursor"]["col"]) if g["cursor"] else None
+    return {"cols": cols, "rows": rows, "start": start, "absent": g["absent"], "source": g["source"], "lines": lines,
+            "inverse": inverse, "cursor": cursor}

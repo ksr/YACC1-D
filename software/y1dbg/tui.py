@@ -21,27 +21,10 @@ A terminal of at least 120 x 36 shows all the panes; a smaller one shows the scr
 output, with the registers in the status line.
 """
 import curses, os, time
-from .debugger import screen as draw_screen, listing
-from .shell import printable
+from .debugger import screen as draw_screen
+from .shell import printable, console_lines
 
 GUTTER = 84                               # the screen pane's width: 80 columns + borders + 2
-
-
-def console_lines(text, width):
-    """the UART text as the lines a terminal would show (CR LF / LF CR as one newline, BS erases, tabs to 8)"""
-    out, cur = [], []
-    for ch in printable(text[-65536:]).replace("^H", "\b"):
-        if ch == "\n": out.append("".join(cur)); cur = []
-        elif ch == "\b":
-            if cur: cur.pop()
-        elif ch == "\t":
-            cur.append(" ")
-            while len(cur) % 8: cur.append(" ")
-        else:
-            cur.append(ch)
-            if len(cur) >= width: out.append("".join(cur)); cur = []
-    out.append("".join(cur))
-    return out
 
 
 class TUI:
@@ -51,7 +34,6 @@ class TUI:
         self.cmd = ""; self.history = []; self.hpos = 0
         self.focus = "cmd"; self.state = {}; self.video = None; self.code = []; self.breaks = set()
         self.con_scroll = 0; self.last_state = "stopped"; self.keys = ""
-        self.last_full = 0
 
     def log(self, text):
         for l in str(text).splitlines() or [""]:
@@ -59,24 +41,17 @@ class TUI:
         self.out = self.out[-500:]
 
     # ------------------------------------------------------------------ state
-    def refresh_state(self, full=True):
+    def refresh_state(self):
         sh = self.sh
         if self.keys:
             sh.emu.cmd("key " + self.keys); self.keys = ""
-        sh.fetch_console()
-        self.state = sh.regs()
-        self.video = sh.emu.ok("video")
-        now = time.time()
-        if full or now - self.last_full > 1:
-            self.breaks = set(sh.emu.ok("break list")["breaks"]); self.last_full = now
-        try:
-            self.code = listing(sh.read, self.state["pc"], 40, sh.syms)
-        except Exception as e:                # noqa: BLE001 - never let the drawing stop the debugger
-            self.code = []; self.log("disassembly: %s" % e)
-        st = self.state["state"]
-        if self.last_state == "running" and st != "running":
-            self.log(self.state["reason"]); self.log(sh.here()); self.focus = "cmd"
-        self.last_state = st
+        snap = sh.snapshot(code=40)               # shared with the browser (shell.py)
+        self.state, self.video, self.code = snap["regs"], snap["video"], snap["code"]
+        self.breaks = set(snap["breaks"])
+        if snap["note"]:
+            self.log(snap["note"])
+            if self.state["state"] != "running": self.focus = "cmd"
+        self.last_state = self.state["state"]
 
     # ------------------------------------------------------------------ drawing
     def put(self, scr, y, x, text, attr=0, width=None):
@@ -232,7 +207,7 @@ class TUI:
             running = self.state.get("state") == "running"
             if dirty or now - last > (0.1 if running else 0.5):
                 try:
-                    self.refresh_state(full=dirty)
+                    self.refresh_state()
                 except Exception as e:                # noqa: BLE001
                     self.log("error: %s" % e)
                     if not self.sh.emu.alive(): return

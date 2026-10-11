@@ -1,6 +1,6 @@
 # Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
 
-"""The debugger's command language, shared by the terminal UI, scripts (-c, --script) and the browser front end to come.
+"""The debugger's command language, shared by the terminal UI, the browser (web.py) and scripts (-c, --script).
 
   s [N]              step N instructions (default 1)        n            step over a JSR/JSRUR (else s)
   us [N]             step N microcode steps                  c            continue: until a breakpoint, a watch, HALT
@@ -22,7 +22,7 @@
 ADDR: hex (F06A, $F06A, 0xF06A, 0F06AH), a symbol (cmdloop, vputc, any case), r0..r7, pc, sp, or name+hex.
 """
 import os, time
-from .debugger import Symbols, parse_addr, listing, disasm, screen as draw_screen
+from .debugger import Symbols, parse_addr, listing, disasm, block_reader, screen as draw_screen
 from .emu import EmulatorError
 
 
@@ -34,6 +34,7 @@ class Shell:
         self.con_shown = 0                # `console` shows from here
         self.wait_from = 0                # `waitfor` searches from here
         self.dropped = 0
+        self.seen = "stopped"             # the state a UI last saw (snapshot(): a run's end is reported once)
 
     # ------------------------------------------------------------------ the emulator
     def regs(self):
@@ -108,7 +109,7 @@ class Shell:
         if cmd == "until":
             return self._run("until %X" % self.addr(a[0]))
         if cmd in ("pause", "stop"):
-            r = e.ok("pause"); return self._after(r)
+            r = e.ok("pause"); self.seen = r["state"]; return self._after(r)
         if cmd == "reset":
             e.ok("reset"); return "reset\n" + self.here()
         if cmd == "b":
@@ -194,6 +195,7 @@ class Shell:
     def _run(self, what):
         r = self.emu.ok(what)
         if not self.blocking:
+            self.seen = r["state"]
             return "running" if r["state"] == "running" else self._after(r)
         reason = self.wait_stop()
         self.fetch_console()
@@ -217,6 +219,32 @@ class Shell:
             if time.time() > end:
                 self.emu.ok("pause"); return "timeout: %r did not appear in %g s" % (text, secs)
             time.sleep(0.01)
+
+    # ------------------------------------------------------------------ what the UIs show
+    def snapshot(self, code=40, mem=None, mem_len=256):
+        """one look at the machine for a UI (the terminal's and the browser's): the UART's new output fetched, the
+        registers (with the status), the video card's state, the breakpoints and watches, `code` instructions from PC
+        (read in one block) and, with mem, mem_len bytes from mem. `note` is the text to log when a run has just
+        stopped (its reason and the instruction it stopped at), once, else None."""
+        e = self.emu
+        self.fetch_console()
+        regs = self.regs()
+        snap = {"regs": regs, "video": e.ok("video"), "breaks": e.ok("break list")["breaks"],
+                "watches": e.ok("watch list")["watches"], "note": None}
+        try:
+            snap["code"] = listing(block_reader(self.read, regs["pc"], 3 * code + 3), regs["pc"], code, self.syms)
+        except Exception as ex:                 # noqa: BLE001 - never let the disassembly stop a UI
+            snap["code"] = []; snap["note"] = "disassembly: %s" % ex
+        if mem is not None:
+            snap["mem"] = self.read(mem, mem_len)
+        if self.seen == "running" and regs["state"] != "running":
+            snap["note"] = "%s\n%s" % (regs["reason"], self.here())
+        self.seen = regs["state"]
+        return snap
+
+    def console_total(self):
+        """how many bytes the UART has sent in all (a UI's 'anything new?')"""
+        return self.dropped + len(self.con)
 
     # ------------------------------------------------------------------ formatting
     def _after(self, r):
@@ -253,3 +281,20 @@ def printable(t):
     """UART text for a terminal: CR LF and LF CR become one newline, other control bytes shown as ^X"""
     t = t.replace("\r\n", "\n").replace("\n\r", "\n").replace("\r", "")
     return "".join(c if c == "\n" or c == "\t" or 32 <= ord(c) < 127 else "^" + chr(64 + (ord(c) & 31)) for c in t)
+
+
+def console_lines(text, width):
+    """the UART text as the lines a terminal would show (CR LF / LF CR as one newline, BS erases, tabs to 8)"""
+    out, cur = [], []
+    for ch in printable(text[-65536:]).replace("^H", "\b"):
+        if ch == "\n": out.append("".join(cur)); cur = []
+        elif ch == "\b":
+            if cur: cur.pop()
+        elif ch == "\t":
+            cur.append(" ")
+            while len(cur) % 8: cur.append(" ")
+        else:
+            cur.append(ch)
+            if len(cur) >= width: out.append("".join(cur)); cur = []
+    out.append("".join(cur))
+    return out
