@@ -14,6 +14,7 @@ software/ucemu/y1ucemu -m                            # interactive monitor on th
 software/ucemu/y1ucemu -x -f prog.img -t             # -t: one line per instruction fetch; -T: every step + signals
 software/ucemu/y1ucemu -x -m -f prog.img -w          # -w: list every bus fight as it first occurs
 python3 tests/ucemu/run.py                           # the compiler suite + tests/assembler/brur on this emulator
+python3 software/y1dbg                               # the debugger: y1ucemu -D under a terminal UI with the video screen
 ```
 
 Options: `-u test.hex` another control store; `-F and|src` how a bus fight resolves (below); `-s NN` the switch
@@ -101,3 +102,13 @@ instruction traces automatically.
 - **2026-09-23: the carry is modelled as the ALU is built**: add/subtract latch CO/BO OR SHIFT-OUT (IC7A), so a stale
   shift-out corrupts the next add unless the microcode clears it, which it now does. This is the default; `-K` keeps
   the old, kinder model (carry = CO/BO only). The old model hid the fault that made `arith` hang on the machine.
+- **2026-10-11: the debug server, `-D PORT`.** In this mode the emulator leaves the terminal alone and serves one
+  connection on 127.0.0.1:PORT (0 = any free port, printed on stdout): one-line commands, one JSON line back each -
+  step (instructions or microcode steps), run / until / pause, breakpoints at instruction fetch, memory watches,
+  registers, memory, poke, register writes, keys into the UART's receive path, the UART's output, the video card's
+  RAM and CRTC registers, an instruction trace, reset, load. The front end is `software/y1dbg` (Python; its README has
+  the protocol, the comment above `dbg_serve` in `y1ucemu.c` is the reference). It exits when the connection closes.
+  Without `-D` nothing changes: the stepping code is the same (the debugger steps through one wrapper, so `do_step`
+  keeps two call sites and is inlined into `main`'s loop as before), and a 300-million-step BASIC loop took 13.13-13.31 s
+  before and 13.34-13.37 s after (median user time of six runs, measured twice; within about 1.5%), with an identical
+  status line. `tests/y1dbg/run.py` tests the server and the debugger.

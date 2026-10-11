@@ -25,7 +25,7 @@
  * register counts) use the values at the end of the step that asserts the strobe. A count on -REG-UP/-REG-DN
  * happens when the strobe goes away or the selection changes (the OR with the register select on the card).
  *
- * usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-l N]
+ * usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-l N] [-D PORT]
  *   -c   attach a CompactFlash image (software/cfmodel.h: P8 = register select, P9 = data; created if missing)
  *   -u   control store (default: firmware/microcode/ucode-generator2/test.hex relative to the executable)
  *   -m   load firmware/basic/basic.img + firmware/monitor/monitor.img (the ROM), as the other emulator does
@@ -49,6 +49,11 @@
  *   -O   (2026-10-10) the old address model: ADDR-REG-ID from the word even while -2-BYTE-OPERAND-SEL is asserted. By
  *        default that select is undriven then (the sequencer's IC18B is off), modelled as no register: address $FFFF -
  *        the slow-clock POPR fault the machine showed at 1 MHz (BACKLOG.md)
+ *   -D PORT  (2026-10-11) the debug server: no terminal; a front end (software/y1dbg) connects on 127.0.0.1:PORT (0 =
+ *        any free port; the first stdout line says which: "y1ucemu: debug server on 127.0.0.1 port N") and drives the
+ *        machine with one-line commands, each answered by one line of JSON (the protocol below, "debug server"). The
+ *        UART's output goes into a buffer the front end fetches (`console`), its input comes from `key`. The emulator
+ *        exits when the front end disconnects, or when none connects within 30 s.
  * Console: the I/O card's UART (P0 = UARTCS|register, P1 = data) is stdin/stdout, as on the machine; reading with
  * nothing left returns 0 with "data ready" set so a program's EOF test sees 0. Port 2 is also a console (the old
  * emulator's shortcut), so hand-written programs that OUTA P2 still print.
@@ -62,6 +67,13 @@
 #include <poll.h>
 #include <libgen.h>
 #include <termios.h>
+#include <stdarg.h>
+#include <signal.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <strings.h>
+#include <arpa/inet.h>
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
 #endif
@@ -113,11 +125,11 @@ static void resolve_signals(void) {
     s_branch_ld_hi = S("BRANCH-LD-HI"); s_int_jmp = S("-INT-JMP"); s_int_ld_lo = S("INT-LD-LO"); s_two_byte = S("-2-BYTE-OPERAND-SEL");
 }
 
-static int on(const uint8_t *w, int s) {   /* is signal s asserted in control word w? */
+static inline __attribute__((always_inline)) int on(const uint8_t *w, int s) {   /* is signal s asserted in control word w? */
     int v = (w[sig_byte[s]] >> sig_bit[s]) & 1;
     return sig_low[s] ? !v : v;
 }
-static int field(const uint8_t *w, int *s4) {
+static inline __attribute__((always_inline)) int field(const uint8_t *w, int *s4) {
     int v = 0;
     for (int i = 0; i < 4; i++) v |= ((w[sig_byte[s4[i]]] >> sig_bit[s4[i]]) & 1) << i;
     return v;
@@ -204,6 +216,42 @@ static int in_eof;
    2) still blocks. After a long run of empty polls with no output either, each poll waits 1 ms, so a monitor idling
    at its prompt does not spin the host CPU; any input or output resets that. */
 static long idle_polls;
+
+/* -D (2026-10-11): the debug server's side of the console and the memory watches. The UART's receive path reads the
+   keys the front end sent (`key`) instead of stdin, its transmit path appends to a buffer the front end fetches
+   (`console`). A memory watch notes the first matching access; the server stops at the end of that instruction. */
+#define COLD __attribute__((noinline, cold))   /* kept out of the stepping loop: -D-less runs as fast as before */
+static int dbg_mode, dbg_fd = -1, dbg_running;
+static uint8_t *dbg_keys; static uint16_t dbg_khead, dbg_ktail;         /* the receive queue (a 64K ring) */
+static char *dbg_con; static size_t dbg_con_len, dbg_con_cap;           /* the transmit buffer since the last fetch */
+static unsigned long dbg_con_lost;
+static uint8_t *watch_map; static int watch_on, watch_hit; static char watch_what[80];   /* 64K: bit 0 read, bit 1 write */
+/* (the -D tables are allocated by dbg_serve: a run without -D carries none of them) */
+static COLD void dbg_con_put(int c) {
+    if (dbg_con_len == dbg_con_cap) {
+        if (dbg_con_cap < (1u << 20)) {
+            dbg_con_cap = dbg_con_cap ? dbg_con_cap * 2 : 4096;
+            if (!(dbg_con = realloc(dbg_con, dbg_con_cap))) exit(3);
+        } else {                                  /* 1 MB unfetched: keep the newer half */
+            memmove(dbg_con, dbg_con + dbg_con_cap / 2, dbg_con_cap / 2);
+            dbg_con_len = dbg_con_cap / 2; dbg_con_lost += dbg_con_cap / 2;
+        }
+    }
+    dbg_con[dbg_con_len++] = (char)c;
+}
+static COLD int dbg_key_ready(void) {
+    if (dbg_khead != dbg_ktail) return 1;
+    if (++idle_polls > 20000 && dbg_running) {    /* a program waiting for a key: wait up to 1 ms for the front end */
+        struct pollfd pf = { dbg_fd, POLLIN, 0 };
+        poll(&pf, 1, 1);
+    }
+    return 0;
+}
+static COLD int dbg_key_get(void) { return dbg_khead != dbg_ktail ? dbg_keys[dbg_ktail++] : 0; }
+static COLD void watch_note(const char *kind, unsigned a, unsigned v) {
+    if (!watch_hit) { watch_hit = 1; snprintf(watch_what, sizeof watch_what, "watch: %s %04X = %02X", kind, a, v & 0xFF); }
+}
+
 static int stdin_fill(int wait_ms) {              /* try to buffer one byte; 1 = something buffered or end of input */
     struct pollfd pf = { STDIN_FILENO, POLLIN, 0 };
     if (poll(&pf, 1, wait_ms) <= 0) return 0;
@@ -213,18 +261,24 @@ static int stdin_fill(int wait_ms) {              /* try to buffer one byte; 1 =
     in_eof = 1; return 1;
 }
 static int input_ready(void) {
+    if (dbg_mode) return dbg_key_ready();
     if (in_buf >= 0) return 1;
     if (in_eof) return 1;                         /* "ready" with 0: programs see end of input as 0 */
     return stdin_fill(++idle_polls > 20000 ? 1 : 0);
 }
 static int input_byte(void) {
+    if (dbg_mode) return dbg_key_get();          /* -D: the next key sent, or 0 (the program did not check LSR) */
     if (in_buf < 0 && !in_eof) stdin_fill(-1);    /* a data read waits for the byte */
     if (in_buf >= 0) { int c = in_buf; in_buf = -1; return c; }
     return 0;
 }
-static void console_out(int c) { char ch = (char)c; idle_polls = 0; if (write(STDOUT_FILENO, &ch, 1) < 0) exit(3); }
+static void console_out(int c) {
+    char ch = (char)c; idle_polls = 0;
+    if (dbg_mode) { dbg_con_put(c); return; }
+    if (write(STDOUT_FILENO, &ch, 1) < 0) exit(3);
+}
 
-static uint8_t io_read(int p) {
+static inline __attribute__((always_inline)) uint8_t io_read(int p) {
     if (p == CF_PORT_SEL || p == CF_PORT_DATA) return cf_io_read(p);
     if (p == 2) return (uint8_t)input_byte();
     if (p != 1) return 0xFF;
@@ -244,7 +298,7 @@ static uint8_t io_read(int p) {
     if (ctl & 0x01) return (uint8_t)switches;    /* SWITCHLED: the switches */
     return 0xFF;
 }
-static void io_write(int p, uint8_t v) {
+static inline __attribute__((always_inline)) void io_write(int p, uint8_t v) {
     port[p] = v;
     if (p == CF_PORT_SEL || p == CF_PORT_DATA) { cf_io_write(p, v); return; }
     if (p == 2) { console_out(v); return; }
@@ -283,7 +337,7 @@ static void note_fight(int lane, const char *drivers) {
 static unsigned long nsteps, nclocks, ninstr;
 static uint16_t last_fetch_pc;
 
-static void compute(const uint8_t *w, struct comb *c) {
+static inline __attribute__((always_inline)) void compute(const uint8_t *w, struct comb *c) {
     memset(c, 0, sizeof *c);
     c->rd_id = field(w, s_rd_id); c->ld_id = field(w, s_ld_id);
     if (on(w, s_two_byte)) { c->rd_id = operand & 0x0F; c->ld_id = operand >> 4; }   /* sequencer IC5 */
@@ -310,6 +364,7 @@ static void compute(const uint8_t *w, struct comb *c) {
     if (on(w, s_mem_rd) && vma) {                        /* the video card's block: software/videomodel.h (2026-09-25) */
         if (vid_in(c->addr)) { int v = vid_read(c->addr, mem); if (v >= 0) DRIVE_LO(v, "VIDEO"); }
         else DRIVE_LO(mem[c->addr], "MEM");
+        if (__builtin_expect(watch_on, 0) && (watch_map[c->addr] & 1)) watch_note("read", c->addr, mem[c->addr]);    /* -D watch */
     }
     if (on(w, s_io_rd)) { if (io_rd_hold < 0) io_rd_hold = io_read(field(w, s_ioaddr)); DRIVE_LO(io_rd_hold, "IO"); }
     else io_rd_hold = -1;
@@ -399,7 +454,7 @@ static void trace_step(const uint8_t *w) {
     fprintf(stderr, "  addr=%04X data=%04X adata=%04X alu=%X ac=%02X c=%d\n", cur.addr, cur.data, cur.adata, cur.alu, acc, carry);
 }
 
-static void do_step(void) {
+static inline __attribute__((always_inline)) void do_step(void) {   /* inlined: the main loop stays as fast as before -D (2026-10-11) */
     const uint8_t *w = ucode[ir][step];
     /* ---- leading edge: latches take what the previous step left on the bus and in the function blocks ---- */
     if (on(w, s_ld_ins_reg)) {
@@ -448,6 +503,7 @@ static void do_step(void) {
         if (cur.addr >= 0xE000) { /* the EEPROM: ignore writes (the other emulator exits) */ }
         else if (vid_in(cur.addr)) vid_write(cur.addr, cur.data & 0xFF, mem);
         else mem[cur.addr] = cur.data & 0xFF;
+        if (__builtin_expect(watch_on, 0) && (watch_map[cur.addr] & 2)) watch_note("write", cur.addr, cur.data);     /* -D watch */
     }
     /* -IO-WR: the I/O card's latches clock on the trailing edge, once per assertion */
     int reset = on(w, s_count_reset);
@@ -493,6 +549,7 @@ static void tty_setup(void) {
 }
 
 /* ---- Intel hex loader (same as the other emulator) ---------------------------------------------------------- */
+static int loaded_bytes;          /* the last load's byte count (the debug server's `load` reports it) */
 static int load_hex(const char *fn) {
     FILE *f = fopen(fn, "r"); if (!f) { fprintf(stderr, "y1ucemu: cannot open %s\n", fn); return 0; }
     char line[1024]; int total = 0;
@@ -504,7 +561,349 @@ static int load_hex(const char *fn) {
     }
     fclose(f);
     if (!scripted) printf("   Loaded %d bytes from %s\n", total, fn);
+    loaded_bytes = total;
     return 1;
+}
+
+/* ---- the debug server (-D PORT, 2026-10-11) ------------------------------------------------------------------
+ * One client on 127.0.0.1:PORT (software/y1dbg). A command is one line of text; every command is answered by
+ * exactly one line holding one JSON object with "ok" (true/false; "error" says why) and the machine's status:
+ * "state" (stopped, running, halted), "reason" (why it last stopped), "pc" (the next instruction's address: R0, or
+ * R0 | $F000 under FORCE-ROM), "step" (the microcode step), "instr", "steps", "clocks" (counts since reset).
+ * Addresses, bytes and register values in commands are hex (an optional $ or 0x), counts (N, LEN) decimal; numbers in
+ * replies are decimal JSON numbers.
+ *   hello                      the emulator's name and the protocol number
+ *   status                     the status alone
+ *   regs                       + "r" (R0..R7), acc, tmp0, tmp1, carry, shift_out, sreg, ir, operand, branch, intvec,
+ *                              cond (the branch-taken latch), force_rom, int_en, out_led, fights, weak
+ *   step [N]                   N instructions (default 1), synchronously: each runs to the next instruction boundary
+ *                              (microcode step 0 after UCODE-COUNT-RESET); stops early at a HALT or a watch, not at
+ *                              breakpoints. ustep [N]: N microcode steps
+ *   run                        run until a breakpoint, a watch, a HALT, or `pause`; the reply comes at once (state
+ *                              running), later replies show the stop. until ADDR: run, and also stop at ADDR
+ *   pause                      stop a run (it finishes the instruction under way: the machine stops at a boundary)
+ *   break add ADDR | break del ADDR | break del all | break list      breakpoints: stop when the next instruction
+ *                              is at ADDR ("breaks": the list)
+ *   watch add r|w|rw ADDR | watch del r|w|rw ADDR | watch del all | watch list     memory watches (a read watch
+ *                              also fires on instruction and operand fetches): the run stops at the end of the
+ *                              instruction that made the access ("watches": [[addr, 1 read | 2 write | 3 both]...])
+ *   mem ADDR LEN               "addr", "hex": LEN bytes (at most 65536) of memory as the emulator holds it
+ *   poke ADDR BB [BB...]       write bytes straight into memory (the ROM half too: no bus cycle)
+ *   set NAME VALUE             r0..r7 (pc = r0, sp = r1), acc, tmp0, tmp1, carry, sreg; replies as regs
+ *   key TEXT                   queue TEXT for the UART's receiver (\n \r \t \e \\ \xHH escapes; CR becomes LF,
+ *                              as on the stdin path); "queued"
+ *   console                    "text": the UART's output since the last fetch, "lost": bytes dropped (over 1 MB)
+ *   video                      the card: "absent", "sel", "regs" (R0..R17), "written" (0/1 each), "ram" (hex, the
+ *                              2K display RAM $D000-$D7FF)
+ *   trace [N]                  "trace": the last N (default 20, at most 4096) instructions run, oldest first, each
+ *                              [pc, opcode, acc, carry, r0..r7] as they were before it ran
+ *   reset                      the machine's reset (registers, IR, UART cleared, FORCE-ROM set; memory and the
+ *                              video card kept); counts restart
+ *   load FILE                  an Intel-hex image, as -f; "bytes"
+ *   quit                       reply, then exit
+ * While running, the server reads commands every 20,000 microcode steps (about a millisecond), so `pause`, `key`,
+ * `video`, `console` and `regs` work during a run; a program polling the UART with no key queued waits up to 1 ms
+ * per poll for the front end instead of spinning. Without -D none of this runs. */
+struct sbuf { char *p; size_t n, cap; };
+static void sb_add(struct sbuf *s, const char *fmt, ...) {
+    for (;;) {
+        va_list ap; va_start(ap, fmt);
+        int k = vsnprintf(s->p + s->n, s->cap - s->n, fmt, ap);
+        va_end(ap);
+        if (k >= 0 && (size_t)k < s->cap - s->n) { s->n += k; return; }
+        s->cap = s->cap * 2 + (k > 0 ? k : 0) + 256;
+        if (!(s->p = realloc(s->p, s->cap))) exit(3);
+    }
+}
+static void sb_jstr(struct sbuf *s, const char *t, size_t n) {   /* a JSON string; bytes above $7F as \u00XX */
+    sb_add(s, "\"");
+    for (size_t i = 0; i < n; i++) {
+        unsigned char c = (unsigned char)t[i];
+        if (c == '"' || c == '\\') sb_add(s, "\\%c", c);
+        else if (c == '\n') sb_add(s, "\\n");
+        else if (c == '\r') sb_add(s, "\\r");
+        else if (c < 0x20 || c >= 0x7F) sb_add(s, "\\u%04x", c);
+        else sb_add(s, "%c", c);
+    }
+    sb_add(s, "\"");
+}
+
+static char dbg_reason[96] = "reset";
+static long dbg_until = -1;
+static uint8_t *brk_map;                          /* 64K: 1 = a breakpoint */
+static struct dbg_tr { uint16_t pc; uint8_t op, acc, carry; uint16_t r[8]; } *dbg_trace;   /* 4096, a ring */
+static unsigned long dbg_ntrace;
+
+static unsigned dbg_pc(void) { return force_rom ? (reg[0] | 0xF000u) : reg[0]; }   /* where the next fetch reads */
+static void dbg_stop(const char *why) { dbg_running = 0; dbg_until = -1; snprintf(dbg_reason, sizeof dbg_reason, "%s", why); }
+static void dbg_trace_push(void) {
+    unsigned pc = dbg_pc();
+    struct dbg_tr *t = &dbg_trace[dbg_ntrace++ & 4095];
+    t->pc = (uint16_t)pc; t->op = mem[pc]; t->acc = acc; t->carry = (uint8_t)carry; memcpy(t->r, reg, sizeof reg);
+}
+static const char *dbg_halt_reason(void) { return halted == 2 ? "COUNT-FAULT" : "HALT"; }
+
+/* every step the debugger takes goes through here: main's loop and this are do_step's only two call sites, so both
+   get the whole step inlined, as main alone had it before -D (more copies made the compiler call compute() and
+   the I/O out of line, and a -D-less run ~5% slower) */
+static __attribute__((noinline)) void dbg_step(void) { do_step(); }
+
+static void dbg_instr(void) {                     /* one instruction: microcode steps to the next boundary */
+    halted = 0;
+    if (step == 0) dbg_trace_push();              /* (mid-instruction after a ustep: it was recorded when it began) */
+    do dbg_step(); while (step != 0 && !halted);
+}
+
+static void machine_reset(void) {                 /* the reset line: what main's start-up state is */
+    memset(reg, 0, sizeof reg); acc = sreg = ir = operand = 0; tmp0 = tmp1 = branch = intvec = 0;
+    carry = shift_out = cond_latch = 0; force_rom = 1; out_led = 0; int_enabled = int_pending = 0; halted = 0; step = 0;
+    memset(&prev, 0, sizeof prev); prev.data = 0xFFFF; memset(&cur, 0, sizeof cur);
+    io_rd_hold = -1; held_bus = 0xFFFF;
+    uart_lcr = uart_ier = uart_fcr = uart_mcr = uart_scr = uart_dll = uart_dlm = 0; memset(port, 0, sizeof port);
+    nsteps = nclocks = ninstr = 0; last_fetch_pc = 0;
+}
+
+static int dbg_hex(const char *s, long *v) {     /* hex with an optional $ or 0x; 0 = not a number */
+    if (!s) return 0;
+    if (*s == '$') s++; else if (s[0] == '0' && (s[1] == 'x' || s[1] == 'X')) s += 2;
+    char *e; unsigned long x = strtoul(s, &e, 16);
+    if (!*s || *e) return 0;
+    *v = (long)x; return 1;
+}
+
+static int dbg_count(const char *s, long *v) {   /* a decimal count */
+    char *e; long x = strtol(s, &e, 10);
+    if (!*s || *e || x < 0) return 0;
+    *v = x; return 1;
+}
+
+static void dbg_status(struct sbuf *s) {
+    sb_add(s, "\"state\":\"%s\",\"reason\":", dbg_running ? "running" : halted ? "halted" : "stopped");
+    sb_jstr(s, dbg_reason, strlen(dbg_reason));
+    sb_add(s, ",\"pc\":%u,\"step\":%d,\"instr\":%lu,\"steps\":%lu,\"clocks\":%lu", dbg_pc(), step, ninstr, nsteps, nclocks);
+}
+static void dbg_regs(struct sbuf *s) {
+    sb_add(s, ",\"r\":[%u,%u,%u,%u,%u,%u,%u,%u]", reg[0], reg[1], reg[2], reg[3], reg[4], reg[5], reg[6], reg[7]);
+    sb_add(s, ",\"acc\":%u,\"tmp0\":%u,\"tmp1\":%u,\"carry\":%d,\"shift_out\":%d,\"sreg\":%u,\"ir\":%u,\"operand\":%u,"
+              "\"branch\":%u,\"intvec\":%u,\"cond\":%d,\"force_rom\":%d,\"int_en\":%d,\"out_led\":%d,\"fights\":%ld,\"weak\":%ld",
+           acc, tmp0, tmp1, carry, shift_out, sreg, ir, operand, branch, intvec, cond_latch, force_rom, int_enabled, out_led,
+           fights_total, weak_drives);
+}
+
+static void dbg_send(struct sbuf *s) {
+    sb_add(s, "}\n");
+    for (size_t off = 0; off < s->n; ) {
+        ssize_t k = write(dbg_fd, s->p + off, s->n - off);
+        if (k <= 0) exit(0);                      /* the front end has gone */
+        off += k;
+    }
+}
+
+static COLD void dbg_command(char *line) {
+    static struct sbuf s;
+    s.n = 0; sb_add(&s, "{");
+    char *rest = line; while (*rest == ' ') rest++;
+    char cmd[16] = ""; int k = 0;
+    while (*rest && *rest != ' ' && k < 15) cmd[k++] = *rest++;
+    cmd[k] = 0;
+    if (*rest == ' ') rest++;                     /* `key` takes the rest of the line as it is */
+    char *argv[260]; int argc = 0; char words[4096];
+    snprintf(words, sizeof words, "%s", rest);
+    for (char *t = strtok(words, " \t"); t && argc < 260; t = strtok(NULL, " \t")) argv[argc++] = t;
+    const char *err = NULL; long a = 0, n = 0;
+    int ok_regs = 0;
+#define NEED(cond, msg) do { if (!(cond)) { err = msg; goto reply; } } while (0)
+    if (!strcmp(cmd, "hello")) sb_add(&s, "\"emulator\":\"y1ucemu\",\"protocol\":1,");
+    else if (!strcmp(cmd, "status") || !cmd[0]) ;
+    else if (!strcmp(cmd, "regs")) ok_regs = 1;
+    else if (!strcmp(cmd, "step") || !strcmp(cmd, "ustep")) {
+        NEED(!dbg_running, "running: pause first");
+        n = 1; if (argc) NEED(dbg_count(argv[0], &n), "step|ustep [N] (N decimal)");
+        watch_hit = 0; snprintf(dbg_reason, sizeof dbg_reason, "stepped");
+        for (long i = 0; i < n; i++) {
+            if (cmd[0] == 'u') { halted = 0; if (step == 0) dbg_trace_push(); dbg_step(); }
+            else dbg_instr();
+            if (halted) { dbg_stop(dbg_halt_reason()); break; }
+            if (watch_hit) { dbg_stop(watch_what); watch_hit = 0; break; }
+        }
+    }
+    else if (!strcmp(cmd, "run") || !strcmp(cmd, "until")) {
+        NEED(!dbg_running, "already running");
+        if (cmd[0] == 'u') { NEED(argc == 1 && dbg_hex(argv[0], &a), "until ADDR"); dbg_until = a & 0xFFFF; }
+        else dbg_until = -1;
+        watch_hit = 0; halted = 0; dbg_running = 1; snprintf(dbg_reason, sizeof dbg_reason, "running");
+        if (step == 0) dbg_trace_push();
+    }
+    else if (!strcmp(cmd, "pause")) {
+        if (dbg_running) { while (step != 0 && !halted) dbg_step(); dbg_stop(halted ? dbg_halt_reason() : "paused"); }
+    }
+    else if (!strcmp(cmd, "break")) {
+        NEED(argc >= 1, "break add|del|list");
+        if (!strcmp(argv[0], "add")) { NEED(argc == 2 && dbg_hex(argv[1], &a), "break add ADDR"); brk_map[a & 0xFFFF] = 1; }
+        else if (!strcmp(argv[0], "del")) {
+            NEED(argc == 2, "break del ADDR|all");
+            if (!strcmp(argv[1], "all")) memset(brk_map, 0, 65536);
+            else { NEED(dbg_hex(argv[1], &a), "break del ADDR|all"); brk_map[a & 0xFFFF] = 0; }
+        } else NEED(!strcmp(argv[0], "list"), "break add|del|list");
+        sb_add(&s, "\"breaks\":["); int first = 1;
+        for (unsigned i = 0; i < 65536; i++) if (brk_map[i]) { sb_add(&s, first ? "%u" : ",%u", i); first = 0; }
+        sb_add(&s, "],");
+    }
+    else if (!strcmp(cmd, "watch")) {
+        NEED(argc >= 1, "watch add|del|list");
+        int bits = 0;
+        if (argc >= 2) bits = !strcmp(argv[1], "r") ? 1 : !strcmp(argv[1], "w") ? 2 : !strcmp(argv[1], "rw") ? 3 : 0;
+        if (!strcmp(argv[0], "add")) { NEED(argc == 3 && bits && dbg_hex(argv[2], &a), "watch add r|w|rw ADDR"); watch_map[a & 0xFFFF] |= bits; }
+        else if (!strcmp(argv[0], "del")) {
+            if (argc == 2 && !strcmp(argv[1], "all")) memset(watch_map, 0, 65536);
+            else { NEED(argc == 3 && bits && dbg_hex(argv[2], &a), "watch del r|w|rw ADDR | watch del all"); watch_map[a & 0xFFFF] &= ~bits; }
+        } else NEED(!strcmp(argv[0], "list"), "watch add|del|list");
+        sb_add(&s, "\"watches\":["); int first = 1; watch_on = 0;
+        for (unsigned i = 0; i < 65536; i++) if (watch_map[i]) { sb_add(&s, first ? "[%u,%u]" : ",[%u,%u]", i, watch_map[i]); first = 0; watch_on = 1; }
+        sb_add(&s, "],");
+    }
+    else if (!strcmp(cmd, "mem")) {
+        NEED(argc == 2 && dbg_hex(argv[0], &a) && dbg_count(argv[1], &n) && n <= 65536, "mem ADDR LEN (LEN decimal, at most 65536)");
+        sb_add(&s, "\"addr\":%ld,\"hex\":\"", a & 0xFFFF);
+        for (long i = 0; i < n; i++) sb_add(&s, "%02X", mem[(a + i) & 0xFFFF]);
+        sb_add(&s, "\",");
+    }
+    else if (!strcmp(cmd, "poke")) {
+        NEED(argc >= 2 && dbg_hex(argv[0], &a), "poke ADDR BB [BB...]");
+        long v[259];
+        for (int i = 1; i < argc; i++) NEED(dbg_hex(argv[i], &v[i]) && v[i] <= 0xFF, "poke ADDR BB [BB...]: a byte is not hex");
+        for (int i = 1; i < argc; i++) mem[(a + i - 1) & 0xFFFF] = (uint8_t)v[i];
+        sb_add(&s, "\"bytes\":%d,", argc - 1);
+    }
+    else if (!strcmp(cmd, "set")) {
+        NEED(argc == 2 && dbg_hex(argv[1], &a), "set NAME VALUE");
+        const char *nm = argv[0];
+        if ((nm[0] == 'r' || nm[0] == 'R') && nm[1] >= '0' && nm[1] <= '7' && !nm[2]) reg[nm[1] - '0'] = (uint16_t)a;
+        else if (!strcasecmp(nm, "pc")) reg[0] = (uint16_t)a;
+        else if (!strcasecmp(nm, "sp")) reg[1] = (uint16_t)a;
+        else if (!strcasecmp(nm, "acc")) acc = (uint8_t)a;
+        else if (!strcasecmp(nm, "tmp0")) tmp0 = (uint16_t)a;
+        else if (!strcasecmp(nm, "tmp1")) tmp1 = (uint16_t)a;
+        else if (!strcasecmp(nm, "carry")) carry = a & 1;
+        else if (!strcasecmp(nm, "sreg")) sreg = (uint8_t)a;
+        else NEED(0, "set: r0..r7, pc, sp, acc, tmp0, tmp1, carry, sreg");
+        ok_regs = 1;
+    }
+    else if (!strcmp(cmd, "key")) {
+        int q = 0;
+        for (const char *p = rest; *p; p++) {
+            int c = (unsigned char)*p;
+            if (c == '\\' && p[1]) {
+                p++;
+                switch (*p) {
+                    case 'n': c = 0x0A; break; case 'r': c = 0x0D; break; case 't': c = 0x09; break;
+                    case 'e': c = 0x1B; break;
+                    case 'x': { char h[3] = { p[1], p[1] ? p[2] : 0, 0 }; char *e; c = (int)strtol(h, &e, 16); if (e != h + 2) c = 'x'; else p += 2; break; }
+                    default: c = (unsigned char)*p; break;
+                }
+            }
+            if (c == 0x0D) c = 0x0A;              /* as stdin_fill: the monitor and BASIC end a line at LF */
+            if ((uint16_t)(dbg_khead + 1) == dbg_ktail) break;   /* the queue is full */
+            dbg_keys[dbg_khead++] = (uint8_t)c; q++;
+        }
+        idle_polls = 0;
+        sb_add(&s, "\"queued\":%d,\"pending\":%u,", q, (uint16_t)(dbg_khead - dbg_ktail));
+    }
+    else if (!strcmp(cmd, "console")) {
+        sb_add(&s, "\"text\":"); sb_jstr(&s, dbg_con ? dbg_con : "", dbg_con_len);
+        sb_add(&s, ",\"lost\":%lu,", dbg_con_lost);
+        dbg_con_len = 0; dbg_con_lost = 0;
+    }
+    else if (!strcmp(cmd, "video")) {
+        sb_add(&s, "\"absent\":%d,\"sel\":%d,\"regs\":[", vid.absent, vid.sel);
+        for (int i = 0; i < 18; i++) sb_add(&s, i ? ",%u" : "%u", vid.reg[i]);
+        sb_add(&s, "],\"written\":[");
+        for (int i = 0; i < 18; i++) sb_add(&s, i ? ",%u" : "%u", vid.written[i]);
+        sb_add(&s, "],\"ram\":\"");
+        for (unsigned i = VID_BASE; i < VID_CRTC; i++) sb_add(&s, "%02X", mem[i]);
+        sb_add(&s, "\",");
+    }
+    else if (!strcmp(cmd, "trace")) {
+        n = 20; if (argc) NEED(dbg_count(argv[0], &n), "trace [N] (N decimal)");
+        if (n > 4096) n = 4096;
+        if ((unsigned long)n > dbg_ntrace) n = (long)dbg_ntrace;
+        sb_add(&s, "\"trace\":[");
+        for (long i = 0; i < n; i++) {
+            struct dbg_tr *t = &dbg_trace[(dbg_ntrace - n + i) & 4095];
+            sb_add(&s, "%s[%u,%u,%u,%u", i ? "," : "", t->pc, t->op, t->acc, t->carry);
+            for (int r = 0; r < 8; r++) sb_add(&s, ",%u", t->r[r]);
+            sb_add(&s, "]");
+        }
+        sb_add(&s, "],");
+    }
+    else if (!strcmp(cmd, "reset")) { machine_reset(); dbg_stop("reset"); dbg_ntrace = 0; }
+    else if (!strcmp(cmd, "load")) {
+        NEED(argc == 1, "load FILE");
+        NEED(load_hex(argv[0]), "load: cannot open the file");
+        sb_add(&s, "\"bytes\":%d,", loaded_bytes);
+    }
+    else if (!strcmp(cmd, "quit")) { sb_add(&s, "\"ok\":true}\n"); if (write(dbg_fd, s.p, s.n) < 0) {} exit(0); }
+    else err = "unknown command";
+reply:
+    if (err) { sb_add(&s, "\"ok\":false,\"error\":"); sb_jstr(&s, err, strlen(err)); sb_add(&s, ","); }
+    else sb_add(&s, "\"ok\":true,");
+    dbg_status(&s);
+    if (ok_regs && !err) dbg_regs(&s);
+    dbg_send(&s);
+#undef NEED
+}
+
+static char dbg_in[8192]; static size_t dbg_in_len;
+static void dbg_poll(int wait_ms) {               /* read what the front end sent; run every complete line */
+    struct pollfd pf = { dbg_fd, POLLIN, 0 };
+    if (poll(&pf, 1, wait_ms) <= 0) return;
+    ssize_t k = read(dbg_fd, dbg_in + dbg_in_len, sizeof dbg_in - 1 - dbg_in_len);
+    if (k <= 0) exit(0);                          /* the front end closed the connection: the emulator goes too */
+    dbg_in_len += k;
+    char *nl;
+    while ((nl = memchr(dbg_in, '\n', dbg_in_len))) {
+        *nl = 0; if (nl > dbg_in && nl[-1] == '\r') nl[-1] = 0;
+        dbg_command(dbg_in);
+        size_t used = (size_t)(nl + 1 - dbg_in);
+        memmove(dbg_in, nl + 1, dbg_in_len - used); dbg_in_len -= used;
+    }
+    if (dbg_in_len == sizeof dbg_in - 1) dbg_in_len = 0;   /* a line longer than the buffer: dropped */
+}
+
+static COLD int dbg_serve(int port) {
+    signal(SIGPIPE, SIG_IGN);
+    dbg_keys = calloc(65536, 1); watch_map = calloc(65536, 1); brk_map = calloc(65536, 1); dbg_trace = calloc(4096, sizeof *dbg_trace);
+    if (!dbg_keys || !watch_map || !brk_map || !dbg_trace) return 3;
+    int ls = socket(AF_INET, SOCK_STREAM, 0), one = 1;
+    struct sockaddr_in sa; memset(&sa, 0, sizeof sa);
+    sa.sin_family = AF_INET; sa.sin_port = htons((uint16_t)port); sa.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    setsockopt(ls, SOL_SOCKET, SO_REUSEADDR, &one, sizeof one);
+    if (ls < 0 || bind(ls, (struct sockaddr *)&sa, sizeof sa) < 0 || listen(ls, 1) < 0) {
+        fprintf(stderr, "y1ucemu: cannot listen on 127.0.0.1 port %d\n", port); return 2;
+    }
+    socklen_t sl = sizeof sa; getsockname(ls, (struct sockaddr *)&sa, &sl);
+    printf("y1ucemu: debug server on 127.0.0.1 port %d\n", ntohs(sa.sin_port)); fflush(stdout);
+    struct pollfd pf = { ls, POLLIN, 0 };
+    if (poll(&pf, 1, 30000) <= 0) { fprintf(stderr, "y1ucemu: no debugger connected within 30 s\n"); return 2; }
+    dbg_fd = accept(ls, NULL, NULL); close(ls);
+    if (dbg_fd < 0) return 2;
+    setsockopt(dbg_fd, IPPROTO_TCP, TCP_NODELAY, &one, sizeof one);
+    memset(&prev, 0, sizeof prev); prev.data = 0xFFFF;   /* the reset state main starts from */
+    for (;;) {
+        if (!dbg_running) { dbg_poll(-1); continue; }
+        for (int i = 0; i < 20000 && dbg_running; i++) {
+            dbg_step();
+            if (halted) { dbg_stop(dbg_halt_reason()); break; }
+            if (step) continue;
+            /* an instruction boundary */
+            if (watch_hit) { dbg_stop(watch_what); watch_hit = 0; break; }
+            unsigned pc = dbg_pc();
+            if (brk_map[pc]) { char b[32]; snprintf(b, sizeof b, "breakpoint %04X", pc); dbg_stop(b); break; }
+            if ((long)pc == dbg_until) { char b[32]; snprintf(b, sizeof b, "reached %04X", pc); dbg_stop(b); break; }
+            dbg_trace_push();
+        }
+        dbg_poll(0);
+    }
 }
 
 static void exe_relative(char *out, size_t outlen, const char *rel, const char *argv0) {
@@ -523,7 +922,7 @@ static void exe_relative(char *out, size_t outlen, const char *rel, const char *
 int main(int argc, char **argv) {
     char path[4096], exe_dir[4096];
     exe_relative(exe_dir, sizeof exe_dir, ".", argv[0]);
-    const char *ucode_path = NULL; int load_std = 0; unsigned long limit = 0;
+    const char *ucode_path = NULL; int load_std = 0, dbg_port = 0; unsigned long limit = 0;
     const char *images[32]; int nimages = 0;
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "-u") && i + 1 < argc) ucode_path = argv[++i];
@@ -549,7 +948,8 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "-V")) vid.dump = 1;
         else if (!strcmp(argv[i], "-W")) vid.log = 1;
         else if (!strcmp(argv[i], "-N")) vid.absent = 1;
-        else { fprintf(stderr, "usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-i 0|1] [-I N] [-R 1|2] [-L] [-E ADDR] [-l N] [-V] [-W] [-N] [-H] [-O]\n"); return 1; }
+        else if (!strcmp(argv[i], "-D") && i + 1 < argc) { dbg_mode = 1; dbg_port = atoi(argv[++i]); scripted = 1; }
+        else { fprintf(stderr, "usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-i 0|1] [-I N] [-R 1|2] [-L] [-E ADDR] [-l N] [-V] [-W] [-N] [-H] [-O] [-D PORT]\n"); return 1; }
     }
     resolve_signals();
     load_opnames(exe_dir);
@@ -564,6 +964,7 @@ int main(int argc, char **argv) {
         exe_relative(img, sizeof img, "../../firmware/monitor/monitor.img", argv[0]); load_hex(img);
     }
     for (int i = 0; i < nimages; i++) if (!load_hex(images[i])) return 2;
+    if (dbg_mode) return dbg_serve(dbg_port);     /* -D: the front end drives the machine from here on */
     if (!scripted) printf("   Interactive: the monitor's console is this terminal (raw mode, the monitor echoes); Ctrl-C quits.\n");
     fflush(stdout);
     tty_setup();
