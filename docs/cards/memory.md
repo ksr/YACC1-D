@@ -365,7 +365,7 @@ What to measure if it misbehaves:
 | v1.2 | 2020-11-29 | fabricated (built), retired 2021 | -VMA arrives on the bus (Blank V3.1 note): -VMA enables IC5, gates IC7 (pin 4) and the low-RAM -CS; the remap trigger moves from BADDR15 to raw ADDR15; "RN3&4 BADDR pull-ups not needed, leave in design"; the 7400 removed then added back for -LO-RAM. `media/memory v1.2 top.jpeg` and `... solder.jpeg` are photographs of this build |
 | v1.3 | design 2021-03-17, boards ordered 2025-06-27 (JLCPCB 2000765A, 4 layers) | **in the machine** | "ARGH": the 3x8 jumper block on IC7's outputs with pull-ups so any 4K block can be removed from the map (for memory-mapped I/O — the video card uses it); IC15 74ALS11 so the 74245 is enabled only by the card's own chip selects; TMP registers on the board. Built design = `eagle/v1.3` (the Fusion 360 export of 2026-09-24, verified against JLCPCB order 2000765A; KiCad `kicad/v1.3`, netlist proof 116/116). `eagle/deprecated/v1.3-do-not-use` is an earlier save, do not use (no IC15, TMP off the board; KiCad `kicad/deprecated/v1.3-do-not-use`, 115/115) |
 
-**v2.0 (2026-09-25: finished for fabrication, NOT ORDERED):** the CompactFlash interface on this card:
+**v2.0 (2026-09-25: finished for fabrication; ordered from JLCPCB 2026-10-09, order 2000765A-Y52, not yet received):** the CompactFlash interface on this card:
 `hardware/cards/memory/kicad/v2.0/` = the built v1.3 card plus the CF card v1.0 circuit ([`cf.md`](cf.md)), I/O-mapped
 on ports P8/P9 as the ROM and the emulators use them; it would be the first use of the IO-ADDR0..3, -IO-RD and -IO-WR
 pins this card leaves unwired today. The schematic is done and proven, but the card has less room than the earlier save

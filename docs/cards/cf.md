@@ -26,7 +26,7 @@ driver: `cfwait`, `cfinit`, `cfread`, `cfwrite`), `software/cfmodel.h` (the emul
   `eagle/deprecated/v1.3-do-not-use/`) the TMP registers' data tracks cross the free area, so with that copper kept the
   CF chips did not fit, so the whole memory card is laid out again with the CF section designed in. A first
   finished board (J2 at the top edge, a TAODAN adapter standing on it) was superseded the same day and is kept as a
-  record. **The v2.0 board (chosen 2026-09-25, standoff option E, finished for fabrication, NOT ORDERED):**
+  record. **The v2.0 board (chosen 2026-09-25, standoff option E, finished for fabrication; ordered from JLCPCB 2026-10-09, order 2000765A-Y52, not yet received):**
   `memory-v2.0.kicad_pcb` with its gerbers, NPTH/PTH drill, renders, placement PDF, BOM, JLCPCB order note and a 1:1
   print. The CF chips (the CF card's U1-U5 are IC30-IC34 there) sit under the adapter; the adapter, an **HX-2118P**
   CF-to-IDE (60 x 44 mm, male 40-pin header, **no pin 20**), mounts flat **on two 15 mm M3 standoffs** (holes H1 / H2,

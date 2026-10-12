@@ -74,7 +74,7 @@ coding and documentation.
 -   ![Memory card v2.0, KiCad render](docs/cards/images/memory-v2.0-render-angled.png)
 
     **[Memory v2.0](docs/cards/memory.md)** — the next memory card, with the CompactFlash disk interface on board
-    (KiCad render, populated; designed, not yet ordered).
+    (KiCad render, populated; ordered 2026-10-09, not yet built).
 
 -   ![I/O card](media/io-v1.1-top.jpg)
 

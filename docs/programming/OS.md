@@ -325,8 +325,8 @@ the start of phase 3). Still to do, in the plan's order:
 
 1. **The CF interface in hardware**: designed as its own card (CF card v1.0, KiCad, never ordered: 74LS138 decode of
    P8/P9, 74LS32 strobe gating, 74LS175 select latch, 74LS08, 74LS245, True IDE 8-bit, status pull-ups, ACT LED;
-   [`docs/cards/cf.md`](../cards/cf.md)); since 2026-09-24 planned onto the memory card, same circuit, still
-   I/O-mapped (not designed yet); bench-tested with the bus tester (`OUTI P8 / INP P9` through the ROM driver, which
+   [`docs/cards/cf.md`](../cards/cf.md)); since 2026-09-24 on the memory card, same circuit, still I/O-mapped
+   (memory card v2.0: designed 2026-09-25, ordered 2026-10-09, not yet received); bench-tested with the bus tester (`OUTI P8 / INP P9` through the ROM driver, which
    the chip in the machine already has) before the CPU touches it.
 2. `fsck` on the OS side (`pack` done 2026-09-23, `/BIN/PACK`); `os/lib_fs.c` (the C wrappers over `sys()`); updated `os/README.md`, `disk.img`
    and `tests/os` transcripts for v0.1.
