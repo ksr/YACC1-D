@@ -12,6 +12,12 @@ the PDF generators, and the KiCad conversion:
   the worst offenders per sheet (`--summary`, `--detail N`, `--pairs N`, `--json`; `--calibrate SVG` checks its text
   boxes against a `kicad-cli sch export svg` render). `eagle_to_kicad_all.py` puts its counts in each README and in
   `hardware/KICAD.md`.
+- `render_populated.py` — pictures of a board as if built (2026-10-11): copies a `.kicad_pcb`, gives every footprint
+  without a 3D model (the Eagle-converted parts) KiCad's standard model - DIP chips by pin count and row width,
+  resistors, caps, LED, crystal, pin headers, SIP networks, the DIN 41612 bus connector, the DB9 - placed on its pad 1
+  and turned to match the pads, and renders top, bottom and a three-quarter view with `kicad-cli pcb render --quality
+  high`. The board file is never changed. Chips are plain (KiCad draws no markings). Used for the video v1.1 and memory
+  v2.0 pictures in `docs/cards/images/`.
 - `verify_fab_vs_brd.py` — proves an Eagle `.brd` is the design a fab house received: every hole against the Excellon
   drill file, every Top/Bottom track against the copper gerbers, inner-layer planes, part list and pick-and-place,
   optionally byte-compares two gerber sets. Takes a gerber zip or a whole order archive (nested zips are searched).

@@ -234,8 +234,11 @@ If it misbehaves:
 | V1.0 | designed in Fusion 360, export 2026-09-18 | **built, in the machine** without CRTC | drawn on Blank V3.1; the board file was exported under the template's name and stored as `Video_1.0.brd`; no fab files in the tree (`hardware/FABRICATED.md`: "none in tree") |
 | v1.1 | KiCad master since 2026-09-21 | design only | `+5V` folded into `VCC` with a joining track (proof 116/116, DRC clean). To do before ordering: RS from A0 to A1, pull-ups on the 7416 outputs (BACKLOG) |
 
-The v1.1 board as KiCad renders it (`hardware/cards/video/kicad/v1.1/video-v1.1.kicad_pcb`, rendered 2026-10-11;
-the board has no 3D part models, so the ICs show as bare pads):
+The v1.1 board as KiCad renders it, populated (`hardware/cards/video/kicad/v1.1/video-v1.1.kicad_pcb`, rendered
+2026-10-11 by `tools/render_populated.py`, which gives each Eagle-converted part KiCad's standard 3D model in a copy of
+the board: plain chips without markings; the RCA jack has no model and shows as its pads):
+
+[![Video card v1.1, populated](images/video-v1.1-render-angled.png)](images/video-v1.1-render-angled.png "Open full size")
 
 [![Video card v1.1, top](images/video-v1.1-render-top.png)](images/video-v1.1-render-top.png "Open full size")
 

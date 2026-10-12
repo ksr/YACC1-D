@@ -391,8 +391,12 @@ jumper** (M2, 2026-09-29), was added beside the ROM, and **R15, the 470 Ω ADDR1
 2026-09-30, section 4.1) beside the bus connector: 72 parts. Open before ordering (its README): the ribbon plug's pin 20 (open, or pull J2's pin 20). The adapter's power-pad
 order was resolved 2026-09-26: a floppy pinout in J3's order, so the J3 cable is straight through (a hand-made harness).
 
-The v2.0 board as KiCad renders it (`hardware/cards/memory/kicad/v2.0/memory-v2.0.kicad_pcb`, rendered 2026-10-11),
-with the CF section and the adapter's standoff outline at the right:
+The v2.0 board as KiCad renders it, populated (`hardware/cards/memory/kicad/v2.0/memory-v2.0.kicad_pcb`, rendered
+2026-10-11 by `tools/render_populated.py`, which gives each Eagle-converted part KiCad's standard 3D model in a copy of
+the board: plain chips without markings; the U$1 3x8 jumper block has no model), with the CF section and the adapter's
+standoff outline at the right (the adapter itself is not drawn):
+
+[![Memory card v2.0, populated](images/memory-v2.0-render-angled.png)](images/memory-v2.0-render-angled.png "Open full size")
 
 [![Memory card v2.0, top](images/memory-v2.0-render-top.png)](images/memory-v2.0-render-top.png "Open full size")
 
