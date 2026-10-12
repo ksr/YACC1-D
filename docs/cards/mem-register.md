@@ -1,7 +1,9 @@
 # Mem Register card V1.0 — theory of operation
 
-Sixteen bytes of RAM built from 74LS374 latches, at $0010-$001F: the scratch memory and stack that let the CPU run
-programs from the Mem Switch card before the memory card existed. Bring-up card, not part of the running machine.
+Sixteen bytes of RAM built from 74LS374 latches, at $0010-$001F. Built on principle, with the
+[Mem Switch card](mem-switch.md), to prove that a machine could be built with a minimum of complex chips; it was the
+scratch memory and stack that let the CPU run programs from the Mem Switch card before the memory card existed. Not
+part of the running machine.
 
 [![The Mem Register card V1.0: sixteen 74x374 latches, one per byte, each with its address and a read (green) and write (red) LED](../../media/mem-register-v1.0-top.jpg)](../../media/mem-register-v1.0-top.jpg "Open full size")
 

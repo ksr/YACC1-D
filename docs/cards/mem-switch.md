@@ -1,7 +1,8 @@
 # Mem Switch card V1.1 — theory of operation
 
-A 16-byte "ROM" made of toggle switches, at $0000-$000F: the first program the CPU ever ran was entered on it.
-Bring-up card, not part of the running machine.
+A 16-byte "ROM" made of DIP switches, at $0000-$000F. Built on principle, with the
+[Mem Register card](mem-register.md), to prove that a machine could be built with a minimum of complex chips; the
+first program the CPU ever ran was entered on it. Not part of the running machine.
 
 [![The Mem Switch card V1.1: sixteen banks of 8 DIP switches, one per byte, each with its address and an LED](../../media/mem-switch-v1.1-top.jpg)](../../media/mem-switch-v1.1-top.jpg "Open full size")
 

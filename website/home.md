@@ -92,13 +92,13 @@ coding and documentation.
 
 -   ![Mem Switch card](media/mem-switch-v1.1-top.jpg)
 
-    **[16-byte switch ROM](docs/cards/mem-switch.md)** — sixteen bytes set on DIP switches: the first program the CPU
-    ran was entered on it.
+    **[16-byte switch ROM](docs/cards/mem-switch.md)** — sixteen bytes of "ROM" set on DIP switches, built on principle
+    to prove that a machine could be built with a minimum of complex chips.
 
 -   ![Mem Register card](media/mem-register-v1.0-top.jpg)
 
-    **[16-byte RAM](docs/cards/mem-register.md)** — sixteen bytes of RAM made of latches, the scratch memory and stack
-    of the first bring-up.
+    **[16-byte RAM](docs/cards/mem-register.md)** — sixteen bytes of RAM made of latches, built on principle with the
+    switch ROM to prove the same thing.
 
 </div>
 
