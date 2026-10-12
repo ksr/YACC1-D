@@ -3,6 +3,8 @@
 Sixteen bytes of RAM built from 74LS374 latches, at $0010-$001F: the scratch memory and stack that let the CPU run
 programs from the Mem Switch card before the memory card existed. Bring-up card, not part of the running machine.
 
+[![The Mem Register card V1.0: sixteen 74x374 latches, one per byte, each with its address and a read (green) and write (red) LED](../../media/mem-register-v1.0-top.jpg)](../../media/mem-register-v1.0-top.jpg "Open full size")
+
 Written 2026-09-23 from the YACC1-D tree.
 
 Sources: `hardware/cards/mem-register/eagle/v1.0/Mem Register V1.0.sch` and `.brd` (parts and nets parsed from the

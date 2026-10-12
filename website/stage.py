@@ -80,7 +80,8 @@ print("timing-diagram pages: %d (descriptions found for %d)" % (len(rows), sum(1
 # photos for the home page, resized for the web (the originals in media/ are 3000-4000 px, 27 MB)
 from PIL import Image
 PHOTOS = {"system1.jpeg": 1400, "sequencer top.jpeg": 700, "alu v3.2 top.jpeg": 700, "index register v1.1 top.jpeg": 700,
-          "memory v1.2 top.jpeg": 700, "io v1.1 top.jpeg": 700, "test board v1.1 top.jpeg": 700}
+          "memory v1.2 top.jpeg": 700, "io v1.1 top.jpeg": 700, "test board v1.1 top.jpeg": 700,
+          "mem switch v1.1 top.jpeg": 700, "mem register v1.0 top.jpeg": 700}
 os.makedirs(os.path.join(OUT, "media"), exist_ok=True)
 for name, width in PHOTOS.items():
     im = Image.open(os.path.join(REPO, "media", name))

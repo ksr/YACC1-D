@@ -3,6 +3,8 @@
 A 16-byte "ROM" made of toggle switches, at $0000-$000F: the first program the CPU ever ran was entered on it.
 Bring-up card, not part of the running machine.
 
+[![The Mem Switch card V1.1: sixteen banks of 8 DIP switches, one per byte, each with its address and an LED](../../media/mem-switch-v1.1-top.jpg)](../../media/mem-switch-v1.1-top.jpg "Open full size")
+
 Written 2026-09-23 from the YACC1-D tree.
 
 Sources: `hardware/cards/mem-switch/eagle/v1.1/Mem Switch V1.1.sch` and `.brd` (parts and nets parsed from the Eagle

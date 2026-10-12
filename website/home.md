@@ -90,11 +90,19 @@ coding and documentation.
     **[Bus tester](docs/cards/bus-tester.md)** — drives or reads every bus line from a serial console, to test each
     card without a CPU.
 
+-   ![Mem Switch card](media/mem-switch-v1.1-top.jpg)
+
+    **[16-byte switch ROM](docs/cards/mem-switch.md)** — sixteen bytes set on DIP switches: the first program the CPU
+    ran was entered on it.
+
+-   ![Mem Register card](media/mem-register-v1.0-top.jpg)
+
+    **[16-byte RAM](docs/cards/mem-register.md)** — sixteen bytes of RAM made of latches, the scratch memory and stack
+    of the first bring-up.
+
 </div>
 
-Also: the [backplane](docs/cards/backplane.md), the
-[CompactFlash interface](docs/cards/cf.md) (designed), and the two 16-byte cards used for the first bring-up — a
-[switch ROM](docs/cards/mem-switch.md) and a [RAM made of latches](docs/cards/mem-register.md).
+Also: the [backplane](docs/cards/backplane.md) and the [CompactFlash interface](docs/cards/cf.md) (designed).
 
 ## Where to start
 
