@@ -234,6 +234,13 @@ If it misbehaves:
 | V1.0 | designed in Fusion 360, export 2026-09-18 | **built, in the machine** without CRTC | drawn on Blank V3.1; the board file was exported under the template's name and stored as `Video_1.0.brd`; no fab files in the tree (`hardware/FABRICATED.md`: "none in tree") |
 | v1.1 | KiCad master since 2026-09-21 | design only | `+5V` folded into `VCC` with a joining track (proof 116/116, DRC clean). To do before ordering: RS from A0 to A1, pull-ups on the 7416 outputs (BACKLOG) |
 
+The v1.1 board as KiCad renders it (`hardware/cards/video/kicad/v1.1/video-v1.1.kicad_pcb`, rendered 2026-10-11;
+the board has no 3D part models, so the ICs show as bare pads):
+
+[![Video card v1.1, top](images/video-v1.1-render-top.png)](images/video-v1.1-render-top.png "Open full size")
+
+[![Video card v1.1, bottom](images/video-v1.1-render-bottom.png)](images/video-v1.1-render-bottom.png "Open full size")
+
 Beyond v1.1, `docs/system/OS-PLAN.md` decision 2 changes the architecture: **video card v2 puts the 6845 registers on
 I/O ports** — PA = address register, PB = data register, with RS = IO-ADDR0 and no latch — so the card needs only its
 2K of display RAM in the memory map and the whole -CS/RS/E problem of the memory-mapped interface goes away
