@@ -71,9 +71,19 @@ coding and documentation.
     **[Memory](docs/cards/memory.md)** — RAM, the ROM and the boot logic (V1.2 shown; V1.3 is in the machine,
     and V2.0 adds a disk).
 
+-   ![Memory card v2.0, KiCad render](docs/cards/images/memory-v2.0-render-top.png)
+
+    **[Memory v2.0](docs/cards/memory.md)** — the next memory card, with the CompactFlash disk interface on board
+    (KiCad render; designed, not yet ordered).
+
 -   ![I/O card](media/io-v1.1-top.jpg)
 
     **[I/O](docs/cards/io.md)** — the serial console, switches, LEDs, hex displays and an LCD.
+
+-   ![Video card v1.1, KiCad render](docs/cards/images/video-v1.1-render-top.png)
+
+    **[Video](docs/cards/video.md)** — an MC6845 alphanumeric display (KiCad render of v1.1; the built V1.0 is in
+    bring-up).
 
 -   ![Bus tester](media/test-board-v1.1-top.jpg)
 
@@ -82,7 +92,7 @@ coding and documentation.
 
 </div>
 
-Also: the [backplane](docs/cards/backplane.md), the [video card](docs/cards/video.md) (in bring-up), the
+Also: the [backplane](docs/cards/backplane.md), the
 [CompactFlash interface](docs/cards/cf.md) (designed), and the two 16-byte cards used for the first bring-up — a
 [switch ROM](docs/cards/mem-switch.md) and a [RAM made of latches](docs/cards/mem-register.md).
 
