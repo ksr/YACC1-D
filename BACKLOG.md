@@ -202,6 +202,10 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     the ROM's `V` commands and `VM1`; `VIDAUTO EQU 1` last.
   - Away from the machine: `tools/vidsim.py run/render/timing` draws the card's picture (the emulators save its state
     with `Y1VIDSTATE`); `tests/video/asm/run.py` in `make check`.
+  - 2026-10-18: IC28 swapped to a 74163 (÷ 6, finding 6.2 gone, a gap between characters); the ROM's `vcrtab` and
+    testcard.asm's table still assume ÷ 5 at 10 MHz - new tables once the crystal is known (`vidsim.py timing
+    --dots 6`; 9 MHz gives 94,80,84,8,31,6,24,27,0,7). EPROM: decide between burning `chargen-remapped.bin`, A9 =
+    NOT A8 through IC26/D, or the ELF Rev B latch for bit 6 (the chip is the ELF's `gr2`).
   - The tester scripts are untested on the machine. Decide which monitor (TV-rate, IBM 5151 or 5153: the plan's
     "Monitors").
 - **Video card, the next revision (2026-10-10): a PS/2 keyboard interface, and the DB9 able to drive an old IBM XT

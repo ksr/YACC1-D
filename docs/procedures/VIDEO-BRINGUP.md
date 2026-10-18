@@ -17,8 +17,12 @@ order of work and the tools for each step.
     (`hardware/cards/video/docs/fix-6845-register-select.md`).
   - **6.1, E one-shot**: C1 has no charging path except IC1's input current, so after one access E may stay away. Fix:
     a pull-up (10k) from IC27 pin 12 (N$3) to +5V.
-  - **6.2, CHARCLOCK runt**: the 74LS166 load may be missed below a ~16-20 MHz dot clock, giving a blank screen with
-    good sync.
+  - **6.2, CHARCLOCK runt: resolved 2026-10-18.** IC28 is now a 74163 (synchronous clear) instead of the drawn
+    74HC160 (asynchronous): the character clock is dot ÷ 6 with a full one-dot CHARCLOCK, and the 74LS166's sixth
+    dot (its grounded C input) is a blank column between characters. The register tables must use ÷ 6:
+    `tools/vidsim.py timing --dots 6`. With a 9 MHz crystal (the ELF card's): R0..R9 = 94,80,84,8,31,6,24,27,0,7
+    for 80 x 24 at 15.79 kHz / 60.3 Hz (80 columns fill 53 of the 63 µs line), or 94,64,74,8,31,6,24,27,0,7 for
+    64 x 24; for an IBM 5151, 80,64,68,8,44,7,25,40,0,7 (64 x 25, 18.5 kHz / 50.5 Hz).
   - **7416 outputs without pull-ups**: the video output (IC27/A to DB9 pin 7) can only pull low. It needs a pull-up
     (e.g. 470 Ω to +5V at DB9 pin 7) to give a monitor a TTL high.
   - **6.5, LPSTB floating** (IC17 pin 3): tie it to GND.
