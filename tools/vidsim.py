@@ -19,7 +19,7 @@ what the real card should show.
   vidsim.py chargen [--out FILE]
         write a 2732 character-generator image (4K) for this card's wiring with the font drawn here (a 2513-style
         64-character set): address = code*8 + row (code = VDATA0..5 on A3..A8, row = RA0..2), dots in D7..D3 (D7 the
-        leftmost, shifted out first by the 74LS166), D2..D0 unused. Burn with `minipro -p 2732 -w FILE` if the fitted
+        leftmost, shifted out first by the 74LS166), D2..D0 unused. Burn with `minipro -p 2732A@DIP24 -w FILE` if the fitted
         EPROM's contents are unknown or wrong.
 
 Common options: --dotclock HZ (default 10e6, the ROM's assumption: the crystal is not in the tree), --chargen FILE (a

@@ -51,14 +51,16 @@ or bus-monitor is on it otherwise - `embedded/bus-tester/README.md`). They were 
    clock. `python3 tools/vidsim.py timing --dotclock HZ` shows what the ROM's table makes of it.
 2. **Read the character EPROM** (IC25, a 2732) in the TL866:
    ```bash
-   minipro -p 2732 -r chargen-read.bin
+   minipro -p 2732A@DIP24 -r chargen-read.bin
    ```
    Draw it with `tools/vidsim.py render ... --chargen chargen-read.bin` (or `run tests/video/asm/testcard.img
    --chargen chargen-read.bin --png card.png`). The card uses the low 512 bytes: code × 8 + row, dots in D7..D3. If it
    is blank, foreign or wired differently, burn `firmware/video/chargen.bin` (a 2513-style 64-character set drawn for
-   this wiring):
+   this wiring). **Done 2026-10-18:** the fitted chip is a 128-character ASCII set whose letters sit at $200-$2FF,
+   beyond the card's reach (A9 grounded): letters would show blank. `firmware/video/chargen-remapped.bin` is its own
+   font moved into the card's layout (`firmware/video/README.md`) - burn that into a 2732A:
    ```bash
-   minipro -p 2732 -w firmware/video/chargen.bin
+   minipro -p 2732A@DIP24 -w firmware/video/chargen-remapped.bin
    ```
 3. **The RS fix**: bend the 6845's pin 24 out and wire it to IC15 pin 41 (ADDR1), as in
    `hardware/cards/video/docs/fix-6845-register-select.md`. Fit the 6845.

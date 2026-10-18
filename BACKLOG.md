@@ -192,8 +192,9 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   (`docs/procedures/VIDEO-BRINGUP.md`).
 - **NEXT AT THE MACHINE: video card V1.0 bring-up (plan written 2026-10-10, nothing run yet):
   `docs/procedures/VIDEO-BRINGUP.md`.**
-  - Phase 0 at the bench: read Q2 and SV4, read the chargen EPROM (`minipro -p 2732 -r`) and draw it with
-    `tools/vidsim.py --chargen`, or burn `firmware/video/chargen.bin`; the RS-to-A1 fix and fit the 6845; recommended
+  - Phase 0 at the bench: read Q2 and SV4; the chargen EPROM was read 2026-10-18
+    (`firmware/video/chargen-read.bin`): a 128-character ASCII set whose letters are beyond the card's reach (A9
+    grounded) - burn `firmware/video/chargen-remapped.bin` (the same font in the card's layout) into a 2732A; the RS-to-A1 fix and fit the 6845; recommended
     a 10k on IC27 pin 12 (6.1), LPSTB to GND (6.5) and 470 Ω on DB9 pin 7.
   - Phase A, the bus tester with bus-driver, CPU out: `tests/video/crtc_regs.py`, then `tests/video/crtc_picture.py`
     (a picture with no CPU).
