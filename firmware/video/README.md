@@ -30,5 +30,13 @@ blank one, or another chip after UV erasing; keep the original as found):
 minipro -p 2732A@DIP24 -w firmware/video/chargen-remapped.bin
 ```
 
+`chargen-remapped.hex` is the same 512 bytes as Intel hex (32 data records of 16 bytes from $0000, CR LF line ends)
+for programmers whose software takes hex, e.g. Batronix Prog-Express: the bytes above $01FF are left to the
+programmer's blank value, which the card never reads.
+
+Burning (2026-10-18): a TL866II+ cannot program the NMOS-era parts at hand - a Fujitsu MBM2732A and a National
+NMC27C32Q (no B) both stayed blank after every attempt (minipro's profiles give them 18 V; they need about 21 V; the pin
+test passed). Parts it can program: an NMC27C32B(Q) (13 V), an AT28C16 EEPROM (5 V); or a 21 V programmer.
+
 The alternative, keeping the chip and reaching its letters, would take VDATA6 to A9 through a latch beside IC23 (which
 has no free flip-flop) - a board change, not a wire.
