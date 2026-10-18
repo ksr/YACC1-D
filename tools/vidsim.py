@@ -22,7 +22,8 @@ what the real card should show.
         leftmost, shifted out first by the 74LS166), D2..D0 unused. Burn with `minipro -p 2732A@DIP24 -w FILE` if the fitted
         EPROM's contents are unknown or wrong.
 
-Common options: --dotclock HZ (default 10e6, the ROM's assumption: the crystal is not in the tree), --chargen FILE (a
+Common options: --dotclock HZ (default 10e6, the ROM's assumption: the crystal is not in the tree), --dots 5|6 (IC28 a
+74HC160 as fitted: 5; a 74LS163: 6, with a blank 6th dot), --chargen FILE (a
 2732 image read from the card's EPROM with minipro, instead of the drawn font), --raster (draw the whole frame: the
 display area, the horizontal sync in red, the vertical sync in blue, blanking grey), --nocursor, --scale N.
 
@@ -112,7 +113,7 @@ def timing(regs, dotclock, out=print):
     if r[6] > r[4] + 1: warn.append("R6 (rows displayed) exceeds the rows in the frame (R4+1)")
     if not (r[6] <= r[7] <= r[4] + 1): warn.append("VSYNC (R7) should come after the displayed rows and within the frame")
     if lines_row > 8: warn.append("R9+1 = %d lines a row: the card wires RA0..2 only, the glyph repeats from line 8" % lines_row)
-    if dotclock < 16e6: warn.append("dot clock below ~16-20 MHz: review 6.2 - the 74LS166 load (CHARCLOCK runt) may be missed: a blank screen")
+    if dotclock < 16e6 and DOTS == 5: warn.append("dot clock below ~16-20 MHz: review 6.2 - the 74LS166 load (CHARCLOCK runt) may be missed: a blank screen")
     scr = (((r[12] & 0x3F) << 8 | r[13]) + r[1] * r[6])
     if (r[12] & 0x3F) << 8 | r[13] < 2048 <= scr - 1 or scr > 2048:
         warn.append("the screen (start + R1*R6 = %d) runs past the CPU's 2K of display RAM: the rest shows the upper half no one can write" % scr)
@@ -150,7 +151,7 @@ def picture(st, chargen=None, raster=False, cursor=True):
                 inv = (b >> 7) & 1
                 if cursor and ma == cur and mode != 1 and cs <= line <= ce: inv ^= 1
                 for d in range(DOTS):
-                    lit = ((bits >> (4 - d)) & 1) ^ inv
+                    lit = (((bits >> (4 - d)) & 1) if d < 5 else 0) ^ inv
                     img[y][col * DOTS + d] = on if lit else off
     if raster:
         hs0, hsw = r[2] * DOTS, (r[3] & 0x0F or 16) * DOTS
@@ -231,7 +232,11 @@ def main():
     ap.add_argument("--png"); ap.add_argument("--dotclock", type=float, default=10e6); ap.add_argument("--chargen")
     ap.add_argument("--raster", action="store_true"); ap.add_argument("--nocursor", action="store_true"); ap.add_argument("--scale", type=int, default=2)
     ap.add_argument("--regs"); ap.add_argument("--port", default="/dev/cu.usbserial-AB6WZCQX"); ap.add_argument("--out")
+    ap.add_argument("--dots", type=int, default=5, help="dots a character: 5 = IC28 a 74HC160 (async clear, as fitted), "
+                    "6 = a 74LS163 (sync clear: a clean CHARCLOCK and a blank 6th dot between characters)")
     a = ap.parse_args()
+    global DOTS
+    DOTS = a.dots
     if a.cmd == "timing":
         timing(parse_regs(a.regs) if a.regs else ROM_TABLE, a.dotclock)
     elif a.cmd == "chargen":
