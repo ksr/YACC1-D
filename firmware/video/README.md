@@ -34,6 +34,16 @@ minipro -p 2732A@DIP24 -w firmware/video/chargen-remapped.bin
 for programmers whose software takes hex, e.g. Batronix Prog-Express: the bytes above $01FF are left to the
 programmer's blank value, which the card never reads.
 
+**Burned 2026-10-20** into a Fujitsu MBM2732A on an XGecu T48 (firmware 00.1.03) with minipro 0.7.4:
+
+```bash
+minipro -p MBM2732A@DIP24 -o vpp=21 -o pulse=1000 -w firmware/video/chargen-remapped.bin
+```
+
+17 s, minipro's verify OK, two read-backs identical to the image (MD5 99914414a8ea6b8a17b751795e2e183b). The pulse
+matters: with the same 21 V, minipro's default 200 µs and a 50 ms pulse both left the chip blank; 1 ms (the "intelligent"
+programming pulse) took every byte. The original chip (`chargen-read.bin`, the ELF's `gr2`) is kept as found.
+
 Burning (2026-10-18): a TL866II+ cannot program the NMOS-era parts at hand - a Fujitsu MBM2732A and a National
 NMC27C32Q (no B) both stayed blank after every attempt (minipro's profiles give them 18 V; they need about 21 V; the pin
 test passed). Parts it can program: an NMC27C32B(Q) (13 V), an AT28C16 EEPROM (5 V); or a 21 V programmer.

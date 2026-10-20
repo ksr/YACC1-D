@@ -62,9 +62,10 @@ or bus-monitor is on it otherwise - `embedded/bus-tester/README.md`). They were 
    is blank, foreign or wired differently, burn `firmware/video/chargen.bin` (a 2513-style 64-character set drawn for
    this wiring). **Done 2026-10-18:** the fitted chip is a 128-character ASCII set whose letters sit at $200-$2FF,
    beyond the card's reach (A9 grounded): letters would show blank. `firmware/video/chargen-remapped.bin` is its own
-   font moved into the card's layout (`firmware/video/README.md`) - burn that into a 2732A:
+   font moved into the card's layout (`firmware/video/README.md`) - **burned 2026-10-20 into a Fujitsu MBM2732A on
+   the T48** (21 V, 1 ms pulse; verified): fit it as IC25. To burn another:
    ```bash
-   minipro -p 2732A@DIP24 -w firmware/video/chargen-remapped.bin
+   minipro -p MBM2732A@DIP24 -o vpp=21 -o pulse=1000 -w firmware/video/chargen-remapped.bin
    ```
 3. **The RS fix**: bend the 6845's pin 24 out and wire it to IC15 pin 41 (ADDR1), as in
    `hardware/cards/video/docs/fix-6845-register-select.md`. Fit the 6845.

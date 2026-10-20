@@ -205,7 +205,9 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   - 2026-10-18: IC28 swapped to a 74163 (÷ 6, finding 6.2 gone, a gap between characters); the ROM's `vcrtab` and
     testcard.asm's table still assume ÷ 5 at 10 MHz - new tables once the crystal is known (`vidsim.py timing
     --dots 6`; 9 MHz gives 94,80,84,8,31,6,24,27,0,7). EPROM: decide between burning `chargen-remapped.bin`, A9 =
-    NOT A8 through IC26/D, or the ELF Rev B latch for bit 6 (the chip is the ELF's `gr2`).
+    NOT A8 through IC26/D, or the ELF Rev B latch for bit 6 (the chip is the ELF's `gr2`). **Done 2026-10-20:**
+    `chargen-remapped.bin` burned into a Fujitsu MBM2732A on the T48 (`firmware/video/README.md`: 21 V, 1 ms pulse),
+    verified; to be fitted as IC25 (the original kept).
   - The tester scripts are untested on the machine. Decide which monitor (TV-rate, IBM 5151 or 5153: the plan's
     "Monitors").
 - **Video card, the next revision (2026-10-10): a PS/2 keyboard interface, and the DB9 able to drive an old IBM XT
