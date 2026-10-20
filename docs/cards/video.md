@@ -43,10 +43,10 @@ drivers to the connectors.
     IC23 74LS174 (char code, CHARCLOCK) --> IC25 2732 char gen <-- RA0..2 (IC17)
                                                 | O3..O7
     IC22 74LS175 (cursor^attr, DE pipeline)     v
-                                          IC24 74LS166 shift (DOTCLOCK, load on CHARCLOCK) --QH--> IC26/B XOR --> IC19/D NAND DE --> IC27/A --R11--> DB9 pin 7
+                                          IC24 74LS166 shift (DOTCLOCK, load on CHARCLOCK) --QH--> IC26/B XOR --> IC19/D NAND DE --> IC27/A --> DB9 pin 7 (R11 to the sync node)
     Q2 crystal + IC20 --> IC21 74LS90 /2 --> SV4 --DOTCLOCK--> IC28 74HC160 --QC--> CRTCCLOCK (IC17 CLK)
                                                                  \--NAND(QA,QC)--> CHARCLOCK (and IC28 -CLR)
-    IC17 HS, VS --> IC27/C, /B (wired-OR, R12) --> RCA U$3;  HS --> DB9 pin 8, VS --> DB9 pin 9
+    IC17 HS, VS --> IC27/C, /B (wired-OR, R12 to +5V, R11 to the video) --> RCA U$3 (composite);  HS --> DB9 pin 8, VS --> DB9 pin 9
     JP1 (2x7) --> IC2 74LS373 --> DATA0..7 at odd addresses with ADDR11 high
 ```
 
@@ -137,12 +137,17 @@ edge; QH is the dot stream.
 IC22 (74LS175) is a two-stage delay for the attribute and display-enable so they line up with the shifted glyph: D1 =
 N$75 = IC26/A = CURSOR XOR VDATA7 (bit 7 of the character byte is an inverse-video attribute; VDATA6 is unused), Q1
 to D2, Q2 to IC26/B; D3 = DE from the 6845, Q3 to D4, Q4 to IC19/D. IC26/B XORs the dot with the attribute; IC19/D
-NANDs that with delayed DE; IC27/A (open collector) drives the result through R11 (33 Ω) to DB9 pin 7 (video).
+NANDs that with delayed DE; IC27/A (open collector) drives DB9 pin 7 (video) directly. (Corrected 2026-10-20 from the
+netlist: R11 is not in series with the video; it joins pin 7 to the sync node, section 3.6.)
 
 ### 3.6 Sync outputs: IC27/B, IC27/C, R12, U$3, X2
 
-HS goes to IC27/C and DB9 pin 8, VS to IC27/B and DB9 pin 9. The two 7416 outputs are wired-OR on N$85 with R12
-(270 Ω) to +5V — the one 7416 net with a pull-up — and go to the RCA jack U$3 (a combined sync). DB9 pin 1 is GND.
+HS goes to IC27/C and DB9 pin 8, VS to IC27/B and DB9 pin 9. The two 7416 outputs are wired-OR on one node (the
+netlist's `Net-(IC27B-O)`: IC27 pins 4 and 6, R12, R11, the RCA jack U$3) with R12 (270 Ω) to +5V. **R11 (33 Ω) joins
+that node to the video line** (IC27/A's output, DB9 pin 7). So the video has a pull-up, through R11 and R12 (about
+300 Ω), and is pulled low during either sync, which blanks it; and the RCA jack carries video and sync combined (a
+simple TTL composite), not sync alone (corrected 2026-10-20 from the netlist; this section said "a combined sync").
+DB9 pin 1 is GND.
 The `archive/eagle-projects/` LM1881 sync-separator project the README mentions is the related composite-video
 experiment, not part of this card.
 

@@ -23,8 +23,9 @@ order of work and the tools for each step.
     `tools/vidsim.py timing --dots 6`. With a 9 MHz crystal (the ELF card's): R0..R9 = 94,80,84,8,31,6,24,27,0,7
     for 80 x 24 at 15.79 kHz / 60.3 Hz (80 columns fill 53 of the 63 µs line), or 94,64,74,8,31,6,24,27,0,7 for
     64 x 24; for an IBM 5151, 80,64,68,8,44,7,25,40,0,7 (64 x 25, 18.5 kHz / 50.5 Hz).
-  - **7416 outputs without pull-ups**: the video output (IC27/A to DB9 pin 7) can only pull low. It needs a pull-up
-    (e.g. 470 Ω to +5V at DB9 pin 7) to give a monitor a TTL high.
+  - **The video output's pull-up is already there** (corrected 2026-10-20): DB9 pin 7 (IC27/A, open collector) is
+    pulled up through R11 (33 Ω) and R12 (270 Ω) to +5V, R11 joining it to the sync node, so no added resistor is
+    needed; the RCA jack carries video and sync combined (`docs/cards/video.md` 3.6).
   - **6.5, LPSTB floating** (IC17 pin 3): tie it to GND.
 - Unknowns to settle at the bench: the crystal (Q2), SV4's position (crystal or crystal/2), the character EPROM's
   contents (IC25), and **which monitor** (see "Monitors" below).
@@ -72,7 +73,6 @@ or bus-monitor is on it otherwise - `embedded/bus-tester/README.md`). They were 
 4. Recommended before powering, each a single wire or part:
    - 10k from IC27 pin 12 to +5V (finding 6.1)
    - IC17 pin 3 (LPSTB) to GND (6.5)
-   - 470 Ω from DB9 pin 7 to +5V (the video line's high level)
 
    Without the 10k, phase A step 2 shows whether 6.1 bites.
 
@@ -170,7 +170,7 @@ dot clock.
 | vram.img errors only with the 6845 running | the dual-port arbitration; -BUSY is not used on this card |
 | R14/R15 read 00 or FF | -CS, RS (the bench fix), E: phase A step 2 |
 | registers write once, then not | finding 6.1: the 10k on IC27 pin 12 |
-| sync right, screen blank | finding 6.2 (CHARCLOCK at IC19 pin 8 against DOTCLOCK), the EPROM, DE at IC17 pin 18, the 470 Ω on DB9 pin 7 |
+| sync right, screen blank | finding 6.2 (CHARCLOCK at IC19 pin 8 against DOTCLOCK), the EPROM, DE at IC17 pin 18 |
 | characters wrong but stable | the EPROM's contents (`vidsim.py --chargen`), IC23 (the code latch), RA0..2 |
 | everything inverse or a solid bar | bit 7 of the bytes (inverse), the cursor registers R10/R11 |
 | picture rolls or tears | the sync rates against the monitor (`vidsim.py timing`), R0-R7 |
