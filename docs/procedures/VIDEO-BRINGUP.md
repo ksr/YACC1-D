@@ -135,13 +135,15 @@ microcode emulator is checked in `make check` (`tests/video/asm/run.py`).
 3. **`testcard.img`**: the test card on the monitor. Its table is at $3003-$3012. Change a register with the monitor
    (`E 3003`, new bytes, Esc) and `G3000` again. The expected picture is
    `python3 tools/vidsim.py run tests/video/asm/testcard.img --png card.png`: 80 x 24, a blank dot column between
-   characters (IC28 a 74163 divides by 6).
+   characters (IC28 a 74163 divides by 6). **Passed 2026-10-21**: the card on the monitor, programmed by the CPU.
 4. **`vstress.img`**, after testcard: the text rolls through every code and row 23 counts the passes. Watch for snow
-   or characters that stay wrong (the two ports at once). Any key returns to the monitor.
+   or characters that stay wrong (the two ports at once). Any key returns to the monitor. **Passed 2026-10-21**: no
+   snow, the count kept rising.
 5. **`estrobe.img`** with the scope on IC17: -CS (pin 25) low for each access, RS (pin 24) low then high, E (pin 23)
    at least 450 ns (280 ns on faster grades) every time. Reset stops it.
 6. **The ROM's driver**: `VS`, `VI` (the ROM's table), `VC`, `VW0000 HELLO`, then `VM1`. From then on the console's
-   output appears on the screen too (`docs/cards/video.md` section 8).
+   output appears on the screen too (`docs/cards/video.md` section 8). **Passed 2026-10-21**: `VI` (CRTC 01),
+   `VW0000 HELLO FROM THE YACC1` at the top, `VM1` mirrored the monitor's output onto the screen.
 7. When all of it works: `VIDAUTO EQU 1` in `firmware/monitor/monitor.asm`, rebuild, burn. The card starts at reset.
    If the timing changed, put the new table in `vcrtab` too.
 
