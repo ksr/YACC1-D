@@ -177,10 +177,10 @@ least 450 ns (280 ns for the faster grades, per the review) for each register ac
 | 6.3 | MED | 74HC160 inputs (CLK, -CLR) driven by 74LS outputs: LS VOH 2.7 V min against HC VIH 3.15 V — works on typical parts, not by specification. 74HCT160 or pull-ups | Open |
 | 6.4 | LOW | IC2's enable has no -MEM-RD term: a *write* to an odd upper-half address turns the latch onto the bus against the writer. Software must never write there | Open; noted for the fix document |
 | 6.5 | LOW | LPSTB floating (NMOS input): tie low | Open |
-| README | MED | 7416 outputs (IC27) drive IC1, IC2, IC26 with no pull-ups; /A0 (N$5) only reads high because it floats | Open ("pull-ups on the 7416 outputs" in BACKLOG) — the second v1.1 change |
+| README | MED | 7416 outputs (IC27) drive IC1, IC2, IC26 with no pull-ups; /A0 (N$5) only reads high because it floats | **Resolved on the bench 2026-10-21**: 4.7k from IC2 pin 1 to pin 20 (N$16) and from IC27 pin 8 to pin 14 (N$5); N$3 has the 10k of 6.1, the video and sync outputs R11/R12. Still a v1.1 change |
 | README | HIGH | +5V rail unfed (section 3.7) | **Resolved on the bench 2026-09-21** (wire), fixed in the v1.1 design |
 | README | HIGH | write-through fault of 2026-09-18: a write to block 0 or 9 landed in the video RAM regardless of BOARDSEL | **Resolved 2026-09-21**: cause was the unpowered rail; `tests/video/video_ram_test.py` 8/8, `tools/alias_min.py` clean |
-| DESIGN-REVIEW.md (mechanical) | MED | open-collector nets N$5 (IC27 p8) and N$16 (IC27 p10) without pull-up | Same as the 7416 item |
+| DESIGN-REVIEW.md (mechanical) | MED | open-collector nets N$5 (IC27 p8) and N$16 (IC27 p10) without pull-up | Same as the 7416 item: resolved on the bench 2026-10-21. Without the N$16 pull-up the latch drove the bus on **every** memory read in the machine (2026-10-20/21, CPU out: ROM and RAM read 3F/7F/07; with a 74LS374 wrongly fitted as IC2, its power-up bytes E1/E9/E5). Bisected by pulling chips: clean with IC2 out, broken with it in, clean again with the pull-up |
 | README / FABRICATED.md | LOW | inherits Blank V3.1's pre-V3.2 names on C3-C6 | Harmless (unused pins); start the next card from Blank V3.2 |
 | Naming (this document) | doc | the README, the fix document and the reviews quoted the CRTC at `$D400`/`$D402` | **Resolved 2026-09-25: video RAM is $D000-$D7FF (2K), the 6845/latch half $D800-$DFFF** - the netlist reading; the fix document and README are corrected; the ROM (2026-09-25) already uses $D800/$D802. `video_ram_test.py` tests $D000-$D3FF only; the monitor's `VF`/`VD` check covers all 2K |
 
@@ -201,6 +201,8 @@ it.
 | U$3 RCA | combined HS+VS (wired-OR, R12) | — |
 | C16 10 µF, C17-C29 0.1 µF | bulk and per-IC decoupling — all on the former `+5V` net | — |
 | Rail wire | +5V to VCC, added 2026-09-21 | fitted |
+| Pull-ups | 4.7k IC2 pin 1 - pin 20 (N$16), 4.7k IC27 pin 8 - pin 14 (N$5), 10k IC27 pin 12 - pin 14 (N$3, 6.1) | fitted (the 4.7ks 2026-10-21) |
+| IC2 | 74LS373 | a 74LS374 was in the socket until 2026-10-21 (pin 11 is a clock there, not LE) |
 | Pins | two bent pins straightened 2026-09-18 | — |
 | X1 | DIN 41612, Blank V3.1 names on C3-C6 | slot not recorded |
 

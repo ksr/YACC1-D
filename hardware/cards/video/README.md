@@ -29,7 +29,7 @@ Known issues and findings:
   only the address register is reachable, the data register never. Bench fix: lift IC1 pin 13 off IC27 pin 8 and tie it
   high is WRONG (odd addresses drive the JP1 read-back latch IC2 onto the bus). Correct fix: move RS from A0 to A1 —
   pin-by-pin procedure in `docs/fix-6845-register-select.md`; then $D800 = address register, $D802 = data register (video RAM $D000-$D7FF, 6845 half $D800-$DFFF; confirmed 2026-09-25).
-- 7416 open-collector outputs (IC27) drive IC1, IC2 and IC26 with no pull-ups; N$5 above only reads high when floating.
+- 7416 open-collector outputs (IC27) drive IC1, IC2 and IC26 with no pull-ups; N$5 above only reads high when floating. 4.7k pull-ups fitted on the bench 2026-10-21: IC2 pin 1 to pin 20 (N$16, the latch's -OC) and IC27 pin 8 to pin 14 (N$5, /A0); the 10k on IC27 pin 12 (N$3) covers the E one-shot.
 - Inherits the Blank V3.1 template's pre-V3.2 names on bus pins C3–C6 (unused by the card).
 
 Bench state: RN2 back to the design's 10k (2026-09-21; it had been 1k since the 2026-09-18 tests — with the rail

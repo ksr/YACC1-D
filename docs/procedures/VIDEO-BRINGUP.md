@@ -72,6 +72,8 @@ or bus-monitor is on it otherwise - `embedded/bus-tester/README.md`). They were 
    `hardware/cards/video/docs/fix-6845-register-select.md`. Fit the 6845.
 4. Recommended before powering, each a single wire or part:
    - 10k from IC27 pin 12 to +5V (finding 6.1)
+   - 4.7k from IC2 pin 1 to pin 20 and from IC27 pin 8 to pin 14 (the open-collector nets N$16 and N$5) - **fitted
+     2026-10-21**: without the N$16 pull-up the JP1 latch drives the data bus on every memory read in the machine
    - IC17 pin 3 (LPSTB) to GND (6.5)
 
    Without the 10k, phase A step 2 shows whether 6.1 bites.
