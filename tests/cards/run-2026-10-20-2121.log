@@ -1,0 +1,106 @@
+== memory (exit 0, 57 s)
+boot remap     OK    read $0000-$000F after reset = ROM $F000 page
+ROM            OK    all 8192 bytes $E000-$FFFF = basic.img + monitor.img
+low RAM        OK    8 spots $0000-$7FF0
+$8000 block    OK    RAM   (expected RAM)
+$9000 block    OK    RAM   (expected RAM)
+$A000 block    OK    RAM   (expected RAM)
+$B000 block    OK    RAM   (expected RAM)
+$C000 block    OK    RAM   (expected RAM)
+$D000 block    OK    VIDEO (D000-D7FF answers)   (expected VIDEO/undecoded)
+$E000 block    OK    ROM   (expected ROM)
+$F000 block    OK    ROM   (expected ROM)
+
+ALL OK in 54 s
+
+== tmp (exit 0, 59 s)
+TMP0 load/read  PASS  38 patterns
+TMP1 load/read  PASS  38 patterns
+TMP0 edge       PASS  $3C3C
+TMP1 edge       PASS  $3C3C
+TMP registers: ALL PASS
+
+== regs (exit 0, 578 s)
+R0 answers
+R1 answers
+R2 answers
+R3 answers
+R4 answers
+R5 answers
+R6 answers
+R7 answers
+R0
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+R1
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+R2
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+R3
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+R4
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+R5
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+R6
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+R7
+  load/read  PASS  38 patterns
+  lanes      PASS  
+  count      PASS  carries and borrows across all four 193s
+  swap       PASS  
+  address    PASS  
+all
+  reset      PASS  every register $0000 after -RESET
+registers answering: R0 R1 R2 R3 R4 R5 R6 R7; ALL PASS
+
+== alu (exit 0, 1299 s)
+accumulator  PASS  20 values, DATA8..15 = $FF
+invert       PASS  
+logic        PASS  AND OR XOR ZERO, 64 pairs each, carry kept
+add          PASS  12 pairs, carry out
+add carry    PASS  ADDIC/ADDTC with carry 0 and 1
+subtract     PASS  carry = borrow
+shift        PASS  SHL SHR RSHL RSHR PSHR CSHL CSHR, carry = bit out
+conditions   PASS  always, <, =, >, zero, 16-bit zero, carry; each inverted too
+reset        PASS  carry cleared
+ALU card: ALL PASS
+
+== io (exit 0, 129 s)
+uart regs    PASS  scratch register 20 values, divisor latch and LCR read back
+uart init    PASS  divisor 3, 8N1; LSR = $60
+uart tx      PASS  44 bytes arrived on /dev/cu.usbserial-AB0MVHSQ
+uart rx      PASS  21 bytes received
+switches     PASS  S7..S0 = 10101010 ($AA) - check against the toggles
+leds/TIL311 ----  check: the LEDs walked 0..7 and now show $A5 (10100101, LED7 on the left), TIL311s show 5A
+OUT         ----  check: the OUT LED blinked three times
+IN          ----  IN switch reads 0 through the ALU (only meaningful with the ALU card in)
+I/O card: ALL PASS (plus the visual checks above)
+
