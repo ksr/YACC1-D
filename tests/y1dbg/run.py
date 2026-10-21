@@ -11,7 +11,7 @@ the terminal UI in a pseudo-terminal) and checks:
   break     a breakpoint at the monitor's command loop (cmdloop, from monitor.lst) stops there; the registers are sane
             (SP in the monitor's stack, FORCE-ROM released, at an instruction boundary); s, us, d and trace
   video     the monitor's video driver (V I, V M1, then the help text mirrored to the screen): `screen` shows the text
-            with the CRTC's 80 x 24 and a cursor; a byte poked into the display RAM shows as its glyph, bit 7 inverse
+            with the CRTC's 64 x 24 and a cursor; a byte poked into the display RAM shows as its glyph, bit 7 inverse
   basic     `key` drives the monitor into BASIC (I, a program line with CR, RUN): the console shows the result
   pause     a BASIC loop runs; status, regs, video and console answer during the run; pause stops it at an
             instruction boundary in the ROM; a write watch on the loop's variable stops it again
@@ -103,7 +103,7 @@ def case_video():
         out = x(sh, "waitfor INTEL-HEX LOAD")
         sc = screen(sh.emu.ok("video"))
         text = x(sh, "screen")
-        ok = out.startswith("found") and sc["cols"] == 80 and sc["rows"] == 24 and "CRTC" in sc["source"] and \
+        ok = out.startswith("found") and sc["cols"] == 64 and sc["rows"] == 24 and "CRTC" in sc["source"] and \
             any("INTEL-HEX LOAD" in l for l in sc["lines"]) and sc["cursor"] is not None and "INTEL-HEX LOAD" in text
         check("video", ok, "%s\n%s" % (out, text))
         x(sh, "poke D000 19 80 99 21")                  # Y, @ inverse, Y inverse, !
@@ -111,7 +111,7 @@ def case_video():
         check("video", sc["lines"][0][:4] == "Y@Y!" and sc["inverse"][0][:4] == [False, True, True, False],
               "%r %r" % (sc["lines"][0][:4], sc["inverse"][0][:4]))
         v = x(sh, "video")
-        check("video", v.startswith("CRTC 7E 50 62") and " 18 " in v, v)
+        check("video", v.startswith("CRTC 5E 40 4B") and " 18 " in v, v)
     finally:
         sh.emu.close()
 
@@ -289,7 +289,7 @@ def case_web():
         code, page = http(base, "/")
         check("web", code == 200 and "<canvas" in page and "/api/state" in page, "page %d" % code)
         code, f = http(base, "/api/font")
-        check("web", code == 200 and f["dots"] == 5 and len(f["glyphs"]) == 64 and
+        check("web", code == 200 and f["dots"] == 6 and len(f["glyphs"]) == 64 and
               all(f["glyphs"][c] == vidsim.font_rows(c) for c in range(64)), "font %d" % code)
         check("web", key_escape("a b\\\r~") == "a\\x20b\\\\\\x0D~", key_escape("a b\\\r~"))
         _, r = http(base, "/api/cmd", {"cmd": "b cmdloop"})
@@ -305,9 +305,9 @@ def case_web():
         http(base, "/api/cmd", {"cmd": "c"})
         st = web_until(base, lambda s: s["console"]["lines"] and any("INTEL-HEX LOAD" in l for l in s["console"]["lines"]))
         v = st["video"]; g = v["geom"]; sc = screen(v)
-        ok = k["queued"] == 8 and st["status"]["state"] == "running" and g["crtc"] and g["cols"] == 80 and g["rows"] == 24 and \
+        ok = k["queued"] == 8 and st["status"]["state"] == "running" and g["crtc"] and g["cols"] == 64 and g["rows"] == 24 and \
             g["lines"] == 8 and g["cursor"] is not None and g["cursor"]["blink"] == 32 and len(v["ram"]) == 4096 and \
-            any("INTEL-HEX LOAD" in l for l in sc["lines"]) and v["regs"][:3] == [0x7E, 0x50, 0x62]
+            any("INTEL-HEX LOAD" in l for l in sc["lines"]) and v["regs"][:3] == [0x5E, 0x40, 0x4B]
         check("web", ok, "%r %r" % (k, g))
         _, again = http(base, "/api/state?con=%d&log=%d" % (st["console"]["total"], st["out"]["total"]))
         check("web", again["console"]["lines"] is None and again["out"]["lines"] is None, "unchanged console/log resent")

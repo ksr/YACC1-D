@@ -224,7 +224,7 @@ function drawScreen(now) {
           const x = col * D + d;
           let c0, c1;
           if (b < 0) { c0 = c1 = (x + y) % 4 === 0 ? HATCH : BG; }   // the upper 2K no one can write (as vidsim)
-          else if (((bits >> (D - 1 - d)) & 1) ^ inv) { c0 = FG; c1 = FG2; }
+          else if ((d < 5 ? (bits >> (4 - d)) & 1 : 0) ^ inv) { c0 = FG; c1 = FG2; }   // 5 glyph dots, the 6th (IC28 /6) blank
           else c0 = c1 = BG;
           const base = y * SY * stride + x * SX;
           for (let sy = 0; sy < SY; sy++) {

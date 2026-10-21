@@ -2,7 +2,7 @@
 
 """The terminal debugger (curses).
 
-  +-- YACC1 screen 80x24 (CRTC) RUNNING ------------+ +-- registers ----------------------+
+  +-- YACC1 screen 64x24 (CRTC) RUNNING ------------+ +-- registers ----------------------+
   |  the video card's display RAM, drawn with the    | | PC, R0-R7, ACC, C, TMP0/1, IR ... |
   |  6845's geometry; inverse = bit 7; the cursor    | +-- code ---------------------------+
   |  from R14:R15                                    | | the disassembly from PC           |

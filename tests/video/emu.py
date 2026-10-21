@@ -14,7 +14,7 @@ level emulator (int) and the microcode one (uc) through the monitor, as a bench 
   write     VC, VW (text at a row/column, upper-cased), VB (bytes), VF + VD (the screen as text over the console),
             VR (a CRTC register written and read back: R14, readable on every 6845); a VW row or column out of range and a VB address outside
             $Dxxx -> ? and the rest of the line dropped (its 0 must not reach the command loop)
-  mirror    VI (the CRTC table: R1/R6 = 80/24, the dump follows them), VM1, two help listings (40+ lines: the screen
+  mirror    VI (the CRTC table: R1/R6 = 64/24, the dump follows them), VM1, two help listings (40+ lines: the screen
             scrolls), VM0: the screen equals what a terminal model of the driver makes of the console bytes that were
             sent while mirroring was on (CR, LF, wrap, scroll, upper case)
   absent    -N: no banner line, VS says 00, VM1 changes nothing on the screen (there is none), the console still works
@@ -29,7 +29,7 @@ EMUS = [("int", os.path.join(ROOT, "software/emulator/emulator")),
         ("uc", os.path.join(ROOT, "software/ucemu/y1ucemu"))]
 LST = open(os.path.join(ROOT, "firmware/monitor/monitor.lst")).read()
 MON_EXIT = re.search(r"^([0-9a-f]{4})h: CMD_EXIT\b", LST, re.M).group(1).upper()   # the monitor's 0 command
-COLS, ROWS = 80, 24
+COLS, ROWS = 64, 24
 VERBOSE = "-v" in sys.argv
 
 
@@ -109,14 +109,14 @@ def case_present(tag, emu):
 
 
 def case_write(tag, emu):
-    out, err = run(emu, "VC\nVW0102 hello, world\nVB D0A0 41 42 43\nVW1700 bottom row [x]\nVW1800 no\n"
+    out, err = run(emu, "VC\nVW0102 hello, world\nVB D080 41 42 43\nVW1700 bottom row [x]\nVW1800 no\n"
                         "VR0E 12\nVR0E\nVF2E\nVD\nVB C000 41 00\nVW0050 0\n0")
     scr = screen(err)
     vd = [l[3:] for l in out.splitlines() if re.match(r"^[0-9A-F]{2} ", l) and len(l) == 3 + COLS]
     want = ["." * COLS] * ROWS                                   # VF2E filled every byte with '.'
     ok1 = scr == want and vd == want
     check("write", tag, ok1, "VF/VD: %r / %r" % (scr and scr[0], vd[:1]))
-    out2, err2 = run(emu, "VC\nVW0102 hello, world\nVB D0A0 41 42 43\nVW1700 bottom row [x]\n0")
+    out2, err2 = run(emu, "VC\nVW0102 hello, world\nVB D080 41 42 43\nVW1700 bottom row [x]\n0")
     s2 = screen(err2)
     ok2 = s2 is not None and s2[1].startswith("  HELLO, WORLD ") and s2[2].startswith("ABC ") and \
         s2[23].startswith("BOTTOM ROW [X] ") and all(s2[r] == " " * COLS for r in (0,) + tuple(range(3, 23)))
@@ -132,7 +132,7 @@ def case_mirror(tag, emu):
     i = out.find("\n\rVIDEO 01  MIRROR 01")                    # the first byte VM1's status sends, mirrored
     if tag == "int": j = out.find("\n\rVIDEO 01  MIRROR 00", i)   # VM0's status: no longer mirrored
     else: j = out.find("VM0", i) + 3                           # uc: the monitor's echo of VM0 still was
-    ok = i >= 0 and scr == model(out[i:j]) and regs[1] == "50" and regs[6] == "18" and "CRTC R1/R6" in err
+    ok = i >= 0 and scr == model(out[i:j]) and regs[1] == "40" and regs[6] == "18" and "CRTC R1/R6" in err
     lines = out[i:j].count("\n")
     check("mirror", tag, ok and lines > ROWS, "%d lines mirrored; screen vs model:\n%s\n%s" %
           (lines, "\n".join(scr or []), "\n".join(model(out[i:j]))))
@@ -159,7 +159,7 @@ def case_os(tag, emu):
     ok = "video card found at D000, mirror off, CRTC cursor off" in out and "MIRRORED LINE" in text and \
         ("ECHO MIRRORED LINE" in text and "VIDEO OFF" in text) == echo and "NOT ON THE SCREEN" not in text and \
         "FIRST" not in text and \
-        "usage: video" in out and "video: what? bogus" in out and crtc(err)[1] == "50" and "CRTC cursor on" in out
+        "usage: video" in out and "video: what? bogus" in out and crtc(err)[1] == "40" and "CRTC cursor on" in out
     check("os", tag, ok, "\n" + out[out.find("BOOT FROM CF"):] + "\n" + text)
 
 

@@ -154,7 +154,8 @@ def glyph(b):
     return chr(((b + 0x20) & 0x3F) + 0x20)
 
 
-DOTCLOCK = 10e6                            # the dot clock the ROM's CRTC table assumes (tools/vidsim.py: the crystal is not in the tree)
+DOTCLOCK = 9e6                             # the card's crystal (Q2, fitted 2026-10-21; SV4 on 1-2): the ROM's CRTC table's
+DOTS = 6                                   # dots a character: IC28 a 74163 (tools/vidsim.py DOTS)
 BLINK = {0: 0, 1: 0, 2: 16, 3: 32}           # R10 bits 5-6: steady, off, blink every 16 / 32 fields
 
 
@@ -162,7 +163,7 @@ def geometry(v):
     """the card's state (the server's `video` reply) -> how the card scans it: cols (R1), rows (R6), start (R12:R13),
     lines (scan lines a row, R9+1; the glyph has 8, RA0..2 only, so from line 8 they repeat), source, field_hz (from
     R0/R4/R5/R9 and DOTCLOCK, else 60), cursor (None, or row, col, first and last line (R10/R11), blink (fields a
-    blink period, 0 = steady), period (seconds)). Before a program has written R1 and R6: the monitor's 80 x 24 from
+    blink period, 0 = steady), period (seconds)). Before a program has written R1 and R6: the monitor's 64 x 24 from
     $D000, 8 lines a row. Shared by the text screen (screen()) and the browser's canvas."""
     regs, written = v["regs"], v["written"]
     crtc = bool(written[1] and written[6] and regs[1] and regs[6])
@@ -170,11 +171,11 @@ def geometry(v):
         cols, rows, start = regs[1], regs[6] & 0x7F, (regs[12] & 0x3F) << 8 | regs[13]
         lines = (regs[9] & 0x1F) + 1 if written[9] else 8
     else:
-        cols, rows, start, lines = 80, 24, 0, 8
+        cols, rows, start, lines = 64, 24, 0, 8
     field = 60.0
     if crtc and written[0] and written[4]:
         total = (regs[4] + 1) * lines + (regs[5] & 0x1F)
-        if regs[0] and total: field = DOTCLOCK / 5 / (regs[0] + 1) / total
+        if regs[0] and total: field = DOTCLOCK / DOTS / (regs[0] + 1) / total
     cursor = None
     cur = (regs[14] & 0x3F) << 8 | regs[15]
     mode = (regs[10] >> 5) & 3

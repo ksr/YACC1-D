@@ -67,7 +67,7 @@ line_buffer:    EQU 0f80h    ; 112 bytes long max ($0FF0-$0FFF are the video var
 VIDAUTO:        EQU 0        ; 1 = reset also runs V I (CRTC table, clear, home) and sets VIDMIR when a card is found
 VIDRAM:         EQU 0d000h   ; display RAM, CPU side (A11 = 0); its first byte is the probe byte
 VIDSIZE:        EQU 2048     ; the RAM the CPU reaches (IC15 A11R grounded): VIDRAM..VIDRAM+2047
-VCOLS:          EQU 80       ; screen geometry: 80 x 24 = 1,920 bytes of the 2K, one byte per character
+VCOLS:          EQU 64       ; screen geometry: 64 x 24 = 1,536 bytes of the 2K, one byte per character
 VROWS:          EQU 24       ;   (VCOLS*(VROWS-1) must be a multiple of 8 and at most 2,040: the scroll's loop)
 VCRTCA:         EQU 0d800h   ; 6845 address register: A11 = 1, A1 = 0, A0 = 0 (the netlist reading of the card; the
 VCRTCD:         EQU 0d802h   ;   card README says $D400/$D402 - one edit here). Data register: A1 = 1, after the
@@ -1320,18 +1320,19 @@ vskip:  JSR uartin
 vgetb:  JSR vskip
         BR getbytec
 ;
-; the CRTC registers R0..R15 for vinit. Timing ASSUMED (no crystal value in the tree, docs/cards/video.md 3.4): a
-; 10 MHz dot clock, 5 dots a character (IC28 divides by 5), 8 scan lines a row (RA0..2): a 2 MHz character clock,
-; 127 characters a line = 63.5 us (15.7 kHz), 32 rows + 6 lines = 262 lines (60 Hz), non-interlaced. Re-derive R0-R7
-; when the crystal is known; R1/R6 follow VCOLS/VROWS.
-vcrtab: DB 126            ; R0  horizontal total - 1
+; the CRTC registers R0..R15 for vinit, as measured on the card 2026-10-21: a 9 MHz crystal (Q2, SV4 on 1-2), 6 dots
+; a character (IC28 a 74163), 8 scan lines a row (RA0..2): a 1.5 MHz character clock, 95 characters a line = 63.3 us
+; (15.79 kHz), 32 rows + 6 lines = 262 lines (60.3 Hz), non-interlaced - a TV-rate monitor. 64 columns (42.7 us of
+; text) fit such a monitor's visible ~48 us with a margin each side (R2 75 centres them); 80 would need a dot clock
+; of about 11 MHz (11.0592 MHz: R0 116). R1/R6 follow VCOLS/VROWS; tools/vidsim.py timing checks a table.
+vcrtab: DB 94             ; R0  horizontal total - 1
         DB VCOLS          ; R1  characters displayed
-        DB 98             ; R2  horizontal sync position
-        DB 10             ; R3  sync width (HS 10 characters)
+        DB 75             ; R2  horizontal sync position
+        DB 8              ; R3  sync width (HS 8 characters, 5.3 us)
         DB 31             ; R4  vertical total - 1 (rows)
         DB 6              ; R5  vertical total adjust (scan lines)
         DB VROWS          ; R6  rows displayed
-        DB 28             ; R7  vertical sync position (row)
+        DB 27             ; R7  vertical sync position (row)
         DB 0              ; R8  interlace mode: off
         DB 7              ; R9  scan lines per row - 1
         DB 067h           ; R10 cursor start line 7, blinking (1/16 field rate)
@@ -1770,7 +1771,7 @@ loffloop:
 ;
 ; MONITOR STRINGS
 ;
-hello:  DB 0ah,0dh,"YACC 2020: hello world  ROM 2026-10-07",0ah,0dh,0    ; the build date tells ROMs apart at a glance
+hello:  DB 0ah,0dh,"YACC 2020: hello world  ROM 2026-10-21",0ah,0dh,0    ; the build date tells ROMs apart at a glance
 PROMPT: DB ">",0
 CRLF: DB 0ah,0dh,0
 ERROR: DB "UNRECOGINIZED COMMAND",0ah,0dh,0

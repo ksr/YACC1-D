@@ -72,7 +72,7 @@ An address is hex (`F06A`, `$F06A`, `0xF06A`, `0F06AH`), a symbol in any case (`
   letters take no Enter (`I` enters BASIC; `I\n` would give BASIC an empty line). `console` shows what the machine
   sent, CR LF pairs as newlines.
 - **The screen** is the video card's 2K display RAM drawn as the card would: the 6845's R1 columns by R6 rows from
-  start address R12:R13 once a program has written R1 and R6, else the monitor's 80 x 24 from $D000 (as `y1ucemu -V`);
+  start address R12:R13 once a program has written R1 and R6, else the monitor's 64 x 24 from $D000 (as `y1ucemu -V`);
   a byte's bits 0-5 pick the glyph (2513 order: $00-$1F are `@ A..Z [ \ ] ^ _`, $20-$3F are space to `?`), bit 7 is
   inverse, bit 6 is not wired; the cursor is R14:R15 unless R10 turns it off. A screen reaching past the 2K the CPU
   can write shows `#` there (the upper half of the IDT7134, as `tools/vidsim.py` draws it). RAM the ROM has not
@@ -82,7 +82,7 @@ An address is hex (`F06A`, `$F06A`, `0xF06A`, `0F06AH`), a symbol in any case (`
 ## The terminal UI
 
 ```
-+- YACC1 screen 80x24 (CRTC) ------------------------------------++- registers ------------------------------+
++- YACC1 screen 64x24 (CRTC) ------------------------------------++- registers ------------------------------+
 |C      COPY THE BASIC TEST PROGRAM INTO THE INTERPRETER BUFFER  ||PC FA08 <uartin>                          |
 |  ...                                                           ||R0 FA08  R1 0EF3  R2 D802  R3 1016        |
 |>>RUN                                                           ||  ...                                     |
@@ -124,8 +124,8 @@ terminal, Quit on the page, or `q` on the page's command line ends the debugger 
 commands of `-c`/`--script` run first and their output opens the page's command log.
 
 - **The screen** is the video card's picture, dot by dot on a canvas: the 2K display RAM scanned with the 6845's
-  geometry (R1 x R6 from R12:R13, R9+1 scan lines a row; 80 x 24 with 8 lines before a program sets the CRTC, as the
-  terminal UI), every character 5 dots wide as on the card (IC28 divides by 5), each dot drawn 2 x 3 pixels with a
+  geometry (R1 x R6 from R12:R13, R9+1 scan lines a row; 64 x 24 with 8 lines before a program sets the CRTC, as the
+  terminal UI), every character 6 dots wide as on the card (5 glyph dots and a blank: IC28 a 74163 divides by 6), each dot drawn 2 x 3 pixels with a
   dimmer third line for the scan-line look. The glyphs are the character generator's: `tools/vidsim.py`'s 2513-style
   font (`font_rows`, the same table `vidsim.py chargen` writes for the 2732), served by `/api/font`, or with
   `--chargen FILE` a 2732 image read from the card's EPROM. Bit 7 is inverse video, bit 6 is not wired, rows 8 and on
@@ -150,7 +150,7 @@ commands of `-c`/`--script` run first and their output opens the page's command 
 | HTTP | |
 |---|---|
 | `GET /` | the page |
-| `GET /api/font` | `dots` (5), `rows` (8), `glyphs` (64 x 8 rows, bit 4 the leftmost dot), `source` |
+| `GET /api/font` | `dots` (6: the 5 glyph dots and the blank 6th), `rows` (8), `glyphs` (64 x 8 rows, bit 4 the leftmost dot), `source` |
 | `GET /api/state?con=N&log=N` | `status`, `regs`, `code`, `breaks`, `watches`, `mem`, `video` (`ram`, `regs`, `written`, `geom`: the scan), `console` and `out` (their totals, and their lines when the total is not N) |
 | `POST /api/cmd {"cmd": ...}` | `{"out": ...}`: `Shell.exec`, as the terminal UI (`c`, `until`, `n` return `running` at once) |
 | `POST /api/key {"text": ...}` | into the UART (`key`, every byte escaped) |

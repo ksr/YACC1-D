@@ -71,18 +71,18 @@ def main():
     check("crtcreg", "R12 R13 READ: 12 34" in out, "a part that reads R12/R13: 12 34")
     out, err = run([path["testcard"]])
     s = screen(err)
-    want0 = " YACC1 VIDEO TEST CARD - 80 X 24 - TESTCARD.ASM"
-    ok = len(s) == 24 and s[0].startswith(want0) and s[1] == "0123456789" * 8 and \
-        s[2].startswith("@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_ !\"#$%&'()*+,-./0123456789:;<=>? CODES 00-3F") and \
+    want0 = " YACC1 VIDEO TEST CARD - 64 X 24 - TESTCARD.ASM"
+    ok = len(s) == 24 and s[0].startswith(want0) and s[1] == ("0123456789" * 7)[:64] and \
+        s[2] == "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_ !\"#$%&'()*+,-./0123456789:;<=>?" and \
         s[4].startswith("04*THE QUICK BROWN FOX") and s[4].endswith("*") and s[22].startswith("16*X JUMPS") and \
-        s[23].startswith("ROW 23 - LAST ROW.") and "video: CRTC 7E 50 62 0A 1F 06 18 1C 00 07 67 07 00 00 03 E8" in err
-    check("testcard", ok, "the screen and the CRTC table (cursor $03E8)")
+        s[23].startswith("ROW 23 - LAST ROW.") and "video: CRTC 5E 40 4B 08 1F 06 18 1B 00 07 67 07 00 00 03 20" in err
+    check("testcard", ok, "the screen (64 x 24) and the CRTC table (cursor $0320)")
     out, err = run([path["estrobe"]], ["-W"], limit=3000000, tail=b"")
     n14 = err.count("video: CRTC R14 <- 2A")
     check("estrobe", n14 > 1000 and "JP1 latch" not in err, "%d R14 accesses, none to the latch" % n14)
     out, err = run([path["testcard"], path["vstress"]])
     s = screen(err)
-    check("vstress", len(s) == 24 and s[4].startswith("15+UIF!RVJDL") and s[23][60:64] == "0001" and s[0].startswith(want0),
+    check("vstress", len(s) == 24 and s[4].startswith("15+UIF!RVJDL") and s[23][48:52] == "0001" and s[0].startswith(want0),
           "rows 4-22 one code up, pass count 0001 (the emulator's console always has a byte waiting: one pass)")
     shutil.rmtree(d)
     print("%d failed" % fails)

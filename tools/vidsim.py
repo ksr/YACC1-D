@@ -22,15 +22,15 @@ what the real card should show.
         leftmost, shifted out first by the 74LS166), D2..D0 unused. Burn with `minipro -p 2732A@DIP24 -w FILE` if the fitted
         EPROM's contents are unknown or wrong.
 
-Common options: --dotclock HZ (default 10e6, the ROM's assumption: the crystal is not in the tree), --dots 5|6 (IC28 a
-74HC160 as fitted: 5; a 74LS163: 6, with a blank 6th dot), --chargen FILE (a
+Common options: --dotclock HZ (default 9e6: the card's crystal, Q2, fitted 2026-10-21, SV4 on 1-2), --dots 5|6 (IC28 a
+74163 since 2026-10-18: 6, with a blank 6th dot; the drawn 74HC160: 5), --chargen FILE (a
 2732 image read from the card's EPROM with minipro, instead of the drawn font), --raster (draw the whole frame: the
 display area, the horizontal sync in red, the vertical sync in blue, blanking grey), --nocursor, --scale N.
 
 What is modelled (docs/cards/video.md sections 3.2-3.6): the CPU writes the IDT7134's lower 2K (A11R grounded); the 6845
 scans MA0..11 (4K) from R12:R13, so a screen past the CPU's 2K shows the upper half no one can write (drawn as a hatch);
-a byte's bits 0-5 pick the glyph, bit 7 is inverse video, bit 6 is not wired; 5 dots a character (IC28 divides by 5,
-no gap between characters); RA0..2 only, so with R9 > 7 the glyph rows repeat; the cursor (R10 start line and blink
+a byte's bits 0-5 pick the glyph, bit 7 is inverse video, bit 6 is not wired; 6 dots a character (IC28 a 74163 divides by 6,
+the 6th dot blank: a gap between characters; --dots 5 for the drawn 74HC160, no gap); RA0..2 only, so with R9 > 7 the glyph rows repeat; the cursor (R10 start line and blink
 mode, R11 end line, R14:R15) XORs like the attribute. Not modelled: the review findings that would blank or tear a real
 picture (6.1 the E one-shot, 6.2 the CHARCLOCK runt below ~16-20 MHz dot clocks, 6.3 the HC/LS levels) - the timing
 report warns about 6.2.
@@ -38,8 +38,8 @@ report warns about 6.2.
 import os, re, sys, zlib, struct, argparse, subprocess, tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DOTS = 5                     # dots per character: IC28 (74HC160) cleared at 5
-ROM_TABLE = [126, 80, 98, 10, 31, 6, 24, 28, 0, 7, 0x67, 7, 0, 0, 0, 0]   # the monitor's vcrtab (monitor.asm)
+DOTS = 6                     # dots per character: IC28 a 74163 (synchronous clear) since 2026-10-18; the drawn 74HC160: 5
+ROM_TABLE = [94, 64, 75, 8, 31, 6, 24, 27, 0, 7, 0x67, 7, 0, 0, 0, 0]     # the monitor's vcrtab (monitor.asm): 64 x 24, 9 MHz
 
 # 5x7 glyphs for ASCII $20-$5F, column-major (bit 0 = top row), the classic HD44780-style shapes
 _COLS = """
@@ -175,22 +175,20 @@ def write_png(path, W, H, img, sx=2, sy=2):
                 chunk(b"IDAT", zlib.compress(bytes(raw), 9)) + chunk(b"IEND", b""))
 
 
-TESTCARD_TABLE = ROM_TABLE[:14] + [0x03, 0xE8]           # testcard.asm's crtab: the cursor at row 12, column 40
+TESTCARD_TABLE = ROM_TABLE[:14] + [0x03, 0x20]           # testcard.asm's crtab: the cursor at row 12, column 32
 
 
-def testcard_ram(cols=80):
-    """the 2K display RAM exactly as tests/video/asm/testcard.asm leaves it (cols = 80); other widths lay the same
-    card out on cols-character rows (crtc_picture.py with R1 = 64, 72 ...)"""
+def testcard_ram(cols=64):
+    """the 2K display RAM exactly as tests/video/asm/testcard.asm leaves it (cols = 64, the standard since 2026-10-21);
+    other widths lay the same card out on cols-character rows (crtc_picture.py with R1 = 72, 80 ...): with room past
+    the 64 codes (80 columns) rows 2 and 3 also get their labels"""
     ram = bytearray(b" " * 2048)
     def put(addr, text):
         b = text.encode("ascii") if isinstance(text, str) else text
         ram[addr:addr + len(b)] = b
-    if cols == 80:
-        put(0, " YACC1 VIDEO TEST CARD - 80 X 24 - TESTCARD.ASM"); put(80, "0123456789" * 8)
-        put(160, bytes(range(64))); put(224, " CODES 00-3F"); put(240, bytes(c | 0x80 for c in range(64))); put(304, " INVERSE")
-    else:
-        put(0, (" YACC1 VIDEO TEST CARD - %d X 24" % cols)[:cols]); put(cols, ("0123456789" * 9)[:cols])
-        put(2 * cols, bytes(range(64))[:cols]); put(3 * cols, bytes(c | 0x80 for c in range(64))[:cols])
+    put(0, (" YACC1 VIDEO TEST CARD - %d X 24 - TESTCARD.ASM" % cols)[:cols]); put(cols, ("0123456789" * 9)[:cols])
+    put(2 * cols, bytes(range(64))[:cols]); put(3 * cols, bytes(c | 0x80 for c in range(64))[:cols])
+    if cols >= 76: put(2 * cols + 64, " CODES 00-3F"); put(3 * cols + 64, " INVERSE")
     text = "THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG 0123456789 " * 3
     for row in range(4, 23):
         put(row * cols, "%02X*" % row + text[row - 4:row - 4 + cols - 4] + "*")
@@ -236,11 +234,11 @@ def main():
     ap.add_argument("cmd", choices=["run", "render", "tester", "timing", "chargen"])
     ap.add_argument("arg", nargs="?")
     ap.add_argument("--go", default="3000"); ap.add_argument("--input", default=""); ap.add_argument("--steps", type=int, default=300000000)
-    ap.add_argument("--png"); ap.add_argument("--dotclock", type=float, default=10e6); ap.add_argument("--chargen")
+    ap.add_argument("--png"); ap.add_argument("--dotclock", type=float, default=9e6); ap.add_argument("--chargen")
     ap.add_argument("--raster", action="store_true"); ap.add_argument("--nocursor", action="store_true"); ap.add_argument("--scale", type=int, default=2)
     ap.add_argument("--regs"); ap.add_argument("--port", default="/dev/cu.usbserial-AB6WZCQX"); ap.add_argument("--out")
-    ap.add_argument("--dots", type=int, default=5, help="dots a character: 5 = IC28 a 74HC160 (async clear, as fitted), "
-                    "6 = a 74LS163 (sync clear: a clean CHARCLOCK and a blank 6th dot between characters)")
+    ap.add_argument("--dots", type=int, default=6, help="dots a character: 6 = IC28 a 74163 (sync clear: a clean CHARCLOCK "
+                    "and a blank 6th dot between characters; fitted 2026-10-18), 5 = the drawn 74HC160 (async clear)")
     a = ap.parse_args()
     global DOTS
     DOTS = a.dots
