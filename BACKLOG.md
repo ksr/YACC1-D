@@ -192,24 +192,23 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   - **Phase A done 2026-10-21, CPU out**: the latch's floating -OC (N$16) had the card driving every memory read in
     the machine - 4.7k pull-ups on N$16 (IC2 pin 1-20) and N$5 (IC27 pin 8-14), IC2 a 74LS373 (was a 74LS374); the
     MC6845 fitted (RS on A1, LPSTB to GND), `crtc_regs.py` ALL PASS (read through RDBLK: C1 is 1 uF, E ~12 ms);
-    a 9 MHz crystal in Q2, SV4 1-2, the remapped EPROM in IC25; `crtc_picture.py` put the test card on a TV-rate
-    monitor. 80 columns overflowed it (~72 visible); **64 x 24, R0..R9 = 94,64,75,8,31,6,24,27,0,7, is the
-    standard**: `ROM 2026-10-21` (rom.bin MD5 8b5f778f8371e3e87c70fdc9e9425435), `testcard.asm`, `crtc_picture.py`,
-    `tools/vidsim.py`, the emulators' default geometry.
+    the remapped EPROM in IC25, SV4 1-2; `crtc_picture.py` put the test card on a TV-rate monitor. With a 9 MHz
+    crystal 80 columns overflowed it (~72 visible) and 64 x 24 fitted; an **11.0592 MHz crystal** (fitted the same
+    day) gives **80 x 24 with even margins, the standard**: R0..R9 = 116,80,94,9,31,6,24,27,0,7 (15.75 kHz /
+    60.1 Hz) in `ROM 2026-10-21` (rom.bin MD5 68b584fc04885ac6abbfc26a96548696; a first 64 x 24 build, 8b5f778f, was
+    never burned), `testcard.asm`, `crtc_picture.py`, `tools/vidsim.py`, the emulators' default geometry.
   - **Burn `ROM 2026-10-21`** (`minipro -p AT28C64B -u -P -w firmware/rom/shipped/rom.bin`, read back and `cmp`).
     Until then `memory_status.py` and the card tests report the chip's ROM as differing from the tree's: pass the
     burned image with `--rom` (`firmware/rom/README.md`).
   - Phase B: `tests/video/asm/{vram,crtcreg,testcard,vstress,estrobe}.img` with `monload.py --delay 6 --go 3000`,
-    then the ROM's `V` commands (`VI` now gives the 64 x 24 picture) and `VM1`; `VIDAUTO EQU 1` last.
-  - Optional: an **11.0592 MHz crystal** for 80 x 24 on the same monitor (R0 116, about 4 characters of margin each
-    side; the 450 ns MBM2732A has room at a 1.84 MHz character clock) - a new table then.
+    then the ROM's `V` commands (`VI` gives the 80 x 24 picture) and `VM1`; `VIDAUTO EQU 1` last.
   - Away from the machine: `tools/vidsim.py run/render/timing` draws the card's picture (the emulators save its state
     with `Y1VIDSTATE`); `tests/video/asm/run.py` in `make check`.
 - **Video card, the next revision (2026-10-10): a PS/2 keyboard interface, and the DB9 able to drive an old IBM XT
   monitor.** Which monitor decides the timing (to ask at the machine): **IBM 5151** (MDA, mono): 18.432 kHz / 50 Hz,
   720x350, 9-dot characters from a 16.257 MHz dot clock, DB9 1-2 GND, 6 intensity, 7 video, 8 +HSYNC, 9 -VSYNC; or **IBM
   5153** (CGA, colour): 15.7 kHz / 60 Hz, DB9 3-6 R G B I, 8 +HSYNC, 9 +VSYNC. The v1.0/v1.1 DB9 is MDA-like (7 video,
-  8 HS, 9 VS, 1 GND) but its timing is TV rate (the ROM's table: 15.79 kHz from the 9 MHz crystal, 64 x 24) and its
+  8 HS, 9 VS, 1 GND) but its timing is TV rate (the ROM's table: 15.75 kHz from the 11.0592 MHz crystal, 80 x 24) and its
   character is 5 dots and a gap (IC28 a 74163 divides by 6) - it does not sync on a 5151. So: a crystal for the
   standard (16.257 MHz for MDA), a 9-dot character (counter /9, the chargen 8 bits wide plus the gap column), the
   sync polarities and an intensity output, with the review items 6.1-6.5 and the RS/7416 fixes folded in. Keyboard:

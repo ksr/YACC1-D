@@ -55,7 +55,7 @@ Sources: `docs/system/MACHINE.md` (the memory card's jumper settings, verified w
 | $3000 | | default `ORG` of a compiled program run from the monitor (`G3000`) | `y1cc.py` `ORG_DEFAULT` |
 | $5000–$CFFF | 32K | Y1/OS transient program area (`TPA`..`TPATOP`); `/BIN` programs are compiled `--org 0x5000` | `os/lib_abi.c` |
 | $8000–$CFFF | 20K | the high 62256 (jumpers up) — the upper part of the TPA | `MACHINE.md` |
-| $D000–$D7FF | 2K | video card display RAM (1K verified on the built card); the ROM's screen is 64 x 24 from $D000 (80 x 24 until ROM 2026-10-21) | `OS-PLAN.md`, `tests/video`, `monitor.asm` |
+| $D000–$D7FF | 2K | video card display RAM (1K verified on the built card); the ROM's screen is 80 x 24 from $D000 | `OS-PLAN.md`, `tests/video`, `monitor.asm` |
 | $D800–$DFFF | 2K | the video card's CRTC half: the 6845 at even addresses ($D800 address register, $D802 data register after the RS-to-A1 fix; not fitted), the JP1 latch at odd ones (netlist reading, `docs/cards/video.md` section 4) | `docs/cards/video.md`, `monitor.asm` `VCRTCA` |
 | $E000–$EFFF | 4K | ROM: BASIC (ROM 2026-10-07, 2026-10-08 layout): the entry table $E000..$E060 at 16-byte spacing (each stub fits its slot), the code to $EF3D at its ROM 2026-09-23 addresses, the new line input and SYNTAX ERROR code $EF3E–$EFDD, free $EFDE–$EFFE (33 bytes), the end byte at $EFFF. `ORG 0EF00h` (the old test program's place, its data commented out) lies inside the code and emits nothing | `basic.asm`, `basic.lst`, `monitor.asm` equates |
 | $F000–$FF14 | | ROM: the monitor with the video unit (ROM 2026-09-25 and later; in the chip since 2026-10-07): 3,947 bytes in the half | `monitor.lst` |

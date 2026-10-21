@@ -260,11 +260,11 @@ block) is in the machine for bring-up without its 6845. The ROM carries the whol
 card by itself** until the card is debugged (`VIDAUTO EQU 0`). All of it is plain 2021-set code: no `LDZ`/`STZ`/
 `ADDIW`/`SHL16`, no `BRUR`, no R2, so it runs on the sequencer EEPROM's current image and on the 2026-09-24 one.
 
-**Equates** (one edit each, top of `monitor.asm`): `VIDAUTO` 0, `VIDRAM` $D000, `VIDSIZE` 2048, `VCOLS` 64, `VROWS` 24,
+**Equates** (one edit each, top of `monitor.asm`): `VIDAUTO` 0, `VIDRAM` $D000, `VIDSIZE` 2048, `VCOLS` 80, `VROWS` 24,
 `VCRTCA` $D800 (6845 address register) and `VCRTCD` $D802 (data register). The CRTC addresses follow the card
 (ADDR11 selects the CRTC half, A1 the register after the RS-to-A1 bench fix): video RAM $D000-$D7FF, 6845 half
-$D800-$DFFF, confirmed 2026-09-25. Geometry: the 2K the CPU reaches holds 64 x 24 = 1,536 characters, one byte each (80 x 24 until ROM 2026-10-21: 80
-columns overflow a TV-rate monitor at this card's 9 MHz dot clock); the card
+$D800-$DFFF, confirmed 2026-09-25. Geometry: the 2K the CPU reaches holds 80 x 24 = 1,920 characters, one byte each (with the card's 11.0592 MHz
+crystal; a 9 MHz one fits only 64 columns on a TV-rate monitor); the card
 latches bits 0-5 (a 64-glyph character EPROM) and bit 7 (inverse); the driver stores ASCII with lower case moved up
 ($60-$7F → $40-$5F), which a 2513-style character set (code = ASCII bits 0-5) shows as sent - the character EPROM
 (`firmware/video/chargen-remapped.bin`, burned 2026-10-20) is such a set. `VCOLS*(VROWS-1)` must be a multiple of 8
@@ -309,13 +309,13 @@ prints ` ?` after dropping the rest of the line (a stray `0` would otherwise sto
 | `VD` | the screen as text over the console: 24 lines, each its hex row number and 64 characters, each byte shown as its glyph would be under the 2513 assumption (bits 0-5: 00-1F = `@`..`_`, 20-3F = blank..`?`); mirroring is paused meanwhile. `B D000` shows the bytes in hex |
 | `VR rr [vv]` | CRTC register rr ← vv; with no vv, select rr and read the data register (a 6845 reads back R12-R17 only) |
 
-**The CRTC table** (`vcrtab`, R0-R15, ROM 2026-10-21): 94, 64, 75, 8, 31, 6, 24, 27, 0, 7, $67, 7, 0, 0, 0, 0 — the
-card's 9 MHz crystal (SV4 on 1-2), 6 dots a character (IC28 a 74163) and 8 scan lines a row: 95 characters = 63.3 µs
-a line (15.79 kHz), 32 rows + 6 lines = 262 lines (60.3 Hz), non-interlaced, a blinking underline cursor; 64 columns
-take 42.7 µs of the line and sit centred inside a TV-rate monitor's visible ~48 µs (the picture measured 2026-10-21,
-the CPU out). R1/R6 come from `VCOLS`/`VROWS`. Until ROM 2026-10-21 the table was 126, 80, 98, 10, 31, 6, 24, 28 for
-an assumed 10 MHz, 5-dot clock. 80 columns need a dot clock of about 11 MHz (an 11.0592 MHz crystal: R0 116); `VR`
-tries values by hand first.
+**The CRTC table** (`vcrtab`, R0-R15, ROM 2026-10-21): 116, 80, 94, 9, 31, 6, 24, 27, 0, 7, $67, 7, 0, 0, 0, 0 —
+the card's 11.0592 MHz crystal (SV4 on 1-2), 6 dots a character (IC28 a 74163) and 8 scan lines a row: 117
+characters = 63.5 µs a line (15.75 kHz), 32 rows + 6 lines = 262 lines (60.1 Hz), non-interlaced, a blinking
+underline cursor; 80 columns take 43.4 µs of the line and sit with even margins inside a TV-rate monitor's visible
+~48 µs (the picture measured 2026-10-21, the CPU out). R1/R6 come from `VCOLS`/`VROWS`. Until ROM 2026-10-21 the
+table was 126, 80, 98, 10, 31, 6, 24, 28 for an assumed 10 MHz, 5-dot clock; with a 9 MHz crystal 94, 64, 75, 8, 31,
+6, 24, 27 (`VCOLS` 64) fits; `VR` tries values by hand first.
 
 **Turning auto-start on** once the card works: `VIDAUTO EQU 1` in `monitor.asm`, rebuild the ROM (`software/assembler`
 `make check`, copy the images, `makerom`, `img2bin.py`, `tools/verify_firmware.py`), burn. Reset then also runs `V I`

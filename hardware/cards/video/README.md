@@ -34,7 +34,7 @@ Known issues and findings:
 
 Bench state: RN2 back to the design's 10k (2026-09-21; it had been 1k since the 2026-09-18 tests — with the rail
 unpowered the value never mattered; quick RAM test 8/8 with 10k); +5V and VCC joined by a wire (2026-09-21). Since 2026-10-21: the MC6845 fitted (RS on A1, LPSTB to GND),
-a 9 MHz crystal in Q2 (SV4 1-2), the pull-ups above, IC2 a 74LS373; a 64 x 24 picture with the CPU out
+an 11.0592 MHz crystal in Q2 (SV4 1-2; 9 MHz first, which fits only 64 columns), the pull-ups above, IC2 a 74LS373; an 80 x 24 picture with the CPU out
 (`docs/procedures/VIDEO-BRINGUP.md`).
 
 Reference: `docs/BYTE 6845.pdf` - a BYTE magazine article on the 6845 CRTC (a personal copy, added 2026-09-26).

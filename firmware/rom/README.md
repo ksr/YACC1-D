@@ -26,10 +26,11 @@
   no write-protect jumper) is ignored by the chip. Nothing in the tree writes the ROM in place. Then read back and
   compare: `minipro -p AT28C64B -r /tmp/rb.bin && cmp /tmp/rb.bin firmware/rom/shipped/rom.bin`.
 - **2026-10-21: `shipped/rom` and `rom.bin` are `ROM 2026-10-21` — NOT BURNED.** The monitor's video unit at the
-  geometry and timing proven on the card that day with the CPU out: `VCOLS` 64 (was 80) and `vcrtab` R0..R9 = 94, 64,
-  75, 8, 31, 6, 24, 27, 0, 7 for the 9 MHz crystal and IC28's ÷ 6 (was 126, 80, 98, 10, 31, 6, 24, 28 for an assumed
-  10 MHz ÷ 5) - 15.79 kHz / 60.3 Hz, 64 x 24 centred on a TV-rate monitor - and the banner date. Same size, no address
-  moves: 15 bytes differ from `ROM 2026-10-07`; BASIC unchanged. **MD5 (rom.bin) 8b5f778f8371e3e87c70fdc9e9425435**;
+  timing proven on the card that day with the CPU out: `vcrtab` R0..R9 = 116, 80, 94, 9, 31, 6, 24, 27, 0, 7 for the
+  11.0592 MHz crystal and IC28's ÷ 6 (was 126, 80, 98, 10, 31, 6, 24, 28 for an assumed 10 MHz ÷ 5) - 15.75 kHz /
+  60.1 Hz, 80 x 24 with even margins on a TV-rate monitor - and the banner date. Same size, no address moves: 6 bytes
+  differ from `ROM 2026-10-07`; BASIC unchanged. **MD5 (rom.bin) 68b584fc04885ac6abbfc26a96548696**; a first build
+  that day for a 9 MHz crystal (`VCOLS` 64, 94, 64, 75, 8, ...; MD5 8b5f778f8371e3e87c70fdc9e9425435) was never burned;
   `tools/verify_firmware.py`: FIRMWARE VERIFIED. Burn and compare:
   `minipro -p AT28C64B -u -P -w firmware/rom/shipped/rom.bin`, then
   `minipro -p AT28C64B -r /tmp/rb.bin && cmp /tmp/rb.bin firmware/rom/shipped/rom.bin`. Until it is burned,

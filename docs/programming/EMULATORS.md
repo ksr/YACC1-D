@@ -37,7 +37,7 @@ Options (`print_usage`, `main`):
 | `-x` | scripted run: no load/dump chatter, no raw tty, stdout flushed, `HALT` exits with `HALT at aaaa after N instructions, R3=xxxx` on stderr |
 | `-c IMAGE` | attach a CompactFlash image on ports P8/P9 (created zero-filled if missing) |
 | `-l N` | stop after N instructions (`instruction limit reached at ... R3=...` on stderr) |
-| `-V` | (2026-09-25) the video card: at exit print its screen (64 x 24 from $D000 (80 x 24 until 2026-10-21), or the CRTC's R1 x R6 from R12/R13 once written; each byte as its glyph, bits 0-5) and the 18 CRTC registers on stderr |
+| `-V` | (2026-09-25) the video card: at exit print its screen (80 x 24 from $D000, or the CRTC's R1 x R6 from R12/R13 once written; each byte as its glyph, bits 0-5) and the 18 CRTC registers on stderr |
 | `-W` | log every CRTC register write on stderr (and writes to the latch's odd addresses) |
 | `-N` | no video card: $D000-$DFFF reads $FF, writes are lost (the monitor's "not found" path) |
 | `Y1VIDSTATE=FILE` | (environment, 2026-10-10, with `-V`) also save the card's state (CRTC registers, the 2K display RAM) for `tools/vidsim.py render`, which draws the picture; `Y1VID_R12READ=1` models a 6845 that reads R12/R13 back (Motorola's MC6845 does not: only R14-R17) |
@@ -162,7 +162,7 @@ python3 software/y1dbg -c "b cmdloop; c; key I; waitfor >>; key 10 print 42\r; k
   `/BIN/DISASM`, from `yacc1.def`, `--xisa` instructions included), `trace [N]`; `screen` (the display as text),
   `video` (the CRTC registers); `key TEXT` into the UART, `console`, `waitfor TEXT`; `sym FILE` (RC/asm listings: the
   monitor's and BASIC's are loaded at the start), `load FILE`. Addresses are hex, `$hex`, symbols or registers.
-- **The UI** (curses): the screen pane (the 6845's R1 x R6 from R12:R13, or 64 x 24 from $D000 before a program sets
+- **The UI** (curses): the screen pane (the 6845's R1 x R6 from R12:R13, or 80 x 24 from $D000 before a program sets
   them; bit 7 inverse, the cursor from R14:R15), registers, code at PC, the UART console and the command output.
   F5 continue, F6/Esc pause, F7 step, F8 step over. While the machine runs, typed keys go to its UART and the panes
   refresh 10 times a second; Tab gives the command line the keys without stopping it.
