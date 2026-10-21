@@ -54,7 +54,7 @@ print("6845 R0-R15 written: " + " ".join("%02X" % v for v in regs[:16]))
 cur = []
 for r in (14, 15):
     c("DATABUS-WR-MODE", 1); bd.writemem(0xD800, r); c("DATABUS-RD-MODE", 1); time.sleep(wait / 2)
-    cur.append(bd.readmem(0xD802)); time.sleep(wait / 2)
+    cur.append(bd.read_block(0xD802, 1)[0]); time.sleep(wait / 2)   # fast: E ends ~12 ms after the strobe (crtc_regs.py)
 print("cursor read back R14:R15 = %02X%02X (written %02X%02X)%s" % (cur[0], cur[1], regs[14] & 0x3F, regs[15],
       "" if cur == [regs[14] & 0x3F, regs[15]] else "  - the register path is not working: crtc_regs.py"))
 if verify:

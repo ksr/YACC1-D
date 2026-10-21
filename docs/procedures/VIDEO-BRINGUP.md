@@ -86,7 +86,7 @@ crystal).
 1. `python3 tests/memory/memory_status.py --rom <the chip's image>` and `python3 tests/video/video_ram_test.py --quick`:
    the memory card and the display RAM as before.
 2. `python3 tests/video/crtc_regs.py`:
-   - **ALL PASS**: the register path works (-CS, RS on A1, E).
+   - **ALL PASS**: the register path works (-CS, RS on A1, E). **Passed 2026-10-21** (MC6845; C1 = 1 uF).
    - **R14/R15 read 00 or FF**: the 6845 does not answer. `hold_address.py D800` and `D802` with a meter: IC17 pin 25
      (-CS) low at both, pin 24 (RS) low at $D800 and high at $D802. With `--rd` and a scope, look at pin 23 (E).
    - **Repeat failures that go away with `--gap 0.5`**: finding 6.1 (fit the 10k on IC27 pin 12).

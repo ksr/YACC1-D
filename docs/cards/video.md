@@ -196,7 +196,7 @@ it.
 | RN2 | the SV3 pull-ups | 10k as designed (was 1k from the 2026-09-18 tests until 2026-09-21) |
 | SV4 (1x3) | 1 = crystal, 2 = DOTCLOCK, 3 = crystal/2 | **To verify:** position |
 | JP1 (2x7) | eight latch inputs (pins 1, 2, 4, 6, 8, 10, 12, 14), LE on 13, VCC on 3, GND on 5: a byte the CPU can read back at odd upper-half addresses (a configuration/ID byte; the README does not say what it was for) | **To verify:** whether anything is jumpered; F2's $FF says nothing is |
-| IC17 socket | MC6845 | **empty** |
+| IC17 socket | MC6845 | fitted 2026-10-21 (RS on A1, LPSTB to GND); `crtc_regs.py` ALL PASS. C1 measured 1 uF: E lasts ~12 ms on a slow strobe |
 | X2 DB9 female | 7 video (R11), 8 HS, 9 VS, 1 GND | — |
 | U$3 RCA | combined HS+VS (wired-OR, R12) | — |
 | C16 10 µF, C17-C29 0.1 µF | bulk and per-IC decoupling — all on the former `+5V` net | — |

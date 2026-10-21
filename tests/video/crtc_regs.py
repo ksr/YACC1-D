@@ -14,6 +14,9 @@ from the card's RC one-shot (IC27/F, R1, C1 -> IC1/A), which the slow strobes st
            charging path except IC1's input current, so after the first access E may be missing until C1 recovers;
            failures with --gap 0 that go away with --gap 0.5 are that finding (fix: a pull-up on IC27 pin 12, N$3)
   R12/R13  written 12/34 and read: 00 00 = an MC6845 (or nothing answering), 12 34 = a part that reads them
+Reads go through the firmware's RDBLK, which samples the bus well under a millisecond after -MEM-RD: E lasts only until
+C1 (1 uF, through R1 10k) discharges, ~12 ms, and the per-command read (-MEM-RD, then RD-DATABUS-L as a second serial
+command) samples after E has gone - every register then reads as the undriven bus, FF (found 2026-10-21).
 Every 00 or FF read back from a register means the 6845 did not answer: -CS (IC17 pin 25 must go low for $D800/$D802),
 RS still on A0 (the bench fix moves IC17 pin 24 to ADDR1), or no E (IC17 pin 23). tests/video/hold_address.py D800
 [--rd] parks an address for the meter. docs/procedures/VIDEO-BRINGUP.md has the order of the bring-up.
@@ -43,7 +46,7 @@ def wr(addr, v):
 
 def rd(addr, precharge):
     c("DATABUS-WR-MODE", 1); c("WR-DATABUS", precharge); c("DATABUS-RD-MODE", 1)   # the undriven bus keeps its last value
-    v = bd.readmem(addr)
+    v = bd.read_block(addr, 1)[0]   # sampled inside the firmware: E (R1 10k, C1 1 uF) ends ~12 ms after the strobe
     if gap: time.sleep(gap)
     return v
 
