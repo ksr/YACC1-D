@@ -1,0 +1,40 @@
+13:41:43  start: port /dev/cu.usbserial-AB6WZCQX
+13:42:10  A. ROM $E000-$FFFF = basic.img + monitor.img   PASS  8192 bytes, 0 differ (27 s)
+13:42:15  B. address lines A0-A15 independent            PASS  17 cells
+13:42:56     write 1FFF  (0.7 min)
+13:43:37     write 3FFF  (1.4 min)
+13:44:18     write 5FFF  (2.0 min)
+13:44:59     write 7FFF  (2.7 min)
+13:45:40     write 9FFF  (3.4 min)
+13:46:21     write BFFF  (4.1 min)
+13:47:08     verify 1FFF  0 bad so far  (4.9 min)
+13:47:34     verify 3FFF  0 bad so far  (5.3 min)
+13:48:01     verify 5FFF  0 bad so far  (5.8 min)
+13:48:27     verify 7FFF  0 bad so far  (6.2 min)
+13:48:54     verify 9FFF  0 bad so far  (6.6 min)
+13:49:21     verify BFFF  0 bad so far  (7.1 min)
+13:49:34  C. RAM $0000-$7FFF + $8000-$CFFF pattern 1     PASS  53248 cells, 0 bad (7.3 min)
+13:50:15     write 1FFF  (0.7 min)
+13:50:56     write 3FFF  (1.4 min)
+13:51:37     write 5FFF  (2.0 min)
+13:52:17     write 7FFF  (2.7 min)
+13:52:58     write 9FFF  (3.4 min)
+13:53:39     write BFFF  (4.1 min)
+13:54:26     verify 1FFF  0 bad so far  (4.9 min)
+13:54:53     verify 3FFF  0 bad so far  (5.3 min)
+13:55:19     verify 5FFF  0 bad so far  (5.8 min)
+13:55:46     verify 7FFF  0 bad so far  (6.2 min)
+13:56:13     verify 9FFF  0 bad so far  (6.6 min)
+13:56:39     verify BFFF  0 bad so far  (7.1 min)
+13:56:52  D. RAM inverted pattern                        PASS  53248 cells, 0 bad (7.3 min)
+13:57:01  E1. video RAM pattern                          PASS  1024 cells
+13:57:09  E2. video RAM inverted                         PASS  1024 cells
+13:57:16  E3. video single cell, neighbours clear        PASS  ok
+13:57:17  E4. write to 0010 must not reach D010          PASS  D010 = 11
+13:57:18  E4. write to 9010 must not reach D010          PASS  D010 = 11
+13:57:19  E4. write to 0011 must not reach D010          PASS  D010 = 11
+13:57:19  E4. write to 1010 must not reach D010          PASS  D010 = 11
+13:57:35  E5. video read stability                       PASS  
+13:58:02  F. ROM again after the RAM sweeps              PASS  8192 bytes, 0 differ (27 s)
+13:58:03  F2. $D800-$DFFF: nothing answers (no CRTC fitted) PASS  reads FF FF after writing 77 / 88
+13:58:03  DONE: 14/14 passed in 0.3 h
