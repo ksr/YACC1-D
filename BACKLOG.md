@@ -198,8 +198,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     a 10k on IC27 pin 12 (6.1) and LPSTB to GND (6.5); no video pull-up is needed (R11/R12 already
     pull DB9 pin 7 up: corrected 2026-10-20).
   - 2026-10-21: the card drove every memory read in the machine (CPU out); cause the floating -OC of the JP1 latch
-    (N$16) - 4.7k pull-ups fitted on the bench 2026-10-21: IC2 pin 1 to pin 20 (N$16, the latch's -OC) and IC27 pin 8 to pin 14 (N$5, /A0); IC2 was a 74LS374, now a 74LS373. Fitted now: IC1, IC2, IC15, IC18-IC20, IC26, IC27;
-    out: IC17 (6845), IC21-IC25, IC28 (refit them, then crtc_regs.py). All cards' tests pass with the card in.
+    (N$16) - 4.7k pull-ups fitted on the bench 2026-10-21: IC2 pin 1 to pin 20 (N$16, the latch's -OC) and IC27 pin 8 to pin 14 (N$5, /A0); IC2 was a 74LS374, now a 74LS373. Every chip refitted except IC17 (the 6845)
+    and Q2 (no crystal has ever been fitted); memory_status and the 2K video RAM pass. Next: the 6845, crtc_regs.py.
   - Phase A, the bus tester with bus-driver, CPU out: `tests/video/crtc_regs.py`, then `tests/video/crtc_picture.py`
     (a picture with no CPU).
   - Phase B, the CPU: `tests/video/asm/{vram,crtcreg,testcard,vstress,estrobe}.img` with `monload.py --go 3000`, then
