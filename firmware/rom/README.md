@@ -25,7 +25,7 @@
   writing, `-P` sets it again afterwards, so on the machine a store into $E000-$FFFF (review M2: the v1.3 card has
   no write-protect jumper) is ignored by the chip. Nothing in the tree writes the ROM in place. Then read back and
   compare: `minipro -p AT28C64B -r /tmp/rb.bin && cmp /tmp/rb.bin firmware/rom/shipped/rom.bin`.
-- **2026-10-21: `shipped/rom` and `rom.bin` are `ROM 2026-10-21` — NOT BURNED.** The monitor's video unit at the
+- **2026-10-21: `shipped/rom` and `rom.bin` are `ROM 2026-10-21` — burned 2026-10-21 on the T48 (`minipro -p AT28C64B -u -P -w`, verify OK, read back and `cmp` identical).** The monitor's video unit at the
   timing proven on the card that day with the CPU out: `vcrtab` R0..R9 = 116, 80, 94, 9, 31, 6, 24, 27, 0, 7 for the
   11.0592 MHz crystal and IC28's ÷ 6 (was 126, 80, 98, 10, 31, 6, 24, 28 for an assumed 10 MHz ÷ 5) - 15.75 kHz /
   60.1 Hz, 80 x 24 with even margins on a TV-rate monitor - and the banner date. Same size, no address moves: 6 bytes

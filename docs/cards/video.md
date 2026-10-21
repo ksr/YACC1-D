@@ -270,7 +270,7 @@ crystal/C1 values belong in that redesign whichever interface it keeps.
 
 ## 8. Software: the ROM's driver and bring-up with the `V` command (2026-09-25)
 
-`ROM 2026-09-25` and later drive this card (`ROM 2026-10-21`, the 80 x 24 table below, is built, **not burned**); the full description is
+`ROM 2026-09-25` and later drive this card (`ROM 2026-10-21`, the 80 x 24 table below, is burned 2026-10-21 on the T48 (`minipro -p AT28C64B -u -P -w`, verify OK, read back and `cmp` identical)); the full description is
 [`docs/programming/MONITOR.md`](../programming/MONITOR.md) section 11, the addresses are in
 [`firmware/abi/README.md`](../../firmware/abi/README.md). In short:
 

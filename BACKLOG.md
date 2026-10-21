@@ -197,7 +197,7 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     day) gives **80 x 24 with even margins, the standard**: R0..R9 = 116,80,94,9,31,6,24,27,0,7 (15.75 kHz /
     60.1 Hz) in `ROM 2026-10-21` (rom.bin MD5 68b584fc04885ac6abbfc26a96548696; a first 64 x 24 build, 8b5f778f, was
     never burned), `testcard.asm`, `crtc_picture.py`, `tools/vidsim.py`, the emulators' default geometry.
-  - **Burn `ROM 2026-10-21`** (`minipro -p AT28C64B -u -P -w firmware/rom/shipped/rom.bin`, read back and `cmp`).
+  - `ROM 2026-10-21` burned 2026-10-21 on the T48 (`minipro -p AT28C64B -u -P -w`, verify OK, read back and `cmp` identical).
     Until then `memory_status.py` and the card tests report the chip's ROM as differing from the tree's: pass the
     burned image with `--rom` (`firmware/rom/README.md`).
   - Phase B: `tests/video/asm/{vram,crtcreg,testcard,vstress,estrobe}.img` with `monload.py --delay 6 --go 3000`,
