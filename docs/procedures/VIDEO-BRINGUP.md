@@ -128,7 +128,9 @@ microcode emulator is checked in `make check` (`tests/video/asm/run.py`).
 1. **`vram.img`**: four passes over all 2K, each ends `ERRORS 0000`. Run it twice, with the 6845 stopped (before any
    CRTC programming) and running (after testcard). An error only with the 6845 running points at the IDT7134's
    arbitration.
-2. **`crtcreg.img`**: R14 and R15 `OK`, `REPEAT R15 X256: 0000 FAILED OK`, R12/R13 as in phase A. Here the accesses are
+   **Passed 2026-10-21** (4 passes, 0 errors).
+2. **`crtcreg.img`**: **failed at speed 2026-10-21 (every register FF) until IC1 pin 2 was tied to VCC (finding 6.1: the
+   E one-shot never recharged); then passed.** R14 and R15 `OK`, `REPEAT R15 X256: 0000 FAILED OK`, R12/R13 as in phase A. Here the accesses are
    microseconds apart, so finding 6.1 shows harder than with the tester.
 3. **`testcard.img`**: the test card on the monitor. Its table is at $3003-$3012. Change a register with the monitor
    (`E 3003`, new bytes, Esc) and `G3000` again. The expected picture is

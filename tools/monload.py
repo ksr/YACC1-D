@@ -95,6 +95,12 @@ def main():
     print("%s: %d records (%d data), about %.0f s at %g ms per character" % (a.image, len(recs), data,
           sum(len(r) for r in recs) * (a.delay / 1000.0 + 10.0 / a.baud), a.delay))
     link = Link(a.port or find_port(), a.baud)
+    # the first character after the port opens can be lost (2026-10-21: record 1's ':' never arrived), so wake the
+    # monitor with a CR and wait for its prompt first
+    for _ in range(3):
+        link.write(b"\r", a.delay)
+        if link.wait_for([b">"], 2.0): break
+    time.sleep(0.2); link.s.reset_input_buffer()
     t0 = time.time()
     for n, r in enumerate(recs, 1):
         link.write(r.encode("ascii"), a.delay)

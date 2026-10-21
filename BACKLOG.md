@@ -200,6 +200,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   - `ROM 2026-10-21` burned 2026-10-21 on the T48 (`minipro -p AT28C64B -u -P -w`, verify OK, read back and `cmp` identical).
     Until then `memory_status.py` and the card tests report the chip's ROM as differing from the tree's: pass the
     burned image with `--rom` (`firmware/rom/README.md`).
+  - Phase B 2026-10-21 (reset in SS, then FREERUN: the reset fault under Verification): `vram.img` 0 errors; `crtcreg.img`
+    failed (E never rose: C1 = 1 uF, finding 6.1) until IC1 pin 2 (N$4, the one-shot) bent out of the socket and wired to IC1 pin 14 (VCC), 2026-10-21: E = the strobe XOR (IC26/C), high for the whole of every memory read and write; then ALL OK.
   - Phase B: `tests/video/asm/{vram,crtcreg,testcard,vstress,estrobe}.img` with `monload.py --delay 6 --go 3000`,
     then the ROM's `V` commands (`VI` gives the 80 x 24 picture) and `VM1`; `VIDAUTO EQU 1` last.
   - Away from the machine: `tools/vidsim.py run/render/timing` draws the card's picture (the emulators save its state
