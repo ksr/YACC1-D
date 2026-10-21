@@ -16,6 +16,9 @@ what the real card should show.
   vidsim.py timing [--regs R0,R1,...] [--dotclock HZ]
         the raster the registers make: line and frame rates, displayed/sync positions, against a TV-rate monitor
         (15.734 kHz / 60 Hz), an IBM 5151 (MDA 18.432 kHz / 50 Hz) and an IBM 5153 (CGA 15.7 kHz / 60 Hz)
+  vidsim.py overlay [--overlay FILE] [--save-overlay FILE] [--gmode or|xor] [--layers L] [--tint] [--png OUT.png]
+        the PROPOSED graphics overlay (--layers text,gfx|text|gfx|none) (BACKLOG "Video: graphics overlay", 2026-10-21; not built): the test card's text
+        with a demo drawing (or a 16K overlay image) in a second RAM that the same 6845 scans - see "The overlay" below
   vidsim.py chargen [--out FILE]
         write a 2732 character-generator image (4K) for this card's wiring with the font drawn here (a 2513-style
         64-character set): address = code*8 + row (code = VDATA0..5 on A3..A8, row = RA0..2), dots in D7..D3 (D7 the
@@ -31,7 +34,16 @@ What is modelled (docs/cards/video.md sections 3.2-3.6): the CPU writes the IDT7
 scans MA0..11 (4K) from R12:R13, so a screen past the CPU's 2K shows the upper half no one can write (drawn as a hatch);
 a byte's bits 0-5 pick the glyph, bit 7 is inverse video, bit 6 is not wired; 6 dots a character (IC28 a 74163 divides by 6,
 the 6th dot blank: a gap between characters; --dots 5 for the drawn 74HC160, no gap); RA0..2 only, so with R9 > 7 the glyph rows repeat; the cursor (R10 start line and blink
-mode, R11 end line, R14:R15) XORs like the attribute. Not modelled: the review findings that would blank or tear a real
+mode, R11 end line, R14:R15) XORs like the attribute.
+
+The overlay (a proposal for the next card, modelled 2026-10-21): a 16K RAM read at every character time together with the
+text RAM, addressed RA2..0:MA10..0 - eight planes of 2K, plane n = scan line n of every character cell. A byte is one
+cell's 6 dots on one line in bits 7..2 (bit 7 leftmost, the order the second 74LS166 shifts them out), bits 1..0 spare;
+480 x 192 dots in all. Its dots are ORed (or XORed: --gmode) with the text dots before the video output, and two control bits switch each layer
+on or off (TEXT-ON, GFX-ON: --layers text,gfx | text | gfx | none).
+The CPU sees it through a window (default 1K: 16 banks, `Overlay.cpu_write(bank, offset, value)`); dot (x, y) is at
+plane y & 7, cell (y >> 3) * columns + x / 6, mask $80 >> x % 6 (`Overlay.locate`, `x_table` = the 480-entry lookup
+table a YACC1 program would use instead of dividing by 6). --overlay FILE takes any 16K image, in run/render too. Not modelled: the review findings that would blank or tear a real
 picture (6.1 the E one-shot, 6.2 the CHARCLOCK runt below ~16-20 MHz dot clocks, 6.3 the HC/LS levels) - the timing
 report warns about 6.2.
 """
@@ -92,6 +104,69 @@ class State:
             f.write("sel 0\nram " + self.ram.hex().upper() + "\n")
 
 
+GRAM = 16384                 # the overlay RAM: 8 planes (RA0..2) x 2K (MA0..10)
+
+
+def x_table(cols=80):
+    """the lookup a YACC1 program would keep for the overlay: x -> (column, mask); 480 entries for 80 columns"""
+    return [(x // DOTS, 0x80 >> (x % DOTS)) for x in range(cols * DOTS)]
+
+
+class Overlay:
+    """the proposed graphics overlay RAM (16K, address RA2..0:MA10..0, 6 dots a byte in bits 7..2)"""
+    def __init__(self, data=None, cols=80, start=0, window=1024):
+        self.ram = bytearray(data if data is not None else bytes(GRAM))
+        assert len(self.ram) == GRAM, "an overlay image is 16384 bytes"
+        self.cols, self.start, self.window = cols, start, window
+
+    def locate(self, x, y):
+        """-> (address, mask) of dot (x, y): plane y & 7, cell (y >> 3) * cols + x / 6"""
+        cell = (self.start + (y >> 3) * self.cols + x // DOTS) & 0x7FF
+        return (y & 7) << 11 | cell, 0x80 >> (x % DOTS)
+
+    def plot(self, x, y, on=True):
+        if 0 <= x < self.cols * DOTS and 0 <= y < 192:
+            a, m = self.locate(x, y)
+            self.ram[a] = (self.ram[a] | m) if on else (self.ram[a] & ~m & 0xFF)
+
+    def line(self, x0, y0, x1, y1):
+        dx, dy = abs(x1 - x0), -abs(y1 - y0); sx, sy = (1 if x0 < x1 else -1), (1 if y0 < y1 else -1); e = dx + dy
+        while True:
+            self.plot(x0, y0)
+            if (x0, y0) == (x1, y1): return
+            e2 = 2 * e
+            if e2 >= dy: e += dy; x0 += sx
+            if e2 <= dx: e += dx; y0 += sy
+
+    def ellipse(self, cx, cy, rx, ry, steps=720):
+        import math
+        for i in range(steps):
+            t = 2 * math.pi * i / steps
+            self.plot(round(cx + rx * math.cos(t)), round(cy + ry * math.sin(t)))
+
+    def cpu_write(self, bank, offset, value):
+        """a CPU write through the window: bank (the bank register) * window size + offset"""
+        assert 0 <= offset < self.window and 0 <= bank < GRAM // self.window
+        self.ram[bank * self.window + offset] = value & 0xFF
+
+    def dots(self, ma, line):
+        """the 6-dot pattern (bit 5 = leftmost) the overlay gives the cell at MA on scan line `line`"""
+        return self.ram[(line & 7) << 11 | (ma & 0x7FF)] >> 2
+
+
+def overlay_demo(cols=80):
+    """a drawing to look at: a frame, a circle (round on the monitor: dots are about twice as tall as wide), a sine wave
+    and the two diagonals"""
+    import math
+    ov = Overlay(cols=cols); W = cols * DOTS
+    ov.line(0, 0, W - 1, 0); ov.line(0, 191, W - 1, 191); ov.line(0, 0, 0, 191); ov.line(W - 1, 0, W - 1, 191)
+    ov.line(0, 0, W - 1, 191); ov.line(0, 191, W - 1, 0)
+    ov.ellipse(W // 2, 96, 120, 60); ov.ellipse(W // 2, 96, 121, 61)
+    for x in range(W):
+        ov.plot(x, round(96 - 70 * math.sin(2 * math.pi * x / W * 2)))
+    return ov
+
+
 def timing(regs, dotclock, out=print):
     r = regs
     char = dotclock / DOTS
@@ -124,13 +199,16 @@ def timing(regs, dotclock, out=print):
     return hfreq, vfreq, warn
 
 
-def picture(st, chargen=None, raster=False, cursor=True):
-    """-> (width, height, rows of RGB tuples) at one pixel a dot"""
+def picture(st, chargen=None, raster=False, cursor=True, overlay=None, gmode="or", tint=False, layers=("text", "gfx")):
+    """-> (width, height, rows of RGB tuples) at one pixel a dot; overlay: an Overlay scanned with the text, gmode how
+    the two meet (or / xor), layers which are switched on (the proposed control bits TEXT-ON and GFX-ON; the cursor
+    belongs to the text layer), tint: overlay dots green where the text has none"""
+    text_on, gfx_on = "text" in layers, "gfx" in layers
     r = st.regs; cg = chargen or chargen_image()
     lines_row = (r[9] & 0x1F) + 1
     start = (r[12] & 0x3F) << 8 | r[13]; cur = (r[14] & 0x3F) << 8 | r[15]
     cs, ce, mode = r[10] & 0x1F, r[11] & 0x1F, (r[10] >> 5) & 3
-    on, off, hatch = (230, 230, 230), (10, 10, 10), (90, 40, 40)
+    on, off, hatch, green = (230, 230, 230), (10, 10, 10), (90, 40, 40), (90, 230, 110)
     if raster:
         W = (r[0] + 1) * DOTS; H = (r[4] + 1) * lines_row + (r[5] & 0x1F)
     else:
@@ -150,9 +228,13 @@ def picture(st, chargen=None, raster=False, cursor=True):
                 bits = cg[(b & 0x3F) * 8 + (line & 7)] >> 3
                 inv = (b >> 7) & 1
                 if cursor and ma == cur and mode != 1 and cs <= line <= ce: inv ^= 1
+                g = overlay.dots(ma, line) if overlay else 0
                 for d in range(DOTS):
-                    lit = (((bits >> (4 - d)) & 1) if d < 5 else 0) ^ inv
-                    img[y][col * DOTS + d] = on if lit else off
+                    t = (((bits >> (4 - d)) & 1) if d < 5 else 0) ^ inv
+                    gd = (g >> (5 - d)) & 1 if d < 6 else 0
+                    t &= text_on; gd &= gfx_on
+                    lit = t ^ gd if gmode == "xor" else t | gd
+                    img[y][col * DOTS + d] = (green if tint and gd and not t else on) if lit else off
     if raster:
         hs0, hsw = r[2] * DOTS, (r[3] & 0x0F or 16) * DOTS
         vs0 = r[7] * lines_row
@@ -210,8 +292,11 @@ def text_view(st, out=print):
     out("+" + "-" * r[1] + "+")
 
 
-def show(st, a, label):
+def show(st, a, label, overlay=None):
     cg = open(a.chargen, "rb").read() if a.chargen else None
+    if overlay is None and a.overlay:
+        r = st.regs
+        overlay = Overlay(open(a.overlay, "rb").read(), r[1], (r[12] & 0x3F) << 8 | r[13])
     print("== %s" % label)
     if not any(st.written[:16]):
         print("(the program never wrote the CRTC: drawn with the ROM's table)")
@@ -219,7 +304,7 @@ def show(st, a, label):
     timing(st.regs, a.dotclock)
     text_view(st)
     if a.png:
-        W, H, img = picture(st, cg, a.raster, not a.nocursor)
+        W, H, img = picture(st, cg, a.raster, not a.nocursor, overlay, a.gmode, a.tint, a.layers.split(","))
         write_png(a.png, W, H, img, a.scale, a.scale * (1 if a.raster else 2))
         print("picture: %s (%d x %d dots%s)" % (a.png, W, H, ", whole raster" if a.raster else ""))
 
@@ -231,7 +316,7 @@ def parse_regs(s):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("cmd", choices=["run", "render", "tester", "timing", "chargen"])
+    ap.add_argument("cmd", choices=["run", "render", "tester", "timing", "chargen", "overlay"])
     ap.add_argument("arg", nargs="?")
     ap.add_argument("--go", default="3000"); ap.add_argument("--input", default=""); ap.add_argument("--steps", type=int, default=300000000)
     ap.add_argument("--png"); ap.add_argument("--dotclock", type=float, default=11.0592e6); ap.add_argument("--chargen")
@@ -239,6 +324,12 @@ def main():
     ap.add_argument("--regs"); ap.add_argument("--port", default="/dev/cu.usbserial-AB6WZCQX"); ap.add_argument("--out")
     ap.add_argument("--dots", type=int, default=6, help="dots a character: 6 = IC28 a 74163 (sync clear: a clean CHARCLOCK "
                     "and a blank 6th dot between characters; fitted 2026-10-18), 5 = the drawn 74HC160 (async clear)")
+    ap.add_argument("--overlay", help="a 16K overlay image (RA2..0:MA10..0, 6 dots a byte in bits 7..2) to draw over the text")
+    ap.add_argument("--save-overlay", help="overlay: write the demo drawing's 16K image here")
+    ap.add_argument("--gmode", choices=["or", "xor"], default="or", help="how the overlay meets the text")
+    ap.add_argument("--layers", default="text,gfx", help="the layers switched on: text, gfx, both (default) or none "
+                    "(the proposed TEXT-ON / GFX-ON control bits)")
+    ap.add_argument("--tint", action="store_true", help="draw overlay dots green where the text has none (the card is monochrome)")
     a = ap.parse_args()
     global DOTS
     DOTS = a.dots
@@ -248,6 +339,16 @@ def main():
         out = a.out or os.path.join(ROOT, "firmware/video/chargen.bin")
         os.makedirs(os.path.dirname(out), exist_ok=True)
         open(out, "wb").write(chargen_image()); print("wrote %s (4096 bytes, 64 glyphs x 8 rows in the low 512)" % out)
+    elif a.cmd == "overlay":
+        st = State(TESTCARD_TABLE, testcard_ram())
+        ov = Overlay(open(a.overlay, "rb").read()) if a.overlay else overlay_demo()
+        if a.save_overlay:
+            open(a.save_overlay, "wb").write(ov.ram); print("wrote %s (16384 bytes)" % a.save_overlay)
+        lit = sum(bin(b >> 2).count("1") for b in ov.ram)
+        print("overlay: 16K = 8 planes x 2K (RA2..0:MA10..0), %d of 92160 dots set; CPU window %d bytes x %d banks" % (
+            lit, ov.window, GRAM // ov.window))
+        a.overlay = None
+        show(st, a, "the test card with the overlay (layers %s, %s%s)" % (a.layers, a.gmode, ", tinted" if a.tint else ""), ov)
     elif a.cmd == "render":
         show(State.load(a.arg), a, a.arg)
     elif a.cmd == "run":

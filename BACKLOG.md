@@ -219,6 +219,33 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   sync polarities and an intensity output, with the review items 6.1-6.5 and the RS/7416 fixes folded in. Keyboard:
   PS/2 clock/data into a shift register or a small MCU, read on an I/O port behind the console vectors (OS-PLAN
   phase 4). `tools/vidsim.py timing` checks a register table against both monitors.
+- **Video: a graphics overlay (proposed 2026-10-21, modelled in `tools/vidsim.py overlay`, not designed).** A 480 x 192
+  bitmap over the 80 x 24 text, from the same 6845. Each character time the 6845's MA0..10 (cell) and RA0..2 (scan
+  line) already address the text RAM and the EPROM; the overlay RAM is addressed **RA2..0:MA10..0** (14 bits, 16K: eight
+  2K planes, plane n = scan line n of every cell) and read in step with the text, so the two cannot drift. A byte is one
+  cell's 6 dots on one line (bits 7..2, bit 7 leftmost; bits 1..0 spare - an attribute such as "overlay wins" or
+  intensity), latched on CHARCLOCK like IC23 so it meets the glyph's one-character pipeline delay, shifted by a second
+  74LS166 on DOTCLOCK and ORed/XORed with the text dots before IC19/D (DE gating). **Each layer can be switched on
+  and off**: TEXT-ON and GFX-ON, two more bits of the bank/control register, each ANDed with its dot stream before the
+  combine (or the 74LS166's clock inhibit); with both off the screen is blank but sync runs. OR or XOR could be a third
+  bit. 16K, not 11,520 bytes: 6-dot cells do
+  not pack into 8-bit bytes with addresses the 6845 can make, so three 4K chips are not enough.
+  - **Memory**: one 62256 (32K: two overlay pages, a page bit in the bank register) time-shared, or four IDT7134s (dual
+    port, no arbitration, 4 x 48 pins). Time-sharing works because the character slot is 542 ns at 11.0592 MHz and a
+    55-70 ns SRAM manages two accesses in it: the display read in one half, the CPU in the other; a YACC1 memory strobe
+    lasts ~2 us at 1 MHz (about four slots), so the card does the CPU's read in a CPU slot and latches the byte onto
+    DATA0..7 for the rest of the strobe, and holds a write in a latch until a CPU slot - no snow, no wait states. Address
+    mux: 74LS157s (CPU address + bank against RA/MA).
+  - **CPU access, no main memory lost**: a window in the card's own $D000 block plus a bank register. With the 6845
+    still memory-mapped, its decode shrinks to $D800-$DBFF and the window is **$DC00-$DFFF (1K, 16 banks)**, the bank
+    register one more address there (e.g. $D804, write-only, 74LS173/374). With the 6845 on I/O ports PA/PB (the v2
+    plan), the window is the whole **$D800-$DFFF (2K: one bank = one scan-line plane)** and the bank register an I/O port.
+  - **Software**: dot (x, y) is plane y & 7, cell (y >> 3) * 80 + x / 6, mask $80 >> (x mod 6); a 480-entry table
+    (x -> column, mask; `vidsim.x_table`) replaces the divide by 6; with 1K banks the bank is (plane * 2048 + cell) >> 10.
+  - Roughly 8-10 more chips: the SRAM, 2-3 74LS157, the slot logic (a few gates, a flip-flop on CHARCLOCK/DOTCLOCK), a
+    CPU read latch (74LS374) and write latch, the bank/control register (bank, TEXT-ON, GFX-ON), a 74LS166, three gates. Goes with the PS/2 and IBM-monitor
+    revision. Model: `python3 tools/vidsim.py overlay --tint --png ov.png` (the test card plus a drawing; `--overlay FILE`
+    any 16K image, also in run/render; `--gmode or|xor`, `--layers text,gfx|text|gfx|none`); `tests/video/overlay_check.py` checks the addressing.
 - **Sequencer logic v2.2: a "CPU off" switch** (`hardware/cards/sequencer-logic`). Today the card's outputs can never be
   silenced while the memory card is enabled: -BUS-EN is generated on the card itself (IC36 74LS04 from the sequencer's
   READY line) and is also the output enable of all nine pipeline 74LS374s and the two microcode-address 74LS244s; -RESET
