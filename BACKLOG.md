@@ -423,6 +423,18 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Port of the P8X work (OS, monitor, BASIC, compilers) onto YACC1 — the reason this repo exists; not started.
 
 ## Verification still to do
+- **OPEN 2026-10-21: reset with the 1 MHz clock running does not boot.** The CPU never reaches the banner: the first
+  fetch reads RAM ($0000 = EB 81 37 instead of the ROM's A0 F0 03), the boot remap (memory card IC12/A, FORCE-ROM) already
+  cleared, and the PC then walks $A7xx-$DFxx with no I/O. Reset with the clock stopped boots every time: SS/WAIT on SS
+  (SS-SEL on EXT, nothing on JP4 pin 2 moving), reset, then FREERUN - banner, `VIDEO CARD FOUND`, `>` (twice, once
+  after 400 stepped edges, once with none). Stepped from reset the CPU follows the ROM exactly (BR $F003, MVIW R1, the
+  UART OUTIs). Everything else checked the same day: microcode `--boot-check` 0 mismatches, `ROM 2026-10-21` byte-
+  identical on the chip, every card through the bus tester (`tests/cards/run-2026-10-21-1304.log`). Suspects: the
+  sequencer logic card's reset release (the ~30-45 ns `N$32` pulse into `BUS-LATCH-CLK`, `docs/cards/sequencer-logic.md`
+  3.2) racing the running counter so a stale pipeline word (VMA asserted, no register selected: the address floats to
+  $FFFF, seen while -RESET was held) clears FORCE-ROM; or reset-switch bounce. Next: a scope on -RESET, BUS-LATCH-CLK,
+  -VMA, ADDR15 and IC12/A Q, triggered on -RESET rising. **Workaround: reset in SS, then FREERUN.** It did boot with
+  a running clock on 2026-10-10, so check what differs (the SS-SEL jumper, the JP4 clip lead, the front-panel latch).
 - (done 2026-09-21: both ATmegas now run tree builds, verified by reading the flash back; the previous binaries are in
   `embedded/*/readback/`)
 - (done 2026-09-20: `tools/verify_embedded.py`, 12 sketches compile against the vendored libraries)
