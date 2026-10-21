@@ -9,6 +9,7 @@ can be brought up before the CPU and the E one-shot matter at speed.
   crtc_picture.py [port] [--regs R0,R1,...] [--dotclock HZ] [--blank] [--png OUT.png] [--verify]
 
   --regs      R0..R15 (decimal or 0x..; missing ones from testcard.asm's table = the ROM's, cursor at row 12 col 40)
+  --dots      dots a character (default 6: IC28 a 74163, fitted 2026-10-18; 5 = the drawn 74HC160)
   --dotclock  the crystal (or crystal/2 with SV4 on 2-3) for the timing report (default 10e6, the ROM's assumption)
   --blank     fill the RAM with spaces instead of the test card (a raster with nothing on it: sync only)
   --png       also draw what the monitor should show (tools/vidsim.py, same RAM and registers)
@@ -32,6 +33,7 @@ def opt(name, default):
 regs = [int(x, 0) for x in opt("--regs", "").split(",") if x] or []
 regs = regs + vidsim.TESTCARD_TABLE[len(regs):]
 dotclock = float(opt("--dotclock", 10e6)); png = opt("--png", None); wait = float(opt("--wait", 0.3))
+vidsim.DOTS = int(opt("--dots", 6))   # IC28 a 74163 since 2026-10-18: dot clock / 6
 blank = "--blank" in args; verify = "--verify" in args
 port = next((a for a in args if not a.startswith("--")), PORT)
 
