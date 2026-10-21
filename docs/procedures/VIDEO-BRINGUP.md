@@ -6,29 +6,34 @@ order of work and the tools for each step.
 
 ## Where the card stands
 
-- In the machine since 2026-09-18, in the $D000 block (SV3 5-6). **No 6845 fitted.**
+**Phase A done, 2026-10-21: a picture with the CPU out.** The card in the machine (the $D000 block, SV3 5-6) has every
+chip fitted, the reworks below, a 9 MHz crystal in Q2 with SV4 on 1-2, and the remapped character EPROM in IC25.
+Through the bus tester: `memory_status` ALL OK with the card in, the whole 2K of display RAM passes, `crtc_regs.py`
+ALL PASS (an MC6845), and `crtc_picture.py` puts the test card on a TV-rate monitor. At 80 columns the monitor cut
+about 4 characters off each edge (it shows about 72 of the 80); 64 x 24 with R0..R9 = 94,64,75,8,31,6,24,27,0,7 sits
+centred (the left margin half a character wider: R2 moves in whole characters). That table is the standard since
+`ROM 2026-10-21` (built, **not burned**), `testcard.asm` and `crtc_picture.py`.
+
+The card's reworks and fits, in the order they were found (`docs/cards/video.md` sections 4 and 5):
 - The +5V/VCC rails joined by a wire (2026-09-21); RN2 back to 10k.
-- The display RAM's lower 1K tested through the bus tester: `tests/video/video_ram_test.py` 8/8 (2026-09-21). The
-  upper 1K ($D400-$D7FF) has never been tested.
-- The ROM in the machine (`ROM 2026-10-07`) has the video unit: the probe at reset (`VIDEO CARD FOUND`), the monitor's
-  `V` commands and console mirroring, with `VIDAUTO` off.
-- Open findings that stand between the card and a picture (`docs/cards/video.md` section 4):
-  - **RS**: the 6845's data register cannot be reached as built. Fix: IC17 pin 24 to ADDR1
-    (`hardware/cards/video/docs/fix-6845-register-select.md`).
-  - **6.1, E one-shot**: C1 has no charging path except IC1's input current, so after one access E may stay away. Fix:
-    a pull-up (10k) from IC27 pin 12 (N$3) to +5V.
-  - **6.2, CHARCLOCK runt: resolved 2026-10-18.** IC28 is now a 74163 (synchronous clear) instead of the drawn
-    74HC160 (asynchronous): the character clock is dot ÷ 6 with a full one-dot CHARCLOCK, and the 74LS166's sixth
-    dot (its grounded C input) is a blank column between characters. The register tables must use ÷ 6:
-    `tools/vidsim.py timing --dots 6`. With a 9 MHz crystal (the ELF card's): R0..R9 = 94,80,84,8,31,6,24,27,0,7
-    for 80 x 24 at 15.79 kHz / 60.3 Hz (80 columns fill 53 of the 63 µs line), or 94,64,74,8,31,6,24,27,0,7 for
-    64 x 24; for an IBM 5151, 80,64,68,8,44,7,25,40,0,7 (64 x 25, 18.5 kHz / 50.5 Hz).
-  - **The video output's pull-up is already there** (corrected 2026-10-20): DB9 pin 7 (IC27/A, open collector) is
-    pulled up through R11 (33 Ω) and R12 (270 Ω) to +5V, R11 joining it to the sync node, so no added resistor is
-    needed; the RCA jack carries video and sync combined (`docs/cards/video.md` 3.6).
-  - **6.5, LPSTB floating** (IC17 pin 3): tie it to GND.
-- Unknowns to settle at the bench: the crystal (Q2), SV4's position (crystal or crystal/2), the character EPROM's
-  contents (IC25), and **which monitor** (see "Monitors" below).
+- **RS** to ADDR1: IC17 pin 24 bent out and wired to IC15 pin 41 (`hardware/cards/video/docs/fix-6845-register-select.md`).
+- **6.1, E one-shot**: 10k from IC27 pin 12 (N$3) to pin 14. C1 is 1 µF, so E lasts about 12 ms on a slow strobe:
+  the bus tester's per-command read samples after E has ended, so `crtc_regs.py` reads the 6845 with the firmware's
+  RDBLK instead (2026-10-21).
+- **The open-collector enables**: 4.7k from IC2 pin 1 to pin 20 (N$16, the latch's -OC) and from IC27 pin 8 to pin 14
+  (N$5, /A0), 2026-10-21. Without the first the JP1 latch drove the data bus on every memory read in the machine.
+  IC2 is a 74LS373 (a 74LS374 was in its socket until 2026-10-21).
+- **6.2, CHARCLOCK runt: resolved 2026-10-18** with IC28 a 74163 (synchronous clear): dot ÷ 6, a full one-dot
+  CHARCLOCK, and the 74LS166's sixth dot a blank column between characters. Register tables use ÷ 6
+  (`tools/vidsim.py` does by default).
+- **6.5, LPSTB** (IC17 pin 3) tied to pin 1 (GND).
+- The video output's pull-up is already there: DB9 pin 7 (IC27/A) is pulled up through R11 (33 Ω) and R12 (270 Ω);
+  the RCA jack carries video and sync combined (`docs/cards/video.md` 3.6).
+
+**80 columns** need a faster dot clock: about 11 MHz puts 80 characters in the 43-44 µs a TV-rate monitor shows with
+margins. An **11.0592 MHz** crystal (R0 116, a 1.84 MHz character clock; the MC6845 and the 450 ns 2732A both have
+room) gives 80 x 24 with the same margins as 64 x 24 now; 10.738635 MHz also fits, with less margin; 12 MHz leaves the
+EPROM about 500 ns, too tight. Other tables: an IBM 5151 needs 18.4 kHz / 50 Hz (`tools/vidsim.py timing` checks any).
 
 ## The tools
 
@@ -48,11 +53,12 @@ order of work and the tools for each step.
 
 The bus-tester scripts need the **bus-driver** firmware on the tester (`embedded/bus-tester/bus-driver`; the bus-stepper
 or bus-monitor is on it otherwise - `embedded/bus-tester/README.md`). They were written 2026-10-10 against the same
-`tools/busdrv.py` calls as the memory and register tests and **have not been run on the machine yet**.
+`tools/busdrv.py` calls as the memory and register tests; all of them ran on the machine on 2026-10-21.
 
 ## Phase 0 — at the bench, power off
 
-1. **Read the crystal Q2** and **SV4** (pin 1-2 = the crystal is the dot clock, 2-3 = half of it). That gives the dot
+1. **Read the crystal Q2** and **SV4** (pin 1-2 = the crystal is the dot clock, 2-3 = half of it). (Done: Q2 was
+   empty; a 9 MHz crystal went in on 2026-10-21, SV4 on 1-2.) That gives the dot
    clock. `python3 tools/vidsim.py timing --dotclock HZ` shows what the ROM's table makes of it.
 2. **Read the character EPROM** (IC25, a 2732) in the TL866:
    ```bash
@@ -91,11 +97,12 @@ crystal).
      (-CS) low at both, pin 24 (RS) low at $D800 and high at $D802. With `--rd` and a scope, look at pin 23 (E).
    - **Repeat failures that go away with `--gap 0.5`**: finding 6.1 (fit the 10k on IC27 pin 12).
    - **R12/R13**: `00 00` = a Motorola MC6845, `12 34` = a part that reads them. Both are fine.
-3. `python3 tests/video/crtc_picture.py --dotclock HZ --png expected.png --verify`: the test card in the RAM and the
-   6845 programmed; the tester lets go and the 6845 keeps scanning. With a scope:
+3. `python3 tests/video/crtc_picture.py --png expected.png --verify`: the test card in the RAM and the 6845
+   programmed (the 64 x 24 table at 9 MHz by default); the tester lets go and the 6845 keeps scanning. **Done
+   2026-10-21**: the picture on a TV-rate monitor, centred. With a scope:
    - DOTCLOCK at SV4 pin 2.
-   - CRTCCLOCK at IC17 pin 21: dot/5.
-   - CHARCLOCK at IC19 pin 8: a short low pulse each character (6.2: it must still be low at the next DOTCLOCK edge).
+   - CRTCCLOCK at IC17 pin 21: dot/6 (1.5 MHz).
+   - CHARCLOCK at IC19 pin 8: a one-dot low pulse each character.
    - HSYNC at IC17 pin 39: the line rate the timing report gives.
    - VSYNC at pin 40: the frame rate.
    - DE at pin 18.
@@ -107,7 +114,7 @@ crystal).
    with the scope.
 4. A monitor on the DB9 (see "Monitors"). Nothing at all: the sync rates against the monitor's. Sync but a blank
    screen: the dots (6.2, the EPROM, DE). Garbage characters: the EPROM's contents or the code/row wiring (A3..A8 / A0..A2).
-5. To change the timing without the CPU: `crtc_picture.py --regs 126,80,98,10,31,6,24,28,0,7` with the numbers that
+5. To change the timing without the CPU: `crtc_picture.py --regs 94,64,75,8,31,6,24,27,0,7` with the numbers that
    `vidsim.py timing --regs ...` approves.
 
 ## Phase B — the CPU, at speed
@@ -123,8 +130,8 @@ microcode emulator is checked in `make check` (`tests/video/asm/run.py`).
    microseconds apart, so finding 6.1 shows harder than with the tester.
 3. **`testcard.img`**: the test card on the monitor. Its table is at $3003-$3012. Change a register with the monitor
    (`E 3003`, new bytes, Esc) and `G3000` again. The expected picture is
-   `python3 tools/vidsim.py run tests/video/asm/testcard.img --png card.png`. The characters touch each other: the
-   card's character is 5 dots with no gap column (IC28 divides by 5). That is the design, not a fault.
+   `python3 tools/vidsim.py run tests/video/asm/testcard.img --png card.png`: 64 x 24, a blank dot column between
+   characters (IC28 a 74163 divides by 6).
 4. **`vstress.img`**, after testcard: the text rolls through every code and row 23 counts the passes. Watch for snow
    or characters that stay wrong (the two ports at once). Any key returns to the monitor.
 5. **`estrobe.img`** with the scope on IC17: -CS (pin 25) low for each access, RS (pin 24) low then high, E (pin 23)
@@ -152,14 +159,14 @@ microcode emulator is checked in `make check` (`tests/video/asm/run.py`).
 ## Monitors
 
 The card's DB9 is wired MDA-style: pin 7 video, 8 HSYNC (positive), 9 VSYNC (positive), 1 GND. The video output is an
-open-collector 7416 through 33 Ω with no pull-up. The ROM's table is TV-rate: 15.75 kHz and 60 Hz for an assumed 10 MHz
-dot clock.
+open-collector 7416, pulled up through R11 and R12. The ROM's table is TV-rate: 15.79 kHz and 60.3 Hz from the 9 MHz
+crystal, 64 x 24 (a TV-rate monitor showed it centred on 2026-10-21).
 
 | Monitor | What it needs | With this card |
 |---|---|---|
-| a TV-rate TTL monitor, or a composite one through the RCA (combined sync only) | 15.7 kHz, 60 Hz | the ROM's table, if the crystal gives 10 MHz (or adjust R0..R7 for the real crystal) |
+| a TV-rate TTL monitor, or a composite one through the RCA (video and sync combined) | 15.7 kHz, 60 Hz | the ROM's table: 64 x 24 at 9 MHz, proven 2026-10-21; 80 x 24 with an 11.0592 MHz crystal |
 | IBM 5153 (CGA colour) | 15.7 kHz / 60 Hz, TTL R G B I on DB9 3-6, +H 8, +V 9 | timing fits; the card's video is on pin 7, so an adapter must take it to a colour pin (e.g. 4, green) |
-| IBM 5151 (MDA mono) | 18.432 kHz / 50 Hz, video 7, intensity 6, +H 8, **−V** 9 | the line rate needs a new table and a dot clock near 9.2 MHz (dot/5/(R0+1) = 18.4 kHz). The VSYNC polarity is wrong (the 6845's is positive), so it may need inverting. A real MDA picture (9-dot characters, 720 dots) is the next revision's job |
+| IBM 5151 (MDA mono) | 18.432 kHz / 50 Hz, video 7, intensity 6, +H 8, **−V** 9 | the line rate needs a new table (at 9 MHz: 80,64,68,8,44,7,25,40,0,7, 64 x 25, 18.5 kHz / 50.5 Hz). The VSYNC polarity is wrong (the 6845's is positive), so it may need inverting. A real MDA picture (9-dot characters, 720 dots) is the next revision's job |
 
 `tools/vidsim.py timing` reports the match for each.
 

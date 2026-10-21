@@ -186,41 +186,31 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   where each instruction ends.
 - **Video card v1.1** (`hardware/cards/video/kicad/v1.1`, the KiCad master since 2026-09-21; Fusion abandoned): DONE in the
   design — one 5 V rail (`+5V` folded into `VCC`, joining track added; proof 116/116). TO DO — move the 6845 RS from A0 to A1
-  (`hardware/cards/video/docs/fix-6845-register-select.md`; bench job first), pull-ups on the 7416 outputs; then order.
-  On the built v1.0: fit the 6845 with the RS bench fix, then the ROM's `VR0E 12` / `VR0E` read-back (R14, the cursor
-  high byte: readable on every 6845; R12/R13 are write-only on Motorola's MC6845) proves the register path
-  (`docs/procedures/VIDEO-BRINGUP.md`).
-- **NEXT AT THE MACHINE: video card V1.0 bring-up (plan written 2026-10-10, nothing run yet):
-  `docs/procedures/VIDEO-BRINGUP.md`.**
-  - Phase 0 at the bench: read Q2 and SV4; the chargen EPROM was read 2026-10-18
-    (`firmware/video/chargen-read.bin`): a 128-character ASCII set whose letters are beyond the card's reach (A9
-    grounded) - burn `firmware/video/chargen-remapped.bin` (the same font in the card's layout) into a 2732A; the RS-to-A1 fix and fit the 6845; recommended
-    a 10k on IC27 pin 12 (6.1) and LPSTB to GND (6.5); no video pull-up is needed (R11/R12 already
-    pull DB9 pin 7 up: corrected 2026-10-20).
-  - 2026-10-21: the card drove every memory read in the machine (CPU out); cause the floating -OC of the JP1 latch
-    (N$16) - 4.7k pull-ups fitted on the bench 2026-10-21: IC2 pin 1 to pin 20 (N$16, the latch's -OC) and IC27 pin 8 to pin 14 (N$5, /A0); IC2 was a 74LS374, now a 74LS373. Every chip refitted; the MC6845 fitted
-    (RS on A1, LPSTB to GND) and `crtc_regs.py` ALL PASS on 2026-10-21 (R14/R15, 32 repeats, R12/R13 = MC6845).
-    C1 = 1 uF. Q2: no crystal has ever been fitted; SV4 on 1-2. Next: the 9 MHz crystal, then crtc_picture.py.
-  - Phase A, the bus tester with bus-driver, CPU out: `tests/video/crtc_regs.py`, then `tests/video/crtc_picture.py`
-    (a picture with no CPU).
-  - Phase B, the CPU: `tests/video/asm/{vram,crtcreg,testcard,vstress,estrobe}.img` with `monload.py --go 3000`, then
-    the ROM's `V` commands and `VM1`; `VIDAUTO EQU 1` last.
+  (`hardware/cards/video/docs/fix-6845-register-select.md`; proven on the v1.0 bench 2026-10-21), pull-ups on the 7416
+  outputs (on the bench: 10k on N$3, 4.7k on N$16 and N$5), IC2 drawn as a 74LS373; then order.
+- **NEXT AT THE MACHINE: video card V1.0, Phase B (the CPU)** - `docs/procedures/VIDEO-BRINGUP.md`.
+  - **Phase A done 2026-10-21, CPU out**: the latch's floating -OC (N$16) had the card driving every memory read in
+    the machine - 4.7k pull-ups on N$16 (IC2 pin 1-20) and N$5 (IC27 pin 8-14), IC2 a 74LS373 (was a 74LS374); the
+    MC6845 fitted (RS on A1, LPSTB to GND), `crtc_regs.py` ALL PASS (read through RDBLK: C1 is 1 uF, E ~12 ms);
+    a 9 MHz crystal in Q2, SV4 1-2, the remapped EPROM in IC25; `crtc_picture.py` put the test card on a TV-rate
+    monitor. 80 columns overflowed it (~72 visible); **64 x 24, R0..R9 = 94,64,75,8,31,6,24,27,0,7, is the
+    standard**: `ROM 2026-10-21` (rom.bin MD5 8b5f778f8371e3e87c70fdc9e9425435), `testcard.asm`, `crtc_picture.py`,
+    `tools/vidsim.py`, the emulators' default geometry.
+  - **Burn `ROM 2026-10-21`** (`minipro -p AT28C64B -u -P -w firmware/rom/shipped/rom.bin`, read back and `cmp`).
+    Until then `memory_status.py` and the card tests report the chip's ROM as differing from the tree's: pass the
+    burned image with `--rom` (`firmware/rom/README.md`).
+  - Phase B: `tests/video/asm/{vram,crtcreg,testcard,vstress,estrobe}.img` with `monload.py --delay 6 --go 3000`,
+    then the ROM's `V` commands (`VI` now gives the 64 x 24 picture) and `VM1`; `VIDAUTO EQU 1` last.
+  - Optional: an **11.0592 MHz crystal** for 80 x 24 on the same monitor (R0 116, about 4 characters of margin each
+    side; the 450 ns MBM2732A has room at a 1.84 MHz character clock) - a new table then.
   - Away from the machine: `tools/vidsim.py run/render/timing` draws the card's picture (the emulators save its state
     with `Y1VIDSTATE`); `tests/video/asm/run.py` in `make check`.
-  - 2026-10-18: IC28 swapped to a 74163 (÷ 6, finding 6.2 gone, a gap between characters); the ROM's `vcrtab` and
-    testcard.asm's table still assume ÷ 5 at 10 MHz - new tables once the crystal is known (`vidsim.py timing
-    --dots 6`; 9 MHz gives 94,80,84,8,31,6,24,27,0,7). EPROM: decide between burning `chargen-remapped.bin`, A9 =
-    NOT A8 through IC26/D, or the ELF Rev B latch for bit 6 (the chip is the ELF's `gr2`). **Done 2026-10-20:**
-    `chargen-remapped.bin` burned into a Fujitsu MBM2732A on the T48 (`firmware/video/README.md`: 21 V, 1 ms pulse),
-    verified; to be fitted as IC25 (the original kept).
-  - The tester scripts are untested on the machine. Decide which monitor (TV-rate, IBM 5151 or 5153: the plan's
-    "Monitors").
 - **Video card, the next revision (2026-10-10): a PS/2 keyboard interface, and the DB9 able to drive an old IBM XT
   monitor.** Which monitor decides the timing (to ask at the machine): **IBM 5151** (MDA, mono): 18.432 kHz / 50 Hz,
   720x350, 9-dot characters from a 16.257 MHz dot clock, DB9 1-2 GND, 6 intensity, 7 video, 8 +HSYNC, 9 -VSYNC; or **IBM
   5153** (CGA, colour): 15.7 kHz / 60 Hz, DB9 3-6 R G B I, 8 +HSYNC, 9 +VSYNC. The v1.0/v1.1 DB9 is MDA-like (7 video,
-  8 HS, 9 VS, 1 GND) but its timing is TV rate (the ROM's table: 15.7 kHz with an assumed 10 MHz dot clock) and its
-  character is 5 dots with no gap (IC28 divides by 5) - neither syncs nor reads well on a 5151. So: a crystal for the
+  8 HS, 9 VS, 1 GND) but its timing is TV rate (the ROM's table: 15.79 kHz from the 9 MHz crystal, 64 x 24) and its
+  character is 5 dots and a gap (IC28 a 74163 divides by 6) - it does not sync on a 5151. So: a crystal for the
   standard (16.257 MHz for MDA), a 9-dot character (counter /9, the chargen 8 bits wide plus the gap column), the
   sync polarities and an intensity output, with the review items 6.1-6.5 and the RS/7416 fixes folded in. Keyboard:
   PS/2 clock/data into a shift register or a small MCU, read on an I/O port behind the console vectors (OS-PLAN
@@ -251,10 +241,6 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Video auto-start: `VIDAUTO EQU 1`** in `firmware/monitor/monitor.asm` once the card is debugged (6845 fitted with
   the RS-to-A1 fix, E one-shot and 7416 pull-ups sorted, a picture from `V I`): reset then programs the CRTC, clears the
   screen and turns mirroring on. Rebuild, `tools/verify_firmware.py`, burn.
-- **Video: settle the CRTC timing** — the ROM uses $D800/$D802 (confirmed 2026-09-25: RAM $D000-$D7FF, 6845
-  $D800-$DFFF) and a CRTC table assuming a 10 MHz dot clock, 5-dot characters, 80 x 24
-  (`vcrtab`); read the crystal, confirm with `tests/video/hold_address.py`, adjust with the monitor's `VR` by hand, then
-  in the table. The character EPROM's order is assumed 2513-style (ASCII bits 0-5); read the 2732 to confirm.
 - **Sequencer microcode: five changes waiting for one EEPROM** (`firmware/microcode/ucode-generator2/test.hex`; `cache` =
   what the EEPROM holds, the 2026-09-23 image): (a) `LDZ`/`STZ`/`ADDIW`/`SHL16` (2026-09-24, 32 new records $80-$8F,
   $C0-$CF), (b) the undefined opcodes $A5, $AE, $F8-$FA get HALT's record (2026-09-29, H-4), (c) the three-step fetch

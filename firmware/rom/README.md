@@ -25,6 +25,16 @@
   writing, `-P` sets it again afterwards, so on the machine a store into $E000-$FFFF (review M2: the v1.3 card has
   no write-protect jumper) is ignored by the chip. Nothing in the tree writes the ROM in place. Then read back and
   compare: `minipro -p AT28C64B -r /tmp/rb.bin && cmp /tmp/rb.bin firmware/rom/shipped/rom.bin`.
+- **2026-10-21: `shipped/rom` and `rom.bin` are `ROM 2026-10-21` — NOT BURNED.** The monitor's video unit at the
+  geometry and timing proven on the card that day with the CPU out: `VCOLS` 64 (was 80) and `vcrtab` R0..R9 = 94, 64,
+  75, 8, 31, 6, 24, 27, 0, 7 for the 9 MHz crystal and IC28's ÷ 6 (was 126, 80, 98, 10, 31, 6, 24, 28 for an assumed
+  10 MHz ÷ 5) - 15.79 kHz / 60.3 Hz, 64 x 24 centred on a TV-rate monitor - and the banner date. Same size, no address
+  moves: 15 bytes differ from `ROM 2026-10-07`; BASIC unchanged. **MD5 (rom.bin) 8b5f778f8371e3e87c70fdc9e9425435**;
+  `tools/verify_firmware.py`: FIRMWARE VERIFIED. Burn and compare:
+  `minipro -p AT28C64B -u -P -w firmware/rom/shipped/rom.bin`, then
+  `minipro -p AT28C64B -r /tmp/rb.bin && cmp /tmp/rb.bin firmware/rom/shipped/rom.bin`. Until it is burned,
+  `tests/memory/memory_status.py` reports the chip's ROM as different from the tree's: give it the burned image with
+  `--rom` (`git show bd6a620:firmware/rom/shipped/rom.bin > /tmp/rom-2026-10-07.bin`).
 - `shipped/rom.bin` — the same image as a flat 8,192-byte file for a chip programmer (Visual Minipro / minipro, device
   28C64): `python3 tools/img2bin.py firmware/rom/shipped/rom firmware/rom/shipped/rom.bin --base 0xE000 --end 0x10000 --fill 0xFF --size 8192`.
   Offset 0 = $E000; bytes the sources never write are $FF like a blank part. Checked 2026-09-22: its BASIC half is

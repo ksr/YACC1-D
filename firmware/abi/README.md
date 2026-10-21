@@ -80,7 +80,7 @@ program compiled for the OS relies on those addresses as it relies on the vector
 
 | Address | What |
 |---|---|
-| $D000–$D7FF | display RAM, CPU side: 80 x 24 characters from $D000, one byte each (bits 0-5 the glyph of a 64-character EPROM, bit 7 inverse); the driver writes ASCII with lower case moved up |
+| $D000–$D7FF | display RAM, CPU side: 64 x 24 characters from $D000 (80 x 24 before ROM 2026-10-21), one byte each (bits 0-5 the glyph of a 64-character EPROM, bit 7 inverse); the driver writes ASCII with lower case moved up |
 | $D800 / $D802 | the 6845's address / data register (even addresses of the CRTC half, A1 = the register select after the RS-to-A1 fix; repeats every 4 bytes). `VCRTCA`/`VCRTCD` in `monitor.asm` — the card's README says $D400/$D402, one equate to change if the check in `docs/cards/video.md` section 4 says so |
 | odd $D801.. | the JP1 read-back latch (reads $FF with nothing jumpered); it drives the bus on writes too — never write there |
 

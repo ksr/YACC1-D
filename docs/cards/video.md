@@ -118,13 +118,19 @@ arbitration; nothing on the card sequences the two ports.
 
 IC20/A and IC20/B with R8/R9 (1K) and Q2 form a Pierce oscillator; IC20/C buffers it onto N$57, which goes to SV4
 pin 1 and to IC21's CKA. IC21 (74LS90, R0/R9 inputs grounded) divides by two on QA; IC20/D re-buffers QA onto N$59 =
-SV4 pin 3. SV4 pin 2 is DOTCLOCK: the jumper picks the crystal or half of it. Q2's value is empty in the design
-(**To verify:** read the crystal).
+SV4 pin 3. SV4 pin 2 is DOTCLOCK: the jumper picks the crystal or half of it. Q2's value is empty in the design;
+the card had no crystal until 2026-10-21, when a **9 MHz** crystal went in with SV4 on 1-2 (DOTCLOCK = 9 MHz). With
+IC28 a 74163 (below) that is a 1.5 MHz character clock: the ROM's table (section 8) gives 15.79 kHz lines and a
+60.3 Hz frame, and a centred 64 x 24 picture on a TV-rate monitor, measured with the CPU out the same day. 80 columns
+take 53.3 of the 63.3 µs line, more than such a monitor shows (about 72 characters were visible); an 11.0592 MHz
+crystal (R0 116) would make room for 80.
 
 IC28 (74HC160) counts DOTCLOCK with A..D grounded and LD/ENT/ENP on N$73 (R10 to +5V, also the CLR of IC22/IC23/IC24).
 CHARCLOCK = IC19/C = NAND(QA, QC), low only while the count is 5 (0101); it is IC28's own asynchronous -CLR, so the
 counter divides by five and CHARCLOCK is a runt as wide as the clear propagation (6.2). QC is also CRTCCLOCK = the
-6845's CLK. CHARCLOCK clocks IC22 and IC23 and is the SH/-LD of IC24.
+6845's CLK. CHARCLOCK clocks IC22 and IC23 and is the SH/-LD of IC24. **On the card since 2026-10-18 IC28 is a 74163**
+(synchronous clear): the clear takes effect at the next DOTCLOCK edge, so the count is 0..5 - divide by six - and
+CHARCLOCK is a full dot wide; the 74LS166's sixth shift is its grounded input, a blank dot column between characters.
 
 ### 3.5 Character pipeline: IC23, IC25, IC24, IC22, IC26/A, IC26/B, IC19/D
 
@@ -166,8 +172,9 @@ v1.1 master folds `+5V` into `VCC` with a joining track (proof 116/116).
 Two timing chains matter. The **bus side** is the memory card's: BOARDSEL needs IC20/F + IC18 (a 74S85, fast) and
 IC19/B before -CER is valid, which happens within the address set-up step the microcode gives every memory access.
 The **video side** runs on DOTCLOCK: IC24 must reload once per character and the 6845 must see an E pulse of at
-least 450 ns (280 ns for the faster grades, per the review) for each register access. Neither has been measured: no
-6845 has been fitted and no crystal value is in the tree.
+least 450 ns (280 ns for the faster grades, per the review) for each register access. On 2026-10-21, CPU out: the
+register path passed through the bus tester (E from the one-shot, about 12 ms with C1 = 1 µF on a slow strobe) and
+the 9 MHz dot clock gave a stable 64 x 24 picture; the E pulse at the CPU's speed is Phase B's `estrobe.img`.
 
 | ID | Severity | Finding | Status 2026-09-23 |
 |---|---|---|---|
@@ -194,7 +201,7 @@ it.
 |---|---|---|
 | SV3 (2x4) | pairs 1-2 (A3), 3-4 (A2), 5-6 (A1), 7-8 (A0); fitted = 0, open = 1 (RN2 pull-up); compared with ADDR15..12 | only 5-6 fitted: block $D000 |
 | RN2 | the SV3 pull-ups | 10k as designed (was 1k from the 2026-09-18 tests until 2026-09-21) |
-| SV4 (1x3) | 1 = crystal, 2 = DOTCLOCK, 3 = crystal/2 | **To verify:** position |
+| SV4 (1x3) | 1 = crystal, 2 = DOTCLOCK, 3 = crystal/2 | 1-2: DOTCLOCK = the crystal, 9 MHz (Q2 fitted 2026-10-21) |
 | JP1 (2x7) | eight latch inputs (pins 1, 2, 4, 6, 8, 10, 12, 14), LE on 13, VCC on 3, GND on 5: a byte the CPU can read back at odd upper-half addresses (a configuration/ID byte; the README does not say what it was for) | **To verify:** whether anything is jumpered; F2's $FF says nothing is |
 | IC17 socket | MC6845 | fitted 2026-10-21 (RS on A1, LPSTB to GND); `crtc_regs.py` ALL PASS. C1 measured 1 uF: E lasts ~12 ms on a slow strobe |
 | X2 DB9 female | 7 video (R11), 8 HS, 9 VS, 1 GND | — |
@@ -262,7 +269,7 @@ crystal/C1 values belong in that redesign whichever interface it keeps.
 
 ## 8. Software: the ROM's driver and bring-up with the `V` command (2026-09-25)
 
-`ROM 2026-09-25` (`firmware/rom/shipped`, **not burned yet**) drives this card; the full description is
+`ROM 2026-09-25` and later drive this card (`ROM 2026-10-21`, the 64 x 24 table below, is built, **not burned**); the full description is
 [`docs/programming/MONITOR.md`](../programming/MONITOR.md) section 11, the addresses are in
 [`firmware/abi/README.md`](../../firmware/abi/README.md). In short:
 
@@ -273,10 +280,11 @@ crystal/C1 values belong in that redesign whichever interface it keeps.
   rebuild once the card works: reset then programs the CRTC, clears and turns mirroring on.
 - **Mirroring**: while `VIDMIR` ($0FF1) is set, CHAROUT/UARTOUT (the console of the monitor, BASIC, Y1/OS and every
   program) also write each byte at the screen's cursor: CR, LF, BS, TAB, FF, wrap and scroll handled in software.
-- **Geometry assumed**: 80 x 24 from $D000 (1,920 of the 2K), one byte a character, the driver storing ASCII with
-  lower case moved up (right for a 2513-style set: glyph = ASCII bits 0-5); CRTC table for a 10 MHz dot clock,
-  5 dots a character, 8 lines a row (15.7 kHz, 60 Hz). The crystal and the EPROM contents are not in the tree:
-  equates and one 16-byte table in `monitor.asm` change them.
+- **Geometry**: 64 x 24 from $D000 (1,536 of the 2K; 80 x 24 until ROM 2026-10-21), one byte a character, the
+  driver storing ASCII with lower case moved up (right for the 2513-style set in the EPROM: glyph = ASCII bits 0-5);
+  CRTC table 94, 64, 75, 8, 31, 6, 24, 27, 0, 7 for the 9 MHz crystal, 6 dots a character, 8 lines a row (15.79 kHz,
+  60.3 Hz), the table the picture was proven with on 2026-10-21. `VCOLS`/`VROWS` and one 16-byte table in
+  `monitor.asm` change it.
 - **Y1/OS**: `video [on|off|clear|init|probe]` (`/BIN/VIDEO`, `os/man/video`).
 - **Emulators**: `-V` prints the screen, `-W` logs CRTC writes, `-N` removes the card; `tests/video/emu.py`.
 
@@ -290,7 +298,7 @@ crystal/C1 values belong in that redesign whichever interface it keeps.
 | 4 | `VC`, `VW0000 HELLO`, `VW1700 LAST ROW`, `VD` | the text in rows 00 and 17; `B D000` shows the bytes ($48 $45 ...) |
 | 5 | `VM1`, then any command, `VD`, `VM0` | the console's own output in the screen RAM, scrolled at the bottom |
 | 6 | (6845 fitted, RS moved to A1, E fixed) `VR0E 12`, then `VR0E` | `12` read back from R14 (the cursor high byte, readable on every 6845; R12/R13 are write-only on Motorola's MC6845): the register interface works. `00`/`FF` = -CS, RS or E (section 4) |
-| 7 | `VI` | the CRTC programmed from the ROM's table (`VR rr` reads back R12-R17 only); `VS` shows `CRTC 01`. Then a monitor on the DB9: sync first (`VR00 7E`, `VR02 62`, `VR04 1F`, `VR07 1C` to move it), then the text of step 4 |
+| 7 | `VI` | the CRTC programmed from the ROM's table (`VR rr` reads back R12-R17 only); `VS` shows `CRTC 01`. Then a monitor on the DB9 or the RCA: sync first (`VR00 5E`, `VR02 4B`, `VR04 1F`, `VR07 1B` to move it), then the text of step 4 |
 | 8 | `VM1` | from here the console shows on the screen; the CRTC cursor follows (R14/R15) |
 | 9 | (card debugged) | `VIDAUTO EQU 1`, rebuild the ROM, burn: the card starts at reset (`BACKLOG.md`) |
 
