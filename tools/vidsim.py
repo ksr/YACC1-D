@@ -178,17 +178,24 @@ def write_png(path, W, H, img, sx=2, sy=2):
 TESTCARD_TABLE = ROM_TABLE[:14] + [0x03, 0xE8]           # testcard.asm's crtab: the cursor at row 12, column 40
 
 
-def testcard_ram():
-    """the 2K display RAM exactly as tests/video/asm/testcard.asm leaves it"""
+def testcard_ram(cols=80):
+    """the 2K display RAM exactly as tests/video/asm/testcard.asm leaves it (cols = 80); other widths lay the same
+    card out on cols-character rows (crtc_picture.py with R1 = 64, 72 ...)"""
     ram = bytearray(b" " * 2048)
-    def put(addr, text): ram[addr:addr + len(text)] = text.encode("ascii") if isinstance(text, str) else text
-    put(0, " YACC1 VIDEO TEST CARD - 80 X 24 - TESTCARD.ASM"); put(80, "0123456789" * 8)
-    put(160, bytes(range(64))); put(224, " CODES 00-3F"); put(240, bytes(c | 0x80 for c in range(64))); put(304, " INVERSE")
-    text = "THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG 0123456789 " * 2
+    def put(addr, text):
+        b = text.encode("ascii") if isinstance(text, str) else text
+        ram[addr:addr + len(b)] = b
+    if cols == 80:
+        put(0, " YACC1 VIDEO TEST CARD - 80 X 24 - TESTCARD.ASM"); put(80, "0123456789" * 8)
+        put(160, bytes(range(64))); put(224, " CODES 00-3F"); put(240, bytes(c | 0x80 for c in range(64))); put(304, " INVERSE")
+    else:
+        put(0, (" YACC1 VIDEO TEST CARD - %d X 24" % cols)[:cols]); put(cols, ("0123456789" * 9)[:cols])
+        put(2 * cols, bytes(range(64))[:cols]); put(3 * cols, bytes(c | 0x80 for c in range(64))[:cols])
+    text = "THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG 0123456789 " * 3
     for row in range(4, 23):
-        put(row * 80, "%02X*" % row + text[row - 4:row - 4 + 76] + "*")
-    put(23 * 80, "ROW 23 - LAST ROW. CURSOR AT ROW 12, COLUMN 40.")
-    return bytes(ram)
+        put(row * cols, "%02X*" % row + text[row - 4:row - 4 + cols - 4] + "*")
+    put(23 * cols, ("ROW 23 - LAST ROW. CURSOR AT ROW 12, COLUMN %d." % (cols // 2))[:cols])
+    return bytes(ram[:2048])
 
 
 def text_view(st, out=print):

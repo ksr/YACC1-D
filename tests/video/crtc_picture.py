@@ -38,7 +38,7 @@ blank = "--blank" in args; verify = "--verify" in args
 port = next((a for a in args if not a.startswith("--")), PORT)
 
 vidsim.timing(regs, dotclock)
-ram = bytes(b" " * 2048) if blank else vidsim.testcard_ram()
+ram = bytes(b" " * 2048) if blank else vidsim.testcard_ram(regs[1])   # laid out on R1-character rows
 
 bd = BusDriver(port); bd.wait_prompt(timeout=20)
 c = bd.cmd
