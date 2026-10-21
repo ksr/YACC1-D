@@ -8,10 +8,10 @@ can be brought up before the CPU and the E one-shot matter at speed.
 
   crtc_picture.py [port] [--regs R0,R1,...] [--dotclock HZ] [--blank] [--png OUT.png] [--verify]
 
-  --regs      R0..R15 (decimal or 0x..; missing ones from testcard.asm's table = the ROM's 64 x 24 at 9 MHz, cursor at row 12 col 32;
-              e.g. --regs 94,80,84 for 80 columns, which a TV-rate monitor's overscan cuts at both edges)
+  --regs      R0..R15 (decimal or 0x..; missing ones from testcard.asm's table = the ROM's 80 x 24 at 11.0592 MHz, cursor at
+              row 12 col 40; e.g. --regs 94,64,75,8 --dotclock 9e6 for 64 x 24 from a 9 MHz crystal)
   --dots      dots a character (default 6: IC28 a 74163, fitted 2026-10-18; 5 = the drawn 74HC160)
-  --dotclock  the crystal (or crystal/2 with SV4 on 2-3) for the timing report (default 9e6, the fitted crystal)
+  --dotclock  the crystal (or crystal/2 with SV4 on 2-3) for the timing report (default 11.0592e6, the fitted crystal)
   --blank     fill the RAM with spaces instead of the test card (a raster with nothing on it: sync only)
   --png       also draw what the monitor should show (tools/vidsim.py, same RAM and registers)
   --verify    read the 2K back and compare (the RAM half through the tester, as video_ram_test.py does for 1K)
@@ -33,7 +33,7 @@ def opt(name, default):
     return default
 regs = [int(x, 0) for x in opt("--regs", "").split(",") if x] or []
 regs = regs + vidsim.TESTCARD_TABLE[len(regs):]
-dotclock = float(opt("--dotclock", 9e6)); png = opt("--png", None); wait = float(opt("--wait", 0.3))
+dotclock = float(opt("--dotclock", 11.0592e6)); png = opt("--png", None); wait = float(opt("--wait", 0.3))
 vidsim.DOTS = int(opt("--dots", 6))   # IC28 a 74163 since 2026-10-18: dot clock / 6
 blank = "--blank" in args; verify = "--verify" in args
 port = next((a for a in args if not a.startswith("--")), PORT)

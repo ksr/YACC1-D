@@ -12,7 +12,7 @@
  * model keeps the display RAM in the emulator's own memory array, so a program sees plain RAM there as before.
  *
  *   -V   at exit (a -x HALT, the monitor's 0 command, a limit, any exit) print the screen on stderr: the geometry is the
- *        CRTC's R1 x R6 from R12/R13 when a program has written them, else the monitor's default 64 x 24 from $D000;
+ *        CRTC's R1 x R6 from R12/R13 when a program has written them, else the monitor's default 80 x 24 from $D000;
  *        each byte shown as its glyph under the 2513-style assumption (bits 0-5; 00-1F = @..underscore, 20-3F =
  *        blank..?), then the 18 CRTC registers
  *   -W   log every CRTC register write (and any write to the latch's odd addresses: a bus fight on the card) on stderr
@@ -31,7 +31,7 @@
 
 #define VID_BASE   0xD000
 #define VID_CRTC   0xD800                 /* ADDR11 high: the CRTC / latch half */
-#define VID_COLS   64                     /* the monitor's default geometry (monitor.asm VCOLS/VROWS) */
+#define VID_COLS   80                     /* the monitor's default geometry (monitor.asm VCOLS/VROWS) */
 #define VID_ROWS   24
 
 static struct {

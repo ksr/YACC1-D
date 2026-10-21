@@ -23,7 +23,7 @@ DESCRIPTION
                        (the monitor's V I); status afterwards
         video probe    test $D000 again; status afterwards
 
-    The screen is 64 x 24 characters. CR, LF (a new line), BS, TAB
+    The screen is 80 x 24 characters. CR, LF (a new line), BS, TAB
     and FF (clear) are obeyed; the text is upper-cased (the character
     ROM has 64 glyphs); the screen scrolls at the bottom.
 

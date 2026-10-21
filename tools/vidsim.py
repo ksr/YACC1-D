@@ -22,7 +22,7 @@ what the real card should show.
         leftmost, shifted out first by the 74LS166), D2..D0 unused. Burn with `minipro -p 2732A@DIP24 -w FILE` if the fitted
         EPROM's contents are unknown or wrong.
 
-Common options: --dotclock HZ (default 9e6: the card's crystal, Q2, fitted 2026-10-21, SV4 on 1-2), --dots 5|6 (IC28 a
+Common options: --dotclock HZ (default 11.0592e6: the card's crystal, Q2, fitted 2026-10-21, SV4 on 1-2), --dots 5|6 (IC28 a
 74163 since 2026-10-18: 6, with a blank 6th dot; the drawn 74HC160: 5), --chargen FILE (a
 2732 image read from the card's EPROM with minipro, instead of the drawn font), --raster (draw the whole frame: the
 display area, the horizontal sync in red, the vertical sync in blue, blanking grey), --nocursor, --scale N.
@@ -39,7 +39,7 @@ import os, re, sys, zlib, struct, argparse, subprocess, tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOTS = 6                     # dots per character: IC28 a 74163 (synchronous clear) since 2026-10-18; the drawn 74HC160: 5
-ROM_TABLE = [94, 64, 75, 8, 31, 6, 24, 27, 0, 7, 0x67, 7, 0, 0, 0, 0]     # the monitor's vcrtab (monitor.asm): 64 x 24, 9 MHz
+ROM_TABLE = [116, 80, 94, 9, 31, 6, 24, 27, 0, 7, 0x67, 7, 0, 0, 0, 0]    # the monitor's vcrtab (monitor.asm): 80 x 24, 11.0592 MHz
 
 # 5x7 glyphs for ASCII $20-$5F, column-major (bit 0 = top row), the classic HD44780-style shapes
 _COLS = """
@@ -175,13 +175,13 @@ def write_png(path, W, H, img, sx=2, sy=2):
                 chunk(b"IDAT", zlib.compress(bytes(raw), 9)) + chunk(b"IEND", b""))
 
 
-TESTCARD_TABLE = ROM_TABLE[:14] + [0x03, 0x20]           # testcard.asm's crtab: the cursor at row 12, column 32
+TESTCARD_TABLE = ROM_TABLE[:14] + [0x03, 0xE8]           # testcard.asm's crtab: the cursor at row 12, column 40
 
 
-def testcard_ram(cols=64):
-    """the 2K display RAM exactly as tests/video/asm/testcard.asm leaves it (cols = 64, the standard since 2026-10-21);
-    other widths lay the same card out on cols-character rows (crtc_picture.py with R1 = 72, 80 ...): with room past
-    the 64 codes (80 columns) rows 2 and 3 also get their labels"""
+def testcard_ram(cols=80):
+    """the 2K display RAM exactly as tests/video/asm/testcard.asm leaves it (cols = 80, the standard); other widths
+    lay the same card out on cols-character rows (crtc_picture.py with R1 = 64, 72 ...): with room past the 64 codes
+    (76 columns or more) rows 2 and 3 also get their labels"""
     ram = bytearray(b" " * 2048)
     def put(addr, text):
         b = text.encode("ascii") if isinstance(text, str) else text
@@ -234,7 +234,7 @@ def main():
     ap.add_argument("cmd", choices=["run", "render", "tester", "timing", "chargen"])
     ap.add_argument("arg", nargs="?")
     ap.add_argument("--go", default="3000"); ap.add_argument("--input", default=""); ap.add_argument("--steps", type=int, default=300000000)
-    ap.add_argument("--png"); ap.add_argument("--dotclock", type=float, default=9e6); ap.add_argument("--chargen")
+    ap.add_argument("--png"); ap.add_argument("--dotclock", type=float, default=11.0592e6); ap.add_argument("--chargen")
     ap.add_argument("--raster", action="store_true"); ap.add_argument("--nocursor", action="store_true"); ap.add_argument("--scale", type=int, default=2)
     ap.add_argument("--regs"); ap.add_argument("--port", default="/dev/cu.usbserial-AB6WZCQX"); ap.add_argument("--out")
     ap.add_argument("--dots", type=int, default=6, help="dots a character: 6 = IC28 a 74163 (sync clear: a clean CHARCLOCK "

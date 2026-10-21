@@ -67,7 +67,7 @@ line_buffer:    EQU 0f80h    ; 112 bytes long max ($0FF0-$0FFF are the video var
 VIDAUTO:        EQU 0        ; 1 = reset also runs V I (CRTC table, clear, home) and sets VIDMIR when a card is found
 VIDRAM:         EQU 0d000h   ; display RAM, CPU side (A11 = 0); its first byte is the probe byte
 VIDSIZE:        EQU 2048     ; the RAM the CPU reaches (IC15 A11R grounded): VIDRAM..VIDRAM+2047
-VCOLS:          EQU 64       ; screen geometry: 64 x 24 = 1,536 bytes of the 2K, one byte per character
+VCOLS:          EQU 80       ; screen geometry: 80 x 24 = 1,920 bytes of the 2K, one byte per character
 VROWS:          EQU 24       ;   (VCOLS*(VROWS-1) must be a multiple of 8 and at most 2,040: the scroll's loop)
 VCRTCA:         EQU 0d800h   ; 6845 address register: A11 = 1, A1 = 0, A0 = 0 (the netlist reading of the card; the
 VCRTCD:         EQU 0d802h   ;   card README says $D400/$D402 - one edit here). Data register: A1 = 1, after the
@@ -1320,15 +1320,16 @@ vskip:  JSR uartin
 vgetb:  JSR vskip
         BR getbytec
 ;
-; the CRTC registers R0..R15 for vinit, as measured on the card 2026-10-21: a 9 MHz crystal (Q2, SV4 on 1-2), 6 dots
-; a character (IC28 a 74163), 8 scan lines a row (RA0..2): a 1.5 MHz character clock, 95 characters a line = 63.3 us
-; (15.79 kHz), 32 rows + 6 lines = 262 lines (60.3 Hz), non-interlaced - a TV-rate monitor. 64 columns (42.7 us of
-; text) fit such a monitor's visible ~48 us with a margin each side (R2 75 centres them); 80 would need a dot clock
-; of about 11 MHz (11.0592 MHz: R0 116). R1/R6 follow VCOLS/VROWS; tools/vidsim.py timing checks a table.
-vcrtab: DB 94             ; R0  horizontal total - 1
+; the CRTC registers R0..R15 for vinit, as measured on the card 2026-10-21: an 11.0592 MHz crystal (Q2, SV4 on 1-2),
+; 6 dots a character (IC28 a 74163), 8 scan lines a row (RA0..2): a 1.8432 MHz character clock, 117 characters a line
+; = 63.5 us (15.75 kHz), 32 rows + 6 lines = 262 lines (60.1 Hz), non-interlaced - a TV-rate monitor. 80 columns
+; (43.4 us of text) fit such a monitor's visible ~48 us with a margin each side (R2 94 centres them); a 9 MHz crystal
+; gave room for only 64. The character EPROM gets ~540 ns a character (an MBM2732A is a 450 ns part). R1/R6 follow
+; VCOLS/VROWS; tools/vidsim.py timing checks a table.
+vcrtab: DB 116            ; R0  horizontal total - 1
         DB VCOLS          ; R1  characters displayed
-        DB 75             ; R2  horizontal sync position
-        DB 8              ; R3  sync width (HS 8 characters, 5.3 us)
+        DB 94             ; R2  horizontal sync position
+        DB 9              ; R3  sync width (HS 9 characters, 4.9 us)
         DB 31             ; R4  vertical total - 1 (rows)
         DB 6              ; R5  vertical total adjust (scan lines)
         DB VROWS          ; R6  rows displayed
