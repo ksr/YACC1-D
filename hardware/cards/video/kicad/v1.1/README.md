@@ -1,6 +1,8 @@
 # video-v1.1 — KiCad design master for the video card
 
-**This is the master. Hand-maintained in KiCad 10 since 2026-09-21; Fusion 360 is abandoned for this card.**
+**Superseded 2026-10-22 by `../v1.2/`, the master now** (v1.1 plus the bench fixes of 2026-10-21). Kept as history; it
+keeps its `MASTER` marker so the conversion tool never regenerates it. Was: the master, hand-maintained in KiCad 10 since
+2026-09-21; Fusion 360 is abandoned for this card.
 Started as a copy of the proven conversion of the built card (`../v1.0-fusion-export-2026-09-18/`, which stays as the
 record of what was built) with the project renamed to `video-v1.1`. `tools/eagle_to_kicad_all.py` never writes here
 (`MASTER` marker file).
@@ -18,8 +20,7 @@ record of what was built) with the project renamed to `video-v1.1`. `tools/eagle
    DRC identical by type before and after (229 cosmetic findings, 0 unconnected); `reports/drc.json` and the two
    renders regenerated.
 
-Still to do in this master (see BACKLOG): move the 6845 RS from A0 to A1 (`../../docs/fix-6845-register-select.md`),
-pull-ups on the 7416 outputs.
+The two items left to do here (the 6845 RS from A0 to A1, pull-ups on the 7416 outputs) are done in `../v1.2/`.
 
 ## Files
 

@@ -185,9 +185,10 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   A second header pin on a spare MCP input for the sequencer's JP4 pin 3 (UCODE-COUNT-RESET) would let the stepper see
   where each instruction ends.
 - **Video card v1.1** (`hardware/cards/video/kicad/v1.1`, the KiCad master since 2026-09-21; Fusion abandoned): DONE in the
-  design — one 5 V rail (`+5V` folded into `VCC`, joining track added; proof 116/116). TO DO — move the 6845 RS from A0 to A1
-  (`hardware/cards/video/docs/fix-6845-register-select.md`; proven on the v1.0 bench 2026-10-21), pull-ups on the 7416
-  outputs (on the bench: 10k on N$3, 4.7k on N$16 and N$5), IC2 drawn as a 74LS373; then order.
+  design — one 5 V rail (`+5V` folded into `VCC`, joining track added; proof 116/116). **Superseded 2026-10-22 by
+  `kicad/v1.2`**: v1.1 plus every bench fix (RS on ADDR1, LPSTB to GND, R13/R14 4.7k on N$16 and N$5, E from the strobe
+  with R1/C1 removed, IC28 74163, Q2 11.0592 MHz; proof 114/114, DRC 0 unconnected). **v1.2 NOT ORDERED**: order it, or
+  fold it into the next revision (the graphics overlay / 8-dot plans below).
 - **NEXT AT THE MACHINE: video card V1.0, Phase B (the CPU)** - `docs/procedures/VIDEO-BRINGUP.md`.
   - **Phase A done 2026-10-21, CPU out**: the latch's floating -OC (N$16) had the card driving every memory read in
     the machine - 4.7k pull-ups on N$16 (IC2 pin 1-20) and N$5 (IC27 pin 8-14), IC2 a 74LS373 (was a 74LS374); the
@@ -374,8 +375,8 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - **HIGH (masked), memory v1.3: FORCE-ROM race** - IC12 (74LS74) is clocked by ADDR15·-VMA·-BUS-EN while the register card puts the
   address up ~40 ns after -VMA and the address bus floats high between cycles; masked since 2020 by asserting -VMA in EVERY
   microcode step (`main.c:103,115` "Hack prevent ROM mapping from triggering"), which removes -VMA from all memory chip selects.
-- **HIGH (untested), video v1.1: 6845 E clock** derived from C1/R1 discharged by a 7416 open-collector output with no pull-up;
-  unreliable at run speed. Goes with the RS-to-A1 change and the 7416 pull-ups before a CRTC is fitted.
+- (done 2026-10-21/22: video 6845 E clock - the C1/R1 one-shot never let E rise at 1 MHz; the bench card takes E from the
+  strobe (IC1 pin 2 to VCC) and `kicad/v1.2` drops the one-shot.)
 - **MED**: 28C64 -WE is raw -MEM-WR (any store during FORCE-ROM writes the EEPROM; the monitor is safe only because its first
   instruction jumps above $8000; **memory v2.0 has the write-protect jumper JP3, 2026-09-29**); reset does not reload the pipeline (stale word on the bus during reset, with FORCE-ROM active);
   no power-on reset anywhere (FORCE-ROM, counters, carry undefined until the button); register card IC34 is a CD4077 driven by LS
