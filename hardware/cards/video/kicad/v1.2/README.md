@@ -1,6 +1,6 @@
 # video-v1.2 — KiCad design master for the video card
 
-**This is the master (since 2026-10-22). Hand-maintained in KiCad 10.** It is `../v1.1/` (one 5 V rail) with every
+**Superseded by `../v1.3/` (2026-10-22), the master now; v1.2 stays as the record of the bench state: the built V1.0 card with every fix up to 2026-10-21, on v1.1's 2-layer board.** Hand-maintained in KiCad 10. It is `../v1.1/` (one 5 V rail) with every
 change the built V1.0 card needed on the bench up to 2026-10-21, so a card built from it starts where the bench card
 ended: register access through the CPU at 1 MHz, the test card, the ROM's driver and the console mirrored on screen
 (`docs/procedures/VIDEO-BRINGUP.md`, `docs/cards/video.md`). Not ordered. `tools/eagle_to_kicad_all.py` never writes here

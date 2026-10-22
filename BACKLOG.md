@@ -221,7 +221,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   PS/2 clock/data into a shift register or a small MCU, read on an I/O port behind the console vectors (OS-PLAN
   phase 4). `tools/vidsim.py timing` checks a register table against both monitors.
 - **Video v1.3: 6 or 8 dots a character, chosen by one jumper (planned 2026-10-22; design `hardware/cards/video/kicad/v1.3`,
-  model `tools/vidsim.py --card v1.3`; not ordered).** One 12 MHz crystal (Q2, SV4 1-2) gives both modes:
+  model `tools/vidsim.py --card v1.3`; not ordered; the board: 4 layers, In1 GND / In2 VCC planes, routed from scratch by
+  `build.sh` - proof 116/116, DRC 0 unconnected).** One 12 MHz crystal (Q2, SV4 1-2) gives both modes:
   | DOTS jumper | divider | character clock | screen | 6845 R0..R9 | dots across | EPROM time a character |
   |---|---|---|---|---|---|---|
   | open (high) | /6 | 2.0 MHz | **80 x 24** | 126, 80, 98, 10, 31, 6, 24, 27, 0, 7 | 480 | 500 ns |

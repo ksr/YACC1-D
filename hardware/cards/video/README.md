@@ -6,14 +6,17 @@ only SV3 5–6), cascaded from -VMA, into the memory card's undecoded $D000 bloc
 and sync on the card; the LM1881 sync-converter Eagle project in `archive/eagle-projects/` is the related
 composite-video experiment.
 
-**KiCad is the master design: `kicad/v1.2/` (2026-10-22; `kicad/v1.1/` before it, from 2026-09-21) — hand-maintained,
+**KiCad is the master design: `kicad/v1.3/` (2026-10-22; `kicad/v1.2/` and `kicad/v1.1/` before it) — hand-maintained,
 Fusion 360 abandoned for this card.**
 `eagle/v1.0-fusion-export-2026-09-18/` is the Fusion export of the BUILT card (`Video_1.0.sch/.brd`, exported by Fusion as
 "Blank V3.1.brd" because the design started from the blank template) and `kicad/v1.0-fusion-export-2026-09-18/` its
 generated, proven conversion; both are the record of what was built. One version built, in the machine for bring-up
 since 2026-10-21 with a CRTC and working. v1.1: the two 5 V nets merged into `VCC` with a joining track. v1.2 (not
 ordered): v1.1 plus every bench fix up to 2026-10-21 - RS on ADDR1, LPSTB to GND, 4.7k pull-ups on N$16 and N$5 (R13,
-R14), E straight from the strobe (the R1/C1 one-shot removed), IC28 a 74163, Q2 11.0592 MHz (see its README).
+R14), E straight from the strobe (the R1/C1 one-shot removed), IC28 a 74163, Q2 11.0592 MHz (see its README). v1.3 (not
+ordered): 6 or 8 dots a character chosen by one jumper (DOTS, JP2: 80 x 24 or 64 x 24 from a 12 MHz crystal, both fonts
+in one EPROM, the mode readable at `$D801` bit 0), on a new 4-layer board (In1 GND plane, In2 VCC plane) routed from
+scratch (`kicad/v1.3/README.md`, `build.sh`).
 
 Known issues and findings:
 - **+5V rail unpowered as designed (found 2026-09-20 by the KiCad netlist proof, confirmed on the bench 2026-09-21).**
