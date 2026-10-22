@@ -9,7 +9,7 @@
 The terminal: what is typed goes to the machine, what it sends is shown (the monitor and BASIC echo, so there is no
 local echo). Enter sends CR (the ROM's uartin makes it LF); backspace sends what the keyboard sends ($7F on a Mac:
 BASIC takes $7F and $08 since ROM 2026-10-07; the monitor's own commands take neither). Ctrl-] then:
-  s  send a file to BASIC (asks for the path)      q  quit
+  s  send a file to BASIC (lists firmware/basic/programs, --dir; a bare name or NAME.bas is found there)      q  quit
   n  NEW before the next file is sent (toggle)      h  this help
   ]  send a Ctrl-] itself
 
@@ -111,6 +111,15 @@ def to_basic(con, a):
     return False
 
 
+def find_program(name, folder):
+    """the file the s key means: a path as typed (~ expanded) if it exists, else NAME or NAME.bas in folder"""
+    name = os.path.expanduser(name)
+    if not name or os.path.isfile(name) or os.path.isabs(name): return name
+    for cand in (name, name + ".bas", name + ".BAS"):
+        if os.path.isfile(os.path.join(folder, cand)): return os.path.join(folder, cand)
+    return name
+
+
 def send_file(con, path, a, new=False, run=False):
     """type path into BASIC, line by line -> (lines sent, [(file line, text, answer)], prompt lost)"""
     lines = basic_lines(path, a.maxlen)
@@ -178,11 +187,13 @@ def terminal(con, a):
                     os.write(sys.stdout.fileno(), b"NEW before the next file: %s\r\n" % (b"yes" if new_first else b"no"))
                 elif c in (b"s", b"S"):
                     termios.tcsetattr(fd, termios.TCSADRAIN, saved)
+                    progs = sorted(f for f in os.listdir(a.dir) if f.lower().endswith(".bas")) if os.path.isdir(a.dir) else []
                     try:
-                        path = input("\nfile to send to BASIC: ").strip()
+                        path = input("\nprograms in %s: %s\nfile to send to BASIC: " % (
+                            os.path.relpath(a.dir), " ".join(progs) or "(none)")).strip()
                     except EOFError:
                         path = ""
-                    path = os.path.expanduser(path)
+                    path = find_program(path, a.dir)
                     if path and os.path.isfile(path):
                         try:
                             send_file(con, path, a, new=new_first)
@@ -203,7 +214,10 @@ def main():
     ap.add_argument("--port")
     ap.add_argument("--baud", type=int, default=38400)
     ap.add_argument("--log", help="append everything the machine sends to this file")
-    ap.add_argument("--send", metavar="FILE", help="type FILE into BASIC, then exit (or --stay)")
+    ap.add_argument("--send", metavar="FILE", help="type FILE into BASIC, then exit (or --stay); a bare name is looked "
+                    "up in --dir too")
+    ap.add_argument("--dir", default=os.path.join(os.path.dirname(HERE), "firmware", "basic", "programs"),
+                    help="where the s key (and --send) look for a program given by name (default firmware/basic/programs)")
     ap.add_argument("--new", action="store_true", help="send NEW before the file")
     ap.add_argument("--run", action="store_true", help="send RUN after the file")
     ap.add_argument("--stay", action="store_true", help="after --send, stay in the terminal")
@@ -216,6 +230,7 @@ def main():
     a = ap.parse_args()
     con = Console(a.port or monload.find_port(), a.baud, a.log)
     if a.send:
+        a.send = find_program(a.send, a.dir)
         if not os.path.isfile(a.send):
             sys.exit("y1term: no file %s" % a.send)
         sent, bad, lost = send_file(con, a.send, a, new=a.new, run=a.run)
