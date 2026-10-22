@@ -220,7 +220,35 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   sync polarities and an intensity output, with the review items 6.1-6.5 and the RS/7416 fixes folded in. Keyboard:
   PS/2 clock/data into a shift register or a small MCU, read on an I/O port behind the console vectors (OS-PLAN
   phase 4). `tools/vidsim.py timing` checks a register table against both monitors.
-- **Video: 64 columns of 8-dot characters (planned 2026-10-22, not done).** For the graphics overlay's arithmetic: with
+- **Video v1.3: 6 or 8 dots a character, chosen by one jumper (planned 2026-10-22; design `hardware/cards/video/kicad/v1.3`,
+  model `tools/vidsim.py --card v1.3`; not ordered).** One 12 MHz crystal (Q2, SV4 1-2) gives both modes:
+  | DOTS jumper | divider | character clock | screen | 6845 R0..R9 | dots across | EPROM time a character |
+  |---|---|---|---|---|---|---|
+  | open (high) | /6 | 2.0 MHz | **80 x 24** | 126, 80, 98, 10, 31, 6, 24, 27, 0, 7 | 480 | 500 ns |
+  | fitted (low) | /8 | 1.5 MHz | **64 x 24** | 94, 64, 75, 8, 31, 6, 24, 27, 0, 7 (proven 2026-10-21) | 512 | 667 ns |
+  Both 15.75 kHz / 60 Hz; the 80-column table is centred in the TV-rate monitor's measured visible window (about
+  10.3-58.3 us after the sync starts: the text runs 14.5-54.5 us, margins 4.2 / 3.8 us).
+  - **IC28 (74163) divides by 16 - P**, loading P on its carry: -CLR (pin 1) to VCC; data A (3) = GND, B (4) = DOTS,
+    C (5) = GND, D (6) = VCC, so P = 8 (/8) or 10 (/6); -LOAD (9) = CHARCLOCK = NOT RCO, IC19/C with both inputs
+    (pins 9, 10) on RCO (pin 15); ENT/ENP stay on N$73 (R10). CHARCLOCK is one dot low at count 15 in both modes, the
+    pulse the 74LS166 load and IC22/IC23 get today. CRTCCLOCK stays QC (pin 12 -> IC17 21): /8 low 4 / high 4 dots,
+    /6 low 2 / high 4 - 167 ns low at 12 MHz against the MC6845's minimum clock low width (see the v1.3 README for the
+    margin and the faster-part option).
+  - **DOTS**: a new 2-pin header (fitted = GND = 8 dots, open = 6 dots) with a 4.7k pull-up. It also drives **EPROM
+    A10** (font select: the 8-dot font at $000, the 6-dot font at $400; A9, A11 stay GND) and **latch IC2 input 1D**
+    (pin 3, was JP1 pin 1): `$D801` bit 0 = 1 for 6 dots, 0 for 8. The latch's LE (pin 11, was JP1 pin 13, floating)
+    goes to VCC: transparent by design.
+  - **IC24 (74LS166) A, B, C** (pins 2, 3, 4, were GND) to EPROM O0, O1, O2 (pins 9, 10, 11): all eight bits load;
+    in 6-dot mode the next load comes after 6 shifts, so only O7..O2 are seen. Fonts (`firmware/video/chargen-v13.bin`,
+    `vidsim.py chargen --card v1.3`): 8-dot cells a 7-dot glyph in D7..D1 (D0 = 0, the gap); 6-dot cells the 5-dot
+    glyph in D7..D3, D2..D0 = 0. 8 scan lines a row in both modes (R9 = 7): taller characters need RA3 to the EPROM and
+    break the overlay's 8-plane addressing, so not in v1.3.
+  - **EPROM speed**: 500 ns a character in 6-dot mode against the MBM2732A's 450 ns: works, little slack; a faster part
+    (a 2732A-25, or a 27C32/2764 at 250 ns with a socket adapter) removes the worry.
+  - **Next, the ROM**: at reset read `$D801` bit 0 and pick 80 or 64 columns and the matching table; `VCOLS` becomes a
+    variable (the scroll, VW and the cursor arithmetic use it). Not started.
+- **Video: 64 columns of 8-dot characters (planned 2026-10-22, folded into v1.3 above as its 8-dot mode; the IC28 rework
+  below is the same load-on-carry scheme with B tied low).** For the graphics overlay's arithmetic: with
   8 dots a cell the overlay is 512 x 192, every bit of a byte used, and a dot's byte and bit are shifts only - cell =
   (y >> 3) << 6 | x >> 3, mask = $80 >> (x & 7), plane = y & 7 (no divide by 6, no lookup table; with 64 columns the
   row multiply is a shift too). Its RA2..0:MA10..0 addressing still takes a 16K space (eight 2K planes, 1,536 bytes of
