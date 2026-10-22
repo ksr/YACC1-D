@@ -15,7 +15,8 @@ since 2026-10-21 with a CRTC and working. v1.1: the two 5 V nets merged into `VC
 ordered): v1.1 plus every bench fix up to 2026-10-21 - RS on ADDR1, LPSTB to GND, 4.7k pull-ups on N$16 and N$5 (R13,
 R14), E straight from the strobe (the R1/C1 one-shot removed), IC28 a 74163, Q2 11.0592 MHz (see its README). v1.3 (not
 ordered): 6 or 8 dots a character chosen by one jumper (DOTS, JP2: 80 x 24 or 64 x 24 from a 12 MHz crystal, both fonts
-in one EPROM, the mode readable at `$D801` bit 0), on a new 4-layer board (In1 GND plane, In2 VCC plane) routed from
+in one EPROM, the mode readable at `$D801` bit 0, the card ID on bit 2 = 0: latch 3D tied low; the card in the
+machine reads bit 2 = 1 through a jumper on JP1 3-4; `ROM 2026-10-22` picks its geometry from them), on a new 4-layer board (In1 GND plane, In2 VCC plane) routed from
 scratch (`kicad/v1.3/README.md`, `build.sh`).
 
 Known issues and findings:

@@ -52,9 +52,11 @@ on the instruction-level emulator; the microcode emulator takes the UART path li
 | $0FF0 | VIDPRES | (2026-09-25) 1 = the video card's RAM answered at $D000 at reset (or at the last probe); set by the ROM only |
 | $0FF1 | VIDMIR | nonzero = CHAROUT/UARTOUT mirror every byte on the screen (only while VIDPRES is 1); 0 at reset (1 with `VIDAUTO`). **The switch for the OS and programs**: write 1/0 here (Y1/OS: `video on`/`off`) |
 | $0FF2 | VIDCUR | nonzero = the driver keeps the CRTC's cursor (R14/R15) at the text cursor; set by init |
-| $0FF3, $0FF4 | VROW, VCOL | the text cursor: row 0..23, column 0..79 (read them; the driver owns them) |
+| $0FF3, $0FF4 | VROW, VCOL | the text cursor: row 0..23, column 0..VCOLSV-1 (read them; the driver owns them) |
 | $0FF5 | VCHAR | the driver's scratch byte |
 | $0FF6–$0FF7 | VLINE | the address of the cursor row's first byte (big-endian word) |
+| $0FF8 | VCOLSV | (2026-10-22) the screen's columns, 80 or 64 (a V1.3 card with DOTS fitted), set at reset from the card's latch ($D801); read it, the driver owns it |
+| $0FF9 | VSCRLN | the driver's scroll count for that width |
 | $0EFF down | | the hardware stack (R1), set by the monitor at reset; $0C00 is the informal floor |
 | $0100–$02FF | | BASIC's variables (BASIC stays in ROM at $E000 for now) |
 | $0400–$0BFF | HBUFS | **while Y1/OS runs**: its four file handles' 512-byte sector buffers (2026-09-23, moved out of the OS's 16K to make room for redirection and pipes). $0400–$04FF is BASIC's token-line scratch, dead while the OS runs (the OS load has already overwritten BASIC's token buffer at $1000); $0500–$0BFF was unassigned. The stack must stay above $0C00, its informal floor, for as long as the OS runs |

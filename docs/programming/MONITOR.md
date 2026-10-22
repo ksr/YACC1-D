@@ -153,9 +153,11 @@ removed 2026-09-25 for room (git history has them). Addresses in this document a
 | $0FF0 | `VIDPRES` | 1 = the video card answered at $D000 at reset (or the last `V P` / VIDCTL 0) (2026-09-25) |
 | $0FF1 | `VIDMIR` | nonzero = CHAROUT/UARTOUT also write to the screen (acts only while `VIDPRES` is 1); 0 at reset |
 | $0FF2 | `VIDCUR` | nonzero = the driver keeps the CRTC's cursor registers R14/R15 at the text cursor (set by `V I`) |
-| $0FF3 / $0FF4 | `VROW` / `VCOL` | the text cursor, row 0..23, column 0..79 |
+| $0FF3 / $0FF4 | `VROW` / `VCOL` | the text cursor, row 0..23, column 0..`VCOLSV`-1 |
 | $0FF5 | `VCHAR` | the driver's scratch byte |
 | $0FF6–$0FF7 | `VLINE` | the address of the cursor row's first byte (big-endian, `LDR`/`STR`) |
+| $0FF8 | `VCOLSV` | (2026-10-22) the screen's columns, 80 or 64, set by `vmode` from the card's latch |
+| $0FF9 | `VSCRLN` | the scroll's passes for that width, `VCOLSV`*23/8 (230 or 184) |
 | $0EFF downward | `STACK` | R1 at reset; `$0C00` is the informal floor, nothing checks |
 
 Below the page: BASIC's variables at $0100–$02FF, its line and token-line buffers at $0300/$0400, and the token
@@ -260,15 +262,29 @@ block) is in the machine for bring-up without its 6845. The ROM carries the whol
 card by itself** until the card is debugged (`VIDAUTO EQU 0`). All of it is plain 2021-set code: no `LDZ`/`STZ`/
 `ADDIW`/`SHL16`, no `BRUR`, no R2, so it runs on the sequencer EEPROM's current image and on the 2026-09-24 one.
 
-**Equates** (one edit each, top of `monitor.asm`): `VIDAUTO` 0, `VIDRAM` $D000, `VIDSIZE` 2048, `VCOLS` 80, `VROWS` 24,
+**Equates** (one edit each, top of `monitor.asm`): `VIDAUTO` 0, `VIDRAM` $D000, `VIDSIZE` 2048, `VROWS` 24, `VLATCH` $D801,
 `VCRTCA` $D800 (6845 address register) and `VCRTCD` $D802 (data register). The CRTC addresses follow the card
 (ADDR11 selects the CRTC half, A1 the register after the RS-to-A1 bench fix): video RAM $D000-$D7FF, 6845 half
 $D800-$DFFF, confirmed 2026-09-25. Geometry: the 2K the CPU reaches holds 80 x 24 = 1,920 characters, one byte each (with the card's 11.0592 MHz
 crystal; a 9 MHz one fits only 64 columns on a TV-rate monitor); the card
 latches bits 0-5 (a 64-glyph character EPROM) and bit 7 (inverse); the driver stores ASCII with lower case moved up
 ($60-$7F → $40-$5F), which a 2513-style character set (code = ASCII bits 0-5) shows as sent - the character EPROM
-(`firmware/video/chargen-remapped.bin`, burned 2026-10-20) is such a set. `VCOLS*(VROWS-1)` must be a multiple of 8
+(`firmware/video/chargen-remapped.bin`, burned 2026-10-20) is such a set. The columns times 23 must be a multiple of 8
 (the scroll moves 8 bytes a pass) and at most 2,040: 64 x 24 and 80 x 24 both qualify.
+
+**The card's geometry** (`vmode`, 2026-10-22, from `ROM 2026-10-22`): the probe then reads the JP1 latch at
+`VLATCH` ($D801, read only - a write fights the latch) and sets `VCOLSV` ($0FF8), `VSCRLN` ($0FF9) and the CRTC's
+R0..R3 for `V I` (R4..R15 are common, `vcrtab`). Bit 2 is the card ID, bit 0 a V1.3 card's DOTS jumper:
+
+| $D801 bit 2 | bit 0 | Card | Screen, CRTC R0..R3 |
+|---|---|---|---|
+| 1 | either | V1.0-V1.2 (the card in the machine: a jumper on JP1 3-4 holds bit 2 high) | 80 x 24, 116, 80, 94, 9 (11.0592 MHz, 6 dots) |
+| 0 | 1 | V1.3, DOTS open | 80 x 24, 126, 80, 98, 10 (12 MHz, 6 dots, 15.75 kHz) |
+| 0 | 0 | V1.3, DOTS fitted | 64 x 24, 94, 64, 75, 8 (12 MHz, 8 dots, 15.79 kHz) |
+
+`V P` and `V I` read the latch again; `V S` ends with `COLS` and the width in hex (50 or 40). Every use of the width
+in the driver (wrap, line feed, scroll, `V W`'s column check, `V D`'s rows) reads `VCOLSV`. The emulators' latch is
+`Y1VID_LATCH` (default FF; `tests/video/emu.py` case `dots` runs FF, FB and FA).
 
 **Detection** (`vprobe`, at reset and by `V P`): the byte at $D000 is saved, $55 written and read back, then $AA,
 and the old byte put back; `VIDPRES` = 1 only when both came back. An undecoded block reads whatever was last on the
@@ -277,7 +293,7 @@ the bus, so a floating bus reads $00, never the pattern. The banner then says `V
 
 **The driver** (`vputc`, entered from CHAROUT): CR → column 0; LF → column 0 of the next row (Y1/OS ends lines with LF
 alone, the monitor sends LF CR: both come out right); BS → one column left, nothing erased; TAB → spaces to the next
-multiple of 8; FF → clear + home; other control bytes and DEL are ignored; a character in the last column (63) wraps; LF on row 23
+multiple of 8; FF → clear + home; other control bytes and DEL are ignored; a character in the last column wraps; LF on row 23
 scrolls (rows 1-23 move up, 8 bytes a pass, row 23 blanked). With `VIDCUR` set every character also writes the
 cursor's offset from $D000 into the CRTC's R14/R15. It keeps R3-R7 and TMP (Y1/OS relies on CHAROUT keeping every
 register, ACC and TMP); R2 changes as in every `LDA`; the carry is not kept (the monitor's own `SHR`s change it on

@@ -25,7 +25,21 @@
   writing, `-P` sets it again afterwards, so on the machine a store into $E000-$FFFF (review M2: the v1.3 card has
   no write-protect jumper) is ignored by the chip. Nothing in the tree writes the ROM in place. Then read back and
   compare: `minipro -p AT28C64B -r /tmp/rb.bin && cmp /tmp/rb.bin firmware/rom/shipped/rom.bin`.
-- **2026-10-21: `shipped/rom` and `rom.bin` are `ROM 2026-10-21` — burned 2026-10-21 on the T48 (`minipro -p AT28C64B -u -P -w`, verify OK, read back and `cmp` identical).** The monitor's video unit at the
+- **2026-10-22: `shipped/rom` and `rom.bin` are `ROM 2026-10-22` — NOT BURNED** (the chip holds `ROM 2026-10-21`,
+  MD5 68b584fc04885ac6abbfc26a96548696). The video geometry from the card: at reset, after the probe, `vmode` reads
+  the JP1 latch at $D801 - bit 2 = 1 the V1.0-V1.2 card (80 x 24, the 11.0592 MHz table as before), bit 2 = 0 a V1.3
+  card, its DOTS jumper on bit 0 (open: 80 x 24, 126/80/98/10; fitted: 64 x 24, 94/64/75/8, both 12 MHz). The columns
+  are a variable (`VCOLSV` $0FF8, the scroll count `VSCRLN` $0FF9); `V S` ends with `COLS 50` / `COLS 40`. CHAROUT mirrors only
+  while `VIDPRES` is exactly 1 (it tested non-zero: RAM no reset has set reads $FF on the emulators, which turned the
+  mirror on with the new variables unset - `tests/ucemu`'s boot images). The monitor half grew 119 bytes (3,947 ->
+  4,066; 30 free: $FF8C-$FF8F and $FFA2-$FFBB); its routines after the video driver
+  moved, the vectors at $FFBC-$FFFF are where they were (their targets changed); BASIC unchanged. **MD5 (rom.bin)
+  ffee916318157f829a75cba09e6b2139**; `tools/verify_firmware.py`: FIRMWARE VERIFIED. On the card in the machine fit a
+  jumper on **JP1 pins 3-4** first (VCC to the latch's 3D: bit 2 held at 1; open it floats). Burn and compare:
+  `minipro -p AT28C64B -u -P -w firmware/rom/shipped/rom.bin`, then
+  `minipro -p AT28C64B -r /tmp/rb.bin && cmp /tmp/rb.bin firmware/rom/shipped/rom.bin`. Until it is burned the bus
+  tester's ROM checks report the chip as differing: pass `--rom` with the burned image (`git show cb5463f:firmware/rom/shipped/rom.bin`).
+- **2026-10-21: `shipped/rom` and `rom.bin` were `ROM 2026-10-21` — burned 2026-10-21 on the T48 (`minipro -p AT28C64B -u -P -w`, verify OK, read back and `cmp` identical).** The monitor's video unit at the
   timing proven on the card that day with the CPU out: `vcrtab` R0..R9 = 116, 80, 94, 9, 31, 6, 24, 27, 0, 7 for the
   11.0592 MHz crystal and IC28's ÷ 6 (was 126, 80, 98, 10, 31, 6, 24, 28 for an assumed 10 MHz ÷ 5) - 15.75 kHz /
   60.1 Hz, 80 x 24 with even margins on a TV-rate monitor - and the banner date. Same size, no address moves: 6 bytes

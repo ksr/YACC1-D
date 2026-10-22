@@ -246,8 +246,14 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     break the overlay's 8-plane addressing, so not in v1.3.
   - **EPROM speed**: 500 ns a character in 6-dot mode against the MBM2732A's 450 ns: works, little slack; a faster part
     (a 2732A-25, or a 27C32/2764 at 250 ns with a socket adapter) removes the worry.
-  - **Next, the ROM**: at reset read `$D801` bit 0 and pick 80 or 64 columns and the matching table; `VCOLS` becomes a
-    variable (the scroll, VW and the cursor arithmetic use it). Not started.
+  - **The ROM: done 2026-10-22 (`ROM 2026-10-22`, built, NOT burned).** A card ID on the latch: v1.3 ties **3D (IC2
+    pin 7) to GND** (JP1 pin 4 unconnected), so `$D801` bit 2 = 0 means V1.3; the V1.0-V1.2 card reads bit 2 = 1. At
+    reset (and `V P`, `V I`) `vmode` reads the latch: bit 2 = 1 -> 80 x 24 with the 11.0592 MHz table as before;
+    bit 2 = 0 -> bit 0 picks 80 x 24 (126/80/98/10) or 64 x 24 (94/64/75/8). `VCOLSV` ($0FF8) and `VSCRLN` ($0FF9)
+    replace the `VCOLS` constant. Emulators: `Y1VID_LATCH` (default FF); `tests/video/emu.py` case `dots`.
+  - **At the machine (Ken)**: fit a jumper on the video card's **JP1 pins 3-4** (VCC to 3D: bit 2 held at 1 - open, the
+    input floats and read $FD/$3C once each on 2026-10-21), burn `ROM 2026-10-22` (MD5 ffee9163...), reset (SS, reset,
+    FREERUN), then `VS` (ends `COLS 50`), `VI` and `VM1`: the screen as before.
 - **Video: 64 columns of 8-dot characters (planned 2026-10-22, folded into v1.3 above as its 8-dot mode; the IC28 rework
   below is the same load-on-carry scheme with B tied low).** For the graphics overlay's arithmetic: with
   8 dots a cell the overlay is 512 x 192, every bit of a byte used, and a dot's byte and bit are shifts only - cell =
@@ -517,6 +523,11 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Port of the P8X work (OS, monitor, BASIC, compilers) onto YACC1 — the reason this repo exists; not started.
 
 ## Verification still to do
+- **OPEN 2026-10-22: `tests/kermit/run.py` on the microcode emulator fails intermittently** at "send them back
+  (kermit -s *)" (the detail is only the `/K>` prompt: the Y1 side returned with nothing sent). Seen in `make check` and
+  reproduced on a clean checkout of 53f6493 (2 of 3 runs failed; the instruction-level emulator always passes), so it
+  is older than ROM 2026-10-22 - probably timing between the host kermit's wall-clock waits and the slow microcode
+  emulator. To look into: `--time` / the host side's timeouts in that session, or a race in /BIN/KERMIT's send start.
 - **OPEN 2026-10-21: reset with the 1 MHz clock running does not boot.** The CPU never reaches the banner: the first
   fetch reads RAM ($0000 = EB 81 37 instead of the ROM's A0 F0 03), the boot remap (memory card IC12/A, FORCE-ROM) already
   cleared, and the PC then walks $A7xx-$DFxx with no I/O. Reset with the clock stopped boots every time: SS/WAIT on SS

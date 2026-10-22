@@ -203,7 +203,7 @@ it.
 | SV3 (2x4) | pairs 1-2 (A3), 3-4 (A2), 5-6 (A1), 7-8 (A0); fitted = 0, open = 1 (RN2 pull-up); compared with ADDR15..12 | only 5-6 fitted: block $D000 |
 | RN2 | the SV3 pull-ups | 10k as designed (was 1k from the 2026-09-18 tests until 2026-09-21) |
 | SV4 (1x3) | 1 = crystal, 2 = DOTCLOCK, 3 = crystal/2 | 1-2: DOTCLOCK = the crystal, 11.0592 MHz (Q2 fitted 2026-10-21; 9 MHz before it the same day) |
-| JP1 (2x7) | eight latch inputs (pins 1, 2, 4, 6, 8, 10, 12, 14), LE on 13, VCC on 3, GND on 5: a byte the CPU can read back at odd upper-half addresses (a configuration/ID byte; the README does not say what it was for) | **To verify:** whether anything is jumpered; F2's $FF says nothing is |
+| JP1 (2x7) | eight latch inputs (pins 1, 2, 4, 6, 8, 10, 12, 14), LE on 13, VCC on 3, GND on 5: a byte the CPU can read back at odd upper-half addresses (a configuration/ID byte; the README does not say what it was for) | **2026-10-22: a jumper on pins 3-4** (VCC to 3D) on the card in the machine: $D801 bit 2 = 1 tells `ROM 2026-10-22` and later that this is a V1.0-V1.2 card (open, the input floats and usually reads 1 - it read $FD and $3C once each on 2026-10-21). V1.3 ties 3D low and puts DOTS on 1D, JP1 pins 1 and 4 unconnected |
 | IC17 socket | MC6845 | fitted 2026-10-21 (RS on A1, LPSTB to GND); `crtc_regs.py` ALL PASS. C1 measured 1 uF: E lasts ~12 ms on a slow strobe |
 | X2 DB9 female | 7 video (R11), 8 HS, 9 VS, 1 GND | — |
 | U$3 RCA | combined HS+VS (wired-OR, R12) | — |
@@ -284,12 +284,21 @@ crystal/C1 values belong in that redesign whichever interface it keeps.
   rebuild once the card works: reset then programs the CRTC, clears and turns mirroring on.
 - **Mirroring**: while `VIDMIR` ($0FF1) is set, CHAROUT/UARTOUT (the console of the monitor, BASIC, Y1/OS and every
   program) also write each byte at the screen's cursor: CR, LF, BS, TAB, FF, wrap and scroll handled in software.
+- **Geometry from the card** (`ROM 2026-10-22`, built, not burned): after the probe the ROM reads the JP1 latch at
+  $D801 and picks the columns and the CRTC's R0..R3 (`vmode`; `docs/programming/MONITOR.md` section 11):
+
+  | $D801 bit 2 | bit 0 | Card | Screen, CRTC R0..R3 |
+  |---|---|---|---|
+  | 1 | either | V1.0-V1.2 (the card in the machine: a jumper on JP1 3-4 holds bit 2 high) | 80 x 24, 116, 80, 94, 9 (11.0592 MHz, 6 dots) |
+  | 0 | 1 | V1.3, DOTS open | 80 x 24, 126, 80, 98, 10 (12 MHz, 6 dots, 15.75 kHz) |
+  | 0 | 0 | V1.3, DOTS fitted | 64 x 24, 94, 64, 75, 8 (12 MHz, 8 dots, 15.79 kHz) |
+
 - **Geometry**: 80 x 24 from $D000 (1,920 of the 2K), one byte a character, the
   driver storing ASCII with lower case moved up (right for the 2513-style set in the EPROM: glyph = ASCII bits 0-5);
   CRTC table 116, 80, 94, 9, 31, 6, 24, 27, 0, 7 for the 11.0592 MHz crystal, 6 dots a character, 8 lines a row
   (15.75 kHz, 60.1 Hz), the table the picture was proven with on 2026-10-21 (before `ROM 2026-10-21`: 126, 80, 98,
-  10, 31, 6, 24, 28 for an assumed 10 MHz, 5-dot clock). `VCOLS`/`VROWS` and one 16-byte table in
-  `monitor.asm` change it.
+  10, 31, 6, 24, 28 for an assumed 10 MHz, 5-dot clock). Since `ROM 2026-10-22` the columns are the variable
+  `VCOLSV` and R0..R3 come from one of three 4-byte tables (above).
 - **Y1/OS**: `video [on|off|clear|init|probe]` (`/BIN/VIDEO`, `os/man/video`).
 - **Emulators**: `-V` prints the screen, `-W` logs CRTC writes, `-N` removes the card; `tests/video/emu.py`.
 

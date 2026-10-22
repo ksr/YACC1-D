@@ -53,7 +53,7 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
 - Four extra instructions (2026-09-24, `--xisa`): `LDZ`/`STZ Rn,d` ($80+n/$88+n, variable page = R6 high byte),
   `ADDIW Rn,#w` ($C0+n), `SHL16 Rn` ($C8+n). The native toolchain (compiler passes, /BIN/ASM) needs them.
 - Memory map: ROM $E000-$FFFF (BASIC $E000, monitor $F000, BIOS vectors $FFC0-$FFFC, video entry $FFBC); monitor RAM
-  $0C00-$0FFF (stack $0C00-$0EFF, variables $0F00.., SYSTAB $0F14, ARGBUF $0F40, video flags $0FF0-$0FF7); Y1/OS at
+  $0C00-$0FFF (stack $0C00-$0EFF, variables $0F00.., SYSTAB $0F14, ARGBUF $0F40, video flags $0FF0-$0FF9); Y1/OS at
   $1000, OS RAM $4A00, SYSTAB2 $4FC0; programs (TPA) $5000-$CFFF; video RAM $D000-$D7FF, 6845 CRTC $D800 (address) /
   $D802 (data), odd addresses there = the JP1 latch (never write them).
 - I/O ports: P0/P1 = the I/O card (control latch + data: UART, switches, LEDs, LCD, TIL311); P2-P7 decoded by it but
