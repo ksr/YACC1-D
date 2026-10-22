@@ -1,6 +1,8 @@
-# video-v1.3 — KiCad design master for the video card
+# video-v1.3 — KiCad design for the video card
 
-**This is the master (since 2026-10-22). Not ordered.** v1.3 is `../v1.2/` (the bench state of 2026-10-21) with one
+**Superseded by `../v2.0/` (2026-10-22), which builds on it; kept as the DOTS-jumper design. Not ordered.**
+
+(Was the master from 2026-10-22.) v1.3 is `../v1.2/` (the bench state of 2026-10-21) with one
 jumper that chooses **6 or 8 dots a character**, and a new board: **4 layers, routed from scratch** - In1.Cu a solid GND
 plane, In2.Cu a solid VCC plane, every signal routed anew, GND and VCC never routed (every power pin is a through-hole
 pad on its plane). The outline, the bus connector X1 and the placement are v1.2's; the parts v1.3 adds sit beside IC28.

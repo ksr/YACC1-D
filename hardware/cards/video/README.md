@@ -6,8 +6,8 @@ only SV3 5–6), cascaded from -VMA, into the memory card's undecoded $D000 bloc
 and sync on the card; the LM1881 sync-converter Eagle project in `archive/eagle-projects/` is the related
 composite-video experiment.
 
-**KiCad is the master design: `kicad/v1.3/` (2026-10-22; `kicad/v1.2/` and `kicad/v1.1/` before it) — hand-maintained,
-Fusion 360 abandoned for this card.**
+**KiCad is the master design: `kicad/v2.0/` (2026-10-22, generated from `v20_netlist.py` by `gen_v20.py` / `build.sh`;
+`kicad/v1.3/`, `kicad/v1.2/` and `kicad/v1.1/` before it) — Fusion 360 abandoned for this card.**
 `eagle/v1.0-fusion-export-2026-09-18/` is the Fusion export of the BUILT card (`Video_1.0.sch/.brd`, exported by Fusion as
 "Blank V3.1.brd" because the design started from the blank template) and `kicad/v1.0-fusion-export-2026-09-18/` its
 generated, proven conversion; both are the record of what was built. One version built, in the machine for bring-up
@@ -17,7 +17,10 @@ R14), E straight from the strobe (the R1/C1 one-shot removed), IC28 a 74163, Q2 
 ordered): 6 or 8 dots a character chosen by one jumper (DOTS, JP2: 80 x 24 or 64 x 24 from a 12 MHz crystal, both fonts
 in one EPROM, the mode readable at `$D801` bit 0, the card ID on bit 2 = 0: latch 3D tied low; the card in the
 machine reads bit 2 = 1 through a jumper on JP1 3-4; `ROM 2026-10-22` picks its geometry from them), on a new 4-layer board (In1 GND plane, In2 VCC plane) routed from
-scratch (`kicad/v1.3/README.md`, `build.sh`).
+scratch (`kicad/v1.3/README.md`, `build.sh`). **V2.0** (not ordered): v1.3 plus a graphics layer (512 x 192 in 8-dot mode,
+a time-shared 62256 behind the window $D800-$DFFF), the 6845 and every register on I/O ports PA-PE, two PS/2 ports on an
+ATmega328P (`embedded/video-ps2`) and an INT jumper; 218 mm long, 4 layers (`kicad/v2.0/README.md`, `docs/cards/video.md`
+section 7a).
 
 Known issues and findings:
 - **+5V rail unpowered as designed (found 2026-09-20 by the KiCad netlist proof, confirmed on the bench 2026-09-21).**

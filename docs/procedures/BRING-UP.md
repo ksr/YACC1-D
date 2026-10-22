@@ -521,7 +521,7 @@ $D800-$DFFF without the CRTC. What is known to be wrong before the 6845 goes in:
    blank. Confirm: scope IC19 pin 8 against IC28 pin 2; look for glyph bits on IC24 pin 13.
 5. (6.3) 74LS outputs driving 74HC inputs (IC28): measure the high level at IC28 pin 2.
 
-Design master is now `hardware/cards/video/kicad/v1.3/` (2026-10-22; v1.2 = the bench fixes, v1.1 from 2026-09-21); the Eagle folder is the record of the built board.
+Design master is now `hardware/cards/video/kicad/v2.0/` (2026-10-22; v1.3 = the DOTS jumper, v1.2 = the bench fixes, v1.1 from 2026-09-21); the Eagle folder is the record of the built board.
 
 ---
 
