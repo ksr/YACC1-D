@@ -335,6 +335,10 @@ the keyboard's codes: `embedded/video-ps2/README.md`.
 **Jumpers.** SV3 (the block, 5-6 for $D000), SV4 (1-2: the 12 MHz crystal), JP2 DOTS (fitted: 8 dots, 64 x 24 with
 graphics; open: 6 dots, 80 x 24), JP3 INT-EN.
 
+**Design review** (2026-10-22, before ordering): [`hardware/DESIGN-REVIEW-video-v2.0.md`](../../hardware/DESIGN-REVIEW-video-v2.0.md) -
+3 HIGH (the bootloader driving BUSY, the Mini-DIN footprint, the firmware's host-to-device bit count), 9 MED, 11 LOW, 6
+INFO; order after the HIGH fixes, with the MED net changes in the same rebuild.
+
 **Software to follow**: the ROM's V2.0 driver (IN PC, the 6845 through OUT PA/PB), the keyboard behind the console
 vectors, the emulators' V2.0 card model, Y1/OS `video`. `python3 tools/vidsim.py overlay --card v2.0` draws the card's
 picture today.

@@ -390,6 +390,16 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     74LS10, ATmega328P; IC1 (74ALS08) reused, IC2 removed. Model: `tools/vidsim.py --card v2.0`.
   - **Software to follow (not designed here)**: the ROM's driver over IN/OUT for V2.0 (probe IN PC), the keyboard behind
     the console vectors (CONST/CHARIN read PD/PE besides the UART), the emulators' V2.0 card model, Y1/OS `video`.
+  - **Design review 2026-10-22: `hardware/DESIGN-REVIEW-video-v2.0.md` - HIGH 3, MED 9, LOW 11, INFO 6. Verdict: order
+    after the HIGH fixes** (and fold the MED net changes into the same rebuild; the architecture needs no rework).
+    Must fix before ordering: **V2-1** Optiboot drives PB5 = BUSY (IC53/B's output) for ~1.4 s after every reset - swap
+    BUSY and SRC on the ATmega (IC49 pins 19 / 17) and the firmware's two pin numbers; **V2-2** redraw the Mini-DIN-6
+    footprint from the jack bought. Before the PS/2 ports are used: **V2-3** (firmware) `ps2_send()` counts the host's
+    own clock edge, so every command goes out a bit late - the mouse never starts. MED, all for the same rebuild: V2-4
+    the 157s' select = QC OR RCO (spare IC32/C: IC42's hold race); V2-5 IC40 enabled by GWE (GD contention); V2-6 MRST
+    through IC27/E,F (open collector) instead of D1; V2-7/V2-8 -INT = INTREQ AND FULL (spare IC19/D + IC48/C), pull-ups on
+    LDDATA and RDCMD, LDDATA idle high; V2-9/V2-12 IC33, IC40, IC51, IC53 in 74HCT; V2-10 a 28-pin socket for an
+    AT28C64B-15 instead of the 2732; V2-11 a faster 6845 grade for 80 x 24. Bench order in the review's last section.
 - **Sequencer logic v2.2: a "CPU off" switch** (`hardware/cards/sequencer-logic`). Today the card's outputs can never be
   silenced while the memory card is enabled: -BUS-EN is generated on the card itself (IC36 74LS04 from the sequencer's
   READY line) and is also the output enable of all nine pipeline 74LS374s and the two microcode-address 74LS244s; -RESET
