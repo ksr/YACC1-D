@@ -5,6 +5,9 @@
 /*
    video-ps2 (2026-10-22) - the PS/2 keyboard and mouse controller of the YACC1 video card V2.0
    (hardware/cards/video/kicad/v2.0, BACKLOG "Video card V2.0", embedded/video-ps2/README.md).
+   Revised 2026-10-22 after the design review (hardware/DESIGN-REVIEW-video-v2.0.md): BUSY and SRC swapped (V2-1,
+   Optiboot's LED pin PB5 is now the SRC output), host-to-device bit count (V2-3), LDDATA idle high (V2-7), MD released
+   with pull-ups (V2-9), the V2-18 robustness items.
 
    An ATmega328P at 16 MHz between two PS/2 jacks and the YACC1 bus. The CPU never talks to it directly: it reads and
    writes three latches on the card (so a 1 MHz CPU never waits for this firmware):
@@ -18,19 +21,24 @@
      D3        PD3 INT1              mouse CLOCK (J3 pin 5)
      D4        PD4                   keyboard DATA (J2 pin 1)
      D5        PD5                   mouse DATA (J3 pin 1)
-     D6        PD6  LDDATA  out      rising edge: the data latch takes MD0..7, FULL sets
-     D7        PD7  -RDCMD  out      low: the command latch drives MD0..7 (and BUSY clears)
+     D6        PD6  LDDATA  out      idle high (10k pull-up R22); a low pulse: the data latch takes MD0..7 and FULL
+                                     sets on its rising edge
+     D7        PD7  -RDCMD  out      low: the command latch drives MD0..7 (and BUSY clears); 10k pull-up R23
      A0..A5    PC0..PC5  MD0..MD5    the local bus (both directions)
      D8, D9    PB0, PB1  MD6, MD7
      D10       PB2  FULL    in       1 = the CPU has not read the last byte yet
-     D11       PB3  SRC     out      0 = the byte in the data latch is from the keyboard, 1 = from the mouse
-     D12       PB4  INTREQ  out      1 = request -INT (through IC27/D, open collector, and jumper JP3 INT-EN)
-     D13       PB5  BUSY    in       1 = the CPU wrote a command (OUT PD) the firmware has not read yet
+     D11       PB3  BUSY    in       1 = the CPU wrote a command (OUT PD) the firmware has not read yet
+     D12       PB4  INTREQ  out      1 = request -INT: the card ANDs it with FULL (IC54/B) into IC27/D (open
+                                     collector) and jumper JP3 INT-EN; 10k pull-down R24
+     D13       PB5  SRC     out      0 = the byte in the data latch is from the keyboard, 1 = from the mouse
+                                     (PB5 is the Uno bootloader's LED pin: it may flash during Optiboot, harmless on
+                                     SRC, which only matters with FULL)
    The PS/2 lines are open drain: a pin is either an input (the 4.7k pull-up makes 1) or an output driving 0.
 
    Commands (OUT PD): $01 interrupts on, $02 off, $03 acknowledge (-INT released until the next byte), $04 mouse on
    (reset + enable data reporting), $05 mouse off, $06 flush both queues, $07 keyboard reset, $10-$17 keyboard LEDs
-   (bit 0 scroll, 1 num, 2 caps lock), $FF start again (as after a reset). The bus -RESET resets the ATmega (D1).
+   (bit 0 scroll, 1 num, 2 caps lock), $FF start again (as after a reset). The bus -RESET resets the ATmega (through
+   IC27/E,F, open collector: the bus line only ever pulls MRST down).
    Keyboard bytes are ASCII (set-2 scan codes translated: shift, caps lock, ctrl, the keypad, arrows and the editing
    keys as VT100 sequences ESC [ A..D / H / F / 5~ / 6~, Delete $7F); mouse bytes are its 3-byte packets, raw and
    whole (a packet is queued only when all three bytes are in).
@@ -43,12 +51,12 @@
 #define LDDATA 6
 #define RDCMD 7
 #define PIN_FULL 10
-#define PIN_SRC 11
+#define PIN_BUSY 11                    // V2-1: BUSY on PB3, SRC on PB5 (Optiboot's LED pin)
 #define PIN_INTREQ 12
-#define PIN_BUSY 13
+#define PIN_SRC 13
 
 #define QSIZE 64                      // the queue to the CPU: (byte, source) pairs
-#define RXSIZE 16                     // each port's receive ring
+#define RXSIZE 64                     // each port's receive ring (64: the mouse's packets during LED commands)
 #define FRAME_TIMEOUT_US 2000UL       // a gap this long between clock edges restarts the frame
 
 // ---------------------------------------------------------------- the two PS/2 ports (interrupt side)
@@ -62,10 +70,10 @@ struct Ps2 {
 Ps2 kb = {KCLK, KDAT}, ms = {MCLK, MDAT};
 
 static inline void ps2_edge(Ps2 &p) {             // called on every falling clock edge
+  uint8_t d = digitalRead(p.dat);                 // the data bit first: it is valid only while the clock is low
   uint32_t now = micros();
   if (now - p.last > FRAME_TIMEOUT_US) p.n = 0;   // a stray or broken frame: start again
   p.last = now;
-  uint8_t d = digitalRead(p.dat);
   if (p.sending) {                                // host to device: put the next bit while the clock is low
     if (p.n < 8) { if ((p.sendbyte >> p.n) & 1) pinMode(p.dat, INPUT); else { pinMode(p.dat, OUTPUT); digitalWrite(p.dat, LOW); } }
     else if (p.n == 8) { if (p.sendparity) pinMode(p.dat, INPUT); else { pinMode(p.dat, OUTPUT); digitalWrite(p.dat, LOW); } }
@@ -100,13 +108,17 @@ int ps2_get(Ps2 &p) {                            // the next received byte, or -
 bool ps2_send(Ps2 &p, uint8_t b) {               // host to device; true when the device acknowledged
   uint8_t ones = 0;
   for (uint8_t i = 0; i < 8; i++) ones += (b >> i) & 1;
+  // Request to send: the clock low for 120 us. INT0/INT1 fire on this, the host's own falling edge (they trigger on
+  // output pins too), so the transmitter is armed only afterwards: the edge reaches the receive side with the data
+  // line released (high) and is ignored there (V2-3; armed first, it was counted as the device's first clock and
+  // every byte went out one bit late).
+  digitalWrite(p.clk, LOW); pinMode(p.clk, OUTPUT);
+  delayMicroseconds(120);
   noInterrupts();
   p.sendbyte = b; p.sendparity = (ones & 1) ? 0 : 1; p.ack = 0; p.n = 0; p.sending = 1;
   interrupts();
-  pinMode(p.clk, OUTPUT); digitalWrite(p.clk, LOW);        // request to send: clock low for 120 us
-  delayMicroseconds(120);
-  pinMode(p.dat, OUTPUT); digitalWrite(p.dat, LOW);        // the start bit
-  pinMode(p.clk, INPUT);                                   // the device now clocks the bits in
+  digitalWrite(p.dat, LOW); pinMode(p.dat, OUTPUT);        // the start bit
+  pinMode(p.clk, INPUT);                                   // released: a rising edge; the device now clocks the bits in
   uint32_t t0 = millis();
   while (p.sending && millis() - t0 < 20) ;
   pinMode(p.dat, INPUT);
@@ -149,7 +161,7 @@ void md_write(uint8_t b) {
   PORTB = (PORTB & 0xFC) | (b >> 6);
 }
 
-void md_release() { DDRC &= 0xC0; DDRB &= 0xFC; PORTC &= 0xC0; PORTB &= 0xFC; }   // inputs, no pull-ups
+void md_release() { DDRC &= 0xC0; DDRB &= 0xFC; PORTC |= 0x3F; PORTB |= 0x03; }   // inputs with pull-ups (V2-9)
 
 uint8_t read_command() {                          // the command latch onto MD (and BUSY cleared)
   md_release();
@@ -162,14 +174,14 @@ uint8_t read_command() {                          // the command latch onto MD (
 
 void feed_cpu() {                                 // the next queued byte into the data latch once the CPU took the last
   if (qh == qt || digitalRead(PIN_FULL)) return;
-  delayMicroseconds(5);                           // FULL is held clear while the CPU's read strobe lasts (~2 us)
-  if (digitalRead(PIN_FULL)) return;
+  delayMicroseconds(5);                           // FULL is held clear while the CPU's read strobe lasts: INP holds
+  if (digitalRead(PIN_FULL)) return;              // -IO-RD 7 clocks (7 us at 1 MHz); a load inside it is caught below
   digitalWrite(PIN_SRC, qsrc[qt]);
   md_write(qbyte[qt]);
   delayMicroseconds(1);
-  digitalWrite(LDDATA, HIGH);                     // the 74LS374 and FULL take it on this rising edge
+  digitalWrite(LDDATA, LOW);                      // LDDATA idles high (V2-7): a low pulse,
   delayMicroseconds(1);
-  digitalWrite(LDDATA, LOW);
+  digitalWrite(LDDATA, HIGH);                     // the 74LS374 and FULL take the byte on its rising edge
   md_release();
   if (digitalRead(PIN_FULL)) qt = (qt + 1) % QSIZE;   // else a read strobe overlapped: load it again next time
 }
@@ -209,6 +221,7 @@ void key_nav(uint8_t k) {                         // the editing keys as VT100 s
     case K_PGUP: s = "\x1b[5~"; break; case K_PGDN: s = "\x1b[6~"; break; case K_DEL: qput(0x7F, 0); return;
     default: return;
   }
+  if (qfree() < 4) return;                        // a sequence goes in whole or not at all
   while (*s) qput(*s++, 0);
 }
 
@@ -222,13 +235,13 @@ void keyboard_byte(uint8_t c) {
   brk = ext = false;
   if (c == 0x12 && e) return;                     // Print Screen's fake shifts
   if (c == 0x12) { lshift = !up; return; }
-  if (c == 0x59) { rshift = !up; return; }
+  if (c == 0x59 && !e) { rshift = !up; return; }   // (E0 59 is a fake shift)
   if (c == 0x14) { if (e) rctrl = !up; else lctrl = !up; return; }
   if (c == 0x11) return;                          // Alt: no meaning here
   if (up) return;                                 // other releases: nothing
   if (c == 0x58) { caps = !caps; send_leds(); return; }
   if (c == 0x77) { num = !num; send_leds(); return; }
-  if (c == 0x7E) { scroll = !scroll; send_leds(); return; }
+  if (c == 0x7E && !e) { scroll = !scroll; send_leds(); return; }   // E0 7E is Ctrl-Break, not Scroll Lock
   if (e) {
     switch (c) {
       case 0x75: key_nav(K_UP); return;   case 0x72: key_nav(K_DOWN); return;
@@ -306,8 +319,8 @@ void command(uint8_t c) {
 void setup() {
   Serial.begin(38400);
   pinMode(KCLK, INPUT); pinMode(KDAT, INPUT); pinMode(MCLK, INPUT); pinMode(MDAT, INPUT);   // released: the pull-ups
-  pinMode(LDDATA, OUTPUT); digitalWrite(LDDATA, LOW);
-  pinMode(RDCMD, OUTPUT); digitalWrite(RDCMD, HIGH);
+  digitalWrite(LDDATA, HIGH); pinMode(LDDATA, OUTPUT);     // idle high, as the pull-up held it through the reset
+  digitalWrite(RDCMD, HIGH); pinMode(RDCMD, OUTPUT);
   pinMode(PIN_FULL, INPUT); pinMode(PIN_BUSY, INPUT);
   pinMode(PIN_SRC, OUTPUT); pinMode(PIN_INTREQ, OUTPUT); digitalWrite(PIN_INTREQ, LOW);
   md_release();
