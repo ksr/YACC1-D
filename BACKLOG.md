@@ -211,7 +211,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   - Away from the machine: `tools/vidsim.py run/render/timing` draws the card's picture (the emulators save its state
     with `Y1VIDSTATE`); `tests/video/asm/run.py` in `make check`.
 - **Video card, the next revision (2026-10-10): a PS/2 keyboard interface, and the DB9 able to drive an old IBM XT
-  monitor.** Which monitor decides the timing (to ask at the machine): **IBM 5151** (MDA, mono): 18.432 kHz / 50 Hz,
+  monitor.** (2026-10-22: the PS/2 half is designed in **Video card V2.0** below; the IBM-monitor half - MDA timing,
+  9-dot cells, sync polarity, intensity - stays open.) Which monitor decides the timing (to ask at the machine): **IBM 5151** (MDA, mono): 18.432 kHz / 50 Hz,
   720x350, 9-dot characters from a 16.257 MHz dot clock, DB9 1-2 GND, 6 intensity, 7 video, 8 +HSYNC, 9 -VSYNC; or **IBM
   5153** (CGA, colour): 15.7 kHz / 60 Hz, DB9 3-6 R G B I, 8 +HSYNC, 9 +VSYNC. The v1.0/v1.1 DB9 is MDA-like (7 video,
   8 HS, 9 VS, 1 GND) but its timing is TV rate (the ROM's table: 15.75 kHz from the 11.0592 MHz crystal, 80 x 24) and its
@@ -287,7 +288,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   - **To do in the tools before the bench**: `tools/vidsim.py --dots 8` (it draws 5-dot glyphs in an 8-dot cell today;
     a 7-dot font and the overlay at 8 dots a byte are not modelled yet), `tests/video/asm` and the emulators' screen
     geometry follow `VCOLS`.
-- **Video: a graphics overlay (proposed 2026-10-21, modelled in `tools/vidsim.py overlay`, not designed).** A 480 x 192
+- **Video: a graphics overlay (proposed 2026-10-21, modelled in `tools/vidsim.py overlay`; designed 2026-10-22 as part of
+  Video card V2.0 below - 8-dot mode only, 512 x 192, one time-shared 62256; the 6-dot/480-wide variant here is not built).** A 480 x 192
   bitmap over the 80 x 24 text, from the same 6845. Each character time the 6845's MA0..10 (cell) and RA0..2 (scan
   line) already address the text RAM and the EPROM; the overlay RAM is addressed **RA2..0:MA10..0** (14 bits, 16K: eight
   2K planes, plane n = scan line n of every cell) and read in step with the text, so the two cannot drift. A byte is one
@@ -314,6 +316,80 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     CPU read latch (74LS374) and write latch, the bank/control register (bank, TEXT-ON, GFX-ON), a 74LS166, three gates. Goes with the PS/2 and IBM-monitor
     revision. Model: `python3 tools/vidsim.py overlay --tint --png ov.png` (the test card plus a drawing; `--overlay FILE`
     any 16K image, also in run/render; `--gmode or|xor`, `--layers text,gfx|text|gfx|none`); `tests/video/overlay_check.py` checks the addressing.
+- **Video card V2.0 (designed 2026-10-22; `hardware/cards/video/kicad/v2.0`, not ordered).** V1.3 (DOTS jumper, 12 MHz,
+  both fonts in one EPROM, 4 layers) plus a graphics layer, two PS/2 ports and every register on I/O ports. Board 218 mm
+  long (the sequencer logic V2.1l's length; X1 where every card has it), 4 layers: In1 GND plane, In2 VCC plane.
+  - **Memory map**: text RAM **$D000-$D7FF** as before (IDT7134, the 6845 reads the other port); **graphics window
+    $D800-$DFFF** (2K = one scan-line plane, chosen by the control register). The 6845's memory-mapped registers and the
+    JP1 latch are gone (IC2, JP1, the upper-half decode, R13/R14). Board select unchanged (74S85 + SV3: the $D000 block).
+  - **I/O ports** (74LS138 on IO-ADDR0..2, enabled by IO-ADDR3: PA..PF = Y2..Y7; two 74LS32 OR each select with
+    -IO-RD/-IO-WR, so a strobe is low only during the bus strobe for this card's port, as on the CF card; P0-P9 untouched):
+    | port | read (IN) | write (OUT) |
+    |---|---|---|
+    | **PA** | - | 6845 address register |
+    | **PB** | 6845 data (R14-R17) | 6845 data |
+    | **PC** | card status: bit 0 DOTS (1 = 6 dots), 1 VSYNC, 2 DE (display enable), 3 = 0, bits 7..4 = **0101 (card ID $5x)** | control: bits 0-2 PLANE (the CPU window's plane), 3 CPAGE (the CPU's 16K page), 4 DPAGE (the displayed page), 5 TEXT-OFF, 6 GFX-ON, 7 XOR (graphics XOR text instead of OR); 74LS273, cleared by -RESET: plane 0, page 0, text on, graphics off |
+    | **PD** | PS/2 status: bit 0 FULL (a byte waits in PE), 1 SRC (0 keyboard, 1 mouse; valid with FULL), 2 BUSY (a command not yet taken), 7..3 = 0 | PS/2 command (below) |
+    | **PE** | PS/2 data: the next byte; reading it clears FULL | - |
+    | **PF** | spare | spare |
+    6845 on PA/PB: -CS = Y2 AND Y3 (address only, so it is settled before E), RS = IO-ADDR0 (PA even, PB odd),
+    R/-W = -IO-WR, **E = -IO-RD XOR -IO-WR** (IC26/C: high for the whole of every I/O strobe; no one-shot - the bench's
+    V1.2 fix, now on I/O strobes). An old ROM (2026-10-22) on V2.0: the $D000 probe still finds the card, but its 6845
+    writes land in graphics RAM at $D800/$D802 (harmless) and `$D801` reads RAM, so there is no picture until a ROM
+    with the V2.0 driver: IN PC, (v AND $F0) = $50 -> V2.0, bit 0 -> 80 x 24 or 64 x 24, the 6845 through OUT PA/PB.
+  - **Graphics**: 16K at **RA2..0:MA10..0** per page (eight 2K planes, plane n = scan line n of every cell; at 64
+    columns 1,536 bytes of each used: **512 x 192**, 8 dots a byte, bit 7 leftmost). One **62256** (32K = two pages:
+    CPAGE / DPAGE give double buffering), **time-shared per character slot** - the slot logic from the existing clocks:
+    IC28 counts 8..15 in 8-dot mode (10..15 in 6-dot); its **QC** (CRTCCLOCK) is 0 for counts 8-11 = the **CPU half**
+    and 1 for 12-15 = the **display half** (333 ns each at 12 MHz). QC is the select of four 74LS157s (CPU: ADDR0..10,
+    PLANE0..2, CPAGE; display: MA0..10, RA0..2, DPAGE).
+    | count | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 |
+    |---|---|---|---|---|---|---|---|---|
+    | QC / address | CPU | CPU | CPU | CPU | display | display | display | display |
+    | -WE (write pending) | | low | low | | | | | |
+    | latches | WRQ samples | | | | CPU read latch loads (QC rises) | | | display latch loads (CHARCLOCK rises at the end) |
+    - **CPU read** of $D800-$DFFF: every QC rise loads a 74LS374 with the RAM byte at the CPU's address; it drives
+      DATA0..7 while -MEM-RD and the window are selected (-OE = NAND(GSEL, MEMRD), IC19/A). The YACC1's read strobe
+      is a whole microcode step (2 us at 1 MHz), so at least one complete CPU half falls inside it and the latch holds
+      the right byte when the CPU samples - no wait states, no snow. Needs a strobe of at least ~1.4 us: graphics reads
+      fail above a ~1.5 MHz CPU clock (the text RAM, dual-port, has no limit).
+    - **CPU write**: a 74LS74 (WRQ) samples GWR (window AND -MEM-WR) on CHARCLOCK's rise (the start of the CPU half);
+      WSLOT = WRQ AND NOT QC turns the RAM's -OE off and a 74LS244 on (DATA0..7 -> the RAM's data pins);
+      -WE = NAND(WRQ, NOT QC, QA XOR QB, GWR) is low for counts 9-10 (167 ns; count 10 only, 83 ns, in 6-dot mode).
+      Sampling at the start of the half means a write never starts mid-slot; GWR in the NAND ends it with the strobe.
+      A 2 us strobe writes the same byte two or three times - harmless.
+    - **Display**: the display half reads the byte for the current cell and scan line; a 74LS374 latches it on
+      CHARCLOCK's rise (the same edge as the text code into IC23), a second 74LS166 loads it on the next CHARCLOCK
+      (with IC24) and shifts it out bit 7 first: the text and graphics dots stay in step through the same
+      one-character pipeline, with DE and the cursor delayed by IC22 as before.
+    - **Combine**: TDG = text dot AND NOT TEXT-OFF; GDG = graphics dot AND GFX-ON AND **8-dot mode** (NOT DOTS: in
+      6-dot mode the graphics layer never shows; the CPU can still fill it); dot = (TDG OR GDG) AND NOT(TDG AND GDG AND
+      XOR) - OR, or XOR when bit 7 is set; video = NAND3(dot, NAND-term, delayed DE) into IC27/A as before.
+  - **PS/2: two Mini-DIN-6 jacks** (keyboard J2, mouse J3; pin 1 data, 3 GND, 4 +5 V, 5 clock; 4.7k pull-ups on clock and
+    data) on an **ATmega328P** (16 MHz crystal; keyboard clock on INT0/PD2, mouse clock on INT1/PD3, data on PD4/PD5;
+    the PS/2 lines driven open-drain for host-to-device commands). Firmware `embedded/video-ps2/`: frames with parity
+    and timeouts, set-2 scan codes -> ASCII (shift, caps, ctrl, extended keys, break codes), the mouse reset + enable
+    reporting ($F4) and its 3-byte packets queued.
+    - **Bus interface** (latches, so the 1 MHz CPU never waits for the MCU): an 8-bit local bus MD0..7 (PC0-PC5,
+      PB0, PB1). **Data out**: the MCU puts a byte on MD and pulses LDDATA (PD6): a 74LS374 latches it (read by IN PE)
+      and a 74LS74 sets FULL; reading PE clears FULL (CLR = -RD_PE AND -RESET); the MCU waits for FULL = 0 (PB2) before
+      the next byte, and sets SRC (PB3) first. **Commands**: OUT PD latches DATA0..7 into a second 74LS374 on the
+      strobe's rising edge and sets BUSY (74LS74); the MCU sees BUSY (PB5), reads the latch onto MD with -RDCMD (PD7,
+      the latch's -OE), which also clears BUSY. **Status**: a 74LS244 puts FULL, SRC, BUSY on DATA0..2 for IN PD.
+    - **Commands (OUT PD)**: $01 interrupts on, $02 off, $03 acknowledge (release -INT until the next byte), $04 mouse
+      on (reset + enable reporting), $05 mouse off, $06 flush both queues, $07 keyboard reset, $10-$17 keyboard LEDs
+      (bit 0 scroll, 1 num, 2 caps), $FF re-initialise.
+    - **INT**: the MCU's INTREQ (PB4) through IC27/D (7416, open collector) to **jumper JP3 (INT-EN)** and the bus -INT
+      (C13; the I/O card's RN2 is its pull-up). Jumper off: the card never touches -INT. Jumper on: -INT is low while
+      interrupts are on (command $01) and a byte waits; reading PE (or $03) releases it; the handler reads PD first,
+      so -INT can be shared with the I/O card.
+    - **FTDI header J4** (GND, CTS, VCC not connected, TXD, RXD, DTR -> 100 nF -> RESET) for the bootloader and a debug
+      console, as on the sequencer card; bus -RESET also resets the MCU through a 1N4148 (no fight with the DTR pulse).
+  - **Chips added**: 74LS138, 2x 74LS32, 74LS273, 2x 74LS244 (status, PS/2 status), 4x 74LS157, 62256, 74LS244 (write
+    buffer), 3x 74LS374 (CPU read, display, PS/2 data) + 1 (command), 74LS166, 2x 74LS74, 74LS20, 74LS04, 74LS08,
+    74LS10, ATmega328P; IC1 (74ALS08) reused, IC2 removed. Model: `tools/vidsim.py --card v2.0`.
+  - **Software to follow (not designed here)**: the ROM's driver over IN/OUT for V2.0 (probe IN PC), the keyboard behind
+    the console vectors (CONST/CHARIN read PD/PE besides the UART), the emulators' V2.0 card model, Y1/OS `video`.
 - **Sequencer logic v2.2: a "CPU off" switch** (`hardware/cards/sequencer-logic`). Today the card's outputs can never be
   silenced while the memory card is enabled: -BUS-EN is generated on the card itself (IC36 74LS04 from the sequencer's
   READY line) and is also the output enable of all nine pipeline 74LS374s and the two microcode-address 74LS244s; -RESET
