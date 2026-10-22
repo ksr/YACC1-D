@@ -303,6 +303,7 @@ CHANGES = [("IC28", "1", "VCC"), ("IC28", "3", "GND"), ("IC28", "4", "DOTS"), ("
            ("IC24", "2", "CG0"), ("IC24", "3", "CG1"), ("IC24", "4", "CG2"), ("IC25", "9", "CG0"), ("IC25", "10", "CG1"),
            ("IC25", "11", "CG2"), ("IC25", "19", "DOTS"), ("IC2", "3", "DOTS"), ("IC2", "11", "VCC"), ("JP1", "1", None),
            ("JP1", "13", None), ("JP2", "1", "DOTS"), ("JP2", "2", "GND"), ("R15", "1", "VCC"), ("R15", "2", "DOTS"),
+           ("IC2", "7", "GND"), ("JP1", "4", None),     # 2026-10-22: latch 3D low = the V1.3 card ID ($D801 bit 2)
            ("IC17", "24", "ADDR1"), ("IC17", "3", "GND"), ("IC1", "2", "VCC")]          # the last three: v1.2's, kept
 
 
