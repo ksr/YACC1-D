@@ -467,6 +467,17 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   $FFFF, seen while -RESET was held) clears FORCE-ROM; or reset-switch bounce. Next: a scope on -RESET, BUS-LATCH-CLK,
   -VMA, ADDR15 and IC12/A Q, triggered on -RESET rising. **Workaround: reset in SS, then FREERUN.** It did boot with
   a running clock on 2026-10-10, so check what differs (the SS-SEL jumper, the JP4 clip lead, the front-panel latch).
+  - **Tests to run next (agreed 2026-10-21), in order, each a reset in FREERUN with the console watched:**
+    1. **1 MHz, the 2026-10-10 setup**: SS-SEL on INT, the clip lead off JP4, the bus tester pulled (or on bus-monitor).
+       Boots -> the stepping setup was the cause (the clip into the clock gating, or the tester's 100k pull-ups).
+    2. If not, **the 6 MHz oscillator**, same setup. Boots at 6 but not at 1 -> a timing race: while -RESET is held the
+       pipeline keeps its last word (reset does not clear it), possibly with -2-BYTE-OPERAND-SEL set, which disables
+       ADDR-REG-ID (the POPR mechanism) so no one drives the address bus (A=$FFFF, ADR=14 seen during reset). If the
+       release pulse fails to load START, that word lasts until the first counter clock - ~1 us at 1 MHz, ~170 ns at
+       6 MHz - and a floating ADDR15 pulled up (the tester's 100k on every line) reaches threshold only in the longer
+       window, with -VMA asserted: FORCE-ROM cleared. Fails at both -> the release pulse itself: the scope.
+    The microcode is ruled out: the image (boot check 0 mismatches, `test.hex` unchanged since ad0cef3) reset fine at
+    speed on 2026-10-10 after the POPR load, and 1 MHz resets worked for every bench run 2026-09-23..10-09.
 - (done 2026-09-21: both ATmegas now run tree builds, verified by reading the flash back; the previous binaries are in
   `embedded/*/readback/`)
 - (done 2026-09-20: `tools/verify_embedded.py`, 12 sketches compile against the vendored libraries)
