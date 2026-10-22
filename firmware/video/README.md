@@ -9,6 +9,13 @@ fitted EPROM is blank or holds a foreign set (read it first: `minipro -p 2732A@D
 `tools/vidsim.py ... --chargen chargen-read.bin`). Burn with `minipro -p 2732A@DIP24 -w firmware/video/chargen.bin`.
 `docs/procedures/VIDEO-BRINGUP.md` phase 0.
 
+`chargen-v13.bin` (2026-10-22) — the EPROM for the v1.3 design (`hardware/cards/video/kicad/v1.3`), written by
+`python3 tools/vidsim.py chargen --card v1.3`: two fonts selected by A10, which v1.3 wires to the DOTS jumper. $000-$1FF
+the 8-dot font (DOTS fitted): 7x7 glyphs drawn for the card, a glyph row in D7..D1 with D7 the leftmost, D0 = 0 (the gap
+column; v1.3's 74LS166 loads all eight bits); $400-$5FF the 6-dot font (DOTS open): the same 5x7 glyphs as
+`chargen.bin`, D7..D3, D2..D0 = 0. Same 2513 order and code x 8 + row addressing; the rest zero. Not burned (no v1.3
+board exists). `tests/video/overlay_check.py` checks that this file is what the tool writes.
+
 ## The card's own EPROM (read 2026-10-18)
 
 `chargen-read.bin` is IC25 as found, read twice with the TL866II+ (`minipro -p 2732A@DIP24 -r`, MD5

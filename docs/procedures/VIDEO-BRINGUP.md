@@ -154,6 +154,9 @@ microcode emulator is checked in `make check` (`tests/video/asm/run.py`).
   uses a real EPROM image, `--dotclock HZ` sets the crystal.
 - `python3 tools/vidsim.py timing --regs R0,R1,... --dotclock HZ`: the raster any register table makes, checked
   against a TV-rate monitor, an IBM 5151 and an IBM 5153.
+- `python3 tools/vidsim.py testcard --png card.png`: the test card with the card's own table. `--card v1.3 --dots 6`
+  (80 x 24) or `--dots 8` (64 x 24, the 7-dot font) draws the v1.3 design's two modes (12 MHz, the DOTS jumper;
+  `BACKLOG.md` "Video v1.3"); `vidsim.py chargen --card v1.3` writes its two-font EPROM, `firmware/video/chargen-v13.bin`.
 - Both emulators model the card (`software/videomodel.h`):
   - `-V` prints the screen.
   - `-W` logs every CRTC write, and every write to the latch (a bus fight on the real card).

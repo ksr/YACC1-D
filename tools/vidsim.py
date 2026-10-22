@@ -19,14 +19,19 @@ what the real card should show.
   vidsim.py overlay [--overlay FILE] [--save-overlay FILE] [--gmode or|xor] [--layers L] [--tint] [--png OUT.png]
         the PROPOSED graphics overlay (--layers text,gfx|text|gfx|none) (BACKLOG "Video: graphics overlay", 2026-10-21; not built): the test card's text
         with a demo drawing (or a 16K overlay image) in a second RAM that the same 6845 scans - see "The overlay" below
-  vidsim.py chargen [--out FILE]
-        write a 2732 character-generator image (4K) for this card's wiring with the font drawn here (a 2513-style
-        64-character set): address = code*8 + row (code = VDATA0..5 on A3..A8, row = RA0..2), dots in D7..D3 (D7 the
-        leftmost, shifted out first by the 74LS166), D2..D0 unused. Burn with `minipro -p 2732A@DIP24 -w FILE` if the fitted
-        EPROM's contents are unknown or wrong.
+  vidsim.py testcard [--card v1.0|v1.3] [--dots N] [--regs R0,R1,...] [--png OUT.png]
+        the test card (tests/video/asm/testcard.asm's layout, laid out for R1 columns) with the card's own table
+  vidsim.py chargen [--card v1.0|v1.3] [--out FILE]
+        write a 2732 character-generator image (4K) for the card's wiring with the fonts drawn here (2513-style
+        64-character sets): address = code*8 + row (code = VDATA0..5 on A3..A8, row = RA0..2), D7 the leftmost dot,
+        shifted out first by the 74LS166. v1.0 (firmware/video/chargen.bin): 5 dots in D7..D3, D2..D0 unused. v1.3
+        (firmware/video/chargen-v13.bin): the 8-dot font at $000 (a 7-dot glyph in D7..D1) and the 6-dot font at $400
+        (D7..D3), A10 = the DOTS jumper. Burn with `minipro -p 2732A@DIP24 -w FILE`.
 
-Common options: --dotclock HZ (default 11.0592e6: the card's crystal, Q2, fitted 2026-10-21, SV4 on 1-2), --dots 5|6 (IC28 a
-74163 since 2026-10-18: 6, with a blank 6th dot; the drawn 74HC160: 5), --chargen FILE (a
+Common options: --card v1.0 (the card in the machine, the default) | v1.3 (the design with the DOTS jumper: 12 MHz, --dots 6
+= 80 x 24, --dots 8 = 64 x 24, both fonts in one EPROM; BACKLOG "Video v1.3"), --dotclock HZ (default the card's crystal:
+v1.0 11.0592e6, Q2 fitted 2026-10-21, SV4 on 1-2; v1.3 12e6), --dots N (v1.0: 6 = IC28 a 74163 since 2026-10-18, a blank
+6th dot; 5 = the drawn 74HC160; v1.3: 6 or 8), --chargen FILE (a
 2732 image read from the card's EPROM with minipro, instead of the drawn font), --raster (draw the whole frame: the
 display area, the horizontal sync in red, the vertical sync in blue, blanking grey), --nocursor, --scale N.
 
@@ -38,8 +43,8 @@ mode, R11 end line, R14:R15) XORs like the attribute.
 
 The overlay (a proposal for the next card, modelled 2026-10-21): a 16K RAM read at every character time together with the
 text RAM, addressed RA2..0:MA10..0 - eight planes of 2K, plane n = scan line n of every character cell. A byte is one
-cell's 6 dots on one line in bits 7..2 (bit 7 leftmost, the order the second 74LS166 shifts them out), bits 1..0 spare;
-480 x 192 dots in all. Its dots are ORed (or XORed: --gmode) with the text dots before the video output, and two control bits switch each layer
+cell's dots on one line from bit 7 down (the order the second 74LS166 shifts them out): 6 dots in bits 7..2 with 1..0
+spare (480 x 192), or on the v1.3 card's 8-dot mode all eight bits (512 x 192 at 64 columns, cell (y >> 3) * 64 + x >> 3). Its dots are ORed (or XORed: --gmode) with the text dots before the video output, and two control bits switch each layer
 on or off (TEXT-ON, GFX-ON: --layers text,gfx | text | gfx | none).
 The CPU sees it through a window (default 1K: 16 banks, `Overlay.cpu_write(bank, offset, value)`); dot (x, y) is at
 plane y & 7, cell (y >> 3) * columns + x / 6, mask $80 >> x % 6 (`Overlay.locate`, `x_table` = the 480-entry lookup
@@ -52,6 +57,17 @@ import os, re, sys, zlib, struct, argparse, subprocess, tempfile
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOTS = 6                     # dots per character: IC28 a 74163 (synchronous clear) since 2026-10-18; the drawn 74HC160: 5
 ROM_TABLE = [116, 80, 94, 9, 31, 6, 24, 27, 0, 7, 0x67, 7, 0, 0, 0, 0]    # the monitor's vcrtab (monitor.asm): 80 x 24, 11.0592 MHz
+CARD = "v1.0"                # v1.0: the card in the machine (11.0592 MHz, IC24 loads EPROM D7..D3 only, A..C grounded);
+                             # v1.3: the design (12 MHz, the DOTS jumper: 6 or 8 dots, IC24 loads all eight bits, two fonts)
+CARD_CLOCK = {"v1.0": 11.0592e6, "v1.3": 12e6}
+V13_TABLES = {6: [126, 80, 98, 10, 31, 6, 24, 27, 0, 7, 0x67, 7, 0, 0, 0, 0],    # DOTS open: /6, 2.0 MHz, 80 x 24
+              8: [94, 64, 75, 8, 31, 6, 24, 27, 0, 7, 0x67, 7, 0, 0, 0, 0]}     # DOTS fitted: /8, 1.5 MHz, 64 x 24
+
+
+def card_table(card=None, dots=None):
+    """the 6845 table for a card (and, on v1.3, the DOTS mode): R0..R15"""
+    card = card or CARD; dots = dots or DOTS
+    return list(V13_TABLES[dots] if card == "v1.3" else ROM_TABLE)
 
 # 5x7 glyphs for ASCII $20-$5F, column-major (bit 0 = top row), the classic HD44780-style shapes
 _COLS = """
@@ -71,6 +87,51 @@ def font_rows(code):
     ascii_ = code | 0x40 if code < 0x20 else code
     cols = bytes.fromhex(_COLS[ascii_ - 0x20])
     return [sum(((cols[c] >> r) & 1) << (4 - c) for c in range(5)) for r in range(7)] + [0]
+
+
+# 7x7 glyphs for the v1.3 card's 8-dot cells, in 2513 order (codes 00-3F), 7 rows each, bit 6 = the leftmost dot; drawn
+# for this card (2026-10-22): row 8 and the 8th column are the gaps between characters
+_FONT7 = """
+3E415D555E403E 1C2241417F4141 7E41417E41417E 3E41404040413E 7C42414141427C 7F40407C40407F 7F40407C404040 3E41404F41413E
+4141417F414141 3E08080808083E 1F02020242423C 42444870484442 4040404040407F 41635549414141 41615149454341 3E41414141413E
+7E41417E404040 3E41414145423D 7E41417E444241 3E41403E01413E 7F080808080808 4141414141413E 41414122221408 41414149556341
+41221408142241 41221408080808 7F02040810207F 1E10101010101E 40201008040201 3C04040404043C 08142241000000 0000000000007F
+00000000000000 08080808080008 14141400000000 14147F147F1414 083E483E093E08 61620408102343 38444830494639 08081000000000
+04081010100804 10080404040810 00492A1C2A4900 0008087F080800 000000000C0810 0000003E000000 00000000001818 01020408102040
+3E43454951613E 0818280808083E 3E41011E20407F 3E41011E01413E 060A12227F0202 7F407E0101413E 1E20407E41413E 7F010204080808
+3E41413E41413E 3E41413F01023C 00181800181800 00181800180810 04081020100804 00007F007F0000 10080402040810 3E410106080008
+""".split()
+
+
+def font7_rows(code):
+    """8 rows of 7 dots (bit 6 = leftmost) for a character code 0..63, the v1.3 card's 8-dot font"""
+    h = _FONT7[code & 0x3F]
+    return [int(h[i:i + 2], 16) for i in range(0, 14, 2)] + [0]
+
+
+def chargen_v13_image():
+    """the v1.3 card's 2732: the 8-dot font at $000 (A10 = DOTS low), a 7-dot glyph in D7..D1, D0 = 0; the 6-dot font at
+    $400 (A10 = DOTS high), the 5-dot glyph in D7..D3, D2..D0 = 0; address = A10 + code*8 + row; the rest $00"""
+    img = bytearray(4096)
+    for code in range(64):
+        for r in range(8):
+            img[code * 8 + r] = font7_rows(code)[r] << 1
+            img[0x400 + code * 8 + r] = font_rows(code)[r] << 3
+    return bytes(img)
+
+
+def font_base():
+    """where the fitted font starts in the EPROM: v1.3 puts DOTS on A10 (6 dots -> $400)"""
+    return 0x400 if CARD == "v1.3" and DOTS == 6 else 0
+
+
+def load_mask():
+    """the EPROM bits IC24 loads: v1.0 wires D..H to O3..O7 only (A..C grounded); v1.3 all eight"""
+    return 0xF8 if CARD == "v1.0" else 0xFF
+
+
+def default_chargen():
+    return chargen_v13_image() if CARD == "v1.3" else chargen_image()
 
 
 def chargen_image():
@@ -150,8 +211,9 @@ class Overlay:
         self.ram[bank * self.window + offset] = value & 0xFF
 
     def dots(self, ma, line):
-        """the 6-dot pattern (bit 5 = leftmost) the overlay gives the cell at MA on scan line `line`"""
-        return self.ram[(line & 7) << 11 | (ma & 0x7FF)] >> 2
+        """the byte the overlay gives the cell at MA on scan line `line`: its dots from bit 7 (the leftmost) down, DOTS
+        of them (6: bits 7..2, 8: bits 7..0)"""
+        return self.ram[(line & 7) << 11 | (ma & 0x7FF)]
 
 
 def overlay_demo(cols=80):
@@ -182,7 +244,13 @@ def timing(regs, dotclock, out=print):
     out("visible: %d x %d dots; interlace R8 = %d; cursor R10 = %02X (lines %d-%d, %s), R11 = %d; start R12:R13 = %04X, cursor R14:R15 = %04X" % (
         r[1] * DOTS, r[6] * lines_row, r[8] & 3, r[10], r[10] & 0x1F, r[11] & 0x1F,
         ["steady", "off", "blink 1/16", "blink 1/32"][(r[10] >> 5) & 3], r[11], (r[12] & 0x3F) << 8 | r[13], (r[14] & 0x3F) << 8 | r[15]))
+    if CARD == "v1.3":
+        lo = 2 if DOTS == 6 else 4                          # QC over counts 10..15 (/6) or 8..15 (/8): low 2 or 4 dots
+        out("6845 clock (IC28 QC): low %d / high %d dots = %.0f / %.0f ns; EPROM time a character %.0f ns" % (
+            lo, DOTS - lo, lo / dotclock * 1e9, (DOTS - lo) / dotclock * 1e9, DOTS / dotclock * 1e9))
     warn = []
+    if CARD == "v1.3" and 2 / dotclock * 1e9 < 160 + 20 and DOTS == 6:
+        warn.append("the 6845's clock is low for only %.0f ns: little margin over the MC6845's minimum (v1.3 README)" % (2 / dotclock * 1e9))
     if r[1] >= htot: warn.append("R1 (displayed) must be less than R0+1 (total)")
     if not (r[1] <= r[2] and r[2] + hsw <= htot): warn.append("HSYNC (R2..R2+R3) should start after the display and end within the line")
     if r[6] > r[4] + 1: warn.append("R6 (rows displayed) exceeds the rows in the frame (R4+1)")
@@ -204,7 +272,7 @@ def picture(st, chargen=None, raster=False, cursor=True, overlay=None, gmode="or
     the two meet (or / xor), layers which are switched on (the proposed control bits TEXT-ON and GFX-ON; the cursor
     belongs to the text layer), tint: overlay dots green where the text has none"""
     text_on, gfx_on = "text" in layers, "gfx" in layers
-    r = st.regs; cg = chargen or chargen_image()
+    r = st.regs; cg = chargen or default_chargen(); base, mask = font_base(), load_mask()
     lines_row = (r[9] & 0x1F) + 1
     start = (r[12] & 0x3F) << 8 | r[13]; cur = (r[14] & 0x3F) << 8 | r[15]
     cs, ce, mode = r[10] & 0x1F, r[11] & 0x1F, (r[10] >> 5) & 3
@@ -225,13 +293,13 @@ def picture(st, chargen=None, raster=False, cursor=True, overlay=None, gmode="or
                         img[y][col * DOTS + d] = hatch if (col * DOTS + d + y) % 4 == 0 else off
                     continue
                 b = st.ram[ma]
-                bits = cg[(b & 0x3F) * 8 + (line & 7)] >> 3
+                bits = cg[base + (b & 0x3F) * 8 + (line & 7)] & mask
                 inv = (b >> 7) & 1
                 if cursor and ma == cur and mode != 1 and cs <= line <= ce: inv ^= 1
                 g = overlay.dots(ma, line) if overlay else 0
                 for d in range(DOTS):
-                    t = (((bits >> (4 - d)) & 1) if d < 5 else 0) ^ inv
-                    gd = (g >> (5 - d)) & 1 if d < 6 else 0
+                    t = (((bits >> (7 - d)) & 1) if d < 8 else 0) ^ inv
+                    gd = (g >> (7 - d)) & 1 if d < 8 else 0
                     t &= text_on; gd &= gfx_on
                     lit = t ^ gd if gmode == "xor" else t | gd
                     img[y][col * DOTS + d] = (green if tint and gd and not t else on) if lit else off
@@ -300,7 +368,7 @@ def show(st, a, label, overlay=None):
     print("== %s" % label)
     if not any(st.written[:16]):
         print("(the program never wrote the CRTC: drawn with the ROM's table)")
-        st.regs[:16] = ROM_TABLE
+        st.regs[:16] = card_table()
     timing(st.regs, a.dotclock)
     text_view(st)
     if a.png:
@@ -311,42 +379,62 @@ def show(st, a, label, overlay=None):
 
 def parse_regs(s):
     v = [int(x, 0) for x in s.split(",")]
-    return v + ROM_TABLE[len(v):]
+    return v + card_table()[len(v):]
+
+
+def testcard_table(table):
+    """a table with the test card's cursor: row 12, the middle column"""
+    cur = 12 * table[1] + table[1] // 2
+    return table[:14] + [cur >> 8, cur & 0xFF]
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("cmd", choices=["run", "render", "tester", "timing", "chargen", "overlay"])
+    ap.add_argument("cmd", choices=["run", "render", "tester", "timing", "chargen", "overlay", "testcard"])
     ap.add_argument("arg", nargs="?")
     ap.add_argument("--go", default="3000"); ap.add_argument("--input", default=""); ap.add_argument("--steps", type=int, default=300000000)
-    ap.add_argument("--png"); ap.add_argument("--dotclock", type=float, default=11.0592e6); ap.add_argument("--chargen")
+    ap.add_argument("--png"); ap.add_argument("--dotclock", type=float, help="the crystal (default: the card's: v1.0 11.0592 MHz, v1.3 12 MHz)")
+    ap.add_argument("--chargen")
+    ap.add_argument("--card", choices=["v1.0", "v1.3"], default="v1.0", help="v1.0 = the card in the machine (default); "
+                    "v1.3 = the design with the DOTS jumper (--dots 6: 80 x 24, --dots 8: 64 x 24, 12 MHz, two fonts)")
     ap.add_argument("--raster", action="store_true"); ap.add_argument("--nocursor", action="store_true"); ap.add_argument("--scale", type=int, default=2)
     ap.add_argument("--regs"); ap.add_argument("--port", default="/dev/cu.usbserial-AB6WZCQX"); ap.add_argument("--out")
-    ap.add_argument("--dots", type=int, default=6, help="dots a character: 6 = IC28 a 74163 (sync clear: a clean CHARCLOCK "
-                    "and a blank 6th dot between characters; fitted 2026-10-18), 5 = the drawn 74HC160 (async clear)")
-    ap.add_argument("--overlay", help="a 16K overlay image (RA2..0:MA10..0, 6 dots a byte in bits 7..2) to draw over the text")
+    ap.add_argument("--dots", type=int, help="dots a character. v1.0: 6 = IC28 a 74163 (a clean CHARCLOCK and a blank 6th dot; "
+                    "fitted 2026-10-18, the default), 5 = the drawn 74HC160. v1.3: 6 (DOTS open, the default) or 8 (fitted)")
+    ap.add_argument("--overlay", help="a 16K overlay image (RA2..0:MA10..0, a byte's dots from bit 7: 6 or 8 of them) to draw over the text")
     ap.add_argument("--save-overlay", help="overlay: write the demo drawing's 16K image here")
     ap.add_argument("--gmode", choices=["or", "xor"], default="or", help="how the overlay meets the text")
     ap.add_argument("--layers", default="text,gfx", help="the layers switched on: text, gfx, both (default) or none "
                     "(the proposed TEXT-ON / GFX-ON control bits)")
     ap.add_argument("--tint", action="store_true", help="draw overlay dots green where the text has none (the card is monochrome)")
     a = ap.parse_args()
-    global DOTS
-    DOTS = a.dots
+    global DOTS, CARD
+    CARD = a.card
+    DOTS = a.dots or 6
+    if DOTS not in ((5, 6) if CARD == "v1.0" else (6, 8)):
+        ap.error("--dots %d does not exist on card %s" % (DOTS, CARD))
+    a.dotclock = a.dotclock or CARD_CLOCK[CARD]
+    table = card_table()
     if a.cmd == "timing":
-        timing(parse_regs(a.regs) if a.regs else ROM_TABLE, a.dotclock)
+        timing(parse_regs(a.regs) if a.regs else table, a.dotclock)
     elif a.cmd == "chargen":
-        out = a.out or os.path.join(ROOT, "firmware/video/chargen.bin")
+        out = a.out or os.path.join(ROOT, "firmware/video/chargen-v13.bin" if CARD == "v1.3" else "firmware/video/chargen.bin")
         os.makedirs(os.path.dirname(out), exist_ok=True)
-        open(out, "wb").write(chargen_image()); print("wrote %s (4096 bytes, 64 glyphs x 8 rows in the low 512)" % out)
+        open(out, "wb").write(default_chargen())
+        print("wrote %s (4096 bytes, %s)" % (out, "the 8-dot font at $000, the 6-dot font at $400" if CARD == "v1.3"
+                                             else "64 glyphs x 8 rows in the low 512"))
+    elif a.cmd == "testcard":
+        tb = testcard_table(parse_regs(a.regs) if a.regs else table)
+        show(State(tb, testcard_ram(tb[1])), a, "the test card, card %s, %d dots a character" % (CARD, DOTS))
     elif a.cmd == "overlay":
-        st = State(TESTCARD_TABLE, testcard_ram())
-        ov = Overlay(open(a.overlay, "rb").read()) if a.overlay else overlay_demo()
+        tb = testcard_table(parse_regs(a.regs) if a.regs else table)
+        st = State(tb, testcard_ram(tb[1]))
+        ov = Overlay(open(a.overlay, "rb").read(), tb[1]) if a.overlay else overlay_demo(tb[1])
         if a.save_overlay:
             open(a.save_overlay, "wb").write(ov.ram); print("wrote %s (16384 bytes)" % a.save_overlay)
-        lit = sum(bin(b >> 2).count("1") for b in ov.ram)
-        print("overlay: 16K = 8 planes x 2K (RA2..0:MA10..0), %d of 92160 dots set; CPU window %d bytes x %d banks" % (
-            lit, ov.window, GRAM // ov.window))
+        lit = sum(bin(b >> (8 - DOTS)).count("1") for b in ov.ram)
+        print("overlay: 16K = 8 planes x 2K (RA2..0:MA10..0), %d of %d dots set; CPU window %d bytes x %d banks" % (
+            lit, tb[1] * DOTS * 192, ov.window, GRAM // ov.window))
         a.overlay = None
         show(st, a, "the test card with the overlay (layers %s, %s%s)" % (a.layers, a.gmode, ", tinted" if a.tint else ""), ov)
     elif a.cmd == "render":
@@ -369,7 +457,7 @@ def main():
         bd.cmd("-BUS-EN", 1); bd.no_registers(); bd.cmd("-VMA", 1); bd.cmd("ADDRBUS-WR-MODE", 1); bd.cmd("DATABUS-RD-MODE", 1)
         bd.readmem(0xF000)                                  # release FORCE-ROM
         ram = bytes(bd.read_block(0xD000, 2048))
-        regs = parse_regs(a.regs) if a.regs else list(ROM_TABLE)
+        regs = parse_regs(a.regs) if a.regs else list(table)
         for reg in (14, 15):                                # readable on every 6845
             bd.cmd("DATABUS-WR-MODE", 1); bd.writemem(0xD800, reg); bd.cmd("DATABUS-RD-MODE", 1)
             regs[reg] = bd.readmem(0xD802)
