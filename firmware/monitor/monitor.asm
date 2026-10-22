@@ -67,8 +67,11 @@ line_buffer:    EQU 0f80h    ; 112 bytes long max ($0FF0-$0FFF are the video var
 VIDAUTO:        EQU 0        ; 1 = reset also runs V I (CRTC table, clear, home) and sets VIDMIR when a card is found
 VIDRAM:         EQU 0d000h   ; display RAM, CPU side (A11 = 0); its first byte is the probe byte
 VIDSIZE:        EQU 2048     ; the RAM the CPU reaches (IC15 A11R grounded): VIDRAM..VIDRAM+2047
-VCOLS:          EQU 80       ; screen geometry: 80 x 24 = 1,920 bytes of the 2K, one byte per character
-VROWS:          EQU 24       ;   (VCOLS*(VROWS-1) must be a multiple of 8 and at most 2,040: the scroll's loop)
+VROWS:          EQU 24       ; screen geometry: VCOLSV x 24, one byte per character (2026-10-22: the columns are a
+                             ;   variable, 80 or 64, set from the card's latch by vmode; cols*(VROWS-1) must be a
+                             ;   multiple of 8 and at most 2,040: the scroll's loop - 80: 230 passes, 64: 184)
+VLATCH:         EQU 0d801h   ; the JP1 read-back latch (IC2), read only (a write fights it): bit 2 = 0 a V1.3 card,
+                             ;   bit 0 its DOTS jumper (1 = 6 dots, 0 = 8 dots); the V1.0-V1.2 card reads bit 2 = 1
 VCRTCA:         EQU 0d800h   ; 6845 address register: A11 = 1, A1 = 0, A0 = 0 (the netlist reading of the card; the
 VCRTCD:         EQU 0d802h   ;   card README says $D400/$D402 - one edit here). Data register: A1 = 1, after the
                              ;   RS-to-A1 bench fix (hardware/cards/video/docs/fix-6845-register-select.md)
@@ -76,9 +79,11 @@ VIDPRES:        EQU 0ff0h    ; 1 = display RAM answered at VIDRAM at reset (or a
 VIDMIR:         EQU 0ff1h    ; nonzero = CHAROUT/UARTOUT also write to the screen (only while VIDPRES is 1)
 VIDCUR:         EQU 0ff2h    ; nonzero = keep the CRTC's cursor (R14/R15) at the text cursor (set by V I)
 VROW:           EQU 0ff3h    ; text cursor row 0..VROWS-1
-VCOL:           EQU 0ff4h    ; text cursor column 0..VCOLS-1
+VCOL:           EQU 0ff4h    ; text cursor column 0..VCOLSV-1
 VCHAR:          EQU 0ff5h    ; the driver's scratch byte
 VLINE:          EQU 0ff6h    ; word ($0FF6 high, $0FF7 low): the address of the cursor row's first byte
+VCOLSV:         EQU 0ff8h    ; (2026-10-22) the screen's columns: 80, or 64 on a V1.3 card with DOTS fitted
+VSCRLN:         EQU 0ff9h    ;   and the scroll's passes for it, VCOLSV*(VROWS-1)/8 (both set by vmode)
 
 
 ;
@@ -849,7 +854,7 @@ MSGCFERR: DB "CF ERROR",0ah,0dh,0
 MSGNOOS: DB "NO OS ON THE CARD",0ah,0dh,0
 ;
 ; ---- Video card driver (YACC1-D 2026-09-25) --------------------------------------------------------------------
-; The screen is VCOLS x VROWS bytes from VIDRAM, row after row; a byte's bits 0-5 pick one of the 64 glyphs of the
+; The screen is VCOLSV x VROWS bytes from VIDRAM, row after row; a byte's bits 0-5 pick one of the 64 glyphs of the
 ; character EPROM (the card latches VDATA0..5 only), bit 7 is inverse video, bit 6 is unused. The driver stores
 ; ASCII with $60-$7F moved to $40-$5F (upper case), so a 2513-style set (code = ASCII bits 0-5) shows the text as sent. Cursor: VROW/VCOL, VLINE =
 ; the address of the row. vputc handles CR (column 0), LF (column 0 of the next row: Y1/OS ends lines with LF
@@ -895,18 +900,47 @@ vprno:  LDAI 0
 vprset: STA VIDPRES
         POP
         STA VIDRAM
+        JSR vmode
         LDA VIDPRES
         RET
 ;
-; vinit: the CRTC's 16 registers from vcrtab, the CRTC cursor on, then vcls (R7 clobbered)
-vinit:
-        MVIW R7,vcrtab
+; vmode (2026-10-22): the card's geometry from the JP1 latch at VLATCH ($D801, read only when the probe found a card).
+; Bit 2 = 1: the V1.0-V1.2 card (11.0592 MHz, 6 dots, 80 x 24; on the card in the machine a jumper on JP1 3-4 holds
+; the bit high). Bit 2 = 0: a V1.3 card at 12 MHz, its DOTS jumper on bit 0: 1 (open) = 6 dots, 80 x 24; 0 (fitted)
+; = 8 dots, 64 x 24. Sets VCOLSV and VSCRLN; R6 = the CRTC's R0..R3 for vinit (the rest are common: vcrtab)
+vmode:  MVIW R6,vcr10
+        LDAI 80
+        STA VCOLSV
+        LDAI 230                ; 80*(VROWS-1)/8
+        STA VSCRLN
+        LDA VIDPRES
+        BRZ vmodex
+        LDA VLATCH
+        ANDI 4
+        BRNZ vmodex
+        MVIW R6,vcr13
+        LDA VLATCH
+        ANDI 1
+        BRNZ vmodex
+        MVIW R6,vcr64
+        LDAI 64
+        STA VCOLSV
+        LDAI 184                ; 64*(VROWS-1)/8
+        STA VSCRLN
+vmodex: RET
+;
+; vinit: the CRTC's 16 registers - R0..R3 for the card vmode found, R4..R15 from vcrtab - the CRTC cursor on, then
+; vcls (R6, R7 clobbered)
+vinit:  JSR vmode
         LDAI 0
 vinitl: STA VCRTCA
         PUSH
-        LDAVR R7
+        LDTI 4
+        BRNEQ vinitn
+        MVIW R6,vcrtab
+vinitn: LDAVR R6
         STA VCRTCD
-        INCR R7
+        INCR R6
         POP
         ADDI 1
         LDTI 16
@@ -1007,7 +1041,7 @@ vpchar: PUSH
         LDA VCOL
         ADDI 1
         STA VCOL
-        LDTI VCOLS
+        LDT VCOLSV
         BRNEQ vpchx
         JSR vlf
 vpchx:  RET
@@ -1021,7 +1055,7 @@ vlf:    LDAI 0
         BREQ vscroll
         STA VROW
         LDR R7,VLINE
-        LDTI VCOLS
+        LDT VCOLSV
         JSR vaddt
         STR R7,VLINE
         RET
@@ -1030,9 +1064,14 @@ vlf:    LDAI 0
 vscroll:
         PUSHR R6
         PUSHR R5
-        MVIW R6,VIDRAM+VCOLS
         MVIW R7,VIDRAM
-        MVIB R5,(VCOLS*(VROWS-1)/8).0
+        LDT VCOLSV
+        JSR vaddt
+        PUSHR R7
+        POPR R6                 ; R6 = VIDRAM + VCOLSV: row 1
+        MVIW R7,VIDRAM
+        LDA VSCRLN
+        MVARL R5
 vscrl:  LDAVR R6
         STAVR R7
         INCR R6
@@ -1068,7 +1107,8 @@ vscrl:  LDAVR R6
         DECR R5
         MVRLA R5
         BRNZ vscrl
-        MVIB R5,VCOLS
+        LDA VCOLSV
+        MVARL R5
 vscrb:  LDIVR R7,' '
         INCR R7
         DECR R5
@@ -1183,6 +1223,10 @@ vcstl:  JSR stringout
         MVRLA R6
         LDTI (VCOL+1).0
         BRNEQ vcstl
+        MVIW R7,MSGVCOL         ; 2026-10-22: the columns vmode set ($50 or $40)
+        JSR stringout
+        LDA VCOLSV
+        JSR showbytea
 vcok:   MVIW R7,CRLF
 vcmsg:  JSR stringout
         BR cmdloop
@@ -1195,21 +1239,24 @@ vcbadl: JSR uartin              ; the rest of the line is dropped (else its char
 vcbadx: MVIW R7,MSGVBAD
         BR vcmsg
 ;
-; VW rr cc text: rows 0..VROWS-1, columns 0..VCOLS-1; one blank after cc is the separator, the text runs to CR/LF
+; VW rr cc text: rows 0..VROWS-1, columns 0..VCOLSV-1; one blank after cc is the separator, the text runs to CR/LF
 ; (upper-cased, stored as typed, it may run on into the next rows but stops at the end of the display RAM)
 vcwrt:  JSR vgetb
         LDTI VROWS-1
         BRGT vcbad
         PUSH
         JSR vgetb
-        LDTI VCOLS-1
-        BRGT vcbad
         STA VCHAR
+        LDA VCOLSV
+        SUBI 1
+        MVAT
+        LDA VCHAR
+        BRGT vcbad
         POP
         MVIW R7,VIDRAM
 vcwrl:  BRZ vcwrc
         PUSH
-        LDTI VCOLS
+        LDT VCOLSV
         JSR vaddt
         POP
         SUBI 1
@@ -1272,7 +1319,8 @@ vcdrow: MVRLA R5
         JSR showbytea
         LDAI ' '
         JSR charout
-        MVIB R6,VCOLS
+        LDA VCOLSV
+        MVARL R6
 vcdcol: LDAVR R7
         ADDI 020h
         ANDI 03fh
@@ -1325,12 +1373,14 @@ vgetb:  JSR vskip
 ; = 63.5 us (15.75 kHz), 32 rows + 6 lines = 262 lines (60.1 Hz), non-interlaced - a TV-rate monitor. 80 columns
 ; (43.4 us of text) fit such a monitor's visible ~48 us with a margin each side (R2 94 centres them); a 9 MHz crystal
 ; gave room for only 64. The character EPROM gets ~540 ns a character (an MBM2732A is a 450 ns part). R1/R6 follow
-; VCOLS/VROWS; tools/vidsim.py timing checks a table.
-vcrtab: DB 116            ; R0  horizontal total - 1
-        DB VCOLS          ; R1  characters displayed
-        DB 94             ; R2  horizontal sync position
-        DB 9              ; R3  sync width (HS 9 characters, 4.9 us)
-        DB 31             ; R4  vertical total - 1 (rows)
+; VROWS; tools/vidsim.py timing checks a table.
+; 2026-10-22: R0..R3 per card (vmode picks one, R6), R4..R15 common. A V1.3 card runs from 12 MHz: 6 dots a 2.0 MHz
+; character, 127 a line (15.75 kHz), 80 x 24 (40 us of text, R2 98 centres it); 8 dots a 1.5 MHz character, 95 a line
+; (15.79 kHz), 64 x 24 - the 64-column table proven on the monitor 2026-10-21 (then from 9 MHz / 6, the same 1.5 MHz).
+vcr10:  DB 116,80,94,9    ; V1.0-V1.2, 11.0592 MHz: R0 total-1, R1 displayed, R2 sync position, R3 sync width
+vcr13:  DB 126,80,98,10   ; V1.3, DOTS open: 6 dots, 80 x 24
+vcr64:  DB 94,64,75,8     ; V1.3, DOTS fitted: 8 dots, 64 x 24
+vcrtab: DB 31             ; R4  vertical total - 1 (rows)
         DB 6              ; R5  vertical total adjust (scan lines)
         DB VROWS          ; R6  rows displayed
         DB 27             ; R7  vertical sync position (row)
@@ -1623,7 +1673,8 @@ uartout:
         LDA VIDMIR
         BRZ chnovid
         LDA VIDPRES
-        BRZ chnovid
+        SUBI 1                  ; 2026-10-22: VIDPRES exactly 1 (vprobe writes 1 or 0): RAM never set by a reset
+        BRNZ chnovid            ;   ($FF on the emulators) must not turn the mirror on with VCOLSV/VLINE garbage
         POP
         PUSH
         JSR vputc
@@ -1772,7 +1823,7 @@ loffloop:
 ;
 ; MONITOR STRINGS
 ;
-hello:  DB 0ah,0dh,"YACC 2020: hello world  ROM 2026-10-21",0ah,0dh,0    ; the build date tells ROMs apart at a glance
+hello:  DB 0ah,0dh,"YACC 2020: hello world  ROM 2026-10-22",0ah,0dh,0    ; the build date tells ROMs apart at a glance
 PROMPT: DB ">",0
 CRLF: DB 0ah,0dh,0
 ERROR: DB "UNRECOGINIZED COMMAND",0ah,0dh,0
@@ -1807,6 +1858,7 @@ DB 0
 ;
 MSGVIDEO: DB "VIDEO CARD FOUND",0ah,0dh,0
 MSGVST: DB 0ah,0dh,"VIDEO ",0,"  MIRROR ",0,"  CRTC ",0,"  ROW ",0,"  COL ",0
+MSGVCOL: DB "  COLS ",0
 MSGVBAD: DB " ?",0ah,0dh,0
 VHELP:
 DB 0ah,0dh,"VS STATUS  VP PROBE  VI INIT CRTC+CLEAR  VC CLEAR  VM1/VM0 MIRROR ON/OFF",0ah,0dh

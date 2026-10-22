@@ -356,9 +356,13 @@ def case_gate():
         r = subprocess.run([sys.executable, os.path.join(ROOT, "software/y1dbg"), "--video-rev", rev, "-c", cmds],
                            capture_output=True, text=True, timeout=120)
         if VERBOSE: print(r.stdout + r.stderr)
-        got[rev] = (r.returncode, re.search(r"^CRTC .*$", r.stdout, re.M))
+        got[rev] = (r.returncode, re.search(r"^CRTC .*$", r.stdout, re.M), r.stdout + r.stderr)
+    # since ROM 2026-10-22 the reset reads the JP1 latch at $D801 (the card's geometry): on v1.0 its inputs float, so
+    # the only bus events allowed are those reads
+    ev = [l for l in got["v1.0"][2].splitlines() if l.startswith("video card: ")]
     ok = got["v1.0"][0] == 0 and got["v1.0"][1] and got["v1.0"][1].group(0).split()[15] == "12" and \
-        "card: v1.0 at gate level, 0 bus events" in got["v1.0"][1].group(0)
+        re.search(r"card: v1\.0 at gate level, \d+ bus events", got["v1.0"][1].group(0)) and \
+        all("a read of IC2 (the JP1 latch) with inputs FF floating" in l and "at $D801" in l for l in ev)
     check("gate", bool(ok), "%r" % got["v1.0"][1])
     m = got["v1.0-no-rs"][1]
     ok = got["v1.0-no-rs"][0] == 0 and m and m.group(0).split()[15] == "--" and re.search(r"card: v1\.0-no-rs at gate level, [1-9]\d* bus events", m.group(0))

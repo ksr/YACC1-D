@@ -17,6 +17,9 @@
  *        blank..?), then the 18 CRTC registers
  *   -W   log every CRTC register write (and any write to the latch's odd addresses: a bus fight on the card) on stderr
  *   Y1VIDSTATE=FILE (environment, with -V): also write the card's state for tools/vidsim.py, which draws the picture
+ *   Y1VID_LATCH=HH (environment, hex): what the JP1 latch reads (default FF: the V1.0-V1.2 card, nothing jumpered;
+ *        2026-10-22: FB = a V1.3 card with DOTS open, FA = DOTS fitted - bit 2 the card ID, bit 0 DOTS; the ROM picks
+ *        its geometry from it at reset, monitor.asm vmode)
  *   -N   no video card: $D000-$DFFF reads $FF (the ucemu model leaves the bus to its pull-ups) and ignores writes,
  *        to test the monitor's "not present" path
  *
@@ -41,6 +44,11 @@ static struct {
 
 static int vid_in(unsigned a) { return a >= 0xD000 && a <= 0xDFFF; }
 
+static int vid_latch(void) {                             /* the JP1 latch's inputs: Y1VID_LATCH, default FF */
+    const char *e = getenv("Y1VID_LATCH");
+    return e ? (int)(strtol(e, 0, 16) & 0xFF) : 0xFF;
+}
+
 /* the 6845's register interface (2026-10-11: shared with y1ucemu's gate-level card, -G): rs 0 = the address register,
    1 = the register it selects. A read returns the byte the chip drives, -1 = it drives nothing. */
 static int vid_crtc_read(int rs) {
@@ -64,7 +72,7 @@ static void vid_crtc_write(int rs, uint8_t v) {
 static int vid_read(unsigned a, const uint8_t *mem) {   /* the byte a read of a returns; -1 = nothing drives the bus */
     if (vid.absent) return -1;
     if (a < VID_CRTC) return mem[a];
-    if (a & 1) return 0xFF;                               /* the JP1 latch, nothing jumpered */
+    if (a & 1) return vid_latch();                        /* the JP1 latch (Y1VID_LATCH; FF: nothing jumpered) */
     return vid_crtc_read((a >> 1) & 1);
 }
 

@@ -373,7 +373,7 @@ static COLD int vg_step(unsigned a, int vma, int rd, int wr, int others, const c
     int v = 0xFF, n = 0; strcpy(vg_who, "VIDEO");
     if (VG_RAM(e) == VG_READ) { v &= mem[0xD000 + vgate->ramaddr(a)]; n++; strcat(vg_who, " IC15"); }
     if (VG_CRTC(e) == VG_READ) { int r = vid_crtc_read(VG_RS(e)); if (r >= 0) { v &= r; n++; strcat(vg_who, " IC17"); } }
-    if (VG_LATCH(e)) { v &= VG_LVAL(e); n++; strcat(vg_who, " IC2"); }
+    if (VG_LATCH(e)) { v &= VG_LVAL(e) & vid_latch(); n++; strcat(vg_who, " IC2"); }   /* Y1VID_LATCH: the inputs */
     if (e->ev) vg_event(e->ev, vgate->msgs[e->ev], a);
     int cpu_read = rd && vma && !wr;
     if (n && others) {

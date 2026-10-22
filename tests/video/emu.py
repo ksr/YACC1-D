@@ -18,6 +18,10 @@ level emulator (int) and the microcode one (uc) through the monitor, as a bench 
             scrolls), VM0: the screen equals what a terminal model of the driver makes of the console bytes that were
             sent while mirroring was on (CR, LF, wrap, scroll, upper case)
   absent    -N: no banner line, VS says 00, VM1 changes nothing on the screen (there is none), the console still works
+  dots      (2026-10-22) the card ID and DOTS on the JP1 latch ($D801, Y1VID_LATCH): FF = the V1.0-V1.2 card (80 x 24,
+            11.0592 MHz table 74 50 5E 09), FB = V1.3 with DOTS open (80 x 24, 12 MHz table 7E 50 62 0A), FA = V1.3 with
+            DOTS fitted (64 x 24, 5E 40 4B 08): VS's COLS, VI's R0..R3, mirroring with scroll and wrap at that width, VW's
+            column limit and VD's row length
   os        Y1/OS (os/disk.img): video (status), video init, video on, echo, video clear, echo, video off, echo:
             the screen shows what came between the clear and off and nothing else; video -h, a bad word
 """
@@ -33,11 +37,12 @@ COLS, ROWS = 80, 24
 VERBOSE = "-v" in sys.argv
 
 
-def run(emu, script, extra=(), limit=400000000, disk=None):
+def run(emu, script, extra=(), limit=400000000, disk=None, latch=None):
     cmd = [emu, "-x", "-m", "-V", "-l", str(limit)] + list(extra)
     if disk: cmd += ["-c", disk]
     if emu.endswith("y1ucemu"): cmd += ["-E", MON_EXIT]
-    r = subprocess.run(cmd, input=script.encode("latin1"), capture_output=True, timeout=1800)
+    env = dict(os.environ, Y1VID_LATCH=latch) if latch else None
+    r = subprocess.run(cmd, input=script.encode("latin1"), capture_output=True, timeout=1800, env=env)
     out, err = r.stdout.decode("latin1"), r.stderr.decode("latin1")
     if VERBOSE: print(out + "\n" + err)
     return out, err
@@ -60,7 +65,7 @@ def crtc(err):
     return m.group(1).split() if m else None
 
 
-def model(data):
+def model(data, COLS=COLS):
     """what the ROM's vputc makes of these console bytes on a blank screen, cursor home (monitor.asm, video driver)"""
     g = [[" "] * COLS for _ in range(ROWS)]; row = col = 0
 
@@ -138,6 +143,25 @@ def case_mirror(tag, emu):
           (lines, "\n".join(scr or []), "\n".join(model(out[i:j]))))
 
 
+def case_dots(tag, emu):
+    for latch, cols, head in (("FF", 80, ["74", "50", "5E", "09"]), ("FB", 80, ["7E", "50", "62", "0A"]),
+                              ("FA", 64, ["5E", "40", "4B", "08"])):
+        out, err = run(emu, "VS\nVI\nVM1\nH\nH\nVM0\nVS\n0", latch=latch)
+        scr = screen(err); regs = crtc(err)
+        i = out.find("\n\rVIDEO 01  MIRROR 01")
+        if tag == "int": j = out.find("\n\rVIDEO 01  MIRROR 00", i)
+        else: j = out.find("VM0", i) + 3
+        ok = "COLS %02X" % cols in out and regs is not None and regs[:4] == head and regs[6] == "18" and \
+            scr == model(out[i:j], cols) and out[i:j].count("\n") > ROWS
+        check("dots", tag, ok, "latch %s: COLS %02X, R0-R3 %s (want %s), screen vs model:\n%s\n%s" % (
+            latch, cols, regs and regs[:4], head, "\n".join(scr or []), "\n".join(model(out[i:j], cols))))
+        out, err = run(emu, "VI\nVW0000 hi\nVW00%02X z\nVW00%02X no\nVD\n0" % (cols - 1, cols), latch=latch)
+        scr = screen(err) or [""]
+        vd = [l[3:] for l in out.splitlines() if re.match(r"^[0-9A-F]{2} ", l) and len(l) == 3 + cols]
+        ok = out.count(" ?") == 1 and scr[0] == "HI" + " " * (cols - 3) + "Z" and len(vd) == ROWS and vd[0] == scr[0]
+        check("dots", tag, ok, "latch %s: VW limit / VD width: %r %r" % (latch, scr[0], vd[:1]))
+
+
 def case_absent(tag, emu):
     out, err = run(emu, "VS\nVM1\nH\nVS\n0", extra=["-N"])
     ok = "VIDEO CARD FOUND" not in out and "VIDEO 00  MIRROR 00" in out and "VIDEO 00  MIRROR 01" in out and \
@@ -163,7 +187,8 @@ def case_os(tag, emu):
     check("os", tag, ok, "\n" + out[out.find("BOOT FROM CF"):] + "\n" + text)
 
 
-CASES = {"present": case_present, "write": case_write, "mirror": case_mirror, "absent": case_absent, "os": case_os}
+CASES = {"present": case_present, "write": case_write, "mirror": case_mirror, "dots": case_dots, "absent": case_absent,
+         "os": case_os}
 names = [a for a in sys.argv[1:] if not a.startswith("-")] or list(CASES)
 for n in names:
     for tag, emu in EMUS:

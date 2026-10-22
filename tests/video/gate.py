@@ -16,8 +16,9 @@ edits; y1ucemu -G REV looks each step's decode up there (docs/cards/video.md sec
            video unit (tests/video/emu.py's present/write/mirror, VI/VM1/VW/VS/VR), Y1/OS's video command, and the
            bring-up programs of tests/video/asm (vram, crtcreg, crtcreg on a part that reads R12/R13, testcard,
            testcard + vstress, estrobe with -W)
-  events   with the card as fitted (-G v1.0) every one of those runs has 0 bus events, except crtcreg's two deliberate
-           reads of the JP1 latch ($D801, $D803), reported as reads of floating inputs and nothing else
+  events   with the card as fitted (-G v1.0) every one of those runs has no bus events but reads of the JP1 latch at
+           $D801, reported as reads of floating inputs: the ROM's (since ROM 2026-10-22 the reset, V P and V I read
+           the latch for the card's geometry) and crtcreg's two deliberate ones ($D801, $D803) - nothing else
   rs       without the RS rework (-G v1.0-no-rs, the 6845 as drawn: RS = A0) the data register is unreachable, as
            hardware/cards/video/docs/fix-6845-register-select.md says: VR0E 12 then VR0E reads FF, R14 is never
            written, crtcreg reports BAD for R14/R15 and its repeat; every read of $D802 is an undriven-read event.
@@ -107,6 +108,14 @@ def case_gen():
           bad.stderr + both.stderr)
 
 
+LATCHREAD = "a read of IC2 (the JP1 latch) with inputs FF floating"
+
+
+def other(ev):
+    """the event lines that are not reads of the JP1 latch (the ROM reads it at reset, V P and V I since 2026-10-22)"""
+    return [l for l in ev[:-1] if LATCHREAD not in l]
+
+
 def case_equal():
     for name, data, extra, env, ex, os_disk in SCENARIOS:
         lim = ["-l", "3000000000"] if os_disk else []
@@ -118,8 +127,9 @@ def case_equal():
         check("equal", same and halted is not None and "RUN TEST CODE" in b[0],
               "%s: the runs differ (stdout %s, stderr %s, state %s; %d bytes out, halted %s, %r)" %
               (name, b[0] == g[0], b[1] == g[1], b[3] == g[3], len(b[0]), halted is not None, b[2][:2]))
-        ok = g[4] == 0 if name not in ("crtcreg", "crtc-r12") else \
-            g[4] == 10 and all("a read of IC2 (the JP1 latch) with inputs FF floating" in l for l in g[2][:-1])
+        latch = [l for l in g[2][:-1] if "a read of IC2 (the JP1 latch) with inputs FF floating" in l]
+        ok = g[4] is not None and len(latch) == len(g[2][:-1]) and all("at $D801" in l or "at $D803" in l for l in latch)
+        if name in ("crtcreg", "crtc-r12"): ok = ok and g[4] >= 10   # its own two reads besides the ROM's
         check("events", ok, "%s: %r events: %s" % (name, g[4], "\n".join(g[2][:6])))
 
 
@@ -129,8 +139,8 @@ def case_rs():
     good = "12" in re.split(r"[\r\n]+", out) and re.search(r"^video: CRTC( --){14} 12", err, re.M)
     out2, err2, ev2, st2, n2 = run(data, ["-G", "v1.0-no-rs"])
     bad = "FF" in re.split(r"[\r\n]+", out2) and re.search(r"^video: CRTC( --){18}", err2, re.M) and \
-        n2 == 5 and all("read with RS = 0: the address register is write-only" in l for l in ev2[:-1])
-    check("rs", bool(good) and n == 0 and bool(bad), "v1.0: %r / no-rs: %r %r" % (out[-200:], out2[-200:], ev2[:2]))
+        other(ev2) != [] and all("read with RS = 0: the address register is write-only" in l for l in other(ev2))
+    check("rs", bool(good) and other(ev) == [] and bool(bad), "v1.0: %r / no-rs: %r %r" % (out[-200:], out2[-200:], ev2[:2]))
     out, err, ev, st, n = run(img("crtcreg") + b"0", ["-G", "v1.0-no-rs"])
     ok = re.search(r"R14 00>3F 3F>3F 15>3F 2A>3F 12>3F +BAD", out) and re.search(r"R15 00>FF FF>FF 55>FF AA>FF 34>FF +BAD", out) and \
         "00FF FAILED BAD" in out and "R12 R13 READ: FF FF" in out and any("RS = 0" in l for l in ev)
@@ -138,7 +148,7 @@ def case_rs():
     out, err, ev, st, n = run(img("crtcreg") + b"0", ["-G", "v1.0-no6845"])
     ok = "R14 00>3F" in out and "BAD" in out and any("IC17 socket empty: its select (CS) is low" in l for l in ev)
     out2, err2, ev2, st2, n2 = run(img("vram") + b"0", ["-G", "v1.0-no6845"])
-    check("rs", bool(ok) and out2.count("ERRORS 0000") == 4 and n2 == 0, "the empty socket:\n%s\n%s" % (out[-400:], out2[-300:]))
+    check("rs", bool(ok) and out2.count("ERRORS 0000") == 4 and other(ev2) == [], "the empty socket:\n%s\n%s" % (out[-400:], out2[-300:]))
 
 
 def case_5v():
@@ -147,7 +157,7 @@ def case_5v():
     for rev in ("v1.0", "v1.0-no6845", "v1.0-no-5v"):
         out, err, ev, st, n = run(data, ["-G", rev])
         m = re.search(r"^D010: (..)", out.replace("\r", ""), re.M)
-        got[rev] = (m.group(1) if m else None, n, ev)
+        got[rev] = (m.group(1) if m else None, len(other(ev)), ev)
     ok = got["v1.0"][:2] == ("FF", 0) and got["v1.0-no6845"][:2] == ("FF", 0) and got["v1.0-no-5v"][0] == "5A" and \
         any("~{CER} undefined: a write may land" in l for l in got["v1.0-no-5v"][2])
     check("5v", ok, "%r" % {k: (v[0], v[1], v[2][:4]) for k, v in got.items()})
