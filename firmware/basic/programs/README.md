@@ -13,4 +13,3 @@ name the same way.
 | Program | What it does |
 |---|---|
 | `baslook.bas` | nested counting loops: the inner one counts `C` to 32000, the outer one prints `L` each time round and never ends (a long soak of GOTO, IF and PRINT at the machine's speed; stop it with reset - BASIC has no break key yet, `BACKLOG.md`) |
-| `test.bas` | the same program as `baslook.bas` (a working copy kept from the bench, 2026-10-21) |
