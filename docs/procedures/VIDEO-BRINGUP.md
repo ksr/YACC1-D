@@ -157,6 +157,10 @@ microcode emulator is checked in `make check` (`tests/video/asm/run.py`).
 - `python3 tools/vidsim.py testcard --png card.png`: the test card with the card's own table. `--card v1.3 --dots 6`
   (80 x 24) or `--dots 8` (64 x 24, the 7-dot font) draws the v1.3 design's two modes (12 MHz, the DOTS jumper;
   `BACKLOG.md` "Video v1.3"); `vidsim.py chargen --card v1.3` writes its two-font EPROM, `firmware/video/chargen-v13.bin`.
+- `python3 tools/vidsim.py overlay --card v2.0 --tint --png v2.png`: the V2.0 design (`BACKLOG.md` "Video card V2.0"):
+  the test card with a demo drawing in the graphics layer, 512 x 192 in 8-dot mode. `--layers text,gfx|text|gfx|none`
+  and `--gmode or|xor` (or `--control BYTE`, the value a program writes to port PC) set the control register, `--dpage`
+  the displayed page, `--overlay FILE` a 16K page or 32K image; `--dots 6` shows the layer forced off.
 - Both emulators model the card (`software/videomodel.h`):
   - `-V` prints the screen.
   - `-W` logs every CRTC write, and every write to the latch (a bus fight on the real card).

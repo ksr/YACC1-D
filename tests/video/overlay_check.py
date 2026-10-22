@@ -87,6 +87,32 @@ for d in (6, 8):
     got = [sum((img[r][x] != (10, 10, 10)) << (width - 1 - x) for x in range(width)) for r in range(8)]
     gap = all(img[r][x] == (10, 10, 10) for r in range(8) for x in range(width, d))
     check("v1.3 %d dots: the A in cell 0" % d, got == want and gap, "rows %s" % " ".join("%02X" % g for g in got))
+# ---- the V2.0 card: the graphics layer on a time-shared 62256 (two 16K pages), the control register on port PC
+vidsim.CARD, vidsim.DOTS = "v2.0", 8
+C = vidsim.V20Control
+check("v2.0 control reset value $00", C(0).layers() == ("text",) and C(0).plane == 0 and not C(0).xor,
+      "text on, graphics off, plane 0, page 0")
+check("v2.0 control bits", C(C.make(plane=5, cpage=1, dpage=1, text=False, gfx=True, xor=True)).value == 0xFD and
+      (C(0xFD).plane, C(0xFD).cpage, C(0xFD).dpage, C(0xFD).layers(), C(0xFD).xor) == (5, 1, 1, ("gfx",), True))
+check("v2.0 CPU window: $D800 plane 0 page 0", vidsim.v20_cpu_address(0x00, 0xD800) == 0)
+check("v2.0 CPU window: $DFFF plane 7 page 1", vidsim.v20_cpu_address(0x0F, 0xDFFF) == 16384 + 7 * 2048 + 0x7FF)
+check("v2.0 display: page 1, RA 3, MA 100", vidsim.v20_display_address(0x10, 100, 3) == 16384 + 3 * 2048 + 100)
+ov = vidsim.Overlay(cols=64, pages=2, window=2048)
+ov.plot(500, 100)                                 # page 0: plane 100 & 7 = 4, cell (100 >> 3) * 64 + 500 >> 3 = 830
+a = vidsim.v20_cpu_address(C.make(plane=4), 0xD800 + 830)
+check("v2.0 plot = what the CPU writes through the window", ov.ram[a] == 0x80 >> (500 & 7), "$%04X" % a)
+ov.cpu_write(8 + 2, 0x10, 0xFF)                   # bank = page 1 * 8 + plane 2 (2K window): $D810 with PLANE 2, CPAGE 1
+check("v2.0 cpu_write bank = CPAGE:PLANE", ov.ram[vidsim.v20_cpu_address(C.make(plane=2, cpage=1), 0xD810)] == 0xFF)
+st = vidsim.State(vidsim.V13_TABLES[8], bytes(b" " * 2048))
+for page, want in ((0, [(500, 100)]), (1, [(x, 2) for x in range(128, 136)])):
+    ov.page = page
+    W, H, img = vidsim.picture(st, cursor=False, overlay=ov)
+    lit = [(x, y) for y in range(H) for x in range(W) if img[y][x] != (10, 10, 10)]
+    check("v2.0 DPAGE %d displayed" % page, lit == want, "%s" % lit[:3])
+vidsim.DOTS = 6                                  # 6-dot mode: GDG = dot AND GFX-ON AND NOT DOTS -> never shown
+ov.page = 0
+W, H, img = vidsim.picture(st, cursor=False, overlay=ov)
+check("v2.0 6-dot mode: graphics forced off", not any(img[y][x] != (10, 10, 10) for y in range(H) for x in range(W)))
 vidsim.CARD, vidsim.DOTS = "v1.0", 6
 
 print("overlay model: %s" % ("ALL PASS" if not fails else "%d FAIL" % fails))

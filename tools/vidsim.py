@@ -19,9 +19,9 @@ what the real card should show.
   vidsim.py overlay [--overlay FILE] [--save-overlay FILE] [--gmode or|xor] [--layers L] [--tint] [--png OUT.png]
         the PROPOSED graphics overlay (--layers text,gfx|text|gfx|none) (BACKLOG "Video: graphics overlay", 2026-10-21; not built): the test card's text
         with a demo drawing (or a 16K overlay image) in a second RAM that the same 6845 scans - see "The overlay" below
-  vidsim.py testcard [--card v1.0|v1.3] [--dots N] [--regs R0,R1,...] [--png OUT.png]
+  vidsim.py testcard [--card v1.0|v1.3|v2.0] [--dots N] [--regs R0,R1,...] [--png OUT.png]
         the test card (tests/video/asm/testcard.asm's layout, laid out for R1 columns) with the card's own table
-  vidsim.py chargen [--card v1.0|v1.3] [--out FILE]
+  vidsim.py chargen [--card v1.0|v1.3|v2.0] [--out FILE]
         write a 2732 character-generator image (4K) for the card's wiring with the fonts drawn here (2513-style
         64-character sets): address = code*8 + row (code = VDATA0..5 on A3..A8, row = RA0..2), D7 the leftmost dot,
         shifted out first by the 74LS166. v1.0 (firmware/video/chargen.bin): 5 dots in D7..D3, D2..D0 unused. v1.3
@@ -29,7 +29,8 @@ what the real card should show.
         (D7..D3), A10 = the DOTS jumper. Burn with `minipro -p 2732A@DIP24 -w FILE`.
 
 Common options: --card v1.0 (the card in the machine, the default) | v1.3 (the design with the DOTS jumper: 12 MHz, --dots 6
-= 80 x 24, --dots 8 = 64 x 24, both fonts in one EPROM; BACKLOG "Video v1.3"), --dotclock HZ (default the card's crystal:
+= 80 x 24, --dots 8 = 64 x 24, both fonts in one EPROM; BACKLOG "Video v1.3") | v2.0 (v1.3 + the graphics layer, 8-dot
+mode only, see "V2.0" below; --dots 8 the default), --dotclock HZ (default the card's crystal:
 v1.0 11.0592e6, Q2 fitted 2026-10-21, SV4 on 1-2; v1.3 12e6), --dots N (v1.0: 6 = IC28 a 74163 since 2026-10-18, a blank
 6th dot; 5 = the drawn 74HC160; v1.3: 6 or 8), --chargen FILE (a
 2732 image read from the card's EPROM with minipro, instead of the drawn font), --raster (draw the whole frame: the
@@ -51,6 +52,14 @@ plane y & 7, cell (y >> 3) * columns + x / 6, mask $80 >> x % 6 (`Overlay.locate
 table a YACC1 program would use instead of dividing by 6). --overlay FILE takes any 16K image, in run/render too. Not modelled: the review findings that would blank or tear a real
 picture (6.1 the E one-shot, 6.2 the CHARCLOCK runt below ~16-20 MHz dot clocks, 6.3 the HC/LS levels) - the timing
 report warns about 6.2.
+
+V2.0 (the design of 2026-10-22, BACKLOG "Video card V2.0"; `--card v2.0`): the v1.3 text card plus a graphics layer in a
+32K RAM (two 16K pages), each page addressed RA2..0:MA10..0 like the overlay above, 8 dots a byte (512 x 192 at 64
+columns), shown only in 8-dot mode (6-dot mode: the layer is forced off, whatever the control register says). The
+control register (OUT PC, `V20Control`): bits 0-2 PLANE (the plane the CPU window $D800-$DFFF shows), 3 CPAGE (the
+page it writes), 4 DPAGE (the page displayed), 5 TEXT-OFF, 6 GFX-ON, 7 XOR. On the command line --layers / --gmode set
+TEXT-OFF / GFX-ON / XOR and --dpage the displayed page, or --control BYTE sets the register outright; --overlay FILE
+takes a 16K page or a 32K image (both pages). `v20_cpu_address(control, addr)` is where a CPU byte at $D800-$DFFF lands.
 """
 import os, re, sys, zlib, struct, argparse, subprocess, tempfile
 
@@ -59,7 +68,7 @@ DOTS = 6                     # dots per character: IC28 a 74163 (synchronous cle
 ROM_TABLE = [116, 80, 94, 9, 31, 6, 24, 27, 0, 7, 0x67, 7, 0, 0, 0, 0]    # the monitor's vcrtab (monitor.asm): 80 x 24, 11.0592 MHz
 CARD = "v1.0"                # v1.0: the card in the machine (11.0592 MHz, IC24 loads EPROM D7..D3 only, A..C grounded);
                              # v1.3: the design (12 MHz, the DOTS jumper: 6 or 8 dots, IC24 loads all eight bits, two fonts)
-CARD_CLOCK = {"v1.0": 11.0592e6, "v1.3": 12e6}
+CARD_CLOCK = {"v1.0": 11.0592e6, "v1.3": 12e6, "v2.0": 12e6}
 V13_TABLES = {6: [126, 80, 98, 10, 31, 6, 24, 27, 0, 7, 0x67, 7, 0, 0, 0, 0],    # DOTS open: /6, 2.0 MHz, 80 x 24
               8: [94, 64, 75, 8, 31, 6, 24, 27, 0, 7, 0x67, 7, 0, 0, 0, 0]}     # DOTS fitted: /8, 1.5 MHz, 64 x 24
 
@@ -67,7 +76,7 @@ V13_TABLES = {6: [126, 80, 98, 10, 31, 6, 24, 27, 0, 7, 0x67, 7, 0, 0, 0, 0],   
 def card_table(card=None, dots=None):
     """the 6845 table for a card (and, on v1.3, the DOTS mode): R0..R15"""
     card = card or CARD; dots = dots or DOTS
-    return list(V13_TABLES[dots] if card == "v1.3" else ROM_TABLE)
+    return list(V13_TABLES[dots] if card in ("v1.3", "v2.0") else ROM_TABLE)
 
 # 5x7 glyphs for ASCII $20-$5F, column-major (bit 0 = top row), the classic HD44780-style shapes
 _COLS = """
@@ -122,7 +131,7 @@ def chargen_v13_image():
 
 def font_base():
     """where the fitted font starts in the EPROM: v1.3 puts DOTS on A10 (6 dots -> $400)"""
-    return 0x400 if CARD == "v1.3" and DOTS == 6 else 0
+    return 0x400 if CARD in ("v1.3", "v2.0") and DOTS == 6 else 0
 
 
 def load_mask():
@@ -131,7 +140,7 @@ def load_mask():
 
 
 def default_chargen():
-    return chargen_v13_image() if CARD == "v1.3" else chargen_image()
+    return chargen_v13_image() if CARD in ("v1.3", "v2.0") else chargen_image()
 
 
 def chargen_image():
@@ -174,16 +183,17 @@ def x_table(cols=80):
 
 
 class Overlay:
-    """the proposed graphics overlay RAM (16K, address RA2..0:MA10..0, 6 dots a byte in bits 7..2)"""
-    def __init__(self, data=None, cols=80, start=0, window=1024):
-        self.ram = bytearray(data if data is not None else bytes(GRAM))
-        assert len(self.ram) == GRAM, "an overlay image is 16384 bytes"
-        self.cols, self.start, self.window = cols, start, window
+    """the graphics overlay RAM (16K a page, address RA2..0:MA10..0, a byte's dots from bit 7: 6 or 8 of them); V2.0's
+    62256 holds two pages (pages=2), `page` is the one displayed (DPAGE)"""
+    def __init__(self, data=None, cols=80, start=0, window=1024, pages=1, page=0):
+        self.ram = bytearray(data if data is not None else bytes(GRAM * pages))
+        assert len(self.ram) in (GRAM, 2 * GRAM), "an overlay image is 16384 bytes (one page) or 32768 (two)"
+        self.cols, self.start, self.window, self.page = cols, start, window, page
 
     def locate(self, x, y):
         """-> (address, mask) of dot (x, y): plane y & 7, cell (y >> 3) * cols + x / 6"""
         cell = (self.start + (y >> 3) * self.cols + x // DOTS) & 0x7FF
-        return (y & 7) << 11 | cell, 0x80 >> (x % DOTS)
+        return self.page * GRAM + ((y & 7) << 11 | cell), 0x80 >> (x % DOTS)
 
     def plot(self, x, y, on=True):
         if 0 <= x < self.cols * DOTS and 0 <= y < 192:
@@ -207,13 +217,45 @@ class Overlay:
 
     def cpu_write(self, bank, offset, value):
         """a CPU write through the window: bank (the bank register) * window size + offset"""
-        assert 0 <= offset < self.window and 0 <= bank < GRAM // self.window
+        assert 0 <= offset < self.window and 0 <= bank < len(self.ram) // self.window
         self.ram[bank * self.window + offset] = value & 0xFF
 
     def dots(self, ma, line):
         """the byte the overlay gives the cell at MA on scan line `line`: its dots from bit 7 (the leftmost) down, DOTS
         of them (6: bits 7..2, 8: bits 7..0)"""
-        return self.ram[(line & 7) << 11 | (ma & 0x7FF)]
+        return self.ram[(self.page * GRAM if len(self.ram) > GRAM else 0) + ((line & 7) << 11 | (ma & 0x7FF))]
+
+
+class V20Control:
+    """V2.0's control register (OUT PC, a 74LS273 cleared by -RESET: plane 0, page 0, text on, graphics off)"""
+    def __init__(self, value=0):
+        self.value = value & 0xFF
+
+    plane = property(lambda s: s.value & 7)
+    cpage = property(lambda s: (s.value >> 3) & 1)
+    dpage = property(lambda s: (s.value >> 4) & 1)
+    text_on = property(lambda s: not (s.value >> 5) & 1)
+    gfx_on = property(lambda s: bool((s.value >> 6) & 1))
+    xor = property(lambda s: bool((s.value >> 7) & 1))
+
+    @staticmethod
+    def make(plane=0, cpage=0, dpage=0, text=True, gfx=False, xor=False):
+        return (plane & 7) | cpage << 3 | dpage << 4 | (0 if text else 0x20) | (0x40 if gfx else 0) | (0x80 if xor else 0)
+
+    def layers(self):
+        return tuple(n for n, on in (("text", self.text_on), ("gfx", self.gfx_on)) if on)
+
+
+def v20_cpu_address(control, addr):
+    """the 62256 address a CPU access to addr ($D800-$DFFF) reaches: CPAGE, PLANE, ADDR10..0 (the 74LS157s' A side)"""
+    c = V20Control(control)
+    assert 0xD800 <= addr <= 0xDFFF, "the V2.0 graphics window is $D800-$DFFF"
+    return c.cpage * GRAM + c.plane * 2048 + (addr & 0x7FF)
+
+
+def v20_display_address(control, ma, ra):
+    """the 62256 address the display half reads for MA, RA: DPAGE, RA2..0, MA10..0 (the 74LS157s' B side)"""
+    return V20Control(control).dpage * GRAM + ((ra & 7) << 11 | (ma & 0x7FF))
 
 
 def overlay_demo(cols=80):
@@ -244,12 +286,12 @@ def timing(regs, dotclock, out=print):
     out("visible: %d x %d dots; interlace R8 = %d; cursor R10 = %02X (lines %d-%d, %s), R11 = %d; start R12:R13 = %04X, cursor R14:R15 = %04X" % (
         r[1] * DOTS, r[6] * lines_row, r[8] & 3, r[10], r[10] & 0x1F, r[11] & 0x1F,
         ["steady", "off", "blink 1/16", "blink 1/32"][(r[10] >> 5) & 3], r[11], (r[12] & 0x3F) << 8 | r[13], (r[14] & 0x3F) << 8 | r[15]))
-    if CARD == "v1.3":
+    if CARD in ("v1.3", "v2.0"):
         lo = 2 if DOTS == 6 else 4                          # QC over counts 10..15 (/6) or 8..15 (/8): low 2 or 4 dots
         out("6845 clock (IC28 QC): low %d / high %d dots = %.0f / %.0f ns; EPROM time a character %.0f ns" % (
             lo, DOTS - lo, lo / dotclock * 1e9, (DOTS - lo) / dotclock * 1e9, DOTS / dotclock * 1e9))
     warn = []
-    if CARD == "v1.3" and 2 / dotclock * 1e9 < 160 + 20 and DOTS == 6:
+    if CARD in ("v1.3", "v2.0") and 2 / dotclock * 1e9 < 160 + 20 and DOTS == 6:
         warn.append("the 6845's clock is low for only %.0f ns: little margin over the MC6845's minimum (v1.3 README)" % (2 / dotclock * 1e9))
     if r[1] >= htot: warn.append("R1 (displayed) must be less than R0+1 (total)")
     if not (r[1] <= r[2] and r[2] + hsw <= htot): warn.append("HSYNC (R2..R2+R3) should start after the display and end within the line")
@@ -272,6 +314,8 @@ def picture(st, chargen=None, raster=False, cursor=True, overlay=None, gmode="or
     the two meet (or / xor), layers which are switched on (the proposed control bits TEXT-ON and GFX-ON; the cursor
     belongs to the text layer), tint: overlay dots green where the text has none"""
     text_on, gfx_on = "text" in layers, "gfx" in layers
+    if CARD == "v2.0" and DOTS != 8:
+        gfx_on = False                                      # V2.0: GDG = dot AND GFX-ON AND NOT DOTS (8-dot mode only)
     r = st.regs; cg = chargen or default_chargen(); base, mask = font_base(), load_mask()
     lines_row = (r[9] & 0x1F) + 1
     start = (r[12] & 0x3F) << 8 | r[13]; cur = (r[14] & 0x3F) << 8 | r[15]
@@ -364,7 +408,7 @@ def show(st, a, label, overlay=None):
     cg = open(a.chargen, "rb").read() if a.chargen else None
     if overlay is None and a.overlay:
         r = st.regs
-        overlay = Overlay(open(a.overlay, "rb").read(), r[1], (r[12] & 0x3F) << 8 | r[13])
+        overlay = Overlay(open(a.overlay, "rb").read(), r[1], (r[12] & 0x3F) << 8 | r[13], page=a.dpage)
     print("== %s" % label)
     if not any(st.written[:16]):
         print("(the program never wrote the CRTC: drawn with the ROM's table)")
@@ -395,8 +439,9 @@ def main():
     ap.add_argument("--go", default="3000"); ap.add_argument("--input", default=""); ap.add_argument("--steps", type=int, default=300000000)
     ap.add_argument("--png"); ap.add_argument("--dotclock", type=float, help="the crystal (default: the card's: v1.0 11.0592 MHz, v1.3 12 MHz)")
     ap.add_argument("--chargen")
-    ap.add_argument("--card", choices=["v1.0", "v1.3"], default="v1.0", help="v1.0 = the card in the machine (default); "
-                    "v1.3 = the design with the DOTS jumper (--dots 6: 80 x 24, --dots 8: 64 x 24, 12 MHz, two fonts)")
+    ap.add_argument("--card", choices=["v1.0", "v1.3", "v2.0"], default="v1.0", help="v1.0 = the card in the machine (default); "
+                    "v1.3 = the design with the DOTS jumper (--dots 6: 80 x 24, --dots 8: 64 x 24, 12 MHz, two fonts); "
+                    "v2.0 = v1.3 + the graphics layer (8-dot mode only; --dots 8 the default)")
     ap.add_argument("--raster", action="store_true"); ap.add_argument("--nocursor", action="store_true"); ap.add_argument("--scale", type=int, default=2)
     ap.add_argument("--regs"); ap.add_argument("--port", default="/dev/cu.usbserial-AB6WZCQX"); ap.add_argument("--out")
     ap.add_argument("--dots", type=int, help="dots a character. v1.0: 6 = IC28 a 74163 (a clean CHARCLOCK and a blank 6th dot; "
@@ -407,21 +452,30 @@ def main():
     ap.add_argument("--layers", default="text,gfx", help="the layers switched on: text, gfx, both (default) or none "
                     "(the proposed TEXT-ON / GFX-ON control bits)")
     ap.add_argument("--tint", action="store_true", help="draw overlay dots green where the text has none (the card is monochrome)")
+    ap.add_argument("--control", type=lambda v: int(v, 0), help="v2.0: the control register (OUT PC) outright: bits 0-2 "
+                    "PLANE, 3 CPAGE, 4 DPAGE, 5 TEXT-OFF, 6 GFX-ON, 7 XOR (overrides --layers, --gmode, --dpage)")
+    ap.add_argument("--dpage", type=int, choices=[0, 1], default=0, help="v2.0: the page displayed (DPAGE)")
     a = ap.parse_args()
     global DOTS, CARD
     CARD = a.card
-    DOTS = a.dots or 6
+    DOTS = a.dots or (8 if CARD == "v2.0" else 6)
     if DOTS not in ((5, 6) if CARD == "v1.0" else (6, 8)):
         ap.error("--dots %d does not exist on card %s" % (DOTS, CARD))
     a.dotclock = a.dotclock or CARD_CLOCK[CARD]
+    if CARD == "v2.0":
+        if a.control is None:
+            ly = a.layers.split(",")
+            a.control = V20Control.make(dpage=a.dpage, text="text" in ly, gfx="gfx" in ly, xor=a.gmode == "xor")
+        c = V20Control(a.control)
+        a.layers, a.gmode, a.dpage = ",".join(c.layers()) or "none", "xor" if c.xor else "or", c.dpage
     table = card_table()
     if a.cmd == "timing":
         timing(parse_regs(a.regs) if a.regs else table, a.dotclock)
     elif a.cmd == "chargen":
-        out = a.out or os.path.join(ROOT, "firmware/video/chargen-v13.bin" if CARD == "v1.3" else "firmware/video/chargen.bin")
+        out = a.out or os.path.join(ROOT, "firmware/video/chargen-v13.bin" if CARD in ("v1.3", "v2.0") else "firmware/video/chargen.bin")
         os.makedirs(os.path.dirname(out), exist_ok=True)
         open(out, "wb").write(default_chargen())
-        print("wrote %s (4096 bytes, %s)" % (out, "the 8-dot font at $000, the 6-dot font at $400" if CARD == "v1.3"
+        print("wrote %s (4096 bytes, %s)" % (out, "the 8-dot font at $000, the 6-dot font at $400" if CARD in ("v1.3", "v2.0")
                                              else "64 glyphs x 8 rows in the low 512"))
     elif a.cmd == "testcard":
         tb = testcard_table(parse_regs(a.regs) if a.regs else table)
@@ -430,6 +484,12 @@ def main():
         tb = testcard_table(parse_regs(a.regs) if a.regs else table)
         st = State(tb, testcard_ram(tb[1]))
         ov = Overlay(open(a.overlay, "rb").read(), tb[1]) if a.overlay else overlay_demo(tb[1])
+        if CARD == "v2.0":
+            if len(ov.ram) == GRAM:                         # a one-page image: it goes in the displayed page
+                ov.ram = bytearray(ov.ram + bytes(GRAM)) if a.dpage == 0 else bytearray(bytes(GRAM) + ov.ram)
+            ov.page, ov.window = a.dpage, 2048
+            print("V2.0 control register (OUT PC) = $%02X: %s" % (a.control, "layers %s, %s, displayed page %d%s" % (
+                a.layers, a.gmode, a.dpage, "" if DOTS == 8 else "; 6-dot mode: the graphics layer is forced off")))
         if a.save_overlay:
             open(a.save_overlay, "wb").write(ov.ram); print("wrote %s (16384 bytes)" % a.save_overlay)
         lit = sum(bin(b >> (8 - DOTS)).count("1") for b in ov.ram)
