@@ -219,6 +219,38 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   sync polarities and an intensity output, with the review items 6.1-6.5 and the RS/7416 fixes folded in. Keyboard:
   PS/2 clock/data into a shift register or a small MCU, read on an I/O port behind the console vectors (OS-PLAN
   phase 4). `tools/vidsim.py timing` checks a register table against both monitors.
+- **Video: 64 columns of 8-dot characters (planned 2026-10-22, not done).** For the graphics overlay's arithmetic: with
+  8 dots a cell the overlay is 512 x 192, every bit of a byte used, and a dot's byte and bit are shifts only - cell =
+  (y >> 3) << 6 | x >> 3, mask = $80 >> (x & 7), plane = y & 7 (no divide by 6, no lookup table; with 64 columns the
+  row multiply is a shift too). Its RA2..0:MA10..0 addressing still takes a 16K space (eight 2K planes, 1,536 bytes of
+  each used: 12,288 bytes of picture).
+  - **Crystal Q2 = 12 MHz** (SV4 1-2): 12 / 8 = 1.5 MHz, the same character clock as 9 MHz / 6, so the 6845 table is
+    the 64 x 24 one proven on the monitor on 2026-10-21: **94, 64, 75, 8, 31, 6, 24, 27, 0, 7** (15.79 kHz, 60.3 Hz,
+    even margins). Dot 83 ns (fastest video 6 MHz, easier on the monitor than today's 80 columns); the EPROM gets 667 ns
+    a character. (80 columns of 8 dots would need 14.7456 MHz: 640 dots, 68 ns, 7.4 MHz video - harder on a TV-rate
+    monitor.)
+  - **IC28 (74163) to divide by 8: load 8, count 8..15, reload on the carry.** Decoding count N into the synchronous
+    -CLR divides by N + 1 (today NAND(QA, QC) at 5: /6; QD alone at 8 would give /9), and /8 needs count 7 = QA.QB.QC,
+    a 3-input NAND the card does not have - so use RCO instead. From the netlist (`kicad/v1.0-fusion-export-2026-09-18`):
+    | pin | today | for /8 |
+    |---|---|---|
+    | IC28 1 -CLR | CHARCLOCK (IC19 8, IC22 9, IC23 9, IC24 15) | lift, to N$73 (+5 V through R10: IC28 7/10) |
+    | IC28 6 D | GND | lift, to N$73 (bridge to pin 7) - the load value 1000 |
+    | IC28 9 -LOAD | N$73 | lift, to CHARCLOCK (IC19 pin 8) |
+    | IC28 15 RCO | unconnected | to IC19 pins 9 and 10 |
+    | IC19 9 (NAND in) | IC28 14 QA | lift, to RCO |
+    | IC19 10 (NAND in) | CRTCCLOCK (IC28 12, IC17 21) | lift, to RCO (CRTCCLOCK itself stays: IC28 12 -> IC17 21) |
+    CHARCLOCK = NOT RCO: low for one dot at count 15, the same one-dot pulse the 74LS166 load and IC22/IC23 get today;
+    QC (pin 12) is low 8-11, high 12-15: one 6845 clock a character, unchanged wiring.
+  - **Stage 1 (the EPROM as burned)**: crystal + IC28 only - today's 5-dot glyphs in 8-dot cells (5 + 3 blank), and the
+    ROM back to `VCOLS 64` with the table above (the 64 x 24 build of 2026-10-21, `0384c73`, never burned).
+  - **Stage 2, a 7-dot font**: IC24 (74LS166) B and C to the EPROM's O1, O2 - lift IC24 pin 3 (B) and 4 (C) from GND,
+    wire 3 -> IC25 pin 10 (O1), 4 -> IC25 pin 11 (O2); A (pin 2) stays grounded as the gap column, shifted out last
+    (H = O7 leftmost, as now). A new 2732 with 7-dot glyphs in D7..D1, D0 = 0 (a font drawn for it, not a copied
+    commercial one). Optional: VDATA6 to EPROM A9 for 128 characters (lower case) - one wire; the 2732 has the room.
+  - **To do in the tools before the bench**: `tools/vidsim.py --dots 8` (it draws 5-dot glyphs in an 8-dot cell today;
+    a 7-dot font and the overlay at 8 dots a byte are not modelled yet), `tests/video/asm` and the emulators' screen
+    geometry follow `VCOLS`.
 - **Video: a graphics overlay (proposed 2026-10-21, modelled in `tools/vidsim.py overlay`, not designed).** A 480 x 192
   bitmap over the 80 x 24 text, from the same 6845. Each character time the 6845's MA0..10 (cell) and RA0..2 (scan
   line) already address the text RAM and the EPROM; the overlay RAM is addressed **RA2..0:MA10..0** (14 bits, 16K: eight
