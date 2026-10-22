@@ -1,4 +1,8 @@
 /*
+ * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
+ */
+
+/*
    video-ps2 (2026-10-22) - the PS/2 keyboard and mouse controller of the YACC1 video card V2.0
    (hardware/cards/video/kicad/v2.0, BACKLOG "Video card V2.0", embedded/video-ps2/README.md).
 
