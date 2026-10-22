@@ -5,7 +5,9 @@
 (RA2..0:MA10..0, 6 dots a byte in bits 7..2), the CPU window and banks, the 480-entry x table, and that a plotted dot
 comes out at the right place in the picture with each combine mode; and (2026-10-22) the v1.3 card's model - 8-dot
 cells (the overlay 512 x 192, a byte's eight bits), both 6845 tables' rates, the two-font EPROM image
-(firmware/video/chargen-v13.bin) and a glyph drawn in each mode. No hardware; part of `make check`."""
+(firmware/video/chargen-v13.bin) and a glyph drawn in each mode; the V2.0 card's control register, CPU window and
+picture, and after its design review its status bit, direct mode, text-only build and 28C64 image (chargen-v20.bin).
+No hardware; part of `make check`."""
 import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "tools"))
 import vidsim
@@ -113,6 +115,32 @@ vidsim.DOTS = 6                                  # 6-dot mode: GDG = dot AND GFX
 ov.page = 0
 W, H, img = vidsim.picture(st, cursor=False, overlay=ov)
 check("v2.0 6-dot mode: graphics forced off", not any(img[y][x] != (10, 10, 10) for y in range(H) for x in range(W)))
+# ---- V2.0 after the design review (2026-10-22): the status bit, direct mode, the text-only build, the 28C64 image
+check("v2.0 IN PC: ID $5x, DOTS, VSYNC, DE, TEXT-ONLY", vidsim.v20_status(8) == 0x50 and vidsim.v20_status(6) == 0x51 and
+      vidsim.v20_status(8, vsync=True, de=True) == 0x56 and vidsim.v20_status(8, text_only=True) == 0x58,
+      "bit 3 = 0 with the graphics chips fitted")
+card = vidsim.V20Card(clock=6e6)
+check("v2.0 reset: GFX-ON = 0 = direct mode", card.mode == "direct" and not card.shown())
+check("v2.0 direct mode at 6 MHz: a plain SRAM", card.write(0xD812, 0xA5) and card.read(0xD812) == 0xA5 and
+      card.ram[0x12] == 0xA5)
+card.out_pc(C.make(plane=3, cpage=1))
+check("v2.0 direct mode: CPAGE, PLANE address the window", card.write(0xD800, 0x3C) and
+      card.ram[16384 + 3 * 2048] == 0x3C)
+card.out_pc(C.make(gfx=True))
+check("v2.0 slot mode (GFX-ON = 1) at 6 MHz: lost", card.mode == "slot" and card.write(0xD800, 1) is False and
+      card.read(0xD800) is None and card.shown())
+card.clock = 1e6
+check("v2.0 slot mode at 1 MHz: works", card.write(0xD801, 0x77) and card.read(0xD801) == 0x77)
+card.dots = 6
+check("v2.0 6-dot mode: graphics never shown", not card.shown())
+tcard = vidsim.V20Card(text_only=True)
+check("v2.0 text-only build: IN PC bit 3 = 1, the window is empty", tcard.in_pc() & 0x08 and
+      tcard.write(0xD800, 1) is False and tcard.read(0xD800) is None)
+img20 = vidsim.chargen_v20_image()
+path20 = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "firmware", "video", "chargen-v20.bin")
+check("chargen-v20.bin = vidsim.py chargen --card v2.0", open(path20, "rb").read() == img20)
+check("chargen-v20 layout: 8K, the v1.3 image at $0000 and $1000", len(img20) == 8192 and
+      img20[:4096] == img20[4096:] == vidsim.chargen_v13_image())
 vidsim.CARD, vidsim.DOTS = "v1.0", 6
 
 print("overlay model: %s" % ("ALL PASS" if not fails else "%d FAIL" % fails))

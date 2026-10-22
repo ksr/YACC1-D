@@ -22,11 +22,13 @@ what the real card should show.
   vidsim.py testcard [--card v1.0|v1.3|v2.0] [--dots N] [--regs R0,R1,...] [--png OUT.png]
         the test card (tests/video/asm/testcard.asm's layout, laid out for R1 columns) with the card's own table
   vidsim.py chargen [--card v1.0|v1.3|v2.0] [--out FILE]
-        write a 2732 character-generator image (4K) for the card's wiring with the fonts drawn here (2513-style
-        64-character sets): address = code*8 + row (code = VDATA0..5 on A3..A8, row = RA0..2), D7 the leftmost dot,
-        shifted out first by the 74LS166. v1.0 (firmware/video/chargen.bin): 5 dots in D7..D3, D2..D0 unused. v1.3
-        (firmware/video/chargen-v13.bin): the 8-dot font at $000 (a 7-dot glyph in D7..D1) and the 6-dot font at $400
-        (D7..D3), A10 = the DOTS jumper. Burn with `minipro -p 2732A@DIP24 -w FILE`.
+        write a character-generator image for the card's wiring with the fonts drawn here (2513-style 64-character
+        sets): address = code*8 + row (code = VDATA0..5 on A3..A8, row = RA0..2), D7 the leftmost dot, shifted out first
+        by the 74LS166. v1.0 (firmware/video/chargen.bin, a 2732, 4K): 5 dots in D7..D3, D2..D0 unused. v1.3
+        (firmware/video/chargen-v13.bin, a 2732, 4K): the 8-dot font at $000 (a 7-dot glyph in D7..D1) and the 6-dot
+        font at $400 (D7..D3), A10 = the DOTS jumper; burn with `minipro -p 2732A@DIP24 -w FILE`. v2.0
+        (firmware/video/chargen-v20.bin, an AT28C64B, 8K): the v1.3 image at $0000-$0FFF, A12 and A11 grounded on the
+        card (the copy at $1000 is never read); burn with `minipro -p AT28C64B -u -P -w FILE`, as the ROM.
 
 Common options: --card v1.0 (the card in the machine, the default) | v1.3 (the design with the DOTS jumper: 12 MHz, --dots 6
 = 80 x 24, --dots 8 = 64 x 24, both fonts in one EPROM; BACKLOG "Video v1.3") | v2.0 (v1.3 + the graphics layer, 8-dot
@@ -60,6 +62,12 @@ control register (OUT PC, `V20Control`): bits 0-2 PLANE (the plane the CPU windo
 page it writes), 4 DPAGE (the page displayed), 5 TEXT-OFF, 6 GFX-ON, 7 XOR. On the command line --layers / --gmode set
 TEXT-OFF / GFX-ON / XOR and --dpage the displayed page, or --control BYTE sets the register outright; --overlay FILE
 takes a 16K page or a 32K image (both pages). `v20_cpu_address(control, addr)` is where a CPU byte at $D800-$DFFF lands.
+After the design review (2026-10-22): GFX-ON = 0 is DIRECT MODE - the CPU owns the RAM (the muxes hold the CPU address,
+-WE is the CPU's write strobe, reads pass through a buffer), so the window is a plain SRAM at any clock the machine runs
+(test: tests/video/v20_timing.py); GFX-ON = 1 is the slot mode, time-shared with the display, which needs a CPU clock of
+at most ~1.8 MHz (review V2-24). `V20Card` models the CPU side: OUT PC, IN PC (`v20_status`: bit 0 DOTS, 1 VSYNC,
+2 DE, 3 TEXT-ONLY, 7..4 = 0101), the window in both modes, and the text-only build (no graphics chips: bit 3 = 1, the
+window reads the floating bus, writes go nowhere).
 """
 import os, re, sys, zlib, struct, argparse, subprocess, tempfile
 
@@ -141,6 +149,13 @@ def load_mask():
 
 def default_chargen():
     return chargen_v13_image() if CARD in ("v1.3", "v2.0") else chargen_image()
+
+
+def chargen_v20_image():
+    """the V2.0 card's AT28C64B (8K): the v1.3 image at $0000-$0FFF (A12 and A11 grounded on the card, A10 = DOTS), a
+    copy of it at $1000-$1FFF so the chip reads the same whatever A12 does"""
+    img = chargen_v13_image()
+    return img + img
 
 
 def chargen_image():
@@ -253,6 +268,57 @@ def v20_cpu_address(control, addr):
     return c.cpage * GRAM + c.plane * 2048 + (addr & 0x7FF)
 
 
+SLOT_MODE_MAX_CLOCK = 1.8e6     # review V2-24: the slot mode's writes need ~1.1 us of strobe (-MEM-WR is 2 clocks)
+DIRECT_MODE_MAX_CLOCK = 7.7e6   # tests/video/v20_timing.py: the one-step read window against the direct read path
+
+
+def v20_status(dots=8, vsync=False, de=False, text_only=False):
+    """IN PC (IC34): bit 0 DOTS (1 = 6 dots, the jumper open), 1 VSYNC, 2 DE, 3 TEXT-ONLY (1 = no graphics chips: IC44/B
+    absent, R27 pulls it high), bits 7..4 = 0101 (the card ID $5x)"""
+    return 0x50 | (dots == 6) | vsync << 1 | de << 2 | text_only << 3
+
+
+class V20Card:
+    """the CPU's view of V2.0's graphics side: the control register (OUT PC), the status (IN PC) and the window
+    $D800-$DFFF. GFX-ON = 0 is direct mode (plain SRAM, no clock limit of its own below the machine's); GFX-ON = 1 is the
+    slot mode (time-shared with the display: accesses need clock <= SLOT_MODE_MAX_CLOCK, faster ones are lost or read
+    an earlier byte - returned as None / False here). text_only: the graphics chips are not fitted."""
+    def __init__(self, clock=1e6, text_only=False, dots=8):
+        self.clock, self.text_only, self.dots = clock, text_only, dots
+        self.control = V20Control(0)                         # -RESET clears IC33: GFX-ON = 0, i.e. direct mode
+        self.ram = bytearray(2 * GRAM)
+
+    def out_pc(self, value):
+        self.control = V20Control(value)
+
+    def in_pc(self, vsync=False, de=False):
+        return v20_status(self.dots, vsync, de, self.text_only)
+
+    @property
+    def mode(self):
+        return "slot" if self.control.gfx_on else "direct"
+
+    def _ok(self):
+        return self.mode == "direct" and self.clock <= DIRECT_MODE_MAX_CLOCK or self.clock <= SLOT_MODE_MAX_CLOCK
+
+    def write(self, addr, value):
+        """a CPU write to the window; True when the byte is in the RAM"""
+        if self.text_only or not self._ok():
+            return False
+        self.ram[v20_cpu_address(self.control.value, addr)] = value & 0xFF
+        return True
+
+    def read(self, addr):
+        """a CPU read of the window: the byte, or None (text-only build: nothing drives the bus; too fast in slot mode)"""
+        if self.text_only or not self._ok():
+            return None
+        return self.ram[v20_cpu_address(self.control.value, addr)]
+
+    def shown(self):
+        """whether the graphics layer is on the screen: GFX-ON, 8-dot mode, the chips fitted"""
+        return self.control.gfx_on and self.dots == 8 and not self.text_only
+
+
 def v20_display_address(control, ma, ra):
     """the 62256 address the display half reads for MA, RA: DPAGE, RA2..0, MA10..0 (the 74LS157s' B side)"""
     return V20Control(control).dpage * GRAM + ((ra & 7) << 11 | (ma & 0x7FF))
@@ -286,6 +352,10 @@ def timing(regs, dotclock, out=print):
     out("visible: %d x %d dots; interlace R8 = %d; cursor R10 = %02X (lines %d-%d, %s), R11 = %d; start R12:R13 = %04X, cursor R14:R15 = %04X" % (
         r[1] * DOTS, r[6] * lines_row, r[8] & 3, r[10], r[10] & 0x1F, r[11] & 0x1F,
         ["steady", "off", "blink 1/16", "blink 1/32"][(r[10] >> 5) & 3], r[11], (r[12] & 0x3F) << 8 | r[13], (r[14] & 0x3F) << 8 | r[15]))
+    if CARD == "v2.0":
+        out("graphics window: direct mode (GFX-ON = 0) a plain SRAM up to %.1f MHz CPU clock (the machine's own limit, "
+            "~6 MHz, comes first); slot mode (GFX-ON = 1, the layer shown) up to %.1f MHz" % (
+                DIRECT_MODE_MAX_CLOCK / 1e6, SLOT_MODE_MAX_CLOCK / 1e6))
     if CARD in ("v1.3", "v2.0"):
         lo = 2 if DOTS == 6 else 4                          # QC over counts 10..15 (/6) or 8..15 (/8): low 2 or 4 dots
         out("6845 clock (IC28 QC): low %d / high %d dots = %.0f / %.0f ns; EPROM time a character %.0f ns" % (
@@ -472,11 +542,15 @@ def main():
     if a.cmd == "timing":
         timing(parse_regs(a.regs) if a.regs else table, a.dotclock)
     elif a.cmd == "chargen":
-        out = a.out or os.path.join(ROOT, "firmware/video/chargen-v13.bin" if CARD in ("v1.3", "v2.0") else "firmware/video/chargen.bin")
+        out = a.out or os.path.join(ROOT, {"v1.0": "firmware/video/chargen.bin", "v1.3": "firmware/video/chargen-v13.bin",
+                                           "v2.0": "firmware/video/chargen-v20.bin"}[CARD])
         os.makedirs(os.path.dirname(out), exist_ok=True)
-        open(out, "wb").write(default_chargen())
-        print("wrote %s (4096 bytes, %s)" % (out, "the 8-dot font at $000, the 6-dot font at $400" if CARD in ("v1.3", "v2.0")
-                                             else "64 glyphs x 8 rows in the low 512"))
+        img = chargen_v20_image() if CARD == "v2.0" else default_chargen()
+        open(out, "wb").write(img)
+        print("wrote %s (%d bytes, %s)" % (out, len(img), {
+            "v1.0": "64 glyphs x 8 rows in the low 512",
+            "v1.3": "the 8-dot font at $000, the 6-dot font at $400",
+            "v2.0": "an AT28C64B: the 8-dot font at $000, the 6-dot font at $400, the 4K copied at $1000"}[CARD]))
     elif a.cmd == "testcard":
         tb = testcard_table(parse_regs(a.regs) if a.regs else table)
         show(State(tb, testcard_ram(tb[1])), a, "the test card, card %s, %d dots a character" % (CARD, DOTS))
