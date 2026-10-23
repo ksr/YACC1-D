@@ -13,7 +13,7 @@ stats = {"github": 0}
 
 
 def card_versions(card):
-    """[(label, staged README path)] for each design version of hardware/cards/<card>/, oldest first. A version
+    """[(label, staged page)] for each design version of hardware/cards/<card>/, oldest first. A version
     is a folder under eagle/ or kicad/ with a README (the built card's Eagle export wins over its KiCad conversion);
     deprecated/ and option folders are not versions."""
     found = {}
@@ -24,7 +24,7 @@ def card_versions(card):
             m = re.match(r"v(\d+(?:\.\d+)*)", name, re.I)
             readme = os.path.join(base, name, "README.md")
             if m and os.path.isfile(readme):
-                found[m.group(1)] = (os.path.join(base, name), "hardware/cards/%s/%s/%s/README.md" % (card, tool, name))
+                found[m.group(1)] = (os.path.join(base, name), "hardware/cards/%s/%s/%s/notes.md" % (card, tool, name))
     if not found: return []
     status = {}                                                  # version -> label, from tools/fabricated.py
     for c, folder, ver, st, note in re.findall(r'\(\s*"([^"]+)",\s*"([^"]+)",\s*"([^"]+)",\s*"([^"]+)",\s*"[^"]*",\s*"([^"]*)"',

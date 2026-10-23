@@ -11,9 +11,7 @@ FILES = ["BACKLOG.md", "hardware/README.md", "hardware/FABRICATED.md", "os/READM
          "firmware/README.md", "embedded/README.md", "tools/README.md", "tests/README.md",
          "software/compiler/README.md", "software/assembler/README.md", "software/emulator/README.md",
          "software/ucemu/README.md", "software/y1dbg/README.md", "software/disassembler/README.md"]
-GLOBS = ["docs/**/*.md", "docs/isa/*.svg", "docs/**/*.png",
-         # one page per card version (the Cards menu lists them under each card, see hooks.py)
-         "hardware/cards/*/eagle/*/README.md", "hardware/cards/*/kicad/*/README.md"]
+GLOBS = ["docs/**/*.md", "docs/isa/*.svg", "docs/**/*.png"]
 
 shutil.rmtree(OUT, ignore_errors=True)
 n = 0
@@ -26,6 +24,15 @@ for rel in sorted(paths):
     dst = os.path.join(OUT, rel)
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     shutil.copy2(src, dst); n += 1
+# one page per card version: each hardware/cards/<card>/{eagle,kicad}/<version>/README.md, staged beside it as
+# notes.md (not README.md: the theme would take a README as the card's index page and lift it out of the card's
+# submenu); hooks.py lists them under each card in the Cards menu
+for rel in sorted(glob.glob(os.path.join(REPO, "hardware/cards/*/*/*/README.md"))):
+    rel = os.path.relpath(rel, REPO)
+    if rel.split("/")[3] not in ("eagle", "kicad"): continue
+    dst = os.path.join(OUT, os.path.dirname(rel), "notes.md")
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    shutil.copy2(os.path.join(REPO, rel), dst); n += 1
 # the visitor home page (home.md here) is the site's index; the repository README becomes the "Working on the code"
 # page (links to README.md from other documents then point at GitHub, through hooks.py)
 shutil.copy2(os.path.join(HERE, "home.md"), os.path.join(OUT, "index.md")); n += 1
