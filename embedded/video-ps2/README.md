@@ -2,7 +2,7 @@
 
 The firmware of the ATmega328P on the video card V2.0 (`hardware/cards/video/kicad/v2.0`, design note in `BACKLOG.md`
 "Video card V2.0", theory in `docs/cards/video.md`). Designed 2026-10-22; the card is not built, so the sketch has run
-on no hardware yet. `tools/verify_embedded.py` compiles it with every other sketch (`make check`): 5,618 bytes of flash
+on no hardware yet. `tools/verify_embedded.py` compiles it with every other sketch (`make check`): 5,838 bytes of flash
 (Arduino Uno target = the ATmega328P at 16 MHz).
 
 **Revised 2026-10-22 after the design review** (`hardware/DESIGN-REVIEW-video-v2.0.md`), together with the board:
@@ -14,7 +14,8 @@ on no hardware yet. `tools/verify_embedded.py` compiles it with every other sket
 | V2-7 | LDDATA idles **high** (a 10k pull-up R22 holds it there through the reset and the bootloader); a byte is loaded with a low pulse, the latch and FULL take its rising edge. RDCMD has a 10k pull-up (R23). |
 | V2-8 | -INT = INTREQ AND FULL in hardware (IC54/B): reading PE releases -INT at once, whatever the firmware is doing; INTREQ has a 10k pull-down (R24). |
 | V2-9 | MD0..7 are released with the pull-ups on (no floating inputs between transfers); IC51 / IC53 are 74HCT parts on the card. |
-| V2-18 | the data bit is read first in the ISR; the receive rings are 64 bytes (the mouse's packets during LED commands); a VT100 key sequence is queued whole or not at all; E0 7E (Ctrl-Break) no longer toggles Scroll Lock, E0 59 no longer sets right shift; the FULL comment says 7 us (INP's -IO-RD). Still open: a scan code typed while `send_leds()` waits for $FA is taken as the answer. |
+| V2-18 | the data bit is read first in the ISR; the receive rings are 64 bytes (the mouse's packets during LED commands); a VT100 key sequence is queued whole or not at all; E0 7E (Ctrl-Break) no longer toggles Scroll Lock, E0 59 no longer sets right shift; the FULL comment says 7 us (INP's -IO-RD). The one item left open here (a scan code typed while `send_leds()` waits for $FA taken as the answer) is fixed by R2-10 below. |
+| R2-10 (re-review, 2026-10-23) | `ps2_wait()` returns only **reply bytes** ($FA acknowledge, $FE resend, $EE echo, $AA / $FC self-test, $00 the mouse's ID); any other byte that arrives while a command waits (a key typed during the LED command, a mouse packet byte) is held and handed to the main loop afterwards, in order (`ps2_next()`). `ps2_command()` skips a stray reply other than $FA / $FE for up to 50 ms. And the driver rule below: **IN PE only after IN PD showed FULL = 1**. |
 
 ## What it does
 
@@ -54,6 +55,11 @@ the firmware's loop comes round) and comes back with the next; during the ATmega
 interrupt came from another card (the I/O card's UART shares -INT).
 
 ## Reading the keyboard from a program
+
+**Rule: read PE only after PD has shown FULL = 1** (re-review R2-10). `feed_cpu()` loads a byte, then checks FULL a few
+microseconds later and loads the byte again if FULL did not set (it takes that as a read strobe that overlapped the
+load). A program that reads PE without first seeing FULL could clear FULL inside that check and receive the byte twice;
+a program that waits for FULL (or for -INT) cannot reach its `INP PE` within those microseconds, even at 6 MHz.
 
 ```
 wait:  INP PD        ; status

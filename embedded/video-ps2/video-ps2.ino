@@ -7,7 +7,8 @@
    (hardware/cards/video/kicad/v2.0, BACKLOG "Video card V2.0", embedded/video-ps2/README.md).
    Revised 2026-10-22 after the design review (hardware/DESIGN-REVIEW-video-v2.0.md): BUSY and SRC swapped (V2-1,
    Optiboot's LED pin PB5 is now the SRC output), host-to-device bit count (V2-3), LDDATA idle high (V2-7), MD released
-   with pull-ups (V2-9), the V2-18 robustness items.
+   with pull-ups (V2-9), the V2-18 robustness items. 2026-10-23 after the re-review (hardware/DESIGN-REVIEW-video-v2.0-r2.md
+   R2-10): ps2_wait() takes only reply bytes; a key typed while a command waits for its answer goes to the key queue.
 
    An ATmega328P at 16 MHz between two PS/2 jacks and the YACC1 bus. The CPU never talks to it directly: it reads and
    writes three latches on the card (so a 1 MHz CPU never waits for this firmware):
@@ -39,6 +40,9 @@
    (reset + enable data reporting), $05 mouse off, $06 flush both queues, $07 keyboard reset, $10-$17 keyboard LEDs
    (bit 0 scroll, 1 num, 2 caps lock), $FF start again (as after a reset). The bus -RESET resets the ATmega (through
    IC27/E,F, open collector: the bus line only ever pulls MRST down).
+   The CPU's side (the driver rule, R2-10): IN PE only after IN PD showed FULL = 1. feed_cpu() checks FULL a few
+   microseconds after each load and loads the byte again if FULL did not set (a read strobe overlapped the load); a
+   CPU that read PE without waiting for FULL could clear it inside that check and get the byte twice.
    Keyboard bytes are ASCII (set-2 scan codes translated: shift, caps lock, ctrl, the keypad, arrows and the editing
    keys as VT100 sequences ESC [ A..D / H / F / 5~ / 6~, Delete $7F); mouse bytes are its 3-byte packets, raw and
    whole (a packet is queued only when all three bytes are in).
@@ -66,6 +70,7 @@ struct Ps2 {
   volatile uint32_t last;
   volatile uint8_t rx[RXSIZE];
   volatile uint8_t head, tail, errors;
+  uint8_t held[16], nh;                           // bytes that arrived while a command waited for its reply (R2-10)
 };
 Ps2 kb = {KCLK, KDAT}, ms = {MCLK, MDAT};
 
@@ -127,17 +132,38 @@ bool ps2_send(Ps2 &p, uint8_t b) {               // host to device; true when th
   return ok;
 }
 
-int ps2_wait(Ps2 &p, uint16_t ms) {             // the next received byte within ms, or -1
-  uint32_t t0 = millis();
-  int b;
-  while ((b = ps2_get(p)) < 0 && millis() - t0 < ms) ;
-  return b;
+int ps2_next(Ps2 &p) {                           // the main loop's next byte: the held ones first, in order
+  if (p.nh) {
+    uint8_t b = p.held[0];
+    for (uint8_t i = 1; i < p.nh; i++) p.held[i - 1] = p.held[i];
+    p.nh--;
+    return b;
+  }
+  return ps2_get(p);
 }
 
-bool ps2_command(Ps2 &p, uint8_t b) {             // send and expect $FA (acknowledge), one retry on $FE (resend)
-  for (uint8_t i = 0; i < 2; i++) {
+static inline bool ps2_is_reply(uint8_t b) {    // what a device sends in answer to the host: acknowledge, resend,
+  return b == 0xFA || b == 0xFE || b == 0xEE || b == 0xAA || b == 0xFC || b == 0x00;   // echo, BAT ok / failed, ID
+}
+
+int ps2_wait(Ps2 &p, uint16_t ms) {             // the next REPLY byte within ms, or -1 (R2-10): a scan code or a
+  uint32_t t0 = millis();                       // mouse packet byte that arrives meanwhile is held for the main loop
+  int b;
+  do {
+    while ((b = ps2_get(p)) >= 0) {
+      if (ps2_is_reply(b)) return b;
+      if (p.nh < sizeof p.held) p.held[p.nh++] = b;
+    }
+  } while (millis() - t0 < ms);
+  return -1;
+}
+
+bool ps2_command(Ps2 &p, uint8_t b) {             // send and expect $FA (acknowledge), one retry on $FE (resend);
+  for (uint8_t i = 0; i < 2; i++) {               // another reply byte (a stray $AA / $00) is skipped, for 50 ms
     if (!ps2_send(p, b)) continue;
-    int r = ps2_wait(p, 50);
+    uint32_t t0 = millis();
+    int r;
+    do r = ps2_wait(p, 50); while (r >= 0 && r != 0xFA && r != 0xFE && millis() - t0 < 50);
     if (r == 0xFA) return true;
     if (r != 0xFE) return false;
   }
@@ -309,7 +335,7 @@ void command(uint8_t c) {
   else if (c == 0x03) acked = true;
   else if (c == 0x04) mouse_on = mouse_start();
   else if (c == 0x05) { mouse_on = false; ps2_command(ms, 0xF5); }
-  else if (c == 0x06) { noInterrupts(); kb.head = kb.tail; ms.head = ms.tail; interrupts(); qh = qt; mn = 0; }
+  else if (c == 0x06) { noInterrupts(); kb.head = kb.tail; ms.head = ms.tail; interrupts(); kb.nh = ms.nh = 0; qh = qt; mn = 0; }
   else if (c == 0x07) keyboard_reset();
   else if ((c & 0xF8) == 0x10) { scroll = c & 1; num = c & 2; caps = c & 4; send_leds(); }
   else if (c == 0xFE) debug_on = !debug_on;       // the FTDI console shows commands and bytes
@@ -326,15 +352,15 @@ void setup() {
   md_release();
   attachInterrupt(digitalPinToInterrupt(KCLK), kb_isr, FALLING);
   attachInterrupt(digitalPinToInterrupt(MCLK), ms_isr, FALLING);
-  Serial.println(F("video-ps2 2026-10-22"));
+  Serial.println(F("video-ps2 2026-10-23"));
   if (digitalRead(PIN_BUSY)) read_command();      // a command latched before a reset: dropped
   start_all();
 }
 
 void loop() {
   int b;
-  while ((b = ps2_get(kb)) >= 0) { if (debug_on) { Serial.print(F("kb ")); Serial.println(b, HEX); } keyboard_byte(b); }
-  while ((b = ps2_get(ms)) >= 0) mouse_byte(b);
+  while ((b = ps2_next(kb)) >= 0) { if (debug_on) { Serial.print(F("kb ")); Serial.println(b, HEX); } keyboard_byte(b); }
+  while ((b = ps2_next(ms)) >= 0) mouse_byte(b);
   if (digitalRead(PIN_BUSY)) command(read_command());
   feed_cpu();
   digitalWrite(PIN_INTREQ, int_on && !acked && digitalRead(PIN_FULL));
