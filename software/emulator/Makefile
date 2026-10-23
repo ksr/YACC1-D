@@ -13,7 +13,7 @@ ROM     ?= ../../firmware/rom/shipped/rom
 
 all: emulator
 
-emulator: main.c ../opcodes.h
+emulator: main.c ../opcodes.h ../cfmodel.h ../videomodel.h
 	$(CC) $(CFLAGS) -o $@ main.c
 
 run: emulator
