@@ -6,6 +6,10 @@ character generator, the HCT/LS mix, the rebuilt board, the MD-60SM footprint an
 `1f1c213`, `fc71ec4` and `ed5333e`. Findings only: no design file is changed by this review; every finding carries a
 concrete fix.
 
+**Status 2026-10-23: R2-1, R2-2, R2-3 and R2-14 are fixed in `560977b`** (the board rebuilt and routed anew,
+order 6: 0 unrouted, 328 vias; netlist proof MATCH 216/216, DRC clean, `verify` PASS with 189 connections). The order
+gate below is lifted; the rest are documentation, the BOM, the test model, the firmware and bench measurements.
+
 Read and re-derived: `hardware/cards/video/kicad/v2.0/v20_netlist.py` gate by gate against the TI pinouts (every
 section of IC1, IC19, IC26, IC27, IC32, IC44-IC48, IC54, the 157 sections, IC39-IC43, IC55, IC25, IC33/IC34, IC49-IC53);
 `reports/netlist-compare.txt`, `drc.json`, `erc.json`; the board through KiCad 10's `pcbnew` (pad positions, track
@@ -32,9 +36,9 @@ CLK->Q 13-25/25-40; ALS08 -/14; HCT08 11/24 (30 at 85 °C); HCT244 A->Y 13/25 (3
 
 | ID | Sev | Finding | Fix (short) |
 |---|---|---|---|
-| R2-1 | MED | MD-60SM side-leg slots: by the data sheet's own leg dimensions (0.54 mm legs, 13.2 mm between their inner faces) a 0.8 mm slot on the 13.5 mm centres leaves **0.01 mm** at the outer face, before tolerances | side slots 1.2 x 2.6 mm (plated), pads 1.9 x 3.3, same centres; check against a real jack |
-| R2-2 | LOW | IC55 lies on its side 2.7 mm (pin row to end pins) from IC19 and IC1: their sockets collide with IC55's, and the BOM says "every IC in a socket" | move IC55 0.6 mm up (y = 78.7) in the rebuild, or no sockets on IC55 / IC19 / IC1 |
-| R2-3 | LOW | The bus -RESET gains 2.8 mA on this card (7416 1.6, LS74 CLR 0.8, LS08 0.4) on top of ~4 mA elsewhere, from one LS04 (8 mA, VOL 0.5 V max) | feed IC27/E from spare IC54/C (HCT, buffer): the bus sees an HCT input; measure C30's low level |
+| R2-1 | MED | MD-60SM side-leg slots: by the data sheet's own leg dimensions (0.54 mm legs, 13.2 mm between their inner faces) a 0.8 mm slot on the 13.5 mm centres leaves **0.01 mm** at the outer face, before tolerances | side slots 1.2 x 2.6 mm (plated), pads 1.9 x 3.3, same centres; check against a real jack - **fixed `560977b`** |
+| R2-2 | LOW | IC55 lies on its side 2.7 mm (pin row to end pins) from IC19 and IC1: their sockets collide with IC55's, and the BOM says "every IC in a socket" | move IC55 0.6 mm up (y = 78.7) in the rebuild, or no sockets on IC55 / IC19 / IC1 - **fixed `560977b`** (3.30 / 3.22 mm) |
+| R2-3 | LOW | The bus -RESET gains 2.8 mA on this card (7416 1.6, LS74 CLR 0.8, LS08 0.4) on top of ~4 mA elsewhere, from one LS04 (8 mA, VOL 0.5 V max) | feed IC27/E from spare IC54/C (HCT, buffer): the bus sees an HCT input; measure C30's low level - **fixed `560977b`** (net RESETB) |
 | R2-4 | LOW | 6-dot slot reads: IC41's set-up is **~2 ns** worst case (54 ns typical), not 30-40 ns; a -70 RAM fails the corner | make "GFX-ON = 0 in 6-dot mode" a driver rule that is enforced (refuse GFX-ON = 1 when IN PC bit 0 = 1) |
 | R2-5 | LOW | `v20_timing.py` models the address only through the register select with LS244 figures: the fitted HC244 and a counted register (HC193 ripple) are slower; at 6 MHz the read margin is 38-60 ns on a selected register, ~0 after a count, negative when a count crosses into the window | add the count path and the HC values to the test; rule for 6 MHz: no stack and no BRVR vector in the window |
 | R2-6 | LOW | IC41 and IC55 drive the backplane with 74HCT outputs (6 mA) where V2.0's first IC41 was a 74LS374 (24 mA) | measure DATA0's low level during a window read; 74ACT374 / 74ACT244 if it is above 0.5 V |
@@ -45,7 +49,7 @@ CLK->Q 13-25/25-40; ALS08 -/14; HCT08 11/24 (30 at 85 °C); HCT244 A->Y 13/25 (3
 | R2-11 | INFO | The switching character: GFX-ON 0 -> 1 shows the two pipeline bytes latched in direct mode ($FF from RN3) as 16 lit (OR) or inverted (XOR) dots | the driver switches GFX-ON in vertical blanking |
 | R2-12 | INFO | MRST's high level rests on the 7416's off-state current (specified only at 15 V, 250 uA max) through R16 10k | measure MRST >= 4.5 V with -RESET high |
 | R2-13 | INFO | `chargen-v20.bin`'s copy at $1000 is unreachable (A12 = GND) and harmless; the reached ranges $0000-$01FF / $0400-$05FF hold the two fonts | - |
-| R2-14 | INFO | `gen_v20.py verify`'s 173 connections skip some nets of the fixes (J2/J3 shield pads, the MEMWR path, IC44.1, IC53/A); `text_only_check()` silently passes a left-off IC that has no `OUTPUTS` entry | add them to `KEY`; make `check()` fail on a left-off IC without an entry |
+| R2-14 | INFO | `gen_v20.py verify`'s 173 connections skip some nets of the fixes (J2/J3 shield pads, the MEMWR path, IC44.1, IC53/A); `text_only_check()` silently passes a left-off IC that has no `OUTPUTS` entry | add them to `KEY`; make `check()` fail on a left-off IC without an entry - **done `560977b`** (KEY 173 -> 189) |
 | R2-15 | INFO | Route lengths: CRTCCLOCK 267 mm (4 vias), CHARCLOCK 220, DOTCLOCK 182, GWE 226 (7 vias), NMUX 186, GFXON 252: below the critical length for LS edges | scope the far ends (IC41.11, IC44.3, IC39.27) |
 | R2-16 | INFO | F1 (MF-RHT050) drops ~0.1-0.2 V at 0.2 A; R17-R20 hang on VCC, not on PS2VCC | measure PS2VCC under load (>= 4.6 V) |
 
