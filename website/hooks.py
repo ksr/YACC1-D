@@ -40,7 +40,9 @@ def card_versions(card):
 
 
 def on_config(config):
-    """Each card in the Cards menu becomes a submenu: its theory-of-operation page, then one page per version."""
+    """Each card in the Cards menu becomes a submenu, generation by generation: a generation's theory-of-operation
+    page, then its versions. docs/cards/<card>.md is the oldest generation's theory, docs/cards/<card>-v<N>.md the
+    theory of generation N (V2.0, V2.1 ... share docs/cards/<card>-v2.md)."""
     for section in config["nav"]:
         if not (isinstance(section, dict) and "Cards" in section): continue
         items = []
@@ -48,10 +50,20 @@ def on_config(config):
             (label, path), = item.items()
             card = os.path.splitext(os.path.basename(path))[0] if isinstance(path, str) else None
             versions = card_versions(card) if card and path.startswith("docs/cards/") else []
-            if versions:
-                items.append({label: [{"Theory of operation": path}] + [{l: p} for l, p in versions]})
-            else:
-                items.append(item)
+            if not versions:
+                items.append(item); continue
+            major = lambda l: int(re.match(r"V(\d+)", l).group(1))
+            gens = sorted({major(l) for l, _ in versions})
+            theory = {g: "docs/cards/%s-v%d.md" % (card, g) for g in gens
+                      if os.path.isfile(os.path.join(REPO, "docs", "cards", "%s-v%d.md" % (card, g)))}
+            theory.setdefault(gens[0], path)                      # the card's own page: the oldest generation
+            several = len(theory) > 1
+            sub = []
+            for g in gens:
+                if g in theory:
+                    sub.append({"Theory of operation" + (" \u2014 V%d" % g if several else ""): theory[g]})
+                sub += [{l: p} for l, p in versions if major(l) == g]
+            items.append({label: sub})
         section["Cards"] = items
     return config
 
