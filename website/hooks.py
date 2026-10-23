@@ -12,6 +12,50 @@ LINK = re.compile(r'(!?)\[((?:[^\[\]]|\[[^\]]*\])*)\]\((<[^>]+>|[^)\s]+)((?:\s+"
 stats = {"github": 0}
 
 
+def card_versions(card):
+    """[(label, staged README path)] for each design version of hardware/cards/<card>/, oldest first. A version
+    is a folder under eagle/ or kicad/ with a README (the built card's Eagle export wins over its KiCad conversion);
+    deprecated/ and option folders are not versions."""
+    found = {}
+    for tool in ("kicad", "eagle"):                               # eagle second, so it wins for the same version
+        base = os.path.join(REPO, "hardware", "cards", card, tool)
+        if not os.path.isdir(base): continue
+        for name in os.listdir(base):
+            m = re.match(r"v(\d+(?:\.\d+)*)", name, re.I)
+            readme = os.path.join(base, name, "README.md")
+            if m and os.path.isfile(readme):
+                found[m.group(1)] = (os.path.join(base, name), "hardware/cards/%s/%s/%s/README.md" % (card, tool, name))
+    if not found: return []
+    status = {}                                                  # version -> label, from tools/fabricated.py
+    for c, folder, ver, st, note in re.findall(r'\(\s*"([^"]+)",\s*"([^"]+)",\s*"([^"]+)",\s*"([^"]+)",\s*"[^"]*",\s*"([^"]*)"',
+                                             open(os.path.join(REPO, "tools", "fabricated.py"), encoding="utf-8").read()):
+        if c != card or "deprecated" in folder: continue
+        v = ver.lower().lstrip("v")
+        if st == "in-machine": status[v] = "in the machine"
+        elif st == "fabricated": status[v] = "ordered" if "not yet received" in note or "ORDERED" in note else "built"
+    key = lambda v: [int(x) for x in v.split(".")]
+    masters = [v for v, (d, _) in found.items() if os.path.exists(os.path.join(d, "MASTER")) and v not in status]
+    if masters and len(found) > 1: status.setdefault(max(masters, key=key), "current design")   # the newest of several designs
+    return [("V%s%s" % (v, " (%s)" % status[v] if v in status else ""), found[v][1]) for v in sorted(found, key=key)]
+
+
+def on_config(config):
+    """Each card in the Cards menu becomes a submenu: its theory-of-operation page, then one page per version."""
+    for section in config["nav"]:
+        if not (isinstance(section, dict) and "Cards" in section): continue
+        items = []
+        for item in section["Cards"]:
+            (label, path), = item.items()
+            card = os.path.splitext(os.path.basename(path))[0] if isinstance(path, str) else None
+            versions = card_versions(card) if card and path.startswith("docs/cards/") else []
+            if versions:
+                items.append({label: [{"Theory of operation": path}] + [{l: p} for l, p in versions]})
+            else:
+                items.append(item)
+        section["Cards"] = items
+    return config
+
+
 def on_page_markdown(markdown, page, config, files):
     site = {f.src_uri for f in files}
     here = posixpath.dirname(page.file.src_uri)

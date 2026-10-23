@@ -11,7 +11,9 @@ FILES = ["BACKLOG.md", "hardware/README.md", "hardware/FABRICATED.md", "os/READM
          "firmware/README.md", "embedded/README.md", "tools/README.md", "tests/README.md",
          "software/compiler/README.md", "software/assembler/README.md", "software/emulator/README.md",
          "software/ucemu/README.md", "software/y1dbg/README.md", "software/disassembler/README.md"]
-GLOBS = ["docs/**/*.md", "docs/isa/*.svg", "docs/**/*.png"]
+GLOBS = ["docs/**/*.md", "docs/isa/*.svg", "docs/**/*.png",
+         # one page per card version (the Cards menu lists them under each card, see hooks.py)
+         "hardware/cards/*/eagle/*/README.md", "hardware/cards/*/kicad/*/README.md"]
 
 shutil.rmtree(OUT, ignore_errors=True)
 n = 0
