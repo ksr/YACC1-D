@@ -384,7 +384,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
       interrupts are on (command $01) and a byte waits; reading PE (or $03) releases it; the handler reads PD first,
       so -INT can be shared with the I/O card.
     - **FTDI header J4** (GND, CTS, VCC not connected, TXD, RXD, DTR -> 100 nF -> RESET) for the bootloader and a debug
-      console, as on the sequencer card; bus -RESET also resets the MCU through a 1N4148 (no fight with the DTR pulse).
+      console, as on the sequencer card; bus -RESET also resets the MCU (since the review: through two open-collector
+      inverters, IC27/E,F, instead of a 1N4148).
   - **Chips added**: 74LS138, 2x 74LS32, 74LS273, 2x 74LS244 (status, PS/2 status), 4x 74LS157, 62256, 74LS244 (write
     buffer), 3x 74LS374 (CPU read, display, PS/2 data) + 1 (command), 74LS166, 2x 74LS74, 74LS20, 74LS04, 74LS08,
     74LS10, ATmega328P; IC1 (74ALS08) reused, IC2 removed. Model: `tools/vidsim.py --card v2.0`.
@@ -400,6 +401,25 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     through IC27/E,F (open collector) instead of D1; V2-7/V2-8 -INT = INTREQ AND FULL (spare IC19/D + IC48/C), pull-ups on
     LDDATA and RDCMD, LDDATA idle high; V2-9/V2-12 IC33, IC40, IC51, IC53 in 74HCT; V2-10 a 28-pin socket for an
     AT28C64B-15 instead of the 2732; V2-11 a faster 6845 grade for 80 x 24. Bench order in the review's last section.
+  - **Review fixes applied (2026-10-22; firmware `7d3c054`, board `fc71ec4`)**: every HIGH and MED finding, and the
+    trivial LOW ones (V2-16 decoupling and 47 uF bulk, V2-17 a PTC in the PS/2 +5 V, V2-18 in part, V2-20 the J4 legend,
+    V2-21 `BOM.md`). The status of each finding is the table at the top of the review. The Mini-DIN is the **Same Sky
+    MD-60SM** (date code after 2022-03-03), its footprint drawn from the data sheet. New parts: IC54 74HCT08, IC55
+    74HCT244, RN3, R21-R27, F1; D1 gone; IC25 an AT28C64B-15 (`firmware/video/chargen-v20.bin`).
+  - **Direct mode (2026-10-22)**: with **GFX-ON = 0** (the reset state) the CPU owns the graphics RAM - the muxes hold
+    the CPU address (NMUX = NAND(QC OR RCO, GFX-ON)), -WE = NOT GWR (WRQ preset, the phase term forced), the RAM's -OE is
+    the window read, reads pass through IC55 (74HCT244) instead of the slot latch IC41. A plain SRAM: checked against
+    the microcode (`tests/video/v20_timing.py`: all 59 `-MEM-WR` held a step each side, one-step read window) - 72 ns of
+    read margin at 6 MHz, ~7.7 MHz for the card alone; the machine's own limit (~6 MHz) comes first. GFX-ON = 1 is the
+    slot mode as before, ~1.8 MHz. Rule: the instruction that writes PC does not touch the window.
+  - **Text-only build (2026-10-22)**: the graphics chips (IC35-IC45, IC55, RN3, their capacitors) left off, R25 / R26
+    (1k pull-downs on GDOT and WRQ) fitted only then; **IN PC bit 3 = TEXT-ONLY** (IC44/B's Q low when fitted, R27
+    pull-up when not). The recommended first build; `BOM.md` marks it.
+  - **Open - re-review before ordering**: a focused re-review of the changed slot logic (NMUX, WEPH2, the WSLOT / -OE
+    term, IC40 on GWE, IC41's enable), direct mode (the IC55 path, WRQ's preset at the mode switch, the GD pull-ups) and
+    the text-only build, against the rebuilt board. **The design is not to be ordered until that re-review passes.**
+  - **Open - the ROM's V2.0 driver** (IN PC: ID $5x, bit 3 TEXT-ONLY, bit 0 DOTS; the 6845 through OUT PA/PB; graphics
+    drawn in direct mode; the keyboard on PD/PE behind the console vectors) and the emulators' V2.0 card model.
 - **Sequencer logic v2.2: a "CPU off" switch** (`hardware/cards/sequencer-logic`). Today the card's outputs can never be
   silenced while the memory card is enabled: -BUS-EN is generated on the card itself (IC36 74LS04 from the sequencer's
   READY line) and is also the output enable of all nine pipeline 74LS374s and the two microcode-address 74LS244s; -RESET
