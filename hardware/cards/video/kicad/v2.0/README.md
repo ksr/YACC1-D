@@ -42,14 +42,14 @@ component orders and passes). `tools/eagle_to_kicad_all.py` never writes here (`
 
 | Check | Result |
 |---|---|
-| schematic netlist vs `v20_netlist.py` | **MATCH, 215 nets** (`gen_v20.py checknet`); `v20_netlist.check()` OK: 120 parts, 942 connections, no pin on two nets, the text-only check |
-| netlist proof, schematic vs board (`tools/kicad/compare_netlists.py`) | **MATCH, 215 of 215 net groups** |
+| schematic netlist vs `v20_netlist.py` | **MATCH, 216 nets** (`gen_v20.py checknet`); `v20_netlist.check()` OK: 120 parts, 943 connections, no pin on two nets, the text-only check |
+| netlist proof, schematic vs board (`tools/kicad/compare_netlists.py`) | **MATCH, 216 of 216 net groups** (RESETB added by R2-3) |
 | placement | 120 footprints, no courtyard overlaps (`gen_v20.py place`) |
-| route (Freerouting 1.9, component order 3, 60 passes) | **0 unrouted, 308 vias, 22.4 m of 0.25 mm track** (F.Cu 10.4 m, B.Cu 12.0 m). Orders 3 and 4 completed (4: 321 vias); 17, 2, 0 and 1 left 4-7 connections unrouted. An earlier placement with the new parts in the band under the muxes (and RN3 between the 6845 and the 62256) left 30 unrouted after 10 passes: that band and the channels round IC15 / IC17 carry the address and data lines and are kept free |
-| DRC | **0 unconnected, no clearance / short / dangling findings**, schematic parity 0; cosmetic only: silk_over_copper 86, silk_overlap 41, silk_edge_clearance 10 (X1, X2, J1, the Mini-DIN outlines at the edge), text_height 2, text_thickness 3 (footprint texts) |
+| route (Freerouting 1.9, component order 6, 60 passes; the R2-1/R2-2/R2-3 rebuild of 2026-10-23) | **0 unrouted, 328 vias, 22.2 m of 0.25 mm track** (F.Cu 10.1 m, B.Cu 12.0 m). Of orders 0-7 and 17 only 6 and 5 (355 vias) completed cleanly; 0 left one connection (-MEM-RD at X1), 3 and 17 shorts, the rest 2-4 unrouted (before the rebuild: order 3, 308 vias). An earlier placement with the new parts in the band under the muxes (and RN3 between the 6845 and the 62256) left 30 unrouted after 10 passes: that band and the channels round IC15 / IC17 carry the address and data lines and are kept free |
+| DRC | **0 unconnected, no clearance / short / dangling findings**, schematic parity 0; cosmetic only: silk_over_copper 89, silk_overlap 40, silk_edge_clearance 10 (X1, X2, J1, the Mini-DIN outlines at the edge), text_height 2, text_thickness 3 (footprint texts) |
 | planes | In1.Cu GND, In2.Cu VCC, one zone each over the whole board, filled as one piece (24,478 mm2) besides the pad-sized islands the previous board had too; every GND / VCC pin reaches its plane (0 unconnected with no power tracks) |
 | ERC | endpoint_off_grid 6 (cosmetic), nothing else |
-| `gen_v20.py verify` | **PASS**: 173 key connections pin by pin in the schematic and on the board (the port decode and strobes, the 6845 on PA/PB, the card ID and the TEXT-ONLY bit, the mux select NMUX and its QC OR RCO, the slot logic and direct mode (WRQ preset, WEPH2, -WE, the -OE term, IC40 on -WE, IC41 / IC55 enables, RN3), the text-only pads, the 28C64's wiring, the combine, the DOTS divider and font select, the ATmega's bus interface with BUSY / SRC swapped, -INT = INTREQ AND FULL, the reset through IC27/E,F, the PS/2 lines and F1), 4 copper layers, the two planes, no track on GND/VCC |
+| `gen_v20.py verify` | **PASS**: 189 key connections pin by pin in the schematic and on the board (the port decode and strobes, the 6845 on PA/PB, the card ID and the TEXT-ONLY bit, the mux select NMUX and its QC OR RCO, the slot logic and direct mode (WRQ preset, WEPH2, -WE, the -OE term, IC40 on -WE, IC41 / IC55 enables, RN3), the text-only pads, the 28C64's wiring, the combine, the DOTS divider and font select, the ATmega's bus interface with BUSY / SRC swapped, -INT = INTREQ AND FULL, the reset through IC54/C and IC27/E,F, the PS/2 lines and F1; since R2-14 also the MEMWR path, IC44.1, FULL's clear / clock / output, IC40's A / Y pins and the jacks' shield pads), 4 copper layers, the two planes, no track on GND/VCC |
 
 `./build.sh` takes 40-75 minutes with four component orders in parallel (`SEEDS="3 4 17 2"`): Freerouting's passes take
 several minutes each on this board, and a completed route is then optimised for up to 40 minutes; the watchdog
@@ -88,8 +88,9 @@ several minutes each on this board, and a completed route is then optimised for 
 
 Changed v1.3 parts: IC25 a 28-pin **AT28C64B-15** in place of the 2732 (below); IC1 (74ALS08) the 6845 -CS (PA OR PB),
 WSLOT and the dot gates; IC19/A the window-read NAND, IC19/D NMUX; IC26/C E = -IO-RD XOR -IO-WR, IC26/D QA XOR QB;
-IC27/D INTG -> -INT, IC27/E,F the bus -RESET to MRST; IC17 RS = IO-ADDR0, R/-W = -IO-WR, -CS from IC1/A; C16 47 uF.
-Spare after all changes: IC46/F (input on GND), IC54/C and /D (inputs on GND), IC38's fourth section (both inputs on GND);
+IC27/D INTG -> -INT, IC27/E,F the bus -RESET to MRST (IC27/E's input through IC54/C, an HCT08 section used as a
+buffer: R2-3); IC17 RS = IO-ADDR0, R/-W = -IO-WR, -CS from IC1/A; C16 47 uF.
+Spare after all changes: IC46/F (input on GND), IC54/D (inputs on GND), IC38's fourth section (both inputs on GND);
 every other gate is used once (`v20_netlist.check()`: no pin on two nets; ERC: no input unconnected). Pin by pin:
 `v20_netlist.py`.
 
@@ -199,8 +200,10 @@ reel / bag before soldering. The review's check list:
 3. **Numbering**: looking into the jack pins 6, 4, 2 are on the left and 5, 3, 1 on the right - the PS/2 face numbering
    (1 data, 3 GND, 4 +5 V, 5 clock; 2, 6 unused). Confirm with a meter on the first jack before soldering.
 4. **Shell and earth**: the earth terminal a 2.2 x 0.7 (+0.1) mm slot 4.7 mm behind the face on the centre line; the
-   shield's two side legs (0.54 mm thick) slots 13.5 mm apart, 5.5 mm behind the face, drawn like the earth slot (0.7 x
-   2.2 mm, not separately dimensioned); all three plated, on GND, drilled as 0.8 x 2.3 mm slots.
+   shield's two side legs (0.54 mm thick, 2.0 mm wide, 13.2 mm between their inner faces) slots 13.5 mm apart (centres),
+   5.5 mm behind the face; all three plated, on GND. The earth slot is drilled 0.8 x 2.3 mm; the side slots **1.2 x 2.6
+   mm, pads 1.9 x 3.3** (R2-1, 2026-10-23: a 0.8 mm slot left 0.01 mm at the legs' outer face; now 0.21 mm outside and
+   0.45 mm inside). Measure a real jack's leg span (14.28 mm across the outer faces expected) before ordering.
 5. **Board edge**: the mating face (the drawing's datum) is at the board edge, x = 236.17.
 6. **Spacing**: the body is 14.0 mm wide (13.0 deep, 12.8 high); J2 and J3 are 18 mm apart: 4 mm between the bodies.
 7. **Silk**: "KBD (PURPLE)" and "MOUSE (GREEN)", the PS/2 colours.

@@ -132,11 +132,13 @@ def local_symbols():
 #   long side front-to-back; the legs are 0.54 thick);
 #   body 14.0 wide, 13.0 deep, 12.8 high.
 # The drawing is a top (component-side) view, as this footprint: looking into the jack, pins 6 / 4 / 2 are on the left,
-# which is +y here - the PS/2 face numbering (1 data, 3 GND, 4 +5 V, 5 clock). Drills 1.0 and 0.8 x 2.3 mm slots (the
-# upper tolerance), plated: the shell and the earth terminal are on GND (pad S).
+# which is +y here - the PS/2 face numbering (1 data, 3 GND, 4 +5 V, 5 clock). Drills 1.0, the earth slot 0.8 x 2.3 mm
+# and the side-leg slots 1.2 x 2.6 mm (R2-1), plated: the shell and the earth terminal are on GND (pad S).
 MINIDIN_PADS = [("1", -8.5, -1.3), ("2", -8.5, 1.3), ("3", -8.5, -3.4), ("4", -8.5, 3.4), ("5", -11.0, -3.4),
                 ("6", -11.0, 3.4)]
-MINIDIN_SLOTS = [(-4.7, 0.0, 0.8, 2.3), (-5.5, -6.75, 2.3, 0.8), (-5.5, 6.75, 2.3, 0.8)]   # (x, y, drill x, drill y)
+# R2-1 (2026-10-23): the side-leg slots 2.6 x 1.2 (pads 3.3 x 1.9) for the data sheet's 0.54 mm legs 13.2 mm apart
+# (0.8 mm left 0.01 mm at the outer face); centres unchanged. The earth slot stays 0.8 x 2.3.
+MINIDIN_SLOTS = [(-4.7, 0.0, 0.8, 2.3), (-5.5, -6.75, 2.6, 1.2), (-5.5, 6.75, 2.6, 1.2)]   # (x, y, drill x, drill y)
 
 
 def minidin_footprint():
@@ -401,7 +403,8 @@ PLACE = {
     # the direct-mode read buffer on its side under the display latch and shifter (the band under the muxes stays free
     # for routing); the GD pull-ups standing between IC38 and IC42; the text-only pull-downs in the gaps beside IC1;
     # IC54 (turned round: VCC at the bottom) between the clock parts and J4
-    "IC55": (156.0, 79.3, 90), "RN3": (152.8, 51.0, 270),
+    "IC55": (156.0, 78.7, 90),     # R2-2: 0.6 mm up, its socket clears IC19's / IC1's
+    "RN3": (152.8, 51.0, 270),
     "R26": (166.82, 88.5, 270), "R25": (180.82, 88.5, 270),
     "IC54": (208.12, 117.24, 180),
     # the PS/2 +5 V fuse
@@ -637,8 +640,15 @@ KEY = [
     ("J2", "5", "KCLK"), ("J2", "1", "KDAT"), ("J3", "5", "MCLK"), ("J3", "1", "MDAT"), ("J2", "3", "GND"),
     ("J2", "4", "PS2VCC"), ("J3", "4", "PS2VCC"), ("F1", "2", "PS2VCC"), ("F1", "1", "VCC"),
     # V2-6: the bus -RESET to MRST through two open-collector inverters (no D1)
-    ("IC27", "11", "-RESET"), ("IC27", "10", "RESETH"), ("R21", "1", "RESETH"), ("IC27", "13", "RESETH"),
+    # R2-3: IC27/E's input buffered by IC54/C (74HCT08, both inputs: -RESET and VCC) - the bus sees one HCT input
+    ("IC54", "9", "-RESET"), ("IC54", "10", "VCC"), ("IC54", "8", "RESETB"), ("IC27", "11", "RESETB"),
+    ("IC27", "10", "RESETH"), ("R21", "1", "RESETH"), ("IC27", "13", "RESETH"),
     ("IC27", "12", "MRST"), ("IC49", "1", "MRST"), ("R16", "1", "MRST"),
+    # R2-14: the nets the review's fixes rest on - MEMWR into GWR, the WRQ clear, FULL's clear / clock / output, IC40
+    ("IC46", "5", "-MEM-WR"), ("IC46", "6", "MEMWR"), ("IC47", "10", "MEMWR"), ("IC44", "1", "-RESET"),
+    ("IC53", "1", "FULLCLR"), ("IC53", "3", "LDDATA"), ("IC53", "5", "FULL"),
+    ("IC40", "2", "DATA0"), ("IC40", "18", "GD0"), ("IC40", "17", "DATA7"), ("IC40", "3", "GD7"),
+    ("J2", "S", "GND"), ("J3", "S", "GND"),
 ]
 
 

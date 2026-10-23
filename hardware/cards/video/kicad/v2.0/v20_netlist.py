@@ -87,7 +87,7 @@ PARTS = {
     "IC46": ("74LS04", "74xx:74LS04", DIP[14], "inverters"),
     "IC47": ("74LS08", "74xx:74LS08", DIP[14], "graphics select, write, FULL clear"),
     "IC48": ("74LS10", "74xx:74LS10", DIP[14], "XOR term, video NAND, slot read latch enable"),
-    "IC54": ("74HCT08", "74xx:74LS08", DIP[14], "-INT = INTREQ AND FULL; the graphics RAM's -OE term"),
+    "IC54": ("74HCT08", "74xx:74LS08", DIP[14], "-INT = INTREQ AND FULL; the graphics RAM's -OE term; the -RESET buffer for IC27/E (R2-3)"),
     "IC55": ("74HCT244", "74xx:74LS244", DIP[20], "direct-mode read buffer GD -> DATA (GFX-ON = 0)"),
     "RN3":  ("10k x8", "Device:R_Network08", "Resistor_THT:R_Array_SIP9", "GD0-7 pull-ups (GD idles undriven in direct mode)"),
     # --- PS/2
@@ -343,12 +343,13 @@ c("TEXTOFF", "IC46.9"); c("TEXTON", "IC46.8", "IC1.10"); c("EIGHT", "IC46.10", "
 c("TDG", "IC1.8", "IC32.4", "IC48.1"); c("GFXON", "IC1.13"); c("GDA", "IC1.11", "IC47.1")
 c("GDG", "IC47.3", "IC32.5", "IC48.2"); c("GSEL", "IC47.6", "IC47.9", "IC19.1")
 c("XORM", "IC48.13"); c("NBOTH", "IC48.12", "IC48.4"); c("GOR", "IC32.6", "IC48.3")
-c("GND", "IC54.9", "IC54.10", "IC54.12", "IC54.13")                     # IC54/C, D spare
+c("-RESET", "IC54.9"); c("VCC", "IC54.10"); c("RESETB", "IC54.8")       # R2-3: IC54/C buffers -RESET for IC27/E
+c("GND", "IC54.12", "IC54.13")                                           # IC54/D spare
 c("FULLCLR", "IC47.11", "IC53.1"); c("-RESET", "IC47.13")
 
 # ---- PS/2: IC49 ATmega328P, Y1, reset, FTDI, latches IC50-IC52, flags IC53, jacks, INT -------------------------------
 c("MRST", "IC49.1", "R16.1", "C57.2", "IC27.12"); c("VCC", "R16.2")     # V2-6: open collector, no D1
-c("-RESET", "IC27.11"); c("RESETH", "IC27.10", "R21.1", "IC27.13"); c("VCC", "R21.2")
+c("RESETB", "IC27.11"); c("RESETH", "IC27.10", "R21.1", "IC27.13"); c("VCC", "R21.2")
 c("FTX", "IC49.2", "J4.4"); c("FRX", "IC49.3", "J4.5"); c("FDTR", "J4.6", "C57.1"); c("GND", "J4.1", "J4.2")
 c("KCLK", "IC49.4", "R17.1", "J2.5"); c("MCLK", "IC49.5", "R19.1", "J3.5")
 c("KDAT", "IC49.6", "R18.1", "J2.1"); c("MDAT", "IC49.11", "R20.1", "J3.1")
@@ -373,7 +374,7 @@ c("INTOC", "IC27.8", "JP3.1"); c("-INT", "JP3.2")
 # ---- pins left open (a no-connect flag each) --------------------------------------------------------------------------
 NO_CONNECT = {
     "IC15": [22], "IC17": [16, 17, 34, 35], "IC18": [5, 7], "IC21": [8, 9, 11], "IC28": [11], "IC22": [3, 6, 11, 14],
-    "IC30": [14, 15, 7], "IC38": [12], "IC44": [6, 8], "IC46": [12], "IC54": [8, 11], "IC25": [1, 26],
+    "IC30": [14, 15, 7], "IC38": [12], "IC44": [6, 8], "IC46": [12], "IC54": [11], "IC25": [1, 26],
     "IC49": [21], "IC53": [6, 8], "J4": [3], "J2": [2, 6], "J3": [2, 6], "X2": [2, 3, 4, 5, 6],
 }
 NO_CONNECT = {r: [str(p) for p in ps] for r, ps in NO_CONNECT.items()}
@@ -449,6 +450,9 @@ def check():
     for net, r in (("GDOT", "R25"), ("WRQ", "R26"), ("TXTONLY", "R27")):
         if r not in {ref for ref, _ in NETS.get(net, [])}:
             probs.append("text-only build: %s has no %s" % (net, r))
+    for ref in TEXT_ONLY_LEFT_OFF:                  # R2-14: a left-off IC without an OUTPUTS entry would pass silently
+        if ref.startswith("IC") and ref not in OUTPUTS:
+            probs.append("text-only build: %s is left off but has no OUTPUTS entry" % ref)
     return probs
 
 

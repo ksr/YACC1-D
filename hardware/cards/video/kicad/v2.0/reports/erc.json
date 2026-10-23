@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.kicad.org/erc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-10-22T22:14:24",
+    "date": "2026-10-23T11:13:50",
     "ignored_checks": [
         {
             "description": "Global label only appears once in the schematic",
@@ -35,12 +35,12 @@
                     "description": "Symbol pin or wire end off connection grid",
                     "items": [
                         {
-                            "description": "Symbol #PWR276 Pin 1 [Power input, Line]",
+                            "description": "Symbol #PWR275 Pin 1 [Power input, Line]",
                             "pos": {
                                 "x": 0.2,
                                 "y": 5.9
                             },
-                            "uuid": "5181b9e8-2ee1-544a-ad5b-ee138f65ffe5"
+                            "uuid": "62f68581-4939-51d0-af55-da33cb3a59b0"
                         }
                     ],
                     "severity": "warning",
@@ -65,12 +65,12 @@
                     "description": "Symbol pin or wire end off connection grid",
                     "items": [
                         {
-                            "description": "Symbol #PWR277 Pin 1 [Power input, Line]",
+                            "description": "Symbol #PWR276 Pin 1 [Power input, Line]",
                             "pos": {
                                 "x": 0.2,
                                 "y": 6.0
                             },
-                            "uuid": "2f973c9c-9002-53b2-8c04-132c33b13020"
+                            "uuid": "5181b9e8-2ee1-544a-ad5b-ee138f65ffe5"
                         }
                     ],
                     "severity": "warning",
