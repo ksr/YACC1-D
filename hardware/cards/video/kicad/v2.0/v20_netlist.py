@@ -17,6 +17,19 @@ fonts in one 2732 - hardware/cards/video/kicad/v1.3, its parts and pin numbers k
   * two PS/2 ports on an ATmega328P (IC49) talking to the bus through latches IC50 (data, IN PE), IC51 (commands,
     OUT PD), IC52 (status, IN PD) and flags IC53 (FULL, BUSY); INTREQ to -INT through IC27/D and jumper JP3.
 
+Revised 2026-10-22 after the design review (hardware/DESIGN-REVIEW-video-v2.0.md): its HIGH and MEDIUM fixes (V2-1 BUSY/SRC
+swapped on the ATmega, V2-4 the muxes' select from QC OR RCO, V2-5 IC40 enabled by -WE, V2-6 MRST through IC27/E,F,
+V2-7 -INT = INTREQ AND FULL and the LDDATA/RDCMD pull-ups, V2-9/V2-12 HCT parts, V2-10 a 28C64 character generator)
+and two features:
+  * DIRECT MODE: while GFX-ON (control bit 6) is 0 the CPU owns the graphics RAM - the muxes hold the CPU address
+    (NMUX = NAND(QC OR RCO, GFX-ON), the CPU on the 157s' I1 side), -WE is NOT GWR (WRQ preset by GFX-ON = 0, WEPH
+    forced high through IC32/D), the RAM's -OE is the window read (GRDOE) and reads pass through the bypass buffer IC55
+    (74HCT244, GD -> DATA) instead of the slot latch IC41. With GFX-ON = 1 the slot logic runs as before.
+  * TEXT-ONLY BUILD: the graphics parts (IC35-IC45, IC55, RN3 and their capacitors) may be left off; R25 / R26 (1k, fitted
+    only then) hold GDOT and WRQ low, and IN PC bit 3 (TXTONLY, IC44/B's Q held 0 when fitted, R27 pull-up when not)
+    tells software which build it runs on. text_only_check() proves that these are the only nets the left-off parts
+    drive into fitted logic.
+
 Pin numbers are the physical DIP pins (TI pinouts = the KiCad 74xx symbols'; the 74LS163 uses the 74LS161 symbol, the
 7416 the 74LS05's, the ATmega328P-P the ATmega48PV-10P's: same pinouts). Bus pins: V3.2 DIN 41612 (docs/system/BUS.md).
 Net names: the V1.3 netlist's where a net is kept (its N$ names replaced by names saying what they are).
@@ -49,7 +62,7 @@ PARTS = {
     "IC22": ("74LS175", "74xx:74LS175", DIP[16], "attribute and DE delay"),
     "IC23": ("74LS174", "74xx:74LS174", DIP[16], "character code latch"),
     "IC24": ("74LS166", "74xx:74LS166", DIP[16], "text dot shifter"),
-    "IC25": ("2732", LOCAL + ":2732", DIPW[24], "character generator (firmware/video/chargen-v13.bin)"),
+    "IC25": ("AT28C64B-15", "Memory_EEPROM:KM28C64A", DIPW[28], "character generator, 28C64 (firmware/video/chargen-v20.bin)"),
     "IC26": ("74LS86", "74xx:74LS86", DIP[14], "cursor/attribute XORs, 6845 E, the -WE phase"),
     "IC27": ("7416", "74xx:74LS05", DIP[14], "open collector: video, syncs, -INT"),
     "IC28": ("74LS163", "74xx:74LS161", DIP[16], "character counter: load 8 or 10 on the carry (DOTS)"),
@@ -57,7 +70,7 @@ PARTS = {
     "IC30": ("74LS138", "74xx:74LS138", DIP[16], "port decode: Y2..Y7 = PA..PF (IO-ADDR3 = 1)"),
     "IC31": ("74LS32", "74xx:74LS32", DIP[14], "PC/PD strobes"),
     "IC32": ("74LS32", "74xx:74LS32", DIP[14], "PE strobe, text OR graphics"),
-    "IC33": ("74LS273", "74xx:74LS273", DIP[20], "control register (OUT PC)"),
+    "IC33": ("74HCT273", "74xx:74LS273", DIP[20], "control register (OUT PC)"),
     "IC34": ("74LS244", "74xx:74LS244", DIP[20], "card status (IN PC)"),
     # --- graphics
     "IC35": ("74LS157", "74xx:74LS157", DIP[16], "graphics address mux GA0-3"),
@@ -65,28 +78,38 @@ PARTS = {
     "IC37": ("74LS157", "74xx:74LS157", DIP[16], "graphics address mux GA8-11"),
     "IC38": ("74LS157", "74xx:74LS157", DIP[16], "graphics address mux GA12-14"),
     "IC39": ("62256", "Memory_RAM:KM62256CLP", DIPW[28], "graphics RAM, 32K = two pages, time-shared"),
-    "IC40": ("74LS244", "74xx:74LS244", DIP[20], "graphics write buffer DATA -> GD"),
-    "IC41": ("74LS374", "74xx:74LS374", DIP[20], "graphics CPU read latch GD -> DATA"),
+    "IC40": ("74HCT244", "74xx:74LS244", DIP[20], "graphics write buffer DATA -> GD (while -WE)"),
+    "IC41": ("74HCT374", "74xx:74LS374", DIP[20], "graphics CPU read latch GD -> DATA (slot mode)"),
     "IC42": ("74LS374", "74xx:74LS374", DIP[20], "graphics display latch"),
     "IC43": ("74LS166", "74xx:74LS166", DIP[16], "graphics dot shifter"),
     "IC44": ("74LS74", "74xx:74LS74", DIP[14], "WRQ: CPU write pending"),
-    "IC45": ("74LS20", "74xx:74LS20", DIP[14], "graphics RAM -WE"),
+    "IC45": ("74LS20", "74xx:74LS20", DIP[14], "graphics RAM -WE, direct-read buffer enable"),
     "IC46": ("74LS04", "74xx:74LS04", DIP[14], "inverters"),
     "IC47": ("74LS08", "74xx:74LS08", DIP[14], "graphics select, write, FULL clear"),
-    "IC48": ("74LS10", "74xx:74LS10", DIP[14], "XOR term, video NAND"),
+    "IC48": ("74LS10", "74xx:74LS10", DIP[14], "XOR term, video NAND, slot read latch enable"),
+    "IC54": ("74HCT08", "74xx:74LS08", DIP[14], "-INT = INTREQ AND FULL; the graphics RAM's -OE term"),
+    "IC55": ("74HCT244", "74xx:74LS244", DIP[20], "direct-mode read buffer GD -> DATA (GFX-ON = 0)"),
+    "RN3":  ("10k x8", "Device:R_Network08", "Resistor_THT:R_Array_SIP9", "GD0-7 pull-ups (GD idles undriven in direct mode)"),
     # --- PS/2
     "IC49": ("ATmega328P-P", "MCU_Microchip_ATmega:ATmega48PV-10P", DIP[28], "PS/2 controller (embedded/video-ps2)"),
     "IC50": ("74LS374", "74xx:74LS374", DIP[20], "PS/2 data latch (IN PE)"),
-    "IC51": ("74LS374", "74xx:74LS374", DIP[20], "PS/2 command latch (OUT PD)"),
+    "IC51": ("74HCT374", "74xx:74LS374", DIP[20], "PS/2 command latch (OUT PD)"),
     "IC52": ("74LS244", "74xx:74LS244", DIP[20], "PS/2 status (IN PD)"),
-    "IC53": ("74LS74", "74xx:74LS74", DIP[14], "FULL and BUSY flags"),
+    "IC53": ("74HCT74", "74xx:74LS74", DIP[14], "FULL and BUSY flags"),
     "Y1":   ("16MHz", "Device:Crystal", "Crystal:Crystal_HC49-U_Vertical", "ATmega clock"),
-    "J2":   ("KEYBOARD", LOCAL + ":MINIDIN6", LOCAL + ":MiniDIN6_PS2", "PS/2 keyboard"),
-    "J3":   ("MOUSE", LOCAL + ":MINIDIN6", LOCAL + ":MiniDIN6_PS2", "PS/2 mouse"),
+    "J2":   ("KEYBOARD", LOCAL + ":MINIDIN6", LOCAL + ":MiniDIN6_MD-60SM", "PS/2 keyboard (Same Sky MD-60SM)"),
+    "J3":   ("MOUSE", LOCAL + ":MINIDIN6", LOCAL + ":MiniDIN6_MD-60SM", "PS/2 mouse (Same Sky MD-60SM)"),
+    "F1":   ("0.5A PTC", "Device:Polyfuse", "Fuse:Fuse_Bourns_MF-RHT050", "PS/2 +5 V (J2/J3 pin 4), resettable"),
     "J4":   ("FTDI", "Connector_Generic:Conn_01x06", FP_H % 6, "GND CTS VCC(nc) TXD RXD DTR: bootloader, console"),
     "JP3":  ("INT-EN", "Connector_Generic:Conn_01x02", FP_H % 2, "fitted: the card may drive -INT"),
-    "D1":   ("1N4148", "Device:D", "Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal", "bus -RESET resets the ATmega"),
     "R16":  ("10k", "Device:R", FP_R, "ATmega reset pull-up"),
+    "R21":  ("4.7k", "Device:R", FP_R, "RESETH pull-up (bus -RESET -> MRST through IC27/E,F)"),
+    "R22":  ("10k", "Device:R", FP_R, "LDDATA pull-up (idle high through the ATmega's reset)"),
+    "R23":  ("10k", "Device:R", FP_R, "RDCMD pull-up"),
+    "R24":  ("10k", "Device:R", FP_R, "INTREQ pull-down (an HCT input, the ATmega's pin floats in reset)"),
+    "R25":  ("1k", "Device:R", FP_R, "TEXT-ONLY BUILD ONLY: GDOT pull-down (IC43 not fitted)"),
+    "R26":  ("1k", "Device:R", FP_R, "TEXT-ONLY BUILD ONLY: WRQ pull-down (IC44 not fitted)"),
+    "R27":  ("10k", "Device:R", FP_R, "TXTONLY pull-up: IN PC bit 3 = 1 when IC44 is not fitted"),
     "R17":  ("4.7k", "Device:R", FP_R, "keyboard clock pull-up"),
     "R18":  ("4.7k", "Device:R", FP_R, "keyboard data pull-up"),
     "R19":  ("4.7k", "Device:R", FP_R, "mouse clock pull-up"),
@@ -111,20 +134,22 @@ PARTS = {
     "JP2":  ("DOTS 8=ON", "Connector_Generic:Conn_01x02", FP_H % 2, "fitted: 8 dots (64 x 24, graphics), open: 6 (80 x 24)"),
     "X2":   ("DB9 F", LOCAL + ":DE9_SHIELD", LOCAL + ":F09HP", "TTL video: 7 video, 8 HSYNC, 9 VSYNC, 1 GND"),
     "J1":   ("RCA", LOCAL + ":RCA", LOCAL + ":RCA", "composite: video + sync (was U$3)"),
-    "C16":  ("10u", "Device:C_Polarized", FP_CP, "bulk"),
+    "C16":  ("47u", "Device:C_Polarized", "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm", "bulk (V2-16)"),
 }
 DECOUPLE = {"C3": "IC1", "C17": "IC15", "C18": "IC17", "C19": "IC18", "C20": "IC19", "C21": "IC20", "C22": "IC21",
             "C23": "IC22", "C24": "IC23", "C25": "IC24", "C26": "IC25", "C27": "IC26", "C28": "IC27", "C29": "IC28"}
 for n in range(30, 54):
     DECOUPLE["C%d" % n] = "IC%d" % n
 DECOUPLE["C54"] = "IC49"                         # the ATmega's AVCC
+DECOUPLE["C58"] = "IC54"
+DECOUPLE["C59"] = "IC55"
 for c, ic in DECOUPLE.items():
     PARTS[c] = ("100n", "Device:C", FP_C, "%s decoupling" % ic)
 
 POWER_PINS = {  # ref -> (VCC pins, GND pins)
     "IC1": ((14,), (7,)), "IC15": ((48,), (24,)), "IC17": ((20,), (1,)), "IC18": ((16,), (8,)), "IC19": ((14,), (7,)),
     "IC20": ((14,), (7,)), "IC21": ((5,), (10,)), "IC22": ((16,), (8,)), "IC23": ((16,), (8,)), "IC24": ((16,), (8,)),
-    "IC25": ((24,), (12,)), "IC26": ((14,), (7,)), "IC27": ((14,), (7,)), "IC28": ((16,), (8,)),
+    "IC25": ((28,), (14,)), "IC26": ((14,), (7,)), "IC27": ((14,), (7,)), "IC28": ((16,), (8,)),
     "IC39": ((28,), (14,)), "IC49": ((7, 20), (8, 22)),
 }
 for ref in PARTS:
@@ -188,7 +213,7 @@ c("VDATA7", "IC15.23", "IC26.2")
 # ---- 6845 IC17 on PA/PB ----------------------------------------------------------------------------------------------
 c("-RESET", "IC17.2"); c("GND", "IC17.3")                          # LPSTB tied low
 c("DE", "IC17.18", "IC22.12", "IC34.6"); c("CURSOR", "IC17.19", "IC26.1")
-c("CRTCCLOCK", "IC17.21", "IC28.12", "IC46.1", "IC41.11")
+c("CRTCCLOCK", "IC17.21", "IC28.12", "IC41.11", "IC32.9")
 c("-IO-WR", "IC17.22"); c("CRTCE", "IC17.23", "IC26.8"); c("IO-ADDR0", "IC17.24"); c("CRTCCS", "IC17.25", "IC1.3")
 for i in range(8):
     c("DATA%d" % i, "IC17.%d" % (33 - i))
@@ -204,19 +229,23 @@ c("XTALDIV2", "IC20.9", "IC21.1", "IC21.12"); c("DOTCLKH", "IC20.8", "SV4.3")
 c("GND", "IC21.2", "IC21.3", "IC21.6", "IC21.7")
 c("DOTCLOCK", "SV4.2", "IC28.2", "IC24.7", "IC43.7")
 c("VCC", "IC28.1", "IC28.6"); c("GND", "IC28.3", "IC28.5")         # -CLR high; load 1 0 DOTS 0 = 8 or 10
-c("DOTS", "IC28.4", "IC25.19", "JP2.1", "R15.2", "IC34.2", "IC46.11"); c("GND", "JP2.2"); c("VCC", "R15.1")
+c("DOTS", "IC28.4", "IC25.21", "JP2.1", "R15.2", "IC34.2", "IC46.11"); c("GND", "JP2.2"); c("VCC", "R15.1")
 c("CNTEN", "IC28.7", "IC28.10", "R10.1", "IC22.1", "IC23.1", "IC24.9", "IC43.9"); c("VCC", "R10.2")
 c("CHARCLOCK", "IC28.9", "IC19.8", "IC22.9", "IC23.9", "IC24.15", "IC43.15", "IC42.11", "IC44.3")
-c("RCO", "IC28.15", "IC19.9", "IC19.10")
+c("RCO", "IC28.15", "IC19.9", "IC19.10", "IC32.10")
 c("CNTQA", "IC28.14", "IC26.12"); c("CNTQB", "IC28.13", "IC26.13")
 
 # ---- text pipeline: IC23 code latch, IC25 EPROM, IC24 shifter, IC22 delays, IC26 XORs --------------------------------
-for vd, d_pin, q_pin, a_pin in ((5, 3, 2, 23), (4, 4, 5, 1), (3, 6, 7, 2), (2, 11, 10, 3), (1, 13, 12, 4), (0, 14, 15, 5)):
+# IC25: a 28C64 (AT28C64B-15, V2-10) - the 2732's pins + 2 (a 24-pin part sits in pins 3-26 of the 28-pin socket):
+# A0..A2 = RA0..2 (pins 10, 9, 8), A3..A8 = the code (7..3, 25), A10 = DOTS (21: the font), A9, A11, A12 = GND (24, 23,
+# 2), -CE, -OE = GND (20, 22), -WE = VCC (27: never written on the card), pins 1 and 26 not connected
+for vd, d_pin, q_pin, a_pin in ((5, 3, 2, 25), (4, 4, 5, 3), (3, 6, 7, 4), (2, 11, 10, 5), (1, 13, 12, 6), (0, 14, 15, 7)):
     c("VDATA%d" % vd, "IC23.%d" % d_pin)
     c("CA%d" % (8 - (5 - vd)), "IC23.%d" % q_pin, "IC25.%d" % a_pin)      # code bit vd -> EPROM A3 + vd
-c("VROWS2", "IC25.6"); c("VROWS1", "IC25.7"); c("VROWS0", "IC25.8")
-c("GND", "IC25.18", "IC25.20", "IC25.21", "IC25.22")                    # -CE, -OE, A11, A9
-for k, (o_pin, s_pin) in enumerate(((9, 2), (10, 3), (11, 4), (13, 5), (14, 10), (15, 11), (16, 12), (17, 14))):
+c("VROWS2", "IC25.8"); c("VROWS1", "IC25.9"); c("VROWS0", "IC25.10")
+c("GND", "IC25.20", "IC25.22", "IC25.23", "IC25.24", "IC25.2")          # -CE, -OE, A11, A9, A12
+c("VCC", "IC25.27")                                                      # -WE
+for k, (o_pin, s_pin) in enumerate(((11, 2), (12, 3), (13, 4), (15, 5), (16, 10), (17, 11), (18, 12), (19, 14))):
     c("CG%d" % k, "IC25.%d" % o_pin, "IC24.%d" % s_pin)
 c("GND", "IC24.1", "IC24.6")
 c("TDOT", "IC24.13", "IC26.5")
@@ -233,7 +262,7 @@ c("PWRLED", "R2.1", "LED1.2"); c("VCC", "R2.2"); c("GND", "LED1.1")
 
 # ---- E for the 6845: -IO-RD XOR -IO-WR (IC26/C) ----------------------------------------------------------------------
 c("-IO-RD", "IC26.9"); c("-IO-WR", "IC26.10")
-c("WEPH", "IC26.11", "IC45.4")                                          # QA XOR QB: counts 9, 10
+c("WEPH", "IC26.11")                                                    # QA XOR QB: counts 9, 10
 
 # ---- port decode IC30, strobes IC31/IC32 -----------------------------------------------------------------------------
 c("IO-ADDR0", "IC30.1"); c("IO-ADDR1", "IC30.2"); c("IO-ADDR2", "IC30.3"); c("IO-ADDR3", "IC30.6")
@@ -253,16 +282,19 @@ for i, (d, q) in enumerate(((3, 2), (4, 5), (7, 6), (8, 9), (13, 12), (14, 15), 
 # IC34: 1A1..1A4 (2, 4, 6, 8) -> 1Y (18, 16, 14, 12) = DATA0..3; 2A1..2A4 (11, 13, 15, 17) -> 2Y (9, 7, 5, 3) = DATA4..7
 c("DATA0", "IC34.18"); c("DATA1", "IC34.16"); c("DATA2", "IC34.14"); c("DATA3", "IC34.12")
 c("DATA4", "IC34.9"); c("DATA5", "IC34.7"); c("DATA6", "IC34.5"); c("DATA7", "IC34.3")
-c("GND", "IC34.8", "IC34.13", "IC34.17"); c("VCC", "IC34.11", "IC34.15")      # bit 3 = 0, bits 7..4 = 0101 (ID $5x)
+c("GND", "IC34.13", "IC34.17"); c("VCC", "IC34.11", "IC34.15")               # bits 7..4 = 0101 (ID $5x)
+c("TXTONLY", "IC34.8", "IC44.9", "R27.1"); c("VCC", "R27.2")              # bit 3: 0 = graphics fitted (IC44/B's Q)
 
-# ---- graphics address muxes IC35-IC38 (S = QC: 0 = CPU (I0), 1 = display (I1)) -------------------------------------
+# ---- graphics address muxes IC35-IC38 (S = NMUX: 1 = CPU (I1), 0 = display (I0)) -----------------------------------
+# NMUX = NAND(QC OR RCO, GFX-ON) (IC32/C, IC19/D): the display address is held until RCO has fallen (V2-4: IC42's hold
+# at the character boundary) and, with GFX-ON = 0, the CPU address all the time (direct mode)
 MUX = [("IC35", ("ADDR0", "VADDR0"), ("ADDR1", "VADDR1"), ("ADDR2", "VADDR2"), ("ADDR3", "VADDR3")),
        ("IC36", ("ADDR4", "VADDR4"), ("ADDR5", "VADDR5"), ("ADDR6", "VADDR6"), ("ADDR7", "VADDR7")),
        ("IC37", ("ADDR8", "VADDR8"), ("ADDR9", "VADDR9"), ("ADDR10", "VADDR10"), ("PLANE0", "VROWS0")),
        ("IC38", ("PLANE1", "VROWS1"), ("PLANE2", "VROWS2"), ("CPAGE", "DPAGE"), ("GND", "GND"))]
-SECTIONS = ((2, 3, 4), (5, 6, 7), (11, 10, 9), (14, 13, 12))          # (I0, I1, Z) of a, b, c, d
+SECTIONS = ((3, 2, 4), (6, 5, 7), (10, 11, 9), (13, 14, 12))          # (CPU = I1, display = I0, Z) of a, b, c, d
 for k, (ref, *sections) in enumerate(MUX):
-    c("CRTCCLOCK", ref + ".1"); c("GND", ref + ".15")
+    c("NMUX", ref + ".1"); c("GND", ref + ".15")
     for j, ((cpu, disp), (i0, i1, z)) in enumerate(zip(sections, SECTIONS)):
         c(cpu, "%s.%d" % (ref, i0)); c(disp, "%s.%d" % (ref, i1))
         if k * 4 + j < 15:
@@ -274,46 +306,62 @@ for i, pin in enumerate((10, 9, 8, 7, 6, 5, 4, 3, 25, 24, 21, 23, 2, 26, 1)):
 for i, pin in enumerate((11, 12, 13, 15, 16, 17, 18, 19)):
     c("GD%d" % i, "IC39.%d" % pin)
 c("GND", "IC39.20")                                                      # -CS
-c("WSLOT", "IC39.22", "IC1.6", "IC46.13"); c("GWE", "IC39.27", "IC45.6")
+c("WSLOT", "IC39.22", "IC1.6"); c("GWE", "IC39.27", "IC45.6", "IC40.1", "IC40.19")    # V2-5: IC40 on only during -WE
+for i in range(8):
+    c("GD%d" % i, "RN3.%d" % (2 + i))
+c("VCC", "RN3.1")
 
-# ---- write buffer IC40 (DATA -> GD while WSLOT), CPU read latch IC41, display latch IC42, shifter IC43 ----------------
-c("-WSLOT", "IC46.12", "IC40.1", "IC40.19")
+# ---- write buffer IC40 (DATA -> GD while -WE), CPU read latch IC41, bypass IC55, display latch IC42, shifter IC43 -----
 for i, (a, y) in enumerate(((2, 18), (4, 16), (6, 14), (8, 12), (11, 9), (13, 7), (15, 5), (17, 3))):
     c("DATA%d" % i, "IC40.%d" % a); c("GD%d" % i, "IC40.%d" % y)
+    c("GD%d" % i, "IC55.%d" % a); c("DATA%d" % i, "IC55.%d" % y)       # direct-mode reads: GD -> DATA, no latch
+c("DRDOE", "IC45.8", "IC55.1", "IC55.19")                                # NAND(GSEL, MEMRD, NOT GFX-ON) (IC45/B)
 L374 = ((3, 2), (4, 5), (7, 6), (8, 9), (13, 12), (14, 15), (17, 16), (18, 19))   # (D, Q) bits 0..7
 for i, (d, q) in enumerate(L374):
     c("GD%d" % i, "IC41.%d" % d, "IC42.%d" % d); c("DATA%d" % i, "IC41.%d" % q)
     c("GL%d" % i, "IC42.%d" % q)
-c("GRDOE", "IC41.1", "IC19.3"); c("GND", "IC42.1")
+c("SRDOE", "IC48.8", "IC41.1"); c("GND", "IC42.1")                     # NAND(GSEL, MEMRD, GFX-ON) (IC48/C)
+c("GRDOE", "IC19.3", "IC54.2")                                           # NAND(GSEL, MEMRD): a window read
 for i, pin in enumerate((2, 3, 4, 5, 10, 11, 12, 14)):                  # A..H, H shifted out first = bit 7
     c("GL%d" % i, "IC43.%d" % pin)
-c("GND", "IC43.1", "IC43.6"); c("GDOT", "IC43.13", "IC1.12")
+c("GND", "IC43.1", "IC43.6"); c("GDOT", "IC43.13", "IC1.12", "R25.1"); c("GND", "R25.2")   # R25: text-only build
 
 # ---- slot logic: WRQ (IC44), -WE (IC45), inverters (IC46), gates (IC1, IC47, IC48, IC19/A, IC32) --------------------
-c("GWR", "IC47.8", "IC44.2", "IC45.5"); c("WRQ", "IC44.5", "IC1.4", "IC45.1"); c("-RESET", "IC44.1"); c("VCC", "IC44.4")
-c("VCC", "IC44.13", "IC44.10"); c("GND", "IC44.12", "IC44.11")           # the second flip-flop: spare, inputs tied
-c("NQC", "IC46.2", "IC1.5", "IC45.2")
+c("GWR", "IC47.8", "IC44.2", "IC45.5")
+c("WRQ", "IC44.5", "IC1.4", "IC45.1", "R26.1"); c("GND", "R26.2")         # R26: text-only build
+c("-RESET", "IC44.1"); c("GFXON", "IC44.4")                               # GFX-ON = 0 presets WRQ: direct mode
+c("VCC", "IC44.10"); c("GND", "IC44.13", "IC44.12", "IC44.11")            # IC44/B: -CLR held low, Q = 0 = TXTONLY
+c("QCR", "IC32.8", "IC19.12"); c("GFXON", "IC19.13")                      # QC OR RCO (IC32/C)
+c("NMUX", "IC19.11", "IC45.2", "IC54.1")                                  # NAND(QCR, GFX-ON) (IC19/D)
+c("GFXON", "IC46.1"); c("NGFX", "IC46.2", "IC32.13", "IC45.12")           # IC46/A
+c("WEPH", "IC32.12"); c("WEPH2", "IC32.11", "IC45.4")                     # WEPH OR NOT GFX-ON (IC32/D)
+c("OEY", "IC54.3", "IC1.5")                                               # NMUX AND GRDOE (IC54/A); WSLOT = WRQ AND OEY
+c("GSEL", "IC48.9", "IC45.9"); c("MEMRD", "IC48.10", "IC45.10"); c("GFXON", "IC48.11"); c("VCC", "IC45.13")
+c("GND", "IC46.13")                                                       # IC46/F spare
 c("-MEM-RD", "IC46.3"); c("MEMRD", "IC46.4", "IC19.2"); c("-MEM-WR", "IC46.5"); c("MEMWR", "IC46.6", "IC47.10")
 c("TEXTOFF", "IC46.9"); c("TEXTON", "IC46.8", "IC1.10"); c("EIGHT", "IC46.10", "IC47.2")
 c("TDG", "IC1.8", "IC32.4", "IC48.1"); c("GFXON", "IC1.13"); c("GDA", "IC1.11", "IC47.1")
 c("GDG", "IC47.3", "IC32.5", "IC48.2"); c("GSEL", "IC47.6", "IC47.9", "IC19.1")
 c("XORM", "IC48.13"); c("NBOTH", "IC48.12", "IC48.4"); c("GOR", "IC32.6", "IC48.3")
-c("VCC", "IC45.9", "IC45.10", "IC45.12", "IC45.13", "IC48.9", "IC48.10", "IC48.11", "IC19.12", "IC19.13")
-c("GND", "IC32.9", "IC32.10", "IC32.12", "IC32.13", "IC27.11", "IC27.13")
+c("GND", "IC54.9", "IC54.10", "IC54.12", "IC54.13")                     # IC54/C, D spare
 c("FULLCLR", "IC47.11", "IC53.1"); c("-RESET", "IC47.13")
 
 # ---- PS/2: IC49 ATmega328P, Y1, reset, FTDI, latches IC50-IC52, flags IC53, jacks, INT -------------------------------
-c("MRST", "IC49.1", "R16.1", "C57.2", "D1.2"); c("VCC", "R16.2"); c("-RESET", "D1.1")
+c("MRST", "IC49.1", "R16.1", "C57.2", "IC27.12"); c("VCC", "R16.2")     # V2-6: open collector, no D1
+c("-RESET", "IC27.11"); c("RESETH", "IC27.10", "R21.1", "IC27.13"); c("VCC", "R21.2")
 c("FTX", "IC49.2", "J4.4"); c("FRX", "IC49.3", "J4.5"); c("FDTR", "J4.6", "C57.1"); c("GND", "J4.1", "J4.2")
 c("KCLK", "IC49.4", "R17.1", "J2.5"); c("MCLK", "IC49.5", "R19.1", "J3.5")
 c("KDAT", "IC49.6", "R18.1", "J2.1"); c("MDAT", "IC49.11", "R20.1", "J3.1")
-c("VCC", "R17.2", "R18.2", "R19.2", "R20.2", "J2.4", "J3.4"); c("GND", "J2.3", "J3.3", "J2.S", "J3.S")
+c("VCC", "R17.2", "R18.2", "R19.2", "R20.2", "F1.1"); c("PS2VCC", "F1.2", "J2.4", "J3.4")
+c("GND", "J2.3", "J3.3", "J2.S", "J3.S")
 c("XT1", "IC49.9", "Y1.1", "C55.1"); c("XT2", "IC49.10", "Y1.2", "C56.1"); c("GND", "C55.2", "C56.2")
-c("LDDATA", "IC49.12", "IC50.11", "IC53.3"); c("RDCMD", "IC49.13", "IC51.1", "IC53.13")
+c("LDDATA", "IC49.12", "IC50.11", "IC53.3", "R22.1"); c("RDCMD", "IC49.13", "IC51.1", "IC53.13", "R23.1")
+c("VCC", "R22.2", "R23.2")
 for i, pin in enumerate((23, 24, 25, 26, 27, 28, 14, 15)):
     c("MD%d" % i, "IC49.%d" % pin)
-c("FULL", "IC49.16", "IC53.5", "IC52.2"); c("SRC", "IC49.17", "IC52.4"); c("INTREQ", "IC49.18", "IC27.9")
-c("BUSY", "IC49.19", "IC53.9", "IC52.6")
+c("FULL", "IC49.16", "IC53.5", "IC52.2", "IC54.5"); c("SRC", "IC49.19", "IC52.4")     # V2-1: SRC on PB5
+c("INTREQ", "IC49.18", "IC54.4", "R24.1"); c("GND", "R24.2"); c("INTG", "IC54.6", "IC27.9")   # V2-7: AND FULL
+c("BUSY", "IC49.17", "IC53.9", "IC52.6")                                  # V2-1: BUSY on PB3
 for i, (d, q) in enumerate(L374):
     c("MD%d" % i, "IC50.%d" % d, "IC51.%d" % q); c("DATA%d" % i, "IC50.%d" % q, "IC51.%d" % d)
 c("DATA0", "IC52.18"); c("DATA1", "IC52.16"); c("DATA2", "IC52.14"); c("DATA3", "IC52.12")
@@ -325,13 +373,58 @@ c("INTOC", "IC27.8", "JP3.1"); c("-INT", "JP3.2")
 # ---- pins left open (a no-connect flag each) --------------------------------------------------------------------------
 NO_CONNECT = {
     "IC15": [22], "IC17": [16, 17, 34, 35], "IC18": [5, 7], "IC21": [8, 9, 11], "IC28": [11], "IC22": [3, 6, 11, 14],
-    "IC19": [11], "IC27": [10, 12], "IC30": [14, 15, 7], "IC32": [8, 11], "IC38": [12], "IC44": [6, 8, 9],
-    "IC45": [8], "IC48": [8], "IC49": [21], "IC53": [6, 8], "J4": [3], "J2": [2, 6], "J3": [2, 6], "X2": [2, 3, 4, 5, 6],
+    "IC30": [14, 15, 7], "IC38": [12], "IC44": [6, 8], "IC46": [12], "IC54": [8, 11], "IC25": [1, 26],
+    "IC49": [21], "IC53": [6, 8], "J4": [3], "J2": [2, 6], "J3": [2, 6], "X2": [2, 3, 4, 5, 6],
 }
 NO_CONNECT = {r: [str(p) for p in ps] for r, ps in NO_CONNECT.items()}
 
 # single-pin nets that are deliberate (none on this card)
 SINGLE_OK = set()
+
+
+# ---- what to buy: the parts whose exact type matters (BOM.md, written by gen_v20.py bom) ----------------------------
+BUY = {
+    "IC17": "HD6845SP (Hitachi) or MC68B45P (2 MHz grades, review V2-11/V2-24); an MC6845P (1 MHz) only for 64 x 24 at a "
+            "1 MHz CPU clock",
+    "IC15": "IDT7134 (SA/LA, 55-90 ns, DIP-48), or the V1.0 card's chip",
+    "IC25": "AT28C64B-15PU (Microchip), 150 ns, burned with chargen-v20.bin (minipro -p AT28C64B -u -P -w)",
+    "IC39": "AS6C62256-55PCN (Alliance, 55 ns, 600-mil DIP-28): the -55 grade is needed (slot reads in 6-dot mode, "
+            "direct-mode reads at 6 MHz); not a 300-mil 'skinny' 62256",
+    "IC49": "ATmega328P-PU with the Arduino Uno bootloader burned (ISP) before fitting",
+    "IC18": "74S85 (the V1.x card's; a 74LS85 also works: see the README)",
+    "J2": "Same Sky (CUI Devices) MD-60SM, date code after 2022-03-03 (the footprint follows that layout)",
+    "J3": "Same Sky (CUI Devices) MD-60SM, date code after 2022-03-03",
+    "F1": "Bourns MF-RHT050 (0.5 A hold, radial)",
+    "J4": "1x6 pin header; a 5 V FTDI cable (TTL-232R-5V) or a 5 V FTDI Basic",
+    "Y1": "16 MHz, HC-49/U", "Q2": "12 MHz, HC-49/U",
+}
+SOCKETS = "every IC in a socket (the 6845, the IDT7134, the 28C64, the 62256 and the ATmega at least)"
+
+# ---- the text-only build ----------------------------------------------------------------------------------------------
+# Left off: the graphics parts. Fitted in that build only: R25 (GDOT) and R26 (WRQ). Their outputs (the pins that drive a
+# net) are listed so text_only_check() can find every net a left-off part drives into a fitted one.
+TEXT_ONLY_LEFT_OFF = ["IC%d" % n for n in range(35, 46)] + ["IC55", "RN3"] + ["C%d" % n for n in range(35, 46)] + ["C59"]
+TEXT_ONLY_FITTED = ["R25", "R26"]
+_Q374 = (2, 5, 6, 9, 12, 15, 16, 19)
+_Y244 = (18, 16, 14, 12, 9, 7, 5, 3)
+OUTPUTS = {"IC35": (4, 7, 9, 12), "IC36": (4, 7, 9, 12), "IC37": (4, 7, 9, 12), "IC38": (4, 7, 9, 12),
+           "IC39": (11, 12, 13, 15, 16, 17, 18, 19), "IC40": _Y244, "IC55": _Y244, "IC41": _Q374, "IC42": _Q374,
+           "IC43": (13,), "IC44": (5, 6, 8, 9), "IC45": (6, 8), "RN3": tuple(range(2, 10))}
+THREE_STATE_TO_BUS = {"IC41", "IC55"}       # their outputs on DATA0..7 are released when the chip is absent
+
+
+def text_only_check():
+    """-> {net: [fitted pins]} for every net a left-off part drives (an output pin) that reaches a part still fitted;
+    the 3-state bus drivers onto DATA are left out (absent = released)"""
+    off = set(TEXT_ONLY_LEFT_OFF)
+    out = {}
+    for net, conns in NETS.items():
+        drivers = [(r, p) for r, p in conns if r in off and int(p) in OUTPUTS.get(r, ()) and
+                   not (r in THREE_STATE_TO_BUS and net.startswith("DATA"))]
+        fitted = sorted({"%s.%s" % (r, p) for r, p in conns if r not in off and r not in ("VCC", "GND")})
+        if drivers and fitted and net not in ("VCC", "GND"):
+            out[net] = fitted
+    return out
 
 
 def check():
@@ -350,6 +443,12 @@ def check():
         for p in pins:
             if (ref, p) in seen:
                 probs.append("%s.%s is a no-connect and on %s" % (ref, p, seen[(ref, p)]))
+    tob = text_only_check()
+    if sorted(tob) != ["GDOT", "TXTONLY", "WRQ"]:
+        probs.append("text-only build: left-off parts drive %s into fitted logic (want GDOT, WRQ, TXTONLY)" % sorted(tob))
+    for net, r in (("GDOT", "R25"), ("WRQ", "R26"), ("TXTONLY", "R27")):
+        if r not in {ref for ref, _ in NETS.get(net, [])}:
+            probs.append("text-only build: %s has no %s" % (net, r))
     return probs
 
 
@@ -357,3 +456,5 @@ if __name__ == "__main__":
     p = check()
     print("\n".join(p) or "v20_netlist: %d parts, %d nets, %d connections - OK" % (
         len(PARTS), len(NETS), sum(len(set(v)) for v in NETS.values())))
+    for net, pins in sorted(text_only_check().items()):
+        print("  text-only build: %-8s driven by a left-off part into %s" % (net, ", ".join(pins)))
