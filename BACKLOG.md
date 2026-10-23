@@ -415,9 +415,17 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   - **Text-only build (2026-10-22)**: the graphics chips (IC35-IC45, IC55, RN3, their capacitors) left off, R25 / R26
     (1k pull-downs on GDOT and WRQ) fitted only then; **IN PC bit 3 = TEXT-ONLY** (IC44/B's Q low when fitted, R27
     pull-up when not). The recommended first build; `BOM.md` marks it.
-  - **Open - re-review before ordering**: a focused re-review of the changed slot logic (NMUX, WEPH2, the WSLOT / -OE
-    term, IC40 on GWE, IC41's enable), direct mode (the IC55 path, WRQ's preset at the mode switch, the GD pull-ups) and
-    the text-only build, against the rebuilt board. **The design is not to be ordered until that re-review passes.**
+  - **Re-review 2026-10-23: `hardware/DESIGN-REVIEW-video-v2.0-r2.md` - HIGH 0, MED 1, LOW 9, INFO 6. Verdict: order
+    after R2-1.** The slot logic, direct mode and the text-only build are right (IC42's hold >= 9 ns at the corners; GD
+    hand-over a dot apart; direct-mode writes meet the 62256 at 1 and 6 MHz, re-derived from `test.hex`). **Open - must
+    fix before ordering: R2-1** the MD-60SM side-leg slots (`gen_v20.py` `MINIDIN_SLOTS` 0.8 x 2.3 -> 1.2 x 2.6 mm: the
+    data sheet's 0.54 mm legs 13.2 apart leave 0.01 mm in a 0.8 mm slot). **Same rebuild:** R2-2 IC55 0.6 mm up (its
+    socket collides with IC19's / IC1's), R2-3 IC27/E's input through spare IC54/C (V2.0 adds 2.8 mA to the bus -RESET).
+    Then: R2-7 the BOM (IC17 value HD68B45SP / MC68B45P, C16 16 V), R2-8 two README statements, R2-9 silk, R2-14 more
+    nets in `verify`'s KEY; R2-5 the counted-register path in `tests/video/v20_timing.py` (6 MHz read margin 38-60 ns
+    selected, ~0 after a count: no stack / BRVR vectors in the window at 6 MHz); R2-10 firmware (`ps2_wait()` takes
+    replies only). Driver rules: GFX-ON = 0 in 6-dot mode, enforced (R2-4); switch GFX-ON in vertical blanking (R2-11);
+    IN PE only after FULL. Bench additions in the r2 review's last section. **Not to be ordered before R2-1 is in.**
   - **Open - the ROM's V2.0 driver** (IN PC: ID $5x, bit 3 TEXT-ONLY, bit 0 DOTS; the 6845 through OUT PA/PB; graphics
     drawn in direct mode; the keyboard on PD/PE behind the console vectors) and the emulators' V2.0 card model.
 - **Sequencer logic v2.2: a "CPU off" switch** (`hardware/cards/sequencer-logic`). Today the card's outputs can never be

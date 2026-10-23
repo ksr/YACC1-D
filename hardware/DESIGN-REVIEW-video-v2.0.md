@@ -1,5 +1,7 @@
 # Design review — video card V2.0 before ordering (2026-10-22)
 
+**Re-review (2026-10-23): [`DESIGN-REVIEW-video-v2.0-r2.md`](DESIGN-REVIEW-video-v2.0-r2.md)** - the fixes and direct mode checked again: HIGH 0, MED 1, LOW 9, INFO 6; order after R2-1 (the MD-60SM side-leg slots).
+
 An independent pass over `hardware/cards/video/kicad/v2.0` (designed and generated the same day, not ordered, no
 gerbers) and the ATmega firmware `embedded/video-ps2`. Findings only: the design files (`v20_netlist.py`, `gen_v20.py`,
 the KiCad project) are unchanged by this review; every finding carries a proposed fix, pin by pin where it is a net
