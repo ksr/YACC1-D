@@ -7,7 +7,8 @@
 #
 #   hardware/cards/video/kicad/v2.0/build.sh        rebuild everything from v20_netlist.py, then verify
 #
-# Steps: gen_v20.py sch (local libraries + the A0 schematic) and its netlist checked against v20_netlist.py; the project
+# Steps: gen_v20.py sch (local libraries + the schematic: a root and eight wired sheets, node + elkjs) and its netlist
+# checked against v20_netlist.py; the project
 # rules; the unrouted board (gen_v20.py board: the blank card's X1, a 218 mm outline, In1.Cu GND / In2.Cu VCC planes,
 # every part placed, every pad on its net) and the placement check; one Freerouting run per DSN component order (SEEDS,
 # in parallel; Power = GND/VCC not routed: -inc Power), each imported, its planes refilled and DRC'd; the best kept
