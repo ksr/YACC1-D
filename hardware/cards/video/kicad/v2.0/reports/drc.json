@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.kicad.org/drc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-10-24T05:53:51",
+    "date": "2026-10-24T09:23:45",
     "ignored_checks": [
         {
             "description": "Footprint has no courtyard defined",
@@ -226,20 +226,43 @@
             "description": "Silkscreen clipped by solder mask",
             "items": [
                 {
-                    "description": "Segment of J1 on F.Silkscreen",
+                    "description": "Circle of X2 on F.Silkscreen",
                     "pos": {
-                        "x": 227.297,
-                        "y": 49.065
+                        "x": 223.487,
+                        "y": 16.2228
                     },
-                    "uuid": "5b237dc6-c7b6-444f-8379-ef31504105dc"
+                    "uuid": "143d322e-9119-425d-bf91-b3193c7d9877"
                 },
                 {
-                    "description": "PTH pad S1 [GND] of J1",
+                    "description": "PTH pad G1 [GND] of X2",
                     "pos": {
-                        "x": 227.297,
-                        "y": 49.065
+                        "x": 223.487,
+                        "y": 16.2228
                     },
-                    "uuid": "4e3ab61d-6089-490f-a3fe-3cae44d2abb1"
+                    "uuid": "9a7a698a-0690-47eb-9956-ea6d5b724a74"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Circle of X2 on F.Silkscreen",
+                    "pos": {
+                        "x": 223.487,
+                        "y": 41.2672
+                    },
+                    "uuid": "e8f724d7-d948-4a57-9ec5-774b362a2321"
+                },
+                {
+                    "description": "PTH pad G2 [GND] of X2",
+                    "pos": {
+                        "x": 223.487,
+                        "y": 41.2672
+                    },
+                    "uuid": "14cc14a1-8b83-4132-98aa-c3eaa08ca058"
                 }
             ],
             "severity": "warning",
@@ -320,6 +343,29 @@
                 {
                     "description": "Segment of J1 on F.Silkscreen",
                     "pos": {
+                        "x": 227.297,
+                        "y": 49.065
+                    },
+                    "uuid": "5b237dc6-c7b6-444f-8379-ef31504105dc"
+                },
+                {
+                    "description": "PTH pad S1 [GND] of J1",
+                    "pos": {
+                        "x": 227.297,
+                        "y": 49.065
+                    },
+                    "uuid": "4e3ab61d-6089-490f-a3fe-3cae44d2abb1"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of J1 on F.Silkscreen",
+                    "pos": {
                         "x": 232.377,
                         "y": 50.335
                     },
@@ -355,52 +401,6 @@
                         "y": 59.225
                     },
                     "uuid": "717f8048-44c4-4f78-96bf-44d030814bbd"
-                }
-            ],
-            "severity": "warning",
-            "type": "silk_over_copper"
-        },
-        {
-            "description": "Silkscreen clipped by solder mask",
-            "items": [
-                {
-                    "description": "Circle of X2 on F.Silkscreen",
-                    "pos": {
-                        "x": 223.487,
-                        "y": 41.2672
-                    },
-                    "uuid": "e8f724d7-d948-4a57-9ec5-774b362a2321"
-                },
-                {
-                    "description": "PTH pad G2 [GND] of X2",
-                    "pos": {
-                        "x": 223.487,
-                        "y": 41.2672
-                    },
-                    "uuid": "14cc14a1-8b83-4132-98aa-c3eaa08ca058"
-                }
-            ],
-            "severity": "warning",
-            "type": "silk_over_copper"
-        },
-        {
-            "description": "Silkscreen clipped by solder mask",
-            "items": [
-                {
-                    "description": "Circle of X2 on F.Silkscreen",
-                    "pos": {
-                        "x": 223.487,
-                        "y": 16.2228
-                    },
-                    "uuid": "143d322e-9119-425d-bf91-b3193c7d9877"
-                },
-                {
-                    "description": "PTH pad G1 [GND] of X2",
-                    "pos": {
-                        "x": 223.487,
-                        "y": 16.2228
-                    },
-                    "uuid": "9a7a698a-0690-47eb-9956-ea6d5b724a74"
                 }
             ],
             "severity": "warning",
