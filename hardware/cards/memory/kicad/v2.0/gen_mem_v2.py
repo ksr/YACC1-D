@@ -24,9 +24,9 @@ Called "base" / "v1.3" below. This script:
            - sheet 1: the four removed caps C20-C23 (mem_v2_netlist.REMOVED, 2026-09-24) taken out of the row of
              caps C19-C24 (remove_parts(): the symbols go, the GND and VCC rails that ran through their pins become
              one wire each from C19 to C24, the junctions at the removed pins go),
-         adds sheet 7 = the CF section, drawn with the CF card's own sheet writer (hardware/cards/cf/kicad/v1.0/gen_cf.py,
-         class Sheet: KiCad standard symbols, short wire stubs to labels / power symbols, no-connect flags) from
-         mem_v2_netlist.py; nets shared with v1.3 are boxed global labels, as on the converted v1.3 sheets;
+         adds sheet 7 = the CF section, drawn by tools/kicad/sch_wire.py (2026-10-24: ELK places the parts and the
+         section's own nets are wires; KiCad standard symbols and the CF card's sheet writer gen_cf.py underneath)
+         from mem_v2_netlist.py; nets shared with v1.3 are boxed global labels, as on the converted v1.3 sheets;
          copies the base symbol + footprint libraries (their nickname kept, so nothing is re-linked).
   board  starts from the base board (same outline, X1 at the same place: it plugs into the same backplane), keeps every
          base footprint and ALL its copper (the built card's copper = the fab gerbers; nothing is removed or moved:
@@ -37,6 +37,8 @@ Called "base" / "v1.3" below. This script:
          silkscreen (title V2.0, "CF: P8/P9") and the CF-to-IDE adapter zones (User.Drawings). The CF section itself
          is NOT routed here: ratsnest only (the blocked keep-copper record; the re-layout is gen_relayout.py).
   locked / check / review   the steps after the board: see build.sh.
+  link   <netlist> <pcb>: every footprint's schematic link (path) set from the netlist, nothing else in the board
+         (tools/kicad/sch_wire.py link(): the links only, as KiCad's "Update PCB from Schematic" would set them).
 
 Since the re-layout decision (2026-09-24) the "board" half is the RECORD of the blocked keep-the-built-copper options
 (placements.py, written to options-keep-copper/, regenerated only with KEEPCOPPER="a b c" build.sh); the re-layout
@@ -51,6 +53,8 @@ V13 = os.path.join(HERE, "..", BASE_NAME)
 sys.path.insert(0, HERE)
 import mem_v2_netlist as NL                                # noqa: E402  (puts the CF card folder on sys.path)
 import gen_cf                                              # noqa: E402  the CF card v1.0's sheet writer (read-only reuse)
+sys.path.insert(0, os.path.join(ROOT, "tools", "kicad"))
+import sch_wire as W                                       # noqa: E402  wired sheets (ELK), on gen_cf's writer
 
 PROJ = "memory-v2.0"
 OLD = "memory-" + BASE_NAME
@@ -325,20 +329,15 @@ def write_root():
     open(os.path.join(HERE, PROJ + ".kicad_sch"), "w").write(t)
 
 
-class CFSheet(gen_cf.Sheet):
-    """gen_cf's sheet writer; nets shared with the v1.3 sheets get boxed global labels"""
-    def label(self, x, y, net, d):
-        if net not in NL.SHARED:
-            return super().label(x, y, net, d)
-        if (round(x, 3), round(y, 3), net) in self.labels:
-            return
-        self.labels.add((round(x, 3), round(y, 3), net))
-        ang = {"R": 0, "L": 180, "U": 90, "D": 270}[d]
-        self.out.append(global_label(net, x, y, ang, gen_cf.U("gl", x, y, net)))
+class CFSheet(W.WSheet):
+    """the shared sheet writer (tools/kicad/sch_wire.py, on gen_cf's): nets shared with the v1.3 sheets get boxed global
+    labels, the CF section's own nets local labels (KiCad names them /Sheet 7/<name>, as on the board)"""
+    def __init__(self):
+        super().__init__("memory-v2.0/sheet7", lambda net: "global" if net in NL.SHARED else "local")
 
-    def write(self, path):
+    def write(self, path, paper="A3"):
         head = ['(kicad_sch', '\t(version 20260306)', '\t(generator "gen_mem_v2")', '\t(generator_version "1.0")',
-                '\t(uuid "%s")' % SHEET7_FILE_UUID, '\t(paper "A3")',
+                '\t(uuid "%s")' % SHEET7_FILE_UUID, '\t(paper "%s")' % paper,
                 '\t(title_block (title "%s sheet 7: CompactFlash interface") (date "%s") (rev "%s") (company "YACC1")'
                 % (PROJ, NL.DATE, NL.REV),
                 '\t\t(comment 1 "CF (True IDE, 8-bit) on I/O ports P8 (register latch) / P9 (data) - docs/cards/cf.md")',
@@ -351,91 +350,87 @@ class CFSheet(gen_cf.Sheet):
         open(path, "w").write("\n".join(head + self.out + ['\t(embedded_fonts no)', ')', '']))
 
 
+# sheet 7's parts: the wired ones in signal order (the decode, the latch, the buffer, the header and its pull-ups, the
+# ACT LED), then the power units and the decoupling (label style, a row under the drawing)
+SHEET7_WIRED = [("IC30", 1)] + [("IC31", u) for u in (1, 2, 3)] + [("IC32", 1)] + [("IC33", u) for u in (1, 2, 3)] + \
+               [("IC34", 1), ("J2", 1), ("RN9", 1), ("R10", 1), ("R11", 1), ("R12", 1), ("R13", 1), ("JP2", 1),
+                ("R14", 1), ("LED1", 1)]
+SHEET7_ROWS = [("J3", 1), ("C30", 1), ("IC31", 4), ("IC33", 4), ("IC31", 5), ("IC33", 5)] + \
+              [("C%d" % n, 1) for n in range(25, 30)]
+
+SHEET7_NOTES = "\n".join([
+    "The CF section has no bus connector of its own: it shares the memory card's X1. Boxed global labels = nets shared",
+    "with sheets 1-6: IO-ADDR0-3 (X1 C7-C10) -> IC30; -IO-RD (B25) -> IC31 gate 2 (CF -IOR); -IO-WR (B26) -> IC31 gates",
+    "1 and 3 (latch clock, CF -IOW); -RESET (C30) -> IC32 CLR, IC33 gate 2 (also IC12 PRE); DATA0-7 (A19-A26) -> IC34 A",
+    "side, DATA0-3 -> IC32 D1-D4. On v1.3, IO-ADDR0-3, -IO-RD and -IO-WR reached X1 only. The CF section drives the",
+    "data bus only while the CPU reads port P9 (IC34 enabled by -CFOE, DIR = -IOR).",
+    "",
+    "1. Two I/O ports. P8 (write): 74LS175 latch IC32 - bits 0-2 = the ATA task-file register (CF DA0-2), bit 3 = CF",
+    "   reset (1 = held in reset). P9 (read/write): the selected ATA register, 8-bit True IDE, through the 74LS245 IC34.",
+    "2. Decode: 74LS138 IC30 on IO-ADDR0-2, enabled by IO-ADDR3 (Y0 = port 8, Y1 = port 9), as on the CF card v1.0.",
+    "   The ROM in the machine and both emulators use P8/P9. The I/O card must keep its IO-ADDR-HL strap at P0-P7.",
+    "3. IC31 (74LS32) ORs each port select with -IO-WR / -IO-RD: -IOR, -IOW and the latch clock are low only during",
+    "   the bus strobe for this port. -CS0 (J2 pin 37) LOW and -CS1 (38) HIGH: the strobes alone define every cycle",
+    "   (docs/cards/cf.md section 4: gating -CS0 would break the chip-select hold time after -IOR). IC31 gate 4 unused.",
+    "4. J2 = 40-pin IDE header (pin 20 kept) for a CF-to-IDE adapter: plugged straight on (TAODAN CF-IDE40, standing",
+    "   off the component side) or on a short ribbon (SinLoon). Adapter power: J3 (1 = +5 V, 2 and 3 = GND, 4 not",
+    "   used) or, with JP2 fitted, IDE pin 20 for adapters powered there. CSEL = GND (master).",
+    "5. Pull-ups: CF D0-7 (RN9: an empty adapter reads $FF = 'no card' to the ROM driver), IORDY, -PDIAG, -DASP;",
+    "   -DMACK held inactive. SRST (IC32 Q4) is a one-pin net by design (a probe point). -CFRESET = -RESET AND -SRST.",
+    "6. ACT LED: any P9 access (the buffer enable -CFOE = -IOR AND -IOW; ACTK sinks it). No PWR LED here: the card has",
+    "   PWR0 + R2 (sheet 1). No DASP LED on v2.0. C25 IC30, C26 IC31, C27 IC32, C28 IC33, C29 IC34; C30 10 uF at J3.",
+    "7. From hardware/cards/cf/kicad/v1.0/cf_netlist.py: U1->IC30 U2->IC31 U3->IC32 U4->IC33 U5->IC34 J1->J2 J2->J3",
+    "   JP1->JP2 RN1->RN9 R1-R5->R10-R14 LED2->LED1 C1-C6->C25-C30. Dropped: X1 (the card's bus connector), the",
+    "   PWR LED (LED1, R7: the card has PWR0 + R2) and the DASP LED (LED3, R6).",
+    "Theory: docs/cards/cf.md, docs/cards/memory.md. Circuit source: mem_v2_netlist.py (edit, then re-run build.sh).",
+    "Drawn by tools/kicad/sch_wire.py: ELK places the parts and the section's own nets are wires (PWR_FLAGs: sheet 1)."])
+
+
 def build_sheet7():
     # point gen_cf's writer at the v2.0 CF section
     gen_cf.N = type("CFSection", (), dict(PARTS=NL.PARTS, NETS=NL.NETS, NO_CONNECT=NL.NO_CONNECT))
     gen_cf.NETOF = {(r, p): n for n, conns in NL.NETS.items() for r, p in conns}
     gen_cf.NC = {(r, p) for r, ps in NL.NO_CONNECT.items() for p in ps}
     gen_cf.PROJ = PROJ
-    gen_cf.ROOT_UUID = ROOT_UUID + "/" + SHEET7          # symbol instance path /root/sheet7
+    gen_cf.ROOT_UUID = ROOT_UUID + "/" + SHEET7          # symbol instance path /root/sheet7 (unchanged: the board's links)
+    why = W.elk_ready()
+    if why:
+        raise SystemExit("gen_mem_v2.py sch: " + why)
     S = CFSheet()
     S.pwr = 700                                           # #PWR701.. (the v1.3 sheets use #GNDn / #P+n / #FLGn)
-    # --- where the bus signals come from -----------------------------------------------------------------------------
-    S.box(gx(5), gx(11), gx(57), gx(52.5), "FROM THE BUS (memory card X1, sheet 1)")
-    S.text(gx(6), gx(16), "The CF section has no bus connector of its own: it shares the memory\n"
-           "card's X1. Boxed global labels = nets shared with sheets 1-6:\n\n"
-           "  IO-ADDR0-3   X1 C7-C10   port number -> IC30 (74LS138)\n"
-           "  -IO-RD       X1 B25      -> IC31 gate 2 (CF -IOR)\n"
-           "  -IO-WR       X1 B26      -> IC31 gates 1 and 3 (latch clock, CF -IOW)\n"
-           "  -RESET       X1 C30      -> IC32 CLR, IC33 gate 2 (also IC12 PRE)\n"
-           "  DATA0-7      X1 A19-A26  -> IC34 A side; DATA0-3 -> IC32 D1-D4\n"
-           "  VCC, GND     the card's supply (six pins each on X1)\n\n"
-           "On v1.3, IO-ADDR0-3, -IO-RD and -IO-WR reached X1 only.\n"
-           "The CF section drives the data bus only while the CPU\n"
-           "reads port P9 (IC34 enabled by -CFOE, DIR = -IOR).", size=1.27)
-    # --- decode + strobe gating --------------------------------------------------------------------------------------
-    S.box(gx(58), gx(5), gx(105), gx(42), "PORT DECODE + STROBE GATING")
-    S.part("IC30", 1, gx(72), gx(22))
-    for u, y in ((1, 12), (2, 21), (3, 30), (4, 38)):
-        S.part("IC31", u, gx(95), gx(y))
-    S.text(gx(59), gx(34), "IC30: IO-ADDR3 = 1 enables;\nY0 = port 8, Y1 = port 9.\nIC31 gate 1: P8 latch clock\n"
-           "IC31 gate 2: CF -IOR\nIC31 gate 3: CF -IOW\nIC31 gate 4: unused", size=1.27)
-    # --- latch + CF reset --------------------------------------------------------------------------------------------
-    S.box(gx(58), gx(43), gx(105), gx(68), "P8 LATCH: DA0-2 + CF RESET")
-    S.part("IC32", 1, gx(72), gx(56))
-    S.part("IC33", 2, gx(95), gx(52))
-    S.text(gx(86), gx(57), "IC33 gate 2: -CFRESET =\n-RESET AND -SRST\n(bus reset or latch bit 3)", size=1.27)
-    # --- data buffer + its enable ------------------------------------------------------------------------------------
-    S.box(gx(106), gx(5), gx(131), gx(63), "P9 DATA BUFFER")
-    S.part("IC34", 1, gx(118), gx(17))
-    S.part("IC33", 1, gx(118), gx(37))
-    S.part("IC33", 3, gx(118), gx(46))
-    S.part("IC33", 4, gx(118), gx(54))
-    S.text(gx(107), gx(58.5), "DIR = -IOR (low: CF -> bus)\n-CFOE = -IOR AND -IOW\nACTK sinks the ACT LED", size=1.27)
-    # --- IDE header, pull-ups, adapter power -------------------------------------------------------------------------
-    S.box(gx(132), gx(5), gx(160.5), gx(63), "IDE HEADER J2 (CF-TO-IDE ADAPTER)")
-    S.part("J2", 1, gx(142), gx(18), fields={"Reference": (-1.27, -27.94), "Value": (3.81, -27.94)}, pstub=G)
-    S.part("RN9", 1, gx(142), gx(37))
-    for i, r in enumerate(("R10", "R11", "R12", "R13")):
-        S.part(r, 1, gx(136 + 3 * i), gx(50))
-    S.part("JP2", 1, gx(155), gx(47))
-    S.part("J3", 1, gx(155), gx(55))
-    S.part("C30", 1, gx(157.5), gx(56))
-    S.text(gx(133), gx(59), "CSEL = GND (master)\n-CS0 = GND, -CS1 = VCC", size=1.27)
-    # --- ACT LED -----------------------------------------------------------------------------------------------------
-    S.box(gx(106), gx(66), gx(131), gx(97), "ACT LED")
-    S.part("R14", 1, gx(118), gx(73))
-    S.part("LED1", 1, gx(118), gx(80), rot=90)
-    S.text(gx(107), gx(89), "ACT: any P9 access (the buffer\nenable). No PWR LED here: the\n"
-           "card has PWR0 + R2 (sheet 1).\nNo DASP LED on v2.0.", size=1.27)
-    # --- power + decoupling ------------------------------------------------------------------------------------------
-    S.box(gx(5), gx(54), gx(57), gx(76), "POWER + DECOUPLING (one 100 nF per new IC)")
-    for i, c in enumerate(("C25", "C26", "C27", "C28", "C29")):
-        S.part(c, 1, gx(8 + 5 * i), gx(65))
-    S.part("IC31", 5, gx(38), gx(65))
-    S.part("IC33", 5, gx(47), gx(65))
-    S.text(gx(6), gx(71.5), "C25 IC30, C26 IC31, C27 IC32, C28 IC33, C29 IC34.\n"
-           "C30 10 uF bulk at J3. PWR_FLAGs: sheet 1.", size=1.27)
-    # --- notes -------------------------------------------------------------------------------------------------------
-    S.box(gx(5), gx(78), gx(105), gx(112), "DESIGN NOTES (MEMORY CARD v2.0, CF SECTION)")
-    S.text(gx(5.5), gx(81), "\n".join([
-        "1. Two I/O ports. P8 (write): 74LS175 latch IC32 - bits 0-2 = the ATA task-file register (CF DA0-2), bit 3 = CF",
-        "   reset (1 = held in reset). P9 (read/write): the selected ATA register, 8-bit True IDE, through the 74LS245 IC34.",
-        "2. Decode: 74LS138 IC30 on IO-ADDR0-2, enabled by IO-ADDR3 (Y0 = port 8, Y1 = port 9), as on the CF card v1.0.",
-        "   The ROM in the machine and both emulators use P8/P9. The I/O card must keep its IO-ADDR-HL strap at P0-P7.",
-        "3. IC31 (74LS32) ORs each port select with -IO-WR / -IO-RD: -IOR, -IOW and the latch clock are low only during",
-        "   the bus strobe for this port. -CS0 (J2 pin 37) LOW and -CS1 (38) HIGH: the strobes alone define every cycle",
-        "   (docs/cards/cf.md section 4: gating -CS0 would break the chip-select hold time after -IOR).",
-        "4. J2 = 40-pin IDE header (pin 20 kept) for a CF-to-IDE adapter: plugged straight on (TAODAN CF-IDE40, standing",
-        "   off the component side) or on a short ribbon (SinLoon). Adapter power: J3 (1 = +5 V, 2 and 3 = GND, 4 not",
-        "   used) or, with JP2 fitted, IDE pin 20 for adapters powered there.",
-        "5. Pull-ups: CF D0-7 (RN9: an empty adapter reads $FF = 'no card' to the ROM driver), IORDY, -PDIAG, -DASP;",
-        "   -DMACK held inactive; CSEL grounded (master). SRST (IC32 Q4) is a one-pin net by design (a probe point).",
-        "6. From hardware/cards/cf/kicad/v1.0/cf_netlist.py: U1->IC30 U2->IC31 U3->IC32 U4->IC33 U5->IC34 J1->J2 J2->J3",
-        "   JP1->JP2 RN1->RN9 R1-R5->R10-R14 LED2->LED1 C1-C6->C25-C30. Dropped: X1 (the card's bus connector), the",
-        "   PWR LED (LED1, R7: the card has PWR0 + R2) and the DASP LED (LED3, R6).",
-        "Theory: docs/cards/cf.md, docs/cards/memory.md. Circuit source: mem_v2_netlist.py (edit, then re-run build.sh)."]),
-        size=1.5)
+    D = W.Design(gen_cf.N, NL.SHARED, [(NL.CF_SHEET, SHEET7_WIRED + SHEET7_ROWS)], S.lib)
+    for ref, (value, symid, fpid, note) in NL.PARTS.items():
+        s = S.lib(gen_cf.SYM_SUB.get(symid, symid))
+        got = {u for r, u in SHEET7_WIRED + SHEET7_ROWS if r == ref}
+        if got != set(s.units):
+            raise SystemExit("sheet 7: %s units listed %s, symbol has %s" % (ref, sorted(got), s.units))
+
+    def measure(L):
+        dry = CFSheet()
+        e0, _ = W.draw(dry, D, L, SHEET7_WIRED, 0, 0, hier=False)
+        return max(e0.x1 - e0.x0, 330) + 5, e0.y1 - e0.y0 + 85, dry.nwires
+    L, layering = W.best_layout(D, NL.CF_SHEET, SHEET7_WIRED, S.label_kind, measure)
+    ox, oy = 15.24, 25.4
+    S.text(ox, 12.7, "MEMORY CARD v2.0: THE COMPACTFLASH SECTION (I/O PORTS P8 / P9)", size=2.5, bold=True)
+    if L is not None:
+        dry = CFSheet()
+        e0, _ = W.draw(dry, D, L, SHEET7_WIRED, 0, 0, hier=False)
+        ext, unclear = W.draw(S, D, L, SHEET7_WIRED, round((ox - e0.x0) / G) * G, round((oy - e0.y0) / G) * G,
+                              hier=False)
+        how = "wired, ELK layering " + layering
+    else:
+        ext = W.draw_rows(S, W.label_style_rows(D, SHEET7_WIRED, S.label_kind, width=380.0), ox, oy)
+        unclear, how = [], "LABEL STYLE"
+    rows = W.label_style_rows(D, SHEET7_ROWS, S.label_kind, width=160.0)
+    y = round((ext.y1 + 7.62) / G) * G
+    S.text(ox, y, "ADAPTER POWER J3, UNUSED GATES, POWER UNITS, DECOUPLING", size=1.8, bold=True)
+    e2 = W.draw_rows(S, rows, ox, y + 5.08)
+    nx = round((e2.x1 + 12.7) / G) * G
+    S.text(nx, y, "DESIGN NOTES (MEMORY CARD v2.0, CF SECTION)", size=1.8, bold=True)
+    S.text(nx, y + 4.0, SHEET7_NOTES, size=1.5)
+    w = max(ext.x1, nx + 118 * 1.5 * 0.85) - ox + 5
+    h = max(e2.y1, y + 4.0 + 26 * 1.5 * 1.65) - 12.7 + 5
+    paper = W.paper_for(w, h)[0]
     for ref, (value, symid, fpid, note) in NL.PARTS.items():
         s = S.lib(gen_cf.SYM_SUB.get(symid, symid))
         if S.placed[ref] != set(s.units):
@@ -443,7 +438,8 @@ def build_sheet7():
     missing = [k for k in list(gen_cf.NETOF) + list(gen_cf.NC) if k not in S.pinhits]
     if missing:
         raise SystemExit("sheet 7: pins not drawn: %s" % missing)
-    S.write(os.path.join(HERE, PROJ + "-sheet7.kicad_sch"))
+    S.write(os.path.join(HERE, PROJ + "-sheet7.kicad_sch"), paper)
+    S.how, S.unclear, S.paper = how, unclear, paper
     return S
 
 
@@ -478,8 +474,10 @@ def main_sch():
     write_root()
     S = build_sheet7()
     write_project()
-    print("schematic: %s.kicad_sch + sheets 1-6 (v1.3) + sheet 7 (CF: %d parts, %d power symbols)"
-          % (PROJ, len(NL.PARTS), S.pwr - 700))
+    print("schematic: %s.kicad_sch + sheets 1-6 (v1.3) + sheet 7 (CF: %d parts, %d power symbols; %s, %s: %d nets "
+          "wired (%d wires), %d stubs, %d labels, %d junctions%s)" % (
+              PROJ, len(NL.PARTS), S.pwr - 700, S.paper, S.how, S.nwired, S.nwires - S.nstubs, S.nstubs, S.nlabels,
+              S.njunctions, "; name labels not clear: " + ", ".join(S.unclear) if S.unclear else ""))
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -959,5 +957,7 @@ if __name__ == "__main__":
         os._exit(0 if ok else 1)
     elif sys.argv[1] == "review":
         review_copy(sys.argv[2], sys.argv[3], sys.argv[4])
+    elif sys.argv[1] == "link":                          # link <netlist> <pcb>: the footprints' (path) only
+        W.link(sys.argv[2], sys.argv[3])
     sys.stdout.flush()
     os._exit(0)
