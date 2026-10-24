@@ -12,6 +12,16 @@ V2.0", the two design reviews linked below, `embedded/video-ps2/README.md`, and 
 
 ## 1. The card
 
+The V2.0 board as KiCad renders it, populated (`hardware/cards/video/kicad/v2.0/video-v2.0.kicad_pcb`, rendered
+2026-10-24 by `tools/render_populated.py`: plain chips without markings; the two Mini-DIN PS/2 sockets and the RCA jack
+have no 3D model and show as their pads):
+
+[![Video card V2.0, populated](images/video-v2.0-render-angled.png)](images/video-v2.0-render-angled.png "Open full size")
+
+[![Video card V2.0, top](images/video-v2.0-render-top.png)](images/video-v2.0-render-top.png "Open full size")
+
+[![Video card V2.0, bottom](images/video-v2.0-render-bottom.png)](images/video-v2.0-render-bottom.png "Open full size")
+
 The design master since 2026-10-22 (`hardware/cards/video/kicad/v2.0`, generated with its schematic from
 `v20_netlist.py` by `gen_v20.py` and `build.sh`; design note in `BACKLOG.md` "Video card V2.0"). It is the v1.3 card -
 6845, IDT7134 text RAM, the DOTS jumper and IC28's load-on-carry divider, 12 MHz, both fonts in one character generator
