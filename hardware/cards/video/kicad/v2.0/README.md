@@ -16,8 +16,8 @@ clear of its neighbours (R2-2), the bus -RESET buffered (R2-3), the BOM, the REA
 timing test and the firmware; the rest are driver rules and bench measurements.
 
 Unlike v1.x (Eagle conversions edited in KiCad) this design is **generated**: `v20_netlist.py` is the circuit,
-`gen_v20.py` draws the schematic (one A0 sheet, the CF card's sheet writer: every pin a stub to a label or a power
-symbol, functional boxes), builds the board and writes `BOM.md`; `build.sh` routes and checks it. Change the circuit in
+`gen_v20.py` draws the schematic (since 2026-10-24 a root sheet and eight functional sheets with the nets drawn as
+wires: "The schematic" below), builds the board and writes `BOM.md`; `build.sh` routes and checks it. Change the circuit in
 `v20_netlist.py`, the placement in `gen_v20.py` (`PLACE`), then run `./build.sh` (KiCad 10, Freerouting 1.9 in `FRJAR`,
 default `~/freerouting/freerouting.jar`, which opens a window while it runs; `SEEDS="..."` and `MP=` choose the
 component orders and passes). `tools/eagle_to_kicad_all.py` never writes here (`MASTER` marker).
@@ -50,6 +50,70 @@ component orders and passes). `tools/eagle_to_kicad_all.py` never writes here (`
   The jack legends "KBD (PURPLE)" and "MOUSE (GREEN)" stand turned beside each jack; the Mini-DIN outline is broken
   round its side-leg pads and stops short of the board edge.
 
+## The schematic (redrawn 2026-10-24)
+
+The schematic is drawn by function: the root sheet `video-v2.0.kicad_sch` holds one sheet symbol per block, and each
+block is a sheet of its own whose parts are placed by ELK and whose nets are wires. Until 2026-10-23 it was one A0
+sheet of functional boxes in which every pin was a short stub to a net label or a power symbol (no pin was wired to
+another). The circuit, the board and the fab files are unchanged by the redraw (the proofs below).
+
+| Sheet | File | Paper | What is on it |
+|---|---|---|---|
+| 1 (root) | `video-v2.0.kicad_sch` | A1 | the eight sheet symbols, a pin and a net label for every net of each sheet, the list of sheets |
+| 2 Bus and ports | `video-v2.0-bus.kicad_sch` | A3 | X1 (rows a, b, c), the port decode IC30, the strobes IC31/A-D and IC32/A, the control register IC33, the status IC34, R27 |
+| 3 CRTC | `video-v2.0-crtc.kicad_sch` | A4 | the 6845 IC17, its -CS (IC1/A) and E (IC26/C) |
+| 4 Text | `video-v2.0-text.kicad_sch` | A2 | the board select IC18 with SV3 / RN2, IC20/E,F (NADDR11, VMA), IC19/B (-CER), the text RAM IC15, the code latch IC23, the character generator IC25, the shifter IC24, the delays IC22, IC26/A,B |
+| 5 Clocks | `video-v2.0-clock.kicad_sch` | A3 | the oscillator Q2, R8, R9, IC20/A-D, the divider IC21 and SV4, the character counter IC28 with R10, JP2, R15, IC19/C (CHARCLOCK), IC26/D (WEPH) |
+| 6 Graphics | `video-v2.0-gfx.kicad_sch` | A1 | the muxes IC35-IC38, the RAM IC39, RN3, IC40, IC41, IC55, the display latch IC42 and shifter IC43, WRQ (IC44), -WE (IC45), IC46/A-C, IC47/B,C, IC1/B, IC19/A,D, IC32/C,D, IC48/C, IC54/A, the text-only pads R25 / R26 |
+| 7 Video out | `video-v2.0-video.kicad_sch` | A3 | the combine IC1/C,D, IC47/A, IC46/D,E, IC32/B, IC48/A,B; the drivers IC27/A-C, R11, R12, X2, J1 |
+| 8 PS2 | `video-v2.0-ps2.kicad_sch` | A2 | the ATmega IC49 with Y1, C55, C56, R16, C57 and J4; the latches IC50-IC52, the flags IC53, IC47/D, IC54/B, IC27/D, JP3; the reset path IC54/C, IC27/E,F, R21; F1, J2, J3, R17-R20, R22-R24 |
+| 9 Power | `video-v2.0-power.kicad_sch` | A3 | every power unit, the decoupling and C16, R2 / LED1, the spare gates IC46/F and IC54/D, the PWR_FLAGs |
+
+**How it is drawn** (`gen_v20.py sch`: the blocks in `SHEETS`; the drawing in `tools/kicad/sch_wire.py`, which the
+memory card v2.0's sheet 7 uses too; modelled on the P8X project's ELK-wired sheets). Each symbol unit is an ELK node
+whose box holds its body, its fields and its stubs; a net with two or more pins on a sheet that is neither power nor a
+bus signal (X1's) is a wire, run from the pin on a symbol's right-hand edge (a driver first) to the others, so a sheet
+reads left to right. A wired net that also reaches other sheets gets a hierarchical label of its own on the wiring,
+on the left where another sheet drives it and on the right where this one does; the other wired nets carry their name
+once, on a short stub. The bus signals, power and a sheet's one-pin nets keep the stub to a label or a power symbol.
+Everything is on the 1.27 mm grid; after ELK every route is pinned to its pins and checked (no point shared by two nets
+but a plain crossing, no wire through a pin, a label or a symbol), and a sheet falls back to labels on every pin if no
+spacing routes it cleanly (none does). ELK's layering is chosen per sheet: of four, the one that fits the smallest
+paper, then the fewest wires. The output is the same on every run. It needs node and elkjs (`cd tools/kicad && npm
+install`; `tools/setup_check.py` checks both).
+
+**Net names.** The board and its Gerbers (their X2 net attributes) carry the flat sheet's net names, `/NAME`. KiCad
+gives a net that name only from a label on the root sheet, so every net of a sub-sheet ends in a hierarchical label,
+each is a pin of the sheet's symbol on the root, and a local label at each pin names the net. Above the dashed line in
+a sheet symbol: the nets it shares with other sheets (left: it reads them; right: it drives them). Below it: the nets
+drawn on that sheet only, with a pin on each side - KiCad's ERC counts a root label as connected only when another
+label of its name stands on the root sheet (138 label_dangling errors otherwise).
+
+| | Before (one A0 sheet) | After (root + 8 sheets) |
+|---|---|---|
+| nets drawn as wires | 0 | **153** (895 wire segments, 205 junctions) |
+| stubs (a pin to a label or power symbol) | 945 | 534 |
+| labels | 669 local | 413 hierarchical on the sheets; 491 local at the 491 sheet pins of the root |
+| power symbols | 276 | 276 |
+
+**Proofs (2026-10-24)**, the schematic redrawn and nothing else rebuilt (no Freerouting, no `build.sh`):
+
+| Check | Result |
+|---|---|
+| `gen_v20.py checknet` (the schematic's netlist vs `v20_netlist.py`) | **MATCH, 216 nets** |
+| `tools/kicad/compare_netlists.py` (schematic vs board) | **MATCH, 216 of 216** net groups (`reports/netlist-compare.txt`) |
+| net names, pad by pad | the schematic names all 1034 pads on nets exactly as the board does (`/NAME`, `VCC`, `GND`, `unconnected-(...)`) |
+| `gen_v20.py verify` | **PASS**, 189 key connections |
+| DRC (`reports/drc.json`) | 0 unconnected, **schematic parity 0**; silk_edge_clearance 8, silk_over_copper 8, as before |
+| ERC (`reports/erc.json`) | **no errors, no warnings** (before: endpoint_off_grid 6, the PWR_FLAG wires) |
+| the board file | only the footprints' `(path ...)` lines differ: 105 now carry the sheet's UUID before the symbol's, and the 15 multi-unit parts, which had no link, have one (`gen_v20.py link`: the links that "Update PCB from Schematic" would set, written as text, nothing else touched) |
+| Gerbers | re-exported with the commands under "Ordering" into a scratch folder: all 14 files equal `gerbers/` apart from their date / time lines; `gerbers/` and `video-v2.0-gerbers.zip` are as exported 2026-10-23 |
+
+To redraw the schematic only (the board stays): `gen_v20.py sch`, export the netlist
+(`kicad-cli sch export netlist --format kicadsexpr -o reports/netlist.net video-v2.0.kicad_sch`), `gen_v20.py checknet
+reports/netlist.net`, then `gen_v20.py link reports/netlist.net video-v2.0.kicad_pcb` (the links only) and the proofs
+above. `build.sh` remakes the board as well (`gen_v20.py board` sets the same links from the netlist).
+
 ## Results (`./build.sh`, 2026-10-23, after the re-review)
 
 | Check | Result |
@@ -60,7 +124,7 @@ component orders and passes). `tools/eagle_to_kicad_all.py` never writes here (`
 | route (Freerouting 1.9, component order 5, 60 passes; the re-review rebuild of 2026-10-23) | **0 unrouted, 285 vias, 22.1 m of 0.25 mm track** (F.Cu 10.1 m, B.Cu 12.0 m). Orders 6 (331 vias) and 5 completed, order 4 left 2 unrouted; earlier runs of a placement with IC55 0.04 mm lower and R10 0.5 mm left (orders 6, 5, 3, 4) left 1-6 unrouted or ran past the watchdog on a machine busy with other jobs. A repeat of order 5 on the same files left 2 unrouted (Freerouting is not repeatable here), so the board is that build's route; the silkscreen texts were then placed again by `gen_v20.py silk` (texts only, after keeping them out of other parts' bodies) and the reports and checks of `build.sh` run on it. Before the re-review: order 6, 328 vias (`560977b`), order 3, 308 vias (`fc71ec4`) |
 | DRC | **0 unconnected, no clearance / short / dangling findings**, schematic parity 0; cosmetic only: **silk_overlap 0** (40 before R2-9), **silk_over_copper 8** (89 before: J1's and X2's library outlines over their own pads), **silk_edge_clearance 8** (10: X1, X2, J1 at the edge), text_height / text_thickness 0 (2 / 3) |
 | planes | In1.Cu GND, In2.Cu VCC, one zone each over the whole board, filled as one piece (GND 20,058 mm2, VCC 20,031 mm2 of copper after the antipads) besides 7 / 4 pad-sized islands (at most 2.5 mm2) as before; every GND / VCC pin reaches its plane (0 unconnected with no power tracks) |
-| ERC | endpoint_off_grid 6 (cosmetic), nothing else |
+| ERC | endpoint_off_grid 6 (cosmetic), nothing else; since the redraw of 2026-10-24 none |
 | `gen_v20.py verify` | **PASS**: 189 key connections pin by pin in the schematic and on the board (the port decode and strobes, the 6845 on PA/PB, the card ID and the TEXT-ONLY bit, the mux select NMUX and its QC OR RCO, the slot logic and direct mode (WRQ preset, WEPH2, -WE, the -OE term, IC40 on -WE, IC41 / IC55 enables, RN3), the text-only pads, the 28C64's wiring, the combine, the DOTS divider and font select, the ATmega's bus interface with BUSY / SRC swapped, -INT = INTREQ AND FULL, the reset through IC54/C and IC27/E,F, the PS/2 lines and F1; since R2-14 also the MEMWR path, IC44.1, FULL's clear / clock / output, IC40's A / Y pins and the jacks' shield pads), 4 copper layers, the two planes, no track on GND/VCC |
 
 `./build.sh` takes 40-90 minutes with up to four component orders in parallel (`SEEDS="6 5 4"`): Freerouting's passes take
@@ -336,12 +400,14 @@ card model (`BACKLOG.md`).
 | File | What it is |
 |---|---|
 | `v20_netlist.py` | **the circuit**: parts, nets (pin by pin), no-connects, `BUY`, the text-only build, `check()` |
-| `gen_v20.py` | schematic, local libraries, project rules, the unrouted board, placement check, verify, `BOM.md` |
+| `gen_v20.py` | schematic (`SHEETS`: the blocks), local libraries, project rules, the unrouted board, the board's schematic links (`link`), placement check, verify, `BOM.md` |
+| `../../../../../tools/kicad/sch_wire.py`, `elk_layout.js`, `package.json` | the wired sheets (ELK), shared with the memory card v2.0 |
 | `build.sh` | the whole build: schematic -> board -> Freerouting seeds -> reports -> checks |
 | `BOM.md` | the bill of materials (generated) |
-| `video-v2.0.kicad_sch`, `.kicad_pcb`, `.kicad_pro`, `.kicad_dru` | the generated design |
+| `video-v2.0.kicad_sch`, `.kicad_pcb`, `.kicad_pro`, `.kicad_dru` | the generated design (`.kicad_sch` the root sheet) |
+| `video-v2.0-{bus,crtc,text,clock,gfx,video,ps2,power}.kicad_sch` | the eight functional sheets ("The schematic") |
 | `video-v2.0-local.kicad_sym` / `.pretty/` | IDT7134, RCA, DE9 and Mini-DIN symbols; F09HP and RCA footprints (from v1.x), MiniDIN6_MD-60SM |
 | `blank-card-v3.2-eagle.kicad_sym` / `.pretty/` | the bus connector FABC96R (from the CF card / blank V3.2) |
-| `reports/` | netlist, `netlist-compare.txt` (proof), `erc.json`, `drc.json`, schematic PDF, top / bottom renders |
+| `reports/` | netlist, `netlist-compare.txt` (proof), `erc.json`, `drc.json`, schematic PDF (9 pages), top / bottom renders |
 | `gerbers/`, `video-v2.0-gerbers.zip` | the fab files (4 copper layers, masks, silk, outline, PTH / NPTH drill and maps), exported 2026-10-23 |
 | `video-v2.0-jlcpcb-order.txt` | the PCB order parameters |
