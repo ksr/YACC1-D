@@ -316,7 +316,7 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     CPU read latch (74LS374) and write latch, the bank/control register (bank, TEXT-ON, GFX-ON), a 74LS166, three gates. Goes with the PS/2 and IBM-monitor
     revision. Model: `python3 tools/vidsim.py overlay --tint --png ov.png` (the test card plus a drawing; `--overlay FILE`
     any 16K image, also in run/render; `--gmode or|xor`, `--layers text,gfx|text|gfx|none`); `tests/video/overlay_check.py` checks the addressing.
-- **Video card V2.0 (designed 2026-10-22; `hardware/cards/video/kicad/v2.0`, not ordered).** V1.3 (DOTS jumper, 12 MHz,
+- **Video card V2.0 (designed 2026-10-22; `hardware/cards/video/kicad/v2.0`; re-reviewed and READY TO ORDER 2026-10-23, not ordered).** V1.3 (DOTS jumper, 12 MHz,
   both fonts in one EPROM, 4 layers) plus a graphics layer, two PS/2 ports and every register on I/O ports. Board 218 mm
   long (the sequencer logic V2.1l's length; X1 where every card has it), 4 layers: In1 GND plane, In2 VCC plane.
   - **Memory map**: text RAM **$D000-$D7FF** as before (IDT7134, the 6845 reads the other port); **graphics window
@@ -409,8 +409,9 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   - **Direct mode (2026-10-22)**: with **GFX-ON = 0** (the reset state) the CPU owns the graphics RAM - the muxes hold
     the CPU address (NMUX = NAND(QC OR RCO, GFX-ON)), -WE = NOT GWR (WRQ preset, the phase term forced), the RAM's -OE is
     the window read, reads pass through IC55 (74HCT244) instead of the slot latch IC41. A plain SRAM: checked against
-    the microcode (`tests/video/v20_timing.py`: all 59 `-MEM-WR` held a step each side, one-step read window) - 72 ns of
-    read margin at 6 MHz, ~7.7 MHz for the card alone; the machine's own limit (~6 MHz) comes first. GFX-ON = 1 is the
+    the microcode (`tests/video/v20_timing.py`: all 59 `-MEM-WR` held a step each side, one-step read window) - 38 ns of
+    read margin at 6 MHz on a selected register (85 °C, since R2-5), ~6.8 MHz for the card alone; the machine's own limit
+    (~6 MHz) comes first. GFX-ON = 1 is the
     slot mode as before, ~1.8 MHz. Rule: the instruction that writes PC does not touch the window.
   - **Text-only build (2026-10-22)**: the graphics chips (IC35-IC45, IC55, RN3, their capacitors) left off, R25 / R26
     (1k pull-downs on GDOT and WRQ) fitted only then; **IN PC bit 3 = TEXT-ONLY** (IC44/B's Q low when fitted, R27
@@ -420,13 +421,21 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     hand-over a dot apart; direct-mode writes meet the 62256 at 1 and 6 MHz, re-derived from `test.hex`). **R2-1, R2-2,
     R2-3 and R2-14 done 2026-10-23 (`560977b`)**: the MD-60SM side-leg slots 1.2 x 2.6 mm, IC55 0.6 mm up, IC27/E's input
     through IC54/C (RESETB), 16 more nets in `verify`'s KEY; routed anew (order 6, 328 vias), proof MATCH, DRC clean -
-    **the order gate is lifted** (measure a real jack's leg span, 14.28 mm, before ordering). Still open, none blocking:
-    R2-7 the BOM (IC17 value HD68B45SP / MC68B45P, C16 16 V), R2-8 two README statements, R2-9 silk; R2-5 the counted-register path in `tests/video/v20_timing.py` (6 MHz read margin 38-60 ns
-    selected, ~0 after a count: no stack / BRVR vectors in the window at 6 MHz); R2-10 firmware (`ps2_wait()` takes
-    replies only). Driver rules: GFX-ON = 0 in 6-dot mode, enforced (R2-4); switch GFX-ON in vertical blanking (R2-11);
-    IN PE only after FULL. Bench additions in the r2 review's last section.
-  - **Open - the ROM's V2.0 driver** (IN PC: ID $5x, bit 3 TEXT-ONLY, bit 0 DOTS; the 6845 through OUT PA/PB; graphics
-    drawn in direct mode; the keyboard on PD/PE behind the console vectors) and the emulators' V2.0 card model.
+    **the order gate is lifted**. **The rest applied 2026-10-23** (the status table at the top of the r2 review): R2-7
+    the BOM (IC17 HD68B45SP / MC68B45P, the B grade; C16 47 uF 16 V), R2-8 the README (IN PC AND $F9; the -55 grade's
+    reasons), R2-9 the silkscreen (every text placed clear by `gen_v20.py`), a socket-outline check over the whole board
+    in `gen_v20.py place` (R2-2), R2-5 the counted-register windows in `tests/video/v20_timing.py` (`f3cd989`), R2-10
+    the firmware's reply filter (`a139dc4`); R2-6 / R2-12 / R2-15 / R2-16 are bench steps in the README's order. Board
+    rebuilt and verified (`ed7c060`: order 5, 0 unrouted, 285 vias, proof MATCH, DRC clean, silk overlaps 0). **Ready to order** - nothing blocks it; before ordering, if a jack is
+    at hand, measure its leg span (14.28 mm). What to upload and buy: the card's README, "Ordering".
+  - **Open - the ROM's V2.0 driver** and the emulators' V2.0 card model. The driver's requirements (the card's README,
+    "The software rules for the window"): the card ID check **(IN PC AND $F0) = $50**, the build and DOTS from **(IN PC
+    AND $F9)** = $58 / $59 text-only, $50 / $51 with graphics (bits 1 and 2 are VSYNC and DE, live); GFX-ON left 0 on a
+    text-only card; **refuse GFX-ON = 1 in 6-dot mode** (IN PC bit 0 = 1, R2-4); the 6845 through OUT PA/PB; graphics
+    drawn in direct mode (GFX-ON = 0); the **6 MHz read rules** - no code in the window ever, no stack and no BRVR vector
+    table in it at 6 MHz (R2-5), the window only in direct mode above ~1.8 MHz; the **mode switch** - the instruction
+    that writes PC does not touch the window, GFX-ON switched in vertical blanking (IN PC bit 1, R2-11); the keyboard on
+    PD/PE behind the console vectors, **IN PE only after IN PD showed FULL** (R2-10).
 - **Sequencer logic v2.2: a "CPU off" switch** (`hardware/cards/sequencer-logic`). Today the card's outputs can never be
   silenced while the memory card is enabled: -BUS-EN is generated on the card itself (IC36 74LS04 from the sequencer's
   READY line) and is also the output enable of all nine pipeline 74LS374s and the two microcode-address 74LS244s; -RESET

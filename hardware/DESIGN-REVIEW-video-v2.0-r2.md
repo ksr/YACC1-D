@@ -6,9 +6,31 @@ character generator, the HCT/LS mix, the rebuilt board, the MD-60SM footprint an
 `1f1c213`, `fc71ec4` and `ed5333e`. Findings only: no design file is changed by this review; every finding carries a
 concrete fix.
 
-**Status 2026-10-23: R2-1, R2-2, R2-3 and R2-14 are fixed in `560977b`** (the board rebuilt and routed anew,
-order 6: 0 unrouted, 328 vias; netlist proof MATCH 216/216, DRC clean, `verify` PASS with 189 connections). The order
-gate below is lifted; the rest are documentation, the BOM, the test model, the firmware and bench measurements.
+## Status of the findings (2026-10-23)
+
+Every finding is dealt with: the board items in two rebuilds (`560977b`; then `ed7c060`, the R2-2 socket check, R2-7's
+values and the R2-9 silkscreen), the firmware (`a139dc4`), the test (`f3cd989`), the README and the BOM; the driver
+rules (R2-4, R2-5, R2-11) wait for the ROM's V2.0 driver and the measurements (R2-6, R2-12, R2-15, R2-16) for the bench,
+both written down. **The design is ready to order** (`hardware/cards/video/kicad/v2.0/README.md`, "Ordering"). The findings below are unchanged.
+
+| ID | Status | Where | Open |
+|---|---|---|---|
+| R2-1 | applied (`560977b`) | `gen_v20.py` `MINIDIN_SLOTS`: side slots 1.2 x 2.6 mm plated, pads 1.9 x 3.3, centres unchanged: the 0.54 mm legs 0.21 mm inside the outer wall, 0.45 inside the inner, 0.3 each end | measure a real jack's leg span (14.28 mm) before soldering, ideally before ordering |
+| R2-2 | applied (`560977b`, `ed7c060`) | IC55 at y = 78.7; `gen_v20.py place` checks every DIP socket's outline (+1.3 mm sides, +1.9 mm ends) against every socket and every part's pads and body over the whole board: PASS, closest 0.02 mm (IC55 / IC42), 0.10 (IC55 / IC19, IC1); RN3 and C59 0.3 mm left (they met IC55's end wall) | try the sockets side by side at the bench |
+| R2-3 | applied (`560977b`) | IC54/C (74HCT08, -RESET AND VCC) -> RESETB -> IC27.11; same sense, +24 ns at most against a reset of milliseconds; `verify` KEY | C30's low level at the bench |
+| R2-4 | rule | README "The software rules for the window" (5), BACKLOG's driver requirements | the ROM's V2.0 driver |
+| R2-5 | applied (`f3cd989`) | `tests/video/v20_timing.py`: the fitted HC244 / HC193, selected / counted / counted-into windows at 25 and 85 °C; fails on a permitted negative margin; the 6 MHz rules in the README (1-3) | the driver keeps the rules |
+| R2-6 | bench | README BOM notes and bench step 6; `BUY` notes for IC41 / IC55 (74ACT374 / 74ACT244) | measure DATA0's low level |
+| R2-7 | applied (`ed7c060`) | IC17 value "HD68B45SP / MC68B45P" (schematic, board, BOM), the grade note; C16 "47u 16V" | Hitachi's grade letters: to verify on the bought part's data sheet (only a secondary source found) |
+| R2-8 | applied | README bench step 3 (IN PC AND $F9), BOM / README IC39 note | - |
+| R2-9 | applied (`ed7c060`) | `gen_v20.py silk_place()`: every reference and legend clear; the jack legends turned beside the jacks; the Mini-DIN outline broken round its slot pads; X2's "F09" to Fab, X1's small texts to 0.8 mm: DRC silk_overlap 40 -> 0, silk_over_copper 89 -> 8, silk_edge_clearance 10 -> 8, text height / thickness 5 -> 0 | the library outlines of J1 / X2 over their own pads, the edge connectors' outlines at the edge (cosmetic) |
+| R2-10 | applied (`a139dc4`) | `embedded/video-ps2`: `ps2_wait()` takes replies only, the rest held for the main loop; the rule "IN PE only after FULL" in the sketch, its README and the card's README | - |
+| R2-11 | rule | README rules (6), BACKLOG | the driver |
+| R2-12 | bench | README bench step 5 (MRST >= 4.5 V, else R16 4.7k) | measure |
+| R2-13 | no action | - | - |
+| R2-14 | applied (`560977b`) | `verify` KEY 173 -> 189; `check()` fails on a left-off IC without an `OUTPUTS` entry | - |
+| R2-15 | bench | README bench step 6 (IC41.11, IC44.3, IC39.27) | scope |
+| R2-16 | bench | README bench step 5 (PS2VCC >= 4.6 V) | measure |
 
 Read and re-derived: `hardware/cards/video/kicad/v2.0/v20_netlist.py` gate by gate against the TI pinouts (every
 section of IC1, IC19, IC26, IC27, IC32, IC44-IC48, IC54, the 157 sections, IC39-IC43, IC55, IC25, IC33/IC34, IC49-IC53);

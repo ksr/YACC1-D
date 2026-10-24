@@ -272,15 +272,15 @@ the memory card's $D000 jumper set to RAM for a 36K TPA. Phase 4 of the plan pai
 controller behind the console vectors. The review items 6.2/6.3/6.5 (character clock, HC levels, LPSTB) and the
 crystal/C1 values belong in that redesign whichever interface it keeps.
 
-## 7a. Video card V2.0 (designed 2026-10-22, not built)
+## 7a. Video card V2.0 (designed 2026-10-22, re-reviewed 2026-10-23, ready to order, not built)
 
 The design master since 2026-10-22 (`hardware/cards/video/kicad/v2.0`, generated with its schematic from
 `v20_netlist.py` by `gen_v20.py` and `build.sh`; design note in `BACKLOG.md` "Video card V2.0"). It is the v1.3 card -
 6845, IDT7134 text RAM, the DOTS jumper and IC28's load-on-carry divider, 12 MHz, both fonts in one character generator
 (on V2.0 an AT28C64B-15, `firmware/video/chargen-v20.bin`) - with three additions, on a 4-layer board (In1 GND plane, In2
 VCC plane) 218 mm long (the sequencer logic V2.1l's length; X1 where every card has it). Revised the same day after its
-design review: the review's fixes, **direct mode** and the **text-only build** (below). Not to be ordered before a
-re-review of those changes.
+design review: the review's fixes, **direct mode** and the **text-only build** (below); re-reviewed 2026-10-23 and
+revised again the same day (every re-review finding applied, below): ready to order.
 
 **Memory and ports.** The card keeps the $D000 block (IC18 74S85 + SV3): text RAM at $D000-$D7FF as before, and the
 **graphics window at $D800-$DFFF** (2K, one scan-line plane). Every register is on an I/O port: IC30 (74LS138, enabled by
@@ -330,15 +330,19 @@ holds the CPU address for good (direct mode, below).
   (GRDOE); reads reach DATA through **IC55**, a 74HCT244 GD -> DATA enabled by NAND(GSEL, MEMRD, NOT GFX-ON) (IC45/B),
   instead of the latch; RN3 (10k x 8) holds GD up between accesses. The window is then a plain SRAM. The microcode sets
   the address and the data a step before every `-MEM-WR` and holds them a step after (all 59 strobes), and its shortest
-  read window is one step, so direct mode works at 1 MHz and at 6 MHz (6 MHz: 72 ns of read margin, -WE 255 ns against
-  tWP 45; the card alone would allow ~7.7 MHz): `tests/video/v20_timing.py`. The layer is not displayed in this mode
+  read window is one step, so direct mode works at 1 MHz and at 6 MHz (6 MHz: 38 ns of read margin on a register
+  selected in the step, 85 °C, with the register cards' HC244s; -WE 255 ns against tWP 45): `tests/video/v20_timing.py`.
+  A register **counted** at the window's edge (the HC193 carry ripple) has ~0 to -104 ns at 6 MHz; only the code fetch,
+  the pops (RET, IRET, POPR) and BRVR's second vector byte do that in one step, so the rules are: no code in the
+  window at any clock, and at 6 MHz no stack and no BRVR vector table in it (re-review R2-5; the test fails if a window
+  the rules permit has a negative margin). The layer is not displayed in this mode
   (GDG needs GFX-ON), so a program draws with the layer hidden at full speed and shows it with GFX-ON = 1. OUT PC
   switches at the end of its strobe; the rule is that the instruction writing PC does not access the window (no OUT
   record does; code is never run from the window).
 - **Display**: IC42 latches the byte on CHARCLOCK's rise (with IC23's character code), IC43 (74LS166) loads it on the
   next CHARCLOCK (with IC24) and shifts it out bit 7 first: text and graphics dots stay in step.
 - **Combine**: TDG = text dot AND NOT TEXT-OFF (IC1/C, IC46/D); GDG = graphics dot AND GFX-ON AND NOT DOTS (IC1/D,
-  IC47/A, IC46/E: never in 6-dot mode); dot = (TDG OR GDG) AND NOT(TDG AND GDG AND XOR) (IC32/B, IC48/A); the video
+  IC47/A, IC46/E: never in 6-dot mode, and the driver never sets GFX-ON there: R2-4); dot = (TDG OR GDG) AND NOT(TDG AND GDG AND XOR) (IC32/B, IC48/A); the video
   NAND3 (IC48/B) gates it with the delayed DE into IC27/A as before.
 
 **The text-only build.** The graphics chips (IC35-IC45, IC55, RN3 and their capacitors) may be left off; two 1k
@@ -364,7 +368,7 @@ graphics; open: 6 dots, 80 x 24), JP3 INT-EN.
 3 HIGH (the bootloader driving BUSY, the Mini-DIN footprint, the firmware's host-to-device bit count), 9 MED, 11 LOW, 6
 INFO. All HIGH and MED fixes are in the design and the firmware (the status of every finding is at the top of the
 review); a re-review of the changed slot logic, direct mode and the text-only build comes before ordering.
-**Re-review** (2026-10-23): [`hardware/DESIGN-REVIEW-video-v2.0-r2.md`](../../hardware/DESIGN-REVIEW-video-v2.0-r2.md) - HIGH 0, MED 1, LOW 9, INFO 6; order after R2-1 (the MD-60SM side-leg slots, 0.8 mm -> 1.2 mm). **R2-1, R2-2 (IC55's socket clearance), R2-3 (-RESET buffered by IC54/C) and R2-14 fixed 2026-10-23 (`560977b`)**: the board routed anew, netlist proof MATCH, DRC clean.
+**Re-review** (2026-10-23): [`hardware/DESIGN-REVIEW-video-v2.0-r2.md`](../../hardware/DESIGN-REVIEW-video-v2.0-r2.md) - HIGH 0, MED 1, LOW 9, INFO 6; order after R2-1 (the MD-60SM side-leg slots, 0.8 mm -> 1.2 mm). **Every finding applied 2026-10-23** (the status table at the top of the re-review): R2-1 the side-leg slots 1.2 x 2.6 mm, R2-2 IC55's socket clearance (and a socket-outline check over the whole board), R2-3 the bus -RESET buffered by IC54/C, R2-14 `verify`'s list (`560977b`); R2-7 the 6845's B grade and C16's 16 V, R2-8 the README, R2-9 the silkscreen (overlaps 40 -> 0), R2-5 the counted-register windows in the timing test, R2-10 the firmware's reply filter; R2-4, R2-11 and R2-5's rules are the driver's, R2-6, R2-12, R2-15, R2-16 bench measurements. **Ready to order**; what to upload: the card's README, "Ordering".
 
 **Software to follow**: the ROM's V2.0 driver (IN PC with bit 3, the 6845 through OUT PA/PB, drawing in direct mode),
 the keyboard behind the console vectors, the emulators' V2.0 card model, Y1/OS `video`. `python3 tools/vidsim.py overlay
