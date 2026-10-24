@@ -635,6 +635,34 @@ back in unchanged if a stage fails.
    - a CFD line at `-IOW`'s rising edge holding a 0 (M2-8).
 4. Only after the microcode changes of M2-3 / M2-4 (and M2-6), repeat stage 5 at 6 MHz.
 
+**Option: CF first, beside the v1.3 card** (added 2026-10-24). The CF circuit is the new, never-built part of the
+card; the memory side is the proven v1.3 circuit. Running the CF side first next to a working v1.3 card puts any fault
+in the CF circuit, and any later fault in the memory side. This works because the CF side reaches the bus directly:
+IC34's A side is DATA0-7, IC30 decodes IO-ADDR0-3 and IC31 gates `-IO-RD` / `-IO-WR` straight from X1. None of it
+passes through IC5. The order:
+1. Stage 0 as written.
+2. Solder everything as in stage 1.1 **except RN5 and RN6**, the DATA0-15 pull-downs: the v1.3 card has its own, and a
+   second pair doubles the load on every data line. They go in at step 6.
+3. Fit IC30-IC34 only; every memory-side socket stays empty. IC5 and IC26-IC29 above all:
+   - IC5 would drive DATA0-7 against the v1.3 card's IC5 on every memory read.
+   - IC26-IC29 (TMP0/TMP1) would drive DATA0-15 against the v1.3 card's TMP registers on every TMP read.
+
+   JP1, JP3 and U$1 have no effect with those chips out. R15 (the ADDR15 pull-down) can stay fitted: it is the M1
+   fix, and it does the same in this machine as on the finished card.
+4. Make room: the backplane's 8 slots are full, so take the video card out and fit the v2.0 card in its slot. The
+   monitor's reset probe finds no card at $D000 and runs on the UART alone. Check that the adapter on its standoffs
+   clears the neighbouring card in that slot (the layout was checked for the memory slot only).
+   Before the first power-on, check the empty IC5 socket: pins 2-9 (DATA0-7) read only the v1.3 card's RN5 to GND, and
+   nothing on the v2.0 card loads them. Pins 11-18 (BDATA0-7) float with the memory chips out.
+5. Stages 3, 4 and 5 as written, with the v1.3 card supplying the memory, the ROM (with `O` and the CF driver) and
+   the TMP registers. At 1 MHz only, as in stage 5.
+6. The memory side:
+   - Take the v1.3 card and the v2.0 card out.
+   - Solder RN5/RN6 and fit the memory-side chips with the jumpers of stage 1.2.
+   - Do stage 1.3-1.4 and stage 2 with the bus tester.
+   - Move the v2.0 card to the memory slot, put the video card back, and run the bench (stage 2.4).
+   - Then `O` again: the CF side, already proven, now runs on the card's own memory side.
+
 ## What this review could not verify
 
 - **The HX-2118P.** No data sheet or photo is in the tree. Its header handedness (M2-1), its jumpers (M2-2: their
