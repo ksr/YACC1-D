@@ -256,12 +256,43 @@ Resolved: ~~the card-cage slot pitch vs the ~35 mm stack height~~ - nothing in f
   sheet 1's cap row** (the symbols go; the GND and VCC rails through their pins become one wire each from C19 to C24,
   their four + four junctions go; `gen_mem_v2.py` `remove_parts()`); **sheet 3 gets JP3** (IC13 pin 27 onto ROM-WE,
   above); **sheet 2 gets R15** (ADDR15 to GND, above); title blocks say v2.0.
-  **Sheet 7** is the CF section, drawn with the CF card's own sheet writer (`gen_cf.py`, class `Sheet`), nets shared
-  with sheets 1-6 as boxed global labels. **IC15** (74ALS11, gate A = AND(-LO-RAM, -HI-RAM, -ROM-CS) -> IC5 pin 19,
+  **Sheet 7** is the CF section, nets shared with sheets 1-6 as boxed global labels; since 2026-10-24 drawn with its
+  own nets as wires ("Sheet 7, the CF section, wired" below). **IC15** (74ALS11, gate A = AND(-LO-RAM, -HI-RAM, -ROM-CS) -> IC5 pin 19,
   the 74LS245's enable) is part of the built card's schematic. The circuit is unchanged by the re-layout.
 - **Bus pins now used** (same backplane pinout as the CF card v1.0; checked pin by pin against the built card's X1 by
   `check_netlist.py`): IO-ADDR0-3 = C7-C10, -IO-RD = B25, -IO-WR = B26 (unused on v1.3, now wired to the CF
   section); -RESET = C30 (v1.3: IC12 PRE, now also IC32 CLR and IC33); DATA0-7 = A19-A26 (also IC34 A side, IC32 D1-D4).
+
+### Sheet 7, the CF section, wired (redrawn 2026-10-24)
+
+Sheet 7 is drawn by `tools/kicad/sch_wire.py` (shared with the video card V2.0; ELK places the parts, the P8X
+project's way) on the CF card's sheet writer `gen_cf.py`: the decode IC30, the strobes IC31/A-C, the latch IC32, the
+gates IC33/A-C, the buffer IC34, the header J2 with RN9, R10-R13 and JP2, and the ACT LED (R14, LED1) are placed
+left to right and every net of the section with two or more pins on the sheet is a wire carrying its name once (a
+local label, so KiCad names it `/Sheet 7/<name>` as before). The bus nets shared with sheets 1-6 (DATA0-7, IO-ADDR0-3,
+-IO-RD, -IO-WR, -RESET) keep a boxed global label at each pin, power keeps its symbols, SRST its one-pin label. Below
+the drawing: J3 and C30 (the adapter's power), the unused gates IC31/D and IC33/D, the two power units and C25-C29,
+and the design notes. A2 (A3 before). Until 2026-10-23 every pin was a stub to a label or a power symbol in
+functional boxes.
+
+| | Before | After |
+|---|---|---|
+| nets drawn as wires | 0 | **26** (120 wire segments, 13 junctions) |
+| stubs (a pin to a label or power symbol) | 136 | 70 |
+| labels | 66 local, 21 global | 27 local, 21 global |
+| power symbols, no-connect flags | 48, 23 | 48, 23 |
+
+The proofs (2026-10-24; sheets 1-6 byte-identical, `mem_v2_netlist.py` unchanged): the netlist proof
+(`check_netlist.py`, as `build.sh` step 6) **MATCH**, `reports/netlist-proof.txt` identical line for line (187 nets;
+every board and record board = the schematic); the ERC gate (`reports/erc-summary.txt`) identical: 99 findings, the
+same as before, 1 error (sheet 3's inherited missing_power_pin), nothing new but the designed-in SRST label -> PASS;
+DRC of the v2.0 board with schematic parity: 0 unconnected, the same 49 parity items (the built card's inherited
+Eagle values and fields) as before. The board file differs only in two footprint links: IC31 and IC33, whose units
+now lie in another order on the sheet, carry the UUID of the unit KiCad now names first (`gen_mem_v2.py link
+<netlist> memory-v2.0.kicad_pcb`: the `(path ...)` lines, as "Update PCB from Schematic" would set them; nothing else).
+The Gerbers and drill files re-exported from it (the `finish_v2.py fab-e` commands, into a scratch folder) equal
+`gerbers/` - the files of order 2000765A-Y52 - apart from their date / time lines. `gen_mem_v2.py sch` needs node
+and elkjs (`cd tools/kicad && npm install`).
 
 ### Port assignment
 
@@ -859,7 +890,7 @@ DATA8-15 bundle (DRC: A 11 shorts / 4 clearance / 63 mask bridges, B 12 / 1 / 50
 | File | What it is |
 |---|---|
 | `mem_v2_netlist.py` | **the delta** (single source): CF card v1.0 -> v2.0 reference map, dropped parts, shared nets, `check()`, `expected()` |
-| `gen_mem_v2.py` | writes the schematic (`sch`); the keep-copper record boards (`board`, `locked`, `check`); `refill`, `review` (review images) |
+| `gen_mem_v2.py` | writes the schematic (`sch`; sheet 7 wired by `tools/kicad/sch_wire.py`); the board's schematic links (`link`); the keep-copper record boards (`board`, `locked`, `check`); `refill`, `review` (review images) |
 | **`standoff_placements.py`** | **the standoff options** A-E (plain data): the HX-2118P's measured geometry (`HX`, `adapter()`), J2's orientation and plug envelope (`j2()`, `j2_geom()`, `PLUG_SIDE`, `PLUG_H`, `J2_SHROUD_GAP`), `ribbon_length()`, the standoff / hole / ROM clearance figures; C-E's shared layout (`cf_under()`, `j3_c30()`) |
 | **`gen_standoff.py`** | the standoff boards (`board`: placement, H1/H2 + keep-outs, the adapter / J2 / ribbon / slot drawings and labels), `check` (the placement gates above, J2's plug envelope), `geom` (for the print), `shuffle` (a DSN in another component order: the trial routes are the best of 8 orders); `dsn` / `ses` / `stats` / `airwire` / `review` = gen_relayout's |
 | **`print_1to1.py`** | the 1:1 US-Letter check print (reportlab, system python3) from `gen_standoff.py geom` |
