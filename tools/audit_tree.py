@@ -19,7 +19,7 @@ logged = {r["destination"] for lf in glob.glob(os.path.join(DST, "migration/run-
           for r in csv.DictReader(open(lf), delimiter="\t") if r["result"] in ("copied", "already", "clash")}
 buckets = collections.Counter(); unexplained = []; bad = []
 for root, dirs, files in os.walk(DST):
-    dirs[:] = [d for d in dirs if d != ".git"]
+    dirs[:] = [d for d in dirs if d not in (".git", "node_modules")]   # node_modules: npm's, git-ignored (tools/kicad)
     for f in files:
         p = os.path.join(root, f); rel = os.path.relpath(p, DST)
         if os.path.islink(p): buckets["generated: layout links (tools/layout_links.py)"] += 1; continue

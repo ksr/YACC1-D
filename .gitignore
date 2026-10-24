@@ -12,6 +12,8 @@ __pycache__/
 build/
 dist/
 nbproject/private/
+# node packages (tools/kicad/package.json: npm install)
+node_modules/
 # KiCad local state
 *.kicad_prl
 *-backups/

@@ -81,6 +81,13 @@ java = shutil.which("java")
 rc, out = run([java, "-version"]) if java else (1, "")
 check(G, "Java (for Freerouting)", rc == 0, out.splitlines()[0] if rc == 0 and out else "", "brew install openjdk")
 check(G, "Freerouting jar", os.path.exists(FRJAR), FRJAR, "copy freerouting.jar to ~/freerouting/ (or set FRJAR=)")
+# the generated schematics' wired sheets (tools/kicad/sch_wire.py: gen_v20.py sch, gen_mem_v2.py sch) lay out with ELK
+node = shutil.which("node")
+rc, out = run([node, "--version"]) if node else (1, "")
+check(G, "node (schematic layout: tools/kicad/elk_layout.js)", rc == 0, out if rc == 0 else "", "brew install node")
+elk = os.path.join(ROOT, "tools", "kicad", "node_modules", "elkjs")
+check(G, "elkjs 0.9.3 (ELK, the wired schematic sheets)", os.path.isdir(elk), elk if os.path.isdir(elk) else "",
+      "cd tools/kicad && npm install  (tools/kicad/package.json; node_modules is not in git)")
 
 # ---- Arduino firmware (tools/verify_embedded.py, part of make check) -------------------------------------------
 G = "Arduino sketches (tools/verify_embedded.py)"
