@@ -19,8 +19,7 @@ in one EPROM, the mode readable at `$D801` bit 0, the card ID on bit 2 = 0: latc
 machine reads bit 2 = 1 through a jumper on JP1 3-4; `ROM 2026-10-22` picks its geometry from them), on a new 4-layer board (In1 GND plane, In2 VCC plane) routed from
 scratch (`kicad/v1.3/README.md`, `build.sh`). **V2.0** (not ordered): v1.3 plus a graphics layer (512 x 192 in 8-dot mode,
 a time-shared 62256 behind the window $D800-$DFFF), the 6845 and every register on I/O ports PA-PE, two PS/2 ports on an
-ATmega328P (`embedded/video-ps2`) and an INT jumper; 218 mm long, 4 layers (`kicad/v2.0/README.md`, `docs/cards/video.md`
-section 7a).
+ATmega328P (`embedded/video-ps2`) and an INT jumper; 218 mm long, 4 layers (`kicad/v2.0/README.md`, `docs/cards/video-v2.md`).
 
 Known issues and findings:
 - **+5V rail unpowered as designed (found 2026-09-20 by the KiCad netlist proof, confirmed on the bench 2026-09-21).**
