@@ -41,6 +41,21 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
   file, the authorship headers and `tools/authors.tsv`, commit messages, `deprecated/` and `archive/`, third-party and
   generated files, and Ken's own comments in his code.
 - Ken likes explanations that teach: say what was done, why, and what it means for the machine.
+- **Board-layout rules (Ken, 2026-10-24, all of his systems)**, written in full in Ken's global instructions on each Mac.
+  In short:
+  - Switches, buttons, LEDs and outside-cable connectors go on the front edge (the edge farthest from the bus
+    connector). Outside-cable connectors are video, D-subs, USB, network, and a module's own USB or programming port.
+  - Every reference designator stays readable with the parts fitted: never under a chip, socket or module, and with
+    the IC type beside it.
+  - Every switch, button and LED carries its function on the silk, and each position of a switch is labelled.
+  - The rule set also covers modules (Nano/Pico).
+
+  **Scope:**
+  - The rules do **not** apply to any card already built or ordered: everything in `docs/system/MACHINE.md`, and the
+    memory card v2.0 (ordered 2026-10-09). Leave those as they are.
+  - They apply to all future YACC1 board work.
+  - When it is not clear whether a board counts as built/ordered or as future work, ask Ken before applying them. One
+    example is the video card V2.0: Gerbers exported 2026-10-23, not ordered.
 
 ## Machine facts that bite
 
