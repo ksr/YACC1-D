@@ -1,0 +1,668 @@
+# Design review — memory card v2.0 before the build (2026-10-23)
+
+An independent pass over `hardware/cards/memory/kicad/v2.0`, the board fabricated by JLCPCB (order 2000765A-Y52,
+2026-10-09) and not yet assembled. The boards exist, so this review changes nothing in the design files (the schematic,
+`mem_v2_netlist.py`, the board and the gerbers are untouched). Every fix proposed here is doable on the fabricated
+board: a bodge wire or resistor, a jumper setting, a part value or grade, an assembly or bring-up step, or a rule for
+the microcode or the ROM driver.
+
+The memory side of v2.0 is the v1.3 card that runs in the machine, plus JP3 and R15, minus C20-C23. The CompactFlash
+section is the CF card v1.0 circuit "as drawn", never built. The emulators (`software/cfmodel.h`) and the ROM driver
+model only the registers, so wiring, polarity, protocol and timing errors could hide there. Most of this review is
+about the CF section.
+
+**Read:**
+- `mem_v2_netlist.py` and `../../../cf/kicad/v1.0/cf_netlist.py`, pin by pin, against the TI pinouts of the five
+  CF chips and the standard 40-pin IDE pinout.
+- The board file, parsed directly: every pad's net and position, the footprints' pin-1 pads and silk.
+- The committed gerbers and drill files, parsed independently of KiCad. Section "Verified OK" has the net trace
+  through the copper.
+- The README of the folder and its reports (`netlist-proof.txt`, `-final.txt`, `-placement-check.txt`), and the BOM.
+- `docs/cards/memory-v2.md`, `memory.md` and `cf.md`; `hardware/DESIGN-REVIEW-NOTES-datapath.md` (M1-M8) and
+  `docs/isa/MICROCODE-REVIEW-NOTES.md` (M-2, M-3).
+- `docs/system/MICROCODE.md` and `MACHINE.md`; the v1.1-v1.3 design notes under `hardware/cards/memory/eagle/deprecated/`.
+- The microcode image itself (`firmware/microcode/ucode-generator2/test.hex`), decoded record by record. The I/O step
+  windows below are measured from it, not taken from the generator's source.
+- The ROM driver (`firmware/monitor/monitor.asm`, `cfwait` .. `cfwrite`, `boot`) and the v1.3 board
+  (`../v1.3/memory-v1.3.kicad_pcb`), compared net by net with v2.0.
+
+Severity as in the video review: **HIGH** = will not work, or damages parts; **MED** = fails in some mode or at
+6 MHz, or has no margin by specification; **LOW** = an improvement or a small risk; **INFO** = a fact the build or
+the bench needs. A finding marked *(firmware)* or *(microcode)* needs nothing on the board.
+
+**Data-sheet values.** The 74LS245 figures come from the TI sheet in the tree (`docs/datasheets/74245.pdf`,
+SDLS146A) and the 74HC244 / 74HC374 figures from the tree's HC sheets. The other 74LS figures (LS32, LS08, LS138,
+LS175, LS374) are the TI data-book values (typ / max, 5 V, 25 °C, CL 15 pF) as commonly published; they were not
+fetched for this review and are marked "(TI LS)". LS minimum delays are not specified; where a margin depends on them,
+one third of the typical value is assumed and said.
+
+The ATA / CompactFlash timings are PIO mode 0:
+- t0, t1, t2 (16-bit), t3, t4, t5, t6, t6Z, t9 and tB are from ATA-3 revision 6, table 21 (sources at the end).
+- t2 for 8-bit register transfers, 290 ns, is from a CompactFlash True-IDE timing table reproduced in a Transcend
+  CF-module data sheet. That is a secondary source: **To verify** against the CF specification or the card bought.
+
+## Summary
+
+| ID | Sev | Finding | Fix (short) |
+|---|---|---|---|
+| M2-1 | MED | The recorded pin 1 of the HX-2118P's header ("left end of the outer row, pin 20 the 10th of the inner row from the left") is the mirror image of standard header numbering, and it contradicts the board: J2's odd row faces the adapter, so the straight ribbon needs the adapter's odd row on its *inner* side. One of the recorded facts is wrong; in one of the two possible cases the straight cable joins J2 pin n to adapter pin 41-n | look at the adapter before making the cable: the missing pin must be in its outer row, the 10th from its H1 end; meter check before power (bring-up stage 4) |
+| M2-2 | MED | The adapter has a 3.3 V / 5 V jumper (and, like most, a master/slave jumper). On 3.3 V the CF runs at 3.3 V while J2 drives it with 5 V TTL levels and RN9 / R10-R13 pull its pins to 5 V | set the adapter to **5 V** and **master** before it is powered |
+| M2-3 *(microcode)* | MED | `INP P9` gives the CF one step from `-IO-RD` to the accumulator's leading-edge load: at 6 MHz 333 ns, against ~302 ns from the step edge to data on the bus at the PIO-0 worst case, plus the ALU path and set-up. IORDY is not looked at | one more step between `-IO-RD` and `-AC-LD` in `INP` (the microcode review's M-3); until then, disk work at ≤ 4 MHz |
+| M2-4 *(microcode)* | MED | `OUTA`/`OUTI` hold `-IO-WR` for one step: at 6 MHz the CF's `-IOW` is 293 ns at worst against t2 = 290 ns (8-bit register) | hold `-IO-WR` for two steps in `OUTA`/`OUTI`, or ≤ 4 MHz |
+| M2-5 | LOW | Until the sequencer raises READY, `-IO-RD`, `-IO-WR` and IO-ADDR0-3 float (review M5) and reach the CF through IC30/IC31 with nothing pulling them | optional bodge: 4.7k from IC31 pin 2 (`-IO-WR`) and pin 5 (`-IO-RD`) to VCC; better, the backplane pull-ups of M5 |
+| M2-6 *(microcode)* | LOW | `INP` drops `-IO-RD` and IO-ADDR on the edge that starts the next fetch: IC34 (the CF buffer) and IC5 overlap on DATA0-7 for up to ~50 ns, and with the video card V2.0 an `INP PB/PD/PF` can glitch through P9 (video review V2-14) | one release step without `-IO-RD` at the end of `INP` |
+| M2-7 | LOW | IC34's DIR (= `-IOR`) turns before its enable at the end of every read: up to ~45 ns of the 245 driving CFD0-7 against the releasing CF (documented in `cf.md` 4) | none needed; scope a CFD line (stage 5) |
+| M2-8 | LOW | Write data hold (t4 = 30 ns) is guaranteed only ~8 ns by the drivers; the rest relies on the CFD lines' capacitance against RN9's 10k | scope it at stage 5; if short, RN9 = 47k (still reads $FF with no card) |
+| M2-9 *(firmware)* | LOW | ROM driver: `cfdrq` takes DRQ without BSY = 0 (ATA-3: proceed only when BSY = 0); `cfread`/`cfwrite` ignore `cfwait`'s time-out, so with no card `cfread` returns "ok" and 512 x $FF; an ERR after the command is not seen until the DRQ time-out | test `(status AND $89) = $08`; return the time-out; next ROM burn |
+| M2-10 | LOW | JP3 with no cap leaves the ROM's -WE (CMOS) floating; a cap on 1-2 and another on 2-3 at once shorts IC6 pin 4 to VCC | fit the cap on 2-3 at assembly; optional 10k from JP3 pin 2 to pin 3 on the solder side |
+| M2-11 | LOW | BOM gaps: the v1.3 parts carry Eagle values (`74*32`, `C-US`, `RNX8`, `G08R`); no grades, no socket list, no jumper caps, no ratings for C30 | the build list in the finding |
+| M2-12 | LOW | v1.3 findings carried unchanged into v2.0: M3, M4, M6, M7 (JP1 must be fitted), M8, S1 | the table "The v1.3 findings on v2.0" |
+| M2-13 | INFO | The jumper wire on the built v1.3 card's IC7 pin 4: most likely a leftover of the v1.1 rework that added -VMA to IC7 pin 4 by wire (v1.2 and v1.3 have it in copper), or a probe point. v2.0 needs no wire | the measurement in the finding |
+| M2-14 | INFO | R15 does fix M1 (the floating-ADDR15 race), at 470 Ω against the register cards' 74HC244 (~8.5 mA, VOH ~3.8 V); it also makes an undriven address read $7FFF instead of $FFFF | the emulator's floating-select model (`y1ucemu -O`) should say $7FFF with R15 |
+| M2-15 | INFO | Decoupling: one 100 nF per IC, 8 mm from each CF chip's VCC pin, solid planes; removing C20-C23 (spares) is harmless. Bulk: only C30 (10 uF), 29 mm from J3 | C30 = 47 uF 16 V (5 mm can, 2 mm pitch) if available; ≥ 10 V in any case |
+| M2-16 | INFO | Supply: the CF section adds ~90 mA typical / ~140 mA maximum for its chips, plus the CF and the adapter (up to ~100 mA, To verify); J3 carries only the adapter's share | measure at stage 3 and 4 |
+| M2-17 | INFO | The strobes run unterminated down ~8 cm of ribbon; a ring on the rising edge of `-IOR` would advance the CF's buffer twice (a lost byte) | scope `-IOR` at the adapter (stage 5); if it rings, cut the track at J2 pin 25 / 23 and bridge with 33 Ω |
+| M2-18 | INFO | Bench timings of the ROM driver: `O` with no card takes **~20 s** at 1 MHz (two `cfwait` time-outs of 65,536 polls at 149 clocks), not "about a second" (`cf.md` 7); at 6 MHz the time-out is ~1.6 s, short for a slow card. The P8-bit-3 reset needs a delay: two `OUTI P8` are 19 us apart at 1 MHz, the ATA minimum is 25 us | expect the 20 s; a delay loop in any driver that pulses bit 3 |
+| M2-19 | INFO | The card bought must accept SET FEATURES $01 (8-bit transfers): `cfinit` returns the ERR bit, so a card without it shows `CF ERROR`, not wrong data | prefer older / smaller CF cards (≤ 2 GB); see `docs/procedures/CF-CARD.md` |
+| M2-20 | INFO | Of the three items "carried into the build" at ordering, the BASIC RUN fault was solved on 2026-10-10 (POPR in the microcode, not the card); the IC7 wire is M2-13; pin 20 is a cable choice (README) | update the FABRICATED note when the card is built |
+
+**Counts: HIGH 0, MED 4 (two of them microcode), LOW 8, INFO 8.**
+
+**Verdict: build as is.** No bodge wire is needed for the card to work at 1 MHz. Before the CF adapter is
+plugged in, two assembly checks are required: the adapter's header orientation and cable (M2-1, settled with a meter
+before power) and its jumpers (M2-2: 5 V, master). For 6 MHz, the CF section needs two microcode changes, which
+the rest of the machine wants too (M2-3, M2-4). The optional bodges, M2-5 and M2-10, are two or three resistors on
+the solder side. Nothing found needs a cut track.
+
+## Timing of P8/P9, from the microcode image
+
+`test.hex`, 0-based steps. A step is two clocks; the record's last step, which carries `UCODE-COUNT-RESET`, is one
+clock. A sweep of all 256 records finds the I/O strobes only in `OUTA`, `OUTI` and `INP`. No record changes IO-ADDR in
+the step before a strobe, or while a strobe is asserted.
+
+| Record | IO-ADDR = port | strobe | ACC load | strobe released | IO-ADDR back to 0 |
+|---|---|---|---|---|---|
+| `OUTA P8/P9` ($68/$69) | steps 3-8 | `-IO-WR` step 6 (2 clocks) | - | step 7 | step 0 of the next record |
+| `OUTI P8/P9` ($78/$79) | steps 4-8 | `-IO-WR` step 7 (2 clocks); memory drives the operand steps 3-8 | - | step 8 | step 9 |
+| `INP P9` ($99) | steps 3-8 | `-IO-RD` steps 5-8 (7 clocks) | `-AC-LD` step 6 (leading edge = the start of step 6) | step 0 of the next record | the same edge |
+
+Path delays, from the pipeline edge that starts the strobe step (LS374 CLK to Q 20 / 28 ns (TI LS); typ / max):
+
+| Event at J2 / on the bus | typ | max |
+|---|---|---|
+| `-IOR` / `-IOW` falls (LS374 + IC31 LS32 14 / 22) | 33 ns | 50 ns |
+| `-CFOE` falls (+ IC33 LS08 10 / 20) | 43 ns | 70 ns |
+| IC34 enabled (+ LS245 tPZL/tPZH 27 / 40) | 70 ns | 110 ns |
+| read data on DATA0-7: `-IOR` + CF access + LS245 8 / 12 | ~120 ns (a CF answering in ~80 ns) | **302 ns** (CF at t2 − t5 = 290 − 50 = 240 ns, the latest PIO-0 allows) |
+
+| PIO-0 requirement | 1 MHz (step 2000 ns) | 6 MHz (step 333 ns) |
+|---|---|---|
+| t1 address set-up 70 ns (DA0-2 from the P8 latch; `-P9SEL` settles ≥ 2 steps before the strobe, LS138 ≤ 41 ns) | microseconds | ≥ 625 ns |
+| t2 `-IOW` width 290 ns (8-bit register): one step − 50 + 10 (min delays at ⅓ typ) | ≥ 1960 ns | **≥ 293 ns: +3 ns** (typ 329 ns) — M2-4 |
+| t2 `-IOR` width 290 ns: 7 clocks | ≥ 6960 ns | ≥ 1127 ns |
+| t3 write data set-up 60 ns: the bus holds the byte from step 3; IC34 drives the CF ≤ 122 ns into the strobe, `-IOW` rises ≥ one step + 10 ns after it starts | ≥ 1888 ns | ≥ 221 ns |
+| t4 write data hold 30 ns: IC33 tPLH + LS245 disable, min ~8 ns, then RC on RN9 | ~45-60 ns estimated | the same — M2-8 |
+| read data at the ACC: the ACC loads at the start of the next step (+ the `-AC-LD` 374 delay, ≥ ~7 ns), less the ALU card's path (~50 ns, estimated) and the LS374 set-up (20 ns) ⇒ data needed on the bus ≤ step − 63 ns | ≤ 1937 ns: margin ≥ 1635 ns at worst | ≤ 270 ns: **−32 ns at worst**, +150 ns typical — M2-3 |
+| t0 cycle 600 ns between CF strobes (the tightest pair: `OUTI P9` then the next `OUTI P9` with an `OUTI P8` between) | ≥ 38 us | ≥ 6 us |
+| tB: IORDY may stretch a cycle up to 1250 ns (IORDY goes to R10 only) | covered by the 2 us step | not covered — M2-3 |
+| LS175 latch (P8): data set-up 20 ns / hold 5 ns (TI LS) at the rising edge of LATCHCLK = the end of `-IO-WR`; data held a step past it | ✓ | ✓ |
+
+## MEDIUM
+
+### M2-1 MED — The adapter's pin-1 record does not fit J2's orientation
+
+**Evidence.**
+- *The record.* The folder's README, "Open questions" 1 (CONFIRMED 2026-09-24): "the adapter's pin 1 at the left
+  end of its outer row, viewed component side up with the header at the top; the missing pin 20 is the 10th of the
+  inner row from the left". `standoff_placements.py` lines 27-33 says the same.
+- *Standard numbering.* The README itself states it ("J2 and the ribbon"): seen from above with pin 1 at the left
+  end, pin 1 is in the lower row and pin 2 above it. KiCad's IDC footprint and every IDC plug follow it.
+- *The contradiction.* Seen that way, with the header at the top, pin 1 at the left end would be in the inner row,
+  and pin 20 (an even pin) in the outer row. A header whose missing pin is in the inner row has its odd row outer,
+  and then its pin 1 is at the *right* end and the gap is the 11th pin from the left. So the three recorded facts
+  ("left end", "outer row", "10th of the inner row from the left") cannot all hold for a standard header; one of them
+  is wrong.
+- *What the board needs.* J2 is at rotation 180: pin 1 at (144.75, 110.03), odd row x 144.75 (toward the adapter),
+  even row x 142.21, key slot on the odd-row side (the footprint's notch, facing +x). A straight ribbon with its plugs
+  crimped alike is a translation: it puts J2's odd row (+x) on the adapter's +x row, its *inner* row (x ≈ 158.1; the
+  outer row is ≈ 155.6).
+- *The design's reasoning.* `standoff_placements.py` line 101 used only "pin 1 at the left end" (= board y-max) and
+  standard numbering, which puts the adapter's odd row inner. The "outer row" of the record was never used.
+
+**Consequence.** Two cases, told apart by looking at the adapter's header:
+
+| The missing pin is in the adapter's | Then its pin 1 is at | The straight ribbon (BOM HW4) |
+|---|---|---|
+| **outer** row (the one nearer its header edge and J2), the 10th from the H1 / LED end | its y-max (H1) end, odd row inner | **right**, as designed; the record's "outer" was a slip |
+| **inner** row (necessarily the 11th from the H1 end, the 10th from the H2 end) | its y-min (H2) end, odd row outer | **wrong**: J2 pin n meets adapter pin 41 − n. The shroud keys would refuse a keyed plug. Forced or with unkeyed plugs: J2 pin 38 (VCC) on DD7, J2's grounds on -RESET, DD0, DD1, DD3 and -DASP: the CF held in reset with outputs shorted |
+
+**Fix (on the build, not the board).** Before making or buying the ribbon:
+1. Look at the adapter's header: which row has the gap (that row is even) and which side has the shroud's key slot
+   (the odd side).
+2. The straight cable is right only if the gap is in the outer row, the 10th pin from the H1 end.
+3. In the other case a straight ribbon cannot work. The plug at one end has to come out rotated by 180°: a ribbon
+   with a half twist and a longer loop (~12-15 cm), checked pin by pin with a meter before it is used.
+
+Either way, run the meter check of bring-up stage 4 before power: with the ribbon and the J3 harness on and no CF
+card, J2 pins 1, 3, 23, 25 and 39 must **not** beep to GND. In both wrong mappings an adapter ground lands on J2
+pin 1.
+
+### M2-2 MED — The adapter's voltage and master/slave jumpers
+
+**Evidence.**
+- The README's assembly notes find the adapter's +5 V at "the middle pin of its 3.3/5 V jumper": the HX-2118P has a
+  supply selector, as these adapters generally do ("choose 5.0 V or 3.3 V according to your CF card", typical
+  listing). Most also have a master/slave jumper.
+- The interface has no level shifting. IC31's and IC33's LS outputs drive `-IOR`, `-IOW` and `-RESET`, and IC32's
+  drive DA0-2. IC34's B side drives CFD0-7, and RN9 (10k) pulls CFD0-7 to 5 V. R10-R13 pull IORDY, -PDIAG, -DASP and
+  -DMACK to 5 V.
+- J2 pin 28 (CSEL) is grounded, which makes the CF master only if the adapter routes CSEL to the card.
+
+**Consequence.**
+- *At 3.3 V.* The CF's inputs see LS highs of 3.4 V typical (up to ~4 V lightly loaded) and 5 V through the
+  pull-ups, above a 3.3 V card's VIH max (VCC + 0.3 V). The current flows into its input clamps: through 10k that is
+  ~0.1 mA; from an LS output it is limited only by the output stage. This risks the card, not the memory card.
+- *As slave.* The CF is device 1 alone. The driver selects device 0 ($E0), nothing answers, and `O` reports
+  `CF ERROR`.
+
+**Fix.** Set the adapter's jumpers to **5 V** and **master** (or CSEL / cable select, with J2's grounded CSEL) before
+its first power-up; note both settings on the adapter.
+
+### M2-3 MED *(microcode)* — `INP P9` at 6 MHz: one step for the CF read
+
+**Evidence.**
+- *The microcode.* Record $99 (`INP P9`) asserts `-IO-RD` in step 5 and `-AC-LD` in step 6. The accumulator latches
+  at the leading edge (`MICROCODE.md` 4.1), so the byte must reach the ACC within the one step after the strobe
+  starts.
+- *The CF.* Worst case by PIO-0, the CF's data is valid t2 − t5 = 290 − 50 = 240 ns after `-IOR` falls. That puts it
+  on DATA0-7 302 ns after the step edge (timing table).
+- *The budget.* The ACC needs it there ~63 ns before the next edge: the ALU card's path and the LS374 set-up.
+- *The margin.* At 6 MHz that is −32 ns at the specified worst case, and +150 ns with a CF answering in ~80 ns
+  (typical for real cards). Break-even at the worst case is a step of ~365 ns: about 5.5 MHz.
+- *IORDY.* It goes to R10 only. A card that negates it (tB, up to 1250 ns) is covered at 1 MHz (2 us) and not at
+  6 MHz.
+- *The same window elsewhere.* It is the microcode review's M-3, which flagged the same window for the UART.
+
+**Consequence.** At 6 MHz, disk reads depend on the card being faster than the specification's limit: a slow card,
+or one that uses IORDY, reads wrong bytes or the status of the previous access. At 1 MHz the margin is over 1.6 us.
+
+**Fix (microcode, no board change).** In `io.c` INP, one more step with `-IO-RD` before the `-AC-LD` step (the
+idle-step pass keeps it, since the next step has a leading-edge latch). That gives two steps, 667 ns at 6 MHz, and
+helps the UART path (M-3) as well. Until it is loaded, run disk work at ≤ 4 MHz: margin +135 ns worst case.
+
+### M2-4 MED *(microcode)* — The CF write strobe at 6 MHz
+
+**Evidence.**
+- *The microcode.* `OUTA`/`OUTI` assert `-IO-WR` for one step: 333 ns at 6 MHz.
+- *The width at J2.* `-IOW` = `-P9SEL` OR `-IO-WR`, so its width is the strobe's, less the skew between the falling
+  path and the rising path: LS374 + LS32 at ≤ 50 ns falling against ≥ ~10 ns rising (⅓ of typical). That leaves
+  ≥ 293 ns.
+- *The requirement.* PIO-0 t2 for an 8-bit register transfer is 290 ns, so the worst-case margin is 3 ns (typical
+  ~39 ns). The 16-bit figure, 165 ns, does not apply: every transfer here is 8 bits.
+
+**Consequence.** At 6 MHz a CF register or data write is within a few ns of its specified minimum strobe. Real cards
+take far shorter strobes, so this is a specification margin, not an expected failure. At 1 MHz the strobe is 2 us.
+
+**Fix (microcode).** Hold `-IO-WR` for two steps in `OUTA` and `OUTI` (one more line before `clearSignal("-IO-WR")`):
+627 ns worst case at 6 MHz. Every trailing-edge port latch (the I/O card, the P8 latch, the video card's) is
+unaffected. Or keep disk writes to ≤ 4 MHz (step 500 ns: ≥ 460 ns).
+
+## LOW
+
+### M2-5 LOW — The CF sees floating strobes before READY
+
+**Evidence.**
+- The pipeline's 374s are tri-stated by `-BUS-EN` until the sequencer has copied its microcode and raised READY
+  (`MICROCODE.md` 4, rule 7): a few seconds at every power-up, ~54 s during a serial load.
+- Nothing pulls `-IO-RD` (B25), `-IO-WR` (B26) or IO-ADDR0-3 (C7-C10) on any card or the backplane (review M5;
+  control-io 5.1).
+- The control lines measure ~1.5-1.9 V in that state (memory.md 6), a few hundred mV above the LS threshold.
+
+**Consequence.**
+- *A read glitch.* If noise takes IO-ADDR to 1001 and a strobe low, IC34 enables and the CF reads or writes a
+  register: a read only advances its buffer.
+- *A write glitch.* A write strobe to the command register with a random byte could start a command, a sector write
+  among them.
+- *Likelihood.* Low: the floating lines sit high, and IO-ADDR floating high decodes to PF, not P9.
+- *Already safe.* With JP3 on PROTECT, the same floating `-MEM-WR` can no longer write the ROM.
+
+**Fix.** Optional, on the solder side: 4.7k from IC31 pin 2 (`-IO-WR`, also pin 10) to IC31 pin 14 (VCC), and 4.7k
+from IC31 pin 5 (`-IO-RD`) to pin 14. When the pipeline drives the lines, each adds ~1 mA of low-level load on an
+LS374 output (IOL 24 mA). The machine-wide fix is M5's pull-ups on the backplane.
+
+### M2-6 LOW *(microcode)* — `INP` ends on the fetch's edge
+
+**Evidence.**
+- *The edge.* Record $99 holds `-IO-RD` through its one-clock last step. The pipeline edge that releases it also
+  returns IO-ADDR to 0000 and asserts the next fetch's `-MEM-RD`.
+- *IC34 turns off late.* `-IOR` rises ≤ 50 ns after that edge, `-CFOE` ≤ 15 ns later (TI LS), and the LS245 is off
+  ≤ 28 ns after that: up to ~93 ns.
+- *IC5 turns on early.* IC5's enable is always active (the `-VMA`-in-every-step microcode keeps a chip selected),
+  so `-MEM-RD` alone turns it round to drive DATA0-7: after the 374 delay plus the 245's direction change, ~40-70 ns.
+- *The glitch.* The video card V2.0's ports PB/PD/PF pass through 1001 on the way to 0000 (video review V2-14).
+
+**Consequence.**
+- *Contention.* Up to ~50 ns of two 245s on DATA0-7 after every `INP P9`. The IR samples three clocks later, so no
+  data is wrong; it is current spikes and ground bounce.
+- *A lost byte.* Once the video card V2.0 is in, a short spurious `-IOR` to the CF after `IN PD`, which would cost
+  a byte if the keyboard is polled during a sector transfer. The LS138's 20-40 ns decode delay is longer than the
+  pipeline's output skew, so `-IO-RD` is normally high before the glitch arrives.
+
+**Fix (microcode).** One release step at the end of `INP`, with the port number and without `-IO-RD`, as `OUTA`/`OUTI`
+already have. It is the same change as V2-14 and can be loaded together with M2-3.
+
+### M2-7 LOW — IC34 turns round before it switches off
+
+**Evidence.** IC34 pin 1 (DIR) = `-IOR`; pin 19 (OE) = `-CFOE` = `-IOR` AND `-IOW`, one LS08 later. At the end of a
+read, DIR goes high (bus to CF) while OE stays low for IC33's tPLH (8 / 15 ns) and then the 245's disable (15 / 28
+ns). The CF releases its outputs within t6Z ≤ 30 ns. `cf.md` section 4 describes the effect and the P8X card has it
+too.
+
+**Consequence.** Up to ~45 ns of the 245's B side driving CFD0-7 (with whatever DATA0-7 holds) against the CF's
+outputs, at every P9 read. The byte has been taken a step earlier, so nothing is lost; it is a current spike.
+
+**Fix.** None needed. At stage 5, scope CFD0 (J2 pin 17) against `-IOR` (pin 25) at the end of a read. A runt
+shorter than ~20 ns is the expected picture.
+
+### M2-8 LOW — Write data hold rests on RC
+
+**Evidence.**
+- *The requirement.* PIO-0 t4: data held ≥ 30 ns after `-IOW` rises.
+- *Held by the drivers.* After `-IOW` rises, IC33 raises `-CFOE` (tPLH 8 / 15 ns, min ~3 ns assumed) and IC34
+  releases CFD0-7 (tPLZ / tPHZ 15 / 25-28 ns, min ~5 ns): the drive is guaranteed ~8 ns, typically ~23 ns.
+- *Held by RC.* After that a 0 is held only by the line's capacitance (ribbon + adapter + CF, ~30-50 pF estimated)
+  against RN9's 10k. Rising from ~0.3 V to the CF's VIL of 0.8 V takes ~10k × 40 pF × ln(4.7 / 4.2) ≈ 45 ns.
+
+**Consequence.** By the guaranteed figures, a written 0 bit could turn into a 1 just inside t4. By typical figures,
+there is ~60 ns of hold.
+
+**Fix.** At stage 5, scope a CFD line that carries a 0 at `-IOW`'s rising edge (`OUTI P9,0` in a loop, the register
+selected = sector count). If the line rises within 30 ns of the edge, fit RN9 as **47k**:
+- the RC hold becomes ~220 ns;
+- the empty-adapter read still gives $FF (LS245 B-input IIH 20 uA × 47k ≈ 0.9 V drop, ≥ 4 V high).
+
+### M2-9 LOW *(firmware)* — The ROM driver's status checks
+
+**Evidence.** `firmware/monitor/monitor.asm`:
+- `cfdrq` loops until status bit 3 (DRQ) is set, without looking at BSY. ATA-3 clause 9: the host proceeds only when
+  BSY = 0, and while BSY = 1 the other bits are not to be used.
+- `cfread` and `cfwrite` call `cfwait` and ignore its time-out. With no card (status $FF), `cfdrq` sees DRQ = 1 at
+  once and `cfread` reads 512 x $FF and returns 0 = ok. `boot` is protected only because it calls `cfinit` first.
+- A command that ends in ERR (status $51, DRQ = 0) is noticed only after `cfdrq`'s full time-out, ~10 s at 1 MHz.
+
+**Consequence.** Y1/OS calling CFREAD with the card absent or failed gets a "good" sector of $FF. A card that shows
+DRQ while still busy is read too early. Neither shows at the first bring-up with a good card.
+
+**Fix (the next ROM build, burned by hand).**
+- `cfdrq`: wait for `(status AND $89) = $08` (BSY = 0, DRQ = 1, ERR = 0), and leave on ERR at once.
+- `cfread`/`cfwrite`: return 1 when `cfwait` times out (BSY still set).
+- Y1/OS's own calls need nothing more.
+
+### M2-10 LOW — JP3 without a cap
+
+**Evidence.** IC13 pin 27 (ROM-WE) = JP3 pin 2 only; JP3 pin 1 = `Net-(IC1-~{WE})` (IC6 pin 4, IC1/IC2 pin 27), pin 3
+= VCC. The AT28C64B's -WE is a CMOS input with no stated pull-up. A cap on 1-2 and another on 2-3 together would tie
+IC6 pin 4 (an LS04 output) to VCC.
+
+**Consequence.** With no cap the EEPROM's -WE floats: writes are possible whenever it drifts low with -CE low and
+-OE high, which is every bus write the ROM is selected for. The double cap stops every RAM write and stresses IC6.
+
+**Fix.** Fit one cap on **2-3 (PROTECT)** at assembly (the README says so). Optional: 10k from JP3 pin 2 to pin 3 on
+the solder side, so a missing cap means PROTECT. On WRITE (1-2) IC6 then sinks 0.5 mA more.
+
+### M2-11 LOW — The BOM is not yet a build list
+
+**Evidence.** `memory-v2.0-bom.csv` carries the converted Eagle values for the v1.3 parts:
+- `74*32`, `74*30`, `74*04` etc. with no family;
+- `C-US` with no value;
+- RN5/RN6 `RNX8` (value unknown, review M8) and RN7/RN8 `G08R`;
+- `62256P` and `28C64C` with no speed.
+
+There is also no socket list, no jumper caps, and no voltage for C30.
+
+**Fix.** Build from this list (or move the v1.3 card's chips across):
+- **ICs:** the v1.3 card's grades: IC4/IC18 74ALS30, IC10 74ALS00, IC15 74ALS11, IC5 the 74HC245 fitted 2026-10-09
+  (BACKLOG); the rest 74LS. The 62256 ≤ 150 ns, 600 mil. The ROM an AT28C64B-15, in its own machined socket.
+- **Sockets:** 25 DIP sockets: 3 × 28 (machined for IC13), 8 × 20, 4 × 16, 10 × 14.
+- **Capacitors:** C1-C19, C24 100 nF, 2.54 mm pitch. C25-C29 100 nF disc, 5 mm. C30 47 uF 16 V or 10 uF ≥ 10 V, 5 mm
+  diameter, 2 mm pitch.
+- **Resistor networks:** RN5/RN6 as measured on v1.3 (M8). RN7/RN8 10k bussed, pin 1 common. RN9 10k bussed (47k,
+  M2-8).
+- **Jumpers and headers:** two jumper caps (JP1, JP3) and the seven U$1 block jumpers. J2 a 2x20 shrouded box header. J3 a 1x4 male header.
+- **Mechanical:** the hardware lines HW1-HW6 as listed.
+
+### M2-12 LOW — v1.3 findings that v2.0 carries
+
+See the table below. None needs board work. The ones that touch the build:
+- **M7:** JP1 must carry a cap, or the whole high-32K decode is dead. Fit it in the position used on the v1.3 card:
+  read it off that card; MACHINE.md does not record it.
+- **M8:** RN5/RN6, measured on the v1.3 card first.
+
+## INFO
+
+### M2-13 INFO — The wire on the built v1.3 card's IC7 pin 4
+
+**Evidence.**
+- *The net.* IC7 is the 74LS138 block decoder and pin 4 is G2A. On v1.3 and on v2.0 the net `-VMA` is exactly
+  IC7.4, IC14.11, IC3.1 and X1 C12, in copper on both boards (both board files, parsed).
+- *The history.*
+  - On v1.1 IC7 pin 4 was not on -VMA: the bus had no -VMA yet.
+  - `eagle/deprecated/v1.2/Notes.md` lists the v1.1 rework: "Add -VMA to IC7 74138 pin 4 so ROM & HI Ram can only be
+    selected with -VMA asserted", together with "-VMA to enable 74245" and "-VMA ... -CS for LOW RAM". It adds: "ALL
+    Above reflected V1.1 mods and V1.2 working schematics".
+  - On v1.1 those were wires; v1.2 and v1.3 have them as tracks.
+- *What the wire is not.* The machine runs, so G2A is low during every cycle on the built card. The wire cannot be
+  the only connection of pin 4 with its far end loose: a floating LS input reads high and would kill the ROM and the
+  high RAM.
+
+**Conclusion.** The wire is one of three things:
+- a leftover of the v1.1-era habit (the same mod made by hand, then found unnecessary);
+- a probe point on `-VMA`;
+- a tie used once to defeat the -VMA gating (G2A to GND) while the FORCE-ROM race was being chased in 2020.
+
+The `-VMA`-in-every-step microcode makes `-VMA` low in every step, so G2A = `-VMA` and G2A = GND behave the same
+today. **v2.0 needs no wire.** If the microcode later stops asserting `-VMA` in idle steps (the M1 follow-up),
+v2.0's copper (G2A = `-VMA`) is the designed behaviour.
+
+**To settle it on the v1.3 card** (out of the machine, chips in their sockets, meter on ohms):
+1. **IC7 pin 4 to X1 pin C12.** Probe the IC's own leg, not the socket. Expect < 1 Ω. Also check pin 4 to IC14
+   pin 11 and to IC3 pin 1: < 1 Ω.
+2. **Pin 4 to GND.** Expect not 0 Ω: an LS input reads a few kΩ or more.
+3. **Where the wire is soldered.** Is it on the IC's leg (on top), on the socket pin, or on the pad on the solder
+   side? Is IC7's pin 4 bent out of the socket, as the video card's IC1 pin 2 is?
+4. **The far end.** Measure the loose end to GND and to VCC: expect open. Inspect the -VMA track at pin 4 under a
+   loupe for a cut.
+5. **In the machine**, idle in the monitor: DC level at IC7 pin 4 equal to C12's (~0.1-0.3 V).
+
+If 1 passes and 3 shows no lifted leg, the wire is dead: remove it and close the BACKLOG item. If 1 fails (a cut track
+or a lifted leg with the wire to GND or elsewhere), record what it connects to. v2.0 still needs nothing while the
+microcode asserts `-VMA` in every step.
+
+### M2-14 INFO — R15 and the M1 race
+
+**Evidence.**
+- *What M1 is.* IC12's clock is ADDR15 · VMA · BUS-EN (IC10/IC3). On v2.0, R15 is 470 Ω from ADDR15 (X1 A18, IC9
+  pin 17, IC10 pin 4) to GND. The race needs ADDR15 to read high while no register drives the address bus.
+- *When it can still happen.* The microcode asserts `-VMA` in every step, so the address bus is undriven only at the
+  moment `-BUS-EN` asserts (the 374s and the register cards' 244s turn on) and in the `-2-BYTE-OPERAND-SEL` steps
+  where nothing drives ADDR-REG-ID (BACKLOG, the POPR fault). In both, R15 holds A15 at ~0.42 V (memory.md 4.1),
+  and IC12 cannot be clocked by an address that is not there.
+- *The drivers.* The register cards drive ADDR15 with 74HC244s (photo, `docs/cards/register.md`). Into 470 Ω that
+  is ~8.5 mA at VOH ≈ 3.8-3.9 V (HC: 3.84 V min at −6 mA, 85 °C; abs max ±35 mA): ample. An LS244 driver would give
+  ≥ ~2.3 V at ~5 mA (2.4 V at −3 mA, 2.0 V at −15 mA, TI LS). That still leaves a margin over VIH, though it is
+  thinner.
+
+**Consequence.** R15 fixes M1 as designed. One side effect: an address bus nobody drives now reads **$7FFF** (low
+RAM) instead of $FFFF (the ROM's last byte). That matters only to code that reads in an undriven step, which the
+2026-10-10 POPR fix removed.
+
+**Fix.** None on the card. `y1ucemu`'s floating-select model ($FFFF while `-2-BYTE-OPERAND-SEL`) should become
+$7FFF for a v2.0 card (or for v1.3 once the bodge is fitted). The bus tester's RN4 must be read first (memory.md 4.1).
+
+### M2-15 INFO — Decoupling and bulk
+
+**Evidence.**
+- *Bypass caps.* Every one of the 25 ICs has its 100 nF: C1-C19 and C24 for the v1.3 chips, C25-C29 for IC30-IC34,
+  each 8.1 mm from its chip's VCC pin.
+- *Planes.* GND (In1) and VCC (In2) are each one piece, 81 % of the board, and every power pin reaches its plane
+  through a thermal relief (`-final.txt`).
+- *C20-C23.* On v1.3 these four were VCC-GND caps with no IC beside them (`mem_v2_netlist.removed_pins()` checks
+  it), so removing them takes 400 nF of spare plane decoupling off a card that keeps 2.5 uF of local bypass.
+- *Bulk.* The card's only electrolytic is C30, 10 uF. The board puts it 29 mm from J3 pin 1, not beside J3 as the
+  notes say; on solid planes the distance does not matter.
+
+**Consequence.** Adequate for LS logic at 1-6 MHz. The CF's write bursts (tens of mA in steps) are met by the planes,
+C30 and the adapter's own capacitors.
+
+**Fix.** Optional: C30 = 47 uF 16 V in the same 5 mm can. Whatever is fitted must be ≥ 10 V, with its + lead in the
+square pad (VCC).
+
+### M2-16 INFO — Supply current
+
+**Evidence.**
+- *The CF chips* (ICC typ / max, TI LS; the LS245 from the tree's sheet): IC34 LS245 64 / 95 mA (outputs off), IC32
+  LS175 11 / 18 mA, IC30 LS138 6 / 10 mA, IC31 LS32 6 / 10 mA, IC33 LS08 4 / 9 mA. That is ~90 mA typical, ~140 mA
+  maximum.
+- *The rest of the CF section.* The ACT LED ~2.6 mA while lit. The CF card and the adapter's LED: up to ~100 mA by
+  `cf.md`, **To verify** with the card bought.
+- *Unchanged from v1.3.* PWR0 at ~9 mA, and the memory half.
+- *The paths.* J3 carries only the adapter's share; the card draws all of it through X1's six VCC pins and the plane.
+
+**Fix.** Measure the card's current at stage 1 (the v1.3 half), stage 3 (+ the CF chips) and stage 4 (+ the adapter).
+Check the machine's supply headroom with the video card V2.0 planned as well (its review: ~0.85-1.45 A).
+
+### M2-17 INFO — Strobes down the ribbon
+
+**Evidence.** IC31's LS32 outputs drive `-IOR` (J2 25) and `-IOW` (J2 23) through ~8 cm of 40-wire ribbon,
+unterminated. Each runs between grounds (22/24/26), which is good. The CF advances its sector buffer at the end of
+each data-register read.
+
+**Consequence.** At this length (≈ 0.5 ns each way) LS edges see a nearly lumped line, and ringing should be small.
+A ring that crossed back below the CF's threshold on the rising edge of `-IOR` would count two reads: every
+so often a sector would come back one byte short.
+
+**Fix.** At stage 5, scope `-IOR` at the adapter's header during a sector read. If it rings through the threshold, cut
+the track at J2 pin 25 (and 23) and bridge it with 33 Ω.
+
+### M2-18 INFO — Driver timings to expect on the bench
+
+**Evidence.** Steps per record from `test.hex`. One `cfwait` poll is `OUTI P8` (19 clocks), `INP P9` (17), `ANDI` (19),
+`BRZ` (35), `DECR` (11), `MVRLA` (13) and `BRNZ` (35): 149 clocks. The time-out is 65,536 polls.
+
+**Consequence.**
+- *No card.* `O` makes two time-outs in `cfinit` (it carries on after the first): **~20 s at 1 MHz** before
+  `CF ERROR`. `cf.md` section 7 says "about a second".
+- *At 6 MHz.* The time-out is ~1.6 s, which may be short for a card's start-up after reset (ATA allows far more;
+  CF cards are typically ready in well under a second).
+- *Software reset.* Two back-to-back `OUTI P8` (bit 3 set, then cleared) are 19 clocks apart: 19 us at 1 MHz,
+  under ATA's 25 us minimum reset pulse.
+- *Sector transfers.* The 512-byte read loop is 104 clocks a byte: ~53 ms a sector at 1 MHz.
+
+**Fix.** Expect the 20 s; correct `cf.md` 7 when the card is built. Any driver that pulses P8 bit 3 waits ≥ 25 us
+(more at 6 MHz) before clearing it, and then runs `cfinit`.
+
+### M2-19 INFO — Choosing the CF card
+
+`cfinit` sends SET FEATURES $01 (8-bit transfers) and returns the ERR bit. The 8-bit mode is lost at every hardware
+reset (bus -RESET or P8 bit 3), and `boot` runs `cfinit` each time, so that is covered. A card that refuses the
+feature gives `CF ERROR`, not corrupt data. Hobby experience points at older, smaller cards (≤ 2 GB) as the safe
+choice. **To verify** with the card used.
+
+### M2-20 INFO — The items "carried into the build"
+
+The FABRICATED note (2026-10-09) carries three open items: the BASIC RUN fault, the IC7 pin-4 wire and the ribbon's
+pin 20.
+- **The BASIC RUN fault** was found to be POPR reading through an undriven ADDR-REG-ID, and fixed in the microcode on
+  2026-10-10 (BACKLOG): nothing on the memory card.
+- **The IC7 pin-4 wire:** M2-13.
+- **Pin 20** is a cable choice (an open plug at J2, or pull J2's pin 20), together with M2-1.
+
+## The v1.3 findings on v2.0
+
+| ID (datapath / control-io review) | On v2.0 |
+|---|---|
+| M1 HIGH (masked): FORCE-ROM clock races a floating ADDR15 | **fixed** by R15 (M2-14) |
+| M2 MED: the ROM's -WE is raw -MEM-WR | **fixed** by JP3 on PROTECT; also closes control-io 1.3 (a stale word with -MEM-WR during reset) and M5's floating -MEM-WR for the ROM |
+| M3 MED: TMP registers latch at the leading edge | carried (a microcode rule; the generator obeys it) |
+| M4 / B1 MED: low RAM cannot be jumpered out | carried: no bring-up card (Mem Switch / Mem Register at $0000-$001F) on the bus with this card |
+| M5 / S3 LOW: control inputs float before READY | carried; now also reaches the CF (M2-5); the ROM is safe on PROTECT |
+| M6 LOW: IC14 pins 5 and 9 open | carried (LS inputs, read high, harmless); optional: bridge pins 5 and 9 to pin 7 (GND) on the solder side |
+| M7 LOW: JP1 must be fitted | carried: fit JP1's cap as on the v1.3 card (M2-12) |
+| M8 LOW: RN5/RN6 value unknown | carried: measure DATA0 (A19) to GND on the v1.3 card and fit the same |
+| S1 MED (system): no power-on reset | carried; the P8 latch powers up random until the first bus reset or `OUT P8`, which may hold the CF in reset meanwhile (harmless: the reset button comes before `O` anyway) |
+
+## Verified OK
+
+- **The memory side is v1.3.** The v1.3 and v2.0 boards were parsed, pad by pad, and every pad of the 53 v1.3 parts
+  that v2.0 keeps was compared net-group for net-group. The only difference is IC13 pin 27 leaving the -WE net
+  (`N$4` = IC1.27, IC2.27, IC6.4) for ROM-WE (JP3 pin 2); unconnected pins differ only in name. Footprints are
+  identical. C20-C23 are gone and R15 joins ADDR15 = {IC9.17, IC10.4, X1.A18} to GND.
+- **JP3.**
+  - 1-2 gives ROM -WE = -MEM-WR through IC6, as on v1.3.
+  - 2-3 holds -WE at VCC. With JP3 on PROTECT a store to $E000-$FFFF selects the ROM with -OE high and -WE high:
+    IC5 drives BDATA, the ROM's outputs are off, nothing is written, nothing fights.
+- **R15:** 470 Ω, 1/4 W, pad 1 on the ADDR15 track, pad 2 on GND (M2-14 for the value).
+- **The CF section matches `cf_netlist.py` on the board**, pin for pin:
+  - IC30 (LS138): A/B/C = IO-ADDR0-2, G1 = IO-ADDR3, G2A/G2B = GND, Y0 (15) = -P8SEL, Y1 (14) = -P9SEL.
+  - IC31 (LS32): 1/2→3 LATCHCLK, 4/5→6 -IOR, 9/10→8 -IOW, gate 4 inputs on GND.
+  - IC32 (LS175): CLR = -RESET, D1-D4 = DATA0-3, Q1/Q2/Q3 (2/7/10) = DA0/DA1/DA2, -Q4 (14) = -SRST, Q4 (15) = SRST.
+  - IC33 (LS08): 1/2→3 -CFOE, 4/5→6 -CFRESET, 9/10→8 ACTK, gate 4 inputs on GND.
+  - IC34 (LS245): DIR = -IOR (low = B to A = CF to bus), OE = -CFOE, A1-A8 = DATA0-7, B1-B8 (18..11) = CFD0-7.
+- **The IDE pinout** against the 40-pin standard:
+  - -RESET 1; DD7..DD0 on 3, 5, .., 17; DD8-15 (even 4-18) open.
+  - GND on 2, 19, 22, 24, 26, 30, 40; pin 20 = JP2 only.
+  - DMARQ 21, INTRQ 31 and -IOCS16 32 open: device outputs nobody reads.
+  - -DIOW 23, -DIOR 25.
+  - IORDY 27 (10k up), CSEL 28 = GND (master), -DMACK 29 (10k up: no DMA cycle can be acknowledged), -PDIAG 34 and
+    -DASP 39 (10k up).
+  - DA1 33, DA0 35, DA2 36; -CS0 37 = GND and -CS1 38 = VCC (the control block is unreachable; the soft reset is
+    P8 bit 3).
+- **Polarities.**
+  - `-IOR`/`-IOW` are active low and low only for the card's own port: OR of active-lows.
+  - -CFRESET = -RESET AND -SRST: low while either is.
+  - The latch's CLR on the bus reset, so after a reset the card points at register 0 and is out of reset.
+  - The CF's -RESET in True IDE is active low.
+- **8-bit mode.** The driver sends SET FEATURES $01 after every reset, and the high byte is never needed (DD8-15
+  open; in 8-bit mode the CF leaves them high-impedance).
+- **The decode.** P8/P9 only; nothing in P0-P7 (the I/O card's half with its IO-ADDR-HL strap on P0-P7: **check the
+  strap**). Y2-Y7 are unused, so there is no overlap with the video card V2.0's PA-PE (its own LS138, Y2-Y7 = PA-PF).
+  A read of P8 enables nothing (LATCHCLK uses `-IO-WR` only); the bus floats, which is harmless.
+- **Bus contention on a P9 read.** IC34 is the only DATA0-7 driver during the strobe. IC5 is enabled, because a chip
+  is always selected, but faces the memory side while `-MEM-RD` is high. TMP, ALU (`-AC-RD` off) and the register
+  cards are not reading. The only overlap is at the strobe's end (M2-6).
+- **The strobes in the microcode.** IO-ADDR is set ≥ 2 steps before every strobe and never changes while one is
+  asserted (all 256 records swept). The OUT strobes end one step before the port number changes, with the data
+  (ACC in `OUTA`, memory in `OUTI`) on the bus throughout. LATCHCLK's rising edge, at the end of the P8 write, finds
+  DATA0-3 stable.
+- **Polarised parts and pin 1.**
+  - All 25 ICs stand the same way: pin 1 at the bus-connector end, in the row toward the y-max (LED) edge. The
+    Eagle footprints mark pin 1 by the outline notch only (oval pads, as on v1.3); the KiCad ones (IC30-IC34) also
+    have a square pad.
+  - C30's + is the square pad (VCC). LED1's cathode is pad 1 (square, ACTK, sunk by IC33). PWR0's K is on GND (its
+    reference is on the placement PDF only).
+  - J2's pin 1 is square at y-max, with "PIN 1" on the silk. J3 pin 1 is square = +5 V (labelled). RN9's common
+    pin 1 is square, on VCC.
+- **The mechanics.**
+  - H1 (166.34, 111.90) and H2 (166.34, 59.90) are 52.0 mm apart, 3.2 mm, in the NPTH file, each in a 7 mm
+    all-layer keep-out.
+  - Under the adapter outline (x 151.04-195.04, y 55.90-115.90) are only IC31, IC32, IC34, IC33, C26-C29, R10-R13 and
+    RN9: sockets, disc caps, axial resistors and a SIP. The adapter's underside is 15 mm up and its pin tails ~2.5 mm,
+    against ~9.5 mm for a socketed DIP.
+  - J3 and C30 are outside it at y < 55.9, and J2's plug envelope is 1.5 mm outside it.
+  - The ROM's keep-clear zone holds no part (`-placement-check.txt` and the parsed positions agree).
+  - M3 x 6 screws into 15 mm female-female standoffs engage ~3.9 mm of thread through 1.6 mm of board and a washer.
+- **The BOM against the board.** 72 parts in both, H1/H2 as board features. `memory-v2.0-bom.csv`: 26 C, 25 IC, J2,
+  J3, JP1-JP3, LED1, PWR0, R2, R10-R15, RN5-RN9, U$1, X1.
+- **The fabricated files**, parsed independently of KiCad:
+  - The job file says 4 layers, 1.6 mm, 177.83 x 114.02 mm. F_Cu L1, In1_Cu L2, In2_Cu L3, B_Cu L4.
+  - `PTH.drl`: 807 holes = 735 pads + 72 vias, every hole at a pad centre or a via of the board. `NPTH.drl`: X1's
+    two 2.794 mm holes and H1/H2 3.200 mm at the board's coordinates.
+  - The F_Cu and B_Cu gerbers' 2,045 track draws were joined with the plated holes and the real pad outlines
+    (tracks ending on a pad or passing through one). The resulting copper groups contain **all 185 signal nets of
+    the board, none split, none merged with another**, including every CF net (DA0-2, CFD0-7, -IOR, -IOW, -CFOE,
+    -CFRESET, LATCHCLK, -P8SEL, -P9SEL) and ROM-WE.
+  - The inner layers carry the GND and VCC planes (and the non-functional pad rings of KiCad's export).
+
+## Bring-up plan
+
+Each stage starts only when the one before passes. Socket everything. Keep the v1.3 card as the fall-back: it goes
+back in unchanged if a stage fails.
+
+**Stage 0 — bare board (no parts).**
+1. Look for solder-mask or drill defects. H1/H2 are unplated 3.2 mm holes. J2's square pad (pin 1) is at the LED end.
+2. VCC to GND: open (> 1 MΩ). The six GND (A1/B1/C1/A32/B32/C32) and six VCC (A2/B2/C2/A31/B31/C31) pins of X1 each
+   beep to their plane (any cap's pads).
+3. Continuity, each < 1 Ω:
+   - X1 C12 → IC7 pin 4, IC3 pin 1, IC14 pin 11 (-VMA);
+   - X1 A18 → R15 pad 1, IC9 pin 17, IC10 pin 4;
+   - JP3 pin 1 → IC1 pin 27; JP3 pin 2 → IC13 pin 27 only (not IC1 pin 27); JP3 pin 3 → VCC;
+   - X1 B25 → IC31 pin 5; X1 B26 → IC31 pins 2 and 10; X1 C7-C10 → IC30 pins 1, 2, 3, 6; X1 C30 → IC12 pin 4,
+     IC32 pin 1, IC33 pin 4;
+   - J2 pins 28 and 37 → GND; J2 pin 38 → VCC; J2 pin 1 → IC33 pin 6.
+
+**Stage 1 — the memory side.**
+1. Solder everything: all sockets including IC30-IC34's, the caps, R15, JP1, JP3, J2, J3, JP2 (no cap), the LEDs
+   and X1 (bolted before soldering).
+2. Fit the memory-side chips only; leave IC30-IC34 out. JP3 cap on **2-3**. JP1 cap as on the v1.3 card (M2-12).
+   U$1 jumpers as in the machine: $8-$C RAM, $D none, $E/$F ROM. The ROM chip moves across in its machined socket.
+3. Before the bus: VCC-GND resistance (note it); X1 A18 to GND ≈ 470 Ω (R15).
+4. Bench supply, card alone through a bus extender or in the backplane with nothing else: PWR0 lights. Note the
+   current; it should be within ~10 % of the v1.3 card's.
+
+**Stage 2 — prove it as a v1.3 replacement.**
+1. In the backplane with the bus tester and no CPU cards:
+   - `python3 tests/memory/memory_status.py`: the FORCE-ROM page at $0000, low RAM, the block map.
+   - `tests/memory/rom_verify.py`, then `tests/memory/memory_full_test.py` (~16 min).
+2. The M1 check of memory.md 4.1, with R15 fitted. Read the tester's RN4 first. Address lines as inputs, `-BUS-EN`
+   low, pulse `-VMA`: IC12 pin 5 (FORCE-ROM) stays high.
+3. JP3: on PROTECT, a tester write to $E000 leaves `rom_verify.py` clean.
+4. The whole machine at 1 MHz (I/O card strap on P0-P7 checked): reset, the banner, then
+   `python3 tests/bench/run.py --port /dev/cu.usbserial-AB0MVHSQ`. Expect the same result as the v1.3 card
+   (15/15 on 2026-10-10).
+5. Measure IC7 pin 4 on the **v1.3** card (M2-13) while it is out.
+
+**Stage 3 — the CF chips, no adapter.**
+1. Fit IC30-IC34 (all with pin 1 toward X1). The card's current rises by ~90 mA (≤ 140 mA).
+2. Monitor `E`/`G`, or the bus tester: `OUTI P8,n` for n = 0..7. With a meter, J2 pins 35 / 33 / 36 (DA0 / DA1 / DA2)
+   show the bits of n. `OUTI P8,8` takes J2 pin 1 low and `OUTI P8,0` releases it; the reset button takes it low too.
+3. `O` with nothing on J2: ACT flickers, and `CF ERROR` after **~20 s** at 1 MHz (M2-18). That proves the decode, the
+   read strobe, IC34's direction and RN9.
+4. Scope, during `O`:
+   - `-IOR` (J2 25): ~7 us pulses, one clean edge each.
+   - `-IOW` (J2 23): ~2 us pulses.
+   - IC34 pin 19 following pin 1 by one gate.
+   - Nothing on J2 25/23 during `INP P1` (the console).
+
+**Stage 4 — the adapter, no CF card.**
+1. Settle M2-1 on the adapter itself (gap row, key side, gap position) and make or choose the ribbon accordingly
+   (pin 20 open at J2's plug, or J2's pin 20 pulled).
+2. Set the adapter to **5 V** and **master** (M2-2). Make the J3 harness, pin 1 (+5 V) to the adapter's +5 V pad,
+   identified with the meter (it beeps to the middle pin of its voltage jumper).
+3. Mount it on the standoffs.
+4. Power off, ribbon and harness fitted:
+   - J2 pins 1, 3, 23, 25 and 39 do **not** beep to GND;
+   - J2 pin 2 and the adapter's GND pad beep;
+   - J3 pin 1 to the adapter's +5 V pad beeps.
+5. Power: the adapter's LED, the current (+ a few mA), and `O` → `CF ERROR` as in stage 3.
+
+**Stage 5 — a CF card.**
+1. Prepare it on the Mac: `make -C os`, then `python3 tools/cfcard.py write os/disk.img --disk diskN`
+   (`docs/procedures/CF-CARD.md`). Insert it with the power off.
+2. `O` boots Y1/OS. Then `dir`, `cat README.TXT`, `hello`, and the `tests/os` sessions by hand: reads and writes.
+3. Scope (once, at 1 MHz):
+   - `-IOR` at the adapter's header during a sector read, for ringing (M2-17);
+   - CFD0 against `-IOR` at the end of a read (M2-7);
+   - a CFD line at `-IOW`'s rising edge holding a 0 (M2-8).
+4. Only after the microcode changes of M2-3 / M2-4 (and M2-6), repeat stage 5 at 6 MHz.
+
+## What this review could not verify
+
+- **The HX-2118P.** No data sheet or photo is in the tree. Its header handedness (M2-1), its jumpers (M2-2: their
+  existence comes from the README's note and generic listings), its power pads, and whether it routes CSEL and
+  grounds the CF's -OE for True IDE are all known only from the record.
+- **CF timing.** The 8-bit t2 (290 ns) is from a reproduced table (secondary source). The figures used are the
+  specification's limits, not the card's: the actual access time and whether the card uses IORDY are unknown until
+  it is on a scope. The ATA rule on status bits while BSY is set is cited from ATA-3 clause 9 ("proceed no further
+  unless and until BSY = 0"); the status-register clause itself was not read.
+- **The LS figures** other than the LS245 are data-book values from memory of the TI tables, not fetched. LS minimum
+  delays are assumed at ⅓ of typical.
+- **The ALU card's data-to-ACC path** (~50 ns in M2-3) is an estimate; nothing in the tree measures it.
+- **On the machine.** The IC7 pin-4 wire (M2-13), RN5/RN6 (M8) and the JP1 position on the v1.3 card, and the bus
+  tester's RN4: all on the bench.
+- **The CF's current**, and the ribbon's capacitance used for M2-8 (~30-50 pF, estimated).
+
+## Sources
+
+- TI SN74LS245 data sheet, SDLS146A (`docs/datasheets/74245.pdf`); TI SN74HC374 and SN74HC244 sheets
+  (`docs/datasheets/74374.pdf`, `74244.pdf`).
+- ATA-3 revision 6, PIO timing table 21: [pjrc.com/docs/specs/disk/ata3r6_10.html](https://www.pjrc.com/docs/specs/disk/ata3r6_10.html);
+  protocol, clause 9: [pjrc.com/docs/specs/disk/ata3r6_9.html](https://www.pjrc.com/docs/specs/disk/ata3r6_9.html).
+- CompactFlash True-IDE PIO timing (t2 8-bit register 290 ns), as reproduced in the Transcend TS1GDOM40V-S data sheet:
+  [alldatasheet.com mirror](https://html.alldatasheet.com/html-pdf/329906/TRANSCEND/TS1GDOM40V-S/2976/6/TS1GDOM40V-S.html).
+- Generic CF-to-IDE adapter listings (the 3.3 V / 5 V and master/slave jumpers), for example
+  [this listing](https://ubbthreads.com/store/item/Compact-Flash-CF-to-Male-40-Pin-IDE-Bootable-Adapter-Master-Slave-Support_335019290959.html).
+- In the tree: `hardware/cards/memory/kicad/v2.0/` (README, `mem_v2_netlist.py`, the board, `gerbers/`, `reports/`, the
+  BOM), `hardware/cards/cf/kicad/v1.0/cf_netlist.py`, `docs/cards/memory.md`, `memory-v2.md`, `cf.md`,
+  `hardware/DESIGN-REVIEW-NOTES-datapath.md`, `docs/isa/MICROCODE-REVIEW-NOTES.md`, `docs/system/MICROCODE.md`,
+  `firmware/microcode/ucode-generator2/test.hex`, `firmware/monitor/monitor.asm`,
+  `hardware/cards/memory/eagle/deprecated/v1.2/Notes.md`, `BACKLOG.md`.

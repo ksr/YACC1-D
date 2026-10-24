@@ -780,6 +780,25 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   (`ROM 2026-09-23`) already drives P8/P9, so no burn is needed. **After building**: the bring-up steps in
   `docs/cards/cf.md` section 7 (empty adapter = `CF ERROR`, the P8 latch on the IDE header's DA pins, then `O` with a
   card prepared by `tools/cfcard.py` from `os/disk.img`).
+  - **2026-10-23: design review of the fabricated v2.0 before the build: `hardware/DESIGN-REVIEW-memory-v2.0.md`**
+    (HIGH 0, MED 4, LOW 8, INFO 8; verdict: build as is, no bodge wire needed at 1 MHz; the board, schematic and gerbers
+    unchanged, the gerbers' copper traced net for net against the board). Open actions:
+    - **Before the adapter goes on (M2-1):** the record of the HX-2118P's pin 1 ("left end of the outer row", pin 20
+      "the 10th of the inner row") is the mirror of standard numbering; the straight ribbon is right only if the
+      adapter's missing pin is in its *outer* row, the 10th from its H1 end. Look at the adapter, then the meter check
+      of the review's bring-up stage 4 (J2 pins 1, 3, 23, 25, 39 must not beep to GND) before power.
+    - **Adapter jumpers (M2-2):** 5 V and master, before its first power-up.
+    - **Microcode, for 6 MHz disk work (M2-3, M2-4, M2-6):** `INP` one more step between `-IO-RD` and `-AC-LD` (also
+      the microcode review's M-3) and a release step without `-IO-RD` at its end (also video V2-14); `OUTA`/`OUTI`
+      hold `-IO-WR` two steps. Until loaded, disk work at ≤ 4 MHz.
+    - **ROM driver, next burn (M2-9):** `cfdrq` waits for BSY = 0 / DRQ = 1 / ERR = 0; `cfread`/`cfwrite` return the
+      `cfwait` time-out. Correct `docs/cards/cf.md` 7: `O` with no card takes ~20 s at 1 MHz (M2-18).
+    - **Optional bodges:** 10k JP3 pin 2 to pin 3 (no cap = PROTECT, M2-10); 4.7k pull-ups on `-IO-WR`/`-IO-RD` at
+      IC31 (M2-5); RN9 47k only if the write hold measures short (M2-8).
+    - **On the v1.3 card (M2-13):** measure the IC7 pin-4 wire (IC7 pin 4 to X1 C12 < 1 Ω on the chip's leg, the
+      wire's far end open, no cut); v2.0 needs no wire either way. Also read off it JP1's position and RN5/RN6's value
+      for the v2.0 build (M2-11, M2-12).
+    - `y1ucemu`'s floating-address model: $7FFF with R15 fitted (M2-14).
 - (done 2026-09-23: **write support** — save/del/ren/mkdir/rmdir in the shell, files written at the free pointer and
   registered as `p8xfs.py` does, verified from the host in `tests/os/run.py` (fsck, ls, get); **the file API** —
   a 22-entry syscall table at $0F14 (SYSARG/SYSRES at $0F06..), y1cc's `sys()`/`funcaddr()` builtins, `os/lib_fs.c`
