@@ -7,7 +7,7 @@ import glob, os, shutil
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # the repository this folder is in
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "stage")
-FILES = ["BACKLOG.md", "hardware/README.md", "hardware/FABRICATED.md", "os/README.md",
+FILES = ["BACKLOG.md", "hardware/README.md", "hardware/FABRICATED.md", "hardware/BUILD-RULES.md", "os/README.md",
          "firmware/README.md", "embedded/README.md", "tools/README.md", "tests/README.md",
          "software/compiler/README.md", "software/assembler/README.md", "software/emulator/README.md",
          "software/ucemu/README.md", "software/y1dbg/README.md", "software/disassembler/README.md"]
