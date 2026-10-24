@@ -1,7 +1,7 @@
 # video-v2.0 — KiCad design master for the video card
 
 **The master since 2026-10-22. Ready to order since 2026-10-23 (re-reviewed, every re-review finding applied); not
-ordered, no gerbers in the tree** (what to upload: "Ordering" below). V2.0 is the v1.3 card (`../v1.3/`: 6845, IDT7134 text RAM,
+ordered; gerbers exported 2026-10-23** (`video-v2.0-gerbers.zip`, what to upload: "Ordering" below). V2.0 is the v1.3 card (`../v1.3/`: 6845, IDT7134 text RAM,
 the DOTS jumper, 12 MHz, both fonts in one character generator) plus a **graphics layer**, **every register on I/O ports
 PA-PE** and **two PS/2 ports** on an ATmega328P with an **INT jumper**. The design note is `BACKLOG.md` "Video card
 V2.0"; the theory `docs/cards/video.md` section 7a; the ATmega's firmware `embedded/video-ps2`; the picture and the CPU
@@ -302,18 +302,23 @@ need a note:
 ## Ordering
 
 Nothing blocks the order. Before it, if a jack is at hand: the MD-60SM's leg span and thickness against the slots
-(R2-1, 14.28 mm across the outer faces, 0.54 mm legs in 1.2 mm slots), and its date code (after 2022-03-03). The tree
-holds no gerbers (the build makes none); made the way the memory card v2.0's were (`../../memory/kicad/v2.0`,
-`memory-v2.0-jlcpcb-order.txt`, JLCPCB order 2000765A-Y52), from this folder:
+(R2-1, 14.28 mm across the outer faces, 0.54 mm legs in 1.2 mm slots), and its date code (after 2022-03-03). The
+gerbers (`gerbers/`, zipped as `video-v2.0-gerbers.zip`; the order parameters in `video-v2.0-jlcpcb-order.txt`) were
+exported 2026-10-23 from the board as committed in `ed7c060`, with the memory card v2.0's export options
+(`../../memory/kicad/v2.0/finish_v2.py fab`, JLCPCB order 2000765A-Y52). The build makes none: after any rebuild of
+the board, export them again from this folder:
 
 ```
 CLI=/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli
-mkdir -p gerbers
-$CLI pcb export gerbers -o gerbers/ -l F.Cu,In1.Cu,In2.Cu,B.Cu,F.Mask,B.Mask,F.Silkscreen,B.Silkscreen,Edge.Cuts \
-    video-v2.0.kicad_pcb
-$CLI pcb export drill -o gerbers/ --excellon-separate-th --generate-map --map-format gerberx2 video-v2.0.kicad_pcb
-(cd gerbers && zip ../video-v2.0-gerbers.zip *)
+rm -rf gerbers && mkdir gerbers
+$CLI pcb export gerbers --no-protel-ext --layers F.Cu,In1.Cu,In2.Cu,B.Cu,F.Mask,B.Mask,F.Silkscreen,B.Silkscreen,Edge.Cuts \
+    -o gerbers/ video-v2.0.kicad_pcb
+$CLI pcb export drill --format excellon --excellon-units mm --generate-map --map-format gerberx2 \
+    --excellon-separate-th -o gerbers/ video-v2.0.kicad_pcb
+rm -f video-v2.0-gerbers.zip && (cd gerbers && zip -X ../video-v2.0-gerbers.zip *)
 ```
+
+The drill file checked against the board: 285 vias of 0.4 mm (the board's 285), six plated slots, two NPTH holes.
 
 **Upload `video-v2.0-gerbers.zip`** with the memory card v2.0's settings: FR-4, **4 layers, 218.42 x 113.97 mm, 1.6 mm,
 outer copper 1 oz, inner 0.5 oz**, green mask, white silk, HASL with lead, vias plugged; no impedance control, no
@@ -338,3 +343,5 @@ card model (`BACKLOG.md`).
 | `video-v2.0-local.kicad_sym` / `.pretty/` | IDT7134, RCA, DE9 and Mini-DIN symbols; F09HP and RCA footprints (from v1.x), MiniDIN6_MD-60SM |
 | `blank-card-v3.2-eagle.kicad_sym` / `.pretty/` | the bus connector FABC96R (from the CF card / blank V3.2) |
 | `reports/` | netlist, `netlist-compare.txt` (proof), `erc.json`, `drc.json`, schematic PDF, top / bottom renders |
+| `gerbers/`, `video-v2.0-gerbers.zip` | the fab files (4 copper layers, masks, silk, outline, PTH / NPTH drill and maps), exported 2026-10-23 |
+| `video-v2.0-jlcpcb-order.txt` | the PCB order parameters |
