@@ -44,18 +44,20 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
 - **Board-layout rules (Ken, 2026-10-24, all of his systems)**, written in full in Ken's global instructions on each Mac.
   In short:
   - Switches, buttons, LEDs and outside-cable connectors go on the front edge (the edge farthest from the bus
-    connector). Outside-cable connectors are video, D-subs, USB, network, and a module's own USB or programming port.
+    connector). Outside-cable connectors are video, D-subs, USB and network.
+  - A plug-in module (Pico, Tang Nano, ...) goes at an edge other than the bus connector's, where possible, with its
+    USB port facing that edge.
   - Every reference designator stays readable with the parts fitted: never under a chip, socket or module, and with
     the IC type beside it.
   - Every switch, button and LED carries its function on the silk, and each position of a switch is labelled.
-  - The rule set also covers modules (Nano/Pico).
 
   **Scope:**
   - The rules do **not** apply to any card already built or ordered: everything in `docs/system/MACHINE.md`, and the
     memory card v2.0 (ordered 2026-10-09). Leave those as they are.
   - They apply to all future YACC1 board work.
-  - When it is not clear whether a board counts as built/ordered or as future work, ask Ken before applying them. One
-    example is the video card V2.0: Gerbers exported 2026-10-23, not ordered.
+  - When it is not clear whether a board counts as built/ordered or as future work, ask Ken before applying them.
+  - The video card V2.0 (not ordered) follows them: settled 2026-10-24, as silk changes only, with J4 (the FTDI
+    header) left where it is.
 
 ## Machine facts that bite
 
