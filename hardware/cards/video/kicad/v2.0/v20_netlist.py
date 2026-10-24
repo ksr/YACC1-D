@@ -37,7 +37,7 @@ Net names: the V1.3 netlist's where a net is kept (its N$ names replaced by name
 
 CARD = "YACC1 video card"
 REV = "V2.0"
-DATE = "2026-10-22"
+DATE = "2026-10-23"
 
 DIP = {n: "Package_DIP:DIP-%d_W7.62mm" % n for n in (14, 16, 20, 28)}
 DIPW = {n: "Package_DIP:DIP-%d_W15.24mm" % n for n in (24, 28, 40, 48)}
@@ -54,7 +54,7 @@ PARTS = {
     # --- the V1.3 video core (references kept)
     "IC1":  ("74ALS08", "74xx:74LS08", DIP[14], "6845 -CS, WSLOT, the text and graphics dot gates"),
     "IC15": ("IDT7134", LOCAL + ":IDT7134", DIPW[48], "text RAM, dual port: CPU $D000-$D7FF / 6845"),
-    "IC17": ("MC6845", "GPU:MC6845", DIPW[40], "CRTC on ports PA (address) / PB (data)"),
+    "IC17": ("HD68B45SP / MC68B45P", "GPU:MC6845", DIPW[40], "CRTC on ports PA (address) / PB (data)"),
     "IC18": ("74S85", "74xx:74LS85", DIP[16], "board select: ADDR15..12 = SV3 ($D000 block)"),
     "IC19": ("74LS00", "74xx:74LS00", DIP[14], "text RAM -CER, CHARCLOCK, CPU read latch -OE"),
     "IC20": ("74LS04", "74xx:74LS04", DIP[14], "oscillator, /ADDR11, VMA"),
@@ -134,7 +134,7 @@ PARTS = {
     "JP2":  ("DOTS 8=ON", "Connector_Generic:Conn_01x02", FP_H % 2, "fitted: 8 dots (64 x 24, graphics), open: 6 (80 x 24)"),
     "X2":   ("DB9 F", LOCAL + ":DE9_SHIELD", LOCAL + ":F09HP", "TTL video: 7 video, 8 HSYNC, 9 VSYNC, 1 GND"),
     "J1":   ("RCA", LOCAL + ":RCA", LOCAL + ":RCA", "composite: video + sync (was U$3)"),
-    "C16":  ("47u", "Device:C_Polarized", "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm", "bulk (V2-16)"),
+    "C16":  ("47u 16V", "Device:C_Polarized", "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm", "bulk (V2-16)"),
 }
 DECOUPLE = {"C3": "IC1", "C17": "IC15", "C18": "IC17", "C19": "IC18", "C20": "IC19", "C21": "IC20", "C22": "IC21",
             "C23": "IC22", "C24": "IC23", "C25": "IC24", "C26": "IC25", "C27": "IC26", "C28": "IC27", "C29": "IC28"}
@@ -385,12 +385,18 @@ SINGLE_OK = set()
 
 # ---- what to buy: the parts whose exact type matters (BOM.md, written by gen_v20.py bom) ----------------------------
 BUY = {
-    "IC17": "HD6845SP (Hitachi) or MC68B45P (2 MHz grades, review V2-11/V2-24); an MC6845P (1 MHz) only for 64 x 24 at a "
-            "1 MHz CPU clock",
+    "IC17": "HD68B45SP (Hitachi) or MC68B45P (Motorola), the 2 MHz (B) bus grade: a 6 MHz CPU's OUT gives E 333 ns high "
+            "(PWEH 220 ns in the B grade, 450 in the 1 MHz grade) and 6-dot mode needs its clock-low time (V2-11, R2-7). "
+            "HD6845SP / MC6845P (the 1 MHz grades) only with a 1 MHz CPU and the V2-11 clock-low check in 6-dot mode. "
+            "Hitachi's letters (HD6845S / HD68A45S / HD68B45S = 1.0 / 1.5 / 2.0 MHz) to verify on the part's data sheet",
     "IC15": "IDT7134 (SA/LA, 55-90 ns, DIP-48), or the V1.0 card's chip",
     "IC25": "AT28C64B-15PU (Microchip), 150 ns, burned with chargen-v20.bin (minipro -p AT28C64B -u -P -w)",
-    "IC39": "AS6C62256-55PCN (Alliance, 55 ns, 600-mil DIP-28): the -55 grade is needed (slot reads in 6-dot mode, "
-            "direct-mode reads at 6 MHz); not a 300-mil 'skinny' 62256",
+    "IC39": "AS6C62256-55PCN (Alliance, 55 ns, 600-mil DIP-28): -55 recommended (current production); a slower 62256 "
+            "works in direct mode up to the machine's 6 MHz and in slot mode in 8-dot mode (R2-8); not a 300-mil 'skinny' "
+            "62256",
+    "IC41": "74HCT374; a 74ACT374 (24 mA) if DATA0's low level during a window read is above 0.5 V (R2-6)",
+    "IC55": "74HCT244; a 74ACT244 (24 mA) if DATA0's low level during a window read is above 0.5 V (R2-6)",
+    "C16": "47 uF electrolytic, 16 V or more, radial 6.3 mm, 2.5 mm pitch (R2-7)",
     "IC49": "ATmega328P-PU with the Arduino Uno bootloader burned (ISP) before fitting",
     "IC18": "74S85 (the V1.x card's; a 74LS85 also works: see the README)",
     "J2": "Same Sky (CUI Devices) MD-60SM, date code after 2022-03-03 (the footprint follows that layout)",
@@ -399,7 +405,8 @@ BUY = {
     "J4": "1x6 pin header; a 5 V FTDI cable (TTL-232R-5V) or a 5 V FTDI Basic",
     "Y1": "16 MHz, HC-49/U", "Q2": "12 MHz, HC-49/U",
 }
-SOCKETS = "every IC in a socket (the 6845, the IDT7134, the 28C64, the 62256 and the ATmega at least)"
+SOCKETS = ("every IC in a socket (the 6845, the IDT7134, the 28C64, the 62256 and the ATmega at least); the placement "
+           "leaves room for stamped sockets with end walls up to 1.9 mm (R2-2, `gen_v20.py place`)")
 
 # ---- the text-only build ----------------------------------------------------------------------------------------------
 # Left off: the graphics parts. Fitted in that build only: R25 (GDOT) and R26 (WRQ). Their outputs (the pins that drive a

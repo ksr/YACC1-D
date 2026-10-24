@@ -1,8 +1,8 @@
 (export
 	(version "E")
 	(design
-		(source "/Users/ken/Developer/YACC1-D/hardware/cards/video/kicad/v2.0/video-v2.0.kicad_sch")
-		(date "2026-10-23T11:13:49")
+		(source "/Users/ksr77/Developer/YACC1-D/hardware/cards/video/kicad/v2.0/video-v2.0.kicad_sch")
+		(date "2026-10-23T20:05:00")
 		(tool "Eeschema 10.0.6")
 		(sheet
 			(number "1")
@@ -12,7 +12,7 @@
 				(title "YACC1 video card V2.0")
 				(company "YACC1")
 				(rev "V2.0")
-				(date "2026-10-22")
+				(date "2026-10-23")
 				(source "video-v2.0.kicad_sch")
 				(comment
 					(number "1")
@@ -110,7 +110,7 @@
 		)
 		(comp
 			(ref "C16")
-			(value "47u")
+			(value "47u 16V")
 			(footprint "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm")
 			(description "bulk (V2-16)")
 			(fields
@@ -2837,7 +2837,7 @@
 		)
 		(comp
 			(ref "IC17")
-			(value "MC6845")
+			(value "HD68B45SP / MC68B45P")
 			(footprint "Package_DIP:DIP-40_W15.24mm")
 			(description "CRTC on ports PA (address) / PB (data)")
 			(fields

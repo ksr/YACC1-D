@@ -19,9 +19,9 @@ PYK=/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/
 CLI=/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli
 FRJAR="${FRJAR:-$HOME/freerouting/freerouting.jar}"
 JAVA="${JAVA:-$(command -v java || echo /opt/homebrew/opt/openjdk/bin/java)}"
-SEEDS=${SEEDS:-"6"}           # the committed board: order 6 at MP=60 (2026-10-23, the R2-1/R2-2/R2-3 rebuild: complete, 328 vias; order 5 also completed (355); orders 3, 4, 17, 0, 1, 2, 7 left 1-4 unrouted or shorts - Freerouting varies run to run here; before: order 3, 308 vias); a wider search: SEEDS="0 1 ... 19", at most four at a time (the M3 Pro's performance cores)
+SEEDS=${SEEDS:-"5"}           # the committed board: order 5 at MP=60 (2026-10-23, the re-review rebuild: complete, 285 vias; order 6 also completed (331), order 4 left 2 unrouted; a repeat of order 5 left 2 - Freerouting varies run to run here, more so on a loaded machine; before: order 6, 328 vias); a wider search: SEEDS="0 1 ... 19", at most four at a time (the M3 Pro's performance cores)
 MP=${MP:-60}
-WATCHDOG=${WATCHDOG:-5400}   # seconds; a completed route is optimised for up to ~40 min after ~20 min of passes
+WATCHDOG=${WATCHDOG:-5400}   # seconds; a completed route is optimised for up to ~40 min after ~20 min of passes (on a machine busy with other jobs the passes take hours: WATCHDOG=10800)
 P=video-v2.0
 R="$HERE/reports"
 export PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1

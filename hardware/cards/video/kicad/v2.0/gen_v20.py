@@ -17,7 +17,9 @@ Run with KiCad's bundled Python (pcbnew), from this folder:
   gen_v20.py project                      -> video-v2.0.kicad_pro + .kicad_dru (signals 0.25 mm / 0.2 mm, vias 0.8/0.4;
                                              class Power = GND, VCC: planes, never routed)
   gen_v20.py board <netlist> <out.pcb>    -> the unrouted board
-  gen_v20.py place <pcb>                  -> the placement check: courtyards apart, everything inside the outline
+  gen_v20.py place <pcb>                  -> the placement check: courtyards apart, everything inside the outline, the
+                                             DIP sockets' outlines clear of each other and of the other parts
+  gen_v20.py silk <pcb> [out]             -> the silkscreen texts placed clear (board() does it on every new board)
   gen_v20.py dsn|shuffle|ses|stats ...    -> as gen_v13.py (Specctra export/import, Freerouting seeds, route stats)
   gen_v20.py verify <netlist> <pcb>       -> the key connections pin by pin (schematic and board), layers, planes
   gen_v20.py bom                          -> BOM.md: the bill of materials from v20_netlist.PARTS and BUY (plain Python)
@@ -149,10 +151,19 @@ def minidin_footprint():
          '(YACC1 video V2.0)")', '\t(attr through_hole)',
          '\t(property "Reference" "REF**" (at -6.5 -8.2 0) (layer "F.SilkS") (effects (font (size 1 1) (thickness 0.15))))',
          '\t(property "Value" "MD-60SM" (at -6.5 8.2 0) (layer "F.Fab") (effects (font (size 1 1) (thickness 0.15))))',
-         '\t(fp_rect (start -13.0 -7.0) (end 0 7.0) (stroke (width 0.12) (type solid)) (fill no) (layer "F.SilkS"))',
          '\t(fp_rect (start -13.25 -7.25) (end 0.25 7.25) (stroke (width 0.05) (type solid)) (fill no) (layer "F.CrtYd"))',
          '\t(fp_rect (start -13.0 -7.0) (end 0 7.0) (stroke (width 0.1) (type solid)) (fill no) (layer "F.Fab"))',
          '\t(fp_line (start 0 -4.0) (end 0 4.0) (stroke (width 0.3) (type solid)) (layer "F.Fab"))']
+    # the body outline on the silk (R2-9): the back and the two sides, broken round the side-leg pads (they stand across
+    # the body's sides) and stopped 0.5 mm short of the mating face, which lies on the board edge
+    lx, ly, ldx, ldy = MINIDIN_SLOTS[1]                     # a side-leg slot; its pad is ldx + 0.7 long
+    g0, g1 = lx - (ldx + 0.7) / 2 - 0.25, lx + (ldx + 0.7) / 2 + 0.25
+    segs = [((-13.0, -7.0), (-13.0, 7.0))]
+    for s in (-7.0, 7.0):
+        segs += [((-13.0, s), (g0, s)), ((g1, s), (-0.5, s))]
+    for (ax, ay), (bx, by) in segs:
+        L.append('\t(fp_line (start %s %s) (end %s %s) (stroke (width 0.12) (type solid)) (layer "F.SilkS"))'
+                 % (gen_cf.f(ax), gen_cf.f(ay), gen_cf.f(bx), gen_cf.f(by)))
     for num, x, y in MINIDIN_PADS:
         L.append('\t(pad "%s" thru_hole circle (at %s %s) (size 1.6 1.6) (drill 1.0) (layers "*.Cu" "*.Mask"))'
                  % (num, gen_cf.f(x), gen_cf.f(y)))
@@ -403,8 +414,8 @@ PLACE = {
     # the direct-mode read buffer on its side under the display latch and shifter (the band under the muxes stays free
     # for routing); the GD pull-ups standing between IC38 and IC42; the text-only pull-downs in the gaps beside IC1;
     # IC54 (turned round: VCC at the bottom) between the clock parts and J4
-    "IC55": (156.0, 78.7, 90),     # R2-2: 0.6 mm up, its socket clears IC19's / IC1's
-    "RN3": (152.8, 51.0, 270),
+    "IC55": (156.0, 78.7, 90),     # R2-2: 0.6 mm up, its socket clears IC19's / IC1's and IC42's (socket_check)
+    "RN3": (152.5, 51.0, 270),     # 0.3 mm left of the middle: clear of IC55's socket end wall (socket_check)
     "R26": (166.82, 88.5, 270), "R25": (180.82, 88.5, 270),
     "IC54": (208.12, 117.24, 180),
     # the PS/2 +5 V fuse
@@ -440,7 +451,8 @@ PLACE["C18"] = (57.0, 98.0, 0)                           # the 6845's VCC is pin
 PLACE["C49"] = (195.6, 60.24, 270)                       # the ATmega's VCC / GND are pins 7 / 8
 PLACE["C22"] = (110.82, 113.0, 270)                      # the 74LS90's VCC is pin 5
 PLACE["C58"] = (201.5, 121.2, 0)                         # IC54 turned round: VCC (pin 14) at the bottom left
-PLACE["C59"] = (152.8, 75.5, 270)                        # IC55 on its side: VCC (pin 20) at the left end
+PLACE["C59"] = (152.5, 75.5, 270)                        # IC55 on its side: VCC (pin 20) at the left end; 0.3 mm
+                                                         # left of RN3's old line, clear of IC55's socket (socket_check)
 
 
 def board(netfile, out):
@@ -528,14 +540,21 @@ def board(netfile, out):
             a = 2 * math.pi * i / 32
             o.Append(FM(cx + 4.0 * math.cos(a)), FM(cy + 4.0 * math.sin(a)))
         b.Add(z)
-    for s, x, y, size in SILK:
+    for s, x, y, size, *ang in SILK:
         t = pcbnew.PCB_TEXT(b)
         t.SetText(s); t.SetLayer(pcbnew.F_SilkS)
         t.SetTextSize(VECTOR2I(FM(size), FM(size))); t.SetTextThickness(FM(max(0.15, size * 0.15)))
-        t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_LEFT)
+        if ang:                                           # a turned legend: (x, y) is its centre
+            t.SetTextAngleDegrees(ang[0])
+            t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_CENTER); t.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_CENTER)
+        else:
+            t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_LEFT)
         t.SetPosition(VECTOR2I(FM(x), FM(y)))
         b.Add(t)
+    unclear = silk_place(b)
     pcbnew.SaveBoard(out, b)
+    print("silk: every reference and legend placed clear of other silk, the pads and the edge%s" % (
+        "" if not unclear else " except %s" % ", ".join(unclear)))
     G13.refill(out)
     print("board %s: %d footprints placed, %d pads on nets, %.2f x %.2f mm, 4 layers (In1 GND, In2 VCC planes)" % (
         os.path.basename(out), len(fps), n, X1R - X0, Y1B - Y0))
@@ -543,14 +562,183 @@ def board(netfile, out):
 
 SILK = [("YACC1 Video Card V2.0", 60.0, 40.6, 1.5), ("onepagecomputer.com", 120.0, 40.6, 1.0),
         ("DOTS", 95.4, 105.6, 0.8), ("INT-EN", 202.0, 13.6, 0.8),
-        ("KBD (PURPLE)", 223.5, 61.6, 1.0), ("MOUSE (GREEN)", 223.5, 96.6, 1.0),
+        # R2-9: the jack legends turned, beside each jack's body (between it and the pull-ups), clear of J1 and J2's ref
+        ("KBD (PURPLE)", 220.6, 70.0, 1.0, 90), ("MOUSE (GREEN)", 220.6, 88.0, 1.0, 90),
         ("TEXT-ONLY: R25 R26", 160.0, 100.3, 0.8)]
 SILK += [(t, 214.0, 99.0 + 2.54 * k, 1.0) for k, t in enumerate(("1 GND (BLK)", "CTS", "VCC nc", "TXD", "RXD", "DTR"))]
 UNCONNECTED = {}                                         # filled from the schematic's netlist by board()
 
 
+def silk_place(b):
+    """R2-9 (2026-10-23): the silkscreen texts placed clear of each other, of every footprint's silk graphics, of the
+    pads, of the board edge and of every other part's body (its Fab outline). The legends (SILK) stay where they are unless they meet something, then move by up to
+    3 mm; each reference field goes to the free spot nearest its footprint's default (above, below, beside the body,
+    turned if need be; inside a DIP's outline as the last resort). Geometry by bounding boxes (a slanted line as a chain
+    of small boxes), so it is a little stricter than KiCad's DRC. X2's library text "F09" goes to the Fab layer, X1's
+    small texts are raised to the board's 0.8 mm / 0.12 mm minimum. -> the texts left where they still meet something"""
+    import math
+    import pcbnew
+    from pcbnew import VECTOR2I
+    MM, FM = pcbnew.ToMM, pcbnew.FromMM
+    CLR_SILK, CLR_PAD, EDGE = 0.15, 0.2, 0.4
+
+    def bx(bb, g=0.0):
+        return (MM(bb.GetLeft()) - g, MM(bb.GetTop()) - g, MM(bb.GetRight()) + g, MM(bb.GetBottom()) + g)
+
+    def hit(a, c):
+        return a[0] < c[2] and c[0] < a[2] and a[1] < c[3] and c[1] < a[3]
+
+    def shape_boxes(s, g):
+        w = MM(s.GetWidth()) / 2 + g
+        kind = s.GetShapeStr()
+        if kind in ("Rect", "Line"):
+            pts = [(MM(v.x), MM(v.y)) for v in s.GetRectCorners()] if kind == "Rect" else \
+                  [(MM(s.GetStart().x), MM(s.GetStart().y)), (MM(s.GetEnd().x), MM(s.GetEnd().y))]
+            edges = list(zip(pts, pts[1:] + pts[:1])) if kind == "Rect" else [tuple(pts)]
+            out = []
+            for (ax, ay), (cx, cy) in edges:
+                n = max(1, int(math.hypot(cx - ax, cy - ay)))
+                for i in range(n):
+                    x0, y0 = ax + (cx - ax) * i / n, ay + (cy - ay) * i / n
+                    x1, y1 = ax + (cx - ax) * (i + 1) / n, ay + (cy - ay) * (i + 1) / n
+                    out.append((min(x0, x1) - w, min(y0, y1) - w, max(x0, x1) + w, max(y0, y1) + w))
+            return out
+        return [bx(s.GetBoundingBox(), g)]
+
+    fixed, placed, unclear = [], [], []
+    fps = list(b.GetFootprints())
+    for fp in fps:
+        ref = fp.GetReference()
+        for p in fp.Pads():
+            fixed.append(bx(p.GetBoundingBox(), CLR_PAD))
+        for it in fp.GraphicalItems():
+            if it.GetLayer() != pcbnew.F_SilkS:
+                continue
+            if it.GetClass() == "PCB_TEXT":
+                if ref == "X2" and it.GetText() == "F09":
+                    it.SetLayer(pcbnew.F_Fab)
+                    continue
+                if it.GetTextHeight() < FM(0.8):
+                    it.SetTextSize(VECTOR2I(FM(0.8), FM(0.8)))
+                if it.GetTextThickness() < FM(0.12):
+                    it.SetTextThickness(FM(0.12))
+                fixed.append(bx(it.GetBoundingBox(), CLR_SILK))
+            else:
+                fixed.extend(shape_boxes(it, CLR_SILK))
+    bodies = {}                                         # each part's body (its Fab outline): no other part's text in it
+    for fp in fps:
+        qs = [bx(it.GetBoundingBox()) for it in fp.GraphicalItems()
+              if it.GetLayer() == pcbnew.F_Fab and it.GetClass() != "PCB_TEXT"]
+        if qs:
+            bodies[fp.GetReference()] = (min(q[0] for q in qs), min(q[1] for q in qs), max(q[2] for q in qs),
+                                         max(q[3] for q in qs))
+
+    def free(t, owner=None):
+        r = bx(t.GetBoundingBox())
+        if r[0] < X0 + EDGE or r[1] < Y0 + EDGE or r[2] > X1R - EDGE or r[3] > Y1B - EDGE:
+            return False
+        if any(hit(r, q) for ref, q in bodies.items() if ref != owner):
+            return False
+        return not any(hit(r, q) for q in fixed) and not any(hit(r, q) for q in placed)
+
+    def place(t, cands, name, owner=None):
+        for x, y, a in cands:
+            t.SetTextAngleDegrees(a)
+            t.SetPosition(VECTOR2I(FM(x), FM(y)))
+            if free(t, owner):
+                break
+        else:
+            x, y, a = cands[0]
+            t.SetTextAngleDegrees(a)
+            t.SetPosition(VECTOR2I(FM(x), FM(y)))
+            unclear.append(name)
+        placed.append(bx(t.GetBoundingBox(), CLR_SILK))
+
+    for d in b.GetDrawings():                           # 1. the legends, near their own place
+        if d.GetClass() == "PCB_TEXT" and d.GetLayer() == pcbnew.F_SilkS:
+            x, y, a = MM(d.GetPosition().x), MM(d.GetPosition().y), d.GetTextAngleDegrees()
+            offs = sorted({(i * 0.25, j * 0.25) for i in range(-12, 13) for j in range(-12, 13)},
+                          key=lambda o: (abs(o[0]) + abs(o[1]), abs(o[1]), o))
+            place(d, [(x + i, y + j, a) for i, j in offs], d.GetText())
+    order = lambda fp: (not fp.GetReference().startswith("IC"), fp.GetReference())
+    for fp in sorted(fps, key=order):                   # 2. the references, ICs first
+        t = fp.Reference()
+        if not t.IsVisible() or t.GetLayer() != pcbnew.F_SilkS:
+            continue
+        if t.GetTextThickness() < FM(0.15):
+            t.SetTextThickness(FM(0.15))
+        t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_CENTER)
+        t.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_CENTER)
+        boxes = [bx(p.GetBoundingBox()) for p in fp.Pads()] + \
+                [bx(it.GetBoundingBox()) for it in fp.GraphicalItems()
+                 if it.GetLayer() == pcbnew.F_SilkS and it.GetClass() != "PCB_TEXT"]
+        x0, y0 = min(q[0] for q in boxes), min(q[1] for q in boxes)
+        x1, y1 = max(q[2] for q in boxes), max(q[3] for q in boxes)
+        cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+        dx, dy, da = MM(t.GetPosition().x), MM(t.GetPosition().y), t.GetTextAngleDegrees() % 180
+        cands = [(dx, dy, da, 0)]
+        for a in (0, 90):
+            t.SetTextAngleDegrees(a)
+            t.SetPosition(VECTOR2I(0, 0))
+            r = bx(t.GetBoundingBox())
+            w, h = r[2] - r[0], r[3] - r[1]
+            for gap in (0.2, 0.6, 1.2, 2.0):
+                for k in range(-16, 17):
+                    s = k * 0.5
+                    cands += [(cx + s, y0 - gap - h / 2, a, 0), (cx + s, y1 + gap + h / 2, a, 0),
+                              (x0 - gap - w / 2, cy + s, a, 0), (x1 + gap + w / 2, cy + s, a, 0)]
+            cands.append((cx, cy, a, 4))                # inside the body: the last resort
+        cands.sort(key=lambda c: math.hypot(c[0] - dx, c[1] - dy) + (1.5 if c[2] != da else 0) + c[3])
+        place(t, [c[:3] for c in cands], fp.GetReference(), fp.GetReference())
+    return unclear
+
+
+SIDE_WALL, END_WALL = 1.3, 1.9          # a DIP socket's walls beyond its pin rows / its end pins (stamped sockets' worst)
+
+
+def socket_check(b):
+    """R2-2 (2026-10-23): every DIP in a socket - the socket's outline (the pin rows + 1.3 mm at the sides, the end pins +
+    1.9 mm at the ends) must clear every other socket's outline and every other part's pads and body (each pad, Fab and
+    silk shape on its own: a resistor's pad and its body outline are not one box); a courtyard is only ~0.5 mm round the pins. -> (problems, the smallest gaps)"""
+    import pcbnew
+    MM = pcbnew.ToMM
+    socks, bodies = {}, {}
+    for fp in b.GetFootprints():
+        ref = fp.GetReference()
+        if "DIP-" in fp.GetFPIDAsString():
+            xs = [MM(p.GetPosition().x) for p in fp.Pads()]
+            ys = [MM(p.GetPosition().y) for p in fp.Pads()]
+            ax, ay = (END_WALL, SIDE_WALL) if max(xs) - min(xs) > max(ys) - min(ys) else (SIDE_WALL, END_WALL)
+            socks[ref] = (min(xs) - ax, min(ys) - ay, max(xs) + ax, max(ys) + ay)
+        elif ref != "X1":                                # each pad, each Fab / silk shape on its own
+            bodies[ref] = [(MM(r.GetLeft()), MM(r.GetTop()), MM(r.GetRight()), MM(r.GetBottom())) for r in
+                           [p.GetBoundingBox() for p in fp.Pads()] + [it.GetBoundingBox() for it in fp.GraphicalItems()
+                            if it.GetLayer() in (pcbnew.F_Fab, pcbnew.F_SilkS) and it.GetClass() != "PCB_TEXT"]]
+    gap = lambda A, C: max(C[0] - A[2], A[0] - C[2], C[1] - A[3], A[1] - C[3])
+    res = []
+    refs = sorted(socks)
+    for i, a in enumerate(refs):
+        res += [(gap(socks[a], socks[c]), a, c, "socket") for c in refs[i + 1:]]
+        res += [(min(gap(socks[a], B) for B in bs), a, c, "body") for c, bs in bodies.items()]
+    res.sort()
+    probs = ["socket %s meets %s %s (%.2f mm)" % (a, "socket" if k == "socket" else "the body of", c, g)
+             for g, a, c, k in res if g < 0]
+    return probs, res[:6], len(socks)
+
+
+def silk_cmd(pcb, out=None):
+    """gen_v20.py silk <pcb> [out]: silk_place() on a finished board (board() runs it on every new one)"""
+    import pcbnew
+    b = pcbnew.LoadBoard(pcb)
+    unclear = silk_place(b)
+    pcbnew.SaveBoard(out or pcb, b)
+    print("silk: %s" % ("every text clear" if not unclear else "still meeting something: " + ", ".join(unclear)))
+    return not unclear
+
+
 def placement_check(pcb):
-    """courtyards must not overlap, every courtyard inside the outline (the connectors' fronts may reach the edge)"""
+    """courtyards must not overlap, every courtyard inside the outline (the connectors' fronts may reach the edge); the
+    DIP sockets clear of each other and of the other parts (socket_check)"""
     import pcbnew
     b = pcbnew.LoadBoard(pcb)
     boxes = {}
@@ -576,9 +764,14 @@ def placement_check(pcb):
             C = boxes[c]
             if A[0] < C[2] - 0.05 and C[0] < A[2] - 0.05 and A[1] < C[3] - 0.05 and C[1] < A[3] - 0.05:
                 bad.append("%s overlaps %s" % (a, c))
+    sp, smallest, nsock = socket_check(b)
+    bad += sp
     for x in bad:
         print("  " + x)
     print("placement: %d footprints, %s" % (len(boxes), "clear" if not bad else "%d problems" % len(bad)))
+    print("sockets: %d DIP sockets (+%.1f mm at the sides, +%.1f at the ends): %s; the closest: %s" % (
+        nsock, SIDE_WALL, END_WALL, "PASS" if not sp else "%d FAIL" % len(sp),
+        ", ".join("%s-%s %.2f" % (a, c, g) for g, a, c, k in smallest)))
     return not bad
 
 
@@ -749,7 +942,7 @@ if __name__ == "__main__":
     elif cmd == "place":
         ok = placement_check(*a)
     elif cmd == "silk":
-        pass
+        ok = silk_cmd(*a)
     elif cmd == "verify":
         ok = verify(*a)
     elif cmd == "bom":
