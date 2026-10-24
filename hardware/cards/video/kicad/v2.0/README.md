@@ -1,7 +1,8 @@
 # video-v2.0 — KiCad design master for the video card
 
 **The master since 2026-10-22. Ready to order since 2026-10-23 (re-reviewed, every re-review finding applied); not
-ordered; gerbers exported 2026-10-23** (`video-v2.0-gerbers.zip`, what to upload: "Ordering" below). V2.0 is the v1.3 card (`../v1.3/`: 6845, IDT7134 text RAM,
+ordered; gerbers exported 2026-10-24** with the board-layout rules' silkscreen (copper and drills as routed
+2026-10-23; `video-v2.0-gerbers.zip`, what to upload: "Ordering" below). V2.0 is the v1.3 card (`../v1.3/`: 6845, IDT7134 text RAM,
 the DOTS jumper, 12 MHz, both fonts in one character generator) plus a **graphics layer**, **every register on I/O ports
 PA-PE** and **two PS/2 ports** on an ATmega328P with an **INT jumper**. The design note is `BACKLOG.md` "Video card
 V2.0"; the theory `docs/cards/video.md` section 7a; the ATmega's firmware `embedded/video-ps2`; the picture and the CPU
@@ -45,10 +46,45 @@ component orders and passes). `tools/eagle_to_kicad_all.py` never writes here (`
   closest are IC55 (on its side between IC42 above and IC19 / IC1 below) with 0.02 mm to IC42's and 0.10 to IC19's /
   IC1's, IC55 / C59 0.17, IC49 / R12 0.17, IC25 / IC39 0.18 mm; with turned-pin sockets (1.27 mm end walls) IC55 has
   ~0.65 mm. RN3 and C59 stand 0.3 mm left of the middle of their gap for it.
-- **Silkscreen** (R2-9): `gen_v20.py` places every reference and legend clear of the other silk, the pads and the edge
-  (`silk_place()`: the free spot nearest the footprint's default, beside or above / below the body, turned if need be).
-  The jack legends "KBD (PURPLE)" and "MOUSE (GREEN)" stand turned beside each jack; the Mini-DIN outline is broken
-  round its side-leg pads and stops short of the board edge.
+- **Silkscreen** (R2-9; the board-layout rules since 2026-10-24, below): `gen_v20.py silk` writes every legend afresh
+  and places it and every reference clear of the other silk, the pads, the edge and every part's body, its own
+  included (`silk_texts()`, `silk_place()`). Each IC's type stands on the reference's line ("IC30 74LS138"); the
+  jumpers and the LED carry their function and the jumpers each position's meaning. The jack legends "KBD (PURPLE)" and
+  "MOUSE (GREEN)" stand turned beside each jack's body; the Mini-DIN outline is broken round its side-leg pads and stops
+  short of the board edge. The card's name stands in the band under the graphics muxes.
+
+## The board-layout rules (2026-10-24)
+
+The rules for every YACC1 board (switches, buttons, LEDs and outside-cable connectors on the front edge, the edge
+farthest from the bus connector; every reference readable with the parts fitted, never under a chip, socket or module,
+an IC's type beside it; every switch, button and LED labelled with its function, each position of a switch with what
+it selects) came after this board was routed and before it was ordered. V2.0 takes them on the **silkscreen only**:
+no part moves, the copper and the drills are the route of 2026-10-23 (`ed7c060`, order 5, 285 vias).
+
+| Rule | On this board |
+|---|---|
+| front edge | the DB9 X2, the RCA J1, the PS/2 jacks J2 / J3 and the PWR LED stand at the right-hand edge, opposite X1. The FTDI header J4 (the ATmega's programming port) stays where it is, 24 mm in from that edge, with its pin legend: moving it would mean a new route |
+| IC type beside the reference | all 40 ICs, on one line with the reference ("IC30 74LS138"): the value of each, shortened where it is long - IC17 **6845** (HD68B45SP / MC68B45P), IC25 **28C64** (AT28C64B-15), IC49 **ATmega328P** (ATmega328P-P). Above the IC where there is room (29), else below it (7: IC1, IC20, IC21, IC25, IC32, IC45, IC54), else turned in the gap beside it (IC19, IC28, IC49 on the left, IC53 on the right) |
+| no reference under a part | every text is kept off every part's body, its own included: a DIP's body is the outline of the widest stamped socket (`socket_check`: the pin rows + 1.3 mm, the end pins + 1.9 mm), X1's the DIN 41612 housing (its silk, pads and 2.5 mm past its ends), J1's its outline and pads. R10, R25, R26 and R27 had their references inside their own outline: they now stand beside it. X1's reference left the housing's end (now at the top-left corner, x 18.9, y 16.1); J1's, hidden by the RCA library footprint, is shown left of the jack. Checked by the texts' ink against every body and socket outline: before, 37 references stood on one - 26 capacitors' on a neighbouring IC's socket wall, IC1's on IC55's socket, IC19's, IC25's and IC54's on their own socket, J2's on J1, R15's and RN3's on IC25's / IC38's socket, R10's, R25's, R26's and R27's on their own body; now none |
+| functions and positions | **LED1 PWR**. **JP2 DOTS**, "ON=8 OFF=6" (fitted: 8 dots a character, 64 x 24 with graphics; open: 6 dots, 80 x 24). **JP3 INT-EN**, "ON: PS/2 -INT" / "OFF: NO -INT" (fitted: IC27/D's open collector drives the bus -INT; open: the card never touches -INT). **SV3 BLOCK**, "A15" .. "A12" beside the pairs 1-2 .. 7-8 and "ON=0" (each pair sets the address bit the board select IC18 compares, fitted = 0, open = 1 through RN2; $D000 = 5-6 only). **SV4 DOTCLK**, "XTAL" over pin 1 and "XTAL/2" over pin 3 (1-2: DOTCLOCK the crystal; 2-3: half of it). The meanings are those of `v20_netlist.py` and `docs/cards/video.md` (sections 3.1, 3.4, 7a) |
+| text size | every reference and legend 1.0 mm high with 0.15 mm strokes, JLCPCB's standard legend (the card's name 1.5 mm); "DOTS", "INT-EN" and "TEXT-ONLY" were 0.8 mm. X1's library pin numbers "1" and "32" stay 0.8 mm (0.15 mm strokes; at 1.0 mm "32" meets the housing's outline), JLCPCB's high-precision legend size |
+
+`gen_v20.py silk` places the texts by their ink (not KiCad's taller text box), 0.15 mm from other silk (1.0 mm after an
+IC's label), 0.2 mm from pads, 0.4 mm from the edge; an IC's label goes above it, else below, else turned in the gap at
+its right, then its left, along that side and within its length. A second run leaves every text where it is.
+
+**Proofs (2026-10-24)**, the silkscreen placed again on the committed board and nothing else rebuilt (no Freerouting,
+no `build.sh`):
+
+| Check | Result |
+|---|---|
+| the board, item by item (pcbnew: 120 footprints' place, orientation, value and footprint; 1,040 pads with their nets, sizes and drills; 5,069 tracks and vias; the zones and keepouts; the outline) | **identical**; the file's changes are the silkscreen texts and the reference fields' places and sizes |
+| Gerbers (the commands under "Ordering"), against the export of 2026-10-23 | **only `video-v2.0-F_Silkscreen.gbr` differs**; F_Cu, In1_Cu, In2_Cu, B_Cu, F_Mask, B_Mask, B_Silkscreen, Edge_Cuts, the PTH and NPTH drill files, both drill maps and the job file are identical apart from their date lines |
+| `tools/kicad/compare_netlists.py` (schematic vs board) | **MATCH, 216 of 216** net groups |
+| `gen_v20.py verify` | **PASS**, 189 key connections |
+| `gen_v20.py place` | 120 footprints clear; **sockets PASS** (40), the closest IC42 / IC55 0.02 mm as before |
+| DRC (`reports/drc.json`) | 0 unconnected, schematic parity 0, no copper findings; **silk_overlap 0, silk_over_copper 8, silk_edge_clearance 8** (J1's, X1's and X2's library outlines, as before), text_height / text_thickness 0 |
+| `v20_netlist.py`, the schematic | unchanged |
 
 ## The schematic (redrawn 2026-10-24)
 
@@ -107,7 +143,7 @@ label of its name stands on the root sheet (138 label_dangling errors otherwise)
 | DRC (`reports/drc.json`) | 0 unconnected, **schematic parity 0**; silk_edge_clearance 8, silk_over_copper 8, as before |
 | ERC (`reports/erc.json`) | **no errors, no warnings** (before: endpoint_off_grid 6, the PWR_FLAG wires) |
 | the board file | only the footprints' `(path ...)` lines differ: 105 now carry the sheet's UUID before the symbol's, and the 15 multi-unit parts, which had no link, have one (`gen_v20.py link`: the links that "Update PCB from Schematic" would set, written as text, nothing else touched) |
-| Gerbers | re-exported with the commands under "Ordering" into a scratch folder: all 14 files equal `gerbers/` apart from their date / time lines; `gerbers/` and `video-v2.0-gerbers.zip` are as exported 2026-10-23 |
+| Gerbers | re-exported with the commands under "Ordering" into a scratch folder: all 14 files equal `gerbers/` apart from their date / time lines; `gerbers/` and `video-v2.0-gerbers.zip` were as exported 2026-10-23 (exported again 2026-10-24 for the silkscreen: "The board-layout rules") |
 
 To redraw the schematic only (the board stays): `gen_v20.py sch`, export the netlist
 (`kicad-cli sch export netlist --format kicadsexpr -o reports/netlist.net video-v2.0.kicad_sch`), `gen_v20.py checknet
@@ -368,7 +404,9 @@ need a note:
 Nothing blocks the order. Before it, if a jack is at hand: the MD-60SM's leg span and thickness against the slots
 (R2-1, 14.28 mm across the outer faces, 0.54 mm legs in 1.2 mm slots), and its date code (after 2022-03-03). The
 gerbers (`gerbers/`, zipped as `video-v2.0-gerbers.zip`; the order parameters in `video-v2.0-jlcpcb-order.txt`) were
-exported 2026-10-23 from the board as committed in `ed7c060`, with the memory card v2.0's export options
+exported 2026-10-24 from the board as committed in `d42fc33` (the route of `ed7c060` with the board-layout rules'
+silkscreen; against the export of 2026-10-23 only `video-v2.0-F_Silkscreen.gbr` differs), with the memory card v2.0's
+export options
 (`../../memory/kicad/v2.0/finish_v2.py fab`, JLCPCB order 2000765A-Y52). The build makes none: after any rebuild of
 the board, export them again from this folder:
 
@@ -409,5 +447,5 @@ card model (`BACKLOG.md`).
 | `video-v2.0-local.kicad_sym` / `.pretty/` | IDT7134, RCA, DE9 and Mini-DIN symbols; F09HP and RCA footprints (from v1.x), MiniDIN6_MD-60SM |
 | `blank-card-v3.2-eagle.kicad_sym` / `.pretty/` | the bus connector FABC96R (from the CF card / blank V3.2) |
 | `reports/` | netlist, `netlist-compare.txt` (proof), `erc.json`, `drc.json`, schematic PDF (9 pages), top / bottom renders |
-| `gerbers/`, `video-v2.0-gerbers.zip` | the fab files (4 copper layers, masks, silk, outline, PTH / NPTH drill and maps), exported 2026-10-23 |
+| `gerbers/`, `video-v2.0-gerbers.zip` | the fab files (4 copper layers, masks, silk, outline, PTH / NPTH drill and maps), exported 2026-10-24 |
 | `video-v2.0-jlcpcb-order.txt` | the PCB order parameters |

@@ -428,6 +428,10 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     the firmware's reply filter (`a139dc4`); R2-6 / R2-12 / R2-15 / R2-16 are bench steps in the README's order. Board
     rebuilt and verified (`ed7c060`: order 5, 0 unrouted, 285 vias, proof MATCH, DRC clean, silk overlaps 0). **Ready to order** - nothing blocks it; before ordering, if a jack is
     at hand, measure its leg span (14.28 mm). What to upload and buy: the card's README, "Ordering".
+    **2026-10-24: Gerbers re-exported with the board-layout rules' silkscreen** (`d42fc33`, `31db2e2`; silk only, no
+    part moved): every IC's type beside its reference, no reference on a part's body or a stamped socket, LED1 PWR,
+    JP2 / JP3 / SV3 / SV4 with their function and each position's meaning. Only `video-v2.0-F_Silkscreen.gbr` differs
+    from the export of 2026-10-23; still ready to order, not ordered (the card's README, "The board-layout rules").
   - **Open - the ROM's V2.0 driver** and the emulators' V2.0 card model. The driver's requirements (the card's README,
     "The software rules for the window"): the card ID check **(IN PC AND $F0) = $50**, the build and DOTS from **(IN PC
     AND $F9)** = $58 / $59 text-only, $50 / $51 with graphics (bits 1 and 2 are VSYNC and DE, live); GFX-ON left 0 on a
