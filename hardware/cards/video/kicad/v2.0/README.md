@@ -1,7 +1,7 @@
 # video-v2.0 — KiCad design master for the video card
 
 **The master since 2026-10-22. Ready to order since 2026-10-23 (re-reviewed, every re-review finding applied); not
-ordered; gerbers exported 2026-10-24** with the board-layout rules' silkscreen (copper and drills as routed
+ordered; gerbers exported 2026-10-24, again 2026-10-26** (the board's URL changed to cottageworker.com: only `video-v2.0-F_Silkscreen.gbr` differs) with the board-layout rules' silkscreen (copper and drills as routed
 2026-10-23; `video-v2.0-gerbers.zip`, what to upload: "Ordering" below). V2.0 is the v1.3 card (`../v1.3/`: 6845, IDT7134 text RAM,
 the DOTS jumper, 12 MHz, both fonts in one character generator) plus a **graphics layer**, **every register on I/O ports
 PA-PE** and **two PS/2 ports** on an ATmega328P with an **INT jumper**. The design note is `BACKLOG.md` "Video card

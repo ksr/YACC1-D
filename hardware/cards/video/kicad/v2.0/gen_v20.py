@@ -758,7 +758,7 @@ def board(netfile, out):
 SILK_H, SILK_W = 1.0, 0.15       # every text on the silk: JLCPCB's standard characters (>= 1.0 mm high, >= 0.15 mm strokes)
 # the legends: (text, x, y, size) left-justified at (x, y), or (text, x, y, size, angle) centred on (x, y)
 # the card's name in the band under the graphics muxes (the IC labels take the band between rows A and B, 2026-10-24)
-SILK = [("YACC1 Video Card V2.0", 111.6, 70.5, 1.5), ("onepagecomputer.com", 116.5, 73.5, 1.0),
+SILK = [("YACC1 Video Card V2.0", 111.6, 70.5, 1.5), ("cottageworker.com", 116.5, 73.5, 1.0),
         # R2-9: the jack legends turned, beside each jack's body (between it and the pull-ups), clear of J1 and J2's ref
         ("KBD (PURPLE)", 220.6, 70.0, 1.0, 90), ("MOUSE (GREEN)", 220.6, 88.0, 1.0, 90),
         ("TEXT-ONLY: R25 R26", 149.0, 100.3, 1.0)]
