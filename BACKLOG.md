@@ -435,9 +435,9 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     **2026-10-26: independent review r3** (`hardware/DESIGN-REVIEW-video-v2.0-r3.md`: the circuit, the netlist and
     footprints, and the Gerbers, each checked separately; HIGH 0, MED 1, LOW 18): **order as is**, no board change.
     For the parts: IC28 a 74F163A / 74ALS163B (R3-1, CHARCLOCK's set-up to the 166s); RN2 / RN3 bussed (R3-15);
-    capacitor ratings (R3-17); check a new DE-9's pitch (R3-16). Open: whether `BOM.md` takes these (it is part of
-    the ready-to-order card, so it is changed only on a yes); the first board's bench checks (r3, "The parts and the
-    first board").
+    capacitor ratings (R3-17); check a new DE-9's pitch (R3-16). These are in `BOM.md` since 2026-10-26 (the BUY
+    notes of `v20_netlist.py` only: parts, values, footprints and nets unchanged, so the board and the Gerbers are
+    too). Open: the first board's bench checks (r3, "The parts and the first board").
   - **Open - the ROM's V2.0 driver** and the emulators' V2.0 card model. The driver's requirements (the card's README,
     "The software rules for the window"): the card ID check **(IN PC AND $F0) = $50**, the build and DOTS from **(IN PC
     AND $F9)** = $58 / $59 text-only, $50 / $51 with graphics (bits 1 and 2 are VSYNC and DE, live); GFX-ON left 0 on a

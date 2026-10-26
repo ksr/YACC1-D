@@ -403,8 +403,25 @@ BUY = {
     "J3": "Same Sky (CUI Devices) MD-60SM, date code after 2022-03-03",
     "F1": "Bourns MF-RHT050 (0.5 A hold, radial)",
     "J4": "1x6 pin header; a 5 V FTDI cable (TTL-232R-5V) or a 5 V FTDI Basic",
-    "Y1": "16 MHz, HC-49/U", "Q2": "12 MHz, HC-49/U",
+    "Y1": "16 MHz, HC-49/U, parallel resonant, 18-20 pF load (for C55 / C56 22 pF, as on an Arduino Uno)",
+    "Q2": "12 MHz, HC-49/U",
+    # 2026-10-26, review r3 (hardware/DESIGN-REVIEW-video-v2.0-r3.md): BOM notes only, the circuit unchanged
+    "IC28": "74F163A or 74ALS163B (same pinout; R3-1: with a 74LS163, CHARCLOCK's set-up to the 74LS166s' SH/-LD is "
+            "~3 ns at worst-case delays, ~24 ns typical); keep a spare 74F163",
+    "IC19": "74LS00; a 74ALS00 adds a little more CHARCLOCK margin (R3-1)",
+    "RN2": "10k x4 BUSSED, pin 1 common, 5-pin SIP (e.g. Bourns 4605X-101-103LF); not an isolated network, which "
+           "would leave SEL0-3 without pull-ups (R3-15)",
+    "RN3": "10k x8 BUSSED, pin 1 common, 9-pin SIP (e.g. Bourns 4609X-101-103LF); not an isolated network, which "
+           "would leave GD0-7 without pull-ups (R3-15)",
+    "X2": "DE-9 female, right-angle PCB mount: the V1.0 card's part, or check a new one's pin pitch first - the F09HP "
+          "footprint is 2.74 mm pitch, 2.54 mm between rows (most DE-9s 2.77 / 2.84 mm; R3-16)",
+    "J1": "RCA jack, right-angle PCB mount: the V1.0 card's part (the footprint is V1.0's)",
 }
+for _r, _p in PARTS.items():                                           # capacitor ratings (R3-17)
+    if _p[0] == "100n":
+        BUY[_r] = "ceramic X7R, 50 V, 2.5 mm lead spacing"
+    elif _p[0] == "22p":
+        BUY[_r] = "ceramic C0G (NP0), 50 V, 2.5 mm lead spacing"
 SOCKETS = ("every IC in a socket (the 6845, the IDT7134, the 28C64, the 62256 and the ATmega at least); the placement "
            "leaves room for stamped sockets with end walls up to 1.9 mm (R2-2, `gen_v20.py place`)")
 
