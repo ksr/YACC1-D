@@ -432,6 +432,12 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     part moved): every IC's type beside its reference, no reference on a part's body or a stamped socket, LED1 PWR,
     JP2 / JP3 / SV3 / SV4 with their function and each position's meaning. Only `video-v2.0-F_Silkscreen.gbr` differs
     from the export of 2026-10-23; still ready to order, not ordered (the card's README, "The board-layout rules").
+    **2026-10-26: independent review r3** (`hardware/DESIGN-REVIEW-video-v2.0-r3.md`: the circuit, the netlist and
+    footprints, and the Gerbers, each checked separately; HIGH 0, MED 1, LOW 18): **order as is**, no board change.
+    For the parts: IC28 a 74F163A / 74ALS163B (R3-1, CHARCLOCK's set-up to the 166s); RN2 / RN3 bussed (R3-15);
+    capacitor ratings (R3-17); check a new DE-9's pitch (R3-16). Open: whether `BOM.md` takes these (it is part of
+    the ready-to-order card, so it is changed only on a yes); the first board's bench checks (r3, "The parts and the
+    first board").
   - **Open - the ROM's V2.0 driver** and the emulators' V2.0 card model. The driver's requirements (the card's README,
     "The software rules for the window"): the card ID check **(IN PC AND $F0) = $50**, the build and DOTS from **(IN PC
     AND $F9)** = $58 / $59 text-only, $50 / $51 with graphics (bits 1 and 2 are VSYNC and DE, live); GFX-ON left 0 on a

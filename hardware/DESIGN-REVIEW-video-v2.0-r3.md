@@ -1,0 +1,262 @@
+# Video card V2.0 — independent review r3 (2026-10-26)
+
+The third review of `hardware/cards/video/kicad/v2.0`, made before ordering the boards. It was made as three
+separate, independent reviews:
+
+- the circuit;
+- the netlist and footprints;
+- the fabrication files.
+
+None of them used the two earlier reviews (`DESIGN-REVIEW-video-v2.0.md`, 2026-10-22; `DESIGN-REVIEW-video-v2.0-r2.md`,
+2026-10-23), the README's findings tables or the generator's own checks (`gen_v20.py checknet` / `verify`,
+`tools/kicad/compare_netlists.py`). Each wrote its own comparisons. The results were compared with the earlier reviews
+afterwards (the last section).
+
+The design reviewed: the board as committed at `1ec9bb9`, with the copper and drills of the 2026-10-23 route
+(`ed7c060`, order 5, 285 vias), the silkscreen of 2026-10-24 (`d42fc33`) and `video-v2.0-gerbers.zip` of `31db2e2`.
+
+## Verdict
+
+**Order as is.** HIGH 0, MED 1, LOW 18, INFO 18. No finding needs a board change.
+
+- **The one MED** is a timing margin, fixed by fitting a faster counter in a socket.
+- **The LOW items** are bench checks for the first board and notes for buying the parts.
+
+## Summary of findings
+
+| Id | Rating | Finding | Fix |
+|---|---|---|---|
+| R3-1 | **MED** | CHARCLOCK's set-up to the 74LS166s' SH/-LD (pin 15) is ~3 ns at worst-case delays with the 12 MHz dot clock | fit IC28 as a **74F163A / 74ALS163B** (and/or IC19 as a 74ALS00); socketed, no board change |
+| R3-2 | LOW | 6845 R/-W (= -IO-WR) changes on the same edge as E: tCS 40-60 ns set-up and tCH 10 ns hold not met | bench check with the part bought; worked on V1.0 with a Motorola MC6845; an MC68B45 if writes fail |
+| R3-3 | LOW | HSYNC / VSYNC: the 6845's NMOS outputs (1.6 mA) drive a standard-TTL 7416 input (1.6 mA) plus the DB9 cable | measure the sync low level with a monitor connected |
+| R3-4 | LOW | 6845 D0-D7 (1.6 mA) drive the backplane unbuffered; works on V1.0. At 6 MHz the B grade is needed | the HD68B45 / MC68B45 of the BOM |
+| R3-5 | LOW | IC41 / IC55 (74HCT) drive the backplane DATA lines with 4-6 mA outputs | measure on the bench; keep 74ACT374 / 74ACT244 spares |
+| R3-6 | LOW | 24 HCT inputs (IC33, IC40, IC51) sit on DATA, which floats in idle steps: extra supply current only | none |
+| R3-7 | LOW | The 74LS163's RCO may glitch at counts 12 and 14 (fast Q rise against slow Q fall), and CHARCLOCK is a clock | scope CHARCLOCK on the first board; the 74F163 of R3-1 also helps |
+| R3-8 | LOW | 6-dot mode: the 6845's clock low time ~167 ns against 150 ns min | none (in spec, small margin) |
+| R3-9 | LOW | The 12 MHz dot clock's duty cycle against the LS163 / LS166 minimum pulse width (25 ns) | scope DOTCLOCK's high and low times |
+| R3-10 | LOW | PS/2 data latch: below ~100 kHz CPU clock, or single-stepping, a byte can be lost and one doubled | a longer wait in the firmware if it matters |
+| R3-11 | LOW | No ESD or series protection on the PS/2 lines; no capacitor at the jacks' +5 V | optional: 100 nF at F1's load side by hand |
+| R3-12 | LOW | No local 100 nF at the ATmega's VCC pin 7 (C54 sits at AVCC, pin 20) | optional: 100 nF across pins 7-8 on the solder side |
+| R3-13 | LOW | The bus -RESET does not reach the ATmega's latches; BUSY survives a reset (the firmware handles it) | none |
+| R3-14 | LOW | Supply current ~0.8-1.0 A typical, ~1.5 A worst case, plus the PS/2 devices. The backplane supply's rating is not recorded | measure the card's current; record the supply's rating |
+| R3-15 | LOW | BOM: RN2 / RN3 must be **bussed** networks with pin 1 common (e.g. Bourns 4605X-101-103LF, 4609X-101-103LF); an isolated SIP leaves SEL0-3 and GD0-7 without pull-ups. No part numbers for J1 (RCA) / X2 (DE-9) | buy bussed networks; J1 / X2 as on V1.0 |
+| R3-16 | LOW | X2's footprint is the Eagle F09HP: 2.74 mm pitch and 2.54 mm row spacing against 2.77 / 2.84 mm on most DE-9s. Each row lands ~0.15 mm off its holes (1.016 mm), tight but it fits; V1.0 was built with it | check a new DE-9's pitch before buying, or reuse V1.0's part |
+| R3-17 | LOW | BOM: capacitor voltages and dielectrics not stated (except C16) | 50 V; X7R for 100 nF, C0G for 22 pF; the crystals' load capacitance to match |
+| R3-18 | LOW | 27 plugged vias are under JLCPCB's suggested 0.35 mm from a pad's mask opening (closest 0.155 mm). The memory card v2.0 had 13 (closest 0.142 mm) and was made without remark | none |
+| R3-19 | LOW | X1's "1" and "32" are 0.8 mm high (standard silk minimum 1.0 mm); X1's "b" touches pad B1's opening by 0.009 mm² | cosmetic; high-precision silk optional |
+
+INFO, in short:
+
+- **Driver notes:**
+  - Hardware scrolling with R12/R13 is limited by MA11; the CPU sees only the lower 2 KB of the IDT7134, by design.
+  - The Hitachi HD6845S differs in R3's upper bits and R8.
+  - The driver must never issue `IN PA` or `IN PF`.
+- **Connectors:**
+  - The DB9 is MDA-style, and pin 2 is not grounded (as on V1.0).
+  - The RCA and DB9 share one output node.
+  - J4 pin 6 is labelled DTR, but on a TTL-232R cable it is RTS#; auto-reset works with either.
+- **On the board:**
+  - LPSTB is now grounded; it floated on V1.0.
+  - IC25 pin 26 is open, so the socket takes a 28C64 only.
+  - The 74S85 IC18 loads ADDR12-15 more than other parts.
+  - The IDT7134 has no BUSY arbitration, which is not needed here.
+  - The ATmega's FULL/BUSY pins share nets with IC53's outputs: fine with the firmware's input setting and no ISP header.
+  - JP3's ON/OFF legends sit beside its two pins.
+- **Fab-file notes:**
+  - X1's two non-plated mounting holes carry floating copper rings, as on the memory card.
+  - Some silk lies off the board or on pads; JLCPCB drops it.
+  - 739 outline strokes are 0.12 mm.
+  - The gbrjob's own size/finish fields are taken from the order form instead.
+  - IC46 pin 14 has two thermal spokes on In2.
+  - **The Mini-DIN jacks' six plated slots are the first slots on a YACC1 board:** check them in JLCPCB's viewer.
+
+## R3-1 MED: CHARCLOCK set-up to the dot shifters
+
+- **The circuit:**
+  - IC28 (74LS163) counts dots and loads 8 or 10 on its carry. CHARCLOCK = NOT RCO (IC19/C, 74LS00).
+  - CHARCLOCK drives IC24's and IC43's SH/-LD (74LS166, pin 15), IC28's -LOAD, and the clocks of IC22, IC23, IC42 and
+    IC44.
+  - The 166s load when SH/-LD is low at a DOTCLOCK rising edge. CHARCLOCK falls during count 15, and the load edge
+    follows one dot later: 83.3 ns at 12 MHz.
+- **The worst-case budget:** CLK->RCO 35 ns max (TI SN74LS163A) + NAND 15 ns max = CHARCLOCK low at most 50 ns after
+  the edge. The 74LS166A needs 30 ns of mode-control set-up (TI SN74LS166A). That leaves 83.3 − 50 − 30 = **3.3 ns**.
+  - The TI maxima are for 15 pF at 25 °C. CHARCLOCK carries eight inputs and a long trace, and LS delays grow towards
+    70 °C, so at the worst corner the margin can go negative.
+  - With typical delays (20 + 9 ns) the margin is ~24 ns, so most boards work as built.
+- **The failure:** glyphs or graphics bytes garbled or shifted by a dot.
+- **The fix:**
+  - Fit IC28 as a 74F163A or 74ALS163B (same pinout, CLK->TC ~10 ns max): 30+ ns of margin. IC19 as a 74ALS00 adds a
+    little more.
+  - Both are socketed swaps; keep a 74F163 with the parts.
+- **Bench check:** on the first board, scope IC19 pin 8 (CHARCLOCK) against DOTCLOCK at IC24 pin 7. CHARCLOCK must be
+  low at least 30 ns before the rising edge that ends count 15.
+
+The first review's timing table (`DESIGN-REVIEW-video-v2.0.md`, count 15) has the same window: CHARCLOCK low 613-633
+ns, the load at 667. It does not compare that window with the 166's 30 ns requirement.
+
+## Verified correct
+
+### The circuit
+- **Pinouts:** every IC's pinout against its data sheet, including the 6845, the IDT7134 (pin for pin as on the built
+  V1.0), the 62256, the 28C64 and the ATmega328P. Every IC input is tied.
+- **Port decode:** PA-PE overlap neither the I/O card's P0-P7 nor the CompactFlash P8/P9, and the memory map is clean.
+- **Bus drive:**
+  - the card drives DATA only when selected, including at reset and with -BUS-EN high;
+  - reset and -INT have the right polarity;
+  - the bus can only pull the ATmega's reset low.
+- **The PS/2 firmware:** `embedded/video-ps2`'s pin table matches the netlist pin for pin. FTDI TX/RX/DTR are right, and
+  the latch handshake is consistent.
+- **The character ROM image:** its layout matches the wiring for both fonts.
+- **The text and graphics pipeline:**
+  - pipeline alignment is right, and the hold margins at the display and read latches are positive by construction;
+  - in slot mode, -WE, -OE and the write buffer's enable never conflict, and the AS6C62256's tWP / tDW / tAS / tWR are
+    met;
+  - direct mode was traced through.
+- **I/O timing:** meets the 6845's E width, set-up and read-delay requirements at 1 MHz, and at 6 MHz with the B grade.
+- **Logic levels:** mixed LS / HCT / NMOS levels and fan-out are within ratings.
+
+### The netlist and footprints
+- **Three-way netlist:**
+  - `v20_netlist.py`, the schematic (its own `kicad-cli` export) and the board's pad nets (pcbnew) agree as sets of
+    pins: 120 parts, 216 nets, 943 pin connections;
+  - no single-pin nets, no shorts;
+  - the look-alike names (-MEM-RD / MEMRD, -MEM-WR / MEMWR, -VMA / VMA) are deliberate, each through an inverter;
+  - `BOM.md` matches the netlist for all 120 references.
+- **Pinouts:** 738 IC pins checked against data-sheet pinouts. That includes the unusual power pins: the '90's 5/10,
+  the 6845, the IDT7134's 48/24, the 28C64, the 62256, and the ATmega's 7/20 and 8/22.
+  - no input floats, no output is tied to a rail, nothing sits on an NC pin;
+  - the '166's CLR (9) and SH/-LD (15) are right, and so are the '85's cascade inputs;
+  - every gate unit uses a valid pin set.
+- **X1:** all 96 pad positions are identical to the video V1.0's, the video v1.3's and the memory v1.3's.
+  - the board edge and the two 2.794 mm mounting holes (88.9 mm apart) match;
+  - the 47 connected signals and the power pins (VCC A2/B2/C2/A31/B31/C31, GND A1/B1/C1/A32/B32/C32) match `BUS.md`
+    and those cards;
+  - the backplane's eight slots are wired straight through.
+- **Footprints:**
+  - the MD-60SM jacks match Same Sky's MD-SM drawing (rev 1.09): pins, earth slot and side-leg slots, with pin 1 data,
+    3 GND, 4 +5 V through F1, 5 clock;
+  - F1 matches Bourns' MF-RHT drawing;
+  - the LED (pad 1 = cathode = GND), C16 and the networks' pin 1 have the right polarity;
+  - the DE-9 and RCA footprints and their distance to the edge are identical to V1.0's.
+- **Silk legends:** match the circuit: SV4 "XTAL" at pin 1 and "XTAL/2" at pin 3; JP2 "ON=8 OFF=6"; SV3's A15-A12
+  rows ($D000 = pins 5-6); all 40 IC type labels.
+- **Outline:** 218.42 x 113.97 mm, the same as the sequencer-logic V2.1 board in the machine.
+
+### The fabrication files
+These were checked from the Gerbers and drill files alone, with an independent RS-274X / Excellon parser.
+- **The zip:**
+  - it unzips cleanly and equals `gerbers/` (14 files);
+  - X2 attributes and a gbrjob are present;
+  - every Gerber is FSLAX46Y46 in mm; the Excellon files are METRIC, decimal, absolute.
+- **Copper connectivity rebuilt from the fab files:**
+  - 216 of 216 nets are each one connected group, with 0 shorts;
+  - all 1,040 pads land on a hole (1,038 plated, 2 non-plated);
+  - the 285 vias are exactly the board's;
+  - 91 pads are deliberately unconnected: 38 no-connects, 49 unused X1 pins, and four pads with no internal connection.
+- **The planes:**
+  - In1 GND and In2 VCC are each one piece, touched by their own 160 and 118 pads and by no other net;
+  - every other hole has its antipad;
+  - the narrowest plane neck is ≥ 0.30 mm.
+- **Against JLCPCB's published capabilities** (fetched 2026-10-26):
+
+  | Check | Measured | JLCPCB minimum |
+  |---|---|---|
+  | Copper spacing, outer / inner | 0.2016 / 0.209 mm | 0.09 mm |
+  | Hole to other-net copper | ≥ 0.401 mm | 0.2-0.3 mm |
+  | Hole to hole | ≥ 0.668 mm | 0.45 mm |
+  | Copper to edge | ≥ 0.50 mm | 0.2 mm |
+  | Annular ring | 0.20 mm on vias, ≥ 0.254 mm on component pads | |
+
+  Every track is 0.25 mm. The drills line up with their pads to within 0.0007 mm.
+- **Solder mask:**
+  - every pad has an opening (1,040 a side), and no via has one, so the vias can be plugged;
+  - no other-net copper shows in an opening;
+  - no two openings are closer than 0.30 mm.
+- **Outline and fit:**
+  - Edge_Cuts is one closed rectangle, 218.420 x 113.970 mm, with no copper across it;
+  - the left, top and bottom edges and all 98 X1 holes match the memory card v2.0's, so X1 lines up with the backplane.
+- **The order file** (`video-v2.0-jlcpcb-order.txt`) agrees with the files: layers, size, thickness, stack-up, hole and
+  via counts, design minimums.
+
+## Ordering
+
+The JLCPCB order page:
+
+| Option | Setting |
+|---|---|
+| Base material | FR-4 |
+| Layers | 4 |
+| Size | 218.42 x 113.97 mm |
+| Thickness | 1.6 mm |
+| Impedance control / stack-up | none, JLCPCB's default 4-layer stack-up |
+| Copper weight | 1 oz outer, 0.5 oz inner |
+| Solder mask / silkscreen | green / white |
+| Surface finish | HASL with lead |
+| Via covering | plugged |
+| Gold fingers, castellated holes, edge plating | none |
+
+High-precision silk is not needed. It only makes X1's two 0.8 mm pin numbers print crisply (R3-19).
+
+In JLCPCB's viewer, check:
+- the six Mini-DIN slots;
+- the board size;
+- the inner layers as GND then VCC.
+
+## The parts and the first board
+
+Buy:
+- IC28 as a 74F163A or 74ALS163B (R3-1);
+- RN2 / RN3 as bussed networks (R3-15);
+- capacitors to R3-17;
+- a 74F163, a 74ACT374 and a 74ACT244 as spares.
+
+Check the DE-9's pitch (R3-16).
+
+On the first board, add these to the bench order of `docs/cards/video.md`:
+- CHARCLOCK against DOTCLOCK (R3-1, R3-7);
+- E against R/-W at the first `OUT PB`, with the 6845 actually fitted (R3-2);
+- the sync low level with a monitor connected (R3-3);
+- DOTCLOCK's high and low times (R3-9);
+- the card's supply current (R3-14).
+
+## Against the earlier reviews
+
+Already in the earlier reviews:
+- **R3-2** = V2-15.
+- **INFO, hardware scrolling** = V2-27.
+- **R3-3 / R3-4 / R3-5:** drive and level points of the first review.
+- The PS/2 latch timing of r2 is the same area as R3-10.
+
+New in r3:
+- **R3-1:** the window was in the first review's table, but it was not compared with the 166's set-up.
+- **R3-7, R3-9, R3-14:** the RCO glitch, the dot clock's duty cycle, and the current estimate.
+- **R3-15, R3-16, R3-17:** the BOM notes and the DE-9 pitch.
+- **R3-18, R3-19:** the plugged-via and silk-size counts.
+
+Nothing r3 found contradicts a finding of the earlier reviews or a fix applied after them. In particular, the display
+latch's hold margins (V2-4's QC OR RCO select) and the 28C64 socket (V2-10) check out.
+
+## Not verified
+
+- **Data sheets not used:**
+  - no Hitachi HD68B45 data sheet was found, so the 6845 figures are Motorola's (MC6845 / 68A45 / 68B45);
+  - the ATmega328P's pinout was checked from the KiCad symbol, the built V1.0 card and the firmware;
+  - most 74LS / 74HCT delays are data-book figures. The 74LS163A, 74LS166A, MC6845 and AS6C62256 figures were read from
+    their sheets.
+- **Parts and mechanics not checked:** the exact DE-9 and RCA parts; part heights against the enclosure; which slots
+  take a 218 mm card.
+- **Not checked at all:** layout effects (ringing, crosstalk); the PS/2 firmware's protocol logic (only its pins and
+  handshake were checked).
+- **Not seen:** how JLCPCB's own tools treat the slots and the floating mounting-hole rings.
+
+## Sources
+
+- TI SN74LS163A data sheet: https://www.ti.com/lit/ds/symlink/sn74ls163a.pdf
+- TI SN74LS166A data sheet: https://www.ti.com/lit/ds/symlink/sn74ls166a.pdf
+- MC6845 data sheet (Motorola, mirror): https://cdn.hackaday.io/files/1670897148735776/6845.pdf
+- UM6845E (UMC): https://cpcwiki.eu/imgs/4/49/UM6845E-UMC.pdf
+- JLCPCB PCB capabilities: https://jlcpcb.com/capabilities/pcb-capabilities
+- JLCPCB character design specifications: https://jlcpcb.com/blog/character-design-specifications
+- Same Sky (CUI) MD-SM series drawing rev 1.09; Bourns MF-RHT data sheet; IDT7134 data sheet
+- In the tree: `docs/datasheets/AS6C62256.pdf`, `28c64.pdf`, `7485.pdf`, `74245.pdf`, `74374.pdf`
