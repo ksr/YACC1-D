@@ -72,7 +72,7 @@ changes are silkscreen texts (below).
 
 **Why.** On v1.3 the 28C64's -WE (IC13 pin 27) is -MEM-WR re-buffered by IC6, the same net as the RAMs' -WE, with
 nothing to stop a write: any store while the ROM is selected writes the EEPROM - and during FORCE-ROM *every* address
-selects it (design review M2, `hardware/DESIGN-REVIEW-NOTES-datapath.md`; `docs/cards/memory.md` section 4). The chip
+selects it (design review M2, `hardware/cards/memory/reviews/v1.3-datapath-2026-09-21.md`; `docs/cards/memory.md` section 4). The chip
 then spends ~10 ms in its internal write cycle, returning poll bits instead of code, and the byte stays changed. The
 monitor avoids it only by jumping above $8000 first; the reset-time window (finding 1.3: a stale control word with
 -MEM-WR asserted while reset is held) it cannot avoid.

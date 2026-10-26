@@ -5,9 +5,9 @@
 /*
    video-ps2 (2026-10-22) - the PS/2 keyboard and mouse controller of the YACC1 video card V2.0
    (hardware/cards/video/kicad/v2.0, BACKLOG "Video card V2.0", embedded/video-ps2/README.md).
-   Revised 2026-10-22 after the design review (hardware/DESIGN-REVIEW-video-v2.0.md): BUSY and SRC swapped (V2-1,
+   Revised 2026-10-22 after the design review (hardware/cards/video/reviews/v2.0.md): BUSY and SRC swapped (V2-1,
    Optiboot's LED pin PB5 is now the SRC output), host-to-device bit count (V2-3), LDDATA idle high (V2-7), MD released
-   with pull-ups (V2-9), the V2-18 robustness items. 2026-10-23 after the re-review (hardware/DESIGN-REVIEW-video-v2.0-r2.md
+   with pull-ups (V2-9), the V2-18 robustness items. 2026-10-23 after the re-review (hardware/cards/video/reviews/v2.0-r2.md
    R2-10): ps2_wait() takes only reply bytes; a key typed while a command waits for its answer goes to the key queue.
 
    An ATmega328P at 16 MHz between two PS/2 jacks and the YACC1 bus. The CPU never talks to it directly: it reads and

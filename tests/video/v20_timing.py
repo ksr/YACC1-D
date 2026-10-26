@@ -19,10 +19,10 @@ the data around -MEM-WR and -MEM-RD, so this test reads firmware/microcode/ucode
 
 then works out the direct-mode budget with the parts' data-sheet delays at 1 MHz and 6 MHz (the clock periods the
 machine has run at) and fails if any margin is negative. The delay figures are maxima at 5 V / 25 C: 74LS from the TI
-data book (as the review hardware/DESIGN-REVIEW-video-v2.0.md uses them), 74HCT from the NXP sheets (To verify against
+data book (as the review hardware/cards/video/reviews/v2.0.md uses them), 74HCT from the NXP sheets (To verify against
 the parts bought), the AS6C62256-55 from docs/datasheets/AS6C62256.pdf.
 
-Since the re-review (hardware/DESIGN-REVIEW-video-v2.0-r2.md R2-5, 2026-10-23) every read window is classed by how its
+Since the re-review (hardware/cards/video/reviews/v2.0-r2.md R2-5, 2026-10-23) every read window is classed by how its
 address reached the bus at the window's first edge, with the register cards as fitted (SN74HC244N address buffers,
 SN74HC193N counters, register.md):
   * selected: the register put on the address bus in that step (pipeline + 74LS139 + the HC244's enable);

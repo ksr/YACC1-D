@@ -10,7 +10,7 @@ Sources: `hardware/cards/address-tmp/eagle/deprecated/v1.0/Address and TMP V1.0.
 `hardware/cards/address-tmp/README.md`, `hardware/FABRICATED.md`, `hardware/PROVENANCE.md`,
 `hardware/NEWER-DESIGNS-vs-ACTIVE.txt`, `docs/system/connector/README.md`, `docs/history/general-notes/NOTES-Update from old project.md`,
 `docs/history/NOTES Jan 2-17 orig.md`, `tests/bus-tester-scripts/deprecated/address-register-2020-07/address registers.txt`,
-`tests/bus-tester-scripts/README.md`, `hardware/cards/memory/` (v1.3 TMP registers, via `hardware/DESIGN-REVIEW-NOTES-datapath.md` M3).
+`tests/bus-tester-scripts/README.md`, `hardware/cards/memory/` (v1.3 TMP registers, via `hardware/cards/memory/reviews/v1.3-datapath-2026-09-21.md` M3).
 
 ---
 
@@ -55,7 +55,7 @@ What happened:
    or SP removes the reload-per-step cost; `-VMA` (added on C12 in Bus V3.1) qualifies the address drive.
 2. **The TMP registers went to the memory card** (v1.2, 2020-11; v1.3 in the machine): TMP0 = IC26/IC27, TMP1 = IC28/IC29,
    74LS374 edge-triggered registers on the same `-TMP-REG-RD0/1` / `-TMP-REG-LD0/1` strobes — but latching on the **leading**
-   edge of the load strobe instead of the trailing edge of this card's transparent latches (`DESIGN-REVIEW-NOTES-datapath.md` M3:
+   edge of the load strobe instead of the trailing edge of this card's transparent latches (`hardware/cards/memory/reviews/v1.3-datapath-2026-09-21.md` M3:
    "TMP registers latch on the leading edge of -TMP-REG-LDn; correct only under a microcode ordering rule"). The microcode
    generator's "source one line before the strobe" convention dates from this change.
 3. The card was moved to "Old & obsolete – do not use" in the Production folder in January 2021 (`hardware/FABRICATED.md`).

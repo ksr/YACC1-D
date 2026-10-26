@@ -10,7 +10,7 @@ Written 2026-09-23 from the YACC1-D tree.
 
 Sources: `hardware/cards/mem-switch/eagle/v1.1/Mem Switch V1.1.sch` and `.brd` (parts and nets parsed from the Eagle
 XML), `hardware/cards/mem-switch/eagle/v1.1/Notes.md`, `hardware/cards/mem-switch/README.md`,
-`hardware/DESIGN-REVIEW-NOTES-datapath.md` (B1, B2, M4 and "checked, no issue (bring-up cards)"),
+`hardware/cards/mem-switch/reviews/v1.1-datapath-2026-09-21.md` (B1, B2 and "checked, no issue (bring-up cards)"), `hardware/cards/memory/reviews/v1.3-datapath-2026-09-21.md` (M4),
 `tests/assembler/ledcount/README.md`, `docs/system/MACHINE.md`, `hardware/FABRICATED.md`, `BACKLOG.md`.
 
 ## 1. Purpose and place in the machine

@@ -61,7 +61,8 @@ YACC1-D/
 │   ├── FABRICATED.md         every revision of every board: built, in the machine, or design only
 │   ├── SCHEMATICS.md BOARDS.md   generated indexes of the schematic and board PDFs
 │   ├── KICAD.md              the Eagle -> KiCad conversion and its netlist proof
-│   └── DESIGN-REVIEW*.md     the 2026-09-21 review of the datapath, control and I/O
+│   └── reviews/              the indexes of the multi-card design reviews (2026-09-21: mechanical, datapath,
+│                             control and I/O); the reviews themselves are in each board's own reviews/
 ├── firmware/                 code that runs INSIDE the machine
 │   ├── microcode/            ucode-generator2 (C) -> test.hex, the sequencer EEPROM image
 │   ├── monitor/  basic/      monitor.asm, basic.asm (+ candidates never burned)
@@ -109,6 +110,7 @@ YACC1-D/
 ├── eagle/<rev>/     the Eagle originals, frozen; the active revision at the top, fab/ (what was sent to the board
 │                    house), pdf/ (generated), bom/
 │   └── deprecated/  every older revision, same shape
+├── reviews/         the card's design reviews, one file per review (<rev>-<review>-<date>.md, or <rev>.md)
 └── docs/            card-specific notes
 ```
 

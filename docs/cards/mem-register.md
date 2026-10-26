@@ -10,8 +10,8 @@ part of the running machine.
 Written 2026-09-23 from the YACC1-D tree.
 
 Sources: `hardware/cards/mem-register/eagle/v1.0/Mem Register V1.0.sch` and `.brd` (parts and nets parsed from the
-Eagle XML), `hardware/cards/mem-register/README.md`, `hardware/DESIGN-REVIEW-NOTES-datapath.md` (B1, M4, "checked,
-no issue (bring-up cards)"), `docs/isa/MICROCODE-REVIEW-NOTES.md` (H-1 confirmation, 1.6),
+Eagle XML), `hardware/cards/mem-register/README.md`, `hardware/cards/mem-switch/reviews/v1.1-datapath-2026-09-21.md` (B1, "checked,
+no issue (bring-up cards)"; the two bring-up cards were reviewed together), `hardware/cards/memory/reviews/v1.3-datapath-2026-09-21.md` (M4), `docs/isa/MICROCODE-REVIEW-NOTES.md` (H-1 confirmation, 1.6),
 `firmware/microcode/ucode-generator2/main.c` (write ordering, per the review), `docs/system/MACHINE.md`,
 `hardware/FABRICATED.md`.
 

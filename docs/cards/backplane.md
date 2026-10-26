@@ -14,9 +14,9 @@ signal table), `hardware/bus/bus-template/README.md`, `hardware/bus/blank-card/e
 `hardware/bus/bus-jumper-horizontal/README.md`, `eagle/v3.2/Notes.md`, `hardware/bus/bus-jumper-vertical/README.md`,
 `hardware/bus/README.md`, `hardware/mechanical/README.md`, `docs/system/connector/README.md`,
 `hardware/cards/address-tmp/README.md` via `hardware/FABRICATED.md`, `firmware/microcode/yaccsignaldata2.h`,
-`embedded/libraries/YACC/YACC_Common_header.h`, `hardware/DESIGN-REVIEW.md`,
-`hardware/DESIGN-REVIEW-NOTES-control-io.md` (1.1, 1.8, 4.1, 5, cross-card notes),
-`hardware/DESIGN-REVIEW-NOTES-datapath.md` (M5/S3), `docs/isa/MICROCODE-REVIEW-NOTES.md` (1.1, 1.2),
+`embedded/libraries/YACC/YACC_Common_header.h`, `hardware/bus/backplane/reviews/v2.0-mechanical-2026-09-21.md`,
+`hardware/reviews/control-io-2026-09-21.md` (1.1, 1.8, 4.1, 5, cross-card notes; section 5 is `hardware/bus/backplane/reviews/v2.0-control-io-2026-09-21.md`),
+`hardware/cards/memory/reviews/v1.3-datapath-2026-09-21.md` (M5), `hardware/reviews/datapath-2026-09-21.md` (S3), `docs/isa/MICROCODE-REVIEW-NOTES.md` (1.1, 1.2),
 `docs/system/MACHINE.md`, `hardware/FABRICATED.md`, `BACKLOG.md`, `docs/procedures/System Build Notes.md`.
 
 ## 1. Purpose and place in the machine
@@ -159,7 +159,7 @@ TMP, accumulator, shift register) need their data on the bus *before* the strobe
 
 | ID | Severity | Finding | Status 2026-09-23 |
 |---|---|---|---|
-| 5.1 (`DESIGN-REVIEW-NOTES-control-io.md`), M5/S3 (datapath) | LOW, system-wide | **No pull-ups anywhere on the bus.** Whenever the pipeline's 374s are off (READY low for ~54 s at every boot; the tester holding -BUS-EN high) every control line floats. LS inputs read that as high — inactive for every active-low strobe, which is why the memory and I/O cards sit quietly during the microcode load — but the active-high lines (REG-*-ID, ADDR-REG-ID, IO-ADDR, ALU0..3, BR-COND, OUT, IN) are undefined and CMOS inputs (the register card's CD4077, the video card's 74HC160) see mid-rail | Open; "a pull-up bank on a future revision is the usual answer" |
+| 5.1 (`hardware/bus/backplane/reviews/v2.0-control-io-2026-09-21.md`), M5/S3 (datapath) | LOW, system-wide | **No pull-ups anywhere on the bus.** Whenever the pipeline's 374s are off (READY low for ~54 s at every boot; the tester holding -BUS-EN high) every control line floats. LS inputs read that as high — inactive for every active-low strobe, which is why the memory and I/O cards sit quietly during the microcode load — but the active-high lines (REG-*-ID, ADDR-REG-ID, IO-ADDR, ALU0..3, BR-COND, OUT, IN) are undefined and CMOS inputs (the register card's CD4077, the video card's 74HC160) see mid-rail | Open; "a pull-up bank on a future revision is the usual answer" |
 | 1.1 / 4.1 | HIGH | 17 lines (B9..B16, C3..C6, B18, B20, C27, C28, C30) are driven by the sequencer-logic card regardless of -BUS-EN, and the bus tester's firmware drives all of them push-pull from `setup()`: two totem-pole drivers per line whenever both are fitted. The tester cannot load RAM with the logic card in | Open; the sequencer v2.2 "CPU off" switch + open-collector -BUS-EN (BACKLOG). Today: unplug the logic card to use the tester |
 | 1.3 | MED | during reset the pipeline holds a stale word (it reloads on reset *release*), so the bus is driven with whatever was executing, FORCE-ROM active | Open (sequencer) |
 | 1.8 | LOW | pipeline outputs float with -BUS-EN high; -BRANCH-RD/-INT-JMP could put the branch/INT registers on the data bus against the tester on noise | By convention |

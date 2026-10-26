@@ -13,7 +13,7 @@ the Eagle XML), `hardware/cards/bus-tester/eagle/v3.1/tester.sch` (the 2020 rede
 `embedded/libraries/YACC/YACC_Common_header.h` (the signal table), `tools/busdrv.py`, `tools/alias_min.py`,
 `docs/procedures/BUS Driver Commands - Google Docs.pdf`, `tests/bus-tester-scripts/README.md` and the scripts,
 `tests/memory/memory_full_test.py`, `rom_verify.py`, `memory_status.py`, `tests/video/*.py`,
-`hardware/DESIGN-REVIEW-NOTES-control-io.md` (sections 1.1, 4, 5.1, cross-card), `docs/system/MACHINE.md`,
+`hardware/reviews/control-io-2026-09-21.md` (sections 1.1, 4, 5.1, cross-card; section 4 is `hardware/cards/bus-tester/reviews/v1.1-control-io-2026-09-21.md`), `docs/system/MACHINE.md`,
 `hardware/FABRICATED.md`, `BACKLOG.md`.
 
 ## 1. Purpose and place in the machine
@@ -169,7 +169,7 @@ The tester has no timing of its own; its findings are about *contention*.
 
 | ID | Severity | Finding | Status 2026-09-23 |
 |---|---|---|---|
-| 4.1 / 1.1 (`DESIGN-REVIEW-NOTES-control-io.md`) | HIGH | nothing on the card can make the expanders passive: from `setup()` every table line is a push-pull output, including -RESET (C30), -BUS-EN (C28), -RUN, OUT and the register-card ID/strobe lines. The sequencer-logic card drives 17 of those lines regardless of -BUS-EN (IC4/IC5/IC18 select buffers, -REG-LD-LO/HI, -RESET, OUT, -BUS-EN itself). Two totem-pole drivers per line; an LS output high into an MCP23017 output low (25 mA absolute maximum per pin) can kill the expander pin. This is why "the tester cannot load RAM with the logic card fitted" | Open. Rule today: **unplug the sequencer-logic card before using the tester**, or use the ROM monitor over the UART. The planned fix is the sequencer v2.2 "CPU off" switch covering all 17 lines plus an open-collector -BUS-EN driver (BACKLOG) |
+| 4.1 / 1.1 (`hardware/cards/bus-tester/reviews/v1.1-control-io-2026-09-21.md`, `hardware/cards/sequencer-logic/reviews/v2.1-control-io-2026-09-21.md`) | HIGH | nothing on the card can make the expanders passive: from `setup()` every table line is a push-pull output, including -RESET (C30), -BUS-EN (C28), -RUN, OUT and the register-card ID/strobe lines. The sequencer-logic card drives 17 of those lines regardless of -BUS-EN (IC4/IC5/IC18 select buffers, -REG-LD-LO/HI, -RESET, OUT, -BUS-EN itself). Two totem-pole drivers per line; an LS output high into an MCP23017 output low (25 mA absolute maximum per pin) can kill the expander pin. This is why "the tester cannot load RAM with the logic card fitted" | Open. Rule today: **unplug the sequencer-logic card before using the tester**, or use the ROM monitor over the UART. The planned fix is the sequencer v2.2 "CPU off" switch covering all 17 lines plus an open-collector -BUS-EN driver (BACKLOG) |
 | 4.2 | LOW | RN1-RN4 pull up all 32 address/data lines, value unrecorded | Open (section 3.5) |
 | 2.2 | LOW | DTR auto-reset dead-ends (N$9 single node); FTDI-VCC would parallel the FTDI 5 V with the rail | Housekeeping |
 | 5.1 | LOW | no pull-ups on the backplane: when the tester tri-states a bus, the lines float | By convention |

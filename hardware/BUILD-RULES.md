@@ -100,7 +100,7 @@ an OSH Park design-rule set.
 | Memory v2.0 | Two 3.2 mm standoff holes with 7 mm keep-outs; silk 0.5 mm from the edge; the PWR0 reference on F.Fab, not the silk | memory v2.0 README |
 | Blank V3.1 and the cards drawn on it (video v1.0, mem-switch, mem-register) | Old C3–C6 signal names | blank-card README |
 | Video v1.0 / v1.1 | Two unjoined 5 V nets (VCC and +5V), fixed with a wire | [video README](cards/video/README.md) |
-| EEPROM adaptor | No power pins, no decoupling, no PWR LED | `DESIGN-REVIEW.md` |
+| EEPROM adaptor | No power pins, no decoupling, no PWR LED | `hardware/cards/sequencer-memory/reviews/eeprom-adaptor-mechanical-2026-09-21.md` |
 | Mem-switch v1.0 | Bypass caps missing (fixed in v1.1) | mem-switch v1.1 Notes |
 | ALU v3.0 | 2-layer with no VCC or GND planes, scrapped | ALU v3.0 Notes |
 | ALU v3.1 | Buried vias, removed in the resubmit | ALU v3.1 resubmit Notes |
@@ -114,7 +114,7 @@ an OSH Park design-rule set.
    `eagle/<rev>/fab/`.
 3. **Power pins:** `BUS.md` says "three outermost pins of each row are GND, next three VCC"; the pinout and the
    netlist have one GND and one VCC at each end of each row (12 pins in all).
-4. **Signal count:** `BUS.md` says 84 signals in one place and 86 signal pins in another; `DESIGN-REVIEW.md` counts 86.
+4. **Signal count:** `BUS.md` says 84 signals in one place and 86 signal pins in another; the mechanical pass (`hardware/reviews/mechanical-2026-09-21.md`) counts 86.
 5. **Card height:** the READMEs say 114 mm; the Eagle outline spans 164 mm (flagged "To verify" in `BUS.md`).
 6. **The record:** `hardware/README.md` says KiCad is current; `KICAD.md` says the Eagle files remain the record of
    what was built.

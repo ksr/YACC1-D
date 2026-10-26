@@ -12,7 +12,7 @@ library's gate/pin → pad connects), `hardware/bus/README.md`, `hardware/bus/ba
 `bus-template/README.md`, the backplane schematic and board (`hardware/bus/backplane/eagle/v2.0/yacc2buss.sch/.brd`),
 `hardware/bus/blank-card/eagle/v3.1/Blank V3.1.brd`, `firmware/microcode/yaccsignaldata2.h`,
 `embedded/libraries/YACC/YACC_Common_header.h` (the bus tester's table), `docs/isa/MICROCODE-REVIEW-NOTES.md` section 1,
-`hardware/DESIGN-REVIEW-NOTES-datapath.md`, `hardware/DESIGN-REVIEW-NOTES-control-io.md`, `software/ucemu/y1ucemu.c`,
+`hardware/reviews/datapath-2026-09-21.md`, `hardware/reviews/control-io-2026-09-21.md` (and the per-card files they list), `software/ucemu/y1ucemu.c`,
 `tools/ucode_wavedrom.py` and `tools/ucode_review.py`, `docs/system/waveforms/REG-LD.json` / `REG-RD.json`, the card
 schematics (`hardware/cards/<card>/eagle/<rev>/*.sch`), `hardware/mechanical/README.md`, `hardware/FABRICATED.md`,
 `docs/system/MACHINE.md`, `BACKLOG.md`.
@@ -386,7 +386,7 @@ H-5 (`ADDR-REG-ID0` during PUSH), H-2 (BRZ with AC = 0), H-1 (PUSHR read-back), 
 | Open collectors | I/O card 7406 for the strobes and `-INT` (pull-ups RN2, value unknown); video card 7416 outputs with no pull-ups (open, HIGH for the E one-shot) | control-io 3.2, 6.1 |
 | Drive contention | seventeen sequencer lines vs the bus tester (1.1/4.1); memory-card low RAM vs the bring-up cards at $0000–$001F and vs FORCE-ROM after reset (M4/B1) | control-io, datapath |
 | Reset | manual RS latch, no POR (S1); pipeline not reloaded during reset — a stale `-MEM-WR`/`-VMA` word can write the EEPROM (1.3) | datapath S1, control-io 1.3 |
-| Decoupling | backplane: one electrolytic per slot (C1–C8, value blank) + C7/C8 bulk added in V2.0; cards carry their own 100 nF (the mechanical review flags only the EEPROM adaptor and the backplane's single IC-count as having none) | `DESIGN-REVIEW.md`, backplane README |
+| Decoupling | backplane: one electrolytic per slot (C1–C8, value blank) + C7/C8 bulk added in V2.0; cards carry their own 100 nF (the mechanical review flags only the EEPROM adaptor and the backplane's single IC-count as having none) | `hardware/reviews/mechanical-2026-09-21.md`, backplane README |
 | Power entry | single wire-pad pair (5V, GND) on the backplane, PWR LED through R1 330 Ω; each slot's twelve power pins | backplane schematic; control-io 5 |
 
 ---

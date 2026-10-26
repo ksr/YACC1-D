@@ -38,7 +38,7 @@ Rules (decided 2026-09-24; rule 7 2026-09-29; rule 8 2026-09-30):
      checks that each of the four is on VCC and GND only on v1.3 and takes them out; nothing else of v1.3 changes.
      The committed option / trial-route / keep-copper boards are records made BEFORE the removal and still carry the
      four (check_netlist.py checks them against the schematic + exactly these four, as on v1.3).
-  7. The ROM write-protect jumper JP3 (2026-09-29; design review M2, hardware/DESIGN-REVIEW-NOTES-datapath.md):
+  7. The ROM write-protect jumper JP3 (2026-09-29; design review M2, hardware/cards/memory/reviews/v1.3-datapath-2026-09-21.md):
      on v1.3 the 28C64's -WE (IC13 pin 27) is -MEM-WR re-buffered (IC6 pin 4, the net that also feeds the RAMs'
      -WE, IC1/IC2 pin 27), so any store while the ROM is selected - every address during FORCE-ROM - writes the
      EEPROM. v2.0 takes IC13 pin 27 off that net onto its own, ROM-WE (a sheet-3 local label), and JP3 (a 3-pin

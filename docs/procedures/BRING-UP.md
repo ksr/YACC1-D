@@ -11,7 +11,7 @@ loaded), `hardware/FABRICATED.md`, `tools/ucode_send.py` (docstring), `embedded/
 and `firmware/rom/shipped/rom.bin` (compared byte for byte for this document), `tests/assembler/{ledcount,romcount,romdiag,brur}/README.md`,
 `docs/procedures/BUS Driver Commands - Google Docs.pdf` (the script language; read with pypdf), `tests/bus-tester-scripts/README.md`,
 `tools/busdrv.py`, `embedded/bus-tester/README.md` and `bus-driver/bus-driver.ino`, `tests/memory/*.py` and their logs,
-`tests/video/README.md`, `tests/sequencer/*.log`, `hardware/DESIGN-REVIEW-NOTES-datapath.md`, `hardware/DESIGN-REVIEW-NOTES-control-io.md`,
+`tests/video/README.md`, `tests/sequencer/*.log`, `hardware/reviews/datapath-2026-09-21.md`, `hardware/reviews/control-io-2026-09-21.md` (and the per-card files they list),
 `docs/isa/MICROCODE-REVIEW-NOTES.md` (section 7), the card READMEs and `Build Notes.md` under `hardware/cards/`, `docs/procedures/System Build Notes.md`,
 `docs/system/connector/README.md`, and the generated `docs/bom/*.md` (for the names of switches, jumpers and LEDs on each card).
 Anything the tree does not settle is marked **To verify:** with what would settle it.
@@ -69,7 +69,7 @@ From the card `Build Notes.md` files (memory, bus tester; the text is the same o
   it once at the supply and note it in `docs/system/MACHINE.md`.
 - The bus tester and the sequencer-memory card can also be powered from their FTDI cable through the `FTDI-VCC` solder
   jumper (`docs/bom/bus-tester.md`, `docs/bom/sequencer-memory.md`). The bus-tester build notes say: jumper FTDI-VCC only when
-  the card is being run **off** the bus; remove it when the card is on a powered bus. `hardware/DESIGN-REVIEW-NOTES-control-io.md`
+  the card is being run **off** the bus; remove it when the card is on a powered bus. `hardware/cards/sequencer-memory/reviews/v2.1-control-io-2026-09-21.md`
   2.2 says why: closed on the bus it parallels the FTDI's 5 V with the backplane rail.
 - The video card as designed had its `+5V` net fed by nothing (`hardware/cards/video/README.md`); `+5V` was joined to `VCC`
   with a wire on 2026-09-21. Do not remove that wire: IC1, IC2, RN2 and every decoupling capacitor on the card hang off it.
@@ -80,15 +80,15 @@ From the card `Build Notes.md` files (memory, bus tester; the text is the same o
    mode it copies the microcode from the I2C EEPROMs into the eight 62256 RAMs (16 s), reads the whole copy back and compares
    it with the EEPROM (29 s), and only then raises READY - 54 s after reset (`tests/sequencer/boot-run-mode-2026-09-21-sequencer4.log`).
    LOADING is on while copying; READY comes on when done; on a mismatch FAULT blinks six times and READY never comes.
-2. READY drives the bus signal `-BUS-EN` through the logic card (`DESIGN-REVIEW-NOTES-control-io.md` 1.8). Until then every
-   control line on rows B and C of the bus is a tri-stated 74LS374 output with no pull-up anywhere (`DESIGN-REVIEW-NOTES-datapath.md`
-   M5, S3): the lines float at ~1.5-1.9 V. LS inputs read that as high (inactive), so nothing is selected, but the levels are
+2. READY drives the bus signal `-BUS-EN` through the logic card (`hardware/cards/sequencer-logic/reviews/v2.1-control-io-2026-09-21.md` 1.8). Until then every
+   control line on rows B and C of the bus is a tri-stated 74LS374 output with no pull-up anywhere (`hardware/cards/memory/reviews/v1.3-datapath-2026-09-21.md`
+   M5, `hardware/reviews/datapath-2026-09-21.md` S3): the lines float at ~1.5-1.9 V. LS inputs read that as high (inactive), so nothing is selected, but the levels are
    undefined. This is the window in which the memory card's `-WE` follows an undefined `-MEM-WR` (M2, M5).
 3. **The bus must be quiet during the copy.** The clobbered transcript `tests/sequencer/boot-run-mode-2026-09-21.log` is what
    you get when the bus tester holds `-BUS-EN` asserted while the ATmega writes the RAMs: the logic card drives the address
    lines, every write lands on address 0 and every dumped instruction reads as zeros. With the tester idle
    (`bus-monitor` sketch, or `bus-driver` with nothing asserted) the same boot gives RAM == EEPROM (`...-bus-quiet.log`).
-4. There is **no power-on reset** (`DESIGN-REVIEW-NOTES-datapath.md` S1): `-RESET` comes from a manual RS latch on the logic
+4. There is **no power-on reset** (`hardware/reviews/datapath-2026-09-21.md` S1): `-RESET` comes from a manual RS latch on the logic
    card (RESET = NOR(FP-RESET, RUN)). After a cold start the memory card's FORCE-ROM flip-flop, the sixteen 74LS192 register
    counters and the ALU's carry/shift flip-flops are in arbitrary states until the front-panel RESET is operated. So the first
    thing after READY is always a reset (section 3).
@@ -105,9 +105,9 @@ and `STEP-CLK` (9070-1W), two push buttons `HALT` and `CONT`, an `OUT` LED (the 
 
 - `RESET` toggle: in the RESET position the latch holds `RESET` high and `-RESET` (bus pin C30) low; moving it to the run
   position (called EXECUTE in the design review) releases it. Only the **release** edge reloads the pipeline (a ~30-45 ns pulse
-  `N$32`, `DESIGN-REVIEW-NOTES-control-io.md` 1.3): while the switch sits in RESET the pipeline latches keep driving whatever
+  `N$32`, `hardware/cards/sequencer-logic/reviews/v2.1-control-io-2026-09-21.md` 1.3): while the switch sits in RESET the pipeline latches keep driving whatever
   step was executing, or power-up garbage, onto the bus.
-- What reset does around the machine (`DESIGN-REVIEW-NOTES-datapath.md` S2, `software/ucemu/README.md` "Reset"): the
+- What reset does around the machine (`hardware/reviews/datapath-2026-09-21.md` S2, `software/ucemu/README.md` "Reset"): the
   instruction register clears, all sixteen register counters clear (so PC = R0 = $0000), the ALU carry/shift flip-flops
   clear, and the memory card's FORCE-ROM flip-flop is preset, so the 28C64 answers **every** address until the first `-VMA`
   cycle with ADDR15 high. That is why the first fetch at $0000 gets the byte at ROM offset $1000 = $F000, and why every
@@ -117,11 +117,11 @@ and `STEP-CLK` (9070-1W), two push buttons `HALT` and `CONT`, an `OUT` LED (the 
   (`docs/bom/bus-tester.md`). **To verify:** which of the two drives bus `-RESET` and which resets the tester's own ATmega;
   the schematic `hardware/cards/bus-tester/eagle/v1.1/tester.sch` answers it.
 - The sequencer-memory card has its own `LOCAL-CPU-RESET` push button that resets **its ATmega** (and through JP1 pin 2 /
-  `-MEM-CPU-RESET` can be tied to the logic card, `DESIGN-REVIEW-NOTES-control-io.md` 1.4). Pressing it restarts the 54 s
+  `-MEM-CPU-RESET` can be tied to the logic card, `hardware/cards/sequencer-logic/reviews/v2.1-control-io-2026-09-21.md` 1.4). Pressing it restarts the 54 s
   copy. It is what "reset the card" means in the microcode-loading procedure (section 4).
 
 Known hazard while reset is held (control-io 1.3): a stale pipeline word with `-MEM-WR` and `-VMA` asserted writes the
-28C64 during reset, because the memory card's EEPROM `-WE` is `-MEM-WR` unqualified (`DESIGN-REVIEW-NOTES-datapath.md` M2).
+28C64 during reset, because the memory card's EEPROM `-WE` is `-MEM-WR` unqualified (`hardware/cards/memory/reviews/v1.3-datapath-2026-09-21.md` M2).
 It has not been seen to happen (the chip read back byte-identical to the 2021 sources on 2026-09-18), but do not leave the
 machine sitting in RESET, and re-check the ROM (`tests/memory/rom_verify.py`) after a batch of power cycles.
 
@@ -130,7 +130,7 @@ machine sitting in RESET, and re-check the ROM (`tests/memory/rom_verify.py`) af
 - The logic card's `QG1` is a 14-pin oscillator socket (BOM: deviceset `XO-`, package DIL14S). During bring-up the machine has
   been clocked from a **function generator's TTL output plugged into that socket: pin 8 = clock, pin 7 = GND**
   (`docs/system/MACHINE.md`, 2026-09-21). At a few hertz every step is visible on the LEDs (`tests/assembler/ledcount/README.md`).
-- One microcode step is two clock periods (the step counter's QA is a phase bit, `DESIGN-REVIEW-NOTES-control-io.md` 1.2;
+- One microcode step is two clock periods (the step counter's QA is a phase bit, `hardware/cards/sequencer-logic/reviews/v2.1-control-io-2026-09-21.md` 1.2;
   `software/ucemu/README.md`). `tests/assembler/romcount/README.md` gives the scale: ~590,000 clocks per LED count with the
   $2000 delay, about 0.6 s per count at 1 MHz.
 - Single-stepping: `STEP-CLK` and `SS/WAIT` toggles and the `SS-SEL` jumper select the step-clock source - the front-panel
@@ -152,10 +152,10 @@ The names are from `docs/bom/<card>.md`; the meaning from the READMEs and the de
 | Card | Header | Setting in the machine | Source |
 |---|---|---|---|
 | Memory v1.3 | `U$1` 3x8 block header | one column per 4K block $8000..$FFFF: jumper **up** = RAM, **down** = ROM, **none** = undecoded. Fitted: $8000-$CFFF up (5), $D000 none (video), $E000-$FFFF down (2) | `docs/system/MACHINE.md`, `hardware/cards/memory/README.md` |
-| Memory v1.3 | `JP1` 1x3 | must be fitted: it feeds IC7's G2B (the block decoder) | `DESIGN-REVIEW-NOTES-datapath.md` M7 |
+| Memory v1.3 | `JP1` 1x3 | must be fitted: it feeds IC7's G2B (the block decoder) | `hardware/cards/memory/reviews/v1.3-datapath-2026-09-21.md` M7 |
 | Memory v1.3 | wire from IC7 pin 4 | present, unconnected, purpose not remembered | `MACHINE.md`, BACKLOG |
 | Index registers 1.1 | `J1` (RD), `J2` (LD), `J3` (ADDR), each 2x4 | all three on one card set to the **same** ID2-3 code: card 0 = R0-R3, card 1 = R4-R7 | `hardware/cards/register/README.md`; datapath "Checked, no issue" |
-| ALU V3.2 | `JP1` 1x3 | the branch-condition mux enable: pin 1 = `-ALU-FUNC`, pin 3 = GND. On GND the mux always drives BR-COND (C24); on `-ALU-FUNC` it floats whenever `-ALU-FUNC` is high | `DESIGN-REVIEW-NOTES-datapath.md` A1. **To verify:** which position is fitted (meter on C24 with `-ALU-FUNC` high) |
+| ALU V3.2 | `JP1` 1x3 | the branch-condition mux enable: pin 1 = `-ALU-FUNC`, pin 3 = GND. On GND the mux always drives BR-COND (C24); on `-ALU-FUNC` it floats whenever `-ALU-FUNC` is high | `hardware/cards/alu/reviews/v3.2-datapath-2026-09-21.md` A1. **To verify:** which position is fitted (meter on C24 with `-ALU-FUNC` high) |
 | ALU V3.2 | `JP2` 1x3 | **To verify:** not described in the review notes; read the schematic | |
 | Sequencer logic v2.1 | `JP2` 1x2 | **must stay OPEN**: it would tie the pipeline's SPARE3 bit (always 0) to the sequencer-memory ATmega's reset and hold the loader in reset for ever | control-io 1.4 |
 | Sequencer logic v2.1 | `JP3` 1x5 + `-INT-PULLUP` 1x2 | interrupt mode: `-INT` (C13) to pin 2 = edge or pin 4 = level, and the **other** input jumpered to its GND neighbour, else PRE or the clock floats | control-io 1.6 |
@@ -298,7 +298,7 @@ The I/O card's LEDs count 00, 01, ... FF, 00 at one count per four instructions.
 2026-09-21 on the function-generator clock with the ALU and one index card (`MACHINE.md`). It uses only PC-relative addressing,
 so it proves fetch, `OUTI/OUTA`, `ADDI` and `BR` - and nothing about the index registers, the stack or the ROM card.
 
-Caution from `DESIGN-REVIEW-NOTES-datapath.md` M4: the memory card's low RAM cannot be removed from the map, so with the
+Caution from `hardware/cards/memory/reviews/v1.3-datapath-2026-09-21.md` M4: the memory card's low RAM cannot be removed from the map, so with the
 memory card **and** a bring-up card on the bus every read of $0000-$001F has two drivers (three under FORCE-ROM). Use the
 bring-up cards without the memory card. **To verify:** whether the 2026-09-21 switch-ROM run had the memory card fitted
 (`MACHINE.md` lists the cards refitted, not the ones removed).
@@ -479,7 +479,7 @@ other traffic came between the write and the read. `memory_status.py` uses the s
 ### 7.6 Bus-tester etiquette on a running machine
 
 - The tester and the CPU share the bus. While the sequencer is READY the logic card drives every control line; the tester
-  must not drive them too (a fight, `DESIGN-REVIEW-NOTES-datapath.md` M4/M5 style). Hold the CPU in RESET or take the
+  must not drive them too (a fight, `hardware/cards/memory/reviews/v1.3-datapath-2026-09-21.md` M4/M5 style). Hold the CPU in RESET or take the
   tester's outputs to inputs (bus-monitor) before scripting, and **keep the tester quiet during the 54 s microcode copy** (section 2.1).
 - `-BUS-EN` from the tester takes the bus away from the logic card (its 374s tri-state, control-io 1.8); that is the state the
   memory scripts assume.

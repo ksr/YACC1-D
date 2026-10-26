@@ -21,7 +21,7 @@ turn them into readable form. Written from tree commit b77c299 onward.
 
 1. **Facts come from the tree, and every section says where.** Schematics (`hardware/cards/<card>/eagle/<active rev>/*.sch`,
    Eagle XML: `<part>` and `<net>/<segment>/<pinref>` are parseable with Python's xml module), card READMEs and Notes,
-   `hardware/DESIGN-REVIEW*.md`, `firmware/microcode/` (generator + `yaccsignaldefine.h`/`yaccsignaldata2.h`),
+   `hardware/reviews/` and `hardware/*/*/reviews/` (the design reviews), `firmware/microcode/` (generator + `yaccsignaldefine.h`/`yaccsignaldata2.h`),
    `software/ucemu/y1ucemu.c` (the hardware model that runs the microcode), `firmware/monitor/monitor.asm`,
    `software/opcodes.h`, `software/assembler/yacc1.def`, `docs/isa/*.json` (per-opcode step timing),
    `docs/system/connector/`, `docs/system/MACHINE.md`, `BACKLOG.md`. Cite paths in the text.

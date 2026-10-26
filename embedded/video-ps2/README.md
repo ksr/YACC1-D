@@ -5,7 +5,7 @@ The firmware of the ATmega328P on the video card V2.0 (`hardware/cards/video/kic
 on no hardware yet. `tools/verify_embedded.py` compiles it with every other sketch (`make check`): 5,838 bytes of flash
 (Arduino Uno target = the ATmega328P at 16 MHz).
 
-**Revised 2026-10-22 after the design review** (`hardware/DESIGN-REVIEW-video-v2.0.md`), together with the board:
+**Revised 2026-10-22 after the design review** (`hardware/cards/video/reviews/v2.0.md`), together with the board:
 
 | Finding | Change |
 |---|---|

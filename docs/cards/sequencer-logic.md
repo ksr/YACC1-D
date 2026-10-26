@@ -9,7 +9,7 @@ Written 2026-09-23 from the YACC1-D tree.
 Sources: `hardware/cards/sequencer-logic/eagle/v2.1/Sequencer-Logic-Prod-V2.1l.sch` and `.brd` (parsed with Python's
 `xml.etree`; every net and pin below comes from the `<part>`/`<net>/<pinref>` elements), `hardware/cards/sequencer-logic/README.md`,
 `eagle/v2.1/Notes.md`, `eagle/v2.1/bom/Sequencer-Logic-Prod-V2.1l.csv`, `hardware/FABRICATED.md`, `hardware/PROVENANCE.md`,
-`hardware/DESIGN-REVIEW-NOTES-control-io.md` (section 1), `docs/isa/MICROCODE-REVIEW-NOTES.md` (section 1.1, findings
+`hardware/cards/sequencer-logic/reviews/v2.1-control-io-2026-09-21.md` (section 1), `docs/isa/MICROCODE-REVIEW-NOTES.md` (section 1.1, findings
 H-1..H-5, M-7, M-8, L-1, L-6, L-8), `firmware/microcode/yaccsignaldata2.h`, `firmware/microcode/ucode-generator2/main.c`,
 `software/ucemu/y1ucemu.c`, `docs/system/MACHINE.md`, `BACKLOG.md`, `docs/history/general-notes/NOTES-Update from old project.md`,
 `media/sequencer logic v2.1 top.jpeg`, `media/sequencer top.jpeg`, `tests/sequencer/`, `tests/assembler/{ledcount,romcount,romdiag}`.
@@ -164,7 +164,7 @@ since 2026-09-29 the prologue is three steps with LD-INS-REG in step 1, so steps
 OC of every pipeline 374 and of IC15/IC35). IC37A/D and IC36E form the three-inverter delay `RESET -> N$44 -> N$42 ->
 N$46`, and IC32C makes `N$32` = NOR(`RESET`, `N$46`): a ~30–45 ns pulse on the falling edge of RESET only. IC25D ORs it
 with `CNT-CLK` into `BUS-LATCH-CLK`, so releasing RESET clocks the pipeline once (address IR = 0, step 0: the START record)
-even though the counter is held at 0 (`DESIGN-REVIEW-NOTES-control-io.md` 1.3).
+even though the counter is held at 0 (`hardware/cards/sequencer-logic/reviews/v2.1-control-io-2026-09-21.md` 1.3).
 
 **Halt.** IC23B (74*74) `D` = VCC, `PRE` = VCC, `CLK` = `N$33` = IC25B = `N$54` OR `SOFT-HALT`, `N$54` = IC24D = `FP-HALT`
 AND `UCODE-COUNT-RESET`; `CLR` = `HALT-CLR` = IC32D = NOR(`RESET`, `FP-HALT-CONT`); `Q` = `DO-HALT`. So the HALT button
@@ -190,12 +190,12 @@ the bus lines (2) or on-card signals:
 The `L` prefix marks fields that go through a further buffer (IC4, IC18B) before the bus. JP2 (2 pins) links `SPARE3`
 (IC16 3Q) to `-MEM-CPU-RESET` (JP1 pin 2 — the memory card's ATmega reset): a microcode bit that could reset the loader.
 The generator never sets SPARE3 (it is cleared to 0 by `initCurrentLine()`, `main.c:94-105`), so with JP2 fitted the
-memory card would be held in reset permanently; JP2 must stay open (`DESIGN-REVIEW-NOTES-control-io.md` 1.4). The mated-pair
+memory card would be held in reset permanently; JP2 must stay open (`hardware/cards/sequencer-logic/reviews/v2.1-control-io-2026-09-21.md` 1.4). The mated-pair
 photo shows bare pins at the `SPARE3`/`CPU-RESET` silk. **To verify:** JP2 open on the card.
 
 The 74*374 map to bits: `yaccsignaldata2.h` gives every signal as (chip, port, bit); byte index = (chip-1)*2+port
 (`controlLine.c`); the memory card wires byte n to its RAM ICn and MCP23017 port, and SV1/SV2 carry the same name to
-the D input here. The 2026-09-21 review checked all 64 mappings (`DESIGN-REVIEW-NOTES-control-io.md`, "checked, no issue").
+the D input here. The 2026-09-21 review checked all 64 mappings (`hardware/cards/sequencer-memory/reviews/v2.1-control-io-2026-09-21.md`, "checked, no issue").
 
 ### 3.3 Sheet 3 — interrupt request and enable, the OUT latch
 
@@ -206,7 +206,7 @@ the D input here. The 2026-09-21 review checked all 64 mappings (`DESIGN-REVIEW-
   (JP3 pin 4), `CLR` = `N$29` = IC36B = NOT `N$27`, `Q` = `N$28`. JP3 is a 5-pin header: 1 = GND, 2 = INT-EDGE, 3 = -INT
   (bus C13), 4 = INT-LEVEL, 5 = GND. A jumper 2–3 makes the flip-flop clock on the *rising* edge of -INT (the release of
   the request); a jumper 3–4 presets it while -INT is low (level mode). The other input must be jumpered to its GND
-  neighbour, otherwise it floats (`DESIGN-REVIEW-NOTES-control-io.md` 1.6). The `-INT-PULLUP` header puts R5 (10k) on -INT.
+  neighbour, otherwise it floats (`hardware/cards/sequencer-logic/reviews/v2.1-control-io-2026-09-21.md` 1.6). The `-INT-PULLUP` header puts R5 (10k) on -INT.
   **To verify:** JP3 population (the mated-pair photo shows two caps on the LEVEL/EDGE header but not which pairs).
 - IC24C: `DO-INT` = `N$28` AND `N$24` (pending AND enabled) — the IC1/IC2 select of 3.1. The generator's INT record ($FF)
   asserts `INT-START` first, which both acknowledges (clears IC23A) and disables further interrupts until IRET's `INT-EN`.
@@ -325,7 +325,7 @@ Sheet 8 holds only the IC11B spare and IC37E (input grounded).
 ### 3.7 Sheets 9 and 10 — SV1, SV2, JP1, X1
 
 SV1 and SV2 are 2x20 headers (MA20-2). Their pin-outs are identical on both cards apart from the `U` prefix on this side
-(80/80 checked in `DESIGN-REVIEW-NOTES-control-io.md`). Notable pins: SV1 12 = `READY` (memory card ATmega PD7), SV1 14..38
+(80/80 checked in `hardware/cards/sequencer-logic/reviews/v2.1-control-io-2026-09-21.md`). Notable pins: SV1 12 = `READY` (memory card ATmega PD7), SV1 14..38
 even = `CADDR0..12`, SV1 2 = `CADDR13`, SV1 39/40 = GND, SV2 1/2 = VCC. `CADDR14` is not on the headers: the memory card
 sets it with its own jumper. X1 is the 96-pin DIN 41612 (FABC96R) to the backplane, pinned as in section 2.
 
@@ -405,7 +405,7 @@ below are read from the photos and flagged accordingly.
 | SS-SEL (3 pins, silk EXT/INT) | 1–2 = on-card STEP-CLK toggle, 2–3 = JP4 pin 2 external clock | photo: cap on the EXT-side pair; **To verify** which pins the cap bridges |
 | JP4 (4 pins, silk GND / CLK / CLK-RESET / GND) | 2 = external single-step clock in, 3 = UCODE-COUNT-RESET out | no cap (signal header) |
 | JP3 (5 pins, silk LEVEL / EDGE) | 2–3 edge, 3–4 level; the unused input jumpered to GND (1–2 or 4–5) | photo: two caps; **To verify** positions |
-| -INT-PULLUP (2 pins) | R5 10k on -INT | photo: no cap visible; the IO card's -INT driver is open-collector with its own RN2 (`DESIGN-REVIEW-NOTES-control-io.md` 3), **To verify** |
+| -INT-PULLUP (2 pins) | R5 10k on -INT | photo: no cap visible; the IO card's -INT driver is open-collector with its own RN2 (`hardware/cards/io/reviews/v1.1-control-io-2026-09-21.md` 3), **To verify** |
 | JP2 (2 pins, silk SPARE3 / CPU-RESET) | SPARE3 microcode bit -> memory-card ATmega reset | **must be open**; photo: bare pins |
 | JP1 (2x2) | SPARE3, -MEM-CPU-RESET, SRC-ADDR, DEST-ADDR to the memory card | mated with the memory card's JP1 (photo) |
 | SV1, SV2 (2x20) | the 64 microcode bits, CADDR0..13, READY, VCC/GND | mated with the memory card |

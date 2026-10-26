@@ -9,7 +9,7 @@ Written 2026-09-23 from the YACC1-D tree.
 Sources: `hardware/cards/sequencer-memory/eagle/v2.1/Sequencer-Memory-V2.1.sch` and `.brd` (parsed with Python's
 `xml.etree`), `eagle/v2.1/bom/Sequencer-Memory-V2.1.csv`, `hardware/cards/sequencer-memory/README.md`, `eagle/v2.1/Notes.md`,
 `accessories/eeprom-adaptor/eeprom adaptor.sch` and its README, `hardware/FABRICATED.md`, `hardware/PROVENANCE.md`,
-`hardware/DESIGN-REVIEW.md`, `hardware/DESIGN-REVIEW-NOTES-control-io.md` (section 2), `embedded/sequencer-card/README.md`,
+`hardware/cards/sequencer-memory/reviews/v2.1-mechanical-2026-09-21.md`, `hardware/cards/sequencer-memory/reviews/eeprom-adaptor-mechanical-2026-09-21.md`, `hardware/cards/sequencer-memory/reviews/v2.1-control-io-2026-09-21.md` (section 2), `embedded/sequencer-card/README.md`,
 `embedded/sequencer-card/sequencer4/{Sequencer4.ino,download.ino,uCodeRAM.ino,uCodeROM.ino,IO.ino}`,
 `embedded/sequencer-card/readback/README.md`, `tools/ucode_send.py`, `tests/sequencer/{run.py,mock_card.py,*.log}`,
 `firmware/microcode/README.md`, `firmware/microcode/yaccsignaldata2.h`, `firmware/microcode/ucode-generator2/controlLine.c`,
@@ -82,7 +82,7 @@ Byte-to-chip map (`yaccsignaldata2.h` gives each signal as (chip, port, bit); th
 On RAM IC1..IC4 the table's bit n is on I/On; on IC5..IC8 the schematic wires the nets in reverse pin order (IC8 I/O0 =
 -AC-LD-INV, I/O7 = -IO-ADDR-LD). It does not matter: the same MCP23017 pin writes and the same SV pin reads a given net, and
 the SRAM does not care which of its eight data pins stores which bit. The 2026-09-21 review verified all 64 (signal ->
-RAM pin -> SV pin -> logic-card D input) mappings (`DESIGN-REVIEW-NOTES-control-io.md`, "checked, no issue").
+RAM pin -> SV pin -> logic-card D input) mappings (`hardware/cards/sequencer-memory/reviews/v2.1-control-io-2026-09-21.md`, "checked, no issue").
 
 `REG-LD-LO`, `REG-LD-HI`, `BRANCH-RD` and `-SRC-ADDR`/`-DEST-ADDR` are stored with the polarity the table says (the
 comments in `yaccsignaldata2.h`: "this active low on the bus"): the logic card inverts or gates them on its side.
@@ -98,7 +98,7 @@ Eight 62256P (Eagle `memory-hitachi`; fitted AS6C62256-55PCN, 55 ns) with all ad
 straight from the ATmega: `!CS` = `-CMEMSEL` (PB2), `!OE` = `-CMEMRD` (PB1), `!WE` = `-CMEMWR` (PB0). There are no
 pull-ups on these three lines, so while the ATmega is in reset or in its bootloader (the ~1 s after power-up, or whenever
 `-MEM-CPU-RESET` is low) the SRAMs see undefined `-CS/-OE/-WE` — harmless, because the copy that follows rewrites
-everything, but it is why nothing on the bus should depend on the store before READY (`DESIGN-REVIEW-NOTES-control-io.md` 2.1).
+everything, but it is why nothing on the bus should depend on the store before READY (`hardware/cards/sequencer-memory/reviews/v2.1-control-io-2026-09-21.md` 2.1).
 The data pins are the 64 control nets of section 2. 62256 timing: with `-CS` and `-OE` low the outputs follow the address
 after tAA (55 ns for the fitted part); the logic card gives them one clock period.
 
@@ -149,7 +149,7 @@ jumpers hang off it:
 - **DTR-RESET**: pin 1 = N$33 (FTDI DTR), pin 2 = N$8 = C19 -> `-MEM-CPU-RESET`. Closed, this is the ordinary Arduino
   auto-reset: opening the serial port pulls DTR low and the 100 nF edge resets the ATmega into its bootloader. The
   schematic, the `.brd` (signals `N$8` = C19.1 + DTR-RESET.2; `-MEM-CPU-RESET` includes C19.2) and the KiCad netlist all
-  show C19 in circuit; `DESIGN-REVIEW-NOTES-control-io.md` 2.2 ("nothing reaches /RESET and there is no series 100 nF")
+  show C19 in circuit; `hardware/cards/sequencer-memory/reviews/v2.1-control-io-2026-09-21.md` 2.2 ("nothing reaches /RESET and there is no series 100 nF")
   is contradicted by all three and by use: `tools/ucode_send.py` and `embedded/sequencer-card/readback/README.md` both rely
   on the DTR reset (run the sender first, then press START; avrdude through the bootloader). The photo shows a blue cap
   on the DTR-RESET header. **To verify:** whether the review looked at an older netlist; the design as in the tree is fine.
@@ -175,7 +175,7 @@ socket: IC1 with A0 = A1 = A2 = VCC (address 7, 0x57) and IC2 with A0 = GND, A1 
 because the microcode needs 128 KB and the largest 8-pin 24Cxx is 64 KB (24LC512): two of them, selected by the low
 address bit of the device address, give one 128 KB store. Designed 2020-12-19/21, one OSH Park order (rmD8XYsD, 2024-06-19,
 three boards), fitted (confirmed 2026-09-20). The photo shows two 24LC512 (one E/P, one I/P) on it. The mechanical design review
-flags the adaptor's VCC/GND as "no source" — expected, the socket pins are its supply (`hardware/DESIGN-REVIEW.md`); it has
+flags the adaptor's VCC/GND as "no source" — expected, the socket pins are its supply (`hardware/cards/sequencer-memory/reviews/eeprom-adaptor-mechanical-2026-09-21.md`); it has
 no decoupling of its own (the card's C1..C14 are nearby). `docs/datasheets/24lc512.pdf` is the part's datasheet.
 
 The firmware's view (`uCodeROM.ino`): `EEPROM_DEV_LO 0x56` holds instructions 0..127 (byte address = instruction x 512 +

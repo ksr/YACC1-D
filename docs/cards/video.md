@@ -12,7 +12,7 @@ Sources: `hardware/cards/video/eagle/v1.0-fusion-export-2026-09-18/Video_1.0.sch
 exported from Fusion 360; parts and nets parsed from the Eagle XML), `hardware/cards/video/kicad/v1.1/README.md` (the
 design master since 2026-09-21), `hardware/cards/video/kicad/v1.0-fusion-export-2026-09-18/README.md` (the netlist
 proof that found the rail fault), `hardware/cards/video/README.md`, `hardware/cards/video/docs/fix-6845-register-
-select.md`, `hardware/DESIGN-REVIEW.md`, `hardware/DESIGN-REVIEW-NOTES-control-io.md` section 6, `docs/system/
+select.md`, `hardware/cards/video/reviews/v1.1-mechanical-2026-09-21.md`, `hardware/cards/video/reviews/v1.1-control-io-2026-09-21.md` (section 6), `docs/system/
 MACHINE.md`, `docs/system/OS-PLAN.md` (decisions 2 and 4), `tests/video/README.md`, `tests/video/video_ram_test.py`,
 `tests/video/hold_address.py`, `tests/memory/memory_full_test.py` and `full-run-2026-09-21.log`, `tools/alias_min.py`,
 `BACKLOG.md`, `hardware/FABRICATED.md`.
@@ -188,7 +188,7 @@ the 11.0592 MHz dot clock gave a stable 80 x 24 picture (9 MHz: 64 x 24); the E 
 | README | MED | 7416 outputs (IC27) drive IC1, IC2, IC26 with no pull-ups; /A0 (N$5) only reads high because it floats | **Resolved on the bench 2026-10-21**: 4.7k from IC2 pin 1 to pin 20 (N$16) and from IC27 pin 8 to pin 14 (N$5); N$3 has the 10k of 6.1, the video and sync outputs R11/R12. In the `kicad/v1.2` design as R13/R14 |
 | README | HIGH | +5V rail unfed (section 3.7) | **Resolved on the bench 2026-09-21** (wire), fixed in the v1.1 design |
 | README | HIGH | write-through fault of 2026-09-18: a write to block 0 or 9 landed in the video RAM regardless of BOARDSEL | **Resolved 2026-09-21**: cause was the unpowered rail; `tests/video/video_ram_test.py` 8/8, `tools/alias_min.py` clean |
-| DESIGN-REVIEW.md (mechanical) | MED | open-collector nets N$5 (IC27 p8) and N$16 (IC27 p10) without pull-up | Same as the 7416 item: resolved on the bench 2026-10-21. Without the N$16 pull-up the latch drove the bus on **every** memory read in the machine (2026-10-20/21, CPU out: ROM and RAM read 3F/7F/07; with a 74LS374 wrongly fitted as IC2, its power-up bytes E1/E9/E5). Bisected by pulling chips: clean with IC2 out, broken with it in, clean again with the pull-up |
+| `hardware/cards/video/reviews/v1.1-mechanical-2026-09-21.md` (mechanical) | MED | open-collector nets N$5 (IC27 p8) and N$16 (IC27 p10) without pull-up | Same as the 7416 item: resolved on the bench 2026-10-21. Without the N$16 pull-up the latch drove the bus on **every** memory read in the machine (2026-10-20/21, CPU out: ROM and RAM read 3F/7F/07; with a 74LS374 wrongly fitted as IC2, its power-up bytes E1/E9/E5). Bisected by pulling chips: clean with IC2 out, broken with it in, clean again with the pull-up |
 | README / FABRICATED.md | LOW | inherits Blank V3.1's pre-V3.2 names on C3-C6 | Harmless (unused pins); start the next card from Blank V3.2 |
 | Naming (this document) | doc | the README, the fix document and the reviews quoted the CRTC at `$D400`/`$D402` | **Resolved 2026-09-25: video RAM is $D000-$D7FF (2K), the 6845/latch half $D800-$DFFF** - the netlist reading; the fix document and README are corrected; the ROM (2026-09-25) already uses $D800/$D802. `video_ram_test.py` tests $D000-$D3FF only; the monitor's `VF`/`VD` check covers all 2K |
 

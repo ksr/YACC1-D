@@ -8,7 +8,7 @@ Written 2026-09-23 from the YACC1-D tree.
 Sources: `hardware/cards/alu/eagle/v3.2/ALU V3.2.sch` (parsed with Python's `xml.etree`; every net and gate below comes
 from its `<part>`/`<net>/<pinref>` elements), `hardware/cards/alu/README.md`, `eagle/v3.2/Notes.md`, the deprecated
 revisions' `Notes.md`, `hardware/FABRICATED.md`, `hardware/PROVENANCE.md`, `hardware/NEWER-DESIGNS-vs-ACTIVE.txt`,
-`hardware/DESIGN-REVIEW-NOTES-datapath.md` (ALU section, A1–A3), `docs/isa/MICROCODE-REVIEW-NOTES.md` (1.4, H-2, H-3, M-5,
+`hardware/cards/alu/reviews/v3.2-datapath-2026-09-21.md` (ALU section, A1–A3), `docs/isa/MICROCODE-REVIEW-NOTES.md` (1.4, H-2, H-3, M-5,
 section 3), `firmware/microcode/yaccsignaldata2.h`, `firmware/microcode/ucode-generator2/{CodeGen.h,accumulator.c,branch.c}`,
 `software/ucemu/y1ucemu.c` (`compute()`, `do_step()`), `docs/system/MACHINE.md`, `BACKLOG.md`,
 `tests/bus-tester-scripts/ALU/`, `tests/assembler/{ledcount,romcount,romdiag}`, `media/alu v3.2 top.jpeg`.

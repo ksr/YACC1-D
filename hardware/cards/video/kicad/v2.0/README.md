@@ -8,10 +8,10 @@ PA-PE** and **two PS/2 ports** on an ATmega328P with an **INT jumper**. The desi
 V2.0"; the theory `docs/cards/video-v2.md`; the ATmega's firmware `embedded/video-ps2`; the picture and the CPU
 side `tools/vidsim.py --card v2.0`.
 
-**Revised 2026-10-22 after the design review** (`hardware/DESIGN-REVIEW-video-v2.0.md`, its status table at the top):
+**Revised 2026-10-22 after the design review** (`hardware/cards/video/reviews/v2.0.md`, its status table at the top):
 every HIGH and MEDIUM finding is in the circuit or the firmware, and two features were added - **direct mode** (with
 GFX-ON = 0 the CPU owns the graphics RAM: a plain SRAM at any clock the machine runs) and the **text-only build** (the
-graphics chips left off, a status bit saying so). **Re-reviewed 2026-10-23** (`hardware/DESIGN-REVIEW-video-v2.0-r2.md`,
+graphics chips left off, a status bit saying so). **Re-reviewed 2026-10-23** (`hardware/cards/video/reviews/v2.0-r2.md`,
 HIGH 0, MED 1, LOW 9, INFO 6; its status table at the top): the MD-60SM side-leg slots widened (R2-1), IC55's socket
 clear of its neighbours (R2-2), the bus -RESET buffered (R2-3), the BOM, the README's statements, the silkscreen, the
 timing test and the firmware; the rest are driver rules and bench measurements.

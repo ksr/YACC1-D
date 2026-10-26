@@ -7,7 +7,7 @@ Written 2026-09-23 from the YACC1-D tree.
 
 Sources: `hardware/cards/protocard/eagle/v1.0/ProtoCard-Prod-V1.0.sch` (parts and nets parsed from the Eagle XML),
 `hardware/cards/protocard/README.md`, `hardware/FABRICATED.md`, `docs/system/connector/README.md`,
-`hardware/bus/bus-template/eagle/v3.2/Bus Template V3.2.sch`, `hardware/DESIGN-REVIEW.md`,
+`hardware/bus/bus-template/eagle/v3.2/Bus Template V3.2.sch`, `hardware/cards/protocard/reviews/v1.0-mechanical-2026-09-21.md`, `hardware/bus/bus-template/reviews/v3.2-mechanical-2026-09-21.md`,
 `docs/procedures/System Build Notes.md`.
 
 ## 1. Purpose and place in the machine
@@ -54,7 +54,7 @@ set. There is no test beyond the connector check every card gets (`Build Notes`:
 right pins of each row are GND, the next three in are VCC; VCC not shorted to GND).
 
 Anything built on it inherits the bus conventions: control lines are 74LS374 outputs on the sequencer with -BUS-EN
-as their enable and no pull-ups anywhere (`hardware/DESIGN-REVIEW-NOTES-control-io.md` 5.1), the data bus is 16
+as their enable and no pull-ups anywhere (`hardware/bus/backplane/reviews/v2.0-control-io-2026-09-21.md` 5.1), the data bus is 16
 bits with pull-downs on the memory card (value unknown) and pull-ups on the bus tester, and a memory-mapped device
 must qualify its select with -VMA (`docs/cards/memory.md`, `docs/cards/video.md`).
 

@@ -11,8 +11,8 @@ Sources: `hardware/cards/io/eagle/v1.1/IO V1.1.sch` and `.brd` (parts and nets p
 the `uartout`/`uartoutw`/`uartin`/`switchin`/`ledout`/`TIL311out`/`const` routines and the old LCD test),
 `firmware/microcode/ucode-generator2/io.c` and `docs/isa/steps.txt` (OUTI/OUTA/INP step timing),
 `firmware/microcode/yaccsignaldata2.h`, `software/ucemu/y1ucemu.c` (the I/O card model), `software/opcodes.h`,
-`software/assembler/yacc1.def`, `hardware/DESIGN-REVIEW.md`, `hardware/DESIGN-REVIEW-NOTES-control-io.md`
-(section 3 and the cross-card notes), `docs/isa/MICROCODE-REVIEW-NOTES.md` (1.5, 1.6, L-2), `firmware/abi/README.md`,
+`software/assembler/yacc1.def`, `hardware/cards/io/reviews/v1.1-mechanical-2026-09-21.md`, `hardware/cards/io/reviews/v1.1-control-io-2026-09-21.md`
+(section 3) and `hardware/reviews/control-io-2026-09-21.md` (the cross-card notes), `docs/isa/MICROCODE-REVIEW-NOTES.md` (1.5, 1.6, L-2), `firmware/abi/README.md`,
 `docs/system/OS-PLAN.md`, `software/cfmodel.h`, `docs/system/MACHINE.md`, `hardware/FABRICATED.md`,
 `tests/bus-tester-scripts/IO/*`, `tests/assembler/{ledcount,romcount,romdiag}/README.md`, `BACKLOG.md`.
 
@@ -152,7 +152,7 @@ are tied to VCC (inactive: the modem lines are unused); RTS, DTR, OP1, OP2, DDIS
 BAUDOUT feeds RCLK (net ICLK), the standard single-clock connection.
 
 Y1 is a canned oscillator (`ECS-2100AX-200` is the Eagle package/deviceset name, not a frequency) into XTAL1; XTAL2 is
-open, which is the datasheet connection for an external clock (`DESIGN-REVIEW.md` flagged XTAL2 as floating; the
+open, which is the datasheet connection for an external clock (`hardware/cards/io/reviews/v1.1-mechanical-2026-09-21.md` flagged XTAL2 as floating; the
 control/IO notes 3.1 correct that to "not a fault"). The monitor programs divisor 3 for 38400 baud
 (`OUTI P1,3 ;38400`, with a commented `12 ;9600`), which implies a 1.8432 MHz oscillator (16 x 38400 x 3). **To
 verify:** the frequency printed on the can (a 20 MHz part would give 416 kbaud).
@@ -291,7 +291,7 @@ through RN2) only ends the cycle. The review therefore calls the port decode sou
 
 | ID | Severity | Finding | Status 2026-09-23 |
 |---|---|---|---|
-| DESIGN-REVIEW.md, io | MED (retracted) | IC1 XTAL2 floating | Not a fault: an external oscillator on XTAL1 leaves XTAL2 open (control/IO notes 3.1) |
+| `hardware/cards/io/reviews/v1.1-mechanical-2026-09-21.md` | MED (retracted) | IC1 XTAL2 floating | Not a fault: an external oscillator on XTAL1 leaves XTAL2 open (control/IO notes 3.1) |
 | 3.1 | note | "ECS-2100AX-200" is a package name; the monitor's divisor implies 1.8432 MHz | **To verify:** read the can, put the frequency in the BOM |
 | 3.2 | LOW | strobes through 74LS06 with a pull-up of unknown value; slow rising edges through IC6/IC7/IC11 could double-pulse the LCD E line (a doubled character) | Open; RN2 value to record |
 | 3.3 | LOW | decoder is address-only, device bits not mutually exclusive | Software rule (section 4.5); the V1.2 idea of -BUS-EN on IC5 pin 5 has no functional effect since every consumer is strobe-qualified |

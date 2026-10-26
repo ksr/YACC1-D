@@ -15,7 +15,7 @@ Sources: `firmware/microcode/README.md`, `firmware/microcode/yaccsignaldefine.h`
 `software/assembler/yacc1.def`, `tests/assembler/brur/`, `tests/ucemu/`, `embedded/sequencer-card/README.md` and
 `sequencer4/Sequencer4.ino`, `tests/sequencer/` (`run.py`, `mock_card.py`, the boot logs), the sequencer schematics
 (`hardware/cards/sequencer-logic/eagle/v2.1/*.sch`, `hardware/cards/sequencer-memory/eagle/v2.1/*.sch`, parsed with
-Python), `hardware/DESIGN-REVIEW-NOTES-control-io.md`, `docs/system/MACHINE.md`, `BACKLOG.md`.
+Python), `hardware/reviews/control-io-2026-09-21.md` (section 1: `hardware/cards/sequencer-logic/reviews/v2.1-control-io-2026-09-21.md`), `docs/system/MACHINE.md`, `BACKLOG.md`.
 
 Conventions: as in `ARCHITECTURE.md` (`-` prefix = active low; **To verify:** marks what the tree does not settle).
 

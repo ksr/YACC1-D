@@ -7,8 +7,8 @@ card will get its own theory of operation under `docs/cards/`.
 Written 2026-09-23 from the YACC1-D tree.
 
 Sources: `docs/system/MACHINE.md` (what is fitted), `docs/isa/MICROCODE-REVIEW-NOTES.md` section 1 (the hardware model
-re-derived from the KiCad netlists), `hardware/DESIGN-REVIEW-NOTES-datapath.md` and `hardware/DESIGN-REVIEW-NOTES-control-io.md`
-(the 2026-09-21 design review), `software/ucemu/y1ucemu.c` (the microcode-level emulator: the executable form of that model),
+re-derived from the KiCad netlists), `hardware/reviews/datapath-2026-09-21.md` and `hardware/reviews/control-io-2026-09-21.md`
+(the 2026-09-21 design review; each lists its per-card files), `software/ucemu/y1ucemu.c` (the microcode-level emulator: the executable form of that model),
 `firmware/microcode/ucode-generator2/*.c` and `firmware/microcode/yaccsignaldata2.h`, `docs/isa/steps.txt` and
 `docs/isa/LDAI.json` / `docs/isa/OUTA.json`, `hardware/cards/*/README.md` and `eagle/<rev>/Notes.md`, the Eagle schematics
 (`hardware/cards/<card>/eagle/<rev>/*.sch`, parsed with Python for part types and nets), `hardware/cards/memory/README.md`,
@@ -91,7 +91,7 @@ Two things the diagram makes visible that are easy to miss:
 ## 3. The datapath: ACC, TMP, the ALU card
 
 The ALU card (ALU V3.2, `hardware/cards/alu/eagle/v3.2/ALU V3.2.sch`, netlist model in
-`docs/isa/MICROCODE-REVIEW-NOTES.md` 1.4 and `hardware/DESIGN-REVIEW-NOTES-datapath.md` "ALU v3.2") holds the
+`docs/isa/MICROCODE-REVIEW-NOTES.md` 1.4 and `hardware/cards/alu/reviews/v3.2-datapath-2026-09-21.md` "ALU v3.2") holds the
 accumulator and every arithmetic element. Its internal bus is **BDATA0..15**; the accumulator's output is **ACO**;
 the selected function's result is **INV-IN0..7**; the accumulator's input is **ACI-DATA**.
 
@@ -145,7 +145,7 @@ The accumulator is a 74LS374 (IC5) clocked by `AC-LD = NOT(-AC-LD)` through JP2,
 step before the strobe (`accumulator.c` `aluOp()`: set `-ALU-FUNC` + code, write a line, set `-AC-LD`, write, clear, write).
 
 The carry flip-flop is half of a 74LS74 (IC9A). Its D input is `CO/BO OR SHIFT-OUT` and its clock is
-`(function is ADD, SUB or SHIFT) AND AC-LD` (`DESIGN-REVIEW-NOTES-datapath.md` "Carry flip-flop IC9A"). Three
+`(function is ADD, SUB or SHIFT) AND AC-LD` (`hardware/cards/alu/reviews/v3.2-datapath-2026-09-21.md` "Carry flip-flop IC9A"). Three
 consequences for programmers, all reproduced by `y1ucemu.c` (`do_step()`, the `-AC-LD` block):
 
 1. Logic operations (AND, OR, XOR, DATA, ZERO) **do not touch** the carry: the clock is gated off.
@@ -212,12 +212,12 @@ When `-AC-RD` writes ACC into TMP0 (MVAT), TMP0's high byte becomes $FF from the
 ## 4. The register file: R0..R7 on two Index Register cards
 
 Each Index Register card 1.1 (`hardware/cards/register/eagle/v1.1/Index Registers - 1.1.sch`; model in
-`docs/isa/MICROCODE-REVIEW-NOTES.md` 1.2 and `DESIGN-REVIEW-NOTES-datapath.md` "Index Register card 1.1") holds four
+`docs/isa/MICROCODE-REVIEW-NOTES.md` 1.2 and `hardware/cards/register/reviews/v1.1-datapath-2026-09-21.md` "Index Register card 1.1") holds four
 16-bit registers. Card 0 is R0..R3, card 1 is R4..R7 (`docs/system/MACHINE.md`). A register is four cascaded
 74LS192 counters (e.g. R0 = IC3..IC6: low byte IC3/IC4, high byte IC5/IC6), so it can be **loaded** a byte at a time
 and **counted** up or down as a 16-bit whole. The schematic, board and BOM name the counters 74LS192 (BCD decade); the
 machine executes binary step and address sequences, so the review concludes 74LS193 (binary) must be what is fitted
-(`DESIGN-REVIEW-NOTES-control-io.md` 1.2). **To verify:** read the markings on the register-card counters (and the
+(`hardware/cards/sequencer-logic/reviews/v2.1-control-io-2026-09-21.md` 1.2). **To verify:** read the markings on the register-card counters (and the
 sequencer's IC33/IC34) and correct the design files.
 
 ### 4.1 What the three register-id fields mean
@@ -448,7 +448,7 @@ Two review findings live here:
   regardless of the address. The designer met this in 2020 by asserting `-VMA` in **every** microcode step
   (`main.c` `initCurrentLine()`: `setSignal("-VMA"); // Hack prevent ROM mapping from triggering`), so the address bus
   never floats while the machine runs — at the price of removing the `-VMA` qualification from every chip select on
-  the card (`DESIGN-REVIEW-NOTES-datapath.md` M1).
+  the card (`hardware/cards/memory/reviews/v1.3-datapath-2026-09-21.md` M1).
 - **M2 (MED)**: the 28C64's `-WE` is `-MEM-WR` re-buffered, with no write-protect. During FORCE-ROM every address selects
   the ROM block, so a store before the first jump above $8000 would write the EEPROM. The shipped monitor is safe by
   construction (branch first); nothing in hardware enforces it. Status 2026-09-23: open (`DOC-PLAN.md` rule 7).
@@ -632,7 +632,7 @@ notes) says OUTA could be 7 steps instead of 12; LDAI 8 instead of 12.
 
 ## 13. Findings that shape the machine, and their status on 2026-09-23
 
-Per `DOC-PLAN.md` rule 7 (`docs/isa/MICROCODE-REVIEW-NOTES.md`, `hardware/DESIGN-REVIEW-NOTES-*.md`, `BACKLOG.md`,
+Per `DOC-PLAN.md` rule 7 (`docs/isa/MICROCODE-REVIEW-NOTES.md`, `hardware/reviews/*-2026-09-21.md` and the per-card files they list, `BACKLOG.md`,
 `docs/system/MACHINE.md`):
 
 | ID | One line | Status |

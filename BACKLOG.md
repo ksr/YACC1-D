@@ -391,7 +391,7 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     74LS10, ATmega328P; IC1 (74ALS08) reused, IC2 removed. Model: `tools/vidsim.py --card v2.0`.
   - **Software to follow (not designed here)**: the ROM's driver over IN/OUT for V2.0 (probe IN PC), the keyboard behind
     the console vectors (CONST/CHARIN read PD/PE besides the UART), the emulators' V2.0 card model, Y1/OS `video`.
-  - **Design review 2026-10-22: `hardware/DESIGN-REVIEW-video-v2.0.md` - HIGH 3, MED 9, LOW 11, INFO 6. Verdict: order
+  - **Design review 2026-10-22: `hardware/cards/video/reviews/v2.0.md` - HIGH 3, MED 9, LOW 11, INFO 6. Verdict: order
     after the HIGH fixes** (and fold the MED net changes into the same rebuild; the architecture needs no rework).
     Must fix before ordering: **V2-1** Optiboot drives PB5 = BUSY (IC53/B's output) for ~1.4 s after every reset - swap
     BUSY and SRC on the ATmega (IC49 pins 19 / 17) and the firmware's two pin numbers; **V2-2** redraw the Mini-DIN-6
@@ -416,7 +416,7 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   - **Text-only build (2026-10-22)**: the graphics chips (IC35-IC45, IC55, RN3, their capacitors) left off, R25 / R26
     (1k pull-downs on GDOT and WRQ) fitted only then; **IN PC bit 3 = TEXT-ONLY** (IC44/B's Q low when fitted, R27
     pull-up when not). The recommended first build; `BOM.md` marks it.
-  - **Re-review 2026-10-23: `hardware/DESIGN-REVIEW-video-v2.0-r2.md` - HIGH 0, MED 1, LOW 9, INFO 6. Verdict: order
+  - **Re-review 2026-10-23: `hardware/cards/video/reviews/v2.0-r2.md` - HIGH 0, MED 1, LOW 9, INFO 6. Verdict: order
     after R2-1.** The slot logic, direct mode and the text-only build are right (IC42's hold >= 9 ns at the corners; GD
     hand-over a dot apart; direct-mode writes meet the 62256 at 1 and 6 MHz, re-derived from `test.hex`). **R2-1, R2-2,
     R2-3 and R2-14 done 2026-10-23 (`560977b`)**: the MD-60SM side-leg slots 1.2 x 2.6 mm, IC55 0.6 mm up, IC27/E's input
@@ -432,7 +432,7 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     part moved): every IC's type beside its reference, no reference on a part's body or a stamped socket, LED1 PWR,
     JP2 / JP3 / SV3 / SV4 with their function and each position's meaning. Only `video-v2.0-F_Silkscreen.gbr` differs
     from the export of 2026-10-23; still ready to order, not ordered (the card's README, "The board-layout rules").
-    **2026-10-26: independent review r3** (`hardware/DESIGN-REVIEW-video-v2.0-r3.md`: the circuit, the netlist and
+    **2026-10-26: independent review r3** (`hardware/cards/video/reviews/v2.0-r3.md`: the circuit, the netlist and
     footprints, and the Gerbers, each checked separately; HIGH 0, MED 1, LOW 18): **order as is**, no board change.
     For the parts: IC28 a 74F163A / 74ALS163B (R3-1, CHARCLOCK's set-up to the 166s); RN2 / RN3 bussed (R3-15);
     capacitor ratings (R3-17); check a new DE-9's pitch (R3-16). These are in `BOM.md` since 2026-10-26 (the BUY
@@ -520,8 +520,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **monnew-2025** (`firmware/monitor/monnew-2025`): small D/M/B monitor; assembled, never run on the machine.
 - `firmware/abi/` — the BIOS/port/variable map still has to be written from the two .asm headers.
 
-## Design review 2026-09-21 (reports: `hardware/DESIGN-REVIEW.md`, `hardware/DESIGN-REVIEW-NOTES-datapath.md`,
-`hardware/DESIGN-REVIEW-NOTES-control-io.md`, `docs/isa/MICROCODE-REVIEW.md`, `docs/isa/MICROCODE-REVIEW-NOTES.md`)
+## Design review 2026-09-21 (reports: `hardware/reviews/mechanical-2026-09-21.md`, `hardware/reviews/datapath-2026-09-21.md`,
+`hardware/reviews/control-io-2026-09-21.md` - each lists its per-card files in the cards' `reviews/` folders - `docs/isa/MICROCODE-REVIEW.md`, `docs/isa/MICROCODE-REVIEW-NOTES.md`)
 Items below were traced to nets/pins or to test.hex and spot-checked; the reports give the evidence and a bench check each.
 - (done 2026-09-29 in the tree, NOT YET LOADED: **HIGH, microcode: undefined opcodes were all-zero words** ($80-$8F, $A5, $AD,
   $AE, $C0-$CF, $F8-$FA; BRUR and the four xisa instructions filled all but five). An all-zero word asserts every active-low
@@ -790,7 +790,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   (`ROM 2026-09-23`) already drives P8/P9, so no burn is needed. **After building**: the bring-up steps in
   `docs/cards/cf.md` section 7 (empty adapter = `CF ERROR`, the P8 latch on the IDE header's DA pins, then `O` with a
   card prepared by `tools/cfcard.py` from `os/disk.img`).
-  - **2026-10-23: design review of the fabricated v2.0 before the build: `hardware/DESIGN-REVIEW-memory-v2.0.md`**
+  - **2026-10-23: design review of the fabricated v2.0 before the build: `hardware/cards/memory/reviews/v2.0.md`**
     (HIGH 0, MED 4, LOW 8, INFO 8; verdict: build as is, no bodge wire needed at 1 MHz; the board, schematic and gerbers
     unchanged, the gerbers' copper traced net for net against the board). Open actions:
     - **Before the adapter goes on (M2-1):** the record of the HX-2118P's pin 1 ("left end of the outer row", pin 20

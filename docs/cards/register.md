@@ -9,7 +9,7 @@ Written 2026-09-23 from the YACC1-D tree.
 Sources: `hardware/cards/register/eagle/v1.1/Index Registers - 1.1.sch` (parsed with Python's `xml.etree`; every net and
 gate below comes from its `<part>`/`<net>/<pinref>` elements), `hardware/cards/register/README.md`, `eagle/v1.1/Notes.md`,
 `eagle/deprecated/v1.0*/Notes.md`, `hardware/FABRICATED.md`, `hardware/PROVENANCE.md`, `hardware/NEWER-DESIGNS-vs-ACTIVE.txt`,
-`hardware/DESIGN-REVIEW-NOTES-datapath.md` (register section R1–R3, S1, S2), `hardware/DESIGN-REVIEW-NOTES-control-io.md`
+`hardware/cards/register/reviews/v1.1-datapath-2026-09-21.md` (register section R1–R3), `hardware/reviews/datapath-2026-09-21.md` (S1, S2), `hardware/cards/sequencer-logic/reviews/v2.1-control-io-2026-09-21.md`
 (1.2, the 74LS192 item), `docs/isa/MICROCODE-REVIEW-NOTES.md` (1.2, 1.6, H-1, M-1, M-4, L-6, L-9, section 4),
 `firmware/microcode/yaccsignaldata2.h`, `firmware/microcode/ucode-generator2/{main.c,register.c,CodeGen.h}`,
 `software/ucemu/y1ucemu.c`, `docs/system/MACHINE.md`, `docs/system/waveforms/`, `docs/system/connector/README.md`,
@@ -151,7 +151,7 @@ So the straight path is open when exactly one of read/load selects this card and
 exactly one selects it and `-HL-SWAP` is low; when both select it (MOVRR between two registers of one card) all three close
 and the copy runs on `ADATA` inside the card; when neither, the card is off the bus. This answers the "1.2" question in
 `Notes.md` ("Is bus direction correct, should it be based on -rd-sel"): the review traced all four cases and found the
-design correct as drawn (`DESIGN-REVIEW-NOTES-datapath.md`, "checked, no issue").
+design correct as drawn (`hardware/cards/register/reviews/v1.1-datapath-2026-09-21.md`, "checked, no issue").
 
 `-HL-SWAP` is how a byte reaches or leaves the **high** half over the 8-bit-wide sources: MVRHA (high byte -> AC on DATA0..7),
 MVARH and MVIW's first byte (DATA0..7 -> the high byte), JSR/PUSHR pushing PC.hi. Three consequences documented in the reviews:

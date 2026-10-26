@@ -17,7 +17,7 @@ fonts in one 2732 - hardware/cards/video/kicad/v1.3, its parts and pin numbers k
   * two PS/2 ports on an ATmega328P (IC49) talking to the bus through latches IC50 (data, IN PE), IC51 (commands,
     OUT PD), IC52 (status, IN PD) and flags IC53 (FULL, BUSY); INTREQ to -INT through IC27/D and jumper JP3.
 
-Revised 2026-10-22 after the design review (hardware/DESIGN-REVIEW-video-v2.0.md): its HIGH and MEDIUM fixes (V2-1 BUSY/SRC
+Revised 2026-10-22 after the design review (hardware/cards/video/reviews/v2.0.md): its HIGH and MEDIUM fixes (V2-1 BUSY/SRC
 swapped on the ATmega, V2-4 the muxes' select from QC OR RCO, V2-5 IC40 enabled by -WE, V2-6 MRST through IC27/E,F,
 V2-7 -INT = INTREQ AND FULL and the LDDATA/RDCMD pull-ups, V2-9/V2-12 HCT parts, V2-10 a 28C64 character generator)
 and two features:
@@ -405,7 +405,7 @@ BUY = {
     "J4": "1x6 pin header; a 5 V FTDI cable (TTL-232R-5V) or a 5 V FTDI Basic",
     "Y1": "16 MHz, HC-49/U, parallel resonant, 18-20 pF load (for C55 / C56 22 pF, as on an Arduino Uno)",
     "Q2": "12 MHz, HC-49/U",
-    # 2026-10-26, review r3 (hardware/DESIGN-REVIEW-video-v2.0-r3.md): BOM notes only, the circuit unchanged
+    # 2026-10-26, review r3 (hardware/cards/video/reviews/v2.0-r3.md): BOM notes only, the circuit unchanged
     "IC28": "74F163A or 74ALS163B (same pinout; R3-1: with a 74LS163, CHARCLOCK's set-up to the 74LS166s' SH/-LD is "
             "~3 ns at worst-case delays, ~24 ns typical); keep a spare 74F163",
     "IC19": "74LS00; a 74ALS00 adds a little more CHARCLOCK margin (R3-1)",
