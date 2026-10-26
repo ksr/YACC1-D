@@ -26,6 +26,7 @@ usage: design_review.py [--date YYYY-MM-DD] [--out DIR]
 import os, re, glob, collections, argparse, time
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); HW = os.path.join(ROOT, "hardware")
 RAIL_POS = re.compile(r"^(\+?5V0?|VCC|VDD|\+5)$", re.I); RAIL_GND = re.compile(r"^(GND|VSS|0V)$", re.I)
+leaf = lambda n: n.rsplit("/", 1)[-1]   # 2026-10-26: a hierarchical net name ('/Sheet 1/GND') is matched by its last part
 
 def parse_netlist(path):
     s = open(path).read()
@@ -44,7 +45,7 @@ def review(card, netfile):
     comps, nets = parse_netlist(netfile)
     F = []   # (severity, text)
     real = lambda r: not r.startswith("#")
-    pos = [n for n in nets if RAIL_POS.match(n)]; gnd = [n for n in nets if RAIL_GND.match(n)]
+    pos = [n for n in nets if RAIL_POS.match(leaf(n))]; gnd = [n for n in nets if RAIL_GND.match(leaf(n))]
     rails = set(pos) | set(gnd)
     # 1. supply islands and sources
     if len(pos) > 1: F.append(("HIGH", "two positive rails, nothing joins them: %s (pins %s)" % (", ".join(pos), ", ".join("%s=%d" % (n, len(nets[n])) for n in pos))))
@@ -68,20 +69,33 @@ def review(card, netfile):
     for n, nodes in nets.items():
         outs = [(r, p, f) for r, p, f, t in nodes if t == "output" and real(r)]
         if len(outs) > 1: F.append(("HIGH", "net %s has %d totem-pole outputs: %s" % (n, len(outs), ", ".join("%s.%s(%s)" % x for x in outs[:5]))))
-    # 5. open-collector nets without a pull-up
+    # 5. open-collector nets without a pull-up. One that reaches the bus connector, directly or across a jumper or
+    # header, is a bus line pulled up on another card (2026-10-26: video V2.0's /INTOC -> JP3 -> -INT, pulled up by the
+    # I/O card's RN2): LOW, a reminder that the pull-up must exist elsewhere, not MED
+    pins_of = collections.defaultdict(list)
+    for n, nodes in nets.items():
+        for r, p, f, t in nodes: pins_of[r].append(n)
+    on_bus = lambda n: any(r == "X1" for r, *_ in nets[n])
     for n, nodes in nets.items():
         if n in rails: continue
         oc = [x for x in nodes if x[3] == "open_collector"]
         drv = [x for x in nodes if x[3] in ("output", "tri_state", "power_out")]
         res = [x for x in nodes if x[0].startswith(("R", "RN")) and not x[0].startswith("RESET")]
-        if oc and not drv and not res: F.append(("MED", "open-collector net %s (%s) has no pull-up and no other driver" % (n, ", ".join("%s.%s" % (r, p) for r, p, f, t in oc[:4]))))
+        if oc and not drv and not res:
+            via = [r for r, *_ in nodes if r.startswith(("JP", "SV")) and any(m != n and on_bus(m) for m in pins_of[r])]
+            ocs = ", ".join("%s.%s" % (r, p) for r, p, f, t in oc[:4])
+            if on_bus(n) or via:
+                F.append(("LOW", "open-collector net %s (%s) has no pull-up on this card; it reaches the bus%s, so its "
+                          "pull-up must be on another card" % (n, ocs, " through " + ", ".join(sorted(set(via))) if via else "")))
+            else:
+                F.append(("MED", "open-collector net %s (%s) has no pull-up and no other driver" % (n, ocs)))
     # 6. decoupling
     ics = [r for r in comps if r.startswith(("IC", "U")) and real(r)]
     caps = [r for r, (v, fp) in comps.items() if r.startswith("C") and not re.search(r"POL|ELKO|CPOL|E2|E5|E3", fp, re.I)]   # ceramic footprints (Eagle values are blank)
     if len(caps) < len(ics) * 0.5: F.append(("LOW", "decoupling: %d 100 nF-class caps for %d ICs" % (len(caps), len(ics))))
     # bus connector summary
     x1 = [n for n, nodes in nets.items() if any(r == "X1" for r, *_ in nodes)]
-    info = "%d parts, %d nets, %d ICs, %d bus-connector nets, rails %s" % (len([c for c in comps if real(c)]), len(nets), len(ics), len(x1), ", ".join(sorted(rails)))
+    info = "%d parts, %d nets, %d ICs, %d bus-connector nets, rails %s" % (len([c for c in comps if real(c)]), len(nets), len(ics), len(x1), ", ".join(sorted(set(leaf(n) for n in rails))))
     return info, F
 
 SEVERITY = ("HIGH", "MED", "LOW")

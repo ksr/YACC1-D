@@ -33,10 +33,14 @@ One file per board, in the board's own `reviews/` folder:
 - **2026-10-26: one file per board.** The run of 2026-09-21 wrote one file, `hardware/DESIGN-REVIEW.md`, with a section
   per board. Each section is now the board's own file above, its text unchanged (the heading, the summary line, the
   findings), and `tools/design_review.py` writes this layout: the per-board files and this index.
-- **The 2026-09-21 text is kept as it was run; a rerun on the tree of 2026-10-26 does not reproduce all of it.** The
-  boards have moved on since: the two bus jumpers' ground net is now named `/Sheet 1/GND` (the readable converted
-  schematics, `902e9bf`), which the rail pattern does not match, so their summary line would end "rails " with no rail;
-  and video v1.2, v1.3 and v2.0 have netlists now (v1.2 and v1.3 no findings; v2.0 one MED, the open-collector net
-  `/INTOC` (IC27.8) with no pull-up on the card: it goes through JP3 to the bus `-INT`, whose pull-up is on the I/O
-  card). Every other board's file comes out the same byte for byte (`--date 2026-09-21 --out DIR` writes the set for
-  comparison). A new run writes a new dated set beside this one.
+- **The 2026-09-21 text is kept as it was run.** A rerun on the tree of 2026-10-26 (`--date 2026-09-21 --out DIR`
+  writes the set for comparison) reproduces all 19 boards' files byte for byte. It adds video v1.2, v1.3 and v2.0,
+  which have netlists now: v1.2 and v1.3 have no findings, and v2.0 one LOW, the open-collector `/INTOC` (IC27.8),
+  which goes through JP3 to the bus `-INT`, pulled up by the I/O card's RN2. A new run writes a new dated set beside
+  this one.
+- **2026-10-26, two fixes to `tools/design_review.py`:**
+  - Rails are matched by the last part of a hierarchical net name. The two bus jumpers' ground net is `/Sheet 1/GND`
+    since the readable converted schematics (`902e9bf`); before the fix it was not seen as a rail.
+  - An open-collector net with no pull-up on the card that reaches the bus connector, directly or across a jumper or
+    header, is LOW ("its pull-up must be on another card"), not MED. Such a net is a bus line pulled up elsewhere,
+    like `-INT` by the I/O card.
