@@ -112,11 +112,11 @@ the keyboard's codes: `embedded/video-ps2/README.md`.
 **Jumpers.** SV3 (the block, 5-6 for $D000), SV4 (1-2: the 12 MHz crystal), JP2 DOTS (fitted: 8 dots, 64 x 24 with
 graphics; open: 6 dots, 80 x 24), JP3 INT-EN.
 
-**Design review** (2026-10-22, before ordering): [`hardware/DESIGN-REVIEW-video-v2.0.md`](../../hardware/DESIGN-REVIEW-video-v2.0.md) -
+**Design review** (2026-10-22, before ordering): [`hardware/cards/video/reviews/v2.0.md`](../../hardware/cards/video/reviews/v2.0.md) -
 3 HIGH (the bootloader driving BUSY, the Mini-DIN footprint, the firmware's host-to-device bit count), 9 MED, 11 LOW, 6
 INFO. All HIGH and MED fixes are in the design and the firmware (the status of every finding is at the top of the
 review); a re-review of the changed slot logic, direct mode and the text-only build comes before ordering.
-**Re-review** (2026-10-23): [`hardware/DESIGN-REVIEW-video-v2.0-r2.md`](../../hardware/DESIGN-REVIEW-video-v2.0-r2.md) - HIGH 0, MED 1, LOW 9, INFO 6; order after R2-1 (the MD-60SM side-leg slots, 0.8 mm -> 1.2 mm). **Every finding applied 2026-10-23** (the status table at the top of the re-review): R2-1 the side-leg slots 1.2 x 2.6 mm, R2-2 IC55's socket clearance (and a socket-outline check over the whole board), R2-3 the bus -RESET buffered by IC54/C, R2-14 `verify`'s list (`560977b`); R2-7 the 6845's B grade and C16's 16 V, R2-8 the README, R2-9 the silkscreen (overlaps 40 -> 0), R2-5 the counted-register windows in the timing test, R2-10 the firmware's reply filter; R2-4, R2-11 and R2-5's rules are the driver's, R2-6, R2-12, R2-15, R2-16 bench measurements. **Ready to order**; what to upload: the card's README, "Ordering".
+**Re-review** (2026-10-23): [`hardware/cards/video/reviews/v2.0-r2.md`](../../hardware/cards/video/reviews/v2.0-r2.md) - HIGH 0, MED 1, LOW 9, INFO 6; order after R2-1 (the MD-60SM side-leg slots, 0.8 mm -> 1.2 mm). **Every finding applied 2026-10-23** (the status table at the top of the re-review): R2-1 the side-leg slots 1.2 x 2.6 mm, R2-2 IC55's socket clearance (and a socket-outline check over the whole board), R2-3 the bus -RESET buffered by IC54/C, R2-14 `verify`'s list (`560977b`); R2-7 the 6845's B grade and C16's 16 V, R2-8 the README, R2-9 the silkscreen (overlaps 40 -> 0), R2-5 the counted-register windows in the timing test, R2-10 the firmware's reply filter; R2-4, R2-11 and R2-5's rules are the driver's, R2-6, R2-12, R2-15, R2-16 bench measurements. **Ready to order**; what to upload: the card's README, "Ordering".
 
 **Software to follow**: the ROM's V2.0 driver (IN PC with bit 3, the 6845 through OUT PA/PB, drawing in direct mode),
 the keyboard behind the console vectors, the emulators' V2.0 card model, Y1/OS `video`. `python3 tools/vidsim.py overlay
