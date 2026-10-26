@@ -75,13 +75,59 @@ nav:
       - Address + TMP (retired): docs/cards/address-tmp.md
       - Protocard: docs/cards/protocard.md
   - Design reviews:
-      - Video V2.0 independent review (2026-10-26): hardware/cards/video/reviews/v2.0-r3.md
-      - Video V2.0 re-review (2026-10-23): hardware/cards/video/reviews/v2.0-r2.md
-      - Video V2.0 (2026-10-22): hardware/cards/video/reviews/v2.0.md
-      - Memory v2.0 (2026-10-23): hardware/cards/memory/reviews/v2.0.md
-      - Datapath cards (2026-09-21): hardware/reviews/datapath-2026-09-21.md
-      - Control paths and I/O (2026-09-21): hardware/reviews/control-io-2026-09-21.md
-      - Mechanical pass (2026-09-21): hardware/reviews/mechanical-2026-09-21.md
+      - Several cards, 2026-09-21:
+          - Mechanical pass, every board: hardware/reviews/mechanical-2026-09-21.md
+          - Datapath cards: hardware/reviews/datapath-2026-09-21.md
+          - Control paths and I/O: hardware/reviews/control-io-2026-09-21.md
+      - Backplane:
+          - V2.0 control paths and I/O (2026-09-21): hardware/bus/backplane/reviews/v2.0-control-io-2026-09-21.md
+          - V2.0 mechanical pass (2026-09-21): hardware/bus/backplane/reviews/v2.0-mechanical-2026-09-21.md
+      - Sequencer logic:
+          - V2.1 control paths and I/O (2026-09-21): hardware/cards/sequencer-logic/reviews/v2.1-control-io-2026-09-21.md
+          - V2.1 mechanical pass (2026-09-21): hardware/cards/sequencer-logic/reviews/v2.1-mechanical-2026-09-21.md
+      - Sequencer memory:
+          - V2.1 control paths and I/O (2026-09-21): hardware/cards/sequencer-memory/reviews/v2.1-control-io-2026-09-21.md
+          - V2.1 mechanical pass (2026-09-21): hardware/cards/sequencer-memory/reviews/v2.1-mechanical-2026-09-21.md
+          - EEPROM adaptor mechanical pass (2026-09-21): hardware/cards/sequencer-memory/reviews/eeprom-adaptor-mechanical-2026-09-21.md
+      - ALU:
+          - V3.2 datapath (2026-09-21): hardware/cards/alu/reviews/v3.2-datapath-2026-09-21.md
+          - V3.2 mechanical pass (2026-09-21): hardware/cards/alu/reviews/v3.2-mechanical-2026-09-21.md
+      - Index registers:
+          - V1.1 datapath (2026-09-21): hardware/cards/register/reviews/v1.1-datapath-2026-09-21.md
+          - V1.1 mechanical pass (2026-09-21): hardware/cards/register/reviews/v1.1-mechanical-2026-09-21.md
+      - Memory:
+          - V2.0 before the build (2026-10-23): hardware/cards/memory/reviews/v2.0.md
+          - V1.3 datapath (2026-09-21): hardware/cards/memory/reviews/v1.3-datapath-2026-09-21.md
+          - V1.3 mechanical pass (2026-09-21): hardware/cards/memory/reviews/v1.3-mechanical-2026-09-21.md
+      - I/O:
+          - V1.1 control paths and I/O (2026-09-21): hardware/cards/io/reviews/v1.1-control-io-2026-09-21.md
+          - V1.1 mechanical pass (2026-09-21): hardware/cards/io/reviews/v1.1-mechanical-2026-09-21.md
+      - Video:
+          - V2.0 independent review r3 (2026-10-26): hardware/cards/video/reviews/v2.0-r3.md
+          - V2.0 re-review (2026-10-23): hardware/cards/video/reviews/v2.0-r2.md
+          - V2.0 review (2026-10-22): hardware/cards/video/reviews/v2.0.md
+          - V1.1 control paths and I/O (2026-09-21): hardware/cards/video/reviews/v1.1-control-io-2026-09-21.md
+          - V1.1 mechanical pass (2026-09-21): hardware/cards/video/reviews/v1.1-mechanical-2026-09-21.md
+      - Bus tester:
+          - V1.1 control paths and I/O (2026-09-21): hardware/cards/bus-tester/reviews/v1.1-control-io-2026-09-21.md
+          - V3.1 mechanical pass (2026-09-21): hardware/cards/bus-tester/reviews/v3.1-mechanical-2026-09-21.md
+          - V1.1 mechanical pass (2026-09-21): hardware/cards/bus-tester/reviews/v1.1-mechanical-2026-09-21.md
+      - 16-byte switch ROM:
+          - V1.1 datapath, with the RAM latch (2026-09-21): hardware/cards/mem-switch/reviews/v1.1-datapath-2026-09-21.md
+          - V1.1 mechanical pass (2026-09-21): hardware/cards/mem-switch/reviews/v1.1-mechanical-2026-09-21.md
+      - 16-byte RAM latch:
+          - V1.0 datapath (2026-09-21): hardware/cards/mem-register/reviews/v1.0-datapath-2026-09-21.md
+          - V1.0 mechanical pass (2026-09-21): hardware/cards/mem-register/reviews/v1.0-mechanical-2026-09-21.md
+      - Protocard:
+          - V1.0 mechanical pass (2026-09-21): hardware/cards/protocard/reviews/v1.0-mechanical-2026-09-21.md
+      - Blank card:
+          - V3.2 mechanical pass (2026-09-21): hardware/bus/blank-card/reviews/v3.2-mechanical-2026-09-21.md
+          - V3.1 mechanical pass (2026-09-21): hardware/bus/blank-card/reviews/v3.1-mechanical-2026-09-21.md
+      - Bus template:
+          - V3.2 mechanical pass (2026-09-21): hardware/bus/bus-template/reviews/v3.2-mechanical-2026-09-21.md
+      - Bus jumpers:
+          - Horizontal V3.2 mechanical pass (2026-09-21): hardware/bus/bus-jumper-horizontal/reviews/v3.2-mechanical-2026-09-21.md
+          - Vertical V3.0 mechanical pass (2026-09-21): hardware/bus/bus-jumper-vertical/reviews/v3.0-mechanical-2026-09-21.md
   - Programming:
       - Overview: docs/programming/README.md
       - Instruction set: docs/programming/ISA-REFERENCE.md
