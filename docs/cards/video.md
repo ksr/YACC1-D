@@ -254,7 +254,7 @@ If it misbehaves:
 | V2.0 | KiCad master since 2026-10-22 | design only, not ordered | v1.3 plus a **graphics layer** (8-dot mode: 512 x 192, a time-shared 62256 behind the window $D800-$DFFF, two pages), the **6845 and every register on I/O ports PA-PE** (the JP1 latch and the memory-mapped 6845 gone), **two PS/2 ports** on an ATmega328P (`embedded/video-ps2`) with an INT jumper; 218 mm, 4 layers, schematic and board generated from `v20_netlist.py` ([the V2.0 page](video-v2.md), `hardware/cards/video/kicad/v2.0/README.md`) |
 
 The v1.1 board as KiCad renders it, populated (`hardware/cards/video/kicad/v1.1/video-v1.1.kicad_pcb`, rendered
-2026-10-11 by `tools/render_populated.py`, which gives each Eagle-converted part KiCad's standard 3D model in a copy of
+2026-10-27 by `tools/render_populated.py`, which gives each Eagle-converted part KiCad's standard 3D model in a copy of
 the board: plain chips without markings; the RCA jack has no model and shows as its pads):
 
 [![Video card v1.1, populated](images/video-v1.1-render-angled.png)](images/video-v1.1-render-angled.png "Open full size")

@@ -7,7 +7,8 @@ The board file itself is never changed.
     python3 tools/render_populated.py BOARD.kicad_pcb OUT_PREFIX [--check]
 
 writes OUT_PREFIX-top.png (flat, from above), OUT_PREFIX-bottom.png and OUT_PREFIX-angled.png (a three-quarter view),
-all with KiCad's high-quality renderer. --check only lists what each footprint gets.
+all with KiCad's high-quality renderer and turned so the bus connector is at the bottom (Ken, 2026-10-27: every card
+shown connector down). --check only lists what each footprint gets.
 
 Each rule names the standard model and two of its pads: the model is placed so its first pad sits on the footprint's
 pad of that name, and turned (in 90-degree steps) so the line to the second pad points the same way as on the board.
@@ -119,11 +120,13 @@ def main():
         pcb = os.path.join(os.path.dirname(os.path.abspath(board)), ".render-populated.kicad_pcb")
         open(pcb, "w", encoding="utf-8").write(text)
         try:
-            views = {"top": ["--side", "top"], "bottom": ["--side", "bottom"],
-                     "angled": ["--side", "top", "--perspective", "--rotate", "-40,0,20", "--zoom", "0.9", "--floor"]}
+            # the cards' bus connector is on their left edge in the board files: turning the view 90 degrees puts it at
+            # the bottom (the angled view keeps its 20-degree turn on top of that), so the pictures are portrait
+            views = {"top": ["--side", "top", "--rotate", "0,0,90"], "bottom": ["--side", "bottom", "--rotate", "0,0,90"],
+                     "angled": ["--side", "top", "--perspective", "--rotate", "-40,0,110", "--zoom", "0.65", "--floor"]}
             for view, args in views.items():
                 out = "%s-%s.png" % (prefix, view)
-                subprocess.run([CLI, "pcb", "render", "--quality", "high", "--width", "2000", "--height", "1400",
+                subprocess.run([CLI, "pcb", "render", "--quality", "high", "--width", "1400", "--height", "2000",
                                 "--background", "opaque" if view == "angled" else "transparent"] + args +
                                ["-o", out, pcb], check=True, capture_output=True)
                 print("wrote", out)

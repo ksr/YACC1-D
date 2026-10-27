@@ -42,7 +42,7 @@ order was resolved 2026-09-26: a floppy pinout in J3's order, so the J3 cable is
 ## 2. The board
 
 The v2.0 board as KiCad renders it, populated (`hardware/cards/memory/kicad/v2.0/memory-v2.0.kicad_pcb`, rendered
-2026-10-11 by `tools/render_populated.py`, which gives each Eagle-converted part KiCad's standard 3D model in a copy of
+2026-10-27 by `tools/render_populated.py`, which gives each Eagle-converted part KiCad's standard 3D model in a copy of
 the board: plain chips without markings; the U$1 3x8 jumper block has no model), with the CF section and the adapter's
 standoff outline at the right (the adapter itself is not drawn):
 

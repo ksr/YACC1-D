@@ -14,7 +14,7 @@ V2.0", the two design reviews linked below, `embedded/video-ps2/README.md`, and 
 ## 1. The card
 
 The V2.0 board as KiCad renders it, populated (`hardware/cards/video/kicad/v2.0/video-v2.0.kicad_pcb`, rendered
-2026-10-24 by `tools/render_populated.py`: plain chips without markings; the two Mini-DIN PS/2 sockets and the RCA jack
+2026-10-27 by `tools/render_populated.py`: plain chips without markings; the two Mini-DIN PS/2 sockets and the RCA jack
 have no 3D model and show as their pads):
 
 [![Video card V2.0, populated](images/video-v2.0-render-angled.png)](images/video-v2.0-render-angled.png "Open full size")
