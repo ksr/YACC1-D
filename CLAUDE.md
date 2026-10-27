@@ -55,6 +55,10 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
   - Every reference designator stays readable with the parts fitted: never under a chip, socket or module, and with
     the IC type beside it.
   - Every switch, button and LED carries its function on the silk, and each position of a switch is labelled.
+  - `cottageworker.com` on the silk beside the board's name and revision (Ken, 2026-10-26), replacing
+    `onepagecomputer.com`. Video V2.0 has it. Existing boards keep `onepagecomputer.com`, including the
+    never-ordered blank card V3.2, CF v1.0 and bus tester V3.1 (Ken, 2026-10-27: the rule only, no board edits);
+    they get the new URL when next revised.
 
   **Scope:**
   - **Always ask Ken before changing a card that might be built, ordered or in production**: any change at all,

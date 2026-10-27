@@ -30,6 +30,9 @@ Source: [`CLAUDE.md`](../CLAUDE.md) (board-layout rules, 2026-10-24).
 - Every switch, button and LED is labelled with its function (RESET, STEP, RUN, ...), and each switch position with
   what it selects.
 - Placement drawings (PDF) show the outline and the parts in one orientation, on a sheet shaped like the board.
+- `cottageworker.com` on the silkscreen, beside the board's name and revision (2026-10-26). It replaces the old
+  `onepagecomputer.com`, which stays on the boards already built or ordered and on the never-ordered designs (blank
+  card V3.2, CF v1.0, bus tester V3.1) until one of them is next revised.
 
 Silk sizes used on the video card V2.0, the first board drawn to these rules: text 1.0 mm high, 0.15 mm strokes,
 card name 1.5 mm; 0.15 mm from other silk, 0.2 mm from pads, 0.4 mm from the board edge
@@ -84,7 +87,8 @@ card name 1.5 mm; 0.15 mm from other silk, 0.2 mm from pads, 0.4 mm from the boa
 | JLCPCB orders: FR-4, 4 layers, 1.6 mm, 1 oz outer / 0.5 oz inner, green mask, white silk, leaded HASL, plugged vias; separate PTH and NPTH drill files | memory v2.0 order and README, video V2.0 README |
 
 Seen on every board but not written down as a rule: the silk title reads `YACC1 <CARD> V<x.y>`; the Eagle boards use
-an OSH Park design-rule set.
+an OSH Park design-rule set. Every board before the video card V2.0 carries `onepagecomputer.com` (section 1: new
+boards carry `cottageworker.com`).
 
 ## 7. Exceptions
 
