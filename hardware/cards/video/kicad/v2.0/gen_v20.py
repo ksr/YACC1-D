@@ -275,10 +275,11 @@ SHEETS = [
      "build only (README). IC44/B is held cleared: its Q = IN PC bit 3 (0 = the graphics chips are fitted)."),
     ("video", "Video out", "DOT COMBINE AND VIDEO OUT (GRAPHICS ONLY IN 8-DOT MODE)",
      _u("IC1", 3, 4) + _u("IC47", 1) + _u("IC46", 4, 5) + _u("IC32", 2) + _u("IC48", 1, 2) + _u("IC27", 1, 2, 3) +
-     _all("R11", "R12", "X2", "J1"), None,
+     _all("R11", "R12", "X2", "J1") + _u("IC54", 4) + _u("IC46", 6) + _all("JP4"), None,
      "Text dot TD AND TEXT-ON, graphics dot GDOT AND GFX-ON AND EIGHT; TEXT OR GRAPHICS, or with XOR set the\n"
      "exclusive OR (IC48/A,B, IC32/B); gated by DE3 (IC48/B). IC27 (7416, open collector) drives the DB9 TTL video\n"
-     "(7 video, 8 HSYNC, 9 VSYNC) and the composite RCA (video into the sync node R11 / R12)."),
+     "(7 video, 8 HSYNC, 9 VSYNC) and the composite RCA (video into the sync node R11 / R12). DB9 pin 9: VSYNC\n"
+     "buffered by IC54/D, JP4 1-2 = +VSYNC (TV rate, CGA), 2-3 = -VSYNC through IC46/F (MDA)."),
     ("ps2", "PS2", "PS/2: ATMEGA328P, LATCHES ON PD / PE, FTDI, -INT, RESET",
      _all("IC49", "Y1", "C55", "C56", "R16", "C57", "J4", "R21") + _u("IC54", 3) + _u("IC27", 5, 6) +
      _all("IC50", "IC51", "IC52") + _u("IC53", 1, 2) + _u("IC47", 4) + _u("IC54", 2) + _u("IC27", 4) +
@@ -289,7 +290,7 @@ SHEETS = [
     ("power", "Power", "POWER UNITS, DECOUPLING, POWER LED, SPARE GATES",
      _all("R2", "LED1"), (None, "top"),
      "One 100 nF per IC beside its VCC pin (C54 at the ATmega's AVCC), C16 47 uF bulk. The bus supplies VCC and GND\n"
-     "(X1, six pins each): the PWR_FLAGs. Spare: IC46/F (input on GND), IC54/D (inputs on GND), IC38's fourth section."),
+     "(X1, six pins each): the PWR_FLAGs. Spare: IC38's fourth section."),
 ]
 
 
@@ -299,7 +300,7 @@ def _power_units(S):
         s = S.lib(gen_cf.SYM_SUB.get(N.PARTS[ref][1], N.PARTS[ref][1]))
         if ref.startswith("IC") and len(s.units) > 1:
             out.append((ref, s.units[-1]))
-    return out + _u("IC46", 6) + _u("IC54", 4) + [(c, 1) for c in sorted(N.DECOUPLE, key=lambda r: int(r[1:]))] + \
+    return out + [(c, 1) for c in sorted(N.DECOUPLE, key=lambda r: int(r[1:]))] + \
         [("C16", 1)]
 
 
@@ -631,6 +632,8 @@ PLACE = {
     "J2": (X1R, 70.0, 0), "J3": (X1R, 88.0, 0),                 # MD-60SM: the mating face at the board edge
     "R17": (213.6, 60.0, 270), "R18": (216.9, 60.0, 270), "R19": (213.6, 78.0, 270), "R20": (216.9, 78.0, 270),
     "J4": (212.0, 99.0, 0), "JP3": (204.5, 16.0, 0),
+    # 2026-10-26: the DB9's VSYNC polarity jumper, standing beside the DB9 (pin 1 at the top)
+    "JP4": (217.5, 32.25, 0),
     "LED1": (227.0, 118.5, 0), "R2": (213.0, 118.5, 0),
     # between rows A and B: the sync node resistors
     "R11": (186.0, 41.5, 0), "R12": (196.0, 41.5, 0),
@@ -777,12 +780,15 @@ _jp2x, _jp2y = PLACE["JP2"][:2]
 SILK += [("ON=8 OFF=6", _jp2x - 1.2, _jp2y - 7.0, 1.0, 90)]
 _jp3x, _jp3y = PLACE["JP3"][:2]
 SILK += [("ON: PS/2 -INT", _jp3x + 1.8, _jp3y, 1.0), ("OFF: NO -INT", _jp3x + 1.8, _jp3y + 2.54, 1.0)]
+# JP4: 1-2 the DB9's VSYNC positive (a TV-rate or CGA monitor), 2-3 negative (an MDA monitor); each beside its end pin
+_jp4x, _jp4y = PLACE["JP4"][:2]
+SILK += [("+VS CGA", _jp4x - 4.6, _jp4y, 1.0, 0), ("-VS MDA", _jp4x - 4.6, _jp4y + 5.08, 1.0, 0)]
 # the text beside a reference (board-layout rules): each IC's type, the LED's and the jumpers' function. The IC types are
 # the parts' values, shortened where the value is long: the 6845 (HD68B45SP / MC68B45P), the 28C64 (AT28C64B-15),
 # the ATmega328P (ATmega328P-P)
 TYPE_SHORT = {"IC17": "6845", "IC25": "28C64", "IC49": "ATmega328P"}
 COMPANION = dict({r: TYPE_SHORT.get(r, v[0]) for r, v in N.PARTS.items() if r.startswith("IC")},
-                 LED1="PWR", JP2="DOTS", JP3="INT-EN", SV3="BLOCK", SV4="DOTCLK")
+                 LED1="PWR", JP2="DOTS", JP3="INT-EN", JP4="VSYNC", SV3="BLOCK", SV4="DOTCLK")
 UNCONNECTED = {}                                         # filled from the schematic's netlist by board()
 
 
@@ -1184,6 +1190,11 @@ KEY = [
     ("IC53", "1", "FULLCLR"), ("IC53", "3", "LDDATA"), ("IC53", "5", "FULL"),
     ("IC40", "2", "DATA0"), ("IC40", "18", "GD0"), ("IC40", "17", "DATA7"), ("IC40", "3", "GD7"),
     ("J2", "S", "GND"), ("J3", "S", "GND"),
+    # 2026-10-26: the DB9 - VSYNC buffered (IC54/D), its polarity by JP4 (inverted by IC46/F); pins 1 and 2 ground
+    ("IC17", "40", "VSYNC"), ("IC54", "12", "VSYNC"), ("IC54", "13", "VSYNC"), ("IC54", "11", "VSBUF"),
+    ("IC46", "13", "VSBUF"), ("JP4", "1", "VSBUF"), ("IC46", "12", "NVSYNC"), ("JP4", "3", "NVSYNC"),
+    ("JP4", "2", "DB9VS"), ("X2", "9", "DB9VS"), ("IC17", "39", "HSYNC"), ("X2", "8", "HSYNC"), ("X2", "7", "VIDEO"),
+    ("X2", "1", "GND"), ("X2", "2", "GND"),
 ]
 
 

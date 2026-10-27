@@ -1,9 +1,9 @@
 YACC1 video card v2.0 - PCB order parameters (JLCPCB)            *** NOT ORDERED ***
-Gerbers exported 2026-10-24 from video-v2.0.kicad_pcb as committed in d42fc33 (kicad-cli, the memory card v2.0's
-export options: finish_v2.py fab): the board-layout rules' silkscreen (IC types beside the references, no reference
-under a part or its socket, the jumpers' and the LED's functions). Against the export of 2026-10-23 (ed7c060) only
-F_Silkscreen differs; every copper layer, both masks, B_Silkscreen, Edge_Cuts, both drill files and both drill maps
-are identical apart from their date lines.
+Gerbers exported 2026-10-27 from video-v2.0.kicad_pcb (kicad-cli, the memory card v2.0's export options:
+finish_v2.py fab): the board with the DB9's VSYNC polarity jumper JP4 (2026-10-26), routed afresh by build.sh
+2026-10-27, with the board-layout rules' silkscreen (IC types beside the references, no reference under a part or
+its socket, the jumpers' and the LED's functions, cottageworker.com). Every copper layer, both masks and both drill
+files are new against the exports of 2026-10-24 / 2026-10-26 (the route of 2026-10-23, ed7c060).
 
 The same stack-up and options as the memory card v2.0's order (JLCPCB 2000765A-Y52, 2026-10-09,
 ../../memory/kicad/v2.0/memory-v2.0-jlcpcb-order.txt):
@@ -27,13 +27,13 @@ Layer stack (top to bottom), the gerbers in the zip:
   L3  video-v2.0-In2_Cu.gbr   VCC plane (solid, thermal reliefs on the VCC pads)
   L4  video-v2.0-B_Cu.gbr     signals (bottom)
   plus F_Mask, B_Mask, F_Silkscreen, B_Silkscreen (empty), Edge_Cuts, the Excellon drill files and the drill maps:
-  video-v2.0-PTH.drl plated: 1317 round holes (285 vias of 0.4 mm, the component holes 0.71-3.30 mm) and the
+  video-v2.0-PTH.drl plated: 1349 round holes (314 vias of 0.4 mm, the component holes 0.71-3.30 mm) and the
   Mini-DIN jacks' six plated slots (2 x 0.8 x 2.3 mm, 4 x 1.2 x 2.6 mm side legs);
   video-v2.0-NPTH.drl non-plated: the bus connector X1's two 2.79 mm mounting holes.
 
 Design minimums on this board: track 0.25 mm, clearance 0.2 mm, via 0.8 mm pad / 0.4 mm drill;
-285 vias, all through vias; every part through-hole (no SMD, no assembly, no stencil).
+314 vias, all through vias; every part through-hole (no SMD, no assembly, no stencil).
 
-Checks on the board these gerbers came from (2026-10-24, the route of build.sh 2026-10-23 with the silkscreen placed
-again by gen_v20.py silk): netlist proof MATCH 216/216, DRC 0 unconnected, no copper findings, schematic parity 0,
-silk_overlap 0; both planes one piece; verify PASS (189 connections); placement and socket check PASS.
+Checks on the board these gerbers came from (build.sh 2026-10-27, component order 3: 0 unrouted, 314 vias):
+netlist proof MATCH 219/219, DRC 0 unconnected, no copper findings, schematic parity 0, silk_overlap 0; both planes
+one piece; verify PASS (204 connections); placement and socket check PASS.

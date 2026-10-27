@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.kicad.org/drc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-10-24T09:23:45",
+    "date": "2026-10-27T01:06:25",
     "ignored_checks": [
         {
             "description": "Footprint has no courtyard defined",
@@ -44,56 +44,10 @@
                 {
                     "description": "Segment on Edge.Cuts",
                     "pos": {
-                        "x": 236.167,
-                        "y": 10.025
-                    },
-                    "uuid": "49a66874-bf2b-4d9d-b91d-26afd8155b31"
-                },
-                {
-                    "description": "Segment of J1 on F.Silkscreen",
-                    "pos": {
-                        "x": 232.377,
-                        "y": 50.335
-                    },
-                    "uuid": "bf8868fc-1301-4f25-93a3-cebda3407ea8"
-                }
-            ],
-            "severity": "warning",
-            "type": "silk_edge_clearance"
-        },
-        {
-            "description": "Silkscreen clipped by board edge",
-            "items": [
-                {
-                    "description": "Segment on Edge.Cuts",
-                    "pos": {
-                        "x": 236.167,
-                        "y": 10.025
-                    },
-                    "uuid": "49a66874-bf2b-4d9d-b91d-26afd8155b31"
-                },
-                {
-                    "description": "Segment of J1 on F.Silkscreen",
-                    "pos": {
-                        "x": 238.727,
-                        "y": 57.955
-                    },
-                    "uuid": "f729d6be-4b37-4175-a6d1-c9db80e3a1d3"
-                }
-            ],
-            "severity": "warning",
-            "type": "silk_edge_clearance"
-        },
-        {
-            "description": "Silkscreen clipped by board edge",
-            "items": [
-                {
-                    "description": "Segment on Edge.Cuts",
-                    "pos": {
                         "x": 17.747,
                         "y": 123.995
                     },
-                    "uuid": "c483dfd4-262c-48c5-99d8-af8f3f5ed0d5"
+                    "uuid": "0a0fb672-2864-4e77-b456-8494d02729a0"
                 },
                 {
                     "description": "Segment of X1 on F.Silkscreen",
@@ -101,7 +55,7 @@
                         "x": 19.017,
                         "y": 24.935
                     },
-                    "uuid": "0ca64a75-533e-4bbc-a1bd-a423d2433461"
+                    "uuid": "c911a410-2141-4add-a502-0527fb7f0127"
                 }
             ],
             "severity": "warning",
@@ -116,7 +70,7 @@
                         "x": 17.747,
                         "y": 123.995
                     },
-                    "uuid": "c483dfd4-262c-48c5-99d8-af8f3f5ed0d5"
+                    "uuid": "0a0fb672-2864-4e77-b456-8494d02729a0"
                 },
                 {
                     "description": "Segment of X1 on F.Silkscreen",
@@ -124,7 +78,7 @@
                         "x": 19.017,
                         "y": 108.755
                     },
-                    "uuid": "8413268b-c027-4a64-a6b0-fe1d136bdfcf"
+                    "uuid": "4d0a6060-22ca-472a-8d74-c04a935e9b75"
                 }
             ],
             "severity": "warning",
@@ -139,7 +93,7 @@
                         "x": 17.747,
                         "y": 123.995
                     },
-                    "uuid": "c483dfd4-262c-48c5-99d8-af8f3f5ed0d5"
+                    "uuid": "0a0fb672-2864-4e77-b456-8494d02729a0"
                 },
                 {
                     "description": "Segment of X1 on F.Silkscreen",
@@ -147,7 +101,7 @@
                         "x": 22.827,
                         "y": 19.855
                     },
-                    "uuid": "022d92b5-ae11-40fc-9fa1-9b159fef9522"
+                    "uuid": "aadaec02-7967-4d49-a20e-4bf8748037e5"
                 }
             ],
             "severity": "warning",
@@ -162,7 +116,7 @@
                         "x": 17.747,
                         "y": 123.995
                     },
-                    "uuid": "c483dfd4-262c-48c5-99d8-af8f3f5ed0d5"
+                    "uuid": "0a0fb672-2864-4e77-b456-8494d02729a0"
                 },
                 {
                     "description": "Segment of X1 on F.Silkscreen",
@@ -170,7 +124,7 @@
                         "x": 22.827,
                         "y": 113.7951
                     },
-                    "uuid": "582a381a-380d-4218-822f-18305319b6e5"
+                    "uuid": "fa781ff8-6bc2-40b0-a0d9-164b3879e421"
                 }
             ],
             "severity": "warning",
@@ -185,7 +139,53 @@
                         "x": 236.167,
                         "y": 10.025
                     },
-                    "uuid": "49a66874-bf2b-4d9d-b91d-26afd8155b31"
+                    "uuid": "451065b2-79c2-403c-a52e-ac38ab9a6d8e"
+                },
+                {
+                    "description": "Segment of J1 on F.Silkscreen",
+                    "pos": {
+                        "x": 232.377,
+                        "y": 50.335
+                    },
+                    "uuid": "8fcd308d-c18f-4787-b6cf-588dad1ecaee"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 236.167,
+                        "y": 10.025
+                    },
+                    "uuid": "451065b2-79c2-403c-a52e-ac38ab9a6d8e"
+                },
+                {
+                    "description": "Segment of J1 on F.Silkscreen",
+                    "pos": {
+                        "x": 238.727,
+                        "y": 57.955
+                    },
+                    "uuid": "30f01202-2a47-4013-9fd2-5e0d770e655a"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 236.167,
+                        "y": 10.025
+                    },
+                    "uuid": "451065b2-79c2-403c-a52e-ac38ab9a6d8e"
                 },
                 {
                     "description": "Segment of X2 on F.Silkscreen",
@@ -193,7 +193,7 @@
                         "x": 235.806,
                         "y": 20.617
                     },
-                    "uuid": "c03d745b-882b-4f54-86ce-eca5df2fc5a9"
+                    "uuid": "f96b4102-ad47-47fb-b8c9-265b5260a09f"
                 }
             ],
             "severity": "warning",
@@ -208,7 +208,7 @@
                         "x": 236.167,
                         "y": 10.025
                     },
-                    "uuid": "49a66874-bf2b-4d9d-b91d-26afd8155b31"
+                    "uuid": "451065b2-79c2-403c-a52e-ac38ab9a6d8e"
                 },
                 {
                     "description": "Segment of X2 on F.Silkscreen",
@@ -216,7 +216,7 @@
                         "x": 235.806,
                         "y": 36.873
                     },
-                    "uuid": "e8aff137-9866-4937-b625-84835599a58c"
+                    "uuid": "13c6c5fd-d193-49d0-9ce2-1fa9a843ec5a"
                 }
             ],
             "severity": "warning",
@@ -231,7 +231,7 @@
                         "x": 223.487,
                         "y": 16.2228
                     },
-                    "uuid": "143d322e-9119-425d-bf91-b3193c7d9877"
+                    "uuid": "80251a5a-adb9-4f18-8a5d-7b8e27aabb04"
                 },
                 {
                     "description": "PTH pad G1 [GND] of X2",
@@ -239,30 +239,7 @@
                         "x": 223.487,
                         "y": 16.2228
                     },
-                    "uuid": "9a7a698a-0690-47eb-9956-ea6d5b724a74"
-                }
-            ],
-            "severity": "warning",
-            "type": "silk_over_copper"
-        },
-        {
-            "description": "Silkscreen clipped by solder mask",
-            "items": [
-                {
-                    "description": "Circle of X2 on F.Silkscreen",
-                    "pos": {
-                        "x": 223.487,
-                        "y": 41.2672
-                    },
-                    "uuid": "e8f724d7-d948-4a57-9ec5-774b362a2321"
-                },
-                {
-                    "description": "PTH pad G2 [GND] of X2",
-                    "pos": {
-                        "x": 223.487,
-                        "y": 41.2672
-                    },
-                    "uuid": "14cc14a1-8b83-4132-98aa-c3eaa08ca058"
+                    "uuid": "c00da9b8-1846-4b85-b212-e89be7391589"
                 }
             ],
             "severity": "warning",
@@ -277,30 +254,7 @@
                         "x": 227.297,
                         "y": 59.225
                     },
-                    "uuid": "08708834-a714-4fb3-8fa0-aab49f42ff71"
-                },
-                {
-                    "description": "PTH pad C1 [/SYNC] of J1",
-                    "pos": {
-                        "x": 227.297,
-                        "y": 54.145
-                    },
-                    "uuid": "41f70a74-bd60-48cf-abff-1535c0cd080c"
-                }
-            ],
-            "severity": "warning",
-            "type": "silk_over_copper"
-        },
-        {
-            "description": "Silkscreen clipped by solder mask",
-            "items": [
-                {
-                    "description": "Segment of J1 on F.Silkscreen",
-                    "pos": {
-                        "x": 227.297,
-                        "y": 59.225
-                    },
-                    "uuid": "08708834-a714-4fb3-8fa0-aab49f42ff71"
+                    "uuid": "b0fbb7f2-d19d-4cce-8435-64854f0579d9"
                 },
                 {
                     "description": "PTH pad S3 [GND] of J1",
@@ -308,7 +262,7 @@
                         "x": 227.297,
                         "y": 59.225
                     },
-                    "uuid": "717f8048-44c4-4f78-96bf-44d030814bbd"
+                    "uuid": "28607ce8-5ab8-403a-8c60-63d00892b2db"
                 }
             ],
             "severity": "warning",
@@ -323,7 +277,30 @@
                         "x": 227.297,
                         "y": 59.225
                     },
-                    "uuid": "08708834-a714-4fb3-8fa0-aab49f42ff71"
+                    "uuid": "b0fbb7f2-d19d-4cce-8435-64854f0579d9"
+                },
+                {
+                    "description": "PTH pad C1 [/SYNC] of J1",
+                    "pos": {
+                        "x": 227.297,
+                        "y": 54.145
+                    },
+                    "uuid": "3ad62aac-0187-448d-882d-07caf23732ab"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of J1 on F.Silkscreen",
+                    "pos": {
+                        "x": 227.297,
+                        "y": 59.225
+                    },
+                    "uuid": "b0fbb7f2-d19d-4cce-8435-64854f0579d9"
                 },
                 {
                     "description": "PTH pad S1 [GND] of J1",
@@ -331,7 +308,7 @@
                         "x": 227.297,
                         "y": 49.065
                     },
-                    "uuid": "4e3ab61d-6089-490f-a3fe-3cae44d2abb1"
+                    "uuid": "cdca3457-7630-4360-8bac-dd69fe340077"
                 }
             ],
             "severity": "warning",
@@ -346,7 +323,7 @@
                         "x": 227.297,
                         "y": 49.065
                     },
-                    "uuid": "5b237dc6-c7b6-444f-8379-ef31504105dc"
+                    "uuid": "a803504d-1d03-4085-a69e-ee6b6bbda7aa"
                 },
                 {
                     "description": "PTH pad S1 [GND] of J1",
@@ -354,7 +331,7 @@
                         "x": 227.297,
                         "y": 49.065
                     },
-                    "uuid": "4e3ab61d-6089-490f-a3fe-3cae44d2abb1"
+                    "uuid": "cdca3457-7630-4360-8bac-dd69fe340077"
                 }
             ],
             "severity": "warning",
@@ -369,7 +346,7 @@
                         "x": 232.377,
                         "y": 50.335
                     },
-                    "uuid": "1ab67891-fb7f-49e1-9614-622c8e156871"
+                    "uuid": "e7af2914-254c-4d92-b266-d3232ab51473"
                 },
                 {
                     "description": "PTH pad S2 [GND] of J1",
@@ -377,7 +354,7 @@
                         "x": 232.377,
                         "y": 54.145
                     },
-                    "uuid": "ab28e04d-7c10-4ce1-b0f4-aac3c45574cf"
+                    "uuid": "d5264f96-e119-465c-959c-eb11a2768ac3"
                 }
             ],
             "severity": "warning",
@@ -392,7 +369,7 @@
                         "x": 232.377,
                         "y": 59.225
                     },
-                    "uuid": "0b9c6633-088d-4cbb-87be-656fc390e539"
+                    "uuid": "d6d5e2b5-4ec4-452e-9f67-1fa59810bd75"
                 },
                 {
                     "description": "PTH pad S3 [GND] of J1",
@@ -400,7 +377,30 @@
                         "x": 227.297,
                         "y": 59.225
                     },
-                    "uuid": "717f8048-44c4-4f78-96bf-44d030814bbd"
+                    "uuid": "28607ce8-5ab8-403a-8c60-63d00892b2db"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Circle of X2 on F.Silkscreen",
+                    "pos": {
+                        "x": 223.487,
+                        "y": 41.2672
+                    },
+                    "uuid": "7e3cd3ab-eed5-4f12-8d89-c8004cf3393a"
+                },
+                {
+                    "description": "PTH pad G2 [GND] of X2",
+                    "pos": {
+                        "x": 223.487,
+                        "y": 41.2672
+                    },
+                    "uuid": "ac8e2a13-26de-4c49-acb8-3fde054a7291"
                 }
             ],
             "severity": "warning",

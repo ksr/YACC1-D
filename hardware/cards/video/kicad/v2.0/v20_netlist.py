@@ -30,6 +30,11 @@ and two features:
     tells software which build it runs on. text_only_check() proves that these are the only nets the left-off parts
     drive into fitted logic.
 
+Revised 2026-10-26, before the order: the DB9's VSYNC polarity is a jumper, JP4 (1-2 = +VSYNC for a TV-rate or CGA
+monitor, the V1.x cards' polarity; 2-3 = -VSYNC for an IBM 5151 / MDA monitor). IC54/D (74HCT08, the spare) buffers the
+6845's VSYNC, so the DB9 cable and the inverter IC46/F (the other spare) add no load to it (R3-3); X2 pin 2 is grounded
+like pin 1 (both IBM pinouts, MDA and CGA, have GND on pins 1 and 2).
+
 Pin numbers are the physical DIP pins (TI pinouts = the KiCad 74xx symbols'; the 74LS163 uses the 74LS161 symbol, the
 7416 the 74LS05's, the ATmega328P-P the ATmega48PV-10P's: same pinouts). Bus pins: V3.2 DIN 41612 (docs/system/BUS.md).
 Net names: the V1.3 netlist's where a net is kept (its N$ names replaced by names saying what they are).
@@ -37,7 +42,7 @@ Net names: the V1.3 netlist's where a net is kept (its N$ names replaced by name
 
 CARD = "YACC1 video card"
 REV = "V2.0"
-DATE = "2026-10-23"
+DATE = "2026-10-26"
 
 DIP = {n: "Package_DIP:DIP-%d_W7.62mm" % n for n in (14, 16, 20, 28)}
 DIPW = {n: "Package_DIP:DIP-%d_W15.24mm" % n for n in (24, 28, 40, 48)}
@@ -87,7 +92,7 @@ PARTS = {
     "IC46": ("74LS04", "74xx:74LS04", DIP[14], "inverters"),
     "IC47": ("74LS08", "74xx:74LS08", DIP[14], "graphics select, write, FULL clear"),
     "IC48": ("74LS10", "74xx:74LS10", DIP[14], "XOR term, video NAND, slot read latch enable"),
-    "IC54": ("74HCT08", "74xx:74LS08", DIP[14], "-INT = INTREQ AND FULL; the graphics RAM's -OE term; the -RESET buffer for IC27/E (R2-3)"),
+    "IC54": ("74HCT08", "74xx:74LS08", DIP[14], "-INT = INTREQ AND FULL; the graphics RAM's -OE term; the -RESET buffer for IC27/E (R2-3); the DB9 VSYNC buffer"),
     "IC55": ("74HCT244", "74xx:74LS244", DIP[20], "direct-mode read buffer GD -> DATA (GFX-ON = 0)"),
     "RN3":  ("10k x8", "Device:R_Network08", "Resistor_THT:R_Array_SIP9", "GD0-7 pull-ups (GD idles undriven in direct mode)"),
     # --- PS/2
@@ -132,7 +137,8 @@ PARTS = {
              "fitted = 0: 5-6 only = the $D000 block"),
     "SV4":  ("DOTCLK", "Connector_Generic:Conn_01x03", FP_H % 3, "1-2: the crystal, 2-3: half of it"),
     "JP2":  ("DOTS 8=ON", "Connector_Generic:Conn_01x02", FP_H % 2, "fitted: 8 dots (64 x 24, graphics), open: 6 (80 x 24)"),
-    "X2":   ("DB9 F", LOCAL + ":DE9_SHIELD", LOCAL + ":F09HP", "TTL video: 7 video, 8 HSYNC, 9 VSYNC, 1 GND"),
+    "X2":   ("DB9 F", LOCAL + ":DE9_SHIELD", LOCAL + ":F09HP", "TTL video: 7 video, 8 HSYNC, 9 VSYNC (+ or - by JP4), 1 and 2 GND"),
+    "JP4":  ("VSYNC +/-", "Connector_Generic:Conn_01x03", FP_H % 3, "DB9 pin 9: 1-2 +VSYNC (TV rate, CGA), 2-3 -VSYNC (MDA)"),
     "J1":   ("RCA", LOCAL + ":RCA", LOCAL + ":RCA", "composite: video + sync (was U$3)"),
     "C16":  ("47u 16V", "Device:C_Polarized", "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm", "bulk (V2-16)"),
 }
@@ -218,7 +224,7 @@ c("-IO-WR", "IC17.22"); c("CRTCE", "IC17.23", "IC26.8"); c("IO-ADDR0", "IC17.24"
 for i in range(8):
     c("DATA%d" % i, "IC17.%d" % (33 - i))
 c("VROWS2", "IC17.36"); c("VROWS1", "IC17.37"); c("VROWS0", "IC17.38")
-c("HSYNC", "IC17.39", "IC27.5", "X2.8"); c("VSYNC", "IC17.40", "IC27.3", "X2.9", "IC34.4")
+c("HSYNC", "IC17.39", "IC27.5", "X2.8"); c("VSYNC", "IC17.40", "IC27.3", "IC34.4", "IC54.12", "IC54.13")
 
 # ---- clocks: Q2, IC20 oscillator, IC21 /2, SV4, IC28 counter, CHARCLOCK (IC19/C) -------------------------------------
 c("OSCIN", "Q2.1", "R8.1", "IC20.1")
@@ -257,7 +263,10 @@ c("TD", "IC26.6", "IC1.9")
 c("VIDN", "IC48.6", "IC27.1")
 c("VIDEO", "IC27.2", "R11.2", "X2.7")
 c("SYNC", "IC27.4", "IC27.6", "R11.1", "R12.2", "J1.C1"); c("VCC", "R12.1")
-c("GND", "X2.1", "X2.G1", "X2.G2", "J1.S1", "J1.S2", "J1.S3")
+c("GND", "X2.1", "X2.2", "X2.G1", "X2.G2", "J1.S1", "J1.S2", "J1.S3")
+# 2026-10-26: DB9 pin 9 = VSYNC buffered by IC54/D (VSBUF, an HCT input on the 6845's pin) or inverted by IC46/F (NVSYNC),
+# chosen by JP4: 1-2 +VSYNC (TV rate, the CGA 5153), 2-3 -VSYNC (the MDA 5151)
+c("VSBUF", "IC54.11", "IC46.13", "JP4.1"); c("NVSYNC", "IC46.12", "JP4.3"); c("DB9VS", "JP4.2", "X2.9")
 c("PWRLED", "R2.1", "LED1.2"); c("VCC", "R2.2"); c("GND", "LED1.1")
 
 # ---- E for the 6845: -IO-RD XOR -IO-WR (IC26/C) ----------------------------------------------------------------------
@@ -337,14 +346,12 @@ c("GFXON", "IC46.1"); c("NGFX", "IC46.2", "IC32.13", "IC45.12")           # IC46
 c("WEPH", "IC32.12"); c("WEPH2", "IC32.11", "IC45.4")                     # WEPH OR NOT GFX-ON (IC32/D)
 c("OEY", "IC54.3", "IC1.5")                                               # NMUX AND GRDOE (IC54/A); WSLOT = WRQ AND OEY
 c("GSEL", "IC48.9", "IC45.9"); c("MEMRD", "IC48.10", "IC45.10"); c("GFXON", "IC48.11"); c("VCC", "IC45.13")
-c("GND", "IC46.13")                                                       # IC46/F spare
 c("-MEM-RD", "IC46.3"); c("MEMRD", "IC46.4", "IC19.2"); c("-MEM-WR", "IC46.5"); c("MEMWR", "IC46.6", "IC47.10")
 c("TEXTOFF", "IC46.9"); c("TEXTON", "IC46.8", "IC1.10"); c("EIGHT", "IC46.10", "IC47.2")
 c("TDG", "IC1.8", "IC32.4", "IC48.1"); c("GFXON", "IC1.13"); c("GDA", "IC1.11", "IC47.1")
 c("GDG", "IC47.3", "IC32.5", "IC48.2"); c("GSEL", "IC47.6", "IC47.9", "IC19.1")
 c("XORM", "IC48.13"); c("NBOTH", "IC48.12", "IC48.4"); c("GOR", "IC32.6", "IC48.3")
 c("-RESET", "IC54.9"); c("VCC", "IC54.10"); c("RESETB", "IC54.8")       # R2-3: IC54/C buffers -RESET for IC27/E
-c("GND", "IC54.12", "IC54.13")                                           # IC54/D spare
 c("FULLCLR", "IC47.11", "IC53.1"); c("-RESET", "IC47.13")
 
 # ---- PS/2: IC49 ATmega328P, Y1, reset, FTDI, latches IC50-IC52, flags IC53, jacks, INT -------------------------------
@@ -374,8 +381,8 @@ c("INTOC", "IC27.8", "JP3.1"); c("-INT", "JP3.2")
 # ---- pins left open (a no-connect flag each) --------------------------------------------------------------------------
 NO_CONNECT = {
     "IC15": [22], "IC17": [16, 17, 34, 35], "IC18": [5, 7], "IC21": [8, 9, 11], "IC28": [11], "IC22": [3, 6, 11, 14],
-    "IC30": [14, 15, 7], "IC38": [12], "IC44": [6, 8], "IC46": [12], "IC54": [11], "IC25": [1, 26],
-    "IC49": [21], "IC53": [6, 8], "J4": [3], "J2": [2, 6], "J3": [2, 6], "X2": [2, 3, 4, 5, 6],
+    "IC30": [14, 15, 7], "IC38": [12], "IC44": [6, 8], "IC25": [1, 26],
+    "IC49": [21], "IC53": [6, 8], "J4": [3], "J2": [2, 6], "J3": [2, 6], "X2": [3, 4, 5, 6],
 }
 NO_CONNECT = {r: [str(p) for p in ps] for r, ps in NO_CONNECT.items()}
 
@@ -416,6 +423,7 @@ BUY = {
     "X2": "DE-9 female, right-angle PCB mount: the V1.0 card's part, or check a new one's pin pitch first - the F09HP "
           "footprint is 2.74 mm pitch, 2.54 mm between rows (most DE-9s 2.77 / 2.84 mm; R3-16)",
     "J1": "RCA jack, right-angle PCB mount: the V1.0 card's part (the footprint is V1.0's)",
+    "JP4": "1x3 pin header and a shunt: 1-2 (+VSYNC) for a TV-rate or CGA monitor, 2-3 (-VSYNC) for an MDA monitor",
 }
 for _r, _p in PARTS.items():                                           # capacitor ratings (R3-17)
     if _p[0] == "100n":

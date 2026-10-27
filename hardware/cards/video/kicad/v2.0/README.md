@@ -1,8 +1,9 @@
 # video-v2.0 — KiCad design master for the video card
 
 **The master since 2026-10-22. Ready to order since 2026-10-23 (re-reviewed, every re-review finding applied); not
-ordered; gerbers exported 2026-10-24, again 2026-10-26** (the board's URL changed to cottageworker.com: only `video-v2.0-F_Silkscreen.gbr` differs) with the board-layout rules' silkscreen (copper and drills as routed
-2026-10-23; `video-v2.0-gerbers.zip`, what to upload: "Ordering" below). V2.0 is the v1.3 card (`../v1.3/`: 6845, IDT7134 text RAM,
+ordered. Revised 2026-10-26 before the order: the DB9's VSYNC polarity jumper JP4** (below), the board routed again
+and the gerbers exported again 2026-10-27 (`video-v2.0-gerbers.zip`, what to upload: "Ordering" below), with the
+board-layout rules' silkscreen and cottageworker.com on it. V2.0 is the v1.3 card (`../v1.3/`: 6845, IDT7134 text RAM,
 the DOTS jumper, 12 MHz, both fonts in one character generator) plus a **graphics layer**, **every register on I/O ports
 PA-PE** and **two PS/2 ports** on an ATmega328P with an **INT jumper**. The design note is `BACKLOG.md` "Video card
 V2.0"; the theory `docs/cards/video-v2.md`; the ATmega's firmware `embedded/video-ps2`; the picture and the CPU
@@ -39,7 +40,7 @@ component orders and passes). `tools/eagle_to_kicad_all.py` never writes here (`
   the routing); row C the text pipeline and the gates, with the text-only pads R25 / R26 in the gaps beside IC1; row D
   the clock chain (IC28, IC21, IC20 with Q2, SV4), the remaining gates (IC32 among them, beside the counter whose QC and
   RCO it ORs) and IC54 (turned round, beside J4); the right
-  edge DB9 (X2), RCA (J1), the keyboard (J2) and mouse (J3) Mini-DINs with their faces at the board edge, F1, the FTDI header J4 (a legend
+  edge DB9 (X2) with its VSYNC polarity jumper JP4 standing beside it (2026-10-26), RCA (J1), the keyboard (J2) and mouse (J3) Mini-DINs with their faces at the board edge, F1, the FTDI header J4 (a legend
   at every pin), the PWR LED. `gen_v20.py place` checks that no two courtyards overlap and, since the re-review (R2-2),
   that every DIP **socket** fits: each socket's outline (the pin rows + 1.3 mm at the sides, the end pins + 1.9 mm at
   the ends: the widest stamped sockets) clear of every other socket and of every other part's pads and body. The
@@ -58,15 +59,17 @@ component orders and passes). `tools/eagle_to_kicad_all.py` never writes here (`
 The rules for every YACC1 board (switches, buttons, LEDs and outside-cable connectors on the front edge, the edge
 farthest from the bus connector; every reference readable with the parts fitted, never under a chip, socket or module,
 an IC's type beside it; every switch, button and LED labelled with its function, each position of a switch with what
-it selects) came after this board was routed and before it was ordered. V2.0 takes them on the **silkscreen only**:
-no part moves, the copper and the drills are the route of 2026-10-23 (`ed7c060`, order 5, 285 vias).
+it selects) came after this board was routed and before it was ordered. V2.0 took them on the **silkscreen only**
+(2026-10-24): no part moved, the copper and the drills stayed the route of 2026-10-23 (`ed7c060`, order 5, 285 vias).
+The VSYNC jumper JP4 (2026-10-26) follows them too: a jumper block near the front edge, its positions labelled. The
+board was routed afresh for it ("Results").
 
 | Rule | On this board |
 |---|---|
-| front edge | the DB9 X2, the RCA J1, the PS/2 jacks J2 / J3 and the PWR LED stand at the right-hand edge, opposite X1. The FTDI header J4 (the ATmega's programming port) stays where it is, 24 mm in from that edge, with its pin legend: moving it would mean a new route |
+| front edge | the DB9 X2, the RCA J1, the PS/2 jacks J2 / J3 and the PWR LED stand at the right-hand edge, opposite X1; the DB9's VSYNC jumper JP4 stands beside the DB9. The FTDI header J4 (the ATmega's programming port) stays where it is, 24 mm in from that edge, with its pin legend: moving it would mean a new route |
 | IC type beside the reference | all 40 ICs, on one line with the reference ("IC30 74LS138"): the value of each, shortened where it is long - IC17 **6845** (HD68B45SP / MC68B45P), IC25 **28C64** (AT28C64B-15), IC49 **ATmega328P** (ATmega328P-P). Above the IC where there is room (29), else below it (7: IC1, IC20, IC21, IC25, IC32, IC45, IC54), else turned in the gap beside it (IC19, IC28, IC49 on the left, IC53 on the right) |
 | no reference under a part | every text is kept off every part's body, its own included: a DIP's body is the outline of the widest stamped socket (`socket_check`: the pin rows + 1.3 mm, the end pins + 1.9 mm), X1's the DIN 41612 housing (its silk, pads and 2.5 mm past its ends), J1's its outline and pads. R10, R25, R26 and R27 had their references inside their own outline: they now stand beside it. X1's reference left the housing's end (now at the top-left corner, x 18.9, y 16.1); J1's, hidden by the RCA library footprint, is shown left of the jack. Checked by the texts' ink against every body and socket outline: before, 37 references stood on one - 26 capacitors' on a neighbouring IC's socket wall, IC1's on IC55's socket, IC19's, IC25's and IC54's on their own socket, J2's on J1, R15's and RN3's on IC25's / IC38's socket, R10's, R25's, R26's and R27's on their own body; now none |
-| functions and positions | **LED1 PWR**. **JP2 DOTS**, "ON=8 OFF=6" (fitted: 8 dots a character, 64 x 24 with graphics; open: 6 dots, 80 x 24). **JP3 INT-EN**, "ON: PS/2 -INT" / "OFF: NO -INT" (fitted: IC27/D's open collector drives the bus -INT; open: the card never touches -INT). **SV3 BLOCK**, "A15" .. "A12" beside the pairs 1-2 .. 7-8 and "ON=0" (each pair sets the address bit the board select IC18 compares, fitted = 0, open = 1 through RN2; $D000 = 5-6 only). **SV4 DOTCLK**, "XTAL" over pin 1 and "XTAL/2" over pin 3 (1-2: DOTCLOCK the crystal; 2-3: half of it). The meanings are those of `v20_netlist.py` and `docs/cards/video.md` (sections 3.1, 3.4) and `docs/cards/video-v2.md` |
+| functions and positions | **LED1 PWR**. **JP2 DOTS**, "ON=8 OFF=6" (fitted: 8 dots a character, 64 x 24 with graphics; open: 6 dots, 80 x 24). **JP3 INT-EN**, "ON: PS/2 -INT" / "OFF: NO -INT" (fitted: IC27/D's open collector drives the bus -INT; open: the card never touches -INT). **SV3 BLOCK**, "A15" .. "A12" beside the pairs 1-2 .. 7-8 and "ON=0" (each pair sets the address bit the board select IC18 compares, fitted = 0, open = 1 through RN2; $D000 = 5-6 only). **SV4 DOTCLK**, "XTAL" over pin 1 and "XTAL/2" over pin 3 (1-2: DOTCLOCK the crystal; 2-3: half of it). **JP4 VSYNC**, "+VS CGA" beside pin 1 and "-VS MDA" beside pin 3 (1-2: DB9 pin 9 positive VSYNC, a TV-rate or CGA monitor; 2-3: negative, an MDA monitor; 2026-10-26). The meanings are those of `v20_netlist.py` and `docs/cards/video.md` (sections 3.1, 3.4) and `docs/cards/video-v2.md` |
 | text size | every reference and legend 1.0 mm high with 0.15 mm strokes, JLCPCB's standard legend (the card's name 1.5 mm); "DOTS", "INT-EN" and "TEXT-ONLY" were 0.8 mm. X1's library pin numbers "1" and "32" stay 0.8 mm (0.15 mm strokes; at 1.0 mm "32" meets the housing's outline), JLCPCB's high-precision legend size |
 
 `gen_v20.py silk` places the texts by their ink (not KiCad's taller text box), 0.15 mm from other silk (1.0 mm after an
@@ -101,9 +104,9 @@ another). The circuit, the board and the fab files are unchanged by the redraw (
 | 4 Text | `video-v2.0-text.kicad_sch` | A2 | the board select IC18 with SV3 / RN2, IC20/E,F (NADDR11, VMA), IC19/B (-CER), the text RAM IC15, the code latch IC23, the character generator IC25, the shifter IC24, the delays IC22, IC26/A,B |
 | 5 Clocks | `video-v2.0-clock.kicad_sch` | A3 | the oscillator Q2, R8, R9, IC20/A-D, the divider IC21 and SV4, the character counter IC28 with R10, JP2, R15, IC19/C (CHARCLOCK), IC26/D (WEPH) |
 | 6 Graphics | `video-v2.0-gfx.kicad_sch` | A1 | the muxes IC35-IC38, the RAM IC39, RN3, IC40, IC41, IC55, the display latch IC42 and shifter IC43, WRQ (IC44), -WE (IC45), IC46/A-C, IC47/B,C, IC1/B, IC19/A,D, IC32/C,D, IC48/C, IC54/A, the text-only pads R25 / R26 |
-| 7 Video out | `video-v2.0-video.kicad_sch` | A3 | the combine IC1/C,D, IC47/A, IC46/D,E, IC32/B, IC48/A,B; the drivers IC27/A-C, R11, R12, X2, J1 |
+| 7 Video out | `video-v2.0-video.kicad_sch` | A3 | the combine IC1/C,D, IC47/A, IC46/D,E, IC32/B, IC48/A,B; the drivers IC27/A-C, R11, R12, X2, J1; the DB9's VSYNC: IC54/D, IC46/F, JP4 (2026-10-26) |
 | 8 PS2 | `video-v2.0-ps2.kicad_sch` | A2 | the ATmega IC49 with Y1, C55, C56, R16, C57 and J4; the latches IC50-IC52, the flags IC53, IC47/D, IC54/B, IC27/D, JP3; the reset path IC54/C, IC27/E,F, R21; F1, J2, J3, R17-R20, R22-R24 |
-| 9 Power | `video-v2.0-power.kicad_sch` | A3 | every power unit, the decoupling and C16, R2 / LED1, the spare gates IC46/F and IC54/D, the PWR_FLAGs |
+| 9 Power | `video-v2.0-power.kicad_sch` | A3 | every power unit, the decoupling and C16, R2 / LED1, the PWR_FLAGs |
 
 **How it is drawn** (`gen_v20.py sch`: the blocks in `SHEETS`; the drawing in `tools/kicad/sch_wire.py`, which the
 memory card v2.0's sheet 7 uses too; modelled on the P8X project's ELK-wired sheets). Each symbol unit is an ELK node
@@ -150,7 +153,26 @@ To redraw the schematic only (the board stays): `gen_v20.py sch`, export the net
 reports/netlist.net`, then `gen_v20.py link reports/netlist.net video-v2.0.kicad_pcb` (the links only) and the proofs
 above. `build.sh` remakes the board as well (`gen_v20.py board` sets the same links from the netlist).
 
-## Results (`./build.sh`, 2026-10-23, after the re-review)
+## Results (`./build.sh`, 2026-10-27, with JP4)
+
+The VSYNC jumper (2026-10-26) changes five nets: VSYNC also reaches IC54/D's inputs, and VSBUF, NVSYNC and DB9VS are
+new; DB9 pin 2 joins GND. The old copper could not take it: IC46/F's pins are walled in by row A's long bus tracks on
+both layers, so the board was routed from scratch with JP4 placed. Every check below is on the new route; the
+gerbers of 2026-10-24 and 2026-10-26 and the independent review r3 (`hardware/cards/video/reviews/v2.0-r3.md`,
+2026-10-26) were of the route of 2026-10-23.
+
+| Check | Result |
+|---|---|
+| route (Freerouting 1.9, component order 3, 60 passes) | **0 unrouted, 314 vias, 22.9 m of 0.25 mm track** (F.Cu 10.5 m, B.Cu 12.4 m). Orders 2 (348 vias) and 3 completed, order 7 left 1 unrouted, order 1 left 3; an earlier build (orders 5, 6, 4, 0) left 5-14 unrouted, and the old route kept with only the new connections added could not reach IC46/F |
+| schematic netlist vs `v20_netlist.py` | **MATCH, 219 nets** (`gen_v20.py checknet`); `v20_netlist.check()` OK: 121 parts, no pin on two nets |
+| netlist proof, schematic vs board (`tools/kicad/compare_netlists.py`) | **MATCH, 219 of 219 net groups** |
+| placement | 121 footprints, no courtyard overlaps; **sockets PASS**, the closest as before (IC42 / IC55 0.02 mm) |
+| DRC | **0 unconnected, no clearance / short / dangling findings**, schematic parity 0; cosmetic only, the same as before: silk_over_copper 8, silk_edge_clearance 8 |
+| planes | In1.Cu GND 19,996 mm2 and In2.Cu VCC 19,971 mm2 of copper in one piece each, besides 7 / 4 pad-sized islands (at most 2.5 mm2); 0 unconnected with no power tracks |
+| ERC | none |
+| `gen_v20.py verify` | **PASS**, 204 key connections (the 189 below and the DB9's 15: VSYNC through IC54/D, IC46/F and JP4 to pin 9, HSYNC, VIDEO, pins 1 and 2 on GND) |
+
+## Results (`./build.sh`, 2026-10-23, after the re-review; the route until 2026-10-26)
 
 | Check | Result |
 |---|---|
@@ -185,7 +207,7 @@ several minutes each on this board, and a completed route is then optimised for 
 | IC44 | 74LS74 | A: WRQ, a CPU write pending, sampled on CHARCLOCK, preset while GFX-ON = 0; B: held cleared, its Q is IN PC bit 3 (0 = graphics fitted) |
 | IC45 | 74LS20 | A: the RAM's -WE = NAND(WRQ, NMUX, WEPH2, GWR); B: IC55's enable = NAND(GSEL, MEMRD, NOT GFX-ON) |
 | IC46, IC47, IC48 | 74LS04, 74LS08, 74LS10 | inverters (NOT GFX-ON among them), graphics select / write / FULL clear, XOR term, the video NAND3 and IC41's enable |
-| IC54 | **74HCT08** | A: the RAM's -OE term NMUX AND GRDOE; B: -INT = INTREQ AND FULL; C: the bus -RESET buffered for IC27/E (RESETB, R2-3); D spare |
+| IC54 | **74HCT08** | A: the RAM's -OE term NMUX AND GRDOE; B: -INT = INTREQ AND FULL; C: the bus -RESET buffered for IC27/E (RESETB, R2-3); D: the 6845's VSYNC buffered for the DB9 (VSBUF, 2026-10-26) |
 | IC49, Y1 | ATmega328P, 16 MHz | the PS/2 controller (`embedded/video-ps2`), C55/C56 22 pF |
 | IC50, IC51, IC52, IC53 | 74LS374, **74HCT374**, 74LS244, **74HCT74** | PS/2 data latch (IN PE), command latch (OUT PD), status (IN PD), FULL/BUSY |
 | J2, J3 | **Same Sky MD-60SM** | keyboard, mouse (R17-R20 4.7k pull-ups); +5 V through F1 |
@@ -196,13 +218,15 @@ several minutes each on this board, and a completed route is then optimised for 
 | R25, R26 | 1k | **text-only build only**: GDOT and WRQ pull-downs |
 | R27 | 10k | TEXT-ONLY pull-up (IN PC bit 3 = 1 when IC44 is not fitted) |
 | JP3 | 1x2 header | INT-EN: IC27/D's open collector to the bus -INT |
+| JP4 | 1x3 header | VSYNC (2026-10-26): DB9 pin 9 from IC54/D (1-2, +VSYNC: TV rate, IBM 5153 CGA) or through IC46/F (2-3, -VSYNC: IBM 5151 MDA); DB9 pin 2 on GND with pin 1 |
 | C30-C54, C58, C59 | 100 nF | decoupling, one per new IC (C54 the ATmega's AVCC) |
 
 Changed v1.3 parts: IC25 a 28-pin **AT28C64B-15** in place of the 2732 (below); IC1 (74ALS08) the 6845 -CS (PA OR PB),
 WSLOT and the dot gates; IC19/A the window-read NAND, IC19/D NMUX; IC26/C E = -IO-RD XOR -IO-WR, IC26/D QA XOR QB;
 IC27/D INTG -> -INT, IC27/E,F the bus -RESET to MRST (IC27/E's input through IC54/C, an HCT08 section used as a
 buffer: R2-3); IC17 RS = IO-ADDR0, R/-W = -IO-WR, -CS from IC1/A; C16 47 uF.
-Spare after all changes: IC46/F (input on GND), IC54/D (inputs on GND), IC38's fourth section (both inputs on GND);
+Spare after all changes: IC38's fourth section (both inputs on GND; IC46/F and IC54/D, spare until 2026-10-26, drive
+the DB9's VSYNC);
 every other gate is used once (`v20_netlist.check()`: no pin on two nets; ERC: no input unconnected). Pin by pin:
 `v20_netlist.py`.
 
@@ -404,8 +428,8 @@ need a note:
 Nothing blocks the order. Before it, if a jack is at hand: the MD-60SM's leg span and thickness against the slots
 (R2-1, 14.28 mm across the outer faces, 0.54 mm legs in 1.2 mm slots), and its date code (after 2022-03-03). The
 gerbers (`gerbers/`, zipped as `video-v2.0-gerbers.zip`; the order parameters in `video-v2.0-jlcpcb-order.txt`) were
-exported 2026-10-24 from the board as committed in `d42fc33` (the route of `ed7c060` with the board-layout rules'
-silkscreen; against the export of 2026-10-23 only `video-v2.0-F_Silkscreen.gbr` differs), with the memory card v2.0's
+exported 2026-10-27 from the board routed that day with JP4 ("Results"; every copper layer, the masks and the drill
+files are new against the exports of 2026-10-24 / 2026-10-26), with the memory card v2.0's
 export options
 (`../../memory/kicad/v2.0/finish_v2.py fab`, JLCPCB order 2000765A-Y52). The build makes none: after any rebuild of
 the board, export them again from this folder:
@@ -420,7 +444,8 @@ $CLI pcb export drill --format excellon --excellon-units mm --generate-map --map
 rm -f video-v2.0-gerbers.zip && (cd gerbers && zip -X ../video-v2.0-gerbers.zip *)
 ```
 
-The drill file checked against the board: 285 vias of 0.4 mm (the board's 285), six plated slots, two NPTH holes.
+The drill file checked against the board: 314 vias of 0.4 mm (the board's 314), 1,349 round plated holes in all, six
+plated slots, two NPTH holes.
 
 **Upload `video-v2.0-gerbers.zip`** with the memory card v2.0's settings: FR-4, **4 layers, 218.42 x 113.97 mm, 1.6 mm,
 outer copper 1 oz, inner 0.5 oz**, green mask, white silk, HASL with lead, vias plugged; no impedance control, no
@@ -447,5 +472,5 @@ card model (`BACKLOG.md`).
 | `video-v2.0-local.kicad_sym` / `.pretty/` | IDT7134, RCA, DE9 and Mini-DIN symbols; F09HP and RCA footprints (from v1.x), MiniDIN6_MD-60SM |
 | `blank-card-v3.2-eagle.kicad_sym` / `.pretty/` | the bus connector FABC96R (from the CF card / blank V3.2) |
 | `reports/` | netlist, `netlist-compare.txt` (proof), `erc.json`, `drc.json`, schematic PDF (9 pages), top / bottom renders |
-| `gerbers/`, `video-v2.0-gerbers.zip` | the fab files (4 copper layers, masks, silk, outline, PTH / NPTH drill and maps), exported 2026-10-24 |
+| `gerbers/`, `video-v2.0-gerbers.zip` | the fab files (4 copper layers, masks, silk, outline, PTH / NPTH drill and maps), exported 2026-10-27 |
 | `video-v2.0-jlcpcb-order.txt` | the PCB order parameters |

@@ -212,7 +212,10 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     with `Y1VIDSTATE`); `tests/video/asm/run.py` in `make check`.
 - **Video card, the next revision (2026-10-10): a PS/2 keyboard interface, and the DB9 able to drive an old IBM XT
   monitor.** (2026-10-22: the PS/2 half is designed in **Video card V2.0** below; the IBM-monitor half - MDA timing,
-  9-dot cells, sync polarity, intensity - stays open.) Which monitor decides the timing (to ask at the machine): **IBM 5151** (MDA, mono): 18.432 kHz / 50 Hz,
+  9-dot cells, sync polarity, intensity - stays open. 2026-10-26: V2.0 takes the sync polarity and the ground: jumper
+  JP4 makes DB9 pin 9 +VSYNC (1-2) or -VSYNC (2-3, IC46/F), the 6845's VSYNC buffered by IC54/D, pin 2 on GND; MDA
+  rates are a 6845 table for the ROM driver (64 x 32 of 8 x 8 at 18.52 kHz / 50.05 Hz, `docs/cards/video-v2.md`
+  "Monitor outputs"); 9-dot cells, the 16.257 MHz crystal and intensity stay for a later revision.) Which monitor decides the timing (to ask at the machine): **IBM 5151** (MDA, mono): 18.432 kHz / 50 Hz,
   720x350, 9-dot characters from a 16.257 MHz dot clock, DB9 1-2 GND, 6 intensity, 7 video, 8 +HSYNC, 9 -VSYNC; or **IBM
   5153** (CGA, colour): 15.7 kHz / 60 Hz, DB9 3-6 R G B I, 8 +HSYNC, 9 +VSYNC. The v1.0/v1.1 DB9 is MDA-like (7 video,
   8 HS, 9 VS, 1 GND) but its timing is TV rate (the ROM's table: 15.75 kHz from the 11.0592 MHz crystal, 80 x 24) and its
@@ -438,6 +441,13 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     capacitor ratings (R3-17); check a new DE-9's pitch (R3-16). These are in `BOM.md` since 2026-10-26 (the BUY
     notes of `v20_netlist.py` only: parts, values, footprints and nets unchanged, so the board and the Gerbers are
     too). Open: the first board's bench checks (r3, "The parts and the first board").
+    **2026-10-26/27: the DB9's VSYNC polarity jumper JP4** (1-2 +VSYNC for a TV-rate or IBM 5153 CGA monitor, 2-3
+    -VSYNC through IC46/F for an IBM 5151 MDA; IC54/D buffers VSYNC; DB9 pin 2 on GND): 121 parts, 219 nets. The old
+    copper could not take it (IC46/F walled in by row A's tracks), so the board was **routed afresh** by `build.sh`
+    2026-10-27 (order 3 of 1, 2, 3, 7: 0 unrouted, 314 vias; proof MATCH 219/219, DRC clean, verify PASS with 204
+    connections) and the Gerbers exported again. r3's fabrication-file checks (the Gerbers parsed on their own) were of
+    the route of 2026-10-23; the new copper has the build's checks only. Still not ordered (the card's README,
+    "Results" and "Ordering").
   - **Open - the ROM's V2.0 driver** and the emulators' V2.0 card model. The driver's requirements (the card's README,
     "The software rules for the window"): the card ID check **(IN PC AND $F0) = $50**, the build and DOTS from **(IN PC
     AND $F9)** = $58 / $59 text-only, $50 / $51 with graphics (bits 1 and 2 are VSYNC and DE, live); GFX-ON left 0 on a

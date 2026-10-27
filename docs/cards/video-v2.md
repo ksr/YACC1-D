@@ -1,7 +1,8 @@
 # Video card V2.0 — theory of operation
 
 The video card's second generation: the v1.3 card plus a graphics layer, every register on I/O ports and two PS/2
-ports. **Designed 2026-10-22, re-reviewed 2026-10-23, ready to order; not ordered or built.**
+ports. **Designed 2026-10-22, re-reviewed 2026-10-23, the DB9's VSYNC polarity jumper added 2026-10-26; not ordered or
+built.**
 
 The text circuit (the 6845, the IDT7134 text RAM, the character pipeline, the DOTS jumper) is the v1 cards': its
 theory is the [V1 page](video.md). This page is what V2.0 adds and changes. It was section 7a of the V1 page until
@@ -109,8 +110,19 @@ debugs the ATmega (DTR auto-reset); the bus -RESET resets it through two open-co
 bus line only pulls MRST low. BUSY is on PB3 and SRC on PB5, the bootloader's LED pin (review V2-1). Commands and
 the keyboard's codes: `embedded/video-ps2/README.md`.
 
+**Monitor outputs.** As on the v1 cards, IC27 (7416, open collector) drives the DB9's TTL video (pin 7) and, wired-OR
+with the syncs through R11 / R12, the RCA's composite signal. DB9 pin 8 is the 6845's HSYNC (positive). **Pin 9 is VSYNC
+with its polarity set by jumper JP4** (2026-10-26): IC54/D (74HCT08, both inputs on VSYNC) buffers the 6845's pin, so
+the cable adds no load to an output already at its 1.6 mA rating with IC27's standard-TTL input (review r3, R3-3); JP4
+1-2 takes the buffered VSYNC (positive: a TV-rate monitor, the IBM 5153 CGA monitor), 2-3 the same inverted by IC46/F
+(negative: the IBM 5151 MDA monitor). Pins 1 and 2 are GND, as on both IBM pinouts; pin 6 (intensity) is not driven.
+An MDA monitor also needs MDA rates, 18.432 kHz / 50 Hz, where the default 6845 tables give 15.75 kHz / 60 Hz: a 5151
+stays unplugged until the driver has a table for it. One such table, 8-dot mode at 12 MHz, R0-R9 = 80, 64, 68, 10, 45,
+2, 32, 39, 0, 7 (18.52 kHz / 50.05 Hz, 64 x 32 characters of 8 x 8 dots: the 2K the CPU reaches), passes `python3
+tools/vidsim.py timing --card v2.0 --dots 8 --regs 80,64,68,10,45,2,32,39,0,7` for the 5151 (not tried on a monitor).
+
 **Jumpers.** SV3 (the block, 5-6 for $D000), SV4 (1-2: the 12 MHz crystal), JP2 DOTS (fitted: 8 dots, 64 x 24 with
-graphics; open: 6 dots, 80 x 24), JP3 INT-EN.
+graphics; open: 6 dots, 80 x 24), JP3 INT-EN, JP4 VSYNC (1-2 positive, 2-3 negative).
 
 **Design review** (2026-10-22, before ordering): [`hardware/cards/video/reviews/v2.0.md`](../../hardware/cards/video/reviews/v2.0.md) -
 3 HIGH (the bootloader driving BUSY, the Mini-DIN footprint, the firmware's host-to-device bit count), 9 MED, 11 LOW, 6
