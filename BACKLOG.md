@@ -445,9 +445,9 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     -VSYNC through IC46/F for an IBM 5151 MDA; IC54/D buffers VSYNC; DB9 pin 2 on GND): 121 parts, 219 nets. The old
     copper could not take it (IC46/F walled in by row A's tracks), so the board was **routed afresh** by `build.sh`
     2026-10-27 (order 3 of 1, 2, 3, 7: 0 unrouted, 314 vias; proof MATCH 219/219, DRC clean, verify PASS with 204
-    connections) and the Gerbers exported again. r3's fabrication-file checks (the Gerbers parsed on their own) were of
-    the route of 2026-10-23; the new copper has the build's checks only. Still not ordered (the card's README,
-    "Results" and "Ordering").
+    connections) and the Gerbers exported again. r3's fabrication-file check (the Gerbers parsed on their own) was
+    repeated on the new files 2026-10-27: order as is, HIGH 0, MED 0, 219/219 nets, 0 shorts (r3, "Since the
+    review"). Still not ordered (the card's README, "Results" and "Ordering").
   - **Open - the ROM's V2.0 driver** and the emulators' V2.0 card model. The driver's requirements (the card's README,
     "The software rules for the window"): the card ID check **(IN PC AND $F0) = $50**, the build and DOTS from **(IN PC
     AND $F9)** = $58 / $59 text-only, $50 / $51 with graphics (bits 1 and 2 are VSYNC and DE, live); GFX-ON left 0 on a

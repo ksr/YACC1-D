@@ -36,4 +36,8 @@ Design minimums on this board: track 0.25 mm, clearance 0.2 mm, via 0.8 mm pad /
 
 Checks on the board these gerbers came from (build.sh 2026-10-27, component order 3: 0 unrouted, 314 vias):
 netlist proof MATCH 219/219, DRC 0 unconnected, no copper findings, schematic parity 0, silk_overlap 0; both planes
-one piece; verify PASS (204 connections); placement and socket check PASS.
+one piece; verify PASS (204 connections); placement and socket check PASS. The fab files checked again on their own
+2026-10-27 (review r3, "Since the review"): 219/219 nets, 0 shorts, 314 vias, order as is.
+
+On the order form enter the size 218.42 x 113.97 mm and HASL: the gbrjob's size includes the outline's line width
+(218.52 x 114.07) and its finish reads "None".

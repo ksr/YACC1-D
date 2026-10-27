@@ -159,7 +159,8 @@ The VSYNC jumper (2026-10-26) changes five nets: VSYNC also reaches IC54/D's inp
 new; DB9 pin 2 joins GND. The old copper could not take it: IC46/F's pins are walled in by row A's long bus tracks on
 both layers, so the board was routed from scratch with JP4 placed. Every check below is on the new route; the
 gerbers of 2026-10-24 and 2026-10-26 and the independent review r3 (`hardware/cards/video/reviews/v2.0-r3.md`,
-2026-10-26) were of the route of 2026-10-23.
+2026-10-26) were of the route of 2026-10-23. r3's fabrication-file check was repeated on the new gerbers 2026-10-27
+(r3, "Since the review"): 219 of 219 nets, 0 shorts, every clearance inside JLCPCB's limits, order as is.
 
 | Check | Result |
 |---|---|
