@@ -54,6 +54,10 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
     USB port facing that edge.
   - Every reference designator stays readable with the parts fitted: never under a chip, socket or module, and with
     the IC type beside it.
+  - Every part's type or value is on the silk beside its reference (Ken, 2026-11-02, all cards, starting with the
+    next memory revision): `IC30 74LS138`, `R10 10k`, `RN9 10k x8`, `C25 100n`, `C30 10u`, crystals their frequency.
+    Never obscured by any fitted part (chip, socket, module, standoff, adapter, cable): the card can be stuffed from
+    the silk alone.
   - Every switch, button and LED carries its function on the silk, and each position of a switch is labelled.
   - `cottageworker.com` on the silk beside the board's name and revision (Ken, 2026-10-26), replacing
     `onepagecomputer.com`. Video V2.0 has it. Existing boards keep `onepagecomputer.com`, including the

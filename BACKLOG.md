@@ -472,6 +472,10 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Memory v1.3 notes**: "should TMP registers move to the ALU", hard-jumper a boot-loader enable, 4K-block EEPROM select.
 - **Sequencer logic notes**: expose ucode-count-reset / instruction number for an external debugger; HALT LED.
 - **Memory card**: the unconnected jumper wire on IC7 pin 4 — purpose not remembered (2026-09-20); trace it on the board or remove it.
+- **Memory card, the next revision (after v2.0): every part's type or value on the silk** (2026-11-02, the rule for
+  all new cards): each IC's type, each R / RN / C value, the LEDs' functions, beside the references and clear of every
+  fitted part, the IDE adapter, its standoffs and the ribbon included. On v2.0 (ordered 2026-10-09) the silk has the
+  references only: stuff it from `hardware/cards/memory/kicad/v2.0/memory-v2.0-bom.csv`.
 
 ## Firmware — written, not burned / loaded
 - **ROM 2026-10-07 (burned 2026-10-07): the video unit + BASIC's input fix** — `firmware/rom/shipped/rom.bin` (MD5 122f1a93..., the 2026-10-08 layout; BASIC: backspace/DEL, lower case, SYNTAX ERROR instead of an endless loop, `firmware/basic/README.md`; the monitor as 2026-09-25 with the new banner date): the $D000 probe at
