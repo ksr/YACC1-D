@@ -787,7 +787,11 @@ SILK += [("+VS CGA", _jp4x - 4.6, _jp4y, 1.0, 0), ("-VS MDA", _jp4x - 4.6, _jp4y
 # the parts' values, shortened where the value is long: the 6845 (HD68B45SP / MC68B45P), the 28C64 (AT28C64B-15),
 # the ATmega328P (ATmega328P-P)
 TYPE_SHORT = {"IC17": "6845", "IC25": "28C64", "IC49": "ATmega328P"}
+# 2026-11-02 (the rule for every new card): every resistor, network, capacitor, crystal and the fuse carries its value
+# too ("R10 1k", "RN3 10k x8", "C16 47u"), so the card can be stuffed from the silk alone
+VALUE_SHORT = {"C16": "47u", "F1": "0.5A"}
 COMPANION = dict({r: TYPE_SHORT.get(r, v[0]) for r, v in N.PARTS.items() if r.startswith("IC")},
+                 **{r: VALUE_SHORT.get(r, v[0]) for r, v in N.PARTS.items() if re.match(r"(RN?|C|Q|Y|F)\d", r)},
                  LED1="PWR", JP2="DOTS", JP3="INT-EN", JP4="VSYNC", SV3="BLOCK", SV4="DOTCLK")
 UNCONNECTED = {}                                         # filled from the schematic's netlist by board()
 
@@ -833,7 +837,10 @@ def silk_place(b, comp=None):
     library default (above, below, beside the body, turned if need be; an IC's: above it, else below it, else turned in
     the gap at its right, then at its left), on one line with its companion text (an IC's
     type, a jumper's or the LED's function: "IC30 74LS138", read as one) or, for the non-ICs, with the companion under
-    it; a spot beside the part (along its own side) is taken before one that reaches past it. Geometry by the texts'
+    it; a spot beside the part (along its own side) is taken before one that reaches past it. A part's value (R, RN, C,
+    Q, Y, F: 2026-11-03) that finds no such spot stands apart from the reference, beside the part or next to the
+    reference, else in a legend ("C3 C20: 100n", LEGEND); a passive's texts stand nearer their own part than any other
+    non-IC part; the parts that needed this are placed earlier in another round (SPLIT, LEGEND). Geometry by the texts'
     ink and the shapes' bounding boxes (a slanted line as a chain of small boxes), so it is a little stricter than
     KiCad's DRC. X2's library text "F09" goes to the Fab layer; X1's pin numbers "1" and "32" are raised to 0.8 mm /
     0.15 mm (at 1.0 mm "32" meets the housing's outline).
@@ -853,6 +860,9 @@ def silk_place(b, comp=None):
 
     def hit(a, c):
         return a[0] < c[2] and c[0] < a[2] and a[1] < c[3] and c[1] < a[3]
+
+    def apart(a, c):                                    # the distance between two boxes (0 when they meet)
+        return math.hypot(max(c[0] - a[2], a[0] - c[2], 0.0), max(c[1] - a[3], a[1] - c[3], 0.0))
 
     def union(qs):
         return (min(q[0] for q in qs), min(q[1] for q in qs), max(q[2] for q in qs), max(q[3] for q in qs))
@@ -962,42 +972,37 @@ def silk_place(b, comp=None):
         return ink(t)
 
     SIDES = {"above": 0.0, "below": 2.0, "right": 4.0, "left": 6.0}
-    order = lambda fp: (not fp.GetReference().startswith("IC"), fp.GetReference() not in comp, fp.GetReference())
-    for fp in sorted(fps, key=order):                   # 2. the references (ICs, then the others with a companion)
-        ref = fp.GetReference()
-        t = fp.Reference()
-        if ref == "J1":                                 # the RCA library footprint hides its reference
-            t.SetVisible(True); t.SetLayer(pcbnew.F_SilkS)
-        if not t.IsVisible() or t.GetLayer() != pcbnew.F_SilkS:
-            continue
-        t.SetTextSize(VECTOR2I(FM(SILK_H), FM(SILK_H))); t.SetTextThickness(FM(SILK_W))
-        t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_CENTER)
-        t.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_CENTER)
-        c = comp.get(ref)
-        o = outline[ref]
-        x0, y0, x1, y1 = o
-        cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
-        dx, dy, da = default(fp)
-        cands = []                                      # (cost, angle, (ref x, y), (companion x, y) or None)
-        for a in (0, 90):
-            er = extent(t, a)
-            ec = extent(c, a) if c else None
-            arr = [("one", 0.0)] if c is None else \
-                  [("line", 0.0)] + ([("stack", 0.8)] if not ref.startswith("IC") else [])
-            for kind, pen in arr:
-                # the companion's centre relative to the reference's, and the block's ink box around the reference's
-                if kind == "one":
-                    pc, U = None, er
-                else:
-                    if kind == "line" and a == 0:       # "IC30 74LS138": the companion after the reference
-                        pc = (er[2] + 0.7 - ec[0], 0.0)
-                    elif kind == "line":                # turned, read upwards: the companion above the reference
-                        pc = (0.0, er[1] - 0.7 - ec[3])
-                    elif a == 0:                        # stacked: the companion on the next line
-                        pc = (0.0, er[3] + 0.35 - ec[1])
-                    else:
-                        pc = (er[2] + 0.35 - ec[0], 0.0)
-                    U = union([er, (ec[0] + pc[0], ec[1] + pc[1], ec[2] + pc[0], ec[3] + pc[1])])
+    del SPLIT[:]                                        # the parts whose value stands apart from the reference
+    # 2. the references (ICs, then the others with a companion). A part that found no room beside it (far) is placed
+    # earlier in the next round, before the neighbours that took its room; the round with the fewest such parts is kept.
+    placed0, unclear0 = list(placed), list(unclear)
+
+    def round_(first):
+        order = lambda fp: (not fp.GetReference().startswith("IC"), fp.GetReference() not in first,
+                            first.index(fp.GetReference()) if fp.GetReference() in first else 0,
+                            fp.GetReference() not in comp, fp.GetReference())
+        placed[:], unclear[:], far = list(placed0), list(unclear0), []   # far: not on one line / stacked
+        del SPLIT[:]
+        LEGEND.clear()
+        for fp in sorted(fps, key=order):
+            ref = fp.GetReference()
+            t = fp.Reference()
+            if ref == "J1":                                 # the RCA library footprint hides its reference
+                t.SetVisible(True); t.SetLayer(pcbnew.F_SilkS)
+            if not t.IsVisible() or t.GetLayer() != pcbnew.F_SilkS:
+                continue
+            t.SetTextSize(VECTOR2I(FM(SILK_H), FM(SILK_H))); t.SetTextThickness(FM(SILK_W))
+            t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_CENTER)
+            t.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_CENTER)
+            c = comp.get(ref)
+            o = outline[ref]
+            x0, y0, x1, y1 = o
+            cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+            dx, dy, da = default(fp)
+            isic = ref.startswith("IC")
+
+            def spots(U, a, pen, pc):                       # the places of a block U (ink box round its anchor text)
+                out = []                                    # (cost, angle, (anchor x, y), (companion x, y) or None, beside)
                 W, H = U[2] - U[0], U[3] - U[1]
                 for gap in (0.2, 0.6, 1.2, 2.0):
                     for k in range(-40, 41):
@@ -1005,41 +1010,175 @@ def silk_place(b, comp=None):
                         for side, bx0, by0 in (("above", cx + s - W / 2, y0 - gap - H), ("below", cx + s - W / 2, y1 + gap),
                                                ("left", x0 - gap - W, cy + s - H / 2), ("right", x1 + gap, cy + s - H / 2)):
                             along = "x" if side in ("above", "below") else "y"
-                            if ref.startswith("IC") and (a == 0) != (along == "x"):
-                                continue                # an IC's reference and type run along the side they are on
+                            if isic and (a == 0) != (along == "x"):
+                                continue                    # an IC's reference and type run along the side they are on
                             # beside the part: the block within the outline's span on that side (1 mm over at most)
                             span, size = (x1 - x0, W) if along == "x" else (y1 - y0, H)
                             over = max(0.0, abs(s) - max(0.0, (span - size) / 2) - 1.0)
                             rx, ry = bx0 - U[0], by0 - U[1]
-                            if ref.startswith("IC"):    # an IC: above it, else below, else in the gap at its right, left
+                            if isic:                        # an IC: above it, else below, else in the gap at its right, left
                                 cost = SIDES[side] + 0.2 * abs(s) + gap
-                            else:                       # the rest: nearest the library's place
+                            else:                           # the rest: nearest the library's place
                                 cost = math.hypot(bx0 + W / 2 - dx, by0 + H / 2 - dy) + (1.5 if a != da else 0) + pen
                             cost += 10 * min(over, 1.0) + over
-                            cands.append((cost, a, (rx, ry), (rx + pc[0], ry + pc[1]) if pc else None))
-        cands.sort(key=lambda q: (round(q[0], 6), q[1], q[2]))
-        for cost, a, (rx, ry), cp in cands:
-            put(t, rx, ry, a)
-            if not free(ink(t)):
-                continue
-            if c is not None:
-                put(c, cp[0], cp[1], a)
-                if not free(ink(c)) or hit(ink(c), ink(t, CLR_SILK)):
-                    continue
+                            out.append((cost, a, (rx, ry), (rx + pc[0], ry + pc[1]) if pc else None, over == 0))
+                return out
+
+            cands, alone, lone = [], [], []                 # the blocks; the reference alone; the companion alone
+            for a in (0, 90):
+                er = extent(t, a)
+                ec = extent(c, a) if c else None
+                arr = [("one", 0.0)] if c is None else [("line", 0.0)] + ([("stack", 0.8)] if not isic else [])
+                for kind, pen in arr:
+                    # the companion's centre relative to the reference's, and the block's ink box around the reference's
+                    if kind == "one":
+                        pc, U = None, er
+                    else:
+                        if kind == "line" and a == 0:       # "IC30 74LS138": the companion after the reference
+                            pc = (er[2] + 0.7 - ec[0], 0.0)
+                        elif kind == "line":                # turned, read upwards: the companion above the reference
+                            pc = (0.0, er[1] - 0.7 - ec[3])
+                        elif a == 0:                        # stacked: the companion on the next line
+                            pc = (0.0, er[3] + 0.35 - ec[1])
+                        else:
+                            pc = (er[2] + 0.35 - ec[0], 0.0)
+                        U = union([er, (ec[0] + pc[0], ec[1] + pc[1], ec[2] + pc[0], ec[3] + pc[1])])
+                    cands += spots(U, a, pen, pc)
+                if c is not None and not isic:
+                    alone += [q for q in spots(er, a, 0.0, None) if q[4]]
+                    lone += spots(ec, a, 0.0, None)
+            key = lambda q: (round(q[0], 6), q[1], q[2])
+            cands.sort(key=key)
+            alone.sort(key=key)
+
+            others = [r for r in outline if r != ref and not r.startswith("IC")]
+
+            passive = re.match(r"(RN?|C|Q|Y|F)\d", ref)
+
+            def owns(q):                                    # a passive's text nearer its own part than any other part's
+                g = apart(q, outline[ref])                  # but an IC's (the ICs' gaps hold the capacitors' texts)
+                return not passive or all(g <= apart(q, outline[r]) for r in others)
+
+            def block(qs, own=True):                        # the first block of qs clear of everything
+                for cost, a, (rx, ry), cp, _ in qs:
+                    put(t, rx, ry, a)
+                    if not free(ink(t)) or (own and not owns(ink(t))):
+                        continue
+                    if c is not None:
+                        put(c, cp[0], cp[1], a)
+                        if not free(ink(c)) or hit(ink(c), ink(t, CLR_SILK)):
+                            continue
+                    return True
+                return False
+
+            def split(near):                                # the reference beside its part and the companion beside it too
+                cfree = []                                  # (near) or next to the reference (1.5 mm from its ink), as
+                for _, a, (x, y), _, beside in lone:        # close to the reference as the room allows
+                    if near and not beside:
+                        continue
+                    put(c, x, y, a)
+                    if free(ink(c)) and (not near or owns(ink(c))):
+                        cfree.append((a, (x, y), ink(c)))
+                best, n = None, 0
+                for cost, a, (rx, ry), _, _ in alone:
+                    put(t, rx, ry, a)
+                    if not free(ink(t)) or not owns(ink(t)):
+                        continue
+                    ri = ink(t, CLR_SILK)
+                    for ca, cp, ci in cfree:
+                        if hit(ci, ri) or (not near and not hit(ci, ink(t, 1.5))):
+                            continue
+                        d = math.hypot((ci[0] + ci[2] - ri[0] - ri[2]) / 2, (ci[1] + ci[3] - ri[1] - ri[3]) / 2)
+                        if best is None or cost + 2 * d < best[0] - 1e-9:
+                            best = (cost + 2 * d, a, (rx, ry), ca, cp)
+                    n += 1
+                    if n >= 40:
+                        break
+                if best is None:
+                    return False
+                _, a, (rx, ry), ca, (x, y) = best
+                put(t, rx, ry, a)
+                put(c, x, y, ca)
+                return True
+
+            def alone_beside():                             # the reference by itself beside its part
+                for cost, a, (rx, ry), _, _ in alone:
+                    put(t, rx, ry, a)
+                    if free(ink(t)) and owns(ink(t)):
+                        return True
+                return False
+
+            # an IC's label, a part without a companion: the best clear place; the others' reference and value: on one line
+            # or stacked beside the part, else each beside the part, the value nearest the reference, else the reference
+            # beside the part and the value next to it, else the reference beside the part and the value in a legend with
+            # the others' in the same plight (LEGEND), else the block anywhere clear
+            if isic or c is None:
+                ok = block(cands)
+            else:
+                ok = block([q for q in cands if q[4]])
+                if not ok:
+                    far.append(ref)
+                    ok = True
+                    if split(True) or split(False):
+                        SPLIT.append(ref)
+                    elif alone_beside():
+                        LEGEND[ref] = c.GetText()
+                    else:
+                        ok = block(cands) or block(cands, own=False)
+            if not ok:
+                cost, a, (rx, ry), cp, _ = cands[0]
+                put(t, rx, ry, a)
+                if c is not None:
+                    put(c, cp[0], cp[1], a)
+                unclear.append(ref)
+            g = CLR_IC if ref.startswith("IC") else CLR_SILK  # an IC's label stands apart from the texts placed after it
+            placed.append(ink(t, g))
+            if c is not None and ref not in LEGEND:
+                placed.append(ink(c, g))
+        return (len(unclear), len(far) - len(SPLIT) - len(LEGEND), len(LEGEND), len(SPLIT)), far
+
+    first, best, seen = [], None, set()
+    for _ in range(8):
+        score, far = round_(first)
+        if best is None or score < best[0]:
+            best = (score, list(first))
+        if not far:
             break
+        # the next round: the parts placed anywhere or given a legend first, then the earlier order, then the split ones
+        worst = [r for r in far if r not in SPLIT]
+        first = worst + [r for r in first if r not in worst] + [r for r in SPLIT if r not in first and r not in worst]
+        if tuple(first) in seen:
+            break
+        seen.add(tuple(first))
+    if first != best[1]:
+        round_(best[1])
+    # 3. the legends: "C3 C20: 100n" for the parts whose value found no room beside them, nearest those parts
+    groups = collections.defaultdict(list)
+    for ref, v in LEGEND.items():
+        groups[v].append(ref)
+    num = lambda r: (re.match(r"[A-Z]+", r).group(0), int(re.search(r"\d+", r).group(0)))
+    for v, refs in sorted(groups.items()):
+        refs.sort(key=num)
+        t = comp[refs[0]]
+        for r in refs[1:]:
+            b.Delete(comp.pop(r))
+        t.SetText("%s: %s" % (" ".join(refs), v))
+        us = [outline[r] for r in refs]
+        gx, gy = sum(u[0] + u[2] for u in us) / 2 / len(us), sum(u[1] + u[3] for u in us) / 2 / len(us)
+        offs = sorted(((i * 0.25, j * 0.25) for i in range(-100, 101) for j in range(-100, 101)),
+                      key=lambda o: (math.hypot(*o), o))
+        for i, j in offs:
+            put(t, gx + i, gy + j, 0)
+            if free(ink(t)):
+                break
         else:
-            cost, a, (rx, ry), cp = cands[0]
-            put(t, rx, ry, a)
-            if c is not None:
-                put(c, cp[0], cp[1], a)
-            unclear.append(ref)
-        g = CLR_IC if ref.startswith("IC") else CLR_SILK  # an IC's label stands apart from the texts placed after it
-        placed.append(ink(t, g))
-        if c is not None:
-            placed.append(ink(c, g))
+            unclear.append(t.GetText())
+        placed.append(ink(t, CLR_SILK))
     return unclear
 
 
+SPLIT = []                              # silk_place(): the references whose value had to stand apart from them
+LEGEND = {}                             # silk_place(): {ref: value} of the values that went into a legend
 SIDE_WALL, END_WALL = 1.3, 1.9          # a DIP socket's walls beyond its pin rows / its end pins (stamped sockets' worst)
 
 
@@ -1081,6 +1220,10 @@ def silk_cmd(pcb, out=None):
     unclear = silk_place(b, silk_texts(b))
     pcbnew.SaveBoard(out or pcb, b)
     print("silk: %s" % ("every text clear" if not unclear else "still meeting something: " + ", ".join(unclear)))
+    if SPLIT:
+        print("silk: the value apart from the reference (each beside the part): " + ", ".join(SPLIT))
+    if LEGEND:
+        print("silk: the value in a legend (no room beside the part): " + ", ".join(sorted(LEGEND)))
     return not unclear
 
 

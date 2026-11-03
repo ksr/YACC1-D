@@ -448,6 +448,12 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     connections) and the Gerbers exported again. r3's fabrication-file check (the Gerbers parsed on their own) was
     repeated on the new files 2026-10-27: order as is, HIGH 0, MED 0, 219/219 nets, 0 shorts (r3, "Since the
     review"). Still not ordered (the card's README, "Results" and "Ordering").
+    **2026-11-03: Gerbers re-exported with every part's value on the silk** (the rule of 2026-11-02 for new cards; silk
+    only, no part moved, copper and drills as routed 2026-10-27): all 69 resistors, networks, capacitors, crystals and
+    the fuse carry their value beside the reference ("R10 1k", "RN3 10k x8", "C16 47u"); C3 and C20 have no room, so
+    their value is the legend "C3 C20: 100n" beside IC55. Only `video-v2.0-F_Silkscreen.gbr` differs from the export of
+    2026-10-27; DRC 0 unconnected, parity 0, silk_overlap 0. Still ready to order, not ordered (the card's README, "The
+    board-layout rules", "Part values").
   - **Open - the ROM's V2.0 driver** and the emulators' V2.0 card model. The driver's requirements (the card's README,
     "The software rules for the window"): the card ID check **(IN PC AND $F0) = $50**, the build and DOTS from **(IN PC
     AND $F9)** = $58 / $59 text-only, $50 / $51 with graphics (bits 1 and 2 are VSYNC and DE, live); GFX-ON left 0 on a
