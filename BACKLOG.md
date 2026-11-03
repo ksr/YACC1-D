@@ -771,6 +771,16 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   netlist, DRC 0 errors / 0 unconnected, gerbers ready; theory in `docs/cards/cf.md`; never ordered.
   Card-preparation procedure written: `docs/procedures/CF-CARD.md`. A move of the interface onto an I/O card v2.0 on
   ports P4/P5 was designed 2026-09-23 and dropped 2026-09-24 (6eeb259, 65851b0).)
+  **2026-11-03: memory card v2.0 built CF-only (IC30-IC34, RN9, R10-R14, J2, J3; memory side empty, RN5/RN6 out) and
+  its CF section PASSES** in the video card's slot beside the v1.3 card, CPU out, through the bus tester
+  (`tests/memory/cf_test.py`): reset to status $50, registers, 8-bit mode, IDENTIFY (TDK GBDriver CF2.0, 125 MB),
+  sector 0 (a DOS FAT16 boot sector: the card is not yet written with `os/disk.img`). The board's copper was traced
+  from the ordered Gerbers the same day: no net split or merged. The afternoon's fault was the HX-2118P adapter's
+  master/slave jumper (on slave the CF never answers: every register $FF; now first in `docs/procedures/CF-CARD.md`).
+  **Next**: write the card with `tools/cfcard.py`, CPU back in, `O` boots Y1/OS (review stage 5). **Open, the v1.3
+  card**: DATA6 (X1 A25) stuck high twice, each time cleared by reseating the card (a contact on the card or its slot:
+  look at A25 next time it is out); a stray -RESET once re-set FORCE-ROM during `memory_status.py` (reads at $3FF0+
+  returned the ROM page) with the v2.0 card in, not seen after the reseat.
   **2026-10-09: memory card v2.0 ORDERED from JLCPCB, order 2000765A-Y52.** **2026-09-25: memory card v2.0 FINISHED FOR FABRICATION** (`hardware/cards/memory/kicad/v2.0`, README
   "The v2.0 board"): **standoff option E** (chosen 2026-09-25) - the CF-to-IDE adapter (HX-2118P: 60 x 44 mm, 2 M3 holes 52 mm
   apart at the header end, no pin 20) on two 15 mm M3 standoffs over the CF chips at the free top edge, J2 parallel to
