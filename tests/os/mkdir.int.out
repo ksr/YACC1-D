@@ -1,0 +1,38 @@
+BOOT FROM CF
+Y1/OS v0.2 (2026-09-23)  P8XFS v2
+/> 
+/> 
+/> 
+/> 
+/> 
+usage: mkdir [-s sectors] path   (1..64 sectors, 16 entries each)
+/> 
+usage: mkdir [-s sectors] path   (1..64 sectors, 16 entries each)
+/> 
+cannot mkdir
+/> 
+cannot mkdir
+/> 
+mkdir: -s not with > or a pipe (a file is growing at the free pointer)
+/> 
+/BIG> 
+/BIG> 
+/BIG> 
+/BIG> 
+77 154 471
+/BIG> 
+/BIG/SUB> 
+/BIG/SUB
+/BIG/SUB> 
+/> 
+/> 
+/> 
+      0  F70
+      0  F71
+      0  F72
+      0  F73
+      0  F74
+      0  F75
+/> 
+bye
+>

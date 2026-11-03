@@ -1,5 +1,6 @@
 load /BIN/HELLO
 mkdir T
+load /BIN/HELLO
 dir
 cd T
 save H.BIN 5000 20
@@ -28,6 +29,7 @@ run /T2/HELLO 1 2 3
 cd /
 save /SAVED.BIN 5000 84
 mkdir /T2
+load /BIN/HELLO
 save /T2/HELLO 5000 10
 dir /T2
 exit

@@ -3,26 +3,43 @@ NAME
 
 SYNOPSIS
     mkdir path
+    mkdir -s sectors path
 
 DESCRIPTION
     Makes a new, empty directory: 4 sectors, room for 62 entries
     besides "." and "..". Quiet on success; "cannot mkdir" when the
     name exists, the parent is missing or full, or the name is not
-    valid. mkdir is a shell built-in; the MKDIR syscall (8), which
-    cp -r uses, does the same work.
+    valid.
 
-    It stays in the shell because it is a bootstrap primitive: a fresh
-    card needs it to make /BIN before any /BIN program exists.
+    -s makes it that many sectors, 1 to 64: 16 entries a sector, less
+    "." and ".." (-s 8: 126, -s 16: 254, -s 64: 1022). A directory's
+    size is fixed when it is made; for a bigger one later, make a new
+    directory with -s and mv the files into it.
+
+    mkdir is /BIN/MKDIR (2026-11-03). Without -s it asks the OS (the
+    MKDIR syscall, 8, which cp -r uses too); with -s it writes the
+    directory on the card itself, as pack does: the new extent at the
+    free pointer, the free pointer raised, then the entry in the
+    parent. A failure ends with status 1 (a running script stops).
+
+    As a /BIN program it runs in the program area at $5000, as dir,
+    cat and del do: a program loaded there (load) is overwritten. The
+    shell also has a built-in mkdir path (no -s), used when there is no
+    /BIN/MKDIR: a fresh card needs it to make /BIN before any /BIN
+    program exists.
 
 LIMITS
-    Names are 1..12 characters; the path at most 62. Refused ("cannot
-    mkdir") while a file is open for writing, which includes a > or
-    >> redirect and a pipe: a directory is allocated at the same free
-    pointer (see shell).
+    Names are 1..12 characters; the path at most 62. Refused while a
+    file is open for writing, which includes a > or >> redirect and a
+    pipe: a directory is allocated at the same free pointer (see
+    shell). With -s: "mkdir: -s not with > or a pipe".
+    The OS's own mkdir (the built-in, the syscall, cp -r) always makes
+    4 sectors.
 
 EXAMPLES
     mkdir /T
     mkdir SUB           in the current directory
+    mkdir -s 16 /WORK   room for 254 entries
 
 NOTES
     Changed from the P8X version: nothing is printed on success (the

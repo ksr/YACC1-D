@@ -5,6 +5,8 @@ BOOT FROM CF
 loaded 146 bytes at $5000
 /> 
 /> 
+loaded 146 bytes at $5000
+/> 
          BIN/
          DOCS/
      98  FRUIT.TXT  @B000
@@ -68,6 +70,8 @@ BOOT FROM CF
 saved 132 bytes
 /> 
 cannot mkdir
+/> 
+loaded 146 bytes at $5000
 /> 
 saved 16 bytes
 /> 

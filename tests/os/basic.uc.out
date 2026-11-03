@@ -61,7 +61,7 @@ BOOT FROM CF
   run path args  load and call a program with an argument tail
   save p a l     write memory a..a+l (hex) to a new file
   ren path name  rename a file or directory in place
-  mkdir / rmdir  make / remove (an empty) directory
+  mkdir / rmdir  make / remove (an empty) directory (/BIN/MKDIR: -s N, N sectors)
   type path      print a file (the built-in cat)
   sh file        run a script: its lines as typed (NAME.SH runs too)
   exit           back to the ROM monitor

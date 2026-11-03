@@ -49,7 +49,7 @@ it keeps that pointer in RAM and reads it again after every program returns (`re
 | `save path addr len` | write `len` bytes of memory from `addr` (both hex) to a new file whose load and exec address are `addr` |
 | `del path` | delete a file (a tombstone in its directory; `pack` gets the sectors back) |
 | `ren path newname` | rename a file or directory in place (`newname` is a bare name, 1..12 characters) |
-| `mkdir path` | a new directory (a 4-sector extent with `.` and `..`, as `p8xfs.py mkdir` makes it) |
+| `mkdir path` | a new directory (a 4-sector extent with `.` and `..`, as `p8xfs.py mkdir` makes it); `/BIN/MKDIR` replaces it and adds `-s N` (below) |
 | `rmdir path` | remove an empty directory |
 | `help` / `?` | this list |
 | `sh path` | run a script: the file's lines one after the other, as if typed (2026-11-03, "Scripts" below) |
@@ -382,6 +382,7 @@ names, globs and `-` (the console until Ctrl-D) work wherever a command reads te
 | `ls [path]` | a plain listing through opendir/readdir |
 | `make [-n] [-B] [-f file] [target...]` | build targets from a Makefile (2026-11-03): the recipes go into `MAKE.SH`, which the shell runs as a script; no file dates, so what is missing is built (`man make`, "The sources on the disk" below) |
 | `man [name]` | `/MAN/NAME` through the pager; alone: the page names |
+| `mkdir [-s N] path` | a directory; `-s` N sectors, 1..64 (16 entries each, less `.` and `..`): 2026-11-03, written on raw sectors as `pack` does, since the kernels and the MKDIR syscall make 4 sectors (62 entries) and the C kernel has no room for more; without `-s` the syscall |
 | `md [-p] [file]` | Markdown rendered (ANSI, or plain with `-p`), paged; names are looked up in `/DOCS` too; alone: the list |
 | `more [file...]` | page text (or stdin: `dir -R \| more`): space, Enter, q from the keyboard |
 | `mv src dst` | rename in place (RENAME), or move to another directory (copy + delete), globs into a directory |

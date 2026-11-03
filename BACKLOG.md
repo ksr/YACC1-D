@@ -794,6 +794,10 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   - The C kernel (`y1os.c`, the specification) has 10 bytes left of its 16,320 after `sh` (its sector, line and path
     buffers moved to low RAM to make room): the next OS feature must find room in it first.
   - `pack` inside a running script moves the script under the reader (documented in `man sh`; not guarded).
+  - Done the same day: `dir` sorts 255 entries (64 before); `/BIN/MKDIR` with `-s N` makes an N-sector directory
+    (1..64 sectors, up to 1,022 entries) on raw sectors as `pack` does, since the kernels make 4 and the C kernel
+    has no room (`tests/os/mkdir.session`: 75 files in an 8-sector directory, fsck on the host). The built-in and
+    the MKDIR syscall still make 4 sectors.
 - **First boot on the machine from the CF (2026-11-03): Y1/OS comes up from memory v2.0's CF section** (disk written
   through the bus tester, `tools/cfwrite_bus.py`, 2,048 sectors verified). **Line ends: fixed in the tree
   2026-11-03, the CF in the machine still has the old kernel.** Y1/OS sent a bare LF (the monitor and BASIC send LF

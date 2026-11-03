@@ -7,7 +7,7 @@
    Ported from P8X os/commands/help.c 2026-09-23, changes: the text is rewritten for Y1/OS (no /d1, graphics,
    kermit, make, sh; the built-ins are Y1/OS's; redirection and pipes since the same evening: man shell; pack added 2026-09-23;
    asm and cc 2026-09-25, video 2026-09-25, kermit 2026-09-26, asmc 2026-09-26, disasm 2026-09-29, sh and make
-   2026-11-03). Keep it in step with os/README.md. */
+   2026-11-03, mkdir -s the same day). Keep it in step with os/README.md. */
 #include "y1lib.c"
 
 void main() {
@@ -18,7 +18,7 @@ void main() {
     puts("  run path args  load and call a program with an argument tail");
     puts("  save p a l     write memory a..a+l (hex) to a new file");
     puts("  ren path name  rename a file or directory in place");
-    puts("  mkdir / rmdir  make / remove (an empty) directory");
+    puts("  mkdir / rmdir  make / remove (an empty) directory (/BIN/MKDIR: -s N, N sectors)");
     puts("  type path      print a file (the built-in cat)");
     puts("  sh file        run a script: its lines as typed (NAME.SH runs too)");
     puts("  exit           back to the ROM monitor");

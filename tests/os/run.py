@@ -76,6 +76,9 @@ HOST = {
     "badhandle": [("fsck",), ("boot",), ("same", []),       # 2026-09-23: nothing written through a bad handle
                   ("data", "/BADH.TXT", b"ABC")],
     "api": [("fsck",), ("get", "/COPY.TXT", "os/disk/README.TXT", 0)],
+    "mkdir": [("fsck",),                        # 2026-11-03: /BIN/MKDIR -s writes a bigger directory on raw sectors
+              ("ls", "/", ["BIG", "SMALL", "LOCAL"], ["X", "Y"]),
+              ("ls", "/BIG", ["F01", "F62", "F63", "F75", "SUB"], [])],
     "write": [("fsck",),
               ("ls", "/", ["T", "T2", "SAVED.BIN"], ["README.TXT"]),
               ("ls", "/T", ["KEEP.TXT"], ["COPY.TXT", "H.BIN", "SUB"]),
