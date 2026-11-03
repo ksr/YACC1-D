@@ -454,6 +454,13 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     their value is the legend "C3 C20: 100n" beside IC55. Only `video-v2.0-F_Silkscreen.gbr` differs from the export of
     2026-10-27; DRC 0 unconnected, parity 0, silk_overlap 0. Still ready to order, not ordered (the card's README, "The
     board-layout rules", "Part values").
+    **2026-11-03: each plane one piece.** The pre-order check (`~/Developer/elf/tools/preorder_check.py`) failed only
+    PLANES: GND in 8 pieces, VCC in 5. The extra pieces were pad-sized slivers where two same-net pads stand 2.54 mm
+    apart (X1's GND rows 1 / 32 and VCC rows 2 / 31, SV3's four GND pins): the two thermal gaps leave no fill between
+    them, only the two spokes meeting, joined to both pads; every pad also reached the main plane, so nothing was
+    unconnected. Those 16 pads are now connected solid to their plane (`gen_v20.py planes`, run by `build.sh` on the
+    routed board); no re-route, only `In1_Cu.gbr` / `In2_Cu.gbr` change. preorder_check PASS on every check; DRC, proof
+    and verify as before. Still ready to order, not ordered (the card's README, "Planes (2026-11-03)").
   - **Open - the ROM's V2.0 driver** and the emulators' V2.0 card model. The driver's requirements (the card's README,
     "The software rules for the window"): the card ID check **(IN PC AND $F0) = $50**, the build and DOTS from **(IN PC
     AND $F9)** = $58 / $59 text-only, $50 / $51 with graphics (bits 1 and 2 are VSYNC and DE, live); GFX-ON left 0 on a

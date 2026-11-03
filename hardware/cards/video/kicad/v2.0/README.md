@@ -3,8 +3,9 @@
 **The master since 2026-10-22. Ready to order since 2026-10-23 (re-reviewed, every re-review finding applied); not
 ordered. Revised 2026-10-26 before the order: the DB9's VSYNC polarity jumper JP4** (below), the board routed again
 2026-10-27, with the board-layout rules' silkscreen and cottageworker.com on it; the gerbers exported again
-2026-11-03 with every part's value on the silk (silk only; `video-v2.0-gerbers.zip`, what to upload: "Ordering"
-below). V2.0 is the v1.3 card (`../v1.3/`: 6845, IDT7134 text RAM,
+2026-11-03 with every part's value on the silk (silk only) and, the same day, with each power plane in one piece
+(16 power pads connected solid, inner layers only: "Planes (2026-11-03)"; `video-v2.0-gerbers.zip`, what to upload:
+"Ordering" below). V2.0 is the v1.3 card (`../v1.3/`: 6845, IDT7134 text RAM,
 the DOTS jumper, 12 MHz, both fonts in one character generator) plus a **graphics layer**, **every register on I/O ports
 PA-PE** and **two PS/2 ports** on an ATmega328P with an **INT jumper**. The design note is `BACKLOG.md` "Video card
 V2.0"; the theory `docs/cards/video-v2.md`; the ATmega's firmware `embedded/video-ps2`; the picture and the CPU
@@ -128,8 +129,53 @@ Freerouting, no `build.sh`):
 | `gen_v20.py verify` | **PASS**, 204 key connections |
 | `gen_v20.py place` | 121 footprints clear; **sockets PASS** (40), the closest IC42 / IC55 0.02 mm as before |
 | DRC (`reports/drc.json`, schematic parity) | 0 unconnected, parity 0, no copper findings; **silk_overlap 0, silk_over_copper 8, silk_edge_clearance 8**, the same eight-and-eight items as before (J1's, X1's and X2's library outlines); text_height / text_thickness 0 |
-| `preorder_check.py` (the System-5 tools' pre-order check: layers, ERC, DRC with the zones refilled, parity, the zip against the board, the zip's contents, bypass-capacitor pitch, netlist, planes) | every check PASS except PLANES, the same on the export of 2026-10-27: GND 8 pieces, VCC 5 - the plane and the 7 / 4 pad-sized islands of "Results", every GND / VCC pad reaching its plane |
+| `preorder_check.py` (the System-5 tools' pre-order check, `~/Developer/elf/tools/preorder_check.py`: layers, ERC, DRC with the zones refilled, parity, the zip against the board, the zip's contents, bypass-capacitor pitch, netlist, planes) | every check PASS except PLANES, the same on the export of 2026-10-27: GND 8 pieces, VCC 5 - the plane and the 7 / 4 pad-sized islands of "Results", every GND / VCC pad reaching its plane; fixed the same day ("Planes (2026-11-03)" below) |
 | the 3D render (`reports/video-v2.0-top.png`) | every value readable beside its part, none on a part's body |
+
+## Planes (2026-11-03)
+
+The pre-order check (`~/Developer/elf/tools/preorder_check.py <pcb> <zip> --layers 4`, from the System-5 repository;
+its PLANES step is `tools/kicad/plane_check.py` there: on a refilled copy of the board, each inner-layer zone one
+piece, every pad of its net touching the fill, no other net's pad inside it, no track on the layer) passed everything
+but PLANES on the route of 2026-10-27: In1.Cu GND in 8 pieces, In2.Cu VCC in 5. The extra pieces were the "7 / 4
+pad-sized islands" the results below record since 2026-10-23:
+
+| Plane | Island (x, y in mm), size | Touching |
+|---|---|---|
+| In1.Cu GND | (24.10, 106.24) 0.76 mm2, (26.64, 106.22) 0.80 mm2 | X1 A1-B1, B1-C1 |
+| In1.Cu GND | (24.10, 27.48) 0.80 mm2, (26.64, 27.48) 0.80 mm2 | X1 A32-B32, B32-C32 |
+| In1.Cu GND | (70.82, 107.27) 2.24 mm2, (70.81, 109.81) 2.54 mm2, (70.81, 112.35) 2.54 mm2 | SV3 2-4, 4-6, 6-8 |
+| In2.Cu VCC | (24.10, 103.67), (26.64, 103.67), (24.10, 30.02), (26.64, 30.02), 0.80 mm2 each | X1 A2-B2, B2-C2, A31-B31, B31-C31 |
+
+Each one lies between two pads of the plane's own net 2.54 mm apart. Their two thermal reliefs (0.4 mm gap round a
+1.52 mm or 1.7 mm pad) leave no room for the fill between them, so what is left there is the pair of 0.5 mm spokes
+that meet head on, with a little fill round them where the neighbouring antipads allow: copper joined to both pads and
+to nothing else. No island was an orphan (each touches two pads, so the zone's island removal, already "always",
+keeps it) and none was a fault: each of the 16 pads also reaches the main plane through its other spokes, every one
+of the 158 GND and 118 VCC pads touches the main piece, and DRC had 0 unconnected with no power tracks. No signal
+track runs on the inner layers and no via took part.
+
+The fix: those 16 pads (X1 A1, B1, C1, A32, B32, C32 on GND, X1 A2, B2, C2, A31, B31, C31 on VCC, SV3 2, 4, 6, 8 on
+GND) are connected solid to their plane instead of through a thermal relief, so the copper between each pair is part
+of the plane. `gen_v20.py planes <pcb>` does it on any board: it refills the zones, connects solid the pads of the
+plane's net that touch a piece other than the main one, and refills again until each plane is one piece; `build.sh`
+runs it on the routed board, so a rebuild reproduces it. The pads are on the inner layers only; the X1 pins and SV3's
+GND pins draw a little more heat when soldered, as on any solid plane connection (0.5 oz inner copper). No re-route:
+the tracks, vias and outer layers are unchanged.
+
+**Proofs (2026-11-03)**, after `gen_v20.py planes` on the committed board:
+
+| Check | Result |
+|---|---|
+| the board file against the one before, the zone fills left out | **16 lines added**, `(zone_connect 2)` on the 16 pads; nothing else |
+| `gen_v20.py planes`, again | In1.Cu GND 1 piece, In2.Cu VCC 1 piece, no pad changed |
+| `gen_v20.py silk`, on a copy | every text where it was (the file differs only in the texts' uuids); the part values of `7ed7d5c` intact |
+| Gerbers (the commands under "Ordering"), against the export of `7ed7d5c` (the part values) | **only `video-v2.0-In1_Cu.gbr` and `video-v2.0-In2_Cu.gbr` differ**; F_Cu, B_Cu, the masks, both silkscreens, Edge_Cuts, the drill files, the maps and the job file are identical apart from their date lines |
+| `tools/kicad/compare_netlists.py` (schematic vs board) | **MATCH, 219 of 219** net groups |
+| `gen_v20.py verify` | **PASS**, 204 key connections, no track on GND / VCC |
+| `gen_v20.py place` | 121 footprints clear; **sockets PASS** (40), the closest IC42 / IC55 0.02 mm as before |
+| DRC (`reports/drc.json`, schematic parity) | 0 unconnected, parity 0, no copper findings; silk_overlap 0, **silk_over_copper 8, silk_edge_clearance 8** as before |
+| `preorder_check.py` | **PASS on every check**: LAYERS, ERC, DRC, UNCONNECTED, PARITY, FRESH ZIP, ZIP CONTENT, BYPASS CAPS, NETLIST 219 of 219, **PLANES: GND 1 piece (158 pads), VCC 1 piece (118 pads)**, PICTURES |
 
 ## The schematic (redrawn 2026-10-24)
 
@@ -203,8 +249,9 @@ both layers, so the board was routed from scratch with JP4 placed. Every check b
 gerbers of 2026-10-24 and 2026-10-26 and the independent review r3 (`hardware/cards/video/reviews/v2.0-r3.md`,
 2026-10-26) were of the route of 2026-10-23. r3's fabrication-file check was repeated on the new gerbers 2026-10-27
 (r3, "Since the review"): 219 of 219 nets, 0 shorts, every clearance inside JLCPCB's limits, order as is. The
-gerbers were exported again 2026-11-03 for the part values on the silk (silk only: "The board-layout rules"); the
-copper, the masks and the drill files are those checked here.
+gerbers were exported again 2026-11-03 for the part values on the silk (silk only: "The board-layout rules") and for
+the planes in one piece (16 pads connected solid on In1.Cu / In2.Cu: "Planes (2026-11-03)"); the outer copper, the
+masks and the drill files are those checked here.
 
 | Check | Result |
 |---|---|
@@ -213,7 +260,7 @@ copper, the masks and the drill files are those checked here.
 | netlist proof, schematic vs board (`tools/kicad/compare_netlists.py`) | **MATCH, 219 of 219 net groups** |
 | placement | 121 footprints, no courtyard overlaps; **sockets PASS**, the closest as before (IC42 / IC55 0.02 mm) |
 | DRC | **0 unconnected, no clearance / short / dangling findings**, schematic parity 0; cosmetic only, the same as before: silk_over_copper 8, silk_edge_clearance 8 |
-| planes | In1.Cu GND 19,996 mm2 and In2.Cu VCC 19,971 mm2 of copper in one piece each, besides 7 / 4 pad-sized islands (at most 2.5 mm2); 0 unconnected with no power tracks |
+| planes | In1.Cu GND 19,996 mm2 and In2.Cu VCC 19,971 mm2 of copper in one piece each, besides 7 / 4 pad-sized islands (at most 2.5 mm2); 0 unconnected with no power tracks. Since 2026-11-03 one piece each, the islands joined ("Planes (2026-11-03)") |
 | ERC | none |
 | `gen_v20.py verify` | **PASS**, 204 key connections (the 189 below and the DB9's 15: VSYNC through IC54/D, IC46/F and JP4 to pin 9, HSYNC, VIDEO, pins 1 and 2 on GND) |
 
@@ -474,8 +521,8 @@ Nothing blocks the order. Before it, if a jack is at hand: the MD-60SM's leg spa
 (R2-1, 14.28 mm across the outer faces, 0.54 mm legs in 1.2 mm slots), and its date code (after 2022-03-03). The
 gerbers (`gerbers/`, zipped as `video-v2.0-gerbers.zip`; the order parameters in `video-v2.0-jlcpcb-order.txt`) were
 exported 2026-11-03 from the board routed 2026-10-27 with JP4 ("Results"; every copper layer, the masks and the drill
-files are new against the exports of 2026-10-24 / 2026-10-26; against 2026-10-27 only the front silkscreen differs, the
-part values), with the memory card v2.0's
+files are new against the exports of 2026-10-24 / 2026-10-26; against 2026-10-27 the front silkscreen differs, the
+part values, and the two plane layers, each plane in one piece: "Planes (2026-11-03)"), with the memory card v2.0's
 export options
 (`../../memory/kicad/v2.0/finish_v2.py fab`, JLCPCB order 2000765A-Y52). The build makes none: after any rebuild of
 the board, export them again from this folder:
@@ -488,6 +535,13 @@ $CLI pcb export gerbers --no-protel-ext --layers F.Cu,In1.Cu,In2.Cu,B.Cu,F.Mask,
 $CLI pcb export drill --format excellon --excellon-units mm --generate-map --map-format gerberx2 \
     --excellon-separate-th -o gerbers/ video-v2.0.kicad_pcb
 rm -f video-v2.0-gerbers.zip && (cd gerbers && zip -X ../video-v2.0-gerbers.zip *)
+```
+
+Before the upload, run the pre-order check from the System-5 repository (it writes `check-*.png` pictures of the
+copper layers next to the zip: look at them, do not commit them):
+
+```
+cd ~/Developer/elf && python3 tools/preorder_check.py <this folder>/video-v2.0.kicad_pcb <this folder>/video-v2.0-gerbers.zip --layers 4
 ```
 
 The drill file checked against the board: 314 vias of 0.4 mm (the board's 314), 1,349 round plated holes in all, six
@@ -509,7 +563,7 @@ card model (`BACKLOG.md`).
 | File | What it is |
 |---|---|
 | `v20_netlist.py` | **the circuit**: parts, nets (pin by pin), no-connects, `BUY`, the text-only build, `check()` |
-| `gen_v20.py` | schematic (`SHEETS`: the blocks), local libraries, project rules, the unrouted board, the board's schematic links (`link`), placement check, verify, `BOM.md` |
+| `gen_v20.py` | schematic (`SHEETS`: the blocks), local libraries, project rules, the unrouted board, the board's schematic links (`link`), placement check, the planes in one piece (`planes`), verify, `BOM.md` |
 | `../../../../../tools/kicad/sch_wire.py`, `elk_layout.js`, `package.json` | the wired sheets (ELK), shared with the memory card v2.0 |
 | `build.sh` | the whole build: schematic -> board -> Freerouting seeds -> reports -> checks |
 | `BOM.md` | the bill of materials (generated) |

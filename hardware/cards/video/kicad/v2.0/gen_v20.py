@@ -21,6 +21,8 @@ Run with KiCad's bundled Python (pcbnew), from this folder:
   gen_v20.py place <pcb>                  -> the placement check: courtyards apart, everything inside the outline, the
                                              DIP sockets' outlines clear of each other and of the other parts
   gen_v20.py silk <pcb> [out]             -> the silkscreen texts placed clear (board() does it on every new board)
+  gen_v20.py planes <pcb>                 -> each plane one piece: pads walled in by a same-net neighbour's thermal
+                                             relief connected solid, the zones refilled (build.sh, on the routed board)
   gen_v20.py dsn|shuffle|ses|stats ...    -> as gen_v13.py (Specctra export/import, Freerouting seeds, route stats)
   gen_v20.py link <netlist> <pcb>         -> the footprints' schematic links (path) set from the netlist, nothing else
   gen_v20.py verify <netlist> <pcb>       -> the key connections pin by pin (schematic and board), layers, planes
@@ -1227,6 +1229,48 @@ def silk_cmd(pcb, out=None):
     return not unclear
 
 
+def planes(pcb):
+    """gen_v20.py planes <pcb>: each plane filled as one piece (2026-11-03). Where two pads of the plane's net stand side
+    by side at 2.54 mm (X1's GND rows 1 and 32 and VCC rows 2 and 31, SV3's GND pins), their two 0.4 mm thermal gaps
+    leave no room for the fill between them, and the two spokes that meet there form a pad-sized island joined to both
+    pads (and through their other spokes to the plane) but to nothing else: harmless, but a plane in several pieces.
+    Those pads are connected solid instead (no thermal relief on that plane; the island becomes part of the plane) and
+    the zones filled again, until every plane is one piece. Only pads touching an island are changed; the routed copper,
+    the outer layers and every other pad stay as they are. Refills and saves <pcb>."""
+    import pcbnew
+    changed = []
+    for _ in range(3):
+        G13.refill(pcb)
+        b = pcbnew.LoadBoard(pcb)
+        fix, pieces = [], []
+        for z in b.Zones():
+            lid = z.GetFirstLayer()
+            if z.GetIsRuleArea() or not b.GetLayerName(lid).startswith("In"):
+                continue
+            poly = z.GetFilledPolysList(lid)
+            big = max(range(poly.OutlineCount()), key=lambda i: abs(poly.Outline(i).Area()))
+            pieces.append("%s %s %d" % (b.GetLayerName(lid), z.GetNetname(), poly.OutlineCount()))
+            for i in range(poly.OutlineCount()):
+                if i == big:
+                    continue
+                isl = pcbnew.SHAPE_POLY_SET()
+                isl.AddOutline(poly.Outline(i))
+                for fp in b.GetFootprints():
+                    for p in fp.Pads():
+                        if p.GetNetname() == z.GetNetname() and p.GetLocalZoneConnection() != pcbnew.ZONE_CONNECTION_FULL \
+                                and isl.Collide(p.GetPosition(), int(p.GetSize(lid).x / 2) + pcbnew.FromMM(0.05)):
+                            fix.append((fp, p))
+        if not fix:
+            break
+        for fp, p in fix:
+            p.SetLocalZoneConnection(pcbnew.ZONE_CONNECTION_FULL)
+            changed.append("%s.%s" % (fp.GetReference(), p.GetNumber()))
+        pcbnew.SaveBoard(pcb, b)
+    print("planes: %s piece(s)%s" % (", ".join(pieces), "; connected solid: " + " ".join(sorted(set(changed)))
+                                     if changed else ""))
+    return not fix
+
+
 def placement_check(pcb):
     """courtyards must not overlap, every courtyard inside the outline (the connectors' fronts may reach the edge); the
     DIP sockets clear of each other and of the other parts (socket_check)"""
@@ -1437,6 +1481,8 @@ if __name__ == "__main__":
         ok = placement_check(*a)
     elif cmd == "silk":
         ok = silk_cmd(*a)
+    elif cmd == "planes":
+        ok = planes(*a)
     elif cmd == "verify":
         ok = verify(*a)
     elif cmd == "bom":

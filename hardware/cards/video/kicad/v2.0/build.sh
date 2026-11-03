@@ -12,9 +12,9 @@
 # rules; the unrouted board (gen_v20.py board: the blank card's X1, a 218 mm outline, In1.Cu GND / In2.Cu VCC planes,
 # every part placed, every pad on its net) and the placement check; one Freerouting run per DSN component order (SEEDS,
 # in parallel; Power = GND/VCC not routed: -inc Power), each imported, its planes refilled and DRC'd; the best kept
-# (fewest unrouted, then fewest vias, then shortest); the reports (netlist, ERC, DRC with schematic parity, schematic
-# PDF, renders, netlist proof); gen_v20.py verify. Needs KiCad 10 and Freerouting 1.9 (FRJAR, default
-# ~/freerouting/freerouting.jar; it opens a window while it runs).
+# (fewest unrouted, then fewest vias, then shortest) and its planes made one piece each (gen_v20.py planes); the reports
+# (netlist, ERC, DRC with schematic parity, schematic PDF, renders, netlist proof); gen_v20.py verify. Needs KiCad 10
+# and Freerouting 1.9 (FRJAR, default ~/freerouting/freerouting.jar; it opens a window while it runs).
 HERE=$(cd "$(dirname "$0")" && pwd)
 PYK=/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3
 CLI=/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli
@@ -85,6 +85,8 @@ EOF
 [ -n "$BEST" ] || { echo "no clean route"; exit 1; }
 echo "  kept: seed $BEST"
 cp "$TMP/s$BEST/r.kicad_pcb" "$P.kicad_pcb"
+"$PYK" gen_v20.py planes "$P.kicad_pcb" > "$TMP/planes.log" 2>&1; st=$?   # each plane one piece (2026-11-03)
+q < "$TMP/planes.log"; [ $st = 0 ] || exit 1
 
 echo "== 3  reports =="
 "$CLI" sch erc --format json --severity-all -o "$R/erc.json" "$P.kicad_sch" >/dev/null 2>&1
