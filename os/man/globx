@@ -11,7 +11,7 @@ DESCRIPTION
     glob_expand(pat, out, maxn) -> the number of matches
       pat    the pattern word (ends at NUL or a space), * and ? in its
              last component only: "*.TXT" (the current directory) or
-             "/MAN/C*"
+             "/man/c*"
       out    maxn slots of GSLOT (64) bytes; slot i = the directory
              part of pat + the i-th matching name, NUL-ended, so it
              opens the way the bare word would (a relative prefix stays

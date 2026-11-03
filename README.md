@@ -24,10 +24,10 @@ Around the hardware, all in this tree:
 - **Firmware in the machine:** the microcode (a C generator that writes the sequencer's EEPROM image), the monitor
   ROM with its Intel-hex loader, BIOS vectors and video driver, and a Tiny BASIC.
 - **Y1/OS:** a disk operating system on CompactFlash (P8XFS), with a shell, redirection and pipes, and some thirty-five
-  `/BIN` commands, most ported from P8X, among them `vi`, `sed`, `awk`, `pack` and `kermit`. It exists twice and is kept
+  `/bin` commands, most ported from P8X, among them `vi`, `sed`, `awk`, `pack` and `kermit`. It exists twice and is kept
   in step: `os/y1os.asm` (the real one) and `os/y1os.c` (its specification).
 - **y1cc**, a C compiler for YACC1: a Python reference, a C twin, and nine passes that run under Y1/OS. Together with
-  the on-target assembler `/BIN/ASM` they rebuild themselves byte for byte on the emulator (the self-host).
+  the on-target assembler `/bin/asm` they rebuild themselves byte for byte on the emulator (the self-host).
 - **Host tools:** the RC/asm assembler, an instruction-level emulator, a microcode-level emulator that steps the real
   EEPROM image through models of the cards, loaders for the ROM monitor and the sequencer card, Kermit, the CF-card
   writer, and the KiCad board tooling.

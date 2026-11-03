@@ -18,67 +18,67 @@ BOOT FROM CF
 /> 
 /> 
 /> 
-/PK/SUB> 
+/pk/sub> 
 pack: 9 sectors reclaimed, free pointer N (was N)
 pack: N files and N directories moved
-/PK/SUB> 
-/PK/SUB
-/PK/SUB> 
-         DEEP/
-    146  H  @5000
-  73295  Y1CC.MD  @B000
-/PK/SUB> 
-/PK/SUB/DEEP> 
-    549  MD.MD  @B000
-/PK/SUB/DEEP> 
-/PK/SUB> 
-/PK> 
-/PK
-/PK> 
-      7  A.TXT
-      8  LOG
-         SUB/
-     69  U.TXT
-/PK> 
+/pk/sub> 
+/pk/sub
+/pk/sub> 
+         deep/
+    146  h  @5000
+  73334  y1cc.md  @B000
+/pk/sub> 
+/pk/sub/deep> 
+    549  md.md  @B000
+/pk/sub/deep> 
+/pk/sub> 
+/pk> 
+/pk
+/pk> 
+      7  a.txt
+      8  log
+         sub/
+     69  u.txt
+/pk> 
 one
 two
-/PK> 
+/pk> 
 alpha2
-/PK> 
+/pk> 
 apple 3 red
 banana 12 yellow
 cherry 40 red
 fig 7 purple
 pear 5 green
-/PK> 
-/PK> 
-/PK> 
-hello from /BIN/HELLO
+/pk> 
+/pk> 
+/pk> 
+hello from /bin/hello
 args: 1 2
-/PK> 
+/pk> 
 NAME
     pack - compact the volume, reclaiming dead sectors
 
-/PK> 
-/PK> 
+/pk> 
+/pk> 
 new
-/PK> 
+/pk> 
 pack: not with < > >> or a pipe (a redirect file is open)
-/PK> 
+/pk> 
 pack: not with < > >> or a pipe (a redirect file is open)
-/PK> 
+/pk> 
 pack: not with < > >> or a pipe (a redirect file is open)
-/PK> 
-/PK> 
-/PK> 
+/pk> 
+/pk> 
+/pk> 
 /> 
 pack: 2 sectors reclaimed, free pointer N (was N)
 pack: 1 files and 0 directories moved
 /> 
 /> 
-      5  LAST.TXT
-    549  MD.MD  @B000
-      4  MID.TXT
+      5  last.txt
+    549  md.md  @B000
+      4  mid.txt
 /> 
 bye
 >

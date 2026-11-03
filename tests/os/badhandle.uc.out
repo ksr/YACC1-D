@@ -34,20 +34,20 @@ BOOT FROM CF
 getc closed 65535
 putc 0 again 0
 0200 untouched 1
-/> cat /BADH.TXT
+/> cat /badh.txt
 
-ABC/> load /ZERO.BIN
+ABC/> load /zero.bin
 
 bad load address or size
-/> run /ZERO.BIN
+/> run /zero.bin
 
 bad load address or size
 /> zero.bin
 
 bad load address or size
-/> dir /ZERO.BIN
+/> dir /zero.bin
 
-      0  ZERO.BIN  @6000
+      0  zero.bin  @6000
 /> exit
 
 bye

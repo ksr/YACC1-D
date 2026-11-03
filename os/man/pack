@@ -10,7 +10,7 @@ DESCRIPTION
     Files and directories are single contiguous extents, and new ones
     are only ever allocated at the volume's free pointer, so a sector
     that stops being used stays dead: a deleted or replaced file, the
-    pipes' /PIPE0.TMP and /PIPE1.TMP, the old copy a >> append leaves
+    pipes' /pipe0.tmp and /pipe1.tmp, the old copy a >> append leaves
     when the file was not the last one written, a removed directory.
     pack moves every live file and directory down over those holes,
     in disk order, updates each directory entry to the new place, and
@@ -32,7 +32,7 @@ DESCRIPTION
     at the old free pointer. It refuses a volume whose extents
     overlap or reach past the free pointer, before writing anything
     (check such a card with tools/p8xfs.py fsck on the host).
-    pack is /BIN/PACK.
+    pack is /bin/pack.
 
 OPTIONS
     -v  one line per moved extent: "from>to", or "from>to via S" for
@@ -80,7 +80,7 @@ LIMITS
     anything. Nothing on the volume can lie past LBA 65535 (32 MB).
 
 EXAMPLES
-    del /OLD.TXT
+    del /old.txt
     pack
     dir
 

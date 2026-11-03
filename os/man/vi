@@ -13,7 +13,7 @@ DESCRIPTION
     exist starts as an empty buffer ("[new file]"). Longer lines, or
     lines past the 320th, are cut when the file is read; the status row
     then says [cut], and writing the buffer back writes the cut text.
-    Files are written with LF line ends. vi is /BIN/VI.
+    Files are written with LF line ends. vi is /bin/vi.
 
     The screen is 24 x 80: 23 text rows (~ marks rows past the end of
     the file) and a status row showing the mode, the file name, [+] when
@@ -53,14 +53,13 @@ END OF INPUT
     that only happens when the input is gone for good (a scripted run
     on the emulators).
 
-    On the instruction-level emulator a q byte is read as end of input
-    (docs/programming/EMULATORS.md), so :q, :wq and text containing q
-    cannot be typed there: use :x to save and quit. The microcode
-    emulator and the machine have no such quirk.
+    On the instruction-level emulator a q byte was read as end of input
+    until 2026-11-03 (docs/programming/EMULATORS.md); it is an ordinary
+    byte now, so :q and :wq work there too.
 
 EXAMPLES
     vi notes.txt
-    vi /README.TXT        then  jo  some text  Esc  :x /T.TXT
+    vi /README        then  jo  some text  Esc  :x /t.txt
 
 SEE ALSO
     cat

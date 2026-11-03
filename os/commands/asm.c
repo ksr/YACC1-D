@@ -2,13 +2,13 @@
  * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
  */
 
-/* asm.c - the native YACC1 assembler, /BIN/ASM (2026-09-25), /BIN/ASMC since 2026-09-26: RC/asm's source dialect
+/* asm.c - the native YACC1 assembler, /bin/asm (2026-09-25), /bin/asmc since 2026-09-26: RC/asm's source dialect
    (software/assembler, the assembler y1cc's output and the firmware are written for) on the machine, and byte for
-   byte what the host assembler makes of the same source. It is THE SPECIFICATION of /BIN/ASM, the same program
+   byte what the host assembler makes of the same source. It is THE SPECIFICATION of /bin/asm, the same program
    hand-written in YACC1 assembly (os/commands-asm/asm.asm, ~5x faster, a 20,292-byte symbol table): any change of
    behaviour goes into both, and tests/asm/run.py checks that they print and write the same on every source.
      asm [-h] SRC [OUT]
-       SRC   the source; a name without '.' gets ".ASM" (asm HELLO reads HELLO.ASM)
+       SRC   the source; a name without '.' gets ".ASM" (asm HELLO reads hello.asm)
        OUT   a program file (the default: SRC without its extension): the bytes from the first address written to
              the last, gaps as zeros, load = that first address, exec = END's address (else the load address) -
              what `run` and the shell's NAME lookup take; the code must go up in address (no ORG back)
@@ -549,11 +549,11 @@ void main() {
     }
     dot = 0;
     for (s = srcn; *s; s++) { if (*s == '.') dot = s; if (*s == '/') dot = 0; }
-    if (!dot) { dot = s; scpy(s, ".ASM"); }
+    if (!dot) { dot = s; scpy(s, ".asm"); }
     if (!outn[0]) {
         s = outn; a = srcn;
         while (a != dot) *s++ = *a++;
-        scpy(s, hexo ? ".IMG" : "");
+        scpy(s, hexo ? ".img" : "");
     }
     if (runpass(1)) { errs = 1; eput2("asm: cannot open ", srcn); osexit(1); }     /* (2026-11-03: status 1 on any
                                                                                    error, so a script stops) */

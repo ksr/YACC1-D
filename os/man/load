@@ -18,11 +18,11 @@ DESCRIPTION
     errors: "not found", "is a directory".
 
 EXAMPLES
-    load /BIN/HELLO        loaded 132 bytes at $5000
-    load /FRUIT.TXT        a text file (the host tool gives $B000)
+    load /bin/hello        loaded 132 bytes at $5000
+    load /fruit.txt        a text file (the host tool gives $B000)
 
 NOTES
-    Every /BIN program also runs from $5000, dump and examine included,
+    Every /bin program also runs from $5000, dump and examine included,
     so they overwrite a program loaded there; to look at it, leave the
     OS (exit) and use the monitor's B or D.
     Removed from the P8X version: the .bin suffix.

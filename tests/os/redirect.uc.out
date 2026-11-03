@@ -2,46 +2,46 @@ BOOT FROM CF
 Y1/OS v0.2 (2026-09-23)  P8XFS v2
 /> 
 
-/> echo hello > /R1.TXT
+/> echo hello > /r1.txt
 
-/> cat /R1.TXT
+/> cat /r1.txt
 
 hello
-/> echo more >>/R1.TXT
+/> echo more >>/r1.txt
 
-/> type /FRUIT.TXT >/R2.TXT
+/> type /fruit.txt >/r2.txt
 
-/> echo third>>/R1.TXT
+/> echo third>>/r1.txt
 
-/> cat /R1.TXT
+/> cat /r1.txt
 
 hello
 more
 third
-/> wc < /R1.TXT
+/> wc < /r1.txt
 
 3 3 17
-/> cmp /FRUIT.TXT /R2.TXT
+/> cmp /fruit.txt /r2.txt
 
-/> cd /BIN
+/> cd /bin
 
-/BIN> pwd > /R3.TXT
+/bin> pwd > /r3.txt
 
-/BIN> cd /
+/bin> cd /
 
-/> type R3.TXT
+/> type r3.txt
 
-/BIN
-/> cp /FRUIT.TXT /R4.TXT > /R5.TXT
+/bin
+/> cp /fruit.txt /r4.txt > /r5.txt
 
-cp: cannot create /R4.TXT
-/> save /R6.BIN 5000 10 >> /R1.TXT
+cp: cannot create /r4.txt
+/> save /r6.bin 5000 10 >> /r1.txt
 
 cannot create
-/> echo x > /BIN
+/> echo x > /bin
 
 cannot write the > or pipe file
-/> cat < /NOPE
+/> cat < /nope
 
 cannot read the < file
 /> echo a >
@@ -53,9 +53,9 @@ BOOT FROM CF
 /> echo "a > b" 'c|d'
 
 "a > b" 'c|d'
-/> sort /R2.TXT > /R2.TXT
+/> sort /r2.txt > /r2.txt
 
-/> head -3 /R2.TXT
+/> head -3 /r2.txt
 
 apple 3 red
 apple 3 red

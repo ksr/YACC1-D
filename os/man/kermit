@@ -30,7 +30,7 @@ OPTIONS
     -a ADDR   the load and exec address (hex) of the files received
               (0 without), so a received program can be run
     -n        never replace a file: an incoming name that exists gets
-              ~1 .. ~99 (FOO.BIN~1); without -n it is replaced
+              ~1 .. ~99 (foo.bin~1); without -n it is replaced
     -k        keep a file that did not arrive whole (else deleted)
     -l N      the longest packet I take, 20..94 (94)
     -B / -T   send binary (the default: every byte as it is) or text
@@ -44,8 +44,8 @@ FILES
     A received name loses any directory part, is upper-cased, and
     keeps 1..12 of A-Z 0-9 . _ - (others become _); a longer one is
     cut to 12 keeping a short extension (lower case name.text comes
-    as LOWER_CA.TEX). The ACK tells the sender the name used. Data
-    goes to KERMIT.TMP in the current directory, renamed when the
+    as lower_ca.tex). The ACK tells the sender the name used. Data
+    goes to kermit.tmp in the current directory, renamed when the
     file is complete: an old file of the same name is replaced only
     by a whole new one, and a failed transfer leaves nothing. Text
     mode (the sender's attributes say so, or C-Kermit's text files)
@@ -75,7 +75,7 @@ NOTES
 EXAMPLES
     kermit -r                 then on the Mac: send foo.txt
     kermit -s *.C             then on the Mac: receive
-    kermit -x                 then: send, get REPORT.TXT, finish
+    kermit -x                 then: send, get report.txt, finish
     kermit -r -a 5000         a program, runnable when it arrives
 
 SEE ALSO

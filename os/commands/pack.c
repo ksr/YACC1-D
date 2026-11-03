@@ -9,7 +9,7 @@
                  step is done (c copied to the scratch area, e entry on the scratch copy, C copied to its place,
                  E entry on the final copy): what an interrupted run was doing
      pack -h     usage
-   New in Y1/OS 2026-09-23 (the P8X PACK was a shell built-in in p8xos.asm; this is a /BIN program so the OS image
+   New in Y1/OS 2026-09-23 (the P8X PACK was a shell built-in in p8xos.asm; this is a /bin program so the OS image
    does not grow). It works on raw sectors, CFREAD/CFWRITE through the ROM (as y1os.c's cfread() does), because
    the syscalls hide where an entry sits; it uses the OS only for STDIO, GETCWD and CHDIR.
    RESET-SAFE since 2026-09-23 (the same day, second version): an interrupted pack loses nothing, and running it

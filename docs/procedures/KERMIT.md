@@ -1,6 +1,6 @@
 # Moving files between the Mac and Y1/OS with Kermit
 
-Written 2026-09-26 with `/BIN/KERMIT` (`os/commands/kermit.c`, `man kermit`). The console cable is the only link: the
+Written 2026-09-26 with `/bin/kermit` (`os/commands/kermit.c`, `man kermit`). The console cable is the only link: the
 I/O card's 16C550 at 38400 8N1 behind the MAX232, no flow control, the FTDI cable on the Mac
 (`/dev/cu.usbserial-AB0MVHSQ`; the sequencer card's FTDI, `usbserial-AB6WZCQX`, is not the console). The same line
 is the terminal and the transfer: you type the kermit command on the YACC1, then go back to the Kermit on the Mac and
@@ -48,14 +48,14 @@ What each one is for:
 | `carrier-watch off`, `modem type none` | a three-wire cable: no carrier detect, no modem |
 | `flow-control none` | RTS/CTS are not wired; with hardware flow control C-Kermit would wait for a CTS that never comes |
 | `parity none` | the line is 8N1, so bytes over 127 travel as they are (no 8th-bit prefixing needed) |
-| `prefixing all` | every control character goes prefixed (`#`). `/BIN/KERMIT` reads packets by their length, so C-Kermit's default (cautious) works too; `all` costs a few percent and never depends on that |
-| `streaming off`, `window 1` | `/BIN/KERMIT` answers every packet (stop-and-wait); it does not offer windows or long packets, so C-Kermit would fall back anyway |
-| `block-check 3` | the 16-bit CRC; `/BIN/KERMIT` takes 1, 2 or 3 |
+| `prefixing all` | every control character goes prefixed (`#`). `/bin/kermit` reads packets by their length, so C-Kermit's default (cautious) works too; `all` costs a few percent and never depends on that |
+| `streaming off`, `window 1` | `/bin/kermit` answers every packet (stop-and-wait); it does not offer windows or long packets, so C-Kermit would fall back anyway |
+| `block-check 3` | the 16-bit CRC; `/bin/kermit` takes 1, 2 or 3 |
 | `file type binary`, `transfer mode manual` | every byte arrives as sent. Y1/OS text files end lines with LF like the Mac's, so text needs no conversion. In text mode C-Kermit sends CR LF (kermit drops the CR) and may translate the character set; for exact copies stay binary |
-| `file names literal` | a file from the YACC1 keeps its upper-case name (C-Kermit would lower-case it) |
+| `file names literal` | a file keeps its name exactly, both ways (C-Kermit would otherwise convert its case) |
 | `terminal autodownload on` | when `kermit -s` on the YACC1 starts sending, C-Kermit in CONNECT mode starts receiving by itself |
 
-Packet length: `/BIN/KERMIT` tells C-Kermit to send it packets of up to 94 characters (the short-packet maximum; `-l N`
+Packet length: `/bin/kermit` tells C-Kermit to send it packets of up to 94 characters (the short-packet maximum; `-l N`
 lowers it) and sends up to what C-Kermit asks for; nothing to set. Timeout: it asks C-Kermit to wait 15 s for its
 packets and itself uses what C-Kermit asks for (else 5 s).
 
@@ -71,20 +71,21 @@ packets and itself uses what C-Kermit asks for (else 5 s).
 
 ```
 C-Kermit> connect
-/> cd /WORK                       (the files land in the current directory)
-/WORK> kermit -r                  kermit: ready to receive: start the sender (3 Ctrl-Cs cancel)
+/> cd /work                       (the files land in the current directory)
+/work> kermit -r                  kermit: ready to receive: start the sender (3 Ctrl-Cs cancel)
 Ctrl-\ C
 C-Kermit> send report.txt         (or: send *.c   several files in one go)
    ... C-Kermit's transfer display ...
 C-Kermit> connect
-  REPORT.TXT  1234 bytes
+  report.txt  1234 bytes
 kermit: 1 file received
-/WORK>
+/work>
 ```
 
-Names arrive upper-cased and cut to Y1/OS's 12 characters (`lower case name.text` becomes `LOWER_CA.TEX`); the name
+Names keep their case and are cut to Y1/OS's 12 characters (`lower case name.text` becomes `lower_ca.tex`; upper-cased
+until 2026-11-03); the name
 used is sent back to C-Kermit, which shows it. A file of the same name is replaced once the new one is complete
-(`kermit -r -n` keeps it and names the new one `REPORT.TXT~1`); a transfer that fails leaves nothing behind
+(`kermit -r -n` keeps it and names the new one `report.txt~1`); a transfer that fails leaves nothing behind
 (`-k` keeps the part that arrived). For a program: `kermit -r -a 5000` gives the received files load and exec address
 $5000, so `run NAME` (or just `NAME`) works.
 
@@ -92,12 +93,12 @@ $5000, so `run NAME` (or just `NAME`) works.
 
 ```
 C-Kermit> connect
-/WORK> kermit -s REPORT.TXT *.C   kermit: sending 3 files: start the receiver
+/work> kermit -s report.txt *.C   kermit: sending 3 files: start the receiver
    (with autodownload on, C-Kermit starts receiving here by itself; otherwise:)
 Ctrl-\ C
 C-Kermit> receive
 C-Kermit> connect
-  REPORT.TXT  1234 bytes
+  report.txt  1234 bytes
   ...
 kermit: 3 files sent
 ```
@@ -109,10 +110,10 @@ file replaced, the default renames it). `kermit -s -T FILE` sends text (LF as CR
 
 ```
 C-Kermit> connect
-/WORK> kermit -x                  kermit: server; the other side: send, get, finish (3 Ctrl-Cs quit)
+/work> kermit -x                  kermit: server; the other side: send, get, finish (3 Ctrl-Cs quit)
 Ctrl-\ C
 C-Kermit> send notes.txt
-C-Kermit> get REPORT.TXT          (a Y1/OS glob works: get *.C; a lower-case name is tried in upper case too)
+C-Kermit> get report.txt          (a Y1/OS glob works: get *.C; a lower-case name is tried in upper case too)
 C-Kermit> send prog
 C-Kermit> finish                  (ends kermit -x; the shell prompt comes back)
 C-Kermit> connect
@@ -144,7 +145,7 @@ The Python Kermit the tests use speaks the same protocol (pyserial, as `tools/mo
 python3 tools/y1kermit.py term                      a terminal on the line (Ctrl-] quits): type kermit -r there
 python3 tools/y1kermit.py send report.txt           to kermit -r (or a kermit -x server)
 python3 tools/y1kermit.py receive ~/incoming        from kermit -s
-python3 tools/y1kermit.py get 'REPORT.TXT' ~/in     from kermit -x;   y1kermit.py finish   ends it
+python3 tools/y1kermit.py get 'report.txt' ~/in     from kermit -x;   y1kermit.py finish   ends it
 ```
 
 `--port /dev/cu.usbserial-AB0MVHSQ` if more than one USB serial port is present; `tools/README.md` lists its options.

@@ -3,24 +3,24 @@
 
 """tests/native/selfhost.py - the YACC1 toolchain rebuilds itself under Y1/OS on the emulated YACC1 (2026-09-25).
 
-Stage 1 (the native build): on a copy of the OS disk, with the toolchain's own sources on it under /R (as they are in
+Stage 1 (the native build): on a copy of the OS disk, with the toolchain's own sources on it under /r (as they are in
 the repository: software/compiler/c's pass sources, target/, ylim/, the os/lib_*.c libraries, os/asm_optab.c,
-os/commands/asm.c and cc.c; /LIB/Y1LIB.C and /LIB/Y1CCRT.TXT are on the OS disk already), the host-built compiler
-(/BIN/CC + /LIB/CC/CC1..CC9) compiles
+os/commands/asm.c and cc.c; /lib/y1lib.c and /lib/y1ccrt.txt are on the OS disk already), the host-built compiler
+(/bin/cc + /lib/cc/cc1..cc9) compiles
 
   - each of the nine passes, software/compiler/c/target/NAME.c, with os/Makefile's flags for them
     (--org 0x5000 --os --stack 0xCFFF --xisa), and
-  - the assembler os/commands/asm.c (/BIN/ASMC) and the driver os/commands/cc.c, with the /BIN flags
+  - the assembler os/commands/asm.c (/bin/asmc) and the driver os/commands/cc.c, with the /bin flags
     (--org 0x5000 --os),
 
-and the host-built /BIN/ASM assembles each one into a program file; and /BIN/ASM assembles its own source, the
-assembler in YACC1 assembly os/commands-asm/asm.asm with its INCLUDE asmtab.inc (2026-09-26: since then /BIN/ASM is
-that program and asm.c, its specification, is /BIN/ASMC; both are rebuilt here). The host fetches the eleven assemblies and program
+and the host-built /bin/asm assembles each one into a program file; and /bin/asm assembles its own source, the
+assembler in YACC1 assembly os/commands-asm/asm.asm with its INCLUDE asmtab.inc (2026-09-26: since then /bin/asm is
+that program and asm.c, its specification, is /bin/asmc; both are rebuilt here). The host fetches the eleven assemblies and program
 files off the image (tools/p8xfs.py get) and compares them byte for byte with os/build (the Makefile's host builds:
 y1cc.py + the host assembler + img2bin; the assembly with the header's date masked, Y1/OS has no clock).
 
-Stage 2 (the fixed point): a fresh copy of the OS disk with the NATIVELY built CC1..CC9 (in /LIB/CC), CC and ASM (in
-/BIN; ASMC from asm.c, ASM from asm.asm) in place of the host-built ones (taken off stage 1's image), and the same
+Stage 2 (the fixed point): a fresh copy of the OS disk with the NATIVELY built CC1..CC9 (in /lib/cc), CC and ASM (in
+/bin; ASMC from asm.c, ASM from asm.asm) in place of the host-built ones (taken off stage 1's image), and the same
 eleven compiles and twelve assemblies again:
 every output must again be the host's, byte for byte. Then the YACC1 toolchain reproduces itself with no host
 involved (the host only puts the sources on the disk and reads the results).
@@ -50,14 +50,14 @@ CPI = 26.1                                           # clocks an instruction (te
                                                      # microcode of 2026-09-29: three-step prologue 27.4, + idle steps 26.1;
                                                      # 32.4 with the old one, which the EEPROM holds until it is reloaded)
 PFLAGS = "--org 0x5000 --os --stack 0xCFFF --xisa"  # os/Makefile, the passes
-BFLAGS = "--org 0x5000 --os"                         # os/Makefile, a /BIN command (make without XISA=1)
+BFLAGS = "--org 0x5000 --os"                         # os/Makefile, a /bin command (make without XISA=1)
 CDIR = "software/compiler/c"
 # name, source, flags, the host build in os/build, where it goes on the disk
-PROGS = [(n, CDIR + "/target/%s.c" % n, PFLAGS, "cc/" + n, "/LIB/CC/CC%d" % (i + 1)) for i, n in enumerate(run.PASSN)]
-PROGS += [("asm", "os/commands/asm.c", BFLAGS, "bin/asm", "/BIN/ASMC"),
-          ("cc", "os/commands/cc.c", BFLAGS, "bin/cc", "/BIN/CC"),
-          # (2026-09-26) the assembler in YACC1 assembly: only assembled (flags None), by the native /BIN/ASM itself
-          ("asma", "os/commands-asm/asm.asm", None, "asma/asm", "/BIN/ASM")]
+PROGS = [(n, CDIR + "/target/%s.c" % n, PFLAGS, "cc/" + n, "/lib/cc/cc%d" % (i + 1)) for i, n in enumerate(run.PASSN)]
+PROGS += [("asm", "os/commands/asm.c", BFLAGS, "bin/asm", "/bin/asmc"),
+          ("cc", "os/commands/cc.c", BFLAGS, "bin/cc", "/bin/cc"),
+          # (2026-09-26) the assembler in YACC1 assembly: only assembled (flags None), by the native /bin/asm itself
+          ("asma", "os/commands-asm/asm.asm", None, "asma/asm", "/bin/asm")]
 
 
 def steps(p):
@@ -82,18 +82,18 @@ def sources():
 
 
 def make_disk(img, progs, native=None):
-    """os/disk.img + the sources under /R + /OUT/NAME for each program; native: {name: program bytes} to install"""
+    """os/disk.img + the sources under /r + /out/name for each program; native: {name: program bytes} to install"""
     shutil.copy(os.path.join(OS, "disk.img"), img)
-    dirs = {"/R"}
-    run.sh(FS + ["mkdir", img, "/R"])
+    dirs = {"/r"}
+    run.sh(FS + ["mkdir", img, "/r"])
     for f in sources():
         parts = f.split("/")
         for i in range(1, len(parts)):
-            d = "/R/" + "/".join(parts[:i])
+            d = "/r/" + "/".join(parts[:i])
             if d not in dirs: run.sh(FS + ["mkdir", img, d]); dirs.add(d)
-        run.sh(FS + ["put", img, os.path.join(ROOT, f), "--name", "/R/" + f])
-    run.sh(FS + ["mkdir", img, "/OUT"])
-    for p in progs: run.sh(FS + ["mkdir", img, "/OUT/" + p[0].upper()])
+        run.sh(FS + ["put", img, os.path.join(ROOT, f), "--name", "/r/" + f])
+    run.sh(FS + ["mkdir", img, "/out"])
+    for p in progs: run.sh(FS + ["mkdir", img, "/out/" + p[0]])
     for name, data in (native or {}).items():
         p = [q for q in PROGS if q[0] == name][0]
         f = os.path.join(BUILD, "install.tmp"); open(f, "wb").write(data)
@@ -104,14 +104,14 @@ def make_disk(img, progs, native=None):
 def script(progs):
     lines = ["O"]
     for p in progs:
-        N = p[0].upper()
+        N = p[0]
         if p[2] is None:                              # assembly source: assembled where it lies (its INCLUDE)
-            lines += ["cd /R/" + os.path.dirname(p[1]), "asm %s /OUT/%s/%s" % (os.path.basename(p[1]), N, N), "cd /"]
+            lines += ["cd /r/" + os.path.dirname(p[1]), "asm %s /out/%s/%s" % (os.path.basename(p[1]), N, N), "cd /"]
             continue
-        lines += ["cd /R/" + os.path.dirname(p[1]),
-                  "cc %s -o /OUT/%s/%s.ASM %s" % (os.path.basename(p[1]), N, N, p[2]),
+        lines += ["cd /r/" + os.path.dirname(p[1]),
+                  "cc %s -o /out/%s/%s.asm %s" % (os.path.basename(p[1]), N, N, p[2]),
                   "cd /",
-                  "asm /OUT/%s/%s.ASM" % (N, N)]
+                  "asm /out/%s/%s.asm" % (N, N)]
     return "\n".join(lines + ["exit", "0", ""])
 
 
@@ -128,11 +128,11 @@ def hm(n):
 def check(img, p):
     """the host's comparison of program p's results on an image: (failures, assembly bytes, program bytes)"""
     want_asm, want_bin = host(p)
-    N = p[0].upper(); D = "/OUT/%s/%s" % (N, N)
+    N = p[0]; D = "/out/%s/%s" % (N, N)
     fails = []
-    ga = run.get(img, D + ".ASM") if want_asm is not None else b""
+    ga = run.get(img, D + ".asm") if want_asm is not None else b""
     if want_asm is None: pass                         # asm.asm: its program file only
-    elif ga is None: fails.append("no " + D + ".ASM")
+    elif ga is None: fails.append("no " + D + ".asm")
     elif run.corpus.normalize(ga.decode("latin1")) != run.corpus.normalize(want_asm):
         fails.append("assembly differs (%d / %d bytes)" % (len(ga), len(want_asm)))
     gb = run.get(img, D)
@@ -219,7 +219,7 @@ def main():
     progs = [p for p in PROGS if not names or p[0] in names]
     if not progs: sys.exit("selfhost: no such program: " + " ".join(names))
     shutil.rmtree(BUILD, ignore_errors=True); os.makedirs(BUILD)
-    run.sh(["make", "-s", "-C", OS])                 # the disk: the OS, /BIN (CC, ASM), /LIB, the passes (host builds)
+    run.sh(["make", "-s", "-C", OS])                 # the disk: the OS, /bin (CC, ASM), /lib, the passes (host builds)
     run.BUILD = BUILD
     bad = 0; native = {}; total = 0
     if only in (None, 1):

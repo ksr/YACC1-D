@@ -15,7 +15,7 @@
    Y1/OS keeps no file dates, so a target is built when it does not exist, when a prerequisite was built in this
    run, or with -B; a prerequisite with no rule must exist. A target with no recipe (all:) is made when any of its
    prerequisites is. To rebuild one after editing its source: make -B NAME (or del NAME, then make NAME).
-   make runs nothing itself: the recipe lines of every target to build, in order, go into MAKE.SH in the current
+   make runs nothing itself: the recipe lines of every target to build, in order, go into make.sh in the current
    directory, and make EXECs it; the shell runs it as a script (sh), each line echoed, and the first command that
    fails stops it. An error in the Makefile, a missing prerequisite or a cycle: the message, nothing run, status 1. */
 #include "../lib_fs.c"
@@ -44,16 +44,16 @@ char file[64] = "Makefile";
 char word[64];
 char ent[32];
 char nflag, bflag;
-int hs;                         /* MAKE.SH's handle, 0 until the first recipe line */
+int hs;                         /* make.sh's handle, 0 until the first recipe line */
 
-void fail(char *s, char *t) { eput2(s, t); if (hs) { fclose(hs); fdelete("MAKE.SH"); } osexit(1); }
+void fail(char *s, char *t) { eput2(s, t); if (hs) { fclose(hs); fdelete("make.sh"); } osexit(1); }
 
 void estr(char *s) { while (*s) eputc(*s++); }
 void edec(int n) { if (n >= 10) edec(n / 10); eputc('0' + n % 10); }
 
 void failn(char *s, int n) {    /* a Makefile error at line n */
     estr("make: "); estr(file); estr(" line "); edec(n + 1); estr(": "); eputs(s);
-    if (hs) { fclose(hs); fdelete("MAKE.SH"); }
+    if (hs) { fclose(hs); fdelete("make.sh"); }
     osexit(1);
 }
 
@@ -156,11 +156,11 @@ int expand(char *s, char *d, int max, char *tgt, char *first) {   /* s -> d with
     return n;
 }
 
-void emit(char *s) {            /* a recipe line: printed (-n), else into MAKE.SH */
+void emit(char *s) {            /* a recipe line: printed (-n), else into make.sh */
     if (nflag) { puts(s); return; }
     if (!hs) {
-        hs = fcreate("MAKE.SH", 0, 0);
-        if (!hs) fail("make: cannot write ", "MAKE.SH (inside > or a pipe?)");
+        hs = fcreate("make.sh", 0, 0);
+        if (!hs) fail("make: cannot write ", "make.sh (inside > or a pipe?)");
     }
     fputs(hs, s); fputc(hs, 10);
 }
@@ -226,7 +226,7 @@ void main() {
     }
     if (!hs) { if (!nflag && k == 2) puts("make: nothing to do"); return; }
     fclose(hs);
-    osexec("MAKE.SH", 0);
-    eputs("make: cannot run MAKE.SH");
+    osexec("make.sh", 0);
+    eputs("make: cannot run make.sh");
     osexit(1);
 }

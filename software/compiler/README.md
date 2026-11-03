@@ -44,7 +44,7 @@ machine they call the monitor's BIOS vectors `charout` ($FFC4) and `uartin` ($FF
 time with `BRDEV`, which never branches on the emulator and always branches on the hardware, so one image serves
 both. `puts` appends `\n` (10) only.
 
-**`--os`** (2026-09-23) compiles a Y1/OS program: `os/Makefile` builds the OS itself and every `/BIN` command with
+**`--os`** (2026-09-23) compiles a Y1/OS program: `os/Makefile` builds the OS itself and every `/bin` command with
 it. `putchar` (and `puts`, which loops over it) then stores the byte in SYSARG0 ($0F06, a big-endian word, high byte
 0) and JSRURs the Y1/OS syscall CONOUT (the word at SYSTAB + 38 = $0F3A); `getchar` JSRURs CONIN (SYSTAB + 34) and
 returns the low byte of SYSRES, or **0** when CONIN says 65535 (end of input, Ctrl-D, the end of a `<` file): the
@@ -166,7 +166,7 @@ and big-endian words in memory. There is no 16-bit ALU and no indexed addressing
   handlers (they run on the caller's stack). Why: the monitor's stack is 768 bytes ($0C00-$0EFF, the handle buffers
   below it), shared with the shell and the syscalls, and the compiler's parser alone needs 1.2K on the corpus;
   a Y1/OS program owns $5000-$CFFF, so `--stack 0xCFFF` puts its stack at the top of its own area, above its
-  tables. The option was chosen over the OS giving every program the area's top (a `/BIN` command whose data
+  tables. The option was chosen over the OS giving every program the area's top (a `/bin` command whose data
   reached $CFFF would collide with it). Nothing checks for overflow at run time; the instruction-level emulator's
   `-S` (program watch) reports the lowest SP a `--stack` program reached, which `tests/native/run.py` compares with
   each pass's last byte of data. Without the option the output is byte-identical (`diffcheck.py`);
@@ -224,7 +224,7 @@ microcode.
   | all nine | 123,811 | **101,884** (-17.7 %) | | | |
 
   In the nine with `--xisa` 9,115 of the 13,063 word loads and stores are `LDZ`/`STZ`, with 1,278 `ADDIW` and 954
-  `SHL16`. The `/BIN` commands (`make -C os sizes`, `XISA=1`): 87,235 bytes of images → 75,998 (-12.9 %); the
+  `SHL16`. The `/bin` commands (`make -C os sizes`, `XISA=1`): 87,235 bytes of images → 75,998 (-12.9 %); the
   smallest grow by up to 2 bytes (`hello`: the `MVIW R6,zpage` costs more than its two variables save) and the
   data stays the same. The C OS `y1os.c`: code 13,747 → 11,905. Test programs (code + data, `--boot`): -9 % to -18 %.
 - **Speed** (microcode emulator, clocks): `ADDIW` is 46 steps against 72, `SHL16` 35 against 90, `LDZ`/`STZ` 30/31
@@ -234,7 +234,7 @@ microcode.
 - **Tests** (since 2026-10-04 the default is `--xisa`, so every test runs with it; `--no-xisa` runs the old code):
   `tests/compiler/run.py` and `tests/ucemu/run.py` (every test, both emulators, 0 bus fights; `--no-xisa` for the
   old code); `twin.py` (also `--16`, `--chain`, `--chain16`, each with `--no-xisa`): y1cc.py, y1cc.c and the passes
-  agree; `tests/os/run.py` (Y1/OS with every `/BIN` program built with `--xisa`; `NOXISA=1` the old build, sizes
+  agree; `tests/os/run.py` (Y1/OS with every `/bin` program built with `--xisa`; `NOXISA=1` the old build, sizes
   masked; `make -C os NOXISA=1` builds that disk); `tests/compiler/xisa.c` (`// y1cc: --xisa`) is a test of its own and a
   `tests/bench` program for the machine.
 - In the passes: cc6 counts the identifiers while it copies each expression tree, plans the page after the last
@@ -260,7 +260,7 @@ emulators (`tests/ucemu/run.py`); 22 with `adjstr.c` (an error test, from the tw
 
 `tests/compiler/diffcheck.py [--base REV]` is the differential proof for a compiler change: it compiles the whole
 corpus (`tests/compiler/corpus.py`: the compiler tests with `--boot`, plain, `--os` and `--no-brur`, three
-`--vector` builds, the bench sources, `os/y1os.c`, every `/BIN` command, `tests/os/*.c`, and since the twin
+`--vector` builds, the bench sources, `os/y1os.c`, every `/bin` command, `tests/os/*.c`, and since the twin
 `c/target.c` — 121 compiles on 2026-09-24; 130 with the nine passes of the multi-pass compiler as Y1/OS programs,
 `c/target/*.c`, the same day) with an old `y1cc.py` from git and the working one and diffs the assembly
 (the header's timestamp masked). Against c847a97 (the last compiler without recursion): 100 identical, 17 that only
@@ -304,7 +304,7 @@ data — concatenated at the end; the host writes the file only when the compile
 `io_out(c)` (the `-l` summary), `io_fail(msg)` (message, exit status 1), `io_date(buf)` (the header's timestamp). All
 plain ints and char buffers, no negative numbers. On the host the library directory is `$Y1CC_LIB`, else `../lib`
 beside the executable (= `software/compiler/lib`, where y1cc.py looks). On Y1/OS (`target_io.c`) the command line is
-the `argstr()` tail, `#include` falls back to `/LIB`, code goes straight into the output file while data and BSS wait
+the `argstr()` tail, `#include` falls back to `/lib`, code goes straight into the output file while data and BSS wait
 in RAM (Y1/OS has one write handle), there is no clock (the date is `0000-00-00 00:00`) and `io_fail` HALTs (no exit
 syscall yet).
 
@@ -348,7 +348,7 @@ size its tables per pass.
 
 **The twin test** `tests/compiler/twin.py` compiles the whole corpus (`tests/compiler/corpus.py`, 121 compiles on
 2026-09-24: the compiler tests in four option sets, three `--vector` builds, the bench sources, `os/y1os.c`, every
-`/BIN` command, `tests/os` programs, and `c/target.c` — y1cc.c compiling itself) with both compilers and requires
+`/bin` command, `tests/os` programs, and `c/target.c` — y1cc.c compiling itself) with both compilers and requires
 identical assembly (the header's timestamp masked), identical `-l` summaries and identical error messages for the
 expected-error tests. 2026-09-24: **117 programs identical, 4 identical errors, 0 different**, with `y1cc` and with
 `y1cc16`; 126 and 4 once the nine passes joined the corpus. It runs in `make check` and `make cc-test`; `--chain` and
@@ -379,16 +379,16 @@ about 24 bytes of code per line of C.
 2. *Split into passes* that each fit the 32K area with their tables — done 2026-09-24: nine passes, below.
 3. *A bigger stack* — measured, placed, not built: below, "The stack".
 4. *Y1/OS support*: an exit syscall (`io_fail` and `io_done` HALT today), files over 64K, a way to run nine
-   programs in a row, `/LIB/y1ccrt.txt` on the disk: below, "What is left for native".
+   programs in a row, `/lib/y1ccrt.txt` on the disk: below, "What is left for native".
 5. *The on-target assembler* (BACKLOG wave 3): the compiler emits assembly text; the machine needs an assembler
    (the host assembler's label table now holds 8,191, enough for any single pass) before a program compiled on it can run.
-   Done 2026-09-25: `/BIN/ASM` (`os/commands/asm.c`, `docs/programming/ASSEMBLER.md` section 10) is byte-identical to
+   Done 2026-09-25: `/bin/asm` (`os/commands/asm.c`, `docs/programming/ASSEMBLER.md` section 10) is byte-identical to
    the host assembler on the whole corpus, and its symbol table holds cc8's 1,326 labels; on the emulator it has
    assembled pass cc4 (`--xisa`, 58,585 bytes, the one pass under 64K) under Y1/OS (`tests/asm/target.py`).
-   2026-09-26: `/BIN/ASM` is the same assembler hand-written in YACC1 assembly (`os/commands-asm/asm.asm`, about five
-   times faster, a 20,292-byte label table); asm.c, its specification, is `/BIN/ASMC`.
+   2026-09-26: `/bin/asm` is the same assembler hand-written in YACC1 assembly (`os/commands-asm/asm.asm`, about five
+   times faster, a 20,292-byte label table); asm.c, its specification, is `/bin/asmc`.
 6. *Native self-host* — done 2026-09-25: under Y1/OS on the emulator the native compiler and assembler rebuild all
-   nine passes, `/BIN/ASM` and `/BIN/CC` byte-identical to the host builds, and the rebuilt tools do it again
+   nine passes, `/bin/asm` and `/bin/cc` byte-identical to the host builds, and the rebuilt tools do it again
    identically (below, "Self-host").
 
 ## The multi-pass compiler (2026-09-24)
@@ -411,7 +411,7 @@ python3 tests/compiler/passes.py [-v]                            # the sizes, th
 
 `y1ccp` (`c/y1ccp.c`, host C) takes y1cc.py's command line, makes a temporary directory `W`, runs `cc1 W <the
 command line>`, then `cc2 W` ... `cc9 W`, stops at the first pass that fails (that pass printed the message) and
-removes the files. On Y1/OS (2026-09-25) `/BIN/CC` does the same with the syscall EXEC: "Native", below.
+removes the files. On Y1/OS (2026-09-25) `/bin/cc` does the same with the syscall EXEC: "Native", below.
 
 ### The passes
 
@@ -492,7 +492,7 @@ data (tables, static frames), and measures the stack (below). 2026-09-24, in byt
 | cc8 emit | 25,197 | 1,427 | 26,624 | 3,617 | 424 | 30,665 | 2,103 | 1,326 |
 | cc9 final | 16,714 | 1,930 | 18,644 | 13,749 | 100 | 32,493 | 275 | 1,178 |
 
-(2026-09-25, built as the native compiler is, with `--stack 0xCFFF`, and with target_io.c's upper-case `/LIB` names:
+(2026-09-25, built as the native compiler is, with `--stack 0xCFFF`, and with target_io.c's `/LIB` names, upper case then:
 free cc1 717, cc2 2,231, cc3 10,588, cc4 14,301, cc5 6,220, cc6 201, cc7 525, cc8 2,082, cc9 211; the stack
 prologue and epilogue cost cc6 135 bytes of code, the other passes 11.)
 
@@ -556,10 +556,10 @@ byte of data (below, "Native").
   compiles kept every intermediate file and the output under 64K; y1os.c (`W.se` 174K, its assembly 152K), md.c,
   awk.c, grep.c, vi.c and the passes compiling themselves (their assembly 68-259K) did not.
 - **Open files** (done: `c/target_inc.c`, the lexer's reads). Y1/OS has four handles, one of them the file being
-  written, so cc1 can keep only three sources open, and the /BIN commands nest five (cat.c, lib_stdin.c,
+  written, so cc1 can keep only three sources open, and the /bin commands nest five (cat.c, lib_stdin.c,
   lib_globx.c, lib_fs.c, lib_abi.c): a virtual handle per file, the innermost three real; the outermost is closed
   and later opened again and SEEKed (the new syscall) to where it was.
-- **Exit, and nine programs in a row** (done: the syscalls EXIT and EXEC, SYSTAB2 for them; `/BIN/CC`), `/LIB/Y1CCRT.TXT`
+- **Exit, and nine programs in a row** (done: the syscalls EXIT and EXEC, SYSTAB2 for them; `/bin/cc`), `/lib/y1ccrt.txt`
   on the disk (done), room on the disk for the intermediate files (cc8's source compiling itself: 740K; the emulators'
   card grows, a real card is far bigger), and the stack (done: `--stack`, above).
 - The passes run under Y1/OS, one by one and chained (below). Still open: the code size work (every byte y1cc saves
@@ -569,23 +569,24 @@ byte of data (below, "Native").
 ### Native: the compiler on the emulated YACC1 (2026-09-25)
 
 ```
-cc /SRC/FIB.C -o FIB.ASM --org 0x5000 --os      # under Y1/OS: y1cc's command line, the nine passes chained
-asm FIB.ASM                                     # /BIN/ASM: the program file FIB (asmc: the C build, the same)
+cc /src/fib.c -o fib.asm --org 0x5000 --os      # under Y1/OS: y1cc's command line, the nine passes chained
+asm fib.asm                                     # /bin/asm: the program file FIB (asmc: the C build, the same)
 run FIB
 ```
 
-- **On the disk** (`make -C os`): `/BIN/CC` (`os/commands/cc.c`), the passes `/LIB/CC/CC1`..`CC9` (`make -C os
-  passes`: `c/target/NAME.c` compiled with `--org 0x5000 --os --stack 0xCFFF --xisa`), `/LIB/Y1CCRT.TXT` (the
-  runtime text cc9 reads) and `/LIB/Y1LIB.C`. `#include "name"` looks beside the including file, then in `/LIB`
-  with the name upper-cased (`target_io.c` `io_lib`), as the Makefiles put files on a disk.
-- **The chain**: `cc` EXECs `/LIB/CC/CC1` with `CCW` + its own command line; every pass ends (`target_io.c` `main`,
+- **On the disk** (`make -C os`): `/bin/cc` (`os/commands/cc.c`), the passes `/lib/cc/cc1`..`CC9` (`make -C os
+  passes`: `c/target/NAME.c` compiled with `--org 0x5000 --os --stack 0xCFFF --xisa`), `/lib/y1ccrt.txt` (the
+  runtime text cc9 reads) and `/lib/y1lib.c`. `#include "name"` looks beside the including file, then in `/lib`
+  under the name as written (`target_io.c` `io_lib`; names on a disk are lower case since 2026-11-03, upper-cased
+  before).
+- **The chain**: `cc` EXECs `/lib/cc/cc1` with `ccw` + its own command line; every pass ends (`target_io.c` `main`,
   or `io_done` after a deferred error) by EXECing the next one, named in its `target/NAME.c` (`io_next_pass`), with
-  the work prefix `CCW` as its whole command line; cc9 returns to the shell. A pass that finds an error prints it on
+  the work prefix `ccw` as its whole command line; cc9 returns to the shell. A pass that finds an error prints it on
   the screen (`lib_err.c` `eputs`, so not into a `>` file) and EXITs with status 1, which ends the chain. The work
-  files `CCW.opt`..`CCW.em` stay in the current directory (the next compile replaces them; pack gets the space back).
-- **The I/O layer**: `c/target_io.c` (every pass: the command line, `/LIB`, the output file, EXIT/EXEC) with
+  files `ccw.opt`..`ccw.em` stay in the current directory (the next compile replaces them; pack gets the space back).
+- **The I/O layer**: `c/target_io.c` (every pass: the command line, `/lib`, the output file, EXIT/EXEC) with
   `c/target_rd.c` (plain reads: passes 2-9) or `c/target_inc.c` (the lexer: a stack of virtual handles, the three
-  innermost real, the others closed and SEEKed back to on the way out; the /BIN sources nest five `#include`s).
+  innermost real, the others closed and SEEKed back to on the way out; the /bin sources nest five `#include`s).
   **Buffered** since 2026-09-25 (a syscall per byte read or written was a third of a compile): `io_getc` takes the
   next byte from a buffer of `IO_RB` bytes that the syscall READN fills (Y1/OS's 25th, `os/README.md`: up to n bytes,
   never past a sector); `io_wput` collects `IO_WB` bytes for one WRITE, `io_wputs` a whole line (cc9). `IO_RB` and
@@ -608,13 +609,13 @@ run FIB
   emulator, 4 of them (hello, fib, echo, cat) also on the microcode emulator (`--all-uc`: all 27, 27 of 27 on
   2026-09-25 in 1.53G instructions, 25.4G steps, 49.2G clocks: 13.7 hours at 1 MHz, 18 minutes of emulation):
   every `tests/compiler` program that compiles (with its own flags: `--stack`, `--no-brur`, `--xisa`), fib again
-  with `--xisa`, the `/BIN` commands hello, echo, cat and wc, and **the compiler's own pass 4** (`c/target/calls.c`:
+  with `--xisa`, the `/bin` commands hello, echo, cat and wc, and **the compiler's own pass 4** (`c/target/calls.c`:
   the native compiler compiling itself). Each is compiled by `cc` in its source directory (the sources are on the
-  disk under `/R` as in the repository), assembled by `/BIN/ASM` and, when it can run under the OS, run with its
+  disk under `/r` as in the repository), assembled by `/bin/asm` and, when it can run under the OS, run with its
   output redirected to a file. The host then checks, 27 of 27 on 2026-09-25: the assembly is byte-identical to
   y1cc.py's (the date masked), the program file byte-identical to the host toolchain's (y1cc.py + the host assembler
-  + img2bin; the four commands also to the Makefile's `/BIN` builds), and the output is the test's `.out` (or, for a
-  command, what `/BIN`'s own build prints in the same session). The deepest stack of any pass kept 1,474 bytes of
+  + img2bin; the four commands also to the Makefile's `/bin` builds), and the output is the test's `.out` (or, for a
+  command, what `/bin`'s own build prints in the same session). The deepest stack of any pass kept 1,474 bytes of
   room above its data (cc1); 373 since 2026-09-25's buffers (above).
 - **How long** (instructions on the instruction-level emulator; the microcode emulator counted 16.6 steps and 32.1
   clocks an instruction on hello, fib, echo and cat before 2026-09-25's speed work, 16.7 and 32.4 after, so at 1 MHz
@@ -625,7 +626,7 @@ run FIB
   |---|---|---|---|---|---|---|---|---|
   | hello.c (9 lines) | 5.8M | 3.5M | 0.9M | 0.8M | 1.5x | 3 min 32 s | 2 min 20 s | 1.6x |
   | fib.c | 28.1M | 10.9M | 5.8M | 5.5M | 2.1x | 18 min 09 s | 8 min 51 s | 2.6x |
-  | echo.c (`/BIN/ECHO`) | 11.7M | 5.1M | 0.6M | 0.6M | 2.2x | 6 min 36 s | 3 min 05 s | 2.3x |
+  | echo.c (`/bin/echo`) | 11.7M | 5.1M | 0.6M | 0.6M | 2.2x | 6 min 36 s | 3 min 05 s | 2.3x |
   | cat.c (5 nested `#include`s) | 92.4M | 31.3M | 13.6M | 12.9M | 2.4x | 56 min 40 s | 23 min 50 s | 3.0x |
   | wc.c | 107.7M | 36.4M | 16.8M | 16.0M | 2.4x | 1 h 06 min | 28 min 18 s | 3.0x |
   | xisa.c (the biggest test) | 132.9M | 50.0M | 28.4M | 27.3M | 2.1x | 1 h 26 min | 41 min 44 s | 2.7x |
@@ -653,17 +654,17 @@ run FIB
   - **cc2**: `tk`/`tv`/`is_op`/`is_kw` call `need_tok` only when the token is not read yet (a third of the parser's
     time); **cc4**: the reach matrix's closure walks row pointers (it multiplied by the row length per bit and per
     byte); **cc5**: `lhash` as cc1's; `rarr`/`warr` and the `skip`s through pointers and `io_skip`.
-  - **/BIN/ASM**: `getln` tests a character against `;`, `:` and the quotes only when it is at most `;` (5% of the
+  - **/bin/asm**: `getln` tests a character against `;`, `:` and the quotes only when it is at most `;` (5% of the
     assembler). The assembler was then the biggest single step (30%): `getln` (a third of it: each source byte is
     copied, upper-cased and parsed, about 50 instructions), `hash`, `asmcmd`, `same`; the assembly text itself
     (cc9 writes 60-260K and the assembler reads it twice) is the design's cost.
-    **2026-09-26: `/BIN/ASM` in YACC1 assembly** (`os/commands-asm/asm.asm`, the same behaviour byte for byte; the C
-    build is `/BIN/ASMC`; `docs/programming/ASSEMBLER.md` section 10): the same 27 programs,
+    **2026-09-26: `/bin/asm` in YACC1 assembly** (`os/commands-asm/asm.asm`, the same behaviour byte for byte; the C
+    build is `/bin/asmc`; `docs/programming/ASSEMBLER.md` section 10): the same 27 programs,
 
     | | assemble | compile and assemble | at 1 MHz | the assembler's share |
     |---|---|---|---|---|
-    | `/BIN/ASM` = asm.c (2026-09-25) | 216.5M | 687.4M | 6 h 11 min | 31% |
-    | `/BIN/ASM` = asm.asm (2026-09-26) | 46.5M | 517.4M | 4 h 39 min | 9% |
+    | `/bin/asm` = asm.c (2026-09-25) | 216.5M | 687.4M | 6 h 11 min | 31% |
+    | `/bin/asm` = asm.asm (2026-09-26) | 46.5M | 517.4M | 4 h 39 min | 9% |
 
     (cat.c: 12.9M -> 2.8M to assemble; pass 4: 35.7M -> 7.5M.) The compiler's passes are now 90% of a native build.
   - Left: each pass's load by the ROM and `main`'s BSS clear (about 2M instructions a compile: half of hello's
@@ -674,20 +675,20 @@ run FIB
 
 **Yes, the compiler compiles itself natively.** `tests/native/selfhost.py` (`make selfhost`, and in `make check`:
 about 30 seconds on the Mac) runs, under Y1/OS on the instruction-level emulator, with the toolchain's own sources on
-the disk under `/R` as in the repository (the pass sources, `c/target/`, `c/ylim/`, `os/lib_*.c`, `os/asm_optab.c`,
-`os/commands/asm.c` and `cc.c`, and since 2026-09-26 `os/commands-asm/asm.asm` with `asmtab.inc`; `/LIB/Y1LIB.C` and `/LIB/Y1CCRT.TXT` are on the OS disk):
+the disk under `/r` as in the repository (the pass sources, `c/target/`, `c/ylim/`, `os/lib_*.c`, `os/asm_optab.c`,
+`os/commands/asm.c` and `cc.c`, and since 2026-09-26 `os/commands-asm/asm.asm` with `asmtab.inc`; `/lib/y1lib.c` and `/lib/y1ccrt.txt` are on the OS disk):
 
-1. **Stage 1, the native build**: the host-built `/BIN/CC` + `/LIB/CC/CC1..CC9` compile each of the nine passes
+1. **Stage 1, the native build**: the host-built `/bin/cc` + `/lib/cc/cc1..cc9` compile each of the nine passes
    (`c/target/NAME.c`, `--org 0x5000 --os --stack 0xCFFF --xisa` as `os/Makefile` builds them), the assembler
-   `os/commands/asm.c` and the driver `os/commands/cc.c` (`--org 0x5000 --os`, the `/BIN` flags), each in its source
-   directory; the host-built `/BIN/ASM` assembles each into a program file. The host fetches the eleven assemblies and
+   `os/commands/asm.c` and the driver `os/commands/cc.c` (`--org 0x5000 --os`, the `/bin` flags), each in its source
+   directory; the host-built `/bin/asm` assembles each into a program file. The host fetches the eleven assemblies and
    program files off the image and compares them with `os/build` (y1cc.py + the host assembler + img2bin).
 2. **Stage 2, the fixed point**: a fresh OS disk with the natively built CC1..CC9, CC and ASM installed in place of
    the host builds, and the same eleven compiles and assemblies again.
 
 Result, 2026-09-25, the first run: **all eleven identical to the host builds in both stages** (assembly byte for
 byte with the header's date masked, program files byte for byte), so the natively built toolchain reproduces itself
-exactly. Nothing had to change: every table held (cc1's names, cc8's 1,383 labels in `/BIN/ASM`'s 17,088-byte pool,
+exactly. Nothing had to change: every table held (cc1's names, cc8's 1,383 labels in `/bin/asm`'s 17,088-byte pool,
 asm.c's 117K of assembly), every pass kept its stack above its data (the least room: cc1 373 bytes, cc9 522, cc7
 1,333, cc6 1,259), and the 24-bit files took the biggest (cc8's source: work files 514K, `CCW.se` 248K of them, and 235K of assembly).
 
@@ -702,8 +703,8 @@ asm.c's 117K of assembly), every pass kept its stack above its data (the least r
 | cc7 sema | 157K | 14,106 | 172.1M | 90.4M | 262.5M | 2 h 21 min |
 | cc8 emit | 230K | 23,949 | 261.0M | 129.7M | 390.8M | 3 h 31 min |
 | cc9 final | 172K | 17,899 | 224.9M | 97.0M | 321.9M | 2 h 53 min |
-| /BIN/ASM (asm.c) | 117K | 13,186 | 131.7M | 58.5M | 190.2M | 1 h 42 min |
-| /BIN/CC (cc.c) | 5K | 498 | 13.1M | 2.5M | 15.6M | 8 min |
+| /bin/asm (asm.c) | 117K | 13,186 | 131.7M | 58.5M | 190.2M | 1 h 42 min |
+| /bin/cc (cc.c) | 5K | 498 | 13.1M | 2.5M | 15.6M | 8 min |
 | **the toolchain** | 1.35M | 131,371 | 1,601M | 764M | 2,365M | **21 h 17 min** |
 
 (Instructions on the instruction-level emulator, `emulator -S`; the same in stage 2, whose tools are the same bytes.
@@ -712,10 +713,10 @@ At 1 MHz with 32.4 clocks an instruction, tests/native/run.py's ratio. The micro
 the shell, 40.9G steps (17.2 an instruction) and **79.3G clocks (33.4 an instruction): 22 hours at 1 MHz,
 measured**.) So on the machine one full rebuild of the toolchain by itself would take most of a day; the fixed-point
 check doubles it. Where the time goes is as for the other native compiles
-("How long", above): cc9's text and the lexer; `/BIN/ASM` was a third (`getln`, `hash`).
+("How long", above): cc9's text and the lexer; `/bin/asm` was a third (`getln`, `hash`).
 
-**2026-09-26: `/BIN/ASM` in YACC1 assembly.** The self-host now rebuilds twelve programs: the eleven above (asm.c's
-build installed as `/BIN/ASMC`) and the hand-written assembler `os/commands-asm/asm.asm`, which the native `/BIN/ASM`
+**2026-09-26: `/bin/asm` in YACC1 assembly.** The self-host now rebuilds twelve programs: the eleven above (asm.c's
+build installed as `/bin/asmc`) and the hand-written assembler `os/commands-asm/asm.asm`, which the native `/bin/asm`
 assembles in its own directory (its `INCLUDE asmtab.inc`); stage 2 installs the native builds of both assemblers,
 and all twelve come out identical again: the fixed point holds with the assembly-language assembler. One stage:
 
@@ -730,10 +731,10 @@ and all twelve come out identical again: the fixed point holds with the assembly
 | cc7 sema | 90.4M | 17.7M | 5.1x | 2 h 21 min | 1 h 42 min |
 | cc8 emit | 129.7M | 26.4M | 4.9x | 3 h 31 min | 2 h 35 min |
 | cc9 final | 97.0M | 19.9M | 4.9x | 2 h 53 min | 2 h 12 min |
-| asm.c (`/BIN/ASMC`) | 58.5M | 13.1M | 4.5x | 1 h 42 min | 1 h 18 min |
-| cc.c (`/BIN/CC`) | 2.5M | 0.6M | 4.1x | 8 min | 7 min |
+| asm.c (`/bin/asmc`) | 58.5M | 13.1M | 4.5x | 1 h 42 min | 1 h 18 min |
+| cc.c (`/bin/cc`) | 2.5M | 0.6M | 4.1x | 8 min | 7 min |
 | **the eleven** | 763.8M | 153.4M | **5.0x** | **21 h 17 min** | **15 h 47 min** |
-| asm.asm (`/BIN/ASM`, assembled only) | 42.8M | 9.3M | 4.6x | 23 min | 5 min |
+| asm.asm (`/bin/asm`, assembled only) | 42.8M | 9.3M | 4.6x | 23 min | 5 min |
 | **the toolchain now** | | | | | **15 h 52 min** (1,764M instructions) |
 
 (Compiling is unchanged, 1,601M; the assembler's share of a stage fell from 32% to 9%. At 1 MHz with 32.4 clocks an

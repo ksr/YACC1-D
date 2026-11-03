@@ -14,7 +14,7 @@ DESCRIPTION
     without echo from the keyboard (keyin: even when the dump goes to
     a > file or a pipe): ".", q or Q, or Ctrl-D returns to the shell;
     any other key shows the next 256 bytes. "dump: bad address" when addr
-    is not hex. dump is /BIN/DUMP.
+    is not hex. dump is /bin/dump.
 
 EXAMPLES
     dump 6000      the program area, above dump itself

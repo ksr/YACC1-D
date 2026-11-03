@@ -1,20 +1,20 @@
-mkdir -s 8 /BIG
-mkdir -s 2 /BIG/SUB
-mkdir /SMALL
-mkdir -s 0 /X
-mkdir -s 65 /X
-mkdir -s 8 /BIG
+mkdir -s 8 /big
+mkdir -s 2 /big/sub
+mkdir /small
+mkdir -s 0 /x
+mkdir -s 65 /x
+mkdir -s 8 /big
 mkdir -s 3 NOPE/X
-mkdir -s 4 /Y > /O.TXT
-cd /BIG
-touch F01 F02 F03 F04 F05 F06 F07 F08 F09 F10 F11 F12 F13 F14 F15 F16 F17 F18 F19 F20 F21 F22 F23 F24 F25
-touch F26 F27 F28 F29 F30 F31 F32 F33 F34 F35 F36 F37 F38 F39 F40 F41 F42 F43 F44 F45 F46 F47 F48 F49 F50
-touch F51 F52 F53 F54 F55 F56 F57 F58 F59 F60 F61 F62 F63 F64 F65 F66 F67 F68 F69 F70 F71 F72 F73 F74 F75
+mkdir -s 4 /y > /o.txt
+cd /big
+touch f01 f02 f03 f04 f05 f06 f07 f08 f09 f10 f11 f12 f13 f14 f15 f16 f17 f18 f19 f20 f21 f22 f23 f24 f25
+touch f26 f27 f28 f29 f30 f31 f32 f33 f34 f35 f36 f37 f38 f39 f40 f41 f42 f43 f44 f45 f46 f47 f48 f49 f50
+touch f51 f52 f53 f54 f55 f56 f57 f58 f59 f60 f61 f62 f63 f64 f65 f66 f67 f68 f69 f70 f71 f72 f73 f74 f75
 ls | wc
-cd SUB
+cd sub
 pwd
 cd /
-mkdir -s 3 LOCAL
-dir LOCAL
-dir /BIG/F7?
+mkdir -s 3 local
+dir local
+dir /big/f7?
 exit

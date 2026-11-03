@@ -24,7 +24,7 @@ the PDF generators, and the KiCad conversion:
   First used 2026-09-24 on the memory card (`hardware/cards/memory/eagle/v1.3/README.md`).
 - `verify_processing.py` — builds the Processing command sender with the Processing 4 CLI and re-compiles it with warnings on.
 - `gen_y1_optab.py` — generates the instruction tables of the native assemblers from `software/assembler/yacc1.def`:
-  `os/asm_optab.c` for `/BIN/ASMC` (asm.c, 2026-09-25) and `os/commands-asm/asmtab.inc` for `/BIN/ASM` (asm.asm,
+  `os/asm_optab.c` for `/bin/asmc` (asm.c, 2026-09-25) and `os/commands-asm/asmtab.inc` for `/bin/asm` (asm.asm,
   2026-09-26) (`os/Makefile` runs it, `--check` fails when either is stale: `tests/asm/run.py`). It compiles each `.def` construction line with a copy of RC/asm's `Translate()`.
 - `y1term.py` — a terminal for the console that can also type a text file into BASIC (2026-10-08): the plain
   terminal (`python3 tools/y1term.py`, Ctrl-] for the menu: `s` send a file, `n` NEW first, `q` quit), or
@@ -35,8 +35,8 @@ the PDF generators, and the KiCad conversion:
   with `I` first. `--log FILE` keeps everything the machine sends. Finds the console FTDI as `monload.py` does.
   Tested by `tests/y1term/run.py` against the microcode emulator through a pty.
 - `y1kermit.py` — a small standard Kermit for the Mac side of the console line (2026-09-26): `send FILE...` to
-  `/BIN/KERMIT`'s `kermit -r` (or its `-x` server), `receive [DIR]` from `kermit -s`, `get NAME... [DIR]`, `finish` /
-  `bye` for the server, `term` (a plain terminal, Ctrl-] quits). The same protocol subset as `/BIN/KERMIT`: short
+  `/bin/kermit`'s `kermit -r` (or its `-x` server), `receive [DIR]` from `kermit -s`, `get NAME... [DIR]`, `finish` /
+  `bye` for the server, `term` (a plain terminal, Ctrl-] quits). The same protocol subset as `/bin/kermit`: short
   packets, window 1, block checks 1-3 (`--check`, 3 by default), control prefixing, repeat counts (`--norpt`),
   8th-bit prefixing only when asked (`--ebq` asks), attribute packets (`--noattr`), text mode (`--text`: LF as CR
   LF). `--port` (default: the one USB serial port that is not the sequencer's FTDI; the port is opened with

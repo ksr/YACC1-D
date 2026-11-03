@@ -26,9 +26,9 @@ BOOT FROM CF
 /> exe s
 
 status 0
-/> exe c 2 > /E.TXT
+/> exe c 2 > /e.txt
 
-/> cat /E.TXT
+/> cat /e.txt
 
 chain 2
 chain 1

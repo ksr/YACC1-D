@@ -10,7 +10,7 @@ DESCRIPTION
     matches. A pattern with * or ? is a glob matched against the whole
     name, case folded; any other pattern matches the names that CONTAIN
     it, case-sensitively. A directory's contents follow it directly.
-    "find: not a directory" when dir is not one. find is /BIN/FIND.
+    "find: not a directory" when dir is not one. find is /bin/find.
 
 LIMITS
     8 levels below the start directory: a deeper directory is printed
@@ -20,7 +20,7 @@ LIMITS
 EXAMPLES
     find .TXT            names containing ".TXT", from here down
     find *.txt /         every name ending in .TXT, from the root
-    find C* /MAN         the pages whose names start with C
+    find C* /man         the pages whose names start with C
     find BIN /           where BIN is
 
 NOTES

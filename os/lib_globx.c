@@ -4,7 +4,7 @@
 
 /* lib_globx.c - expand a filename glob into the list of matching files (Y1/OS, 2026-09-23).
      glob_expand(pat, out, maxn) -> count
-       pat    the pattern word (ends at NUL or space), e.g. "*.C" (the current directory) or "/MAN/C*"
+       pat    the pattern word (ends at NUL or space), e.g. "*.c" (the current directory) or "/man/c*"
        out    maxn slots of GSLOT (64) bytes; slot i = the directory part of pat + the matched name, NUL-ended,
               so it opens the way the bare word would (a relative prefix stays relative to the current directory)
        maxn   the slot count; matches past it are dropped

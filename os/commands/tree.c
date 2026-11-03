@@ -4,7 +4,7 @@
 
 /* tree.c - the directory tree, depth first and indented: tree [dir]
      tree        everything under the current directory: two spaces per level, a '/' after a directory
-     tree /BIN   under that directory
+     tree /bin   under that directory
    Up to 8 levels (lib_walk.c): a deeper directory is shown but not entered, and a note says so at the end.
    Ported from P8X os/commands/tree.c 2026-09-23, changes: the recursive walk() is the iterative lib_walk.c (y1cc
    has no recursion), so the order is true pre-order (a directory's contents right under it; the P8X listed a

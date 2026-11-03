@@ -4,13 +4,13 @@ BOOT FROM CF
 /> 
 /> echo a1
 a1
-/> cd /BIN
-/BIN> pwd
-/BIN
-/BIN> sh /B.SH
-/BIN> echo b1
+/> cd /bin
+/bin> pwd
+/bin
+/bin> sh /b.sh
+/bin> echo b1
 b1
-/BIN> cd /
+/bin> cd /
 /> pwd
 /
 /> echo a2
@@ -24,22 +24,22 @@ BOOT FROM CF
 /> 
 /> echo d1
 d1
-/> /EXE x 3
+/> /exe x 3
 exit 3
 sh: stopped
 /> 
 /> echo e
 e
-/> sh /E.SH
+/> sh /e.sh
 /> echo e
 e
-/> sh /E.SH
+/> sh /e.sh
 /> echo e
 e
-/> sh /E.SH
+/> sh /e.sh
 /> echo e
 e
-/> sh /E.SH
+/> sh /e.sh
 sh: too deep
 sh: stopped
 /> 
@@ -48,7 +48,7 @@ BOOT FROM CF
 /> echo f2
 f2
 /> 
-/> shx /F.SH
+/> shx /f.sh
 /> echo f1
 f1
 /> echo f2

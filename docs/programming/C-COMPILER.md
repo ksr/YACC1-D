@@ -152,7 +152,7 @@ From the docstring and `README.md`, with the instructions involved:
 | `--org 0xNNNN` | load address. Default `$3000`: `$1000–$1FFF` is BASIC's token buffer, which the monitor's boot clears (a program at $1000 lost its first byte before it ran, 2026-09-22), and the removed T-menu tests scribbled at $2000 |
 | `--boot` | append a stub at `$F000`: `BR $F003 / MVIW R1,$0EFF / JSR f_main / HALT / END $F000`. The first branch presents an A15-high address, which releases the memory card's FORCE-ROM boot remap exactly as the monitor's first instruction does; without it every fetch stays inside $F000–$FFFF on ucemu. This is how the test suites run |
 | `--vector` | layout for the monitor as burned in 2021, whose `G` was `BRVR R7` (an indirect jump through the word at the address, no return pushed): the image starts with `DW start`, then `start: JSR f_main / BR $F000` (restart the monitor) |
-| `--os` | a Y1/OS program (2026-09-23; `os/Makefile` uses it for the OS and every `/BIN` command): `putchar`/`puts` go through the OS syscall CONOUT (19) and `getchar` through CONIN (17), so the shell can redirect them; `getchar` still returns 0 at the end of input; R3/R4 are kept across both (`software/compiler/README.md`). Without it the console runtime is unchanged |
+| `--os` | a Y1/OS program (2026-09-23; `os/Makefile` uses it for the OS and every `/bin` command): `putchar`/`puts` go through the OS syscall CONOUT (19) and `getchar` through CONIN (17), so the shell can redirect them; `getchar` still returns 0 at the end of input; R3/R4 are kept across both (`software/compiler/README.md`). Without it the console runtime is unchanged |
 | `--no-brur` | never emit `BRUR` ($AD): a `switch` is always a compare chain. For a machine whose sequencer EEPROM lacks the 2026-09-22 microcode (it was reloaded that evening, so this is now a bench-verification option) |
 | `--no-xisa` | do not use `LDZ`/`STZ` (the variable page, R6 = page register), `ADDIW`, `SHL16` (section 4): the code for a machine without the 2026-09-24 microcode. They are the default since 2026-10-04 (the machine's EEPROM holds that microcode, `tests/bench` 15/15); `--xisa` is still accepted |
 | `--stack ADDR` | (2026-09-25) `main` runs on a stack of its own that starts at ADDR (the first byte pushed; it grows down): `main` begins `MOVRR R1,R5 / MVIW R1,ADDR / PUSHR R5` (after the `--xisa` page load) and every return from `main`, and its end, is `POPR R5 / MOVRR R5,R1 / RET`, so the caller's stack (the shell's or the monitor's, $0C00-$0EFF) is untouched and gets its SP back. Recursion's frame saves and every syscall then use the new stack. For programs that need more than the 768-byte monitor stack: the native compiler's passes are built with `--stack 0xCFFF` (`os/Makefile passes`), their tables below, the stack above. Without it the output is unchanged (`diffcheck.py`); `tests/compiler/stack.c` is its test |
@@ -163,18 +163,18 @@ Options are recognised anywhere after the source file; the source file must be t
 ## 6. Running on the emulators and the machine
 
 - **On the machine itself (native, 2026-09-25)**: under Y1/OS, `cc prog.c -o prog.asm --org 0x5000 --os` runs the
-  multi-pass compiler (`/LIB/CC/CC1`..`CC9`, chained with the syscall EXEC) and writes the same assembly as y1cc.py
+  multi-pass compiler (`/lib/cc/cc1`..`CC9`, chained with the syscall EXEC) and writes the same assembly as y1cc.py
   (only the header's date differs); `asm prog.asm` makes the program. So far on the emulators (Y1/OS needs the CF
   interface, the passes the 2026-09-24 microcode); `software/compiler/README.md` "Native", `tests/native/run.py` (27
   programs byte-identical to the host toolchain, the compiler's own pass 4 among them). Slow: about 32 us an
   instruction at 1 MHz, so hello.c takes 2.3 minutes to compile and assemble, fib.c 9, cat.c 24 (since the
   2026-09-25 speed work; 3.7, 18 and 57 before).
   **It compiles itself** (2026-09-25, `tests/native/selfhost.py`, `make selfhost`): under Y1/OS the nine passes,
-  `/BIN/ASM` and `/BIN/CC` compiled and assembled natively from their sources on the disk come out byte-identical
+  `/bin/asm` and `/bin/cc` compiled and assembled natively from their sources on the disk come out byte-identical
   to the host builds, and the natively built tools, installed in their place, reproduce themselves byte for byte
   (the fixed point). One such rebuild is 2,365M instructions: about 21 hours at 1 MHz (`software/compiler/README.md`
-  "Self-host"); since 2026-09-26, with `/BIN/ASM` hand-written in YACC1 assembly (`os/commands-asm/asm.asm`, asm.c's
-  build is `/BIN/ASMC`), 1,764M with asm.asm's own assembly: 15 h 52 min.
+  "Self-host"); since 2026-09-26, with `/bin/asm` hand-written in YACC1 assembly (`os/commands-asm/asm.asm`, asm.c's
+  build is `/bin/asmc`), 1,764M with asm.asm's own assembly: 15 h 52 min.
 
 - **Interpreter, stand-alone**: compile with `--boot`, `emulator -x -f prog.img [< input]`; stdout is the program's
   output, stderr ends with `HALT at aaaa after N instructions, R3=xxxx`. `-l N` caps the instruction count.

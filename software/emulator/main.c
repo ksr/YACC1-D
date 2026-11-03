@@ -433,7 +433,7 @@ void enableRawMode() {
    polls in a row with no input or output meanwhile, each poll waits up to 1 ms (a program idling on the line does not
    spin the host CPU; ucemu does the same). THR writes (OUTA P1 as well as OUTI P1 while P0 = $40) print. A byte the
    poll has buffered is the next one port 2 (mygetchar) gives, so the ROM's console and the UART share one stream.
-   CR becomes LF on this path too (as mygetchar and ucemu do); unlike port 2, 'q' is an ordinary byte here. */
+   CR becomes LF on this path too (as mygetchar and ucemu do); 'q' is an ordinary byte, on port 2 too since 2026-11-03. */
 static int uart_buf = -1, uart_eof = 0;
 static long uart_idle = 0;
 static int uart_fill(int wait_ms) {             /* try to buffer one byte; 1 = something buffered or end of input */
@@ -467,10 +467,10 @@ char mygetchar() {
 
     if (uart_buf >= 0) {                        /* a byte the UART poll took first */
         c = (char)uart_buf; uart_buf = -1;
-        return c == 'q' ? 0 : c;
+        return c;                               /* (2026-11-03: 'q' is an ordinary byte; it was 0, the old quit key) */
     }
     if (uart_eof) return 0;
-    while (read(STDIN_FILENO, &c, 1) == 1 && c != 'q') {
+    while (read(STDIN_FILENO, &c, 1) == 1) {   /* (2026-11-03: no longer stops at 'q': Y1/OS names are lower case) */
         /*    if (iscntrl(c)) {
               printf("%d\n", c);
             } else {

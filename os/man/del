@@ -11,22 +11,22 @@ DESCRIPTION
     A name that is not a file reports
     "del: not a file: NAME" and the others are still deleted; a glob
     that matches nothing reports "del: no match: GLOB". Files only:
-    remove a directory with rmdir. del is /BIN/DEL.
+    remove a directory with rmdir. del is /bin/del.
 
-    The shell also has a built-in del, used only when /BIN/DEL is
+    The shell also has a built-in del, used only when /bin/del is
     missing: one path, no globs, "not a file" when it fails.
 
 LIMITS
     Up to 24 files per glob word.
 
 EXAMPLES
-    del /F.TXT
-    del A.TXT B.TXT /T/C.TXT
-    del /T/*.BAK
+    del /f.txt
+    del a.txt b.txt /t/c.txt
+    del /t/*.bak
 
 NOTES
     Removed from the P8X version: the /d1 mount (pack, which the P8X
-    had as a shell built-in, is /BIN/PACK). New: globs.
+    had as a shell built-in, is /bin/pack). New: globs.
     Ported from P8X os/commands/del.c 2026-09-23.
 
 SEE ALSO

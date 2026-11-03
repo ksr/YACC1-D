@@ -11,7 +11,7 @@ DESCRIPTION
         *    any run of characters, none included
         ?    exactly one character
     Any other character matches itself with the case folded, so *.txt
-    finds README.TXT (Y1/OS names are case-sensitive, a pattern is
+    finds README (Y1/OS names are case-sensitive, a pattern is
     not). No I/O and no globals; gfold(c) is the upper-casing it uses.
 
     To turn a pattern into the list of matching files of a directory,

@@ -2,48 +2,48 @@ BOOT FROM CF
 Y1/OS v0.2 (2026-09-23)  P8XFS v2
 /> 
 
-/> rdn w /RA 1 66
+/> rdn w /ra 1 66
 
 rdn w: 67597 bytes, read back ok
-/> rdn w /RB 2 3
+/> rdn w /rb 2 3
 
 rdn w: 3085 bytes, read back ok
-/> rdn r /RB 2
+/> rdn r /rb 2
 
 rdn r: 3085 bytes in 18 READNs, ok
-/> rdn r /RB 2
+/> rdn r /rb 2
 
 rdn r: 3085 bytes in 18 READNs, ok
-/> rdn r /RA 1
+/> rdn r /ra 1
 
 rdn r: 67597 bytes in 301 READNs, ok
-/> rdn k /RA 1
+/> rdn k /ra 1
 
 rdn k: 70 READNs after SEEKs, ok
-/> rdn k /RB 2
+/> rdn k /rb 2
 
 rdn k: 70 READNs after SEEKs, ok
-/> rdn 2 /RA 1 /RB 2
+/> rdn 2 /ra 1 /rb 2
 
 rdn 2: 606 READNs, ok
-/> rdn w /RB 3 2
+/> rdn w /rb 3 2
 
 rdn w: 2061 bytes, read back ok
-/> rdn r /RB 3
+/> rdn r /rb 3
 
 rdn r: 2061 bytes in 13 READNs, ok
-/> rdn k /RB 3
+/> rdn k /rb 3
 
 rdn k: 70 READNs after SEEKs, ok
-/> rdn e /RB 3
+/> rdn e /rb 3
 
 rdn e: the zero cases, ok
-/> dir /RA
+/> dir /ra
 
-  67597  RA
-/> dir /RB
+  67597  ra
+/> dir /rb
 
-   2061  RB
+   2061  rb
 /> exit
 
 bye

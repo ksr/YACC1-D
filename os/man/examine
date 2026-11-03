@@ -19,7 +19,7 @@ DESCRIPTION
     Any other key shows the same address again, as does a hex digit
     followed by anything but a second one. "examine: bad address" when
     addr is not hex. The shell's counterpart of the monitor's E
-    command. examine is /BIN/EXAMINE.
+    command. examine is /bin/examine.
 
     There are no guard rails: it writes over the OS ($1000..$4FFF) or
     over itself ($5000 up) as readily as anywhere else. dump views a

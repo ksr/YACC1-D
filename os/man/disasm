@@ -20,9 +20,9 @@ DESCRIPTION
 
     FILE is a program file shown as if loaded: the addresses start at
     the load address in its directory entry (where load and run put
-    it; /BIN programs load at 5000), or at START, and go to the end of
+    it; /bin programs load at 5000), or at START, and go to the end of
     the file or for COUNT bytes. The file is read, not loaded, so
-    disasm can show any program, itself included (disasm /BIN/DISASM).
+    disasm can show any program, itself included (disasm /bin/disasm).
 
     -m shows memory from ADDR instead, COUNT bytes (default 40): the
     ROM monitor (disasm -m F000 20), the OS (1000), a program you
@@ -43,7 +43,7 @@ DESCRIPTION
     The output is ordinary output, so > and | work (disasm F | more,
     disasm F > F.LST); errors go to the screen: "disasm: not found:
     F", "disasm: bad address: X", "disasm: bad count: X", "disasm:
-    START is not in the file: X". disasm is /BIN/DISASM.
+    START is not in the file: X". disasm is /bin/disasm.
 
 OPTIONS
     -s    source only: an ORG line, then the instructions indented,
@@ -51,12 +51,12 @@ OPTIONS
     -m    memory instead of a file
 
 EXAMPLES
-    disasm /BIN/HELLO           the first /BIN program, all of it
-    disasm /BIN/HELLO 5010 10   16 bytes of it from 5010
+    disasm /bin/hello           the first /bin program, all of it
+    disasm /bin/hello 5010 10   16 bytes of it from 5010
     disasm -m F000 20           the ROM monitor's first instructions
     disasm -m FFC0 40           the ROM's BIOS vectors
-    disasm /BIN/HELLO | more    a page at a time
-    disasm -s P > P.ASM         then asm P.ASM Q: Q is P again (cmp P Q)
+    disasm /bin/hello | more    a page at a time
+    disasm -s P > p.asm         then asm p.asm Q: Q is P again (cmp P Q)
 
 NOTES
     The instruction table is generated from yacc1.def, the file the

@@ -8,7 +8,7 @@ DESCRIPTION
     Reads the files named (as one stream; globs expand, "-" is stdin),
     or stdin, into memory, sorts the lines in ascending byte order (A-Z
     before a-z; equal lines keep their order) and prints them. CR is
-    dropped; each file ends a line. sort is /BIN/SORT. stdin is the
+    dropped; each file ends a line. sort is /bin/sort. stdin is the
     shell's < file or pipe (see shell), else the console up to Ctrl-D.
 
 LIMITS
@@ -17,8 +17,8 @@ LIMITS
     rest dropped" at the end.
 
 EXAMPLES
-    sort /FRUIT2.TXT               the fruit in alphabetical order
-    sort /FRUIT.TXT /FRUIT2.TXT    the lines of both, merged
+    sort /fruit2.txt               the fruit in alphabetical order
+    sort /fruit.txt /fruit2.txt    the lines of both, merged
     sort                           typed lines, sorted at Ctrl-D
 
 NOTES

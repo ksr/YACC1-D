@@ -10,7 +10,7 @@ DESCRIPTION
     abspath(out, a) builds the absolute form of the path word a: the
     current directory (getcwd) + "/" + a when a is relative, then "."
     components dropped and ".." folded into their parent, so
-    "/BIN/../MAN/" comes out "/MAN". There is no trailing "/" except on
+    "/bin/../man/" comes out "/man". There is no trailing "/" except on
     the root itself. The word ends at NUL or a space, so a whole
     command tail may be passed; the result is how many characters of a
     were used. Nothing is opened or checked: it only builds a string.

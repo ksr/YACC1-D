@@ -1,11 +1,11 @@
-cat README.TXT
+cat README
 ls
-ls /NOPE
-cd BIN
+ls /nope
+cd bin
 ls ..
-cat /README.TXT ../README.TXT
+cat /README ../README
 cd ..
-wc /README.TXT
+wc /README
 wc
 hello there
 world
@@ -13,10 +13,10 @@ world
 cat
 filter line
 
-cp /README.TXT /COPY.TXT
-cat - COPY.TXT
+cp /README /copy.txt
+cat - copy.txt
 typed first
 
-type COPY.TXT
+type copy.txt
 ls
 exit

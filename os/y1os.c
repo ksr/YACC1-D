@@ -10,10 +10,10 @@
    Shell:  dir [path]  cd path  pwd  cat path  load path  run path [args]  save path addr len  del path
            mkdir path  rmdir path  ren path newname  help  exit
            cmd [< in] [> out | >> out] [| cmd ...]   (2026-09-23: redirection and pipes, up to NSEG commands)
-           a /BIN/<NAME> program comes FIRST, even over a built-in of that name (since 2026-09-23: the ported /BIN dir,
-           cat, pwd, del, help replace the built-ins, which stay for a card without /BIN); an unknown word runs <NAME>
+           a /bin/<name> program comes FIRST, even over a built-in of that name (since 2026-09-23: the ported /bin dir,
+           cat, pwd, del, help replace the built-ins, which stay for a card without /bin); an unknown word runs <name>
            in the current directory; the rest of the line is the program's argument tail.
-   Paths: absolute /A/B or relative, '.' and '..' are the directory's own entries. Names are case-sensitive, as the
+   Paths: absolute /a/b or relative, '.' and '..' are the directory's own entries. Names are case-sensitive, as the
    host tool writes them (tools/p8xfs.py), 1..12 characters, stored space-padded. Programs are compiled with
    `y1cc --org 0x5000` and put with `--load 0x5000 --exec 0x5000`; they return with RET (main returns) and find
    their arguments with argstr().
@@ -35,11 +35,11 @@
    syscalls CONIN (no echo, through the ROM's UARTINNE vector added the same day) and CONST let a program read
    its input the way the P8X filters do.
 
-   Redirection and pipes (2026-09-23): this file and every /BIN command are compiled with `y1cc --os`, so putchar/
+   Redirection and pipes (2026-09-23): this file and every /bin command are compiled with `y1cc --os`, so putchar/
    puts are the syscall CONOUT and getchar is CONIN. CONOUT writes to the file the shell opened for `>`/`>>`/a pipe
    (so_h), else to the raw console (bios CHAROUT); CONIN/CONST read the `<` file or the pipe (si_h), else the
    console; KEYIN is always the keyboard (the pager's and vi's keys). A pipe `a | b` runs a with its output to
-   /PIPE0.TMP, then b with its input from it (the next stage writes /PIPE1.TMP, then /PIPE0.TMP again...), and
+   /pipe0.tmp, then b with its input from it (the next stage writes /pipe1.tmp, then /pipe0.tmp again...), and
    the temp files are deleted after the last stage: the commands run one after the other, there is no
    multitasking. Diagnostics of the shell (and eputs() in the commands, lib_err.c) go to the raw console. */
 #include "lib_abi.c"
@@ -103,7 +103,7 @@ int w_oslba, w_ooff;            /* the live same-named file a CREATE replaces: i
 int os_sp;                      /* the shell's SP inside the stub, while a program runs */
 int ex_addr;                    /* the program's exec address */
 int ex_code;                    /* its status: 0, or what it gave EXIT; STATUS ($0F0E) after it */
-char ex_pend;                   /* EXEC: xpath runs next (1 a program; 2 a script, NAME.SH: 2026-11-03) */
+char ex_pend;                   /* EXEC: xpath runs next (1 a program; 2 a script, name.sh: 2026-11-03) */
 char *xpath;                    /* EXEC's program (64), out of the program area */
 char stub[] = {15, 81, 237, 0, 0, 247, 0, 0, 6, 7, 5, 241, 0, 0, 5};
 /* scripts (2026-11-03): the running one's extent, length and read position (up to 64K, read from its sectors: a
@@ -274,7 +274,7 @@ void tombstone() {              /* flag the entry at e_slba/e_off deleted */
 }
 
 int read_free() {               /* free_lba <- the boot block's free pointer; 1 = read error. At boot and after every
-                                   program (run_prog): a program may move it behind the OS's back (/BIN/PACK) */
+                                   program (run_prog): a program may move it behind the OS's back (/bin/pack) */
     if (cfread(0, sbuf)) return 1;
     free_lba = le16(sbuf + 4);
     return 0;
@@ -684,7 +684,7 @@ void h_exec() {                 /* EXEC(path, args): 0 when path cannot run; els
     p = peekw(SYSARG0); a = peekw(SYSARG1);
     if (strlen(p) > 63 || !resolve(p) || e_flags != F_FILE) { pokew(SYSRES, 0); return; }
     strcpy(xpath, p);
-    if (is_sh(p)) {             /* NAME.SH (2026-11-03): a script, which the shell runs after this command */
+    if (is_sh(p)) {             /* name.sh (2026-11-03): a script, which the shell runs after this command */
         ex_pend = 2; ex_code = 0;
         call(stub + 11);
     }
@@ -869,7 +869,7 @@ void cmd_save(char *rest) {             /* save path addr len: memory -> a file 
     if (!h) { eputs("cannot create"); return; }
     a = addr;
     n = fs_write(h, a, len);            /* closed even after a short write (2026-09-23): a handle left open here kept
-                                           wh set with no program running, which /BIN/PACK could not see */
+                                           wh set with no program running, which /bin/pack could not see */
     if (!fs_close(h) || n != len) { eputs("write error"); return; }
     putstr("saved "); putnum(len); puts(" bytes");
 }
@@ -884,15 +884,13 @@ void cmd_ren(char *rest) {              /* ren path newname */
 void cmd_mkdir(char *path) { if (!fs_mkdir(path)) eputs("cannot mkdir"); }
 void cmd_rmdir(char *path) { if (!fs_rmdir(path)) eputs("not an empty directory"); }
 
-void upper(char *s) { while (*s) { if (*s >= 'a' && *s <= 'z') *s -= 32; s++; } }
-
-int try_prog(char *name, char *args, int bin) {  /* /BIN/NAME (bin = 1) or NAME here, upper case (as the Makefile puts programs) */
+int try_prog(char *name, char *args, int bin) {  /* /bin/name (bin = 1) or name here: the word as run_cmd lower-cased it
+                                                    (2026-11-03: names on the disk are lower case; before, /BIN/NAME) */
     char p[20];
     if (strlen(name) > 12) return 0;
-    if (bin) { strcpy(p, "/BIN/"); strcpy(p + 5, name); } else strcpy(p, name);
-    upper(p);
+    if (bin) { strcpy(p, "/bin/"); strcpy(p + 5, name); } else strcpy(p, name);
     if (!resolve(p) || e_flags != F_FILE) return 0;
-    if (is_sh(p)) sc_push();            /* NAME.SH (2026-11-03): a script, run after this command */
+    if (is_sh(p)) sc_push();            /* name.sh (2026-11-03): a script, run after this command */
     else if (load_file(p)) run_prog(args);
     return 1;
 }
@@ -900,20 +898,20 @@ int try_prog(char *name, char *args, int bin) {  /* /BIN/NAME (bin = 1) or NAME 
 void cmd_help() {
     puts("Y1/OS: dir [path]  cd path  pwd  cat path  load path  run path [args]  help  exit");
     puts("       save path addr len (hex)  del path  ren path newname  mkdir path  rmdir path");
-    puts("       or the name of a program in /BIN (or here), followed by its arguments");
+    puts("       or the name of a program in /bin (or here), followed by its arguments");
     puts("       cmd [< in] [> out | >> out] [| cmd ...]  redirection, pipes (4 commands)");
-    puts("       sh file  run its lines (NAME.SH: the same)");
+    puts("       sh file  run its lines (name.sh: the same)");
 }
 
 /* ---- scripts (2026-11-03) ----------------------------------------------------------------------------------
-   A script is a text file of shell lines, started by `sh path`, by naming a NAME.SH file as a command, or by a
-   program's EXEC of one (how /BIN/MAKE runs its recipes). Its lines run as if typed, echoed after the prompt;
+   A script is a text file of shell lines, started by `sh path`, by naming a name.sh file as a command, or by a
+   program's EXEC of one (how /bin/make runs its recipes). Its lines run as if typed, echoed after the prompt;
    blank lines and lines starting with # are skipped; a line that fails stops every script. */
-int is_sh(char *p) {                    /* the path ends in ".SH" (upper case: the shell upper-cases a command's
-                                           name, and MAKE writes MAKE.SH) */
+int is_sh(char *p) {                    /* the path ends in ".sh" (lower case, as the shell lower-cases a command's
+                                           name, and make writes make.sh) */
     int n;
     n = strlen(p);
-    return n > 3 && strcmp(p + n - 3, ".SH") == 0;
+    return n > 3 && strcmp(p + n - 3, ".sh") == 0;
 }
 
 void sc_push() {                        /* e_* = a script's entry: it runs next, the running one is saved */
@@ -990,7 +988,7 @@ int run_cmd(char *cmd) {                /* one command (a pipeline stage): its w
     rest = word(cmd);
     lower(cmd);
     if (strcmp(cmd, "exit") == 0) return 1;
-    if (try_prog(cmd, rest, 1)) return 0;   /* a /BIN program wins over a built-in of the same name (2026-09-23) */
+    if (try_prog(cmd, rest, 1)) return 0;   /* a /bin program wins over a built-in of the same name (2026-09-23) */
     switch (builtin(cmd)) {             /* (2026-11-03: one scan of a word list, not a strcmp per word) */
     case 0: cmd_dir(rest); break;
     case 1: cmd_cd(rest); break;
@@ -1050,7 +1048,7 @@ int split() {                           /* line -> seg[], the redirect names -> 
     }
 }
 
-char *pipename(int k) { return k & 1 ? "/PIPE1.TMP" : "/PIPE0.TMP"; }   /* stage k writes this one */
+char *pipename(int k) { return k & 1 ? "/pipe1.tmp" : "/pipe0.tmp"; }   /* stage k writes this one */
 
 int stage(int k, int n) {               /* open stage k's input and output (of n); 0 = cannot (said so) */
     char *nm; int h;
@@ -1099,7 +1097,7 @@ void main() {
             else k = n;
             io_reset();                 /* also after a failed stage or command: files closed, console back */
         }
-        if (n > 1) { fs_delete("/PIPE0.TMP"); fs_delete("/PIPE1.TMP"); }
+        if (n > 1) { fs_delete("/pipe0.tmp"); fs_delete("/pipe1.tmp"); }
     }
     puts("bye");
 }

@@ -777,6 +777,19 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Move off NetBeans (README decision 7).
 
 ## Disk operating system (plan `docs/system/OS-PLAN.md`, decisions 2026-09-22)
+- **2026-11-03: every name on the Y1/OS disk is lower case**, as in Unix (`/bin/cat`, `/lib/cc/cc1`, `/man`, `/docs`,
+  `/src`, `fruit.txt`, `make.sh`, cc's `ccw.*`, asm's `.asm`/`.img`, `/pipe0.tmp`, `kermit.tmp`), Unix's own capitals
+  kept (`README`, the `Makefile`s). Both kernels look up `/bin/name` with the command word lower-cased (any case runs
+  it; they upper-cased it before), `.sh` scripts; `man`, `md`, `cc` and the passes (`/lib`, `#include` in `/lib` as
+  written), `asm`, `make` and `kermit` (received names keep their case) follow; os/Makefile and mksrcmk.py build the
+  disk that way. The instruction-level emulator no longer turns a typed `q` into 0 (the old quit key cut `quirks.asm`
+  short); leave it with `exit`, then `0`. `tools/y1kermit.py` sends names as they are (it upper-cased them, as Kermit's
+  converted names do; C-Kermit with `tools/y1.ksc`'s `set file names literal` does the same). Tests and transcripts
+  converted (names only; `wave2` copies `/README` in as `readme.txt` for its glob delete). The CF in the machine has
+  the upper-case image: rewrite it with this one.
+- **Open (2026-11-03): `tests/y1dbg` "cli" fails now and then** on a busy Mac (1 run of 4 that day, load average ~39): the
+  monitor's `H` text was cut at "E AAAA SHOW ..." before "INTEL-HEX LOAD", so the session's `console` read stopped
+  before the help was all there. ROM monitor only, unrelated to Y1/OS. To fix: wait for the help's last line, not a time.
 - **2026-11-03: scripts, `make` and the sources on the disk** (`os/README.md` "Scripts" and "The sources on the
   disk"; `man sh`, `man make`). Both kernels: `sh path`, `NAME.SH` as a command, and EXEC of a `NAME.SH` run a
   script, its lines as typed; a shell message or a status other than 0 stops it; four nest. `/BIN/MAKE`

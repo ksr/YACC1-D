@@ -2,7 +2,7 @@
  * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
  */
 
-/* lib_fs.c - the Y1/OS file API for programs (2026-09-23): C wrappers around the syscalls, for /BIN commands.
+/* lib_fs.c - the Y1/OS file API for programs (2026-09-23): C wrappers around the syscalls, for /bin commands.
    #include "../lib_fs.c" (it includes lib_abi.c itself: the numbers, the RAM addresses). Each wrapper is one
    sys() call (y1cc: the arguments go to SYSARG0..2, the OS handler in SYSTAB is JSRURed, SYSRES comes back), so a
    command written against these names never sees an address; unused wrappers cost nothing (y1cc drops them).
@@ -25,7 +25,7 @@
               stdio() bit 0: stdin redirected, bit 1: stdout redirected (the pager does not page into a file).
               Output is putchar/puts (y1cc --os: the CONOUT syscall, redirected by the shell); a diagnostic that must
               reach the screen even under > or | is eputs() from lib_err.c.
-   Paths are as the shell takes them: absolute /A/B or relative to the current directory, names 1..12 characters,
+   Paths are as the shell takes them: absolute /a/b or relative to the current directory, names 1..12 characters,
    case-sensitive; "" is the current directory for opendir/fresolve. */
 #include "lib_abi.c"
 

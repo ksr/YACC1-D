@@ -1,18 +1,18 @@
-bigw /BIG1 70
-bigw /BIG2 140
-dir /BIG1
-dir /BIG2
-bigr /BIG1
-bigr -s /BIG1
-bigr -s /BIG2
-bigr -k /BIG2
-bigr -n /BIG2
-bigw -v /BIG3 70
-bigr /BIG3
-bigr -n /BIG3
-cat /BIG1 > /COPY1
-dir /COPY1
-echo tail >> /BIG2
-dir /BIG2
-bigr -s /BIG2
+bigw /big1 70
+bigw /big2 140
+dir /big1
+dir /big2
+bigr /big1
+bigr -s /big1
+bigr -s /big2
+bigr -k /big2
+bigr -n /big2
+bigw -v /big3 70
+bigr /big3
+bigr -n /big3
+cat /big1 > /copy1
+dir /copy1
+echo tail >> /big2
+dir /big2
+bigr -s /big2
 exit

@@ -5,8 +5,8 @@
 
 Runs programs of tests/native/run.py's list through the native compiler and assembler on the instruction-level
 emulator with its PC histogram (`emulator -P FILE`: a block of per-address counts for every program Y1/OS starts),
-then names the addresses: the program area ($5000-$CFFF) from the running program's assembly (the pass, /BIN/CC,
-/BIN/ASM: os/build), the OS ($1000-$4FFF) from the OS's (the assembly or the C one, as os/build/os-sel says), the
+then names the addresses: the program area ($5000-$CFFF) from the running program's assembly (the pass, /bin/cc,
+/bin/asm: os/build), the OS ($1000-$4FFF) from the OS's (the assembly or the C one, as os/build/os-sel says), the
 ROM as one entry. An address counts for the nearest label before it that is not one of y1cc's generated ones
 (`Ltop12`...), so a C function's count includes its loops; in the OS a routine's local labels (`fg_in`) count apart.
 The labels' addresses come from the host assembler's listing (-l) of the same assembly.
@@ -84,7 +84,7 @@ def main():
 
     def prog_labels(p, w):
         if w == "cc": f = os.path.join(OS, "build/bin/cc.asm")
-        elif w == "asm": f = os.path.join(OS, "build/asma/asm.asm")      # /BIN/ASM: commands-asm/asm.asm (2026-09-26)
+        elif w == "asm": f = os.path.join(OS, "build/asma/asm.asm")      # /bin/asm: commands-asm/asm.asm (2026-09-26)
         elif w.startswith("cc"): f = os.path.join(OS, "build/cc", run.PASSN[int(w[2:]) - 1] + ".asm")
         else: return []
         if f not in cache: cache[f] = labels_of(f, os.path.basename(f)[:-4])

@@ -13,11 +13,11 @@ DESCRIPTION
     (the RMDIR syscall, 9).
 
 EXAMPLES
-    rmdir /T/SUB
+    rmdir /t/sub
     rmdir SUB
 
 NOTES
-    The P8X's pack is /BIN/PACK here (see pack).
+    The P8X's pack is /bin/pack here (see pack).
     The command is the Y1/OS shell's own (os/y1os.asm; os/y1os.c); the page is
     ported from P8X os/man/rmdir 2026-09-23.
 

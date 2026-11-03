@@ -7,7 +7,7 @@
      bigw PATH K      K * 1024 + 7 bytes, 512 at a time through WRITE (the last 7 on their own)
      bigw -v PATH K   the same bytes through WRITE in pieces of 1, 300, 513, 7, 200, 0 and 1000 bytes in turn
                       (2026-09-25: the assembly OS's WRITE copies the rest of each sector in one go)
-   run.py compiles it (y1cc --os) and puts it on the session's disk as /BIGW. */
+   run.py compiles it (y1cc --os) and puts it on the session's disk as /bigw. */
 #include "../../os/lib_fs.c"
 #include "../../os/lib_num.c"
 #include "y1lib.c"

@@ -55,7 +55,7 @@ The UART registers by their offset (16550 names, `docs/datasheets/PC16550D.pdf`;
 |---|---|---|
 | `$40` (UARTA0) | RBR / THR (DLL with DLAB) | `INP P1` receives, `OUTA P1` transmits; at boot DLL ← 3 |
 | `$48` (UARTA1) | IER (DLM with DLAB) | at boot DLM ← 0 |
-| `$50` (UARTA2) | IIR / FCR | the ROM never writes FCR (no FIFO: one character of buffering); `/BIN/KERMIT` writes `$07` (FIFOs on, cleared) for a transfer and `$00` after (2026-09-26, `os/kermit_io.asm`) |
+| `$50` (UARTA2) | IIR / FCR | the ROM never writes FCR (no FIFO: one character of buffering); `/bin/kermit` writes `$07` (FIFOs on, cleared) for a transfer and `$00` after (2026-09-26, `os/kermit_io.asm`) |
 | `$58` (UARTA3) | LCR | at boot `$80` (set DLAB) then `$03` (8N1) |
 | `$68` (UARTA5) | LSR | bit 0 data ready (`uartin`, `const`), bit 5 transmit holding register empty (`kermit_io`'s `ktx`), bit 6 transmitter empty (`uartout` waits for `$40`) |
 

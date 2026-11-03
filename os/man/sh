@@ -3,18 +3,18 @@ NAME
 
 SYNOPSIS
     sh path
-    NAME.SH
+    name.sh
 
 DESCRIPTION
     Runs the lines of a text file one after the other, each as if it
-    had been typed at the prompt: built-ins, /BIN programs, redirection
+    had been typed at the prompt: built-ins, /bin programs, redirection
     and pipes. Each line is shown after the prompt before it runs.
     Blank lines and lines starting with # are skipped. A line ends at
     LF or CR (CR LF is fine); up to 128 characters of it are kept.
     sh is a shell built-in.
 
     A file whose name ends in .SH also runs when it is named as a
-    command (BUILD.SH, or build.sh: the shell upper-cases the name),
+    command (build.sh, or build.sh: the shell upper-cases the name),
     and when a program EXECs it: that is how make runs its recipes.
     The script starts after the command that started it has ended.
 
@@ -23,14 +23,14 @@ DESCRIPTION
     program that ends with a status other than 0 (STATUS). The shell
     then says "sh: stopped" and the prompt comes back.
 
-    A script may start another (sh, NAME.SH, or a program's EXEC):
+    A script may start another (sh, name.sh, or a program's EXEC):
     that one runs, then the first goes on with its next line. Four
     may be running at once.
 
     A script is read from its sectors as it runs: a cd inside it
     changes the directory for the lines after it and for the prompt
     afterwards, and replacing the file while it runs (make writing a
-    new MAKE.SH) does not change the script that is running.
+    new make.sh) does not change the script that is running.
 
 LIMITS
     A script is at most 64K. There are no variables, arguments, tests
@@ -40,9 +40,9 @@ LIMITS
     Messages: "sh: too deep" (a fifth), "sh: over 64K", "sh: stopped".
 
 EXAMPLES
-    sh STEPS.SH            the lines of that file
-    cd /SRC/os/commands
-    make                   writes MAKE.SH and runs it (man make)
+    sh steps.sh            the lines of that file
+    cd /src/os/commands
+    make                   writes make.sh and runs it (man make)
 
 NOTES
     Added 2026-11-03 (os/README.md "Scripts"), after P8X's sh.

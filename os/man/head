@@ -7,16 +7,16 @@ SYNOPSIS
 DESCRIPTION
     Prints the first N lines (default 10) of the files named, read as
     one stream just as cat would print them (globs expand, "-" is
-    stdin), or of stdin. head is /BIN/HEAD. stdin is the shell's < file
+    stdin), or of stdin. head is /bin/head. stdin is the shell's < file
     or pipe (see shell), else the console up to Ctrl-D.
 
 OPTIONS
     -N    the first N lines (e.g. -5)
 
 EXAMPLES
-    head /FRUIT.TXT          the first 10 lines (all 7 of them)
-    head -2 /FRUIT.TXT       apple 3 red, pear 5 green
-    head -3 /MAN/C*          the first 3 lines of the lot
+    head /fruit.txt          the first 10 lines (all 7 of them)
+    head -2 /fruit.txt       apple 3 red, pear 5 green
+    head -3 /man/c*          the first 3 lines of the lot
 
 NOTES
     The count is over the whole stream, not per file.

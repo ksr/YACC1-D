@@ -8,7 +8,7 @@ DESCRIPTION
     Reads its input a line (record) at a time, splits each record into
     fields and runs a one-rule program against it. The input is the
     files named, read one after the other as one stream (globs expand,
-    "-" is stdin), or stdin when none is given. awk is /BIN/AWK. stdin
+    "-" is stdin), or stdin when none is given. awk is /bin/awk. stdin
     is the shell's < file or pipe (see shell), else the console up to
     Ctrl-D.
 
@@ -47,11 +47,11 @@ LIMITS
     The whole argument tail is 127 characters.
 
 EXAMPLES
-    awk '{print $2}' /FRUIT.TXT        the second field of each line
-    awk '/red/' /FRUIT.TXT             the lines containing "red"
-    awk '{print $1, $NF}' /FRUIT.TXT   the first and the last field
-    awk '{print NR ":" $0}' /FRUIT.TXT numbered: "1 : apple 3 red"
-    awk -F e '/red/ {print $2}' /FRUIT2.TXT
+    awk '{print $2}' /fruit.txt        the second field of each line
+    awk '/red/' /fruit.txt             the lines containing "red"
+    awk '{print $1, $NF}' /fruit.txt   the first and the last field
+    awk '{print NR ":" $0}' /fruit.txt numbered: "1 : apple 3 red"
+    awk -F e '/red/ {print $2}' /fruit2.txt
                                        split on the letter e
 
 NOTES

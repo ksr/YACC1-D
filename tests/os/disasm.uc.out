@@ -5,7 +5,7 @@ BOOT FROM CF
 /> disasm
 
 usage: disasm [-s] FILE [START [COUNT]]   disasm [-s] -m ADDR [COUNT]   (hex; -s: source only)
-/> disasm /DIS
+/> disasm /dis
 
 C000  19 CF FF  MVIW R1,0CFFFH
 C003  0E 05     LDAI 05H
@@ -32,14 +32,14 @@ BOOT FROM CF
 C02C  08        DB 08H
 C02D  04        DB 04H
 C02E  12        DB 12H
-/> disasm /DIS C009 6
+/> disasm /dis C009 6
 
 C009  08 60     POPR R6
 C00B  07 07     PUSHR R7
 C00D  06 03     JSRUR R3
-/> disasm -s /DIS > /D.ASM
+/> disasm -s /dis > /d.asm
 
-/> cat /D.ASM
+/> cat /d.asm
 
         ORG 0C000H
         MVIW R1,0CFFFH
@@ -67,15 +67,15 @@ BOOT FROM CF
         DB 08H
         DB 04H
         DB 12H
-/> asm /D.ASM /D2
+/> asm /d.asm /d2
 
-/D2: 47 bytes, 0 labels, load c000 exec c000
-/> cmp /DIS /D2
+/d2: 47 bytes, 0 labels, load c000 exec c000
+/> cmp /dis /d2
 
-/> dir /D2
+/> dir /d2
 
-     47  D2  @C000
-/> load /DIS
+     47  d2  @C000
+/> load /dis
 
 loaded 47 bytes at $C000
 /> disasm -m C000 7
@@ -88,16 +88,16 @@ BOOT FROM CF
 C02B  06        DB 06H
 C02C  08        DB 08H
 C02D  04 12 00  JSR 1200H
-/> disasm /DIS | wc
+/> disasm /dis | wc
 
 25 121 646
-/> disasm /NOPE
+/> disasm /nope
 
-disasm: not found: /NOPE
+disasm: not found: /nope
 /> disasm -m 12345
 
 disasm: bad address: 12345
-/> disasm /DIS 4000
+/> disasm /dis 4000
 
 disasm: START is not in the file: 4000
 /> disasm -x

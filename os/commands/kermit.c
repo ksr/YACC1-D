@@ -1,14 +1,15 @@
-/* kermit.c - Kermit file transfer over the console line: /BIN/KERMIT (Y1/OS, 2026-09-26)
+/* kermit.c - Kermit file transfer over the console line: /bin/kermit (Y1/OS, 2026-09-26)
      kermit -r [-a ADDR] [-n] [-k] [-l N]    receive files into the current directory, named by the sender
-     kermit -s FILE... [-B|-T] [-b N]        send files (globs work: kermit -s *.C)
+     kermit -s FILE... [-B|-T] [-b N]        send files (globs work: kermit -s *.c)
      kermit -x [-a ADDR] [-n] [-k] [-l N]    server: the other Kermit SENDs, GETs, then FINISH or BYE
      kermit -h                               usage
    The other end is C-Kermit (or tools/y1kermit.py) on the machine at the far end of the console cable: the same
    UART, 38400 8N1, no flow control, as the shell's own console. Standard Kermit: short packets (up to 94), window 1
    (stop-and-wait), block checks 1, 2 and 3 (16-bit CRC), control-character prefixing, repeat counts, 8th-bit
    prefixing when the other side asks for it (the line itself is 8 bits), attribute packets (the file size and
-   text/binary). Received names: the leaf only, upper case, at most 12 characters (NAME.EXT kept when it has to be
-   shortened), characters other than A-Z 0-9 . _ - become _. A file is received into KERMIT.TMP and renamed when it
+   text/binary). Received names: the leaf only, its case kept (upper-cased until 2026-11-03), at most 12 characters
+   (name.ext kept when it has to be shortened), characters other than A-Z a-z 0-9 . _ - become _. A file is
+   received into kermit.tmp and renamed when it
    is complete, so an existing file of that name is replaced only by a whole new one (-n: never replaced, the new
    file gets a new name), and a failed transfer leaves nothing (-k: keeps what arrived). Nothing is printed while
    packets flow (the console IS the line); a summary comes at the end. Three Ctrl-Cs while kermit waits for a
@@ -38,7 +39,7 @@
      file with Z "D" (E-Kermit ignored it); a NAK counts as a retry for the sender too
    - server mode (-x) is new: I, S, R (GET) and G F / G L (FINISH, BYE) in the idle state
    - files: the Y1/OS file API (lib_fs.c); text mode strips CR on receive and sends LF as CR LF; binary is the
-     default both ways; received names cleaned, KERMIT.TMP + rename, -n, -a ADDR for the load/exec address
+     default both ways; received names cleaned, kermit.tmp + rename, -n, -a ADDR for the load/exec address
 
    E-Kermit's notice, which its licence asks every copy of its source to keep:
 
@@ -170,7 +171,7 @@ int r_sfhi, r_sflo;           /* bytes so far */
 char gl[GLMAX * GSLOT];       /* the send list */
 int gln, glk;
 char wname[16];               /* the name a received file will have */
-char tmpname[] = "KERMIT.TMP";
+char tmpname[] = "kermit.tmp";
 char errmsg[80];              /* what went wrong, for the summary */
 char logn[LOGMAX * 13];
 int logh[LOGMAX], logl[LOGMAX];
@@ -601,14 +602,14 @@ void fixname(char *in) {                       /* a received name -> wname: 1..1
     n = 0; d = 65535;
     while (s[n] && n < 60) {
         c = s[n];
-        if (c >= 'a' && c <= 'z') c = c - 32;
-        if (!((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '.' || c == '_' || c == '-')) c = '_';
+        if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '.' || c == '_' ||
+              c == '-')) c = '_';       /* (2026-11-03: the case kept as sent; upper-cased before) */
         if (c == '.') d = n;
         tbuf[n++] = c;
     }
     tbuf[n] = 0;
     if (tbuf[0] == '.') tbuf[0] = '_';         /* a leading dot is refused (., .., RENAME) */
-    if (!n) { strcpy(wname, "KERMIT.DAT"); return; }
+    if (!n) { strcpy(wname, "kermit.dat"); return; }
     if (n <= 12) { strcpy(wname, tbuf); return; }
     e = 0;                                     /* NAME.EXT: the extension cut to 3, the name to what is left */
     if (d != 65535 && d > 0) { e = n - d; if (e > 4) e = 4; }
@@ -665,7 +666,7 @@ int closefile(int c, int mode) {               /* mode 1: the file sent; 2: the 
     if (c == 'D' && !k.ikeep) { if (strcmp(wname, tmpname)) fdelete(tmpname); return X_OK; }
     if (strcmp(wname, tmpname)) {
         fdelete(wname);                        /* the old file of that name, if any (a directory stays) */
-        if (!frename(tmpname, wname)) { setmsg("cannot rename KERMIT.TMP"); return X_ERROR; }
+        if (!frename(tmpname, wname)) { setmsg("cannot rename kermit.tmp"); return X_ERROR; }
     }
     logit(wname);
     return rc;
@@ -849,8 +850,8 @@ int kermit(int f, int len) {
             decode(p, datalen, 0);
             gln = 0; glk = 0;
             addfiles(r_filename);
-            if (!nextfile()) {                  /* as given, else in upper case (Y1/OS names are) */
-                for (s = r_filename; *s; s++) if (*s >= 'a' && *s <= 'z') *s = *s - 32;
+            if (!nextfile()) {                  /* as given, else in lower case (2026-11-03: Y1/OS names are) */
+                for (s = r_filename; *s; s++) if (*s >= 'A' && *s <= 'Z') *s = *s + 32;
                 gln = 0; glk = 0;
                 addfiles(r_filename);
             }

@@ -4,7 +4,7 @@
 
 /* find.c - the paths of the entries whose names match: find pattern [dir]
      find .TXT        every file or directory under the current one whose name CONTAINS ".TXT" (as typed)
-     find *.C         ... whose name matches the glob (* and ?, case folded: lib_glob.c)
+     find *.c         ... whose name matches the glob (* and ?, case folded: lib_glob.c)
      find MAN /       ... searching from / instead
    Prints absolute paths, depth first; up to 8 levels (lib_walk.c).
    Ported from P8X os/commands/find.c 2026-09-23, changes: the iterative lib_walk.c for the recursive walk()

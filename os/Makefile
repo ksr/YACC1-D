@@ -1,11 +1,11 @@
 # Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
 
 # Y1/OS - the YACC1 disk operating system (docs/system/OS-PLAN.md), built with the tree's own tools.
-#   make            y1os.bin (the OS image), the /BIN programs, and disk.img (a P8XFS v2 volume with all of it)
+#   make            y1os.bin (the OS image), the /bin programs, and disk.img (a P8XFS v2 volume with all of it)
 #   make OS=c       the same with the C OS (y1os.c, the specification) instead of the assembly one (y1os.asm, the
 #                   default since 2026-09-23); the choice is remembered in build/os-sel, so switching rebuilds disk.img.
 #                   `OS=c python3 ../tests/os/run.py` runs the test sessions against the C OS (make inherits OS).
-#   make NOXISA=1   every /BIN command compiled with y1cc --no-xisa (without LDZ/STZ + the page, ADDIW, SHL16: the code
+#   make NOXISA=1   every /bin command compiled with y1cc --no-xisa (without LDZ/STZ + the page, ADDIW, SHL16: the code
 #                   for a machine without the 2026-09-24 microcode; --xisa is y1cc's default since 2026-10-04, the
 #                   compiler passes always use it); remembered in build/xisa-sel like OS, so switching rebuilds.
 #                   `NOXISA=1 python3 ../tests/os/run.py` tests that build.
@@ -13,7 +13,7 @@
 #   make run-int    same on the instruction-level emulator
 #   make test       tests/os/run.py: scripted sessions on both emulators against expected transcripts
 #   make clean
-#   make sizes      each /BIN program's size (image + uninitialised data) against the 32K program area
+#   make sizes      each /bin program's size (image + uninitialised data) against the 32K program area
 #   make passes     the native C compiler (2026-09-25): the nine passes of software/compiler/c (target/NAME.c) as
 #                   Y1/OS programs build/cc/NAME.bin, each on its own stack from $CFFF down (y1cc --stack), always
 #                   compiled with --xisa (without, cc1, cc6 and cc9 no longer fit the 32K program area)
@@ -24,11 +24,12 @@
 # and runs on the emulators; the machine runs the assembly OS). Both are installed with `p8xfs.py boot` as build/y1os.bin.
 # y1cc --os (2026-09-23) for every program: putchar/puts/getchar are the OS syscalls CONOUT/CONIN,
 # which the shell redirects (> >> < |); a program built without it would write past a redirect to the screen.
-# Programs: os/commands/*.c -> /BIN/NAME (upper case), compiled at TPA $5000; they #include the os/lib_*.c
-# libraries. The one exception (2026-09-26): /BIN/ASM is the assembler in YACC1 assembly, commands-asm/asm.asm
-# (build/asma/asm.bin), and commands/asm.c - its specification, the same program in C - is /BIN/ASMC. Files in os/disk/ go to the root, os/man/NAME to /MAN/NAME (upper case: `man` upper-cases the name),
-# and the Markdown documents in DOCS to /DOCS for `md` (host file = disk name). The native C compiler (2026-09-25):
-# /BIN/CC (commands/cc.c) runs the passes /LIB/CC/CC1..CC9 (make passes), which read /LIB/Y1CCRT.TXT and /LIB/Y1LIB.C.
+# Programs: os/commands/*.c -> /bin/name, compiled at TPA $5000; they #include the os/lib_*.c
+# libraries. The one exception (2026-09-26): /bin/asm is the assembler in YACC1 assembly, commands-asm/asm.asm
+# (build/asma/asm.bin), and commands/asm.c - its specification, the same program in C - is /bin/asmc. Files in os/disk/ go to the root (lower case; README.TXT as README), os/man/name to /man/name (`man` lower-cases the name),
+# and the Markdown documents in DOCS to /docs for `md` (host file = disk name). The native C compiler (2026-09-25):
+# /bin/cc (commands/cc.c) runs the passes /lib/cc/cc1..cc9 (make passes), which read /lib/y1ccrt.txt and /lib/y1lib.c.
+# Every name on the disk is lower case since 2026-11-03 (README and the Makefiles keep Unix's capitals).
 OS    ?= asm
 NOXISA ?=
 CCX    = $(if $(NOXISA),--no-xisa)
@@ -54,16 +55,16 @@ PASSES = $(PASSN:%=$(B)/cc/%.bin)
 PSTACK = 0xCFFF
 PSRC   = $(wildcard $(CDIR)/*.c $(CDIR)/*.h $(CDIR)/ylim/*.h)
 RTLIB  = $(ROOT)/software/compiler/lib/y1ccrt.txt $(ROOT)/software/compiler/lib/y1lib.c
-# 2026-11-03: the sources on the disk under /SRC, at their repository paths (relative to the root), so a #include
-# resolves on the machine as on the Mac: the /BIN commands, the OS's C libraries, both kernels, the assembler in
+# 2026-11-03: the sources on the disk under /src, at their repository paths (relative to the root), so a #include
+# resolves on the machine as on the Mac: the /bin commands, the OS's C libraries, both kernels, the assembler in
 # assembly, and the native compiler's passes (tests/native/selfhost.py's set). The volume is 4 MB (8192 sectors).
 SECTORS = 8192
 SRCS   = $(sort $(patsubst %,os/%,$(wildcard commands/*.c) $(LIBS) asm_optab.c dis_optab.c kermit_io.c kermit_io.asm \
          commands-asm/asm.asm commands-asm/asmtab.inc y1os.asm strings.txt y1os.c) \
          $(patsubst $(ROOT)/%,%,$(filter $(CDIR)/cc% $(CDIR)/p% $(CDIR)/io% $(CDIR)/target%,$(wildcard $(CDIR)/*.c $(CDIR)/*.h)) \
          $(wildcard $(CDIR)/target/*.c) $(wildcard $(CDIR)/ylim/*.h)))
-# a disk name is 1..12 characters: kermit_io.asm (the source mkkio.py turns into kermit_io.c) is /SRC/os/kermitio.asm
-DOCS   = docs/mddemo.md:MDDEMO.MD README.md:OS.MD ../software/compiler/README.md:Y1CC.MD ../docs/system/OS-PLAN.md:OSPLAN.MD PORT-PLAN.md:PORT.MD ../docs/procedures/KERMIT.md:KERMIT.MD
+# a disk name is 1..12 characters: kermit_io.asm (the source mkkio.py turns into kermit_io.c) is /src/os/kermitio.asm
+DOCS   = docs/mddemo.md:mddemo.md README.md:os.md ../software/compiler/README.md:y1cc.md ../docs/system/OS-PLAN.md:osplan.md PORT-PLAN.md:port.md ../docs/procedures/KERMIT.md:kermit.md
 
 all: disk.img
 
@@ -96,7 +97,7 @@ $(B)/y1os-c.bin: y1os.c lib_abi.c lib_fs.c $(ROOT)/software/compiler/y1cc.py $(R
 	  printf "y1os (C): %d bytes image (%d of 32 sectors) + %d data = %d of 16320 (\$$1000-\$$4FBF)\n" $$i $$(( (i + 511) / 512 )) $$d $$((i + d)); \
 	  if [ $$((i + d)) -gt 16320 ] || [ $$i -gt 16320 ]; then echo "y1os: over its 16K less SYSTAB2 (\$$4FC0-\$$4FFF; the programs start at \$$5000)"; rm -f $@; exit 1; fi
 
-# /BIN/ASM's instruction table is generated from the host assembler's yacc1.def (tools/gen_y1_optab.py, 2026-09-25):
+# /bin/asm's instruction table is generated from the host assembler's yacc1.def (tools/gen_y1_optab.py, 2026-09-25):
 # asm_optab.c for the C assembler (commands/asm.c) and commands-asm/asmtab.inc for the assembly-language one, both
 # written by one run of the generator
 asm_optab.c: $(DEF) $(ROOT)/tools/gen_y1_optab.py
@@ -105,7 +106,7 @@ commands-asm/asmtab.inc: $(DEF) $(ROOT)/tools/gen_y1_optab.py
 	python3 $(ROOT)/tools/gen_y1_optab.py && touch $@
 $(B)/bin/asm.bin: asm_optab.c
 
-# /BIN/DISASM's decode table is generated from the same yacc1.def (tools/gen_y1_distab.py, 2026-09-29), with the
+# /bin/disasm's decode table is generated from the same yacc1.def (tools/gen_y1_distab.py, 2026-09-29), with the
 # assembler table generator's reading of it, so disasm and the assemblers cannot disagree about an instruction
 dis_optab.c: $(DEF) $(ROOT)/tools/gen_y1_distab.py $(ROOT)/tools/gen_y1_optab.py $(ROOT)/software/opcodes.h
 	python3 $(ROOT)/tools/gen_y1_distab.py && touch $@
@@ -118,7 +119,7 @@ $(ASMA): commands-asm/asm.asm commands-asm/asmtab.inc $(DEF)
 	@cd $(B)/asma && ../../$(ASM) asm -d=yacc1 > asm.lst && grep -q "^0 Errors" asm.lst || { grep "ERR" $(B)/asma/asm.lst | head; exit 1; }
 	@$(I2B) $(B)/asma/asm.img $@ --base 0x5000
 
-# /BIN/KERMIT's line I/O is assembly (kermit_io.asm, 2026-09-26), turned by mkkio.py into kermit_io.c: the bytes as a
+# /bin/kermit's line I/O is assembly (kermit_io.asm, 2026-09-26), turned by mkkio.py into kermit_io.c: the bytes as a
 # C array and the offsets of its absolute addresses, which kermit.c relocates at start-up (y1cc has no inline asm)
 kermit_io.c: kermit_io.asm mkkio.py $(DEF)
 	python3 mkkio.py
@@ -146,29 +147,30 @@ disk.img: $(B)/y1os.bin $(CMDS) $(ASMA) $(PASSES) $(RTLIB) $(FILES) $(MANS) $(fo
 	@rm -f $@
 	$(FS) create $@ --sectors $(SECTORS)
 	$(FS) boot $@ $(B)/y1os.bin
-	$(FS) mkdir $@ /BIN
-	@for c in $(CMDS); do n=$$(basename $$c .bin | tr a-z A-Z); [ $$n = ASM ] && n=ASMC; \
-	  $(FS) put $@ $$c --name /BIN/$$n --load 0x5000 --exec 0x5000; done
-	$(FS) put $@ $(ASMA) --name /BIN/ASM --load 0x5000 --exec 0x5000
-	@for f in $(FILES); do $(FS) put $@ $$f --name /$$(basename $$f); done
-	$(FS) mkdir $@ /MAN
-	@for f in $(MANS); do $(FS) put $@ $$f --name /MAN/$$(basename $$f | tr a-z A-Z); done
-	$(FS) mkdir $@ /DOCS
-	@for d in $(DOCS); do $(FS) put $@ $${d%%:*} --name /DOCS/$${d##*:}; done
-	$(FS) mkdir $@ /LIB
-	@for f in $(RTLIB); do $(FS) put $@ $$f --name /LIB/$$(basename $$f | tr a-z A-Z); done
-	$(FS) mkdir $@ /LIB/CC
-	@n=1; for p in $(PASSN); do $(FS) put $@ $(B)/cc/$$p.bin --name /LIB/CC/CC$$n --load 0x5000 --exec 0x5000; n=$$((n + 1)); done
-	$(FS) mkdir $@ /SRC
+	$(FS) mkdir $@ /bin
+	@for c in $(CMDS); do n=$$(basename $$c .bin); [ $$n = asm ] && n=asmc; \
+	  $(FS) put $@ $$c --name /bin/$$n --load 0x5000 --exec 0x5000; done
+	$(FS) put $@ $(ASMA) --name /bin/asm --load 0x5000 --exec 0x5000
+	@for f in $(FILES); do n=$$(basename $$f); case $$n in README.TXT) n=README;; *) n=$$(echo $$n | tr A-Z a-z);; esac; \
+	  $(FS) put $@ $$f --name /$$n; done
+	$(FS) mkdir $@ /man
+	@for f in $(MANS); do $(FS) put $@ $$f --name /man/$$(basename $$f); done
+	$(FS) mkdir $@ /docs
+	@for d in $(DOCS); do $(FS) put $@ $${d%%:*} --name /docs/$${d##*:}; done
+	$(FS) mkdir $@ /lib
+	@for f in $(RTLIB); do $(FS) put $@ $$f --name /lib/$$(basename $$f); done
+	$(FS) mkdir $@ /lib/cc
+	@n=1; for p in $(PASSN); do $(FS) put $@ $(B)/cc/$$p.bin --name /lib/cc/cc$$n --load 0x5000 --exec 0x5000; n=$$((n + 1)); done
+	$(FS) mkdir $@ /src
 	@for d in $$(for f in $(SRCS); do x=$$f; while [ "$${x%/*}" != "$$x" ]; do x=$${x%/*}; echo $$x; done; done | sort -u); do \
-	  $(FS) mkdir $@ /SRC/$$d --secs 16 > /dev/null; done
+	  $(FS) mkdir $@ /src/$$d --secs 16 > /dev/null; done
 	@for f in $(SRCS); do n=$$(basename $$f | sed 's/kermit_io\.asm$$/kermitio.asm/'); \
 	  [ $${#n} -le 12 ] || { echo "disk.img: $$f: a name over 12 characters"; exit 1; }; \
-	  $(FS) put $@ $(ROOT)/$$f --name /SRC/$$(echo $$f | sed 's/kermit_io\.asm$$/kermitio.asm/') > /dev/null || exit 1; done
+	  $(FS) put $@ $(ROOT)/$$f --name /src/$$(echo $$f | sed 's/kermit_io\.asm$$/kermitio.asm/') > /dev/null || exit 1; done
 	@python3 mksrcmk.py $(B)/srcmk
 	@for f in $$(cd $(B)/srcmk && find . -name Makefile | sed 's|^\./||' | sort); do \
-	  $(FS) put $@ $(B)/srcmk/$$f --name /SRC/$$f > /dev/null || exit 1; done
-	@echo "/SRC: $(words $(SRCS)) sources and their Makefiles (mksrcmk.py)"
+	  $(FS) put $@ $(B)/srcmk/$$f --name /src/$$f > /dev/null || exit 1; done
+	@echo "/src: $(words $(SRCS)) sources and their Makefiles (mksrcmk.py)"
 	$(FS) tree $@
 
 sizes: $(CMDS) $(ASMA)

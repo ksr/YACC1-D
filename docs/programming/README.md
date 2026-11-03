@@ -21,7 +21,7 @@ the microcode the ISA reference says so.
 | [ASSEMBLER.md](ASSEMBLER.md) | the RC/asm cross assembler: invocation, output formats, directives, expressions, quirks, the four worked examples, the `.def` table format |
 | [C-COMPILER.md](C-COMPILER.md) | y1cc: the C subset, builtins, the code model, CLI flags, the test runner and host oracle, the P8X size comparison, a worked example with its generated code |
 | [MONITOR.md](MONITOR.md) | the ROM monitor: every command, boot, the BIOS vectors, variables, the CF driver, the `O` boot, BASIC in ROM, the ROM build, the ISR |
-| [OS.md](OS.md) | Y1/OS: user guide, writing a `/BIN` command, the P8XFS v2 on-disk format, memory layout, plan and backlog |
+| [OS.md](OS.md) | Y1/OS: user guide, writing a `/bin` command, the P8XFS v2 on-disk format, memory layout, plan and backlog |
 | [MEMORY-MAP.md](MEMORY-MAP.md) | the definitive address map: RAM, ROM, reserved pages, what the OS plan assigns |
 | [IO-PORTS.md](IO-PORTS.md) | the sixteen I/O ports, the I/O card's select latch, the CF card ports, what is reserved |
 | [EMULATORS.md](EMULATORS.md) | the instruction-level emulator and the microcode-level emulator: options, models, what each does not model, how to run the monitor / a program / the OS, how to capture a session for a test |

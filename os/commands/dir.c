@@ -4,20 +4,20 @@
 
 /* dir.c - list a directory, sorted: dir [-R] [-S] [path|glob]
      dir              the current directory, by name
-     dir /BIN         a directory by path;  dir FILE  that one file's line
-     dir *.TXT        the entries matching a glob (* and ?, case folded), here or in dir/*.X
+     dir /bin         a directory by path;  dir FILE  that one file's line
+     dir *.txt        the entries matching a glob (* and ?, case folded), here or in dir/*.X
      dir -S           largest first (directories count as 0), ties by name
      dir -R           the directory, then every directory below it (depth first, up to 8 levels) as a block of
                       its own under a "/PATH:" header, the glob filtering every level
    Each line: the size right-justified in 7 columns (blank for a directory), two spaces, the name ('/' after a
    directory), and "@AAAA" = the load address of a file that has one. Up to 255 entries per directory are sorted
-   (64 until 2026-11-03; a fresh directory holds 62, /SRC's 254), with a Shell sort (an insertion sort before: at
+   (64 until 2026-11-03; a fresh directory holds 62, /src's 254), with a Shell sort (an insertion sort before: at
    1 MHz some 20,000 compares for 200 names); more are dropped with a note. Sizes are 32-bit (lib_num.c).
    Ported from P8X os/commands/dir.c 2026-09-23, changes: the recursive walk() is lib_walk.c and -R prints
    ls -R style blocks with a header each (the P8X interleaved indented levels, streaming a level before its
    subdirectories because the FNEXT cursor was global); the load-address column of the Y1/OS built-in dir is
    added; opendir/readdir handles for FOPENDIR/SYS_OPENCWD/FNEXT/SYS_DIRENTRY/FSDIRBUF; a sort index of chars
-   stays. Replaces the shell's built-in dir while /BIN/DIR exists. */
+   stays. Replaces the shell's built-in dir while /bin/dir exists. */
 #include "../lib_walk.c"
 #include "../lib_globx.c"
 #include "../lib_num.c"

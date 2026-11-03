@@ -9,7 +9,7 @@ DESCRIPTION
     stdin), 23 lines at a time. After each 23 lines it prints
     --More-- and waits for a key, read from the KEYBOARD without echo
     (keyin, never a < file or a pipe); the prompt is wiped once the
-    key comes. more is /BIN/MORE.
+    key comes. more is /bin/more.
 
     Keys at the --More-- prompt:
         space   the next page
@@ -19,7 +19,7 @@ DESCRIPTION
 
     With no file the text is stdin, so more pages a pipe or a <
     file while the keys still come from the keyboard:
-        dir -R / | more      cat /MAN/MORE | more      more < F
+        dir -R / | more      cat /man/more | more      more < F
     When its own output is a file or a pipe (more F > G, more F | wc)
     there is no one to page for: it copies the text, no --More--.
 
@@ -27,8 +27,8 @@ LIMITS
     Up to 24 names in all, after glob expansion.
 
 EXAMPLES
-    more /DOCS/PORT.MD       a long file (md renders it better)
-    more /MAN/C*             the pages starting with C, one after
+    more /docs/port.md       a long file (md renders it better)
+    more /man/c*             the pages starting with C, one after
                              another
 
 NOTES

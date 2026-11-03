@@ -384,7 +384,8 @@ def main():
     try:
         if a.cmd == "send":
             if not a.args: sys.exit("y1kermit: send what?")
-            names = [a.asname[i] if i < len(a.asname) else os.path.basename(f).upper() for i, f in enumerate(a.args)]
+            names = [a.asname[i] if i < len(a.asname) else os.path.basename(f) for i, f in enumerate(a.args)]   # as
+            # named, like C-Kermit's `set file names literal` (2026-11-03: Y1/OS names are lower case; upper-cased before)
             ok = k.send_files(a.args, names)
         elif a.cmd == "receive":
             d = a.args[0] if a.args else "."

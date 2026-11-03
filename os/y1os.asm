@@ -393,7 +393,7 @@ hx_1:       JSR resolve
             LDA ERAW+24
             LDTI F_FILE
             BRNEQ hx_no
-            LDR R3,SYSARG0          ; NAME.SH (2026-11-03): a script, which the shell runs after this command
+            LDR R3,SYSARG0          ; name.sh (2026-11-03): a script, which the shell runs after this command
             JSR is_sh
             BRNZ hx_sh
             JSR loadable
@@ -725,17 +725,8 @@ streq:  LDAVR R4
 se_no:  LDAI 0
         RET
 
-; upper / lower: the string at R3 in place, a-z -> A-Z / A-Z -> a-z. Clobbers R3, ACC, TMP.
-upper:  LDAVR R3
-        BRZ rts
-        LDTI 97
-        BRLT up_nx
-        LDTI 122
-        BRGT up_nx
-        SUBI 32
-        STAVR R3
-up_nx:  INCR R3
-        BR upper
+; lower: the string at R3 in place, A-Z -> a-z (2026-11-03: upper went with the upper-case names). Clobbers R3,
+; ACC, TMP.
 lower:  LDAVR R3
         BRZ rts
         LDTI 65
@@ -876,7 +867,7 @@ cfwr:   MVRLA R6
         BR B_CFWRITE
 
 ; read_free: FREE_LBA <- the boot block's free pointer (bytes 4-5, LE) -> ACC = 0 ok, else a card error. At boot and
-; after every program (run_prog): a program may move it (/BIN/PACK).
+; after every program (run_prog): a program may move it (/bin/pack).
 read_free:
         MVIW R6,0
         MVIW R7,SBUF
@@ -1162,7 +1153,7 @@ fsl_hit: LDR R4,FI_LBA
         BR ret1
 
 ; resolve: walk the path at R3 -> ACC = R3 = 1 found (the final entry in E_*/ERAW, its directory in RLBA/RSECS), 0.
-; Absolute /A/B or relative; "" and "/" are the current / root directory themselves (a made-up '.' entry, no slot:
+; Absolute /a/b or relative; "" and "/" are the current / root directory themselves (a made-up '.' entry, no slot:
 ; E_SLBA = 0); a trailing slash ends the walk (on a file too); a component over 12 characters is not found.
 ; Clobbers R3-R7.
 resolve:
@@ -2985,7 +2976,7 @@ rn_f:   MOVRR R3,R5             ; the new name taken?
         BRNZ ret0
         BR ret1
 
-; path_pop: CWDPATH loses its last component ("/A/B" -> "/A", "/A" -> "/"). CWDPATH lies in one page.
+; path_pop: CWDPATH loses its last component ("/a/b" -> "/a", "/a" -> "/"). CWDPATH lies in one page.
 ; Clobbers R3-R5, ACC, TMP.
 path_pop:
         MVIW R3,CWDPATH
@@ -3546,8 +3537,9 @@ cmd_help:
         MVIW R3,S_HELP5
         BR puts
 
-; try_prog: the word at R3 (lower case) as a program: ACC = 1: /BIN/NAME, 0: NAME here (upper-cased, as the Makefile
-; puts programs); the tail at R5 -> ACC = 1 it is one (loaded and run, or said why not), 0 it is not.
+; try_prog: the word at R3 (lower case) as a program: ACC = 1: /bin/name, 0: name here (2026-11-03: names on the
+; disk are lower case, as the word; before, /BIN/NAME upper-cased); the tail at R5 -> ACC = 1 it is one (loaded and
+; run, or said why not), 0 it is not.
 try_prog:
         STA TP_BIN
         STR R5,TP_ARGS
@@ -3567,14 +3559,12 @@ try_prog:
         POPR R3
 tp_cp:  JSR strcpy
         MVIW R3,TPBUF
-        JSR upper
-        MVIW R3,TPBUF
         JSR resolve
         BRZ ret0
         LDA ERAW+24
         LDTI F_FILE
         BRNEQ ret0
-        MVIW R3,TPBUF           ; NAME.SH (2026-11-03): a script, run after this command
+        MVIW R3,TPBUF           ; name.sh (2026-11-03): a script, run after this command
         JSR is_sh
         BRNZ tp_sh
         MVIW R3,TPBUF
@@ -3588,7 +3578,7 @@ tp_sh:  JSR sc_push
 
 ; =====================================================================================================================
 ; Scripts (y1os.c sc_push, sc_pop, sc_line, is_sh, cmd_sh; 2026-11-03). A script is a text file of shell lines,
-; started by `sh path`, by naming a NAME.SH file as a command, or by a program's EXEC of one (how /BIN/MAKE runs its
+; started by `sh path`, by naming a name.sh file as a command, or by a program's EXEC of one (how /bin/make runs its
 ; recipes). The running script is its extent and length (SC_LBA, SC_LEN; up to 64K) and the read position (SC_POS):
 ; it is read from its sectors, so a `cd` inside it, or the file being replaced while it runs, changes nothing. Up to
 ; 4 nest: a script started from a script runs, then the first goes on (SC_STK keeps the interrupted ones, 6 bytes
@@ -3743,8 +3733,8 @@ sl_end: LDIVR R3,0
         LDAI 1
         RET
 
-; is_sh: the path at R3 ends in ".SH" (upper case: the shell upper-cases a command's name, and MAKE writes MAKE.SH)
-; -> ACC = 1, else 0. Clobbers R4, R5, ACC, TMP.
+; is_sh: the path at R3 ends in ".sh" (lower case, as the shell lower-cases a command's name, and make writes
+; make.sh) -> ACC = 1, else 0. Clobbers R4, R5, ACC, TMP.
 is_sh:  JSR strlen              ; R4 = the length (R3 kept)
         MVRHA R4
         BRNZ ret0a
@@ -3767,11 +3757,11 @@ is_sh:  JSR strlen              ; R4 = the length (R3 kept)
         BRNEQ ret0a
         INCR R5
         LDAVR R5
-        LDTI 83
+        LDTI 115
         BRNEQ ret0a
         INCR R5
         LDAVR R5
-        LDTI 72
+        LDTI 104
         BRNEQ ret0a
         BR ret1a
 
@@ -3816,7 +3806,7 @@ rl_cr:  LDAI 13
 rl_end: LDIVR R3,0
         RET
 
-; run_cmd: one command (a pipeline stage) at R3: its word lower-cased, then /BIN/NAME, the built-ins, NAME here
+; run_cmd: one command (a pipeline stage) at R3: its word lower-cased, then /bin/name, the built-ins, name here
 ; -> ACC = 1 `exit`, 0 otherwise.
 run_cmd:
         LDAVR R3
@@ -3830,7 +3820,7 @@ run_cmd:
         MVIW R4,S_EXIT
         JSR streq
         BRNZ ret1
-        LDR R3,RC_CMD           ; a /BIN program wins over a built-in of the same name
+        LDR R3,RC_CMD           ; a /bin program wins over a built-in of the same name
         LDR R5,RC_REST
         LDAI 1
         JSR try_prog
@@ -4082,7 +4072,7 @@ sp_ret: LDA SP_N
 sp_bad: LDAI 0
         RET
 
-; pipename: ACC = k -> R3 = the pipe file stage k writes: /PIPE0.TMP (k even), /PIPE1.TMP (k odd). Clobbers ACC.
+; pipename: ACC = k -> R3 = the pipe file stage k writes: /pipe0.tmp (k even), /pipe1.tmp (k odd). Clobbers ACC.
 pipename:
         ANDI 1
         BRNZ pn_p1
@@ -4214,7 +4204,7 @@ PBUF:       DS 64               ; a working copy of a path (parent_of) / the pat
 ERAW:       DS 32               ; the entry the last lookup found, as on the card (ENTRY, RESOLVE copy it out)
 DENT:       DS 32               ; cmd_dir's entry
 WNAME:      DS 13               ; the write handle's name
-TPBUF:      DS 20               ; try_prog's "/BIN/NAME"
+TPBUF:      DS 20               ; try_prog's "/bin/name"
         ORG 4B80H
 SEG:        DS 8                ; split's result: the pipeline's commands (words; SEG..RAPP inside one page)
 RIN:        DS 8                ; their < file names (0 none)

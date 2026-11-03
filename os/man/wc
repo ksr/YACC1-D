@@ -8,15 +8,15 @@ DESCRIPTION
     Prints three counts, "lines words bytes", for the files named taken
     together as one stream (globs expand, "-" is stdin), or for stdin. A
     line is an LF; a word is a run of anything but space, tab, CR and
-    LF. The counts are 32-bit (see num). wc is /BIN/WC. stdin is the
+    LF. The counts are 32-bit (see num). wc is /bin/wc. stdin is the
     shell's < file or pipe (see shell), else the console up to Ctrl-D.
 
 LIMITS
     Up to 24 names in all, after glob expansion.
 
 EXAMPLES
-    wc /FRUIT.TXT                7 21 98
-    wc /FRUIT.TXT /FRUIT2.TXT    14 42 192 (one line of totals)
+    wc /fruit.txt                7 21 98
+    wc /fruit.txt /fruit2.txt    14 42 192 (one line of totals)
     wc                           typed text, counted at Ctrl-D
 
 NOTES

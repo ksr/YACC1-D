@@ -8,10 +8,10 @@ SYNOPSIS
 
 DESCRIPTION
     Copies the file src to dst. When dst is an existing directory the
-    copy goes into it under the source's name (cp A.TXT /T makes
-    /T/A.TXT). A file of the target name is replaced. The load and exec
+    copy goes into it under the source's name (cp a.txt /t makes
+    /t/a.txt). A file of the target name is replaced. The load and exec
     addresses are kept, so a copied program runs from its new place.
-    cp is quiet when it works. cp is /BIN/CP.
+    cp is quiet when it works. cp is /bin/cp.
 
     A glob source (* or ? in the last component, case folded) copies
     every matching file into dst, which must be an existing directory.
@@ -39,11 +39,11 @@ LIMITS
     levels, not all copied". src and dst are cut at 63 characters.
 
 EXAMPLES
-    cp /FRUIT.TXT /F.TXT      copy one file
-    cp /FRUIT.TXT /T          into the directory /T: /T/FRUIT.TXT
-    cp /*.TXT /T              every .TXT file of / into /T
-    cp /BIN/HELLO /HI         a program: `hi` typed in / runs it
-    cp -r /MAN /MANBAK        a whole directory
+    cp /fruit.txt /f.txt      copy one file
+    cp /fruit.txt /t          into the directory /t: /t/fruit.txt
+    cp /*.txt /t              every .TXT file of / into /t
+    cp /bin/hello /hi         a program: `hi` typed in / runs it
+    cp -r /man /manbak        a whole directory
 
 NOTES
     Removed from the P8X version: the /d1 mount. Changed: load and exec

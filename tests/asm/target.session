@@ -1,18 +1,18 @@
-cd /S
-asm HELLO.ASM
-run HELLO one two
-asm -h HELLO.ASM
-asm ECHOX.ASM
-ECHOX echo, assembled on the machine
-asm CAT.ASM
-run CAT /FRUIT.TXT
-asm -h MONITOR.ASM MON.IMG
-asm -h ISA.ASM
-asm -h QUIRKS.ASM Q.IMG
-asm QUIRKS
-asm CC4.ASM
-asm ERR.ASM
-asm NOSUCH
+cd /s
+asm hello.asm
+run hello one two
+asm -h hello.asm
+asm echox.asm
+echox echo, assembled on the machine
+asm cat.asm
+run cat /fruit.txt
+asm -h monitor.asm mon.img
+asm -h isa.asm
+asm -h quirks.asm q.img
+asm quirks
+asm cc4.asm
+asm err.asm
+asm nosuch
 asm
 dir
 exit

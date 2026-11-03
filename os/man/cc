@@ -7,13 +7,13 @@ SYNOPSIS
 
 DESCRIPTION
     Compiles a C program (y1cc's subset: man pages cannot hold it, see
-    /DOCS/Y1CC.MD) to YACC1 assembly, the same text y1cc.py writes on
+    /docs/y1cc.md) to YACC1 assembly, the same text y1cc.py writes on
     the Mac (only the date in its first line differs: Y1/OS has no
     clock, it says 0000-00-00 00:00). asm then makes the program:
 
-        cc HELLO.C -o HELLO.ASM --org 0x5000 --os
-        asm HELLO.ASM
-        HELLO
+        cc hello.c -o hello.asm --org 0x5000 --os
+        asm hello.asm
+        hello
 
     --org 0x5000 --os is what a Y1/OS program needs (the program area
     starts at $5000; putchar and getchar go through the shell, so > and
@@ -21,14 +21,14 @@ DESCRIPTION
     The code uses LDZ/STZ, ADDIW and SHL16 (the microcode of
     2026-09-24); --no-xisa leaves them out, for a machine without it.
 
-    The compiler is nine programs, /LIB/CC/CC1 to CC9, run one after
-    the other: cc starts CC1, and each pass EXECs the next one (they
+    The compiler is nine programs, /lib/cc/cc1 to cc9, run one after
+    the other: cc starts cc1, and each pass EXECs the next one (they
     replace each other, one command). An error stops the chain with its
     message on the screen. The passes pass their work in files
-    CCW.OPT ... CCW.EM in the current directory, which stay there and
+    ccw.opt ... ccw.em in the current directory, which stay there and
     are replaced by the next compile (pack gets the space back).
     #include "name" is looked for beside the including file, then in
-    /LIB (upper case: /LIB/Y1LIB.C); the runtime is /LIB/Y1CCRT.TXT.
+    /lib (upper case: /lib/y1lib.c); the runtime is /lib/y1ccrt.txt.
 
 LIMITS
     The passes' tables (software/compiler/c/ylim): about 760 names, 170
@@ -38,8 +38,8 @@ LIMITS
     hour at 1 MHz).
 
 EXAMPLES
-    cc /SRC/FIB.C -o FIB.ASM --org 0x5000 --os
-    cc HELLO.C -l                      the -l summary line
+    cc /src/fib.c -o fib.asm --org 0x5000 --os
+    cc hello.c -l                      the -l summary line
 
 NOTES
     New in Y1/OS 2026-09-25, with the syscalls EXEC and EXIT (man fs).

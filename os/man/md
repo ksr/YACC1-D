@@ -7,11 +7,11 @@ SYNOPSIS
 
 DESCRIPTION
     Renders a Markdown file as styled, paged console text, so the
-    documents in /DOCS read well at the machine itself. A name that is
+    documents in /docs read well at the machine itself. A name that is
     not found as given (and does not start with /) is looked for in
-    /DOCS, so md OS.MD reads /DOCS/OS.MD. With no argument md prints
-    its usage and lists the documents in /DOCS. "md: not found" when
-    neither exists. md is /BIN/MD.
+    /docs, so md os.md reads /docs/os.md. With no argument md prints
+    its usage and lists the documents in /docs. "md: not found" when
+    neither exists. md is /bin/md.
 
     The subset, one classification per source line:
         # .. ######   headings, bold; levels 1 and 2 also underlined
@@ -43,24 +43,24 @@ LIMITS
     178 characters and 10 columns.
 
 EXAMPLES
-    md                   the usage and the list of /DOCS
-    md OS.MD             Y1/OS: the shell, the file API, memory
-    md -p /DOCS/Y1CC.MD  the C compiler, plain
-    md PORT.MD           the plan behind the /BIN commands
+    md                   the usage and the list of /docs
+    md os.md             Y1/OS: the shell, the file API, memory
+    md -p /docs/y1cc.md  the C compiler, plain
+    md port.md           the plan behind the /bin commands
 
 FILES
-    /DOCS/OS.MD       os/README.md: Y1/OS itself
-    /DOCS/Y1CC.MD     the y1cc C compiler
-    /DOCS/OSPLAN.MD   the plan for the disk OS
-    /DOCS/PORT.MD     the port of the P8X commands
-    /DOCS/KERMIT.MD   the Mac side of kermit (C-Kermit settings)
-    /DOCS/MDDEMO.MD   one example of everything md renders
+    /docs/os.md       os/README.md: Y1/OS itself
+    /docs/y1cc.md     the y1cc C compiler
+    /docs/osplan.md   the plan for the disk OS
+    /docs/port.md     the port of the P8X commands
+    /docs/kermit.md   the Mac side of kermit (C-Kermit settings)
+    /docs/mddemo.md   one example of everything md renders
 
 NOTES
     On the instruction-level emulator a lower-case q is read as end of
     input, which quits as well.
     Changed from the P8X version: the shared pager (23 lines, was 22,
-    with a plain prompt), the /DOCS fallback and list, and paragraphs
+    with a plain prompt), the /docs fallback and list, and paragraphs
     that join the lines of a hard-wrapped source (the P8X rendered
     every source line as a paragraph of its own).
     Ported from P8X os/commands/md.c 2026-09-23.

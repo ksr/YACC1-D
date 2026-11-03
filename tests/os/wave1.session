@@ -1,25 +1,25 @@
 pwd
-cat FRUIT.TXT - README.TXT
+cat fruit.txt - README
 typed line
 
-cat *2.TXT
-cat NOPE
-wc FRUIT.TXT FRUIT2.TXT
+cat *2.txt
+cat nope
+wc fruit.txt fruit2.txt
 wc
 one two
 three
 
-head -2 FRUIT.TXT
-tail -3 FRUIT.TXT FRUIT2.TXT
-sort FRUIT2.TXT
-UNIQ FRUIT.TXT
-sed s/an+/AN/g FRUIT.TXT
-sed s/^.*e/X/ FRUIT2.TXT
-awk '{print $3, $1, NF}' FRUIT.TXT
-awk -F e '/red/ {print NR ":" $2}' FRUIT2.TXT
-cmp FRUIT.TXT FRUIT2.TXT
-cmp FRUIT.TXT /FRUIT.TXT
-diff FRUIT.TXT FRUIT2.TXT
+head -2 fruit.txt
+tail -3 fruit.txt fruit2.txt
+sort fruit2.txt
+UNIQ fruit.txt
+sed s/an+/AN/g fruit.txt
+sed s/^.*e/X/ fruit2.txt
+awk '{print $3, $1, NF}' fruit.txt
+awk -F e '/red/ {print NR ":" $2}' fruit2.txt
+cmp fruit.txt fruit2.txt
+cmp fruit.txt /fruit.txt
+diff fruit.txt fruit2.txt
 dep 6000 48 49 0A
 dump 6000
 .
@@ -29,9 +29,9 @@ examine 6000
 .
 dump 6000
 .
-more FRUIT.TXT FRUIT2.TXT FRUIT.TXT FRUIT2.TXT
+more fruit.txt fruit2.txt fruit.txt fruit2.txt
 Q
-md -p MDDEMO.MD
+md -p mddemo.md
  
 md
 man pwd

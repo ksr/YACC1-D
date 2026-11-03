@@ -62,10 +62,10 @@ BOOT FROM CF
         DB 04H
         DB 12H
 /> 
-/D2: 47 bytes, 0 labels, load c000 exec c000
+/d2: 47 bytes, 0 labels, load c000 exec c000
 /> 
 /> 
-     47  D2  @C000
+     47  d2  @C000
 /> 
 loaded 47 bytes at $C000
 /> 
@@ -79,7 +79,7 @@ BOOT FROM CF
 /> 
 25 121 646
 /> 
-disasm: not found: /NOPE
+disasm: not found: /nope
 /> 
 disasm: bad address: 12345
 /> 

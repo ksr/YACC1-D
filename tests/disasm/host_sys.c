@@ -2,7 +2,7 @@
  * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
  */
 
-/* host_sys.c - the Y1/OS syscalls and y1cc builtins /BIN/DISASM uses, emulated on the Mac for host_disasm.c
+/* host_sys.c - the Y1/OS syscalls and y1cc builtins /bin/disasm uses, emulated on the Mac for host_disasm.c
    (2026-09-29): OPEN GETC CLOSE ENTRY SEEK with Y1/OS's results, bios(CHAROUT) to stderr, peek() from a 64K memory,
    argstr() = the command line after the program name.
      Y1_LOAD=hex        the load address the directory entry of an opened file gives (default 5000; Y1/OS keeps it

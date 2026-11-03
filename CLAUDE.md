@@ -30,7 +30,10 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
   `path<TAB>claude<TAB>written in YACC1-D` to `tools/authors.tsv` and run `tools/author_headers.py --apply`; never
   re-label Ken's code as Claude's (a changed file of Ken's keeps "Author: Ken Rother", with the change in
   `tools/patched_files.txt`). Third-party and generated files get no header.
-- New `/BIN` commands need a man page (`os/man/NAME`) and a `help` line; Y1/OS disk docs changing size changes the
+- **Names on the Y1/OS disk are lower case** (Ken, 2026-11-03): `/bin/cat`, `/lib/cc/cc1`, `/man`, `/docs`, `/src`,
+  `fruit.txt`, `make.sh`; Unix's own capitals stay (`README`, `Makefile`). The shell lower-cases a command word, so any
+  case runs it. The repository's own files keep their names.
+- New `/bin` commands need a man page (`os/man/NAME`) and a `help` line; Y1/OS disk docs changing size changes the
   `tests/os` pack transcript's size lines (`python3 tests/os/run.py pack --update`, only size lines may change).
 - **The documentation's voice (Ken, 2026-10-02): everything reads as Ken's own project documentation.** Write the
   plain documentation voice - the subject is the machine, the card, the document ("The v2.0 board uses standoff option
@@ -83,7 +86,7 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
 - The ALU's carry flip-flop latches carry-out **OR** shift-out; the microcode clears shift-out before every add/subtract
   (the 2026-09-23 carry fix). Carry rules for code generators: `software/compiler/README.md`.
 - Four extra instructions (2026-09-24, `--xisa`): `LDZ`/`STZ Rn,d` ($80+n/$88+n, variable page = R6 high byte),
-  `ADDIW Rn,#w` ($C0+n), `SHL16 Rn` ($C8+n). The native toolchain (compiler passes, /BIN/ASM) needs them.
+  `ADDIW Rn,#w` ($C0+n), `SHL16 Rn` ($C8+n). The native toolchain (compiler passes, /bin/asm) needs them.
 - Memory map: ROM $E000-$FFFF (BASIC $E000, monitor $F000, BIOS vectors $FFC0-$FFFC, video entry $FFBC); monitor RAM
   $0C00-$0FFF (stack $0C00-$0EFF, variables $0F00.., SYSTAB $0F14, ARGBUF $0F40, video flags $0FF0-$0FF9); Y1/OS at
   $1000, OS RAM $4A00, SYSTAB2 $4FC0; programs (TPA) $5000-$CFFF; video RAM $D000-$D7FF, 6845 CRTC $D800 (address) /

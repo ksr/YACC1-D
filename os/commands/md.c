@@ -5,8 +5,8 @@
 /* md.c - render a Markdown file on the console, a screen at a time.
      md FILE.MD       styled with ANSI SGR escapes: bold headings (h1/h2 underlined), dim code, wrapped prose
      md -p FILE.MD    plain: the same layout without escapes (dumb terminals, tests)
-     md               the documents in /DOCS
-   A name that is not found as given is looked for in /DOCS (so `md OS.MD` reads /DOCS/OS.MD).
+     md               the documents in /docs
+   A name that is not found as given is looked for in /docs (so `md os.md` reads /docs/os.md).
    The subset, one classification per line: # headings; - * + and 1. list items (hanging indent); > quotes;
    ``` code fences (verbatim, indented, dim); |tables| (buffered, columns measured and aligned, the ---- row drawn
    as dashes); --- rules; prose word-wrapped at 78 columns, consecutive lines joined into one paragraph. Inline: **bold**, `code`, [text](url) -> text (url).
@@ -15,7 +15,7 @@
    The pager is lib_more.c: --More-- after 23 lines, space = page, Enter = line, q = quit.
    Ported from P8X os/commands/md.c 2026-09-23, changes: the pager is the shared lib_more.c (the P8X md had its
    own at 22 lines with a reverse-video prompt; every character goes through pgc() so the line count sees
-   everything); fopen/fgetc on a handle for FRESOLVE/FOPEN/FGETB; the /DOCS fallback and the listing are new;
+   everything); fopen/fgetc on a handle for FRESOLVE/FOPEN/FGETB; the /docs fallback and the listing are new;
    a block-local `int u` that shadowed a `char *u` became uc (y1cc keeps one static slot per name); consecutive
    prose lines (and a list item's indented continuation lines) now flow into ONE paragraph, as Markdown means them
    (the P8X md rendered every source line as a paragraph of its own, which broke the hard-wrapped Y1 documents). */
@@ -33,7 +33,7 @@ char dent[32], dnm[13];
 
 void listdocs() {
     int h;
-    h = opendir("/DOCS");
+    h = opendir("/docs");
     if (!h) return;
     while (readdir(h, dent)) { ent_name(dent, dnm); if (dnm[0] != '.') { putstr("  "); puts(dnm); } }
     fclose(h);
@@ -403,13 +403,13 @@ void main() {
         while (*ap == 32) { ap = ap + 1; }
     }
     if (*ap == 0 || (*ap == '-' && (*(ap + 1) == 'h' || *(ap + 1) == 'H'))) {
-        puts("usage: md [-p] FILE.MD    render markdown (-p: no ANSI styling); md with no file lists /DOCS");
+        puts("usage: md [-p] file.md    render markdown (-p: no ANSI styling); md with no file lists /docs");
         if (*ap == 0) listdocs();
         return;
     }
     argword(ap, path, 63);
     mdh = fopen(path);
-    if (!mdh && path[0] != '/') { strcpy(dpath, "/DOCS/"); strcpy(dpath + 6, path); mdh = fopen(dpath); }
+    if (!mdh && path[0] != '/') { strcpy(dpath, "/docs/"); strcpy(dpath + 6, path); mdh = fopen(dpath); }
     if (!mdh) { eputs("md: not found"); return; }
     infen = 0; tbn = 0; ateof = 0; inpara = 0;
     render();

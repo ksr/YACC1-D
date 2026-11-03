@@ -9,7 +9,7 @@ DESCRIPTION
     load address. An existing file or directory is left alone: it is
     not truncated, and Y1/OS keeps no timestamps to update. Names may
     be relative or absolute. "touch: cannot create NAME" when the
-    directory is missing or the name is not valid. touch is /BIN/TOUCH.
+    directory is missing or the name is not valid. touch is /bin/touch.
 
 LIMITS
     Inside a > or >> redirect or a pipe (stdout going to a file) the
@@ -19,8 +19,8 @@ LIMITS
     Names are 1..12 characters.
 
 EXAMPLES
-    touch /NEW.TXT
-    touch A.TXT B.TXT /T/C.TXT
+    touch /new.txt
+    touch a.txt b.txt /t/c.txt
 
 NOTES
     Removed from the P8X version: the /d1 mount.

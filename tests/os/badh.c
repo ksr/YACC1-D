@@ -6,7 +6,7 @@
    that, and show that every call is refused and nothing is written: PUTC/WRITE on 0 (with no write open: that used to
    write $0200 and then the boot block), on a read, a directory, a closed and out-of-range handles; GETC/READ/READDIR on
    0, a write handle and out-of-range ones; the 16 bytes at $0200 are compared before and after. run.py compiles it
-   (y1cc --os) and puts it on the session's disk as /BADH; the host checks then prove the volume intact. */
+   (y1cc --os) and puts it on the session's disk as /badh; the host checks then prove the volume intact. */
 #include "../../os/lib_fs.c"
 #include "y1lib.c"
 char buf[512];
@@ -27,12 +27,12 @@ void main() {
     for (i = 0; i < 512; i++) buf[i] = 90;
     pr("putc 0 x600", putmany(0, 600));
     pr("write 0 600", fwrite(0, buf, 600));
-    hr = fopen("/README.TXT"); hd = opendir("/");
+    hr = fopen("/README"); hd = opendir("/");
     pr("putc read", putmany(hr, 600)); pr("write read", fwrite(hr, buf, 600));
     pr("putc dir", putmany(hd, 600)); pr("write dir", fwrite(hd, buf, 600));
     pr("putc 5", fputc(5, 65)); pr("putc 255", fputc(255, 65)); pr("putc 256", fputc(256, 65));
     pr("putc 65535", fputc(65535, 65)); pr("write 65535", fwrite(65535, buf, 10));
-    hw = fcreate("/BADH.TXT", 0, 0);
+    hw = fcreate("/badh.txt", 0, 0);
     pr("create", hw != 0);
     pr("putc other", fputc(hr, 65)); pr("putc w", putmany(hw, 3));
     pr("getc w", fgetc(hw)); pr("read w", fread(hw, buf)); pr("readdir w", readdir(hw, buf));

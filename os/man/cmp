@@ -18,14 +18,14 @@ DESCRIPTION
 
     Both files are streamed side by side through two read handles.
     Errors: "cmp: file1 not found", "cmp: file2 not found". cmp is
-    /BIN/CMP.
+    /bin/cmp.
 
 LIMITS
     None beyond the OS's: files up to 16M.
 
 EXAMPLES
-    cmp /FRUIT.TXT /FRUIT2.TXT   cmp: files differ: byte 55, line 5
-    cmp /FRUIT.TXT FRUIT.TXT     silent (in /, the same file)
+    cmp /fruit.txt /fruit2.txt   cmp: files differ: byte 55, line 5
+    cmp /fruit.txt fruit.txt     silent (in /, the same file)
 
 NOTES
     Removed from the P8X version: the 8K limit on file1, which the P8X

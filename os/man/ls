@@ -10,7 +10,7 @@ DESCRIPTION
     for a directory or the size in bytes for a file, and "  @AAAA" when
     the file has a load address. The last line is the count
     ("7 entries"). Names starting with "." are left out, "." and ".."
-    among them. ls is /BIN/LS.
+    among them. ls is /bin/ls.
 
     Errors: "ls: not found", "ls: not a directory" (a file was named).
 
@@ -24,7 +24,7 @@ LIMITS
 
 EXAMPLES
     ls
-    ls /BIN
+    ls /bin
 
 NOTES
     New in Y1/OS 2026-09-23.

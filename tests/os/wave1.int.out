@@ -24,7 +24,7 @@ BOOT FROM CF
 cherry 40 red
 fig 7 purple
 /> 
-cat: not found: NOPE
+cat: not found: nope
 /> 
 14 42 192
 /> 
@@ -190,13 +190,13 @@ BOOT FROM CF
 The end.
 /> 
 /> 
-usage: md [-p] FILE.MD    render markdown (-p: no ANSI styling); md with no file lists /DOCS
-  MDDEMO.MD
-  OS.MD
-  Y1CC.MD
-  OSPLAN.MD
-  PORT.MD
-  KERMIT.MD
+usage: md [-p] file.md    render markdown (-p: no ANSI styling); md with no file lists /docs
+  mddemo.md
+  os.md
+  y1cc.md
+  osplan.md
+  port.md
+  kermit.md
 /> 
 NAME
     pwd - print the working directory
@@ -206,16 +206,16 @@ BOOT FROM CF
 
 DESCRIPTION
     Prints the absolute path of the current directory (the one the
-    prompt shows), from the OS's GETCWD syscall. pwd is /BIN/PWD.
+    prompt shows), from the OS's GETCWD syscall. pwd is /bin/pwd.
 
-    The shell also has a built-in pwd, used only when /BIN/PWD is
+    The shell also has a built-in pwd, used only when /bin/pwd is
     missing; it prints the same path.
 
 LIMITS
     The OS keeps the path in 64 bytes.
 
 EXAMPLES
-    pwd              e.g.  /BIN
+    pwd              e.g.  /bin
 
 NOTES
     Ported from P8X os/commands/pwd.c 2026-09-23.
@@ -224,7 +224,7 @@ BOOT FROM CF
 --More--            cd, dir, ls
 /> 
 /> 
-no manual entry for NOPE
+no manual entry for nope
 /> 
 bye
 >

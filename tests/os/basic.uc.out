@@ -4,69 +4,69 @@ BOOT FROM CF
 
 /> dir
 
-         BIN/
-         DOCS/
-     98  FRUIT.TXT  @B000
-     94  FRUIT2.TXT  @B000
-         LIB/
-         MAN/
-    156  README.TXT  @B000
-         SRC/
-/> cat README.TXT
+    156  README  @B000
+         bin/
+         docs/
+     98  fruit.txt  @B000
+     94  fruit2.txt  @B000
+         lib/
+         man/
+         src/
+/> cat README
 
 Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
 LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
-/> cd BIN
+/> cd bin
 
-/BIN> dir HELLO
+/bin> dir hello
 
-    146  HELLO  @5000
-/BIN> pwd
+    146  hello  @5000
+/bin> pwd
 
-/BIN
-/BIN> cd ..
+/bin
+/bin> cd ..
 
 /> hello a b c
 
-hello from /BIN/HELLO
+hello from /bin/hello
 args: a b c
-/> run /BIN/ECHO hi there
+/> run /bin/echo hi there
 
 hi there
-/> wc README.TXT
+/> wc README
 
 2 29 156
-/> dir /BIN/EC*
+/> dir /bin/ec*
 
-     67  ECHO  @5000
-/> cd /BIN/../BIN
+     67  echo  @5000
+/> cd /bin/../bin
 
-/BIN> pwd
+/bin> pwd
 
-/BIN
-/BIN> nothere
+/bin
+/bin> nothere
 
 what?
-/BIN> cd /
+/bin> cd /
 
-/> load /BIN/HELLO
+/> load /bin/hello
 
 loaded 146 bytes at $5000
 /> help
 
-Y1/OS commands (man NAME for more; a /BIN program wins over a built-in of the same name)
+Y1/OS commands (man name for more; a /bin program wins over a built-in of the same name)
 built into the shell:
   cd path        change directory (/abs, rel, ., ..)
   load path      read a program to its load address
   run path args  load and call a program with an argument tail
   save p a l     write memory a..a+l (hex) to a new file
   ren path name  rename a file or directory in place
-  mkdir / rmdir  make / remove (an empty) directory (/BIN/MKDIR: -s N, N sectors)
+  mkdir / rmdir  make / remove (an empty) directory (/bin/mkdir: -s N, N sectors)
   type path      print a file (the built-in cat)
-  sh file        run a script: its lines as typed (NAME.SH runs too)
+  sh file        run a script: its lines as typed (name.sh runs too)
   exit           back to the ROM monitor
   cmd < in  > out  >> out  a | b | c   redirection and pipes (man shell)
-in /BIN:
+in /bin:
   asm  assemble: asm [-h] SRC [OUT]  (-h: Intel hex)   asmc the same, in C
   awk  one-rule awk: fields, /re/ {print $N ...}, NR NF
   cat  print files (globs, - = console)   cmp  first differing byte
@@ -80,8 +80,8 @@ BOOT FROM CF
   head first lines                         help this list
   kermit file transfer on the console line: -r receive, -s send, -x server
   ls   plain directory list                make build targets from a Makefile (-n -B)
-  man  a manual page (/MAN)
-  md   render Markdown (/DOCS)             more page a file
+  man  a manual page (/man)
+  md   render Markdown (/docs)             more page a file
   mv   move/rename files                   pack compact the disk: reclaim dead sectors
   pwd  the working directory               sed  s/re/new/[g]
   sort sort lines                          tail last lines

@@ -1,6 +1,6 @@
 # software/disassembler — microcode disassembler
 
-(Not the disassembler of YACC1 machine code: that is `/BIN/DISASM` under Y1/OS, `os/commands/disasm.c`, 2026-09-29.)
+(Not the disassembler of YACC1 machine code: that is `/bin/disasm` under Y1/OS, `os/commands/disasm.c`, 2026-09-29.)
 
 `disasm2/` decodes the 64-step microcode image produced by `firmware/microcode/ucode-generator2/` and prints, per opcode,
 which control signals are active on each step, using the signal names in `firmware/microcode/yaccsignaldefine.h`.

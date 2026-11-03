@@ -11,7 +11,7 @@
      bigr -n PATH     READN (2026-09-25) with the sizes 1, 7, 100, 300, 512, 600 in turn and a GETC after every fifth:
                       each count must be what the size and the rest of the sector allow (fewer only at the end)
    Prints the bytes read (32 bits) and the first offset that differs from the pattern, or "pattern ok". run.py
-   compiles it (y1cc --os) and puts it on the session's disk as /BIGR. */
+   compiles it (y1cc --os) and puts it on the session's disk as /bigr. */
 #include "../../os/lib_fs.c"
 #include "../../os/lib_num.c"
 #include "y1lib.c"

@@ -17,7 +17,7 @@
                           closed, and B opened on its handle (whose buffer still holds A's sector 0) and read from 0,
                           SEEKed to a boundary, read
      rdn e PATH SEED      the zero results: n = 0, handles 0, 5 and 255, a write handle, a directory handle, the end
-   Each mode prints one line, "... ok" or the first thing that differs. run.py compiles it (y1cc --os) as /RDN. */
+   Each mode prints one line, "... ok" or the first thing that differs. run.py compiles it (y1cc --os) as /rdn. */
 #include "../../os/lib_fs.c"
 #include "../../os/lib_num.c"
 #include "y1lib.c"
@@ -239,9 +239,9 @@ void main() {
         rn(h, 0); rn(h, 5);
         n = 0;
         n = n + freadn(0, buf, 10) + freadn(5, buf, 10) + freadn(255, buf, 10);
-        h2 = fcreate("/RDN.TMP", 0, 0);
+        h2 = fcreate("/rdn.tmp", 0, 0);
         n = n + freadn(h2, buf, 10);
-        fclose(h2); fdelete("/RDN.TMP");
+        fclose(h2); fdelete("/rdn.tmp");
         h2 = opendir("/");
         n = n + freadn(h2, buf, 10);
         fclose(h2);

@@ -1,17 +1,17 @@
 dir
-cat README.TXT
-cd BIN
-dir HELLO
+cat README
+cd bin
+dir hello
 pwd
 cd ..
 hello a b c
-run /BIN/ECHO hi there
-wc README.TXT
-dir /BIN/EC*
-cd /BIN/../BIN
+run /bin/echo hi there
+wc README
+dir /bin/ec*
+cd /bin/../bin
 pwd
 nothere
 cd /
-load /BIN/HELLO
+load /bin/hello
 help
 exit

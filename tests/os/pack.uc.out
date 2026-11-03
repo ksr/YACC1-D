@@ -2,128 +2,128 @@ BOOT FROM CF
 Y1/OS v0.2 (2026-09-23)  P8XFS v2
 /> 
 
-/> mkdir /PK
+/> mkdir /pk
 
-/> echo gone > /PK/G.TXT
+/> echo gone > /pk/g.txt
 
-/> mkdir /PK/SUB
+/> mkdir /pk/sub
 
-/> cp /DOCS/Y1CC.MD /PK/SUB/Y1CC.MD
+/> cp /docs/y1cc.md /pk/sub/y1cc.md
 
-/> echo one > /PK/LOG
+/> echo one > /pk/log
 
-/> mkdir /PK/SUB/DEEP
+/> mkdir /pk/sub/deep
 
-/> cp /DOCS/MDDEMO.MD /PK/SUB/DEEP/MD.MD
+/> cp /docs/mddemo.md /pk/sub/deep/md.md
 
-/> cp /BIN/HELLO /PK/SUB/H
+/> cp /bin/hello /pk/sub/h
 
-/> mkdir /PK/EMPTY
+/> mkdir /pk/empty
 
-/> echo alpha > /PK/A.TXT
+/> echo alpha > /pk/a.txt
 
-/> echo two >> /PK/LOG
+/> echo two >> /pk/log
 
-/> del /PK/G.TXT
+/> del /pk/g.txt
 
-/> rmdir /PK/EMPTY
+/> rmdir /pk/empty
 
-/> echo alpha2 > /PK/A.TXT
+/> echo alpha2 > /pk/a.txt
 
-/> sort /FRUIT.TXT | UNIQ > /PK/U.TXT
+/> sort /fruit.txt | UNIQ > /pk/u.txt
 
-/> del /FRUIT2.TXT
+/> del /fruit2.txt
 
-/> cd /PK/SUB
+/> cd /pk/sub
 
-/PK/SUB> pack
+/pk/sub> pack
 
 pack: 9 sectors reclaimed, free pointer N (was N)
 pack: N files and N directories moved
-/PK/SUB> pwd
+/pk/sub> pwd
 
-/PK/SUB
-/PK/SUB> dir
+/pk/sub
+/pk/sub> dir
 
-         DEEP/
-    146  H  @5000
-  73295  Y1CC.MD  @B000
-/PK/SUB> cd DEEP
+         deep/
+    146  h  @5000
+  73334  y1cc.md  @B000
+/pk/sub> cd deep
 
-/PK/SUB/DEEP> dir
+/pk/sub/deep> dir
 
-    549  MD.MD  @B000
-/PK/SUB/DEEP> cd ..
+    549  md.md  @B000
+/pk/sub/deep> cd ..
 
-/PK/SUB> cd ..
+/pk/sub> cd ..
 
-/PK> pwd
+/pk> pwd
 
-/PK
-/PK> dir
+/pk
+/pk> dir
 
-      7  A.TXT
-      8  LOG
-         SUB/
-     69  U.TXT
-/PK> cat LOG
+      7  a.txt
+      8  log
+         sub/
+     69  u.txt
+/pk> cat log
 
 one
 two
-/PK> cat A.TXT
+/pk> cat a.txt
 
 alpha2
-/PK> cat U.TXT
+/pk> cat u.txt
 
 apple 3 red
 banana 12 yellow
 cherry 40 red
 fig 7 purple
 pear 5 green
-/PK> cmp /PK/SUB/Y1CC.MD /DOCS/Y1CC.MD
+/pk> cmp /pk/sub/y1cc.md /docs/y1cc.md
 
-/PK> cmp /PK/SUB/DEEP/MD.MD /DOCS/MDDEMO.MD
+/pk> cmp /pk/sub/deep/md.md /docs/mddemo.md
 
-/PK> run /PK/SUB/H 1 2
+/pk> run /pk/sub/h 1 2
 
-hello from /BIN/HELLO
+hello from /bin/hello
 args: 1 2
-/PK> head -3 /MAN/PACK
+/pk> head -3 /man/pack
 
 NAME
     pack - compact the volume, reclaiming dead sectors
 
-/PK> echo new > /PK/NEW.TXT
+/pk> echo new > /pk/new.txt
 
-/PK> cat /PK/NEW.TXT
+/pk> cat /pk/new.txt
 
 new
-/PK> pack > /X.TXT
+/pk> pack > /x.txt
 
 pack: not with < > >> or a pipe (a redirect file is open)
-/PK> cat /FRUIT.TXT | pack
+/pk> cat /fruit.txt | pack
 
 pack: not with < > >> or a pipe (a redirect file is open)
-/PK> pack < /FRUIT.TXT
+/pk> pack < /fruit.txt
 
 pack: not with < > >> or a pipe (a redirect file is open)
-/PK> del /X.TXT
+/pk> del /x.txt
 
-/PK> echo mid > /PK/SUB/DEEP/MID.TXT
+/pk> echo mid > /pk/sub/deep/mid.txt
 
-/PK> cd /
+/pk> cd /
 
 /> pack
 
 pack: 2 sectors reclaimed, free pointer N (was N)
 pack: 1 files and 0 directories moved
-/> echo last > /PK/SUB/DEEP/LAST.TXT
+/> echo last > /pk/sub/deep/last.txt
 
-/> dir /PK/SUB/DEEP
+/> dir /pk/sub/deep
 
-      5  LAST.TXT
-    549  MD.MD  @B000
-      4  MID.TXT
+      5  last.txt
+    549  md.md  @B000
+      4  mid.txt
 /> exit
 
 bye

@@ -5,8 +5,8 @@ SYNOPSIS
     cd [path]
 
 DESCRIPTION
-    Makes path the current directory. The path may be absolute (/BIN),
-    relative (T/SUB), or use . and .. (every directory's own first two
+    Makes path the current directory. The path may be absolute (/bin),
+    relative (t/sub), or use . and .. (every directory's own first two
     entries); cd / is the root. The prompt shows the new path. cd with
     no path changes nothing. Names are case-sensitive. Errors: "not
     found", "not a directory" (the current directory stays as it was).
@@ -16,9 +16,9 @@ LIMITS
     The path the prompt and pwd show is kept in 64 bytes.
 
 EXAMPLES
-    cd /BIN
+    cd /bin
     cd ..
-    cd /MAN
+    cd /man
 
 NOTES
     Removed from the P8X version: the drive-1 mount (cd /d1).

@@ -3,21 +3,21 @@
 
 """tests/native/run.py - C compiled, assembled and run on the emulated YACC1 (2026-09-25): the first native builds.
 
-Under Y1/OS, on a copy of the OS disk (which carries the compiler since 2026-09-25: /BIN/CC, the passes
-/LIB/CC/CC1..CC9, /LIB/Y1CCRT.TXT, /LIB/Y1LIB.C, and the assembler /BIN/ASM), each program of PROGRAMS is
+Under Y1/OS, on a copy of the OS disk (which carries the compiler since 2026-09-25: /bin/cc, the passes
+/lib/cc/cc1..cc9, /lib/y1ccrt.txt, /lib/y1lib.c, and the assembler /bin/asm), each program of PROGRAMS is
 
-  1. compiled by the native compiler: `cc NAME.c -o /OUT/NAME/NAME.ASM --org 0x5000 --os [flags]` in its source directory
-     (the sources are on the disk under /R as they are in the repository, so the #includes resolve as on the Mac;
+  1. compiled by the native compiler: `cc NAME.c -o /out/name/name.asm --org 0x5000 --os [flags]` in its source directory
+     (the sources are on the disk under /r as they are in the repository, so the #includes resolve as on the Mac;
      `cc` runs the nine passes, each EXECing the next);
-  2. assembled by the native assembler: `asm /OUT/NAME/NAME.ASM` -> the program file /OUT/NAME/NAME;
-  3. run: `run /OUT/NAME/NAME args < input > /OUT/NAME/NAME.TXT` (programs that poke the OS's tables or write to port 2
+  2. assembled by the native assembler: `asm /out/name/name.asm` -> the program file /out/name/name;
+  3. run: `run /out/name/name args < input > /out/name/name.txt` (programs that poke the OS's tables or write to port 2
      directly are only compiled and assembled);
 
 and the host checks, from the disk image afterwards (tools/p8xfs.py get), that the assembly is byte-identical to
 what y1cc.py writes on the Mac (the header's date masked: Y1/OS has no clock), that the program file is
-byte-identical to the host toolchain's (y1cc.py + the host assembler + img2bin; a /BIN command's also to the
+byte-identical to the host toolchain's (y1cc.py + the host assembler + img2bin; a /bin command's also to the
 Makefile's build of it), and that the program's output is the expected one (tests/compiler/NAME.out, or what the
-/BIN build of the same command prints in the same session).
+/bin build of the same command prints in the same session).
 
   run.py [name ...] [--int | --uc] [--all-uc] [-v] [--keep]
     name       only these programs;  --int / --uc   one emulator only (default: both)
@@ -48,7 +48,7 @@ TPA = 0x5000
 C = "tests/compiler/"
 # name (the file name on the disk, up to 8 characters), source, extra y1cc flags, the run (None: compile and assemble
 # only; else (arguments, stdin file on the disk or None, expected output: "out" = tests/compiler/NAME.out, "skip1" =
-# the same without its first line, "bin CMD" = what CMD prints in the same session)), and the /BIN program the result
+# the same without its first line, "bin CMD" = what CMD prints in the same session)), and the /bin program the result
 # must equal byte for byte (os/build/bin/NAME.bin), if any
 PROGRAMS = [
     ("hello", C + "hello.c", [], ("", None, "out")),
@@ -57,7 +57,7 @@ PROGRAMS = [
     ("arith", C + "arith.c", [], ("", None, "out")),
     ("arrays", C + "arrays.c", [], ("", None, "out")),
     ("calls", C + "calls.c", [], ("", None, "out")),
-    ("chars", C + "chars.c", [], ("", "/R/tests/compiler/chars.in", "out")),
+    ("chars", C + "chars.c", [], ("", "/r/tests/compiler/chars.in", "out")),
     ("control", C + "control.c", [], ("", None, "out")),
     ("globals", C + "globals.c", [], ("", None, "out")),
     ("io", C + "io.c", [], None),                    # its outp(2) goes past the shell's > to the screen
@@ -75,12 +75,12 @@ PROGRAMS = [
     ("fibx", C + "fib.c", ["--xisa"], ("", None, "out")),
     ("chello", "os/commands/hello.c", [], ("a b c", None, "bin hello a b c"), "hello"),
     ("cecho", "os/commands/echo.c", [], ("native echo", None, "bin echo native echo"), "echo"),
-    ("ccat", "os/commands/cat.c", [], ("/FRUIT.TXT /README.TXT", None, "bin cat /FRUIT.TXT /README.TXT"), "cat"),
-    ("cwc", "os/commands/wc.c", [], ("/R/tests/compiler/fib.c", None, "bin wc /R/tests/compiler/fib.c"), "wc"),
+    ("ccat", "os/commands/cat.c", [], ("/fruit.txt /README", None, "bin cat /fruit.txt /README"), "cat"),
+    ("cwc", "os/commands/wc.c", [], ("/r/tests/compiler/fib.c", None, "bin wc /r/tests/compiler/fib.c"), "wc"),
     ("cc4", "software/compiler/c/target/calls.c", [], None),     # the compiler compiling its own pass 4
 ]
 UC_SET = ["hello", "fib", "cecho", "ccat"]
-EMPTY = "/R/EMPTY"
+EMPTY = "/r/empty"
 
 
 def sh(cmd, **kw):
@@ -110,7 +110,7 @@ def host_build(p):
 
 
 def make_disk(progs, img):
-    """os/disk.img + the sources under /R (the repository's paths), an empty file for stdin, /OUT"""
+    """os/disk.img + the sources under /r (the repository's paths), an empty file for stdin, /out"""
     shutil.copy(os.path.join(OS, "disk.img"), img)
     files = {"os/lib_" + f for f in ("abi.c", "fs.c", "err.c", "stdin.c", "glob.c", "globx.c", "num.c", "apath.c",
                                     "rdline.c")}
@@ -122,39 +122,39 @@ def make_disk(progs, img):
         for f in os.listdir(os.path.join(ROOT, cdir)):
             if f.endswith((".c", ".h")) and f.startswith(("p", "cc4", "io", "target")): files.add(cdir + "/" + f)
         files.add(cdir + "/ylim/calls.h")
-    dirs = {"/R"}
-    sh(FS + ["mkdir", img, "/R"])
+    dirs = {"/r"}
+    sh(FS + ["mkdir", img, "/r"])
     for f in sorted(files):
         parts = f.split("/")
         for i in range(1, len(parts)):
-            d = "/R/" + "/".join(parts[:i])
+            d = "/r/" + "/".join(parts[:i])
             if d not in dirs: sh(FS + ["mkdir", img, d]); dirs.add(d)
-        sh(FS + ["put", img, os.path.join(ROOT, f), "--name", "/R/" + f])
+        sh(FS + ["put", img, os.path.join(ROOT, f), "--name", "/r/" + f])
     e = os.path.join(BUILD, "empty"); open(e, "wb").close()
     sh(FS + ["put", img, e, "--name", EMPTY])
-    sh(FS + ["mkdir", img, "/OUT"])
-    for p in progs: sh(FS + ["mkdir", img, "/OUT/" + p[0].upper()])    # (a directory holds 62 entries)
+    sh(FS + ["mkdir", img, "/out"])
+    for p in progs: sh(FS + ["mkdir", img, "/out/" + p[0]])    # (a directory holds 62 entries)
 
 
 def script(progs):
     lines = ["O"]
     for p in progs:
         name, src, flags, run = p[0], p[1], p[2], p[3]
-        N = name.upper()
-        lines.append("cd /R/" + os.path.dirname(src))
-        lines.append("cc %s -o /OUT/%s/%s.ASM --org 0x5000 --os %s" % (os.path.basename(src), N, N, " ".join(flags)))
+        N = name
+        lines.append("cd /r/" + os.path.dirname(src))
+        lines.append("cc %s -o /out/%s/%s.asm --org 0x5000 --os %s" % (os.path.basename(src), N, N, " ".join(flags)))
         lines.append("cd /")
-        lines.append("asm /OUT/%s/%s.ASM" % (N, N))
+        lines.append("asm /out/%s/%s.asm" % (N, N))
         if run:
             args, stdin, expect = run
-            lines.append("run /OUT/%s/%s %s < %s > /OUT/%s/%s.TXT" % (N, N, args, stdin or EMPTY, N, N))
-            if expect.startswith("bin "): lines.append("%s > /OUT/%s/%s.REF" % (expect[4:], N, N))
+            lines.append("run /out/%s/%s %s < %s > /out/%s/%s.txt" % (N, N, args, stdin or EMPTY, N, N))
+            if expect.startswith("bin "): lines.append("%s > /out/%s/%s.ref" % (expect[4:], N, N))
     lines += ["exit", "0", ""]
     return "\n".join(lines)
 
 
 def steps_of(p):
-    """the programs Y1/OS starts for p, in order: cc, the nine passes, asm, the run, the /BIN reference"""
+    """the programs Y1/OS starts for p, in order: cc, the nine passes, asm, the run, the /bin reference"""
     n = ["cc"] + ["cc%d" % i for i in range(1, 10)] + ["asm"]
     if p[3]:
         n.append("run")
@@ -173,22 +173,22 @@ def get(img, path):
 def check(p, img, host):
     """the host's checks for program p on a disk image: a list of failures"""
     name, src, flags, run = p[0], p[1], p[2], p[3]
-    N = name.upper(); fails = []
-    D = "/OUT/%s/%s" % (N, N)
+    N = name; fails = []
+    D = "/out/%s/%s" % (N, N)
     want_asm, want_bin = host
-    got = get(img, D + ".ASM")
-    if got is None: return ["no %s.ASM" % D]
+    got = get(img, D + ".asm")
+    if got is None: return ["no %s.asm" % D]
     if corpus.normalize(got.decode("latin1")) != corpus.normalize(want_asm): fails.append("assembly differs")
     got = get(img, D)
     if got is None: fails.append("no program file " + D)
     elif got != want_bin:
         fails.append("program file differs from the host toolchain's (%d / %d bytes)" % (len(got), len(want_bin)))
     elif len(p) > 4 and open(os.path.join(OS, "build/bin", p[4] + ".bin"), "rb").read() != got:
-        fails.append("differs from /BIN/" + p[4].upper())
+        fails.append("differs from /bin/" + p[4])
     if run:
-        out = get(img, D + ".TXT")
+        out = get(img, D + ".txt")
         kind = run[2]
-        exp = get(img, D + ".REF") if kind.startswith("bin ") else open(os.path.join(ROOT, src[:-2] + ".out"), "rb").read()
+        exp = get(img, D + ".ref") if kind.startswith("bin ") else open(os.path.join(ROOT, src[:-2] + ".out"), "rb").read()
         if kind == "skip1" and out is not None: out = out.split(b"\n", 1)[-1]; exp = exp.split(b"\n", 1)[-1]
         if out is None: fails.append("no output file")
         elif out != exp: fails.append("output differs: %r, expected %r" % (out[:80], (exp or b"")[:80]))
@@ -202,7 +202,7 @@ def main():
     progs = [p for p in PROGRAMS if not names or p[0] in names]
     tags = ["int"] if "--int" in av else ["uc"] if "--uc" in av else ["int", "uc"]
     shutil.rmtree(BUILD, ignore_errors=True); os.makedirs(BUILD)
-    sh(["make", "-s", "-C", OS])                    # the disk: the OS, /BIN (CC and ASM among them), /LIB, the passes
+    sh(["make", "-s", "-C", OS])                    # the disk: the OS, /bin (CC and ASM among them), /lib, the passes
     host = {p[0]: host_build(p) for p in progs}
     bad = 0; stats = {}; uc_ratio = None
     for tag in tags:

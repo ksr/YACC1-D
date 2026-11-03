@@ -6,8 +6,8 @@
    of the native compiler is built with it (target/NAME.c), and y1cc.c is compiled with it for the self-compile proof
    (target.c). First run 2026-09-25 (tests/native/run.py). Its choices:
    - the command line is the tail argstr() hands a program, split into words at spaces;
-   - #include "name" looks beside the including file, then in /LIB (the name upper-cased, as the Makefiles put files
-     on a disk: #include "y1lib.c" finds /LIB/Y1LIB.C); cc9 reads the runtime text from /LIB/Y1CCRT.TXT;
+   - #include "name" looks beside the including file, then in /lib (the name as written: #include "y1lib.c" finds
+     /lib/y1lib.c; until 2026-11-03 upper-cased, /LIB/Y1LIB.C); cc9 reads the runtime text from /lib/y1ccrt.txt;
    - the source files are read through io_open/io_getc/io_close: io_getc is here, the rest is NOT: target_rd.c has
      the plain ones (each a handle) and target_inc.c those of the lexer, which nests #includes deeper than Y1/OS's
      handles allow; each target/NAME.c includes one of them;
@@ -19,7 +19,7 @@
    - the three output sections of y1cc.c (io_create/io_put/io_finish) are in target_sec.c, which only target.c
      includes (the passes write their files with io_wopen/io_wput/io_wclose and would only carry its buffers);
    - there is no clock, so the header's date is 0000-00-00 00:00;
-   - a pass that is done EXECs the next one (2026-09-25): target/NAME.c names it in io_next_pass ("/LIB/CC/CC2" ...,
+   - a pass that is done EXECs the next one (2026-09-25): target/NAME.c names it in io_next_pass ("/lib/cc/cc2" ...,
      "" for the last), and the next pass gets the work prefix, this pass's first word, as its whole command line;
      io_fail prints its message on the screen (lib_err.c: never into a > file) and EXITs with status 1, which ends
      the chain; io_done (a pass that deferred an error to a later pass) goes on to the next pass like a normal end. */
@@ -53,15 +53,12 @@ void io_arg(int i, char *buf, int max) {
     for (i = 0; i < max - 1 && targs[i]; i++) buf[i] = targs[i];
     buf[i] = 0;
 }
-void io_lib(char *name, char *out, int max) {      /* /LIB/NAME: upper case, as the Makefiles put files on a disk */
-    int i; int j; int c;
-    out[0] = '/'; out[1] = 'L'; out[2] = 'I'; out[3] = 'B'; out[4] = '/';
+void io_lib(char *name, char *out, int max) {      /* /lib/name, the name as written (2026-11-03: names on a disk
+                                                       are lower case; /LIB/NAME upper-cased before) */
+    int i; int j;
+    out[0] = '/'; out[1] = 'l'; out[2] = 'i'; out[3] = 'b'; out[4] = '/';
     i = 5;
-    for (j = 0; name[j] && i < max - 1; j++) {
-        c = name[j];
-        if (c >= 'a' && c <= 'z') c = c - 32;
-        out[i] = c; i++;
-    }
+    for (j = 0; name[j] && i < max - 1; j++) { out[i] = name[j]; i++; }
     out[i] = 0;
 }
 int io_find(char *name, char *from, char *out, int max) {

@@ -37,9 +37,9 @@
 - `os/` — Y1/OS: `run.py` builds `os/disk.img`, boots it on both emulators with the console script `basic.session`
   after the monitor's `O` command, and diffs the transcripts (`basic.int.out`, `basic.uc.out`; the latter shows the
   monitor's input echo). `make os-test`. `NOXISA=1 python3 tests/os/run.py` runs the same sessions with every
-  `/BIN` program built by y1cc `--no-xisa` (`make -C os NOXISA=1`; `--xisa` is the default since 2026-10-04); the
+  `/bin` program built by y1cc `--no-xisa` (`make -C os NOXISA=1`; `--xisa` is the default since 2026-10-04); the
   program sizes `ls`/`load` print are masked.
-- `asm/` — the native assemblers `/BIN/ASMC` (asm.c, 2026-09-25) and `/BIN/ASM` (asm.asm, in YACC1 assembly, 2026-09-26;
+- `asm/` — the native assemblers `/bin/asmc` (asm.c, 2026-09-25) and `/bin/asm` (asm.asm, in YACC1 assembly, 2026-09-26;
   `run.py` also runs it under Y1/OS on the instruction-level emulator on the whole corpus and compares its messages
   and files with asm.c's, `--uc` 27 sources on the microcode emulator too): `run.py` builds `os/commands/asm.c` for the Mac against an
   emulation of the Y1/OS syscalls (`host_asm.c`, `host_sys.c`: int = unsigned short, unsigned char) and compares it with
@@ -49,7 +49,7 @@
   transcripts `target.int.out`/`target.uc.out`) runs `asm` under Y1/OS on both emulators - y1cc programs assembled
   and run, the ROM monitor, `isa.asm`, compiler pass cc4 - and compares every file it wrote with RC/asm's output.
   `make asm-test`; both in `make check`.
-- `disasm/` — `/BIN/DISASM` (os/commands/disasm.c, 2026-09-29): `run.py` builds it for the Mac (`host_disasm.c`,
+- `disasm/` — `/bin/disasm` (os/commands/disasm.c, 2026-09-29): `run.py` builds it for the Mac (`host_disasm.c`,
   `host_sys.c`: int = unsigned short, OPEN/GETC/CLOSE/ENTRY/SEEK and peek emulated) and round-trips - `disasm -s`,
   RC/asm, the same bytes, the listing true to them - over tests/asm's corpus, every program of the OS build, the ROM
   from memory, random bytes and every opcode + operand byte (382, ~20 s), then START/COUNT ranges and the errors;
@@ -67,7 +67,7 @@
 - `y1term/` — `tools/y1term.py --send` against the microcode emulator through a pty (2026-10-08): `good.bas` (lower
   case, a tab, a blank line, a `#` comment, FOR/NEXT) sent with `--new --run` must print `Hello 1 2 3 21`; `bad.bas`
   must exit 1 naming its `print !` line as SYNTAX ERROR, the other lines stored. In `make check`.
-- `kermit/` — `/BIN/KERMIT` (2026-09-26): `run.py` boots Y1/OS on both emulators with the console on a pseudo-terminal
+- `kermit/` — `/bin/kermit` (2026-09-26): `run.py` boots Y1/OS on both emulators with the console on a pseudo-terminal
   and runs `tools/y1kermit.py` against `kermit -r`, `-s` and `-x`: text, all 256 byte values, a 70K file, long runs, an
   empty file, a name to clean; block checks 1-2, 8th-bit prefixing, text mode, `-n`, `-a`; damaged, missing and
   unanswered packets both ways, three Ctrl-Cs; the server's SEND/GET/FINISH. Files compared on the host and on the

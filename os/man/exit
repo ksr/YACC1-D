@@ -9,7 +9,7 @@ DESCRIPTION
     left as it was, so a program loaded at $5000 can still be looked at
     with the monitor's B and D. The monitor's O boots Y1/OS again from
     the card: a fresh start in /. exit is a shell built-in, and the one
-    word a /BIN program cannot replace (the shell checks it first).
+    word a /bin program cannot replace (the shell checks it first).
 
 EXAMPLES
     exit            then O at the monitor prompt to come back

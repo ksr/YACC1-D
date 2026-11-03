@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
 
-"""The native assembler /BIN/ASM (os/commands/asm.c) against the host assembler RC/asm (software/assembler), 2026-09-25.
+"""The native assembler /bin/asm (os/commands/asm.c) against the host assembler RC/asm (software/assembler), 2026-09-25.
 
   run.py [-v] [--only SUBSTR] [--no-native] [--uc] [--target]
 
@@ -16,11 +16,11 @@
                            source whose code goes down in address (an ORG back) must be refused
    A source RC/asm reports errors for must fail in the native assembler too (no output file left).
    The corpus: every y1cc compile of tests/compiler/corpus.py (the compiler tests with their option sets, the bench
-   sources, y1os.c, every /BIN command, the nine compiler passes, y1cc.c itself), each also with --xisa; and every
+   sources, y1os.c, every /bin command, the nine compiler passes, y1cc.c itself), each also with --xisa; and every
    hand-written YACC1 source in the tree (firmware/ monitor and BASIC with their candidates, monnew, tests/assembler,
    tests/ucemu/isa.asm, os/y1os.asm with its INCLUDE).
 4. asm.asm (os/commands-asm, the assembler in YACC1 assembly, 2026-09-26) under Y1/OS on the instruction-level
-   emulator, on the whole corpus (unless --no-native): disks built here with the OS and its build as /BIN/ASM, the
+   emulator, on the whole corpus (unless --no-native): disks built here with the OS and its build as /bin/asm, the
    sources in directories of 18, 72 to a session, the sessions in parallel; each source assembled with -h and to a
    program file, and the console output (the messages, the summary) and the file written (bytes, load, exec) must
    be what the host build of asm.c gives for the same command line. Where asm.c's symbol table is full (y1cc.c's
@@ -44,7 +44,7 @@ import corpus                                    # noqa: E402
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 import p8xfs as P                                # noqa: E402  (disk images built in memory)
 EMUS = {"int": os.path.join(ROOT, "software/emulator/emulator"), "uc": os.path.join(ROOT, "software/ucemu/y1ucemu")}
-ASMA = os.path.join(ROOT, "os/build/asma/asm.bin")       # asm.asm, /BIN/ASM (os/Makefile)
+ASMA = os.path.join(ROOT, "os/build/asma/asm.bin")       # asm.asm, /bin/asm (os/Makefile)
 OSBIN = os.path.join(ROOT, "os/build/y1os.bin")
 MON_EXIT = re.search(r"^([0-9a-f]{4})h: CMD_EXIT\b", open(os.path.join(ROOT, "firmware/monitor/monitor.lst")).read(),
                      re.M).group(1).upper()
@@ -160,7 +160,7 @@ def host_ref(name, d, args, tag):
 
 
 def mkdisk(path, batches, extra_secs):
-    """A fresh volume: the OS, /BIN/ASM = asm.asm, and per batch a directory /Dk with its sources and INCLUDE files"""
+    """A fresh volume: the OS, /bin/asm = asm.asm, and per batch a directory /dk with its sources and INCLUDE files"""
     need = 64 + extra_secs
     for files in batches:
         for f in files: need += 2 * (os.path.getsize(f) // 512 + 2)
@@ -179,11 +179,11 @@ def mkdisk(path, batches, extra_secs):
         lba = P.alloc(img, P.SUBDIR_SECS)
         P.init_dir_extent(img, lba, P.SUBDIR_SECS, pd[0], pd[1])
         P.add_entry(img, pd[0], pd[1], leaf, lba, P.SUBDIR_SECS * P.SEC, 0, 0, P.F_DIR)
-    mkdir("/BIN")
-    P.put_file(img, ASMA, "/BIN/ASM", 0x5000, 0x5000)
+    mkdir("/bin")
+    P.put_file(img, ASMA, "/bin/asm", 0x5000, 0x5000)
     for k, files in enumerate(batches):
-        mkdir("/D%d" % k)
-        for f in files: P.put_file(img, f, "/D%d/%s" % (k, os.path.basename(f)), 0, 0)
+        mkdir("/d%d" % k)
+        for f in files: P.put_file(img, f, "/d%d/%s" % (k, os.path.basename(f)), 0, 0)
     P.write_img(path, img)
 
 
@@ -203,7 +203,7 @@ def native_batch(job):
     cmds = []
     lines = ["O"]
     for j, b in enumerate(batches):
-        lines.append("cd /D%d" % j)
+        lines.append("cd /d%d" % j)
         for name, short, d in b:
             for args, tag in ((["-h"], "xh"), ([], "xp")):
                 lines.append("asm %s%s.asm %s.%s" % ("-h " if args else "", short, short, tag))
@@ -220,13 +220,13 @@ def native_batch(job):
                 for c in cmds[::2]], {}
     body = out[out.find("BOOT FROM CF"):out.find("\nbye")]
     # each command's output follows its prompt (the microcode emulator also shows the command, as the machine echoes it)
-    parts = re.split(r"/D\d+> \n" if emu == "int" else r"/D\d+> [^\n]*\n\n", body)[1:]
-    if parts: parts[-1] = re.sub(r"/D\d+> (exit)?\n?$", "", parts[-1])     # the prompt before `exit`
+    parts = re.split(r"/d\d+> \n" if emu == "int" else r"/d\d+> [^\n]*\n\n", body)[1:]
+    if parts: parts[-1] = re.sub(r"/d\d+> (exit)?\n?$", "", parts[-1])     # the prompt before `exit`
     # the prompts: one after each `cd` (empty output) and one after each command
     seq = []
     idx = 0
     for j, b in enumerate(batches):
-        idx += 1 if j else 0                              # the prompt after `cd /Dj` (the first cd is at "/> ")
+        idx += 1 if j else 0                              # the prompt after `cd /dj` (the first cd is at "/> ")
         for _ in range(2 * len(b)):
             seq.append(parts[idx] if idx < len(parts) else None); idx += 1
     counts = [int(m.group(1)) for m in re.finditer(r"program \d+: (\d+) instructions", err)]
@@ -243,7 +243,7 @@ def native_batch(job):
                 continue
             fails.append("%s: asm.c's symbol table is full, asm.asm: %r" % (tag, got[:160]))
         elif got != con: fails.append("%s output %r, asm.c: %r" % (tag, got[:160], con[:160]))
-        gf = tree.get("/D%d/%s.%s" % (j, short, tag))
+        gf = tree.get("/d%d/%s.%s" % (j, short, tag))
         if f is None and gf is not None: fails.append("%s: a file where asm.c leaves none" % tag)
         if f is not None and gf != f:
             fails.append("%s: file %s" % (tag, "missing" if gf is None else "%d bytes load %04X exec %04X, asm.c %d %04X %04X"
@@ -258,7 +258,7 @@ def native_batch(job):
 
 
 def gf_absent(tree, j, short, tag):
-    return "/D%d/%s.%s" % (j, short, tag) not in tree
+    return "/d%d/%s.%s" % (j, short, tag) not in tree
 
 
 def tree_files(img_path):
@@ -277,7 +277,7 @@ def tree_files(img_path):
 
 
 def native(items, emu, verbose):
-    """asm.asm (/BIN/ASM) under Y1/OS on emulator emu over items: batches of 18 (a directory holds 62 entries), a disk
+    """asm.asm (/bin/asm) under Y1/OS on emulator emu over items: batches of 18 (a directory holds 62 entries), a disk
     of up to 4 batches per session, the sessions in parallel"""
     work = os.path.join(BUILD, "native"); os.makedirs(work, exist_ok=True)
     per_disk = 72 if emu == "int" else 18
@@ -358,7 +358,7 @@ def main():
     print("tests/asm: %d sources: %d identical (hex and program file), %d identical in hex (program file refused: "
           "an ORG back), %d rejected by both assemblers, %d FAILED" % (len(items), counts.get("ok", 0),
           counts.get("ok-hex", 0), counts.get("error", 0), counts.get("FAIL", 0)))
-    if "--no-native" not in sys.argv:                 # asm.asm, the installed /BIN/ASM, on the same corpus
+    if "--no-native" not in sys.argv:                 # asm.asm, the installed /bin/asm, on the same corpus
         sys.stdout.flush()
         r = subprocess.run(["make", "-s", "-C", os.path.join(ROOT, "os"), "build/asma/asm.bin", "build/y1os.bin"],
                            capture_output=True, text=True)

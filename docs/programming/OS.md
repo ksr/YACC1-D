@@ -3,7 +3,7 @@
 User guide, programmer guide (commands and the syscall/file API), the on-disk format, the memory layout and the
 plan for Y1/OS. Written 2026-09-23 from the YACC1-D tree. **Later still that day (v0.2) the OS was rewritten in
 YACC1 assembly, `os/y1os.asm`, with the same behaviour and ABI** (section 1a); `y1os.c` is its specification and is
-still built with `make -C os OS=c`. Where this guide names a `y1os.c` function, `y1os.asm` has a routine of that name. Later the same day the P8X commands were ported (26 programs in /BIN, ten shared libraries, 50 man pages in /MAN, `vi`): `os/README.md` carries the current command table and `os/PORT-PLAN.md` the per-command status; the API described here is unchanged.
+still built with `make -C os OS=c`. Where this guide names a `y1os.c` function, `y1os.asm` has a routine of that name. Later the same day the P8X commands were ported (26 programs in /bin, ten shared libraries, 50 man pages in /man, `vi`): `os/README.md` carries the current command table and `os/PORT-PLAN.md` the per-command status; the API described here is unchanged.
 
 Sources: `os/y1os.c` (v0.1, read as of 2026-09-23 09:43 — **it was being edited while this was written**),
 `os/lib_abi.c` (09:37), `os/README.md` (the v0 text of 2026-09-22), `os/commands/{hello,echo,wc}.c`, `os/Makefile`,
@@ -38,7 +38,7 @@ microcode steps). Its RAM is $4A00-$4FFF at fixed, aligned addresses; $2BE1-$49F
 assembly OS") has the conventions, the test evidence and the list of `y1os.c` behaviours both versions keep.
 
 ```
-make -C os              # build/y1os.bin (the assembly OS), the /BIN programs, disk.img
+make -C os              # build/y1os.bin (the assembly OS), the /bin programs, disk.img
 make -C os OS=c         # the same with the C OS (y1os.c)
 make -C os run          # the microcode emulator with the ROM and the disk: type O at the monitor prompt
 make -C os run-int      # the instruction-level emulator
@@ -75,20 +75,20 @@ CR or NUL ends it). The first word is lower-cased and matched; the rest of the l
 | `rmdir path` | tombstone an empty directory (`fs_rmdir`; `not an empty directory` otherwise) |
 | `help` / `?` | the three-line summary |
 | `exit` | prints `bye` and returns to the monitor (`main` returns; the ROM's `JSRUR` return lands in `cmdloop`) |
-| anything else | `try_bin`: the word upper-cased, looked up as `/BIN/NAME`, then as `NAME` in the current directory; a file is loaded and run with the rest of the line as arguments; otherwise `what?` |
+| anything else | `try_bin`: the word lower-cased (any case finds it; upper-cased, `/BIN/NAME`, until 2026-11-03), looked up as `/bin/name`, then as `name` in the current directory; a file is loaded and run with the rest of the line as arguments; otherwise `what?` |
 
 Paths: components 1..12 characters (`name too long` otherwise); a trailing `/` is accepted; `not found`, `not a
 directory`, `is a directory` are the errors (`too big`, over 64K, until 2026-09-25). **Names are case-sensitive** and stored as the host
-tool writes them; the Makefile puts programs in `/BIN` in upper case, which is why the implicit lookup upper-cases
-the command word (so `hello a b c` finds `/BIN/HELLO`). Load-address rule (`load_file`): a program must load at or
+tool writes them; the Makefile puts programs in `/bin` in upper case, which is why the implicit lookup upper-cases
+the command word (so `hello a b c` finds `/bin/hello`). Load-address rule (`load_file`): a program must load at or
 above `TPA` = $5000 and end below `TPATOP` = $D000, else `bad load address or size`.
 
 The v0 session `tests/os/basic.session` with its transcript `basic.int.out` shows the read-only commands' exact
-output (including `wc 45 1` on raw sector 45, `cd /BIN/../BIN`, and `nothere` → `what?`).
+output (including `wc 45 1` on raw sector 45, `cd /bin/../bin`, and `nothere` → `what?`).
 
 ### Moving files to and from the Mac: `kermit` (2026-09-26)
 
-`/BIN/KERMIT` transfers files over the console cable with the Kermit protocol, against C-Kermit on the Mac (or
+`/bin/kermit` transfers files over the console cable with the Kermit protocol, against C-Kermit on the Mac (or
 `tools/y1kermit.py`): `kermit -r` receives into the current directory, `kermit -s FILE...` sends, `kermit -x` is a
 server (SEND, GET, FINISH from the Mac). The how-to with C-Kermit's exact settings is
 [`docs/procedures/KERMIT.md`](../procedures/KERMIT.md) (`tools/y1.ksc` holds them); the program, its E-Kermit
@@ -100,14 +100,14 @@ character, and times out by counting polls calibrated for 1 MHz. `tests/kermit/r
 ### The disk image that ships
 
 `os/Makefile` builds `os/disk.img` (8,192 sectors = 4 MB since 2026-11-03; 2,048 = 1 MB before): the OS at LBA 1..,
-`/BIN` (every command, `make` and the compiler's driver among them), `/LIB` (the compiler's passes and library),
-`/MAN`, `/DOCS`, the sample files, and `/SRC`, the sources with a Makefile in each directory (`os/README.md`, "The
-sources on the disk"). In v0 it was the OS (10 sectors), `/BIN/HELLO`, `/BIN/ECHO`, `/BIN/WC` and `/README.TXT`.
+`/bin` (every command, `make` and the compiler's driver among them), `/lib` (the compiler's passes and library),
+`/man`, `/docs`, the sample files, and `/src`, the sources with a Makefile in each directory (`os/README.md`, "The
+sources on the disk"). In v0 it was the OS (10 sectors), `/bin/hello`, `/bin/echo`, `/bin/wc` and `/README`.
 `p8xfs.py tree disk.img` lists it.
 
 ## 3. Programmer guide
 
-### Writing a `/BIN` command
+### Writing a `/bin` command
 
 A command is an ordinary `y1cc` program (`os/commands/hello.c`):
 
@@ -115,7 +115,7 @@ A command is an ordinary `y1cc` program (`os/commands/hello.c`):
 #include "../lib_abi.c"
 #include "y1lib.c"
 void main() {
-    puts("hello from /BIN/HELLO");
+    puts("hello from /bin/hello");
     if (*argstr()) { putstr("args: "); puts(argstr()); }
 }
 ```
@@ -126,10 +126,10 @@ void main() {
 - Assemble (`asm hello -d=yacc1` with `yacc1.def` and a `-h` `rcasm.rc` beside it) → `hello.img`.
 - Flatten: `python3 tools/img2bin.py hello.img hello.bin --base 0x5000` (unwritten bytes come out as 0; the `--end`
   default $F000 keeps any stub out).
-- Put on the disk: `python3 tools/p8xfs.py put disk.img hello.bin --name /BIN/HELLO --load 0x5000 --exec 0x5000`
-  (the Makefile does this for every `commands/*.c`, upper-casing the name), or from the machine `save /BIN/HELLO
+- Put on the disk: `python3 tools/p8xfs.py put disk.img hello.bin --name /bin/hello --load 0x5000 --exec 0x5000`
+  (the Makefile does this for every `commands/*.c`, upper-casing the name), or from the machine `save /bin/hello
   5000 len` after loading it another way. Since 2026-09-25 the last three steps can happen on the machine: put
-  `hello.asm` on the disk and `asm HELLO.ASM /BIN/HELLO` (`/BIN/ASM`, `man asm`) writes the same program file,
+  `hello.asm` on the disk and `asm hello.asm /bin/hello` (`/bin/asm`, `man asm`) writes the same program file,
   load and exec address included.
 - Arguments: `argstr()` returns the NUL-terminated tail at ARGBUF ($0F40, up to 127 characters). Console output is
   the compiler's `putchar`/`puts` (with `--os` the CONOUT syscall, which the shell redirects; without it BIOS
@@ -192,13 +192,13 @@ is a stand-alone model of the whole mechanism (handlers, `funcaddr`, nested `sys
 ### Redirection and pipes (2026-09-23)
 
 The shell takes `cmd [args] [< in] [> out | >> out] [| cmd ...]`, up to four commands per line (`os/man/shell`,
-`os/README.md`). It works because the OS and every `/BIN` command are compiled with `y1cc --os`: `putchar`/`puts` are
+`os/README.md`). It works because the OS and every `/bin` command are compiled with `y1cc --os`: `putchar`/`puts` are
 the syscall **CONOUT** (19) and `getchar` is **CONIN** (17). Before a command runs the shell opens its files and sets
 `so_h`/`si_h` in `y1os.c`: CONOUT then writes the byte to the output file (or, with `so_h` = 0, to the raw console
 through the ROM's `CHAROUT`, never through `putchar`, which would call CONOUT again); CONIN and CONST read the input
 file (`si_h`) or the console. After the command, whatever happened, both files are closed and the console is back. A
-pipe `a | b` runs a with its output to `/PIPE0.TMP`, then b with its input from it (stages alternate
-`/PIPE0.TMP`/`/PIPE1.TMP`); the temp files are deleted after the line. There is no multitasking: the stages run one
+pipe `a | b` runs a with its output to `/pipe0.tmp`, then b with its input from it (stages alternate
+`/pipe0.tmp`/`/pipe1.tmp`); the temp files are deleted after the line. There is no multitasking: the stages run one
 after the other.
 
 Two kinds of input follow from it. **Data** is `conin()` (CONIN): the filters' "no file named" and `-`, redirectable.
@@ -247,7 +247,7 @@ A volume is a sequence of 512-byte sectors (LBAs). All multi-byte fields are **l
 A directory is a file whose extent holds 32-byte entries; a subdirectory's extent is 4 sectors by default
 (`mkdir --secs` changes it on the host; the OS always makes 4; the OS reads the size from the entry). Entries are
 used in order; the first entry with flag `$00` ends the scan, and a deleted entry is a tombstone `$FF` that a new
-entry may reuse. Neither the OS nor the host tool frees space when it deletes or replaces; `/BIN/PACK` does it in
+entry may reuse. Neither the OS nor the host tool frees space when it deletes or replaces; `/bin/pack` does it in
 one pass (below).
 
 **Compaction (`pack`, 2026-09-23).** `os/commands/pack.c` reads the tree from the root without recursion (its
@@ -285,8 +285,8 @@ field (`dir_secs`). `p8xfs.py fsck` checks the signature, the `.` and `..` links
 reclaimable space.
 
 Host tool summary (`p8xfs.py --help`): `create img [--sectors N]` (default 256; the Makefile uses 8192), `boot img
-os.bin`, `mkdir img /BIN [--secs N]`, `put img file [--name /BIN/F] [--load A] [--exec A] [--replace] [--strict]`,
-`rm img /BIN/F`, `get img /BIN/F [--out path]`, `ls img [path]`, `tree img`, `fsck img`. Both emulators take the
+os.bin`, `mkdir img /bin [--secs N]`, `put img file [--name /bin/f] [--load A] [--exec A] [--replace] [--strict]`,
+`rm img /bin/f`, `get img /bin/f [--out path]`, `ls img [path]`, `tree img`, `fsck img`. Both emulators take the
 image with `-c disk.img` and create a zero-filled 256-sector one if the file is missing (`software/cfmodel.h`).
 
 ## 5. Memory layout with the OS running (`os/README.md`, `lib_abi.c`, `OS-PLAN.md` map A)
@@ -312,7 +312,7 @@ disk.img -l 80000000`), cuts the transcript from `BOOT FROM CF` to the monitor p
 with `NAME.int.out` / `NAME.uc.out` (the microcode transcript shows the monitor's input echo). `--update` rewrites
 the expectations after a change that was checked by eye. Part of `make check` and `make os-test` at the root. The
 committed transcripts are v0's (banner `Y1/OS v0 (2026-09-22)`). `tests/kermit/run.py` (2026-09-26) boots the OS on a
-pseudo-terminal instead and moves files with `/BIN/KERMIT` against `tools/y1kermit.py` (above; also in `make check`).
+pseudo-terminal instead and moves files with `/bin/kermit` against `tools/y1kermit.py` (above; also in `make check`).
 
 ## 7. The plan and the backlog (`OS-PLAN.md`, `os/PORT-PLAN.md`, `BACKLOG.md`)
 
@@ -331,7 +331,7 @@ the start of phase 3). Still to do, in the plan's order:
    [`docs/cards/cf.md`](../cards/cf.md)); since 2026-09-24 on the memory card, same circuit, still I/O-mapped
    (memory card v2.0: designed 2026-09-25, ordered 2026-10-09, not yet received); bench-tested with the bus tester (`OUTI P8 / INP P9` through the ROM driver, which
    the chip in the machine already has) before the CPU touches it.
-2. `fsck` on the OS side (`pack` done 2026-09-23, `/BIN/PACK`); `os/lib_fs.c` (the C wrappers over `sys()`); updated `os/README.md`, `disk.img`
+2. `fsck` on the OS side (`pack` done 2026-09-23, `/bin/pack`); `os/lib_fs.c` (the C wrappers over `sys()`); updated `os/README.md`, `disk.img`
    and `tests/os` transcripts for v0.1.
 3. **Porting the P8X commands** (`os/PORT-PLAN.md`, survey of 46 commands + 18 libraries): wave 0 the shared
    libraries (`lib_stdin`, `lib_glob`/`lib_regex` made iterative…) and the mechanical recipe (`//#use X` →

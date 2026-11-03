@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
 
-"""tests/kermit/run.py - /BIN/KERMIT against tools/y1kermit.py on both emulators, through a pseudo-terminal
+"""tests/kermit/run.py - /bin/kermit against tools/y1kermit.py on both emulators, through a pseudo-terminal
 (2026-09-26).
 
   run.py [--emu int|uc] [--keep] [--only NAME...]      the transfer sessions (make check runs them all)
@@ -17,13 +17,13 @@ instructions, less the ones spent waiting in kermit_io's poll loops: that is the
 Sessions (each checks the files byte for byte on the host: y1kermit's copies, and the disk image through
 tools/p8xfs.py get; fsck at the end):
   files     kermit -r: a text file, all 256 byte values, a 70K file (over 64K: 24-bit sizes), a file of long runs
-            (repeat counts), an empty file, a lower-case long name (cleaned to 12 upper-case characters) - one
+            (repeat counts), an empty file, a lower-case long name (cut to 12 characters, its case kept) - one
             session; then kermit -s sends them all back (a glob)
   options   block checks 1 and 2, 8th-bit prefixing both ways, text mode both ways (CR LF on the line, LF on disk),
             no attributes, -n (a second copy gets a new name), -a (load/exec address), -b 1 on the sender
   errors    a damaged packet each way (NAK, resend), a packet never sent (kermit -r times out and NAKs), an ACK
             never sent (kermit -s times out and sends again), three Ctrl-Cs cancel a waiting kermit -r
-  server    kermit -x: SEND, GET (a glob, and a name in lower case), an unknown GET, FINISH
+  server    kermit -x: SEND, GET (a glob, and a name in upper case), an unknown GET, FINISH
 """
 import os, sys, pty, tty, re, time, shutil, select, subprocess, threading, tempfile, random
 
@@ -34,19 +34,19 @@ YK = os.path.join(ROOT, "tools/y1kermit.py")
 FS = os.path.join(ROOT, "tools/p8xfs.py")
 EMUS = {"int": os.path.join(ROOT, "software/emulator/emulator"), "uc": os.path.join(ROOT, "software/ucemu/y1ucemu")}
 MON_EXIT = int(re.search(r"^([0-9a-f]{4})h: CMD_EXIT\b", open(os.path.join(ROOT, "firmware/monitor/monitor.lst")).read(), re.M).group(1), 16)
-PROMPT = b"/K> "
+PROMPT = b"/k> "
 
 
 def files():
     """the host files the sessions send: name -> bytes"""
     rnd = random.Random(1926)
     f = {}
-    f["TEXT.TXT"] = open(os.path.join(ROOT, "os/man/kermit"), "rb").read()
-    f["ALL256.BIN"] = bytes(range(256)) + bytes(range(255, -1, -1)) + bytes((i * 37) & 255 for i in range(512))
-    f["BIG.BIN"] = bytes(rnd.getrandbits(8) for _ in range(70 * 1024 + 13))
-    f["RUNS.BIN"] = (b"\0" * 3000 + b"A" * 95 + b"~" * 200 + b"#" * 94 + b"&" * 3 + b"\xff" * 500 + b"xy" * 40 +
+    f["text.txt"] = open(os.path.join(ROOT, "os/man/kermit"), "rb").read()
+    f["all256.bin"] = bytes(range(256)) + bytes(range(255, -1, -1)) + bytes((i * 37) & 255 for i in range(512))
+    f["big.bin"] = bytes(rnd.getrandbits(8) for _ in range(70 * 1024 + 13))
+    f["runs.bin"] = (b"\0" * 3000 + b"A" * 95 + b"~" * 200 + b"#" * 94 + b"&" * 3 + b"\xff" * 500 + b"xy" * 40 +
                      bytes([13, 10]) * 30 + b"\x80" * 2 + b"z" * 1)
-    f["EMPTY.DAT"] = b""
+    f["empty.dat"] = b""
     return f
 
 
@@ -143,7 +143,7 @@ class Run:
         self.t.wait(b"RUN TEST CODE", 0, 60)
         self.t.type("O\n")
         self.t.wait(b"/> ", 0, 300)
-        mark = len(self.t.out); self.t.type("mkdir /K\ncd /K\n"); self.t.wait(PROMPT, mark, 300)
+        mark = len(self.t.out); self.t.type("mkdir /k\ncd /k\n"); self.t.wait(PROMPT, mark, 300)
         self.progs = 0                          # /BIN programs run so far (the -S / -P numbering)
 
     def check(self, name, ok, detail=""):
@@ -163,67 +163,67 @@ class Run:
 
     # ---- sessions ----
     def s_files(self):
-        names = ["TEXT.TXT", "ALL256.BIN", "BIG.BIN", "RUNS.BIN", "EMPTY.DAT"]
+        names = ["text.txt", "all256.bin", "big.bin", "runs.bin", "empty.dat"]
         rc, yo, to = self.kermit("kermit -r", ["send"] + [self.src_(n) for n in names] + [self.src_("lower case name.text"),
                                  "-q", "--time", "10"])
         self.recv_prog = self.progs
         self.check("receive 6 files in one session", rc == 0 and "6 files received" in to, yo + to)
-        self.check("names: the long lower-case one cleaned", "LOWER_CA.TEX" in to, to)
+        self.check("names: the long lower-case one cleaned", "lower_ca.tex" in to, to)
         out = os.path.join(self.dir, "back"); os.makedirs(out)
         rc, yo, to = self.kermit("kermit -s *", ["receive", out, "-q"])
         self.send_prog = self.progs
         ok = rc == 0 and all(open(os.path.join(out, n), "rb").read() == self.f[n] for n in names)
         self.check("send them back (kermit -s *)", ok and "6 files sent" in to, yo + to)
-        self.check("the renamed one came back", os.path.exists(os.path.join(out, "LOWER_CA.TEX")), str(os.listdir(out)))
-        self.disk_checks = [("/K/" + n, self.f[n]) for n in names] + [("/K/LOWER_CA.TEX", b"a lower-case name\n")]
+        self.check("the renamed one came back", os.path.exists(os.path.join(out, "lower_ca.tex")), str(os.listdir(out)))
+        self.disk_checks = [("/k/" + n, self.f[n]) for n in names] + [("/k/lower_ca.tex", b"a lower-case name\n")]
 
     def s_options(self):
-        a = self.f["ALL256.BIN"]; r = self.f["RUNS.BIN"]; txt = self.f["TEXT.TXT"]
-        open(self.src_("B1.BIN"), "wb").write(a); open(self.src_("B2.BIN"), "wb").write(r)
-        open(self.src_("E8.BIN"), "wb").write(a + r)
-        open(self.src_("T.TXT"), "wb").write(txt); open(self.src_("NA.BIN"), "wb").write(a)
-        for fn, ya, what in (("B1.BIN", ["--check", "1"], "block check 1"), ("B2.BIN", ["--check", "2"], "block check 2"),
-                             ("E8.BIN", ["--ebq"], "8th-bit prefixing (sender asks)"), ("T.TXT", ["--text"], "text mode in (CR LF -> LF)"),
-                             ("NA.BIN", ["--noattr", "--norpt"], "no attributes, no repeat counts")):
+        a = self.f["all256.bin"]; r = self.f["runs.bin"]; txt = self.f["text.txt"]
+        open(self.src_("b1.bin"), "wb").write(a); open(self.src_("b2.bin"), "wb").write(r)
+        open(self.src_("e8.bin"), "wb").write(a + r)
+        open(self.src_("t.txt"), "wb").write(txt); open(self.src_("na.bin"), "wb").write(a)
+        for fn, ya, what in (("b1.bin", ["--check", "1"], "block check 1"), ("b2.bin", ["--check", "2"], "block check 2"),
+                             ("e8.bin", ["--ebq"], "8th-bit prefixing (sender asks)"), ("t.txt", ["--text"], "text mode in (CR LF -> LF)"),
+                             ("na.bin", ["--noattr", "--norpt"], "no attributes, no repeat counts")):
             rc, yo, to = self.kermit("kermit -r", ["send", self.src_(fn), "-q"] + ya)
-            ok, d = self.ondisk("/K/" + fn, open(self.src_(fn), "rb").read())
+            ok, d = self.ondisk("/k/" + fn, open(self.src_(fn), "rb").read())
             self.check("receive, " + what, rc == 0 and ok, d + yo + to)
         out = os.path.join(self.dir, "opt"); os.makedirs(out)
-        for line, ya, fn, what in (("kermit -s E8.BIN", ["--ebq"], "E8.BIN", "send, 8th-bit prefixing (receiver asks)"),
-                                   ("kermit -s -T T.TXT", [], "T.TXT", "send, text mode (LF -> CR LF)"),
-                                   ("kermit -s -b 1 B2.BIN", ["--check", "1"], "B2.BIN", "send, block check 1"),
-                                   ("kermit -s -b 2 B1.BIN", ["--check", "2"], "B1.BIN", "send, block check 2")):
+        for line, ya, fn, what in (("kermit -s e8.bin", ["--ebq"], "e8.bin", "send, 8th-bit prefixing (receiver asks)"),
+                                   ("kermit -s -T t.txt", [], "t.txt", "send, text mode (LF -> CR LF)"),
+                                   ("kermit -s -b 1 b2.bin", ["--check", "1"], "b2.bin", "send, block check 1"),
+                                   ("kermit -s -b 2 b1.bin", ["--check", "2"], "b1.bin", "send, block check 2")):
             rc, yo, to = self.kermit(line, ["receive", out, "-q"] + ya)
             got = open(os.path.join(out, fn), "rb").read() if os.path.exists(os.path.join(out, fn)) else None
             self.check(what, rc == 0 and got == open(self.src_(fn), "rb").read(), yo + to)
-        rc, yo, to = self.kermit("kermit -r -n -a 6000", ["send", self.src_("B1.BIN"), "-q"])
-        ok, d = self.ondisk("/K/B1.BIN~1", a)
-        self.check("-n: an existing name gets ~1", rc == 0 and ok and "B1.BIN~1" in to, d + yo + to)
-        ls = subprocess.run([sys.executable, FS, "ls", self.img, "/K"], capture_output=True, text=True).stdout
-        m = re.search(r"B1\.BIN~1.*", ls)
+        rc, yo, to = self.kermit("kermit -r -n -a 6000", ["send", self.src_("b1.bin"), "-q"])
+        ok, d = self.ondisk("/k/b1.bin~1", a)
+        self.check("-n: an existing name gets ~1", rc == 0 and ok and "b1.bin~1" in to, d + yo + to)
+        ls = subprocess.run([sys.executable, FS, "ls", self.img, "/k"], capture_output=True, text=True).stdout
+        m = re.search(r"b1\.bin~1.*", ls)
         self.check("-a 6000: the load address", bool(m) and "6000" in m.group(0).upper(), ls)
 
     def s_errors(self):
-        a = self.f["ALL256.BIN"] * 4
-        open(self.src_("ERR1.BIN"), "wb").write(a)
-        rc, yo, to = self.kermit("kermit -r", ["send", self.src_("ERR1.BIN"), "--corrupt", "4"])
-        ok, d = self.ondisk("/K/ERR1.BIN", a)
+        a = self.f["all256.bin"] * 4
+        open(self.src_("err1.bin"), "wb").write(a)
+        rc, yo, to = self.kermit("kermit -r", ["send", self.src_("err1.bin"), "--corrupt", "4"])
+        ok, d = self.ondisk("/k/err1.bin", a)
         self.check("receive: a damaged packet is NAKed, resent", rc == 0 and ok and "NAKs 1" in yo, d + yo + to)
-        open(self.src_("ERR2.BIN"), "wb").write(a[::-1])
+        open(self.src_("err2.bin"), "wb").write(a[::-1])
         t0 = time.time()
-        rc, yo, to = self.kermit("kermit -r", ["send", self.src_("ERR2.BIN"), "--drop", "5", "--time", "2"])
-        ok, d = self.ondisk("/K/ERR2.BIN", a[::-1])
+        rc, yo, to = self.kermit("kermit -r", ["send", self.src_("err2.bin"), "--drop", "5", "--time", "2"])
+        ok, d = self.ondisk("/k/err2.bin", a[::-1])
         self.check("receive: kermit times out, NAKs (%.1f s)" % (time.time() - t0), rc == 0 and ok and "NAKs 1" in yo, d + yo + to)
         out = os.path.join(self.dir, "err"); os.makedirs(out)
-        rc, yo, to = self.kermit("kermit -s ERR1.BIN", ["receive", out, "--nak", "4"])
-        self.check("send: a NAKed packet is sent again", rc == 0 and open(os.path.join(out, "ERR1.BIN"), "rb").read() == a, yo + to)
-        os.remove(os.path.join(out, "ERR1.BIN"))
+        rc, yo, to = self.kermit("kermit -s err1.bin", ["receive", out, "--nak", "4"])
+        self.check("send: a NAKed packet is sent again", rc == 0 and open(os.path.join(out, "err1.bin"), "rb").read() == a, yo + to)
+        os.remove(os.path.join(out, "err1.bin"))
         t0 = time.time()
-        rc, yo, to = self.kermit("kermit -s ERR1.BIN", ["receive", out, "--mute", "5", "--time", "2"])
+        rc, yo, to = self.kermit("kermit -s err1.bin", ["receive", out, "--mute", "5", "--time", "2"])
         self.check("send: kermit times out, sends again (%.1f s)" % (time.time() - t0),
-                   rc == 0 and open(os.path.join(out, "ERR1.BIN"), "rb").read() == a and "repeats 1" in yo, yo + to)
-        rc, yo, to = self.kermit("kermit -s ERR1.BIN", ["receive", out, "--corrupt", "3"])
-        self.check("send: a damaged ACK, the packet again", rc == 0 and open(os.path.join(out, "ERR1.BIN"), "rb").read() == a, yo + to)
+                   rc == 0 and open(os.path.join(out, "err1.bin"), "rb").read() == a and "repeats 1" in yo, yo + to)
+        rc, yo, to = self.kermit("kermit -s err1.bin", ["receive", out, "--corrupt", "3"])
+        self.check("send: a damaged ACK, the packet again", rc == 0 and open(os.path.join(out, "err1.bin"), "rb").read() == a, yo + to)
         mark = len(self.t.out)
         self.t.type("kermit -r\n"); self.t.wait(b"kermit: ready", mark, 60)
         self.t.type("\x03\x03\x03")
@@ -239,13 +239,13 @@ class Run:
         def yk(*args):
             r = subprocess.run([sys.executable, YK] + list(args) + ["--port", os.ttyname(self.t.s)], capture_output=True, text=True, timeout=900)
             return r.returncode, r.stdout + r.stderr
-        rc, o = yk("send", self.src_("TEXT.TXT"), "--as", "SRV.TXT", "-q")
-        ok, d = self.ondisk("/K/SRV.TXT", self.f["TEXT.TXT"])
+        rc, o = yk("send", self.src_("text.txt"), "--as", "srv.txt", "-q")
+        ok, d = self.ondisk("/k/srv.txt", self.f["text.txt"])
         self.check("server: SEND", rc == 0 and ok, d + o)
         rc, o = yk("get", "B?.BIN", out, "-q")
-        self.check("server: GET a glob", rc == 0 and sorted(os.listdir(out)) == ["B1.BIN", "B2.BIN"], o + str(os.listdir(out)))
-        rc, o = yk("get", "srv.txt", out, "-q")
-        self.check("server: GET a lower-case name", rc == 0 and open(os.path.join(out, "SRV.TXT"), "rb").read() == self.f["TEXT.TXT"], o)
+        self.check("server: GET a glob", rc == 0 and sorted(os.listdir(out)) == ["b1.bin", "b2.bin"], o + str(os.listdir(out)))
+        rc, o = yk("get", "SRV.TXT", out, "-q")
+        self.check("server: GET an upper-case name (as given, else lower-cased)", rc == 0 and open(os.path.join(out, "srv.txt"), "rb").read() == self.f["text.txt"], o)
         rc, o = yk("get", "NOSUCH.X", out, "-q")
         self.check("server: GET a missing file: an error packet", rc == 1 and "File not found" in o, o)
         rc, o = yk("finish", "-q")

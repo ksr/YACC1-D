@@ -10,7 +10,7 @@ DESCRIPTION
     then those only in file2 prefixed "> ". Identical files print
     nothing. One changed, inserted or deleted block comes out exact;
     several changes come out as one block spanning them (this is not a
-    minimal diff). diff is /BIN/DIFF.
+    minimal diff). diff is /bin/diff.
 
     Errors: "diff: file1 not found", "diff: file2 not found".
 
@@ -21,7 +21,7 @@ LIMITS
     compared".
 
 EXAMPLES
-    diff /FRUIT.TXT /FRUIT2.TXT    < banana 12 yellow
+    diff /fruit.txt /fruit2.txt    < banana 12 yellow
                                    > kiwi 9 brown
 
 NOTES

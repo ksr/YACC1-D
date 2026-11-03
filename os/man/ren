@@ -14,8 +14,8 @@ DESCRIPTION
     is a shell built-in (the RENAME syscall, 15).
 
 EXAMPLES
-    ren /T/COPY.TXT KEEP.TXT
-    ren /T TMP                 a directory
+    ren /t/copy.txt keep.txt
+    ren /t TMP                 a directory
 
 NOTES
     mv does the same and more: it replaces an existing file of the new

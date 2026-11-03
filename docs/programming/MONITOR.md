@@ -337,7 +337,7 @@ table was 126, 80, 98, 10, 31, 6, 24, 28 for an assumed 10 MHz, 5-dot clock; wit
 `make check`, copy the images, `makerom`, `img2bin.py`, `tools/verify_firmware.py`), burn. Reset then also runs `V I`
 and sets `VIDMIR` when the card is found, so the banner is on the screen too.
 
-**Y1/OS**: `/BIN/VIDEO` (`os/commands/video.c`): `video` (status), `video on|off|clear|init|probe`. It reads and writes
+**Y1/OS**: `/bin/video` (`os/commands/video.c`): `video` (status), `video on|off|clear|init|probe`. It reads and writes
 the flags and calls `VIDCTL` ($FFBC); on an older ROM it says so and changes nothing. The kernels need nothing: their
 console output is CHAROUT.
 

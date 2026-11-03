@@ -13,10 +13,10 @@ DESCRIPTION
     shell built-in.
 
     A command word that is not run itself is looked up in this order:
-    exit; /BIN/NAME (the word upper-cased); the other built-ins (the
-    word in any case); NAME in the current directory (upper-cased);
-    else "what?". So a /BIN program wins over a built-in of the same
-    name, and `hello x` is short for `run /BIN/HELLO x`. run itself
+    exit; /bin/name; the other built-ins; name in the current
+    directory; else "what?". The word is lower-cased first, so any case
+    finds it (names on the disk are lower case since 2026-11-03). So a /bin program wins over a built-in of the same
+    name, and `hello x` is short for `run /bin/hello x`. run itself
     takes any path, exactly as typed.
 
 LIMITS
@@ -25,12 +25,12 @@ LIMITS
     128.
 
 EXAMPLES
-    run /BIN/HELLO a b       hello from /BIN/HELLO, args: a b
-    run /T2/HELLO 1 2 3      a program outside /BIN
+    run /bin/hello a b       hello from /bin/hello, args: a b
+    run /t2/hello 1 2 3      a program outside /bin
     hello a b                the same as the first line
 
 NOTES
-    Removed from the P8X version: the PATH search (Y1/OS looks in /BIN
+    Removed from the P8X version: the PATH search (Y1/OS looks in /bin
     and the current directory only) and the .bin suffix.
     The command is the Y1/OS shell's own (os/y1os.asm; os/y1os.c); the page is
     ported from P8X os/man/run 2026-09-23.

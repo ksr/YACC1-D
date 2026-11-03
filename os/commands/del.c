@@ -3,12 +3,12 @@
  */
 
 /* del.c - delete files: del name [name ...]
-     del A.TXT /T/B.TXT   tombstone each file (the sectors come back with /BIN/PACK)
+     del a.txt /t/b.txt   tombstone each file (the sectors come back with /bin/pack)
      del *.BAK            a glob deletes every matching file in that directory
    Files only: a directory is removed with the shell's rmdir.
    Ported from P8X os/commands/del.c 2026-09-23, changes: fdelete() (the P8X FRESOLVE + FDELETE and its carry
    test); globs are new (lib_globx.c); the message names the file. Replaces the shell's built-in del while
-   /BIN/DEL exists. */
+   /bin/del exists. */
 #include "../lib_globx.c"
 #include "../lib_err.c"
 #include "y1lib.c"

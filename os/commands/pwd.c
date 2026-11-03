@@ -3,10 +3,10 @@
  */
 
 /* pwd.c - print the current directory.
-     pwd        the path, e.g. /BIN
+     pwd        the path, e.g. /bin
      pwd -h     usage
    Ported from P8X os/commands/pwd.c 2026-09-23, changes: getcwd() (SYS_GETCWD) from lib_fs.c; the buffer is the
-   OS's 64 bytes. Replaces the shell's built-in pwd while /BIN/PWD exists (the shell runs /BIN first). */
+   OS's 64 bytes. Replaces the shell's built-in pwd while /bin/pwd exists (the shell runs /bin first). */
 #include "../lib_fs.c"
 #include "y1lib.c"
 char buf[64];

@@ -1,17 +1,17 @@
 disasm
-disasm /DIS
-disasm /DIS C009 6
-disasm -s /DIS > /D.ASM
-cat /D.ASM
-asm /D.ASM /D2
-cmp /DIS /D2
-dir /D2
-load /DIS
+disasm /dis
+disasm /dis C009 6
+disasm -s /dis > /d.asm
+cat /d.asm
+asm /d.asm /d2
+cmp /dis /d2
+dir /d2
+load /dis
 disasm -m C000 7
 disasm -m c02b 3
-disasm /DIS | wc
-disasm /NOPE
+disasm /dis | wc
+disasm /nope
 disasm -m 12345
-disasm /DIS 4000
+disasm /dis 4000
 disasm -x
 exit

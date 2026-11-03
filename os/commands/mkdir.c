@@ -7,13 +7,13 @@
      mkdir -s N path   N sectors, 1..64: 16 entries a sector, less "." and ".." (-s 16: 254, -s 64: 1022)
    A directory's size is fixed when it is made (P8XFS keeps it in the directory's entry and in its "." entry), and
    the OS and its MKDIR syscall always make 4 sectors. With -s this program writes the directory itself on raw
-   sectors (CFREAD/CFWRITE through the ROM), as /BIN/PACK does and the kernel's fs_mkdir would: the parent's first
+   sectors (CFREAD/CFWRITE through the ROM), as /bin/pack does and the kernel's fs_mkdir would: the parent's first
    free slot (an end-of-directory or deleted entry), the new extent at the volume's free pointer ("." and ".." in
    its first sector, the rest zeros), then the free pointer raised by N, and the entry written last, so an
    interruption leaves at worst unused sectors above an unchanged directory. The shell re-reads the free pointer
    after every program (y1os.c run_prog), as it does after pack. Refused with stdout redirected: a > file or a pipe
    is a file growing at the same free pointer. "cannot mkdir" and status 1 on any failure (a running script stops);
-   the shell's built-in mkdir stays for a card with no /BIN yet. */
+   the shell's built-in mkdir stays for a card with no /bin yet. */
 #include "../lib_fs.c"
 #include "../lib_err.c"
 #include "y1lib.c"

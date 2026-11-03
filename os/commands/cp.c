@@ -3,10 +3,10 @@
  */
 
 /* cp.c - copy files, or a directory tree: cp [-r] src dst
-     cp A.TXT B.TXT       a copy of the file (its load and exec addresses kept, so a copied program runs)
-     cp A.TXT /T          into a directory: /T/A.TXT
-     cp *.TXT /T          a glob: every matching file into the directory /T
-     cp -r /SRC /DST      the directory /SRC and everything below it (up to 8 levels) as /DST, which is made if
+     cp a.txt b.txt       a copy of the file (its load and exec addresses kept, so a copied program runs)
+     cp a.txt /t          into a directory: /t/a.txt
+     cp *.txt /t          a glob: every matching file into the directory /t
+     cp -r /src /dst      the directory /src and everything below it (up to 8 levels) as /dst, which is made if
                           it does not exist; files are replaced, directories reused
    Quiet when it works; copying a file onto itself or a tree into itself is refused.
    Ported from P8X os/commands/cp.c 2026-09-23 (it replaces the v0.1 cp, one file, which printed the byte

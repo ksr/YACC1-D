@@ -5,11 +5,11 @@ SYNOPSIS
     help
 
 DESCRIPTION
-    Prints one line for each shell built-in and each /BIN program;
-    man NAME gives the page for any of them. help is /BIN/HELP.
+    Prints one line for each shell built-in and each /bin program;
+    man NAME gives the page for any of them. help is /bin/help.
 
     The shell also has a built-in help, a four-line summary of the
-    built-ins and of < > >> |, used only when /BIN/HELP is missing. `?` always runs
+    built-ins and of < > >> |, used only when /bin/help is missing. `?` always runs
     the built-in one.
 
 EXAMPLES

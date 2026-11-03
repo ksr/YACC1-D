@@ -9,14 +9,14 @@ DESCRIPTION
     path names. A glob (* or ? in the last component, case folded)
     lists the matching entries of that directory, files and
     directories alike; a file lists just that file's line. "dir: not
-    found" when the name does not exist. dir is /BIN/DIR.
+    found" when the name does not exist. dir is /bin/dir.
 
     A line is the size right-justified in 7 columns (blank for a
     directory), two spaces, the name ("/" after a directory), and
     "  @AAAA" when the file has a load address (a program, a file
     saved from memory; the host tool gives its files $B000):
 
-             98  FRUIT.TXT  @B000
+             98  fruit.txt  @B000
                  MAN/
 
     "." and ".." are left out. Entries are sorted by name in byte
@@ -27,7 +27,7 @@ DESCRIPTION
     first, as a block of its own headed by a blank line and "/PATH:"
     (as ls -R does); a glob filters every level.
 
-    The shell also has a built-in dir, used only when /BIN/DIR is
+    The shell also has a built-in dir, used only when /bin/dir is
     missing: unsorted, with "." and "..", <DIR> for a directory, and
     the count at the end.
 
@@ -37,17 +37,17 @@ OPTIONS
 
 LIMITS
     255 entries per directory are sorted and shown (a new directory
-    holds 62, /SRC's 254); past that dir says "dir: over 255 entries
+    holds 62, /src's 254); past that dir says "dir: over 255 entries
     in a directory, the rest not shown". -R descends 8 levels ("dir: deeper than 8
     levels, not all shown"). A glob pattern is at most 15 characters.
     Sizes are 32-bit (see num).
 
 EXAMPLES
     dir                  the current directory
-    dir /BIN             by path
-    dir -S /BIN          the largest programs first
-    dir /*.TXT           the .TXT files of the root
-    dir /FRUIT.TXT       one file's line
+    dir /bin             by path
+    dir -S /bin          the largest programs first
+    dir /*.txt           the .TXT files of the root
+    dir /fruit.txt       one file's line
     dir -R /             the whole disk, a block per directory
 
 NOTES

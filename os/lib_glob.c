@@ -2,10 +2,10 @@
  * Author: Claude (Anthropic), 2026 - ported from Ken Rother's P8X project
  */
 
-/* lib_glob.c - filename wildcard match for /BIN commands (Y1/OS, 2026-09-23).
+/* lib_glob.c - filename wildcard match for /bin commands (Y1/OS, 2026-09-23).
      gmatch(p, s)   1 when the pattern p matches the WHOLE name s, else 0
    `*` matches any run of characters (none included), `?` exactly one; any other character matches itself with
-   the case folded (so `*.txt` finds README.TXT: Y1/OS names are case-sensitive, a pattern is not).
+   the case folded (so `*.txt` finds README: Y1/OS names are case-sensitive, a pattern is not).
    Ported from P8X os/commands/lib_glob.c 2026-09-23, changes: the P8X gmatch recursed on every suffix after a
    `*`, which y1cc rejects (static frames, no recursion); this is the classic iterative match with one backtrack
    point: remember where the last `*` was and how much of s it has eaten, and on a mismatch let it eat one more

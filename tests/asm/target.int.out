@@ -2,20 +2,20 @@ BOOT FROM CF
 Y1/OS v0.2 (2026-09-23)  P8XFS v2
 /> 
 /> 
-/S> 
-HELLO: 146 bytes, 18 labels, load 5000 exec 5000
-/S> 
-hello from /BIN/HELLO
+/s> 
+hello: 146 bytes, 18 labels, load 5000 exec 5000
+/s> 
+hello from /bin/hello
 args: one two
-/S> 
-HELLO.IMG: 146 bytes, 18 labels, load 5000 exec 5000
-/S> 
-ECHOX: 67 bytes, 9 labels, load 5000 exec 5000
-/S> 
+/s> 
+hello.img: 146 bytes, 18 labels, load 5000 exec 5000
+/s> 
+echox: 67 bytes, 9 labels, load 5000 exec 5000
+/s> 
 echo, assembled on the machine
-/S> 
-CAT: 2327 bytes, 210 labels, load 5000 exec 5000
-/S> 
+/s> 
+cat: 2327 bytes, 210 labels, load 5000 exec 5000
+/s> 
 apple 3 red
 pear 5 green
 apple 3 red
@@ -23,44 +23,44 @@ BOOT FROM CF
 banana 12 yellow
 cherry 40 red
 fig 7 purple
-/S> 
-MON.IMG: 4066 bytes, 286 labels, load f000 exec f000
-/S> 
-ISA.IMG: 790 bytes, 40 labels, load 3000 exec f000
-/S> 
-Q.IMG: 210 bytes, 11 labels, load 3000 exec 3000
-/S> 
-QUIRKS: 210 bytes, 11 labels, load 3000 exec 3000
-/S> 
-CC4: 5618 bytes, 446 labels, load 5000 exec 5000
-/S> 
+/s> 
+mon.img: 4066 bytes, 286 labels, load f000 exec f000
+/s> 
+isa.img: 790 bytes, 40 labels, load 3000 exec f000
+/s> 
+q.img: 210 bytes, 11 labels, load 3000 exec 3000
+/s> 
+quirks: 210 bytes, 11 labels, load 3000 exec 3000
+/s> 
+cc4: 5618 bytes, 446 labels, load 5000 exec 5000
+/s> 
 asm: 5: undefined label: NOTHERE
           LDAI nothere
-asm: 1 error, no ERR
-/S> 
-asm: cannot open NOSUCH.ASM
-/S> 
+asm: 1 error, no err
+/s> 
+asm: cannot open nosuch.asm
+/s> 
 usage: asm [-h] SRC [OUT]
-/S> 
-   2327  CAT  @5000
-  28704  CAT.ASM  @B000
-   5618  CC4  @5000
-  66673  CC4.ASM  @B000
-     67  ECHOX  @5000
-   1112  ECHOX.ASM  @B000
-    202  ERR.ASM  @B000
-    146  HELLO  @5000
-   1747  HELLO.ASM  @B000
-    424  HELLO.IMG  @5000
-  12969  ISA.ASM  @B000
-   2216  ISA.IMG  @3000
-  11228  MON.IMG  @F000
-  49001  MONITOR.ASM  @B000
-    624  Q.IMG  @3000
-    549  QUIRKS  @3000
-   3325  QUIRKS.ASM  @B000
+/s> 
+   2327  cat  @5000
+  28704  cat.asm  @B000
+   5618  cc4  @5000
+  66675  cc4.asm  @B000
+     67  echox  @5000
+   1112  echox.asm  @B000
+    202  err.asm  @B000
+    146  hello  @5000
+   1754  hello.asm  @B000
+    424  hello.img  @5000
+  12969  isa.asm  @B000
+   2216  isa.img  @3000
+  11228  mon.img  @F000
+  49001  monitor.asm  @B000
+    624  q.img  @3000
+    549  quirks  @3000
+   3325  quirks.asm  @B000
     227  quirks1.inc  @B000
     139  quirks2.inc  @B000
-/S> 
+/s> 
 bye
 >

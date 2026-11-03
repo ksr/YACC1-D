@@ -37,8 +37,8 @@ FTDI port; **card** = the sequencer-memory card's FTDI port; **burn** = a 28C64 
 | 12 | `python3 tests/assembler/romdiag/run.py` | the ROM diagnostic on the microcode emulator |
 | 13 | `python3 tests/monload/run.py` | the monitor's `:` loader on both emulators (error paths too) and `tools/monload.py` over a pty (2026-09-23) |
 | 14 | `python3 tests/bench/run.py` | the 15 bench programs on both emulators against their expected transcripts, the committed images, and the `--port` path over a pty (2026-09-23) |
-| - | `python3 tests/disasm/run.py` | `/BIN/DISASM` round trip (2026-09-29): its output reassembled by RC/asm gives the same bytes, over tests/asm's corpus, the OS build's programs, the ROM and synthetic bytes (section 3.10) |
-| 15 | `python3 tests/kermit/run.py` | `/BIN/KERMIT` against `tools/y1kermit.py` over a pty on both emulators: files both ways, options, damaged/missing packets and timeouts, the server; then `--calib`, the receive loop's and the timeouts' clocks on the microcode emulator (2026-09-26) |
+| - | `python3 tests/disasm/run.py` | `/bin/disasm` round trip (2026-09-29): its output reassembled by RC/asm gives the same bytes, over tests/asm's corpus, the OS build's programs, the ROM and synthetic bytes (section 3.10) |
+| 15 | `python3 tests/kermit/run.py` | `/bin/kermit` against `tools/y1kermit.py` over a pty on both emulators: files both ways, options, damaged/missing packets and timeouts, the server; then `--calib`, the receive loop's and the timeouts' clocks on the microcode emulator (2026-09-26) |
 
 Shortcuts: `make cc-test` = steps 7+8, `make os-test` = step 9. `make` (all) first builds the C tools the tests need:
 `software/emulator`, `software/ucemu`, `software/assembler`, `firmware/microcode/ucode-generator2`, `software/disassembler/disasm2`,
@@ -132,7 +132,7 @@ an address above $8000 (`--boot` stub) so that the FORCE-ROM remap is released e
 
 ### 3.3 `tests/os/` - Y1/OS on both emulators (no hardware)
 
-- **Proves:** `os/` builds (`y1os.bin`, the `/BIN` programs, `disk.img` as a P8XFS v2 volume via `tools/p8xfs.py`), the monitor's
+- **Proves:** `os/` builds (`y1os.bin`, the `/bin` programs, `disk.img` as a P8XFS v2 volume via `tools/p8xfs.py`), the monitor's
   `O` command boots it from the CF model on ports P8/P9, and a scripted shell session gives the same transcript on both emulators.
 - **Run:** `python3 tests/os/run.py [--keep] [--update]` (= `make os-test`, `make -C os test`). Sessions are `tests/os/*.session`
   (one console line per line, sent after `O`); expectations `NAME.int.out` (instruction-level) and `NAME.uc.out` (microcode, with
@@ -140,7 +140,7 @@ an address above $8000 (`--boot` stub) so that the FORCE-ROM remap is released e
   rewrites the expectations from the run - only after reading them by eye.
 - **Pass looks like:** `basic int PASS instruction limit reached at f530 after 6000000 instructions, R3=22a7` and
   `basic uc PASS HALT at F529 after 5023647 instructions, 80000000 steps, ...`, `2 passed, 0 failed`. The session exercises
-  `dir`, `cat`, `cd`, `pwd`, `hello a b c` (implicit `/BIN` lookup with arguments), `run /BIN/ECHO hi there`, `wc 45 1` (raw sectors
+  `dir`, `cat`, `cd`, `pwd`, `hello a b c` (implicit `/bin` lookup with arguments), `run /bin/echo hi there`, `wc 45 1` (raw sectors
   through the BIOS vectors), an unknown command, `load`, `help`, `exit`.
 - The CF hardware (planned on the memory card, `docs/cards/cf.md`) does not exist yet, so this is emulator-only by nature.
 
@@ -220,7 +220,7 @@ is not among this document's files and is left as it is.)
 
 ### 3.10 `tests/disasm/` - the disassembler round trip (no hardware)
 
-- **Proves:** `/BIN/DISASM` (`os/commands/disasm.c`) prints only what the assembler turns back into the same bytes, and
+- **Proves:** `/bin/disasm` (`os/commands/disasm.c`) prints only what the assembler turns back into the same bytes, and
   its table (`os/dis_optab.c`) is current with `yacc1.def`.
 - **Run:** `python3 tests/disasm/run.py [-v] [--quick] [--only NAME]` (= `make disasm-test`; `--quick` skips the y1cc corpus).
 - **Pass looks like:** `gen_y1_distab: os/dis_optab.c is current`, `... 382 ok, 0 FAILED; 5901847 instructions and DBs`,

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
 
-"""/BIN/DISASM (os/commands/disasm.c) against the assembler: disassemble, reassemble, compare (2026-09-29).
+"""/bin/disasm (os/commands/disasm.c) against the assembler: disassemble, reassemble, compare (2026-09-29).
 
   run.py [-v] [--only SUBSTR] [--quick]
 
@@ -21,7 +21,7 @@
 4. START and COUNT: ranges of a few programs and of the ROM: the lines start at START, every instruction starts in
    the range and the next one would not, and the listing's bytes are the file's.
 Exit 1 on any difference. Work files in tests/disasm/build/ (git-ignored). tests/os/disasm.session runs the command
-under Y1/OS on both emulators, with /BIN/ASM reassembling its -s output there.
+under Y1/OS on both emulators, with /bin/asm reassembling its -s output there.
 """
 import os, sys, re, glob, random, shutil, subprocess, importlib.util, concurrent.futures
 

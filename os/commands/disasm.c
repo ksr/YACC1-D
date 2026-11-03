@@ -2,23 +2,23 @@
  * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
  */
 
-/* disasm.c - the YACC1 disassembler, /BIN/DISASM (2026-09-29): machine code back to the source the assemblers take.
+/* disasm.c - the YACC1 disassembler, /bin/disasm (2026-09-29): machine code back to the source the assemblers take.
      disasm [-s] FILE [START [COUNT]]    a program file as if loaded: from its load address (the directory entry's,
-                                         where `load` and `run` put it; /BIN programs load at 5000), or from START,
+                                         where `load` and `run` put it; /bin programs load at 5000), or from START,
                                          to its end or for COUNT bytes
      disasm [-s] -m ADDR [COUNT]         memory: COUNT bytes (default 40) from ADDR, e.g. disasm -m F000 20 (the ROM
                                          monitor's first instructions)
    START, ADDR and COUNT are hex. The instructions shown are those that START in the range; the last one is completed
    past its end while there are bytes (to the file's end, or $FFFF). One line an instruction:
        AAAA  bb bb bb  MNEMONIC OPERANDS              e.g.  C000  19 CF FF  MVIW R1,0CFFFH
-   the address, the instruction's bytes, then the instruction in RC/asm's dialect - what the host assembler, /BIN/ASM
-   and /BIN/ASMC assemble back to the same bytes: numbers as hex with an H and a leading 0 before a letter (12H, 0FFH,
+   the address, the instruction's bytes, then the instruction in RC/asm's dialect - what the host assembler, /bin/asm
+   and /bin/asmc assemble back to the same bytes: numbers as hex with an H and a leading 0 before a letter (12H, 0FFH,
    0F000H: never a minus, which RC/asm drops), registers R0..R7, ports P0..PF, one space between the fields. A byte
    that begins no instruction is `DB nnH`: not an opcode (00, A5, AE, F8, F9, FA, FF), an operand byte whose fixed
    bits are wrong (JSRUR's register byte over 7), or an instruction cut off by the end of the bytes. So the output
    always reassembles; data between the code comes out as instructions or DBs, and still reassembles byte for byte.
-   -s  source only: an ORG line, then each instruction indented, without the address and bytes (disasm -s F > F.ASM,
-       then asm F.ASM gives the same bytes back)
+   -s  source only: an ORG line, then each instruction indented, without the address and bytes (disasm -s F > f.asm,
+       then asm f.asm gives the same bytes back)
    The table is os/dis_optab.c, generated from software/assembler/yacc1.def by tools/gen_y1_distab.py - the file the
    assemblers' tables come from - so disasm cannot disagree with them; the generator also checks every opcode against
    software/opcodes.h. It decodes by fixed bits and operand fields, not by a list of opcodes: an instruction added to
@@ -27,7 +27,7 @@
    disasm (at $5000, like every command) can show any program, itself included; memory is read with peek.
    Host build: tests/disasm/host_disasm.c compiles this file on the Mac (int = unsigned short) against an emulation of
    the few syscalls it uses; tests/disasm/run.py reassembles its output for every source of tests/asm's corpus, every
-   /BIN program and the ROM. y1cc subset: int unsigned, no recursion. */
+   /bin program and the ROM. y1cc subset: int unsigned, no recursion. */
 #include "../lib_fs.c"
 #include "../lib_err.c"
 #include "../dis_optab.c"

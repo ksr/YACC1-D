@@ -1,45 +1,45 @@
-mkdir /PK
-echo gone > /PK/G.TXT
-mkdir /PK/SUB
-cp /DOCS/Y1CC.MD /PK/SUB/Y1CC.MD
-echo one > /PK/LOG
-mkdir /PK/SUB/DEEP
-cp /DOCS/MDDEMO.MD /PK/SUB/DEEP/MD.MD
-cp /BIN/HELLO /PK/SUB/H
-mkdir /PK/EMPTY
-echo alpha > /PK/A.TXT
-echo two >> /PK/LOG
-del /PK/G.TXT
-rmdir /PK/EMPTY
-echo alpha2 > /PK/A.TXT
-sort /FRUIT.TXT | UNIQ > /PK/U.TXT
-del /FRUIT2.TXT
-cd /PK/SUB
+mkdir /pk
+echo gone > /pk/g.txt
+mkdir /pk/sub
+cp /docs/y1cc.md /pk/sub/y1cc.md
+echo one > /pk/log
+mkdir /pk/sub/deep
+cp /docs/mddemo.md /pk/sub/deep/md.md
+cp /bin/hello /pk/sub/h
+mkdir /pk/empty
+echo alpha > /pk/a.txt
+echo two >> /pk/log
+del /pk/g.txt
+rmdir /pk/empty
+echo alpha2 > /pk/a.txt
+sort /fruit.txt | UNIQ > /pk/u.txt
+del /fruit2.txt
+cd /pk/sub
 pack
 pwd
 dir
-cd DEEP
+cd deep
 dir
 cd ..
 cd ..
 pwd
 dir
-cat LOG
-cat A.TXT
-cat U.TXT
-cmp /PK/SUB/Y1CC.MD /DOCS/Y1CC.MD
-cmp /PK/SUB/DEEP/MD.MD /DOCS/MDDEMO.MD
-run /PK/SUB/H 1 2
-head -3 /MAN/PACK
-echo new > /PK/NEW.TXT
-cat /PK/NEW.TXT
-pack > /X.TXT
-cat /FRUIT.TXT | pack
-pack < /FRUIT.TXT
-del /X.TXT
-echo mid > /PK/SUB/DEEP/MID.TXT
+cat log
+cat a.txt
+cat u.txt
+cmp /pk/sub/y1cc.md /docs/y1cc.md
+cmp /pk/sub/deep/md.md /docs/mddemo.md
+run /pk/sub/h 1 2
+head -3 /man/pack
+echo new > /pk/new.txt
+cat /pk/new.txt
+pack > /x.txt
+cat /fruit.txt | pack
+pack < /fruit.txt
+del /x.txt
+echo mid > /pk/sub/deep/mid.txt
 cd /
 pack
-echo last > /PK/SUB/DEEP/LAST.TXT
-dir /PK/SUB/DEEP
+echo last > /pk/sub/deep/last.txt
+dir /pk/sub/deep
 exit

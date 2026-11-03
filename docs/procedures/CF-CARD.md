@@ -10,14 +10,14 @@ against the Mac's internal disk, which it refuses; **it has not yet written a re
 ## What goes on the card
 
 A P8XFS v2 volume, built by `make -C os` as `os/disk.img` (4 MB, 8,192 sectors since 2026-11-03, when the sources
-went on it as `/SRC`; 1 MB, 2,048 sectors before; about 1.5 MB of it in use):
+went on it as `/src`; 1 MB, 2,048 sectors before; about 1.5 MB of it in use):
 
 | Sectors | What |
 |---|---|
 | LBA 0 | the boot block: `P8`, version 2, OSCNT (sectors of OS), the free-sector pointer |
 | LBA 1..32 | the OS image (`Y1OS.BIN`), loaded to $1000 by the ROM's `O` command |
 | LBA 33..36 | the root directory |
-| LBA 37.. | directories and files: `/BIN`, `/MAN`, `/DOCS`, the samples |
+| LBA 37.. | directories and files: `/bin`, `/man`, `/docs`, the samples |
 
 The image is written to the **start** of the card. Only its own sectors are written; the rest of the card is left as it
 was. The OS allocates new files from the volume's free pointer, never from the card's size, so a card of any size works

@@ -47,10 +47,11 @@ Behaviour worth knowing (`main.c`):
 
 - Starts with PC = `$F000`, memory zero, R1 = 0 (the monitor sets the stack).
 - **Console = port 2**: `OUTA P2` writes the byte to stdout; `INP P2` reads one key (raw tty unless `-x`; CR becomes
-  LF; 0 at end of input). **A `q` byte ends input**: `mygetchar()` returns 0 on it (`main.c`), so a program that
-  reads a `q` from a redirected stdin sees end of input, not the letter. `OUTI P1` prints when P0 holds `$40` (the UART THR path). All other
+  LF; 0 at end of input). A `q` is an ordinary byte since 2026-11-03 (before, `mygetchar()` returned 0 on it, the
+  old quit key, and a typed `q` ended a Y1/OS command line there). Leave the emulator with `exit`, then the monitor's
+  `0`. `OUTI P1` prints when P0 holds `$40` (the UART THR path). All other
   ports are plain bytes.
-- **The UART** (2026-09-26, for `/BIN/KERMIT`): `INP P1` while P0 selects the 16550 (`$40 | register << 3`) reads RBR
+- **The UART** (2026-09-26, for `/bin/kermit`): `INP P1` while P0 selects the 16550 (`$40 | register << 3`) reads RBR
   (the next console byte) and LSR (`$60` | data ready, a non-blocking poll of stdin; after 20,000 empty polls each waits
   up to 1 ms), as ucemu does; `OUTA P1` with P0 = `$40` prints too. It shares the input stream with port 2, and `q` is
   an ordinary byte on this path. So a program that polls the UART itself can time out on both emulators.
@@ -159,7 +160,7 @@ python3 software/y1dbg -c "b cmdloop; c; key I; waitfor >>; key 10 print 42\r; k
 - **Commands** (the same in the terminal UI, the browser and `-c`/`--script`): `s [N]`, `n` (step over a JSR or
   JSRUR), `us [N]` (microcode steps), `c`, `pause`, `until ADDR`, `reset`; breakpoints `b`/`bd`/`bl`, memory watches
   `w r|w|rw ADDR`/`wd`/`wl`; `r`, `set R3=1234`, `m ADDR [LEN]`, `poke`, `d [ADDR] [N]` (the disassembler of
-  `/BIN/DISASM`, from `yacc1.def`, `--xisa` instructions included), `trace [N]`; `screen` (the display as text),
+  `/bin/disasm`, from `yacc1.def`, `--xisa` instructions included), `trace [N]`; `screen` (the display as text),
   `video` (the CRTC registers); `key TEXT` into the UART, `console`, `waitfor TEXT`; `sym FILE` (RC/asm listings: the
   monitor's and BASIC's are loaded at the start), `load FILE`. Addresses are hex, `$hex`, symbols or registers.
 - **The UI** (curses): the screen pane (the 6845's R1 x R6 from R12:R13, or 80 x 24 from $D000 before a program sets
@@ -283,7 +284,7 @@ Exit codes: every runner exits 1 on any failure, so they chain in `make check` (
 The microcode emulator can now be driven by a live program on a pseudo-terminal, not only by a finished input file: its
 UART status read no longer blocks waiting for input (see `software/ucemu/README.md`). `tests/monload/run.py` relays a pty
 to `y1ucemu -x -m` and runs `tools/monload.py` against it, the same way it would talk to the machine's UART.
-`tests/kermit/run.py` (2026-09-26) does the same on BOTH emulators with Y1/OS booted: `/BIN/KERMIT` on the emulated
+`tests/kermit/run.py` (2026-09-26) does the same on BOTH emulators with Y1/OS booted: `/bin/kermit` on the emulated
 machine, `tools/y1kermit.py` on the pty. Neither emulator models the line's speed: a byte is there as soon as the host
 wrote it, so what a real 38400-baud line and FIFO do to the receive loop is checked by arithmetic and by the
 microcode emulator's clock count (`run.py --calib`), not by a run.

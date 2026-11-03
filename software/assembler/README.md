@@ -4,8 +4,8 @@ Michael H. Riley's table-driven cross assembler (`upstream/rcasm-2.2/` is his un
 for other CPUs). The YACC1 port (2020-08 → 2021-07-09) changed `asm.c asmcmds.c support.c mstrings.* header.h
 Makefile rcasm.rc` and added `yacc1.def`, the YACC1 instruction table. `asm.txt` / `asm.doc` = the manual.
 
-**Its twins on the machine** (2026-09-25): `/BIN/ASM` (`os/commands-asm/asm.asm`, YACC1 assembly, since 2026-09-26)
-and `/BIN/ASMC` (`os/commands/asm.c`, its specification) assemble the same dialect under Y1/OS with the instruction
+**Its twins on the machine** (2026-09-25): `/bin/asm` (`os/commands-asm/asm.asm`, YACC1 assembly, since 2026-09-26)
+and `/bin/asmc` (`os/commands/asm.c`, its specification) assemble the same dialect under Y1/OS with the instruction
 tables generated from `yacc1.def` (`tools/gen_y1_optab.py`, run by `os/Makefile`), so a change here reaches them on
 the next `make -C os`; `tests/asm/run.py` checks the three agree on every source in the tree
 (`docs/programming/ASSEMBLER.md` section 10).

@@ -40,7 +40,8 @@ LIMITS = {"basic": (8000000, 120000000),         # instructions (int) / microcod
           "wave2": (9000000, 130000000),         # 5.7M / 79M needed; 5.9M / 49M with --os
           "redirect": (4000000, 60000000),       # 1.9M / 27M needed (2026-09-23)
           "pipe": (13000000, 180000000),         # 9.8M / 136M needed: every byte crosses CONOUT, then CONIN
-          "pack": (120000000, 1600000000),       # 2026-09-25: the C OS needs ~70M (cmp of two 56K files alone ~45M)
+          "pack": (200000000, 1600000000),       # 2026-09-25: the C OS needs ~70M (cmp of two 56K files alone ~45M);
+                                                 # 2026-11-03: ~118M in its programs on the 4 MB disk with /src
           "badhandle": (6000000, 90000000),
           "rdn": (300000000, 5000000000),        # 2026-09-27: READN against its contract; asm OS 36M / 0.53G, C OS 149M / 2.5G
           "rdnlow": (160000000, 2600000000),     # 2026-09-27: a fresh volume; asm OS 17M / 0.24G, C OS 77M / 1.3G
@@ -65,80 +66,80 @@ def pattern(n):
 
 HOST = {
     "big": [("fsck",),                          # 2026-09-25: files over 64K and 128K (24-bit positions)
-            ("data", "/BIG1", pattern(70 * 1024 + 7)),
-            ("data", "/COPY1", pattern(70 * 1024 + 7)),
-            ("data", "/BIG3", pattern(70 * 1024 + 7)),      # 2026-09-25: WRITE in odd pieces
-            ("data", "/BIG2", pattern(140 * 1024 + 7) + b"tail\n")],
+            ("data", "/big1", pattern(70 * 1024 + 7)),
+            ("data", "/copy1", pattern(70 * 1024 + 7)),
+            ("data", "/big3", pattern(70 * 1024 + 7)),      # 2026-09-25: WRITE in odd pieces
+            ("data", "/big2", pattern(140 * 1024 + 7) + b"tail\n")],
     "rdn": [("fsck",),                          # 2026-09-27: WRITE in odd pieces; a file replaced at close
-            ("data", "/RA", rpattern(66 * 1024 + 13, 1)),
-            ("data", "/RB", rpattern(2 * 1024 + 13, 3))],
-    "rdnlow": [("fsck",), ("data", "/RF", rpattern(40 * 1024 + 13, 5)), ("data", "/RG", rpattern(3 * 1024 + 13, 6))],
+            ("data", "/ra", rpattern(66 * 1024 + 13, 1)),
+            ("data", "/rb", rpattern(2 * 1024 + 13, 3))],
+    "rdnlow": [("fsck",), ("data", "/rf", rpattern(40 * 1024 + 13, 5)), ("data", "/rg", rpattern(3 * 1024 + 13, 6))],
     "badhandle": [("fsck",), ("boot",), ("same", []),       # 2026-09-23: nothing written through a bad handle
-                  ("data", "/BADH.TXT", b"ABC")],
-    "api": [("fsck",), ("get", "/COPY.TXT", "os/disk/README.TXT", 0)],
+                  ("data", "/badh.txt", b"ABC")],
+    "api": [("fsck",), ("get", "/copy.txt", "os/disk/README.TXT", 0)],
     "mkdir": [("fsck",),                        # 2026-11-03: /BIN/MKDIR -s writes a bigger directory on raw sectors
-              ("ls", "/", ["BIG", "SMALL", "LOCAL"], ["X", "Y"]),
-              ("ls", "/BIG", ["F01", "F62", "F63", "F75", "SUB"], [])],
+              ("ls", "/", ["big", "small", "local"], ["x", "y"]),
+              ("ls", "/big", ["f01", "f62", "f63", "f75", "sub"], [])],
     "write": [("fsck",),
-              ("ls", "/", ["T", "T2", "SAVED.BIN"], ["README.TXT"]),
-              ("ls", "/T", ["KEEP.TXT"], ["COPY.TXT", "H.BIN", "SUB"]),
-              ("get", "/T/KEEP.TXT", "os/disk/README.TXT", 0),
-              ("get", "/T2/HELLO", "os/build/bin/hello.bin", 16),
-              ("get", "/SAVED.BIN", "os/build/bin/hello.bin", 0x84)],
-    "vi": [("fsck",), ("ls", "/", ["T.TXT"], [])],
+              ("ls", "/", ["t", "t2", "saved.bin"], ["README"]),
+              ("ls", "/t", ["keep.txt"], ["copy.txt", "h.bin", "sub"]),
+              ("get", "/t/keep.txt", "os/disk/README.TXT", 0),
+              ("get", "/t2/hello", "os/build/bin/hello.bin", 16),
+              ("get", "/saved.bin", "os/build/bin/hello.bin", 0x84)],
+    "vi": [("fsck",), ("ls", "/", ["t.txt"], [])],
     "redirect": [("fsck",),                    # 2026-09-23: > >> < and the write-handle rule
-                 ("ls", "/", ["R1.TXT", "R2.TXT", "R3.TXT", "R5.TXT"], ["R4.TXT", "R6.BIN", "B"]),
-                 ("data", "/R1.TXT", b"hello\nmore\nthird\n"),
-                 ("data", "/R2.TXT", b"apple 3 red\napple 3 red\nbanana 12 yellow\nbanana 12 yellow\n"
+                 ("ls", "/", ["r1.txt", "r2.txt", "r3.txt", "r5.txt"], ["r4.txt", "r6.bin", "b"]),
+                 ("data", "/r1.txt", b"hello\nmore\nthird\n"),
+                 ("data", "/r2.txt", b"apple 3 red\napple 3 red\nbanana 12 yellow\nbanana 12 yellow\n"
                                      b"cherry 40 red\nfig 7 purple\npear 5 green\n"),     # sort F > F
-                 ("data", "/R3.TXT", b"/BIN\n"),
-                 ("data", "/R5.TXT", b"")],
+                 ("data", "/r3.txt", b"/bin\n"),
+                 ("data", "/r5.txt", b"")],
     "pipe": [("fsck",),                        # 2026-09-23: pipes; the temp files are gone afterwards
-             ("ls", "/", ["P1.TXT"], ["PIPE0.TMP", "PIPE1.TMP"]),
-             ("data", "/P1.TXT", b"5 15 69\n")],
-    "pack": [("fsck",), ("packed",), ("same", ["/FRUIT2.TXT"]),   # 2026-09-23: the hole of /FRUIT2.TXT moves /MAN, /DOCS...
-             ("ls", "/", ["PK"], ["FRUIT2.TXT", "X.TXT", "PIPE0.TMP", "PIPE1.TMP"]),
-             ("ls", "/PK", ["A.TXT", "LOG", "U.TXT", "NEW.TXT", "SUB"], ["G.TXT", "EMPTY"]),
-             ("data", "/PK/LOG", b"one\ntwo\n"),
-             ("data", "/PK/A.TXT", b"alpha2\n"),
-             ("data", "/PK/NEW.TXT", b"new\n"),
-             ("data", "/PK/SUB/DEEP/LAST.TXT", b"last\n"),
-             ("data", "/PK/SUB/DEEP/MID.TXT", b"mid\n"),
-             ("data", "/PK/U.TXT", b"apple 3 red\nbanana 12 yellow\ncherry 40 red\nfig 7 purple\npear 5 green\n"),
-             ("get", "/PK/SUB/Y1CC.MD", "software/compiler/README.md", 0),
-             ("get", "/PK/SUB/DEEP/MD.MD", "os/docs/mddemo.md", 0),
-             ("get", "/PK/SUB/H", "os/build/bin/hello.bin", 0)],
+             ("ls", "/", ["p1.txt"], ["pipe0.tmp", "pipe1.tmp"]),
+             ("data", "/p1.txt", b"5 15 69\n")],
+    "pack": [("fsck",), ("packed",), ("same", ["/fruit2.txt"]),   # 2026-09-23: the hole of /fruit2.txt moves /man, /docs...
+             ("ls", "/", ["pk"], ["fruit2.txt", "x.txt", "pipe0.tmp", "pipe1.tmp"]),
+             ("ls", "/pk", ["a.txt", "log", "u.txt", "new.txt", "sub"], ["g.txt", "empty"]),
+             ("data", "/pk/log", b"one\ntwo\n"),
+             ("data", "/pk/a.txt", b"alpha2\n"),
+             ("data", "/pk/new.txt", b"new\n"),
+             ("data", "/pk/sub/deep/last.txt", b"last\n"),
+             ("data", "/pk/sub/deep/mid.txt", b"mid\n"),
+             ("data", "/pk/u.txt", b"apple 3 red\nbanana 12 yellow\ncherry 40 red\nfig 7 purple\npear 5 green\n"),
+             ("get", "/pk/sub/y1cc.md", "software/compiler/README.md", 0),
+             ("get", "/pk/sub/deep/md.md", "os/docs/mddemo.md", 0),
+             ("get", "/pk/sub/h", "os/build/bin/hello.bin", 0)],
     "wave2": [("fsck",),
-              ("ls", "/T", ["E1", "E2", "FRUIT.TXT", "H", "S"], []),
-              ("ls", "/U", ["E3", "S"], ["E1", "E2", "FRUIT.TXT", "H"]),
-              ("ls", "/U/S", ["F2.TXT", "FRUIT.TXT", "FRUIT2.TXT", "H", "F1.TXT"], ["README.TXT"]),
-              ("get", "/FRUIT.TXT", "os/disk/FRUIT.TXT", 0),
-              ("get", "/T/S/F2.TXT", "os/disk/FRUIT2.TXT", 0),
-              ("get", "/U/S/F1.TXT", "os/disk/FRUIT.TXT", 0),
-              ("get", "/U/S/H", "os/build/bin/hello.bin", 0)],
+              ("ls", "/t", ["e1", "e2", "fruit.txt", "h", "s"], []),
+              ("ls", "/u", ["e3", "s"], ["e1", "e2", "fruit.txt", "h"]),
+              ("ls", "/u/s", ["f2.txt", "fruit.txt", "fruit2.txt", "h", "f1.txt"], ["README", "readme.txt"]),
+              ("get", "/fruit.txt", "os/disk/FRUIT.TXT", 0),
+              ("get", "/t/s/f2.txt", "os/disk/FRUIT2.TXT", 0),
+              ("get", "/u/s/f1.txt", "os/disk/FRUIT.TXT", 0),
+              ("get", "/u/s/h", "os/build/bin/hello.bin", 0)],
 }
 
 
 # extra files a session's disk copy gets before it boots (2026-09-23): (host source, disk name, load/exec); a .c
 # source is compiled first with y1cc --os at $5000, as os/Makefile compiles /BIN commands; a .asm source (2026-09-29)
 # is assembled by RC/asm and flattened from the load address (its ORG)
-EXTRA = {"badhandle": [("badh.c", "/BADH", 0x5000), ("", "/ZERO.BIN", 0x6000)],
-         "big": [("bigw.c", "/BIGW", 0x5000), ("bigr.c", "/BIGR", 0x5000)],
-         "rdn": [("rdn.c", "/RDN", 0x5000)],
-         "rdnlow": [("rdn.c", "/RDN", 0x5000)],
-         "systab": [("systab.c", "/SYSTAB", 0x5000)],
-         "disasm": [("dis.asm", "/DIS", 0xC000)],        # 2026-09-29: RC/asm's bytes for disasm to show
-         "exec": [("exe.c", "/EXE", 0x5000), ("exe.c", "/EXES", 0x5000, ["--stack", "0xCFFF"]),
-                  ("", "/BIG.TXT", 0xC000, 20000)],
+EXTRA = {"badhandle": [("badh.c", "/badh", 0x5000), ("", "/zero.bin", 0x6000)],
+         "big": [("bigw.c", "/bigw", 0x5000), ("bigr.c", "/bigr", 0x5000)],
+         "rdn": [("rdn.c", "/rdn", 0x5000)],
+         "rdnlow": [("rdn.c", "/rdn", 0x5000)],
+         "systab": [("systab.c", "/systab", 0x5000)],
+         "disasm": [("dis.asm", "/dis", 0xC000)],        # 2026-09-29: RC/asm's bytes for disasm to show
+         "exec": [("exe.c", "/exe", 0x5000), ("exe.c", "/exes", 0x5000, ["--stack", "0xCFFF"]),
+                  ("", "/big.txt", 0xC000, 20000)],
          # 2026-11-03: scripts (sh, NAME.SH, EXEC of a script): text files, given as bytes, put with load/exec 0
-         "sh": [("exe.c", "/EXE", 0x5000), ("shx.c", "/SHX", 0x5000),
-                (b"# a comment: skipped\necho a1\ncd /BIN\n\npwd\nsh /B.SH\npwd\necho a2", "/A.SH", 0),
-                (b"echo b1\ncd /\n", "/B.SH", 0),
-                (b"echo c1\nnosuch\necho c2\n", "/C.SH", 0),
-                (b"echo d1\n/EXE x 3\necho d2\n", "/D.SH", 0),
-                (b"echo e\nsh /E.SH\necho not here\n", "/E.SH", 0),
-                (b"echo f1\r\necho f2\r\n", "/F.SH", 0),
-                (b"shx /F.SH\necho g2\n", "/G.SH", 0)]}
+         "sh": [("exe.c", "/exe", 0x5000), ("shx.c", "/shx", 0x5000),
+                (b"# a comment: skipped\necho a1\ncd /bin\n\npwd\nsh /b.sh\npwd\necho a2", "/a.sh", 0),
+                (b"echo b1\ncd /\n", "/b.sh", 0),
+                (b"echo c1\nnosuch\necho c2\n", "/c.sh", 0),
+                (b"echo d1\n/exe x 3\necho d2\n", "/d.sh", 0),
+                (b"echo e\nsh /e.sh\necho not here\n", "/e.sh", 0),
+                (b"echo f1\r\necho f2\r\n", "/f.sh", 0),
+                (b"shx /f.sh\necho g2\n", "/g.sh", 0)]}
 
 
 # sessions that boot a FRESH volume (p8xfs create, the selected OS's build/y1os.bin, then these files in order, then
@@ -146,7 +147,7 @@ EXTRA = {"badhandle": [("badh.c", "/BADH", 0x5000), ("", "/ZERO.BIN", 0x6000)],
 # than 37 sectors, so one of its sectors has the number of its start LBA - on os/disk.img the free pointer is past
 # LBA 1,100 and no file can be that long. y1os.asm's fs_getc compared that sector with the start LBA instead of the
 # buffer's sector (2026-09-25..27) and returned the buffer's stale bytes for it.
-FRESH = {"rdnlow": [(lambda: rpattern(40 * 1024 + 13, 5), "/RF")]}
+FRESH = {"rdnlow": [(lambda: rpattern(40 * 1024 + 13, 5), "/rf")]}
 
 
 def fresh(name, img):
@@ -335,7 +336,7 @@ def cuts(n):
     line pack -v printed ("from>to [via scratch]: " + a letter per step done: c e C E), so the report shows that the
     cuts hit the scratch copy, the two entry rewrites and the one-step moves (2026-09-23)."""
     bad = 0
-    for tag, extra in (("A", ""), ("B", "del /DOCS/PORT.MD\n")):
+    for tag, extra in (("A", ""), ("B", "del /docs/port.md\n")):
         bad += cut_scenario(tag, extra, n)
     print("all: %d cuts, %d failed" % (2 * n, bad))
     sys.exit(1 if bad else 0)

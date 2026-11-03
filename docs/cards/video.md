@@ -305,7 +305,7 @@ V2.0 (designed 2026-10-22, re-reviewed 2026-10-23, ready to order, not built) ha
   (15.75 kHz, 60.1 Hz), the table the picture was proven with on 2026-10-21 (before `ROM 2026-10-21`: 126, 80, 98,
   10, 31, 6, 24, 28 for an assumed 10 MHz, 5-dot clock). Since `ROM 2026-10-22` the columns are the variable
   `VCOLSV` and R0..R3 come from one of three 4-byte tables (above).
-- **Y1/OS**: `video [on|off|clear|init|probe]` (`/BIN/VIDEO`, `os/man/video`).
+- **Y1/OS**: `video [on|off|clear|init|probe]` (`/bin/video`, `os/man/video`).
 - **Emulators**: `-V` prints the screen, `-W` logs CRTC writes, `-N` removes the card; `tests/video/emu.py`.
 
 **Bring-up on the machine, in order** (the 6845 not fitted yet; the monitor's `V?` lists the commands):

@@ -3,10 +3,10 @@
  */
 
 /* mv.c - move or rename files: mv src dst
-     mv OLD.TXT NEW.TXT    rename in place (the directory entry is renamed: nothing is copied)
-     mv A.TXT /T           into a directory: /T/A.TXT
-     mv A.TXT /T/B.TXT     to another directory: copied (load/exec kept) and the source deleted
-     mv *.TMP /T           a glob: every matching file into the directory /T
+     mv old.txt new.txt    rename in place (the directory entry is renamed: nothing is copied)
+     mv a.txt /t           into a directory: /t/a.txt
+     mv a.txt /t/b.txt     to another directory: copied (load/exec kept) and the source deleted
+     mv *.TMP /t           a glob: every matching file into the directory /t
      mv DIR NEWNAME        a directory is renamed in place; it cannot move to another directory
    An existing file of the target name is replaced. mv X X is refused (it would delete the only copy).
    Ported from P8X os/commands/mv.c 2026-09-23, changes: a move within one directory is Y1/OS's RENAME syscall

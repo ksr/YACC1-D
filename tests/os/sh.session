@@ -1,12 +1,12 @@
-sh /A.SH
-sh /C.SH
-sh /D.SH
-sh /E.SH
-shx /F.SH
-sh /G.SH
+sh /a.sh
+sh /c.sh
+sh /d.sh
+sh /e.sh
+shx /f.sh
+sh /g.sh
 cd /
 f.sh
-sh /BIN
-sh /NOPE
-shx /NOPE.SH
+sh /bin
+sh /nope
+shx /nope.sh
 exit

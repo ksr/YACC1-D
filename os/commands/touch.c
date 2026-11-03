@@ -3,7 +3,7 @@
  */
 
 /* touch.c - create empty files that do not exist yet: touch name [name ...]
-     touch A.TXT B.TXT   each missing name becomes a 0-byte file; an existing file (or directory) is left alone
+     touch a.txt b.txt   each missing name becomes a 0-byte file; an existing file (or directory) is left alone
    Y1/OS keeps no timestamps, so there is nothing to update on an existing file. No globs (a pattern could only
    match files that exist).
    Ported from P8X os/commands/touch.c 2026-09-23, changes: fresolve() for the existence test and

@@ -9,13 +9,13 @@ DESCRIPTION
     dropped. A glob (* or ? in the last component, case folded) expands
     to the matching files of that directory; "-" is stdin: the shell's
     < file or pipe, else the console, read without echo up to Ctrl-D.
-    With no argument cat copies stdin to the output. cat is /BIN/CAT.
+    With no argument cat copies stdin to the output. cat is /bin/cat.
 
     Every name is checked before anything is printed: one that is not
     found (or a glob that matches nothing) stops cat with
     "cat: not found: NAME".
 
-    The shell also has a built-in cat, used only when /BIN/CAT is
+    The shell also has a built-in cat, used only when /bin/cat is
     missing; it prints one file, with no globs and no "-". `type` is
     always that built-in.
 
@@ -23,13 +23,13 @@ LIMITS
     Up to 24 names in all, after glob expansion; more are dropped.
 
 EXAMPLES
-    cat /README.TXT                print a file
-    cat /FRUIT.TXT /FRUIT2.TXT     two files, one after the other
-    cat /MAN/C*                    every page whose name starts with C
-    cat /FRUIT.TXT - /README.TXT   a file, typed lines up to Ctrl-D,
+    cat /README                print a file
+    cat /fruit.txt /fruit2.txt     two files, one after the other
+    cat /man/c*                    every page whose name starts with C
+    cat /fruit.txt - /README   a file, typed lines up to Ctrl-D,
                                    then another file
-    cat /A.TXT /B.TXT > /AB.TXT    join two files into a new one
-    cat > /NOTE.TXT                type a file, Ctrl-D ends it
+    cat /a.txt /b.txt > /ab.txt    join two files into a new one
+    cat > /note.txt                type a file, Ctrl-D ends it
 
 NOTES
     The P8X cat's > >> < and | are the Y1/OS shell's since 2026-09-23

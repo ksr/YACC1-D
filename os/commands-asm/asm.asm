@@ -1,9 +1,9 @@
 ; Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
 
 ; =====================================================================================================================
-; asm.asm - /BIN/ASM, the native YACC1 assembler hand-written in YACC1 assembly (2026-09-26).
+; asm.asm - /bin/asm, the native YACC1 assembler hand-written in YACC1 assembly (2026-09-26).
 ;
-; The same program as os/commands/asm.c (/BIN/ASMC since 2026-09-26), which stays in the tree as THE SPECIFICATION:
+; The same program as os/commands/asm.c (/bin/asmc since 2026-09-26), which stays in the tree as THE SPECIFICATION:
 ; the same command line (asm [-h] SRC [OUT]), the same output files (a program file with its load and exec address,
 ; or Intel hex), the same messages on the same lines, the same exit behaviour, byte for byte the same output as asm.c
 ; and the host assembler RC/asm on every source (tests/asm/run.py). Every routine below names the C function it
@@ -3386,8 +3386,8 @@ ow_r:   POPR R6
 ; The messages (single quotes: the assembler keeps their case) and the instruction table
 ; =====================================================================================================================
 S_USAGE:    DB 'usage: asm [-h] SRC [OUT]',0
-S_DOTASM:   DB '.ASM',0
-S_DOTIMG:   DB '.IMG',0
+S_DOTASM:   DB '.asm',0
+S_DOTIMG:   DB '.img',0
 S_CANTOPEN: DB 'asm: '
 S_CANTOPN:  DB 'cannot open ',0
 S_CANTMAKE: DB 'asm: cannot create ',0

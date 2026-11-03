@@ -4,7 +4,7 @@
 
 /* grep.c - print the lines that match a regular expression: grep [-r] regex [file ...]
      grep ^al FILE        lines of FILE that start with "al" (regex: . * + ? ^ $, lib_regex.c)
-     grep x.*y *.TXT      every matching file; with more than one file each line is prefixed "NAME:"
+     grep x.*y *.txt      every matching file; with more than one file each line is prefixed "NAME:"
      grep be.a            the console up to Ctrl-D
      grep -r alpha [dir]  every file under the current directory (or dir), depth first, up to 8 levels:
                           "PATH:line" for each match

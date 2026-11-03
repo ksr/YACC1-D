@@ -2,7 +2,7 @@
  * Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
  */
 
-/* host_sys.c - the Y1/OS syscalls /BIN/ASM uses, emulated on the Mac for host_asm.c (2026-09-25): OPEN READ GETC
+/* host_sys.c - the Y1/OS syscalls /bin/asm uses, emulated on the Mac for host_asm.c (2026-09-25): OPEN READ GETC
    CLOSE CREATE WRITE PUTC DELETE with Y1/OS's results (handles 1..4, one of them writing; 65535 at the end of a
    file; 0 for "cannot"), bios(CHAROUT) to stderr, argstr() = the command line after the program name. A file may be
    over 64K (the corpus has 250K compiler passes), as on Y1/OS since 2026-09-25 (24-bit positions); Y1_64K=1 refuses

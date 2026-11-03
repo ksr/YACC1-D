@@ -10,7 +10,7 @@ DESCRIPTION
     after each directory, and a directory's contents right under it.
     Entries come in the order they are stored; "." and ".." are left
     out. "tree: not a directory" when dir is not one. tree is
-    /BIN/TREE.
+    /bin/tree.
 
 LIMITS
     8 levels: a deeper directory is shown but not entered, and tree
@@ -22,7 +22,7 @@ EXAMPLES
                         BIN/
                           AWK
                           ...
-                        FRUIT.TXT
+                        fruit.txt
                         ...
 
 NOTES

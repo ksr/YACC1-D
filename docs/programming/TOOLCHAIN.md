@@ -76,11 +76,11 @@ Details: [ASSEMBLER.md](ASSEMBLER.md) (the invocation gotcha: source name before
 ## 4. Image → CF disk image (Y1/OS)
 
 ```
-python3 tools/img2bin.py prog.img prog.bin --base 0x5000                      # a /BIN program compiled --org 0x5000
+python3 tools/img2bin.py prog.img prog.bin --base 0x5000                      # a /bin program compiled --org 0x5000
 python3 tools/p8xfs.py create disk.img --sectors 2048
 python3 tools/p8xfs.py boot   disk.img os/build/y1os.bin                      # LBA 1.., OSCNT in the boot block
-python3 tools/p8xfs.py mkdir  disk.img /BIN
-python3 tools/p8xfs.py put    disk.img prog.bin --name /BIN/PROG --load 0x5000 --exec 0x5000
+python3 tools/p8xfs.py mkdir  disk.img /bin
+python3 tools/p8xfs.py put    disk.img prog.bin --name /bin/prog --load 0x5000 --exec 0x5000
 python3 tools/p8xfs.py tree   disk.img
 software/ucemu/y1ucemu -m -c disk.img          # then O at the monitor prompt
 ```

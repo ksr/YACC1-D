@@ -24,8 +24,8 @@ LIMITS
     at with cat or dump, but not loaded back. At most 65535 bytes.
 
 EXAMPLES
-    save H.BIN 5000 20      32 bytes from $5000, load and exec $5000
-    save /HELLO2 5000 84    after load /BIN/HELLO: a copy that runs
+    save h.bin 5000 20      32 bytes from $5000, load and exec $5000
+    save /hello2 5000 84    after load /bin/hello: a copy that runs
 
 NOTES
     Changed from the P8X version: the arguments are a start and a

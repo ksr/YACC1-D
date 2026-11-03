@@ -1,15 +1,15 @@
-rdn w /RA 1 66
-rdn w /RB 2 3
-rdn r /RB 2
-rdn r /RB 2
-rdn r /RA 1
-rdn k /RA 1
-rdn k /RB 2
-rdn 2 /RA 1 /RB 2
-rdn w /RB 3 2
-rdn r /RB 3
-rdn k /RB 3
-rdn e /RB 3
-dir /RA
-dir /RB
+rdn w /ra 1 66
+rdn w /rb 2 3
+rdn r /rb 2
+rdn r /rb 2
+rdn r /ra 1
+rdn k /ra 1
+rdn k /rb 2
+rdn 2 /ra 1 /rb 2
+rdn w /rb 3 2
+rdn r /rb 3
+rdn k /rb 3
+rdn e /rb 3
+dir /ra
+dir /rb
 exit

@@ -247,7 +247,7 @@ The ROM in the machine (`ROM 2026-09-23`, burned 2026-09-23) already drives P8/P
    35, 33, 36 with a meter or LEDs: each value 0..7 must appear, and bit 3 must pull J1 pin 1 low.
 3. Fit the adapter with a card prepared on the Mac: `make -C os`, then `python3 tools/cfcard.py write os/disk.img --disk diskN`
    (`docs/procedures/CF-CARD.md`). Then `O` should boot Y1/OS.
-4. `tests/os/*.session` then run on the machine by hand: `dir`, `cat README.TXT`, `hello`.
+4. `tests/os/*.session` then run on the machine by hand: `dir`, `cat README`, `hello`.
 
 If it misbehaves: ACT not flickering during `O` means no port-9 strobes (U1/U2, the I/O card's strap); status always
 $FF with a card fitted means the buffer is not enabled or points the wrong way (U4 gate 1, U5 DIR); reads right but

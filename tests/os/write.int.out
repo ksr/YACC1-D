@@ -7,28 +7,28 @@ BOOT FROM CF
 /> 
 loaded 146 bytes at $5000
 /> 
-         BIN/
-         DOCS/
-     98  FRUIT.TXT  @B000
-     94  FRUIT2.TXT  @B000
-         LIB/
-         MAN/
-    156  README.TXT  @B000
-         SRC/
-         T/
+    156  README  @B000
+         bin/
+         docs/
+     98  fruit.txt  @B000
+     94  fruit2.txt  @B000
+         lib/
+         man/
+         src/
+         t/
 /> 
-/T> 
+/t> 
 saved 32 bytes
-/T> 
-     32  H.BIN  @5000
-/T> 
-/T> 
-     32  H.BIN  @5000
-         SUB/
-/T> 
+/t> 
+     32  h.bin  @5000
+/t> 
+/t> 
+     32  h.bin  @5000
+         sub/
+/t> 
 not an empty directory
-/T> 
-/T> 
+/t> 
+/t> 
 /> 
 /> 
 Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
@@ -37,35 +37,35 @@ BOOT FROM CF
 /> 
 cannot rename
 /> 
-     32  H.BIN  @5000
-    156  KEEP.TXT  @B000
+     32  h.bin  @5000
+    156  keep.txt  @B000
 /> 
 /> 
-del: not a file: /T/H.BIN
+del: not a file: /t/h.bin
 /> 
-    156  KEEP.TXT  @B000
+    156  keep.txt  @B000
 /> 
 not an empty directory
 /> 
 /> 
-         BIN/
-         DOCS/
-     98  FRUIT.TXT  @B000
-     94  FRUIT2.TXT  @B000
-         LIB/
-         MAN/
-         SRC/
-         T/
+         bin/
+         docs/
+     98  fruit.txt  @B000
+     94  fruit2.txt  @B000
+         lib/
+         man/
+         src/
+         t/
 /> 
 /> 
 /> 
-/T2> 
-hello from /BIN/HELLO
+/t2> 
+hello from /bin/hello
 args: x y
-/T2> 
-hello from /BIN/HELLO
+/t2> 
+hello from /bin/hello
 args: 1 2 3
-/T2> 
+/t2> 
 /> 
 saved 132 bytes
 /> 
@@ -75,7 +75,7 @@ BOOT FROM CF
 /> 
 saved 16 bytes
 /> 
-     16  HELLO  @5000
+     16  hello  @5000
 /> 
 bye
 >

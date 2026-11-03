@@ -7,7 +7,7 @@ SYNOPSIS
 
 DESCRIPTION
     Assembles SRC in two passes and writes OUT. A SRC without a '.'
-    gets .ASM (asm HELLO reads HELLO.ASM). The source dialect is the
+    gets .asm (asm hello reads hello.asm). The source dialect is the
     host assembler's (software/assembler, RC/asm with yacc1.def): what
     y1cc writes, what the ROM monitor and BASIC are written in, and
     the output is byte for byte what the host makes of the source.
@@ -56,9 +56,9 @@ LIMITS
     says "asm: cannot create OUT").
 
 EXAMPLES
-    asm HELLO.ASM             HELLO, a program: `run HELLO` runs it
-    asm -h MONITOR.ASM M.IMG  the ROM monitor as Intel hex
-    asm /S/CAT.ASM /T/MYCAT   a program into another directory
+    asm hello.asm             hello, a program: `run hello` runs it
+    asm -h monitor.asm m.img  the ROM monitor as Intel hex
+    asm /s/cat.asm /t/mycat   a program into another directory
 
 NOTES
     Written for Y1/OS 2026-09-25 in C (os/commands/asm.c, now asmc, the

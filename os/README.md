@@ -11,7 +11,7 @@ Only the on-disk format is shared, so `tools/p8xfs.py` (a fork of the P8X tool) 
 what the OS writes.
 
 ```
-make -C os              # build/y1os.bin (the assembly OS), /BIN programs, disk.img
+make -C os              # build/y1os.bin (the assembly OS), /bin programs, disk.img
 make -C os OS=c         # the same with the C OS (y1os.c); build/os-sel remembers the choice, disk.img follows it
 make -C os run          # the microcode emulator with the ROM and the disk: type O at the monitor prompt
 make -C os run-int      # the instruction-level emulator
@@ -34,14 +34,14 @@ on the emulators; the machine runs the assembly OS). At boot the OS
 clears its RAM $4A00-$4FFF (the C clears its BSS: the same effect, the handle table and the redirect state zeroed),
 fills the syscall table (below), and reads the boot block again for the free-sector pointer;
 it keeps that pointer in RAM and reads it again after every program returns (`read_free()` in `run_prog()`, since
-2026-09-23), because `/BIN/PACK` lowers it on the disk.
+2026-09-23), because `/bin/pack` lowers it on the disk.
 
 ## The shell
 
 | Command | Effect |
 |---|---|
 | `dir [path]` | list a directory: name, `<DIR>` or size, and the load address of a program |
-| `cd path` | change directory: absolute `/A/B`, relative, `.`/`..` (the directory's own entries) |
+| `cd path` | change directory: absolute `/a/b`, relative, `.`/`..` (the directory's own entries) |
 | `pwd` | print the current path (also the prompt) |
 | `cat path` / `type` | print a file |
 | `load path` | read a file into its stored load address |
@@ -49,16 +49,16 @@ it keeps that pointer in RAM and reads it again after every program returns (`re
 | `save path addr len` | write `len` bytes of memory from `addr` (both hex) to a new file whose load and exec address are `addr` |
 | `del path` | delete a file (a tombstone in its directory; `pack` gets the sectors back) |
 | `ren path newname` | rename a file or directory in place (`newname` is a bare name, 1..12 characters) |
-| `mkdir path` | a new directory (a 4-sector extent with `.` and `..`, as `p8xfs.py mkdir` makes it); `/BIN/MKDIR` replaces it and adds `-s N` (below) |
+| `mkdir path` | a new directory (a 4-sector extent with `.` and `..`, as `p8xfs.py mkdir` makes it); `/bin/mkdir` replaces it and adds `-s N` (below) |
 | `rmdir path` | remove an empty directory |
 | `help` / `?` | this list |
 | `sh path` | run a script: the file's lines one after the other, as if typed (2026-11-03, "Scripts" below) |
 | `exit` | back to the monitor |
-| anything else | `/BIN/NAME` (upper-cased), then `NAME` in the current directory, run with the rest of the line as arguments; a `NAME.SH` runs as a script |
+| anything else | `/bin/name`, then `name` in the current directory (the word lower-cased, so any case finds it), run with the rest of the line as arguments; a `name.sh` runs as a script |
 
-**A `/BIN` program comes first** (since 2026-09-23): the shell looks for `/BIN/NAME` before its own words (only
-`exit` is never looked up), so the ported `/BIN` `dir`, `cat`, `pwd`, `del` and `help` replace the built-ins of the
-same name. The built-ins stay for a card that has no `/BIN` yet; `type` is always the built-in `cat`.
+**A `/bin` program comes first** (since 2026-09-23): the shell looks for `/bin/name` before its own words (only
+`exit` is never looked up), so the ported `/bin` `dir`, `cat`, `pwd`, `del` and `help` replace the built-ins of the
+same name. The built-ins stay for a card that has no `/bin` yet; `type` is always the built-in `cat`.
 
 ### Redirection and pipes (2026-09-23)
 
@@ -83,18 +83,18 @@ errors (`what?`, `syntax: ...`, `cannot read the < file`, `not found`...) and ev
 whatever happened; if a program never returns, the reset button restarts the OS with the console.
 
 A pipe runs its commands **one after the other** (there is no multitasking): `a | b` runs a with stdout to
-`/PIPE0.TMP`, then b with stdin from it; a third command reads `/PIPE0.TMP`'s successor `/PIPE1.TMP`, a fourth
-`/PIPE0.TMP` again. The temp files are in the root (a command's `cd` cannot lose them) and are deleted after the
+`/pipe0.tmp`, then b with stdin from it; a third command reads `/pipe0.tmp`'s successor `/pipe1.tmp`, a fourth
+`/pipe0.tmp` again. The temp files are in the root (a command's `cd` cannot lose them) and are deleted after the
 pipeline; like every deleted file their sectors come back with `pack`. `cat F | more` pages the pipe while
 `more` reads its keys from the keyboard.
 
-**How:** the OS and every `/BIN` command are compiled with `y1cc --os`, which makes `putchar`/`puts` the syscall
+**How:** the OS and every `/bin` command are compiled with `y1cc --os`, which makes `putchar`/`puts` the syscall
 CONOUT and `getchar` CONIN. The shell opens the files (`si_h`, `so_h` in `y1os.c`), CONOUT writes to the output file
 or the raw console (`bios(CHAROUT)`), CONIN/CONST read the input file or the console; KEYIN is always the keyboard
 (Unix pagers read `/dev/tty` for the same reason); STDIO tells a program which of its two are redirected.
 
 **Line ends (2026-11-03).** Programs and files end lines with LF alone. On the raw console the kernels send an LF as
-LF CR, the monitor's line end (`conraw` in `y1os.asm`, `raw_out` in `y1os.c`; `lib_err.c` eputc and `/BIN/ASM` do
+LF CR, the monitor's line end (`conraw` in `y1os.asm`, `raw_out` in `y1os.c`; `lib_err.c` eputc and `/bin/asm` do
 the same for their error messages), and the shell sends a CR after the Enter the ROM echoes as LF. Files, `>`, `>>`
 and pipes keep LF alone. Before, a plain terminal showed every line one step to the right of the last.
 
@@ -113,16 +113,18 @@ pipe (they do with `<`). Lifting it would need two files growing at once, i.e. a
 pointer (or a reserved area for the redirect file): not simple, so not done (BACKLOG). A redirect also holds one or
 two of the four handles while the command runs.
 
-Names are case-sensitive and stored as `p8xfs.py put` writes them; the Makefile puts programs in `/BIN` in upper
-case, which is why the implicit lookup upper-cases the command word. Every shell command goes through the `fs_*`
+Names are case-sensitive and stored as `p8xfs.py put` writes them. **Every name on the disk is lower case since
+2026-11-03** (`/bin/cat`, `/lib/cc/cc1`, `/man`, `/docs`, `/src`, `fruit.txt`), as in Unix, with Unix's own capitals
+kept (`README`, the `Makefile`s); before, they were upper case (`/BIN/CAT`). The shell lower-cases a command word
+before it looks it up, so `ls`, `LS` and `Ls` all run `/bin/ls`; the names in the arguments are exact. Every shell command goes through the `fs_*`
 functions that the syscalls expose (`cat` is `fs_open` + `fs_read`, `dir` is `fs_opendir` + `fs_readdir`, `save` is
 `fs_create` + `fs_write` + `fs_close`...), so a program and the shell cannot disagree about a file.
 
 ### Scripts: `sh` (2026-11-03)
 
 A script is a text file of shell lines. `sh path` runs one; so does naming a file whose name ends in `.SH` as a
-command (`BUILD.SH`, or `build.sh`: the word is upper-cased), and a program's EXEC of one (below), which is how
-`/BIN/MAKE` runs its recipes. The script starts when the command that started it has ended. Each line is read,
+command (`build.sh`, or `BUILD.SH`: the word is lower-cased), and a program's EXEC of one (below), which is how
+`/bin/make` runs its recipes. The script starts when the command that started it has ended. Each line is read,
 shown after the prompt as if typed, and run: built-ins, programs, redirection and pipes all work. Blank lines and
 lines starting with `#` are skipped; a line ends at LF or CR (so CR LF is fine) and keeps 128 characters.
 
@@ -130,18 +132,18 @@ lines starting with `#` are skipped; a line ends at LF or CR (so CR LF is fine) 
   program that ends with a status other than 0. The shell then says `sh: stopped`, every running script ends, and
   the prompt comes back. The compiler's passes, `asm` and `make` end with status 1 after an error (2026-11-03), so a
   build stops at its first failed step.
-- **Nesting**: a script may start another (`sh`, `NAME.SH`, a program's EXEC); that one runs, then the first goes on
+- **Nesting**: a script may start another (`sh`, `name.sh`, a program's EXEC); that one runs, then the first goes on
   with its next line. Four may run at once (`sh: too deep`).
 - **Read from its sectors**: the running script is its extent, length and read position (`SC_LBA`, `SC_LEN`,
   `SC_POS`; the interrupted ones in `SC_STK`), read through the OS's sector buffer between commands. A `cd` inside it
   changes the directory for the lines after it, and replacing the file while it runs (a nested `make` writing a new
-  `MAKE.SH`) leaves the running script as it was: the old extent stays until `pack`. A script is at most 64K
+  `make.sh`) leaves the running script as it was: the old extent stays until `pack`. A script is at most 64K
   (`sh: over 64K`); `pack` inside one would move it under the reader.
 - No variables, arguments, tests or loops: a line is a command line. `sh` itself writes nothing, so `sh F > OUT`
   redirects nothing (put the `>` on the lines).
 
 `man sh`; `tests/os/sh.session` runs each case on both kernels and both emulators (comments, CR LF, `cd` inside a
-script, nesting and its limit, a diagnostic and a status stopping it, `NAME.SH` as a command, EXEC of a script from a
+script, nesting and its limit, a diagnostic and a status stopping it, `name.sh` as a command, EXEC of a script from a
 program and from a script).
 
 ## The file API (syscalls, 2026-09-23)
@@ -216,7 +218,7 @@ leaves open, the shell closes when the program returns (a pending write is regis
 redirect files stay open until the command is done). A same-named file is replaced at CLOSE, not at CREATE (since
 2026-09-23): the new entry is written over the old one's slot, so the old file is whole and readable until then.
 Files are contiguous: a read handle can SEEK (since 2026-09-25), the only append is the shell's `>>` (above), and dead
-sectors come back only with `/BIN/PACK` (below).
+sectors come back only with `/bin/pack` (below).
 
 ### EXIT, EXEC and chaining programs (2026-09-25)
 
@@ -236,15 +238,15 @@ native compiler"); a program could only end by returning from main. Two syscalls
   and again for as long as programs EXEC. It all stays one shell command: a `>` file or a pipe stays open across the
   chain (`cc prog.c > LOG` sends all nine passes' output there), and the shell's prompt comes back only at the end.
   EXEC returns (0) only when path cannot be run, so the caller can say so.
-- **EXEC of a script** (2026-11-03): a path ending in `.SH` (upper case) is not loaded but becomes a script that the
-  shell runs once the command has ended (`EX_PEND` 2; "Scripts" above). `/BIN/MAKE` writes its recipes into
-  `MAKE.SH` and EXECs it.
+- **EXEC of a script** (2026-11-03): a path ending in `.sh` (lower case) is not loaded but becomes a script that the
+  shell runs once the command has ended (`EX_PEND` 2; "Scripts" above). `/bin/make` writes its recipes into
+  `make.sh` and EXECs it.
 - **Why EXEC and not batch files:** each pass knows its successor (it is fixed) and runs it with one argument, the
   work prefix, so a chain needs no parser, no files and no shell change; a pass that finds an error EXITs (status
   1) and the chain stops there by itself, where a batch file would need a test of STATUS. The driver is one small
-  command, `/BIN/CC` (`commands/cc.c`): it EXECs `/LIB/CC/CC1` with `CCW` + its command line; `cc1`..`cc8` EXEC
-  `/LIB/CC/CC2`..`CC9` with `CCW`, `cc9` returns. (`software/compiler/README.md`, "Native".)
-- **SEEK(handle, hi, lo)** positions a read handle (24 bits). The compiler's lexer needs it: a `/BIN` source nests
+  command, `/bin/cc` (`commands/cc.c`): it EXECs `/lib/cc/cc1` with `ccw` + its command line; `cc1`..`cc8` EXEC
+  `/lib/cc/cc2`..`cc9` with `ccw`, `cc9` returns. (`software/compiler/README.md`, "Native".)
+- **SEEK(handle, hi, lo)** positions a read handle (24 bits). The compiler's lexer needs it: a `/bin` source nests
   `#include`s five deep, and with four handles, one of them writing, only three can be open, so `target_inc.c`
   closes the outermost file and later opens it again and SEEKs to where it was.
 - **READN(handle, buf, n)** (25, 2026-09-25) and a faster **WRITE**: the compiler's passes read and wrote their work
@@ -264,9 +266,9 @@ native compiler"); a program could only end by returning from main. Two syscalls
   position, and the position moves past them, so GETC, READN, SEEK and READ mix in any order (a READ after a READN
   inside a sector gives that whole sector again from its start, then the position is the next sector's). A program
   moving from READ to READN must drop what it did to skip from a sector's start to the position after a SEEK: the
-  READN trial of `/BIN/ASM` (2026-09-26, `READN(fh, SDATA, 512)` in `asm.asm`'s `gs_rd`) kept its `GL_SKIP`, so after
+  READN trial of `/bin/asm` (2026-09-26, `READN(fh, SDATA, 512)` in `asm.asm`'s `gs_rd`) kept its `GL_SKIP`, so after
   every INCLUDE it threw away the first bytes of the outer file's rest and its NPOS ran behind (tests/asm's
-  QUIRKS.ASM: duplicate labels, a garbage label; everything without INCLUDE, CC4.ASM and a 171K source among them,
+  quirks.asm: duplicate labels, a garbage label; everything without INCLUDE, cc4.asm and a 171K source among them,
   byte-identical): that was the "stale data" reported, not the OS. `tests/os/rdn.session` (`tests/os/rdn.c`) pins the
   contract: every count and byte of READNs in nine sizes mixed with GETC over a 66K file, after SEEKs to boundaries,
   into sectors, around 64K, to the end and past it, mixed with READ; right after the WRITE of the same file (in
@@ -287,7 +289,7 @@ native compiler"); a program could only end by returning from main. Two syscalls
   byte-identical. `tests/os/rdnlow.session` boots a newly created volume with a 40K file at LBA 37 (tests/os/run.py
   `FRESH`); before the fix every read of it went wrong at byte 18,944. Fixed in `y1os.asm` (`y1os.c` was right).
 
-Tests: `tests/os/exec.session` (`tests/os/exe.c`, also built with `--stack 0xCFFF` as `/EXES`): EXIT from three
+Tests: `tests/os/exec.session` (`tests/os/exe.c`, also built with `--stack 0xCFFF` as `/exes`): EXIT from three
 recursive calls deep and from a program on its own stack, STATUS as the next program sees it, a chain of four EXECs
 in one command and the same under `>`, EXEC refused for a missing file, a directory, a file that would run past
 $CFFF and a 64-character path, SEEK inside a sector, to the end, past it and on a directory handle, and EXIT inside
@@ -305,7 +307,7 @@ with `--load 0x5000 --exec 0x5000`. A program is an ordinary y1cc program: `main
 compiler's `putchar`/`puts`, which `--os` sends through the CONOUT syscall so that the shell can redirect it,
 `argstr()` is its command tail, and files come from `#include "../lib_fs.c"` (which includes `lib_abi.c`).
 (A command can also be hand-written YACC1 assembly in `os/commands-asm/`, assembled at $5000 by the host assembler:
-`asm.asm`, `/BIN/ASM`, is the one so far. It calls the syscalls as y1cc's `sys()` does - the arguments into
+`asm.asm`, `/bin/asm`, is the one so far. It calls the syscalls as y1cc's `sys()` does - the arguments into
 SYSARG0..2 as big-endian words, `LDR R7,SYSTAB+2n` (SYSTAB2 for 22 and up) / `JSRUR R7`, the result from SYSRES,
 R3..R7, ACC and TMP clobbered - reads its tail at ARGBUF, returns with RET, and must clear its own variables; its
 header lists the conventions.) A C command:
@@ -350,10 +352,10 @@ The shared libraries (`#include "../lib_NAME.c"`; each includes what it needs, e
 | `lib_num.c` | `inc32`/`put32`: 32-bit counts and sizes on 16-bit ints |
 | `lib_err.c` | `eputs`/`eput2`/`eputc`: error messages on the raw console (ROM CHAROUT), never into a `>` file or a pipe |
 
-## The commands (`/BIN`, 2026-09-23)
+## The commands (`/bin`, 2026-09-23)
 
 Most were ported from the P8X (`os/PORT-PLAN.md` has the table: what changed and why, what was left out); each
-source file's header says the same, and `/MAN/NAME` is its page (`man NAME`, `man` alone lists them). Several file
+source file's header says the same, and `/man/name` is its page (`man NAME`, `man` alone lists them). Several file
 names, globs and `-` (the console until Ctrl-D) work wherever a command reads text.
 
 | Command | Does |
@@ -361,7 +363,7 @@ names, globs and `-` (the console until Ctrl-D) work wherever a command reads te
 | `asm [-h] SRC [OUT]` | the assembler (2026-09-25, below): RC/asm's dialect to a program file, or Intel hex with `-h` |
 | `asmc [-h] SRC [OUT]` | the same assembler built from its C source, the specification (2026-09-26, below) |
 | `awk [-F c] 'prog' [file...]` | one rule: `/re/ {print $1, $NF, NR, NF, "text"}` |
-| `cc prog.c [-o prog.asm] [y1cc options]` | the C compiler (2026-09-25): y1cc's nine passes, `/LIB/CC/CC1`..`CC9`, chained with EXEC; the assembly is byte-identical to y1cc.py's (`man cc`, `software/compiler/README.md` "Native") |
+| `cc prog.c [-o prog.asm] [y1cc options]` | the C compiler (2026-09-25): y1cc's nine passes, `/lib/cc/cc1`..`CC9`, chained with EXEC; the assembly is byte-identical to y1cc.py's (`man cc`, `software/compiler/README.md` "Native") |
 | `cat [file\|glob\|-]...` | print files byte-exact, or the console |
 | `cmp f1 f2` | the first differing byte and line, or silence |
 | `cp [-r] src dst` | copy a file, a glob into a directory, or (`-r`) a tree; load/exec kept |
@@ -376,14 +378,14 @@ names, globs and `-` (the console until Ctrl-D) work wherever a command reads te
 | `find pattern [dir]` | paths whose name contains the text, or matches the glob |
 | `grep [-r] re [file...\|dir]` | matching lines; `NAME:` with several files; `-r` a tree |
 | `head [-N] [file...]` / `tail [-N] [file...]` | the first / last N lines (10; tail up to 40) |
-| `hello [args]` | the first /BIN program |
+| `hello [args]` | the first /bin program |
 | `help` | the command list |
 | `kermit -r` / `-s FILE...` / `-x` | file transfer with the Mac over the console line (2026-09-26, below): receive, send, server |
 | `ls [path]` | a plain listing through opendir/readdir |
-| `make [-n] [-B] [-f file] [target...]` | build targets from a Makefile (2026-11-03): the recipes go into `MAKE.SH`, which the shell runs as a script; no file dates, so what is missing is built (`man make`, "The sources on the disk" below) |
-| `man [name]` | `/MAN/NAME` through the pager; alone: the page names |
+| `make [-n] [-B] [-f file] [target...]` | build targets from a Makefile (2026-11-03): the recipes go into `make.sh`, which the shell runs as a script; no file dates, so what is missing is built (`man make`, "The sources on the disk" below) |
+| `man [name]` | `/man/name` through the pager; alone: the page names |
 | `mkdir [-s N] path` | a directory; `-s` N sectors, 1..64 (16 entries each, less `.` and `..`): 2026-11-03, written on raw sectors as `pack` does, since the kernels and the MKDIR syscall make 4 sectors (62 entries) and the C kernel has no room for more; without `-s` the syscall |
-| `md [-p] [file]` | Markdown rendered (ANSI, or plain with `-p`), paged; names are looked up in `/DOCS` too; alone: the list |
+| `md [-p] [file]` | Markdown rendered (ANSI, or plain with `-p`), paged; names are looked up in `/docs` too; alone: the list |
 | `more [file...]` | page text (or stdin: `dir -R \| more`): space, Enter, q from the keyboard |
 | `mv src dst` | rename in place (RENAME), or move to another directory (copy + delete), globs into a directory |
 | `pack` | compact the volume: slide every file and directory down over the dead sectors, lower the free pointer (below) |
@@ -397,39 +399,39 @@ names, globs and `-` (the console until Ctrl-D) work wherever a command reads te
 | `video [on\|off\|clear\|init\|probe]` | the video card (2026-09-25, below): status, mirror the console on the screen, clear it, program the CRTC |
 | `wc [file...]` | lines, words, bytes (32-bit) |
 
-Also on the disk: `/LIB` (2026-09-25: the compiler's passes `/LIB/CC/CC1`..`CC9`, built with `make -C os passes`,
-and `/LIB/Y1CCRT.TXT`, `/LIB/Y1LIB.C`), `/MAN` (the pages, from `os/man/`), `/DOCS` (this README as `OS.MD`, the compiler README as
-`Y1CC.MD`, `OSPLAN.MD`, `PORT.MD`, `KERMIT.MD` (2026-09-26: the Mac side of `kermit`) and `MDDEMO.MD`, md's own sample), and `/FRUIT.TXT` + `/FRUIT2.TXT`, seven lines of
+Also on the disk: `/lib` (2026-09-25: the compiler's passes `/lib/cc/cc1`..`CC9`, built with `make -C os passes`,
+and `/lib/y1ccrt.txt`, `/lib/y1lib.c`), `/man` (the pages, from `os/man/`), `/docs` (this README as `os.md`, the compiler README as
+`y1cc.md`, `osplan.md`, `port.md`, `kermit.md` (2026-09-26: the Mac side of `kermit`) and `mddemo.md`, md's own sample), and `/fruit.txt` + `/fruit2.txt`, seven lines of
 sample data for trying the filters (`sort`, `uniq`, `awk`, `diff` ... the man pages' examples use them).
 
-### The sources on the disk: `/SRC` (2026-11-03)
+### The sources on the disk: `/src` (2026-11-03)
 
-`/SRC` holds the sources of the disk's programs at their paths in the repository, so every `#include` resolves on
-the machine as on the Mac: `/SRC/os/commands` (the `/BIN` commands' C), `/SRC/os` (the C libraries `lib_*.c`, the
+`/src` holds the sources of the disk's programs at their paths in the repository, so every `#include` resolves on
+the machine as on the Mac: `/src/os/commands` (the `/bin` commands' C), `/src/os` (the C libraries `lib_*.c`, the
 generated tables `asm_optab.c`, `dis_optab.c`, `kermit_io.c`, and both kernels with `strings.txt`;
-`kermit_io.asm` is `kermitio.asm`, P8XFS names being 12 characters), `/SRC/os/commands-asm` (`asm.asm`,
-`asmtab.inc`) and `/SRC/software/compiler/c` (the native compiler's passes: `target/*.c`, the `cc*_*.c` and `p*.c`
+`kermit_io.asm` is `kermitio.asm`, P8XFS names being 12 characters), `/src/os/commands-asm` (`asm.asm`,
+`asmtab.inc`) and `/src/software/compiler/c` (the native compiler's passes: `target/*.c`, the `cc*_*.c` and `p*.c`
 they include, `ylim/`). 97 files, 768 KB; the volume is 4 MB (8,192 sectors) since then. Each source directory has
 a Makefile, generated by `os/mksrcmk.py` from the tree and os/Makefile's flags:
 
 ```
-cd /SRC/os/commands                  make TOUCH, make all, make install (-> /BIN)
-cd /SRC/os/commands-asm              ASM from its assembly (-> /BIN/ASM)
-cd /SRC/software/compiler/c/target   CC1 .. CC9 (-> /LIB/CC)
-cd /SRC                              make: all three, one after the other; make install
+cd /src/os/commands                  make TOUCH, make all, make install (-> /bin)
+cd /src/os/commands-asm              ASM from its assembly (-> /bin/asm)
+cd /src/software/compiler/c/target   CC1 .. CC9 (-> /lib/cc)
+cd /src                              make: all three, one after the other; make install
 ```
 
-`tests/native/srcmake.py` (in `make check`) runs `cd /SRC`, `make`, `make` again and `make install` on the emulated
+`tests/native/srcmake.py` (in `make check`) runs `cd /src`, `make`, `make` again and `make install` on the emulated
 machine: 45 programs, every one byte-identical to the Mac's build of the same source, the second `make` compiling
 nothing. Two commands are not in `all` or `install`: `help` (its text is over pass 1's 1,800-byte string pool) and
-`kermit` (`kermit_io.c`'s byte table is over pass 3's node limit); `/BIN` keeps the Mac's builds of them. The
+`kermit` (`kermit_io.c`'s byte table is over pass 3's node limit); `/bin` keeps the Mac's builds of them. The
 kernels are there to read: building one needs `mkstrings.py` and installing it the boot sectors, both on the Mac.
-The `/SRC` directories have 16-sector extents (254 entries): a build leaves a program, its `.ASM` and the
-compiler's 14 `CCW.*` work files in the directory.
+The `/src` directories have 16-sector extents (254 entries): a build leaves a program, its `.ASM` and the
+compiler's 14 `ccw.*` work files in the directory.
 
 ### `kermit` (2026-09-26)
 
-`/BIN/KERMIT` (`commands/kermit.c`, `kermit_io.asm`) moves files between Y1/OS and the Mac over the console cable with
+`/bin/kermit` (`commands/kermit.c`, `kermit_io.asm`) moves files between Y1/OS and the Mac over the console cable with
 the Kermit protocol: C-Kermit on the Mac (`docs/procedures/KERMIT.md`, the how-to: settings, `tools/y1.ksc`, sessions)
 or `tools/y1kermit.py`. `kermit -r` receives into the current directory, `kermit -s FILE...` sends (globs), `kermit -x`
 is a server (the Mac SENDs, GETs, FINISHes). The console IS the line, so nothing is printed while packets flow; a
@@ -446,7 +448,7 @@ mode; the file handling below). `kermit.c`'s header lists every change and keeps
 |---|---|
 | Protocol | short packets (up to 94), window 1 (stop-and-wait), block checks 1, 2, 3 (16-bit CRC; the sender proposes, 3 by default), control prefix `#`, repeat counts `~`, 8th-bit prefix `&` only when the other side asks (the line is 8 bits), attribute packets (size, text/binary; a refused file is skipped); server: I, S, R (GET, a glob too), G F / G L (FINISH, BYE). Not: long packets, sliding windows, streaming, locking shifts, RESEND, file dates, REMOTE commands (BACKLOG) |
 | Timeouts | what the other Kermit asks for, else 5 s; it asks for 15 s. 10 tries a packet, 60 before a transfer has started (the user is switching to the Mac). Three Ctrl-Cs while waiting cancel |
-| Files | received names: the leaf, upper case, 1..12 of `A-Z 0-9 . _ -` (NAME.EXT cut to 8.3 when too long), the name used goes back in the ACK. Data goes to `KERMIT.TMP` in the current directory and is renamed when complete: a same-named file is replaced only by a whole new one, a failed transfer leaves nothing (`-k` keeps it), `-n` never replaces (`NAME~1`..`~99`), `-a ADDR` sets load/exec. Binary by default both ways; text mode (the sender's attribute, or `-T` to send) drops / adds the CR of CR LF. Receiving takes the one write handle: not inside `>` or a pipe |
+| Files | received names: the leaf, its case kept (upper-cased until 2026-11-03), 1..12 of `A-Z a-z 0-9 . _ -` (name.ext cut to 8.3 when too long), the name used goes back in the ACK. Data goes to `kermit.tmp` in the current directory and is renamed when complete: a same-named file is replaced only by a whole new one, a failed transfer leaves nothing (`-k` keeps it), `-n` never replaces (`NAME~1`..`~99`), `-a ADDR` sets load/exec. Binary by default both ways; text mode (the sender's attribute, or `-T` to send) drops / adds the CR of CR LF. Receiving takes the one write handle: not inside `>` or a pipe |
 | Size | 19,349 bytes image + 8,118 data (`--xisa`: 17,524 + 8,373), of which `kermit_io` is 530 bytes of code |
 
 **The line: `kermit_io.asm`.** At 1 MHz the YACC1 runs ~30,000 instructions a second and 38400 baud delivers a
@@ -493,7 +495,7 @@ FIFO, the timing at the real clock and C-Kermit itself are to verify (BACKLOG).
 
 ### `video` (2026-09-25)
 
-`/BIN/VIDEO` (`commands/video.c`) switches the ROM's video driver (`ROM 2026-09-25`, `docs/programming/MONITOR.md`
+`/bin/video` (`commands/video.c`) switches the ROM's video driver (`ROM 2026-09-25`, `docs/programming/MONITOR.md`
 section 11). The ROM probes the card at $D000 at reset (`VIDPRES`, $0FF0) and, while `VIDMIR` ($0FF1) is set, its
 CHAROUT writes every console byte to the screen as well: `video on` / `off` set that flag (on refuses when no card
 was found), `video clear` and `video init` call the ROM's video entry `VIDCTL` ($FFBC: 2 clear, 1 CRTC table + clear),
@@ -505,23 +507,23 @@ command says the ROM has no video driver and changes nothing. The addresses are 
 
 ### `asm` (2026-09-25) and `asmc` (2026-09-26)
 
-`/BIN/ASM` assembles on the machine what the host assembler (`software/assembler`, RC/asm with `yacc1.def`)
-assembles on the Mac, byte for byte: y1cc's output, the ROM monitor, the OS. `asm HELLO.ASM` writes the program file
+`/bin/asm` assembles on the machine what the host assembler (`software/assembler`, RC/asm with `yacc1.def`)
+assembles on the Mac, byte for byte: y1cc's output, the ROM monitor, the OS. `asm hello.asm` writes the program file
 `HELLO` (the bytes from the first address to the last, gaps as zeros, with the load address and END's exec address in
-its directory entry), which `run HELLO` loads and calls; `asm -h HELLO.ASM` writes `HELLO.IMG`, the Intel hex the host
+its directory entry), which `run HELLO` loads and calls; `asm -h hello.asm` writes `hello.img`, the Intel hex the host
 writes. Errors are reported with their line numbers and the output is deleted. Sources are up to 16M (24-bit file
 positions since 2026-09-25; 64K before), and the output needs the one write handle, so `asm` does not run inside a
 `>` or a pipe.
 
 It exists twice, and the two behave identically (the same command line, messages, files and exit behaviour):
 
-- **`/BIN/ASM`** since 2026-09-26 is `commands-asm/asm.asm`, the assembler hand-written in YACC1 assembly: 9,239 bytes,
+- **`/bin/asm`** since 2026-09-26 is `commands-asm/asm.asm`, the assembler hand-written in YACC1 assembly: 9,239 bytes,
   a 20,292-byte symbol table (5 + the name's length a label: about 1,660 of y1cc's labels; the biggest compiler pass,
   cc8, has 1,383), and 4.3-5.3 times faster than the C build (`cat`'s 1,504 lines of y1cc output in 2.75M
   instructions, 1 min 29 s at 1 MHz; compiler pass cc8's 235K in 26.4M). It uses the 2026-09-24 microcode's ADDIW and
   SHL16, as the native compiler's passes do. Built by the host assembler (`make`: `build/asma`), its instruction table
   `commands-asm/asmtab.inc` INCLUDEd.
-- **`/BIN/ASMC`** is `commands/asm.c` (the `/BIN/ASM` of 2026-09-25): **the specification** - asm.asm was written from
+- **`/bin/asmc`** is `commands/asm.c` (the `/bin/asm` of 2026-09-25): **the specification** - asm.asm was written from
   it routine by routine, and a change of behaviour goes into both. 13,186 bytes + 19,569 of data, a 17,088-byte symbol
   table (16,640 until 2026-09-25, when cc8's buffered I/O outgrew it).
 
@@ -529,22 +531,22 @@ Both instruction tables (`asm_optab.c`, `commands-asm/asmtab.inc`) are generated
 `tools/gen_y1_optab.py` (the Makefile regenerates them), so the assemblers cannot disagree about an instruction; the
 disassembler's (`dis_optab.c`, below) comes from the same file.
 `tests/asm/run.py` compares asm.c with RC/asm on 336 sources (built for the Mac against an emulation of these
-syscalls), then runs `/BIN/ASM` under Y1/OS on the same sources and compares its messages and files with asm.c's
-(`--uc`: 27 of them on the microcode emulator too); with `--target` it runs `/BIN/ASM` in scripted sessions on both
+syscalls), then runs `/bin/asm` under Y1/OS on the same sources and compares its messages and files with asm.c's
+(`--uc`: 27 of them on the microcode emulator too); with `--target` it runs `/bin/asm` in scripted sessions on both
 emulators: y1cc programs assembled and run, the monitor assembled to `firmware/monitor/monitor.img`.
 `tests/native/selfhost.py` has both rebuild themselves natively (the fixed point). `man asm`, `man asmc`, and
 `docs/programming/ASSEMBLER.md` section 10.
 
 ### `disasm` (2026-09-29)
 
-`/BIN/DISASM` (`commands/disasm.c`, 6,107 bytes + 230 of data) turns machine code back into the source the assemblers
+`/bin/disasm` (`commands/disasm.c`, 6,107 bytes + 230 of data) turns machine code back into the source the assemblers
 take, one instruction a line with its address and bytes:
 
 ```
-disasm /BIN/HELLO            5000  1B 50 90  MVIW R3,5090H      a program file as if loaded (its load address)
-disasm /BIN/HELLO 5010 10    16 bytes of it from 5010 (START and COUNT in hex)
+disasm /bin/hello            5000  1B 50 90  MVIW R3,5090H      a program file as if loaded (its load address)
+disasm /bin/hello 5010 10    16 bytes of it from 5010 (START and COUNT in hex)
 disasm -m F000 20            memory: F000  A0 F0 03  BR 0F003H ... (the ROM monitor; COUNT 40 by default)
-disasm -s P > P.ASM          the source alone (an ORG, then the instructions): asm P.ASM Q gives P's bytes again
+disasm -s P > p.asm          the source alone (an ORG, then the instructions): asm p.asm Q gives P's bytes again
 ```
 
 The instruction text is exactly RC/asm's dialect: hex numbers with an `H` and a `0` before a letter (`0FFH`, `0F000H`;
@@ -573,16 +575,16 @@ among them.
 **Tests.** `tests/disasm/run.py` (`make disasm-test`, in `make check`, ~20 s) builds `disasm.c` for the Mac (int =
 unsigned short, the few syscalls emulated: `host_disasm.c`, `host_sys.c`) and round-trips: `disasm -s`, RC/asm, the
 same bytes, and the listing must be the `-s` lines behind a true address and bytes. On the 326 sources of `tests/asm`'s
-corpus RC/asm accepts, the 47 programs of the OS build (`/BIN`, asm.asm, the nine compiler passes, the OS image), the
+corpus RC/asm accepts, the 47 programs of the OS build (`/bin`, asm.asm, the nine compiler passes, the OS image), the
 ROM at $E000 and its monitor half from memory, random bytes and every opcode followed by every operand byte: 382 of
 382, 5.9 million lines; plus START/COUNT ranges and the errors. `tests/os/disasm.session` runs it under Y1/OS on both
 emulators on `tests/os/dis.asm` (every operand form, then DBs): a file, a range, memory after `load`, `| wc`, the
-errors, and `disasm -s` reassembled by `/BIN/ASM` on the machine and compared with `cmp`: identical.
+errors, and `disasm -s` reassembled by `/bin/asm` on the machine and compared with `cmp`: identical.
 
 ### `pack` (2026-09-23)
 
 Only the free pointer allocates and nothing is freed, so every deleted or replaced file, every pipe temp file, every
-copied `>>` and every removed directory leaves dead sectors. `/BIN/PACK` (`commands/pack.c`, 5,397 bytes) gets them
+copied `>>` and every removed directory leaves dead sectors. `/bin/pack` (`commands/pack.c`, 5,397 bytes) gets them
 back. It is a program, not a built-in, so the OS image did not grow; it reads and writes raw sectors through the ROM's
 CFREAD/CFWRITE (the syscalls hide where an entry sits) and uses the OS only for STDIO, GETCWD and CHDIR.
 
@@ -624,13 +626,13 @@ byte-identical, and a fresh boot's `pack` completes with no dead sector: 120 of 
 one-step-only build loses a file in 16 of 40 cuts, so the check has teeth. What remains is a sector torn by the power
 going mid-write (the CF card's business, as for any write the OS makes).
 
-The scratch area needs room right above the free pointer (the largest two-step extent: 91 sectors for `/DOCS/PORT.MD`
+The scratch area needs room right above the free pointer (the largest two-step extent: 91 sectors for `/docs/port.md`
 today). The volume has no size field; the bound is LBA 65535 (the free pointer and every LBA are 16 bits, 32 MB), and
 the card itself: `pack` reads the last scratch sector first, and a real card refuses an LBA past its end, so `pack`
 stops with "no room on the card" before writing anything. (The emulators' CF model reads zeros past the image and
 grows it on a write, so that refusal has only been reasoned, not run.) Each move costs up to twice the sector copies
 it did with one step. `pack -v` prints each move and its steps. `tests/os/pack.session` fragments a disk (deletes,
-replaces, a pipe, a copied `>>`, `rmdir`, a hole just after /BIN that moves /MAN, /DOCS and a three-level tree), packs
+replaces, a pipe, a copied `>>`, `rmdir`, a hole just after /bin that moves /man, /docs and a three-level tree), packs
 from inside a subdirectory, and checks from the host that nothing is dead any more, that every file of the pristine
 image is byte-identical, and that the next file lands at the new free pointer.
 
@@ -709,16 +711,16 @@ sessions ~1.55x; most of the remaining time is the programs, compiled C, and the
 - **Tests.** `tests/os/run.py` passes every session on both emulators with either OS (it compares the banner without
   its version), `run.py --cuts 60` passed 120 of 120 (then 119: a cut in pack's own window, the same with the C OS, BACKLOG.md), and a C-versus-assembly differential run (the same disk, the
   same keystrokes; transcript and every sector of the disk afterwards compared) agreed on the sessions plus the
-  built-ins that `/BIN` normally hides, loads at the address limits, redirection and pipe edge cases, and a syscall
+  built-ins that `/bin` normally hides, loads at the address limits, redirection and pipe edge cases, and a syscall
   torture program (every call with odd handles, paths, names and buffers, the `ENTRY` record after each).
 
 **Behaviours of `y1os.c` kept as they are** (the transcripts are the contract; each is in BACKLOG.md):
 
 1. CLOSE of a read handle returns 1 and of a directory handle **3** (its mode), not the documented 1.
-2. A trailing slash after a FILE name still resolves (`fopen("README.TXT/")` opens it).
+2. A trailing slash after a FILE name still resolves (`fopen("README/")` opens it).
 3. CHDIR with a component over 12 characters matches an entry whose 12-character name is its first 12 characters,
-   and the current path then carries the whole typed name (`cd /D1/AAAAAAAAAAAAXYZ` gives the prompt
-   `/D1/AAAAAAAAAAAAXYZ>`); OPEN/RESOLVE refuse such a component.
+   and the current path then carries the whole typed name (`cd /d1/aaaaaaaaaaaaxyz` gives the prompt
+   `/d1/aaaaaaaaaaaaxyz>`); OPEN/RESOLVE refuse such a component.
 4. CHDIR into a directory whose path would pass 62 characters moves the current directory but leaves the path (the
    prompt, GETCWD) at the parent's: `path_push` gives up silently.
 5. DELETE returns 1 even when the tombstone cannot be written; `ren` accepts a new name with spaces (`ren A B C`
@@ -736,5 +738,5 @@ intact (fsck, the boot block, every pristine file byte-identical); against the o
 
 FORMAT and FSCK on the target (the host
 tool has them), a second write handle (so `cp` works inside a `>` or a pipe), concurrent pipes (they run one
-after the other through temp files), `2>` (errors always go to the screen), the command history, BASIC as `/BIN/BASIC`, and the CF interface in hardware (planned on
+after the other through temp files), `2>` (errors always go to the screen), the command history, BASIC as `/bin/basic`, and the CF interface in hardware (planned on
 the memory card), all in BACKLOG.md.

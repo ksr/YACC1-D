@@ -2,53 +2,53 @@ BOOT FROM CF
 Y1/OS v0.2 (2026-09-23)  P8XFS v2
 /> 
 
-/> bigw /BIG1 70
+/> bigw /big1 70
 
-bigw: 71687 bytes to /BIG1
-/> bigw /BIG2 140
+bigw: 71687 bytes to /big1
+/> bigw /big2 140
 
-bigw: 143367 bytes to /BIG2
-/> dir /BIG1
+bigw: 143367 bytes to /big2
+/> dir /big1
 
-  71687  BIG1
-/> dir /BIG2
+  71687  big1
+/> dir /big2
 
- 143367  BIG2
-/> bigr /BIG1
-
-bigr: 71687 bytes, pattern ok
-/> bigr -s /BIG1
+ 143367  big2
+/> bigr /big1
 
 bigr: 71687 bytes, pattern ok
-/> bigr -s /BIG2
+/> bigr -s /big1
+
+bigr: 71687 bytes, pattern ok
+/> bigr -s /big2
 
 bigr: 143367 bytes, pattern ok
-/> bigr -k /BIG2
+/> bigr -k /big2
 
 bigr seek: 1.1.1.1. 1100
-/> bigr -n /BIG2
+/> bigr -n /big2
 
 bigr: 143367 bytes, pattern ok
-/> bigw -v /BIG3 70
+/> bigw -v /big3 70
 
-bigw: 71687 bytes to /BIG3
-/> bigr /BIG3
-
-bigr: 71687 bytes, pattern ok
-/> bigr -n /BIG3
+bigw: 71687 bytes to /big3
+/> bigr /big3
 
 bigr: 71687 bytes, pattern ok
-/> cat /BIG1 > /COPY1
+/> bigr -n /big3
 
-/> dir /COPY1
+bigr: 71687 bytes, pattern ok
+/> cat /big1 > /copy1
 
-  71687  COPY1
-/> echo tail >> /BIG2
+/> dir /copy1
 
-/> dir /BIG2
+  71687  copy1
+/> echo tail >> /big2
 
- 143372  BIG2
-/> bigr -s /BIG2
+/> dir /big2
+
+ 143372  big2
+/> bigr -s /big2
 
 bigr: 143372 bytes, first difference at 143367
 /> exit

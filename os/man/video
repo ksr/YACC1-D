@@ -32,7 +32,7 @@ DESCRIPTION
 
     "video on" says "no video card at D000" when the ROM found none.
     On an older ROM video says "this ROM has no video driver" and
-    changes nothing. video is /BIN/VIDEO.
+    changes nothing. video is /bin/video.
 
 EXAMPLES
     video            e.g.  video card found at D000, mirror off, ...

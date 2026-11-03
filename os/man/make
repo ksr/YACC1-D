@@ -20,43 +20,43 @@ DESCRIPTION
     not exist, when one of its prerequisites was built in this run, or
     always with -B. A prerequisite with no rule must exist. A target
     with no recipe (all:) is made when any of its prerequisites is.
-    To rebuild one program after editing its source: make -B NAME, or
-    del NAME and make NAME.
+    To rebuild one program after editing its source: make -B name, or
+    del name and make name.
 
     make runs nothing itself. The recipe lines of every target to
-    build go, in order, into MAKE.SH in the current directory, and make
+    build go, in order, into make.sh in the current directory, and make
     EXECs it: the shell runs it as a script (man sh), each line shown
     as it runs, and the first command that fails stops it.
 
     -n prints the recipe lines instead (nothing is written or run).
     -B builds every target reached. -f reads another file.
 
-    A recipe may cd and run make again: that make's MAKE.SH runs, then
-    the first goes on (/SRC/Makefile does this for every directory).
+    A recipe may cd and run make again: that make's make.sh runs, then
+    the first goes on (/src/Makefile does this for every directory).
 
 THE SOURCES ON THE DISK
-    /SRC holds the sources of /BIN, /LIB/CC and the OS, at their paths
+    /src holds the sources of /bin, /lib/cc and the OS, at their paths
     in the repository, each directory with a Makefile:
 
-        cd /SRC/os/commands        make NAME, make all, make install
-        cd /SRC/os/commands-asm    ASM, /BIN/ASM from its assembly
-        cd /SRC/software/compiler/c/target
-                                   CC1 .. CC9, the compiler's passes
-        cd /SRC                    make: all three; make install
+        cd /src/os/commands        make name, make all, make install
+        cd /src/os/commands-asm    asm, /bin/asm from its assembly
+        cd /src/software/compiler/c/target
+                                   cc1 .. cc9, the compiler's passes
+        cd /src                    make: all three; make install
 
-    install copies the programs to /BIN or /LIB/CC. A command takes
+    install copies the programs to /bin or /lib/cc. A command takes
     minutes at 1 MHz; the passes much longer.
 
 LIMITS
     12,000 bytes of Makefile, 150 rules, 40 variables; one target a
     rule; a recipe line expands to 128 characters at most. No pattern
-    rules, no include. MAKE.SH needs the write handle: make inside > or
+    rules, no include. make.sh needs the write handle: make inside > or
     a pipe cannot write it.
 
 EXAMPLES
     make -n             what would run
-    make TOUCH          build one command here
-    make -B TOUCH       again, after editing touch.c
+    make touch          build one command here
+    make -B touch       again, after editing touch.c
 
 NOTES
     Added 2026-11-03 (os/commands/make.c), after P8X's make, which is a
