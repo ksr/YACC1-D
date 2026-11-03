@@ -15,7 +15,8 @@ BOOT FROM CF
 MAN <DIR>
 DOCS <DIR>
 LIB <DIR>
-7 entries
+SRC <DIR>
+8 entries
 /> ls /NOPE
 
 ls: not found
@@ -30,7 +31,8 @@ BOOT FROM CF
 MAN <DIR>
 DOCS <DIR>
 LIB <DIR>
-7 entries
+SRC <DIR>
+8 entries
 /BIN> cat /README.TXT ../README.TXT
 
 Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
@@ -74,8 +76,9 @@ BOOT FROM CF
 MAN <DIR>
 DOCS <DIR>
 LIB <DIR>
+SRC <DIR>
 COPY.TXT 156  @B000
-8 entries
+9 entries
 /> exit
 
 bye

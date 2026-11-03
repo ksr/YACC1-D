@@ -777,6 +777,23 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Move off NetBeans (README decision 7).
 
 ## Disk operating system (plan `docs/system/OS-PLAN.md`, decisions 2026-09-22)
+- **2026-11-03: scripts, `make` and the sources on the disk** (`os/README.md` "Scripts" and "The sources on the
+  disk"; `man sh`, `man make`). Both kernels: `sh path`, `NAME.SH` as a command, and EXEC of a `NAME.SH` run a
+  script, its lines as typed; a shell message or a status other than 0 stops it; four nest. `/BIN/MAKE`
+  (`os/commands/make.c`): Makefile rules and variables, no file dates (what is missing is built, `-B` all), the
+  recipes into `MAKE.SH`, which it EXECs. `os/disk.img` is 4 MB with `/SRC` (97 sources at their repository paths,
+  a Makefile per directory from `os/mksrcmk.py`). With it: `asm` and `asmc` end with status 1 after an error, and
+  the compiler's passes check CLOSE (a full directory made a silent empty output). Tests: `tests/os/sh.session`
+  (both kernels, both emulators), `tests/native/srcmake.py` (in `make check`: `cd /SRC`, `make`, `make install`
+  on the emulated machine, 45 programs byte-identical to the Mac's). **Not on the machine yet**: the CF still holds
+  the image of 2026-11-03 morning (old kernel, no `/SRC`); rewrite it (`tools/cfcard.py` with a reader, seconds; or
+  `cfwrite_bus.py`, now up to the free pointer only, about 3.5 h). Open:
+  - `help` and `kermit` do not build natively: `help.c`'s text is over pass 1's string pool (STRPOOL 1,800, and
+    cc1 has 373 bytes of room), `kermit_io.c`'s byte table over pass 3's NODES_MAX. Shorter help text (or the text
+    in a file), and a table form the compiler takes, would put them in `/SRC`'s `all`.
+  - The C kernel (`y1os.c`, the specification) has 10 bytes left of its 16,320 after `sh` (its sector, line and path
+    buffers moved to low RAM to make room): the next OS feature must find room in it first.
+  - `pack` inside a running script moves the script under the reader (documented in `man sh`; not guarded).
 - **First boot on the machine from the CF (2026-11-03): Y1/OS comes up from memory v2.0's CF section** (disk written
   through the bus tester, `tools/cfwrite_bus.py`, 2,048 sectors verified). **Line ends: fixed in the tree
   2026-11-03, the CF in the machine still has the old kernel.** Y1/OS sent a bare LF (the monitor and BASIC send LF

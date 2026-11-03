@@ -32,7 +32,7 @@ BOOT FROM CF
 /S> 
 QUIRKS: 210 bytes, 11 labels, load 3000 exec 3000
 /S> 
-CC4: 5582 bytes, 444 labels, load 5000 exec 5000
+CC4: 5618 bytes, 446 labels, load 5000 exec 5000
 /S> 
 asm: 5: undefined label: NOTHERE
           LDAI nothere
@@ -44,8 +44,8 @@ BOOT FROM CF
 /S> 
    2327  CAT  @5000
   28704  CAT.ASM  @B000
-   5582  CC4  @5000
-  66269  CC4.ASM  @B000
+   5618  CC4  @5000
+  66673  CC4.ASM  @B000
      67  ECHOX  @5000
    1112  ECHOX.ASM  @B000
     202  ERR.ASM  @B000

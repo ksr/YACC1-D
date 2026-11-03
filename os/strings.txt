@@ -39,6 +39,12 @@ S_HELP1     "Y1/OS: dir [path]  cd path  pwd  cat path  load path  run path [arg
 S_HELP2     "       save path addr len (hex)  del path  ren path newname  mkdir path  rmdir path"
 S_HELP3     "       or the name of a program in /BIN (or here), followed by its arguments"
 S_HELP4     "       cmd [< in] [> out | >> out] [| cmd ...]  redirection, pipes (4 commands)"
+S_HELP5     "       sh file  run its lines (NAME.SH: the same)"
+
+# sh: scripts (2026-11-03)
+S_SHDEEP    "sh: too deep"
+S_SHBIG     "sh: over 64K"
+S_SHSTOP    "sh: stopped"
 
 # names
 S_BIN       "/BIN/"
@@ -63,3 +69,4 @@ S_CMKDIR    "mkdir"
 S_CRMDIR    "rmdir"
 S_CHELP     "help"
 S_CQ        "?"
+S_CSH       "sh"

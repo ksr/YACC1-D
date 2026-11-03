@@ -61,14 +61,23 @@
 #define M_DIR 3
 #define NOSEC 65535             /* h_cur: nothing loaded */
 
-char sbuf[512];                 /* the OS's own sector buffer: directory scans, the boot block */
+/* 2026-11-03: the sector buffer and the line and path buffers live in low RAM while the OS runs, out of its 16K
+   (as the handles' buffers at HBUFS): page zero (nothing else uses it) and BASIC's variables, state and input line,
+   idle while the OS runs, whose image has overwritten BASIC's program at $1000 anyway. $0200-$020F stays unused:
+   it is where a bad handle 0's buffer would fall (hb(0)), and tests/os/badhandle watches it. main() points them. */
+#define LOW_SBUF 0x0000         /* 512: $0000-$01FF */
+#define LOW_PBUF 0x0210         /* 64 */
+#define LOW_CWD 0x0250          /* 64 */
+#define LOW_LINE 0x0290         /* 130 */
+#define LOW_XPATH 0x0320        /* 64, to $035F */
+char *sbuf;                     /* the OS's own sector buffer (512): directory scans, the boot block */
 /* the handles' sector buffers, 512 each: hb(h) = HBUFS + 512 * (h - 1), $0400..$0BFF. In the system page since
    2026-09-23 (they left the OS's 16K to make room for redirection): BASIC's token-line scratch $0400-$04FF (BASIC
    is not running while the OS is) and the free $0500-$0BFF, below the stack's floor $0C00 (firmware/abi/README.md) */
 #define HBUFS 0x0400
-char line[130];                 /* the command line (up to 128 characters; the tail goes to ARGBUF, ARGMAX) */
-char cwdpath[64];               /* the current path, for the prompt and GETCWD */
-char pbuf[64];                  /* a working copy of a path (parent_of, fs_chdir) */
+char *line;                     /* the command line (130: up to 128 characters; the tail goes to ARGBUF, ARGMAX) */
+char *cwdpath;                  /* the current path (64), for the prompt and GETCWD */
+char *pbuf;                     /* a working copy of a path (64; parent_of, fs_chdir) */
 int cwd_lba, cwd_secs;          /* the current directory's extent */
 int rlba, rsecs;                /* the directory resolve() is scanning */
 int p_lba, p_secs;              /* parent_of(): the directory that holds the leaf */
@@ -94,9 +103,15 @@ int w_oslba, w_ooff;            /* the live same-named file a CREATE replaces: i
 int os_sp;                      /* the shell's SP inside the stub, while a program runs */
 int ex_addr;                    /* the program's exec address */
 int ex_code;                    /* its status: 0, or what it gave EXIT; STATUS ($0F0E) after it */
-char ex_pend;                   /* EXEC: xpath runs next */
-char xpath[64];                 /* EXEC's program, out of the program area */
+char ex_pend;                   /* EXEC: xpath runs next (1 a program; 2 a script, NAME.SH: 2026-11-03) */
+char *xpath;                    /* EXEC's program (64), out of the program area */
 char stub[] = {15, 81, 237, 0, 0, 247, 0, 0, 6, 7, 5, 241, 0, 0, 5};
+/* scripts (2026-11-03): the running one's extent, length and read position (up to 64K, read from its sectors: a
+   `cd` inside it, or the file replaced while it runs, changes nothing); up to 4 nest, the interrupted ones in sc_stk
+   (3 words each); sc_err: the line failed (a shell diagnostic, or a program's status other than 0) */
+int sc_dep, sc_lba, sc_len, sc_pos, sc_csec;
+int sc_stk[9];
+char sc_err;
 int si_h, so_h;                 /* the shell's redirection: 0 = the console, else the handle of the < file / pipe
                                    (SI_EMPTY: a pipe stage after one that wrote its own > file: empty input) and of
                                    the > or >> file / pipe */
@@ -125,7 +140,9 @@ void raw_out(int c) {           /* the raw console (CHAROUT); an LF goes out as 
     if (c == 10) bios(CHAROUT, 0, 13);
 }
 void eputs(char *s) {           /* a diagnostic line on the raw console, whatever stdout is: the shell's errors
-                                   never land in a > file or a pipe */
+                                   never land in a > file or a pipe. It marks the line failed: a running script
+                                   stops after it (2026-11-03) */
+    sc_err = 1;
     while (*s) raw_out(*s++);
     raw_out(10);
 }
@@ -661,11 +678,17 @@ void h_exit() {                 /* EXIT(status): back to run_prog, as if the pro
     call(stub + 11);
 }
 int loadable();
+int is_sh();
 void h_exec() {                 /* EXEC(path, args): 0 when path cannot run; else the caller ends and path runs */
     char *p, *a, *b; int i;
     p = peekw(SYSARG0); a = peekw(SYSARG1);
-    if (strlen(p) > 63 || !resolve(p) || e_flags != F_FILE || !loadable()) { pokew(SYSRES, 0); return; }
+    if (strlen(p) > 63 || !resolve(p) || e_flags != F_FILE) { pokew(SYSRES, 0); return; }
     strcpy(xpath, p);
+    if (is_sh(p)) {             /* NAME.SH (2026-11-03): a script, which the shell runs after this command */
+        ex_pend = 2; ex_code = 0;
+        call(stub + 11);
+    }
+    if (!loadable()) { pokew(SYSRES, 0); return; }
     b = ARGBUF; i = 0;
     if (a) for (; i < ARGMAX && a[i]; i++) b[i] = a[i];    /* forward: an a inside ARGBUF is fine */
     b[i] = 0;
@@ -678,37 +701,41 @@ void h_stdio() {
     pokew(SYSRES, r);
 }
 
+int it;                         /* install(): the next SYSTAB2 slot */
+void inst(int f) { pokew(it, f); it += 2; }
+
 void install() {                /* SYSTAB2 <- the handlers, then its first 22 words to SYSTAB (2026-09-25): programs reach
                                    them with sys(SYS_x, ...), y1cc through SYSTAB for 0..21 (as every program compiled
                                    before SYSTAB2 does) and through SYSTAB2 for 22..31 */
     int i;
     for (i = 0; i < 64; i++) poke(SYSTAB2 + i, 0);     /* the slots not in use are 0 */
-    pokew(SYSTAB2 + 2 * SYS_OPEN, funcaddr(h_open));
-    pokew(SYSTAB2 + 2 * SYS_READ, funcaddr(h_read));
-    pokew(SYSTAB2 + 2 * SYS_GETC, funcaddr(h_getc));
-    pokew(SYSTAB2 + 2 * SYS_CLOSE, funcaddr(h_close));
-    pokew(SYSTAB2 + 2 * SYS_CREATE, funcaddr(h_create));
-    pokew(SYSTAB2 + 2 * SYS_WRITE, funcaddr(h_write));
-    pokew(SYSTAB2 + 2 * SYS_PUTC, funcaddr(h_putc));
-    pokew(SYSTAB2 + 2 * SYS_DELETE, funcaddr(h_delete));
-    pokew(SYSTAB2 + 2 * SYS_MKDIR, funcaddr(h_mkdir));
-    pokew(SYSTAB2 + 2 * SYS_RMDIR, funcaddr(h_rmdir));
-    pokew(SYSTAB2 + 2 * SYS_OPENDIR, funcaddr(h_opendir));
-    pokew(SYSTAB2 + 2 * SYS_READDIR, funcaddr(h_readdir));
-    pokew(SYSTAB2 + 2 * SYS_RESOLVE, funcaddr(h_resolve));
-    pokew(SYSTAB2 + 2 * SYS_GETCWD, funcaddr(h_getcwd));
-    pokew(SYSTAB2 + 2 * SYS_CHDIR, funcaddr(h_chdir));
-    pokew(SYSTAB2 + 2 * SYS_RENAME, funcaddr(h_rename));
-    pokew(SYSTAB2 + 2 * SYS_ENTRY, funcaddr(h_entry));
-    pokew(SYSTAB2 + 2 * SYS_CONIN, funcaddr(h_conin));
-    pokew(SYSTAB2 + 2 * SYS_CONST, funcaddr(h_const));
-    pokew(SYSTAB2 + 2 * SYS_CONOUT, funcaddr(h_conout));
-    pokew(SYSTAB2 + 2 * SYS_KEYIN, funcaddr(h_keyin));
-    pokew(SYSTAB2 + 2 * SYS_STDIO, funcaddr(h_stdio));
-    pokew(SYSTAB2 + 2 * SYS_EXIT, funcaddr(h_exit));
-    pokew(SYSTAB2 + 2 * SYS_EXEC, funcaddr(h_exec));
-    pokew(SYSTAB2 + 2 * SYS_SEEK, funcaddr(h_seek));
-    pokew(SYSTAB2 + 2 * SYS_READN, funcaddr(h_readn));
+    it = SYSTAB2;                       /* SYS_OPEN .. SYS_READN, in order */
+    inst(funcaddr(h_open));
+    inst(funcaddr(h_read));
+    inst(funcaddr(h_getc));
+    inst(funcaddr(h_close));
+    inst(funcaddr(h_create));
+    inst(funcaddr(h_write));
+    inst(funcaddr(h_putc));
+    inst(funcaddr(h_delete));
+    inst(funcaddr(h_mkdir));
+    inst(funcaddr(h_rmdir));
+    inst(funcaddr(h_opendir));
+    inst(funcaddr(h_readdir));
+    inst(funcaddr(h_resolve));
+    inst(funcaddr(h_getcwd));
+    inst(funcaddr(h_chdir));
+    inst(funcaddr(h_rename));
+    inst(funcaddr(h_entry));
+    inst(funcaddr(h_conin));
+    inst(funcaddr(h_const));
+    inst(funcaddr(h_conout));
+    inst(funcaddr(h_keyin));
+    inst(funcaddr(h_stdio));
+    inst(funcaddr(h_exit));
+    inst(funcaddr(h_exec));
+    inst(funcaddr(h_seek));
+    inst(funcaddr(h_readn));
     i = &os_sp; stub[3] = i >> 8; stub[4] = i; stub[12] = i >> 8; stub[13] = i;
     i = &ex_addr; stub[6] = i >> 8; stub[7] = i;
     for (i = 0; i < 2 * (SYS_OLD + 1); i++) poke(SYSTAB + i, peek(SYSTAB2 + i));
@@ -721,9 +748,13 @@ int dir_of(char *path) {                /* a directory handle for the shell, wit
     return open_ent(M_DIR);
 }
 
-int file_of(char *path) {               /* a read handle for the shell */
+int is_file(char *path) {               /* a file, with the messages (2026-11-03: shared with sh); 0 = said why */
     if (!resolve(path)) { eputs("not found"); return 0; }
     if (e_flags != F_FILE) { eputs("is a directory"); return 0; }
+    return 1;
+}
+int file_of(char *path) {               /* a read handle for the shell */
+    if (!is_file(path)) return 0;
     return open_ent(M_READ);
 }
 
@@ -791,8 +822,13 @@ void run_prog(char *args) {             /* e_* = the program (already loaded): a
         ex_pend = 0; ex_code = 0; ex_addr = e_exec;
         call(stub);                     /* back here when main returns, and from EXIT and EXEC */
         pokew(STATUS, ex_code);
+        if (ex_code) sc_err = 1;        /* a program that failed stops a running script */
         close_all();                    /* what the program left open (a pending write is registered) */
         read_free();                    /* the free pointer as the program left it: pack lowers it (2026-09-23) */
+        if (ex_pend == 2) {             /* it EXECed a script: the shell runs it after this command */
+            if (resolve(xpath)) sc_push();
+            return;
+        }
         if (!ex_pend || !load_file(xpath)) return;
     }
 }
@@ -856,7 +892,8 @@ int try_prog(char *name, char *args, int bin) {  /* /BIN/NAME (bin = 1) or NAME 
     if (bin) { strcpy(p, "/BIN/"); strcpy(p + 5, name); } else strcpy(p, name);
     upper(p);
     if (!resolve(p) || e_flags != F_FILE) return 0;
-    if (load_file(p)) run_prog(args);
+    if (is_sh(p)) sc_push();            /* NAME.SH (2026-11-03): a script, run after this command */
+    else if (load_file(p)) run_prog(args);
     return 1;
 }
 
@@ -865,7 +902,59 @@ void cmd_help() {
     puts("       save path addr len (hex)  del path  ren path newname  mkdir path  rmdir path");
     puts("       or the name of a program in /BIN (or here), followed by its arguments");
     puts("       cmd [< in] [> out | >> out] [| cmd ...]  redirection, pipes (4 commands)");
+    puts("       sh file  run its lines (NAME.SH: the same)");
 }
+
+/* ---- scripts (2026-11-03) ----------------------------------------------------------------------------------
+   A script is a text file of shell lines, started by `sh path`, by naming a NAME.SH file as a command, or by a
+   program's EXEC of one (how /BIN/MAKE runs its recipes). Its lines run as if typed, echoed after the prompt;
+   blank lines and lines starting with # are skipped; a line that fails stops every script. */
+int is_sh(char *p) {                    /* the path ends in ".SH" (upper case: the shell upper-cases a command's
+                                           name, and MAKE writes MAKE.SH) */
+    int n;
+    n = strlen(p);
+    return n > 3 && strcmp(p + n - 3, ".SH") == 0;
+}
+
+void sc_push() {                        /* e_* = a script's entry: it runs next, the running one is saved */
+    int *t;
+    if (sc_dep == 4) { eputs("sh: too deep"); return; }
+    if (e_lenhi) { eputs("sh: over 64K"); return; }
+    if (sc_dep) { t = sc_stk + 3 * (sc_dep - 1); t[0] = sc_lba; t[1] = sc_len; t[2] = sc_pos; }
+    sc_lba = e_lba; sc_len = e_len; sc_pos = 0;
+    sc_dep++;
+}
+
+void sc_pop() {                         /* the running script ended: the one it interrupted goes on */
+    int *t;
+    sc_dep--;
+    if (sc_dep) { t = sc_stk + 3 * (sc_dep - 1); sc_lba = t[0]; sc_len = t[1]; sc_pos = t[2]; }
+}
+
+int sc_line() {                         /* its next line -> line[] (up to 128 characters, LF or CR ends it); 0 = it
+                                           ended (popped). Its sectors come through sbuf, free between commands */
+    int n, s; char c;
+    sc_csec = NOSEC;
+    while (1) {
+        n = 0;
+        while (1) {
+            s = sc_lba + (sc_pos >> 9);
+            if (s != sc_csec) {
+                sc_csec = s;
+                if (cfread(s, sbuf)) sc_pos = sc_len;   /* a card error ends it */
+            }
+            if (sc_pos >= sc_len) { if (n) break; sc_pop(); return 0; }
+            c = sbuf[sc_pos & 511];
+            sc_pos++;
+            if (c == 10 || c == 13) { if (n) break; continue; }   /* a blank line: on to the next */
+            if (n < 128) line[n++] = c;
+        }
+        line[n] = 0;
+        if (line[0] != '#') return 1;  /* a comment: on to the next */
+    }
+}
+
+void cmd_sh(char *path) { if (is_file(path)) sc_push(); }    /* sh path */
 
 /* ---- the shell --------------------------------------------------------------------------------------------- */
 int readline() {
@@ -884,6 +973,17 @@ int readline() {
 
 void lower(char *s) { while (*s) { if (*s >= 'A' && *s <= 'Z') *s += 32; s++; } }
 
+int builtin(char *cmd) {                /* the built-in's number in this list (each word ends with a space), 15 none */
+    char *w; int i, k;
+    w = "dir cd pwd cat type load run save del ren mkdir rmdir help ? sh ";
+    for (k = 0; *w; k++) {
+        for (i = 0; cmd[i] && cmd[i] == w[i]; i++) ;
+        if (!cmd[i] && w[i] == ' ') return k;
+        while (*w++ != ' ') ;
+    }
+    return k;
+}
+
 int run_cmd(char *cmd) {                /* one command (a pipeline stage): its word, then its tail; 1 = exit */
     char *rest;
     if (*cmd == 0) return 0;            /* `> F` alone: F is made empty */
@@ -891,19 +991,22 @@ int run_cmd(char *cmd) {                /* one command (a pipeline stage): its w
     lower(cmd);
     if (strcmp(cmd, "exit") == 0) return 1;
     if (try_prog(cmd, rest, 1)) return 0;   /* a /BIN program wins over a built-in of the same name (2026-09-23) */
-    if (strcmp(cmd, "dir") == 0) cmd_dir(rest);
-    else if (strcmp(cmd, "cd") == 0) cmd_cd(rest);
-    else if (strcmp(cmd, "pwd") == 0) puts(cwdpath);
-    else if (strcmp(cmd, "cat") == 0 || strcmp(cmd, "type") == 0) cmd_cat(rest);
-    else if (strcmp(cmd, "load") == 0) cmd_load(rest);
-    else if (strcmp(cmd, "run") == 0) cmd_run(rest);
-    else if (strcmp(cmd, "save") == 0) cmd_save(rest);
-    else if (strcmp(cmd, "del") == 0) cmd_del(rest);
-    else if (strcmp(cmd, "ren") == 0) cmd_ren(rest);
-    else if (strcmp(cmd, "mkdir") == 0) cmd_mkdir(rest);
-    else if (strcmp(cmd, "rmdir") == 0) cmd_rmdir(rest);
-    else if (strcmp(cmd, "help") == 0 || strcmp(cmd, "?") == 0) cmd_help();
-    else if (!try_prog(cmd, rest, 0)) eputs("what?");
+    switch (builtin(cmd)) {             /* (2026-11-03: one scan of a word list, not a strcmp per word) */
+    case 0: cmd_dir(rest); break;
+    case 1: cmd_cd(rest); break;
+    case 2: puts(cwdpath); break;
+    case 3: case 4: cmd_cat(rest); break;
+    case 5: cmd_load(rest); break;
+    case 6: cmd_run(rest); break;
+    case 7: cmd_save(rest); break;
+    case 8: cmd_del(rest); break;
+    case 9: cmd_ren(rest); break;
+    case 10: cmd_mkdir(rest); break;
+    case 11: cmd_rmdir(rest); break;
+    case 12: case 13: cmd_help(); break;
+    case 14: cmd_sh(rest); break;
+    default: if (!try_prog(cmd, rest, 0)) eputs("what?");
+    }
     return 0;
 }
 
@@ -975,15 +1078,19 @@ void io_reset() {                       /* back to the console; closing a writte
 
 void main() {
     int n, k, quit;
+    sbuf = LOW_SBUF; line = LOW_LINE; cwdpath = LOW_CWD; pbuf = LOW_PBUF; xpath = LOW_XPATH;
     cwd_lba = ROOT_LBA; cwd_secs = ROOT_SECS; strcpy(cwdpath, "/");
     install();                          /* (wh, si_h, so_h = 0 and every h_mode M_FREE: main's BSS clear did it) */
     if (read_free()) { puts("CF read error"); return; }
     puts("Y1/OS v0.1 (2026-09-23)  P8XFS v2");
     quit = 0;
     while (!quit) {
+        if (sc_dep && sc_err) { sc_dep = 0; eputs("sh: stopped"); }   /* a failed line stops every script */
+        if (sc_dep && !sc_line()) continue;    /* the script's next line; 0: that script ended */
         putstr(cwdpath); putstr("> ");
-        readline();
-        crlf();
+        if (sc_dep) puts(line);         /* a script's line, echoed after the prompt as if typed */
+        else { readline(); crlf(); }
+        sc_err = 0;                     /* nothing has failed on this line yet */
         n = split();
         for (k = 0; k < n; k++) if (n > 1 && !*seg[k]) n = 0;
         if (!n) { eputs("syntax: cmd [< in] [> out | >> out] [| cmd ...] (4 commands at most)"); continue; }

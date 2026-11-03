@@ -555,9 +555,10 @@ void main() {
         while (a != dot) *s++ = *a++;
         scpy(s, hexo ? ".IMG" : "");
     }
-    if (runpass(1)) { errs = 1; eput2("asm: cannot open ", srcn); return; }
+    if (runpass(1)) { errs = 1; eput2("asm: cannot open ", srcn); osexit(1); }     /* (2026-11-03: status 1 on any
+                                                                                   error, so a script stops) */
     if (!errs) {
-        if (!(oh = fcreate(outn, first, sset ? start : first))) { errs = 1; eput2("asm: cannot create ", outn); return; }
+        if (!(oh = fcreate(outn, first, sset ? start : first))) { errs = 1; eput2("asm: cannot create ", outn); osexit(1); }
         fpos = first;
         runpass(2);
         flush();
@@ -569,7 +570,7 @@ void main() {
     if (errs) {
         toerr = 1; ostr("asm: "); odec(errs); ostr(errs == 1 ? " error" : " errors");
         if (oh) { ostr(", no "); ostr(outn); }
-        oc(10); return;
+        oc(10); osexit(1);
     }
     ostr(outn); ostr(": "); odec(nbytes); ostr(" bytes, "); odec(nsym); ostr(" labels");
     if (fset) { ostr(", load "); ohex(first); ostr(" exec "); ohex(sset ? start : first); }

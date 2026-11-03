@@ -9,7 +9,8 @@ against the Mac's internal disk, which it refuses; **it has not yet written a re
 
 ## What goes on the card
 
-A P8XFS v2 volume, built by `make -C os` as `os/disk.img` (1 MB, 2048 sectors):
+A P8XFS v2 volume, built by `make -C os` as `os/disk.img` (4 MB, 8,192 sectors since 2026-11-03, when the sources
+went on it as `/SRC`; 1 MB, 2,048 sectors before; about 1.5 MB of it in use):
 
 | Sectors | What |
 |---|---|
@@ -50,12 +51,13 @@ was. The OS allocates new files from the volume's free pointer, never from the c
    `BOOT FROM CF` then the Y1/OS banner and `/>` mean it worked. What to check if it does not: `docs/cards/cf.md`
    section 7.
 
-Writing the whole 1 MB takes a second or two; the read-back check about the same.
+Writing the whole 4 MB takes a few seconds; the read-back check about the same.
 
 **Without a USB CF reader**: with the CPU cards out and the bus tester in (bus-driver `blocks-2` firmware), write the
 card where it sits on the memory card v2.0: `python3 tools/cfwrite_bus.py os/disk.img`. Each sector goes through P8/P9
 as the machine would see it, then every sector is read back and compared; about 2.5 s a sector to write and 1.75 s to
-verify, so about 2.5 hours for the 1 MB image.
+verify. A P8XFS image goes only up to its free pointer (2026-11-03: the sectors above it hold nothing; `--all` writes
+the whole file): about 2,950 sectors of `os/disk.img`, so about 3.5 hours (2.5 hours for the 1 MB image before).
 
 ## Reading a card back
 

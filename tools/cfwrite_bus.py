@@ -4,7 +4,10 @@
 """cfwrite_bus.py - write a disk image onto the CF card in the machine (memory card v2.0's CF section, P8/P9) through
 the Bus Test Card, CPU out (2026-11-03). For when no USB CF reader is at hand; tools/cfcard.py is the fast way.
 
-  cfwrite_bus.py IMAGE [tester port] [--from LBA] [--count N] [--verify-only] [--no-verify]
+  cfwrite_bus.py IMAGE [tester port] [--from LBA] [--count N] [--all] [--verify-only] [--no-verify]
+
+A P8XFS image is written only up to its free pointer (boot block bytes 4-5; 2026-11-03): the sectors above it hold
+nothing the OS reads, and os/disk.img is 4 MB since /SRC, most of it empty. --all writes every sector of the file.
 
 The tester's I/O block commands (bus-driver blocks-2: IOWBK / IORBK, up to 32 / 64 bytes a command on one port) move
 the data register's bytes and set the registers (one IOWBK to P8 and one to P9 a register); WRITE SECTORS ($30) and
@@ -29,6 +32,10 @@ image = open(args[0], "rb").read()
 if len(image) % 512: sys.exit("cfwrite_bus: %s is not a whole number of sectors" % args[0])
 total = len(image) // 512
 last = total if count is None else min(total, first + int(count))
+if count is None and "--all" not in sys.argv and image[:2] == b"P8":
+    last = min(total, max(image[4] | image[5] << 8, 64))     # the volume's free pointer
+    print("cfwrite_bus: %s is a P8XFS volume: sectors %d..%d (its free pointer; --all for all %d)"
+          % (args[0], first, last - 1, total))
 bd = BusDriver(args[1] if len(args) > 1 else PORT); bd.wait_prompt(timeout=20)
 if not bd.blocks: sys.exit("cfwrite_bus: the tester's firmware has no block commands")
 c = bd.cmd

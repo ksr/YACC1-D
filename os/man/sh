@@ -1,0 +1,51 @@
+NAME
+    sh - run a script: a file of shell lines
+
+SYNOPSIS
+    sh path
+    NAME.SH
+
+DESCRIPTION
+    Runs the lines of a text file one after the other, each as if it
+    had been typed at the prompt: built-ins, /BIN programs, redirection
+    and pipes. Each line is shown after the prompt before it runs.
+    Blank lines and lines starting with # are skipped. A line ends at
+    LF or CR (CR LF is fine); up to 128 characters of it are kept.
+    sh is a shell built-in.
+
+    A file whose name ends in .SH also runs when it is named as a
+    command (BUILD.SH, or build.sh: the shell upper-cases the name),
+    and when a program EXECs it: that is how make runs its recipes.
+    The script starts after the command that started it has ended.
+
+    The first line that fails stops the script, and every script that
+    started it: a message from the shell (what?, not found, ...) or a
+    program that ends with a status other than 0 (STATUS). The shell
+    then says "sh: stopped" and the prompt comes back.
+
+    A script may start another (sh, NAME.SH, or a program's EXEC):
+    that one runs, then the first goes on with its next line. Four
+    may be running at once.
+
+    A script is read from its sectors as it runs: a cd inside it
+    changes the directory for the lines after it and for the prompt
+    afterwards, and replacing the file while it runs (make writing a
+    new MAKE.SH) does not change the script that is running.
+
+LIMITS
+    A script is at most 64K. There are no variables, arguments, tests
+    or loops: a line is just a command line. Each line goes to the
+    console only: sh > FILE redirects nothing. pack moves files, so
+    do not run pack from a script.
+    Messages: "sh: too deep" (a fifth), "sh: over 64K", "sh: stopped".
+
+EXAMPLES
+    sh STEPS.SH            the lines of that file
+    cd /SRC/os/commands
+    make                   writes MAKE.SH and runs it (man make)
+
+NOTES
+    Added 2026-11-03 (os/README.md "Scripts"), after P8X's sh.
+
+SEE ALSO
+    make, shell, run

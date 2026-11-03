@@ -120,12 +120,26 @@ os_ins: LDAVR R3
         BR puts                 ; (puts RETs to the monitor)
 os_up:  MVIW R3,S_BANNER
         JSR puts
-ml_top: MVIW R3,CWDPATH         ; the prompt: the current path and "> "
-        JSR putstr
-        MVIW R3,S_PROMPT
-        JSR putstr
+ml_top: LDA SC_DEP              ; a script running (sh, 2026-11-03): a failed line stops every script ...
+        BRZ ml_con
+        LDA SC_ERR
+        BRZ ml_sl
+        LDAI 0
+        STA SC_DEP
+        MVIW R3,S_SHSTOP
+        JSR eputs
+        BR ml_con
+ml_sl:  JSR sc_line             ; ... else its next line -> LINE (0: that script ended)
+        BRZ ml_top
+        JSR ml_pr
+        MVIW R3,LINE            ; echoed after the prompt, as if typed
+        JSR puts
+        BR ml_ln
+ml_con: JSR ml_pr               ; the prompt, then a console line
         JSR readline
         JSR crlf
+ml_ln:  LDAI 0                  ; nothing has failed on this line yet (eputs, run_prog set SC_ERR)
+        STA SC_ERR
         JSR split               ; ACC = the number of commands, 0 = a bad line
         STA NSEG
         BRZ ml_syn
@@ -188,6 +202,10 @@ ml_nq:  LDA QUIT
         BRZ ml_top
         MVIW R3,S_BYE
         BR puts                 ; "bye", and back to the monitor
+ml_pr:  MVIW R3,CWDPATH         ; the prompt: the current path and "> "
+        JSR putstr
+        MVIW R3,S_PROMPT
+        BR putstr
 
 ; the shared exits: R3 (and ACC) = 0 / 1 / ACC / R3 (ACC = 0 exactly when R3 is 0)
 ret0:   MVIW R3,0
@@ -375,6 +393,9 @@ hx_1:       JSR resolve
             LDA ERAW+24
             LDTI F_FILE
             BRNEQ hx_no
+            LDR R3,SYSARG0          ; NAME.SH (2026-11-03): a script, which the shell runs after this command
+            JSR is_sh
+            BRNZ hx_sh
             JSR loadable
             BRZ hx_no
             LDR R3,SYSARG0          ; XPATH <- the path
@@ -405,6 +426,15 @@ hx_z:       LDIVR R4,0
             RET
 hx_no:      MVIW R3,0
             BR retres
+hx_sh:      LDR R3,SYSARG0          ; XPATH <- the script's path, EX_PEND = 2 (the args are not used)
+            MVIW R4,XPATH
+            JSR strcpy
+            LDAI 2
+            STA EX_PEND
+            MVIW R3,0
+            STR R3,EX_CODE
+            LDR R1,OS_SP
+            RET
 
 ; h_seek: SEEK(handle, hi, lo): a read handle's position <- hi:lo (24 bits), not past its length -> SYSRES = 1; 0 (not
 ; a read handle, past the end, a card error). A position inside a sector loads that sector into the handle's
@@ -557,12 +587,15 @@ puts:   JSR putstr
 crlf:   LDAI 10
         BR cout
 
-; eputs: the string at R3 and a newline on the RAW console, whatever stdout is (the shell's diagnostics).
-eputs:  LDAVR R3
+; eputs: the string at R3 and a newline on the RAW console, whatever stdout is (the shell's diagnostics). A
+; diagnostic marks the line failed: a running script stops after it (SC_ERR, 2026-11-03).
+eputs:  LDAI 1
+        STA SC_ERR
+ep_lp:  LDAVR R3
         BRZ ep_nl
         JSR conraw
         INCR R3
-        BR eputs
+        BR ep_lp
 ep_nl:  LDAI 10
 ;       (falls into conraw)
 
@@ -3143,6 +3176,14 @@ do_1:   LDA ERAW+24
 do_2:   LDAI M_DIR
         BR open_ent
 file_of:
+        JSR is_file
+        BRZ ret0
+        LDAI M_READ
+        BR open_ent
+
+; is_file (y1os.c is_file, 2026-11-03: shared with sh): the path at R3 is a file -> ACC = 1 (E_* its entry), else
+; the message and ACC = 0.
+is_file:
         JSR resolve
         BRNZ fo_1
         MVIW R3,S_NOTFOUND
@@ -3150,12 +3191,10 @@ file_of:
         BR ret0
 fo_1:   LDA ERAW+24
         LDTI F_FILE
-        BREQ fo_3
+        BREQ ret1a
         MVIW R3,S_ISDIR
         JSR eputs
         BR ret0
-fo_3:   LDAI M_READ
-        BR open_ent
 
 ; dir [path]: name, <DIR> or size, and a file's load address; then the count.
 cmd_dir:
@@ -3369,14 +3408,27 @@ rp_go:  LDAI 0
         JSR rp_call             ; back here when main returns, and from EXIT and EXEC
         LDR R3,EX_CODE
         STR R3,STATUS
-        JSR close_all
+        MVRHA R3                ; a program that ends with a status other than 0 stops a running script
+        MVAT
+        MVRLA R3
+        ORT
+        BRZ rp_ok
+        LDAI 1
+        STA SC_ERR
+rp_ok:  JSR close_all
         JSR read_free
         LDA EX_PEND
         BRZ rts
+        LDTI 2                  ; it EXECed a script (2026-11-03): the shell runs it after this command
+        BREQ rp_sh
         MVIW R3,XPATH
         JSR load_file
         BRZ rts
         BR rp_go
+rp_sh:  MVIW R3,XPATH
+        JSR resolve
+        BRZ rts
+        BR sc_push
 rp_call: MOVRR R1,R5            ; the shell's SP (this call's return address on top) for EXIT and EXEC
         STR R5,OS_SP
         JSRUR R7
@@ -3490,6 +3542,8 @@ cmd_help:
         MVIW R3,S_HELP3
         JSR puts
         MVIW R3,S_HELP4
+        JSR puts
+        MVIW R3,S_HELP5
         BR puts
 
 ; try_prog: the word at R3 (lower case) as a program: ACC = 1: /BIN/NAME, 0: NAME here (upper-cased, as the Makefile
@@ -3520,12 +3574,206 @@ tp_cp:  JSR strcpy
         LDA ERAW+24
         LDTI F_FILE
         BRNEQ ret0
+        MVIW R3,TPBUF           ; NAME.SH (2026-11-03): a script, run after this command
+        JSR is_sh
+        BRNZ tp_sh
         MVIW R3,TPBUF
         JSR load_file
         BRZ ret1
         LDR R3,TP_ARGS
         JSR run_prog
         BR ret1
+tp_sh:  JSR sc_push
+        BR ret1
+
+; =====================================================================================================================
+; Scripts (y1os.c sc_push, sc_pop, sc_line, is_sh, cmd_sh; 2026-11-03). A script is a text file of shell lines,
+; started by `sh path`, by naming a NAME.SH file as a command, or by a program's EXEC of one (how /BIN/MAKE runs its
+; recipes). The running script is its extent and length (SC_LBA, SC_LEN; up to 64K) and the read position (SC_POS):
+; it is read from its sectors, so a `cd` inside it, or the file being replaced while it runs, changes nothing. Up to
+; 4 nest: a script started from a script runs, then the first goes on (SC_STK keeps the interrupted ones, 6 bytes
+; each). A line that fails - a shell diagnostic (eputs) or a program's status other than 0 - stops every script.
+; =====================================================================================================================
+; sh path
+cmd_sh: JSR is_file
+        BRZ rts
+        BR sc_push
+
+; sc_push: E_* = a script's entry -> it runs next (the one running, if any, is saved in its slot). Clobbers R3-R6.
+sc_push:
+        LDA SC_DEP
+        LDTI 4
+        BRNEQ su_1
+        MVIW R3,S_SHDEEP
+        BR eputs
+su_1:   LDA ERAW+18             ; the length's bits 16-23
+        BRZ su_2
+        MVIW R3,S_SHBIG
+        BR eputs
+su_2:   LDA SC_DEP
+        BRZ su_3
+        JSR sc_slot             ; the running one -> its slot
+        MVIW R5,SC_LBA
+        MVIB R6,6
+su_sv:  LDAVR R5
+        STAVR R4
+        INCR R4
+        INCR R5
+        DECR R6
+        MVRLA R6
+        BRNZ su_sv
+su_3:   LDR R3,E_LBA
+        STR R3,SC_LBA
+        LDR R3,E_LEN
+        STR R3,SC_LEN
+        MVIW R3,0
+        STR R3,SC_POS
+        LDA SC_DEP
+        ADDI 1
+        STA SC_DEP
+        RET
+
+; sc_pop: the running script ended: the one it interrupted, if any, goes on. Clobbers R4-R7.
+sc_pop: LDA SC_DEP
+        SUBI 1
+        STA SC_DEP
+        BRZ rts
+        JSR sc_slot
+        MVIW R5,SC_LBA
+        MVIB R6,6
+so_lp:  LDAVR R4
+        STAVR R5
+        INCR R4
+        INCR R5
+        DECR R6
+        MVRLA R6
+        BRNZ so_lp
+        RET
+
+; sc_slot: R4 -> SC_STK + 6 * (SC_DEP - 1) (SC_STK inside one page). Clobbers R7, ACC.
+sc_slot:
+        MVIW R4,SC_STK
+        LDA SC_DEP
+        MVARL R7
+ss_lp:  DECR R7
+        MVRLA R7
+        BRZ rts
+        MVRLA R4
+        ADDI 6
+        MVARL R4
+        BR ss_lp
+
+; sc_line: the running script's next line -> LINE (up to 128 characters, NUL-terminated; it ends at LF or CR, and
+; blank lines and lines starting with # are skipped) -> ACC = 1; at the script's end it is popped -> ACC = 0. Its
+; sectors are read into SBUF, which nothing else needs between commands. Clobbers R3-R7.
+sc_line:
+        MVIW R3,0FFFFH          ; no sector in SBUF yet
+        STR R3,SC_CSEC
+sl_ln:  MVIW R3,LINE            ; R3 = LINE + n (page-aligned)
+sl_ch:  LDR R4,SC_POS           ; pos < len?
+        LDR R5,SC_LEN
+        MVRHA R5
+        MVAT
+        MVRHA R4
+        BRLT sl_in
+        BRGT sl_eof
+        MVRLA R5
+        MVAT
+        MVRLA R4
+        BRLT sl_in
+sl_eof: MVRLA R3                ; the end: a last line without LF is still a line
+        BRNZ sl_end
+        JSR sc_pop
+        BR ret0a
+sl_in:  LDR R6,SC_LBA           ; R6 = the sector: SC_LBA + pos >> 9
+        MVRHA R4
+        SHR
+        MVAT
+        MVRLA R6
+        ADDT
+        MVARL R6
+        MVRHA R6
+        ADDIC 0
+        MVARH R6
+        LDR R7,SC_CSEC          ; already in SBUF?
+        MVRHA R7
+        MVAT
+        MVRHA R6
+        BRNEQ sl_rd
+        MVRLA R7
+        MVAT
+        MVRLA R6
+        BREQ sl_hv
+sl_rd:  STR R6,SC_CSEC
+        PUSHR R3
+        MVIW R7,SBUF
+        JSR cfrd
+        POPR R3
+        BRNZ sl_eof             ; a card error ends the script
+sl_hv:  LDR R4,SC_POS           ; the byte at SBUF + (pos & 511)
+        MVRLA R4
+        MVARL R5
+        MVRHA R4
+        ANDI 1
+        ADDI (SBUF).1
+        MVARH R5
+        LDAVR R5
+        STA SC_CH
+        INCR R4
+        STR R4,SC_POS
+        LDA SC_CH
+        LDTI 10
+        BREQ sl_eol
+        LDTI 13
+        BREQ sl_eol
+        MVAT
+        MVRLA R3                ; n < 128
+        ANDI 80H
+        BRNZ sl_ch
+        MVTA
+        STAVR R3
+        INCR R3
+        BR sl_ch
+sl_eol: MVRLA R3                ; a blank line: on to the next
+        BRZ sl_ch
+sl_end: LDIVR R3,0
+        LDA LINE
+        LDTI 35                 ; a comment: on to the next
+        BREQ sl_ln
+        LDAI 1
+        RET
+
+; is_sh: the path at R3 ends in ".SH" (upper case: the shell upper-cases a command's name, and MAKE writes MAKE.SH)
+; -> ACC = 1, else 0. Clobbers R4, R5, ACC, TMP.
+is_sh:  JSR strlen              ; R4 = the length (R3 kept)
+        MVRHA R4
+        BRNZ ret0a
+        MVRLA R4
+        LDTI 4
+        BRLT ret0a
+        MVRLA R4                ; R5 = R3 + length - 3
+        MVAT
+        MVRLA R3
+        ADDT
+        MVARL R5
+        MVRHA R3
+        ADDIC 0
+        MVARH R5
+        DECR R5
+        DECR R5
+        DECR R5
+        LDAVR R5
+        LDTI 46
+        BRNEQ ret0a
+        INCR R5
+        LDAVR R5
+        LDTI 83
+        BRNEQ ret0a
+        INCR R5
+        LDAVR R5
+        LDTI 72
+        BRNEQ ret0a
+        BR ret1a
 
 ; =====================================================================================================================
 ; The shell (y1os.c readline, run_cmd, split, pipename, stage, io_reset)
@@ -3646,6 +3894,8 @@ cmdtab: DW S_CDIR
         DW cmd_help
         DW S_CQ
         DW cmd_help
+        DW S_CSH
+        DW cmd_sh
         DW 0
 
 ; split: LINE -> up to 4 commands split at '|' outside quotes: SEG[] (their text, trailing spaces cut), RIN[] and
@@ -4068,6 +4318,10 @@ RC_REST:    DS 2
 SP_B:       DS 2                ; split
 SP_RI:      DS 2
 SP_RO:      DS 2
+SC_LBA:     DS 2                ; the running script (2026-11-03): its extent, length and read position (these
+SC_LEN:     DS 2                ;   three in this order: sc_push / sc_pop copy them as 6 bytes)
+SC_POS:     DS 2
+SC_CSEC:    DS 2                ; sc_line: the sector in SBUF
 ; bytes
 WH:         DS 1                ; the write handle in use, 0 none (CREATE and MKDIR allocate at the free pointer)
 SI_H:       DS 1                ; the shell's redirection: 0 = the console, else the < file / pipe handle
@@ -4095,5 +4349,9 @@ NSEG:       DS 1                ; the shell: commands in the line, the one runni
 KSEG:       DS 1
 QUIT:       DS 1
 ST_H:       DS 1                ; stage
+SC_DEP:     DS 1                ; scripts running (0: the console), at most 4
+SC_ERR:     DS 1                ; the line failed: a diagnostic, or a program's status other than 0
+SC_CH:      DS 1                ; sc_line's byte
+SC_STK:     DS 18               ; the interrupted scripts' SC_LBA, SC_LEN, SC_POS (3 x 6 bytes, inside one page)
 ram_end:                        ; must stay below $4FC0 (SYSTAB2; $4F1C on 2026-09-25)
         END 1000H

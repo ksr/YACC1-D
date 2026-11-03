@@ -1,0 +1,12 @@
+sh /A.SH
+sh /C.SH
+sh /D.SH
+sh /E.SH
+shx /F.SH
+sh /G.SH
+cd /
+f.sh
+sh /BIN
+sh /NOPE
+shx /NOPE.SH
+exit

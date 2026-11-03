@@ -9,6 +9,7 @@ BOOT FROM CF
          LIB/
          MAN/
     156  README.TXT  @B000
+         SRC/
 /> 
 Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
 LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
@@ -45,6 +46,7 @@ BOOT FROM CF
   ren path name  rename a file or directory in place
   mkdir / rmdir  make / remove (an empty) directory
   type path      print a file (the built-in cat)
+  sh file        run a script: its lines as typed (NAME.SH runs too)
   exit           back to the ROM monitor
   cmd < in  > out  >> out  a | b | c   redirection and pipes (man shell)
 in /BIN:
@@ -60,7 +62,8 @@ BOOT FROM CF
   find names matching a pattern (tree)     grep lines matching a regex; -r
   head first lines                         help this list
   kermit file transfer on the console line: -r receive, -s send, -x server
-  ls   plain directory list                man  a manual page (/MAN)
+  ls   plain directory list                make build targets from a Makefile (-n -B)
+  man  a manual page (/MAN)
   md   render Markdown (/DOCS)             more page a file
   mv   move/rename files                   pack compact the disk: reclaim dead sectors
   pwd  the working directory               sed  s/re/new/[g]

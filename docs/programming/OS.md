@@ -99,8 +99,11 @@ character, and times out by counting polls calibrated for 1 MHz. `tests/kermit/r
 
 ### The disk image that ships
 
-`os/Makefile` builds `os/disk.img` (2048 sectors = 1 MB): the OS at LBA 1.. (10 sectors for v0), `/BIN/HELLO`,
-`/BIN/ECHO`, `/BIN/WC`, and `/README.TXT` from `os/disk/`. `p8xfs.py tree disk.img` lists it.
+`os/Makefile` builds `os/disk.img` (8,192 sectors = 4 MB since 2026-11-03; 2,048 = 1 MB before): the OS at LBA 1..,
+`/BIN` (every command, `make` and the compiler's driver among them), `/LIB` (the compiler's passes and library),
+`/MAN`, `/DOCS`, the sample files, and `/SRC`, the sources with a Makefile in each directory (`os/README.md`, "The
+sources on the disk"). In v0 it was the OS (10 sectors), `/BIN/HELLO`, `/BIN/ECHO`, `/BIN/WC` and `/README.TXT`.
+`p8xfs.py tree disk.img` lists it.
 
 ## 3. Programmer guide
 
@@ -281,7 +284,7 @@ minimum 1; not `(e_len + 511) / 512`, which wraps at 16 bits); a directory's sec
 field (`dir_secs`). `p8xfs.py fsck` checks the signature, the `.` and `..` links, the extents and reports
 reclaimable space.
 
-Host tool summary (`p8xfs.py --help`): `create img [--sectors N]` (default 256; the Makefile uses 2048), `boot img
+Host tool summary (`p8xfs.py --help`): `create img [--sectors N]` (default 256; the Makefile uses 8192), `boot img
 os.bin`, `mkdir img /BIN [--secs N]`, `put img file [--name /BIN/F] [--load A] [--exec A] [--replace] [--strict]`,
 `rm img /BIN/F`, `get img /BIN/F [--out path]`, `ls img [path]`, `tree img`, `fsck img`. Both emulators take the
 image with `-c disk.img` and create a zero-filled 256-sector one if the file is missing (`software/cfmodel.h`).

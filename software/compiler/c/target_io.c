@@ -91,7 +91,8 @@ void io_wflush(void) { if (wp != twb) fwrite(twh, twb, wp - twb); wp = twb; }
 void io_fail(char *msg) { if (twh) io_wflush(); eputs(msg); osexit(1); }   /* on the screen; the chain stops
                                                     (STATUS 1); EXIT closes the file with every byte written */
 void io_out(int c) { putchar(c); }
-int io_wopen(char *path) { twh = fcreate(path, 0, 0); wp = twb; return twh != 0; }
+char *twpath;                                       /* the file being written, for io_wclose's message */
+int io_wopen(char *path) { twpath = path; twh = fcreate(path, 0, 0); wp = twb; return twh != 0; }
 void io_wput(int c) { *wp = c; wp++; if (wp == twb + IO_WB) io_wflush(); }
 void io_wputs(char *s) {
     char *p; char *e;
@@ -99,7 +100,13 @@ void io_wputs(char *s) {
     while (*s) { *p = *s; p++; s++; if (p == e) { wp = p; io_wflush(); p = wp; } }
     wp = p;
 }
-void io_wclose(void) { io_wflush(); fclose(twh); twh = 0; }
+void io_wclose(void) {                              /* 2026-11-03: CLOSE registers the file, and fails when the
+                                                       directory has no free slot (CREATE does not look); the
+                                                       message reuses the passes' own literal (LITS_MAX) */
+    io_wflush();
+    if (!fclose(twh)) { twh = 0; eput2("y1cc: cannot write ", twpath); osexit(1); }
+    twh = 0;
+}
 void io_next(void) {                                /* the next pass, with the work prefix; the last returns */
     if (!io_next_pass[0]) return;
     argword(argstr(), targs, 127);

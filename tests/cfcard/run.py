@@ -21,8 +21,10 @@ def main():
     ok = r.returncode == 0 and "IDENTICAL" in r.stdout and open(card, "rb").read(os.path.getsize(IMG)) == open(IMG, "rb").read()
     print("write     %s" % ("PASS  image written to the stand-in card and read back identical" if ok else "FAIL " + r.stdout + r.stderr)); failed += not ok
     r = run("read", back, "--target-file", card)
-    ok = r.returncode == 0 and open(back, "rb").read()[:os.path.getsize(IMG)] == open(IMG, "rb").read()
-    print("read      %s" % ("PASS  read back (%d bytes) matches the image" % os.path.getsize(back) if ok else "FAIL " + r.stdout + r.stderr)); failed += not ok
+    img = open(IMG, "rb").read(); got = open(back, "rb").read() if os.path.exists(back) else b""
+    used = max(2048, img[4] | img[5] << 8) * 512        # read copies the volume's sectors in use (its free pointer;
+    ok = r.returncode == 0 and len(got) >= used and got == img[:len(got)]   # 2026-11-03: the 4 MB image is not all used)
+    print("read      %s" % ("PASS  read back (%d bytes, the sectors in use) matches the image" % len(got) if ok else "FAIL " + r.stdout + r.stderr)); failed += not ok
     r = run("write", IMG, "--disk", "disk0", "--yes")
     ok = r.returncode != 0 and "refusing disk0" in (r.stderr + r.stdout)
     print("refuse    %s" % ("PASS  the internal disk is refused before any write" if ok else "FAIL " + r.stdout + r.stderr)); failed += not ok

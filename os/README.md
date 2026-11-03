@@ -52,8 +52,9 @@ it keeps that pointer in RAM and reads it again after every program returns (`re
 | `mkdir path` | a new directory (a 4-sector extent with `.` and `..`, as `p8xfs.py mkdir` makes it) |
 | `rmdir path` | remove an empty directory |
 | `help` / `?` | this list |
+| `sh path` | run a script: the file's lines one after the other, as if typed (2026-11-03, "Scripts" below) |
 | `exit` | back to the monitor |
-| anything else | `/BIN/NAME` (upper-cased), then `NAME` in the current directory, run with the rest of the line as arguments |
+| anything else | `/BIN/NAME` (upper-cased), then `NAME` in the current directory, run with the rest of the line as arguments; a `NAME.SH` runs as a script |
 
 **A `/BIN` program comes first** (since 2026-09-23): the shell looks for `/BIN/NAME` before its own words (only
 `exit` is never looked up), so the ported `/BIN` `dir`, `cat`, `pwd`, `del` and `help` replace the built-ins of the
@@ -116,6 +117,32 @@ Names are case-sensitive and stored as `p8xfs.py put` writes them; the Makefile 
 case, which is why the implicit lookup upper-cases the command word. Every shell command goes through the `fs_*`
 functions that the syscalls expose (`cat` is `fs_open` + `fs_read`, `dir` is `fs_opendir` + `fs_readdir`, `save` is
 `fs_create` + `fs_write` + `fs_close`...), so a program and the shell cannot disagree about a file.
+
+### Scripts: `sh` (2026-11-03)
+
+A script is a text file of shell lines. `sh path` runs one; so does naming a file whose name ends in `.SH` as a
+command (`BUILD.SH`, or `build.sh`: the word is upper-cased), and a program's EXEC of one (below), which is how
+`/BIN/MAKE` runs its recipes. The script starts when the command that started it has ended. Each line is read,
+shown after the prompt as if typed, and run: built-ins, programs, redirection and pipes all work. Blank lines and
+lines starting with `#` are skipped; a line ends at LF or CR (so CR LF is fine) and keeps 128 characters.
+
+- **A failure stops it**: a shell message (`what?`, `not found`, `cannot ...`: everything `eputs` prints) or a
+  program that ends with a status other than 0. The shell then says `sh: stopped`, every running script ends, and
+  the prompt comes back. The compiler's passes, `asm` and `make` end with status 1 after an error (2026-11-03), so a
+  build stops at its first failed step.
+- **Nesting**: a script may start another (`sh`, `NAME.SH`, a program's EXEC); that one runs, then the first goes on
+  with its next line. Four may run at once (`sh: too deep`).
+- **Read from its sectors**: the running script is its extent, length and read position (`SC_LBA`, `SC_LEN`,
+  `SC_POS`; the interrupted ones in `SC_STK`), read through the OS's sector buffer between commands. A `cd` inside it
+  changes the directory for the lines after it, and replacing the file while it runs (a nested `make` writing a new
+  `MAKE.SH`) leaves the running script as it was: the old extent stays until `pack`. A script is at most 64K
+  (`sh: over 64K`); `pack` inside one would move it under the reader.
+- No variables, arguments, tests or loops: a line is a command line. `sh` itself writes nothing, so `sh F > OUT`
+  redirects nothing (put the `>` on the lines).
+
+`man sh`; `tests/os/sh.session` runs each case on both kernels and both emulators (comments, CR LF, `cd` inside a
+script, nesting and its limit, a diagnostic and a status stopping it, `NAME.SH` as a command, EXEC of a script from a
+program and from a script).
 
 ## The file API (syscalls, 2026-09-23)
 
@@ -209,6 +236,9 @@ native compiler"); a program could only end by returning from main. Two syscalls
   and again for as long as programs EXEC. It all stays one shell command: a `>` file or a pipe stays open across the
   chain (`cc prog.c > LOG` sends all nine passes' output there), and the shell's prompt comes back only at the end.
   EXEC returns (0) only when path cannot be run, so the caller can say so.
+- **EXEC of a script** (2026-11-03): a path ending in `.SH` (upper case) is not loaded but becomes a script that the
+  shell runs once the command has ended (`EX_PEND` 2; "Scripts" above). `/BIN/MAKE` writes its recipes into
+  `MAKE.SH` and EXECs it.
 - **Why EXEC and not batch files:** each pass knows its successor (it is fixed) and runs it with one argument, the
   work prefix, so a chain needs no parser, no files and no shell change; a pass that finds an error EXITs (status
   1) and the chain stops there by itself, where a batch file would need a test of STATUS. The driver is one small
@@ -350,6 +380,7 @@ names, globs and `-` (the console until Ctrl-D) work wherever a command reads te
 | `help` | the command list |
 | `kermit -r` / `-s FILE...` / `-x` | file transfer with the Mac over the console line (2026-09-26, below): receive, send, server |
 | `ls [path]` | a plain listing through opendir/readdir |
+| `make [-n] [-B] [-f file] [target...]` | build targets from a Makefile (2026-11-03): the recipes go into `MAKE.SH`, which the shell runs as a script; no file dates, so what is missing is built (`man make`, "The sources on the disk" below) |
 | `man [name]` | `/MAN/NAME` through the pager; alone: the page names |
 | `md [-p] [file]` | Markdown rendered (ANSI, or plain with `-p`), paged; names are looked up in `/DOCS` too; alone: the list |
 | `more [file...]` | page text (or stdin: `dir -R \| more`): space, Enter, q from the keyboard |
@@ -369,6 +400,31 @@ Also on the disk: `/LIB` (2026-09-25: the compiler's passes `/LIB/CC/CC1`..`CC9`
 and `/LIB/Y1CCRT.TXT`, `/LIB/Y1LIB.C`), `/MAN` (the pages, from `os/man/`), `/DOCS` (this README as `OS.MD`, the compiler README as
 `Y1CC.MD`, `OSPLAN.MD`, `PORT.MD`, `KERMIT.MD` (2026-09-26: the Mac side of `kermit`) and `MDDEMO.MD`, md's own sample), and `/FRUIT.TXT` + `/FRUIT2.TXT`, seven lines of
 sample data for trying the filters (`sort`, `uniq`, `awk`, `diff` ... the man pages' examples use them).
+
+### The sources on the disk: `/SRC` (2026-11-03)
+
+`/SRC` holds the sources of the disk's programs at their paths in the repository, so every `#include` resolves on
+the machine as on the Mac: `/SRC/os/commands` (the `/BIN` commands' C), `/SRC/os` (the C libraries `lib_*.c`, the
+generated tables `asm_optab.c`, `dis_optab.c`, `kermit_io.c`, and both kernels with `strings.txt`;
+`kermit_io.asm` is `kermitio.asm`, P8XFS names being 12 characters), `/SRC/os/commands-asm` (`asm.asm`,
+`asmtab.inc`) and `/SRC/software/compiler/c` (the native compiler's passes: `target/*.c`, the `cc*_*.c` and `p*.c`
+they include, `ylim/`). 97 files, 768 KB; the volume is 4 MB (8,192 sectors) since then. Each source directory has
+a Makefile, generated by `os/mksrcmk.py` from the tree and os/Makefile's flags:
+
+```
+cd /SRC/os/commands                  make TOUCH, make all, make install (-> /BIN)
+cd /SRC/os/commands-asm              ASM from its assembly (-> /BIN/ASM)
+cd /SRC/software/compiler/c/target   CC1 .. CC9 (-> /LIB/CC)
+cd /SRC                              make: all three, one after the other; make install
+```
+
+`tests/native/srcmake.py` (in `make check`) runs `cd /SRC`, `make`, `make` again and `make install` on the emulated
+machine: 45 programs, every one byte-identical to the Mac's build of the same source, the second `make` compiling
+nothing. Two commands are not in `all` or `install`: `help` (its text is over pass 1's 1,800-byte string pool) and
+`kermit` (`kermit_io.c`'s byte table is over pass 3's node limit); `/BIN` keeps the Mac's builds of them. The
+kernels are there to read: building one needs `mkstrings.py` and installing it the boot sectors, both on the Mac.
+The `/SRC` directories have 16-sector extents (254 entries): a build leaves a program, its `.ASM` and the
+compiler's 14 `CCW.*` work files in the directory.
 
 ### `kermit` (2026-09-26)
 
@@ -587,12 +643,12 @@ image is byte-identical, and that the next file lands at the new free pointer.
 | $0F10–$0F12 | CFLBA0..2, the sector for CFREAD/CFWRITE (ROM variables) |
 | $0F14–$0F3F | SYSTAB, the syscall jump table (entries 0..21, all used since 2026-09-23; the OS copies them from SYSTAB2) |
 | $0F40–$0FBF | ARGBUF, a program's command tail (127 chars + NUL; the upper half overlays the monitor's idle line buffer) |
-| $1000–$2E7F | the OS image (`y1os.asm`, 7,808 bytes, 2026-09-25); the Makefile fails the build if it reaches $4A00 |
-| $2E80–$49FF | free (7,040 bytes) |
+| $1000–$3264 | the OS image (`y1os.asm`, 8,805 bytes = 18 sectors, 2026-11-03 with `sh`; 7,808 on 2026-09-25); the Makefile fails the build if it reaches $4A00 |
+| $3265–$49FF | free (6,043 bytes) |
 | $4A00–$4F0F | the OS's RAM, cleared at boot: line $4A00 (page-aligned), path, path copy, the entry, name buffers; the pipeline table $4B80; the sector buffer $4C00 (512-aligned); the handle records $4E00 (page-aligned, 16 bytes each); the variables $4E50-$4F0F |
-| $4F1D–$4FBF | free (the variables end at $4F1C; XPATH, EXEC's path, is at $4B9C in the pipeline page) |
+| $4F1D–$4FBF | free (the variables end at $4F1C; XPATH, EXEC's path, is at $4B9C in the pipeline page). Since 2026-11-03 the script state `SC_*` runs to $4F3E |
 | $4FC0–$4FFF | SYSTAB2, the 32-entry syscall table (2026-09-25) |
-| (C OS) | `y1os.c` instead (`--xisa`): image 14,041 bytes and data 1,788 in $1000-$4DD4, which the Makefile checks against $4FBF |
+| (C OS) | `y1os.c` instead (`--xisa`): image 14,041 bytes and data 1,788 in $1000-$4DD4, which the Makefile checks against $4FBF. 2026-11-03, with `sh`: 15,275 + 1,035 = 16,310 of 16,320 (10 bytes free), after moving its sector buffer and line and path buffers to low RAM while it runs: `sbuf` $0000-$01FF, `pbuf` $0210, `cwdpath` $0250, `line` $0290, `xpath` $0320-$035F (page zero and BASIC's area, idle while the OS runs; $0200-$020F stays clear, where a bad handle 0's buffer would fall and `tests/os/badhandle` looks) |
 | $5000–$CFFF | programs |
 
 ## Inside

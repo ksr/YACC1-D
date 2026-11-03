@@ -126,7 +126,16 @@ EXTRA = {"badhandle": [("badh.c", "/BADH", 0x5000), ("", "/ZERO.BIN", 0x6000)],
          "systab": [("systab.c", "/SYSTAB", 0x5000)],
          "disasm": [("dis.asm", "/DIS", 0xC000)],        # 2026-09-29: RC/asm's bytes for disasm to show
          "exec": [("exe.c", "/EXE", 0x5000), ("exe.c", "/EXES", 0x5000, ["--stack", "0xCFFF"]),
-                  ("", "/BIG.TXT", 0xC000, 20000)]}
+                  ("", "/BIG.TXT", 0xC000, 20000)],
+         # 2026-11-03: scripts (sh, NAME.SH, EXEC of a script): text files, given as bytes, put with load/exec 0
+         "sh": [("exe.c", "/EXE", 0x5000), ("shx.c", "/SHX", 0x5000),
+                (b"# a comment: skipped\necho a1\ncd /BIN\n\npwd\nsh /B.SH\npwd\necho a2", "/A.SH", 0),
+                (b"echo b1\ncd /\n", "/B.SH", 0),
+                (b"echo c1\nnosuch\necho c2\n", "/C.SH", 0),
+                (b"echo d1\n/EXE x 3\necho d2\n", "/D.SH", 0),
+                (b"echo e\nsh /E.SH\necho not here\n", "/E.SH", 0),
+                (b"echo f1\r\necho f2\r\n", "/F.SH", 0),
+                (b"shx /F.SH\necho g2\n", "/G.SH", 0)]}
 
 
 # sessions that boot a FRESH volume (p8xfs create, the selected OS's build/y1os.bin, then these files in order, then
@@ -154,7 +163,10 @@ def extras(name, img):
         src, disk, addr = e[:3]
         more = e[3] if len(e) > 3 and isinstance(e[3], list) else []     # (2026-09-25) extra y1cc flags
         fill = e[3] if len(e) > 3 and isinstance(e[3], int) else 0       # or the size of a zero-filled file
-        if src.endswith(".asm"):
+        if isinstance(src, bytes):                                       # (2026-11-03) a text file's bytes
+            host = os.path.join(BUILD, "text-%s" % disk.strip("/").replace("/", "-"))
+            open(host, "wb").write(src)
+        elif src.endswith(".asm"):
             base = os.path.splitext(src)[0]
             shutil.copy(os.path.join(ROOT, "software/assembler/yacc1.def"), BUILD)
             open(os.path.join(BUILD, "rcasm.rc"), "w").write("-h\n")

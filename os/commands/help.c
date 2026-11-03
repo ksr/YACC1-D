@@ -6,8 +6,8 @@
      help       the list (man NAME for the page of any of them)
    Ported from P8X os/commands/help.c 2026-09-23, changes: the text is rewritten for Y1/OS (no /d1, graphics,
    kermit, make, sh; the built-ins are Y1/OS's; redirection and pipes since the same evening: man shell; pack added 2026-09-23;
-   asm and cc 2026-09-25, video 2026-09-25, kermit 2026-09-26, asmc 2026-09-26, disasm 2026-09-29). Keep it
-   in step with os/README.md. */
+   asm and cc 2026-09-25, video 2026-09-25, kermit 2026-09-26, asmc 2026-09-26, disasm 2026-09-29, sh and make
+   2026-11-03). Keep it in step with os/README.md. */
 #include "y1lib.c"
 
 void main() {
@@ -20,6 +20,7 @@ void main() {
     puts("  ren path name  rename a file or directory in place");
     puts("  mkdir / rmdir  make / remove (an empty) directory");
     puts("  type path      print a file (the built-in cat)");
+    puts("  sh file        run a script: its lines as typed (NAME.SH runs too)");
     puts("  exit           back to the ROM monitor");
     puts("  cmd < in  > out  >> out  a | b | c   redirection and pipes (man shell)");
     puts("in /BIN:");
@@ -35,7 +36,8 @@ void main() {
     puts("  find names matching a pattern (tree)     grep lines matching a regex; -r");
     puts("  head first lines                         help this list");
     puts("  kermit file transfer on the console line: -r receive, -s send, -x server");
-    puts("  ls   plain directory list                man  a manual page (/MAN)");
+    puts("  ls   plain directory list                make build targets from a Makefile (-n -B)");
+    puts("  man  a manual page (/MAN)");
     puts("  md   render Markdown (/DOCS)             more page a file");
     puts("  mv   move/rename files                   pack compact the disk: reclaim dead sectors");
     puts("  pwd  the working directory               sed  s/re/new/[g]");

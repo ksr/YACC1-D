@@ -57,7 +57,8 @@ SY_CREATE:  EQU 0F1CH
 SY_WRITE:   EQU 0F1EH
 SY_DELETE:  EQU 0F22H
 SY_CONOUT:  EQU 0F3AH
-SY_SEEK:    EQU 4FF0H           ; SYSTAB2 + 2n: SEEK (24)
+SY_EXIT:    EQU 4FECH           ; SYSTAB2 + 2n: EXIT (22; 2026-11-03: status 1 after an error, so a script stops)
+SY_SEEK:    EQU 4FF0H           ;   SEEK (24)
 
 ; =====================================================================================================================
 ; main (asm.c main): the arguments, pass 1, the output file, pass 2, the summary.
@@ -147,7 +148,8 @@ st_p1:  LDAI 1
         STR R3,ERRS
         MVIW R3,S_CANTOPEN
         MVIW R4,SRCN
-        BR eput2
+        JSR eput2
+        BR fail1
 st_o1:  LDR R3,ERRS
         MVRLA R3
         BRNZ st_rep
@@ -171,7 +173,8 @@ st_c1:  STR R3,SYSARG2
         STR R3,ERRS
         MVIW R3,S_CANTMAKE
         MVIW R4,OUTN
-        BR eput2
+        JSR eput2
+        BR fail1
 st_c2:  LDR R3,FIRST
         STR R3,FPOS
         LDAI 2
@@ -218,11 +221,17 @@ st_rep: LDAI 1                  ; "asm: N error(s)[, no OUT]"
         MVIW R3,S_ERROR
 sr_1:   JSR ostr
         LDA OH+1
-        BRZ sr_2
+        BRZ sr_3
         MVIW R3,S_NO
         JSR ostr
         MVIW R3,OUTN
         JSR ostr
+sr_3:   LDAI 10                 ; the report's newline, then status 1
+        JSR oc
+fail1:  MVIW R3,1               ; EXIT(1): STATUS 1, so a running script stops (does not return)
+        STR R3,SYSARG0
+        LDR R7,SY_EXIT
+        JSRUR R7
 sr_2:   LDAI 10
         BR oc
 st_sum: MVIW R3,OUTN            ; "OUT: N bytes, N labels[, load AAAA exec AAAA]"

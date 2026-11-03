@@ -25,6 +25,8 @@
 #   make selfhost   the full native self-host (also in check): under Y1/OS on the instruction-level emulator the nine
 #                   passes, /BIN/ASM and /BIN/CC compiled and assembled natively, byte-identical to the host builds,
 #                   then again with the natively built tools - the fixed point (tests/native/selfhost.py, ~30 s)
+#   make srcmake    the disk's /SRC built by /BIN/MAKE under Y1/OS (cd /SRC, make, make install), every program
+#                   byte-identical to the host build (tests/native/srcmake.py, ~20 s; also in check)
 #   make asm-test   the native assembler /BIN/ASM against the host assembler over the tree's sources, then under Y1/OS on
 #                   both emulators (tests/asm/run.py --target)
 #   make bom        regenerate docs/bom/ (bills of material per card + consolidated) from the active Eagle schematics (tools/gen_bom.py)
@@ -58,6 +60,7 @@ check:
 	python3 tests/disasm/run.py
 	python3 tests/native/run.py
 	python3 tests/native/selfhost.py
+	python3 tests/native/srcmake.py
 	python3 tests/monload/run.py
 	python3 tests/y1term/run.py
 	python3 tests/kermit/run.py
@@ -89,6 +92,8 @@ native-test:
 	python3 tests/native/run.py
 selfhost:
 	python3 tests/native/selfhost.py
+srcmake:
+	python3 tests/native/srcmake.py
 clean:
 	@for d in $(TOOLS); do $(MAKE) -s -C "$$d" clean; done
 kicad:
@@ -97,4 +102,4 @@ isa:
 	python3 tools/ucode_wavedrom.py --all
 bom:
 	python3 tools/gen_bom.py
-.PHONY: all check clean kicad isa bom cc-test os-test asm-test disasm-test native-test selfhost
+.PHONY: all check clean kicad isa bom cc-test os-test asm-test disasm-test native-test selfhost srcmake
