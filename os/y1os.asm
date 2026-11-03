@@ -504,7 +504,7 @@ h_conout:   LDA SYSARG0+1
             LDA SO_H
             BRNZ hco_f
             MVTA
-            BR B_CHAROUT
+            BR conraw
 hco_f:      MVARL R3
             LDAI 0
             MVARH R3
@@ -533,7 +533,7 @@ cout:   MVAT
         LDA SO_H
         BRNZ cout_f
         MVTA
-        BR B_CHAROUT
+        BR conraw
 cout_f: PUSHR R3
         PUSHR R4
         PUSHR R5
@@ -560,10 +560,18 @@ crlf:   LDAI 10
 ; eputs: the string at R3 and a newline on the RAW console, whatever stdout is (the shell's diagnostics).
 eputs:  LDAVR R3
         BRZ ep_nl
-        JSR B_CHAROUT
+        JSR conraw
         INCR R3
         BR eputs
 ep_nl:  LDAI 10
+;       (falls into conraw)
+
+; conraw: ACC to the raw console (the ROM's CHAROUT); an LF goes out as LF CR, the monitor's line end (2026-11-03:
+; a bare LF staircased on a terminal). Files and pipes keep LF alone. Preserves every register; clobbers TMP.
+conraw: LDTI 10
+        BRNEQ B_CHAROUT
+        JSR B_CHAROUT
+        LDAI 13
         BR B_CHAROUT
 
 ; putnum: R3 as an unsigned decimal to stdout ("0" for 0). Clobbers R3-R7, ACC, TMP.
@@ -3523,15 +3531,16 @@ tp_cp:  JSR strcpy
 ; The shell (y1os.c readline, run_cmd, split, pipename, stage, io_reset)
 ; =====================================================================================================================
 ; readline: a console line -> LINE (up to 128 characters, NUL-terminated); the ROM's UARTIN echoes; BS and DEL
-; rub out ("\b \b" through stdout, the console at the prompt). Ends at LF, CR or NUL.
+; rub out ("\b \b" through stdout, the console at the prompt). Ends at LF, CR or NUL; after LF or CR a CR goes to the
+; console (the ROM echoes Enter as LF alone).
 readline:
         MVIW R3,LINE            ; R3 = LINE + n (LINE is page-aligned: n = R3's low byte)
 rl_lp:  JSR B_UARTIN
         BRZ rl_end
         LDTI 10
-        BREQ rl_end
+        BREQ rl_cr
         LDTI 13
-        BREQ rl_end
+        BREQ rl_cr
         LDTI 8
         BREQ rl_bs
         LDTI 127
@@ -3554,6 +3563,8 @@ rl_bs:  MVRLA R3
         LDAI 8
         JSR cout
         BR rl_lp
+rl_cr:  LDAI 13
+        JSR B_CHAROUT
 rl_end: LDIVR R3,0
         RET
 

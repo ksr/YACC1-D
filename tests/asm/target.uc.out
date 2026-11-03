@@ -1,85 +1,85 @@
 BOOT FROM CF
 Y1/OS v0.2 (2026-09-23)  P8XFS v2
-/> 
+/> 
 
-/> cd /S
+/> cd /S
 
-/S> asm HELLO.ASM
+/S> asm HELLO.ASM
 
-HELLO: 146 bytes, 18 labels, load 5000 exec 5000
-/S> run HELLO one two
+HELLO: 146 bytes, 18 labels, load 5000 exec 5000
+/S> run HELLO one two
 
-hello from /BIN/HELLO
-args: one two
-/S> asm -h HELLO.ASM
+hello from /BIN/HELLO
+args: one two
+/S> asm -h HELLO.ASM
 
-HELLO.IMG: 146 bytes, 18 labels, load 5000 exec 5000
-/S> asm ECHOX.ASM
+HELLO.IMG: 146 bytes, 18 labels, load 5000 exec 5000
+/S> asm ECHOX.ASM
 
-ECHOX: 67 bytes, 9 labels, load 5000 exec 5000
-/S> ECHOX echo, assembled on the machine
+ECHOX: 67 bytes, 9 labels, load 5000 exec 5000
+/S> ECHOX echo, assembled on the machine
 
-echo, assembled on the machine
-/S> asm CAT.ASM
+echo, assembled on the machine
+/S> asm CAT.ASM
 
-CAT: 2296 bytes, 208 labels, load 5000 exec 5000
-/S> run CAT /FRUIT.TXT
+CAT: 2327 bytes, 210 labels, load 5000 exec 5000
+/S> run CAT /FRUIT.TXT
 
-apple 3 red
-pear 5 green
-apple 3 red
-banana 12 yellow
-banana 12 yellow
-cherry 40 red
-fig 7 purple
-/S> asm -h MONITOR.ASM MON.IMG
+apple 3 red
+pear 5 green
+apple 3 red
+banana 12 yellow
+banana 12 yellow
+cherry 40 red
+fig 7 purple
+/S> asm -h MONITOR.ASM MON.IMG
 
-MON.IMG: 4066 bytes, 286 labels, load f000 exec f000
-/S> asm -h ISA.ASM
+MON.IMG: 4066 bytes, 286 labels, load f000 exec f000
+/S> asm -h ISA.ASM
 
-ISA.IMG: 790 bytes, 40 labels, load 3000 exec f000
-/S> asm -h QUIRKS.ASM Q.IMG
+ISA.IMG: 790 bytes, 40 labels, load 3000 exec f000
+/S> asm -h QUIRKS.ASM Q.IMG
 
-Q.IMG: 210 bytes, 11 labels, load 3000 exec 3000
-/S> asm QUIRKS
+Q.IMG: 210 bytes, 11 labels, load 3000 exec 3000
+/S> asm QUIRKS
 
-QUIRKS: 210 bytes, 11 labels, load 3000 exec 3000
-/S> asm CC4.ASM
+QUIRKS: 210 bytes, 11 labels, load 3000 exec 3000
+/S> asm CC4.ASM
 
-CC4: 5551 bytes, 442 labels, load 5000 exec 5000
-/S> asm ERR.ASM
+CC4: 5582 bytes, 444 labels, load 5000 exec 5000
+/S> asm ERR.ASM
 
-asm: 5: undefined label: NOTHERE
-          LDAI nothere
-asm: 1 error, no ERR
-/S> asm NOSUCH
+asm: 5: undefined label: NOTHERE
+          LDAI nothere
+asm: 1 error, no ERR
+/S> asm NOSUCH
 
-asm: cannot open NOSUCH.ASM
-/S> asm
+asm: cannot open NOSUCH.ASM
+/S> asm
 
-usage: asm [-h] SRC [OUT]
-/S> dir
+usage: asm [-h] SRC [OUT]
+/S> dir
 
-   2296  CAT  @5000
-  28407  CAT.ASM  @B000
-   5551  CC4  @5000
-  65973  CC4.ASM  @B000
-     67  ECHOX  @5000
-   1112  ECHOX.ASM  @B000
-    202  ERR.ASM  @B000
-    146  HELLO  @5000
-   1747  HELLO.ASM  @B000
-    424  HELLO.IMG  @5000
-  12969  ISA.ASM  @B000
-   2216  ISA.IMG  @3000
-  11228  MON.IMG  @F000
-  49001  MONITOR.ASM  @B000
-    624  Q.IMG  @3000
-    549  QUIRKS  @3000
-   3325  QUIRKS.ASM  @B000
-    227  quirks1.inc  @B000
-    139  quirks2.inc  @B000
-/S> exit
+   2327  CAT  @5000
+  28704  CAT.ASM  @B000
+   5582  CC4  @5000
+  66269  CC4.ASM  @B000
+     67  ECHOX  @5000
+   1112  ECHOX.ASM  @B000
+    202  ERR.ASM  @B000
+    146  HELLO  @5000
+   1747  HELLO.ASM  @B000
+    424  HELLO.IMG  @5000
+  12969  ISA.ASM  @B000
+   2216  ISA.IMG  @3000
+  11228  MON.IMG  @F000
+  49001  MONITOR.ASM  @B000
+    624  Q.IMG  @3000
+    549  QUIRKS  @3000
+   3325  QUIRKS.ASM  @B000
+    227  quirks1.inc  @B000
+    139  quirks2.inc  @B000
+/S> exit
 
-bye
->
+bye
+>

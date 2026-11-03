@@ -212,7 +212,7 @@ def main():
         make_disk(pl, img)
         cmd = [EMUS[tag], "-x", "-m", "-c", img, "-l", "40000000000"] + (["-S"] if tag == "int" else ["-E", MON_EXIT])
         r = subprocess.run(cmd, input=script(pl).encode(), capture_output=True)
-        out = r.stdout.decode("latin1"); err = r.stderr.decode("latin1")
+        out = r.stdout.decode("latin1").replace("\r", ""); err = r.stderr.decode("latin1")   # the console's LF CR (2026-11-03)
         if verbose: print(out[out.find("BOOT FROM CF"):])
         if "\nbye" not in out:
             print("%-4s the session did not end (no bye): %s" % (tag, out[-600:])); bad += 1; continue

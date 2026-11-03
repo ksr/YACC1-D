@@ -146,7 +146,7 @@ def session(img, progs, tag, verbose):
     if tag == "int": cmd = [run.EMUS["int"], "-x", "-m", "-c", img, "-l", "400000000000", "-S"]
     else: cmd = [run.EMUS["uc"], "-x", "-m", "-c", img, "-l", "4000000000000", "-E", run.MON_EXIT]
     r = subprocess.run(cmd, input=script(progs).encode(), capture_output=True)
-    out = r.stdout.decode("latin1"); err = r.stderr.decode("latin1")
+    out = r.stdout.decode("latin1").replace("\r", ""); err = r.stderr.decode("latin1")   # the console's LF CR (2026-11-03)
     if verbose: print(out[out.find("BOOT FROM CF"):])
     if "\nbye" not in out:
         print("%s: the session did not end (no bye): %s\n%s" % (tag, out[-1500:], err[-800:])); return None, None

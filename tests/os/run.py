@@ -188,7 +188,7 @@ def extras(name, img):
 # pointer and how many files moved, and every man page or /DOCS edit changes both. Numbers of two or more digits on
 # those lines become N (the one-digit counts the session itself makes stay checked; the "packed" host check
 # verifies the free pointer from the image)
-MASK = {"pack": (re.compile(r"^(pack: .*)$", re.M), re.compile(r"\d\d+"))}
+MASK = {"pack": (re.compile(r"^(\r?pack: .*)$", re.M), re.compile(r"\d\d+"))}
 
 
 # the banner's version: y1os.asm is v0.2, y1os.c (the specification, `make -C os OS=c`) v0.1; both must pass the same
@@ -230,7 +230,9 @@ def transcript(emu, limit, img, script):
     try: out, err = p.communicate(script, timeout=900)
     except subprocess.TimeoutExpired: p.kill(); out, err = p.communicate(); return None, "timeout"
     s = out.decode("latin1")
-    i = s.find("BOOT FROM CF"); j = s.find("\nbye", i)
+    i = s.find("BOOT FROM CF")
+    m = re.compile(r"\n\r?bye").search(s, i) if i >= 0 else None     # the console's line end is LF CR (2026-11-03)
+    j = m.start() if m else -1
     if i < 0 or j < 0: return None, "no boot/bye in the output (limit too low?): " + s[-300:]
     k = s.find(">", j)                           # the monitor prompt after the OS returned
     status = err.decode("latin1").strip().splitlines()[-1] if err.strip() else ""

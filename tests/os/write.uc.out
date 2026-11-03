@@ -1,109 +1,109 @@
 BOOT FROM CF
 Y1/OS v0.2 (2026-09-23)  P8XFS v2
-/> 
+/> 
 
-/> load /BIN/HELLO
+/> load /BIN/HELLO
 
-loaded 146 bytes at $5000
-/> mkdir T
+loaded 146 bytes at $5000
+/> mkdir T
 
-/> dir
+/> dir
 
-         BIN/
-         DOCS/
-     98  FRUIT.TXT  @B000
-     94  FRUIT2.TXT  @B000
-         LIB/
-         MAN/
-    156  README.TXT  @B000
-         T/
-/> cd T
+         BIN/
+         DOCS/
+     98  FRUIT.TXT  @B000
+     94  FRUIT2.TXT  @B000
+         LIB/
+         MAN/
+    156  README.TXT  @B000
+         T/
+/> cd T
 
-/T> save H.BIN 5000 20
+/T> save H.BIN 5000 20
 
-saved 32 bytes
-/T> dir
+saved 32 bytes
+/T> dir
 
-     32  H.BIN  @5000
-/T> mkdir SUB
+     32  H.BIN  @5000
+/T> mkdir SUB
 
-/T> dir
+/T> dir
 
-     32  H.BIN  @5000
-         SUB/
-/T> rmdir /T
+     32  H.BIN  @5000
+         SUB/
+/T> rmdir /T
 
-not an empty directory
-/T> rmdir SUB
+not an empty directory
+/T> rmdir SUB
 
-/T> cd ..
+/T> cd ..
 
-/> cp /README.TXT /T/COPY.TXT
+/> cp /README.TXT /T/COPY.TXT
 
-/> cat /T/COPY.TXT
+/> cat /T/COPY.TXT
 
-Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
-LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
-/> ren /T/COPY.TXT KEEP.TXT
+Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
+LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
+/> ren /T/COPY.TXT KEEP.TXT
 
-/> ren /T/KEEP.TXT KEEP.TXT
+/> ren /T/KEEP.TXT KEEP.TXT
 
-cannot rename
-/> dir /T
+cannot rename
+/> dir /T
 
-     32  H.BIN  @5000
-    156  KEEP.TXT  @B000
-/> del /T/H.BIN
+     32  H.BIN  @5000
+    156  KEEP.TXT  @B000
+/> del /T/H.BIN
 
-/> del /T/H.BIN
+/> del /T/H.BIN
 
-del: not a file: /T/H.BIN
-/> dir /T
+del: not a file: /T/H.BIN
+/> dir /T
 
-    156  KEEP.TXT  @B000
-/> rmdir /T
+    156  KEEP.TXT  @B000
+/> rmdir /T
 
-not an empty directory
-/> del /README.TXT
+not an empty directory
+/> del /README.TXT
 
-/> dir
+/> dir
 
-         BIN/
-         DOCS/
-     98  FRUIT.TXT  @B000
-     94  FRUIT2.TXT  @B000
-         LIB/
-         MAN/
-         T/
-/> mkdir /T2
+         BIN/
+         DOCS/
+     98  FRUIT.TXT  @B000
+     94  FRUIT2.TXT  @B000
+         LIB/
+         MAN/
+         T/
+/> mkdir /T2
 
-/> cp /BIN/HELLO /T2/HELLO
+/> cp /BIN/HELLO /T2/HELLO
 
-/> cd /T2
+/> cd /T2
 
-/T2> hello x y
+/T2> hello x y
 
-hello from /BIN/HELLO
-args: x y
-/T2> run /T2/HELLO 1 2 3
+hello from /BIN/HELLO
+args: x y
+/T2> run /T2/HELLO 1 2 3
 
-hello from /BIN/HELLO
-args: 1 2 3
-/T2> cd /
+hello from /BIN/HELLO
+args: 1 2 3
+/T2> cd /
 
-/> save /SAVED.BIN 5000 84
+/> save /SAVED.BIN 5000 84
 
-saved 132 bytes
-/> mkdir /T2
+saved 132 bytes
+/> mkdir /T2
 
-cannot mkdir
-/> save /T2/HELLO 5000 10
+cannot mkdir
+/> save /T2/HELLO 5000 10
 
-saved 16 bytes
-/> dir /T2
+saved 16 bytes
+/> dir /T2
 
-     16  HELLO  @5000
-/> exit
+     16  HELLO  @5000
+/> exit
 
-bye
->
+bye
+>

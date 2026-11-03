@@ -1,66 +1,66 @@
 BOOT FROM CF
 Y1/OS v0.2 (2026-09-23)  P8XFS v2
-/> 
-/> 
-/S> 
-HELLO: 146 bytes, 18 labels, load 5000 exec 5000
-/S> 
-hello from /BIN/HELLO
-args: one two
-/S> 
-HELLO.IMG: 146 bytes, 18 labels, load 5000 exec 5000
-/S> 
-ECHOX: 67 bytes, 9 labels, load 5000 exec 5000
-/S> 
-echo, assembled on the machine
-/S> 
-CAT: 2296 bytes, 208 labels, load 5000 exec 5000
-/S> 
-apple 3 red
-pear 5 green
-apple 3 red
-banana 12 yellow
-banana 12 yellow
-cherry 40 red
-fig 7 purple
-/S> 
-MON.IMG: 4066 bytes, 286 labels, load f000 exec f000
-/S> 
-ISA.IMG: 790 bytes, 40 labels, load 3000 exec f000
-/S> 
-Q.IMG: 210 bytes, 11 labels, load 3000 exec 3000
-/S> 
-QUIRKS: 210 bytes, 11 labels, load 3000 exec 3000
-/S> 
-CC4: 5551 bytes, 442 labels, load 5000 exec 5000
-/S> 
-asm: 5: undefined label: NOTHERE
-          LDAI nothere
-asm: 1 error, no ERR
-/S> 
-asm: cannot open NOSUCH.ASM
-/S> 
-usage: asm [-h] SRC [OUT]
-/S> 
-   2296  CAT  @5000
-  28407  CAT.ASM  @B000
-   5551  CC4  @5000
-  65973  CC4.ASM  @B000
-     67  ECHOX  @5000
-   1112  ECHOX.ASM  @B000
-    202  ERR.ASM  @B000
-    146  HELLO  @5000
-   1747  HELLO.ASM  @B000
-    424  HELLO.IMG  @5000
-  12969  ISA.ASM  @B000
-   2216  ISA.IMG  @3000
-  11228  MON.IMG  @F000
-  49001  MONITOR.ASM  @B000
-    624  Q.IMG  @3000
-    549  QUIRKS  @3000
-   3325  QUIRKS.ASM  @B000
-    227  quirks1.inc  @B000
-    139  quirks2.inc  @B000
-/S> 
-bye
->
+/> 
+/> 
+/S> 
+HELLO: 146 bytes, 18 labels, load 5000 exec 5000
+/S> 
+hello from /BIN/HELLO
+args: one two
+/S> 
+HELLO.IMG: 146 bytes, 18 labels, load 5000 exec 5000
+/S> 
+ECHOX: 67 bytes, 9 labels, load 5000 exec 5000
+/S> 
+echo, assembled on the machine
+/S> 
+CAT: 2327 bytes, 210 labels, load 5000 exec 5000
+/S> 
+apple 3 red
+pear 5 green
+apple 3 red
+banana 12 yellow
+banana 12 yellow
+cherry 40 red
+fig 7 purple
+/S> 
+MON.IMG: 4066 bytes, 286 labels, load f000 exec f000
+/S> 
+ISA.IMG: 790 bytes, 40 labels, load 3000 exec f000
+/S> 
+Q.IMG: 210 bytes, 11 labels, load 3000 exec 3000
+/S> 
+QUIRKS: 210 bytes, 11 labels, load 3000 exec 3000
+/S> 
+CC4: 5582 bytes, 444 labels, load 5000 exec 5000
+/S> 
+asm: 5: undefined label: NOTHERE
+          LDAI nothere
+asm: 1 error, no ERR
+/S> 
+asm: cannot open NOSUCH.ASM
+/S> 
+usage: asm [-h] SRC [OUT]
+/S> 
+   2327  CAT  @5000
+  28704  CAT.ASM  @B000
+   5582  CC4  @5000
+  66269  CC4.ASM  @B000
+     67  ECHOX  @5000
+   1112  ECHOX.ASM  @B000
+    202  ERR.ASM  @B000
+    146  HELLO  @5000
+   1747  HELLO.ASM  @B000
+    424  HELLO.IMG  @5000
+  12969  ISA.ASM  @B000
+   2216  ISA.IMG  @3000
+  11228  MON.IMG  @F000
+  49001  MONITOR.ASM  @B000
+    624  Q.IMG  @3000
+    549  QUIRKS  @3000
+   3325  QUIRKS.ASM  @B000
+    227  quirks1.inc  @B000
+    139  quirks2.inc  @B000
+/S> 
+bye
+>

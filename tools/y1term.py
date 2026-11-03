@@ -7,9 +7,9 @@
   y1term.py --send PROG.BAS [--new] [--run] [--stay] [options]      type PROG.BAS into BASIC and exit (or --stay)
 
 The terminal: what is typed goes to the machine, what it sends is shown (the monitor and BASIC echo, so there is no
-local echo). Y1/OS ends its lines with a bare LF (the monitor and BASIC send LF CR), so on the screen an LF that does
-not follow a CR gets a CR in front of it (--raw shows the bytes as they come; the --log file always has them as they
-come). Enter sends CR (the ROM's uartin makes it LF); backspace sends what the keyboard sends ($7F on a Mac:
+local echo). An LF that does not follow a CR gets a CR in front of it on the screen (Y1/OS sent a bare LF before
+2026-11-03; harmless with the monitor's and BASIC's LF CR); --raw shows the bytes as they come, and the --log file
+always has them as they come. Enter sends CR (the ROM's uartin makes it LF); backspace sends what the keyboard sends ($7F on a Mac:
 BASIC takes $7F and $08 since ROM 2026-10-07; the monitor's own commands take neither). Ctrl-] then:
   s  send a file to BASIC (lists firmware/basic/programs, --dir; a bare name or NAME.bas is found there)      q  quit
   n  NEW before the next file is sent (toggle)      h  this help

@@ -149,7 +149,9 @@ def host_ref(name, d, args, tag):
     give. The host build writes the messages to stderr and the summary to stdout; there is never both."""
     out = name + "." + tag
     if os.path.exists(os.path.join(d, out)): os.remove(os.path.join(d, out))
-    rc, so, se = sh([NATIVE] + args + [name + ".asm", out], cwd=d)
+    r = subprocess.run([NATIVE] + args + [name + ".asm", out], cwd=d, capture_output=True)   # bytes: lib_err's
+    rc, so = r.returncode, r.stdout.decode("latin1")                 # eputc sends LF CR (2026-11-03), and text mode
+    se = r.stderr.decode("latin1").replace("\r", "")                 # would turn the CR into a second line end
     m = re.search(r"host_sys: created \S+ load ([0-9A-F]{4}) exec ([0-9A-F]{4})", se)
     con = "".join(l + "\n" for l in se.splitlines() if not l.startswith("host_sys: ")) + so
     f = os.path.join(d, out)
@@ -211,12 +213,12 @@ def native_batch(job):
     if emu == "int": cmd = [EMUS["int"], "-x", "-m", "-c", img, "-l", str(40000000 + 1500 * size), "-S"]
     else: cmd = [EMUS["uc"], "-x", "-m", "-c", img, "-l", str(600000000 + 30000 * size), "-E", MON_EXIT]
     r = subprocess.run(cmd, input="\n".join(lines).encode(), capture_output=True)
-    out = r.stdout.decode("latin1"); err = r.stderr.decode("latin1")
+    out = r.stdout.decode("latin1").replace("\r", ""); err = r.stderr.decode("latin1")   # the console's LF CR (2026-11-03)
     res = []
     if "\nbye" not in out:
         return [(c[0], "FAIL", "%s: the session did not end: %s" % (emu, (out[-300:] + err[-300:]).replace("\n", " | ")))
                 for c in cmds[::2]], {}
-    body = out[out.find("BOOT FROM CF"):out.find("\nbye")].replace("\r", "")
+    body = out[out.find("BOOT FROM CF"):out.find("\nbye")]
     # each command's output follows its prompt (the microcode emulator also shows the command, as the machine echoes it)
     parts = re.split(r"/D\d+> \n" if emu == "int" else r"/D\d+> [^\n]*\n\n", body)[1:]
     if parts: parts[-1] = re.sub(r"/D\d+> (exit)?\n?$", "", parts[-1])     # the prompt before `exit`

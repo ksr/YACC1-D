@@ -9,6 +9,6 @@
    and never lands in an output file or the next command's input, as the P8X eputs() does (stderr, in effect).
    Ported from P8X os/commands/lib_err.c 2026-09-23, changes: the BIOS call is bios(CHAROUT, 0, c), one byte. */
 #include "lib_abi.c"
-void eputc(int c) { bios(CHAROUT, 0, c); }
+void eputc(int c) { bios(CHAROUT, 0, c); if (c == 10) bios(CHAROUT, 0, 13); }   /* LF CR, as the kernels' console */
 void eputs(char *s) { while (*s) eputc(*s++); eputc(10); }
 void eput2(char *s, char *t) { while (*s) eputc(*s++); eputs(t); }   /* "cmd: what: " + a name, one message */

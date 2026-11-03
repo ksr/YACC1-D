@@ -92,6 +92,11 @@ CONOUT and `getchar` CONIN. The shell opens the files (`si_h`, `so_h` in `y1os.c
 or the raw console (`bios(CHAROUT)`), CONIN/CONST read the input file or the console; KEYIN is always the keyboard
 (Unix pagers read `/dev/tty` for the same reason); STDIO tells a program which of its two are redirected.
 
+**Line ends (2026-11-03).** Programs and files end lines with LF alone. On the raw console the kernels send an LF as
+LF CR, the monitor's line end (`conraw` in `y1os.asm`, `raw_out` in `y1os.c`; `lib_err.c` eputc and `/BIN/ASM` do
+the same for their error messages), and the shell sends a CR after the Enter the ROM echoes as LF. Files, `>`, `>>`
+and pipes keep LF alone. Before, a plain terminal showed every line one step to the right of the last.
+
 **`>>` = append in place, or copy-then-extend.** A file is one contiguous extent and only the free pointer
 allocates, so the new bytes must follow the old ones. When the file is the last thing written (its extent ends at
 the free pointer: `echo a >> LOG` twice) the write handle simply carries on in its extent; otherwise the old sectors

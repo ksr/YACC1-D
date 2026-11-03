@@ -119,10 +119,15 @@ int le16(char *p) { return p[0] | (p[1] << 8); }
 void put16(char *p, int v) { p[0] = v; p[1] = v >> 8; }
 char getch() { return bios(UARTIN, 0, 0); }
 void crlf() { putchar(10); }
+void raw_out(int c) {           /* the raw console (CHAROUT); an LF goes out as LF CR, the monitor's line end
+                                   (2026-11-03: a bare LF staircased on a terminal). Files and pipes keep LF alone. */
+    bios(CHAROUT, 0, c);
+    if (c == 10) bios(CHAROUT, 0, 13);
+}
 void eputs(char *s) {           /* a diagnostic line on the raw console, whatever stdout is: the shell's errors
                                    never land in a > file or a pipe */
-    while (*s) bios(CHAROUT, 0, *s++);
-    bios(CHAROUT, 0, 10);
+    while (*s) raw_out(*s++);
+    raw_out(10);
 }
 
 /* ---- directory entries ------------------------------------------------------------------------------------ */
@@ -570,7 +575,7 @@ int fs_entry(char *buf) {       /* the entry the last lookup found (OPEN, OPENDI
    eputs(), which is the raw console too. */
 void con_out(int c) {           /* CONOUT: the > / >> / pipe file, else the raw console (never putchar: see above) */
     if (so_h) fs_putc(so_h, c);
-    else bios(CHAROUT, 0, c);
+    else raw_out(c);
 }
 int key_in() {                  /* KEYIN: a console byte without echo; 65535 on Ctrl-D and on NUL (the emulator's end of input) */
     int c;
@@ -868,7 +873,8 @@ int readline() {
     n = 0;
     while (1) {
         c = getch();
-        if (c == 10 || c == 13 || c == 0) break;
+        if (c == 10 || c == 13) { bios(CHAROUT, 0, 13); break; }   /* the ROM echoes Enter as LF alone */
+        if (c == 0) break;
         if (c == 8 || c == 127) { if (n) { n--; putstr("\b \b"); } continue; }
         if (n < 128) line[n++] = c;
     }

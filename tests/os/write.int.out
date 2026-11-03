@@ -1,75 +1,75 @@
 BOOT FROM CF
 Y1/OS v0.2 (2026-09-23)  P8XFS v2
-/> 
-/> 
-loaded 146 bytes at $5000
-/> 
-/> 
-         BIN/
-         DOCS/
-     98  FRUIT.TXT  @B000
-     94  FRUIT2.TXT  @B000
-         LIB/
-         MAN/
-    156  README.TXT  @B000
-         T/
-/> 
-/T> 
-saved 32 bytes
-/T> 
-     32  H.BIN  @5000
-/T> 
-/T> 
-     32  H.BIN  @5000
-         SUB/
-/T> 
-not an empty directory
-/T> 
-/T> 
-/> 
-/> 
-Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
-LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
-/> 
-/> 
-cannot rename
-/> 
-     32  H.BIN  @5000
-    156  KEEP.TXT  @B000
-/> 
-/> 
-del: not a file: /T/H.BIN
-/> 
-    156  KEEP.TXT  @B000
-/> 
-not an empty directory
-/> 
-/> 
-         BIN/
-         DOCS/
-     98  FRUIT.TXT  @B000
-     94  FRUIT2.TXT  @B000
-         LIB/
-         MAN/
-         T/
-/> 
-/> 
-/> 
-/T2> 
-hello from /BIN/HELLO
-args: x y
-/T2> 
-hello from /BIN/HELLO
-args: 1 2 3
-/T2> 
-/> 
-saved 132 bytes
-/> 
-cannot mkdir
-/> 
-saved 16 bytes
-/> 
-     16  HELLO  @5000
-/> 
-bye
->
+/> 
+/> 
+loaded 146 bytes at $5000
+/> 
+/> 
+         BIN/
+         DOCS/
+     98  FRUIT.TXT  @B000
+     94  FRUIT2.TXT  @B000
+         LIB/
+         MAN/
+    156  README.TXT  @B000
+         T/
+/> 
+/T> 
+saved 32 bytes
+/T> 
+     32  H.BIN  @5000
+/T> 
+/T> 
+     32  H.BIN  @5000
+         SUB/
+/T> 
+not an empty directory
+/T> 
+/T> 
+/> 
+/> 
+Y1/OS on the YACC1: a P8XFS v2 volume built by os/Makefile.
+LBA 0 boot block, LBA 1.. the OS (Y1OS.BIN), root directory at LBA 33, /BIN holds the programs.
+/> 
+/> 
+cannot rename
+/> 
+     32  H.BIN  @5000
+    156  KEEP.TXT  @B000
+/> 
+/> 
+del: not a file: /T/H.BIN
+/> 
+    156  KEEP.TXT  @B000
+/> 
+not an empty directory
+/> 
+/> 
+         BIN/
+         DOCS/
+     98  FRUIT.TXT  @B000
+     94  FRUIT2.TXT  @B000
+         LIB/
+         MAN/
+         T/
+/> 
+/> 
+/> 
+/T2> 
+hello from /BIN/HELLO
+args: x y
+/T2> 
+hello from /BIN/HELLO
+args: 1 2 3
+/T2> 
+/> 
+saved 132 bytes
+/> 
+cannot mkdir
+/> 
+saved 16 bytes
+/> 
+     16  HELLO  @5000
+/> 
+bye
+>

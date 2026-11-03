@@ -1,74 +1,74 @@
 BOOT FROM CF
 Y1/OS v0.2 (2026-09-23)  P8XFS v2
-/> 
-/> 
-apple 3 red
-banana 12 yellow
-cherry 40 red
-fig 7 purple
-pear 5 green
-/> 
-   5333  VI  @5000
-   1201  VIDEO  @5000
-/> 
-/> 
-5 15 69
-/> 
-apple 3 red
-banana 12 yellow
-/> 
-cherry | red
-fig | purple
-/> 
-42 252 1483
-/> 
-NAME
-    more - page through text a screenful at a time
+/> 
+/> 
+apple 3 red
+banana 12 yellow
+cherry 40 red
+fig 7 purple
+pear 5 green
+/> 
+   5333  VI  @5000
+   1232  VIDEO  @5000
+/> 
+/> 
+5 15 69
+/> 
+apple 3 red
+banana 12 yellow
+/> 
+cherry | red
+fig | purple
+/> 
+42 252 1483
+/> 
+NAME
+    more - page through text a screenful at a time
 
-SYNOPSIS
-    more [file ...]
+SYNOPSIS
+    more [file ...]
 
-DESCRIPTION
-    Shows the files named, as one stream (globs expand, "-" is
-    stdin), 23 lines at a time. After each 23 lines it prints
-    --More-- and waits for a key, read from the KEYBOARD without echo
-    (keyin, never a < file or a pipe); the prompt is wiped once the
-    key comes. more is /BIN/MORE.
+DESCRIPTION
+    Shows the files named, as one stream (globs expand, "-" is
+    stdin), 23 lines at a time. After each 23 lines it prints
+    --More-- and waits for a key, read from the KEYBOARD without echo
+    (keyin, never a < file or a pipe); the prompt is wiped once the
+    key comes. more is /BIN/MORE.
 
-    Keys at the --More-- prompt:
-        space   the next page
-        Enter   one more line
-        q, Q    quit (so does Ctrl-D, the end of console input)
-        other   the next page
+    Keys at the --More-- prompt:
+        space   the next page
+        Enter   one more line
+        q, Q    quit (so does Ctrl-D, the end of console input)
+        other   the next page
 
-    With no file the text is stdin, so more pages a pipe or a <
-    file while the keys still come from the keyboard:
-        dir -R / | more      cat /MAN/MORE | more      more < F
-    When its own output is a file or a pipe (more F > G, more F | wc)
---More--            there is no one to page for: it copies the text, no --More--.
+    With no file the text is stdin, so more pages a pipe or a <
+    file while the keys still come from the keyboard:
+        dir -R / | more      cat /MAN/MORE | more      more < F
+    When its own output is a file or a pipe (more F > G, more F | wc)
+--More--            there is no one to page for: it copies the text, no --More--.
 
-LIMITS
-    Up to 24 names in all, after glob expansion.
+LIMITS
+    Up to 24 names in all, after glob expansion.
 
-EXAMPLES
-    more /DOCS/PORT.MD       a long file (md renders it better)
-    more /MAN/C*             the pages starting with C, one after
-                             another
+EXAMPLES
+    more /DOCS/PORT.MD       a long file (md renders it better)
+    more /MAN/C*             the pages starting with C, one after
+                             another
 
-NOTES
-    On the instruction-level emulator a lower-case q is read as end of
-    input, which quits as well.
-    New: several files, globs and "-"; no paging into a file or a
-    pipe. The pager itself is shared with man and md (see pager).
-    Ported from P8X os/commands/more.c 2026-09-23.
+NOTES
+    On the instruction-level emulator a lower-case q is read as end of
+    input, which quits as well.
+    New: several files, globs and "-"; no paging into a file or a
+    pipe. The pager itself is shared with man and md (see pager).
+    Ported from P8X os/commands/more.c 2026-09-23.
 
-SEE ALSO
-    pager, shell, man, md, cat, head, tail
-/> 
-/> 
-syntax: cmd [< in] [> out | >> out] [| cmd ...] (4 commands at most)
-/> 
-syntax: cmd [< in] [> out | >> out] [| cmd ...] (4 commands at most)
-/> 
-bye
->
+SEE ALSO
+    pager, shell, man, md, cat, head, tail
+/> 
+/> 
+syntax: cmd [< in] [> out | >> out] [| cmd ...] (4 commands at most)
+/> 
+syntax: cmd [< in] [> out | >> out] [| cmd ...] (4 commands at most)
+/> 
+bye
+>

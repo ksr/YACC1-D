@@ -398,7 +398,7 @@ oc:     STA OC_C
         LDA TOERR
         BRZ oc_so
         LDA OC_C
-        BR B_CHAROUT
+        BR eoc
 oc_so:  PUSHR R3
         PUSHR R4
         PUSHR R5
@@ -478,15 +478,22 @@ hx_d:   ADDI 48
 ; eput2: the strings at R3 and R4 and a line feed, raw (lib_err.c)
 eput2:  LDAVR R3
         BRZ ep_2
-        JSR B_CHAROUT
+        JSR eoc
         INCR R3
         BR eput2
 ep_2:   LDAVR R4
         BRZ ep_3
-        JSR B_CHAROUT
+        JSR eoc
         INCR R4
         BR ep_2
 ep_3:   LDAI 10
+;       (falls into eoc)
+; eoc: ACC to the raw console (lib_err.c eputc): an LF goes out as LF CR (2026-11-03). Preserves every register;
+; clobbers TMP.
+eoc:    LDTI 10
+        BRNEQ B_CHAROUT
+        JSR B_CHAROUT
+        LDAI 13
         BR B_CHAROUT
 
 ; =====================================================================================================================
