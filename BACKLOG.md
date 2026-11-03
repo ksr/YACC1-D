@@ -777,6 +777,11 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Move off NetBeans (README decision 7).
 
 ## Disk operating system (plan `docs/system/OS-PLAN.md`, decisions 2026-09-22)
+- **Proposed 2026-11-03: a real-time clock** (`docs/cards/rtc.md`): a DS12C887 on P6/P7 with the CF card's decode, so
+  that Kermit's timeouts are real seconds at any CPU clock, Y1/OS gets `/bin/date`, and files get dates (bytes 26-29 of
+  a P8XFS entry) for a `make` that rebuilds what is out of date. Open: the DS12C887's data sheet (it could not be read
+  that day), P6/P7 checked free on the I/O card, a card of its own or the protocard first, the C kernel's room for
+  the date stamping (69 bytes free).
 - **2026-11-03: every name on the Y1/OS disk is lower case**, as in Unix (`/bin/cat`, `/lib/cc/cc1`, `/man`, `/docs`,
   `/src`, `fruit.txt`, `make.sh`, cc's `ccw.*`, asm's `.asm`/`.img`, `/pipe0.tmp`, `kermit.tmp`), Unix's own capitals
   kept (`README`, the `Makefile`s). Both kernels look up `/bin/name` with the command word lower-cased (any case runs

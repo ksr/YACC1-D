@@ -38,6 +38,7 @@ The machine and its bus as a whole: `docs/system/` (architecture, microcode, bus
 | [`mem-switch.md`](mem-switch.md) | Mem Switch V1.1 | 16 bytes of DIP-switch ROM at $0000 |
 | [`mem-register.md`](mem-register.md) | Mem Register V1.0 | 16 bytes of 74LS374 RAM at $0010 |
 | [`protocard.md`](protocard.md) | Protocard V1.0 | the bus on header rows (2016 labels, V3.2 pins) |
+| [`rtc.md`](rtc.md) | Real-time clock: design note (2026-11-03), not designed or built | a DS12C887 on P6/P7 (register number, data), the CF card's decode; Kermit's timeouts in seconds, `/bin/date`, file dates for `make` |
 
 ## The bus
 
