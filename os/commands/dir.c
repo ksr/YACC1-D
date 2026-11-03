@@ -10,8 +10,9 @@
      dir -R           the directory, then every directory below it (depth first, up to 8 levels) as a block of
                       its own under a "/PATH:" header, the glob filtering every level
    Each line: the size right-justified in 7 columns (blank for a directory), two spaces, the name ('/' after a
-   directory), and "@AAAA" = the load address of a file that has one. Up to 64 entries per directory are sorted
-   (a fresh directory holds 62); the rest are dropped with a note. Sizes are 32-bit (lib_num.c).
+   directory), and "@AAAA" = the load address of a file that has one. Up to 255 entries per directory are sorted
+   (64 until 2026-11-03; a fresh directory holds 62, /SRC's 254), with a Shell sort (an insertion sort before: at
+   1 MHz some 20,000 compares for 200 names); more are dropped with a note. Sizes are 32-bit (lib_num.c).
    Ported from P8X os/commands/dir.c 2026-09-23, changes: the recursive walk() is lib_walk.c and -R prints
    ls -R style blocks with a header each (the P8X interleaved indented levels, streaming a level before its
    subdirectories because the FNEXT cursor was global); the load-address column of the Y1/OS built-in dir is
@@ -22,7 +23,7 @@
 #include "../lib_num.c"
 #include "../lib_err.c"
 #include "y1lib.c"
-#define NE 64
+#define NE 255                                  /* eidx[] is a char: 255 entries at most */
 char enam[NE * 13], eisd[NE], eidx[NE], ehi[NE];
 int elen[NE], eload[NE];
 int ecnt, szmode, lost;
@@ -40,7 +41,7 @@ int before(int a, int b) {                      /* entry a sorts before entry b 
 }
 
 int collect(char *path) {                       /* the entries of a directory, sorted into eidx; 0 = not a dir */
-    int h, k, i, j, t;
+    int h, k, i, j, t, g;
     h = opendir(path);
     if (!h) return 0;
     k = 0;
@@ -55,11 +56,13 @@ int collect(char *path) {                       /* the entries of a directory, s
     }
     fclose(h);
     ecnt = k;
-    for (i = 0; i < k; i++) {                   /* insertion sort of the index */
-        t = i; j = i;
-        while (j && before(t, eidx[j - 1])) { eidx[j] = eidx[j - 1]; j--; }
-        eidx[j] = t;
-    }
+    for (i = 0; i < k; i++) eidx[i] = i;
+    for (g = k >> 1; g; g = g >> 1)             /* Shell sort of the index (names are unique: no ties to keep) */
+        for (i = g; i < k; i++) {
+            t = eidx[i]; j = i;
+            while (j >= g && before(t, eidx[j - g])) { eidx[j] = eidx[j - g]; j -= g; }
+            eidx[j] = t;
+        }
     return 1;
 }
 
@@ -115,5 +118,5 @@ void main() {
         }
         if (wtrunc) eputs("dir: deeper than 8 levels, not all shown");
     }
-    if (lost) eputs("dir: over 64 entries in a directory, the rest not shown");
+    if (lost) eputs("dir: over 255 entries in a directory, the rest not shown");
 }
