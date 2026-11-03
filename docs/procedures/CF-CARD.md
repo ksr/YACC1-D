@@ -52,6 +52,11 @@ was. The OS allocates new files from the volume's free pointer, never from the c
 
 Writing the whole 1 MB takes a second or two; the read-back check about the same.
 
+**Without a USB CF reader**: with the CPU cards out and the bus tester in (bus-driver `blocks-2` firmware), write the
+card where it sits on the memory card v2.0: `python3 tools/cfwrite_bus.py os/disk.img`. Each sector goes through P8/P9
+as the machine would see it, then every sector is read back and compared; about 2.5 s a sector to write and 1.75 s to
+verify, so about 2.5 hours for the 1 MB image.
+
 ## Reading a card back
 
 To see what the machine wrote (files saved, `pack` results) or to keep a backup:

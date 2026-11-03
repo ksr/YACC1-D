@@ -19,6 +19,9 @@
    YACC1-D 2026-09-21: block memory commands (one round trip per up to 64 bytes instead of 4 commands per byte):
      RDBLK:addr,count#              -> "Data: hh hh hh ..." count bytes read from addr upward (count 1..64)
      WRBLK:addr,count,hhhh...#      -> writes count bytes (2 hex digits each, no spaces) from addr upward (count 1..32)
+     IORBK:port,count#              -> "Data: hh hh ..." count bytes read from I/O port 0..15, each a -IO-RD cycle
+     IOWBK:port,count,hhhh...#      -> count bytes written to I/O port 0..15, each a -IO-WR cycle (count 1..32);
+                                       the address bus is not touched (2026-11-03: the CF's data register P9)
    Both drive the address bus and pulse -MEM-RD / -MEM-WR exactly like the per-byte idiom (WR-ADDRBUS, WR-DATABUS,
    -MEM-WR:1, -MEM-WR:0 / WR-ADDRBUS, -MEM-RD:1, RD-DATABUS-L, -MEM-RD:0) and switch the data bus direction as
    needed. -VMA, -BUS-EN and ADDRBUS-WR-MODE are the caller's job, as before. Errors reply "Error: ..." and do NOT
@@ -37,7 +40,7 @@
 #define OPCODE_OPERAND_SPLIT ":"
 #define PROMPT ">>"
 #define BAUD 19200                     /* YACC1-D 2026-09-21: one place to change it (busdrv.py and the Processing sender must match) */
-#define BANNER "bus-driver blocks-1 2026-09-21"   /* printed before the first prompt; the host looks for "blocks-" */
+#define BANNER "bus-driver blocks-2 2026-11-03"   /* printed before the first prompt; the host looks for "blocks-" */
 #define BLOCK_MAX 64                  /* RDBLK bytes per command (streamed out, no buffer) */
 #define WBLOCK_MAX 32                 /* WRBLK bytes per command: the command String lives in the Uno's ~500 free bytes */
 
@@ -66,7 +69,7 @@ int dataBusDir(int);
 int addrBusDir(int);
 int dataBusMode = BUS_READ;
 int addrBusMode = BUS_READ;
-int memWrIndex = -1, memRdIndex = -1;   /* YACC1-D 2026-09-21: opcode table indexes of -MEM-WR / -MEM-RD (block commands) */
+int memWrIndex = -1, memRdIndex = -1, ioWrIndex = -1, ioRdIndex = -1, ioAddrIndex[4];   /* YACC1-D 2026-09-21: opcode table indexes of -MEM-WR / -MEM-RD (block commands) */
 int opLookUp(char *codeToLookup);
 
 
@@ -330,6 +333,10 @@ void setup() {
 #endif
   memWrIndex = opLookUp((char *)"-MEM-WR");   /* YACC1-D 2026-09-21: for the block commands */
   memRdIndex = opLookUp((char *)"-MEM-RD");
+  ioWrIndex = opLookUp((char *)"-IO-WR");     /* 2026-11-03: the I/O block commands */
+  ioRdIndex = opLookUp((char *)"-IO-RD");
+  ioAddrIndex[0] = opLookUp((char *)"IOADDR0"); ioAddrIndex[1] = opLookUp((char *)"IOADDR1");
+  ioAddrIndex[2] = opLookUp((char *)"IOADDR2"); ioAddrIndex[3] = opLookUp((char *)"IOADDR3");
   digitalWrite(COMMAND_READY, HIGH);
   Serial.println(F(BANNER));
   Serial.println(PROMPT);
@@ -347,14 +354,19 @@ static int hexNibble(char c) {
 }
 
 void doBlock() {
-  boolean isWrite = command.charAt(0) == 'W';
+  boolean isIO = command.charAt(0) == 'I';                 /* IORBK / IOWBK: an I/O port, no address bus */
+  boolean isWrite = command.charAt(isIO ? 2 : 0) == 'W';
+  int wrIndex = isIO ? ioWrIndex : memWrIndex, rdIndex = isIO ? ioRdIndex : memRdIndex;
   int c1 = command.indexOf(',');
   if (c1 < 0) { Serial.println(F("Error: block needs addr,count")); return; }
   long addr = command.substring(6, c1).toInt();
   int c2 = command.indexOf(',', c1 + 1);
   long count = command.substring(c1 + 1, (c2 < 0) ? command.indexOf('#') : c2).toInt();
   if (addr < 0 || addr > 65535 || count < 1 || count > BLOCK_MAX) { Serial.println(F("Error: block addr 0..65535, count 1..64")); return; }
-  if (addrBusMode == BUS_READ) { Serial.println(F("Error: Addr Bus Mode is READ")); return; }
+  if (isIO) {
+    if (addr > 15) { Serial.println(F("Error: I/O port 0..15")); return; }
+    for (int b = 0; b < 4; b++) setCntlPin(ioAddrIndex[b], (addr >> b) & 1);
+  } else if (addrBusMode == BUS_READ) { Serial.println(F("Error: Addr Bus Mode is READ")); return; }
   if (isWrite) {
     if (count > WBLOCK_MAX) { Serial.println(F("Error: WRBLK count 1..32")); return; }
     if (c2 < 0 || command.length() < (unsigned)(c2 + 1 + 2 * count)) { Serial.println(F("Error: WRBLK needs 2 hex digits per byte")); return; }
@@ -362,20 +374,20 @@ void doBlock() {
     for (int i = 0; i < count; i++) {
       int hi = hexNibble(command.charAt(c2 + 1 + 2 * i)), lo = hexNibble(command.charAt(c2 + 2 + 2 * i));
       if (hi < 0 || lo < 0) { Serial.println(F("Error: bad hex in WRBLK")); return; }
-      mcp[ADDRESS_CHIP].writeGPIOAB((unsigned int)(addr + i));
+      if (!isIO) mcp[ADDRESS_CHIP].writeGPIOAB((unsigned int)(addr + i));
       mcp[DATA_CHIP].writeGPIOAB((unsigned int)((hi << 4) | lo));
-      setCntlPin(memWrIndex, 1);
-      setCntlPin(memWrIndex, 0);
+      setCntlPin(wrIndex, 1);
+      setCntlPin(wrIndex, 0);
     }
     Serial.print(F("Data: ")); Serial.println(count);
   } else {
     if (dataBusMode == BUS_WRITE) dataBusDir(BUS_READ);
     Serial.print(F("Data:"));
     for (int i = 0; i < count; i++) {
-      mcp[ADDRESS_CHIP].writeGPIOAB((unsigned int)(addr + i));
-      setCntlPin(memRdIndex, 1);
+      if (!isIO) mcp[ADDRESS_CHIP].writeGPIOAB((unsigned int)(addr + i));
+      setCntlPin(rdIndex, 1);
       unsigned int v = mcp[DATA_CHIP].readGPIO(0);
-      setCntlPin(memRdIndex, 0);
+      setCntlPin(rdIndex, 0);
       Serial.print(' ');
       if (v < 16) Serial.print('0');
       Serial.print(v, HEX);
@@ -398,7 +410,8 @@ void loop() {
     display_leds(command_counter++);
 
     /* YACC1-D 2026-09-21: block commands are parsed from the String itself (the generic path truncates at 20 chars) */
-    if (command.startsWith(F("RDBLK:")) || command.startsWith(F("WRBLK:"))) {
+    if (command.startsWith(F("RDBLK:")) || command.startsWith(F("WRBLK:")) ||
+        command.startsWith(F("IORBK:")) || command.startsWith(F("IOWBK:"))) {
       doBlock();
       command = "";
       commandReady = false;

@@ -37,7 +37,7 @@ answers `RDBLK:addr,count#` (1–64 bytes back as `Data: hh hh ...`) and `WRBLK:
 digits each): one round trip per block, the same -MEM-RD / -MEM-WR pulses as before, data-bus direction switched by the
 card. It prints `bus-driver blocks-1 2026-09-21` before its first prompt; `tools/busdrv.py` looks for `blocks-` in that
 banner and uses `read_block()` / `write_block()` (falling back to the per-byte commands on the older firmware, which
-would HALT on an unknown opcode - never send RDBLK to it). Block errors reply `Error: ...` without halting. Baud is the
+would HALT on an unknown opcode - never send RDBLK to it). Block errors reply `Error: ...` without halting. Since 2026-11-03 (`bus-driver blocks-2 2026-11-03`) it also answers `IORBK:port,count#` and `IOWBK:port,count,hh...#`: the same blocks on an I/O port (0-15), each byte a -IO-RD / -IO-WR cycle, the address bus untouched (`tools/cfwrite_bus.py` writes a CF card through P9 with them). Baud is the
 `BAUD` define (19200; busdrv.py and the Processing sender must match). **Flashed to the card 2026-09-21** (arduino-cli, Uno, 115200 through the FTDI); the previous flash - the 2020 bus-driver - was read out first to `readback/`.
 
 ## bus-stepper (2026-10-10)
