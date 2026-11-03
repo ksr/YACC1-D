@@ -7,7 +7,9 @@
   y1term.py --send PROG.BAS [--new] [--run] [--stay] [options]      type PROG.BAS into BASIC and exit (or --stay)
 
 The terminal: what is typed goes to the machine, what it sends is shown (the monitor and BASIC echo, so there is no
-local echo). Enter sends CR (the ROM's uartin makes it LF); backspace sends what the keyboard sends ($7F on a Mac:
+local echo). Y1/OS ends its lines with a bare LF (the monitor and BASIC send LF CR), so on the screen an LF that does
+not follow a CR gets a CR in front of it (--raw shows the bytes as they come; the --log file always has them as they
+come). Enter sends CR (the ROM's uartin makes it LF); backspace sends what the keyboard sends ($7F on a Mac:
 BASIC takes $7F and $08 since ROM 2026-10-07; the monitor's own commands take neither). Ctrl-] then:
   s  send a file to BASIC (lists firmware/basic/programs, --dir; a bare name or NAME.bas is found there)      q  quit
   n  NEW before the next file is sent (toggle)      h  this help
@@ -25,7 +27,7 @@ returns (--run-timeout, default 60 s).
 
 Exit status (--send): 0 all lines accepted, 1 a line was refused or a prompt did not come.
 """
-import os, sys, time, select, argparse
+import os, re, sys, time, select, argparse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -36,15 +38,21 @@ CTRL_RB = 0x1D                                   # Ctrl-]
 
 
 class Console:
-    def __init__(self, port, baud, log):
+    def __init__(self, port, baud, log, raw=False):
         import serial
         self.s = serial.Serial(port, baud, timeout=0)
         self.log = open(log, "ab") if log else None
         self.show = True                         # copy what arrives to the screen
+        self.raw = raw                           # False: a bare LF (Y1/OS) is shown as CR LF
+        self.last = 0                            # the last byte shown, for an LF that arrives in the next read
 
     def out(self, data):
         if self.show:
-            os.write(sys.stdout.fileno(), data)
+            shown = data
+            if not self.raw and data:
+                shown = re.sub(rb"(?<!\r)\n", b"\r\n", bytes((self.last,)) + data)[1:]
+                self.last = data[-1]
+            os.write(sys.stdout.fileno(), shown)
         if self.log:
             self.log.write(data); self.log.flush()
 
@@ -213,6 +221,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--port")
     ap.add_argument("--baud", type=int, default=38400)
+    ap.add_argument("--raw", action="store_true", help="show what arrives as it comes (no CR added before a bare LF)")
     ap.add_argument("--log", help="append everything the machine sends to this file")
     ap.add_argument("--send", metavar="FILE", help="type FILE into BASIC, then exit (or --stay); a bare name is looked "
                     "up in --dir too")
@@ -228,7 +237,7 @@ def main():
     ap.add_argument("--maxlen", type=int, default=200, help="longest line sent (default 200)")
     ap.add_argument("--stop-on-error", action="store_true", help="stop at the first refused line")
     a = ap.parse_args()
-    con = Console(a.port or monload.find_port(), a.baud, a.log)
+    con = Console(a.port or monload.find_port(), a.baud, a.log, a.raw)
     if a.send:
         a.send = find_program(a.send, a.dir)
         if not os.path.isfile(a.send):

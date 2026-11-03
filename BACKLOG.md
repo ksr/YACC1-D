@@ -777,6 +777,13 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Move off NetBeans (README decision 7).
 
 ## Disk operating system (plan `docs/system/OS-PLAN.md`, decisions 2026-09-22)
+- **First boot on the machine from the CF (2026-11-03): Y1/OS comes up from memory v2.0's CF section** (disk written
+  through the bus tester, `tools/cfwrite_bus.py`, 2,048 sectors verified). **Line ends: Y1/OS sends a bare LF** (`crlf`
+  and `eputs` in `os/y1os.asm`, y1os.c's twins, and the commands' `putchar(10)`, from P8X), the monitor and BASIC send
+  LF CR, so a plain terminal staircases. For now `tools/y1term.py` shows a bare LF as CR LF (`--raw` to turn it off;
+  `screen` cannot). **To do:** the console path of both kernels (`cout`'s raw branch, `eputs`, `h_conout`'s raw
+  branch) sends LF CR as the monitor does, files and pipes stay LF-only; `tests/os` transcripts updated; then the CF
+  rewritten (`tools/cfcard.py` with a USB reader, or `cfwrite_bus.py`, about 2.5 h).
 - (done 2026-09-22 evening: phase 1 — CF model in both emulators, ROM driver + `O` boot + vectors, p8xfs/img2bin; phase 2
   read-only — `os/y1os.c` shell with dir/cd/pwd/cat/load/run and /BIN programs, `tests/os/` sessions on both emulators.)
 - (designed 2026-09-23: **the CF card v1.0** — `hardware/cards/cf/kicad/v1.0/` generated from `cf_netlist.py`: 5 ICs
