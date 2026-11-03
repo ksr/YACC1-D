@@ -72,6 +72,15 @@ A card keeps its files when only the OS changes if you update the image rather t
 `put` new programs with `p8xfs.py`, and `write card.img` back. Rebuilding `os/disk.img` with `make -C os` starts from
 a fresh volume, discarding whatever the machine wrote.
 
+## When the machine cannot see the card
+
+**Check the adapter's master/slave jumper first.** It must be on **master**. A CF on slave never answers the
+machine, which addresses the master only: every register reads $FF, `O` ends in `CF ERROR`, and every signal at J2
+and at the adapter's header still measures right. This cost an afternoon on the memory card v2.0's first CF bring-up
+(2026-11-03), with the strobes, the decode, the ribbon and the adapter's power all checked before the jumper. Then,
+in order: the 5 V / 3.3 V jumper on 5 V, the adapter's LED and +5 V at its harness, the card pushed fully home, the
+ribbon's pin 1 to the adapter's pin 1.
+
 ## Safety
 
 - The tool only accepts a disk that macOS reports as external, physical and removable or ejectable, that appears in
