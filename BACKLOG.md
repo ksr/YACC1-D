@@ -777,6 +777,17 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Move off NetBeans (README decision 7).
 
 ## Disk operating system (plan `docs/system/OS-PLAN.md`, decisions 2026-09-22)
+- **Proposed 2026-11-04: the OS gets its own name, and P8X comes out of the code.** The OS grew from P8X's and is now
+  separate from it, but the name and the leftovers remain (`Y1/OS` in the docs, `P8XFS` for the disk format, 188
+  tracked files mention P8X, 101 of them in `os/`). To decide: the name, `YACC1OS` or `YOS` (`YOS` is the shorter and
+  likely the better). Then, in order:
+  - the name in the banners, the docs, the man pages and the website;
+  - the disk format: `P8XFS` and `tools/p8xfs.py` renamed, `tests/` and the Makefiles with them;
+  - comments and identifiers in `os/` (kernels, commands, libs) and `tools/`.
+  Three limits: the boot block's `P8` signature (`firmware/monitor/monitor.asm` boot, `tools/p8xfs.py`) is checked by
+  the ROM, so changing it needs a burned ROM and a rewritten CF together, and it can stay as a plain magic number. The
+  facts of where the code came from stay: "ported from P8X" in the authorship headers, `tools/authors.tsv`, and the
+  history in `os/PORT-PLAN.md`, `deprecated/` and `archive/`. The P8X repository itself is read-only reference.
 - **Proposed 2026-11-03: a real-time clock** (`docs/cards/rtc.md`): a DS12C887 on P6/P7 with the CF card's decode, so
   that Kermit's timeouts are real seconds at any CPU clock, Y1/OS gets `/bin/date`, and files get dates (bytes 26-29 of
   a P8XFS entry) for a `make` that rebuilds what is out of date. Open: the DS12C887's data sheet (it could not be read
