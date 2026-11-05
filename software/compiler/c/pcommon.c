@@ -32,11 +32,9 @@ void e_n(int n);
 void e_go(void);
 void wpath(char *ext);
 int ropen(char *ext);
-int rb(int h);
-int ri(int h);
+int ri(int h);                                      /* (ri, wi: the I/O layer, target_io.c / host_io.c) */
 void rs(int h, char *buf, int max);
 void wopen(char *ext);
-void wb(int c);
 void wi(int v);
 void ws(char *s);
 void wclose(void);
@@ -119,8 +117,6 @@ int ropen(char *ext) {
     if (!h) { e_start("y1cc: cannot read "); e_s(wpbuf); io_fail(ebuf); }
     return h;
 }
-int rb(int h) { return io_getc(h); }                /* 0..255, 256 at the end */
-int ri(int h) { int a; a = io_getc(h) & 255; return (a << 8) | (io_getc(h) & 255); }
 void rs(int h, char *buf, int max) {                /* a NUL-terminated string, cut at max - 1 */
     int n; int c;
     n = 0;
@@ -135,8 +131,6 @@ void wopen(char *ext) {
     wpath(ext);
     if (!io_wopen(wpbuf)) { e_start("y1cc: cannot write "); e_s(wpbuf); io_fail(ebuf); }
 }
-void wb(int c) { io_wput(c & 255); }
-void wi(int v) { io_wput((v >> 8) & 255); io_wput(v & 255); }
 void ws(char *s) { while (*s) { io_wput(*s & 255); s++; } io_wput(0); }
 void wclose(void) { io_wclose(); }
 /* whole columns: n words / bytes of a table (the tables go through the files a column at a time: one call per

@@ -60,7 +60,7 @@ void y1cc_main(void) {
         from = 0;
         if (rec_ne == 1 && nk[d] == N_FUNC && f_body[nm_fn[nb[d]]] == rec_ord) from = nm_fn[nb[d]];
         for (i = 0; i < rec_ncall; i++) {
-            c = ri(h); ri(h); rb(h); ri(h);
+            c = ri(h); ri(h); io_getc(h); ri(h);
             k = nm_fn[c];
             if (from && k && f_body[k]) {
                 set_bit(from, k);
@@ -107,7 +107,7 @@ void y1cc_main(void) {
         }
         t = 0; m = 0;                               /* a malformed one seen; the first name without a body */
         for (i = 0; i < rec_ncall; i++) {
-            c = ri(h); n = ri(h); kd = rb(h); a = ri(h);
+            c = ri(h); n = ri(h); kd = io_getc(h); a = ri(h);
             if (!r || c != B_FUNCADDR) continue;
             if (n != 1 || kd != N_ID) t = 1;
             else {

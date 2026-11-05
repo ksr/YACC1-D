@@ -210,27 +210,27 @@ int dec_ptr(int p) { if (p > 0) return p - 1; return 0; }
 int lbl(int kind) {
     if (nsym + 1 >= SYM7) fail("y1cc: too many labels in one function");
     nsym++;
-    wb(R_ALLOC); wi(SYM7 + nsym); wb(kind);
+    io_wput(R_ALLOC); wi(SYM7 + nsym); io_wput(kind);
     return SYM7 + nsym;
 }
-void label_def(int sym) { wb(R_LDEF); wi(sym); }
-void need(int h) { wb(R_NEED); wb(h); }
-void w_addr(void) { int i; wb(ak); wi(aid); wb(ant); for (i = 0; i < ant; i++) { wi(aterm_h[i]); wi(aterm_l[i]); } }
-void ins0(int mn) { wb(R_CODE); wb(mn); wb(F_0); }
-void insr(int mn, int r) { wb(R_CODE); wb(mn); wb(F_R); wb(r); }
-void insn(int mn, int n) { wb(R_CODE); wb(mn); wb(F_N); wi(n); }
-void insl(int mn, int sym) { wb(R_CODE); wb(mn); wb(F_L); wi(sym); }
-void insa(int mn) { wb(R_CODE); wb(mn); wb(F_A); w_addr(); }
-void insrn(int mn, int r, int n) { wb(R_CODE); wb(mn); wb(F_RN); wb(r); wi(n); }
-void insrl(int mn, int r, int sym) { wb(R_CODE); wb(mn); wb(F_RL); wb(r); wi(sym); }
-void insrr(int mn, int a, int b) { wb(R_CODE); wb(mn); wb(F_RR); wb(a); wb(b); }
-void insra(int mn, int r) { wb(R_CODE); wb(mn); wb(F_RA); wb(r); w_addr(); }
-void insv(int mn, int r, int v) { wb(R_CODE); wb(mn); wb(F_RA); wb(r); wb(A_VAR); wi(v); wb(0); }  /* label of v */
-void jsr_rt(int h) { wb(R_CODE); wb(MN_JSR); wb(F_A); wb(A_RT); wi(h); wb(0); }
+void label_def(int sym) { io_wput(R_LDEF); wi(sym); }
+void need(int h) { io_wput(R_NEED); io_wput(h); }
+void w_addr(void) { int i; io_wput(ak); wi(aid); io_wput(ant); for (i = 0; i < ant; i++) { wi(aterm_h[i]); wi(aterm_l[i]); } }
+void ins0(int mn) { io_wput(R_CODE); io_wput(mn); io_wput(F_0); }
+void insr(int mn, int r) { io_wput(R_CODE); io_wput(mn); io_wput(F_R); io_wput(r); }
+void insn(int mn, int n) { io_wput(R_CODE); io_wput(mn); io_wput(F_N); wi(n); }
+void insl(int mn, int sym) { io_wput(R_CODE); io_wput(mn); io_wput(F_L); wi(sym); }
+void insa(int mn) { io_wput(R_CODE); io_wput(mn); io_wput(F_A); w_addr(); }
+void insrn(int mn, int r, int n) { io_wput(R_CODE); io_wput(mn); io_wput(F_RN); io_wput(r); wi(n); }
+void insrl(int mn, int r, int sym) { io_wput(R_CODE); io_wput(mn); io_wput(F_RL); io_wput(r); wi(sym); }
+void insrr(int mn, int a, int b) { io_wput(R_CODE); io_wput(mn); io_wput(F_RR); io_wput(a); io_wput(b); }
+void insra(int mn, int r) { io_wput(R_CODE); io_wput(mn); io_wput(F_RA); io_wput(r); w_addr(); }
+void insv(int mn, int r, int v) { io_wput(R_CODE); io_wput(mn); io_wput(F_RA); io_wput(r); io_wput(A_VAR); wi(v); io_wput(0); }  /* label of v */
+void jsr_rt(int h) { io_wput(R_CODE); io_wput(MN_JSR); io_wput(F_A); io_wput(A_RT); wi(h); io_wput(0); }
 void zext(void) { insn(MN_LDAI, 0); insr(MN_MVARH, 3); }
-void m_addk(int k) { wb(R_MACRO); wb(M_ADDK); wi(k & 65535); }
-void m_adda(void) { wb(R_MACRO); wb(M_ADDA); w_addr(); }
-void m_simple(int m) { wb(R_MACRO); wb(m); }
+void m_addk(int k) { io_wput(R_MACRO); io_wput(M_ADDK); wi(k & 65535); }
+void m_adda(void) { io_wput(R_MACRO); io_wput(M_ADDA); w_addr(); }
+void m_simple(int m) { io_wput(R_MACRO); io_wput(m); }
 /* y1cc.c's add_r4, logic_r4, logic_const, shr1, not_r3: instruction records here (2026-09-24; they were cc9 macros,
    moved out of cc9 to make room there for --xisa) */
 void r4op(int lo, int hi) {                         /* R3 = R3 op R4, a byte at a time (lo op, then hi op) */
@@ -257,8 +257,8 @@ void not_r3(void) {                                 /* R3 = ~R3 */
     insr(MN_MVRLA, 3); ins0(MN_INVA); insr(MN_MVARL, 3);
     insr(MN_MVRHA, 3); ins0(MN_INVA); insr(MN_MVARH, 3);
 }
-void m_scale(int esz) { wb(R_MACRO); wb(M_SCALE); wi(esz); }
-void m_brel(int rel, int sym, int lomode, int lok) { wb(R_MACRO); wb(M_BREL); wb(rel); wi(sym); wb(lomode); wi(lok); }
+void m_scale(int esz) { io_wput(R_MACRO); io_wput(M_SCALE); wi(esz); }
+void m_brel(int rel, int sym, int lomode, int lok) { io_wput(R_MACRO); io_wput(M_BREL); io_wput(rel); wi(sym); io_wput(lomode); wi(lok); }
 
 /* ---- static addresses: the assembler expression in ak/aid/aterm (y1cc.c's abuf) ------------------------------ */
 void a_var(int v) { ak = A_VAR; aid = v; ant = 0; }
@@ -292,7 +292,7 @@ int static_addr(int e) {                            /* 1 when &e is a link-time 
     int k; int i; int b; int bt; int bp;
     k = nk[e];
     if (k == N_ID) { a_var(var_of(e)); return 1; }
-    if (k == N_STR) { wb(R_STRUSE); wi(na[e]); ak = A_STR; aid = na[e]; ant = 0; return 1; }
+    if (k == N_STR) { io_wput(R_STRUSE); wi(na[e]); ak = A_STR; aid = na[e]; ant = 0; return 1; }
     if (k == N_MEMBER) {
         if (!static_addr(na[e])) return 0;
         member(e);
@@ -431,7 +431,7 @@ void deref_r3(int base, int ptr) {                  /* R3 = *(R3) of type (base,
     int sz;
     sz = size_of(base, ptr);
     if (sz != 1 && sz != 2) fail("y1cc: struct/union used as a value");
-    wb(R_MACRO); wb(M_DEREF); wb(sz);
+    io_wput(R_MACRO); io_wput(M_DEREF); io_wput(sz);
 }
 
 /* ---- expressions: result in R3 ------------------------------------------------------------------------------------ */
@@ -793,14 +793,14 @@ void gen_builtin(int e) {                           /* y1cc.c gen_call's builtin
     }
     if (name == B_INP) {
         n = port(nth_arg(e, 0));
-        wb(R_CODE); wb(MN_INP); wb(F_P); wb(n);
+        io_wput(R_CODE); io_wput(MN_INP); io_wput(F_P); io_wput(n);
         insr(MN_MVARL, 3); zext(); return;
     }
     if (name == B_OUTP) {                           /* always OUTA: the emulator's console (port 2) ignores OUTI */
         b = nth_arg(e, 1);
         if (is_narrow(b)) gen_byte_acc(b); else { gen_expr(b); insr(MN_MVRLA, 3); }
         n = port(nth_arg(e, 0));
-        wb(R_CODE); wb(MN_OUTA); wb(F_P); wb(n);
+        io_wput(R_CODE); io_wput(MN_OUTA); io_wput(F_P); io_wput(n);
         return;
     }
     if (name == B_HALT) { ins0(MN_HALT); return; }
@@ -837,7 +837,7 @@ void gen_builtin(int e) {                           /* y1cc.c gen_call's builtin
         if (!a_v[e]) {
             e_start("y1cc: funcaddr() wants the name of a defined function (in "); e_name(cur_name); e_s(")"); e_go();
         }
-        wb(R_CODE); wb(MN_MVIW); wb(F_RA); wb(3); wb(A_FUNC); wi(a_v[e]); wb(0); return;
+        io_wput(R_CODE); io_wput(MN_MVIW); io_wput(F_RA); io_wput(3); io_wput(A_FUNC); wi(a_v[e]); io_wput(0); return;
     }
     /* bios(addr, r7, acc) -> ACC */
     if (!fold(nth_arg(e, 0))) fail("y1cc: bios() address must be a constant");
@@ -850,7 +850,7 @@ void gen_builtin(int e) {                           /* y1cc.c gen_call's builtin
 void frame(int e, int restore) {                    /* frame_save / frame_restore of the callee: M_FSAVE / M_FREST */
     if (a_fer[e]) { e_start("y1cc: unknown type '"); e_name(a_fer[e]); e_s("'"); e_go(); }
     if (!a_c[e]) return;
-    wb(R_MACRO); wb(restore ? M_FREST : M_FSAVE); wi(a_fvar[e]); wi(a_c[e]);
+    io_wput(R_MACRO); io_wput(restore ? M_FREST : M_FSAVE); wi(a_fvar[e]); wi(a_c[e]);
 }
 void gen_call(int e) {
     int name; int nargs; int a; int fn; int rec; int v; int base;
@@ -888,7 +888,7 @@ void gen_call(int e) {
         } else insv(MN_STR, 3, v);
     }
     while (npark > base) { npark--; insr(MN_POPR, 4); insv(MN_STR, 4, park[npark]); }
-    wb(R_CODE); wb(MN_JSR); wb(F_A); wb(A_FUNC); wi(fn); wb(0);
+    io_wput(R_CODE); io_wput(MN_JSR); io_wput(F_A); io_wput(A_FUNC); wi(fn); io_wput(0);
     if (rec) frame(e, 1);
 }
 void gen_expr_stmt(int e) {
@@ -912,11 +912,11 @@ void read_tree(void) {                              /* a hole's tree with cc7's 
     rarrc(inh, a_s + 1, n); rarrc(inh, a_verr + 1, n); rarr(inh, a_fvar + 1, n); rarr(inh, a_fer + 1, n);
     rarr(inh, a_tv + 1, n); rarrc(inh, a_ts + 1, n); rarrc(inh, a_haz + 1, n); rarr(inh, a_esc + 1, n);
     rarrc(inh, a_eerr + 1, n);
-    n = rb(inh);
+    n = io_getc(inh);
     if (n >= TERR_MAX) fail("y1cc: too many errors in one expression (TERR_MAX)");
     rarrc(inh, e_code + 1, n); rarr(inh, e_a1 + 1, n); rarr(inh, e_a2 + 1, n);
 }
-void copy(int n) { while (n) { wb(rb(inh)); n--; } }
+void copy(int n) { while (n) { io_wput(io_getc(inh)); n--; } }
 void zreload(void) { if (opt_xisa) m_simple(M_ZP); }   /* y1cc.c zreload: cc9 prints it when the page is used */
 void load_structs(void) {                           /* W.sym: the struct tags and sizes */
     int h;
@@ -935,29 +935,29 @@ void y1cc_main(void) {
     p_args();
     load_structs();
     h = ropen(".opt");                              /* the options: only --xisa matters here */
-    while (rb(h) % 256) {}
-    while (rb(h) % 256) {}
-    ri(h); opt_xisa = (rb(h) & OPT_XISA) != 0;
+    while (io_getc(h) % 256) {}
+    while (io_getc(h) % 256) {}
+    ri(h); opt_xisa = (io_getc(h) & OPT_XISA) != 0;
     io_close(h);
     inh = ropen(".se");
     wopen(".em");
     for (;;) {
-        c = rb(inh);
+        c = io_getc(inh);
         if (c == 256) break;
         if (c == R_ERROR) { rs(inh, ebuf, EBUF_MAX); io_fail(ebuf); }   /* cc6's deferred error: its turn now */
         if (c != R_HOLE) {
-            wb(c);
-            if (c == R_CODE) { wb(rb(inh)); r = rb(inh); wb(r); copy(flen[r]); }
+            io_wput(c);
+            if (c == R_CODE) { io_wput(io_getc(inh)); r = io_getc(inh); io_wput(r); copy(flen[r]); }
             else if (c == R_FUNC) {
-                copy(2); cur_name = ri(inh); cur_rbase = ri(inh); cur_rptr = rb(inh);
-                wi(cur_name); wi(cur_rbase); wb(cur_rptr);
+                copy(2); cur_name = ri(inh); cur_rbase = ri(inh); cur_rptr = io_getc(inh);
+                wi(cur_name); wi(cur_rbase); io_wput(cur_rptr);
                 nsym = 0; npark = 0;
             } else copy(rlen[c]);
             continue;
         }
-        hk = rb(inh);
+        hk = io_getc(inh);
         r = ri(inh);
-        if (hk == H_COND) { sym = ri(inh); when = rb(inh); read_tree(); gen_cond(r, sym, when); }
+        if (hk == H_COND) { sym = ri(inh); when = io_getc(inh); read_tree(); gen_cond(r, sym, when); }
         else if (hk == H_EXPR) { read_tree(); gen_expr_stmt(r); }
         else if (hk == H_RET) {
             read_tree();
@@ -972,7 +972,7 @@ void y1cc_main(void) {
             gen_expr(r);
             narrow = 0;
             if (n) narrow = is_narrow(r);           /* y1cc.c asks only when there are cases */
-            wb(R_MACRO); wb(M_SWITCH); wb(narrow); wi(sym); wi(n);
+            io_wput(R_MACRO); io_wput(M_SWITCH); io_wput(narrow); wi(sym); wi(n);
             for (i = 0; i < n; i++) { wi(cs_val[i]); wi(cs_sym[i]); }
         }
     }

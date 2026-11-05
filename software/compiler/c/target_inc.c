@@ -10,9 +10,11 @@
    still open (its path and the bytes read from it are kept), and reading a closed one opens it again and SEEKs to
    where it was. Included by target/lex.c and target.c instead of target_rd.c.
    Buffered (2026-09-25, as target_rd.c): one buffer, iob, IO_RB bytes, filled by READN for the file being read;
-   io_getc (target_io.c) takes its bytes from rp..re and calls io_slow to refill or to switch. The lexer switches
-   files only at an #include and at an included file's end: the bytes the old file has not had go back (tv_hi:tv_lo,
-   the bytes READN has given for a file, is taken down by them) and it is SEEKed there when it is read again. */
+   io_getc (target_io.c) takes rc bytes at rp and calls io_slow to refill or to switch. The lexer switches files only
+   at an #include and at an included file's end: the bytes the old file has not had go back (tv_hi:tv_lo, the bytes
+   READN has given for a file, is taken down by them) and it is SEEKed there when it is read again. io_getc does not
+   look at the handle (2026-11-05), so io_open gives them back at once and io_close empties rc: the next io_getc,
+   for whichever file, reaches io_slow. */
 int s_len(char *s);
 #define TV_MAX 8
 #define TV_OPEN 3
@@ -29,14 +31,14 @@ char iob[IO_RB];
 
 void tv_give(void) {            /* the file being read gives back the bytes it has not had (a switch) */
     int u; int *lo;
-    u = re - rp;
+    u = rc;
     if (rh && u) {
         lo = tv_lo + rh;
         if (*lo < u) tv_hi[rh]--;
         *lo = *lo - u;
         tv_sk[rh] = 1;
     }
-    rp = re;
+    rc = 0;
 }
 void tv_room(void) {            /* a real handle free: close the outermost open one if TV_OPEN are */
     int i;
@@ -49,6 +51,7 @@ void tv_room(void) {            /* a real handle free: close the outermost open 
 int io_open(char *path) {
     int h; int i;
     if (tv_n >= TV_MAX) return 0;
+    tv_give();
     tv_room();
     h = fopen(path);
     if (!h) return 0;
@@ -77,16 +80,15 @@ int io_slow(int v) {
         tv_sk[v] = 0;
     }
     n = freadn(h, iob, IO_RB);
-    rp = iob; re = iob + n;
     if (!n) return 256;
     h = *lo + n;
     if (h < n) tv_hi[v]++;
     *lo = h;
-    rp = iob + 1;
+    rp = iob + 1; rc = n - 1;
     return iob[0];
 }
 void io_close(int v) {          /* the innermost (the lexer closes a file when it ends) */
     if (tv_h[v]) { fclose(tv_h[v]); tv_real--; tv_h[v] = 0; }
-    if (v == rh) rh = 0;
+    if (v == rh) { rh = 0; rc = 0; }
     tv_n = v - 1;
 }

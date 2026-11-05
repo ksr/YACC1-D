@@ -11,11 +11,16 @@
    - the source files are read through io_open/io_getc/io_close: io_getc is here, the rest is NOT: target_rd.c has
      the plain ones (each a handle) and target_inc.c those of the lexer, which nests #includes deeper than Y1/OS's
      handles allow; each target/NAME.c includes one of them;
-   - buffered (2026-09-25): io_getc takes the next byte from the buffer of the handle read last (rh: the bytes
-     rp..re-1) and calls io_slow (target_rd.c / target_inc.c) only to switch handles or to refill, with the syscall
-     READN (up to IO_RB bytes, never past a sector); io_wput collects IO_WB bytes for one WRITE. A syscall per byte
-     (GETC, PUTC) was most of a compile's time. IO_RB and IO_WB are in each pass's ylim/NAME.h (RAM: 4 * IO_RB +
+   - buffered (2026-09-25): io_getc takes the next byte from the buffer of the handle read last (rh: rc bytes at rp)
+     and calls io_slow (target_rd.c / target_inc.c) only to switch handles or to refill, with the syscall READN (up
+     to IO_RB bytes, never past a sector); io_wput collects IO_WB bytes for one WRITE. A syscall per byte (GETC, PUTC)
+     was most of a compile's time. IO_RB and IO_WB are in each pass's ylim/NAME.h, at most 128 (RAM: 4 * IO_RB +
      IO_WB bytes; the output and every open file are the same bytes as before);
+   - counted (2026-11-05): io_getc was 840 clocks a byte, most of them comparing h with rh and rp with an end pointer
+     (16 bits, two loads each). rc and wc, one byte each, are the bytes left, so the fast path tests one byte and
+     does not look at h: rc is non-zero only for the handle being read, because a switch of file empties it first
+     (io_open and io_close, in target_rd.c and target_inc.c). ri and wi live here and move a word whole with
+     peekw/pokew: words are big-endian in memory and in the work files;
    - the three output sections of y1cc.c (io_create/io_put/io_finish) are in target_sec.c, which only target.c
      includes (the passes write their files with io_wopen/io_wput/io_wclose and would only carry its buffers);
    - there is no clock, so the header's date is 0000-00-00 00:00;
@@ -74,28 +79,40 @@ int io_find(char *name, char *from, char *out, int max) {
 }
 int rh;                                             /* the reads: the handle read last (io_slow's number), */
 char *rp;                                           /* its next byte in the buffer, */
-char *re;                                           /* the end of its bytes there */
+char rc;                                            /* and how many it has left there */
 int io_slow(int h);
 int io_getc(int h) {
-    char *p;
-    if (h == rh) { p = rp; if (p != re) { rp = p + 1; return *p; } }
+    if (rc) { rc = rc - 1; rp++; return rp[-1]; }
     return io_slow(h);
+}
+int ri(int h) {                                     /* a word; a word split across a refill goes by bytes */
+    char *p; int a;
+    if (rc & 254) { rc = rc - 2; p = rp; rp = p + 2; return peekw(p); }
+    a = io_getc(h) & 255;
+    return (a << 8) | (io_getc(h) & 255);
 }
 int twh;                                            /* the writes: the one file open for writing, */
 char twb[IO_WB];                                    /* its bytes not written yet: twb..wp-1 */
 char *wp;
-void io_wflush(void) { if (wp != twb) fwrite(twh, twb, wp - twb); wp = twb; }
+char wc;                                            /* the room left in twb */
+void io_wflush(void) { if (wp != twb) fwrite(twh, twb, wp - twb); wp = twb; wc = IO_WB; }
 void io_fail(char *msg) { if (twh) io_wflush(); eputs(msg); osexit(1); }   /* on the screen; the chain stops
                                                     (STATUS 1); EXIT closes the file with every byte written */
 void io_out(int c) { putchar(c); }
 char *twpath;                                       /* the file being written, for io_wclose's message */
-int io_wopen(char *path) { twpath = path; twh = fcreate(path, 0, 0); wp = twb; return twh != 0; }
-void io_wput(int c) { *wp = c; wp++; if (wp == twb + IO_WB) io_wflush(); }
+int io_wopen(char *path) { twpath = path; twh = fcreate(path, 0, 0); wp = twb; wc = IO_WB; return twh != 0; }
+void io_wput(int c) { *wp = c; wp++; wc = wc - 1; if (!wc) io_wflush(); }
+void wi(int v) {                                    /* a word; the last three bytes of the buffer go by bytes, */
+    if (wc & 252) { wc = wc - 2; pokew(wp, v); wp = wp + 2; return; }    /* so that a full buffer is always written */
+    io_wput(v >> 8);
+    io_wput(v);
+}
 void io_wputs(char *s) {
     char *p; char *e;
     p = wp; e = twb + IO_WB;
     while (*s) { *p = *s; p++; s++; if (p == e) { wp = p; io_wflush(); p = wp; } }
     wp = p;
+    wc = e - p;
 }
 void io_wclose(void) {                              /* 2026-11-03: CLOSE registers the file, and fails when the
                                                        directory has no free slot (CREATE does not look); the

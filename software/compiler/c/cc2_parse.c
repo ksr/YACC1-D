@@ -126,7 +126,7 @@ void prog_add(int n) {
 void need_tok(int i) {
     int c; int s;
     while (tk_have <= i) {
-        c = rb(tokh);
+        c = io_getc(tokh);
         if (c == T_LINE) { tline = ri(tokh); continue; }
         s = tk_have & 7;
         if (c == 256) { tk_kind[s] = T_EOF; tk_val[s] = 0; }             /* past the end: more T_EOF */
@@ -162,10 +162,10 @@ void e_tok(int d) {                                 /* Python's repr() of a toke
     if (k == T_STR) {                               /* the literal's bytes, from W.lit */
         h = ropen(".lit");
         ri(h);
-        for (i = 1; i < v; i++) { n = ri(h); while (n) { rb(h); n--; } }
+        for (i = 1; i < v; i++) { n = ri(h); while (n) { io_getc(h); n--; } }
         n = ri(h);
         e_s("[");
-        for (i = 0; i < n; i++) { if (i) e_s(", "); e_n(rb(h)); }
+        for (i = 0; i < n; i++) { if (i) e_s(", "); e_n(io_getc(h)); }
         e_s("]");
         io_close(h);
         return;
@@ -604,7 +604,7 @@ void write_node(int i) {
     if (nc[i]) m = m | 4;
     if (nd[i]) m = m | 8;
     if (nx[i]) m = m | 16;
-    wb(nk[i]); wb(m);
+    io_wput(nk[i]); io_wput(m);
     if (na[i]) wi(na[i]);
     if (nb[i]) wi(nb[i]);
     if (nc[i]) wi(nc[i]);
@@ -618,7 +618,7 @@ void lwalk(int n) {
     if (!n) return;
     k = nk[n];
     if (k == N_CALL) {
-        if (lmode) { a = nb[n]; wi(na[n]); wi(nc[n]); wb(nk[a]); wi(na[a]); } else lcount++;
+        if (lmode) { a = nb[n]; wi(na[n]); wi(nc[n]); io_wput(nk[a]); wi(na[a]); } else lcount++;
         lwalk_list(nb[n]);
         return;
     }
@@ -654,7 +654,7 @@ void write_record(void) {                           /* the nodes of one toplevel
     }
     blen = 0;
     for (i = h + 1; i <= nn; i++) blen = blen + node_bytes(i);
-    wb(1); wi(nn); wi(h); wi(nca); wi(nde); wi(blen); wi(nent);
+    io_wput(1); wi(nn); wi(h); wi(nca); wi(nde); wi(blen); wi(nent);
     for (i = 0; i < nent; i++) wi(ent[i]);
     for (i = 1; i <= h; i++) write_node(i);
     lmode = 1;
@@ -669,11 +669,11 @@ void y1cc_main(void) {
     tokh = ropen(".tok");
     wopen(".ast");
     program();
-    wb(0);
+    io_wput(0);
     wclose();
     io_close(tokh);
     wopen(".typ");
     wi(ntypes);
-    for (i = 1; i <= ntypes; i++) { wi(ty_b[i]); wb(ty_p[i]); wi(ty_c[i]); }
+    for (i = 1; i <= ntypes; i++) { wi(ty_b[i]); io_wput(ty_p[i]); wi(ty_c[i]); }
     wclose();
 }

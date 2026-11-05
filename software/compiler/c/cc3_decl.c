@@ -139,7 +139,7 @@ void declare_global(int g) {
 }
 
 /* ---- the global data (y1cc.c emit_globals / const_data), as W.dat records -------------------------------------- */
-void data_text(char *t) { wb(R_TEXT); wb(1); ws(t); }
+void data_text(char *t) { io_wput(R_TEXT); io_wput(1); ws(t); }
 void db_byte(int b) {                               /* DB lines of 16 numbers (the assembler upper-cases text) */
     if (dbn == 0) { db[0] = 0; bcat(db, "        DB "); } else bchr(db, ',');
     bnum(db, b & 255);
@@ -154,9 +154,9 @@ int addr_of(int name) {
 void emit_global(int g) {                           /* after every global has its label (initializers may point at any) */
     int v;
     v = nm_glob[nb[g]];
-    if (!nc[g]) { wb(R_DSVAR); wi(v); wi(v_size(v)); return; }
+    if (!nc[g]) { io_wput(R_DSVAR); wi(v); wi(v_size(v)); return; }
     const_data(g, 0);                               /* y1cc.py makes the strings first, then the label and the lines */
-    wb(R_DATALAB); wi(v);
+    io_wput(R_DATALAB); wi(v);
     const_data(g, 1);
 }
 void const_data(int g, int pass) {                  /* pass 0: make the strings; pass 1: the data lines */
@@ -167,12 +167,12 @@ void const_data(int g, int pass) {                  /* pass 0: make the strings;
     if (!arr) {
         if (nk[init] == N_INITSTR) {
             if (ptr == 0) fail("y1cc: string initializer for a non-pointer");
-            wb(R_STRUSE); wi(na[init]);
-            if (pass) { wb(R_DWSTR); wi(na[init]); }
+            io_wput(R_STRUSE); wi(na[init]);
+            if (pass) { io_wput(R_DWSTR); wi(na[init]); }
         } else if (nk[init] == N_INITADDR) {
             if (!pass) return;
             if (esz != 2) fail("y1cc: address initializer for a non-pointer");
-            wb(R_DWVAR); wi(addr_of(na[init]));
+            io_wput(R_DWVAR); wi(addr_of(na[init]));
         } else if (nk[init] == N_INITNUM) {
             if (!pass) return;
             if (esz == 2) { db[0] = 0; bcat(db, "        DW "); bnum(db, na[init] & 65535); data_text(db); }
@@ -182,7 +182,7 @@ void const_data(int g, int pass) {                  /* pass 0: make the strings;
     }
     if (base == K_CHAR && ptr == 0 && nk[init] == N_INITSTR) {
         if (!pass) return;
-        wb(R_DBLIT); wi(na[init]); wi(count);       /* the literal's bytes, zeros up to count (cc9) */
+        io_wput(R_DBLIT); wi(na[init]); wi(count);       /* the literal's bytes, zeros up to count (cc9) */
         return;
     }
     if (nk[init] != N_INITLIST) { if (pass) fail("y1cc: array needs a brace initializer or a string"); return; }
@@ -193,9 +193,9 @@ void const_data(int g, int pass) {                  /* pass 0: make the strings;
         if (nk[it] == N_INITSTR || nk[it] == N_INITADDR) {
             if (esz != 2) fail("y1cc: string/address initializer for a non-pointer element");
             if (nk[it] == N_INITSTR) {
-                wb(R_STRUSE); wi(na[it]);
-                if (pass) { db_end(); wb(R_DWSTR); wi(na[it]); }
-            } else if (pass) { db_end(); wb(R_DWVAR); wi(addr_of(na[it])); }
+                io_wput(R_STRUSE); wi(na[it]);
+                if (pass) { db_end(); io_wput(R_DWSTR); wi(na[it]); }
+            } else if (pass) { db_end(); io_wput(R_DWVAR); wi(addr_of(na[it])); }
         } else if (nk[it] == N_INITNUM) {
             if (pass) {
                 if (esz == 2) { db[0] = 0; bcat(db, "        DW "); bnum(db, na[it] & 65535); data_text(db); }
@@ -217,12 +217,12 @@ void load_tables(void) {
     h = ropen(".typ");
     ntypes = ri(h);
     if (ntypes >= TYPES_MAX) fail("y1cc: too many types (TYPES_MAX)");
-    for (i = 1; i <= ntypes; i++) { ty_b[i] = ri(h); ty_p[i] = rb(h); ty_c[i] = ri(h); }
+    for (i = 1; i <= ntypes; i++) { ty_b[i] = ri(h); ty_p[i] = io_getc(h); ty_c[i] = ri(h); }
     io_close(h);
     h = ropen(".lit");
     nlits = ri(h);
     if (nlits >= LITS_MAX) fail("y1cc: too many string literals (LITS_MAX)");
-    for (i = 1; i <= nlits; i++) { n = ri(h); lit_len[i] = n; while (n) { rb(h); n--; } }
+    for (i = 1; i <= nlits; i++) { n = ri(h); lit_len[i] = n; while (n) { io_getc(h); n--; } }
     io_close(h);
 }
 void y1cc_main(void) {

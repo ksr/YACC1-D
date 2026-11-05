@@ -485,7 +485,7 @@ void analyse(void) {
 /* ---- the stream -------------------------------------------------------------------------------------------------- */
 char rlen[] = {0, 0, 2, 3, 2, 0, 4, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0};   /* operand bytes of cc6's simple records */
 char flen[] = {0, 1, 2, 2, 0, 3, 3, 2, 0, 1};       /* operand bytes of cc6's R_CODE forms (F_A, F_RA: never) */
-void copy(int n) { while (n) { wb(rb(inh)); n--; } }
+void copy(int n) { while (n) { io_wput(io_getc(inh)); n--; } }
 void y1cc_main(void) {
     int c; int hk; int n; int e; int k; int b; int one;
     p_args();
@@ -493,18 +493,18 @@ void y1cc_main(void) {
     inh = ropen(".st");
     wopen(".se");
     for (;;) {
-        c = rb(inh);
+        c = io_getc(inh);
         if (c == 256) break;
-        wb(c);
+        io_wput(c);
         if (c == R_ERROR) { rs(inh, ebuf, EBUF_MAX); ws(ebuf); break; }
         if (c == R_FUNC) {
             cur_fn = ri(inh); wi(cur_fn); copy(5);
             cur_vfirst = f_vfirst[cur_fn]; cur_vn = f_vn[cur_fn];
             continue;
         }
-        if (c == R_CODE) { wb(rb(inh)); k = rb(inh); wb(k); copy(flen[k]); continue; }
+        if (c == R_CODE) { io_wput(io_getc(inh)); k = io_getc(inh); io_wput(k); copy(flen[k]); continue; }
         if (c != R_HOLE) { copy(rlen[c]); continue; }
-        hk = rb(inh); wb(hk);
+        hk = io_getc(inh); io_wput(hk);
         if (hk == H_COND) copy(5);
         else if (hk == H_DECL) copy(4);
         else if (hk == H_SWITCH) { copy(4); n = ri(inh); wi(n); copy(n * 4); }
@@ -537,7 +537,7 @@ void y1cc_main(void) {
         warr(a_v + 1, n); warr(a_b + 1, n); warrc(a_p + 1, n); warr(a_c + 1, n); warrc(a_s + 1, n);
         warrc(a_verr + 1, n); warr(a_fvar + 1, n); warr(a_fer + 1, n);
         warr(a_tv + 1, n); warrc(a_ts + 1, n); warrc(a_haz + 1, n); warr(a_esc + 1, n); warrc(a_eerr + 1, n);
-        wb(nterr);
+        io_wput(nterr);
         warrc(e_code + 1, nterr); warr(e_a1 + 1, nterr); warr(e_a2 + 1, nterr);
     }
     io_close(inh);

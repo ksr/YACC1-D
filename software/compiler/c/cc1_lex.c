@@ -242,8 +242,8 @@ void lx_err2(char *msg, char *arg) {
     e_start("y1cc: "); e_s(ppool + f_path[fdep]); e_s(":"); e_n(f_line[fdep]); e_s(": "); e_s(msg); e_s(arg); e_go();
 }
 void put_tok(int kind, int val, int line) {
-    if (line != last_line) { wb(T_LINE); wi(line); last_line = line; }
-    wb(kind); wi(val);
+    if (line != last_line) { io_wput(T_LINE); wi(line); last_line = line; }
+    io_wput(kind); wi(val);
 }
 int lex_one(void) {                                 /* one token; 0 at the end of the source */
     int c; int c1;
@@ -514,7 +514,7 @@ void write_tables(void) {                           /* W.nam (the names written 
     wi(nlits);
     for (i = 1; i <= nlits; i++) {
         wi(lit_len[i]);
-        for (k = 0; k < lit_len[i]; k++) wb(spool[lit_off[i] + k]);
+        for (k = 0; k < lit_len[i]; k++) io_wput(spool[lit_off[i] + k]);
     }
     wclose();
 }
@@ -568,7 +568,7 @@ void y1cc_main(void) {
     }
     lx_push(srcpath);
     wopen(".opt");
-    ws(srcpath); ws(outpath); wi(org); wb(flags); wi(stack);
+    ws(srcpath); ws(outpath); wi(org); io_wput(flags); wi(stack);
     wclose();
     wopen(".tok");
     while (lex_one()) {}

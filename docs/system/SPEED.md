@@ -58,6 +58,14 @@ The biggest functions are small and shared: the ROM's sector read loop `cfrdl` 6
 | `JSR` | 55 | 3.5% |
 | `ADDIW R3` | 85 | 3.2% |
 
+## What has been done
+
+Each line is measured on `make grep` (33 m 06 s at the baseline).
+
+| Date | Change | `make grep` |
+|---|---|---|
+| 2026-11-05 | Counted I/O: `io_getc`/`io_wput` test a one-byte count instead of comparing a handle and a pointer; `ri`/`wi` move a word whole with `peekw`/`pokew`; `rb`/`wb` are gone (`software/compiler/c/target_io.c`) | 29 m 24 s, -11.2% |
+
 ## What it points at
 
 1. **The microcode.** Everything runs through it: 27 clocks an instruction. `LDZ` is 51 clocks and `LDZ`/`STZ`/`LDR`/`STR`

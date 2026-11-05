@@ -29,8 +29,8 @@ void rec_node(int h, int i);
 
 void rec_node(int h, int i) {
     int m;
-    nk[i] = rb(h);
-    m = rb(h);
+    nk[i] = io_getc(h);
+    m = io_getc(h);
     na[i] = 0; nb[i] = 0; nc[i] = 0; nd[i] = 0; nx[i] = 0;
     if (m & 1) na[i] = ri(h);
     if (m & 2) nb[i] = ri(h);
@@ -40,7 +40,7 @@ void rec_node(int h, int i) {
 }
 int rec_head(int h) {                               /* 1 with the heads loaded, 0 at the end of W.ast */
     int i;
-    if (rb(h) != 1) return 0;
+    if (io_getc(h) != 1) return 0;
     rec_n = ri(h); rec_h = ri(h); rec_ncall = ri(h); rec_ndecl = ri(h); rec_blen = ri(h); rec_ne = ri(h);
     if (rec_ne > ENTRIES_MAX) fail("y1cc: too many declarators (ENTRIES_MAX)");
     for (i = 0; i < rec_ne; i++) rec_ent[i] = ri(h);

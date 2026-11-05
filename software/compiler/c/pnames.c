@@ -21,7 +21,7 @@ void names_load(void) {
     for (i = 1; i <= nnames; i++) {
         nm_off[i] = n;
         for (;;) {
-            c = rb(h);
+            c = io_getc(h);
             if (n >= NAMEPOOL - 1) fail("y1cc: name pool full (NAMEPOOL)");
             if (c == 256) c = 0;
             npool[n] = c; n++;

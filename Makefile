@@ -66,6 +66,7 @@ check:
 	python3 tests/native/srcmake.py
 	python3 tests/native/mkdisk.py
 	python3 tests/native/clocks.py
+	python3 tests/native/errors.py
 	python3 tests/monload/run.py
 	python3 tests/y1term/run.py
 	python3 tests/kermit/run.py

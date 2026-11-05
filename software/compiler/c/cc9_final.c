@@ -305,7 +305,7 @@ void kadd(char *buf, int off) { if (off) { bchr(buf, '+'); bnum(buf, off); } }
 /* ---- R_CODE: an instruction record rendered as y1cc.c's text ------------------------------------------------- */
 void r_addr(char *buf) {                            /* an address operand: label, then "+term"s */
     int k; int id; int n;
-    k = rb(inh); id = ri(inh); n = rb(inh);
+    k = io_getc(inh); id = ri(inh); n = io_getc(inh);
     ra_z = k == A_VAR && !n && zp(id);
     if (k == A_VAR) bcat(buf, vlab(id));
     else if (k == A_STR) { bchr(buf, 's'); bnum(buf, lit_lab[id]); }
@@ -332,29 +332,29 @@ void r_skip(void) {                                 /* an R_CODE record read pas
                                                        lines are dropped there, and making their text took most of
                                                        cc9's time, 2026-09-25) */
     int f;
-    rb(inh); f = rb(inh);
+    io_getc(inh); f = io_getc(inh);
     io_skip(inh, fskip[f]);
-    if (f == F_A || f == F_RA) io_skip(inh, rb(inh) << 2);
+    if (f == F_A || f == F_RA) io_skip(inh, io_getc(inh) << 2);
 }
 void r_code(void) {
     int mn; int f; int n;
-    mn = rb(inh); f = rb(inh);
+    mn = io_getc(inh); f = io_getc(inh);
     L(mntext[mn]);
     if (f != F_0) Lsp();
-    if (f == F_R) Lr(rb(inh));
+    if (f == F_R) Lr(io_getc(inh));
     else if (f == F_N) bnum(lb, ri(inh));
     else if (f == F_L) blab(lb, sym_num(ri(inh)));
     else if (f == F_A) r_addr(lb);
-    else if (f == F_RN) { Lr(rb(inh)); bchr(lb, ','); bnum(lb, ri(inh)); }
-    else if (f == F_RL) { Lr(rb(inh)); bchr(lb, ','); blab(lb, sym_num(ri(inh))); }
-    else if (f == F_RR) { Lr(rb(inh)); bchr(lb, ','); Lr(rb(inh)); }
+    else if (f == F_RN) { Lr(io_getc(inh)); bchr(lb, ','); bnum(lb, ri(inh)); }
+    else if (f == F_RL) { Lr(io_getc(inh)); bchr(lb, ','); blab(lb, sym_num(ri(inh))); }
+    else if (f == F_RR) { Lr(io_getc(inh)); bchr(lb, ','); Lr(io_getc(inh)); }
     else if (f == F_RA) {
-        Lr(rb(inh)); bchr(lb, ','); r_addr(lb);
+        Lr(io_getc(inh)); bchr(lb, ','); r_addr(lb);
         if (ra_z && mn <= MN_STR) {                 /* --xisa: a page variable: "        LDZ R3,(label).0" */
             lb[10] = 'Z'; tbuf[0] = 0; bcat(tbuf, lb + 15); lb[15] = 0; bchr(lb, '('); bcat(lb, tbuf); bcat(lb, ").0");
         }
     }
-    else if (f == F_P) { n = rb(inh); bchr(lb, 'P'); bchr(lb, n < 10 ? '0' + n : 'A' + n - 10); }
+    else if (f == F_P) { n = io_getc(inh); bchr(lb, 'P'); bchr(lb, n < 10 ? '0' + n : 'A' + n - 10); }
     Lend();
 }
 
@@ -511,19 +511,19 @@ void switch_table(int lo, int hi, int miss, int ncs) {   /* R3 - lo, range check
 }
 void r_macro(void) {
     int m; int a; int b; int c; int d; int i;
-    m = rb(inh);
+    m = io_getc(inh);
     if (m == M_ADDK) add_const(ri(inh));
     else if (m == M_ADDA) { tbuf[0] = 0; r_addr(tbuf); add_const_text(tbuf); }
     else if (m == M_SHL1) shl1();
     else if (m == M_SCALE) scale_r3(ri(inh));
-    else if (m == M_DEREF) deref_r3(rb(inh));
-    else if (m == M_BREL) { a = rb(inh); b = sym_num(ri(inh)); c = rb(inh); d = ri(inh); branch_rel(a, b, c, d); }
+    else if (m == M_DEREF) deref_r3(io_getc(inh));
+    else if (m == M_BREL) { a = io_getc(inh); b = sym_num(ri(inh)); c = io_getc(inh); d = ri(inh); branch_rel(a, b, c, d); }
     else if (m == M_FSAVE) { a = ri(inh); frame_save(a, ri(inh)); }
     else if (m == M_FREST) { a = ri(inh); frame_restore(a, ri(inh)); }
     else if (m == M_BSSCLR) emit_bss_clear();
     else if (m == M_ZP) { if (zused) insrs("MVIW", 6, "zpage"); }
     else {                                          /* M_SWITCH */
-        a = rb(inh); b = sym_num(ri(inh)); c = ri(inh);
+        a = io_getc(inh); b = sym_num(ri(inh)); c = ri(inh);
         if (c > CASES_MAX) fail("y1cc: too many cases in a switch (CASES_MAX)");
         for (i = 0; i < c; i++) { cs_val[i] = ri(inh); cs_lab[i] = sym_num(ri(inh)); }
         switch_dispatch(a, b, c);
@@ -544,17 +544,17 @@ void stream(char *ext) {                            /* one reading of W.dat or W
     int c; int a; int b; int i; int n;
     inh = ropen(ext);
     for (;;) {
-        c = rb(inh);
+        c = io_getc(inh);
         if (c == 256) break;
         if (c == R_CODE) { if (sec) r_skip(); else r_code(); }     /* code text only for the code section */
         else if (c == R_LDEF) { a = ri(inh); if (!sec) label_def(sym_num(a)); }
         else if (c == R_ALLOC) {
-            a = ri(inh); b = rb(inh);
+            a = ri(inh); b = io_getc(inh);
             n = lbl(b);
             if (a >= SYM7) { if (a - SYM7 >= LKIND_MAX) fail("y1cc: too many labels in one function (LKIND_MAX)"); map7[a - SYM7] = n; }
             else { if (a >= LKIND_MAX) fail("y1cc: too many labels in one function (LKIND_MAX)"); map5[a] = n; }
         } else if (c == R_FLABEL) { a = ri(inh); if (!sec) { lb[0] = 0; bcat(lb, flab(a)); bchr(lb, ':'); code_line(lb); } }
-        else if (c == R_TEXT) { a = rb(inh); rs(inh, lb, LINE_MAX); sec_line(a, lb); }
+        else if (c == R_TEXT) { a = io_getc(inh); rs(inh, lb, LINE_MAX); sec_line(a, lb); }
         else if (c == R_DSVAR) {
             a = ri(inh); b = ri(inh);
             if (zp(a) == zsec) { db[0] = 0; bcat(db, vlab(a)); bcat(db, ": DS "); bnum(db, b); bss_line(db); }
@@ -566,11 +566,11 @@ void stream(char *ext) {                            /* one reading of W.dat or W
             a = ri(inh); n = ri(inh);
             for (i = 0; i < n; i++) db_byte(i < lit_len[a] ? spool[lit_off[a] + i] & 255 : 0);
             db_end();
-        } else if (c == R_NEED) used[rb(inh)] = 1;
+        } else if (c == R_NEED) used[io_getc(inh)] = 1;
         else if (c == R_MACRO) r_macro();
         else if (c == R_RETIF) { if (!sec && !last_ret) ins0("RET"); }
         else if (c == R_FUNC) {
-            cur_fn = ri(inh); ri(inh); ri(inh); rb(inh);
+            cur_fn = ri(inh); ri(inh); ri(inh); io_getc(inh);
             fbase = nl + 1; fstart = nraw;
         } else if (c == R_FEND) {
             if (sec == 0) {
@@ -624,7 +624,7 @@ void rs_line(int h, char *buf) {                    /* a line without its newlin
 void load_all(void) {
     int h; int i; int k; int n;
     h = ropen(".opt");
-    rs(h, srcpath, LINE_MAX); rs(h, outpath, LINE_MAX); opt_org = ri(h); opt_flags = rb(h);
+    rs(h, srcpath, LINE_MAX); rs(h, outpath, LINE_MAX); opt_org = ri(h); opt_flags = io_getc(h);
     io_close(h);
     h = ropen(".sym");
     fmain = ri(h);
@@ -639,7 +639,7 @@ void load_all(void) {
     rarr(h, f_name + 1, nfuncs); rarrc(h, f_ln + 1, nfuncs); io_skip(h, nfuncs);
     rarr(h, drop_nm, ndrop);
     io_close(h);
-    if (opt_flags & OPT_XISA) { h = ropen(".zp"); zused = rb(h); rarrc(h, zbits, nvars / 8 + 1); io_close(h); }
+    if (opt_flags & OPT_XISA) { h = ropen(".zp"); zused = io_getc(h); rarrc(h, zbits, nvars / 8 + 1); io_close(h); }
     h = ropen(".lit");
     nlits = ri(h);
     if (nlits >= LITS_MAX) fail("y1cc: too many string literals (LITS_MAX)");
@@ -647,7 +647,7 @@ void load_all(void) {
     for (i = 1; i <= nlits; i++) {
         n = ri(h); lit_off[i] = k; lit_len[i] = n;
         if (k + n >= STRPOOL) fail("y1cc: string pool full (STRPOOL)");
-        while (n) { spool[k] = rb(h); k++; n--; }
+        while (n) { spool[k] = io_getc(h); k++; n--; }
     }
     io_close(h);
 }

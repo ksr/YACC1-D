@@ -177,6 +177,8 @@ int io_wopen(char *path) {
 }
 
 void io_wput(int c) { fputc(c, wfile); }
+int ri(int h) { int a; a = io_getc(h) & 255; return (a << 8) | (io_getc(h) & 255); }   /* the passes' words, big-endian */
+void wi(int v) { io_wput((v >> 8) & 255); io_wput(v & 255); }
 void io_wputs(char *s) { fputs(s, wfile); }
 
 void io_wclose(void) {

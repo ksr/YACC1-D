@@ -74,7 +74,7 @@ int ncs;
 int sw_def;
 char nmbuf[ID_MAX];
 
-void pass_fail(char *msg) { wb(R_ERROR); ws(msg); wclose(); io_done(); }
+void pass_fail(char *msg) { io_wput(R_ERROR); ws(msg); wclose(); io_done(); }
 int lbl(int kind);
 void ldef(int sym);
 void br(int sym);
@@ -94,11 +94,11 @@ void z_plan(void);
 int lbl(int kind) {                                 /* y1cc.c lbl(): a fresh label, here a symbol of this function */
     if (nsym + 1 >= SYM7) fail("y1cc: too many labels in one function");
     nsym++;
-    wb(R_ALLOC); wi(nsym); wb(kind);
+    io_wput(R_ALLOC); wi(nsym); io_wput(kind);
     return nsym;
 }
-void ldef(int sym) { wb(R_LDEF); wi(sym); }
-void br(int sym) { wb(R_CODE); wb(MN_BR); wb(F_L); wi(sym); }
+void ldef(int sym) { io_wput(R_LDEF); wi(sym); }
+void br(int sym) { io_wput(R_CODE); io_wput(MN_BR); io_wput(F_L); wi(sym); }
 
 /* ---- holes: the expression's tree, renumbered 1.. (a subtree shared by x op= e is copied twice: the same code) --- */
 int tcopy(int e) {
@@ -123,7 +123,7 @@ void hole_tree(void) {                              /* n, then the columns kind(
     wi(tn);
     warrc(tnk + 1, tn); warr(tna + 1, tn); warr(tnb + 1, tn); warr(tnc + 1, tn); warr(tnd + 1, tn); warr(tnx + 1, tn);
 }
-void hole1(int hk, int e) { int r; tn = 0; r = tcopy(e); wb(R_HOLE); wb(hk); wi(r); hole_tree(); }
+void hole1(int hk, int e) { int r; tn = 0; r = tcopy(e); io_wput(R_HOLE); io_wput(hk); wi(r); hole_tree(); }
 
 /* ---- statements (y1cc.c gen_stmt) ------------------------------------------------------------------------------ */
 void gen_stmt(int s) {
@@ -137,7 +137,7 @@ void gen_stmt(int s) {
             if (tn + 1 >= TREE_MAX) fail("y1cc: expression too big (TREE_MAX)");
             tn++; l = tn;
             tnk[l] = N_ID; tna[l] = nb[s]; tnb[l] = 0; tnc[l] = 0; tnd[l] = 0; tnx[l] = 0;
-            wb(R_HOLE); wb(H_DECL); wi(l); wi(r); hole_tree();
+            io_wput(R_HOLE); io_wput(H_DECL); wi(l); wi(r); hole_tree();
         }
         return;
     }
@@ -152,7 +152,7 @@ void gen_stmt(int s) {
     if (k == N_IF) {
         els = lbl(LK_ELSE); end = lbl(LK_END);
         tn = 0; r = tcopy(na[s]);
-        wb(R_HOLE); wb(H_COND); wi(r); wi(nc[s] ? els : end); wb(0); hole_tree();
+        io_wput(R_HOLE); io_wput(H_COND); wi(r); wi(nc[s] ? els : end); io_wput(0); hole_tree();
         gen_stmt(nb[s]);
         if (nc[s]) { br(end); ldef(els); gen_stmt(nc[s]); }
         ldef(end);
@@ -162,7 +162,7 @@ void gen_stmt(int s) {
         top = lbl(LK_TOP); end = lbl(LK_END);
         ldef(top);
         tn = 0; r = tcopy(na[s]);
-        wb(R_HOLE); wb(H_COND); wi(r); wi(end); wb(0); hole_tree();
+        io_wput(R_HOLE); io_wput(H_COND); wi(r); wi(end); io_wput(0); hole_tree();
         if (lp_n >= LOOPS_MAX) fail("y1cc: loops nested too deep (LOOPS_MAX)");
         lp_brk[lp_n] = end; lp_cont[lp_n] = top; lp_n++;
         gen_stmt(nb[s]);
@@ -174,7 +174,7 @@ void gen_stmt(int s) {
         top = lbl(LK_TOP); end = lbl(LK_END); cont = lbl(LK_NEXT);
         if (na[s]) hole1(H_EXPR, na[s]);
         ldef(top);
-        if (nb[s]) { tn = 0; r = tcopy(nb[s]); wb(R_HOLE); wb(H_COND); wi(r); wi(end); wb(0); hole_tree(); }
+        if (nb[s]) { tn = 0; r = tcopy(nb[s]); io_wput(R_HOLE); io_wput(H_COND); wi(r); wi(end); io_wput(0); hole_tree(); }
         if (lp_n >= LOOPS_MAX) fail("y1cc: loops nested too deep (LOOPS_MAX)");
         lp_brk[lp_n] = end; lp_cont[lp_n] = cont; lp_n++;
         gen_stmt(nd[s]);
@@ -226,7 +226,7 @@ void gen_switch(int e, int body) {
     relabel(na[body]);
     miss = sw_def ? sw_def : end;
     tn = 0; r = tcopy(e);
-    wb(R_HOLE); wb(H_SWITCH); wi(r); wi(miss); wi(ncs);
+    io_wput(R_HOLE); io_wput(H_SWITCH); wi(r); wi(miss); wi(ncs);
     for (i = 0; i < ncs; i++) { wi(cs_val[i]); wi(cs_lab[i]); }
     hole_tree();
     if (lp_n >= LOOPS_MAX) fail("y1cc: loops nested too deep (LOOPS_MAX)");
@@ -237,44 +237,44 @@ void gen_switch(int e, int body) {
 }
 
 /* --stack: main's first records MOVRR R1,R5 / MVIW R1,(ADDR) / PUSHR R5, and before each RET of main POPR R5 /
-   MOVRR R5,R1 (as record bytes: a wb() per byte costs y1cc's code about 9 bytes each) */
+   MOVRR R5,R1 (as record bytes: a io_wput() per byte costs y1cc's code about 9 bytes each) */
 char stk_rec[] = {R_CODE, MN_MOVRR, F_RR, 1, 5, R_CODE, MN_MVIW, F_RN, 1, R_CODE, MN_PUSHR, F_R, 5,
                   R_CODE, MN_POPR, F_R, 5, R_CODE, MN_MOVRR, F_RR, 5, 1};
-void ret_rec(void) { wb(R_CODE); wb(MN_RET); wb(F_0); }
+void ret_rec(void) { io_wput(R_CODE); io_wput(MN_RET); io_wput(F_0); }
 void stk_out(void) { if (stk) warrc(stk_rec + 13, 9); }
 /* ---- functions (y1cc.c compile_func; the function's record is loaded, rec_h its N_FUNC node) ------------------ */
 void compile_func(int fn) {
     int i; int v;
     nsym = 0; lp_n = 0; cur_f = fn;
     corder[ncorder] = fn; ncorder++;
-    wb(R_FUNC); wi(fn); wi(f_name[fn]); wi(f_rbase[fn]); wb(f_rptr[fn]);
-    wb(R_FLABEL); wi(fn);
-    if (opt_xisa && f_live[fn] == 1) { wb(R_MACRO); wb(M_ZP); }
+    io_wput(R_FUNC); wi(fn); wi(f_name[fn]); wi(f_rbase[fn]); io_wput(f_rptr[fn]);
+    io_wput(R_FLABEL); wi(fn);
+    if (opt_xisa && f_live[fn] == 1) { io_wput(R_MACRO); io_wput(M_ZP); }
     stk = 0;
     if (f_name[fn] == NM_MAIN) {
         stk = opt_stack;
         if (stk) { warrc(stk_rec, 9); wi(stk); warrc(stk_rec + 9, 4); }
-        wb(R_MACRO); wb(M_BSSCLR);
+        io_wput(R_MACRO); io_wput(M_BSSCLR);
     }
     gen_stmt(nd[rec_h]);
     if (stk) { stk_out(); ret_rec(); }              /* always, as y1cc.py does */
-    wb(R_RETIF);
+    io_wput(R_RETIF);
     for (i = 0; i < f_vn[fn]; i++) {
         v = f_vfirst[fn] + i;
         if (v_serr[v]) {                            /* v_size(): a variable of an unknown struct type */
             nm_fetch(v_base[v] == 65535 ? 0 : v_base[v], nmbuf);
             e_start("y1cc: unknown type "); e_q(nmbuf); e_go();
         }
-        wb(R_DSVAR); wi(v); wi(v_size_[v]);
+        io_wput(R_DSVAR); wi(v); wi(v_size_[v]);
     }
-    wb(R_FEND);
+    io_wput(R_FEND);
 }
 void load_sym(void) {                              /* W.sym (cc5_layout.c): the columns this pass needs */
     int h; int ns; int nm; int n;
     h = ropen(".opt");                              /* the options: --xisa and --stack matter here */
-    while (rb(h) % 256) {}
-    while (rb(h) % 256) {}
-    ri(h); opt_xisa = (rb(h) & OPT_XISA) != 0; opt_stack = ri(h);
+    while (io_getc(h) % 256) {}
+    while (io_getc(h) % 256) {}
+    ri(h); opt_xisa = (io_getc(h) & OPT_XISA) != 0; opt_stack = ri(h);
     io_close(h);
     h = ropen(".sym");
     fmain = ri(h); nglob = ri(h); ns = ri(h); nm = ri(h); nfuncs = ri(h); nvars = ri(h);
@@ -293,7 +293,7 @@ void load_sym(void) {                              /* W.sym (cc5_layout.c): the 
     n = ri(h); nm = ri(h); io_skip(h, n);
     for (ns = 1; ns <= n; ns++) {
         io_skip(h, ns >> 3);
-        if ((rb(h) >> (ns & 7)) & 1) f_rec[ns] = 1;
+        if ((io_getc(h) >> (ns & 7)) & 1) f_rec[ns] = 1;
         io_skip(h, nm - (ns >> 3) - 1);
     }
     io_close(h);
@@ -382,6 +382,6 @@ void y1cc_main(void) {
     if (!opt_xisa) return;
     z_plan();
     wopen(".zp");
-    wb(zused); warrc(zbits, nvars / 8 + 1);
+    io_wput(zused); warrc(zbits, nvars / 8 + 1);
     wclose();
 }

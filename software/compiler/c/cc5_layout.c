@@ -185,7 +185,7 @@ void load_s1(void) {
     h = ropen(".typ");
     ntypes = ri(h);
     if (ntypes >= TYPES_MAX) fail("y1cc: too many types (TYPES_MAX)");
-    for (i = 1; i <= ntypes; i++) { ty_b[i] = ri(h); ty_p[i] = rb(h); ty_c[i] = ri(h); }
+    for (i = 1; i <= ntypes; i++) { ty_b[i] = ri(h); ty_p[i] = io_getc(h); ty_c[i] = ri(h); }
     io_close(h);
     h = ropen(".s1");
     nstructs = ri(h); nmembers = ri(h); nfuncs = ri(h); nglob = ri(h);
@@ -234,7 +234,7 @@ void write_sym(void) {
     warr(v_name + 1, nvars); warr(v_base + 1, nvars); warrc(v_ptr + 1, nvars); warr(v_cnt + 1, nvars);
     warrc(v_slot + 1, nvars);
     for (i = 1; i <= nvars; i++) { size_err = 0; wi(v_size(i)); }
-    for (i = 1; i <= nvars; i++) { size_err = 0; v_size(i); wb(size_err != 0); }
+    for (i = 1; i <= nvars; i++) { size_err = 0; v_size(i); io_wput(size_err != 0); }
     wclose();
 }
 int fn_of(int d) {                                  /* the function a record's N_FUNC node defines */
@@ -263,7 +263,7 @@ void y1cc_main(void) {
     wi(nvars); wi(nfuncs); wi(nd_);
     warr(v_name + 1, nvars); warr(v_fn + 1, nvars); warrc(v_ln + 1, nvars);
     warr(f_name + 1, nfuncs); warrc(f_ln + 1, nfuncs);
-    for (i = 1; i <= nfuncs; i++) wb(f_vfirst[i] != 0);
+    for (i = 1; i <= nfuncs; i++) io_wput(f_vfirst[i] != 0);
     h = ropen(".ast");                              /* the dead definitions, in source order */
     rec_ord = 0;
     while (rec_head(h)) {
