@@ -682,6 +682,19 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Port of the P8X work (OS, monitor, BASIC, compilers) onto YACC1 — the reason this repo exists; not started.
 
 ## Verification still to do
+- **OPEN 2026-11-04: an intermittent data error on the machine during a native compile, probably a single bit.** The
+  first `make` in `/src/os/commands` stopped at `cc asm.c` with `y1cc: line 226: expected ';', got 'if'`. The same compile
+  from the same image passes on the instruction-level emulator (`asmc.asm`, 118,152 bytes). Line 226's `;` is at offset
+  20244 of `ccw.tok` (`05 00 1C`); bit 4 of the value flipped gives `0C`, the token for `++`, and planting exactly that
+  byte in a copy of the image and running `/lib/cc/cc2 ccw` reproduces the message word for word. A dropped token
+  would read the same, so this is the best fit, not proof, and where the bit went wrong is not known (memory during
+  cc1, the CF write, the CF read, memory during cc2). A second `make` got past asm and went on building: the error does
+  not repeat, and the `ccw.tok` of the failed run is gone. Next: **do not `make install` on the machine yet**, since a
+  flipped bit that keeps the syntax compiles silently into a wrong program. When the make finishes, read the card in
+  the USB reader and compare every program it built with the host's (`os/build/...`, as `tests/native/srcmake.py` does):
+  identical means a rare fault, differences give the bit and the rate. If it stops again, run `/lib/cc/cc2 ccw` before
+  any `cc` or `make` (they replace `ccw.tok`): the same line points at the file on the card, a pass points at a read or
+  memory.
 - **OPEN 2026-10-22: `tests/kermit/run.py` on the microcode emulator fails intermittently** at "send them back
   (kermit -s *)" (the detail is only the `/K>` prompt: the Y1 side returned with nothing sent). Seen in `make check` and
   reproduced on a clean checkout of 53f6493 (2 of 3 runs failed; the instruction-level emulator always passes), so it
