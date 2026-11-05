@@ -71,7 +71,7 @@ CR or NUL ends it). The first word is lower-cased and matched; the rest of the l
 | `save path addr len` | **new in v0.1**: write `len` bytes of memory from `addr` (both hex) to a new file whose load and exec address are `addr` (`fs_create`, `fs_write`, `fs_close`); a same-named file is replaced |
 | `del path` | tombstone a file (`fs_delete`; `not a file` otherwise) |
 | `ren path newname` | rename in place: the entry keeps its slot and directory (`fs_rename`; `newname` is a bare name) |
-| `mkdir path` | a new 4-sector directory extent at the free pointer with `.` and `..` (`fs_mkdir`) |
+| `mkdir path` | a new 16-sector directory extent (254 entries; 4 and 62 until 2026-11-05) at the free pointer with `.` and `..` (`fs_mkdir`) |
 | `rmdir path` | tombstone an empty directory (`fs_rmdir`; `not an empty directory` otherwise) |
 | `help` / `?` | the three-line summary |
 | `exit` | prints `bye` and returns to the monitor (`main` returns; the ROM's `JSRUR` return lands in `cmdloop`) |
@@ -245,7 +245,7 @@ A volume is a sequence of 512-byte sectors (LBAs). All multi-byte fields are **l
 | 37… | files and subdirectory extents, contiguous, allocated at the free pointer (`alloc` / `fs_create`), moved only by `pack` |
 
 A directory is a file whose extent holds 32-byte entries; a subdirectory's extent is 4 sectors by default
-(`mkdir --secs` changes it on the host; the OS always makes 4; the OS reads the size from the entry). Entries are
+(`mkdir --secs` changes it on the host; the OS makes 16, `/bin/mkdir -s` 1 to 64; the OS reads the size from the entry). Entries are
 used in order; the first entry with flag `$00` ends the scan, and a deleted entry is a tombstone `$FF` that a new
 entry may reuse. Neither the OS nor the host tool frees space when it deletes or replaces; `/bin/pack` does it in
 one pass (below).

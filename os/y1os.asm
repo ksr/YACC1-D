@@ -2764,8 +2764,8 @@ fs_mkdir:
         BRZ ret0
         LDR R3,FREE_LBA
         STR R3,MK_NL
-        STR R3,SE_LBA           ; set_entry(e_off, leaf, nl, 2048, 0, 0, F_DIR)
-        MVIW R3,2048
+        STR R3,SE_LBA           ; set_entry(e_off, leaf, nl, 8192, 0, 0, F_DIR): 16 sectors, 254 entries (2026-11-05;
+        MVIW R3,8192            ;   4 and 62 before: y1os.c DIR_SECS)
         STR R3,SE_LEN
         MVIW R3,0
         STR R3,SE_LOAD
@@ -2803,7 +2803,7 @@ fs_mkdir:
         MVIW R7,SBUF
         JSR cfwr
         BRNZ ret0
-        MVIW R3,SBUF            ; the other three: empty
+        MVIW R3,SBUF            ; the other fifteen: empty
         MVIB R4,64
 mk_z:   LDIVR R3,0
         INCR R3
@@ -2811,7 +2811,7 @@ mk_z:   LDIVR R3,0
         MVRLA R4
         BRNZ mk_z
         LDR R3,MK_NL
-        MVIB R4,3
+        MVIB R4,15
 mk_w:   INCR R3
         MOVRR R3,R6
         MVIW R7,SBUF
@@ -2820,7 +2820,7 @@ mk_w:   INCR R3
         DECR R4
         MVRLA R4
         BRNZ mk_w
-        INCR R3                 ; free_lba = nl + 4
+        INCR R3                 ; free_lba = nl + 16
         STR R3,FREE_LBA
         JSR write_free
         BR ret1

@@ -6,15 +6,16 @@ SYNOPSIS
     mkdir -s sectors path
 
 DESCRIPTION
-    Makes a new, empty directory: 4 sectors, room for 62 entries
+    Makes a new, empty directory: 16 sectors, room for 254 entries
     besides "." and "..". Quiet on success; "cannot mkdir" when the
     name exists, the parent is missing or full, or the name is not
     valid.
 
     -s makes it that many sectors, 1 to 64: 16 entries a sector, less
-    "." and ".." (-s 8: 126, -s 16: 254, -s 64: 1022). A directory's
-    size is fixed when it is made; for a bigger one later, make a new
-    directory with -s and mv the files into it.
+    "." and ".." (-s 4: 62, -s 64: 1022). A directory's size is fixed
+    when it is made, since files lie right behind it; for a bigger one
+    later, make a new directory with -s and mv the files into it. The
+    root stays 4 sectors, 62 entries.
 
     mkdir is /bin/mkdir (2026-11-03). Without -s it asks the OS (the
     MKDIR syscall, 8, which cp -r uses too); with -s it writes the
@@ -34,12 +35,12 @@ LIMITS
     pipe: a directory is allocated at the same free pointer (see
     shell). With -s: "mkdir: -s not with > or a pipe".
     The OS's own mkdir (the built-in, the syscall, cp -r) always makes
-    4 sectors.
+    16 sectors.
 
 EXAMPLES
     mkdir /t
     mkdir SUB           in the current directory
-    mkdir -s 16 /work   room for 254 entries
+    mkdir -s 64 /work   room for 1022 entries
 
 NOTES
     Changed from the P8X version: nothing is printed on success (the

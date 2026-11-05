@@ -36,6 +36,7 @@ Options (`print_usage`, `main`):
 | `-f FILE` | load an Intel-hex image (relative to the current directory); after `-m` if both given |
 | `-x` | scripted run: no load/dump chatter, no raw tty, stdout flushed, `HALT` exits with `HALT at aaaa after N instructions, R3=xxxx` on stderr |
 | `-c IMAGE` | attach a CompactFlash image on ports P8/P9 (created zero-filled if missing) |
+| `-C IMAGE` | the same as drive 1, the IDE slave (2026-11-05, `/bin/mkdisk`); with none, drive 1 reads $FF |
 | `-l N` | stop after N instructions (`instruction limit reached at ... R3=...` on stderr) |
 | `-V` | (2026-09-25) the video card: at exit print its screen (80 x 24 from $D000, or the CRTC's R1 x R6 from R12/R13 once written; each byte as its glyph, bits 0-5) and the 18 CRTC registers on stderr |
 | `-W` | log every CRTC register write on stderr (and writes to the latch's odd addresses) |
@@ -91,6 +92,7 @@ Options (`y1ucemu.c` header):
 | `-m` | load `basic.img` + `monitor.img` (the ROM) as the interpreter does |
 | `-f FILE` | load an Intel-hex image; repeatable, later files overwrite |
 | `-c IMAGE` | the CF image on P8/P9 |
+| `-C IMAGE` | a second CF image, drive 1 (2026-11-05) |
 | `-x` | scripted: quiet, stdout flushed, `SOFT-HALT` exits; a status line on stderr with instructions, steps, clocks, R3 and the bus-fight count (`... bus fights: N in M`) |
 | `-t` | one line per instruction fetch on stderr; `-T` every step with the signals asserted |
 | `-w` | list bus fights (opcode, step, drivers) as they first occur (the summary is always printed with `-x`) |

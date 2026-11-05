@@ -37,7 +37,7 @@ OPTIONS
 
 LIMITS
     255 entries per directory are sorted and shown (a new directory
-    holds 62, /src's 254); past that dir says "dir: over 255 entries
+    holds 254); past that dir says "dir: over 255 entries
     in a directory, the rest not shown". -R descends 8 levels ("dir: deeper than 8
     levels, not all shown"). A glob pattern is at most 15 characters.
     Sizes are 32-bit (see num).

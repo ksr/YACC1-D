@@ -790,6 +790,23 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Move off NetBeans (README decision 7).
 
 ## Disk operating system (plan `docs/system/OS-PLAN.md`, decisions 2026-09-22)
+- **2026-11-05: the system rebuilds itself onto a new disk, on the emulator** (`os/README.md` "A new disk"): `sysgen`
+  installs a kernel in the boot sectors, `mkdisk` writes a whole disk on drive 1 (emulators: `-C image`, bit 4 of the
+  head register), `make clean` empties `/src` of a build's output, `/lib/y1os` holds the kernel, `y1os_str.inc` and a
+  Makefile are in `/src/os`, and `help` builds natively (its text is `os/help.txt`, `/lib/help.txt`). Directories are
+  16 sectors, 254 entries, by default (both kernels, `p8xfs.py`; 4 and 62 before, and `/man` had filled): they cannot
+  grow, since files lie right behind them; `mkdir -s` makes bigger ones, the root stays 62.
+  `tests/native/mkdisk.py`: `make`, `make install`, `make clean`, `mkdisk`, every file of the new disk identical to
+  `os/disk.img`, then it boots alone and builds a program. Left out on purpose: the ROM and the microcode. Open:
+  - `kermit` does not build natively (`kermit_io.c`'s byte table over pass 3's NODES_MAX); `mkdisk` copies the
+    Mac's build.
+  - An edit of `strings.txt` on the machine does not reach the kernel: `y1os_str.inc` comes from `mkstrings.py`, as the
+    generated tables come from Python. A C `mkstrings` would close that.
+  - `tests/kermit` on the microcode emulator failed 3 checks once at a load average over 100 (the summary lines after
+    a transfer, the bytes right), and passed twice alone: the timing weakness of the item of 2026-10-22.
+  - **The next step is the machine**: a second CF on the IDE cable (the adapter's slave), `mkdisk` there, the card moved
+    to master to boot. `mkdisk`'s drive-1 code has only run on the emulators' model: on a real slave check the
+    SET FEATURES and the `drive 1 does not answer` path first. The data error of 2026-11-04 (below) comes first.
 - **Proposed 2026-11-04: the OS gets its own name, and P8X comes out of the code.** The OS grew from P8X's and is now
   separate from it, but the name and the leftovers remain (`Y1/OS` in the docs, `P8XFS` for the disk format, 188
   tracked files mention P8X, 101 of them in `os/`). To decide: the name, `YACC1OS` or `YOS` (`YOS` is the shorter and
@@ -816,9 +833,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   converted names do; C-Kermit with `tools/y1.ksc`'s `set file names literal` does the same). Tests and transcripts
   converted (names only; `wave2` copies `/README` in as `readme.txt` for its glob delete). The CF in the machine has
   the upper-case image: rewrite it with this one.
-- **Open (2026-11-03): `tests/y1dbg` "cli" fails now and then** on a busy Mac (1 run of 4 that day, load average ~39): the
-  monitor's `H` text was cut at "E AAAA SHOW ..." before "INTEL-HEX LOAD", so the session's `console` read stopped
-  before the help was all there. ROM monitor only, unrelated to Y1/OS. To fix: wait for the help's last line, not a time.
+- (done 2026-11-05: `tests/y1dbg` "cli" failed now and then on a busy Mac: `waitfor >` could match the prompt before `H`'s text. It waits for INTEL-HEX LOAD now.)
 - **2026-11-03: scripts, `make` and the sources on the disk** (`os/README.md` "Scripts" and "The sources on the
   disk"; `man sh`, `man make`). Both kernels: `sh path`, `NAME.SH` as a command, and EXEC of a `NAME.SH` run a
   script, its lines as typed; a shell message or a status other than 0 stops it; four nest. `/BIN/MAKE`

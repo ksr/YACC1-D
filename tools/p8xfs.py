@@ -42,7 +42,7 @@ ENT_PER_SEC = SEC // ENT
 # entry 1 = '..'). New extents allocate from LBA 37 up.
 ROOT_LBA    = 33
 ROOT_SECS   = 4         # 64 entries
-SUBDIR_SECS = 4         # default size of a created subdirectory
+SUBDIR_SECS = 16        # default size of a created subdirectory: 254 entries (2026-11-05, as the Y1/OS kernels; 4 before)
 DATA_V2     = 37
 
 # entry flags

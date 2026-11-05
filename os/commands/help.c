@@ -7,42 +7,17 @@
    Ported from P8X os/commands/help.c 2026-09-23, changes: the text is rewritten for Y1/OS (no /d1, graphics,
    kermit, make, sh; the built-ins are Y1/OS's; redirection and pipes since the same evening: man shell; pack added 2026-09-23;
    asm and cc 2026-09-25, video 2026-09-25, kermit 2026-09-26, asmc 2026-09-26, disasm 2026-09-29, sh and make
-   2026-11-03, mkdir -s the same day). Keep it in step with os/README.md. */
+   2026-11-03, mkdir -s the same day). 
+   The text is os/help.txt, /lib/help.txt on the disk, since 2026-11-05: as string literals it was over pass 1's string
+   pool, so the native compiler could not build help. Keep it in step with os/README.md. */
+#include "../lib_fs.c"
+#include "../lib_err.c"
 #include "y1lib.c"
 
 void main() {
-    puts("Y1/OS commands (man name for more; a /bin program wins over a built-in of the same name)");
-    puts("built into the shell:");
-    puts("  cd path        change directory (/abs, rel, ., ..)");
-    puts("  load path      read a program to its load address");
-    puts("  run path args  load and call a program with an argument tail");
-    puts("  save p a l     write memory a..a+l (hex) to a new file");
-    puts("  ren path name  rename a file or directory in place");
-    puts("  mkdir / rmdir  make / remove (an empty) directory (/bin/mkdir: -s N, N sectors)");
-    puts("  type path      print a file (the built-in cat)");
-    puts("  sh file        run a script: its lines as typed (name.sh runs too)");
-    puts("  exit           back to the ROM monitor");
-    puts("  cmd < in  > out  >> out  a | b | c   redirection and pipes (man shell)");
-    puts("in /bin:");
-    puts("  asm  assemble: asm [-h] SRC [OUT]  (-h: Intel hex)   asmc the same, in C");
-    puts("  awk  one-rule awk: fields, /re/ {print $N ...}, NR NF");
-    puts("  cat  print files (globs, - = console)   cmp  first differing byte");
-    puts("  cc   compile C: cc prog.c -o prog.asm --org 0x5000 --os  (then asm)");
-    puts("  cp   copy files, -r a tree               del  delete files (globs)");
-    puts("  dep  deposit hex bytes into memory       diff line differences");
-    puts("  disasm disassemble: disasm [-s] FILE [START [COUNT]], -m ADDR [COUNT] memory");
-    puts("  dir  list, sorted; -R -S, globs          dump hex dump, a page a key");
-    puts("  echo print the arguments                 examine view/change memory");
-    puts("  find names matching a pattern (tree)     grep lines matching a regex; -r");
-    puts("  head first lines                         help this list");
-    puts("  kermit file transfer on the console line: -r receive, -s send, -x server");
-    puts("  ls   plain directory list                make build targets from a Makefile (-n -B)");
-    puts("  man  a manual page (/man)");
-    puts("  md   render Markdown (/docs)             more page a file");
-    puts("  mv   move/rename files                   pack compact the disk: reclaim dead sectors");
-    puts("  pwd  the working directory               sed  s/re/new/[g]");
-    puts("  sort sort lines                          tail last lines");
-    puts("  touch create empty files                 tree the directory tree");
-    puts("  uniq drop adjacent repeats               vi   the screen editor");
-    puts("  video the video card: on, off, clear     wc   lines words bytes");
+    int h, c;
+    h = fopen("/lib/help.txt");
+    if (!h) { eputs("help: no /lib/help.txt"); osexit(1); }
+    while ((c = fgetc(h)) != 65535) putchar(c);
+    fclose(h);
 }

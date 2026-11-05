@@ -53,6 +53,7 @@ def main():
     progs.append(("/src/os/commands-asm", "asm", "asma/asm.bin", "/bin/asm"))
     for i, p in enumerate(mksrcmk.PASSN):
         progs.append(("/src/software/compiler/c/target", "cc%d" % (i + 1), "cc/%s.bin" % p, "/lib/cc/cc%d" % (i + 1)))
+    progs.append(("/src/os", "y1os", "y1os-asm.bin", "/lib/y1os"))     # 2026-11-05: the kernel, built by asm
     script = "O\ncd /src\nmake\nmake\nmake install\nexit\n0\n"
     r = subprocess.run([EMU, "-x", "-m", "-c", img, "-l", LIMIT], input=script.encode(), capture_output=True)
     out = r.stdout.decode("latin1")
@@ -61,7 +62,7 @@ def main():
     if "sh: stopped" in out: fails.append("a script stopped (see %s)" % os.path.join(B, "session.txt"))
     if not re.search(r"\n\r?bye", out): fails.append("the session did not end (limit too low?)")
     ncc = len(re.findall(r"> cc ", out))             # each compile, as the script shows it: once per C program
-    if ncc != len(progs) - 1: fails.append("%d compiles for %d C programs (the second make compiled?)" % (ncc, len(progs) - 1))
+    if ncc != len(progs) - 2: fails.append("%d compiles for %d C programs (the second make compiled?)" % (ncc, len(progs) - 2))
     for d, n, host, inst in progs:
         want = open(os.path.join(OS, "build", host), "rb").read()
         got = get(img, "%s/%s" % (d, n))

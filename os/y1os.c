@@ -49,7 +49,8 @@
 #define ENT 32
 #define ROOT_LBA 33
 #define ROOT_SECS 4
-#define DIR_SECS 4              /* a new directory's extent, as p8xfs.py mkdir makes it (62 entries) */
+#define DIR_SECS 16             /* a new directory's extent, as p8xfs.py mkdir makes it: 254 entries (2026-11-05; 4 and
+                                   62 before, and directories cannot grow: their extent has files right behind it) */
 #define F_END 0
 #define F_FILE 1
 #define F_DIR 2

@@ -1,0 +1,47 @@
+NAME
+    mkdisk - make a new disk on the second drive
+
+SYNOPSIS
+    mkdisk [-f] [kernel]
+
+DESCRIPTION
+    Writes a complete new disk on drive 1: the boot block, the kernel
+    (/lib/y1os, or the file named), an empty volume, then every file and
+    directory of this disk, each directory keeping its size and each
+    file its load and exec address. Deleted files are not copied, so the
+    new disk needs no pack; neither are a build's work files, make.sh
+    and ccw.*. It prints each directory as it starts, and a summary:
+
+        mkdisk: 18 sectors of kernel, 231 files, 14 directories, ...
+
+    mkdisk is /bin/mkdisk. Drive 1 is the IDE slave beside the running
+    disk (on the emulators, the image of -C). The running disk is only
+    read. The boot block goes last: until then drive 1 has no volume.
+
+    -f writes over a drive that already holds a volume.
+
+    To rebuild the system onto a new disk:
+
+        cd /src
+        make               every program, then the kernel
+        make install       into /bin, /lib/cc and /lib/y1os
+        make clean         the build's output leaves /src
+        cd /
+        mkdisk
+
+    To boot the new disk it must become drive 0, the only one the ROM's
+    O boots: swap the cards, or the images on an emulator.
+
+LIMITS
+    One disk's files onto one drive; no drive 2. The name of a file is
+    not changed. 62 characters of path, as everywhere. kermit does not
+    build on the machine: mkdisk copies the /bin/kermit that is there.
+    Messages: "mkdisk: no drive 1", "mkdisk: drive 1 holds a volume
+    (-f writes over it)", "mkdisk: no kernel", "mkdisk: drive 1 does
+    not answer". Each ends with status 1.
+
+NOTES
+    Added 2026-11-05 (os/commands/mkdisk.c).
+
+SEE ALSO
+    sysgen, make, pack, cp

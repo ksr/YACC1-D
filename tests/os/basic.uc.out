@@ -80,10 +80,11 @@ BOOT FROM CF
   head first lines                         help this list
   kermit file transfer on the console line: -r receive, -s send, -x server
   ls   plain directory list                make build targets from a Makefile (-n -B)
-  man  a manual page (/man)
+  man  a manual page (/man)                mkdisk a new disk on drive 1 (-f over a volume)
   md   render Markdown (/docs)             more page a file
   mv   move/rename files                   pack compact the disk: reclaim dead sectors
   pwd  the working directory               sed  s/re/new/[g]
+  sysgen install a kernel in the boot sectors: sysgen file
   sort sort lines                          tail last lines
   touch create empty files                 tree the directory tree
   uniq drop adjacent repeats               vi   the screen editor

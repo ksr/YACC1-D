@@ -1,0 +1,38 @@
+NAME
+    sysgen - install a kernel in the boot sectors
+
+SYNOPSIS
+    sysgen file
+
+DESCRIPTION
+    Writes a kernel to the reserved sectors LBA 1.. of this disk, reads
+    each one back, then sets OSCNT in the boot block: on the machine
+    what `p8xfs.py boot` does on the Mac. The running OS stays in
+    memory; the new kernel starts at the next O. sysgen is /bin/sysgen.
+
+    The file is a program file with load and exec $1000, as
+
+        asm y1os.asm y1os
+
+    writes it. /lib/y1os is the kernel the disk was built with. In
+    /src/os, make boot builds y1os and runs sysgen on it.
+
+LIMITS
+    32 sectors (16K) at most. There is one copy of the kernel: a
+    failure half way leaves a card that does not boot, until the kernel
+    is written again from the Mac (docs/procedures/CF-CARD.md).
+    Messages: "sysgen: not found", "sysgen: not a kernel: load and exec
+    must be $1000", "sysgen: an empty file", "sysgen: over 32 sectors",
+    "sysgen: no P8XFS boot block", and the CF errors. Each ends with
+    status 1, so a running script stops.
+
+EXAMPLES
+    sysgen /lib/y1os       the installed kernel again
+    cd /src/os
+    make boot              a kernel built here
+
+NOTES
+    Added 2026-11-05 (os/commands/sysgen.c).
+
+SEE ALSO
+    mkdisk, asm, make, mon

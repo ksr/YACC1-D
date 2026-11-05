@@ -520,6 +520,7 @@ void print_usage(const char *progname) {
     printf("  -f filename  Load the specified file using load_file\n");
     printf("  -x           Scripted run: no load/dump chatter, HALT exits (instruction count on stderr)\n");
     printf("  -c image     Attach a CompactFlash image on ports P8/P9 (created zero-filled if missing)\n");
+    printf("  -C image     The same as drive 1, the IDE slave (/bin/mkdisk writes it)\n");
     printf("  -l N         Stop after N instructions (with -x: status on stderr)\n");
     printf("  -P file      PC histogram: instructions per address, a block per program Y1/OS starts, into file\n");
     printf("  -S           Program watch: per program Y1/OS starts (JSRUR $5000) its instructions and own stack, on stderr\n");
@@ -561,6 +562,8 @@ int main(int argc, char** argv) {
             ilimit = strtoul(argv[++arg], NULL, 0);
         } else if (strcmp(argv[arg], "-c") == 0 && arg + 1 < argc) {
             if (!cf_attach(argv[++arg])) { fprintf(stderr, "cannot open CF image %s\n", argv[arg]); return EXIT_FAILURE; }
+        } else if (strcmp(argv[arg], "-C") == 0 && arg + 1 < argc) {   /* YACC1-D 2026-11-05: drive 1 */
+            if (!cf_attach2(argv[++arg])) { fprintf(stderr, "cannot open CF image %s\n", argv[arg]); return EXIT_FAILURE; }
         } else if (strcmp(argv[arg], "-f") == 0) {
             if (arg + 1 < argc) {
                 load_filename = argv[++arg];

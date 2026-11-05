@@ -172,7 +172,7 @@ def case_reset():
 
 def case_cli():
     before = emulators()
-    r = subprocess.run([sys.executable, os.path.join(ROOT, "software/y1dbg"), "-c", "b cmdloop; c; r; key H\\n; waitfor >; console"],
+    r = subprocess.run([sys.executable, os.path.join(ROOT, "software/y1dbg"), "-c", "b cmdloop; c; r; key H\\n; waitfor INTEL-HEX LOAD; console"],
                        capture_output=True, text=True, timeout=120)
     if VERBOSE: print(r.stdout + r.stderr)
     ok = r.returncode == 0 and "breakpoint %04X" % CMDLOOP in r.stdout and "PC=%04X <cmdloop>" % CMDLOOP in r.stdout and \

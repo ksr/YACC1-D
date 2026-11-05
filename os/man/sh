@@ -13,8 +13,8 @@ DESCRIPTION
     LF or CR (CR LF is fine); up to 128 characters of it are kept.
     sh is a shell built-in.
 
-    A file whose name ends in .SH also runs when it is named as a
-    command (build.sh, or build.sh: the shell upper-cases the name),
+    A file whose name ends in .sh also runs when it is named as a
+    command (build.sh, or BUILD.SH: the shell lower-cases the name),
     and when a program EXECs it: that is how make runs its recipes.
     The script starts after the command that started it has ended.
 

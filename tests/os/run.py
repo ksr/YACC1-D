@@ -77,6 +77,7 @@ HOST = {
     "badhandle": [("fsck",), ("boot",), ("same", []),       # 2026-09-23: nothing written through a bad handle
                   ("data", "/badh.txt", b"ABC")],
     "api": [("fsck",), ("get", "/copy.txt", "os/disk/README.TXT", 0)],
+    "sysgen": [("fsck",), ("kernel", bytes(range(256)) * 3)],     # 2026-11-05: 2 sectors at LBA 1, OSCNT 2
     "mkdir": [("fsck",),                        # 2026-11-03: /BIN/MKDIR -s writes a bigger directory on raw sectors
               ("ls", "/", ["big", "small", "local"], ["x", "y"]),
               ("ls", "/big", ["f01", "f62", "f63", "f75", "sub"], [])],
@@ -129,6 +130,7 @@ EXTRA = {"badhandle": [("badh.c", "/badh", 0x5000), ("", "/zero.bin", 0x6000)],
          "rdnlow": [("rdn.c", "/rdn", 0x5000)],
          "systab": [("systab.c", "/systab", 0x5000)],
          "disasm": [("dis.asm", "/dis", 0xC000)],        # 2026-09-29: RC/asm's bytes for disasm to show
+         "sysgen": [(bytes(range(256)) * 3, "/k", 0x1000), ("", "/big.k", 0x1000, 17000)],     # 2026-11-05
          "exec": [("exe.c", "/exe", 0x5000), ("exe.c", "/exes", 0x5000, ["--stack", "0xCFFF"]),
                   ("", "/big.txt", 0xC000, 20000)],
          # 2026-11-03: scripts (sh, NAME.SH, EXEC of a script): text files, given as bytes, put with load/exec 0
@@ -283,6 +285,12 @@ def host_check(name, img):
     """Run the HOST checks for a session on its disk image; returns a list of failure strings."""
     fails = []
     for chk in HOST.get(name, []):
+        if chk[0] == "kernel":                  # the bytes at LBA 1, padded to whole sectors, and OSCNT
+            n = (len(chk[1]) + 511) // 512
+            v = P.read_img(img)
+            if v[3] != n or bytes(v[512:512 * (n + 1)]) != chk[1].ljust(n * 512, b"\0"):
+                fails.append("the kernel sectors or OSCNT are not what sysgen was given")
+            continue
         if chk[0] == "packed":
             vol = P.read_img(img); _, nsec = tree_files(vol)
             if P.get_free(vol) != P.DATA_V2 + nsec:

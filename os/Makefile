@@ -60,7 +60,7 @@ RTLIB  = $(ROOT)/software/compiler/lib/y1ccrt.txt $(ROOT)/software/compiler/lib/
 # assembly, and the native compiler's passes (tests/native/selfhost.py's set). The volume is 4 MB (8192 sectors).
 SECTORS = 8192
 SRCS   = $(sort $(patsubst %,os/%,$(wildcard commands/*.c) $(LIBS) asm_optab.c dis_optab.c kermit_io.c kermit_io.asm \
-         commands-asm/asm.asm commands-asm/asmtab.inc y1os.asm strings.txt y1os.c) \
+         commands-asm/asm.asm commands-asm/asmtab.inc y1os.asm strings.txt y1os.c help.txt) \
          $(patsubst $(ROOT)/%,%,$(filter $(CDIR)/cc% $(CDIR)/p% $(CDIR)/io% $(CDIR)/target%,$(wildcard $(CDIR)/*.c $(CDIR)/*.h)) \
          $(wildcard $(CDIR)/target/*.c) $(wildcard $(CDIR)/ylim/*.h)))
 # a disk name is 1..12 characters: kermit_io.asm (the source mkkio.py turns into kermit_io.c) is /src/os/kermitio.asm
@@ -143,7 +143,12 @@ $(B)/cc/%.bin: $(CDIR)/target/%.c $(PSRC) $(LIBS) $(ROOT)/software/compiler/y1cc
 
 passes: $(PASSES)
 
-disk.img: $(B)/y1os.bin $(CMDS) $(ASMA) $(PASSES) $(RTLIB) $(FILES) $(MANS) $(foreach d,$(DOCS),$(firstword $(subst :, ,$(d)))) $(SRCS:%=$(ROOT)/%) mksrcmk.py Makefile
+# the kernel's messages as assembly, generated: on the disk at /src/os so that `asm y1os.asm` works there (2026-11-05)
+$(B)/y1os_str.inc: strings.txt mkstrings.py
+	@mkdir -p $(B)
+	python3 mkstrings.py strings.txt > $@
+
+disk.img: $(B)/y1os.bin $(B)/y1os_str.inc help.txt $(CMDS) $(ASMA) $(PASSES) $(RTLIB) $(FILES) $(MANS) $(foreach d,$(DOCS),$(firstword $(subst :, ,$(d)))) $(SRCS:%=$(ROOT)/%) mksrcmk.py Makefile
 	@rm -f $@
 	$(FS) create $@ --sectors $(SECTORS)
 	$(FS) boot $@ $(B)/y1os.bin
@@ -159,14 +164,17 @@ disk.img: $(B)/y1os.bin $(CMDS) $(ASMA) $(PASSES) $(RTLIB) $(FILES) $(MANS) $(fo
 	@for d in $(DOCS); do $(FS) put $@ $${d%%:*} --name /docs/$${d##*:}; done
 	$(FS) mkdir $@ /lib
 	@for f in $(RTLIB); do $(FS) put $@ $$f --name /lib/$$(basename $$f); done
+	$(FS) put $@ help.txt --name /lib/help.txt
+	$(FS) put $@ $(B)/y1os.bin --name /lib/y1os --load 0x1000 --exec 0x1000
 	$(FS) mkdir $@ /lib/cc
 	@n=1; for p in $(PASSN); do $(FS) put $@ $(B)/cc/$$p.bin --name /lib/cc/cc$$n --load 0x5000 --exec 0x5000; n=$$((n + 1)); done
 	$(FS) mkdir $@ /src
 	@for d in $$(for f in $(SRCS); do x=$$f; while [ "$${x%/*}" != "$$x" ]; do x=$${x%/*}; echo $$x; done; done | sort -u); do \
-	  $(FS) mkdir $@ /src/$$d --secs 16 > /dev/null; done
+	  $(FS) mkdir $@ /src/$$d > /dev/null; done
 	@for f in $(SRCS); do n=$$(basename $$f | sed 's/kermit_io\.asm$$/kermitio.asm/'); \
 	  [ $${#n} -le 12 ] || { echo "disk.img: $$f: a name over 12 characters"; exit 1; }; \
 	  $(FS) put $@ $(ROOT)/$$f --name /src/$$(echo $$f | sed 's/kermit_io\.asm$$/kermitio.asm/') > /dev/null || exit 1; done
+	$(FS) put $@ $(B)/y1os_str.inc --name /src/os/y1os_str.inc > /dev/null
 	@python3 mksrcmk.py $(B)/srcmk
 	@for f in $$(cd $(B)/srcmk && find . -name Makefile | sed 's|^\./||' | sort); do \
 	  $(FS) put $@ $(B)/srcmk/$$f --name /src/$$f > /dev/null || exit 1; done

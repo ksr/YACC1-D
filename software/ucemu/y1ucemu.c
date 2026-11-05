@@ -1011,6 +1011,7 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "-f") && i + 1 < argc) images[nimages++] = argv[++i];
         else if (!strcmp(argv[i], "-x")) scripted = 1;
         else if (!strcmp(argv[i], "-c") && i + 1 < argc) { if (!cf_attach(argv[++i])) { fprintf(stderr, "y1ucemu: cannot open CF image %s\n", argv[i]); return 2; } }
+        else if (!strcmp(argv[i], "-C") && i + 1 < argc) { if (!cf_attach2(argv[++i])) { fprintf(stderr, "y1ucemu: cannot open CF image %s\n", argv[i]); return 2; } }
         else if (!strcmp(argv[i], "-t")) trace = 1;
         else if (!strcmp(argv[i], "-T")) trace_steps = 1;
         else if (!strcmp(argv[i], "-w")) warn_fights = 1;

@@ -1,0 +1,35 @@
+Y1/OS commands (man name for more; a /bin program wins over a built-in of the same name)
+built into the shell:
+  cd path        change directory (/abs, rel, ., ..)
+  load path      read a program to its load address
+  run path args  load and call a program with an argument tail
+  save p a l     write memory a..a+l (hex) to a new file
+  ren path name  rename a file or directory in place
+  mkdir / rmdir  make / remove (an empty) directory (/bin/mkdir: -s N, N sectors)
+  type path      print a file (the built-in cat)
+  sh file        run a script: its lines as typed (name.sh runs too)
+  exit           back to the ROM monitor
+  cmd < in  > out  >> out  a | b | c   redirection and pipes (man shell)
+in /bin:
+  asm  assemble: asm [-h] SRC [OUT]  (-h: Intel hex)   asmc the same, in C
+  awk  one-rule awk: fields, /re/ {print $N ...}, NR NF
+  cat  print files (globs, - = console)   cmp  first differing byte
+  cc   compile C: cc prog.c -o prog.asm --org 0x5000 --os  (then asm)
+  cp   copy files, -r a tree               del  delete files (globs)
+  dep  deposit hex bytes into memory       diff line differences
+  disasm disassemble: disasm [-s] FILE [START [COUNT]], -m ADDR [COUNT] memory
+  dir  list, sorted; -R -S, globs          dump hex dump, a page a key
+  echo print the arguments                 examine view/change memory
+  find names matching a pattern (tree)     grep lines matching a regex; -r
+  head first lines                         help this list
+  kermit file transfer on the console line: -r receive, -s send, -x server
+  ls   plain directory list                make build targets from a Makefile (-n -B)
+  man  a manual page (/man)                mkdisk a new disk on drive 1 (-f over a volume)
+  md   render Markdown (/docs)             more page a file
+  mv   move/rename files                   pack compact the disk: reclaim dead sectors
+  pwd  the working directory               sed  s/re/new/[g]
+  sysgen install a kernel in the boot sectors: sysgen file
+  sort sort lines                          tail last lines
+  touch create empty files                 tree the directory tree
+  uniq drop adjacent repeats               vi   the screen editor
+  video the video card: on, off, clear     wc   lines words bytes

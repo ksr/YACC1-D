@@ -3,10 +3,10 @@
  */
 
 /* mkdir.c - make a directory: mkdir [-s N] path (2026-11-03)
-     mkdir path        4 sectors, 62 entries: the MKDIR syscall, the same as the shell's built-in mkdir
-     mkdir -s N path   N sectors, 1..64: 16 entries a sector, less "." and ".." (-s 16: 254, -s 64: 1022)
+     mkdir path        16 sectors, 254 entries: the MKDIR syscall, the same as the shell's built-in mkdir
+     mkdir -s N path   N sectors, 1..64: 16 entries a sector, less "." and ".." (-s 4: 62, -s 64: 1022)
    A directory's size is fixed when it is made (P8XFS keeps it in the directory's entry and in its "." entry), and
-   the OS and its MKDIR syscall always make 4 sectors. With -s this program writes the directory itself on raw
+   the OS and its MKDIR syscall always make 16 sectors. With -s this program writes the directory itself on raw
    sectors (CFREAD/CFWRITE through the ROM), as /bin/pack does and the kernel's fs_mkdir would: the parent's first
    free slot (an end-of-directory or deleted entry), the new extent at the volume's free pointer ("." and ".." in
    its first sector, the rest zeros), then the free pointer raised by N, and the entry written last, so an

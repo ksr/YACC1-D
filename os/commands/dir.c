@@ -11,7 +11,7 @@
                       its own under a "/PATH:" header, the glob filtering every level
    Each line: the size right-justified in 7 columns (blank for a directory), two spaces, the name ('/' after a
    directory), and "@AAAA" = the load address of a file that has one. Up to 255 entries per directory are sorted
-   (64 until 2026-11-03; a fresh directory holds 62, /src's 254), with a Shell sort (an insertion sort before: at
+   (64 until 2026-11-03; a fresh directory holds 254), with a Shell sort (an insertion sort before: at
    1 MHz some 20,000 compares for 200 names); more are dropped with a note. Sizes are 32-bit (lib_num.c).
    Ported from P8X os/commands/dir.c 2026-09-23, changes: the recursive walk() is lib_walk.c and -R prints
    ls -R style blocks with a header each (the P8X interleaved indented levels, streaming a level before its

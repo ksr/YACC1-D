@@ -1,0 +1,18 @@
+BOOT FROM CF
+Y1/OS v0.2 (2026-09-23)  P8XFS v2
+/> 
+/> 
+usage: sysgen file   install a kernel (load and exec $1000) in the boot sectors
+/> 
+sysgen: not found
+/> 
+sysgen: not a kernel: load and exec must be $1000
+/> 
+sysgen: over 32 sectors
+/> 
+sysgen: 2 sectors installed, for the next O
+/> 
+mkdisk: no drive 1
+/> 
+bye
+>

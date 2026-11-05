@@ -161,7 +161,7 @@ def host_ref(name, d, args, tag):
 
 def mkdisk(path, batches, extra_secs):
     """A fresh volume: the OS, /bin/asm = asm.asm, and per batch a directory /dk with its sources and INCLUDE files"""
-    need = 64 + extra_secs
+    need = 64 + P.SUBDIR_SECS * (len(batches) + 1) + extra_secs
     for files in batches:
         for f in files: need += 2 * (os.path.getsize(f) // 512 + 2)
     img = bytearray(max(need, P.DATA_V2 + 64) * P.SEC)
