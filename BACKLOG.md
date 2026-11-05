@@ -798,8 +798,14 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   grow, since files lie right behind them; `mkdir -s` makes bigger ones, the root stays 62.
   `tests/native/mkdisk.py`: `make`, `make install`, `make clean`, `mkdisk`, every file of the new disk identical to
   `os/disk.img`, then it boots alone and builds a program. Left out on purpose: the ROM and the microcode. Open:
-  - `kermit` does not build natively (`kermit_io.c`'s byte table over pass 3's NODES_MAX); `mkdisk` copies the
-    Mac's build.
+  - **Native kermit:** `cc kermit.c` on the machine stops with `y1cc: declaration too big (NODES_MAX)`, so `/src`'s `all`
+    leaves it out (`os/mksrcmk.py` NATIVE_NO) and `mkdisk` copies the Mac's build. The cause is `kio[]` in the generated
+    `os/kermit_io.c`, a 543-byte initialized array, against pass 3's NODES_MAX of 128 (`software/compiler/c/ylim/decl.h`).
+    First try: raise it; pass 3 has about 11.5 KB of room (`tests/compiler`'s table), and `make check`'s
+    selfhost shows at once whether the passes still fit. Else `mkkio.py` writes the table so that it fits (several smaller
+    arrays, or a file loaded at run time). `kermit.c` itself is 46 KB, so the passes after 3 may stop at limits of their
+    own: nothing past that declaration has been tried. Done when kermit is out of NATIVE_NO and `tests/native/srcmake.py`
+    finds it byte-identical to the host's.
   - An edit of `strings.txt` on the machine does not reach the kernel: `y1os_str.inc` comes from `mkstrings.py`, as the
     generated tables come from Python. A C `mkstrings` would close that.
   - `tests/kermit` on the microcode emulator failed 3 checks once at a load average over 100 (the summary lines after
