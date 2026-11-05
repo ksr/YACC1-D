@@ -33,6 +33,7 @@ static struct {
     int idx, drq, err, write;
     uint8_t sel, feat, scnt, lba0, lba1, lba2, head;
 } cf;
+static unsigned long cf_reads, cf_writes;         /* sectors moved, for emulator -P (2026-11-05) */
 #define CF_IMG (cf.imgs[(cf.head >> 4) & 1])      /* the selected drive's image */
 
 static long cf_lba(void) { return ((long)(cf.head & 0x0F) << 24) | ((long)cf.lba2 << 16) | ((long)cf.lba1 << 8) | cf.lba0; }
@@ -63,7 +64,7 @@ static void cf_command(uint8_t v) {
     switch (v) {
         case 0xEF: cf.err = 0; cf.drq = 0; break;                                   /* SET FEATURES (8-bit mode) */
         case 0xEC: cf_identify(); break;
-        case 0x20: memset(cf.buf, 0, 512); cf_seek(); if (CF_IMG) { size_t n = fread(cf.buf, 1, 512, CF_IMG); (void)n; }
+        case 0x20: cf_reads++; memset(cf.buf, 0, 512); cf_seek(); if (CF_IMG) { size_t n = fread(cf.buf, 1, 512, CF_IMG); (void)n; }
                    cf.idx = 0; cf.drq = 1; cf.err = 0; cf.write = 0; break;         /* READ SECTORS */
         case 0x30: cf.idx = 0; cf.drq = 1; cf.err = 0; cf.write = 1; break;         /* WRITE SECTORS */
         default:   cf.err = 1; cf.drq = 0; break;
@@ -97,7 +98,7 @@ static void cf_io_write(int port, uint8_t v) {
             if (!cf.drq) return;
             cf.buf[cf.idx++] = v;
             if (cf.idx >= 512) {
-                if (cf.write && CF_IMG) { cf_seek(); fwrite(cf.buf, 1, 512, CF_IMG); fflush(CF_IMG); }
+                if (cf.write && CF_IMG) { cf_seek(); fwrite(cf.buf, 1, 512, CF_IMG); fflush(CF_IMG); cf_writes++; }
                 cf.idx = 0; cf.drq = 0; cf.write = 0;
             }
             return;

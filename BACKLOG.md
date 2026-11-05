@@ -790,6 +790,10 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Move off NetBeans (README decision 7).
 
 ## Disk operating system (plan `docs/system/OS-PLAN.md`, decisions 2026-09-22)
+- **2026-11-05: speed work, the baseline** (`docs/system/SPEED.md`, `tools/speed.py`): `make` in `/src/os/commands` is
+  45.0 G clocks, 12 h 30 m at 1 MHz, 27 clocks an instruction; cc9 29%, cc9 + asm 36%, the disk about 12%, `LDZ`/`STZ`/
+  `LDR`/`STR` 34%. The next step is to choose what to change: the microcode's common records, cc9's text path, the
+  work files, the CF loops.
 - **2026-11-05: the system rebuilds itself onto a new disk, on the emulator** (`os/README.md` "A new disk"): `sysgen`
   installs a kernel in the boot sectors, `mkdisk` writes a whole disk on drive 1 (emulators: `-C image`, bit 4 of the
   head register), `make clean` empties `/src` of a build's output, `/lib/y1os` holds the kernel, `y1os_str.inc` and a

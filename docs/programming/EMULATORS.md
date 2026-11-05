@@ -93,6 +93,8 @@ Options (`y1ucemu.c` header):
 | `-f FILE` | load an Intel-hex image; repeatable, later files overwrite |
 | `-c IMAGE` | the CF image on P8/P9 |
 | `-C IMAGE` | a second CF image, drive 1 (2026-11-05) |
+| `-Q FILE` | clocks per opcode, measured: `OP name count clocks length:count ...` (2026-11-05, `docs/system/SPEED.md`) |
+| `-Y` | print `software/opclocks.h` from the microcode, and stop (with `-x`) |
 | `-x` | scripted: quiet, stdout flushed, `SOFT-HALT` exits; a status line on stderr with instructions, steps, clocks, R3 and the bus-fight count (`... bus fights: N in M`) |
 | `-t` | one line per instruction fetch on stderr; `-T` every step with the signals asserted |
 | `-w` | list bus fights (opcode, step, drivers) as they first occur (the summary is always printed with `-x`) |

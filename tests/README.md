@@ -39,6 +39,9 @@
   monitor's input echo). `make os-test`. `NOXISA=1 python3 tests/os/run.py` runs the same sessions with every
   `/bin` program built by y1cc `--no-xisa` (`make -C os NOXISA=1`; `--xisa` is the default since 2026-10-04); the
   program sizes `ls`/`load` print are masked.
+- `native/` — the toolchain under Y1/OS: `run.py` (native compile), `selfhost.py`, `srcmake.py`, `mkdisk.py` (the system
+  rebuilt onto a new disk), `profile.py` (where one program's instructions go), and `clocks.py` (2026-11-05: the fast
+  emulator's clocks against the microcode, `docs/system/SPEED.md`).
 - `asm/` — the native assemblers `/bin/asmc` (asm.c, 2026-09-25) and `/bin/asm` (asm.asm, in YACC1 assembly, 2026-09-26;
   `run.py` also runs it under Y1/OS on the instruction-level emulator on the whole corpus and compares its messages
   and files with asm.c's, `--uc` 27 sources on the microcode emulator too): `run.py` builds `os/commands/asm.c` for the Mac against an

@@ -269,7 +269,8 @@ class Run:
         blocks, cur = {}, None
         for line in open(self.histo):
             if line.startswith("program"): cur = int(line.split()[1]); blocks[cur] = {}; continue
-            a, c = line.split(); blocks[cur][int(a, 16)] = int(c)
+            w = line.split()
+            if w[0] not in ("op", "cf"): blocks[cur][int(w[0], 16)] = int(w[1])      # address, instructions, clocks
         res = []
         for prog, nbytes, what in ((self.recv_prog, sum(len(self.f[n]) for n in self.f) + 18, "receive"),
                                    (self.send_prog, sum(len(self.f[n]) for n in self.f) + 18, "send")):

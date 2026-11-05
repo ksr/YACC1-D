@@ -74,7 +74,8 @@ def main():
     blocks = []; cur = None
     for line in open(hist):
         if line.startswith("program"): cur = collections.Counter(); blocks.append(cur); continue
-        a, c = line.split(); cur[int(a, 16)] += int(c)
+        w = line.split()
+        if len(w) == 3 and w[0] not in ("op", "cf"): cur[int(w[0], 16)] += int(w[1])      # address, instructions, clocks
     blocks = blocks[1:]                                 # block 0: the monitor and the boot
     steps = []
     for p in progs:

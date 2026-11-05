@@ -13,6 +13,8 @@ software/ucemu/y1ucemu -x -m -f prog.img            # monitor ROM + a program im
 software/ucemu/y1ucemu -m                            # interactive monitor on the terminal (UART = stdin/stdout)
 software/ucemu/y1ucemu -x -f prog.img -t             # -t: one line per instruction fetch; -T: every step + signals
 software/ucemu/y1ucemu -x -m -f prog.img -w          # -w: list every bus fight as it first occurs
+software/ucemu/y1ucemu -x -m -f prog.img -Q out.txt  # -Q: clocks per opcode, measured (docs/system/SPEED.md)
+software/ucemu/y1ucemu -x -Y > software/opclocks.h   # -Y: every opcode's clocks, from the microcode, as a C table
 python3 tests/ucemu/run.py                           # the compiler suite + tests/assembler/brur on this emulator
 python3 software/y1dbg                               # the debugger: y1ucemu -D under a terminal UI with the video screen
 ```

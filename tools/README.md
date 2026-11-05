@@ -45,6 +45,9 @@ the PDF generators, and the KiCad conversion:
   `--mute N` (the Nth packet of the run damaged, not sent, NAKed, not answered). It prints what it sent and received
   and a summary (packets, retries, NAKs, timeouts, repeats); exit 1 on failure. The fallback when C-Kermit is not at
   hand, and what `tests/kermit/run.py` drives both emulators with; `docs/procedures/KERMIT.md` is the how-to.
+- `speed.py` — where the machine's time goes: a shell line under Y1/OS on the fast emulator (default `make` in
+  `/src/os/commands`), reported in clocks by program, by program/OS/ROM, by function and by opcode
+  (`docs/system/SPEED.md`, 2026-11-05).
 - `y1.ksc` — C-Kermit's settings for the same line (`kermit tools/y1.ksc` opens `/dev/cu.usbserial-AB0MVHSQ` at
   38400, no flow control, carrier-watch off, binary, prefixing all, autodownload, and connects;
   `docs/procedures/KERMIT.md` explains each).

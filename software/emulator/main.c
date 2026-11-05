@@ -26,6 +26,7 @@
 #include <poll.h>             /* YACC1-D 2026-09-26: the UART model's non-blocking data-ready poll */
 #include "../opcodes.h"
 #include <stdint.h>
+#include "../opclocks.h"       /* YACC1-D 2026-11-05: clocks per opcode, from the microcode, for -P */
 #include "../cfmodel.h"        /* YACC1-D 2026-09-22: the CompactFlash card on ports P8 (select) / P9 (data), -c image */
 #include "../videomodel.h"     /* YACC1-D 2026-09-25: the video card in $D000-$DFFF (-V screen dump, -W CRTC log, -N absent) */
 
@@ -112,12 +113,17 @@ void stack_report(void) {
    ran, then start again from zero; tests/native/profile.py turns the blocks into instructions per function from the
    programs' and the OS's assembly */
 FILE *pcfile = NULL;
-unsigned long pchist[65536];
+unsigned long pchist[65536], pcclk[65536], ophist[256], cfr0, cfw0;
 int pcseg = 0;
 void pc_dump(void) {
     if (!pcfile) return;
     fprintf(pcfile, "program %d\n", pcseg);
-    for (unsigned a = 0; a < 65536; a++) if (pchist[a]) { fprintf(pcfile, "%04X %lu\n", a, pchist[a]); pchist[a] = 0; }
+    for (unsigned a = 0; a < 65536; a++) if (pchist[a]) {     /* 2026-11-05: address, instructions, clocks */
+        fprintf(pcfile, "%04X %lu %lu\n", a, pchist[a], pcclk[a]); pchist[a] = pcclk[a] = 0;
+    }
+    for (unsigned o = 0; o < 256; o++) if (ophist[o]) { fprintf(pcfile, "op %02X %lu\n", o, ophist[o]); ophist[o] = 0; }
+    fprintf(pcfile, "cf %lu %lu\n", cf_reads - cfr0, cf_writes - cfw0);
+    cfr0 = cf_reads; cfw0 = cf_writes;
     fflush(pcfile);
 }
 void pc_exit(void) { pc_dump(); if (pcfile) fclose(pcfile); pcfile = NULL; }
@@ -522,7 +528,7 @@ void print_usage(const char *progname) {
     printf("  -c image     Attach a CompactFlash image on ports P8/P9 (created zero-filled if missing)\n");
     printf("  -C image     The same as drive 1, the IDE slave (/bin/mkdisk writes it)\n");
     printf("  -l N         Stop after N instructions (with -x: status on stderr)\n");
-    printf("  -P file      PC histogram: instructions per address, a block per program Y1/OS starts, into file\n");
+    printf("  -P file      PC histogram: instructions and clocks per address, opcodes and CF sectors, a block per program Y1/OS starts, into file\n");
     printf("  -S           Program watch: per program Y1/OS starts (JSRUR $5000) its instructions and own stack, on stderr\n");
     printf("  -V           Video card: print the screen (and the CRTC registers) on stderr at exit\n");
     printf("  -W           Video card: log CRTC register writes on stderr\n");
@@ -611,7 +617,10 @@ int main(int argc, char** argv) {
 
         ins = memory_read(register_read_word(PC));
         icount++;
-        if (pcfile) pchist[register_read_word(PC)]++;
+        if (pcfile) {
+            unsigned pa = register_read_word(PC);
+            pchist[pa]++; pcclk[pa] += opclocks[ins & 255]; ophist[ins & 255]++;
+        }
         if (stackwatch) {
             unsigned sp = register_read_word(1), pc = register_read_word(PC);
             if (pc >= 0x5000 && pc < 0xD000) slast = icount;

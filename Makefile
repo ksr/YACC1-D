@@ -29,6 +29,7 @@
 #                   byte-identical to the host build (tests/native/srcmake.py, ~20 s; also in check)
 #   make mkdisk     Y1/OS rebuilds itself onto a new disk on drive 1 (make, make install, make clean, mkdisk) and boots
 #                   from it; every file against os/disk.img (tests/native/mkdisk.py; also in check)
+#   make speed      where the time goes in `make` in the disk's /src/os/commands, in clocks (tools/speed.py, docs/system/SPEED.md)
 #   make asm-test   the native assembler /BIN/ASM against the host assembler over the tree's sources, then under Y1/OS on
 #                   both emulators (tests/asm/run.py --target)
 #   make bom        regenerate docs/bom/ (bills of material per card + consolidated) from the active Eagle schematics (tools/gen_bom.py)
@@ -64,6 +65,7 @@ check:
 	python3 tests/native/selfhost.py
 	python3 tests/native/srcmake.py
 	python3 tests/native/mkdisk.py
+	python3 tests/native/clocks.py
 	python3 tests/monload/run.py
 	python3 tests/y1term/run.py
 	python3 tests/kermit/run.py
@@ -99,6 +101,8 @@ srcmake:
 	python3 tests/native/srcmake.py
 mkdisk:
 	python3 tests/native/mkdisk.py
+speed:
+	python3 tools/speed.py
 clean:
 	@for d in $(TOOLS); do $(MAKE) -s -C "$$d" clean; done
 kicad:
@@ -107,4 +111,4 @@ isa:
 	python3 tools/ucode_wavedrom.py --all
 bom:
 	python3 tools/gen_bom.py
-.PHONY: all check clean kicad isa bom cc-test os-test asm-test disasm-test native-test selfhost srcmake mkdisk
+.PHONY: all check clean kicad isa bom cc-test os-test asm-test disasm-test native-test selfhost srcmake mkdisk speed
