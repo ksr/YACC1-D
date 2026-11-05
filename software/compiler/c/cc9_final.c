@@ -54,6 +54,7 @@ int zused;                      /* --xisa: the page (W.zp from cc6): used, a bit
 char zbits[VARS_MAX / 8 + 1];   /* DS lines are being written; ra_z: r_addr's operand was a page variable's label */
 int zsec;
 int ra_z;
+int ra_can;                     /* r_code: the next r_addr may take the page form */
 
 int sec;                        /* the section being written: 0 code, 1 data, 2 bss */
 int nl;                         /* the label numbers so far (y1cc.c's nl) */
@@ -77,6 +78,8 @@ char lb[LINE_MAX];
 char db[LINE_MAX];
 char tbuf[LINE_MAX];
 char pend[PEND_MAX * LINE_MAX];
+char *lp;                       /* the line being built: its end, and the end of its buffer (Lto) */
+char *le;
 int npend;
 int dbn;
 char pmn_1[WORD_MAX];           /* the peephole's two parsed lines (mn_arg): a = the last pending line (valid when */
@@ -96,7 +99,11 @@ void pass_fail(char *msg) { io_fail(msg); }
 int zp(int v) { return (zbits[v >> 3] >> (v & 7)) & 1; }
 int is_pyspace(int c);
 int skip_space(char *s, int i);
-void blab(char *buf, int n);
+void Lto(char *b);
+void Ls(char *s);
+void Lc(int c);
+void Ln(int n);
+void blab(int n);
 int lbl(int kind);
 int sym_num(int sym);
 void sec_line(int s, char *t);
@@ -121,9 +128,9 @@ void insl(char *mn, int lab);
 void inss(char *mn, char *s);
 void insrn(char *mn, int r, int n);
 void insrs(char *mn, int r, char *s);
-void kadd(char *buf, int off);
-void r_addr(char *buf);
-void bnum32(char *buf, int hi, int lo);
+void kadd(int off);
+void r_addr(void);
+void bnum32(int hi, int lo);
 void r_code(void);
 void r_skip(void);
 void add_const(int k);
@@ -152,9 +159,9 @@ int is_pyspace(int c) { return c == ' ' || (c >= 9 && c <= 13) || (c >= 28 && c 
 int skip_space(char *s, int i) { while (s[i] && is_pyspace(s[i] & 255)) i++; return i; }
 
 /* ---- labels: numbered in stream order ------------------------------------------------------------------------ */
-void blab(char *buf, int n) {                       /* a generated label: its prefix and number */
-    if (n >= fbase) bcat(buf, lkname[lkind[n - fbase] & 255]); else bcat(buf, "s");
-    bnum(buf, n);
+void blab(int n) {                                  /* a generated label: its prefix and number */
+    if (n >= fbase) Ls(lkname[lkind[n - fbase] & 255]); else Lc('s');
+    Ln(n);
 }
 int lbl(int kind) {
     nl++;
@@ -179,32 +186,36 @@ void sec_line(int s, char *t) {                     /* only the section being wr
 }
 void data_line(char *t) { sec_line(1, t); }
 void bss_line(char *t) { sec_line(2, t); }
+char *dbp;                                          /* db_byte: the end of db, between its calls */
 void db_byte(int b) {                               /* DB lines of 16 numbers (the assembler upper-cases text) */
-    if (dbn == 0) { db[0] = 0; bcat(db, "        DB "); } else bchr(db, ',');
-    bnum(db, b & 255);
+    if (dbn == 0) { Lto(db); Ls("        DB "); } else { lp = dbp; le = db + LINE_MAX - 1; Lc(','); }
+    Ln(b & 255);
+    dbp = lp;
     dbn++;
     if (dbn == 16) { data_line(db); dbn = 0; }
 }
 void db_end(void) { if (dbn) { data_line(db); dbn = 0; } }
-int is_ins(char *l) { return s_starts(l, "        "); }
-int mn_arg(char *l, char *mn, char *arg) {          /* y1cc.py parts(): l.strip().split(None, 1) */
-    char *p; char *e; char *m; int c;               /* (pointers, and a space test only below '!': 2026-09-25) */
-    p = l;
-    while ((c = *p & 255) && c <= 32 && is_pyspace(c)) p++;
-    m = mn;                                         /* (the word is only compared with mnemonics: cut it short) */
-    while ((c = *p & 255) && (c > 32 || !is_pyspace(c))) { if (m < mn + WORD_MAX - 1) { *m = c; m++; } p++; }
+/* A code line is eight spaces and an instruction, or has no space in front at all: a label, a comment (2026-11-05:
+   so one byte tells them apart, and the eight spaces need not be walked again for each test). The only white space
+   in an instruction is a space. */
+int is_ins(char *l) { return *l == ' '; }
+int mn_arg(char *l, char *mn, char *arg) {          /* y1cc.py parts(): l.strip().split(None, 1), for is_ins lines */
+    char *p; char *m; int c;
+    p = l + 8;
+    m = mn;
+    while ((c = *p & 255) > 32) { *m = c; m++; p++; }
     *m = 0;
-    while ((c = *p & 255) && c <= 32 && is_pyspace(c)) p++;
-    e = p; while (*e) e++;
-    while (e > p && (*(e - 1) & 255) <= 32 && is_pyspace(*(e - 1) & 255)) e--;
-    while (p < e) { *arg = *p; arg++; p++; }
-    *arg = 0;
+    while (*p == ' ') p++;
+    m = arg;
+    while ((c = *p)) { *m = c; m++; p++; }
+    while (m > arg && m[-1] == ' ') m--;
+    *m = 0;
     return 1;
 }
 void code_line(char *b) {                           /* one line of code: counted raw, then through the peephole */
     if (sec) return;
     nraw++;
-    last_ret = s_eq(b, "        RET");
+    last_ret = *b == ' ' && s_eq(b + 8, "RET");
     peep(b);
 }
 int lsk(char *m) {                                  /* the peephole's word loads and stores (above) */
@@ -279,43 +290,56 @@ void pp_flush(void) {
 }
 
 /* instruction builders: "        MN args" */
-/* (2026-09-25: they append at lp, the end of lb, instead of finding it again for every piece; lp catches up with
-   what bcat/bchr added meanwhile, so the two can mix after L) */
-char *lp;
+/* (2026-09-25: they append at lp instead of finding the end again for every piece. 2026-11-05: everything hot goes
+   through them, on any of the LINE_MAX buffers (Lto); lb, db and tbuf are not walked again.) */
+void Lto(char *b) { lp = b; le = b + LINE_MAX - 1; *b = 0; }
 void Ls(char *s) {
-    while (*lp) lp++;
-    while (*s) { if (lp >= lb + LINE_MAX - 1) fail("y1cc: line too long"); *lp = *s; lp++; s++; }
-    *lp = 0;
+    char *p; char *e;
+    p = lp; e = le;
+    while (*s) { if (p == e) fail("y1cc: line too long"); *p = *s; p++; s++; }
+    *p = 0;
+    lp = p;
 }
-void L(char *mn) { lb[0] = 0; lp = lb; Ls("        "); Ls(mn); }
-void Lsp(void) { Ls(" "); }
-void Lr(int r) { char t[3]; t[0] = 'R'; t[1] = '0' + r; t[2] = 0; Ls(t); }
+void Lc(int c) {
+    if (lp == le) fail("y1cc: line too long");
+    *lp = c; lp++; *lp = 0;
+}
+void L(char *mn) {                                  /* (lb's eight spaces stay from the last instruction: every other
+                                                       line in lb starts with something else, or is cleared) */
+    if (*lb == ' ') { lp = lb + 8; le = lb + LINE_MAX - 1; } else { Lto(lb); Ls("        "); }
+    Ls(mn);
+}
+void Lsp(void) { Lc(' '); }
+void Lr(int r) { Lc('R'); Lc('0' + r); }
 void Ln(int n) { char d[8]; pnum(d, n); Ls(d); }
 void Lend(void) { code_line(lb); }
 void ins0(char *mn) { L(mn); Lend(); }
 void insr(char *mn, int r) { L(mn); Lsp(); Lr(r); Lend(); }
 void insn(char *mn, int n) { L(mn); Lsp(); Ln(n); Lend(); }
-void insl(char *mn, int lab) { L(mn); Lsp(); blab(lb, lab); Lend(); }
+void insl(char *mn, int lab) { L(mn); Lsp(); blab(lab); Lend(); }
 void inss(char *mn, char *s) { L(mn); Lsp(); Ls(s); Lend(); }
-void insrn(char *mn, int r, int n) { L(mn); Lsp(); Lr(r); Ls(","); Ln(n); Lend(); }
-void insrs(char *mn, int r, char *s) { L(mn); Lsp(); Lr(r); Ls(","); Ls(s); Lend(); }
-void label_def(int lab) { lb[0] = 0; blab(lb, lab); bchr(lb, ':'); code_line(lb); }
-void kadd(char *buf, int off) { if (off) { bchr(buf, '+'); bnum(buf, off); } }
+void insrn(char *mn, int r, int n) { L(mn); Lsp(); Lr(r); Lc(','); Ln(n); Lend(); }
+void insrs(char *mn, int r, char *s) { L(mn); Lsp(); Lr(r); Lc(','); Ls(s); Lend(); }
+void label_def(int lab) { Lto(lb); blab(lab); Lc(':'); code_line(lb); }
+void kadd(int off) { if (off) { Lc('+'); Ln(off); } }
 
 /* ---- R_CODE: an instruction record rendered as y1cc.c's text ------------------------------------------------- */
-void r_addr(char *buf) {                            /* an address operand: label, then "+term"s */
+void r_addr(void) {                                 /* an address operand: label, then "+term"s, at lp */
     int k; int id; int n;
     k = io_getc(inh); id = ri(inh); n = io_getc(inh);
-    ra_z = k == A_VAR && !n && zp(id);
-    if (k == A_VAR) bcat(buf, vlab(id));
-    else if (k == A_STR) { bchr(buf, 's'); bnum(buf, lit_lab[id]); }
-    else if (k == A_FUNC) bcat(buf, flab(id));
-    else bcat(buf, rtname[id]);
-    while (n) { k = ri(inh); id = ri(inh); bchr(buf, '+'); bnum32(buf, k, id); n--; }
+    ra_z = ra_can && k == A_VAR && !n && zp(id);    /* a page variable where LDZ/STZ can take it: "(label).0" */
+    ra_can = 0;
+    if (ra_z) Lc('(');
+    if (k == A_VAR) Ls(vlab(id));
+    else if (k == A_STR) { Lc('s'); Ln(lit_lab[id]); }
+    else if (k == A_FUNC) Ls(flab(id));
+    else Ls(rtname[id]);
+    if (ra_z) Ls(").0");
+    while (n) { k = ri(inh); id = ri(inh); Lc('+'); bnum32(k, id); n--; }
 }
-void bnum32(char *buf, int hi, int lo) {            /* hi:lo in decimal (long division by 10, a byte at a time) */
+void bnum32(int hi, int lo) {                       /* hi:lo in decimal (long division by 10, a byte at a time) */
     char d[12]; int b[4]; int k; int i; int r; int nz;
-    if (!hi) { bnum(buf, lo); return; }
+    if (!hi) { Ln(lo); return; }
     b[0] = hi >> 8; b[1] = hi & 255; b[2] = lo >> 8; b[3] = lo & 255;
     k = 0;
     for (;;) {
@@ -324,7 +348,7 @@ void bnum32(char *buf, int hi, int lo) {            /* hi:lo in decimal (long di
         d[k] = '0' + r; k++;
         if (!nz) break;
     }
-    while (k > 0) { k--; bchr(buf, d[k]); }
+    while (k > 0) { k--; Lc(d[k]); }
 }
 char fskip[] = {0, 1, 2, 2, 3, 3, 3, 2, 4, 1};       /* r_skip: an operand's bytes by format F_0..F_P (an address:
                                                        its kind and id, then the count of its terms) */
@@ -342,19 +366,19 @@ void r_code(void) {
     L(mntext[mn]);
     if (f != F_0) Lsp();
     if (f == F_R) Lr(io_getc(inh));
-    else if (f == F_N) bnum(lb, ri(inh));
-    else if (f == F_L) blab(lb, sym_num(ri(inh)));
-    else if (f == F_A) r_addr(lb);
-    else if (f == F_RN) { Lr(io_getc(inh)); bchr(lb, ','); bnum(lb, ri(inh)); }
-    else if (f == F_RL) { Lr(io_getc(inh)); bchr(lb, ','); blab(lb, sym_num(ri(inh))); }
-    else if (f == F_RR) { Lr(io_getc(inh)); bchr(lb, ','); Lr(io_getc(inh)); }
+    else if (f == F_N) Ln(ri(inh));
+    else if (f == F_L) blab(sym_num(ri(inh)));
+    else if (f == F_A) r_addr();
+    else if (f == F_RN) { Lr(io_getc(inh)); Lc(','); Ln(ri(inh)); }
+    else if (f == F_RL) { Lr(io_getc(inh)); Lc(','); blab(sym_num(ri(inh))); }
+    else if (f == F_RR) { Lr(io_getc(inh)); Lc(','); Lr(io_getc(inh)); }
     else if (f == F_RA) {
-        Lr(io_getc(inh)); bchr(lb, ','); r_addr(lb);
-        if (ra_z && mn <= MN_STR) {                 /* --xisa: a page variable: "        LDZ R3,(label).0" */
-            lb[10] = 'Z'; tbuf[0] = 0; bcat(tbuf, lb + 15); lb[15] = 0; bchr(lb, '('); bcat(lb, tbuf); bcat(lb, ").0");
-        }
+        Lr(io_getc(inh)); Lc(',');
+        ra_can = mn <= MN_STR;
+        r_addr();
+        if (ra_z) lb[10] = 'Z';                     /* --xisa: a page variable: "        LDZ R3,(label).0" */
     }
-    else if (f == F_P) { n = io_getc(inh); bchr(lb, 'P'); bchr(lb, n < 10 ? '0' + n : 'A' + n - 10); }
+    else if (f == F_P) { n = io_getc(inh); Lc('P'); Lc(n < 10 ? '0' + n : 'A' + n - 10); }
     Lend();
 }
 
@@ -372,8 +396,8 @@ void add_const(int k) {                             /* R3 += k (a number; masked
 }
 void add_const_text(char *t) {                      /* R3 += a label expression */
     if (opt_flags & OPT_XISA) { insrs("ADDIW", 3, t); return; }
-    insr("MVRLA", 3); L("ADDI"); Lsp(); bchr(lb, '('); bcat(lb, t); bcat(lb, ").0"); Lend(); insr("MVARL", 3);
-    insr("MVRHA", 3); L("ADDIC"); Lsp(); bchr(lb, '('); bcat(lb, t); bcat(lb, ").1"); Lend(); insr("MVARH", 3);
+    insr("MVRLA", 3); L("ADDI"); Lsp(); Lc('('); Ls(t); Ls(").0"); Lend(); insr("MVARL", 3);
+    insr("MVRHA", 3); L("ADDIC"); Lsp(); Lc('('); Ls(t); Ls(").1"); Lend(); insr("MVARH", 3);
 }
 void shl1(void) {                                   /* R3 <<= 1 (R3 += R3) */
     if (opt_flags & OPT_XISA) { insr("SHL16", 3); return; }
@@ -429,15 +453,15 @@ void branch_rel(int rel, int label, int lomode, int lok) {
 }
 void zldst(char *mn, int v) {                       /* frame_save/restore: LDR/STR R4,tbuf, LDZ/STZ in the page */
     if (!zp(v)) { insrs(mn, 4, tbuf); return; }
-    L(mn[0] == 'L' ? "LDZ" : "STZ"); bcat(lb, " R4,("); bcat(lb, tbuf); bcat(lb, ").0"); Lend();
+    L(mn[0] == 'L' ? "LDZ" : "STZ"); Ls(" R4,("); Ls(tbuf); Ls(").0"); Lend();
 }
 void frame_save(int v, int n) {                     /* push a frame of n bytes at v's label; R4 inline, or rt_fsave */
     int off;
     if (n <= FRAME_INLINE) {
         for (off = 0; off + 1 < n; off = off + 2) {
-            tbuf[0] = 0; bcat(tbuf, vlab(v)); kadd(tbuf, off); zldst("LDR", v); insr("PUSHR", 4);
+            Lto(tbuf); Ls(vlab(v)); kadd(off); zldst("LDR", v); insr("PUSHR", 4);
         }
-        if (n & 1) { tbuf[0] = 0; bcat(tbuf, vlab(v)); kadd(tbuf, n - 1); inss("LDA", tbuf); ins0("PUSH"); }
+        if (n & 1) { Lto(tbuf); Ls(vlab(v)); kadd(n - 1); inss("LDA", tbuf); ins0("PUSH"); }
         return;
     }
     insrs("MVIW", 5, vlab(v)); insrn("MVIW", 6, n); used[RT_FSAVE] = 1; inss("JSR", "rt_fsave");
@@ -445,15 +469,15 @@ void frame_save(int v, int n) {                     /* push a frame of n bytes a
 void frame_restore(int v, int n) {                  /* pop it back; R3 (the result) is not touched */
     int off;
     if (n <= FRAME_INLINE) {
-        if (n & 1) { ins0("POP"); tbuf[0] = 0; bcat(tbuf, vlab(v)); kadd(tbuf, n - 1); inss("STA", tbuf); }
+        if (n & 1) { ins0("POP"); Lto(tbuf); Ls(vlab(v)); kadd(n - 1); inss("STA", tbuf); }
         off = n & 65534;
         while (off > 0) {
             off = off - 2;
-            insr("POPR", 4); tbuf[0] = 0; bcat(tbuf, vlab(v)); kadd(tbuf, off); zldst("STR", v);
+            insr("POPR", 4); Lto(tbuf); Ls(vlab(v)); kadd(off); zldst("STR", v);
         }
         return;
     }
-    tbuf[0] = 0; bcat(tbuf, vlab(v)); kadd(tbuf, n - 1);
+    Lto(tbuf); Ls(vlab(v)); kadd(n - 1);
     insrs("MVIW", 5, tbuf); insrn("MVIW", 6, n); used[RT_FREST] = 1; inss("JSR", "rt_frest");
 }
 void emit_bss_clear(void) {                         /* main clears every DS slot (bss_start..bss_end): 20 bytes */
@@ -498,22 +522,22 @@ void switch_table(int lo, int hi, int miss, int ncs) {   /* R3 - lo, range check
     insr("MVRHA", 3); insn("LDTI", n >> 8);
     branch_rel(O_GE, miss, 1, n);
     shl1();
-    tbuf[0] = 0; blab(tbuf, tab); add_const_text(tbuf);
+    Lto(tbuf); blab(tab); add_const_text(tbuf);
     deref_r3(2);
     insr("BRUR", 3);
-    db[0] = 0; blab(db, tab); bchr(db, ':'); data_line(db);
+    Lto(db); blab(tab); Lc(':'); data_line(db);
     for (k = 0; k < n; k++) {                       /* (y1cc.c counts v from lo to hi: hi = 65535 would not end here) */
         v = lo + k;
         lab = miss;
         for (i = 0; i < ncs; i++) if (cs_val[i] == v) lab = cs_lab[i];
-        db[0] = 0; bcat(db, "        DW "); blab(db, lab); data_line(db);
+        Lto(db); Ls("        DW "); blab(lab); data_line(db);
     }
 }
 void r_macro(void) {
     int m; int a; int b; int c; int d; int i;
     m = io_getc(inh);
     if (m == M_ADDK) add_const(ri(inh));
-    else if (m == M_ADDA) { tbuf[0] = 0; r_addr(tbuf); add_const_text(tbuf); }
+    else if (m == M_ADDA) { Lto(tbuf); r_addr(); add_const_text(tbuf); }
     else if (m == M_SHL1) shl1();
     else if (m == M_SCALE) scale_r3(ri(inh));
     else if (m == M_DEREF) deref_r3(io_getc(inh));
@@ -554,7 +578,7 @@ void stream(char *ext) {                            /* one reading of W.dat or W
             if (a >= SYM7) { if (a - SYM7 >= LKIND_MAX) fail("y1cc: too many labels in one function (LKIND_MAX)"); map7[a - SYM7] = n; }
             else { if (a >= LKIND_MAX) fail("y1cc: too many labels in one function (LKIND_MAX)"); map5[a] = n; }
         } else if (c == R_FLABEL) { a = ri(inh); if (!sec) { lb[0] = 0; bcat(lb, flab(a)); bchr(lb, ':'); code_line(lb); } }
-        else if (c == R_TEXT) { a = io_getc(inh); rs(inh, lb, LINE_MAX); sec_line(a, lb); }
+        else if (c == R_TEXT) { a = io_getc(inh); rs(inh, lb, LINE_MAX); sec_line(a, lb); lb[0] = 0; }
         else if (c == R_DSVAR) {
             a = ri(inh); b = ri(inh);
             if (zp(a) == zsec) { db[0] = 0; bcat(db, vlab(a)); bcat(db, ": DS "); bnum(db, b); bss_line(db); }
@@ -607,6 +631,7 @@ void emit_runtime(void) {
         else if (on) sec_line(0, lb);
     }
     io_close(h);
+    lb[0] = 0;
 }
 void rs_line(int h, char *buf) {                    /* a line without its newline; rs_eof at the end of the file */
     int n; int c;

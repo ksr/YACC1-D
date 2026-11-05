@@ -794,6 +794,9 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   45.0 G clocks, 12 h 30 m at 1 MHz, 27 clocks an instruction; cc9 29%, cc9 + asm 36%, the disk about 12%, `LDZ`/`STZ`/
   `LDR`/`STR` 34%. The next step is to choose what to change: the microcode's common records, cc9's text path, the
   work files, the CF loops.
+  Done the same day: counted I/O and cc9's line building, 12 h 30 m -> 10 h 16 m with the same output. What the same
+  profile shows next: the ROM's `cfrdl` 7.4%, `io_wputs` 2.7%, `pnum` 2.3% (an inline add instead of `rt_sub` does not pay:
+  it needs a second table load per digit), `pp_push` 2.0%, `lcand` 1.5% (the label text is built again at every use).
 - **2026-11-05: the system rebuilds itself onto a new disk, on the emulator** (`os/README.md` "A new disk"): `sysgen`
   installs a kernel in the boot sectors, `mkdisk` writes a whole disk on drive 1 (emulators: `-C image`, bit 4 of the
   head register), `make clean` empties `/src` of a build's output, `/lib/y1os` holds the kernel, `y1os_str.inc` and a

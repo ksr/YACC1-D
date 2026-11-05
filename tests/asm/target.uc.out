@@ -46,7 +46,7 @@ BOOT FROM CF
 quirks: 210 bytes, 11 labels, load 3000 exec 3000
 /s> asm cc4.asm
 
-cc4: 5618 bytes, 446 labels, load 5000 exec 5000
+cc4: 5695 bytes, 444 labels, load 5000 exec 5000
 /s> asm err.asm
 
 asm: 5: undefined label: NOTHERE
@@ -62,8 +62,8 @@ BOOT FROM CF
 
    2327  cat  @5000
   28704  cat.asm  @B000
-   5618  cc4  @5000
-  66675  cc4.asm  @B000
+   5695  cc4  @5000
+  67192  cc4.asm  @B000
      67  echox  @5000
    1112  echox.asm  @B000
     202  err.asm  @B000
