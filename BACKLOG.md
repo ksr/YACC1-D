@@ -802,6 +802,8 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   START, then `python3 tests/bench/run.py --port /dev/cu.usbserial-AB0MVHSQ`. The way back is `make keephold` in the
   generator folder and `--all --hex build/kh/test.hex`. The disk's `/bin/kermit` needs the matching PPS: 7398 for this
   image (the tree), 6528 for the old one.
+  Speed work waits for this bench run (2026-11-06). The data error of 2026-11-04 comes first where possible, so that a
+  failure has one cause. After it: the compact format between cc9 and asm, the largest item left (34% of the time).
 - **2026-11-05: the system rebuilds itself onto a new disk, on the emulator** (`os/README.md` "A new disk"): `sysgen`
   installs a kernel in the boot sectors, `mkdisk` writes a whole disk on drive 1 (emulators: `-C image`, bit 4 of the
   head register), `make clean` empties `/src` of a build's output, `/lib/y1os` holds the kernel, `y1os_str.inc` and a
