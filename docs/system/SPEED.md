@@ -61,12 +61,14 @@ The biggest functions are small and shared: the ROM's sector read loop `cfrdl` 6
 ## What has been done
 
 Each line is measured on `make grep` (33 m 06 s at the baseline). The whole of `/src/os/commands` went from 12 h 30 m
-to **10 h 16 m** (37.0 G clocks, 25.9 clocks an instruction, -17.9%). The compiled output has not changed.
+to 10 h 16 m with the software alone, and to **8 h 19 m** (30.0 G clocks, 21.0 clocks an instruction, -33.5%) with the
+microcode, which is **not loaded** on the machine yet. The compiled output has not changed.
 
 | Date | Change | `make grep` |
 |---|---|---|
 | 2026-11-05 | Counted I/O: `io_getc`/`io_wput` test a one-byte count instead of comparing a handle and a pointer; `ri`/`wi` move a word whole with `peekw`/`pokew`; `rb`/`wb` are gone (`software/compiler/c/target_io.c`) | 29 m 24 s, -11.2% |
 | 2026-11-05 | cc9's lines: everything appends at one end pointer (`Lto`, `Ls`, `Lc`, `Ln`) instead of finding the end again; one byte tells an instruction from a label; `mn_arg` starts at column 8; a page variable is written in place, not moved. cc9 is 421 bytes smaller | 26 m 56 s, -18.6% |
+| 2026-11-06 | Microcode: hold and set-up steps removed, every record outside I/O and interrupts shorter (`docs/system/MICROCODE.md` 5.8; not loaded) | 21 m 48 s, -34.1% |
 
 The tables below are the baseline, before these changes.
 

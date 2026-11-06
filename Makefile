@@ -57,6 +57,7 @@ check:
 	python3 tests/ucemu/undefined.py
 	python3 tests/ucemu/prologue.py
 	python3 tests/ucemu/idle.py
+	python3 tests/ucemu/hold.py
 	python3 tests/y1dbg/run.py
 	python3 tests/os/run.py
 	python3 tests/asm/run.py --target
@@ -88,6 +89,7 @@ cc-test:
 	python3 tests/ucemu/undefined.py
 	python3 tests/ucemu/prologue.py
 	python3 tests/ucemu/idle.py
+	python3 tests/ucemu/hold.py
 os-test:
 	python3 tests/os/run.py
 asm-test:

@@ -57,12 +57,12 @@ def why_not(p, i, n):
     return None
 
 
-def reference():
+def reference(flag="-DKEEPIDLE"):
     tmp = tempfile.mkdtemp()
     for f in glob.glob(os.path.join(GEN, "*.c")) + glob.glob(os.path.join(GEN, "*.h")): shutil.copy(f, tmp)
     exe = os.path.join(tmp, "ucodegen")
     # the sources include ../yaccsignal*.h and ../../opcodes.h: build in place from GEN's own paths
-    r = subprocess.run(["cc", "-O2", "-w", "-DKEEPIDLE", "-I" + GEN, "-o", exe] + sorted(glob.glob(os.path.join(GEN, "*.c"))),
+    r = subprocess.run(["cc", "-O2", "-w", flag, "-I" + GEN, "-o", exe] + sorted(glob.glob(os.path.join(GEN, "*.c"))),
                        capture_output=True, text=True, cwd=GEN)
     if r.returncode: sys.exit("idle.py: building the -DKEEPIDLE generator failed:\n" + r.stderr)
     subprocess.run([exe], cwd=tmp, capture_output=True, check=True)
@@ -70,7 +70,7 @@ def reference():
 
 
 def main():
-    new = P.load(ARGV[1] if len(ARGV) > 1 else os.path.join(GEN, "test.hex"))
+    new = P.load(ARGV[1]) if len(ARGV) > 1 else reference("-DKEEPHOLD")     # (the hold-step pass, tests/ucemu/hold.py, runs after this one)
     ref = reference(); fails = []; removed = 0; saved = collections.Counter()
     for op in range(256):
         a, b = ref[op][:P.length(ref[op])], new[op][:P.length(new[op])]

@@ -384,7 +384,7 @@ one-byte NOP) or with `SOFT-HALT`; the halt was chosen so a stray fetch is seen,
 ### 5.5 Record lengths
 
 Steps per record with the microcode of 2026-09-29 (the three-step fetch prologue, section 5.6, and the idle-step pass,
-section 5.7), with the count before those changes in brackets (families as their R0 member; `docs/isa/README.md`
+section 5.7; the lengths since the hold-step pass of 2026-11-06 are in section 5.8), with the count before those changes in brackets (families as their R0 member; `docs/isa/README.md`
 has the diagrams; the undefined opcodes are HALT's record, section 5.4):
 
 | Steps | Opcodes (steps before 2026-09-29: six-step prologue, idle steps) |
@@ -511,9 +511,64 @@ record minus idle steps, that every removal satisfies the rules, that the prolog
 left would pass them. `make check` on the emulators (the native session: 27.4 -> 26.1 clocks an instruction); `os/kermit_io.asm` recalibrated (PPS 6528: 1,000,176 clocks a
 second, 217 clocks a received character). `make prologue6` still builds `b98aec2`'s image.
 
-**Not done**: hold steps that are not idle - e.g. LDTI's step after its TMP latch, which keeps `-MEM-RD` a second
-step although the latch took its data at the leading edge of the step before. Those need a per-signal decision
-(hold time of each latch) rather than a pattern rule.
+Hold steps that are not idle - e.g. LDTI's step after its TMP latch, which keeps `-MEM-RD` a second step although the
+latch took its data at the leading edge of the step before - are section 5.8.
+
+### 5.8 Hold and set-up steps (2026-11-06)
+
+**Not loaded.** The tree's `test.hex` has this pass; the sequencer card has the image before it (section 9).
+
+`removeHoldSteps()` in `main.c` runs after `removeIdleSteps()`. The generator writes set-up, strobe, hold, release, each
+in its own step, and the idle pass leaves any step that asserts something. For a step S between P and N, outside the
+prologue, this pass removes S by one of five rules:
+
+| Rule | Steps | S | Why it can go |
+|---|---|---|---|
+| T | 167 | the last step before the reset step | the reset step is S plus the reset bit, so it already holds all of S |
+| Z | 21 | `-MEM-RD` alone | a read no latch takes: N has no latch or strobe |
+| E | 293 | a partial set-up: all S asserts is in N | N is itself a set-up step and does S's work a step earlier |
+| D | 113 | a release: all S asserts is in P | P's other signals end on the edge where N begins |
+| B | 80 | a selection step before a count | P reads no register, so P takes N's REG-RD-ID |
+
+What every rule keeps:
+
+- **I/O, interrupts, OUT and HALT**: a record with any of these is not touched, so INP, OUTA, OUTI, INT, IRET and the
+  rest keep their lengths and the CF and UART timing is unchanged.
+- **A step with a strobe, a count or `BR-TEST`** is never removed, and a step next to `BR-TEST` stays (T apart).
+- **The hold after a trailing-edge strobe**: P ending REG-LD-LO/HI or `-MEM-WR` keeps the next step, with its source and
+  address. The exception is T, where the reset step holds them for its one clock.
+- **The set-up before a strobe**: N with a latch or strobe is not merged into, and E keeps two steps of read in front of
+  a leading-edge latch (M-2).
+- **The count-edge rules** of section 5.7, applied to P and N as they will be adjacent.
+
+The rules lean hardest on the reset step: where T applies after a trailing-edge strobe, the hold is that step's one
+clock (1 us at 1 MHz, 167 ns at 6 MHz) where it was three clocks. The same edge also ends one driver and starts the next
+in more places than before (review A3).
+
+**Result**: 674 steps removed. A record of N steps is 2N - 1 clocks.
+
+| Opcode | Clocks before | Clocks now |
+|---|---|---|
+| MVAT, MVRLA, MVRHA | 13, 15, 15 | 11, 13, 13 |
+| LDTI | 17 | 13 |
+| RET | 33 | 27 |
+| BR and the conditional branches, LDA | 35 | 29 |
+| LDZ, LDR | 51 | 37 |
+| JSR | 55 | 49 |
+| STZ | 55 | 43 |
+| STR | 57 | 43 |
+| ADDIW R3 | 85 | 57 |
+
+`make keephold` builds the image without the pass, byte-identical to `e48d869`'s, for going back:
+`python3 tools/ucode_send.py --all --hex firmware/microcode/ucode-generator2/build/kh/test.hex`. `os/kermit_io.asm`'s
+PPS is 7398 for this image and 6528 for that one; with the wrong one Kermit's timeouts are about 13% off, nothing worse.
+
+**Checked** on the emulators only: `tests/ucemu/hold.py` builds the generator with `-DKEEPHOLD` and judges every removed
+step and every pair of steps the pass made adjacent with its own copy of the rules (0 problems; a deliberately broken
+pass that drops the hold after a strobe gives 279); `tests/ucemu/idle.py` and `prologue.py`; `make check`, one run, on
+this image; `make touch` under Y1/OS on the microcode emulator, 17 million instructions, 0 bus fights; `y1ucemu`'s
+clocks against `software/opclocks.h` for all 127 opcodes used. The emulator models the leading and trailing edges and
+the fights. It does not model analogue margins, which is what a bench run on the machine adds.
 
 ## 6. Reading the timing diagrams (`docs/isa/`)
 

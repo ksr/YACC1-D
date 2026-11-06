@@ -43,11 +43,12 @@
 ; routine is not used here because it turns CR into LF and costs a JSR per character.
 ;
 ; Time: there is no timer, so a timeout is a count of polls. One pass of the wait loop (OUTI, INP, ANDI, BRNZ, DECR,
-; MVRLA, BRNZ) is 19+17+19+35+13+15+35 = 153 clocks (a record of N microcode steps is 2N - 1 clocks), every 256th
-; pass 50 more: 153.20 on average, so PPS = 6528 passes are one second at 1 MHz (the microcode emulator measures
-; 1,000,176 clocks: tests/kermit/run.py --calib). Before the 2026-09-29 microcode changes: 191.23, PPS 5229. At another clock every timeout scales with it. The emulators poll
-; much faster than 1 MHz for the first 20,000 empty polls (~3.8 s of the machine's time) after any input or output,
-; then each poll waits up to 1 ms there (~6.5 times the machine's 153 us): a 2 s timeout passes at once, a 5 s one
+; MVRLA, BRNZ) is 19+17+15+29+13+13+29 = 135 clocks (a record of N microcode steps is 2N - 1 clocks), every 256th
+; pass a little more: 135.2 on average, so PPS = 7398 passes are one second at 1 MHz (the microcode emulator measures
+; it: tests/kermit/run.py --calib). With the microcode before the 2026-11-06 hold-step pass: 153.20, PPS 6528 (the
+; image of `make keephold` needs that value); before the 2026-09-29 microcode changes: 191.23, PPS 5229. At another clock every timeout scales with it. The emulators poll
+; much faster than 1 MHz for the first 20,000 empty polls (~2.7 s of the machine's time) after any input or output,
+; then each poll waits up to 1 ms there (~7.4 times the machine's 135 us): a 2 s timeout passes at once, a 5 s one
 ; takes about 6 s.
 ;
 ; Registers (krx): R3 the result, R4 seconds, R5 the poll budget, R6 the count, R7 the buffer; ACC and TMP. Every
@@ -58,7 +59,7 @@
 
 U_RBR:  EQU 40H                 ; UARTCS | 0 << 3: RBR (read) / THR (write)
 U_LSR:  EQU 68H                 ; UARTCS | 5 << 3: line status
-PPS:    EQU 6528                ; wait-loop passes a second at 1 MHz (above)
+PPS:    EQU 7398                ; wait-loop passes a second at 1 MHz (above)
 GAP:    EQU 13056               ; the budget for the rest of a packet once its SOH is in: ~2 s of waiting
 
         ORG 0000H               ; (os/mkkio.py assembles it here and at 1000H)

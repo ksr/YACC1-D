@@ -39,6 +39,8 @@
   monitor's input echo). `make os-test`. `NOXISA=1 python3 tests/os/run.py` runs the same sessions with every
   `/bin` program built by y1cc `--no-xisa` (`make -C os NOXISA=1`; `--xisa` is the default since 2026-10-04); the
   program sizes `ls`/`load` print are masked.
+- `ucemu/hold.py` — the hold-step pass of the microcode generator removed only what the hardware does not need
+  (2026-11-06, `docs/system/MICROCODE.md` 5.8), judged with its own copy of the rules against the `-DKEEPHOLD` image.
 - `native/` — the toolchain under Y1/OS: `run.py` (native compile), `selfhost.py`, `srcmake.py`, `mkdisk.py` (the system
   rebuilt onto a new disk), `profile.py` (where one program's instructions go), `clocks.py` (2026-11-05: the fast
   emulator's clocks against the microcode, `docs/system/SPEED.md`), and `errors.py` (2026-11-05: `/bin/cc`'s error

@@ -797,6 +797,11 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   Done the same day: counted I/O and cc9's line building, 12 h 30 m -> 10 h 16 m with the same output. What the same
   profile shows next: the ROM's `cfrdl` 7.4%, `io_wputs` 2.7%, `pnum` 2.3% (an inline add instead of `rt_sub` does not pay:
   it needs a second table load per digit), `pp_push` 2.0%, `lcand` 1.5% (the label text is built again at every use).
+- **2026-11-06: the hold-step microcode is not loaded** (`docs/system/MICROCODE.md` 5.8): `make` in `/src/os/commands`
+  8 h 19 m on the emulators, 0 bus fights, `make check` passes. To do at the machine: `python3 tools/ucode_send.py --all`,
+  START, then `python3 tests/bench/run.py --port /dev/cu.usbserial-AB0MVHSQ`. The way back is `make keephold` in the
+  generator folder and `--all --hex build/kh/test.hex`. The disk's `/bin/kermit` needs the matching PPS: 7398 for this
+  image (the tree), 6528 for the old one.
 - **2026-11-05: the system rebuilds itself onto a new disk, on the emulator** (`os/README.md` "A new disk"): `sysgen`
   installs a kernel in the boot sectors, `mkdisk` writes a whole disk on drive 1 (emulators: `-C image`, bit 4 of the
   head register), `make clean` empties `/src` of a build's output, `/lib/y1os` holds the kernel, `y1os_str.inc` and a

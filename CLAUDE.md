@@ -95,9 +95,9 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
   unused; **P8/P9 = CompactFlash** (register select / data); PA-PF free. Console: 16550 UART, 38400 8N1.
 - Serial ports on the Mac (FTDI serial numbers, the same on both Macs): console `/dev/cu.usbserial-AB0MVHSQ`,
   sequencer card (microcode loader) `/dev/cu.usbserial-AL00FSLF` (its own adapter since 2026-10-10), bus tester
-  `/dev/cu.usbserial-AB6WZCQX` (the sequencer's cable before; `tools/ucode_send.py` still falls back to it). Clock 1 MHz; ~26 clocks per
-  instruction on the native toolchain's workload with the tree's microcode (2026-09-29: three-step fetch prologue and
-  idle steps; 32.4 before; the machine's EEPROM holds it since 2026-10-04).
+  `/dev/cu.usbserial-AB6WZCQX` (the sequencer's cable before; `tools/ucode_send.py` still falls back to it). Clock 1 MHz; ~21 clocks per
+  instruction on the native toolchain's workload with the tree's microcode (2026-11-06, the hold-step pass; not loaded:
+  the machine's EEPROM holds the image before it, ~26 clocks, since 2026-10-04).
 
 ## Where things are
 

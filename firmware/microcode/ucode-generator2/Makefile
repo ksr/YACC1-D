@@ -7,6 +7,8 @@
 #   make prologue6  the microcode as it was before 2026-09-29's fetch-prologue and M-1 changes (six-step prologue; with
 #                 LDZ/STZ/ADDIW/SHL16 and the H-4 fix; = the image committed at b98aec2), in build/p6/test.hex
 #                 (for loading in two stages or going back: tools/ucode_send.py --all --hex <that file>)
+#   make keephold  the microcode without the hold-step pass (2026-11-06; = the image of e48d869, the one before it), in
+#                 build/kh/test.hex (for going back: tools/ucode_send.py --all --hex <that file>)
 #   make clean
 CC     ?= cc
 CFLAGS ?= -O2 -Wall -fno-common
@@ -24,6 +26,9 @@ regen: ucodegen
 prologue6: $(SRC) $(wildcard *.h) ../yaccsignaldefine.h ../yaccsignaldata2.h ../../../software/opcodes.h
 	@mkdir -p build/p6 && $(CC) $(CFLAGS) -DPROLOGUE6 -o build/p6/ucodegen $(SRC) && cd build/p6 && ./ucodegen > gen.log && \
 	 echo "six-step prologue image: $(CURDIR)/build/p6/test.hex"
+keephold: $(SRC) $(wildcard *.h) ../yaccsignaldefine.h ../yaccsignaldata2.h ../../../software/opcodes.h
+	@mkdir -p build/kh && $(CC) $(CFLAGS) -DKEEPHOLD -o build/kh/ucodegen $(SRC) && cd build/kh && ./ucodegen > gen.log && \
+	 echo "image before the hold-step pass: $(CURDIR)/build/kh/test.hex"
 clean:
 	rm -rf ucodegen build
 .PHONY: all check regen clean

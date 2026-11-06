@@ -40,6 +40,7 @@ int releasesWritten = 0;
 int m1Masked = 0;                           /* YACC1-D 2026-09-29: count steps written without -MEM-RD (m1Mask) */
 int lineHas(char *signal);
 void removeIdleSteps();
+void removeHoldSteps();
 
 
 //#define DEBUG 1
@@ -481,6 +482,131 @@ void removeIdleSteps() {
     printf("idle steps removed: %d\n", idleRemoved);
 }
 
+/* YACC1-D 2026-11-06: hold and set-up steps that are not idle (docs/system/MICROCODE.md 5.7's "not done", review L-3).
+ * The generator writes set-up, strobe, hold, release, each in its own step, and removeIdleSteps() leaves a step that
+ * asserts anything. For a step S between P and N (and NN after N), never in the prologue, S goes when:
+ *   T  the tail: N is the reset step and is S plus the reset bit: the reset step already holds all of S;
+ *   Z  S only reads memory and nothing takes that read: N has no latch or strobe;
+ *   E  a partial set-up: all S asserts is in N, and N is itself a set-up step, so N does S's work a step earlier;
+ *   D  a release: all S asserts is in P, so P's other signals end on the edge where N begins;
+ *   B  a selection step before a count: as D, but N counts another register's REG-RD-ID; P reads no register, so P
+ *      takes N's REG-RD-ID (P's id is unused) and S goes.
+ * What every rule keeps:
+ *   - S with a strobe, a count or BR-TEST, and every record that has I/O, interrupt, OUT or halt actions: untouched;
+ *   - the hold after a trailing-edge strobe (P ends REG-LD-LO/HI or -MEM-WR): S stays, except T, where the reset
+ *     step goes on holding S's signals for its one clock;
+ *   - the step before any strobe: N with a latch or strobe is not merged (T apart, whose N is the reset step), and E
+ *     keeps two steps in front of a leading-edge latch (NN has one: M-2);
+ *   - the count-edge rules of removeIdleSteps(), for P and N as they will be adjacent;
+ *   - E: an S that reads memory has N's address already;
+ *   - BR-TEST next to S, because the condition is sampled by level: only T may follow it (the latch then clears).
+ * Every field of S must be P's or N's. -DKEEPHOLD leaves the records as removeIdleSteps() left them (the image of
+ * e48d869); tests/ucemu/hold.py checks the result against that image with its own copy of these rules. */
+static void wSetField(unsigned char *w, char *prefix, int v) {
+    char name[32];
+    for (int i = 0; i < 4; i++) {
+        snprintf(name, sizeof name, "%s%d", prefix, i);
+        int n = findSignal(name);
+        if (n < 0) continue;
+        int byte = (signals[n].chip - 1) * PORTS_PER_CHIP + signals[n].port;
+        if (v & (1 << i)) w[byte] |= 1 << signals[n].bit; else w[byte] &= ~(1 << signals[n].bit);
+    }
+}
+
+static int wIsField(char *n) {
+    return !strcmp(n, "-VMA") || !strcmp(n, "OUT-OFF") || !strcmp(n, "OUT-ON") || !strcmp(n, "SPARE3") ||
+           !strncmp(n, "ADDR-REG-ID", 11) || !strncmp(n, "REG-RD-ID", 9) || !strncmp(n, "REG-LD-ID", 9) ||
+           !strncmp(n, "IOADDR", 6) || (!strncmp(n, "ALU", 3) && strlen(n) == 4);
+}
+
+static int wSubset(const unsigned char *a, const unsigned char *b) {    /* all a asserts, b asserts */
+    for (int i = 0; strlen(signals[i].name) != 0; i++)
+        if (!wIsField(signals[i].name) && wHas(a, signals[i].name) && !wHas(b, signals[i].name))
+            return 0;
+    return 1;
+}
+
+static int fieldBetween(const unsigned char *p, const unsigned char *s, const unsigned char *n, char *f) {
+    return wField(s, f) == wField(p, f) || wField(s, f) == wField(n, f);
+}
+
+static char *STAYS[] = {"-IO-RD", "-IO-WR", "-IO-ADDR-LD", "INT-EN", "INT-START", "-INTA", "INT-LD-LO", "INT-LD-HI",
+                        "-INT-JMP", "SOFT-HALT", "OUT-ON", "OUT-OFF", 0};
+
+static int countsOk(const unsigned char *p, const unsigned char *n) {
+    int rdP = wField(p, "REG-RD-ID"), rdN = wField(n, "REG-RD-ID");
+    int twoP = wHas(p, "-2-BYTE-OPERAND-SEL"), twoN = wHas(n, "-2-BYTE-OPERAND-SEL");
+    if (wAny(p, COUNTS) && (rdN != rdP || twoN)) return 0;
+    if (wAny(n, COUNTS) && (rdN != rdP || twoN != twoP || wAny(p, COUNTS))) return 0;
+    if (twoN && !twoP) return 0;
+    return 1;
+}
+
+/* 0 = S stays, else the rule's letter */
+static int holdRule(const unsigned char *pp, const unsigned char *p, const unsigned char *s, const unsigned char *n,
+                    const unsigned char *nn, int pInBody) {
+    static char *BRT[] = {"BR-TEST", 0};
+    unsigned char t[BYTES_PER_LINE];
+    int r = findSignal("UCODE-COUNT-RESET");
+    if (wAny(s, LEADING) || wAny(s, TRAILING) || wAny(s, COUNTS) || wAny(s, BRT)) return 0;
+    if (!fieldBetween(p, s, n, "ADDR-REG-ID") || !fieldBetween(p, s, n, "REG-LD-ID") || !fieldBetween(p, s, n, "ALU"))
+        return 0;
+    if (wHas(n, "UCODE-COUNT-RESET")) {
+        memcpy(t, n, sizeof t);
+        t[(signals[r].chip - 1) * PORTS_PER_CHIP + signals[r].port] ^= 1 << signals[r].bit;
+        if (memcmp(t, s, sizeof t)) return 0;           /* the reset step is S and the reset bit, nothing else */
+        return countsOk(p, n) ? 'T' : 0;
+    }
+    if (wAny(p, TRAILING) || wAny(p, BRT) || wAny(n, BRT) || wAny(n, LEADING) || wAny(n, TRAILING)) return 0;
+    if (wAny(n, COUNTS) && wSubset(s, p) && pInBody && !wHas(p, "-REG-FUNC-RD") && !wAny(p, COUNTS) &&
+        !wHas(p, "-2-BYTE-OPERAND-SEL") && !wHas(n, "-2-BYTE-OPERAND-SEL") && !wAny(pp, COUNTS))
+        return 'B';
+    if (!countsOk(p, n) || !fieldBetween(p, s, n, "REG-RD-ID")) return 0;
+    if (wHas(s, "-MEM-RD") && !wHas(n, "-MEM-RD") && !wHas(p, "-MEM-RD")) {
+        unsigned char m[BYTES_PER_LINE];                /* Z: S with -MEM-RD alone is a read nobody takes */
+        memcpy(m, s, sizeof m);
+        int k = findSignal("-MEM-RD");
+        m[(signals[k].chip - 1) * PORTS_PER_CHIP + signals[k].port] ^= 1 << signals[k].bit;
+        if (wIdle(m)) return 'Z';
+    }
+    if (wSubset(s, n) && !wAny(n, COUNTS) && !(nn && (wAny(nn, LEADING) || wAny(nn, BRT))) &&
+        !(wHas(s, "-MEM-RD") && wField(s, "ADDR-REG-ID") != wField(n, "ADDR-REG-ID")))
+        return 'E';
+    if (wSubset(s, p))
+        return 'D';
+    return 0;
+}
+
+int holdRemoved[128];
+
+void removeHoldSteps() {
+    for (int op = 0; op < INSTRUCTIONS_TO_OUTPUT; op++) {
+        unsigned char *rec = cntlMemory + op * INSTRUCTION_SIZE;
+        int len = eolInfo[op];
+        int skip = 0;
+        for (int i = 0; i < len; i++)
+            if (wAny(rec + i * BYTES_PER_LINE, STAYS))
+                skip = 1;
+        if (skip) continue;
+        for (int i = 3; i < len - 1; ) {
+            unsigned char *p = rec + (i - 1) * BYTES_PER_LINE, *s = rec + i * BYTES_PER_LINE, *n = s + BYTES_PER_LINE;
+            int rule = holdRule(p - BYTES_PER_LINE, p, s, n, i + 2 < len ? n + BYTES_PER_LINE : 0, i > 3);
+            if (rule) {
+                if (rule == 'B') wSetField(p, "REG-RD-ID", wField(n, "REG-RD-ID"));
+                memmove(s, n, (len - i - 1) * BYTES_PER_LINE);
+                len--;
+                memset(rec + len * BYTES_PER_LINE, 0, BYTES_PER_LINE);
+                holdRemoved[rule]++;
+                if (i > 3) i--;
+            } else
+                i++;
+        }
+        eolInfo[op] = len;
+    }
+    printf("hold steps removed: T %d, Z %d, E %d, D %d, B %d\n", holdRemoved['T'], holdRemoved['Z'], holdRemoved['E'],
+           holdRemoved['D'], holdRemoved['B']);
+}
+
 const char *g_argv0 = "";   /* YACC1-D 2026-09-20: for exe_relative() in controlLine.c */
 int main(int argc, char** argv) {
     g_argv0 = argv[0];
@@ -520,6 +646,9 @@ int main(int argc, char** argv) {
 
 #if !defined(PROLOGUE6) && !defined(KEEPIDLE)
     removeIdleSteps();      /* YACC1-D 2026-09-29: the idle steps that can go (below) */
+#ifndef KEEPHOLD
+    removeHoldSteps();      /* YACC1-D 2026-11-06: the hold and set-up steps that can go (below) */
+#endif
 #endif
 
 
