@@ -697,7 +697,8 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Port of the P8X work (OS, monitor, BASIC, compilers) onto YACC1 — the reason this repo exists; not started.
 
 ## Verification still to do
-- **OPEN 2026-11-09: no picture from the video card V1.0 (the monitor says "no signal").** The card went back in with
+- **RESOLVED 2026-11-09 (the same evening): the video card V1.0 gives a picture again** once IC28 held the right
+  counter (a 74x163, see below). The original item: **no picture from the video card V1.0 (the monitor says "no signal").** The card went back in with
   the memory card v2.0 in the machine. Its bus side passes from the CPU (monitor `--go 3000`, `tests/video/asm`):
   `vram` 4 passes 0 errors with the 6845 stopped and running, `crtcreg` all OK (R14/R15, the 256-access repeat, R12/R13
   read 00 00), `testcard` runs and its text is in the video RAM at $D000; no write-through ($9011 written, $D011
