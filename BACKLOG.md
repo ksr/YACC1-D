@@ -492,6 +492,20 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   references only: stuff it from `hardware/cards/memory/kicad/v2.0/memory-v2.0-bom.csv`.
 
 ## Firmware — written, not burned / loaded
+- **Proposed 2026-11-09: test the microcode without the `-VMA`-in-every-step hack, now that R15 is in the machine.**
+  The generator asserts `-VMA` in every step (`firmware/microcode/ucode-generator2/main.c`, `initCurrentLine()` and
+  `startInstruction()`: "Hack prevent ROM mapping from triggering"; a migrated file, so any change gets a dated note in
+  `tools/patched_files.txt`). The hack masked the FORCE-ROM race (review M1), and it also takes the -VMA qualification
+  off every chip select (memory.md 4.1). The memory card v2.0's R15 fixes the race in hardware (checked 2026-11-09), so
+  `-VMA` could go back to only the steps that address memory. To do:
+  1. Generator: drop the two hack lines (or put them behind a switch, so the old image stays one build away); every
+     step that reads or writes memory, or fetches, must still set `-VMA` itself. Check with `tools/ucode_review.py`,
+     both emulators (`make check`; `y1ucemu`'s floating-address model should read $7FFF with R15, review M2-14), and the
+     bus tester's steps on a floating bus.
+  2. Ken loads it at the machine (`tools/ucode_send.py --all`), then: reset with the clock running a few times, the
+     banner, `tests/bench/run.py` 15/15, `O` and a few Y1/OS commands (the CF and the video card both on the bus).
+  3. Keep the image that is in the machine to go back to (the cache), and load one change at a time: the hold-step
+     image (`ee0c5d3`, not loaded yet) first, or this one first, not both at once, so a fault points at one change.
 - **ROM 2026-10-07 (burned 2026-10-07): the video unit + BASIC's input fix** — `firmware/rom/shipped/rom.bin` (MD5 122f1a93..., the 2026-10-08 layout; BASIC: backspace/DEL, lower case, SYNTAX ERROR instead of an endless loop, `firmware/basic/README.md`; the monitor as 2026-09-25 with the new banner date): the $D000 probe at
   reset, the screen driver, CHAROUT mirroring (`VIDMIR` $0FF1, off at reset), the `V` command, the video entry at $FFBC
   (`docs/programming/MONITOR.md` section 11). Burned 2026-10-07 (`firmware/rom/README.md`; BASIC's fix checked on the
