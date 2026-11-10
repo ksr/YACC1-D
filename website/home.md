@@ -42,8 +42,8 @@ coding and documentation.
 - **Compiled C** — programs built by **y1cc**, a C compiler for YACC1, run on the machine and pass the same tests as on
   the emulator. ([C compiler](docs/programming/C-COMPILER.md))
 - **Y1/OS** — a disk operating system with a shell, pipes and dozens of commands, among them an editor, an assembler
-  and a C compiler that run on YACC1 itself. It runs on the emulators today and moves to the machine with the
-  CompactFlash interface. ([Y1/OS](docs/programming/OS.md))
+  and a C compiler that run on YACC1 itself. It runs on the emulators, and on the machine it boots from the
+  CompactFlash disk on the memory card v2.0. ([Y1/OS](docs/programming/OS.md))
 - **Two emulators** on the Mac: one runs YACC1 programs instruction by instruction; the other runs the real microcode
   step by step through models of every card. ([Emulators](docs/programming/EMULATORS.md))
 
@@ -67,13 +67,13 @@ coding and documentation.
 
 -   ![Memory card](media/memory-v1.2-top.jpg)
 
-    **[Memory](docs/cards/memory.md)** — RAM, the ROM and the boot logic (V1.2 shown; V1.3 is in the machine,
-    and V2.0 adds a disk).
+    **[Memory](docs/cards/memory.md)** — RAM, the ROM and the boot logic (V1.2 shown; V1.3 was in the machine
+    until 2026-11-09, when V2.0 replaced it).
 
 -   ![Memory card v2.0, KiCad render](docs/cards/images/memory-v2.0-render-angled.png)
 
-    **[Memory v2.0](docs/cards/memory-v2.md)** — the next memory card, with the CompactFlash disk interface on board
-    (KiCad render, populated; ordered 2026-10-09, not yet built).
+    **[Memory v2.0](docs/cards/memory-v2.md)** — the memory card in the machine since 2026-11-09, with the CompactFlash
+    disk interface on board: Y1/OS boots from it (KiCad render, populated).
 
 -   ![I/O card](media/io-v1.1-top.jpg)
 
@@ -119,10 +119,11 @@ Also: the [backplane](docs/cards/backplane.md) and the [CompactFlash interface](
 | know what is in the machine right now | [What is in it today](docs/system/MACHINE.md) |
 | see what is being worked on | [Status and backlog](BACKLOG.md) |
 
-## Status (October 2026)
+## Status (November 2026)
 
-- **Working on the machine:** the monitor, BASIC, and compiled C programs — all 14 bench tests pass.
-- **Ready, waiting to be loaded into the machine:** new microcode that runs programs about 20% faster, and a ROM with a
-  video driver.
-- **Next:** memory card 2.0 with a CompactFlash disk, so Y1/OS can boot on the real machine; bringing up the video
-  card; finding out how fast the machine can be clocked.
+- **Working on the machine:** the monitor, BASIC, and compiled C programs — all 15 bench tests pass (2026-11-09).
+  The memory card v2.0 is in the machine, and Y1/OS boots from its CompactFlash disk. The video card works, with the
+  console mirrored on the screen.
+- **Ready, waiting to be loaded into the machine:** new microcode (the hold-step pass) and a ROM that reads the video
+  card's screen size (`ROM 2026-10-22`).
+- **Next:** finding out how fast the machine can be clocked.

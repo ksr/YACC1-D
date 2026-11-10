@@ -1,7 +1,8 @@
 # Memory card v2.0 — theory of operation
 
 The memory card v1.3 plus the CompactFlash disk interface, on one card. **Finished for fabrication 2026-09-25; ordered
-from JLCPCB 2026-10-09, order 2000765A-Y52; not yet received or built.**
+from JLCPCB 2026-10-09, order 2000765A-Y52; the CF section built 2026-11-03, the memory side 2026-11-09. In the machine
+since 2026-11-09 in place of v1.3: Y1/OS boots from its CF** ([What is in it today](../system/MACHINE.md)).
 
 The memory circuit is v1.3's, unchanged except for JP3 (the ROM write-protect jumper) and R15 (the ADDR15
 pull-down): its theory is the [v1 page](memory.md). The CompactFlash circuit is the CF card v1.0's: its theory is the

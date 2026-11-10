@@ -2,7 +2,7 @@
 
 64K of address space on one card: two 62256 SRAMs, one 28C64 EEPROM, the 4K-block map jumpers, the FORCE-ROM boot
 remap, and the two 16-bit TMP registers that the microcode uses as scratch words. This page describes v1.3, the card
-in the machine; v2.0, the same card plus the CompactFlash interface, is on [its own page](memory-v2.md).
+in the machine until 2026-11-09; v2.0, the card that replaced it, the same card plus the CompactFlash interface, is on [its own page](memory-v2.md).
 
 Written 2026-09-23 from the YACC1-D tree; **revised 2026-09-24 for the built card** (below).
 
