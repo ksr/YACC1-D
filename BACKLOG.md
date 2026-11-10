@@ -8,10 +8,10 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   R15 (470 Ω, ADDR15 to GND) fitted; the v1.3 bodge (IC10 pin 4 to pin 7) is no longer needed. Checked with the bus
   tester: 20 `-VMA` pulses on a floating address bus ($7FFF, against the tester's 10k RN4) leave FORCE-ROM set
   (`docs/system/MACHINE.md`). Still open, optional and separate: drop the `-VMA`-in-every-step hack from the microcode
-  generator (a reload) so the chip selects are qualified by -VMA again; and see whether reset with the 1 MHz clock running
-  now boots (the open item under "Verification still to do" names a floating ADDR15 as a suspect). Next at the machine
-  with the v2.0 card: CPU cards back in, reset, the banner, `tests/bench/run.py` (review stage 2.4); with the CPU out,
-  the full memory test's ROM lines again with `--rom` and the chip's image (the 2026-11-09 run compared the tree's).
+  generator (a reload) so the chip selects are qualified by -VMA again. With the CPU cards back in the same evening:
+  reset with the 1 MHz clock running boots (see "reset with the 1 MHz clock running" below) and `tests/bench/run.py`
+  passes 15 of 15 (`tests/bench/logs/bench-2026-11-09-2236.log`). Still to do with the CPU out: the full memory test's
+  ROM lines again with `--rom` and the chip's image (the 2026-11-09 run compared the tree's).
 - **RESOLVED 2026-10-10 (the POPR microcode fix, end of this item): BASIC programs go wrong at RUN on the machine: a $00 read from the program buffer comes back with bits set
   (2026-10-08, open; found with ROM 2026-10-07 MD5 122f1a93... and microcode stage 2; the machine runs stage 1 and ROM 2026-09-23 since that evening).** Both emulators run every program below
   correctly. On the machine (`tools/y1term.py --send FILE --new --run`):
@@ -701,7 +701,9 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   reproduced on a clean checkout of 53f6493 (2 of 3 runs failed; the instruction-level emulator always passes), so it
   is older than ROM 2026-10-22 - probably timing between the host kermit's wall-clock waits and the slow microcode
   emulator. To look into: `--time` / the host side's timeouts in that session, or a race in /BIN/KERMIT's send start.
-- **OPEN 2026-10-21: reset with the 1 MHz clock running does not boot.** The CPU never reaches the banner: the first
+- **Probably RESOLVED 2026-11-09 by R15 (the ADDR15 pull-down on the memory card v2.0): reset with the 1 MHz clock
+  running boots again** (one reset at the machine with the banner; the floating-ADDR15 suspect below). Watch for a
+  recurrence. The original item: **OPEN 2026-10-21: reset with the 1 MHz clock running does not boot.** The CPU never reaches the banner: the first
   fetch reads RAM ($0000 = EB 81 37 instead of the ROM's A0 F0 03), the boot remap (memory card IC12/A, FORCE-ROM) already
   cleared, and the PC then walks $A7xx-$DFxx with no I/O. Reset with the clock stopped boots every time: SS/WAIT on SS
   (SS-SEL on EXT, nothing on JP4 pin 2 moving), reset, then FREERUN - banner, `VIDEO CARD FOUND`, `>` (twice, once
