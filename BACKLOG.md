@@ -702,10 +702,12 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   `vram` 4 passes 0 errors with the 6845 stopped and running, `crtcreg` all OK (R14/R15, the 256-access repeat, R12/R13
   read 00 00), `testcard` runs and its text is in the video RAM at $D000; no write-through ($9011 written, $D011
   unchanged: the +5V rail wire is good). **IC28 (the 74163 ÷6 character-clock counter) was found missing** and refitted;
-  still no signal after power-on and `testcard`. The card gave a picture on 2026-10-21 (Phase B), so something changed
+  still no signal after power-on and `testcard`. Check the refitted chip's type first: it must be a 74x163 (synchronous clear, ÷6); a
+  74HC160 or any 160/161 clears asynchronously and divides by 5, so the 6845 runs at 2.21 MHz and the lines at ~18.9 kHz,
+  which a monitor rejects ("no signal"), and CHARCLOCK becomes the 6.2 runt (blank characters). The card gave a picture on 2026-10-21 (Phase B), so something changed
   while it was out. Next, at the machine: IC28's orientation; the same monitor, connector (DB9 or RCA) and input as
   2026-10-21; then the scope along the clock path: the 11.0592 MHz oscillator, IC28 pin 2 (CLK) and pins 16/8 (+5 V),
-  CHARCLOCK (1.84 MHz), IC17 pin 21 (the 6845's CLK), IC17 pins 39/40 (HSYNC ~15.7 kHz, VSYNC ~60 Hz, after
+  IC28's QC (CRTCCLOCK, 1.84 MHz: the 6845's CLK is QC, not CHARCLOCK) and IC17 pin 21, IC17 pins 39/40 (HSYNC ~15.7 kHz, VSYNC ~60 Hz, after
   `testcard` has set the registers), then DB9 pins 8/9 or the RCA jack (IC27, the 7416, and R12). The first point
   where the signal is missing is the fault. Load the test card with `python3 tools/monload.py --delay 6 --go 3000
   tests/video/asm/testcard.img`.
