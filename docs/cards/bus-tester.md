@@ -118,7 +118,9 @@ A 128-byte I2C EEPROM at 0x57 (A0..A2 = VCC) with WP on JP2 (1 = GND, 3 = VCC). 
 
 RN1..RN4 (common pin 1 = VCC) pull up all 32 address and data lines. Their value is empty in both files; the v3.1
 notes say "Removing pull-ups of which currently are on Data and Address lines", so they were known to be a load. If
-they are 1k, every bus driver sinks 5 mA per line (review 4.2). **To verify:** measure RN1 pin 1 to pin 2.
+they are 1k, every bus driver sinks 5 mA per line (review 4.2). **RN4 (A11..A18) is 10k** (read 2026-11-09): with the
+memory card's 470 Ω ADDR15 pull-down an idle A15 sits at ~0.2 V, and the undriven address bus reads $7FFF. RN1-RN3 not
+read yet.
 
 ## 4. The serial protocol and the host tools
 
@@ -170,7 +172,7 @@ The tester has no timing of its own; its findings are about *contention*.
 | ID | Severity | Finding | Status 2026-09-23 |
 |---|---|---|---|
 | 4.1 / 1.1 (`hardware/cards/bus-tester/reviews/v1.1-control-io-2026-09-21.md`, `hardware/cards/sequencer-logic/reviews/v2.1-control-io-2026-09-21.md`) | HIGH | nothing on the card can make the expanders passive: from `setup()` every table line is a push-pull output, including -RESET (C30), -BUS-EN (C28), -RUN, OUT and the register-card ID/strobe lines. The sequencer-logic card drives 17 of those lines regardless of -BUS-EN (IC4/IC5/IC18 select buffers, -REG-LD-LO/HI, -RESET, OUT, -BUS-EN itself). Two totem-pole drivers per line; an LS output high into an MCP23017 output low (25 mA absolute maximum per pin) can kill the expander pin. This is why "the tester cannot load RAM with the logic card fitted" | Open. Rule today: **unplug the sequencer-logic card before using the tester**, or use the ROM monitor over the UART. The planned fix is the sequencer v2.2 "CPU off" switch covering all 17 lines plus an open-collector -BUS-EN driver (BACKLOG) |
-| 4.2 | LOW | RN1-RN4 pull up all 32 address/data lines, value unrecorded | Open (section 3.5) |
+| 4.2 | LOW | RN1-RN4 pull up all 32 address/data lines, value unrecorded | Open for RN1-RN3; RN4 10k (section 3.5) |
 | 2.2 | LOW | DTR auto-reset dead-ends (N$9 single node); FTDI-VCC would parallel the FTDI 5 V with the rail | Housekeeping |
 | 5.1 | LOW | no pull-ups on the backplane: when the tester tri-states a bus, the lines float | By convention |
 | checked | — | signal table vs wiring vs V3.2 pinout 52/52; local reset does not reach C30; switch/LED port fight-free; I2C addresses distinct | — |
@@ -192,7 +194,7 @@ traffic (`tests/video/video_ram_test.py`'s ordering).
 | BUS-RESET button | PC2 input, not read by the sketch | — |
 | S-A, S-B | PC0/PC1 inputs | — |
 | S0-S7, IN toggles; L0-L7, OUT, LED1-5, PWR | the local byte, the IN copy, the error/status LEDs, power | — |
-| RN1-RN4 | address/data pull-ups | fitted, value unknown |
+| RN1-RN4 | address/data pull-ups | fitted; RN4 10k (2026-11-09), RN1-RN3 not read |
 | X1 DIN 41612 | any slot; the card was in for the 2026-09-18/21 sessions and is "plugged in for bring-up sessions" (MACHINE.md) | — |
 
 Firmware in the chip: `embedded/bus-tester/bus-driver` **blocks-1 (2026-09-21)**; before the flash it held the 2020

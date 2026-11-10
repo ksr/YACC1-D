@@ -4,13 +4,14 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 `docs/system/MACHINE.md`. Which revisions exist and were fabricated: `hardware/FABRICATED.md`.
 
 ## Hardware — designed, not built
-- **Memory card: the FORCE-ROM race fix (review M1, 2026-09-30) - a 470 Ω pull-down on ADDR15.** Undriven, A15
-  floats high, so IC12 is clocked ~40 ns before the real address arrives. v1.3 in the machine: fit 470 Ω from IC10 pin 4
-  to IC10 pin 7 on the solder side (`docs/cards/memory.md` 4.1 has the why, the value and the check); read the bus
-  tester's RN4 value first (pull-ups on the address lines: 10 kΩ is fine, 1 kΩ is not). v2.0: **done** - R15 (470 Ω,
-  beside the bus connector, pin 1 on the ADDR15 track; `hardware/cards/memory/kicad/v2.0` README). Then,
-  optional and separate: drop the `-VMA`-in-every-step hack from the microcode generator (a reload) so the chip selects
-  are qualified by -VMA again.
+- **DONE 2026-11-09: the FORCE-ROM race fix (review M1) is in the machine** - the memory card v2.0 replaced v1.3, with
+  R15 (470 Ω, ADDR15 to GND) fitted; the v1.3 bodge (IC10 pin 4 to pin 7) is no longer needed. Checked with the bus
+  tester: 20 `-VMA` pulses on a floating address bus ($7FFF, against the tester's 10k RN4) leave FORCE-ROM set
+  (`docs/system/MACHINE.md`). Still open, optional and separate: drop the `-VMA`-in-every-step hack from the microcode
+  generator (a reload) so the chip selects are qualified by -VMA again; and see whether reset with the 1 MHz clock running
+  now boots (the open item under "Verification still to do" names a floating ADDR15 as a suspect). Next at the machine
+  with the v2.0 card: CPU cards back in, reset, the banner, `tests/bench/run.py` (review stage 2.4); with the CPU out,
+  the full memory test's ROM lines again with `--rom` and the chip's image (the 2026-11-09 run compared the tree's).
 - **RESOLVED 2026-10-10 (the POPR microcode fix, end of this item): BASIC programs go wrong at RUN on the machine: a $00 read from the program buffer comes back with bits set
   (2026-10-08, open; found with ROM 2026-10-07 MD5 122f1a93... and microcode stage 2; the machine runs stage 1 and ROM 2026-09-23 since that evening).** Both emulators run every program below
   correctly. On the machine (`tools/y1term.py --send FILE --new --run`):
