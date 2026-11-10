@@ -697,6 +697,18 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Port of the P8X work (OS, monitor, BASIC, compilers) onto YACC1 — the reason this repo exists; not started.
 
 ## Verification still to do
+- **OPEN 2026-11-09: no picture from the video card V1.0 (the monitor says "no signal").** The card went back in with
+  the memory card v2.0 in the machine. Its bus side passes from the CPU (monitor `--go 3000`, `tests/video/asm`):
+  `vram` 4 passes 0 errors with the 6845 stopped and running, `crtcreg` all OK (R14/R15, the 256-access repeat, R12/R13
+  read 00 00), `testcard` runs and its text is in the video RAM at $D000; no write-through ($9011 written, $D011
+  unchanged: the +5V rail wire is good). **IC28 (the 74163 ÷6 character-clock counter) was found missing** and refitted;
+  still no signal after power-on and `testcard`. The card gave a picture on 2026-10-21 (Phase B), so something changed
+  while it was out. Next, at the machine: IC28's orientation; the same monitor, connector (DB9 or RCA) and input as
+  2026-10-21; then the scope along the clock path: the 11.0592 MHz oscillator, IC28 pin 2 (CLK) and pins 16/8 (+5 V),
+  CHARCLOCK (1.84 MHz), IC17 pin 21 (the 6845's CLK), IC17 pins 39/40 (HSYNC ~15.7 kHz, VSYNC ~60 Hz, after
+  `testcard` has set the registers), then DB9 pins 8/9 or the RCA jack (IC27, the 7416, and R12). The first point
+  where the signal is missing is the fault. Load the test card with `python3 tools/monload.py --delay 6 --go 3000
+  tests/video/asm/testcard.img`.
 - **OPEN 2026-11-04: an intermittent data error on the machine during a native compile, probably a single bit.** The
   first `make` in `/src/os/commands` stopped at `cc asm.c` with `y1cc: line 226: expected ';', got 'if'`. The same compile
   from the same image passes on the instruction-level emulator (`asmc.asm`, 118,152 bytes). Line 226's `;` is at offset
