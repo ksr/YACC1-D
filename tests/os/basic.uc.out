@@ -69,6 +69,7 @@ BOOT FROM CF
 in /bin:
   asm  assemble: asm [-h] SRC [OUT]  (-h: Intel hex)   asmc the same, in C
   awk  one-rule awk: fields, /re/ {print $N ...}, NR NF
+  basic BASIC: basic [file], basic -r file runs it  (HELP inside, BYE leaves)
   cat  print files (globs, - = console)   cmp  first differing byte
   cc   compile C: cc prog.c -o prog.asm --org 0x5000 --os  (then asm)
   cp   copy files, -r a tree               del  delete files (globs)

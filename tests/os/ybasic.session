@@ -1,0 +1,30 @@
+basic
+10 rem squares
+20 for i = 1 to 3 : print i; " "; i*i : next i
+30 a$ = "hello" + ", world" : print a$; " "; len(a$); " "; mid$(a$, 8, 5)
+40 gosub 100 : print "back"
+50 if -2 < 3 then print "signed"
+60 end
+100 print 7 / 2, 7 % 2, abs(-5), 0x1F : return
+run
+save "sq.bas"
+new
+list
+load "sq.bas"
+list
+goto 10
+20
+list
+new
+10 open "d.txt" for output : for i = 1 to 3 : print# i * 10 : next i : close
+20 open "d.txt" for input
+30 if eof(1) then 60
+40 input# n : print "read "; n : goto 30
+60 close
+run
+print "x
+bye
+cat sq.bas
+cat d.txt
+dir *.bas
+exit

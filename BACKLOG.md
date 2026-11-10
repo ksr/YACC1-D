@@ -1032,8 +1032,8 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   byte, unknown bytes as DB; its table `os/dis_optab.c` generated from `yacc1.def` by `tools/gen_y1_distab.py`, which
   runs the assembler generator's Translate() backwards and checks every opcode against `software/opcodes.h`;
   `tests/disasm/run.py` round-trips 382 programs/sources/ROM/synthetic files through RC/asm, `tests/os/disasm.session`
-  reassembles its output with /BIN/ASM under Y1/OS - `os/README.md` "disasm"); `vi` done 2026-09-23. Then BASIC as
-  /BIN/BASIC.
+  reassembles its output with /BIN/ASM under Y1/OS - `os/README.md` "disasm"); `vi` done 2026-09-23. (done 2026-11-09: BASIC as
+  /bin/basic, the P8X BASIC ported, `os/README.md` "basic").
   - disasm follow-ups (2026-09-29, none needed for it to work): (1) labels - a second pass that names every branch/JSR
     target inside the range (`L5003:`) and prints `BR L5003`, so `-s` output reads like source and can be edited and
     moved (today it reassembles only at the same address); (2) not yet run on the machine (no CF card yet): nothing in

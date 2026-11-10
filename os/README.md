@@ -363,6 +363,7 @@ names, globs and `-` (the console until Ctrl-D) work wherever a command reads te
 | `asm [-h] SRC [OUT]` | the assembler (2026-09-25, below): RC/asm's dialect to a program file, or Intel hex with `-h` |
 | `asmc [-h] SRC [OUT]` | the same assembler built from its C source, the specification (2026-09-26, below) |
 | `awk [-F c] 'prog' [file...]` | one rule: `/re/ {print $1, $NF, NR, NF, "text"}` |
+| `basic [file]` / `basic -r file` | the BASIC interpreter (2026-11-09, below): integers and strings, programs saved as text, data files; `-r` runs a program and returns to the shell |
 | `cc prog.c [-o prog.asm] [y1cc options]` | the C compiler (2026-09-25): y1cc's nine passes, `/lib/cc/cc1`..`CC9`, chained with EXEC; the assembly is byte-identical to y1cc.py's (`man cc`, `software/compiler/README.md` "Native") |
 | `cat [file\|glob\|-]...` | print files byte-exact, or the console |
 | `cmp f1 f2` | the first differing byte and line, or silence |
@@ -527,6 +528,38 @@ Ctrl-Cs; the server's SEND, GET (a glob, a lower-case name, a missing file) and 
 the original on the host and, through `tools/p8xfs.py get`, on the disk image, which must pass fsck. 33 checks an
 emulator, the same with `XISA=1`, and `--calib` (the two timing figures above). **Not yet run on the machine**: the
 FIFO, the timing at the real clock and C-Kermit itself are to verify (BACKLOG).
+
+### `basic` (2026-11-09)
+
+`basic` is the BASIC interpreter of the P8X (`basic/basic.c`), ported without its graphics statements:
+`os/commands/basic.c`, 14.5 KB of code and 12,286 bytes for the program's lines. The language: 16-bit signed integers
+(decimal or `0x1F`), 32 number variables and 16 strings of up to 32 characters (names of up to 6 significant
+characters), `PRINT LET IF/THEN FOR/TO/STEP NEXT GOTO GOSUB RETURN INPUT POKE REM END`, the functions `ABS RND PEEK
+LEN ASC VAL CHR$ LEFT$ RIGHT$ MID$ STR$`, and one data file at a time (`OPEN "f" FOR OUTPUT|INPUT`, `PRINT#`, `INPUT#`,
+`EOF(1)`, `CLOSE`). A typed line is checked as it is entered (unbalanced brackets or quotes, a line that starts with
+`THEN` or a function) and refused with `?SYNTAX ERROR` before it is stored. `man basic` has the whole of it.
+
+What the port changed:
+- **Programs are text.** `SAVE "f"` writes the program as `LIST` shows it, `LOAD "f"` reads it back a line at a time as
+  if it were typed. A saved program can be shown with `cat`, edited with `vi`, searched with `grep`, and written on the
+  Mac and sent with `kermit`. (The P8X saved its token image.)
+- **`basic -r file`** loads and runs a program and returns to the shell, so a BASIC program can be a command or a line
+  of a `sh` script.
+- **Lines are inserted and deleted in place**: the P8X built a second copy of the program for every edited line; here
+  the lines after it move, so the whole area holds program.
+- **Ctrl-C stops a running program** (`BREAK IN n`). The check takes a waiting key before each line, and any other key
+  is kept for the next `INPUT` or prompt. It cannot be handed back to the shell, so a key typed while `basic -r` runs
+  is lost when the program ends.
+- `GOSUB` and `FOR` nest 8 deep (3 on the P8X), `INPUT "prompt"; X`, `PRINT# 1, X` as well as `PRINT# X`, and
+  `?ONLY IN A PROGRAM` for `GOTO`, `GOSUB`, `RETURN` or `NEXT` typed at the prompt.
+- For the native compiler (`make` in `/src` builds it under Y1/OS, byte-identical to the host's build) the keyword
+  table is two strings of words (a token is 128 + the word's position) rather than a 200-element initialiser, and the
+  check of a statement's first keyword uses token ranges: the passes' limits are 800 declaration nodes, 160-character
+  string literals and 40 nodes an expression.
+
+The ROM's BASIC (the monitor's `I` command, `firmware/basic/`) is a different, smaller interpreter (uBASIC): it has no
+string variables and cannot load or save programs. `tests/os/ybasic.session` runs a program, saves, loads, edits and
+lists it, and writes and reads a data file, on both emulators.
 
 ### `video` (2026-09-25)
 

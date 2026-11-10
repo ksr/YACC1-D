@@ -1,0 +1,76 @@
+BOOT FROM CF
+Y1/OS v0.2 (2026-09-23)  P8XFS v2
+/> 
+/> 
+Y1 BASIC  12286 bytes for the program
+> 10 rem squares
+> 20 for i = 1 to 3 : print i; " "; i*i : next i
+> 30 a$ = "hello" + ", world" : print a$; " "; len(a$); " "; mid$(a$, 8, 5)
+> 40 gosub 100 : print "back"
+> 50 if -2 < 3 then print "signed"
+> 60 end
+> 100 print 7 / 2, 7 % 2, abs(-5), 0x1F : return
+> run
+1 1
+2 4
+3 9
+hello, world 12 world
+3 1 5 31
+back
+signed
+Ok
+> save "sq.bas"
+Saved
+> new
+> list
+> load "sq.bas"
+Loaded
+> list
+10 REM squares
+20 FOR i = 1 TO 3 : PRINT i; " "; i*i : NEXT i
+30 a$ = "hello" + ", world" : PRINT a$; " "; LEN(a$); " "; MID$(a$, 8, 5)
+40 GOSUB 100 : PRINT "back"
+50 IF -2 < 3 THEN PRINT "signed"
+60 END
+100 PRINT 7 / 2, 7 % 2, ABS(-5), 0x1F : RETURN
+> goto 10
+?ONLY IN A PROGRAM
+> 20
+> list
+10 REM squares
+30 a$ = "hello" + ", world" : PRINT a$; " "; LEN(a$); " "; MID$(a$, 8, 5)
+40 GOSUB 100 : PRINT "back"
+50 IF -2 < 3 THEN PRINT "signed"
+60 END
+100 PRINT 7 / 2, 7 % 2, ABS(-5), 0x1F : RETURN
+> new
+> 10 open "d.txt" for output : for i = 1 to 3 : print# i * 10 : next i : close
+> 20 open "d.txt" for input
+> 30 if eof(1) then 60
+> 40 input# n : print "read "; n : goto 30
+> 60 close
+> run
+read 10
+read 20
+read 30
+Ok
+> print "x
+?SYNTAX ERROR
+> bye
+/> 
+10 REM squares
+20 FOR i = 1 TO 3 : PRINT i; " "; i*i : NEXT i
+30 a$ = "hello" + ", world" : PRINT a$; " "; LEN(a$); " "; MID$(a$, 8, 5)
+40 GOSUB 100 : PRINT "back"
+50 IF -2 < 3 THEN PRINT "signed"
+60 END
+100 PRINT 7 / 2, 7 % 2, ABS(-5), 0x1F : RETURN
+/> 
+10
+20
+30
+/> 
+    251  sq.bas
+/> 
+bye
+>

@@ -1,0 +1,82 @@
+NAME
+    basic - the BASIC interpreter
+
+SYNOPSIS
+    basic
+    basic file
+    basic -r file
+
+DESCRIPTION
+    Y1 BASIC: 16-bit integers, strings, and programs kept in files.
+    basic alone shows the prompt "> ". basic file LOADs the file
+    first; basic -r file LOADs it, RUNs it and returns to the shell,
+    so a BASIC program can be a command or a line of a script. BYE,
+    or Ctrl-D at an empty prompt, returns to the shell.
+
+    A line that starts with a number is stored in the program (the
+    same number again replaces the line, the number alone deletes it);
+    a line without one runs at once. Keywords may be typed in any
+    case; LIST shows them in capitals. Several statements go on one
+    line separated by ":".
+
+    Statements: PRINT (";" joins, "," puts a space, a trailing ; or ,
+    keeps the line open), LET (optional), IF expr THEN statement or
+    line number, FOR v = a TO b [STEP s] ... NEXT [v], GOTO n,
+    GOSUB n ... RETURN, INPUT ["prompt";] v or v$, POKE addr, byte,
+    REM, END.
+    Commands: RUN, LIST, NEW, SAVE "file", LOAD "file", HELP, BYE.
+    Files: OPEN "file" FOR OUTPUT or FOR INPUT, PRINT# value, INPUT#
+    v or v$ (one value per line), EOF(1) (1 at the end of the file),
+    CLOSE. One file is open at a time; RUN and the end of a program
+    close it.
+    Functions: ABS(x) RND(n) (1..n) PEEK(addr) LEN(s$) ASC(s$)
+    VAL(s$) CHR$(n) LEFT$(s$,n) RIGHT$(s$,n) MID$(s$,start[,n])
+    STR$(n).
+    Operators: + - * / % (remainder), = <> < > <= >= (1 true, 0
+    false; numbers compare signed, strings by character code), and
+    + joins strings. Numbers are written in decimal or as 0x1F.
+
+    SAVE writes the program as text, exactly as LIST shows it, so a
+    saved program can be read with cat, changed with vi and LOADed
+    back. LOAD replaces the program in memory with the file's lines.
+
+    Ctrl-C stops a running program with "BREAK IN n". Any other key
+    typed while a program runs is kept for its next INPUT or the next
+    prompt, but a key typed while basic -r runs is lost when the
+    program ends.
+
+ERRORS
+    ?SYNTAX ERROR [IN n]   the line cannot be read; when typed, a
+                           line with unbalanced () or "" or one that
+                           starts with THEN, TO, a function... is
+                           refused and not stored
+    ?UNDEF'D LINE n IN m   GOTO or GOSUB to a line that is not there
+    ?ONLY IN A PROGRAM     GOTO, GOSUB, RETURN or NEXT typed at the
+                           prompt
+    ?RETURN WITHOUT GOSUB, ?NEXT WITHOUT FOR, ?GOSUB TOO DEEP,
+    ?FOR TOO DEEP, ?TOO MANY VARIABLES, ?TOO MANY STRINGS,
+    ?OUT OF MEMORY, ?NO FILE, ?CANNOT SAVE, ?CANNOT OPEN
+
+LIMITS
+    Numbers -32768..32767 (whole numbers only; / rounds toward 0, a
+    division by 0 gives 0). Names: 6 significant letters or digits,
+    32 number variables and 16 strings of up to 32 characters. FOR and
+    GOSUB nest 8 deep. Program lines up to 98 characters; 12286 bytes
+    of program. No arrays.
+
+EXAMPLES
+    > 10 for i = 1 to 3 : print i, i*i : next i
+    > run
+    > save "squares.bas"
+    > bye
+    /> basic -r squares.bas
+
+NOTES
+    Ported from P8X basic/basic.c 2026-11-09, without its graphics
+    statements. New: programs saved as text, basic -r, INPUT with a
+    prompt, Ctrl-C, deeper FOR and GOSUB.
+    The ROM has its own, smaller BASIC (the monitor's I command); it
+    cannot load or save programs.
+
+SEE ALSO
+    vi, cat, sh
