@@ -61,8 +61,14 @@ line_buffer:    EQU 0f80h    ; 112 bytes long max ($0FF0-$0FFF are the video var
 ;
 ; Video card (YACC1-D 2026-09-25): MC6845 CRTC + IDT7134 dual-port RAM in the $D000 block (docs/cards/video.md).
 ; The driver is always in the ROM; VIDAUTO decides whether reset also starts it. Until the card is debugged it does
-; not: reset only probes $D000 (VIDPRES, the banner says VIDEO CARD FOUND) and homes the cursor variables; V I
+; not: reset only probes the card (VIDPRES, the banner says VIDEO CARD FOUND) and homes the cursor variables; V I
 ; initialises the CRTC and clears the screen, V M1 (or Y1/OS's `video on`) turns the mirroring on.
+; 2026-11-10 (branch video-v2): the video card V2.0 (docs/cards/video-v2.md) in place of the V1 cards. The text RAM is
+; at $D000 as before; every register is on an I/O port: PA the 6845's address register, PB its data register, PC the
+; control register (OUT: 0-2 PLANE, 3 CPAGE, 4 DPAGE, 5 TEXT-OFF, 6 GFX-ON, 7 XOR; cleared at reset) and the status (IN:
+; 0 DOTS, 1 VSYNC, 2 DE, 3 TEXT-ONLY, 7..4 = 0101, the card ID), PD/PE the PS/2 keyboard (IN PD: 0 FULL, 1 SRC, 2 BUSY;
+; IN PE the byte, only after IN PD showed FULL). $D800-$DFFF is the graphics window (graphics RAM, never the 6845).
+; The keyboard is a second console input beside the UART (kbst: uartin, uartinne, const).
 ;
 VIDAUTO:        EQU 0        ; 1 = reset also runs V I (CRTC table, clear, home) and sets VIDMIR when a card is found
 VIDRAM:         EQU 0d000h   ; display RAM, CPU side (A11 = 0); its first byte is the probe byte
@@ -70,19 +76,14 @@ VIDSIZE:        EQU 2048     ; the RAM the CPU reaches (IC15 A11R grounded): VID
 VROWS:          EQU 24       ; screen geometry: VCOLSV x 24, one byte per character (2026-10-22: the columns are a
                              ;   variable, 80 or 64, set from the card's latch by vmode; cols*(VROWS-1) must be a
                              ;   multiple of 8 and at most 2,040: the scroll's loop - 80: 230 passes, 64: 184)
-VLATCH:         EQU 0d801h   ; the JP1 read-back latch (IC2), read only (a write fights it): bit 2 = 0 a V1.3 card,
-                             ;   bit 0 its DOTS jumper (1 = 6 dots, 0 = 8 dots); the V1.0-V1.2 card reads bit 2 = 1
-VCRTCA:         EQU 0d800h   ; 6845 address register: A11 = 1, A1 = 0, A0 = 0 (the netlist reading of the card; the
-VCRTCD:         EQU 0d802h   ;   card README says $D400/$D402 - one edit here). Data register: A1 = 1, after the
-                             ;   RS-to-A1 bench fix (hardware/cards/video/docs/fix-6845-register-select.md)
-VIDPRES:        EQU 0ff0h    ; 1 = display RAM answered at VIDRAM at reset (or at the last V P)
+VIDPRES:        EQU 0ff0h    ; 1 = the video card V2.0 answered at reset (or at the last V P): IN PC = $5x
 VIDMIR:         EQU 0ff1h    ; nonzero = CHAROUT/UARTOUT also write to the screen (only while VIDPRES is 1)
 VIDCUR:         EQU 0ff2h    ; nonzero = keep the CRTC's cursor (R14/R15) at the text cursor (set by V I)
 VROW:           EQU 0ff3h    ; text cursor row 0..VROWS-1
 VCOL:           EQU 0ff4h    ; text cursor column 0..VCOLSV-1
 VCHAR:          EQU 0ff5h    ; the driver's scratch byte
 VLINE:          EQU 0ff6h    ; word ($0FF6 high, $0FF7 low): the address of the cursor row's first byte
-VCOLSV:         EQU 0ff8h    ; (2026-10-22) the screen's columns: 80, or 64 on a V1.3 card with DOTS fitted
+VCOLSV:         EQU 0ff8h    ; (2026-10-22) the screen's columns: 80, or 64 with the card's DOTS jumper fitted
 VSCRLN:         EQU 0ff9h    ;   and the scroll's passes for it, VCOLSV*(VROWS-1)/8 (both set by vmode)
 
 
@@ -627,15 +628,29 @@ cfwrl:
         ANDI 001H
         RET
 ;
-; const: ACC = 1 when a console byte is waiting. The emulator's port-2 console has no status: always ready.
+; const: ACC = 1 when a console byte is waiting (2026-11-10: a key on the V2.0 card's keyboard counts too). The
+; emulator's port-2 console has no status: always ready.
 const:
         BRDEV consthw
         LDAI 1
         RET
 consthw:
+        JSR kbst
+        BRNZ constx
         OUTI P0,(UARTCS!UARTA5)
         INP P1
         ANDI 001H
+constx: RET
+;
+; kbst (2026-11-10): ACC = 1 when the video card V2.0's PS/2 keyboard has a byte (IN PD bit 0, FULL), else 0; the
+; byte is then IN PE (the card's rule: read PE only after PD showed FULL). 0 with no card (VIDPRES = 0).
+kbst:   LDA VIDPRES
+        LDTI 1
+        BRNEQ kbst0
+        INP PD
+        ANDI 1
+        RET
+kbst0:  LDAI 0
         RET
 ;
 ; O command: boot. Read the boot block (LBA 0) to OSBASE, check 'P8' and OSCNT, read OSCNT sectors from LBA 1
@@ -878,48 +893,32 @@ vidreset:
         STA VIDMIR
 vidrx:  RET
 ;
-; vprobe: VIDPRES (and ACC) = 1 when the byte at VIDRAM keeps $55 and then $AA, else 0; the old byte is put back.
-; An undecoded block reads what was last on the bus: between each STA and its LDA the LDA's own opcode and operand
-; bytes ($E4 $D0 $00) cross the bus, so a floating bus reads $00, not the pattern.
-vprobe:
-        LDA VIDRAM
-        PUSH
-        LDAI 055h
-        STA VIDRAM
-        LDA VIDRAM
-        LDTI 055h
-        BRNEQ vprno
-        LDAI 0aah
-        STA VIDRAM
-        LDA VIDRAM
-        LDTI 0aah
+; vprobe: VIDPRES (and ACC) = 1 when IN PC (the V2.0 card's status) reads $5x, the card ID in bits 7..4, else 0
+; (2026-11-10; the V1 cards' probe wrote $55/$AA at VIDRAM). With no card the port is not decoded and reads the
+; floating bus: $FF on the pull-ups, or the INP's own opcode $9C - neither is $5x.
+vprobe: INP PC
+        ANDI 0f0h
+        LDTI 050h
         BRNEQ vprno
         LDAI 1
         BR vprset
 vprno:  LDAI 0
 vprset: STA VIDPRES
-        POP
-        STA VIDRAM
         JSR vmode
         LDA VIDPRES
         RET
 ;
-; vmode (2026-10-22): the card's geometry from the JP1 latch at VLATCH ($D801, read only when the probe found a card).
-; Bit 2 = 1: the V1.0-V1.2 card (11.0592 MHz, 6 dots, 80 x 24; on the card in the machine a jumper on JP1 3-4 holds
-; the bit high). Bit 2 = 0: a V1.3 card at 12 MHz, its DOTS jumper on bit 0: 1 (open) = 6 dots, 80 x 24; 0 (fitted)
-; = 8 dots, 64 x 24. Sets VCOLSV and VSCRLN; R6 = the CRTC's R0..R3 for vinit (the rest are common: vcrtab)
-vmode:  MVIW R6,vcr10
+; vmode (2026-10-22; 2026-11-10 the V2.0 card): the geometry from the DOTS jumper, IN PC bit 0 (read only when the
+; probe found the card): 1 (open) = 6 dots, 80 x 24; 0 (fitted) = 8 dots, 64 x 24, the mode the graphics layer needs;
+; both from the 12 MHz crystal. Sets VCOLSV and VSCRLN; R6 = the CRTC's R0..R3 for vinit (the rest are common: vcrtab)
+vmode:  MVIW R6,vcr80
         LDAI 80
         STA VCOLSV
         LDAI 230                ; 80*(VROWS-1)/8
         STA VSCRLN
         LDA VIDPRES
         BRZ vmodex
-        LDA VLATCH
-        ANDI 4
-        BRNZ vmodex
-        MVIW R6,vcr13
-        LDA VLATCH
+        INP PC
         ANDI 1
         BRNZ vmodex
         MVIW R6,vcr64
@@ -929,17 +928,19 @@ vmode:  MVIW R6,vcr10
         STA VSCRLN
 vmodex: RET
 ;
-; vinit: the CRTC's 16 registers - R0..R3 for the card vmode found, R4..R15 from vcrtab - the CRTC cursor on, then
-; vcls (R6, R7 clobbered)
+; vinit: the control register 0 (text on, graphics off: direct mode, plane and pages 0), the CRTC's 16 registers -
+; R0..R3 for the mode vmode found, R4..R15 from vcrtab - through OUT PA / OUT PB, the CRTC cursor on, then vcls
+; (R6, R7 clobbered)
 vinit:  JSR vmode
+        OUTI PC,0
         LDAI 0
-vinitl: STA VCRTCA
+vinitl: OUTA PA
         PUSH
         LDTI 4
         BRNEQ vinitn
         MVIW R6,vcrtab
 vinitn: LDAVR R6
-        STA VCRTCD
+        OUTA PB
         INCR R6
         POP
         ADDI 1
@@ -1144,14 +1145,14 @@ vcursor:
         BRZ vcurx
         JSR vcaddr
         LDAI 14
-        STA VCRTCA
+        OUTA PA
         MVRHA R7
         SUBI (VIDRAM).1
-        STA VCRTCD
+        OUTA PB
         LDAI 15
-        STA VCRTCA
+        OUTA PA
         MVRLA R7
-        STA VCRTCD
+        OUTA PB
 vcurx:  RET
 ;
 ; vidctl: the video entry at $FFBC (JSR vidctl / RET, below the full vector table), for Y1/OS and programs.
@@ -1280,8 +1281,7 @@ vcwrs:  LDTI 0dh
         BR vcok
 ;
 ; VB aaaa bb bb ..: bytes stored from aaaa on, to CR/LF; aaaa must be in VIDRAM's 4K block and the bytes stop at its
-; end (never the ROM). Mind the card: an odd address in the CRTC half is the JP1 latch, which drives the bus even
-; while the CPU writes (docs/cards/video.md finding 6.4)
+; end (never the ROM). $D800-$DFFF is the V2.0 card's graphics window (the plane and page OUT PC chose)
 vcbyt:  JSR vgetb
         MVARH R7
         JSR vgetb
@@ -1345,18 +1345,18 @@ vcdcol: LDAVR R7
 ; VR rr [vv]: rr to the CRTC's address register, then vv to its data register, or with no vv read the data register
 ; (only R12-R17 read back on a 6845; the rest read what the bus floats to)
 vcreg:  JSR vgetb
-        STA VCRTCA
+        OUTA PA
         JSR vskip
         LDTI 0dh
         BREQ vcregr
         LDTI 0ah
         BREQ vcregr
         JSR getbytec
-        STA VCRTCD
+        OUTA PB
         BR vcok
 vcregr: MVIW R7,CRLF
         JSR stringout
-        LDA VCRTCD
+        INP PB
         JSR showbytea
         BR vcok
 ;
@@ -1377,9 +1377,10 @@ vgetb:  JSR vskip
 ; 2026-10-22: R0..R3 per card (vmode picks one, R6), R4..R15 common. A V1.3 card runs from 12 MHz: 6 dots a 2.0 MHz
 ; character, 127 a line (15.75 kHz), 80 x 24 (40 us of text, R2 98 centres it); 8 dots a 1.5 MHz character, 95 a line
 ; (15.79 kHz), 64 x 24 - the 64-column table proven on the monitor 2026-10-21 (then from 9 MHz / 6, the same 1.5 MHz).
-vcr10:  DB 116,80,94,9    ; V1.0-V1.2, 11.0592 MHz: R0 total-1, R1 displayed, R2 sync position, R3 sync width
-vcr13:  DB 126,80,98,10   ; V1.3, DOTS open: 6 dots, 80 x 24
-vcr64:  DB 94,64,75,8     ; V1.3, DOTS fitted: 8 dots, 64 x 24
+; 2026-11-10 (branch video-v2): the V2.0 card, 12 MHz like the V1.3; the V1.0-V1.2 table (11.0592 MHz: 116, 80, 94, 9)
+; is gone with the card.
+vcr80:  DB 126,80,98,10   ; DOTS open: 6 dots, 80 x 24 (R0 total-1, R1 displayed, R2 sync position, R3 sync width)
+vcr64:  DB 94,64,75,8     ; DOTS fitted: 8 dots, 64 x 24
 vcrtab: DB 31             ; R4  vertical total - 1 (rows)
         DB 6              ; R5  vertical total adjust (scan lines)
         DB VROWS          ; R6  rows displayed
@@ -1725,15 +1726,19 @@ uartin:
 ;
 emulator3:
 ;
-; wait for a charater available at input
+; wait for a charater available at input (2026-11-10: the UART or the V2.0 card's keyboard, whichever has one)
 ;
-        OUTI  P0,(UARTCS!UARTA5)
+        JSR   kbst
+        BRZ   uartwt
+        INP   PE
+        BR    uartcv
+uartwt: OUTI  P0,(UARTCS!UARTA5)
         INP   p1
         ANDI  01h
-        BRZ   uartin
+        BRZ   emulator3
         OUTI  P0,(UARTCS)
         INP   P1
-        ldti 0dh          ; cobvert 0x0d to 0x0a
+uartcv: ldti 0dh          ; cobvert 0x0d to 0x0a
         brneq uartinc
         ldai 0ah
 uartinc:
@@ -1755,12 +1760,18 @@ uartinne:
         inp p2
         ret
 uartinnehw:
+        JSR   kbst              ; 2026-11-10: the V2.0 card's keyboard, else the UART
+        BRZ   uartinnew
+        INP   PE
+        BR    uartinnecv
+uartinnew:
         OUTI  P0,(UARTCS!UARTA5)
         INP   p1
         ANDI  01h
         BRZ   uartinnehw
         OUTI  P0,(UARTCS)
         INP   P1
+uartinnecv:
         ldti 0dh
         brneq uartinnec
         ldai 0ah
@@ -1823,7 +1834,7 @@ loffloop:
 ;
 ; MONITOR STRINGS
 ;
-hello:  DB 0ah,0dh,"YACC 2020: hello world  ROM 2026-10-22",0ah,0dh,0    ; the build date tells ROMs apart at a glance
+hello:  DB 0ah,0dh,"YACC 2020: hello world  ROM 2026-11-10 V2",0ah,0dh,0    ; the build date tells ROMs apart at a glance
 PROMPT: DB ">",0
 CRLF: DB 0ah,0dh,0
 ERROR: DB "UNRECOGINIZED COMMAND",0ah,0dh,0

@@ -39,13 +39,14 @@ int main(void) {
     static uint8_t mem[65536];
 
     /* the V1.0 card: none of PA-PF is the card's; $D800 is the 6845 as before */
-    fresh(NULL, NULL, NULL, NULL, NULL);
+    fresh("v1.0", NULL, NULL, NULL, NULL);
     for (int p = 0; p < 16; p++) CHECK(!vid_io_owns(p), "v1.0 owns port %X", p);
     vid_write(0xD800, 14, mem); vid_write(0xD802, 0x2A, mem); vid_write(0xD800, 14, mem);
     CHECK(vid_read(0xD802, mem) == 0x2A, "v1.0: R14 through $D802");
 
-    /* V2.0: PA-PF, the status, the window */
-    fresh("v2.0", NULL, NULL, NULL, NULL);
+    /* V2.0 (the default on the branch video-v2): PA-PF, the status, the window */
+    fresh(NULL, NULL, NULL, NULL, NULL);
+    CHECK(vid2.card == 2, "the default card is V2.0");
     for (int p = 0; p < 16; p++) CHECK(vid_io_owns(p) == (p >= 10), "v2.0 port %X", p);
     CHECK(at(0, 0xC) == 0x50, "status %02X, want 50", at(0, 0xC));
     CHECK(at(0, 0xA) == -1 && at(0, 0xF) == -1, "PA / PF read float");
@@ -95,7 +96,7 @@ int main(void) {
     CHECK(vid2.kbd_stdin, "KBD=stdin");
     CHECK(at(0, 0xE) == 'o' && at(20, 0xE) == 'k' && at(40, 0xE) == 0x0D, "o k CR");
     CHECK(at(60, 0xD) == 0 && at(80, 0xD) == 0, "end of input: no key");
-    fresh(NULL, NULL, "stdin", NULL, NULL);
+    fresh("v1.0", NULL, "stdin", NULL, NULL);
     CHECK(!vid2.kbd_stdin, "KBD=stdin needs the V2.0 card");
 
     /* VSYNC / DE: the MDA table, 8 dots: 1.5 characters a clock, 81 a line, 370 lines; VSYNC from line 312 for 16 */

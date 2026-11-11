@@ -17,11 +17,13 @@ edits; y1ucemu -G REV looks each step's decode up there (docs/cards/video.md sec
            bring-up programs of tests/video/asm (vram, crtcreg, crtcreg on a part that reads R12/R13, testcard,
            testcard + vstress, estrobe with -W)
   events   with the card as fitted (-G v1.0) every one of those runs has no bus events but reads of the JP1 latch at
-           $D801, reported as reads of floating inputs: the ROM's (since ROM 2026-10-22 the reset, V P and V I read
-           the latch for the card's geometry) and crtcreg's two deliberate ones ($D801, $D803) - nothing else
+           $D801, reported as reads of floating inputs: crtcreg's two deliberate ones ($D801, $D803) - nothing else
+           (on main the ROM also reads the latch at reset, V P and V I; the branch video-v2's ROM drives the V2.0 card
+           and never touches the V1 card)
   rs       without the RS rework (-G v1.0-no-rs, the 6845 as drawn: RS = A0) the data register is unreachable, as
-           hardware/cards/video/docs/fix-6845-register-select.md says: VR0E 12 then VR0E reads FF, R14 is never
-           written, crtcreg reports BAD for R14/R15 and its repeat; every read of $D802 is an undriven-read event.
+           hardware/cards/video/docs/fix-6845-register-select.md says: the monitor's VB D800 0E / VB D802 12 (the
+           6845's two registers written as memory) leaves R14 unwritten, crtcreg reports BAD for R14/R15 and its
+           repeat; every read of $D802 is an undriven-read event.
            With the 6845's socket empty (-G v1.0-no6845, the machine today) crtcreg fails the same way, the events
            name the empty socket; the RAM half still passes vram
   5v       without the +5V wire (-G v1.0-no-5v, the card of 2026-09-18): a write to $9010 (the monitor's ':' loader)
@@ -29,6 +31,10 @@ edits; y1ucemu -G REV looks each step's decode up there (docs/cards/video.md sec
            (v1.0, v1.0-no6845) $D010 keeps $FF
   a0fix    the fix the document warns against (/A0 tied high): crtcreg's read of $D801 makes the 6845 and the JP1
            latch drive DATA0..7 together - contention events - and the latch reads 00 instead of FF
+
+2026-11-10 (branch video-v2): the emulators' default card here is the V2.0 and the ROM drives it; these runs ask for
+the V1.0 card (Y1VID_CARD=v1.0, -G's card), so the monitor's video unit finds no card in them and the bring-up
+programs carry the comparison.
 """
 import os, re, sys, shutil, subprocess, tempfile
 
@@ -59,7 +65,8 @@ def run(data, extra=(), env=None, limit=400000000, disk=None, exit=True):
     if os.path.exists(state): os.remove(state)
     cmd = [UC, "-x", "-m", "-V", "-l", str(limit)] + (["-E", MON_EXIT] if exit else []) + list(extra)
     if disk: cmd += ["-c", disk]
-    r = subprocess.run(cmd, input=data, capture_output=True, timeout=1800, env=dict(os.environ, Y1VIDSTATE=state, **(env or {})))
+    r = subprocess.run(cmd, input=data, capture_output=True, timeout=1800,
+                       env=dict(os.environ, Y1VIDSTATE=state, Y1VID_CARD="v1.0", **(env or {})))   # the V1.0 card (-G's)
     out, err = r.stdout.decode("latin1"), r.stderr.decode("latin1")
     if VERBOSE: print(" ".join(cmd[5:]) + "\n" + out + "\n" + err)
     ev = [l for l in err.splitlines() if l.startswith("video card")]
@@ -129,17 +136,16 @@ def case_equal():
               (name, b[0] == g[0], b[1] == g[1], b[3] == g[3], len(b[0]), halted is not None, b[2][:2]))
         latch = [l for l in g[2][:-1] if "a read of IC2 (the JP1 latch) with inputs FF floating" in l]
         ok = g[4] is not None and len(latch) == len(g[2][:-1]) and all("at $D801" in l or "at $D803" in l for l in latch)
-        if name in ("crtcreg", "crtc-r12"): ok = ok and g[4] >= 10   # its own two reads besides the ROM's
+        if name in ("crtcreg", "crtc-r12"): ok = ok and g[4] >= 2    # its own reads (the ROM reads none here)
         check("events", ok, "%s: %r events: %s" % (name, g[4], "\n".join(g[2][:6])))
 
 
 def case_rs():
-    data = b"VR0E 12\nVR0E\n0"
+    data = b"VB D800 0E\nVB D802 12\n0"            # (the V2.0 ROM's VR goes to the V2.0 card's ports)
     out, err, ev, st, n = run(data, ["-G", "v1.0"])
-    good = "12" in re.split(r"[\r\n]+", out) and re.search(r"^video: CRTC( --){14} 12", err, re.M)
+    good = re.search(r"^video: CRTC( --){14} 12", err, re.M)
     out2, err2, ev2, st2, n2 = run(data, ["-G", "v1.0-no-rs"])
-    bad = "FF" in re.split(r"[\r\n]+", out2) and re.search(r"^video: CRTC( --){18}", err2, re.M) and \
-        other(ev2) != [] and all("read with RS = 0: the address register is write-only" in l for l in other(ev2))
+    bad = re.search(r"^video: CRTC( --){18}", err2, re.M)
     check("rs", bool(good) and other(ev) == [] and bool(bad), "v1.0: %r / no-rs: %r %r" % (out[-200:], out2[-200:], ev2[:2]))
     out, err, ev, st, n = run(img("crtcreg") + b"0", ["-G", "v1.0-no-rs"])
     ok = re.search(r"R14 00>3F 3F>3F 15>3F 2A>3F 12>3F +BAD", out) and re.search(r"R15 00>FF FF>FF 55>FF AA>FF 34>FF +BAD", out) and \

@@ -476,7 +476,13 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     `Y1VIDSTATE` carry the graphics side, `tools/vidsim.py render` draws it; `tests/video/v20/run.py`. Not modelled:
     the PS/2 interrupt reaching the CPU (no emulator models -INT yet: `vid_irq()` has the line's state), the mouse,
     the slot mode's clock limit (a hardware rule, `tests/video/v20_timing.py`), the gate level (`-G` is V1.0's).
-  - **Open - the ROM's V2.0 driver** (branch `video-v2`). The driver's requirements (the card's README,
+  - **The ROM's V2.0 driver, text and keyboard: done 2026-11-10 (branch `video-v2`, `ROM 2026-11-10 V2`, not burned):**
+    the card found by its ID on IN PC, the width from DOTS, the 6845 on PA/PB, the control register cleared in `V I`,
+    the PS/2 keyboard beside the UART in `uartin`/`uartinne`/`const` (`docs/programming/MONITOR.md` 11a). The
+    emulators' default card on the branch is the V2.0 (`Y1VID_CARD=v1.0` for the V1). **Open**: graphics in the ROM
+    (or in Y1/OS / a library: the monitor half has 45 bytes free) - drawing in direct mode, GFX-ON switched in vertical
+    blanking, refused in 6-dot mode, the text-only build left at GFX-ON = 0; Y1/OS `video` for the V2.0 card; VIDAUTO.
+  - **The ROM's V2.0 driver** (branch `video-v2`). The driver's requirements (the card's README,
     "The software rules for the window"): the card ID check **(IN PC AND $F0) = $50**, the build and DOTS from **(IN PC
     AND $F9)** = $58 / $59 text-only, $50 / $51 with graphics (bits 1 and 2 are VSYNC and DE, live); GFX-ON left 0 on a
     text-only card; **refuse GFX-ON = 1 in 6-dot mode** (IN PC bit 0 = 1, R2-4); the 6845 through OUT PA/PB; graphics

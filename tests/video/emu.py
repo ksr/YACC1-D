@@ -18,12 +18,17 @@ level emulator (int) and the microcode one (uc) through the monitor, as a bench 
             scrolls), VM0: the screen equals what a terminal model of the driver makes of the console bytes that were
             sent while mirroring was on (CR, LF, wrap, scroll, upper case)
   absent    -N: no banner line, VS says 00, VM1 changes nothing on the screen (there is none), the console still works
-  dots      (2026-10-22) the card ID and DOTS on the JP1 latch ($D801, Y1VID_LATCH): FF = the V1.0-V1.2 card (80 x 24,
-            11.0592 MHz table 74 50 5E 09), FB = V1.3 with DOTS open (80 x 24, 12 MHz table 7E 50 62 0A), FA = V1.3 with
-            DOTS fitted (64 x 24, 5E 40 4B 08): VS's COLS, VI's R0..R3, mirroring with scroll and wrap at that width, VW's
-            column limit and VD's row length
+  dots      (2026-10-22; the V2.0 card since 2026-11-10) the DOTS jumper on IN PC bit 0 (Y1VID_DOTS): 6 = open (80 x 24,
+            12 MHz table 7E 50 62 0A), 8 = fitted (64 x 24, 5E 40 4B 08): VS's COLS, VI's R0..R3, mirroring with
+            scroll and wrap at that width, VW's column limit and VD's row length
+  keyboard  (2026-11-10) the monitor driven from the V2.0 card's PS/2 keyboard (the console is the keyboard,
+            Y1VID_KBD=stdin; the UART receives nothing): VI, VW, VS typed there
   os        Y1/OS (os/disk.img): video (status), video init, video on, echo, video clear, echo, video off, echo:
             the screen shows what came between the clear and off and nothing else; video -h, a bad word
+
+2026-11-10 (branch video-v2): the ROM drives the video card V2.0, the emulators' default card here (the 6845 on ports
+PA/PB, the card found by its ID on IN PC); every case but dots runs with DOTS open (Y1VID_DOTS=6), the 80 columns the
+cases were written for.
 """
 import os, sys, re, subprocess, shutil
 
@@ -37,11 +42,11 @@ COLS, ROWS = 80, 24
 VERBOSE = "-v" in sys.argv
 
 
-def run(emu, script, extra=(), limit=400000000, disk=None, latch=None):
+def run(emu, script, extra=(), limit=400000000, disk=None, dots="6", env=None):
     cmd = [emu, "-x", "-m", "-V", "-l", str(limit)] + list(extra)
     if disk: cmd += ["-c", disk]
     if emu.endswith("y1ucemu"): cmd += ["-E", MON_EXIT]
-    env = dict(os.environ, Y1VID_LATCH=latch) if latch else None
+    env = dict(os.environ, Y1VID_CARD="v2.0", Y1VID_DOTS=dots, **(env or {}))
     r = subprocess.run(cmd, input=script.encode("latin1"), capture_output=True, timeout=1800, env=env)
     out, err = r.stdout.decode("latin1"), r.stderr.decode("latin1")
     if VERBOSE: print(out + "\n" + err)
@@ -144,22 +149,21 @@ def case_mirror(tag, emu):
 
 
 def case_dots(tag, emu):
-    for latch, cols, head in (("FF", 80, ["74", "50", "5E", "09"]), ("FB", 80, ["7E", "50", "62", "0A"]),
-                              ("FA", 64, ["5E", "40", "4B", "08"])):
-        out, err = run(emu, "VS\nVI\nVM1\nH\nH\nVM0\nVS\n0", latch=latch)
+    for latch, cols, head in (("6", 80, ["7E", "50", "62", "0A"]), ("8", 64, ["5E", "40", "4B", "08"])):
+        out, err = run(emu, "VS\nVI\nVM1\nH\nH\nVM0\nVS\n0", dots=latch)
         scr = screen(err); regs = crtc(err)
         i = out.find("\n\rVIDEO 01  MIRROR 01")
         if tag == "int": j = out.find("\n\rVIDEO 01  MIRROR 00", i)
         else: j = out.find("VM0", i) + 3
         ok = "COLS %02X" % cols in out and regs is not None and regs[:4] == head and regs[6] == "18" and \
             scr == model(out[i:j], cols) and out[i:j].count("\n") > ROWS
-        check("dots", tag, ok, "latch %s: COLS %02X, R0-R3 %s (want %s), screen vs model:\n%s\n%s" % (
+        check("dots", tag, ok, "DOTS %s: COLS %02X, R0-R3 %s (want %s), screen vs model:\n%s\n%s" % (
             latch, cols, regs and regs[:4], head, "\n".join(scr or []), "\n".join(model(out[i:j], cols))))
-        out, err = run(emu, "VI\nVW0000 hi\nVW00%02X z\nVW00%02X no\nVD\n0" % (cols - 1, cols), latch=latch)
+        out, err = run(emu, "VI\nVW0000 hi\nVW00%02X z\nVW00%02X no\nVD\n0" % (cols - 1, cols), dots=latch)
         scr = screen(err) or [""]
         vd = [l[3:] for l in out.splitlines() if re.match(r"^[0-9A-F]{2} ", l) and len(l) == 3 + cols]
         ok = out.count(" ?") == 1 and scr[0] == "HI" + " " * (cols - 3) + "Z" and len(vd) == ROWS and vd[0] == scr[0]
-        check("dots", tag, ok, "latch %s: VW limit / VD width: %r %r" % (latch, scr[0], vd[:1]))
+        check("dots", tag, ok, "DOTS %s: VW limit / VD width: %r %r" % (latch, scr[0], vd[:1]))
 
 
 def case_absent(tag, emu):
@@ -187,8 +191,18 @@ def case_os(tag, emu):
     check("os", tag, ok, "\n" + out[out.find("BOOT FROM CF"):] + "\n" + text)
 
 
+def case_keyboard(tag, emu):
+    # the fast emulator with the keyboard takes the ROM's machine path, where the 0 command is the stop loop: a limit
+    out, err = run(emu, "VI\nVW0102 typed on the keyboard\nVS\n0", env={"Y1VID_KBD": "stdin"},
+                   limit=400000000 if tag == "uc" else 20000000)
+    scr = screen(err)
+    ok = scr is not None and scr[1].startswith("  TYPED ON THE KEYBOARD ") and \
+        "VIDEO 01  MIRROR 00  CRTC 01  ROW 00  COL 00" in out and "PS/2 empty, 0 queued" in err
+    check("keyboard", tag, ok, "%r / %r" % (out[-300:], scr and scr[:2]))
+
+
 CASES = {"present": case_present, "write": case_write, "mirror": case_mirror, "dots": case_dots, "absent": case_absent,
-         "os": case_os}
+         "os": case_os, "keyboard": case_keyboard}
 names = [a for a in sys.argv[1:] if not a.startswith("-")] or list(CASES)
 for n in names:
     for tag, emu in EMUS:

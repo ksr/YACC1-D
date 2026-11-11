@@ -23,9 +23,10 @@ the terminal UI in a pseudo-terminal) and checks:
             glyphs), a breakpoint by command, keys typed into the UART (V I, V M1, H) appearing in the state's video RAM
             with the CRTC's geometry and cursor and in the console, pause, the memory window following `sp`, quit
   webstop   the web server ends cleanly, the emulator with it: SIGTERM during a run, SIGINT, and `q` typed as a command
-  gate      --video-rev passes the gate-level card through (y1ucemu -G): with v1.0 the monitor's VR0E 12 / VR0E reads 12
-            back and `video` says "v1.0 at gate level, 0 bus events"; with v1.0-no-rs (no RS fix) R14 is never written
-            and `video` counts the undriven reads; an unknown revision ends y1dbg with an error; nothing left running
+  gate      --video-rev passes the gate-level card through (y1ucemu -G, the V1.0 card): with v1.0 the monitor's
+            VB D800 0E / VB D802 12 writes R14 = 12 and `video` says "v1.0 at gate level, 0 bus events"; with v1.0-no-rs
+            (no RS fix) R14 is never written; an unknown revision ends y1dbg with an error; nothing left running
+            (2026-11-10, branch video-v2: VR0E 12 / VR0E until then; this branch's VR reaches the V2.0 card's ports)
 """
 import os, re, sys, time, socket, subprocess, select, struct, json, signal, urllib.request, urllib.error
 
@@ -40,6 +41,9 @@ sys.path.insert(0, os.path.join(ROOT, "tools"))
 import vidsim                                       # noqa: E402
 
 VERBOSE = "-v" in sys.argv
+# 2026-11-10 (branch video-v2): the emulators' default card is the V2.0; with its DOTS jumper open it is the 80 x 24
+# screen these cases were written for (y1dbg and the y1ucemu it starts inherit this)
+os.environ.setdefault("Y1VID_DOTS", "6")
 MON = os.path.join(ROOT, "firmware/monitor/monitor.lst")
 BAS = os.path.join(ROOT, "firmware/basic/basic.lst")
 CMDLOOP = int(re.search(r"^([0-9a-f]{4})h: CMDLOOP\b", open(MON).read(), re.M).group(1), 16)
@@ -111,7 +115,7 @@ def case_video():
         check("video", sc["lines"][0][:4] == "Y@Y!" and sc["inverse"][0][:4] == [False, True, True, False],
               "%r %r" % (sc["lines"][0][:4], sc["inverse"][0][:4]))
         v = x(sh, "video")
-        check("video", v.startswith("CRTC 74 50 5E") and " 18 " in v, v)
+        check("video", v.startswith("CRTC 7E 50 62") and " 18 " in v, v)   # the V2.0 ROM's 80-column table
     finally:
         sh.emu.close()
 
@@ -307,7 +311,7 @@ def case_web():
         v = st["video"]; g = v["geom"]; sc = screen(v)
         ok = k["queued"] == 8 and st["status"]["state"] == "running" and g["crtc"] and g["cols"] == 80 and g["rows"] == 24 and \
             g["lines"] == 8 and g["cursor"] is not None and g["cursor"]["blink"] == 32 and len(v["ram"]) == 4096 and \
-            any("INTEL-HEX LOAD" in l for l in sc["lines"]) and v["regs"][:3] == [0x74, 0x50, 0x5E]
+            any("INTEL-HEX LOAD" in l for l in sc["lines"]) and v["regs"][:3] == [0x7E, 0x50, 0x62]
         check("web", ok, "%r %r" % (k, g))
         _, again = http(base, "/api/state?con=%d&log=%d" % (st["console"]["total"], st["out"]["total"]))
         check("web", again["console"]["lines"] is None and again["out"]["lines"] is None, "unchanged console/log resent")
@@ -350,22 +354,24 @@ def case_webstop():
 
 def case_gate():
     before = emulators()
-    cmds = "until cmdloop; key VR0E 12\\nVR0E\\nVS\\n; waitfor MIRROR 00  CRTC 60; video"
+    # (2026-11-10, branch video-v2: the ROM's VR goes to the V2.0 card's ports, so the V1.0 card's 6845 is written as
+    # memory: VB D800 0E / VB D802 12, its address and data registers)
+    cmds = "until cmdloop; key VB D800 0E\\nVB D802 12\\nVS\\n; waitfor COLS 50; video"
     got = {}
     for rev in ("v1.0", "v1.0-no-rs"):
         r = subprocess.run([sys.executable, os.path.join(ROOT, "software/y1dbg"), "--video-rev", rev, "-c", cmds],
                            capture_output=True, text=True, timeout=120)
         if VERBOSE: print(r.stdout + r.stderr)
         got[rev] = (r.returncode, re.search(r"^CRTC .*$", r.stdout, re.M), r.stdout + r.stderr)
-    # since ROM 2026-10-22 the reset reads the JP1 latch at $D801 (the card's geometry): on v1.0 its inputs float, so
-    # the only bus events allowed are those reads
+    # the only bus events allowed are reads of the JP1 latch at $D801 (main's ROM reads it at reset; this branch's
+    # ROM does not touch the V1 card)
     ev = [l for l in got["v1.0"][2].splitlines() if l.startswith("video card: ")]
     ok = got["v1.0"][0] == 0 and got["v1.0"][1] and got["v1.0"][1].group(0).split()[15] == "12" and \
         re.search(r"card: v1\.0 at gate level, \d+ bus events", got["v1.0"][1].group(0)) and \
         all("a read of IC2 (the JP1 latch) with inputs FF floating" in l and "at $D801" in l for l in ev)
     check("gate", bool(ok), "%r" % got["v1.0"][1])
     m = got["v1.0-no-rs"][1]
-    ok = got["v1.0-no-rs"][0] == 0 and m and m.group(0).split()[15] == "--" and re.search(r"card: v1\.0-no-rs at gate level, [1-9]\d* bus events", m.group(0))
+    ok = got["v1.0-no-rs"][0] == 0 and m and m.group(0).split()[15] == "--" and re.search(r"card: v1\.0-no-rs at gate level, \d+ bus events", m.group(0))   # (writes only: none)
     check("gate", bool(ok), "%r" % m)
     r = subprocess.run([sys.executable, os.path.join(ROOT, "software/y1dbg"), "--video-rev", "v9", "-c", "r"], capture_output=True, text=True, timeout=60)
     check("gate", r.returncode == 2 and "-G list" in r.stderr, r.stderr)

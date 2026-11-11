@@ -12,8 +12,8 @@
 ;   VSYNC   the 6845 set up with the MDA table (R0-R9 = 80 64 68 10 45 2 32 39 0 7, 18.52 kHz / 50.05 Hz at 8 dots):
 ;           polls of IN PC from one VSYNC rise to the next (a frame) and while VSYNC is high (16 scan lines)
 ;   DE      256 polls of IN PC: how many saw DE high
-;   KEYS    OUT PD 01; three bytes the keyboard sends (Y1VID_KEYS), each read after IN PD showed FULL; IN PE again
-;           with FULL clear (the latch's last byte), IN PD at the end
+;   KEYS    OUT PD 01; three bytes typed on the keyboard, each read after IN PD showed FULL; then IN PD: FULL again,
+;           the next byte typed (the monitor's 0) already loaded (the latch's last byte with FULL clear: model_test.c)
 ; Load: the monitor's : loader, then G3000. No R2.
 ;
 stringout:  EQU 0ffc0h
@@ -176,9 +176,6 @@ kloop:  INP PD
         SUBI 1
         STA cval
         BRNZ kloop
-        INP PE                      ; FULL is clear: the latch's last byte
-        JSR showbytea
-        JSR space
         INP PD
         JSR showbytea
         JSR crlf

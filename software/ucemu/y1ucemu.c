@@ -1070,7 +1070,12 @@ int main(int argc, char **argv) {
     if (vgate && vid.absent) { fprintf(stderr, "y1ucemu: -G and -N: one video card or none\n"); return 1; }
     vid_init();                          /* 2026-11-10: Y1VID_CARD (v1.0 / v2.0) and the V2.0 card's options */
     vid_key_ready = input_ready; vid_key_get = input_byte;   /* Y1VID_KBD=stdin: the console feeds the PS/2 keyboard */
-    if (vgate && vid2.card == 2) { fprintf(stderr, "y1ucemu: -G models the video card V1.0; Y1VID_CARD=v2.0 has no gate model\n"); return 1; }
+    if (vgate) {                         /* -G is the V1.0 card at gate level: it chooses that card (the branch's default
+                                            is V2.0), unless Y1VID_CARD asks for V2.0 outright */
+        const char *c = getenv("Y1VID_CARD");
+        if (c && *c && vid2.card == 2) { fprintf(stderr, "y1ucemu: -G models the video card V1.0; Y1VID_CARD=%s has no gate model\n", c); return 1; }
+        vid2.card = 1;
+    }
     resolve_signals();
     load_opnames(exe_dir);
     if (!ucode_path) { exe_relative(path, sizeof path, "../../firmware/microcode/ucode-generator2/test.hex", argv[0]); ucode_path = path; }

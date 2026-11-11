@@ -257,6 +257,9 @@ echo the machine produces. Under the interpreter the `0` command exits; under uc
 
 ## 11. The video unit (2026-09-25)
 
+**On the branch `video-v2` (since 2026-11-10) the unit drives the video card V2.0 instead of the V1 cards: section 11a.
+This section is the V1 cards' unit, the ROM on `main` and in the machine.**
+
 The video card ([`docs/cards/video.md`](../cards/video.md): an MC6845 CRTC and an IDT7134 dual-port RAM in the $D000
 block) is in the machine for bring-up without its 6845. The ROM carries the whole driver; **it does not start the
 card by itself** until the card is debugged (`VIDAUTO EQU 0`). All of it is plain 2021-set code: no `LDZ`/`STZ`/
@@ -351,3 +354,37 @@ stderr at the end, `-W` logs CRTC writes, `-N` removes the card ($D000-$DFFF rea
 shows the console. After fitting the 6845 with the RS-to-A1 fix: `VR0E 12` then `VR0E` must read back `12` (R14, the cursor
 high byte: readable on every 6845; R12/R13 are write-only on Motorola's MC6845); `VI`, then a picture; adjust timing with `VR`. Details in [`docs/cards/video.md`](../cards/video.md)
 section 8 and [`docs/procedures/VIDEO-BRINGUP.md`](../procedures/VIDEO-BRINGUP.md).
+
+## 11a. The video unit for the video card V2.0 (2026-11-10, branch `video-v2`)
+
+`ROM 2026-11-10 V2` (not burned; for a machine with the V2.0 card, [`docs/cards/video-v2.md`](../cards/video-v2.md)).
+The text side is section 11's driver - the text RAM at $D000-$D7FF, `vputc`, the scroll, mirroring, the `V` command,
+`VIDCTL` at $FFBC, the variables at $0FF0-$0FF9 - with the card reached through its ports; the V1 cards' code is gone
+(the JP1 latch, the 6845 at $D800/$D802, the 11.0592 MHz table), which also pays for the keyboard: the monitor half is
+4,051 bytes (4,066 before).
+
+| | V1 cards (section 11) | V2.0 card |
+|---|---|---|
+| Detection (`vprobe`) | $55 / $AA written and read back at $D000 | `IN PC` (the status) reads $5x: the card ID in bits 7..4. With no card the port is undecoded and reads the floating bus ($FF, or the `INP`'s own opcode $9C) |
+| Geometry (`vmode`) | the JP1 latch at $D801 | the DOTS jumper, `IN PC` bit 0: 1 (open) 80 x 24, R0..R3 = 126, 80, 98, 10; 0 (fitted) 64 x 24, 94, 64, 75, 8 - both 12 MHz, R4..R15 from `vcrtab` |
+| The 6845 | `STA $D800` (address) / `STA $D802`, `LDA $D802` (data) | `OUTA PA` (address) / `OUTA PB`, `INP PB` (data): `vinit`, `vcursor`, `V R` |
+| `V I` | the CRTC table, clear, home | first `OUTI PC,0`: the control register cleared (text on, graphics off, direct mode, plane and pages 0), then the same |
+| $D800-$DFFF | the 6845 and the latch | the graphics window (2K of the 62256: `OUT PC` picks the plane and page); `V B` writes it like any byte of the block |
+| Console input | the UART | the UART **and the PS/2 keyboard** (below) |
+
+**The keyboard.** The card's ATmega turns the keyboard's scan codes into ASCII (Enter = CR, the arrows as VT100
+sequences: `embedded/video-ps2/README.md`) and hands each byte over in a latch: `IN PD` bit 0 (FULL) says one is
+waiting, `IN PE` reads it and clears FULL. `kbst` gives ACC = FULL (0 when no card was found); `uartin` and `uartinne`
+take a key when there is one and otherwise poll the UART, so both inputs work at once, and `const` (CONST, $FFF8)
+counts either. CR becomes LF on both paths as before. The card's rule holds everywhere: `IN PE` only after `IN PD`
+showed FULL. Nothing is needed in BASIC, Y1/OS or the programs: they read the console through these vectors. The
+keyboard's interrupt (JP3) is not used.
+
+**On the emulators** the V2.0 card is the default on this branch (`Y1VID_CARD=v1.0` for the V1 card): `Y1VID_KEYS`
+types on the keyboard, `Y1VID_KBD=stdin` makes the terminal the keyboard (the UART then receives nothing; on the
+instruction-level emulator `BRDEV` then branches, so the ROM takes the machine's path), `Y1VID_DOTS=6` opens the DOTS
+jumper. `tests/video/emu.py` runs the unit on both emulators (case `keyboard`: the monitor driven from the keyboard);
+`tests/video/v20/run.py` the card itself.
+
+Not yet in the ROM: graphics (drawing in direct mode, GFX-ON switched in vertical blanking, refused in 6-dot mode),
+starting the screen at reset (`VIDAUTO` is still 0).

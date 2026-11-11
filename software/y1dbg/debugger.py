@@ -156,6 +156,11 @@ def glyph(b):
 
 DOTCLOCK = 11.0592e6                       # the card's crystal (Q2, fitted 2026-10-21; SV4 on 1-2): the ROM's CRTC table's
 DOTS = 6                                   # dots a character: IC28 a 74163 (tools/vidsim.py DOTS)
+# 2026-11-10 (branch video-v2): the emulators' card is the V2.0 unless Y1VID_CARD=v1.0 - its 12 MHz crystal and the DOTS
+# jumper of Y1VID_DOTS (8 fitted, the default; 6 open), as software/videomodel.h has them (the field rate and the
+# cursor's blink only; --video-rev, the V1.0 card at gate level, keeps these V2.0 figures)
+if os.environ.get("Y1VID_CARD", "v2.0") not in ("v1.0", "1.0", "1"):
+    DOTCLOCK, DOTS = 12e6, 6 if os.environ.get("Y1VID_DOTS") == "6" else 8
 BLINK = {0: 0, 1: 0, 2: 16, 3: 32}           # R10 bits 5-6: steady, off, blink every 16 / 32 fields
 
 

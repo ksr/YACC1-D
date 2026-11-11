@@ -27,7 +27,8 @@
  * software/gatemodel from the netlist) and keeps the display RAM and vid_crtc_read/vid_crtc_write's register file.
  *
  * 2026-11-10: the video card V2.0 (docs/cards/video-v2.md; hardware/cards/video/kicad/v2.0, not built), chosen in the
- * environment: Y1VID_CARD=v2.0 (default v1.0, the card above). On V2.0 the block holds the text RAM at $D000-$D7FF as
+ * environment: Y1VID_CARD=v2.0, or v1.0 for the card above. On the branch video-v2 the default is v2.0 (its ROM drives
+ * the V2.0 card); on main it is v1.0. On V2.0 the block holds the text RAM at $D000-$D7FF as
  * before and the GRAPHICS WINDOW at $D800-$DFFF: 2K of the 62256's 32K, at CPAGE * 16K + PLANE * 2K + ADDR10..0. Every
  * register is on an I/O port (vid_io_read / vid_io_write; IC30 decodes PA..PF):
  *   PA  OUT the 6845's address register             PB  IN/OUT the 6845's data register (R14-R17 read back)
@@ -45,14 +46,14 @@
  * scan code translation; Enter = CR), a byte loaded into PE 20 us after the last was read, BUSY for 20 us after a
  * command; its interrupt request (INTREQ AND FULL, through JP3 to the bus -INT) is kept but not wired to the CPU (no
  * emulator models -INT yet); there is no mouse. Environment:
- *   Y1VID_CARD=v2.0      the V2.0 card                    Y1VID_DOTS=6      the DOTS jumper open (default 8: fitted)
+ *   Y1VID_CARD=v1.0      the V1 card (default here: v2.0) Y1VID_DOTS=6      the DOTS jumper open (default 8: fitted)
  *   Y1VID_TEXTONLY=1     the text-only build (IC35-IC45, IC55, RN3 not fitted: IN PC bit 3 = 1, the window floats)
  *   Y1VID_KEYS=TEXT      bytes the keyboard sends, in order (\r \n \e \t \\ and \xHH)
  *   Y1VID_KBD=stdin      the terminal is the PS/2 keyboard: console input goes to PE, and the UART receives nothing
  *   Y1_CLOCK=HZ          the CPU clock (default 1000000), for VSYNC / DE and the PS/2 delays
  * -V adds a line with the control register and the PS/2 state; Y1VIDSTATE adds the card, the control register, DOTS
  * and the 32K graphics RAM (tools/vidsim.py render draws both layers from it). -W also logs OUT PC and OUT PD.
- * y1ucemu -G (the V1.0 card at gate level) and Y1VID_CARD=v2.0 do not go together.
+ * y1ucemu -G is the V1.0 card at gate level: it chooses that card (Y1VID_CARD=v2.0 with -G is refused).
  *
  * Include after <stdio.h>/<stdint.h>/<stdlib.h>/<string.h>. vid_init() once at start (reads the environment);
  * vid_in(a) says whether an address is the card's; vid_read/vid_write serve it, with mem = the emulator's memory array
@@ -119,10 +120,11 @@ static void v2_queue(int c) { if (vid2.qh - vid2.qt < sizeof vid2.q) vid2.q[vid2
 
 static void vid_init(void) {
     const char *e = getenv("Y1VID_CARD");
-    vid2.card = 1;
+    vid2.card = 2;                        /* the branch video-v2: the V2.0 card unless Y1VID_CARD says v1.0 */
     if (e && *e) {
         if (!strcmp(e, "v2.0") || !strcmp(e, "2.0") || !strcmp(e, "2")) vid2.card = 2;
-        else if (strcmp(e, "v1.0") && strcmp(e, "1.0") && strcmp(e, "1")) {
+        else if (!strcmp(e, "v1.0") || !strcmp(e, "1.0") || !strcmp(e, "1")) vid2.card = 1;
+        else {
             fprintf(stderr, "Y1VID_CARD=%s: the cards are v1.0 and v2.0\n", e); exit(2);
         }
     }

@@ -42,7 +42,7 @@ def build(d):
 def run(images, extra=(), env=None, limit=300000000, tail=b"0"):
     data = b"".join(open(i, "rb").read() + b"G3000" for i in images) + tail
     r = subprocess.run([UC, "-x", "-m", "-V", "-l", str(limit)] + list(extra), input=data, capture_output=True,
-                       env=dict(os.environ, **(env or {})), timeout=1800)
+                       env=dict(os.environ, Y1VID_CARD="v1.0", **(env or {})), timeout=1800)   # the V1 card's programs
     return r.stdout.decode("latin1").replace("\r", ""), r.stderr.decode("latin1")
 
 

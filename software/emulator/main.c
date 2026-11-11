@@ -533,8 +533,9 @@ void print_usage(const char *progname) {
     printf("  -V           Video card: print the screen (and the CRTC registers) on stderr at exit\n");
     printf("  -W           Video card: log CRTC register writes on stderr\n");
     printf("  -N           No video card: $D000-$DFFF reads $FF, writes ignored\n");
-    printf("  (environment) Y1VID_CARD=v2.0  the video card V2.0 (ports PA-PE, graphics window $D800); Y1VID_KEYS,\n"
-           "               Y1VID_KBD=stdin, Y1VID_DOTS, Y1VID_TEXTONLY, Y1_CLOCK: software/videomodel.h\n");
+    printf("  (environment) the video card V2.0 by default on this branch (ports PA-PE, graphics window $D800),\n"
+           "               Y1VID_CARD=v1.0 the V1 card; Y1VID_KEYS, Y1VID_KBD=stdin, Y1VID_DOTS, Y1VID_TEXTONLY, Y1_CLOCK:\n"
+           "               software/videomodel.h\n");
 }
 
 int main(int argc, char** argv) {
@@ -1183,6 +1184,10 @@ int main(int argc, char** argv) {
                         break;
 
                     case BRDEV: // emulator does not branch, hardware does branch
+                        if (vid2.kbd_stdin) {   /* YACC1-D 2026-11-10: the console is the V2.0 card's keyboard: the */
+                            register_write_hi(PC, hi);   /* ROM takes the machine's path (the UART and the keyboard) */
+                            register_write_lo(PC, lo);
+                        }
                         break;
                 }
                 break;

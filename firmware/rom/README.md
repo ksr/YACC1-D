@@ -25,6 +25,16 @@
   writing, `-P` sets it again afterwards, so on the machine a store into $E000-$FFFF (review M2: the v1.3 card has
   no write-protect jumper) is ignored by the chip. Nothing in the tree writes the ROM in place. Then read back and
   compare: `minipro -p AT28C64B -r /tmp/rb.bin && cmp /tmp/rb.bin firmware/rom/shipped/rom.bin`.
+- **2026-11-10 (branch `video-v2` only): `shipped/rom` and `rom.bin` are `ROM 2026-11-10 V2` — NOT BURNED, and not
+  for the machine as it is: it drives the video card V2.0 (not built), not the V1.0 card in the machine.** The monitor's
+  video unit finds the card by its ID on `IN PC` ($5x), takes the width from its DOTS jumper (`IN PC` bit 0: 80 x 24 or
+  64 x 24, the 12 MHz tables), reaches the 6845 through ports PA/PB and clears the control register (PC) in `V I`;
+  the V1 cards' latch, `$D800`/`$D802` and 11.0592 MHz table are gone. The card's PS/2 keyboard is a second console
+  input beside the UART (`uartin`, `uartinne`, `const`). Monitor half 4,051 bytes (was 4,066); the vectors at
+  $FFBC-$FFFF are where they were (their targets moved); BASIC unchanged (its half byte-identical).
+  `docs/programming/MONITOR.md` section 11a. **MD5 (rom.bin) 02ec541711c41cc461e48d9b72456a70**;
+  `tools/verify_firmware.py`: FIRMWARE VERIFIED. On a machine without the V2.0 card it finds no video card and runs
+  as before on the UART. The machine keeps `main`'s `ROM 2026-10-21` until the V2.0 card is built.
 - **2026-10-22: `shipped/rom` and `rom.bin` are `ROM 2026-10-22` — NOT BURNED** (the chip holds `ROM 2026-10-21`,
   MD5 68b584fc04885ac6abbfc26a96548696). The video geometry from the card: at reset, after the probe, `vmode` reads
   the JP1 latch at $D801 - bit 2 = 1 the V1.0-V1.2 card (80 x 24, the 11.0592 MHz table as before), bit 2 = 0 a V1.3
