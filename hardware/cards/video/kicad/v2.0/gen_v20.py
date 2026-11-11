@@ -765,7 +765,7 @@ SILK_H, SILK_W = 1.0, 0.15       # every text on the silk: JLCPCB's standard cha
 # the card's name in the band under the graphics muxes (the IC labels take the band between rows A and B, 2026-10-24)
 SILK = [("YACC1 Video Card V2.0", 111.6, 70.5, 1.5), ("cottageworker.com", 116.5, 73.5, 1.0),
         # R2-9: the jack legends turned, beside each jack's body (between it and the pull-ups), clear of J1 and J2's ref
-        ("KBD (PURPLE)", 220.6, 70.0, 1.0, 90), ("MOUSE (GREEN)", 220.6, 88.0, 1.0, 90),
+        ("KEYBOARD (PURPLE)", 220.6, 70.0, 1.0, 90), ("MOUSE (GREEN)", 220.6, 88.0, 1.0, 90),
         ("TEXT-ONLY: R25 R26", 149.0, 100.3, 1.0)]
 SILK += [(t, 214.0, 99.0 + 2.54 * k, 1.0) for k, t in enumerate(("1 GND (BLK)", "CTS", "VCC nc", "TXD", "RXD", "DTR"))]
 # the jumpers' positions (board-layout rules, 2026-10-24: every position labelled with what it selects; the function
@@ -786,15 +786,20 @@ SILK += [("ON: PS/2 -INT", _jp3x + 1.8, _jp3y, 1.0), ("OFF: NO -INT", _jp3x + 1.
 _jp4x, _jp4y = PLACE["JP4"][:2]
 SILK += [("+VS CGA", _jp4x - 4.6, _jp4y, 1.0, 0), ("-VS MDA", _jp4x - 4.6, _jp4y + 5.08, 1.0, 0)]
 # the text beside a reference (board-layout rules): each IC's type, the LED's and the jumpers' function. The IC types are
-# the parts' values, shortened where the value is long: the 6845 (HD68B45SP / MC68B45P), the 28C64 (AT28C64B-15),
-# the ATmega328P (ATmega328P-P)
-TYPE_SHORT = {"IC17": "6845", "IC25": "28C64", "IC49": "ATmega328P"}
+# the parts' values as the parts list has them (2026-11-10: the 6845, the 28C64 and the ATmega328P were shortened to
+# those names before; the full value carries the grade the card needs: HD68B45SP / MC68B45P, AT28C64B-15, ATmega328P-P)
+TYPE_SHORT = {}
 # 2026-11-02 (the rule for every new card): every resistor, network, capacitor, crystal and the fuse carries its value
 # too ("R10 1k", "RN3 10k x8", "C16 47u"), so the card can be stuffed from the silk alone
 VALUE_SHORT = {"C16": "47u", "F1": "0.5A"}
 COMPANION = dict({r: TYPE_SHORT.get(r, v[0]) for r, v in N.PARTS.items() if r.startswith("IC")},
                  **{r: VALUE_SHORT.get(r, v[0]) for r, v in N.PARTS.items() if re.match(r"(RN?|C|Q|Y|F)\d", r)},
-                 LED1="PWR", JP2="DOTS", JP3="INT-EN", JP4="VSYNC", SV3="BLOCK", SV4="DOTCLK")
+                 LED1="PWR", JP2="DOTS", JP3="INT-EN", JP4="VSYNC", SV3="BLOCK", SV4="DOTCLK",
+                 # the connectors' type (2026-11-10; J2 and J3 are named by their jack legends, "KEYBOARD", "MOUSE")
+                 X1="DIN41612 96", J1="RCA", J4="FTDI", X2="DB9 F")
+# the parts whose companion is the footprint's own value field, shown on the silk (2026-11-10): their library footprints
+# have no courtyard, so a free text cannot be told to belong to them (pcb-check's LABELS), but their own field can
+VALUE_FIELD = {"X1", "J1", "X2"}
 UNCONNECTED = {}                                         # filled from the schematic's netlist by board()
 
 
@@ -824,8 +829,15 @@ def silk_texts(b):
             t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_LEFT)
         t.SetPosition(VECTOR2I(FM(x), FM(y)))
     comp = {}
+    fps = {fp.GetReference(): fp for fp in b.GetFootprints()}
     for ref, s in sorted(COMPANION.items()):
-        t = comp[ref] = text(s, SILK_H)
+        if ref in VALUE_FIELD:
+            t = comp[ref] = fps[ref].Value()
+            assert t.GetText() == s, (ref, t.GetText())
+            t.SetLayer(pcbnew.F_SilkS); t.SetVisible(True)
+            t.SetTextSize(VECTOR2I(FM(SILK_H), FM(SILK_H))); t.SetTextThickness(FM(SILK_W))
+        else:
+            t = comp[ref] = text(s, SILK_H)
         t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_CENTER); t.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_CENTER)
     return comp
 
@@ -907,6 +919,7 @@ def silk_place(b, comp=None):
             else:
                 fixed.extend(shape_boxes(it, CLR_SILK))
     bodies, outline = {}, {}                            # no text on any part's body; outline: what a text stands beside
+    fabs = {}                                           # the Fab outline alone: no text's box on it (pcb-check's LABELS)
     for fp in fps:
         ref = fp.GetReference()
         fab = [bx(it.GetBoundingBox()) for it in fp.GraphicalItems()
@@ -927,12 +940,16 @@ def silk_place(b, comp=None):
                 body = [(u[0], u[1] - 2.5, u[2], u[3] + 2.5)]
         if body:
             bodies[ref] = union(body)
+        if fab:
+            fabs[ref] = union(fab)
         outline[ref] = union(pads + silk + body)
 
-    def free(r):
-        if r[0] < X0 + EDGE or r[1] < Y0 + EDGE or r[2] > X1R - EDGE or r[3] > Y1B - EDGE:
-            return False
+    def free(r, t=None):                                # r: a text's ink; t: the text, whose whole box (KiCad's, taller
+        if r[0] < X0 + EDGE or r[1] < Y0 + EDGE or r[2] > X1R - EDGE or r[3] > Y1B - EDGE:   # than the ink) stays off
+            return False                                # every body (2026-11-10: pcb-check's LABELS measures that box)
         if any(hit(r, q) for q in bodies.values()):
+            return False
+        if t is not None and any(hit(bx(t.GetBoundingBox()), q) for q in fabs.values()):
             return False
         return not any(hit(r, q) for q in fixed) and not any(hit(r, q) for q in placed)
 
@@ -949,7 +966,7 @@ def silk_place(b, comp=None):
                       key=lambda o: (abs(o[0]) + abs(o[1]), abs(o[1]), o))
         for i, j in offs:
             put(d, x + i, y + j, a)
-            if free(ink(d)):
+            if free(ink(d), d):
                 break
         else:
             put(d, x, y, a)
@@ -1019,7 +1036,7 @@ def silk_place(b, comp=None):
                             over = max(0.0, abs(s) - max(0.0, (span - size) / 2) - 1.0)
                             rx, ry = bx0 - U[0], by0 - U[1]
                             if isic:                        # an IC: above it, else below, else in the gap at its right, left
-                                cost = SIDES[side] + 0.2 * abs(s) + gap
+                                cost = SIDES[side] + 0.2 * abs(s) + gap + pen
                             else:                           # the rest: nearest the library's place
                                 cost = math.hypot(bx0 + W / 2 - dx, by0 + H / 2 - dy) + (1.5 if a != da else 0) + pen
                             cost += 10 * min(over, 1.0) + over
@@ -1030,7 +1047,9 @@ def silk_place(b, comp=None):
             for a in (0, 90):
                 er = extent(t, a)
                 ec = extent(c, a) if c else None
-                arr = [("one", 0.0)] if c is None else [("line", 0.0)] + ([("stack", 0.8)] if not isic else [])
+                # an IC's type goes on the reference's line; on a second line beside it (stacked) only where no line
+                # fits anywhere round the chip (2026-11-10: IC49, "ATmega328P-P" in the gap at its left)
+                arr = [("one", 0.0)] if c is None else [("line", 0.0), ("stack", 100.0 if isic else 0.8)]
                 for kind, pen in arr:
                     # the companion's centre relative to the reference's, and the block's ink box around the reference's
                     if kind == "one":
@@ -1064,11 +1083,11 @@ def silk_place(b, comp=None):
             def block(qs, own=True):                        # the first block of qs clear of everything
                 for cost, a, (rx, ry), cp, _ in qs:
                     put(t, rx, ry, a)
-                    if not free(ink(t)) or (own and not owns(ink(t))):
+                    if not free(ink(t), t) or (own and not owns(ink(t))):
                         continue
                     if c is not None:
                         put(c, cp[0], cp[1], a)
-                        if not free(ink(c)) or hit(ink(c), ink(t, CLR_SILK)):
+                        if not free(ink(c), c) or hit(ink(c), ink(t, CLR_SILK)):
                             continue
                     return True
                 return False
@@ -1079,12 +1098,12 @@ def silk_place(b, comp=None):
                     if near and not beside:
                         continue
                     put(c, x, y, a)
-                    if free(ink(c)) and (not near or owns(ink(c))):
+                    if free(ink(c), c) and (not near or owns(ink(c))):
                         cfree.append((a, (x, y), ink(c)))
                 best, n = None, 0
                 for cost, a, (rx, ry), _, _ in alone:
                     put(t, rx, ry, a)
-                    if not free(ink(t)) or not owns(ink(t)):
+                    if not free(ink(t), t) or not owns(ink(t)):
                         continue
                     ri = ink(t, CLR_SILK)
                     for ca, cp, ci in cfree:
@@ -1106,7 +1125,7 @@ def silk_place(b, comp=None):
             def alone_beside():                             # the reference by itself beside its part
                 for cost, a, (rx, ry), _, _ in alone:
                     put(t, rx, ry, a)
-                    if free(ink(t)) and owns(ink(t)):
+                    if free(ink(t), t) and owns(ink(t)):
                         return True
                 return False
 
@@ -1171,7 +1190,7 @@ def silk_place(b, comp=None):
                       key=lambda o: (math.hypot(*o), o))
         for i, j in offs:
             put(t, gx + i, gy + j, 0)
-            if free(ink(t)):
+            if free(ink(t), t):
                 break
         else:
             unclear.append(t.GetText())

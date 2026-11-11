@@ -462,6 +462,13 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     unconnected. Those 16 pads are now connected solid to their plane (`gen_v20.py planes`, run by `build.sh` on the
     routed board); no re-route, only `In1_Cu.gbr` / `In2_Cu.gbr` change. preorder_check PASS on every check; DRC, proof
     and verify as before. Still ready to order, not ordered (the card's README, "Planes (2026-11-03)").
+    **2026-11-10: the labels to the pre-order check** (`~/Developer/pcb-check`: no failures; its LABELS warnings
+    fixed in `gen_v20.py`, silk only, no part moved, only `video-v2.0-F_Silkscreen.gbr` differs): every IC's type as
+    the parts list has it ("IC17 HD68B45SP / MC68B45P", "IC25 AT28C64B-15", "IC49 ATmega328P-P"), the connectors'
+    type ("X1 DIN41612 96", "J1 RCA", "X2 DB9 F", "J4 FTDI", "KEYBOARD (PURPLE)"), and no text box on a part's
+    outline (RN2, RN3, F1, LED1). Left: C20's value in the legend "C3 C20: 100n" (no room within 6 mm of it), and the
+    check's LAYOUT (it takes the bottom edge for the front: J2), DRAWING and BUS PINS warnings. Still ready to order,
+    not ordered (the card's README, "Labels (2026-11-10)").
   - **Open - the ROM's V2.0 driver** and the emulators' V2.0 card model. The driver's requirements (the card's README,
     "The software rules for the window"): the card ID check **(IN PC AND $F0) = $50**, the build and DOTS from **(IN PC
     AND $F9)** = $58 / $59 text-only, $50 / $51 with graphics (bits 1 and 2 are VSYNC and DE, live); GFX-ON left 0 on a
