@@ -372,6 +372,14 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     generator and its two lookups a cycle; the shift registers and dot logic at 25 MHz (74AC / 74F); the VGA
     connector with both sync polarities; whether V2.0 is still ordered first; the emulators' model (the drawing
     commands) and the ROM's console driver.
+- **Video card V3, the build-out (begun 2026-11-11).** `docs/cards/video-v3.md` section 10a is the circuit part by
+  part: the chip's DIP-64 pins, the six ports' strobes from two 74HCT138 (CS, RS = IO-ADDR0, R/W = IO-ADDR2), about
+  30 chips with the PS/2 section and 36 with text method A's. **Next, in order:** the netlist
+  (`hardware/cards/video/kicad/v3.0/v30_netlist.py`) with its checks; a timing check of the memory and bus cycles;
+  the generator for the schematic and the board from V2.0's; routing, DRC, PDFs, `pcb-check`; a design review. Settled
+  2026-11-11: the chip on four ports (PA-PD; with PS/2 on PE / PF the card has all of PA-PF, a later card uses
+  P2-P7), and VGA only (one DE-15; no DB9, RCA or halved clock). Open before the netlist: the memory control's exact
+  gating (-WE, -OE, the shift registers' load with its dummy-cycle flip-flop) from the application note's figures.
 - **Video card V2.0 (designed 2026-10-22; `hardware/cards/video/kicad/v2.0`; re-reviewed and READY TO ORDER 2026-10-23, not ordered).** V1.3 (DOTS jumper, 12 MHz,
   both fonts in one EPROM, 4 layers) plus a graphics layer, two PS/2 ports and every register on I/O ports. Board 218 mm
   long (the sequencer logic V2.1l's length; X1 where every card has it), 4 layers: In1 GND plane, In2 VCC plane.
