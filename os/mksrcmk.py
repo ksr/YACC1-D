@@ -4,8 +4,9 @@
 """mksrcmk.py - the Makefiles that /bin/make reads in the disk's /src (2026-11-03), from the tree, so they never
 drift from the sources or from os/Makefile's flags:
 
-  /src/os/commands/Makefile                 every /bin command from its C (asm.c is asmc), make install -> /bin
-  /src/os/commands-asm/Makefile             asm, the assembler from its own assembly, make install -> /bin/asm
+  /src/os/commands/Makefile                 every /bin command from its C (asm.c is asmc, basic.c is basicc), make
+                                            install -> /bin
+  /src/os/commands-asm/Makefile             asm and basic from their assembly, make install -> /bin/asm, /bin/basic
   /src/software/compiler/c/target/Makefile  cc1 .. cc9, the native compiler's passes, make install -> /lib/cc
   /src/os/Makefile                          the kernel, y1os; make install -> /lib/y1os, make boot runs sysgen
   /src/Makefile                             all of them, one after the other (a recipe cds and runs make again)
@@ -82,7 +83,7 @@ def main():
     for f in sorted(os.listdir(cdir)):
         if f.endswith(".c"):
             n = f[:-2]
-            cmds.append(("asmc" if n == "asm" else n, f, os.path.join(cdir, f)))
+            cmds.append((n + "c" if n in ("asm", "basic") else n, f, os.path.join(cdir, f)))   # their assembly twins have the names
     built = [n for n, _, _ in cmds if n not in NATIVE_NO]
     write(out, "os/commands", [HEAD.rstrip(),
           "# /bin's commands from their C: make name (cc, then asm) builds it here, make install copies all to /bin"] +
@@ -98,11 +99,12 @@ def main():
           "y1os: y1os.asm y1os_str.inc", "\tasm y1os.asm y1os", "",
           "install: all", "\tcp y1os /lib/y1os", "",
           "boot: all", "\tsysgen y1os", ""] + clean(["y1os"], False))
-    # /bin/asm from its assembly
+    # /bin/asm and /bin/basic (2026-11-11) from their assembly
     write(out, "os/commands-asm", [HEAD.rstrip(),
-          "# /bin/asm, the assembler in YACC1 assembly, assembled by the assembler that is in /bin now", "",
-          "all: asm", "",
-          "asm: asm.asm asmtab.inc", "\tasm asm.asm asm", ""] + install(["asm"], "/bin") + clean(["asm"], False))
+          "# /bin/asm and /bin/basic, the programs in YACC1 assembly, assembled by the assembler that is in /bin now", "",
+          "all: asm basic", "",
+          "asm: asm.asm asmtab.inc", "\tasm asm.asm asm", "",
+          "basic: basic.asm", "\tasm basic.asm basic", ""] + install(["asm", "basic"], "/bin") + clean(["asm", "basic"], False))
     # the compiler's passes
     tdir = os.path.join(ROOT, "software/compiler/c/target")
     passes = [("cc%d" % (i + 1), n + ".c", os.path.join(tdir, n + ".c")) for i, n in enumerate(PASSN)]
