@@ -22,6 +22,7 @@ for root, dirs, files in os.walk(DST):
     dirs[:] = [d for d in dirs if d not in (".git", "node_modules")]   # node_modules: npm's, git-ignored (tools/kicad)
     for f in files:
         p = os.path.join(root, f); rel = os.path.relpath(p, DST)
+        if rel == ".git": continue          # a second worktree's .git is a file naming the repository (2026-11-10)
         if os.path.islink(p): buckets["generated: layout links (tools/layout_links.py)"] += 1; continue
         if rel in PATCHED: buckets["mine: patched migrated source (tools/patched_files.txt)"] += 1; continue
         if rel in plan:
