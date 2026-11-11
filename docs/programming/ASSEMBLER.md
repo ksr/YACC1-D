@@ -135,11 +135,28 @@ table with `-x`. `firmware/monitor/monitor.lst` is the reference example (`f05b:
     `ORG`/`DS`/`EQU` backward. y1cc `--xisa` aligns its variable page with `zpad: DS (256-(zpad).0)&255` (the label
     on the same line counts as defined). Every firmware image, bench image and test program assembles to the same
     bytes as before (`tools/verify_firmware.py`, `tests/bench`, `tests/os`, `tests/compiler/passes.py`).
-12. **A line of 100 characters or more aborts the assembler** (found 2026-09-25): `trim()` and `parse()` copy the text
-    after the leading blanks / after the label, up to the comment, into `char tmp[100]`, and macOS's fortified
-    `strcpy` stops the program (exit status 133, no output). y1cc's instructions are far shorter (its longest lines,
-    109 characters, are comments, cut before the copy); the native assembler (section 10) takes 254.
-    BACKLOG has the fix.
+12. **A line is at most 254 characters** (`header.h`: `LINE_CHARS`; the comment counts, the line feed does not),
+    the limit of the native assembler too (section 10). A longer line stops the assembly:
+    `7:ERR - Line longer than 254 characters:` and the line's first 40 characters, 7 being the line's number.
+    Until 2026-11-11 a far shorter line ended the assembler with no message at all: `trim()` and `parse()` copied
+    the text after the leading blanks / after the label's colon, up to the comment, through `char tmp[100]`, so 100
+    characters or more there (a `DB` line of 19 operands after a label; 18 assembled) overran it and macOS's
+    checked `strcpy` stopped the program: exit status 133, nothing printed, an empty `.img` left behind (found
+    2026-09-25 and again 2026-11-11). The text is moved in place now (`memmove`), and `asm.c`'s `next_line()` reads
+    the lines. Before it, `fgets(buffer,255)` handed a line of 255 characters or more on in pieces of 254, each
+    assembled as a line of its own - the rest of a `DB` list as an `Invalid opcode`, the rest of a comment as
+    code - and a line of exactly 254 counted as two in every line number after it. A carriage return before the
+    line feed counts as a character.
+13. **Two more overruns went with it on 2026-11-11**, each the end of the assembler with no message:
+    a name of 30 characters or more as an operand (`BR` and a 30-character name; `support.c` `find_label()` copied
+    it into `buffer[30]`: status 133) is `Label not found` now, as any name that is not a label; and with `-x` a
+    label of 20 to 29 characters that the source refers to (`asm.c` `show_xref()` read the names back into
+    `lab[20]`: status 134 after the image was written, the cross-reference lost; 19 of the 354 sources of
+    `tests/asm`'s corpus did it) gets its cross-reference line. `tests/asm/src` holds a source for each limit -
+    `longline.asm` (lines of 100 to 254 characters, a 29-character label), `err_line.asm` (255), `err_ref.asm`
+    (names of 30 and 40 characters), `err_long.asm` (a label of 30, quirk 2) - and `tests/asm/run.py` checks the
+    exit status and the message of each, and fails on any source the assembler dies on. Listing, symbol table,
+    `.img` and `.prg` of the corpus's 354 sources are the same bytes before and after the change.
 
 ## 7. The four worked examples in `tests/assembler/`
 
@@ -272,7 +289,8 @@ asm -h monitor.asm M.IMG   an output name; a source name without '.' gets .ASM
   mnemonic in 64 hash chains. A construction it cannot express (`\N`, `\D`, `%`, `|n>s`, `OPTION 16BIT`) stops the
   generator rather than producing a different assembler. To add an instruction, section 8 is all there is to do,
   then `make -C os`.
-- **What is copied**: the line read 254 bytes at a time (`fgets(buffer, 255)`); `makeupper` (upper case outside
+- **What is copied**: the line read 254 bytes at a time (RC/asm's `fgets(buffer, 255)` of the time; RC/asm stops
+  at a longer line since 2026-11-11, quirk 12); `makeupper` (upper case outside
   single quotes); `parse` (the comment at the first `;` outside quotes, the label before the first `:` outside
   quotes, with RC/asm's rule that a second kind of quote inside a quote takes over); `WildMatch`/`Class_Match`
   (first word literal, whitespace, `\B`/`\W` up to a `,` or space outside quotes with the `abs((int)v)` range test,
@@ -284,12 +302,14 @@ asm -h monitor.asm M.IMG   an output name; a source name without '.' gets .ASM
 - **Not supported** (an error in /bin/asm, accepted by RC/asm; nothing in the tree uses them): MACRO/ENDM, PUBLIC,
   EXTERN, LIB PROC/ENDP; `/` on values beyond 16 bits; an EQU value outside -65535..65535 (labels are 16 bits + a
   sign); code or a label past $FFFF (RC/asm counts on into 17 bits); INCLUDE more than two deep (four OS handles:
-  the source, two includes, the output). RC/asm's `.prg` output and its listing, cross-reference and symbol options
+  the source, two includes, the output); a quoted string of more than 32 characters in a `DW` list, or after a
+  comma and a blank in a `DB` list (`token too long`; found 2026-11-11, BACKLOG). RC/asm's `.prg` output and its listing, cross-reference and symbol options
   are not there: the summary line gives the size, the label count and the addresses.
 - **Other differences**: errors are counted once per line (RC/asm can print the same undefined label for every
   pattern it tries) and name the line in its own file; after an error the output file is deleted (RC/asm writes
-  it anyway); a missing INCLUDE file is an error (RC/asm prints a message and goes on); lines of 100-254 characters
-  work (quirk 12).
+  it anyway); a missing INCLUDE file is an error (RC/asm prints a message and goes on); a line of more than 254
+  characters is read in pieces of 254, each a line of its own, where RC/asm stops with an error (quirk 12: the
+  rest of the line is refused here too, as an invalid instruction, unless it happens to be one).
 - **Limits**: the symbol table is 20,292 bytes in `/bin/asm` (17,088 in `/bin/asmc`: 16,640 until 2026-09-25,
   when cc8's buffered I/O outgrew it), 5 + the name's length a label (y1cc's labels average 7 characters: about
   1,660 labels, 1,400 in ASMC; the biggest compiler pass, cc8, has 1,383 in 16,925 bytes, 83% of ASM's table);
@@ -336,14 +356,16 @@ asm -h monitor.asm M.IMG   an output name; a source name without '.' gets .ASM
 - **Tests**: `tests/asm/run.py` (in `make check`, `make asm-test`) builds `asm.c` for the Mac with the YACC1's
   integer types against an emulation of the Y1/OS syscalls (`tests/asm/host_asm.c`, `host_sys.c`) and compares it
   with RC/asm on every source in the tree; then it runs `/bin/asm` (asm.asm) under Y1/OS on the instruction-level
-  emulator on the same 336 sources, with -h and to a program file (disks of 72 sources, the sessions in parallel,
-  20 seconds), and its messages, summary and files must be what asm.c gives for the same command line: 334
-  identical, 2 refused by both where ASMC's table is full (`--uc`: 27 of them on the microcode emulator too, 2
-  minutes) - each y1cc compile of `tests/compiler/corpus.py` plain and `--xisa` (262,
+  emulator on the same 357 sources (2026-11-11), with -h and to a program file (disks of 72 sources, the sessions
+  in parallel, 20 seconds), and its messages, summary and files must be what asm.c gives for the same command
+  line: 355 identical, 2 refused by both where ASMC's table is full (`--uc`: 27 of them on the microcode emulator too, 2
+  minutes) - each y1cc compile of `tests/compiler/corpus.py` plain and `--xisa` (318,
   the nine compiler passes and `asm.c` itself among them), the monitor and BASIC with their candidates, monnew,
   `tests/assembler`, `isa.asm`, `y1os.asm` with its INCLUDE, and `tests/asm/src` (`quirks.asm`: the corners above;
-  six sources both must refuse): 283 identical in hex and as program files, 1 identical in hex (`yacc1test.asm`
-  goes back in address: its program file is refused, as it must be), 13 refused by both. `--target`
+  `longline.asm`: lines of 100 to 254 characters; nine sources both must refuse): 340 identical in hex and as
+  program files, 1 identical in hex (`yacc1test.asm` goes back in address: its program file is refused, as it
+  must be), 16 refused by both. Before the corpus the run puts RC/asm at its own limits (quirks 2, 12 and 13:
+  the exit status and the message of each), and a source RC/asm dies on is a failure. `--target`
   (`tests/asm/target.py`) runs `asm` under Y1/OS on both emulators: y1cc programs assembled and run, the monitor
   assembled to `firmware/monitor/monitor.img`, `isa.asm`, the quirks with INCLUDE, compiler pass cc4, an error;
   every file written compared with RC/asm's output.

@@ -254,11 +254,14 @@ tests/asm/host_sys.c	claude	written in YACC1-D
 tests/asm/run.py	claude	written in YACC1-D
 tests/asm/src/err_dup.asm	claude	written in YACC1-D
 tests/asm/src/err_expr.asm	claude	written in YACC1-D
+tests/asm/src/err_line.asm	claude	written in YACC1-D
 tests/asm/src/err_long.asm	claude	written in YACC1-D
 tests/asm/src/err_opcode.asm	claude	written in YACC1-D
 tests/asm/src/err_range.asm	claude	written in YACC1-D
+tests/asm/src/err_ref.asm	claude	written in YACC1-D
 tests/asm/src/err_stale.asm	claude	written in YACC1-D
 tests/asm/src/err_undef.asm	claude	written in YACC1-D
+tests/asm/src/longline.asm	claude	written in YACC1-D
 tests/asm/src/quirks.asm	claude	written in YACC1-D
 tests/asm/src/quirks1.inc	claude	written in YACC1-D
 tests/asm/src/quirks2.inc	claude	written in YACC1-D

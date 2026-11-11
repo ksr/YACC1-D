@@ -365,7 +365,7 @@ def rotl_hash(name, seed):
 
 def render_asm(path):
     """os/commands-asm/asmtab.inc: the table of build() for asm.asm, as DB/DW lines (numbers only: the assembler
-    upper-cases its source; every line well under RC/asm's 100 characters).
+    upper-cases its source; every line well under 100 characters, RC/asm's limit until 2026-11-11).
       OT_SEED        EQU: the mnemonic hash's seed (rotl_hash), the first that keeps every chain at 3 records or fewer
                      with the fewest records passed on the way to all of them
       OT_HEAD        64 words: the first record of each chain, 0 = none
