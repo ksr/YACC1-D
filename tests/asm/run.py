@@ -28,6 +28,10 @@
    emulator's program watch are summed. --uc: also the sources of UC_SET on the microcode emulator (~2 minutes).
 5. --target: the Y1/OS runs on both emulators (tests/asm/target.py): a disk with sources, `asm` run under the OS,
    the results fetched back and compared with RC/asm's.
+Before the corpus, RC/asm at its own limits (LIMITS, 2026-11-11): a source of lines up to 254 characters with the
+listing and the cross-reference on, a line of 255, names of 30 and 40 characters as operands, a label of 30 - the
+exit status and the message of each. All but the last ended RC/asm on a signal with no message until that day, and
+in the corpus a source RC/asm dies on is a failure, never one of the "rejected by both".
 Exit 1 on any difference. The work files are in tests/asm/build/ (git-ignored).
 """
 import os, sys, re, glob, shutil, subprocess, concurrent.futures, types
@@ -49,6 +53,17 @@ OSBIN = os.path.join(ROOT, "os/build/y1os.bin")
 MON_EXIT = re.search(r"^([0-9a-f]{4})h: CMD_EXIT\b", open(os.path.join(ROOT, "firmware/monitor/monitor.lst")).read(),
                      re.M).group(1).upper()
 UC_SET = ["hello", "quirks", "isa", "err_undef", "err_expr", "err_dup", "romdiag", "monitor_monitor"]   # --uc
+# RC/asm at its own limits (software/assembler; tools/patched_files.txt, 2026-09-24 and 2026-11-11): a source of
+# src/, its rcasm.rc, the exit status, and the texts its output must have
+LIMITS = [
+    ("longline", "-h\n-l\n-x\n", 0, ["\n35 Lines assembled\n0 Errors\n", "\nObject Code:604 bytes\n",
+                                     "\n31a7h: ABCDEFGHIJABCDEFGHIJABCDEFGHI - <    27>     28 "]),
+    ("err_line", "-h\n", 1, ["\n7:ERR - Line longer than 254 characters:         DB 001H,002H,"]),
+    ("err_ref", "-h\n", 1, ["\n7:Label not found - ABCDEFGHIJABCDEFGHIJABCDEFGHIJ\n",
+                            "\n8:Label not found - ABCDEFGHIJABCDEFGHIJABCDEFGHIJKLMNOPQRST\n", "\n2 Errors\n"]),
+    ("err_long", "-h\n", 1, ["\n5:ERR - Label longer than 29 characters: ABCDEFGHIJABCDEFGHIJABCDEFGHIJ\n"]),
+]
+LONGEST = {"longline": 254, "err_line": 255}     # what these two are about: an editor must not rewrap them
 
 
 def sh(cmd, cwd=None, env=None):
@@ -87,12 +102,16 @@ def prepare(d):
     for inc in glob.glob(os.path.join(d, "*.inc")): shutil.copy(inc, os.path.join(d, "prg"))
 
 
+DIED = "RC/asm DIED on signal %d"
+
+
 def rcasm(d, name):
     """RC/asm on d/NAME.asm: (ok, errors text, img path, start address from the .prg)."""
     shutil.copy(os.path.join(d, name + ".asm"), os.path.join(d, "prg"))
     rc, out, _ = sh([RCASM, name, "-d=yacc1"], cwd=d)
     ok = "\n0 Errors" in out
     errs = "\n".join(l for l in out.splitlines() if "ERR" in l or "not found" in l)[:300]
+    if rc < 0: ok, errs = False, DIED % -rc      # a fault in RC/asm (2026-11-11), not a source it refuses
     _, pout, _ = sh([RCASM, name, "-d=yacc1"], cwd=os.path.join(d, "prg"))
     m = re.search(r"^\*([0-9a-f]{4})$", open(os.path.join(d, "prg", name + ".prg")).read(), re.M)
     return ok, errs, os.path.join(d, name + ".img"), int(m.group(1), 16) if m else 0
@@ -113,6 +132,7 @@ def check1(name, d):
         if os.path.exists(os.path.join(d, f)): os.remove(os.path.join(d, f))
     rc, out, err = sh([NATIVE, "-h", src, nimg], cwd=d)
     if not ok:                                   # RC/asm reports errors: the native assembler must fail too
+        if errs.startswith(DIED[:11]): return name, "FAIL", errs
         if rc and not os.path.exists(os.path.join(d, nimg)):
             return name, "error", "both report errors (RC/asm: %s | asm: %s)" % (
                 errs.splitlines()[0] if errs else "?", err.strip().splitlines()[0] if err.strip() else "?")
@@ -141,6 +161,32 @@ def check1(name, d):
         return name, "FAIL", "load/exec %s, expected %04X/%04X" % (m.groups() if m else None, lo, exp_exec)
     labels = re.search(r"(\d+) bytes, (\d+) labels", out)
     return name, "ok", "%s bytes, %s labels" % labels.groups() if labels else ""
+
+
+def rcasm_limits():
+    """RC/asm at its own limits (LIMITS): the exit status and the message of each; returns the failures."""
+    d = os.path.join(BUILD, "limits")
+    shutil.rmtree(d, ignore_errors=True)
+    os.makedirs(d)
+    shutil.copy(DEF, d)
+    fails = []
+    for name, opts, status, texts in LIMITS:
+        src = os.path.join(HERE, "src", name + ".asm")
+        shutil.copy(src, d)
+        open(os.path.join(d, "rcasm.rc"), "w").write(opts)
+        rc, out, _ = sh([RCASM, name, "-d=yacc1"], cwd=d)
+        why = []
+        longest = max(len(l) for l in open(src).read().split("\n"))
+        if LONGEST.get(name, longest) != longest:
+            why.append("its longest line is %d characters, not %d" % (longest, LONGEST[name]))
+        if rc != status: why.append("%s, not exit status %d" % (DIED % -rc if rc < 0 else "exit status %d" % rc, status))
+        why += ["not in its output: %r" % t for t in texts if t not in "\n" + out]
+        if why: fails.append(("limits: " + name, "; ".join(why)))
+    for name, detail in fails: print("%-44s %-7s %s" % (name, "FAIL", detail))
+    print("tests/asm: RC/asm at its limits (lines up to 254 characters with the listing and the cross-reference, a "
+          "line of 255, names of 30 and 40 characters as operands, a label of 30): %d sources, %d FAILED" % (
+              len(LIMITS), len(fails)))
+    return fails
 
 
 def host_ref(name, d, args, tag):
@@ -346,10 +392,10 @@ def main():
     only = sys.argv[sys.argv.index("--only") + 1].lower() if "--only" in sys.argv else ""
     os.makedirs(BUILD, exist_ok=True)
     build_native()
+    fails = rcasm_limits()
     items = y1cc_items(only) + hand_items(only)
     for d in sorted({d for _, _, d in items}): prepare(d)
     counts = {}
-    fails = []
     with concurrent.futures.ThreadPoolExecutor(8) as ex:
         for name, status, detail in ex.map(check, items):
             counts[status] = counts.get(status, 0) + 1

@@ -652,11 +652,18 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   To fold into the generator when the diagrams are next regenerated.
 
 ## Software
-- **OPEN 2026-11-11: the host assembler crashes on a long operand list.** A `DB` line with 19 operands (an operand
-  field of about 95 characters) ends `software/assembler/asm` with status 133 and an empty `.img`, no message; 18
-  assemble. Probably a 100-character buffer (`char tmp[100]` in `asm.c`). Until fixed: at most 12 bytes on a `DB`
-  line (`tests/video/v30/v30card.asm` does). To do: a checked buffer or an error naming the line, a line in
-  `docs/programming/ASSEMBLER.md`'s quirks, a regression case.
+- (done 2026-11-11: **the host assembler and long lines.** A `DB` line with 19 operands after a label ended
+  `software/assembler/asm` with status 133 and an empty `.img`, no message; 18 assembled. `parse()` and `trim()`
+  copied the text after the label's colon / after the leading blanks through `char tmp[100]`: 100 characters or
+  more there overran it. It is moved in place now. A line may have 254 characters, the limit of /bin/asm; a
+  longer one stops the assembly with `ERR - Line longer than 254 characters` and its line number (it used to be
+  assembled in pieces of 254). Two more overruns that ended the assembler the same silent way went with it: a
+  name of 30 characters or more as an operand (`find_label()`, status 133; `Label not found` now) and, with
+  `-x`, a referenced label of 20 to 29 characters (`show_xref()`, status 134; 19 sources of `tests/asm`'s corpus).
+  `docs/programming/ASSEMBLER.md` quirks 12 and 13; `tests/asm/src/longline.asm`, `err_line.asm`, `err_ref.asm`
+  and the limits step of `tests/asm/run.py`, which also fails on any source RC/asm dies on; listing, symbols,
+  `.img` and `.prg` of the corpus's 354 sources the same bytes before and after. The 12 bytes a `DB` line of
+  `tests/video/v30/v30card.asm` are no longer a limit.)
 - **The debugger with a live video screen (`software/y1dbg`, 2026-10-11), modelled on the ELF repository's System-5
   emulator (`software/s5emu`: `debugger.py`, `shell.py`, `tui.py`, `web.py`).**
   - **Phase 1 - done 2026-10-11:** `y1ucemu -D PORT` (a line/JSON debug server on 127.0.0.1; run speed without `-D`
@@ -1119,11 +1126,18 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   24-bit positions); (3) what RC/asm accepts and asm refuses (MACRO, PUBLIC/EXTERN/LIB, '/' beyond 16 bits,
   EQU values beyond 16 bits) - nothing in the tree uses them; (4) `asm` inside a `>` or a pipe needs the OS's second
   write handle ("Y1/OS still to write", above).
-- RC/asm (host) aborts on a line whose text after the label or the leading blanks, up to the comment, is 100
-  characters or more (`trim()`/`parse()` copy it into `char tmp[100]`, and macOS's fortified strcpy traps; found
-  2026-09-25 writing `tests/asm/src/quirks.asm`); y1cc's lines are shorter, and /BIN/ASM takes 254. A
-  `tools/patched_files.txt` fix to the host, with `make -C software/assembler check` and `tests/asm` after it. The assembly OS has 18 sectors of headroom in the
-  16K reserve (LBA 1..32) and 7,711 bytes free below its RAM (2026-09-23, v0.2).
+- (done 2026-11-11, "the host assembler and long lines" above: RC/asm (host) aborted on a line whose text after
+  the label or the leading blanks, up to the comment, was 100 characters or more - `trim()`/`parse()` copied it
+  into `char tmp[100]`, and macOS's fortified strcpy traps; found 2026-09-25 writing `tests/asm/src/quirks.asm`.)
+  The assembly OS has 18 sectors of headroom in the 16K reserve (LBA 1..32) and 7,711 bytes free below its RAM
+  (2026-09-23, v0.2).
+- /bin/asm and /bin/asmc refuse a quoted string of more than 32 characters in a `DW` list (`DW "...",0`) and
+  after a comma and a blank in a `DB` list (`DB 13, "..."`) with `token too long`; RC/asm assembles the first (a
+  word a character) and, as with a string of any length there, takes only the first character of the second.
+  Found 2026-11-11 with the host assembler's long lines. `DW \W` is tried before `DW \M`, and a `DB` item that
+  does not begin with its quote is an expression, so the string goes through the expression tokenizer, whose
+  tokens are 32 characters; RC/asm lets a longer token run on into the next records of its token table. Nothing
+  in the tree has such a line. To do, in asm.c and asm.asm both: no error for a token that is one quoted string.
 - (done 2026-09-23: **redirection and pipes** — `cmd [< in] [> out | >> out] [| cmd ...]`, up to 4 commands, clauses
   after the arguments, quotes protect `| < >`; `y1cc --os` makes putchar/puts the new syscall CONOUT (19) and getchar
   CONIN, KEYIN (20) is always the keyboard (pager, vi, dump, examine), STDIO (21) says what is redirected (the pager

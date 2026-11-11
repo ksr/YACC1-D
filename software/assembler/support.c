@@ -83,10 +83,15 @@ word find_label(char* buf)
 {
   int i;
   int f;
-  char buffer[30];
+  /* YACC1-D 2026-11-11: was buffer[30] with the strcpy unchecked, so a name of 30 characters or more as an operand
+     (`BR` and a 30-character name) overran it: status 133, no message. No label is longer than LABEL_CHARS (+ 2
+     for a ".0" or ".1"): a longer name is looked up as "", which no label is, and reported like any other that is
+     not there. */
+  char buffer[LABEL_CHARS+3];
   char mode;
   mode='N';
-  strcpy(buffer,buf);
+  if (strlen(buf) > LABEL_CHARS+2) buffer[0]='\0';
+  else strcpy(buffer,buf);
   i=pos('.',buffer);
   if (i!=0) {
     if (buffer[i]=='1') mode='H';

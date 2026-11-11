@@ -31,7 +31,6 @@ void makeupper(char *buffer) {
 
 void trim(char *buffer) {
   char *BPtr;
-    char tmp[100]; // ken
 /*
   for (i=0;i<strlen(buffer);i++)
     if (buffer[i]==';') buffer[i]='\0';
@@ -40,8 +39,10 @@ void trim(char *buffer) {
   while (*BPtr != '\0' && *BPtr <= ' ') BPtr++;
   //ken add if
     if(buffer != BPtr){
-        strcpy(tmp,BPtr); //ken
-        strcpy(buffer,tmp); //ken
+        /* YACC1-D 2026-11-11: moved down in place. The text went through "char tmp[100]; // ken" (strcpy(tmp,BPtr),
+           strcpy(buffer,tmp)), so 100 characters or more after the leading blanks overran tmp and macOS's checked
+           strcpy ended the assembler with status 133 and no message. memmove() is made for a move that overlaps. */
+        memmove(buffer,BPtr,strlen(BPtr)+1);
         //ken strcpy(buffer,BPtr);
     }
   while (buffer[0]!='\0' && buffer[strlen(buffer)-1]<=' ')
@@ -53,7 +54,6 @@ void parse(char *buffer)
   int i;
   char inQuote;
   char *BPtr;
-    char tmp[100]; //ken
     
   inQuote = 0;
   for (i=0;i<strlen(buffer);i++) {
@@ -77,8 +77,9 @@ void parse(char *buffer)
   if (BPtr != NULL) {
     *BPtr++ = '\0';
     strcpy(labl,buffer);
-      strcpy(tmp,BPtr); //ken
-      strcpy(buffer,tmp); //ken
+      /* YACC1-D 2026-11-11: in place, as in trim(): the copy through "char tmp[100]; //ken" was overrun by 100
+         characters or more after the label's colon (a DB line of 19 operands: status 133, no message) */
+      memmove(buffer,BPtr,strlen(BPtr)+1);
     //ken strcpy(buffer,BPtr);
     } else labl[0]='\0';
   trim(buffer);
@@ -161,12 +162,15 @@ void sort_labelsa()
 void show_xref(char* label)
 {
   int count;
-  char lab[20];
+  /* YACC1-D 2026-11-11: was lab[20] read with "%s". xref.tmp holds label names, 29 characters at most
+     (LABEL_CHARS), so with -x a referenced label of 20 characters or more overran lab and the assembler was
+     aborted (status 134) after the image, before the cross-reference. */
+  char lab[LABEL_CHARS+1];
   int lin;
   count=4;
   rewind(xref);
   do {
-    fscanf(xref,"%s %d",lab,&lin);
+    fscanf(xref,"%29s %d",lab,&lin);
     if (strcmp(label,lab)==0) {
       if (count==10) { printf("\n%7s"," "); count=0; }
       printf("%6d ",lin); count++; 
@@ -257,6 +261,23 @@ void readOptions(char *buffer) {
     }
   }
 
+/* YACC1-D 2026-11-11: the next source line into buffer; 0 at the end of the file. A line has LINE_CHARS characters
+   at most before its line feed (254, the limit of /bin/asm too); a longer one stops the assembly here. The loops
+   below called fgets(buffer,255,...) themselves, which hands a longer line on in pieces of 254: each piece was
+   assembled as a line of its own (the rest of a DB list as an "Invalid opcode", the rest of a comment as code),
+   and a line of exactly 254 counted as two. */
+int next_line(FILE *file)
+{
+  size_t n;
+  if (fgets(buffer,LINE_CHARS+2,file)==NULL) return 0;
+  n=strlen(buffer);
+  if (n>LINE_CHARS && buffer[n-1]!='\n') {
+    printf("%d:ERR - Line longer than %d characters: %.40s...\n",linecount+1,LINE_CHARS,buffer);
+    exit(1);
+    }
+  return 1;
+}
+
 int main(int argc,char** argv)
 {
   FILE *inifile;
@@ -317,7 +338,7 @@ int main(int argc,char** argv)
 /*        while (!feof(infile[filecount]))
           {
             fgets(buffer,255,infile[filecount]); */
-        while (fgets(buffer,255,infile[filecount])!=NULL) {
+        while (next_line(infile[filecount])) {   /* YACC1-D 2026-11-11: was fgets(buffer,255,...)!=NULL */
             linecount++;
             strcpy(readline,buffer);
             makeupper(buffer);
@@ -382,7 +403,7 @@ if (showlist=='*')  printf("%5d %04x: %s",linecount,address,readline);
 /*        while (!feof(infile[filecount]))
           {
             fgets(buffer,255,infile[filecount]); */
-        while (fgets(buffer,255,infile[filecount])!=NULL) {
+        while (next_line(infile[filecount])) {   /* YACC1-D 2026-11-11: was fgets(buffer,255,...)!=NULL */
             linecount++;
             strcpy(readline,buffer);
             bcount=0;

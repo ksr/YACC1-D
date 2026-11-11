@@ -12,6 +12,7 @@
 #define VERSION 2.2
 #define MAX_LABELS 8192   /* YACC1-D 2026-09-24: was 1000, with no bounds check (a bigger program crashed) */
 #define LABEL_CHARS 29   /* longest label: labels[][30] holds 29 characters + NUL */
+#define LINE_CHARS 254   /* YACC1-D 2026-11-11: longest source line, its line feed not counted (asm.c next_line()) */
 
 #define DEF_DIR    "/Users/ken/rcasm/"
 
@@ -52,7 +53,7 @@ prefix char  inmacro;
 prefix char  inname[80];
 prefix char  outname[80];
 prefix char  workfile[80];
-prefix char  buffer[255];
+prefix char  buffer[LINE_CHARS+2];   /* YACC1-D 2026-11-11: was 255; a line of LINE_CHARS, its line feed, NUL */
 prefix char  command[1024];
 prefix char  labl[1024];
 prefix char  lastlabel[1024];

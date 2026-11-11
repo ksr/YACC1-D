@@ -50,8 +50,12 @@
   and files with asm.c's, `--uc` 27 sources on the microcode emulator too): `run.py` builds `os/commands/asm.c` for the Mac against an
   emulation of the Y1/OS syscalls (`host_asm.c`, `host_sys.c`: int = unsigned short, unsigned char) and compares it with
   the host assembler RC/asm on every source in the tree (the y1cc corpus plain and `--xisa`, the firmware, the
-  hand-written tests, `y1os.asm`, and `src/`: `quirks.asm` with two INCLUDE levels, six sources both must refuse), as
-  Intel hex and as program files: 297 sources, 0 different. `run.py --target` (`target.py`, `target.session`, the
+  hand-written tests, `y1os.asm`, and `src/`: `quirks.asm` with two INCLUDE levels, `longline.asm` with lines of
+  100 to 254 characters, nine sources both must refuse), as Intel hex and as program files: 357 sources, 0
+  different (2026-11-11). Before the corpus RC/asm is put at its own limits - a line of 254 characters and one of
+  255, names of 30 and 40 characters as operands, a label of 30, the cross-reference of a 29-character label: the
+  exit status and the message of each (all but the label ended it on a signal with no message until 2026-11-11);
+  a source RC/asm dies on is a failure, never one "refused by both". `run.py --target` (`target.py`, `target.session`, the
   transcripts `target.int.out`/`target.uc.out`) runs `asm` under Y1/OS on both emulators - y1cc programs assembled
   and run, the ROM monitor, `isa.asm`, compiler pass cc4 - and compares every file it wrote with RC/asm's output.
   `make asm-test`; both in `make check`.
