@@ -320,6 +320,37 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     CPU read latch (74LS374) and write latch, the bank/control register (bank, TEXT-ON, GFX-ON), a 74LS166, three gates. Goes with the PS/2 and IBM-monitor
     revision. Model: `python3 tools/vidsim.py overlay --tint --png ov.png` (the test card plus a drawing; `--overlay FILE`
     any 16K image, also in run/render; `--gmode or|xor`, `--layers text,gfx|text|gfx|none`); `tests/video/overlay_check.py` checks the addressing.
+- **A VGA video card around the HD63484 ACRTC (idea, 2026-11-11; nothing designed).** The aim: more graphics
+  resolution than V2.0's 512 x 192, on monitors sold today. That means VGA timing - 640 x 480 at 60 Hz, 31.47 kHz
+  lines, a 25.175 MHz dot clock (the same crystal halved is the TV / CGA rate, 640 x 240 at 15.73 kHz) - which most
+  LCDs and VGA-to-HDMI adapters take, where few take the 15.7 or 18.4 kHz of the V1 / V2.0 cards. Two HD63484 chips
+  are in hand (speed grade and package to read off the marking). From Hitachi's user's manual (1985) and application
+  note (1986), both on bitsavers under `components/hitachi/_dataBooks`:
+  - **Host side.** An 8-bit bus mode (DACK low at reset: D0-D7 only), two addresses (RS: address / status, and data),
+    16-bit registers and the command FIFO written high byte then low byte. CS must stay low for at least three 2CLK
+    cycles (0.95 us at 3.15 MHz: the YACC1's 2 us I/O strobe at 1 MHz meets it; a faster CPU clock needs a wait or a
+    stretched strobe). DTACK is open drain. Two I/O ports are the whole interface: no window in the $D000 block.
+  - **Clock.** 2CLK is 1 MHz to 4 / 6 / 8 MHz by grade. A display cycle is two 2CLK cycles (single access) or four
+    (interleaved, superimposed) and fetches one 16-bit word: the memory cycle rate is dots x bits a pixel x (1 single,
+    2 dual) / 16. 640 x 480 at one bit a pixel, single access: 2CLK = 3.15 MHz, any grade. Text superimposed on
+    graphics (dual access): 6.29 MHz, the 8 MHz grade only.
+  - **The chip draws.** 38 commands (line, rectangle, circle, ellipse, polygon, paint, copy, ...) on a frame buffer of
+    its own (two 62256s hold 640 x 480); the CPU sends coordinates. The CPU reaches the memory only through commands
+    (the read/write pointer RWP with WT, RD, MOD, CLR, CPY).
+  - **Text needs no second CRTC.** Each of the four screens (Upper, Base, Lower: three bands; and the Window) is
+    graphic or character (MWR bit 15). A character screen has its own 64K-word space; the chip puts the raster
+    address on RA0-RA4 (up to 32 lines a character) and CHR high for an external character generator, the 6845's
+    job. One word a display cycle: two 8-bit codes make the same 16 dots as one graphics word. The application note's
+    own example system superimposes character-generator text on graphics with one ACRTC.
+  - **Scrolling a character screen** is a register write, not a move: the screen's start address (SAR) plus its
+    memory width (MWR) is one line up; the start raster address (SRA) in SAR scrolls smoothly a scan line at a time;
+    the address wraps at the end of the space. The bands scroll independently (a fixed status line under a
+    scrolling screen). The chip has no text functions: the driver writes codes with WT and clears a line with CLR.
+  - **To decide or find out:** the two chips' grade (superimposed text at VGA needs the -8; a text window or band
+    that replaces the graphics behind it runs in single access on any grade); the DIP's pin pitch; the character
+    generator and its two lookups a cycle; the shift registers and dot logic at 25 MHz (74AC / 74F); the VGA
+    connector with both sync polarities; whether V2.0 is still ordered first; the emulators' model (the drawing
+    commands) and the ROM's console driver.
 - **Video card V2.0 (designed 2026-10-22; `hardware/cards/video/kicad/v2.0`; re-reviewed and READY TO ORDER 2026-10-23, not ordered).** V1.3 (DOTS jumper, 12 MHz,
   both fonts in one EPROM, 4 layers) plus a graphics layer, two PS/2 ports and every register on I/O ports. Board 218 mm
   long (the sequencer logic V2.1l's length; X1 where every card has it), 4 layers: In1 GND plane, In2 VCC plane.
