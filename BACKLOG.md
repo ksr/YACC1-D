@@ -320,7 +320,10 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     CPU read latch (74LS374) and write latch, the bank/control register (bank, TEXT-ON, GFX-ON), a 74LS166, three gates. Goes with the PS/2 and IBM-monitor
     revision. Model: `python3 tools/vidsim.py overlay --tint --png ov.png` (the test card plus a drawing; `--overlay FILE`
     any 16K image, also in run/render; `--gmode or|xor`, `--layers text,gfx|text|gfx|none`); `tests/video/overlay_check.py` checks the addressing.
-- **A VGA video card around the HD63484 ACRTC (idea, 2026-11-11; nothing designed).** The aim: more graphics
+- **A VGA video card around the HD63484 ACRTC (idea, 2026-11-11; nothing designed). The design note is
+  `docs/cards/video-v3.md` (begun 2026-11-11: the clock and registers for 640 x 480, the bus and memory sides, both
+  text methods, the steps to higher resolution; its section 12 lists what is to decide and to confirm), with
+  `tools/acrtc_timing.py` for the figures. Next: the decisions of its section 12, then the emulators' model.** The aim: more graphics
   resolution than V2.0's 512 x 192, on monitors sold today. That means VGA timing - 640 x 480 at 60 Hz, 31.47 kHz
   lines, a 25.175 MHz dot clock (the same crystal halved is the TV / CGA rate, 640 x 240 at 15.73 kHz) - which most
   LCDs and VGA-to-HDMI adapters take, where few take the 15.7 or 18.4 kHz of the V1 / V2.0 cards. Two **HD63484P8** are
