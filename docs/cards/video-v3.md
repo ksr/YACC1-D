@@ -171,8 +171,9 @@ The driver polls the status register; no emulator models -INT yet.
 - **Sync.** HSYNC and VSYNC leave the chip active low. Two XOR gates give either polarity (640 x 480 wants both
   negative, 640 x 400 a positive VSYNC, 800 x 600 both positive), then a buffer to the connector.
 - **Eight free control bits.** The chip puts its user attribute byte (ATR, in DCR) on MAD0-MAD7 in the last cycle of
-  every HSYNC: a 74HCT273 clocked by HSYNC's rising edge and cleared by -RESET turns it into the card's control
-  register with no port: the two sync polarities, three colour bits, the text layer on / off, OR or XOR.
+  every HSYNC: two registers on the dot clock turn it into the card's control register with no port (section 10b;
+  HSYNC's own edge comes too late to clock it): three colour bits, the two sync polarities, the text layer on / off,
+  OR or XOR.
 - **Output.** A DE-15 (HD15) socket at the front edge, right-angle, facing off the board. The video drives R, G and B
   (pins 1, 2, 3) through a resistor each, about 470 ohm from a 5 V CMOS output for 0.7 V into the monitor's 75 ohm;
   ANDing the dot with the three colour bits gives eight colours for the whole picture. HSYNC pin 13, VSYNC pin 14,
@@ -296,8 +297,9 @@ Beyond that the limits are the 5 V logic and the chip: 1024 x 768 with flashless
 ## 10a. The circuit, part by part (first cut, 2026-11-11)
 
 The step between this note and a netlist: every chip the card needs, what it does, and the connections that are
-already fixed by sections 5-7. The netlist (`hardware/cards/video/kicad/v3.0/v30_netlist.py`, to be written from
-this list as V2.0's `v20_netlist.py` was) is then the single source for the schematic and the board. Part numbers
+already fixed by sections 5-7. The netlist (`hardware/cards/video/kicad/v3.0/v30_netlist.py`, a first cut since 2026-11-11: the
+card without the cursor outputs and text method A, 35 ICs, its own check passing) is the single source
+for the schematic and the board. Part numbers
 here are working numbers until the netlist gives the references.
 
 **The chip, DIP-64 (the manual's figure 4.1).** 1 CUD1, 2 CUD2, 3 R/W, 4 CS, 5 RS, 6 RES, 7 DONE, 8 DREQ, 9 DACK,
@@ -333,21 +335,21 @@ OUT to PC or PD and an IN from PA or PB select nothing.
 | | jumper | IRQ (open drain) to the bus -INT, as V2.0's JP3 |
 | Clock | 25.175 MHz oscillator in a socket | the dot clock |
 | | 74F163 | divides by 4 for 2CLK and counts the 16 dots of a display cycle (application note figure 4-1) |
-| Memory | 3 x 74AC573 | the address latches: MAD0-7, MAD8-15, MA16-19 with RA4 and CHR, open while AS is low |
+| Memory | 2 x 74ACT573 | the address latches: MAD0-7, MAD8-15, open while AS is low (MA16-19 need none: section 10b) |
 | | 2 x 128K x 8 static RAM, 55 ns, DIP-32 | the low and the high byte of the frame buffer's word; the footprint takes the 512K part (pin 1 A18, pin 30 A17 instead of CE2: a jumper) |
-| | 2 x 74AC245 | RAM data to MAD in the data half of a drawing cycle, direction from MRD |
+| | 2 x 74ACT245 | RAM data to MAD in the data half of a drawing cycle, direction from MRD |
 | | 27C256 EPROM | the font, selected instead of the RAM while the latched MA19 is high; its byte goes to both halves of the word |
 | | 74HCT244 | the EPROM's byte onto the high half |
-| | 74AC00, 74AC32, 74AC08 (as the equations need) | -OE, -WE (cut short by 2CLK), the buffers' enables, RAM or EPROM |
+| | 74ACT00, 74ACT02, 74ACT04, 74ACT08, 74ACT10, 74ACT11, 74ACT32, 74F74 (section 10b's equations) | -OE, -WE, the buffers' enables, RAM or EPROM, the load |
 | Dots | 2 x 74F299 | 16 dots, loaded at the end of the display access, bit 0 out first |
-| | 74HCT273 | the control register: the chip's attribute byte (ATR) taken from MAD0-7 at HSYNC's rising edge |
-| | 74HCT86 | the two syncs' polarity; XOR of the text and graphics layers |
-| | 74AC08 | the dot ANDed with the three colour bits; blanking by DISP1 |
+| | 2 x 74ACT377, 74ACT00 | the control register: the chip's attribute byte (ATR) from MAD0-7 (section 10b) |
+| | 74ACT86 | the two syncs' polarity; XOR of the text and graphics layers |
+| | 74F74, gates of the 74ACT10 and 74ACT02 | blanking by DISP1 in step with the dots; a gate for each gun with its off bit |
 | | 3 x 470 ohm, DE-15 socket | R, G, B and the syncs to the monitor |
 | Text A (sockets, fitted later) | 74HCT374, 28C64 or 27C64, 74F299 or 74LS166, a few gates | the character code latched from the Window's word, the character generator addressed by it and RA0-RA3, its dots shifted and laid over the graphics; the card status bit TEXT says the parts are there |
 | PS/2 | ATmega328P, 2 x 74HCT374, 74HCT244, 74HCT74, 16 MHz crystal, 2 Mini-DIN-6, polyfuse, FTDI header | V2.0's section as it is (`embedded/video-ps2`): data on IN PF, commands on OUT PE, FULL / SRC / BUSY in the card status on IN PE with the TEXT bit and the ID 0110 |
 
-About 30 chips with the PS/2 section, 36 with method A's.
+35 chips in the netlist's first cut with the PS/2 section; method A's sockets add about 6.
 
 **The PS/2 section on the new ports** (V2.0's nets with the strobes renamed): OUT PE clocks the command latch and
 sets BUSY; IN PE enables the status buffer (a 74HCT244: FULL, SRC, BUSY and TEXT on bits 0-3, bits 7-4 wired 0110);
@@ -378,6 +380,79 @@ to another, the text-A parts removable as V2.0's graphics parts are). (2) A timi
 the schematic sheets and the unrouted board, from V2.0's (`gen_v20.py`): the 218 mm card, four layers, the layout
 rules of section 10. (4) Routing, DRC, the placement and schematic PDFs, `pcb-check`. (5) The review of the design
 before any order, as V2.0 had (`hardware/cards/video/reviews/v2.0.md`).
+
+## 10b. The memory cycle and the control logic (2026-11-11)
+
+From the manual's figures T-6 (display cycle) and T-8 (frame memory write) and its timing table, the 8 MHz part's
+numbers. Everything is timed from the **falling edge of 2CLK**, and a memory cycle is two 2CLK periods, 8 dots:
+
+| Dots (39.7 ns each) | 2CLK | The chip |
+|---|---|---|
+| 0, 1 | low | MCYC falls (within 40 ns), AS falls (65), the address is on MAD and MA16-19 / RA, MRD and DRAW are valid (70) |
+| 2, 3 | high | AS rises (it is low for about the low half of 2CLK, 30 ns at least); the address stays on MAD |
+| 4, 5 | low | MCYC rises; the address leaves MAD (off within 50 ns); in a write the data is on MAD within 70 ns |
+| 6, 7 | high | a read's data must be on MAD 40 ns before the cycle ends and 10 ns after; a write's data stays 10 ns after |
+
+MA16-19 / RA, MRD and DRAW hold for the whole cycle and 10 ns into the next: they need no latch (the part list's third
+'573 goes). The chip's outputs are TTL levels and its inputs want 2.2 V, so every part it drives has TTL thresholds:
+74ACT, 74HCT or 74F, not plain 74AC (the latches are 74ACT573, the buffers 74ACT245).
+
+**The dot counter keeps step with the chip by itself.** A 74F163 counts the 25.175 MHz clock; QB is 2CLK. QA, QB, QC
+are the dot number 0-7 within the memory cycle once QC follows the chip's MCYC, and it is made to: -LOAD is NAND(QA,
+QB), active in dots 3 and 7, with the load inputs A = B = 0 (what the count would be anyway, so 2CLK never skips) and
+C = NOT MCYC. MCYC is read at the clock edge that ends dot 3 or 7, when it has been steady for 100 ns and before
+it can move (it answers the 2CLK edge that this same clock edge makes). After one load QC is the cycle's half, low for
+the address and high for the data, with a flip-flop's edge instead of the chip's 40 ns.
+
+**The strobes.** W = NOR(DRAW, MRD): a drawing write.
+
+| Signal | Equation | Why |
+|---|---|---|
+| address latches' LE | NOT AS | open while AS is low; the address holds 10 ns after AS rises |
+| RAM -CE / EPROM -CE | MA19 / NOT MA19 | the font is the upper half of the address space |
+| RAM -OE, EPROM -OE | W | reading in every cycle but a write |
+| -WE | a flip-flop on the dot clock, D = NAND(QC, NOT QB, W): low in dots 5 and 6 | 79 ns wide; the data is at the RAM about 41 ns before it rises (25 wanted), and it rises a whole dot before the address or the data can move |
+| the MAD buffers' -OE | DRAW OR NOT QC OR (MRD AND NOT QB) | a write: dots 4-7; a read: dots 6 and 7 only, after the chip has let go of MAD (50 ns into dot 4) |
+| the MAD buffers' direction | MRD | high: RAM to MAD |
+| VALID | a flip-flop preset by AS low, cleared by the clock at the start of each cycle (QC falling) | a dummy cycle - a drawing slot with nothing to draw - looks like a display cycle but has no AS |
+| the shift registers' load (S1; S0 is high) | QA AND QB AND QC AND DRAW AND VALID | dot 7 of a display cycle: the load is the clock edge that ends it, 16 dots apart in dual access |
+| the font's copy onto the high byte ('244 -OE) | NOT MA19 OR W | the EPROM's byte on both halves of the word, never against a write |
+
+In a display cycle the RAM's address is steady about 5 ns into dot 2 and its data 55 ns later, in dot 3; the load is
+at the end of dot 7, so the RAM has 150 ns to spare and a 70 or 100 ns part would do. The read path of a drawing
+cycle (RAM, buffer on from dot 6) has the data at the chip about 79 ns before the cycle's end (40 wanted). At the end
+of a write the buffers are off about 16 ns after the chip's clock edge and the RAM's outputs come on 20 ns after it
+at the earliest: no overlap, but only a few nanoseconds apart - a figure for the timing check with the real parts'
+numbers.
+
+**The shift registers.** Two 74F299, S0 high and S1 the load, their outputs disabled (-OE high) so that the I/O pins
+are inputs on the RAM's data lines. They shift from QA towards QH; QH' of the second is the video. Bit 0 of the word
+is the left-hand dot, so it loads into QH of the second register (the word's low byte on the second register in
+reverse order, the high byte on the first), and the first register's QH' feeds the second's serial input.
+
+**The control register (figure T-9).** The attribute byte is on MAD only in the data half of the last memory cycle
+before HSYNC rises: valid 80 ns after that half begins, gone 10 ns after the cycle ends, while HSYNC itself may rise
+up to 70 ns after it. So HSYNC's edge cannot clock it, and nothing outside the chip says which cycle is the last.
+Two 74ACT377 on the dot clock do it: the first takes MAD0-7 at the end of every cycle while HSYNC is low (enable =
+dot 7 AND HSYNC low), so after the last one it holds the attribute byte; the second copies the first at the end of
+every cycle while HSYNC is high. The second is the control register, and it never shows what the first holds in
+between (the syncs' polarity bits must not move during a sync pulse). Its bits, the ATR byte of the chip's DCR:
+
+| ATR bit | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+|---|---|---|---|---|---|---|---|---|
+| 1 means | red off | green off | blue off | HSYNC positive | VSYNC positive | text layer on (method A) | XOR, not OR (method A) | spare |
+
+ATR = 00 is white on black with both syncs negative, what 640 x 480 wants: a driver that leaves ATR alone (the V3
+ROM writes DCR = $4000) gets a picture.
+
+**Blanking in step with the dots.** DISP1 (active low) moves up to 70 ns after a cycle begins, somewhere in the first
+two dots of a word. A 74F74 takes it when a word is loaded (clocked by the load signal's rise, in dot 7) and passes
+it on at the next dot clock, so the picture is switched on and off exactly on a word's first dot. Which word it
+belongs to is set by the chip's display skew (DSK in OMR). The dot is NAND(the shift register's output, that
+flip-flop), and each gun is a NOR of it with its off bit, through 470 ohm.
+
+**Still to work out before those nets are written:** the cursor outputs' sense and their place in the video, and
+all of text method A (the Window's second access in superimposed mode, which MRD low marks).
 
 ## 11. Software, in the order it can be built
 

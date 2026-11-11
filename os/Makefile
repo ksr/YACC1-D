@@ -26,7 +26,8 @@
 # which the shell redirects (> >> < |); a program built without it would write past a redirect to the screen.
 # Programs: os/commands/*.c -> /bin/name, compiled at TPA $5000; they #include the os/lib_*.c
 # libraries. The one exception (2026-09-26): /bin/asm is the assembler in YACC1 assembly, commands-asm/asm.asm
-# (build/asma/asm.bin), and commands/asm.c - its specification, the same program in C - is /bin/asmc. Files in os/disk/ go to the root (lower case; README.TXT as README), os/man/name to /man/name (`man` lower-cases the name),
+# (build/asma/asm.bin), and commands/asm.c - its specification, the same program in C - is /bin/asmc; since 2026-11-11
+# /bin/basic is commands-asm/basic.asm the same way and commands/basic.c is /bin/basicc. Files in os/disk/ go to the root (lower case; README.TXT as README), os/man/name to /man/name (`man` lower-cases the name),
 # and the Markdown documents in DOCS to /docs for `md` (host file = disk name). The native C compiler (2026-09-25):
 # /bin/cc (commands/cc.c) runs the passes /lib/cc/cc1..cc9 (make passes), which read /lib/y1ccrt.txt and /lib/y1lib.c.
 # Every name on the disk is lower case since 2026-11-03 (README and the Makefiles keep Unix's capitals).
@@ -60,7 +61,7 @@ RTLIB  = $(ROOT)/software/compiler/lib/y1ccrt.txt $(ROOT)/software/compiler/lib/
 # assembly, and the native compiler's passes (tests/native/selfhost.py's set). The volume is 4 MB (8192 sectors).
 SECTORS = 8192
 SRCS   = $(sort $(patsubst %,os/%,$(wildcard commands/*.c) $(LIBS) asm_optab.c dis_optab.c kermit_io.c kermit_io.asm \
-         commands-asm/asm.asm commands-asm/asmtab.inc y1os.asm strings.txt y1os.c help.txt) \
+         commands-asm/asm.asm commands-asm/asmtab.inc commands-asm/basic.asm y1os.asm strings.txt y1os.c help.txt) \
          $(patsubst $(ROOT)/%,%,$(filter $(CDIR)/cc% $(CDIR)/p% $(CDIR)/io% $(CDIR)/target%,$(wildcard $(CDIR)/*.c $(CDIR)/*.h)) \
          $(wildcard $(CDIR)/target/*.c) $(wildcard $(CDIR)/ylim/*.h)))
 # a disk name is 1..12 characters: kermit_io.asm (the source mkkio.py turns into kermit_io.c) is /src/os/kermitio.asm
@@ -120,8 +121,8 @@ $(ASMA): commands-asm/asm.asm commands-asm/asmtab.inc $(DEF)
 	@$(I2B) $(B)/asma/asm.img $@ --base 0x5000
 
 # BASIC in YACC1 assembly (commands-asm/basic.asm, 2026-11-11): the same program as commands/basic.c, assembled by the
-# host assembler at $5000. Not on the disk yet (`make basica` builds it): tests/ybasic/run.py runs it against
-# /bin/basic, the C one, session by session.
+# host assembler at $5000. It is /bin/basic, and the C one (build/bin/basic.bin) is /bin/basicc: tests/ybasic/run.py
+# runs the two against each other, session by session. `make basica` prints their sizes.
 BASICA = $(B)/basica/basic.bin
 $(BASICA): commands-asm/basic.asm $(DEF)
 	@mkdir -p $(B)/basica && cp $(DEF) commands-asm/basic.asm $(B)/basica/ && printf -- "-h\n-l\n" > $(B)/basica/rcasm.rc
@@ -159,14 +160,15 @@ $(B)/y1os_str.inc: strings.txt mkstrings.py
 	@mkdir -p $(B)
 	python3 mkstrings.py strings.txt > $@
 
-disk.img: $(B)/y1os.bin $(B)/y1os_str.inc help.txt $(CMDS) $(ASMA) $(PASSES) $(RTLIB) $(FILES) $(MANS) $(foreach d,$(DOCS),$(firstword $(subst :, ,$(d)))) $(SRCS:%=$(ROOT)/%) mksrcmk.py Makefile
+disk.img: $(B)/y1os.bin $(B)/y1os_str.inc help.txt $(CMDS) $(ASMA) $(BASICA) $(PASSES) $(RTLIB) $(FILES) $(MANS) $(foreach d,$(DOCS),$(firstword $(subst :, ,$(d)))) $(SRCS:%=$(ROOT)/%) mksrcmk.py Makefile
 	@rm -f $@
 	$(FS) create $@ --sectors $(SECTORS)
 	$(FS) boot $@ $(B)/y1os.bin
 	$(FS) mkdir $@ /bin
-	@for c in $(CMDS); do n=$$(basename $$c .bin); [ $$n = asm ] && n=asmc; \
+	@for c in $(CMDS); do n=$$(basename $$c .bin); case $$n in asm|basic) n=$${n}c;; esac; \
 	  $(FS) put $@ $$c --name /bin/$$n --load 0x5000 --exec 0x5000; done
 	$(FS) put $@ $(ASMA) --name /bin/asm --load 0x5000 --exec 0x5000
+	$(FS) put $@ $(BASICA) --name /bin/basic --load 0x5000 --exec 0x5000
 	@for f in $(FILES); do n=$$(basename $$f); case $$n in README.TXT) n=README;; *) n=$$(echo $$n | tr A-Z a-z);; esac; \
 	  $(FS) put $@ $$f --name /$$n; done
 	$(FS) mkdir $@ /man
@@ -192,10 +194,11 @@ disk.img: $(B)/y1os.bin $(B)/y1os_str.inc help.txt $(CMDS) $(ASMA) $(PASSES) $(R
 	@echo "/src: $(words $(SRCS)) sources and their Makefiles (mksrcmk.py)"
 	$(FS) tree $@
 
-sizes: $(CMDS) $(ASMA)
+sizes: $(CMDS) $(ASMA) $(BASICA)
 	@for c in $(CMDS); do n=$$(basename $$c .bin); b=$$(wc -c < $$c); \
 	  d=$$(awk '/^(zpad|bss_start):/{f=1} f && $$2=="DS"{s+=($$3 ~ /^[0-9]+$$/) ? $$3 : 255} END{print s+0}' $(B)/bin/$$n.asm); \
-	  [ $$n = asm ] && n=asmc; printf "%-8s %6d image + %6d data = %6d of 32768\n" $$n $$b $$d $$((b + d)); done
+	  case $$n in asm|basic) n=$${n}c;; esac; printf "%-8s %6d image + %6d data = %6d of 32768\n" $$n $$b $$d $$((b + d)); done
+	@printf "basic    %6d image; its variables, 12288 of program area and 1024 of stack follow it (commands-asm/basic.asm)\n" $$(wc -c < $(BASICA))
 	@b=$$(wc -c < $(ASMA)); p=$$(( 0xC400 - 0x$$(awk '/ POOL:/{print $$2}' $(B)/asma/asm.lst | tr -d :) )); \
 	  printf "asm      %6d image, %d of variables and buffers, a symbol table of %d bytes (commands-asm/asm.asm)\n" $$b $$((32768 - b - p)) $$p
 

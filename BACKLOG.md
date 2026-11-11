@@ -374,12 +374,20 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     commands) and the ROM's console driver.
 - **Video card V3, the build-out (begun 2026-11-11).** `docs/cards/video-v3.md` section 10a is the circuit part by
   part: the chip's DIP-64 pins, the six ports' strobes from two 74HCT138 (CS, RS = IO-ADDR0, R/W = IO-ADDR2), about
-  30 chips with the PS/2 section and 36 with text method A's. **Next, in order:** the netlist
-  (`hardware/cards/video/kicad/v3.0/v30_netlist.py`) with its checks; a timing check of the memory and bus cycles;
+  30 chips with the PS/2 section and 36 with text method A's. The memory cycle and every control equation are in section 10b (from the manual's figures T-6
+  and T-8: a dot counter that keeps step with the chip's MCYC by loading itself, -WE from a flip-flop in dots 5 and
+  6, the buffers' two enable windows, the dummy-cycle flip-flop for the load). **The netlist's first cut is written**
+  (`hardware/cards/video/kicad/v3.0/v30_netlist.py`, 2026-11-11: 113 parts, 35 ICs, 182 nets; `python3
+  v30_netlist.py` proves every pin accounted for): the bus and ports, the chip, clock and control, RAM, the font
+  EPROM, the shift registers, the control register from the attribute byte (colours, sync polarity; ATR 00 =
+  white, both syncs negative), blanking in step with the dots, the VGA output, the PS/2 section. **Next, in order:**
+  the netlist's open parts (the cursor outputs; text method A's sockets, whose superimposed-mode timing is still to
+  be read from the manual); a timing check of the memory and bus cycles;
   the generator for the schematic and the board from V2.0's; routing, DRC, PDFs, `pcb-check`; a design review. Settled
   2026-11-11: the chip on four ports (PA-PD; with PS/2 on PE / PF the card has all of PA-PF, a later card uses
-  P2-P7), and VGA only (one DE-15; no DB9, RCA or halved clock). Open before the netlist: the memory control's exact
-  gating (-WE, -OE, the shift registers' load with its dummy-cycle flip-flop) from the application note's figures.
+  P2-P7), and VGA only (one DE-15; no DB9, RCA or halved clock). To confirm from the parts' data sheets in the timing
+  check: the RAMs' pinout and write timing, the 74F299's set-up, the few nanoseconds between the buffers going off and
+  the RAM's outputs coming on after a write, and the chip's cursor outputs' sense.
 - **Video card V2.0 (designed 2026-10-22; `hardware/cards/video/kicad/v2.0`; re-reviewed and READY TO ORDER 2026-10-23, not ordered).** V1.3 (DOTS jumper, 12 MHz,
   both fonts in one EPROM, 4 layers) plus a graphics layer, two PS/2 ports and every register on I/O ports. Board 218 mm
   long (the sequencer logic V2.1l's length; X1 where every card has it), 4 layers: In1 GND plane, In2 VCC plane.
@@ -914,8 +922,8 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Move off NetBeans (README decision 7).
 
 ## Disk operating system (plan `docs/system/OS-PLAN.md`, decisions 2026-09-22)
-- **2026-11-11: BASIC in assembly is written** (`os/commands-asm/basic.asm`, 3,199 lines, `make -C os basica`), not
-  on the disk yet. It is `os/commands/basic.c` routine for routine - `basic.c` stays the reference - and gives the
+- **2026-11-11: BASIC in assembly is written and is `/bin/basic`** (`os/commands-asm/basic.asm`, 3,199 lines); the C
+  one is `/bin/basicc`. It is `os/commands/basic.c` routine for routine - `basic.c` stays the reference - and gives the
   same console output byte for byte on four sessions (`tests/ybasic/run.py`, in `make check`: expressions and every
   error, programs, files and the command line, the limits; 1,247 lines of transcript) and on the OS tests' own
   `ybasic.session` on both emulators. 7,546 bytes against 14,572. Speed, counted in instructions on the
@@ -925,9 +933,12 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   addresses, a statement table indexed by the token, RUN remembering where a GOTO's line is, and the next line taken
   from where the parse stopped. On the machine both do one more thing per line that the emulator does not count: the
   Ctrl-C check asks the OS whether a key waits (the fast emulator's console always says yes, once).
-  **Next:** make it `/bin/basic` with the C one as `/bin/basicc` (the `asm` / `asmc` pattern: man page, `help` line,
-  `/src/os/commands-asm` with its Makefile from `mksrcmk.py`, `basic.asm` in `tests/asm`'s corpus so that `/bin/asm`
-  is held to it, the `tests/os` size lines) - not done, it changes what is on the CF card. Where the instructions
+  On the disk since the same day, the `asm` / `asmc` pattern: `man basicc`, the `help` line, the source in
+  `/src/os/commands-asm` with a Makefile rule (`make` there assembles it with `/bin/asm`; `tests/native/srcmake.py`
+  compares the result with the Mac's), `basic.asm` in `tests/asm`'s corpus (the host assembler, `asmc` and `asm` give
+  the same bytes), and `tests/ybasic` now puts the C one in `/bin/basic`'s place for its side of the comparison.
+  **The CF card in the machine still has the C BASIC as `/bin/basic`** until it is written again
+  (`tools/cfcard.py`). Where the instructions
   still go: decimal numbers are converted every time they are met (128 of the 843: `32000` alone about 100), blanks
   skipped (136), names scanned twice (once to see whether a `$` ends them). A number or a name could be remembered
   by its place in the program text, as the GOTO lines are.

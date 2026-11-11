@@ -75,8 +75,12 @@ NOTES
     Ported from P8X basic/basic.c 2026-11-09, without its graphics
     statements. New: programs saved as text, basic -r, INPUT with a
     prompt, Ctrl-C, deeper FOR and GOSUB.
+    Written in C (os/commands/basic.c, now basicc, the specification)
+    and 2026-11-11 again in YACC1 assembly
+    (os/commands-asm/basic.asm): this basic, which behaves exactly as
+    basicc and needs about a sixth of its instructions for a line.
     The ROM has its own, smaller BASIC (the monitor's I command); it
     cannot load or save programs.
 
 SEE ALSO
-    vi, cat, sh
+    basicc, vi, cat, sh

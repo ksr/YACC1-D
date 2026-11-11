@@ -8,13 +8,13 @@
     --uc      the sessions on the microcode emulator too (slow: minutes)
     -v        print the transcripts' differences in full
 
-os/commands-asm/basic.asm (`make -C os basica`: os/build/basica/basic.bin) is the same program as
-os/commands/basic.c, which is /bin/basic and the specification. Three checks:
+os/commands-asm/basic.asm, /bin/basic, is the same program as os/commands/basic.c, its specification, which is on
+the disk as /bin/basicc. Three checks:
 
 1. Every session here (tests/ybasic/*.session: console lines sent after the monitor's O command, as tests/os does) is
-   run twice on the instruction-level emulator, on a copy of os/disk.img (the C BASIC) and on a copy whose /bin/basic
-   is the assembly one. The two console transcripts must be the same byte for byte, and the root directories must
-   hold the same files of the same sizes afterwards.
+   run twice on the instruction-level emulator, on a copy of os/disk.img (the assembly BASIC) and on a copy whose
+   /bin/basic is the C one (os/build/bin/basic.bin; the sessions type `basic`). The two console transcripts must be
+   the same byte for byte, and the root directories must hold the same files of the same sizes afterwards.
      expr    expressions, strings, every function, direct statements, the errors a typed line can make
      prog    programs: FOR / NEXT, GOSUB / RETURN, IF, GOTO, INPUT, the line editor, Ctrl-C, RUN's errors, BYE
      files   SAVE / LOAD, OPEN / PRINT# / INPUT# / EOF / CLOSE, basic FILE, basic -r FILE, < > and |
@@ -23,8 +23,8 @@ os/commands/basic.c, which is /bin/basic and the specification. Three checks:
    A key typed while a program runs is read by the Ctrl-C check and kept for the next INPUT or prompt; one typed while
    `basic -r` runs is lost. The emulator's console always has the rest of the session waiting, so the sessions have a
    spare empty line where a key is lost.
-2. tests/os/ybasic.session, the OS tests' own BASIC session, with the assembly BASIC on both emulators: the transcripts
-   must be tests/os/ybasic.int.out and ybasic.uc.out, the ones the C BASIC is held to.
+2. tests/os/ybasic.session, the OS tests' own BASIC session (tests/os runs it with /bin/basic, the assembly one), with
+   the C BASIC on both emulators: the transcripts must be tests/os/ybasic.int.out and ybasic.uc.out as well.
 3. The speed, in instructions (the instruction-level emulator's PC histogram, the block of the program /bin/basic):
    RUN of  10 a=0 / 20 a=a+1 / 30 if a<1000 then goto 20  on both. The assembly BASIC must need less than a quarter of
    the C one's instructions (2026-11-11: 843 against 5,319 for a pass of lines 20 and 30).
@@ -65,12 +65,12 @@ def root_files(img):
 
 
 def images():
-    """build/c.img: os/disk.img; build/asm.img: the same with the assembly BASIC as /bin/basic"""
-    subprocess.run(["make", "-s", "-C", os.path.join(ROOT, "os"), "disk.img", "basica"], check=True, capture_output=True)
+    """build/asm.img: os/disk.img, whose /bin/basic is the assembly BASIC; build/c.img: the same with the C one there"""
+    subprocess.run(["make", "-s", "-C", os.path.join(ROOT, "os"), "disk.img"], check=True, capture_output=True)
     os.makedirs(B, exist_ok=True)
     c, a = os.path.join(B, "c.img"), os.path.join(B, "asm.img")
-    shutil.copy(os.path.join(ROOT, "os/disk.img"), c); shutil.copy(c, a)
-    subprocess.run([sys.executable, FS, "put", a, os.path.join(ROOT, "os/build/basica/basic.bin"), "--name", "/bin/basic",
+    shutil.copy(os.path.join(ROOT, "os/disk.img"), a); shutil.copy(a, c)
+    subprocess.run([sys.executable, FS, "put", c, os.path.join(ROOT, "os/build/bin/basic.bin"), "--name", "/bin/basic",
                     "--load", "0x5000", "--exec", "0x5000", "--replace"], check=True, capture_output=True)
     return c, a
 
@@ -116,11 +116,11 @@ def main():
     script = b"O\n" + open(os.path.join(ROOT, "tests/os/ybasic.session"), "rb").read() + b"0"
     banner = re.compile(r"Y1/OS v[0-9.]+ \([0-9-]+\)")           # the two kernels' banners differ (tests/os/run.py)
     for tag in ("int", "uc"):
-        out, err = run(tag, fresh(a, "run.asm.img"), script)
+        out, err = run(tag, fresh(c, "run.c.img"), script)
         m = re.search(r"\n\r?bye", out)
         got = out[:out.find(">", m.start()) + 1] if m else out
         exp = open(os.path.join(ROOT, "tests/os/ybasic.%s.out" % tag), "rb").read().decode("latin1")
-        check("tests/os ybasic %s" % tag, banner.sub("", got) == banner.sub("", exp),
+        check("tests/os ybasic, in C, %s" % tag, banner.sub("", got) == banner.sub("", exp),
               "not the expected transcript: " + err.strip())
     loop = ["10 a=0", "20 a=a+1", "30 if a<1000 then goto 20"]
     n = {k: instructions(img, loop + ["run"]) - instructions(img, loop) for k, img in (("C", c), ("assembly", a))}
