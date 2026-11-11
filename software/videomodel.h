@@ -66,9 +66,9 @@
  * empty, '?' dots that are no glyph - and the chip's state; Y1VIDSTATE writes the registers and the frame buffer,
  * which tools/vidsim.py render draws; -W logs every command's words.
  *   Y1VID_MOUSE="dx,dy,buttons;..."   (V2.0 and V3) PS/2 mouse packets, queued whole after the keys of Y1VID_KEYS, or
- *        where a \m stands among them: three bytes with SRC = 1 (buttons, the signs; dx; dy). Command $05 turns the
- *        mouse off: the packets not yet sent wait (the scripted movement happens once $04 has turned it on again),
- *        the keys behind them go on. It is on at reset, as the firmware starts it
+ *        where a \m stands among them: three bytes with SRC = 1 (buttons, the signs; dx; dy). The packets wait
+ *        until a program turns the mouse on (command $04: the scripted hand moves it then, never while a ROM is
+ *        still reading the keyboard as its console); the keys behind them go on. Command $05 makes them wait again
  *
  * Include after <stdio.h>/<stdint.h>/<stdlib.h>/<string.h>. vid_init() once at start (reads the environment);
  * vid_in(a) says whether an address is the card's; vid_read/vid_write serve it, with mem = the emulator's memory array
@@ -165,7 +165,7 @@ static void vid_init(void) {
     e = getenv("Y1VID_TEXTONLY"); vid2.textonly = e && *e && *e != '0';
     e = getenv("Y1VID_KBD"); vid2.kbd_stdin = e && !strcmp(e, "stdin") && vid2.card >= 2;
     const char *mouse = getenv("Y1VID_MOUSE");
-    vid2.mouse = 1;                       /* the firmware resets the mouse and turns its reports on at start */
+    vid2.mouse = 0;                       /* the scripted packets begin when a program turns the mouse on (command $04) */
     e = getenv("Y1_CLOCK"); vid2.cpu_hz = e && atof(e) > 0 ? (unsigned long long)atof(e) : 1000000;
     vid2.dot_hz = 12000000;               /* Q2, SV4 on 1-2 */
     for (e = getenv("Y1VID_KEYS"); e && *e; e++) {

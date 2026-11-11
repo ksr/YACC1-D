@@ -239,7 +239,7 @@ int main(void) {
 
     /* the keyboard and the mouse: a key, a packet where \m puts it, a key; SRC says which; mouse off drops packets */
     fresh("a\\mb", "5,-3,1;-2,4,0");
-    vid_clk = 0;
+    vid_clk = 0; vid_io_write(0xE, 0x04); vid_clk = 40;                          /* the mouse on: its packets may come */
     CHECK((vid_io_read(0xE) & 0x07) == 0x01 && vid_io_read(0xF) == 'a', "a key, SRC 0");
     vid_clk += 20; CHECK((vid_io_read(0xE) & 0x07) == 0x03 && vid_io_read(0xF) == 0x29, "the packet's first byte, SRC 1: buttons 1, dy negative");
     vid_clk += 20; CHECK(vid_io_read(0xF) == 0x05, "dx"); vid_clk += 20; CHECK(vid_io_read(0xF) == 0xFD, "dy");
