@@ -8,9 +8,22 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
 
 ## Standing rules (Ken's)
 
-- **Commit to `main`** with conventional commits (`feat:`, `fix:`, `docs:`, `chore:`, `test:`…) and **push after each
-  commit**. No branches or PRs unless Ken asks. Stage explicit paths (never `git add -A` / `git add .`): other work
+- **Commit to `main`** (or to `video-v2` for the V2.0-video work, below) with conventional commits (`feat:`, `fix:`,
+  `docs:`, `chore:`, `test:`…) and **push after each commit**. No other branches, and no PRs, unless Ken asks. Stage explicit paths (never `git add -A` / `git add .`): other work
   may be in the tree. End every commit message with the co-author line the session's attribution instructions give.
+- **Two lines of development (Ken, 2026-11-10).** `main` is the YACC1 as built, with the video card V1.0: its ROM,
+  BIOS, Y1/OS, BASIC and emulators are what runs on the machine today. The branch **`video-v2`** is the YACC1 with the
+  video card V2.0 (registers on I/O ports PA-PE, graphics window $D800-$DFFF, PS/2 keyboard and mouse): its ROM
+  driver, BIOS console, Y1/OS, BASIC and the emulators' V2.0 card model.
+  - What goes where: V1 work, and everything shared - card designs (the V2.0 board itself included), the compiler,
+    tools, tests and docs that are not V2-only - on `main`; V2-only software on `video-v2`. A fix that both need goes
+    on `main` first.
+  - Bring `main` into `video-v2` often, by merging (`git merge main` on `video-v2`; never rebase it: both Macs push
+    it). `video-v2` is merged into `main` when the V2.0 card runs in the machine.
+  - Side by side on one Mac, as a second worktree: `git worktree add ~/Developer/YACC1-D-v2 video-v2` (once per Mac).
+    Each worktree has its own builds (`make` there: the emulators, `os/disk.img`, `rom.bin`) and its own `make
+    check`. Hardware steps (ROM burn, microcode, bench, CF card) are from `main` until the V2.0 card is in the machine.
+  - Syncing YACC1-D means both branches. The website publishes from `main` only.
 - **Never modify `~/Documents/YACCS`** (the historical archive the tree was migrated from; it only exists on Ken's
   first Mac and the repo does not need it).
 - **Migrated files** (sources that came from YACCS, e.g. `software/emulator/main.c`, `software/assembler/*`,
@@ -154,7 +167,8 @@ that travels.
 Claude's conversation history and memory stay on the Mac where they happened; the commits and `BACKLOG.md` are how
 one Mac's session learns what the other did. So, without being asked:
 
-- **At the start of a session**: `git fetch` and `git status`. If the tree is behind and clean, `git pull --ff-only`;
+- **At the start of a session**: `git fetch` and `git status` (in the worktree of the line being worked on; both
+  `main` and `video-v2` are checked the same way). If the tree is behind and clean, `git pull --ff-only`;
   if it has uncommitted changes or has diverged, stop and tell Ken before touching anything. Then summarize for Ken
   the commits that arrived (`git log` of the new range, subjects plus anything the messages leave open), and read
   `BACKLOG.md` for the open items those commits touch, before starting on his request.
