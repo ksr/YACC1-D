@@ -882,6 +882,18 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Move off NetBeans (README decision 7).
 
 ## Disk operating system (plan `docs/system/OS-PLAN.md`, decisions 2026-09-22)
+- **To look at (2026-11-11): /bin/basic in assembly, perhaps other commands after it, and the source tree split into
+  C sources and assembly sources.** Today `/bin/basic` is `os/commands/basic.c` (976 lines), compiled: 14,572 bytes of
+  program, 12,286 bytes left for a BASIC program, and it runs at compiled-C speed (a 16-bit compare is about 200
+  clocks). Hand-written assembly would be smaller - more room for the program - and several times faster. The
+  pattern exists once already: `os/commands-asm/asm.asm` is `/bin/asm`, and its C version `os/commands/asm.c` is
+  built as `asmc` and kept as the reference; P8X's `os/commands-asm` holds most of its commands that way (no BASIC
+  among them). The split wanted: a file that **starts** as assembly belongs with the assembly sources; assembly the
+  compiler makes from C stays with the C sources. On the disk that is `/src/os/commands` (C, with what `cc` makes
+  there) and `/src/os/commands-asm`; the kernel's `y1os.asm` and `kermitio.asm` sit in `/src/os` beside the C today.
+  To settle before starting: what the assembly BASIC is for first (speed, room, or both); whether `basic.c` stays as
+  the reference with the same session run on both (`tests/os/ybasic.session`), as the two kernels are; which name is
+  `/bin/basic`; where the line between the two trees runs, in the repository and on the disk; which commands follow.
 - **2026-11-05: speed work, the baseline** (`docs/system/SPEED.md`, `tools/speed.py`): `make` in `/src/os/commands` is
   45.0 G clocks, 12 h 30 m at 1 MHz, 27 clocks an instruction; cc9 29%, cc9 + asm 36%, the disk about 12%, `LDZ`/`STZ`/
   `LDR`/`STR` 34%. The next step is to choose what to change: the microcode's common records, cc9's text path, the
