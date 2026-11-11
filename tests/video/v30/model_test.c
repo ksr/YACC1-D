@@ -247,7 +247,13 @@ int main(void) {
     vid_clk += 20; CHECK((vid_io_read(0xE) & 0x03) == 0x03 && vid_io_read(0xF) == 0x18, "the second packet: dx negative");
     vid_io_write(0xE, 0x05);                                                     /* mouse off */
     CHECK((vid_io_read(0xE) & 0x04) == 0x04, "BUSY after a command");
-    vid_clk += 40; CHECK((vid_io_read(0xE) & 0x05) == 0, "the rest of the packet dropped, BUSY over");
+    vid_clk += 40; CHECK((vid_io_read(0xE) & 0x05) == 0, "the mouse off: the rest of the packet waits, BUSY over");
+    vid_io_write(0xE, 0x04); vid_clk += 40;                                      /* on again: it comes */
+    CHECK((vid_io_read(0xE) & 0x03) == 0x03 && vid_io_read(0xF) == 0xFE, "the mouse on: the packet goes on");
+    vid_clk += 20; CHECK(vid_io_read(0xF) == 0x04, "its last byte");
+    fresh("\\mz", "1,1,0"); vid_io_write(0xE, 0x05);                             /* a key behind a waiting packet */
+    vid_clk += 40; CHECK((vid_io_read(0xE) & 0x03) == 0x01 && vid_io_read(0xF) == 'z', "the key behind a waiting packet goes first");
+    vid_io_write(0xE, 0x04); vid_clk += 40; CHECK((vid_io_read(0xE) & 0x03) == 0x03 && vid_io_read(0xF) == 0x08, "then the packet");
     vid_io_write(0xE, 0x15); CHECK(vid2.leds == 5, "the LEDs");
 
     printf("model: %d failed\n", fails);

@@ -82,9 +82,10 @@ ced:    INP PC
         INP PC
         JSR showbytea
         JSR crlf
-; ---- the keyboard and the mouse
+; ---- the keyboard and the mouse (the mouse turned on: a ROM that uses the keyboard as its console turns it off)
         MVIW R7,s_ps2
         JSR stringout
+        OUTI PE,4
         LDAI 4
         STA cnt
 kloop:  INP PE

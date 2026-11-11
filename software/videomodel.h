@@ -67,7 +67,8 @@
  * which tools/vidsim.py render draws; -W logs every command's words.
  *   Y1VID_MOUSE="dx,dy,buttons;..."   (V2.0 and V3) PS/2 mouse packets, queued whole after the keys of Y1VID_KEYS, or
  *        where a \m stands among them: three bytes with SRC = 1 (buttons, the signs; dx; dy). Command $05 turns the
- *        mouse off (its bytes are dropped), $04 on again; it is on at reset, as the firmware starts it
+ *        mouse off: the packets not yet sent wait (the scripted movement happens once $04 has turned it on again),
+ *        the keys behind them go on. It is on at reset, as the firmware starts it
  *
  * Include after <stdio.h>/<stdint.h>/<stdlib.h>/<string.h>. vid_init() once at start (reads the environment);
  * vid_in(a) says whether an address is the card's; vid_read/vid_write serve it, with mem = the emulator's memory array
@@ -123,7 +124,7 @@ static struct {
     unsigned long long cpu_hz, dot_hz;
     uint8_t control, gram[2 * V2_GRAM];
     uint8_t q[256], qs[256]; unsigned qh, qt;   /* the controller's queue (the firmware's is 64 bytes; this one 256) and
-                                             each byte's source: 0 the keyboard, 1 the mouse */
+                                             each byte's source: 0 the keyboard, 1 the mouse; 2 = taken already */
     int full, src, ints, acked, mouse, leds;
     uint8_t pe;                           /* IC50, the data latch */
     unsigned long long load_at, busy_until;
@@ -200,8 +201,14 @@ static void v2_fill(void) {
     if (vid2.full || vid_clk < vid2.load_at) return;
     int c = -1;
     int src = 0;
-    while (vid2.qh != vid2.qt && vid2.qs[vid2.qt & 255] && !vid2.mouse) vid2.qt++;   /* the mouse is off: its bytes go */
-    if (vid2.qh != vid2.qt) { src = vid2.qs[vid2.qt & 255]; c = vid2.q[vid2.qt++ & 255]; }
+    while (vid2.qh != vid2.qt && vid2.qs[vid2.qt & 255] == 2) vid2.qt++;
+    for (unsigned i = vid2.qt; i != vid2.qh; i++) {       /* the first byte that may go: a mouse byte waits while the */
+        int t = vid2.qs[i & 255];                         /* mouse is off (the scripted movement happens once it is on) */
+        if (t == 2 || (t == 1 && !vid2.mouse)) continue;
+        c = vid2.q[i & 255]; src = t; vid2.qs[i & 255] = 2;
+        break;
+    }
+    if (c >= 0) ;
     else if (vid2.kbd_stdin && vid_key_ready && vid_key_ready()) {
         c = vid_key_get();
         if (c == 0) c = -1;               /* the end of input (the console reads it as 0): no key */
