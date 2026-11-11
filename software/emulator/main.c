@@ -460,9 +460,9 @@ static int uart_byte(void) {
 }
 static uint8_t uart_read(uint8_t sel) {          /* INP P1 while P0 selects the UART */
     switch ((sel >> 3) & 7) {
-        case 0: return (uint8_t)uart_byte();     /* RBR */
-        case 2: return 0x01;                     /* IIR: no interrupt pending */
-        case 5: return 0x60 | (uart_ready() ? 1 : 0);   /* LSR */
+        case 0: return vid2.kbd_stdin ? 0 : (uint8_t)uart_byte();     /* RBR (2026-11-10: Y1VID_KBD=stdin: the */
+        case 2: return 0x01;                     /* IIR: no interrupt pending */      /* keyboard has the input) */
+        case 5: return 0x60 | (!vid2.kbd_stdin && uart_ready() ? 1 : 0);   /* LSR */
         default: return 0x00;
     }
 }
@@ -533,6 +533,8 @@ void print_usage(const char *progname) {
     printf("  -V           Video card: print the screen (and the CRTC registers) on stderr at exit\n");
     printf("  -W           Video card: log CRTC register writes on stderr\n");
     printf("  -N           No video card: $D000-$DFFF reads $FF, writes ignored\n");
+    printf("  (environment) Y1VID_CARD=v2.0  the video card V2.0 (ports PA-PE, graphics window $D800); Y1VID_KEYS,\n"
+           "               Y1VID_KBD=stdin, Y1VID_DOTS, Y1VID_TEXTONLY, Y1_CLOCK: software/videomodel.h\n");
 }
 
 int main(int argc, char** argv) {
@@ -607,6 +609,8 @@ int main(int argc, char** argv) {
         exe_relative(img, sizeof img, "../../firmware/basic/basic.img", argv[0]);   load_file(img);
         exe_relative(img, sizeof img, "../../firmware/monitor/monitor.img", argv[0]); load_file(img);
     }
+    vid_init();                 /* YACC1-D 2026-11-10: Y1VID_CARD (v1.0 / v2.0) and the V2.0 card's options */
+    vid_key_ready = uart_ready; vid_key_get = uart_byte;     /* Y1VID_KBD=stdin: the console feeds the PS/2 keyboard */
     if (load_filename) {
         load_file(load_filename);
     }
@@ -617,6 +621,7 @@ int main(int argc, char** argv) {
 
         ins = memory_read(register_read_word(PC));
         icount++;
+        vid_clk += opclocks[ins & 255];     /* YACC1-D 2026-11-10: the clock, for the V2.0 card's VSYNC / DE */
         if (pcfile) {
             unsigned pa = register_read_word(PC);
             pchist[pa]++; pcclk[pa] += opclocks[ins & 255]; ophist[ins & 255]++;
@@ -956,6 +961,7 @@ int main(int argc, char** argv) {
                 }
                 if (portaddr == 1 && port[0] == 0x40) myputchar(port[1]);   /* 2026-09-26: THR */
                 if (portaddr == CF_PORT_SEL || portaddr == CF_PORT_DATA) cf_io_write(portaddr, acc);
+                vid_io_write(portaddr, acc);                    /* 2026-11-10: the V2.0 card's ports PA-PF */
                 break;
 
             case OUTI + PORT0:
@@ -982,6 +988,7 @@ int main(int argc, char** argv) {
                 if ((port[0] == 0x40) && (portaddr == 1))
                     myputchar(port[portaddr]);
                 if (portaddr == CF_PORT_SEL || portaddr == CF_PORT_DATA) cf_io_write(portaddr, port[portaddr]);
+                vid_io_write(portaddr, port[portaddr]);         /* 2026-11-10: the V2.0 card's ports PA-PF */
                 break;
 
             case LDZ + REG0:    /* YACC1-D 2026-09-24: LDZ Rn,d = Rn <- the word at (R6.hi : d), as the microcode */
@@ -1048,6 +1055,7 @@ int main(int argc, char** argv) {
                     //printf("in char %x\n", acc);
                 }
                 if (portaddr == CF_PORT_DATA || portaddr == CF_PORT_SEL) acc = cf_io_read(portaddr);
+                if (vid_io_owns(portaddr)) { int v = vid_io_read(portaddr); acc = v < 0 ? 0xFF : v; }   /* 2026-11-10: V2.0 */
                 break;
                 
             case OPCODE_A5:

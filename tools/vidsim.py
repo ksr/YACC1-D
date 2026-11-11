@@ -180,7 +180,9 @@ class State:
             d[k] = v
         regs = [int(x, 16) for x in d["regs"].split()]
         written = [int(x) for x in d.get("written", "1 " * 18).split()]
-        return State(regs, bytes.fromhex(d["ram"]), written)
+        st = State(regs, bytes.fromhex(d["ram"]), written)
+        st.extra = d                                        # 2026-11-10: V2.0's "card", "control", "dots", "gram"
+        return st
 
     def save(self, path):
         with open(path, "w") as f:
@@ -526,6 +528,14 @@ def main():
                     "PLANE, 3 CPAGE, 4 DPAGE, 5 TEXT-OFF, 6 GFX-ON, 7 XOR (overrides --layers, --gmode, --dpage)")
     ap.add_argument("--dpage", type=int, choices=[0, 1], default=0, help="v2.0: the page displayed (DPAGE)")
     a = ap.parse_args()
+    if a.cmd == "render" and a.arg:                         # 2026-11-10: a V2.0 state (Y1VID_CARD=v2.0) names its card
+        extra = State.load(a.arg).extra
+        if extra.get("card") == "v2.0":
+            a.card = "v2.0"
+            a.dots = a.dots or int(extra.get("dots", "8"))
+            if a.control is None:
+                a.control = int(extra.get("control", "0"), 16)
+                if extra.get("textonly") == "1": a.control &= ~0x40     # no graphics chips: no layer
     global DOTS, CARD
     CARD = a.card
     DOTS = a.dots or (8 if CARD == "v2.0" else 6)
@@ -572,7 +582,13 @@ def main():
         a.overlay = None
         show(st, a, "the test card with the overlay (layers %s, %s%s)" % (a.layers, a.gmode, ", tinted" if a.tint else ""), ov)
     elif a.cmd == "render":
-        show(State.load(a.arg), a, a.arg)
+        st = State.load(a.arg); ov = None
+        if "gram" in st.extra:                              # V2.0: the graphics RAM, both pages, DPAGE displayed
+            r = st.regs
+            ov = Overlay(bytes.fromhex(st.extra["gram"]), r[1] or 64, (r[12] & 0x3F) << 8 | r[13], 2048, 2, a.dpage)
+            print("V2.0 control register (OUT PC) = $%02X: layers %s, %s, displayed page %d" % (
+                a.control, a.layers, a.gmode, a.dpage))
+        show(st, a, a.arg, ov)
     elif a.cmd == "run":
         fd, state = tempfile.mkstemp(suffix=".vid"); os.close(fd)
         env = dict(os.environ, Y1VIDSTATE=state)

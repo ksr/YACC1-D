@@ -469,7 +469,14 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     outline (RN2, RN3, F1, LED1). Left: C20's value in the legend "C3 C20: 100n" (no room within 6 mm of it), and the
     check's LAYOUT (it takes the bottom edge for the front: J2), DRAWING and BUS PINS warnings. Still ready to order,
     not ordered (the card's README, "Labels (2026-11-10)").
-  - **Open - the ROM's V2.0 driver** and the emulators' V2.0 card model. The driver's requirements (the card's README,
+  - **The emulators' V2.0 card model: done 2026-11-10 (branch `video-v2`)** - `software/videomodel.h` with
+    `Y1VID_CARD=v2.0`, both emulators: the graphics window (32K, CPAGE / PLANE), the 6845 on PA/PB, the control and
+    status ports (VSYNC and DE counted from the CRTC registers and the CPU clock), the PS/2 controller at its bus
+    (`Y1VID_KEYS`, or `Y1VID_KBD=stdin`: the console as the keyboard), the text-only build and DOTS; `-V` and
+    `Y1VIDSTATE` carry the graphics side, `tools/vidsim.py render` draws it; `tests/video/v20/run.py`. Not modelled:
+    the PS/2 interrupt reaching the CPU (no emulator models -INT yet: `vid_irq()` has the line's state), the mouse,
+    the slot mode's clock limit (a hardware rule, `tests/video/v20_timing.py`), the gate level (`-G` is V1.0's).
+  - **Open - the ROM's V2.0 driver** (branch `video-v2`). The driver's requirements (the card's README,
     "The software rules for the window"): the card ID check **(IN PC AND $F0) = $50**, the build and DOTS from **(IN PC
     AND $F9)** = $58 / $59 text-only, $50 / $51 with graphics (bits 1 and 2 are VSYNC and DE, live); GFX-ON left 0 on a
     text-only card; **refuse GFX-ON = 1 in 6-dot mode** (IN PC bit 0 = 1, R2-4); the 6845 through OUT PA/PB; graphics

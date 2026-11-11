@@ -20,7 +20,12 @@
 - `video/` — `video_ram_test.py`, the video card's display-RAM test over the bus tester (patterns, inverse, neighbour
   isolation, the block-0/9 write-through check, read stability); 8/8 on 2026-09-21 after the +5V/VCC join. `gate.py`
   (2026-10-11, in `make check`): the card at gate level (`y1ucemu -G`) against the behavioural model, byte for byte
-  with 0 bus events, and without each bench rework (the RS fix, the +5V wire) the faults they fixed.
+  with 0 bus events, and without each bench rework (the RS fix, the +5V wire) the faults they fixed. `v20/run.py`
+  (2026-11-10, branch `video-v2`, in `make check`): the video card V2.0's model (`Y1VID_CARD=v2.0`) - `model_test.c`
+  on its own (the PS/2 keyboard from the console, the controller's timing, VSYNC / DE to the clock) and `v20card.asm`
+  through the monitor on both emulators in four builds of the card (as designed, text-only, DOTS open, a 2 MHz CPU):
+  the status port, the 6845 on PA/PB, the 16 plane/page pairs of the window, VSYNC's pulse and frame, DE, the keys;
+  `tools/vidsim.py render` on its state file.
 - `basic/` — `test`, a small BASIC program (LET/FOR loops) used to exercise the interpreter.
 - `compiler/` — the C compiler's test programs (`*.c` + expected `.out`/`.in`/`.err`) and `run.py`, which compiles each with
   `software/compiler/y1cc.py --boot`, assembles it and runs it on `emulator -x`; `--oracle` regenerates the expectations with

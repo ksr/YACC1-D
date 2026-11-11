@@ -9,4 +9,10 @@ working directory (2026-09-20, see `tools/patched_files.txt`). `-f FILE` is rela
 opcode counts and the CF sectors. The clocks come from `../opclocks.h`, generated from the microcode, so they are the machine's;
 `tools/speed.py` turns this into a report (`docs/system/SPEED.md`).
 
+**The video card** is `../videomodel.h`, shared with `software/ucemu` (2026-09-25: `-V` the screen at exit, `-W` the
+CRTC write log, `-N` no card). `Y1VID_CARD=v2.0` in the environment (2026-11-10, branch `video-v2`) puts the video card
+V2.0 there instead: its ports PA-PF on `INP` / `OUTA` / `OUTI`, the graphics window at $D800-$DFFF, VSYNC and DE from
+the CRTC registers and the clocks every instruction adds (`../opclocks.h`), the PS/2 keyboard from `Y1VID_KEYS` or, with
+`Y1VID_KBD=stdin`, from the console (the UART then receives nothing); the options are in `videomodel.h`.
+
 Load `firmware/rom/shipped/rom` (BASIC at $E000, monitor at $F000) to run what the machine runs.
