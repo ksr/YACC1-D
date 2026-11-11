@@ -25,7 +25,11 @@
   on its own (the PS/2 keyboard from the console, the controller's timing, VSYNC / DE to the clock) and `v20card.asm`
   through the monitor on both emulators in four builds of the card (as designed, text-only, DOTS open, a 2 MHz CPU):
   the status port, the 6845 on PA/PB, the 16 plane/page pairs of the window, VSYNC's pulse and frame, DE, the keys;
-  `tools/vidsim.py render` on its state file.
+  `tools/vidsim.py render` on its state file. `v30/run.py` (2026-11-11, in `make check`): the video card V3's model
+  (`Y1VID_CARD=v3`) - the font EPROM's image against its generator, `model_test.c` (the HD63484's registers, FIFOs
+  and commands with the manual's examples, the keyboard and the mouse), and `v30card.asm` through the monitor on both
+  emulators: a YACC1 program starts the chip, writes "V3 OK" from the font EPROM and draws; the frame buffer is
+  compared dot for dot with the same scene drawn in Python.
 - `basic/` — `test`, a small BASIC program (LET/FOR loops) used to exercise the interpreter.
 - `compiler/` — the C compiler's test programs (`*.c` + expected `.out`/`.in`/`.err`) and `run.py`, which compiles each with
   `software/compiler/y1cc.py --boot`, assembles it and runs it on `emulator -x`; `--oracle` regenerates the expectations with

@@ -55,6 +55,20 @@
  * and the 32K graphics RAM (tools/vidsim.py render draws both layers from it). -W also logs OUT PC and OUT PD.
  * y1ucemu -G is the V1.0 card at gate level: it chooses that card (Y1VID_CARD=v2.0 with -G is refused).
  *
+ * 2026-11-11: the video card V3 (docs/cards/video-v3.md: a design note, nothing built), Y1VID_CARD=v3. Nothing in the
+ * $D000 block; the HD63484 ACRTC (acrtcmodel.h: what is modelled and what is not is listed there) on four ports:
+ *   PA  OUT its address register                    PB  OUT its data: a register, or the write FIFO (r00)
+ *   PC  IN  its status register                     PD  IN  its data: a register, or the read FIFO
+ *   PE  IN  the card's status: bit 0 FULL, 1 SRC (0 keyboard, 1 mouse), 2 BUSY, 3 TEXT (0), 7..4 = 0110 (the ID $6x);
+ *       OUT the PS/2 command                        PF  IN  the PS/2 data (clears FULL)
+ * The frame buffer is 128K words of RAM with the font EPROM above it (MA19 high; software/v3font.h from
+ * tools/v3font.py). -V prints the screen read back as text - each 8 x 16 cell matched against the font's glyphs, ' '
+ * empty, '?' dots that are no glyph - and the chip's state; Y1VIDSTATE writes the registers and the frame buffer,
+ * which tools/vidsim.py render draws; -W logs every command's words.
+ *   Y1VID_MOUSE="dx,dy,buttons;..."   (V2.0 and V3) PS/2 mouse packets, queued whole after the keys of Y1VID_KEYS, or
+ *        where a \m stands among them: three bytes with SRC = 1 (buttons, the signs; dx; dy). Command $05 turns the
+ *        mouse off (its bytes are dropped), $04 on again; it is on at reset, as the firmware starts it
+ *
  * Include after <stdio.h>/<stdint.h>/<stdlib.h>/<string.h>. vid_init() once at start (reads the environment);
  * vid_in(a) says whether an address is the card's; vid_read/vid_write serve it, with mem = the emulator's memory array
  * (the text RAM half lives there).
@@ -108,7 +122,8 @@ static struct {
     int card, dots, textonly, kbd_stdin;
     unsigned long long cpu_hz, dot_hz;
     uint8_t control, gram[2 * V2_GRAM];
-    uint8_t q[256]; unsigned qh, qt;      /* the controller's queue (the firmware's is 64 bytes; this one 256) */
+    uint8_t q[256], qs[256]; unsigned qh, qt;   /* the controller's queue (the firmware's is 64 bytes; this one 256) and
+                                             each byte's source: 0 the keyboard, 1 the mouse */
     int full, src, ints, acked, mouse, leds;
     uint8_t pe;                           /* IC50, the data latch */
     unsigned long long load_at, busy_until;
@@ -116,7 +131,22 @@ static struct {
 
 static unsigned long long v2_us(unsigned us) { return vid2.cpu_hz * us / 1000000; }
 
-static void v2_queue(int c) { if (vid2.qh - vid2.qt < sizeof vid2.q) vid2.q[vid2.qh++ & 255] = (uint8_t)c; }
+static void v2_queue(int c, int src) {
+    if (vid2.qh - vid2.qt < sizeof vid2.q) { vid2.q[vid2.qh & 255] = (uint8_t)c; vid2.qs[vid2.qh++ & 255] = (uint8_t)src; }
+}
+/* the next mouse packet of Y1VID_MOUSE ("dx,dy,buttons;..."), queued whole as the firmware does: byte 1 the buttons
+   (bit 0 left, 1 right, 2 middle), bit 3 set, bits 4 / 5 the signs of dx / dy; then dx, dy (PS/2: dy positive = up) */
+static const char *v2_mouse_packet(const char *m) {
+    if (!m || !*m) return m;
+    int dx = (int)strtol(m, (char **)&m, 0), dy = 0, b = 0;
+    if (*m == ',') dy = (int)strtol(m + 1, (char **)&m, 0);
+    if (*m == ',') b = (int)strtol(m + 1, (char **)&m, 0);
+    if (*m == ';') m++;
+    v2_queue(0x08 | (b & 7) | (dx < 0) << 4 | (dy < 0) << 5, 1); v2_queue(dx & 0xFF, 1); v2_queue(dy & 0xFF, 1);
+    return m;
+}
+
+#include "acrtcmodel.h"                   /* 2026-11-11: the video card V3's HD63484 */
 
 static void vid_init(void) {
     const char *e = getenv("Y1VID_CARD");
@@ -124,13 +154,17 @@ static void vid_init(void) {
     if (e && *e) {
         if (!strcmp(e, "v2.0") || !strcmp(e, "2.0") || !strcmp(e, "2")) vid2.card = 2;
         else if (!strcmp(e, "v1.0") || !strcmp(e, "1.0") || !strcmp(e, "1")) vid2.card = 1;
+        else if (!strcmp(e, "v3") || !strcmp(e, "v3.0") || !strcmp(e, "3")) vid2.card = 3;
         else {
-            fprintf(stderr, "Y1VID_CARD=%s: the cards are v1.0 and v2.0\n", e); exit(2);
+            fprintf(stderr, "Y1VID_CARD=%s: the cards are v1.0, v2.0 and v3\n", e); exit(2);
         }
     }
+    ac_reset(); ac.log = vid.log;
     e = getenv("Y1VID_DOTS"); vid2.dots = e && atoi(e) == 6 ? 6 : 8;
     e = getenv("Y1VID_TEXTONLY"); vid2.textonly = e && *e && *e != '0';
-    e = getenv("Y1VID_KBD"); vid2.kbd_stdin = e && !strcmp(e, "stdin") && vid2.card == 2;
+    e = getenv("Y1VID_KBD"); vid2.kbd_stdin = e && !strcmp(e, "stdin") && vid2.card >= 2;
+    const char *mouse = getenv("Y1VID_MOUSE");
+    vid2.mouse = 1;                       /* the firmware resets the mouse and turns its reports on at start */
     e = getenv("Y1_CLOCK"); vid2.cpu_hz = e && atof(e) > 0 ? (unsigned long long)atof(e) : 1000000;
     vid2.dot_hz = 12000000;               /* Q2, SV4 on 1-2 */
     for (e = getenv("Y1VID_KEYS"); e && *e; e++) {
@@ -140,11 +174,13 @@ static void vid_init(void) {
             switch (*e) {
                 case 'r': c = 0x0D; break; case 'n': c = 0x0A; break; case 'e': c = 0x1B; break; case 't': c = 0x09; break;
                 case 'x': if (e[1] && e[2]) { char h[3] = { e[1], e[2], 0 }; c = (int)strtol(h, 0, 16); e += 2; } break;
+                case 'm': mouse = v2_mouse_packet(mouse); continue;      /* the next mouse packet comes here */
                 default: c = (uint8_t)*e;
             }
         }
-        v2_queue(c);
+        v2_queue(c, 0);
     }
+    while (mouse && *mouse) mouse = v2_mouse_packet(mouse);             /* the packets the keys did not place */
 }
 
 /* the 6845's VSYNC and DE now: from R0 (line), R4/R5/R9 (frame), R1/R6 (displayed), R7 (VSYNC row) and the clock */
@@ -163,14 +199,16 @@ static void v2_raster(int *vsync, int *de) {
 static void v2_fill(void) {
     if (vid2.full || vid_clk < vid2.load_at) return;
     int c = -1;
-    if (vid2.qh != vid2.qt) c = vid2.q[vid2.qt++ & 255];
+    int src = 0;
+    while (vid2.qh != vid2.qt && vid2.qs[vid2.qt & 255] && !vid2.mouse) vid2.qt++;   /* the mouse is off: its bytes go */
+    if (vid2.qh != vid2.qt) { src = vid2.qs[vid2.qt & 255]; c = vid2.q[vid2.qt++ & 255]; }
     else if (vid2.kbd_stdin && vid_key_ready && vid_key_ready()) {
         c = vid_key_get();
         if (c == 0) c = -1;               /* the end of input (the console reads it as 0): no key */
         else if (c == 0x0A) c = 0x0D;     /* the console path makes CR into LF; the keyboard's Enter is CR */
     }
     if (c < 0) return;
-    vid2.pe = (uint8_t)c; vid2.src = 0; vid2.full = 1; vid2.acked = 0;
+    vid2.pe = (uint8_t)c; vid2.src = src; vid2.full = 1; vid2.acked = 0;
 }
 
 static void v2_command(uint8_t c) {
@@ -186,13 +224,35 @@ static void v2_command(uint8_t c) {
 }
 
 /* the card pulls the bus -INT (JP3 fitted): INTREQ (interrupts on, not acknowledged, FULL) AND FULL (IC54/B) */
-static int __attribute__((unused)) vid_irq(void) { return vid2.card == 2 && !vid.absent && vid2.ints && !vid2.acked && vid2.full; }
+static int __attribute__((unused)) vid_irq(void) { return vid2.card >= 2 && !vid.absent && vid2.ints && !vid2.acked && vid2.full; }
 
-static int vid_io_owns(int p) { return vid2.card == 2 && !vid.absent && p >= 0xA && p <= 0xF; }
+static int vid_io_owns(int p) { return vid2.card >= 2 && !vid.absent && p >= 0xA && p <= 0xF; }
+
+/* ---- V3 (2026-11-11): the HD63484 on four ports - PA OUT its address register, PB OUT its data (a register, or the
+   write FIFO), PC IN its status, PD IN its data (a register, or the read FIFO); PE IN the card's status (bit 0 FULL,
+   1 SRC, 2 BUSY, 3 TEXT = method A's parts fitted: 0, 7..4 = 0110, the card ID $6x), OUT the PS/2 command; PF IN the
+   PS/2 data. An OUT to PC / PD / PF or an IN from PA / PB does nothing: the card gates each port with its own strobe */
+static int v3_io_read(int p) {
+    switch (p) {
+        case 0xC: return ac_status();
+        case 0xD: return ac_read_data(vid_clk, vid2.cpu_hz);
+        case 0xE: v2_fill(); return 0x60 | vid2.full | vid2.src << 1 | (vid_clk < vid2.busy_until) << 2;
+        case 0xF: v2_fill();
+                  if (vid2.full) { vid2.full = 0; vid2.load_at = vid_clk + v2_us(20); }
+                  return vid2.pe;
+        default:  return -1;
+    }
+}
+static void v3_io_write(int p, uint8_t v) {
+    if (p == 0xA) ac_write_ar(v);
+    else if (p == 0xB) ac_write_data(v);
+    else if (p == 0xE) v2_command(v);
+}
 
 /* IN Pp: the byte the card drives; -1 = not the card's port, or nothing drives the bus (PA, PF) */
 static int vid_io_read(int p) {
     if (!vid_io_owns(p)) return -1;
+    if (vid2.card == 3) return v3_io_read(p);
     switch (p) {
         case 0xA: return -1;                                    /* the 6845's address register is write-only */
         case 0xB: return vid_crtc_read(1);
@@ -209,6 +269,7 @@ static int vid_io_read(int p) {
 /* OUT Pp: 1 when the card took it */
 static int vid_io_write(int p, uint8_t v) {
     if (!vid_io_owns(p)) return 0;
+    if (vid2.card == 3) { v3_io_write(p, v); return 1; }
     switch (p) {
         case 0xA: vid_crtc_write(0, v); break;
         case 0xB: vid_crtc_write(1, v); break;
@@ -228,7 +289,7 @@ static unsigned v2_window(unsigned a) {   /* the 62256 address of a CPU access: 
 }
 
 static int vid_read(unsigned a, const uint8_t *mem) {   /* the byte a read of a returns; -1 = nothing drives the bus */
-    if (vid.absent) return -1;
+    if (vid.absent || vid2.card == 3) return -1;          /* the V3 card has nothing in the $D000 block */
     if (a < VID_CRTC) return mem[a];
     if (vid2.card == 2) return vid2.textonly ? -1 : vid2.gram[v2_window(a)];   /* V2.0: the graphics window */
     if (a & 1) return vid_latch();                        /* the JP1 latch (Y1VID_LATCH; FF: nothing jumpered) */
@@ -236,7 +297,7 @@ static int vid_read(unsigned a, const uint8_t *mem) {   /* the byte a read of a 
 }
 
 static void vid_write(unsigned a, uint8_t v, uint8_t *mem) {
-    if (vid.absent) return;
+    if (vid.absent || vid2.card == 3) return;
     if (a < VID_CRTC) { mem[a] = v; return; }
     if (vid2.card == 2) { if (!vid2.textonly) vid2.gram[v2_window(a)] = v; return; }
     if (a & 1) { if (vid.log) fprintf(stderr, "video: write %02X to $%04X, the JP1 latch (a bus fight on the card)\n", v, a); return; }
@@ -246,11 +307,70 @@ static void vid_write(unsigned a, uint8_t v, uint8_t *mem) {
 /* 2026-10-10: with Y1VIDSTATE=FILE in the environment, the dump also writes the card's state for tools/vidsim.py (the
    picture the card would make): the 18 CRTC registers, which were written, the selected register and the 2K display
    RAM the CPU reaches, as text lines "regs ...", "written ...", "sel N", "ram ..." (hex). */
+/* ---- V3: what the screen shows. The Base screen (screen 1): its start address and memory width, SP1 lines of
+   (HDW + 1) x 8 dots (the card's 2CLK is the dot clock / 4: 8 dots a memory cycle) */
+static void v3_geometry(uint32_t *start, long *mw, int *w, int *h) {
+    *start = ac_sar(1); *mw = ac_mw(1);
+    *w = (ac.reg[0x85] + 1) * 8; *h = (ac.reg[0x8A] & 0x0F) << 8 | ac.reg[0x8B];
+}
+/* the character in the 8 x 16 cell at (row, col), by matching the cell against the font EPROM's glyphs $20-$5F:
+   ' ' for an empty cell, '?' for dots that are no glyph (a drawing) */
+static int v3_cell(uint32_t start, long mw, int row, int col) {
+    uint8_t cell[16]; int any = 0;
+    for (int l = 0; l < 16; l++) {
+        uint16_t w = ac_rd((uint32_t)(start + (row * 16L + l) * mw + col / 2));
+        cell[l] = (uint8_t)(col & 1 ? w >> 8 : w); any |= cell[l];
+    }
+    if (!any) return ' ';
+    for (int g = 0x21; g < 0x60; g++) {
+        int l = 0;
+        while (l < 16 && cell[l] == v3font[((g / 40) * 16 + l) * 40 + g % 40]) l++;
+        if (l == 16) return g;
+    }
+    return '?';
+}
+static void v3_dump(void) {
+    uint32_t start; long mw; int w, h; v3_geometry(&start, &mw, &w, &h);
+    unsigned omr = ac.reg[4] << 8 | ac.reg[5], hc = ac.reg[0x82] + 1u, vc = (ac.reg[0x86] & 0x0Fu) << 8 | ac.reg[0x87];
+    static const char *acm[4] = { "single", "single", "interleaved", "superimposed" };
+    int set = mw > 0 && h > 0 && w > 0 && w <= mw * 16;
+    if (set) {
+        int cols = w / 8, rows = h / 16;
+        fprintf(stderr, "video: %d x %d dots, %d x %d characters of 8 x 16, from word $%05X, %ld words a line\n", w, h, cols, rows, start, mw);
+        fprintf(stderr, "+"); for (int c = 0; c < cols; c++) fputc('-', stderr); fprintf(stderr, "+\n");
+        for (int r = 0; r < rows; r++) {
+            fputc('|', stderr);
+            for (int c = 0; c < cols; c++) fputc(v3_cell(start, mw, r, c), stderr);
+            fprintf(stderr, "|\n");
+        }
+        fprintf(stderr, "+"); for (int c = 0; c < cols; c++) fputc('-', stderr); fprintf(stderr, "+\n");
+    } else fprintf(stderr, "video: the Base screen is not set up (memory width %ld, %d x %d dots)\n", mw, w, h);
+    unsigned lit = 0;
+    for (unsigned i = 0; i < AC_RAMW; i++) lit += ac_ram[i] != 0;
+    fprintf(stderr, "video: V3 HD63484: CCR %02X%02X, OMR %04X (%s, %s access), DCR %02X%02X, status %02X; ",
+            ac.reg[2], ac.reg[3], omr, omr & 0x4000 ? "running" : "stopped", acm[omr >> 2 & 3], ac.reg[6], ac.reg[7], ac_status());
+    if (vc && (omr & 0x4000))
+        fprintf(stderr, "line %.3f kHz, frame %.2f Hz; ", AC_DOTCLK / 8.0 / hc / 1e3, AC_DOTCLK / 8.0 / hc / vc);
+    fprintf(stderr, "%lu commands, %lu not modelled; frame buffer %u of %u words not 0; PS/2 %s, %u queued, interrupts %s, LEDs %d\n",
+            ac.done, ac.missing, lit, AC_RAMW, vid2.full ? "FULL" : "empty", vid2.qh - vid2.qt, vid2.ints ? "on" : "off", vid2.leds);
+}
+/* the V3 card's state for tools/vidsim.py: the chip's registers, parameter registers and pattern RAM, the frame buffer */
+static void v3_state(FILE *f) {
+    fprintf(f, "card v3\nreg ");
+    for (int i = 0; i < 256; i++) fprintf(f, "%02X", ac.reg[i]);
+    fprintf(f, "\npr"); for (int i = 0; i < 20; i++) fprintf(f, " %04X", ac.pr[i]);
+    fprintf(f, "\nptn"); for (int i = 0; i < 16; i++) fprintf(f, " %04X", ac.ptn[i]);
+    fprintf(f, "\ncp %d %d\nfb ", ac.cx, ac.cy);
+    for (unsigned i = 0; i < AC_RAMW; i++) fprintf(f, "%04X", ac_ram[i]);
+    fprintf(f, "\n");
+}
+
 static void vid_state(const uint8_t *mem) {
     const char *path = getenv("Y1VIDSTATE");
     if (!path || vid.absent) return;
     FILE *f = fopen(path, "w");
     if (!f) return;
+    if (vid2.card == 3) { v3_state(f); fclose(f); return; }
     fprintf(f, "regs"); for (int i = 0; i < 18; i++) fprintf(f, " %02X", vid.reg[i]);
     fprintf(f, "\nwritten"); for (int i = 0; i < 18; i++) fprintf(f, " %d", vid.written[i]);
     fprintf(f, "\nsel %d\nram ", vid.sel);
@@ -268,6 +388,7 @@ static void vid_dump(const uint8_t *mem) {
     vid_state(mem);
     if (!vid.dump) return;
     if (vid.absent) { fprintf(stderr, "video: no card (-N)\n"); return; }
+    if (vid2.card == 3) { v3_dump(); return; }
     int cols = vid2.card == 2 && vid2.dots == 8 ? 64 : VID_COLS, rows = VID_ROWS; unsigned start = VID_BASE;
     int crtc = vid.written[1] && vid.written[6] && vid.reg[1] && vid.reg[6];
     if (crtc) { cols = vid.reg[1]; rows = vid.reg[6] & 0x7F; start = VID_BASE + (((vid.reg[12] & 0x3F) << 8 | vid.reg[13]) & 0x7FF); }

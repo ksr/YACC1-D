@@ -493,6 +493,47 @@ def show(st, a, label, overlay=None):
         print("picture: %s (%d x %d dots%s)" % (a.png, W, H, ", whole raster" if a.raster else ""))
 
 
+def read_state_file(path):
+    """a state file's lines as a dictionary: the key, then the rest of the line"""
+    d = {}
+    for line in open(path):
+        k, _, v = line.strip().partition(" ")
+        d[k] = v
+    return d
+
+
+def v3_frame(d):
+    """the video card V3's picture (docs/cards/video-v3.md) from a state file of Y1VID_CARD=v3: the HD63484's Base
+    screen - its memory width MWR1 and start address SAR1, SP1 lines of (HDW + 1) x 8 dots, bit 0 of a word the
+    left-hand dot, a line being one memory width further on. -> (width, height, rows of 0 / 1)"""
+    reg = bytes.fromhex(d["reg"]); fb = d["fb"]
+    mw = (reg[0xCA] & 0x0F) << 8 | reg[0xCB]; start = (reg[0xCD] & 0x0F) << 16 | reg[0xCE] << 8 | reg[0xCF]
+    W = (reg[0x85] + 1) * 8; H = (reg[0x8A] & 0x0F) << 8 | reg[0x8B]
+    n = len(fb) // 4
+    rows = []
+    for y in range(H):
+        row = []
+        for wx in range(W // 16):
+            w = int(fb[4 * ((start + y * mw + wx) % n):][:4], 16)
+            row += [w >> b & 1 for b in range(16)]
+        rows.append(row)
+    return W, H, rows, mw, start
+
+
+def v3_render(d, a):
+    W, H, rows, mw, start = v3_frame(d)
+    reg = bytes.fromhex(d["reg"]); omr = reg[4] << 8 | reg[5]
+    hc = reg[0x82] + 1; vc = (reg[0x86] & 0x0F) << 8 | reg[0x87]
+    print("V3 (HD63484): %d x %d dots from word $%05X, %d words a line; OMR $%04X (%s, %s access)" % (
+        W, H, start, mw, omr, "running" if omr & 0x4000 else "stopped", ["single", "single", "interleaved", "superimposed"][omr >> 2 & 3]))
+    if vc: print("line %.3f kHz, frame %.2f Hz (a 25.175 MHz dot clock, 2CLK a quarter of it)" % (25.175e6 / 8 / hc / 1e3, 25.175e6 / 8 / hc / vc))
+    print("%d dots lit" % sum(map(sum, rows)))
+    if a.png:
+        on, off = (230, 230, 230), (10, 10, 10)
+        write_png(a.png, W, H, [[on if p else off for p in r] for r in rows], a.scale, a.scale)
+        print("picture: %s (%d x %d dots)" % (a.png, W, H))
+
+
 def parse_regs(s):
     v = [int(x, 0) for x in s.split(",")]
     return v + card_table()[len(v):]
@@ -528,6 +569,8 @@ def main():
                     "PLANE, 3 CPAGE, 4 DPAGE, 5 TEXT-OFF, 6 GFX-ON, 7 XOR (overrides --layers, --gmode, --dpage)")
     ap.add_argument("--dpage", type=int, choices=[0, 1], default=0, help="v2.0: the page displayed (DPAGE)")
     a = ap.parse_args()
+    if a.cmd == "render" and a.arg and read_state_file(a.arg).get("card") == "v3":   # 2026-11-11: the V3 card
+        return v3_render(read_state_file(a.arg), a)
     if a.cmd == "render" and a.arg:                         # 2026-11-10: a V2.0 state (Y1VID_CARD=v2.0) names its card
         extra = State.load(a.arg).extra
         if extra.get("card") == "v2.0":

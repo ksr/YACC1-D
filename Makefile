@@ -17,6 +17,7 @@
 #                   the proposed graphics overlay's model in vidsim (tests/video/overlay_check.py),
 #                   the video card V2.0's direct mode against the microcode's strobe timing (tests/video/v20_timing.py),
 #                   the video card V2.0's model in both emulators, Y1VID_CARD=v2.0 (tests/video/v20/run.py),
+#                   the video card V3's model (the HD63484) in both emulators, Y1VID_CARD=v3 (tests/video/v30/run.py),
 #                   the clock and register figures of the ACRTC design note, docs/cards/video-v3.md (tools/acrtc_timing.py --check),
 #                   Kermit transfers between /BIN/KERMIT and tools/y1kermit.py over a pty on both emulators (tests/kermit/run.py)
 #                   the debugger: y1ucemu's debug server and software/y1dbg, scripted and its UI in a pty (tests/y1dbg/run.py)
@@ -81,6 +82,7 @@ check:
 	python3 tests/video/overlay_check.py
 	python3 tests/video/v20_timing.py
 	python3 tests/video/v20/run.py
+	python3 tests/video/v30/run.py
 	python3 tools/acrtc_timing.py --check
 	python3 tests/sequencer/run.py
 	python3 tests/assembler/romcount/run.py

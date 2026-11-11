@@ -14,5 +14,8 @@ CRTC write log, `-N` no card). `Y1VID_CARD=v2.0` in the environment (2026-11-10,
 V2.0 there instead: its ports PA-PF on `INP` / `OUTA` / `OUTI`, the graphics window at $D800-$DFFF, VSYNC and DE from
 the CRTC registers and the clocks every instruction adds (`../opclocks.h`), the PS/2 keyboard from `Y1VID_KEYS` or, with
 `Y1VID_KBD=stdin`, from the console (the UART then receives nothing); the options are in `videomodel.h`.
+`Y1VID_CARD=v3` (2026-11-11) is the video card V3 of `docs/cards/video-v3.md`: the HD63484 ACRTC on ports PA-PD
+(`../acrtcmodel.h`: its registers, FIFOs and the commands a console and simple drawing need), a 640 x 480 frame buffer
+with the font EPROM, the PS/2 keyboard and mouse (`Y1VID_MOUSE`) on PE / PF; `-V` prints the screen read back as text.
 
 Load `firmware/rom/shipped/rom` (BASIC at $E000, monitor at $F000) to run what the machine runs.

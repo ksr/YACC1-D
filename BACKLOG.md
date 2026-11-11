@@ -324,8 +324,15 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   `docs/cards/video-v3.md` (begun 2026-11-11: the clock and registers for 640 x 480, the bus and memory sides, both
   text methods, the steps to higher resolution; its section 12 lists what is to decide and to confirm), with
   `tools/acrtc_timing.py` for the figures. Decided 2026-11-11: text by method B first on a board laid out for A, the font in an EPROM in the frame buffer's
-  address space, the PS/2 keyboard and mouse on the card, V3 goes ahead (V2.0's order still open). Next: the
-  emulators' model on the branch `video-v2` (`Y1VID_CARD=v3`), then the ROM's driver.** The aim: more graphics
+  address space, the PS/2 keyboard and mouse on the card, V3 goes ahead (V2.0's order still open). **The emulators' model:
+  begun 2026-11-11 on `video-v2`** - `Y1VID_CARD=v3`: the four ports, the HD63484's registers, FIFOs and status, the
+  register / data transfer commands and the simple drawing ones (move, dot, line, rectangle, polyline, polygon, filled
+  rectangle, the copies) with the colour, operation and area modes, the 128K-word frame buffer with the font EPROM
+  (`tools/v3font.py`), the raster count, the PS/2 keyboard and mouse (`Y1VID_MOUSE`); `-V` reads the screen back as
+  text; `tests/video/v30/run.py`. Not modelled yet: circles, ellipses, arcs, PAINT, PTN and the DMA transfers (each
+  sets CER and says so), command times, character screens (method A), the cursors, interrupts; `software/y1dbg` shows
+  the 6845 cards' screen only. **Next: the ROM's console driver for V3 (method B: glyphs by SCPY, a scroll by CPY),
+  the keyboard as on V2.0; then the netlist.** The aim: more graphics
   resolution than V2.0's 512 x 192, on monitors sold today. That means VGA timing - 640 x 480 at 60 Hz, 31.47 kHz
   lines, a 25.175 MHz dot clock (the same crystal halved is the TV / CGA rate, 640 x 240 at 15.73 kHz) - which most
   LCDs and VGA-to-HDMI adapters take, where few take the 15.7 or 18.4 kHz of the V1 / V2.0 cards. Two **HD63484P8** are
