@@ -9,14 +9,21 @@
 
 The EPROM answers in the HD63484's frame buffer space where MA19 is high (words $80000 up), on MA0-MA14, its byte on
 both halves of the 16-bit word; the chip's copy commands read it like RAM. Bit 0 of a byte is the left-hand dot (the
-chip's dot order). A copy walks a glyph one word wide and 16 lines down, a line being the screen's memory width, so the
-glyphs are laid out for that width: for 640 dots (40 words a line) glyph g is at
-    $80000 + ((g // 40) * 16 + line) * 40 + g % 40          line 0 = its top line
-256 glyphs in 7 bands, 4,480 bytes. (A wider mode's layout would go at $82000 and $84000; none yet.)
+chip's dot order).
+
+The ROM copies the font once into frame buffer RAM below the screen, and from there draws every character with one
+graphic copy (AGCPY), which takes dot coordinates. In RAM the font is a picture 256 dots wide and 48 lines high, the
+96 glyphs of ASCII $20-$7F in three rows of 32, 8 x 16 dots each: the glyph of code c at
+    x = (c & $1F) x 8,   its top line 16 x ((c - $20) >> 5) lines down
+so a word of that picture holds two glyphs, the left one in its low byte. The EPROM gives a byte to both halves of a
+word, so it holds the picture twice, 40 bytes a line as the copy steps (the 640-dot screen's memory width):
+    $80000 + line x 40 + w          the glyph at the even place 2w of that row (the word's low byte), line 0-47
+    $80780 + line x 40 + w          the glyph at the odd place 2w + 1 (its high byte)
+Two masked copies (SCPY, 16 words x 48 lines, the mask $00FF then $FF00) put it together in RAM. 3,840 bytes.
 
 The glyphs, for now: the V1.3 card's 64 of 7 x 7 dots (tools/vidsim.py, 2513 order: ASCII $20-$5F), each line doubled
-into the 8 x 16 cell with a blank line above and below and a blank eighth column; lower case shows as upper case;
-the control codes and $80-$FF are blank. A font with lower case is still to choose.
+into the 8 x 16 cell with a blank line above and below and a blank eighth column; lower case ($60-$7F) has the upper
+case's shapes. A font with lower case is still to choose: it replaces this image, nothing else.
 """
 import os, sys
 
@@ -25,16 +32,18 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 import vidsim
 
-MW = 40                               # words a line at 640 dots
+MW = 40                               # words a line at 640 dots: the copy's step from line to line
 BASE = 0x80000                        # the EPROM's first word in the frame buffer's address space
 SIZE = 32768
-USED = 7 * 16 * MW                    # 4,480
+HALF = 48 * MW                        # one half's bytes: 1,920
+USED = 2 * HALF                       # 3,840
+ROWS, PLACES = 3, 32                  # the picture: three rows of 32 glyphs
 
 
 def glyph(code):
     """16 bytes, top line first, bit 0 = the left-hand dot"""
     if code < 0x20 or code > 0x7F: return [0] * 16
-    c = code - 0x20 if code >= 0x60 else code             # lower case as upper case, for now
+    c = code - 0x20 if code >= 0x60 else code             # lower case has the upper case's shapes, for now
     rows = vidsim.font7_rows(c & 0x3F)[:7]                 # bit 6 = the left-hand dot
     out = [0]
     for r in rows:
@@ -43,14 +52,20 @@ def glyph(code):
     return out + [0]
 
 
+def place(code):
+    """-> (row, place in the row) of a glyph $20-$7F in the font's picture"""
+    return (code - 0x20) >> 5, code & 0x1F
+
+
 def address(code, line=0):
-    """the glyph's word address in the frame buffer's space"""
-    return BASE + ((code // MW) * 16 + line) * MW + code % MW
+    """the EPROM word that holds this line of the glyph: the even places' half, then the odd places'"""
+    row, pl = place(code)
+    return BASE + (pl & 1) * HALF + (row * 16 + line) * MW + (pl >> 1)
 
 
 def image():
     img = bytearray(SIZE)
-    for code in range(256):
+    for code in range(0x20, 0x80):
         for line, b in enumerate(glyph(code)):
             img[address(code, line) - BASE] = b
     return bytes(img)
@@ -73,7 +88,7 @@ def main():
     files = {os.path.join(ROOT, "firmware/video/font-v3.bin"): img, os.path.join(ROOT, "software/v3font.h"): header(img).encode()}
     if "--show" in sys.argv:
         c = sys.argv[sys.argv.index("--show") + 1]; code = ord(c) if len(c) == 1 else int(c, 0)
-        print("glyph $%02X at word $%05X" % (code, address(code)))
+        print("glyph $%02X: row %d, place %d of the picture; in the EPROM from word $%05X" % ((code,) + place(code) + (address(code),)))
         for b in glyph(code): print("".join("#" if b >> k & 1 else "." for k in range(8)))
         return
     if "--check" in sys.argv:

@@ -30,7 +30,8 @@ static void reg(int r, int v) { vid_io_write(0xA, (uint8_t)r); vid_io_write(0xB,
 static void reg16(int r, int v) { reg(r, v >> 8); reg(r + 1, v & 0xFF); }
 static void w(int v) { vid_io_write(0xB, (uint8_t)(v >> 8)); vid_io_write(0xB, (uint8_t)v); }             /* a FIFO word */
 static void fifo(void) { vid_io_write(0xA, 0); }
-static void cmd(int n, ...) { va_list a; va_start(a, n); for (int i = 0; i < n; i++) w(va_arg(a, int)); va_end(a); }
+static void settle(void) { if (vid_clk < ac.free_at) vid_clk = ac.free_at; }                              /* wait for the chip */
+static void cmd(int n, ...) { va_list a; settle(); va_start(a, n); for (int i = 0; i < n; i++) w(va_arg(a, int)); va_end(a); }
 static int rdw(void) { int h = vid_io_read(0xD); return h << 8 | vid_io_read(0xD); }
 static void rwp(int dn, uint32_t a) { cmd(2, 0x080C, dn << 14 | (int)(a >> 12)); cmd(2, 0x080D, (int)(a << 4) & 0xFFFF); }
 static uint32_t rwp_now(void) { return ac_rwp(); }
@@ -76,8 +77,8 @@ int main(void) {
     CHECK((vid_io_read(0xC) & 0x0C) == 0x04, "RFR after RPR"); CHECK(rdw() == 0x1111, "RPR CL1");
     CHECK((vid_io_read(0xC) & 0x04) == 0 && vid_io_read(0xD) == 0xFF, "the read FIFO empty again");
     cmd(2, 0x0801, 0xFFFF);
-    w(0x0801); CHECK((vid_io_read(0xC) & 0x20) == 0, "CED 0 between a command's words"); w(0xFFFF);
-    CHECK((vid_io_read(0xC) & 0x20) == 0x20, "CED 1 after it");
+    settle(); w(0x0801); CHECK((vid_io_read(0xC) & 0x20) == 0, "CED 0 between a command's words"); w(0xFFFF);
+    settle(); CHECK((vid_io_read(0xC) & 0x20) == 0x20, "CED 1 after it");
 
     /* WT, RD, MOD: the manual's examples at word $56 */
     rwp(0, 0x56); cmd(2, 0x4800, 0x5555);
@@ -115,21 +116,33 @@ int main(void) {
     rwp(0, 0x600); cmd(5, 0x6100, 0x0000, 0x6200, 0, 0xFFFB);                    /* from $620, 6 lines down, to $600 */
     CHECK(ac_ram[0x600] == 3 && ac_ram[0x650] == 8 && ac_ram[0x660] == 7, "an overlapping copy, the right way round");
 
-    /* the font EPROM: MA19 high, the byte on both halves; a masked copy puts a glyph in either half of a word */
-    reg16(0xC2, 0x0028); fifo();
-    CHECK(ac_rd(0x80299 + 40) == 0x1C1C && ac_rd(0x80299) == 0, "the EPROM: 'A' line 1 = %04X", ac_rd(0x80299 + 40));
-    ac_wr(0x80299, 0xFFFF); CHECK(ac_rd(0x80299) == 0, "writes to the EPROM are lost");
+    /* the font EPROM: MA19 high, the byte on both halves of a word; the even places' half, then the odd places' */
+    CHECK(ac_rd(0x80A28) == 0x1C1C && ac_rd(0x80A00) == 0, "the EPROM: 'A' (row 1, place 1) line 1 = %04X", ac_rd(0x80A28));
+    CHECK(ac_rd(0x802A8) == 0x3E3E, "'@' (row 1, place 0) line 1 = %04X", ac_rd(0x802A8));
+    ac_wr(0x80A28, 0xFFFF); CHECK(ac_rd(0x80A28) == 0x1C1C, "writes to the EPROM are lost");
     CHECK(ac_rd(0x20000 + 5) == ac_rd(5) && ac_rd(0x7FFFF) == ac_rd(0x1FFFF), "the RAM repeats below the EPROM");
+    /* the font's picture put together under the screen by two masked copies, as the ROM does; then text with one
+       graphic copy a character (AGCPY ED00: down the columns, to the right), the pointer left at the next cell */
     memset(ac_ram, 0, sizeof ac_ram);
-    cmd(2, 0x0804, 0x00FF); rwp(1, 0); cmd(5, 0x7100, 0x0080, 0x2990, 0, 0xFFF1);        /* 'A' in the left half of word 0 */
-    cmd(2, 0x0804, 0xFF00); rwp(1, 0); cmd(5, 0x7100, 0x0080, 0x29A0, 0, 0xFFF1);        /* 'B' in the right half */
-    CHECK(ac_ram[40] == 0x3F1C && ac_ram[0] == 0 && rwp_now() == 640, "two glyphs in a word: %04X", ac_ram[40]);
-    CHECK(v3_cell(0, 40, 0, 0) == 'A' && v3_cell(0, 40, 0, 1) == 'B' && v3_cell(0, 40, 0, 2) == ' ', "read back as text");
-    ac_ram[80] ^= 0x0010; CHECK(v3_cell(0, 40, 0, 0) == '?', "a cell that is no glyph");
+    cmd(2, 0x0804, 0x00FF); rwp(1, 19200); cmd(5, 0x7100, 0x0080, 0x0000, 15, 0xFFD1);
+    cmd(2, 0x0804, 0xFF00); rwp(1, 19200); cmd(5, 0x7100, 0x0080, 0x7800, 15, 0xFFD1);
+    CHECK(ac_ram[19200 + 17 * 40] == 0x1C3E && ac_ram[19200 + 16 * 40] == 0 && rwp_now() == 19200 + 48 * 40, "the picture: '@' and 'A' in a word: %04X", ac_ram[19200 + 17 * 40]);
+    { unsigned n = 0; for (int l = 0; l < 480; l++) for (int k = 0; k < 40; k++) n += ac_ram[l * 40 + k] != 0;
+      for (int l = 480; l < 528; l++) for (int k = 16; k < 40; k++) n += ac_ram[l * 40 + k] != 0;
+      CHECK(n == 0, "nothing on the screen, nothing beside the picture: %u words", n); }
+    cmd(3, 0x8000, 16, 463);                                                     /* row 1, column 2 */
+    cmd(5, 0xED00, 0x00B0, 0xFFEF, 7, 0xFFF1); CHECK(ac.cx == 24 && ac.cy == 463, "the pointer at the next cell: (%d, %d)", ac.cx, ac.cy);
+    cmd(5, 0xED00, 0x0098, 0xFFFF, 7, 0xFFF1);
+    CHECK(ac_ram[681] == 0x3E41 && ac_ram[640] == 0 && ac_ram[641] == 0, "\"V3\"'s second line: %04X", ac_ram[681]);
+    CHECK(v3_cell(0, 40, 1, 2) == 'V' && v3_cell(0, 40, 1, 3) == '3' && v3_cell(0, 40, 1, 4) == ' ', "read back as text");
+    cmd(3, 0x8000, 16, 463); cmd(5, 0xED00, 0x0000, 0xFFDF, 7, 0xFFF1);          /* a lower case place: row 2 */
+    cmd(5, 0xED00, 0x0000, 0xFFFF, 7, 0xFFF1);                                   /* and a blank over the '3' */
+    CHECK(v3_cell(0, 40, 1, 2) == '@' && v3_cell(0, 40, 1, 3) == ' ', "a glyph replaces what was in the cell");
+    ac_ram[680] ^= 0x0010; CHECK(v3_cell(0, 40, 1, 0) == '?', "a cell that is no glyph");
 
     /* dots: X with the bit number, Y up; a line leaves its last dot; a rectangle's four sides; a filled area */
     memset(ac_ram, 0, sizeof ac_ram);
-    cmd(1, 0xCC00); CHECK(ac_ram[ORGW] == 0x0001, "DOT at the origin: bit 0 of word 19,160");
+    cmd(3, 0x8000, 0, 0); cmd(1, 0xCC00); CHECK(ac_ram[ORGW] == 0x0001, "DOT at the origin: bit 0 of word 19,160");
     cmd(3, 0x8000, 3, 2); cmd(1, 0xCC00); CHECK(ac_ram[ORGW - 80] == 0x0008, "(3, 2): two lines up, bit 3");
     cmd(3, 0x8000, 17, 1); cmd(1, 0xCC00); CHECK(ac_ram[ORGW - 40 + 1] == 0x0002, "(17, 1): the next word");
     cmd(3, 0x8400, 0xFFEE, 0xFFFF); cmd(1, 0xCC00);                              /* RMOVE (-18, -1) -> (-1, 0) */
@@ -179,7 +192,7 @@ int main(void) {
     memset(ac_ram, 0, sizeof ac_ram);
     cmd(3, 0x8000, 0, 0); cmd(6, 0xA400, 2, 4, 0, 0, 4);                         /* RPLG: a triangle, closed */
     { int n = 0; for (unsigned i = 0; i < AC_RAMW; i++) n += __builtin_popcount(ac_ram[i]);
-      CHECK(n == 12 && ac.cx == 0 && ac.cy == 0 && (vid_io_read(0xC) & 0x20), "RPLG: %d dots, closed", n); }
+      settle(); CHECK(n == 12 && ac.cx == 0 && ac.cy == 0 && (vid_io_read(0xC) & 0x20), "RPLG: %d dots, closed", n); }
     memset(ac_ram, 0, sizeof ac_ram);
     ac_ram[ORGW] = 0x0005; ac_ram[ORGW - 40] = 0x0003;                           /* (0,0) (2,0) / (0,1) (1,1) */
     cmd(3, 0x8000, 21, 4); cmd(5, 0xE000, 0, 0, 2, 1);                           /* AGCPY 3 x 2 dots to (21, 4), going up */
@@ -199,6 +212,24 @@ int main(void) {
     CHECK((vid_io_read(0xC) & 0x80) && ac.missing == 1, "CRCL: CER set, counted");
     reg(0x02, 0x80); CHECK(vid_io_read(0xC) == 0x23, "ABT: status 23"); reg(0x02, 0x00); fifo();
     cmd(1, 0x3000); CHECK(vid_io_read(0xC) & 0x80, "$3000 is no command: CER"); reg(0x02, 0x80); reg(0x02, 0x00); fifo();
+
+    /* time: a clear of the screen keeps the chip busy 84,504 2CLK cycles (42,252 by the table, twice that interleaved);
+       meanwhile 16 bytes wait in the FIFO and a 17th is lost */
+    rwp(1, 0); settle();
+    { unsigned long long t0 = vid_clk;
+      w(0x5800); w(0); w(39); w(0xFE21);
+      CHECK(ac.free_at - t0 == 13427, "the clear takes %llu clocks at 1 MHz, want 13427", ac.free_at - t0);
+      CHECK((vid_io_read(0xC) & 0x23) == 0x03, "busy: CED 0, the FIFO empty and ready");
+      for (int i = 0; i < 4; i++) { w(0x0800); w(0x1234); }
+      CHECK((vid_io_read(0xC) & 0x03) == 0x00, "16 bytes waiting: WFR 0, WFE 0");
+      vid_io_write(0xB, 0x08); CHECK(ac.lost == 1, "a 17th byte is lost");
+      vid_clk = ac.free_at - 1; CHECK((vid_io_read(0xC) & 0x20) == 0, "busy to the last clock");
+      vid_clk = ac.free_at; CHECK(vid_io_read(0xC) == 0x23 && ac.pr[0] == 0x1234, "then idle: status %02X", vid_io_read(0xC));
+      cmd(2, 0x0800, 0x0000); }
+    reg16(0x04, 0xC080); fifo(); rwp(1, 0); settle();                            /* single access: the table's own time */
+    { unsigned long long t0 = vid_clk; w(0x5800); w(0); w(39); w(0xFE21);
+      CHECK(ac.free_at - t0 == 6714, "single access: %llu clocks, want 6714", ac.free_at - t0); }
+    reg16(0x04, 0xC088); fifo(); settle();
 
     /* the raster count: 100 memory cycles a line, 525 lines, 3,146,875 memory cycles a second */
     vid_clk = 1000000; vid_io_write(0xA, 0x80);

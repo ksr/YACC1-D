@@ -13,9 +13,14 @@
  *   - the address register and the registers r02-rFF as bytes, r80-rFF stepping the address register (5.2); the
  *     raster count RCR (r80) from the clock; CCR's ABT (set by reset: the FIFOs are shut until the driver clears it;
  *     setting it aborts a command and empties the FIFOs) and GBM (the bits a pixel)
- *   - the status register: CER, ARD, CED, RFF, RFR, WFR, WFE (5.3). Every command finishes the moment its last word
- *     arrives, so the write FIFO is always empty and ready, and CED is 0 only between a command's words
+ *   - the status register: CER, ARD, CED, RFF, RFR, WFR, WFE (5.3)
  *   - the write FIFO as the command stream, the read FIFO (16 bytes) for RD, RPR and RPTN
+ *   - time: a command's effect is there the moment its last word arrives, but the chip is busy for the command's
+ *     length by the manual's table (in 2CLK cycles, doubled for frame buffer work while a dual access mode shares the
+ *     memory with the display - an estimate). While it is busy the bytes written wait in the write FIFO, 16 at most:
+ *     a byte that finds it full is lost and counted, as on the chip. WFE is 1 when nothing waits, WFR while there is
+ *     room, CED when the chip is idle. So a driver must do what the manual says - wait for WFE, then write at most
+ *     16 bytes - or its bytes are lost here too
  *   - the drawing parameter registers Pr00-Pr13 (5.10) and the pattern RAM (16 words)
  *   - commands (6): ORG, WPR, RPR, WPTN, RPTN; RD, WT, MOD, CLR, SCLR, CPY, SCPY with the eight scan directions;
  *     AMOVE, RMOVE, ALINE, RLINE, ARCT, RRCT, APLL, RPLL, APLG, RPLG, AFRCT, RFRCT, DOT, AGCPY, RGCPY - with the
@@ -26,7 +31,7 @@
  * What is not
  *   - CRCL, ELPS, the arcs, PAINT, PTN and the DMA transfers (DRD, DWT, DMOD): each sets CER, is counted and named on
  *     stderr, so a program that needs one fails loudly here
- *   - how long a command takes; character screens (method A); the cursors, zoom, the light pen, interrupts
+ *   - character screens (method A); the cursors, zoom, the light pen, interrupts
  *   - the chip's own choice of dots on a slanted line (this is Bresenham's; a level or upright line is exact), and
  *     the way a filled area walks the pattern RAM from line to line (PPY steps up a line at a time here; a solid
  *     pattern does not depend on it)
@@ -52,6 +57,8 @@ static struct {
     int cer, ard;
     int cx, cy, dn, orgdot; uint32_t org;    /* the current pointer, and the origin ORG set */
     unsigned long done, missing; uint8_t told[32];
+    unsigned long long now, hz, free_at;     /* the CPU's clock at this access, its rate, and when the chip is done */
+    int fifo; unsigned long lost;            /* bytes waiting in the write FIFO; bytes that found it full */
     int log;
 } ac;
 static uint16_t ac_ram[AC_RAMW];
@@ -59,6 +66,7 @@ static uint16_t ac_ram[AC_RAMW];
 static void ac_reset(void) {
     memset(&ac, 0, sizeof ac);
     ac.reg[0x02] = 0x80;                     /* CCR: ABT set by RES */
+    ac.hz = 1000000;
 }
 
 /* ---- the frame buffer ---- */
@@ -248,6 +256,15 @@ static void ac_gcopy(int op, int xs, int ys, int dx, int dy) {
     ac.cx = x0 + (int)(nout * doutx); ac.cy = y0 + (int)(nout * douty);
 }
 
+/* ---- time: the chip busy for `cycles` 2CLK cycles from when it is next free; frame buffer work (`fb`) takes twice
+   as long in a dual access mode (OMR's ACM: the display has every other memory cycle) */
+static void ac_busy(unsigned long cycles, int fb) {
+    if (fb && (ac.reg[0x05] & 0x08)) cycles *= 2;
+    ac.free_at = (ac.now > ac.free_at ? ac.now : ac.free_at) + cycles * ac.hz / (AC_DOTCLK / 4) + 1;
+}
+static int ac_p(uint16_t op) { return (op & 7) < 4 ? 4 : 6; }               /* the table's P: cycles a dot */
+static int ac_len(int x0, int y0, int x1, int y1) { int a = abs(x1 - x0), b = abs(y1 - y0); return a > b ? a : b; }
+
 /* ---- the command stream ---- */
 static const char *ac_name(int hb) {
     static const struct { int hb, mask; const char *n; } t[] = {
@@ -298,34 +315,48 @@ static void ac_exec(void) {
     }
     if (hb == 0x04) {                                                   /* ORG: the origin's screen, address and dot */
         ac.dn = p[0] >> 14; ac.org = (uint32_t)(p[0] & 0xFF) << 12 | p[1] >> 4; ac.orgdot = p[1] & 15; ac.cx = ac.cy = 0;
-    } else if (hb == 0x08) { int rn = op & 0x1F; if (rn < 0x10) ac.pr[rn] = p[0]; }
+        ac_busy(8, 0);
+    } else if (hb == 0x08) { int rn = op & 0x1F; if (rn < 0x10) ac.pr[rn] = p[0]; ac_busy(6, 0); }
     else if (hb == 0x0C) {
         int rn = op & 0x1F; uint16_t v = ac.pr[rn];
         if (rn == 0x10 || rn == 0x11) {                                 /* DP: where the current pointer is in memory */
             uint32_t a; int sh; ac_locate(ac.cx, ac.cy, &a, &sh);
             v = rn == 0x10 ? (uint16_t)(ac.dn << 14 | a >> 12) : (uint16_t)(a << 4 | sh);
         } else if (rn == 0x12) v = (uint16_t)ac.cx; else if (rn == 0x13) v = (uint16_t)ac.cy;
-        ac_push(v); ac.ard = 0;
-    } else if (hb == 0x18) { for (int i = 0; i < ac.need - 1; i++) ac.ptn[(op + i) & 15] = p[1 + i]; }
-    else if (hb == 0x1C) { for (int i = 0; i < p[0] / 2; i++) ac_push(ac.ptn[(op + i) & 15]); }
-    else if (hb == 0x44) { ac_push(ac_rd(ac_rwp())); ac_set_rwp(ac_rwp() + 1); }
-    else if (hb == 0x48) { ac_wr(ac_rwp(), p[0]); ac_set_rwp(ac_rwp() + 1); }
-    else if (hb == 0x4C) { uint32_t a = ac_rwp(); ac_wr(a, ac_modify(ac_rd(a), p[0], op & 3, ac.pr[4])); ac_set_rwp(a + 1); }
-    else if (hb == 0x58) ac_clear(p[0], ac_s16(p[1]), ac_s16(p[2]), 0, 0);
-    else if (hb == 0x5C) ac_clear(p[0], ac_s16(p[1]), ac_s16(p[2]), 1, op & 3);
-    else if ((hb & 0xE0) == 0x60) ac_copy(op, (uint32_t)(p[0] & 0xFF) << 12 | p[1] >> 4, ac_s16(p[2]), ac_s16(p[3]), hb & 0x10);
-    else if (hb == 0x80) { ac.cx = ac_s16(p[0]); ac.cy = ac_s16(p[1]); }
-    else if (hb == 0x84) { ac.cx += ac_s16(p[0]); ac.cy += ac_s16(p[1]); }
-    else if (hb == 0x88) ac_line(ac_s16(p[0]), ac_s16(p[1]), op);
-    else if (hb == 0x8C) ac_line(ac.cx + ac_s16(p[0]), ac.cy + ac_s16(p[1]), op);
-    else if (hb == 0x90 || hb == 0x94) {                                /* ARCT, RRCT: along X first, back to the start */
+        ac_push(v); ac.ard = 0; ac_busy(6, 0);
+    } else if (hb == 0x18) { for (int i = 0; i < ac.need - 1; i++) ac.ptn[(op + i) & 15] = p[1 + i]; ac_busy(4 * (ac.need - 1) + 8, 0); }
+    else if (hb == 0x1C) { for (int i = 0; i < p[0] / 2; i++) ac_push(ac.ptn[(op + i) & 15]); ac_busy(4 * (p[0] / 2) + 10, 0); }
+    else if (hb == 0x44) { ac_push(ac_rd(ac_rwp())); ac_set_rwp(ac_rwp() + 1); ac_busy(12, 1); }
+    else if (hb == 0x48) { ac_wr(ac_rwp(), p[0]); ac_set_rwp(ac_rwp() + 1); ac_busy(8, 1); }
+    else if (hb == 0x4C) { uint32_t a = ac_rwp(); ac_wr(a, ac_modify(ac_rd(a), p[0], op & 3, ac.pr[4])); ac_set_rwp(a + 1); ac_busy(8, 1); }
+    else if (hb == 0x58 || hb == 0x5C) {
+        unsigned long x = (unsigned long)abs(ac_s16(p[1])) + 1, y = (unsigned long)abs(ac_s16(p[2])) + 1;
+        ac_clear(p[0], ac_s16(p[1]), ac_s16(p[2]), hb == 0x5C, op & 3);
+        ac_busy(hb == 0x58 ? (2 * x + 8) * y + 12 : (4 * x + 6) * y + 12, 1);
+    } else if ((hb & 0xE0) == 0x60) {
+        unsigned long x = (unsigned long)abs(ac_s16(p[2])) + 1, y = (unsigned long)abs(ac_s16(p[3])) + 1;
+        ac_copy(op, (uint32_t)(p[0] & 0xFF) << 12 | p[1] >> 4, ac_s16(p[2]), ac_s16(p[3]), hb & 0x10);
+        ac_busy((6 * x + 10) * y + 12, 1);
+    } else if (hb == 0x80) { ac.cx = ac_s16(p[0]); ac.cy = ac_s16(p[1]); ac_busy(56, 0); }
+    else if (hb == 0x84) { ac.cx += ac_s16(p[0]); ac.cy += ac_s16(p[1]); ac_busy(56, 0); }
+    else if (hb == 0x88 || hb == 0x8C) {
+        int x1 = hb == 0x88 ? ac_s16(p[0]) : ac.cx + ac_s16(p[0]), y1 = hb == 0x88 ? ac_s16(p[1]) : ac.cy + ac_s16(p[1]);
+        ac_busy((unsigned long)ac_p(op) * ac_len(ac.cx, ac.cy, x1, y1) + 18, 1);
+        ac_line(x1, y1, op);
+    } else if (hb == 0x90 || hb == 0x94) {                              /* ARCT, RRCT: along X first, back to the start */
         int x0 = ac.cx, y0 = ac.cy, x1 = hb == 0x90 ? ac_s16(p[0]) : x0 + ac_s16(p[0]), y1 = hb == 0x90 ? ac_s16(p[1]) : y0 + ac_s16(p[1]);
+        ac_busy(2UL * ac_p(op) * (abs(x1 - x0) + abs(y1 - y0)) + 54, 1);
         if (ac_line(x1, y0, op) && ac_line(x1, y1, op) && ac_line(x0, y1, op)) ac_line(x0, y0, op);
-    } else if (hb == 0xC0) ac_fill(ac_s16(p[0]), ac_s16(p[1]), op);
-    else if (hb == 0xC4) ac_fill(ac.cx + ac_s16(p[0]), ac.cy + ac_s16(p[1]), op);
-    else if (hb == 0xCC) { if (ac_plot(ac.cx, ac.cy, op)) ac_pstep(0); }
-    else if ((hb & 0xF0) == 0xE0) ac_gcopy(op, ac_s16(p[0]), ac_s16(p[1]), ac_s16(p[2]), ac_s16(p[3]));
-    else if ((hb & 0xF0) == 0xF0) ac_gcopy(op, ac.cx + ac_s16(p[0]), ac.cy + ac_s16(p[1]), ac_s16(p[2]), ac_s16(p[3]));
+    } else if (hb == 0xC0 || hb == 0xC4) {
+        int x1 = hb == 0xC0 ? ac_s16(p[0]) : ac.cx + ac_s16(p[0]), y1 = hb == 0xC0 ? ac_s16(p[1]) : ac.cy + ac_s16(p[1]);
+        ac_busy(((unsigned long)ac_p(op) * (abs(x1 - ac.cx) + 1) + 8) * (abs(y1 - ac.cy) + 1) + 18, 1);
+        ac_fill(x1, y1, op);
+    } else if (hb == 0xCC) { if (ac_plot(ac.cx, ac.cy, op)) ac_pstep(0); ac_busy(8, 1); }
+    else if ((hb & 0xE0) == 0xE0) {                                     /* AGCPY, RGCPY */
+        int rel = hb & 0x10, s = op >> 11 & 1, a = abs(ac_s16(p[s ? 3 : 2])) + 1, b = abs(ac_s16(p[s ? 2 : 3])) + 1;
+        ac_busy(((unsigned long)(ac_p(op) + 2) * a + 10) * b + 70, 1);
+        ac_gcopy(op, rel ? ac.cx + ac_s16(p[0]) : ac_s16(p[0]), rel ? ac.cy + ac_s16(p[1]) : ac_s16(p[1]), ac_s16(p[2]), ac_s16(p[3]));
+    }
 }
 
 /* one word from the write FIFO */
@@ -335,8 +366,12 @@ static void ac_word(uint16_t w) {
         if (ac.polyn++ & 1) {
             uint16_t op = ac.cmd[0]; int rel = op >> 8 & 4;
             int x = rel ? ac.cx + ac_s16(ac.cmd[1]) : ac_s16(ac.cmd[1]), y = rel ? ac.cy + ac_s16(ac.cmd[2]) : ac_s16(ac.cmd[2]);
+            ac_busy((unsigned long)ac_p(op) * ac_len(ac.cx, ac.cy, x, y) + 16, 1);
             ac_line(x, y, op);
-            if (--ac.poly == 0 && (op >> 8 & 0xF8) == 0xA0) ac_line(ac.px0, ac.py0, op);   /* a polygon closes */
+            if (--ac.poly == 0 && (op >> 8 & 0xF8) == 0xA0) {              /* a polygon closes */
+                ac_busy((unsigned long)ac_p(op) * ac_len(ac.cx, ac.cy, ac.px0, ac.py0) + 20, 1);
+                ac_line(ac.px0, ac.py0, op);
+            }
             if (!ac.poly) ac.ncmd = 0;
         }
         return;
@@ -369,18 +404,26 @@ static unsigned ac_raster(unsigned long long clk, unsigned long long cpu_hz) {
     return (unsigned)(mc / hc % vc);
 }
 static int ac_status(void) {
-    return ac.cer << 7 | ac.ard << 6 | (ac.ncmd == 0 && !ac.poly && !ac.half) << 5 | (ac.rfn == 16) << 3 | (ac.rfn > 0) << 2 | 3;
+    int idle = ac.now >= ac.free_at;
+    if (idle) ac.fifo = 0;
+    return ac.cer << 7 | ac.ard << 6 | (idle && ac.ncmd == 0 && !ac.poly && !ac.half) << 5 | (ac.rfn == 16) << 3 | (ac.rfn > 0) << 2 |
+           (ac.fifo < 16) << 1 | (ac.fifo == 0);
 }
 static void ac_write_ar(uint8_t v) { ac.ar = v; }
 static void ac_write_data(uint8_t v) {
     if (ac.ar < 2) {                                                    /* the write FIFO: high byte, low byte */
         if (ac.reg[0x02] & 0x80) return;                                /* ABT: the FIFOs are shut */
+        if (ac.now >= ac.free_at) ac.fifo = 0;                          /* the chip is idle: it takes the byte at once */
+        else if (ac.fifo >= 16) {                                       /* busy and the FIFO full: the byte is lost */
+            if (!ac.lost++) fprintf(stderr, "video: ACRTC write FIFO full: a byte written without waiting for WFE / WFR is lost\n");
+            return;
+        } else ac.fifo++;
         if (!ac.half) { ac.hi = v; ac.half = 1; } else { ac.half = 0; ac_word((uint16_t)(ac.hi << 8 | v)); }
         return;
     }
     ac.reg[ac.ar] = v;
     if (ac.ar == 0x02 && (v & 0x80)) {                                  /* ABT: the command dropped, the FIFOs emptied */
-        ac.ncmd = ac.poly = ac.half = 0; ac.rfn = 0; ac.cer = ac.ard = 0;
+        ac.ncmd = ac.poly = ac.half = 0; ac.rfn = 0; ac.cer = ac.ard = 0; ac.fifo = 0; ac.free_at = ac.now;
     }
     if (ac.ar >= 0x80) ac.ar++;
 }

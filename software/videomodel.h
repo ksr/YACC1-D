@@ -62,7 +62,7 @@
  *   PE  IN  the card's status: bit 0 FULL, 1 SRC (0 keyboard, 1 mouse), 2 BUSY, 3 TEXT (0), 7..4 = 0110 (the ID $6x);
  *       OUT the PS/2 command                        PF  IN  the PS/2 data (clears FULL)
  * The frame buffer is 128K words of RAM with the font EPROM above it (MA19 high; software/v3font.h from
- * tools/v3font.py). -V prints the screen read back as text - each 8 x 16 cell matched against the font's glyphs, ' '
+ * tools/v3font.py: the picture of the 96 glyphs a ROM copies under the screen and draws from). -V prints the screen read back as text - each 8 x 16 cell matched against the font's glyphs, ' '
  * empty, '?' dots that are no glyph - and the chip's state; Y1VIDSTATE writes the registers and the frame buffer,
  * which tools/vidsim.py render draws; -W logs every command's words.
  *   Y1VID_MOUSE="dx,dy,buttons;..."   (V2.0 and V3) PS/2 mouse packets, queued whole after the keys of Y1VID_KEYS, or
@@ -233,6 +233,7 @@ static int vid_io_owns(int p) { return vid2.card >= 2 && !vid.absent && p >= 0xA
    1 SRC, 2 BUSY, 3 TEXT = method A's parts fitted: 0, 7..4 = 0110, the card ID $6x), OUT the PS/2 command; PF IN the
    PS/2 data. An OUT to PC / PD / PF or an IN from PA / PB does nothing: the card gates each port with its own strobe */
 static int v3_io_read(int p) {
+    ac.now = vid_clk; ac.hz = vid2.cpu_hz;
     switch (p) {
         case 0xC: return ac_status();
         case 0xD: return ac_read_data(vid_clk, vid2.cpu_hz);
@@ -244,6 +245,7 @@ static int v3_io_read(int p) {
     }
 }
 static void v3_io_write(int p, uint8_t v) {
+    ac.now = vid_clk; ac.hz = vid2.cpu_hz;
     if (p == 0xA) ac_write_ar(v);
     else if (p == 0xB) ac_write_data(v);
     else if (p == 0xE) v2_command(v);
@@ -322,9 +324,10 @@ static int v3_cell(uint32_t start, long mw, int row, int col) {
         cell[l] = (uint8_t)(col & 1 ? w >> 8 : w); any |= cell[l];
     }
     if (!any) return ' ';
-    for (int g = 0x21; g < 0x60; g++) {
-        int l = 0;
-        while (l < 16 && cell[l] == v3font[((g / 40) * 16 + l) * 40 + g % 40]) l++;
+    for (int g = 0x21; g < 0x80; g++) {                   /* the EPROM: place g & 31 of row (g - $20) >> 5, the even places'
+                                                             half first, 40 bytes a line (tools/v3font.py) */
+        int l = 0, at = (g & 1) * (V3FONT_USED / 2) + ((g - 0x20) >> 5) * 16 * 40 + ((g & 0x1F) >> 1);
+        while (l < 16 && cell[l] == v3font[at + l * 40]) l++;
         if (l == 16) return g;
     }
     return '?';
@@ -351,6 +354,7 @@ static void v3_dump(void) {
             ac.reg[2], ac.reg[3], omr, omr & 0x4000 ? "running" : "stopped", acm[omr >> 2 & 3], ac.reg[6], ac.reg[7], ac_status());
     if (vc && (omr & 0x4000))
         fprintf(stderr, "line %.3f kHz, frame %.2f Hz; ", AC_DOTCLK / 8.0 / hc / 1e3, AC_DOTCLK / 8.0 / hc / vc);
+    if (ac.lost) fprintf(stderr, "%lu BYTES LOST in a full write FIFO; ", ac.lost);
     fprintf(stderr, "%lu commands, %lu not modelled; frame buffer %u of %u words not 0; PS/2 %s, %u queued, interrupts %s, LEDs %d\n",
             ac.done, ac.missing, lit, AC_RAMW, vid2.full ? "FULL" : "empty", vid2.qh - vid2.qt, vid2.ints ? "on" : "off", vid2.leds);
 }

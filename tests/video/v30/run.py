@@ -10,9 +10,11 @@ and the HD63484 of software/acrtcmodel.h; docs/cards/video-v3.md).
 2. model_test.c, the card and the chip on their own: the ports, the registers and FIFOs, every command the model has
    (the manual's examples where it gives one), the font EPROM, the raster count, the keyboard and the mouse.
 3. v30card.asm through the monitor on the instruction-level emulator (int) and the microcode one (uc): a YACC1
-   program starts the chip for 640 x 480, clears the screen, copies "V3 OK" from the font EPROM, draws a frame, a
-   diagonal, a filled box and a dot, reads a word and the current pointer back, and takes a key and a mouse packet
-   from the PS/2 controller. Checked: what it prints; the -V dump (the screen read back as text by matching the
+   program starts the chip for 640 x 480, copies the font from the EPROM into the frame buffer under the screen,
+   clears the screen, draws "V3 OK" with a graphic copy a character, a frame, a diagonal, a filled box and a dot,
+   reads a word and the current pointer back, and takes a key and a mouse packet from the PS/2 controller. It sends
+   its commands in packets, each after the write FIFO is empty: the model keeps the chip busy for each command's
+   time and loses a byte written to a full FIFO, as the chip does (no byte may be lost). Checked: what it prints; the -V dump (the screen read back as text by matching the
    font's glyphs, the chip's line and frame rates); the frame buffer, dot for dot, against the same scene drawn
    here; int and uc the same.
 4. tools/vidsim.py render draws the state file: 640 x 480, the same dots.
@@ -100,7 +102,7 @@ def main():
         rows = [l[1:-1] for l in err.splitlines() if l.startswith("|")]
         ok = len(rows) == 30 and all(len(x) == 80 for x in rows) and rows[1].startswith("? V3 OK ") and rows[0] == "?" * 80 and \
             "640 x 480 dots, 80 x 30 characters" in err and "line 31.469 kHz, frame 59.94 Hz" in err and \
-            "interleaved access" in err and ", 0 not modelled" in err
+            "interleaved access" in err and ", 0 not modelled" in err and "LOST" not in err
         check("the -V dump, %s" % tag, ok, "\n".join(rows[:3]) + "\n" + err[-400:])
         st = vidsim.read_state_file(state) if os.path.exists(state) else {}
         states[tag] = st
