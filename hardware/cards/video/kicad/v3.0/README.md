@@ -14,6 +14,6 @@ first build leaves empty - a character screen of 80 x 30 laid over the graphics.
 `tests/video/v30_netsim.py` runs this netlist as a circuit, with delays, against a model of the chip's memory
 cycles (the design note's section 10d): the proof that the wiring does what section 10b and 10c say.
 
-Still to add before a schematic and a board are generated (the netlist's `OPEN`): the cursor's place in the
-video. Then: a timing check against the parts' data sheets, the generator (from V2.0's `gen_v20.py`), routing,
+Nothing of the circuit is open: the character screen's cursor is the chip's two cursor outputs on the character
+generator's address, and the bitmap console's cursor is drawn by its driver. Then: a timing check against the parts' data sheets, the generator (from V2.0's `gen_v20.py`), routing,
 DRC, `pcb-check`, a design review. Nothing here is ordered or built.

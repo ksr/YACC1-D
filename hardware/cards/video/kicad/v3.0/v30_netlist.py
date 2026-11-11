@@ -12,7 +12,7 @@ THIS IS A FIRST CUT, NOT A BOARD YET. In it: the bus and port decode, the chip, 
 the chip's MCYC, the address latches, RAM, EPROM and their control (section 10b's table, gate for gate), the shift
 registers, the control register taken from the chip's attribute byte (three colour bits, the two syncs'
 polarity), blanking in step with the dots, the VGA output, the PS/2 section. Not in it yet, and to be added before
-the generator runs (OPEN below): the cursor's place in the video.
+the generator runs: nothing (the cursor of the character screen is in; the bitmap console's is drawn by its driver).
 
 Text method A (docs/cards/video-v3.md 8A, 10c): the parts in TEXT_A are sockets that the first build leaves
 empty. The card works without them (the chip in interleaved access, glyphs copied in the bitmap); with them and
@@ -70,8 +70,8 @@ PARTS = {
     "IC43": ("74ACT32", "74xx:74LS32", DIP[14], "a Window cycle or the one after it"),
     "IC44": ("74ACT574", "74xx:74LS574", DIP[20], "the left character's code (the word's low byte)"),
     "IC45": ("74ACT574", "74xx:74LS574", DIP[20], "the right character's code (the high byte)"),
-    "IC46": ("74ACT574", "74xx:74LS574", DIP[20], "the raster line RA0-RA4 of the Window cycle (and CUD1)"),
-    "IC47": ("AT27C256R-70", "Memory_EPROM:27C256", DIPW[28], "character generator: code x 16 + line (firmware/video, 70 ns)"),
+    "IC46": ("74ACT574", "74xx:74LS574", DIP[20], "the raster line RA0-RA4 of the Window cycle"),
+    "IC47": ("AT27C256R-70", "Memory_EPROM:27C256", DIPW[28], "character generator, 70 ns: line + 16 x code; A12 CUD1, A13 the second font, A14 CUD2"),
     "IC48": ("74F299", "74xx:74LS299", DIP[20], "the text's dots, 8 a character"),
     # --- memory
     "IC8":  ("74ACT573", "74xx:74LS573", DIP[20], "address latch A0-7 (open while AS is low)"),
@@ -323,10 +323,15 @@ for i in range(8):
     c("DL%d" % i, "IC44.%d" % (2 + i)); c("DH%d" % i, "IC45.%d" % (2 + i))
     c("CA%d" % i, "IC44.%d" % (19 - i), "IC45.%d" % (19 - i), "IC47.%d" % ROM_A[4 + i])
     c("CG%d" % i, "IC47.%d" % ROM_D[i], "IC48.%d" % IO299[7 - i])                 # bit 0 is the left-hand dot
-c("RA4", "IC1.33", "IC46.6"); c("CUD1#", "IC1.1", "IC46.7"); c("GND", "IC46.1", "IC46.8", "IC46.9")
+c("RA4", "IC1.33", "IC46.6"); c("GND", "IC46.1", "IC46.7", "IC46.8", "IC46.9")
 for i in range(4):
     c("RL%d" % i, "IC46.%d" % (19 - i), "IC47.%d" % ROM_A[i])
-c("GND", "IC47.2", "IC47.26", "IC47.27", "IC47.20", "IC47.22"); c("VCC", "IC47.1")    # A12-A14 low; -CE, -OE on; Vpp
+# the cursor (10c): the chip's CUD1 and CUD2 (active low, a memory cycle = a character wide) are two more address
+# lines of the character generator, live: a character whose look-up cycle has CUD1 low comes from the half of the
+# EPROM that holds the cursor's form of every glyph, and is loaded with the cursor in it. A13 is ATR bit 7: a
+# second font, line by line
+c("CUD1#", "IC1.1", "IC47.2"); c("CUD2#", "IC1.2", "IC47.27"); c("FONT2", "IC35.19", "IC47.26")
+c("GND", "IC47.20", "IC47.22"); c("VCC", "IC47.1")                           # -CE, -OE on; Vpp
 c(PU, "IC48.1", "IC48.2", "IC48.3"); c("GND", "IC48.11", "IC48.18")
 
 # ---- PS/2: IC24 ATmega328P, latches IC25 / IC26, status IC27, flags IC28, IC29, IC30 (V2.0's nets, new ports) --------
@@ -359,9 +364,9 @@ c("GND", "IC29.1", "IC29.3", "IC29.5")                                    # thre
 
 # ---- pins left open ----------------------------------------------------------------------------------------------------
 NO_CONNECT = {
-    "IC1": [2, 8, 10, 15, 25, 26, 27, 28, 29, 30, 31, 32, 62],             # CUD2, DREQ, DTACK, EXSYNC, D8-15, DISP2
+    "IC1": [8, 10, 15, 25, 26, 27, 28, 29, 30, 31, 32, 62],                # DREQ, DTACK, EXSYNC, D8-15, DISP2
     "IC2": [15, 14, 11, 10, 7], "IC3": [15, 14, 13, 12], "IC4": [3, 11, 8],
-    "IC6": [11, 15], "IC7": [6, 8], "IC22": [8], "IC23": [8], "IC33": [6, 8], "IC35": [19],      # ATR bit 7: a spare
+    "IC6": [11, 15], "IC7": [6, 8], "IC22": [8], "IC23": [8], "IC33": [6, 8],
     "IC37": [6, 8, 9],
     "IC40": [3, 4, 5, 6, 10, 11, 12], "IC41": [6], "IC42": [3, 11], "IC43": [6, 8, 11], "IC46": [12, 13, 14, 15], "IC48": [8],
     "IC24": [21], "IC28": [6, 8], "IC29": [2, 4, 6], "J4": [3], "J2": [2, 6], "J3": [2, 6],
@@ -373,8 +378,9 @@ NO_CONNECT = {
 NO_CONNECT = {r: [str(p) for p in ps] for r, ps in NO_CONNECT.items()}
 
 # what the first cut leaves out (docs/cards/video-v3.md 10b): the pins they will use are in NO_CONNECT until then
-OPEN = ("the cursor: CUD1 is latched with the character word (IC46 Q6) but not yet mixed into the video - its sense and\n"
-        "      its timing against the character cell are to be read from the manual first",)
+# nothing of the circuit is open. The bitmap console of the first build (text method B) has no hardware cursor: its
+# driver draws one (a rectangle in XOR)
+OPEN = ()
 
 # text method A's parts: sockets left empty on the first build
 TEXT_A = ["IC%d" % n for n in range(41, 49)] + ["C%d" % n for n in range(42, 50)]
@@ -385,9 +391,9 @@ SHARED = ("DATA", "MAD", "DL", "DH", "HD", "-INT", "MD", "CA")        # (AT0-7 a
 OUTPUTS = {"IC2": (13, 12, 9), "IC3": (11, 10, 9, 7), "IC4": (6,), "IC6": (14, 13, 12), "IC7": (5, 9),
            "IC16": (2, 4, 6, 8, 10, 12), "IC17": (1, 4, 10, 13), "IC18": (12, 6, 8), "IC19": (12, 6, 8), "IC20": (3, 6, 8, 11),
            "IC21": (3, 6, 8, 11), "IC37": (5,), "IC31": (3, 6, 8, 11), "IC32": (3, 6, 8, 11), "IC33": (5, 9), "IC34": (2, 5, 6, 9, 12, 15, 16, 19),
-           "IC35": (2, 5, 6, 9, 12, 15, 16), "IC36": (3, 6, 8, 11), "IC40": (13,), "IC41": (5, 9, 8), "IC42": (6, 8), "IC43": (3,),
+           "IC35": (2, 5, 6, 9, 12, 15, 16, 19), "IC36": (3, 6, 8, 11), "IC40": (13,), "IC41": (5, 9, 8), "IC42": (6, 8), "IC43": (3,),
            "IC46": (16, 17, 18, 19), "IC47": ROM_D, "IC48": (17,), "IC22": (17,), "IC23": (17,), "IC28": (5, 9), "IC29": (8, 10, 12), "IC30": (3, 6, 8, 11),
-           "IC1": (52, 53, 54, 55, 34, 35, 36, 37, 12, 13, 63, 11), "OSC1": (8,),
+           "IC1": (52, 53, 54, 55, 34, 35, 36, 37, 12, 13, 63, 11, 1, 2, 33, 56), "OSC1": (8,),
            "IC8": tuple(range(12, 20)), "IC9": tuple(range(12, 20))}
 
 
@@ -436,7 +442,7 @@ if __name__ == "__main__":
     print("%s %s: %d parts (%d ICs), %d nets, %d pins on nets" % (CARD, REV, len(PARTS), ics, len(NETS),
                                                                  sum(len(p) for p in NETS.values())))
     for x in f: print("  " + x)
-    print("open: " + "; ".join(OPEN))
+    if OPEN: print("open: " + "; ".join(OPEN))
     print("check: %s" % ("%d faults" % len(f) if f else "every pin accounted for, no net with one pin, no two outputs on a net; "
                          "method A's %d sockets drive only TDOT" % sum(1 for r in TEXT_A if r.startswith("IC"))))
     raise SystemExit(1 if f else 0)

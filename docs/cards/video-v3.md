@@ -298,7 +298,7 @@ Beyond that the limits are the 5 V logic and the chip: 1024 x 768 with flashless
 
 The step between this note and a netlist: every chip the card needs, what it does, and the connections that are
 already fixed by sections 5-7. The netlist (`hardware/cards/video/kicad/v3.0/v30_netlist.py`, a first cut since 2026-11-11: the
-whole card but the cursor's place in the video, 46 ICs of which 8 are text method A's sockets, its own checks passing and
+whole card, 46 ICs of which 8 are text method A's sockets, its own checks passing and
 simulated: section 10d) is the single source
 for the schematic and the board. Part numbers
 here are working numbers until the netlist gives the references.
@@ -440,7 +440,7 @@ between (the syncs' polarity bits must not move during a sync pulse). Its bits, 
 
 | ATR bit | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
 |---|---|---|---|---|---|---|---|---|
-| 1 means | red off | green off | blue off | HSYNC positive | VSYNC positive | text layer on (method A) | XOR, not OR (method A) | spare |
+| 1 means | red off | green off | blue off | HSYNC positive | VSYNC positive | text layer on (method A) | XOR, not OR (method A) | the second font (method A) |
 
 ATR = 00 is white on black with both syncs negative, what 640 x 480 wants: a driver that leaves ATR alone (the V3
 ROM writes DCR = $4000) gets a picture.
@@ -451,8 +451,6 @@ it on at the next dot clock, so the picture is switched on and off exactly on a 
 belongs to is set by the chip's display skew (DSK in OMR). The dot is NAND(the shift register's output, that
 flip-flop), and each gun is a NOR of it with its off bit, through 470 ohm.
 
-**Still to work out:** the cursor outputs' sense and timing against the character cell (CUD1 is latched with the
-character word, but not yet mixed into the video).
 
 ## 10c. Text method A in the circuit (2026-11-11)
 
@@ -479,8 +477,8 @@ half goes to drawing, as in interleaved access. Three things follow for the card
 | Part | What it does |
 |---|---|
 | 2 x 74ACT574 | the word's low and high byte, the left and the right character's code; one of them drives the generator's address |
-| 74ACT574 | the raster line RA0-RA3 (with RA4 and CUD1) of the same cycle |
-| AT27C256R-70 | the character generator: address = code x 16 + line, a byte = the line's 8 dots, bit 0 the left-hand one |
+| 74ACT574 | the raster line RA0-RA3 (with RA4) of the same cycle |
+| AT27C256R-70 | the character generator: address = code x 16 + line (A12 CUD1, A13 the second font, A14 CUD2), a byte = the line's 8 dots, bit 0 the left-hand one |
 | 74F299 | the text's dots, loaded 8 at a time |
 | 74F74 | A: the three latches' clock, WCK; B: WPH, "the cycle before this one was a Window cycle" |
 | 74ACT21, 74ACT32 | dot 3 of a Window cycle; the shifter's load |
@@ -498,6 +496,17 @@ half goes to drawing, as in interleaved access. Three things follow for the card
   take. Both layers pass the same gates on the way, so they stay in step within a dot. Without the text parts
   a 10k resistor holds the text dot low and the picture is the graphics alone; the netlist's `text_a_check()`
   proves that the eight sockets drive nothing else in the fitted logic.
+- **The cursor.** CUD1 and CUD2 are active low and a memory cycle wide: one character cell. They need no logic of
+  their own: they are two more address lines of the character generator (A12 and A14), straight from the chip. A
+  character whose look-up cycle has CUD1 low comes from the half of the EPROM that holds the cursor's form of every
+  glyph - turned over, underlined, whatever the image holds - and is loaded with the cursor in it, so the cursor is
+  in step with the dots by construction. The left character's look-up cycle is the Window cycle itself, the right
+  one's the cycle after: the driver puts the cursor on either with the chip's cursor skew (CSK in OMR, in memory
+  cycles) and a cursor one cycle wide. Blinking and the raster range are the chip's (CDR, the block cursor
+  registers). Which cycle the chip counts the skew from is to be seen on the bench; both characters are in reach
+  either way. A13 is ATR bit 7: a second font of 256 glyphs, chosen line by line.
+- **The bitmap console (method B) has no hardware cursor**: the chip's graphic cursor would need a retimed window
+  mixed into the graphics dot. Its driver draws the cursor (a rectangle in XOR).
 - **For the driver:** the Window is a character screen (CHR) of 80 x 30 cells in the RAM's top 64K words; a cell is a
   byte, two to a word, the left one the low byte; 16 lines a cell (RA0-RA3). The card status bit TEXT (jumper JP3)
   says the parts are fitted.
@@ -517,7 +526,7 @@ minimum, and from both phases the dot counter can start in.
   register takes the attribute byte and does not move while HSYNC is low; colours and sync polarity follow it.
 - **Superimposed access, sockets fitted:** a character word comes out as its two glyphs, left code first, exactly under
   the graphics word of the same display cycle; a word written to the character screen lands in the RAM's top 64K
-  words whatever the raster line; OR and XOR.
+  words whatever the raster line; OR and XOR; the second font; the cursor on the left or the right character.
 - **The ports:** only OUT PA / PB and IN PC / PD select the chip, with the bus buffer the right way round.
 - **Everywhere:** no two outputs on a net at once (1 ns at a handover is the most), every register's set-up and hold,
   the RAM's write pulse and data set-up.

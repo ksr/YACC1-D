@@ -22,7 +22,8 @@ can start in:
   superimposed access (the sockets fitted): the character word of a Window cycle comes out as its two glyphs, the
     left code first, bit 0 first, exactly under the graphics word of the same display cycle, and only while the text
     layer is on (ATR bit 5); a word written to the character screen lands in the RAM's top 64K words whatever the
-    raster line says; the layers OR and XOR
+    raster line says; the layers OR and XOR; the second font (ATR bit 7); the cursors: CUD1 low in a Window cycle
+    turns the left character to its cursor form, in the cycle after it the right one, CUD2 likewise
   the ports: OUT PA / PB and IN PC / PD select the chip with the bus buffer the right way round; nothing else does
   everywhere: no two outputs fighting on a net, every flip-flop's and register's set-up and hold met, the RAM's
     write pulse wide enough with its data set up
@@ -368,7 +369,7 @@ class Rom(Part):
     A = {0: 10, 1: 9, 2: 8, 3: 7, 4: 6, 5: 5, 6: 4, 7: 3, 8: 25, 9: 24, 10: 21, 11: 23, 12: 2, 13: 26, 14: 27}
     D = (11, 12, 13, 15, 16, 17, 18, 19)
     def init(self): self.outv = "?"
-    def byte(self, a): return (a * 5 + 0x33) & 255 if self.ref == "IC14" else glyph(a >> 4 & 255, a & 15)
+    def byte(self, a): return (a * 5 + 0x33) & 255 if self.ref == "IC14" else chargen(a)
     def eval(self):
         on = self.v(20) == 0 and self.v(22) == 0
         bits = [self.v(self.A[i]) for i in range(15)]
@@ -388,6 +389,13 @@ class Rom(Part):
 def glyph(code, line): return (code * 3 + line * 17 + 1) & 255       # the test character generator's byte
 
 
+def chargen(a, cud1=None, font2=None, cud2=None):
+    """the test character generator: the glyph, turned over where CUD1 (A12) is low, and marked by the second font
+    (A13) and by CUD2 (A14) low"""
+    g = glyph(a >> 4 & 255, a & 15)
+    return g ^ (0 if a >> 12 & 1 else 0xFF) ^ (0x55 if a >> 13 & 1 else 0) ^ (0 if a >> 14 & 1 else 0x0F)
+
+
 class Chip(Part):
     """the HD63484's memory side (manual figures T-6, T-8, T-9, 2.1): a script of memory cycles, timed from 2CLK's
     falling edge with the delays of self.s.d (ns). A cycle is a dict: kind 'disp' | 'win' | 'read' | 'write' | 'dummy' |
@@ -396,7 +404,7 @@ class Chip(Part):
     def init(self):
         self.ck = None; self.mcyc = 1; self.cyc = None; self.script = []; self.log = []; self.reads = []
         self.out(52, 1, 0); self.out(53, 1, 0); self.out(55, 1, 0); self.out(54, 1, 0); self.out(56, 0, 0)
-        self.out(12, 1, 0); self.out(13, 1, 0); self.out(63, 1, 0)
+        self.out(12, 1, 0); self.out(13, 1, 0); self.out(63, 1, 0); self.out(1, 1, 0); self.out(2, 1, 0)
         for p in (34, 35, 36, 37, 33): self.out(p, 0, 0)
 
     def mad(self, value, delay):
@@ -443,6 +451,7 @@ class Chip(Part):
         for i, p in enumerate((37, 36, 35, 34)): self.out(p, hi >> i & 1, d["ctl"])
         self.out(33, c.get("ra", 0) >> 4 & 1 if ch else 0, d["ctl"])
         self.out(12, c.get("hs", 1), d["sync"]); self.out(63, c.get("disp", 1), d["sync"])
+        self.out(1, c.get("cud1", 1), d["sync"]); self.out(2, c.get("cud2", 1), d["sync"])     # the cursors, active low
         if k in ("dummy", "atr", "idle"): self.mad(0 if k == "dummy" else None, d["mad"])
         else:
             self.out(53, 0, d["as"]); self.mad(a & 0xFFFF, d["mad"])
@@ -582,7 +591,13 @@ def superimposed(delays, count0):
         {"kind": "disp", "addr": 0x00124, "disp": 0}, {"kind": "dummy", "disp": 0},
         {"kind": "dummy", "hs": 0}, {"kind": "atr", "data": 0x60, "hs": 0}, {"kind": "dummy"}, {"kind": "dummy"},     # TEXTON, XOR
         {"kind": "disp", "addr": 0x00123, "disp": 0}, {"kind": "win", "addr": 0x1234, "chr": 1, "ra": line, "disp": 0},
-        {"kind": "disp", "addr": 0x00124, "disp": 0}, {"kind": "dummy", "disp": 0}, {"kind": "dummy"}, {"kind": "dummy"}, {"kind": "dummy"}]
+        {"kind": "disp", "addr": 0x00124, "disp": 0}, {"kind": "dummy", "disp": 0},
+        {"kind": "dummy", "hs": 0}, {"kind": "atr", "data": 0xA0, "hs": 0}, {"kind": "dummy"}, {"kind": "dummy"},     # TEXTON, the second font
+        # the cursors: CUD1 low in the Window cycle (the left character), in the cycle after it (the right one); CUD2
+        {"kind": "disp", "addr": 0x00123, "disp": 0}, {"kind": "win", "addr": 0x1234, "chr": 1, "ra": line, "disp": 0, "cud1": 0},
+        {"kind": "disp", "addr": 0x00124, "disp": 0}, {"kind": "win", "addr": 0x1234, "chr": 1, "ra": 15, "disp": 0},
+        {"kind": "disp", "addr": 0x00125, "disp": 0, "cud1": 0}, {"kind": "win", "addr": 0x1235, "chr": 1, "ra": 0, "disp": 0, "cud2": 0},
+        {"kind": "disp", "addr": 0x00126, "disp": 0, "cud2": 0}, {"kind": "dummy", "disp": 0}, {"kind": "dummy"}, {"kind": "dummy"}, {"kind": "dummy"}]
     chip.script = list(script)
     clock(s, 8 * (len(script) + 4))
     by = list(chip.log)
@@ -593,15 +608,17 @@ def superimposed(delays, count0):
     disp = [(t, c) for t, c in by if c["kind"] == "disp"]
     if len(s.parts["IC23"].loads) != len(disp): chk.append("%d loads of the graphics shift registers for %d Background cycles" % (len(s.parts["IC23"].loads), len(disp)))
     wins = [(t, c) for t, c in by if c["kind"] == "win"]
-    atrs = [t for t, c in by if c["kind"] == "atr"]
-    shown = [t for t, c in wins if t > atrs[0]]                         # the text shifter is held clear until TEXTON
+    atrs = [(t, c["data"]) for t, c in by if c["kind"] == "atr"]
+    shown = [t for t, c in wins if t > atrs[0][0]]                      # the text shifter is held clear until TEXTON
     if len(s.parts["IC48"].loads) != 2 * len(shown): chk.append("%d loads of the text shifter for %d Window cycles with the text on" % (len(s.parts["IC48"].loads), len(shown)))
     for t, c in wins:
         e = edge_of(s, t - DELAY["163"])
         w = s.parts["IC10"].mem.get(0x10000 | c["addr"], s.parts["IC10"].default(0x10000 | c["addr"])) | \
             s.parts["IC11"].mem.get(0x10000 | c["addr"], s.parts["IC11"].default(0x10000 | c["addr"])) << 8
-        atr = 0x60 if len(atrs) > 1 and t > atrs[1] else 0x20 if t > atrs[0] else 0
-        text = bits(glyph(w & 255, c["ra"]), 8) + bits(glyph(w >> 8, c["ra"]), 8) if atr & 0x20 else [0] * 16
+        atr = ([0] + [a for ta, a in atrs if ta < t])[-1]
+        nxt = by[[id(cc) for tt, cc in by].index(id(c)) + 1][1]         # the cycle after: the right character's look-up
+        gen = lambda code, cyc: chargen(cyc.get("cud2", 1) << 14 | (atr >> 7 & 1) << 13 | cyc.get("cud1", 1) << 12 | code << 4 | c["ra"])
+        text = bits(gen(w & 255, c), 8) + bits(gen(w >> 8, nxt), 8) if atr & 0x20 else [0] * 16
         if stream(s, "TDOT", e, 16) != text: chk.append("the character word %04X on line %d came out as %r, not %r" % (w, c["ra"], stream(s, "TDOT", e, 16), text))
         # the graphics word of the same display cycle (the Background cycle before this one) is on GDEL in the same 16 dots
         tb, cb = [(tt, cc) for tt, cc in disp if tt < t][-1]
