@@ -67,6 +67,9 @@ width in 16-bit words fetched at once (1 on the first build), and 2CLK is twice 
 | 640 x 400, 70 Hz | 25.175 MHz | dual | 6.294 MHz | 318 ns | the VGA text raster: 25 rows of 16 lines |
 | 640 x 240, 60 Hz | 12.5875 MHz (the crystal / 2) | dual | 3.147 MHz | 636 ns | a TV-rate or CGA monitor, 15.73 kHz |
 
+The card is built for the VGA rows (section 12): it has no connector and no clock for the 15.73 kHz row, which the
+table keeps for what the chip and the crystal could do.
+
 The 640 x 480 registers, dual access (`python3 tools/acrtc_timing.py 640x480@60`): a line is 800 dots = 100 memory
 cycles (sync 12, back porch 6, display 80, front porch 2), a frame 525 lines (sync 2, back porch 33, display 480,
 front porch 10); 31.469 kHz, 59.94 Hz; both syncs negative.
@@ -158,8 +161,8 @@ The driver polls the status register; no emulator models -INT yet.
 ## 7. The dot path
 
 - **Clock.** A 25.175 MHz oscillator; a 74F163 divides it by 4 for 2CLK and counts the 16 dots of a display cycle
-  (the application note's figure 4-1 is this circuit with a 74S163). A jumper feeds the divider from the oscillator
-  halved for the TV-rate modes; 2CLK must never stop or switch while the chip runs.
+  (the application note's figure 4-1 is this circuit with a 74S163). 2CLK must never stop
+  or switch while the chip runs.
 - **Shift registers.** Two 8-bit universal shift registers with parallel load (74F299 or 74AC299; the application
   note uses 74S299) hold the 16 dots of a graphics word, loaded at the end of the background's display access. Which
   end of the word is the left-hand dot comes from the manual's pixel mapping before the wiring is fixed.
@@ -284,11 +287,97 @@ Beyond that the limits are the 5 V logic and the chip: 1024 x 768 with flashless
 - From V2.0: the PS/2 section (the ATmega328P, its latches and flags, `embedded/video-ps2`), the port decode, the
   blank card's bus connector, the 218 mm four-layer outline with the planes.
 - Gone: everything in the $D000 block (the 74S85 select and SV3, the IDT7134, the window logic), the 6845, the
-  DB9 and RCA outputs unless a TV-rate monitor is to stay supported.
+  DB9 and RCA outputs (VGA only).
 - About 22 chips without the keyboard section and 29 with it; method A adds about 7. V2.0 has 40.
 - The board-layout rules of 2026-10-24 and after apply from the start: the DE-15 and the PS/2 jacks at the front edge
   facing out, jumpers at an edge, every reference and value on the silk outside its part, `cottageworker.com`.
 - `pcb-check` before any order.
+
+## 10a. The circuit, part by part (first cut, 2026-11-11)
+
+The step between this note and a netlist: every chip the card needs, what it does, and the connections that are
+already fixed by sections 5-7. The netlist (`hardware/cards/video/kicad/v3.0/v30_netlist.py`, to be written from
+this list as V2.0's `v20_netlist.py` was) is then the single source for the schematic and the board. Part numbers
+here are working numbers until the netlist gives the references.
+
+**The chip, DIP-64 (the manual's figure 4.1).** 1 CUD1, 2 CUD2, 3 R/W, 4 CS, 5 RS, 6 RES, 7 DONE, 8 DREQ, 9 DACK,
+10 DTACK, 11 IRQ, 12 HSYNC, 13 VSYNC, 14 Vcc, 15 EXSYNC, 16 Vss, 17-24 D0-D7, 25-32 D8-D15 (open in 8-bit mode),
+33 RA4, 34 MA19/RA3, 35 MA18/RA2, 36 MA17/RA1, 37 MA16/RA0, 38-48 MAD15-MAD5 (38 = MAD15 ... 48 = MAD5), 49 Vcc,
+50 2CLK, 51 Vss, 52 MCYC, 53 AS, 54 DRAW, 55 MRD, 56 CHR, 57-61 MAD4-MAD0 (57 = MAD4 ... 61 = MAD0), 62 DISP2,
+63 DISP1, 64 LPSTB.
+
+**Ports.** The six port numbers are IO-ADDR3..0 = 1010 (PA) to 1111 (PF). Two 74HCT138, one enabled by -IO-WR and one
+by -IO-RD (G1 = IO-ADDR3, the select inputs IO-ADDR2..0), give a strobe for each port in the one direction it is
+used:
+
+| Decoder | Output | Strobe | Goes to |
+|---|---|---|---|
+| write (-G2A = -IO-WR) | Y2 | OUT PA | the chip's CS (address register) |
+| | Y3 | OUT PB | the chip's CS (data, write FIFO) |
+| | Y6 | OUT PE | the PS/2 command latch |
+| read (-G2A = -IO-RD) | Y4 | IN PC | the chip's CS (status) |
+| | Y5 | IN PD | the chip's CS (data, read FIFO) |
+| | Y6 | IN PE | the card status buffer |
+| | Y7 | IN PF | the PS/2 data latch |
+
+CS is the AND of the four chip strobes (half a 74HCT21): low while any of them is. RS = IO-ADDR0 and R/W = IO-ADDR2
+straight from the bus (PA / PC have bit 0 clear, PC / PD bit 2 set), valid a microcode step before the strobe. An
+OUT to PC or PD and an IN from PA or PB select nothing.
+
+| Block | Parts | What they do |
+|---|---|---|
+| Bus | X1 DIN 41612 (the blank card's) | |
+| | 2 x 74HCT138, 74HCT21 | the port strobes and CS, above |
+| | 74HCT245 | D0-D7 to DATA0-7: enabled by CS, direction R/W (the chip's side drives the bus on a read) |
+| | 74HCT14 (or a spare gate) | -RESET buffered to RES and DACK; the spare sections square the oscillator if needed |
+| | jumper | IRQ (open drain) to the bus -INT, as V2.0's JP3 |
+| Clock | 25.175 MHz oscillator in a socket | the dot clock |
+| | 74F163 | divides by 4 for 2CLK and counts the 16 dots of a display cycle (application note figure 4-1) |
+| Memory | 3 x 74AC573 | the address latches: MAD0-7, MAD8-15, MA16-19 with RA4 and CHR, open while AS is low |
+| | 2 x 128K x 8 static RAM, 55 ns, DIP-32 | the low and the high byte of the frame buffer's word; the footprint takes the 512K part (pin 1 A18, pin 30 A17 instead of CE2: a jumper) |
+| | 2 x 74AC245 | RAM data to MAD in the data half of a drawing cycle, direction from MRD |
+| | 27C256 EPROM | the font, selected instead of the RAM while the latched MA19 is high; its byte goes to both halves of the word |
+| | 74HCT244 | the EPROM's byte onto the high half |
+| | 74AC00, 74AC32, 74AC08 (as the equations need) | -OE, -WE (cut short by 2CLK), the buffers' enables, RAM or EPROM |
+| Dots | 2 x 74F299 | 16 dots, loaded at the end of the display access, bit 0 out first |
+| | 74HCT273 | the control register: the chip's attribute byte (ATR) taken from MAD0-7 at HSYNC's rising edge |
+| | 74HCT86 | the two syncs' polarity; XOR of the text and graphics layers |
+| | 74AC08 | the dot ANDed with the three colour bits; blanking by DISP1 |
+| | 3 x 470 ohm, DE-15 socket | R, G, B and the syncs to the monitor |
+| Text A (sockets, fitted later) | 74HCT374, 28C64 or 27C64, 74F299 or 74LS166, a few gates | the character code latched from the Window's word, the character generator addressed by it and RA0-RA3, its dots shifted and laid over the graphics; the card status bit TEXT says the parts are there |
+| PS/2 | ATmega328P, 2 x 74HCT374, 74HCT244, 74HCT74, 16 MHz crystal, 2 Mini-DIN-6, polyfuse, FTDI header | V2.0's section as it is (`embedded/video-ps2`): data on IN PF, commands on OUT PE, FULL / SRC / BUSY in the card status on IN PE with the TEXT bit and the ID 0110 |
+
+About 30 chips with the PS/2 section, 36 with method A's.
+
+**The PS/2 section on the new ports** (V2.0's nets with the strobes renamed): OUT PE clocks the command latch and
+sets BUSY; IN PE enables the status buffer (a 74HCT244: FULL, SRC, BUSY and TEXT on bits 0-3, bits 7-4 wired 0110);
+IN PF enables the data latch onto the bus and, ANDed with -RESET, clears FULL. The ATmega's side is unchanged:
+LDDATA clocks the data latch and sets FULL, RDCMD enables the command latch and clears BUSY, INTREQ ANDed with FULL
+reaches -INT through an open-collector gate and the jumper, beside the chip's own IRQ. TEXT is a jumper to VCC
+against a pull-down, fitted with method A's parts. A 7416 stays for -INT and for the ATmega's reset from the bus
+-RESET, as on V2.0.
+
+**What the netlist still needs** (the items of section 12 "to confirm", in the order they block it): the exact
+gating of -WE, -OE and the '299s' load from MCYC, AS, DRAW, MRD and the divider's count (the application note's
+figures 4-1 to 4-4, read against the manual's timing tables for the 8 MHz part); the 128K and 512K RAMs' pinouts from
+their data sheets; the I/O records' data hold after -IO-WR from the microcode (10 ns wanted).
+
+**From the application note's section 6, for those equations.** MCYC is 2CLK halved (the address half, then the data
+half); the note makes an early copy of it with a flip-flop on the oscillator rather than wait for the chip's output.
+The shift registers load at the end of a display cycle, on a dot clock edge while the load input is active, and the
+load must not happen in a drawing cycle or in a **dummy cycle**: when the chip has a drawing slot and nothing to
+draw it runs a cycle that looks like a display read (DRAW and MRD high) but gives no AS strobe, and its address is
+0. A flip-flop set by AS and cleared at the end of the cycle tells the two apart; without it the dots of word 0
+would be loaded into the picture. The read buffers need not be held off in display cycles: the chip ignores what is
+on MAD then. The attribute byte is taken with 2CLK gated by HSYNC in the note (a transparent latch); the '273 on
+HSYNC's edge of section 7 is to be checked against that timing.
+
+**Order of work.** (1) The netlist with its own checks (every pin on a net or listed as unconnected, no output tied
+to another, the text-A parts removable as V2.0's graphics parts are). (2) A timing check in the manner of
+`tests/video/v20_timing.py`: the memory cycle and the bus cycle against the parts' numbers. (3) The generator for
+the schematic sheets and the unrouted board, from V2.0's (`gen_v20.py`): the 218 mm card, four layers, the layout
+rules of section 10. (4) Routing, DRC, the placement and schematic PDFs, `pcb-check`. (5) The review of the design
+before any order, as V2.0 had (`hardware/cards/video/reviews/v2.0.md`).
 
 ## 11. Software, in the order it can be built
 
@@ -310,6 +399,10 @@ Beyond that the limits are the 5 V logic and the chip: 1024 x 768 with flashless
 - The font for B: an EPROM on the card in the frame buffer's address space, so the boot shows on the screen.
 - The card has the PS/2 keyboard and mouse section.
 - V3 is built whether or not V2.0 is ordered (that is still open).
+- The chip takes four ports, PA-PD (section 5); with the PS/2 section on PE / PF the card has all of PA-PF, and a
+  later card uses P2-P7.
+- VGA only: one DE-15 socket. No DB9, no RCA jack, no jumper that halves the clock; V1.0 and V2.0 are the cards
+  for TV-rate monitors.
 - The software: the emulators' model on the branch `video-v2`, chosen with `Y1VID_CARD=v3`, until the ROM for a V3
   machine needs a line of its own.
 
@@ -326,8 +419,6 @@ Beyond that the limits are the 5 V logic and the chip: 1024 x 768 with flashless
   8-bit mode WPTN counts bytes.
 
 **To decide**
-- Four ports for the chip (section 5), or two with a latched R/W.
-- Whether a TV-rate output (the DB9 / RCA of V2.0, the clock halved) stays on the card.
 - A font with lower case: the first image is the V1.3 card's 64 glyphs, each line doubled into the 8 x 16 cell.
 
 **To confirm before a schematic**
