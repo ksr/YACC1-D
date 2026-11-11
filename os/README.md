@@ -307,8 +307,8 @@ with `--load 0x5000 --exec 0x5000`. A program is an ordinary y1cc program: `main
 compiler's `putchar`/`puts`, which `--os` sends through the CONOUT syscall so that the shell can redirect it,
 `argstr()` is its command tail, and files come from `#include "../lib_fs.c"` (which includes `lib_abi.c`).
 (A command can also be hand-written YACC1 assembly in `os/commands-asm/`, assembled at $5000 by the host assembler:
-`asm.asm`, `/bin/asm`, is the one on the disk; `basic.asm` (2026-11-11) is BASIC the same way, built by `make basica`
-and not on the disk yet. It calls the syscalls as y1cc's `sys()` does - the arguments into
+`asm.asm` is `/bin/asm` and, since 2026-11-11, `basic.asm` is `/bin/basic`; the C sources they were written from
+are on the disk as `asmc` and `basicc`. It calls the syscalls as y1cc's `sys()` does - the arguments into
 SYSARG0..2 as big-endian words, `LDR R7,SYSTAB+2n` (SYSTAB2 for 22 and up) / `JSRUR R7`, the result from SYSRES,
 R3..R7, ACC and TMP clobbered - reads its tail at ARGBUF, returns with RET, and must clear its own variables; its
 header lists the conventions.) A C command:
@@ -364,7 +364,7 @@ names, globs and `-` (the console until Ctrl-D) work wherever a command reads te
 | `asm [-h] SRC [OUT]` | the assembler (2026-09-25, below): RC/asm's dialect to a program file, or Intel hex with `-h` |
 | `asmc [-h] SRC [OUT]` | the same assembler built from its C source, the specification (2026-09-26, below) |
 | `awk [-F c] 'prog' [file...]` | one rule: `/re/ {print $1, $NF, NR, NF, "text"}` |
-| `basic [file]` / `basic -r file` | the BASIC interpreter (2026-11-09, below): integers and strings, programs saved as text, data files; `-r` runs a program and returns to the shell |
+| `basic [file]` / `basic -r file` | the BASIC interpreter (2026-11-09, below): integers and strings, programs saved as text, data files; `-r` runs a program and returns to the shell. In assembly since 2026-11-11; `basicc` is the same program in C |
 | `cc prog.c [-o prog.asm] [y1cc options]` | the C compiler (2026-09-25): y1cc's nine passes, `/lib/cc/cc1`..`CC9`, chained with EXEC; the assembly is byte-identical to y1cc.py's (`man cc`, `software/compiler/README.md` "Native") |
 | `cat [file\|glob\|-]...` | print files byte-exact, or the console |
 | `cmp f1 f2` | the first differing byte and line, or silence |
@@ -560,14 +560,15 @@ What the port changed:
 
 **BASIC in assembly (2026-11-11).** `os/commands-asm/basic.asm` is the same interpreter hand-written in YACC1
 assembly, with `basic.c` as its specification: every routine names the C function it implements and follows it, the
-error flag included, so the two print the same thing on every line. `make basica` builds it
-(`os/build/basica/basic.bin`, 7,546 bytes); `tests/ybasic/run.py` puts it on a copy of the disk as `/bin/basic` and
-compares its console output with the C one's, session by session, and counts both on a loop: `20 a=a+1` /
+error flag included, so the two print the same thing on every line. It is `/bin/basic`
+(`os/build/basica/basic.bin`, 7,546 bytes) and the C one is `/bin/basicc`; `tests/ybasic/run.py` runs every session
+on the disk as it is and on a copy with the C one in `/bin/basic`'s place, compares the console output, and counts
+both on a loop: `20 a=a+1` /
 `30 if a<32000 then goto 20` is 5,319 instructions a pass in C and 843 in assembly. It runs on a stack of its own
 (1 K after the program area; an expression in brackets, IF ... THEN and RUN recurse), keeps the one-letter variables'
 addresses in a table and the last lines a GOTO named, and clears only its variables at the start, not the 12 K of
-program area. It is not on the disk yet; when it is, it becomes `/bin/basic` and the C one `/bin/basicc`, as with
-`asm` and `asmc`.
+program area. `make` in `/src/os/commands-asm` assembles it on the machine, and in `/src/os/commands` builds
+`basicc` from the C.
 
 The ROM's BASIC (the monitor's `I` command, `firmware/basic/`) is a different, smaller interpreter (uBASIC): it has no
 string variables and cannot load or save programs. `tests/os/ybasic.session` runs a program, saves, loads, edits and

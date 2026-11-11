@@ -47,10 +47,11 @@ def main():
     progs = []
     for f in sorted(os.listdir(os.path.join(OS, "commands"))):
         if f.endswith(".c"):
-            n = f[:-2]; n = "asmc" if n == "asm" else n
+            n = f[:-2]; n = n + "c" if n in ("asm", "basic") else n
             if n not in mksrcmk.NATIVE_NO:
                 progs.append(("/src/os/commands", n, "bin/%s.bin" % f[:-2], "/bin/" + n))
     progs.append(("/src/os/commands-asm", "asm", "asma/asm.bin", "/bin/asm"))
+    progs.append(("/src/os/commands-asm", "basic", "basica/basic.bin", "/bin/basic"))    # 2026-11-11: BASIC in assembly
     for i, p in enumerate(mksrcmk.PASSN):
         progs.append(("/src/software/compiler/c/target", "cc%d" % (i + 1), "cc/%s.bin" % p, "/lib/cc/cc%d" % (i + 1)))
     progs.append(("/src/os", "y1os", "y1os-asm.bin", "/lib/y1os"))     # 2026-11-05: the kernel, built by asm
@@ -62,7 +63,8 @@ def main():
     if "sh: stopped" in out: fails.append("a script stopped (see %s)" % os.path.join(B, "session.txt"))
     if not re.search(r"\n\r?bye", out): fails.append("the session did not end (limit too low?)")
     ncc = len(re.findall(r"> cc ", out))             # each compile, as the script shows it: once per C program
-    if ncc != len(progs) - 2: fails.append("%d compiles for %d C programs (the second make compiled?)" % (ncc, len(progs) - 2))
+    nc = sum(1 for d, n, host, inst in progs if d not in ("/src/os/commands-asm", "/src/os"))    # asm, basic and y1os are assembled
+    if ncc != nc: fails.append("%d compiles for %d C programs (the second make compiled?)" % (ncc, nc))
     for d, n, host, inst in progs:
         want = open(os.path.join(OS, "build", host), "rb").read()
         got = get(img, "%s/%s" % (d, n))

@@ -1,0 +1,23 @@
+NAME
+    basicc - the BASIC interpreter, the C build (the same as basic)
+
+SYNOPSIS
+    basicc
+    basicc file
+    basicc -r file
+
+DESCRIPTION
+    The same program as basic: the same command line, statements,
+    functions, messages, limits and files (man basic). basic is the
+    interpreter written in YACC1 assembly (os/commands-asm/basic.asm,
+    2026-11-11); basicc is os/commands/basic.c compiled by the C
+    compiler, the specification basic.asm was written from. Both are
+    kept in step: any change of behaviour goes into both, and
+    tests/ybasic checks that they print and write the same, session
+    by session.
+
+    basicc needs about six times the instructions of basic for a
+    program line, and is twice its size (14.5 K against 7.5 K).
+
+SEE ALSO
+    basic, asmc

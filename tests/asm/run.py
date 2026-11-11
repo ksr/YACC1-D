@@ -18,7 +18,7 @@
    The corpus: every y1cc compile of tests/compiler/corpus.py (the compiler tests with their option sets, the bench
    sources, y1os.c, every /bin command, the nine compiler passes, y1cc.c itself), each also with --xisa; and every
    hand-written YACC1 source in the tree (firmware/ monitor and BASIC with their candidates, monnew, tests/assembler,
-   tests/ucemu/isa.asm, os/y1os.asm with its INCLUDE).
+   tests/ucemu/isa.asm, os/y1os.asm with its INCLUDE, os/commands-asm/basic.asm).
 4. asm.asm (os/commands-asm, the assembler in YACC1 assembly, 2026-09-26) under Y1/OS on the instruction-level
    emulator, on the whole corpus (unless --no-native): disks built here with the OS and its build as /bin/asm, the
    sources in directories of 18, 72 to a session, the sessions in parallel; each source assembled with -h and to a
@@ -368,7 +368,8 @@ def hand_items(only):
     os.makedirs(d, exist_ok=True)
     srcs = sorted(glob.glob(os.path.join(ROOT, "firmware/**/*.asm"), recursive=True) +
                   glob.glob(os.path.join(ROOT, "tests/assembler/**/*.asm"), recursive=True) +
-                  [os.path.join(ROOT, "tests/ucemu/isa.asm"), os.path.join(ROOT, "os/y1os.asm")] +
+                  [os.path.join(ROOT, "tests/ucemu/isa.asm"), os.path.join(ROOT, "os/y1os.asm"),
+                   os.path.join(ROOT, "os/commands-asm/basic.asm")] +
                   glob.glob(os.path.join(HERE, "src/*.asm")))
     for inc in glob.glob(os.path.join(HERE, "src/*.inc")): shutil.copy(inc, d)
     items = []
