@@ -209,15 +209,19 @@ graphics").
   96 of 8 x 8; the monitor half has 30 bytes free), and a font loaded from disk would leave the screen dark until
   Y1/OS is up. So the card carries **a font EPROM decoded into the frame buffer's address space** (decided
   2026-11-11), where the chip's copy commands read it like RAM: with MA19 high (words $80000-$FFFFF) a 27C256 answers
-  on MA0-MA14 in place of the RAM, its byte on both halves of the word, so a masked copy takes whichever half the
-  character falls in. Bit 0 is the left-hand dot. The glyphs are laid out the way a copy walks the screen: one word a
-  glyph, 16 lines down, 40 glyphs a band for the 40-word line of 640 dots; a wider mode's layout sits further up the
-  EPROM. `tools/v3font.py` makes the image.
-- **Writing a character**: SCPY (a masked copy of whole words: 1 word x 16 lines, the mask on the half the character
-  occupies) or AGCPY (the graphic copy, in dot coordinates, any position). By the manual's table SCPY takes 268 2CLK
-  cycles, about 43 us, and AGCPY about 1,000, 160 us (twice that while the display has every other cycle). The CPU
-  sends about 10 to 25 bytes a character (an estimate): this method is CPU-bound at roughly a thousand characters a
-  second, about what the ROM's driver does today.
+  on MA0-MA14 in place of the RAM, its byte on both halves of the word. Bit 0 is the left-hand dot. It holds the
+  font as a picture: the 96 glyphs of ASCII $20-$7F in three rows of 32, 256 dots by 48 lines - twice, the glyphs
+  at the even places and those at the odd places, because a word of the picture holds two glyphs and the EPROM
+  gives both halves the same byte. At start the ROM copies it into frame buffer RAM under the screen with two masked
+  copies (SCPY, the mask $00FF, then $FF00). `tools/v3font.py` makes the image (3,840 bytes).
+- **Writing a character**: one AGCPY (the graphic copy, in dot coordinates) from the font's picture in RAM: the
+  glyph of code c is at x = (c and $1F) x 8, 16 x its row lines under the screen. Scanned down the columns and to the
+  right (S = 1, DSD = 101), the copy leaves the current pointer at the next cell, so a line of text is one command
+  of 10 bytes a character with no address arithmetic; a move (AMOVE, 6 bytes) only at a new line. By the manual's
+  table the copy takes about 1,000 2CLK cycles, 160 us (twice that while the display has every other cycle). The
+  method is CPU-bound: 10 bytes are some 30 instructions, under a millisecond.
+- **The FIFO**: the chip is busy for milliseconds on a clear or a scroll and its write FIFO holds 16 bytes; a byte
+  more is lost. The driver sends packets of at most 16 bytes, each after the status shows the FIFO empty (WFE).
 - **Scrolling**: one CPY moves the screen up a row - 40 x 464 words, 116,012 cycles, about 18 ms, some 35 ms
   interleaved with the display - and one CLR blanks the last row. Nothing for the CPU to do but wait. (A start-address
   scroll is possible too, with the bands as a ring; more work in the driver.)
