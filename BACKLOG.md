@@ -382,12 +382,20 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   30 chips with the PS/2 section and 36 with text method A's. The memory cycle and every control equation are in section 10b (from the manual's figures T-6
   and T-8: a dot counter that keeps step with the chip's MCYC by loading itself, -WE from a flip-flop in dots 5 and
   6, the buffers' two enable windows, the dummy-cycle flip-flop for the load). **The netlist's first cut is written**
-  (`hardware/cards/video/kicad/v3.0/v30_netlist.py`, 2026-11-11: 113 parts, 35 ICs, 182 nets; `python3
+  (`hardware/cards/video/kicad/v3.0/v30_netlist.py`, 2026-11-11: 136 parts, 46 ICs, 228 nets; `python3
   v30_netlist.py` proves every pin accounted for): the bus and ports, the chip, clock and control, RAM, the font
   EPROM, the shift registers, the control register from the attribute byte (colours, sync polarity; ATR 00 =
-  white, both syncs negative), blanking in step with the dots, the VGA output, the PS/2 section. **Next, in order:**
-  the netlist's open parts (the cursor outputs; text method A's sockets, whose superimposed-mode timing is still to
-  be read from the manual); a timing check of the memory and bus cycles;
+  white, both syncs negative), blanking in step with the dots, the VGA output, the PS/2 section, and **text method
+  A** (section 10c, from the manual's figure 2.1 (c): eight sockets left empty on the first build - the character
+  codes and raster line latched from the Window's cycle, a 70 ns character generator, a shifter, the layers mixed
+  OR / XOR; CHR forces a character screen into the RAM's top 64K words; the graphics dot is delayed 8 dots to
+  meet the text). **The netlist is simulated** (`tests/video/v30_netsim.py`, in `make check`, section 10d:
+  every part a model, the chip's memory cycles scripted, delays in ns at both ends; interleaved and superimposed
+  access, the ports; eight planted wiring faults caught). It found two faults, both fixed: the MAD buffers' enable
+  is now a flip-flop (a read was 5 ns inside its set-up and the buffers fought the chip's next address), and the
+  text layer is switched at its shifter's clear (it was a gate late). **Next, in order:** the cursor's place in the
+  video (CUD1's sense and timing); the timing check with the bought parts' data-sheet numbers in the simulation's
+  delay table, and the bus cycle's data hold from the microcode;
   the generator for the schematic and the board from V2.0's; routing, DRC, PDFs, `pcb-check`; a design review. Settled
   2026-11-11: the chip on four ports (PA-PD; with PS/2 on PE / PF the card has all of PA-PF, a later card uses
   P2-P7), and VGA only (one DE-15; no DB9, RCA or halved clock). To confirm from the parts' data sheets in the timing
