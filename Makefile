@@ -64,6 +64,7 @@ check:
 	python3 tests/y1dbg/run.py
 	python3 tests/os/run.py
 	python3 tests/asm/run.py --target
+	python3 tests/ybasic/run.py
 	python3 tests/disasm/run.py
 	python3 tests/native/run.py
 	python3 tests/native/selfhost.py

@@ -307,7 +307,8 @@ with `--load 0x5000 --exec 0x5000`. A program is an ordinary y1cc program: `main
 compiler's `putchar`/`puts`, which `--os` sends through the CONOUT syscall so that the shell can redirect it,
 `argstr()` is its command tail, and files come from `#include "../lib_fs.c"` (which includes `lib_abi.c`).
 (A command can also be hand-written YACC1 assembly in `os/commands-asm/`, assembled at $5000 by the host assembler:
-`asm.asm`, `/bin/asm`, is the one so far. It calls the syscalls as y1cc's `sys()` does - the arguments into
+`asm.asm`, `/bin/asm`, is the one on the disk; `basic.asm` (2026-11-11) is BASIC the same way, built by `make basica`
+and not on the disk yet. It calls the syscalls as y1cc's `sys()` does - the arguments into
 SYSARG0..2 as big-endian words, `LDR R7,SYSTAB+2n` (SYSTAB2 for 22 and up) / `JSRUR R7`, the result from SYSRES,
 R3..R7, ACC and TMP clobbered - reads its tail at ARGBUF, returns with RET, and must clear its own variables; its
 header lists the conventions.) A C command:
@@ -556,6 +557,17 @@ What the port changed:
   table is two strings of words (a token is 128 + the word's position) rather than a 200-element initialiser, and the
   check of a statement's first keyword uses token ranges: the passes' limits are 800 declaration nodes, 160-character
   string literals and 40 nodes an expression.
+
+**BASIC in assembly (2026-11-11).** `os/commands-asm/basic.asm` is the same interpreter hand-written in YACC1
+assembly, with `basic.c` as its specification: every routine names the C function it implements and follows it, the
+error flag included, so the two print the same thing on every line. `make basica` builds it
+(`os/build/basica/basic.bin`, 7,546 bytes); `tests/ybasic/run.py` puts it on a copy of the disk as `/bin/basic` and
+compares its console output with the C one's, session by session, and counts both on a loop: `20 a=a+1` /
+`30 if a<32000 then goto 20` is 5,319 instructions a pass in C and 843 in assembly. It runs on a stack of its own
+(1 K after the program area; an expression in brackets, IF ... THEN and RUN recurse), keeps the one-letter variables'
+addresses in a table and the last lines a GOTO named, and clears only its variables at the start, not the 12 K of
+program area. It is not on the disk yet; when it is, it becomes `/bin/basic` and the C one `/bin/basicc`, as with
+`asm` and `asmc`.
 
 The ROM's BASIC (the monitor's `I` command, `firmware/basic/`) is a different, smaller interpreter (uBASIC): it has no
 string variables and cannot load or save programs. `tests/os/ybasic.session` runs a program, saves, loads, edits and

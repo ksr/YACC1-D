@@ -911,7 +911,39 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
 - Move off NetBeans (README decision 7).
 
 ## Disk operating system (plan `docs/system/OS-PLAN.md`, decisions 2026-09-22)
-- **To look at (2026-11-11): /bin/basic in assembly, perhaps other commands after it, and the source tree split into
+- **2026-11-11: BASIC in assembly is written** (`os/commands-asm/basic.asm`, 3,199 lines, `make -C os basica`), not
+  on the disk yet. It is `os/commands/basic.c` routine for routine - `basic.c` stays the reference - and gives the
+  same console output byte for byte on four sessions (`tests/ybasic/run.py`, in `make check`: expressions and every
+  error, programs, files and the command line, the limits; 1,247 lines of transcript) and on the OS tests' own
+  `ybasic.session` on both emulators. 7,546 bytes against 14,572. Speed, counted in instructions on the
+  instruction-level emulator: `10 a=0` / `20 a=a+1` / `30 if a<32000 then goto 20` is 170,193,674 instructions in C
+  and 26,979,424 in assembly (6.3 times fewer; 5,319 and 843 for a pass of lines 20 and 30; 63 minutes and 10 minutes
+  37 seconds at 1 MHz). The straight port was 45.4 million; the rest came from a table of the one-letter variables'
+  addresses, a statement table indexed by the token, RUN remembering where a GOTO's line is, and the next line taken
+  from where the parse stopped. On the machine both do one more thing per line that the emulator does not count: the
+  Ctrl-C check asks the OS whether a key waits (the fast emulator's console always says yes, once).
+  **Next:** make it `/bin/basic` with the C one as `/bin/basicc` (the `asm` / `asmc` pattern: man page, `help` line,
+  `/src/os/commands-asm` with its Makefile from `mksrcmk.py`, `basic.asm` in `tests/asm`'s corpus so that `/bin/asm`
+  is held to it, the `tests/os` size lines) - not done, it changes what is on the CF card. Where the instructions
+  still go: decimal numbers are converted every time they are met (128 of the 843: `32000` alone about 100), blanks
+  skipped (136), names scanned twice (once to see whether a `$` ends them). A number or a name could be remembered
+  by its place in the program text, as the GOTO lines are.
+- **2026-11-11: stopping a running BASIC program without leaving BASIC.** Ctrl-C is there (`BREAK IN n`, back to the
+  `>` prompt) but RUN only looks for it before a line it reaches by falling through or by GOTO / GOSUB / THEN n: after
+  NEXT and RETURN it goes straight on, so `10 FOR I=1 TO 30000` / `20 NEXT` cannot be stopped, nor can a loop written
+  on one line. Wanted: the check on every pass of a loop too, and ESC as well as Ctrl-C. In both `basic.c` and
+  `basic.asm`; a test needs the microcode emulator or the machine (the fast emulator's console is always ready, so
+  the check reads the next typed character at the first line and never asks again).
+- **2026-11-11: found in `basic.c` while porting it** (the assembly does the same, so that the two stay one program;
+  to fix in both or to leave): (1) a name that ends in a keyword is cut there - `toto = 4` is `to` and the token TO,
+  a syntax error; `kwmatch` refuses a keyword that runs on into a longer name but not one that a name runs into.
+  (2) After `?UNDEF'D LINE n IN m` RUN still prints `Ok`, and at the prompt `?ONLY IN A PROGRAM` follows (the GOTO's
+  flag is left set). (3) `RUN` inside a program starts it again one level deeper each time (`10 RUN` runs until the
+  stack is gone; the C one's stack is the shell's 768 bytes, the assembly one has 1 K of its own). (4) INPUT typed
+  at the prompt reads into the line being run, so what follows it on the line is then read from the answer.
+  (5) `PRINT# 1, X` writes 1 and stops with a syntax error: the file number the man page allows is not skipped.
+  (6) A FOR whose NEXT is never reached leaves its frame: the ninth such FOR is `?FOR TOO DEEP`.
+- **To look at (2026-11-11): the other commands in assembly, and the source tree split into
   C sources and assembly sources.** Today `/bin/basic` is `os/commands/basic.c` (976 lines), compiled: 14,572 bytes of
   program, 12,286 bytes left for a BASIC program, and it runs at compiled-C speed (a 16-bit compare is about 200
   clocks). Hand-written assembly would be smaller - more room for the program - and several times faster. The

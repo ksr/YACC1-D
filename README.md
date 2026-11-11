@@ -68,7 +68,7 @@ YACC1-D/
 │   ├── monitor/  basic/      monitor.asm, basic.asm (+ candidates never burned)
 │   ├── rom/                  shipped/ (the image to burn and what is burned), builds/, captured chips
 │   └── abi/                  BIOS vectors, variable and port map (still to be written)
-├── os/                       Y1/OS: y1os.asm + y1os.c, commands/ (C), commands-asm/ (asm.asm), lib_*.c,
+├── os/                       Y1/OS: y1os.asm + y1os.c, commands/ (C), commands-asm/ (asm.asm, basic.asm), lib_*.c,
 │                             man/, docs/, Makefile -> os/disk.img
 ├── software/                 host-side toolchain (runs on the Mac)
 │   ├── assembler/            RC/asm + yacc1.def

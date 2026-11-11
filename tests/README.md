@@ -70,6 +70,12 @@
   transcripts `target.int.out`/`target.uc.out`) runs `asm` under Y1/OS on both emulators - y1cc programs assembled
   and run, the ROM monitor, `isa.asm`, compiler pass cc4 - and compares every file it wrote with RC/asm's output.
   `make asm-test`; both in `make check`.
+- `ybasic/` — BASIC in assembly against BASIC in C (2026-11-11): `run.py` builds `os/commands-asm/basic.asm`, puts it on a
+  copy of the disk as `/bin/basic`, and runs each session (`expr`, `prog`, `files`, `limits`) on that copy and on the
+  disk with the C BASIC: the console transcripts must be the same byte for byte and so must the files left behind.
+  Then `tests/os/ybasic.session` with the assembly BASIC against the OS tests' expected transcripts on both emulators,
+  and both interpreters counted in instructions on a loop (the assembly one must need under a quarter). `--uc` runs
+  the sessions on the microcode emulator too. (`tests/basic/` is the ROM's uBASIC, not this.)
 - `disasm/` — `/bin/disasm` (os/commands/disasm.c, 2026-09-29): `run.py` builds it for the Mac (`host_disasm.c`,
   `host_sys.c`: int = unsigned short, OPEN/GETC/CLOSE/ENTRY/SEEK and peek emulated) and round-trips - `disasm -s`,
   RC/asm, the same bytes, the listing true to them - over tests/asm's corpus, every program of the OS build, the ROM
