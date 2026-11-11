@@ -298,7 +298,7 @@ Beyond that the limits are the 5 V logic and the chip: 1024 x 768 with flashless
 
 The step between this note and a netlist: every chip the card needs, what it does, and the connections that are
 already fixed by sections 5-7. The netlist (`hardware/cards/video/kicad/v3.0/v30_netlist.py`, a first cut since 2026-11-11: the
-card without the cursor outputs and text method A, 35 ICs, its own check passing) is the single source
+whole card but the cursor's place in the video, 45 ICs of which 8 are text method A's sockets, its own checks passing) is the single source
 for the schematic and the board. Part numbers
 here are working numbers until the netlist gives the references.
 
@@ -346,10 +346,10 @@ OUT to PC or PD and an IN from PA or PB select nothing.
 | | 74ACT86 | the two syncs' polarity; XOR of the text and graphics layers |
 | | 74F74, gates of the 74ACT10 and 74ACT02 | blanking by DISP1 in step with the dots; a gate for each gun with its off bit |
 | | 3 x 470 ohm, DE-15 socket | R, G, B and the syncs to the monitor |
-| Text A (sockets, fitted later) | 74HCT374, 28C64 or 27C64, 74F299 or 74LS166, a few gates | the character code latched from the Window's word, the character generator addressed by it and RA0-RA3, its dots shifted and laid over the graphics; the card status bit TEXT says the parts are there |
+| Text A (sockets, fitted later) | 3 x 74ACT574, AT27C256R-70, 74F299, 74F74, 74ACT21, 74ACT32 (section 10c) | the two character codes and the raster line latched from the Window's cycle, the character generator addressed by them, its dots shifted and laid over the graphics; the card status bit TEXT says the parts are there |
 | PS/2 | ATmega328P, 2 x 74HCT374, 74HCT244, 74HCT74, 16 MHz crystal, 2 Mini-DIN-6, polyfuse, FTDI header | V2.0's section as it is (`embedded/video-ps2`): data on IN PF, commands on OUT PE, FULL / SRC / BUSY in the card status on IN PE with the TEXT bit and the ID 0110 |
 
-35 chips in the netlist's first cut with the PS/2 section; method A's sockets add about 6.
+45 chips in the netlist with the PS/2 section, 8 of them method A's sockets (section 10c).
 
 **The PS/2 section on the new ports** (V2.0's nets with the strobes renamed): OUT PE clocks the command latch and
 sets BUSY; IN PE enables the status buffer (a 74HCT244: FULL, SRC, BUSY and TEXT on bits 0-3, bits 7-4 wired 0110);
@@ -451,8 +451,55 @@ it on at the next dot clock, so the picture is switched on and off exactly on a 
 belongs to is set by the chip's display skew (DSK in OMR). The dot is NAND(the shift register's output, that
 flip-flop), and each gun is a NOR of it with its off bit, through 470 ohm.
 
-**Still to work out before those nets are written:** the cursor outputs' sense and their place in the video, and
-all of text method A (the Window's second access in superimposed mode, which MRD low marks).
+**Still to work out:** the cursor outputs' sense and timing against the character cell (CUD1 is latched with the
+character word, but not yet mixed into the video).
+
+## 10c. Text method A in the circuit (2026-11-11)
+
+The manual's figure 2.1 (c): in superimposed access a display cycle is two memory cycles, the **Background's** (MRD
+high) and the **Window's** (MRD low; DRAW is high in both, and each has its AS). When the Window is not displayed its
+half goes to drawing, as in interleaved access. Three things follow for the card, the first two for both builds:
+
+- **The two kinds of display cycle are told apart by MRD.** The graphics shift registers load at the end of a
+  Background cycle only (DRAW AND VALID AND MRD); a Window cycle (DRAW AND VALID AND NOT MRD) belongs to the text
+  parts. The RAM reads in both: its -OE is off only for a drawing write.
+- **CHR changes what MA16-19 mean.** For a screen defined as characters the chip puts the address on MAD0-15 alone and
+  the raster line RA0-RA3 on the MA16-19 pins (RA4 beside them), in display and in drawing cycles alike. So the
+  RAM's upper address must not come from those pins then: A16 (and A17, A18 of the 512K part) = MA OR CHR, the
+  RAM's -CE = MA19 AND NOT CHR, the font EPROM's -CE = NOT MA19 OR CHR. A character screen is therefore the RAM's top
+  64K words (on the 128K part), whatever the line; the graphics screens and the font's copy keep below word $10000.
+- **The text is a cycle behind the graphics, so the graphics wait for it.** The character word of a display cycle is
+  read in its second half, 8 dots after the graphics word was loaded, and its glyph must still be looked up. A
+  74ACT164 delays the (already blanked) graphics dot by 8 dots; its two serial inputs are the AND of the dot and
+  display-on, so the blanking travels with it. Both builds have it: the picture sits 8 dots later against the
+  syncs, which the horizontal timing registers take up.
+
+**The text parts** (eight sockets, empty on the first build; the netlist's `TEXT_A`):
+
+| Part | What it does |
+|---|---|
+| 2 x 74ACT574 | the word's low and high byte, the left and the right character's code; one of them drives the generator's address |
+| 74ACT574 | the raster line RA0-RA3 (with RA4 and CUD1) of the same cycle |
+| AT27C256R-70 | the character generator: address = code x 16 + line, a byte = the line's 8 dots, bit 0 the left-hand one |
+| 74F299 | the text's dots, loaded 8 at a time |
+| 74F74 | A: the three latches' clock, WCK; B: WPH, "the cycle before this one was a Window cycle" |
+| 74ACT21, 74ACT32 | dot 3 of a Window cycle; the shifter's load |
+
+- The RAM's data in a Window cycle is steady by about 142 ns (address valid 70 ns after the chip's clock edge, the
+  latch, 55 ns of RAM), before the cycle's dot 4. WCK rises there (a flip-flop on the dot clock, D = dot 3 AND a
+  Window cycle) and clocks the codes and the line in, 20 ns to spare.
+- The left code drives the generator from then to the cycle's end, about 139 ns: a 70 ns EPROM with room, a 120 ns
+  one just. Its dots load at the end of the Window cycle. The right code drives the generator through all of the
+  next cycle (WPH) and loads at its end. So a character word read in display cycle N is on the screen through
+  cycle N+1, exactly under the delayed graphics word of cycle N.
+- No Window cycle, no load: the text shifter runs empty by itself outside the Window and when the Window is off.
+- **The layers.** T = the text dot AND TEXTON (ATR bit 5); the picture is G OR T, or G XOR T with ATR bit 6:
+  NAND(G OR T, NAND(G, T, TXOR)) is the dot's complement, which the three guns' gates take. Without the text parts
+  a 10k resistor holds the text dot low and the picture is the graphics alone; the netlist's `text_a_check()`
+  proves that the eight sockets drive nothing else in the fitted logic.
+- **For the driver:** the Window is a character screen (CHR) of 80 x 30 cells in the RAM's top 64K words; a cell is a
+  byte, two to a word, the left one the low byte; 16 lines a cell (RA0-RA3). The card status bit TEXT (jumper JP3)
+  says the parts are fitted.
 
 ## 11. Software, in the order it can be built
 
