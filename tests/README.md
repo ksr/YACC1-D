@@ -30,6 +30,10 @@
   and commands with the manual's examples, the keyboard and the mouse), and `v30card.asm` through the monitor on both
   emulators: a YACC1 program starts the chip, writes "V3 OK" from the font EPROM and draws; the frame buffer is
   compared dot for dot with the same scene drawn in Python.
+  `v30_netsim.py` (2026-11-11, in `make check`): the video card V3's netlist
+  (`hardware/cards/video/kicad/v3.0/v30_netlist.py`) run as a circuit, every part a model with its delays, against a
+  model of the HD63484's memory cycles: interleaved and superimposed access, the ports, set-up and hold, bus fights;
+  `docs/cards/video-v3.md` section 10d.
 - `basic/` — `test`, a small BASIC program (LET/FOR loops) used to exercise the interpreter.
 - `compiler/` — the C compiler's test programs (`*.c` + expected `.out`/`.in`/`.err`) and `run.py`, which compiles each with
   `software/compiler/y1cc.py --boot`, assembles it and runs it on `emulator -x`; `--oracle` regenerates the expectations with
