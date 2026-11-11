@@ -672,6 +672,11 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   To fold into the generator when the diagrams are next regenerated.
 
 ## Software
+- **OPEN 2026-11-11: the host assembler crashes on a long operand list.** A `DB` line with 19 operands (an operand
+  field of about 95 characters) ends `software/assembler/asm` with status 133 and an empty `.img`, no message; 18
+  assemble. Probably a 100-character buffer (`char tmp[100]` in `asm.c`). Until fixed: at most 12 bytes on a `DB`
+  line (`tests/video/v30/v30card.asm` does). To do: a checked buffer or an error naming the line, a line in
+  `docs/programming/ASSEMBLER.md`'s quirks, a regression case.
 - **The debugger with a live video screen (`software/y1dbg`, 2026-10-11), modelled on the ELF repository's System-5
   emulator (`software/s5emu`: `debugger.py`, `shell.py`, `tui.py`, `web.py`).**
   - **Phase 1 - done 2026-10-11:** `y1ucemu -D PORT` (a line/JSON debug server on 127.0.0.1; run speed without `-D`
