@@ -1,0 +1,140 @@
+basic
+10 for i = 1 to 3 : print i; : next i : print
+20 for i = 3 to 1 step -1 : print i; : next : print
+30 for i = 1 to 10 step 3
+40 print i;
+50 next i
+60 print
+70 for i = 1 to 2 : for j = 1 to 2 : print i * 10 + j; " "; : next j : next i : print
+80 for i = 5 to 1 : print "once"; i : next
+90 for i = -2 to 2 : print i; " "; : next : print
+95 for i = 32750 to 32766 step 5 : print i; " "; : next : print : for i = 1 to 3 step 0 - 1 : print i : next
+100 gosub 500 : print "back"
+110 gosub 500
+120 print "after"
+130 i = 0
+140 i = i + 1 : if i < 3 then 140
+150 print i
+160 if i = 3 then goto 180
+170 print "not here"
+180 print "here"
+190 input "n"; n : print n * 2
+200 input s$ : print s$; len(s$)
+210 input "neg", m : print m
+215 input "long "; l$ : print l$; len(l$)
+220 end
+230 print "never"
+500 print "sub" : return
+run
+21
+hello there
+-17
+abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJ
+list
+15 rem inserted
+145 print "one four five"
+5 print "first"
+list
+15
+145
+5
+7
+list
+goto 999
+gosub 500
+return
+next
+run
+  42
+x
+junk
+short
+new
+10 print 1 : goto 100
+run
+10 gosub 10
+run
+10 return
+run
+10 next
+run
+10 for i = 1 to 2 : for j = 1 to 2 : for k = 1 to 2 : for l = 1 to 2 : for m = 1 to 2 : for n = 1 to 2 : for o = 1 to 2
+20 for p = 1 to 2 : for q = 1 to 2 : print "deep"
+run
+new
+10 print 1 +
+run
+new
+10 a = 1 : b = 2
+20 print a + b : x
+30 print "not reached"
+run
+new
+0 print 1
+65535 print 1
+70000 print 2
+65536 print 3
+list
+new
+10 print "a"
+20 print "b"
+30 print "c"
+20
+list
+20 print "B"
+list
+10 print "A" : rem changed
+list
+run
+new
+10 gosub 100 : gosub 100 : print "two"
+20 gosub 200
+30 print "end" : end
+100 print "s1"; : return
+200 print "s2" : gosub 100 : print : return
+run
+new
+10 for i = 1 to 3
+20 gosub 100
+30 next i
+40 goto 60
+50 print "skipped"
+60 if i = 4 then print "i is 4"
+70 for j = 1 to 2 : next j : print j
+80 for k = 1 to 3 : if k = 2 then 110
+90 next k
+100 print "sub "; i : return
+110 print "left the loop"; k
+120 next
+130 print k
+140 new
+150 print "gone"
+run
+list
+10 print "a" : end : print "b"
+20 print "c"
+run
+10 goto 20
+20 goto 10
+run
+
+print "after the break"
+15 print "typed ahead"; : input k$ : print k$
+10 print "ten"
+20
+run
+kept for the input
+10 run
+5 n = n + 1 : if n > 3 then end
+run
+new
+10 input a
+20 print a + 1
+30 input a$ : print a$
+40 bye
+50 print "not after bye"
+run
+7
+seven
+
+exit
