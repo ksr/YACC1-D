@@ -21,6 +21,10 @@
   isolation, the block-0/9 write-through check, read stability); 8/8 on 2026-09-21 after the +5V/VCC join. `gate.py`
   (2026-10-11, in `make check`): the card at gate level (`y1ucemu -G`) against the behavioural model, byte for byte
   with 0 bus events, and without each bench rework (the RS fix, the +5V wire) the faults they fixed.
+  `v30_netsim.py` (2026-11-11, in `make check`): the video card V3's netlist
+  (`hardware/cards/video/kicad/v3.0/v30_netlist.py`) run as a circuit, every part a model with its delays, against a
+  model of the HD63484's memory cycles: interleaved and superimposed access, the ports, set-up and hold, bus fights;
+  `docs/cards/video-v3.md` section 10d.
 - `basic/` — `test`, a small BASIC program (LET/FOR loops) used to exercise the interpreter.
 - `compiler/` — the C compiler's test programs (`*.c` + expected `.out`/`.in`/`.err`) and `run.py`, which compiles each with
   `software/compiler/y1cc.py --boot`, assembles it and runs it on `emulator -x`; `--oracle` regenerates the expectations with

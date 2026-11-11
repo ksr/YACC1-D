@@ -298,7 +298,8 @@ Beyond that the limits are the 5 V logic and the chip: 1024 x 768 with flashless
 
 The step between this note and a netlist: every chip the card needs, what it does, and the connections that are
 already fixed by sections 5-7. The netlist (`hardware/cards/video/kicad/v3.0/v30_netlist.py`, a first cut since 2026-11-11: the
-whole card but the cursor's place in the video, 45 ICs of which 8 are text method A's sockets, its own checks passing) is the single source
+whole card but the cursor's place in the video, 46 ICs of which 8 are text method A's sockets, its own checks passing and
+simulated: section 10d) is the single source
 for the schematic and the board. Part numbers
 here are working numbers until the netlist gives the references.
 
@@ -349,7 +350,7 @@ OUT to PC or PD and an IN from PA or PB select nothing.
 | Text A (sockets, fitted later) | 3 x 74ACT574, AT27C256R-70, 74F299, 74F74, 74ACT21, 74ACT32 (section 10c) | the two character codes and the raster line latched from the Window's cycle, the character generator addressed by them, its dots shifted and laid over the graphics; the card status bit TEXT says the parts are there |
 | PS/2 | ATmega328P, 2 x 74HCT374, 74HCT244, 74HCT74, 16 MHz crystal, 2 Mini-DIN-6, polyfuse, FTDI header | V2.0's section as it is (`embedded/video-ps2`): data on IN PF, commands on OUT PE, FULL / SRC / BUSY in the card status on IN PE with the TEXT bit and the ID 0110 |
 
-45 chips in the netlist with the PS/2 section, 8 of them method A's sockets (section 10c).
+46 chips in the netlist with the PS/2 section, 8 of them method A's sockets (section 10c).
 
 **The PS/2 section on the new ports** (V2.0's nets with the strobes renamed): OUT PE clocks the command latch and
 sets BUSY; IN PE enables the status buffer (a 74HCT244: FULL, SRC, BUSY and TEXT on bits 0-3, bits 7-4 wired 0110);
@@ -412,18 +413,17 @@ the address and high for the data, with a flip-flop's edge instead of the chip's
 | RAM -CE / EPROM -CE | MA19 / NOT MA19 | the font is the upper half of the address space |
 | RAM -OE, EPROM -OE | W | reading in every cycle but a write |
 | -WE | a flip-flop on the dot clock, D = NAND(QC, NOT QB, W): low in dots 5 and 6 | 79 ns wide; the data is at the RAM about 41 ns before it rises (25 wanted), and it rises a whole dot before the address or the data can move |
-| the MAD buffers' -OE | DRAW OR NOT QC OR (MRD AND NOT QB) | a write: dots 4-7; a read: dots 6 and 7 only, after the chip has let go of MAD (50 ns into dot 4) |
+| the MAD buffers' -OE | a flip-flop on the dot clock, D = DRAW OR NOT QC OR (QA AND QB), then one gate: on in dots 5-7 of a drawing cycle | a read and a write alike: on after the chip has let go of its address on MAD (50 ns into dot 4), off 16 ns after the cycle's last clock edge (a read's data is wanted for 10) |
 | the MAD buffers' direction | MRD | high: RAM to MAD |
 | VALID | a flip-flop preset by AS low, cleared by the clock at the start of each cycle (QC falling) | a dummy cycle - a drawing slot with nothing to draw - looks like a display cycle but has no AS |
 | the shift registers' load (S1; S0 is high) | QA AND QB AND QC AND DRAW AND VALID | dot 7 of a display cycle: the load is the clock edge that ends it, 16 dots apart in dual access |
 | the font's copy onto the high byte ('244 -OE) | NOT MA19 OR W | the EPROM's byte on both halves of the word, never against a write |
 
 In a display cycle the RAM's address is steady about 5 ns into dot 2 and its data 55 ns later, in dot 3; the load is
-at the end of dot 7, so the RAM has 150 ns to spare and a 70 or 100 ns part would do. The read path of a drawing
-cycle (RAM, buffer on from dot 6) has the data at the chip about 79 ns before the cycle's end (40 wanted). At the end
-of a write the buffers are off about 16 ns after the chip's clock edge and the RAM's outputs come on 20 ns after it
-at the earliest: no overlap, but only a few nanoseconds apart - a figure for the timing check with the real parts'
-numbers.
+at the end of dot 7, so the RAM has 150 ns to spare and a 70 or 100 ns part would do. The figures of the simulation
+(section 10d) with the chip's delays at their maximum: a drawing read's data is at the chip 102 ns before the
+cycle's end (40 wanted); a write's data is steady at the RAM 40 ns before -WE rises (25 wanted) and the pulse is
+79 ns (45 wanted); the buffers and the chip are never on MAD together for more than 1 ns.
 
 **The shift registers.** Two 74F299, S0 high and S1 the load, their outputs disabled (-OE high) so that the I/O pins
 are inputs on the RAM's data lines. They shift from QA towards QH; QH' of the second is the video. Bit 0 of the word
@@ -493,13 +493,48 @@ half goes to drawing, as in interleaved access. Three things follow for the card
   next cycle (WPH) and loads at its end. So a character word read in display cycle N is on the screen through
   cycle N+1, exactly under the delayed graphics word of cycle N.
 - No Window cycle, no load: the text shifter runs empty by itself outside the Window and when the Window is off.
-- **The layers.** T = the text dot AND TEXTON (ATR bit 5); the picture is G OR T, or G XOR T with ATR bit 6:
-  NAND(G OR T, NAND(G, T, TXOR)) is the dot's complement, which the three guns' gates take. Without the text parts
+- **The layers.** TEXTON (ATR bit 5) is the text shifter's clear: off, it holds the shifter empty. The picture is G OR
+  T, or G XOR T with ATR bit 6: NAND(G OR T, NAND(G, T, TXOR)) is the dot's complement, which the three guns' gates
+  take. Both layers pass the same gates on the way, so they stay in step within a dot. Without the text parts
   a 10k resistor holds the text dot low and the picture is the graphics alone; the netlist's `text_a_check()`
   proves that the eight sockets drive nothing else in the fitted logic.
 - **For the driver:** the Window is a character screen (CHR) of 80 x 30 cells in the RAM's top 64K words; a cell is a
   byte, two to a word, the left one the low byte; 16 lines a cell (RA0-RA3). The card status bit TEXT (jumper JP3)
   says the parts are fitted.
+
+## 10d. The netlist simulated (2026-11-11)
+
+`tests/video/v30_netsim.py` (in `make check`) runs `v30_netlist.py` as a circuit, gate for gate, with delays in
+nanoseconds. Every 74xx part, the RAMs and the EPROMs are models written from the parts' pinouts and function tables,
+wired by the netlist's nets; the chip is a model of its memory side from the manual's figures (it answers the 2CLK the
+card gives it with MCYC, AS, the address and data, MRD, DRAW, CHR, the raster line, HSYNC and DISP1, each after its
+delay) and runs a script of memory cycles. Each script runs with the chip's delays at their maximum and near their
+minimum, and from both phases the dot counter can start in.
+
+- **Interleaved access, text sockets empty:** the counter falls into step; a write reaches both RAMs and nothing else;
+  a read is back in time; the font's byte reads on both halves; every display word leaves the shift registers bit 0
+  first, 8 dots later after the delay line, and on the guns; dummy and drawing cycles load nothing; the control
+  register takes the attribute byte and does not move while HSYNC is low; colours and sync polarity follow it.
+- **Superimposed access, sockets fitted:** a character word comes out as its two glyphs, left code first, exactly under
+  the graphics word of the same display cycle; a word written to the character screen lands in the RAM's top 64K
+  words whatever the raster line; OR and XOR.
+- **The ports:** only OUT PA / PB and IN PC / PD select the chip, with the bus buffer the right way round.
+- **Everywhere:** no two outputs on a net at once (1 ns at a handover is the most), every register's set-up and hold,
+  the RAM's write pulse and data set-up.
+
+Eight wiring faults put in on purpose (two data bits swapped, a latch enable inverted, a gate input left off, ...)
+are each caught. The smallest margins with every delay at its maximum: 4.7 ns at the buffers' enable flip-flop, 8.2 ns
+at the shift registers' load, 12.4 ns at the character latches, 14.7 ns of RAM data set-up.
+
+**What it found, and what changed for it:**
+- The MAD buffers' enable was three gates deep from the counter: a read's data reached the chip only 5 ns inside its
+  set-up, and the buffers were still on up to 18 ns into the next cycle, against the chip's address. It is now a
+  flip-flop on the dot clock (the row above), and reads and writes share one window.
+- The text dot passed one gate more than the graphics dot and arrived after the dot's end. TEXTON now holds the text
+  shifter clear instead of gating its output.
+
+The delays are the parts' data-sheet maximums as far as they are known; the timing check against the parts actually
+bought uses the same program with their numbers.
 
 ## 11. Software, in the order it can be built
 

@@ -80,6 +80,7 @@ check:
 	python3 tests/video/gate.py
 	python3 tests/video/overlay_check.py
 	python3 tests/video/v20_timing.py
+	python3 tests/video/v30_netsim.py
 	python3 tools/acrtc_timing.py --check
 	python3 tests/sequencer/run.py
 	python3 tests/assembler/romcount/run.py

@@ -54,8 +54,9 @@ PARTS = {
     "IC17": ("74ACT02", "74xx:74LS02", DIP[14], "W = NOR(DRAW, MRD): a drawing write; the three guns' gates"),
     "IC18": ("74ACT10", "74xx:74LS10", DIP[14], "the -WE flip-flop's D; the counter's -LOAD; the blanked dot"),
     "IC19": ("74ACT11", "74xx:74LS11", DIP[14], "dot 7; the shift registers' load"),
-    "IC20": ("74ACT32", "74xx:74LS32", DIP[14], "the MAD buffers' enable; the font copy's enable"),
-    "IC21": ("74ACT08", "74xx:74LS08", DIP[14], "the read half of the buffers' enable"),
+    "IC20": ("74ACT32", "74xx:74LS32", DIP[14], "the MAD buffers' enable (its flip-flop's D); the font copy's enable; graphics OR text"),
+    "IC21": ("74ACT08", "74xx:74LS08", DIP[14], "dots 3 and 7 for the buffers' enable; the graphics load; the RAMs' -CE"),
+    "IC37": ("74F74", "74xx:74LS74", DIP[14], "A: the MAD buffers' enable, on in dots 5-7 of a drawing cycle; B: spare"),
     "IC31": ("74ACT00", "74xx:74LS00", DIP[14], "the control register's two enables (dot 7, HSYNC low / high)"),
     "IC32": ("74ACT86", "74xx:74LS86", DIP[14], "the two syncs' polarity"),
     "IC33": ("74F74", "74xx:74LS74", DIP[14], "blanking in step with the dots: DISP1 taken at a load, then on the dot clock"),
@@ -133,7 +134,7 @@ PARTS = {
     "JP4":  ("RAM 128K/512K", "Connector_Generic:Conn_01x03", FP_H % 3, "the RAMs' pin 30: 1-2 CE2 high (128K), 2-3 A17 (512K)"),
     "C1":   ("47u 16V", "Device:C_Polarized", "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm", "bulk"),
 }
-DECOUPLE = {"C%d" % (n + 1): "IC%d" % n for n in list(range(1, 37)) + list(range(40, 49))}   # one for each IC
+DECOUPLE = {"C%d" % (n + 1): "IC%d" % n for n in list(range(1, 38)) + list(range(40, 49))}   # one for each IC
 DECOUPLE["C50"] = "IC1"                                                   # the chip's second Vcc pin
 DECOUPLE["C51"] = "OSC1"
 DECOUPLE["C52"] = "IC24"                                                  # the ATmega's AVCC
@@ -210,14 +211,14 @@ c("DONE#", "IC1.7", "R1.1"); c("VCC", "R1.2"); c("GND", "IC1.64")        # LPSTB
 c("IRQ#", "IC1.11", "JP1.1"); c("-INT", "JP1.2")
 
 # ---- the dot clock and the counter: OSC1, IC6 (docs/cards/video-v3.md 10b) ---------------------------------------------
-c("CK", "OSC1.8", "IC6.2", "IC7.3", "IC22.12", "IC23.12", "IC33.11", "IC34.11", "IC35.11", "IC40.8", "IC41.3", "IC48.12")
+c("CK", "OSC1.8", "IC6.2", "IC7.3", "IC22.12", "IC23.12", "IC33.11", "IC34.11", "IC35.11", "IC37.3", "IC40.8", "IC41.3", "IC48.12")
 c(PU, "IC6.1", "IC6.7", "IC6.10")                                         # -CLR, ENP, ENT
 c("GND", "IC6.3", "IC6.4", "IC6.6")                                       # A, B, D load 0
 c("MCYC", "IC1.52", "IC16.3"); c("MCYCN", "IC16.4", "IC6.5")              # C loads NOT MCYC
-c("QA", "IC6.14", "IC18.3", "IC19.1"); c("2CLK", "IC6.13", "IC1.50", "IC18.4", "IC19.2", "IC16.5")     # QB
+c("QA", "IC6.14", "IC18.3", "IC19.1", "IC21.1"); c("2CLK", "IC6.13", "IC1.50", "IC18.4", "IC19.2", "IC16.5", "IC21.2")     # QB
 c("QC", "IC6.12", "IC19.13", "IC18.1", "IC16.9")
 c("VCC", "IC18.5"); c("LD163#", "IC18.6", "IC6.9")                        # NAND(QA, QB): dots 3 and 7
-c("QBN", "IC16.6", "IC18.2", "IC21.2"); c("QCN", "IC16.8", "IC20.2", "IC7.11")
+c("QBN", "IC16.6", "IC18.2"); c("QCN", "IC16.8", "IC20.1", "IC7.11")
 
 # ---- the chip's memory side: the address latches IC8 / IC9, MAD's pull-ups ---------------------------------------------
 MAD = {0: 61, 1: 60, 2: 59, 3: 58, 4: 57, 5: 48, 6: 47, 7: 46, 8: 45, 9: 44, 10: 43, 11: 42, 12: 41, 13: 40, 14: 39, 15: 38}
@@ -252,14 +253,19 @@ for i, (a, y) in enumerate(((2, 18), (4, 16), (6, 14), (8, 12), (11, 9), (13, 7)
     c("DL%d" % i, "IC15.%d" % a); c("DH%d" % i, "IC15.%d" % y)
 
 # ---- memory control (10b): W, -OE, -WE, the buffers' enable, VALID, the load -------------------------------------------
-c("DRAW#", "IC1.54", "IC17.2", "IC20.1", "IC19.4", "IC19.10")
-c("MRD", "IC1.55", "IC17.3", "IC21.1", "IC12.1", "IC13.1", "IC19.3", "IC32.9"); c("VCC", "IC32.10"); c("MRDN", "IC32.8", "IC19.9")
+c("DRAW#", "IC1.54", "IC17.2", "IC20.4", "IC19.4", "IC19.10")
+c("MRD", "IC1.55", "IC17.3", "IC12.1", "IC13.1", "IC19.3", "IC32.9"); c("VCC", "IC32.10"); c("MRDN", "IC32.8", "IC19.9")
 c("W", "IC17.1", "IC10.24", "IC11.24", "IC14.22", "IC18.13", "IC20.10")   # the RAMs' and the EPROM's -OE
 c("WED", "IC18.12", "IC7.2"); c("WE#", "IC7.5", "IC10.29", "IC11.29")     # D = NAND(QC, NOT QB, W); Q low in dots 5, 6
 c(PU, "IC7.1", "IC7.4", "IC7.13")
 c("GND", "IC7.12"); c("VALID", "IC7.9", "IC19.5", "IC19.11")              # B: D = 0 clocked by NOT QC, preset by AS
-c("RDHOLD", "IC21.3", "IC20.5"); c("E1", "IC20.3", "IC20.4")              # MRD AND NOT QB; DRAW OR NOT QC
-c("BUFEN#", "IC20.6", "IC12.19", "IC13.19")
+# the MAD buffers are on in dots 5, 6 and 7 of a drawing cycle, for a read and for a write (MRD is their direction):
+# after the chip has let go of its address (50 ns into dot 4), and off 16 ns after the cycle's last clock edge (a
+# read's data is wanted 10 ns after it). IC37/A's D is low in dots 4-6: DRAW OR NOT QC OR (QA AND QB); its Q goes
+# through a gate of IC21 for those 16 ns
+c("QAB", "IC21.3", "IC20.2"); c("ENA1", "IC20.3", "IC20.5"); c("BUFD", "IC20.6", "IC37.2")
+c("BUFQ", "IC37.5", "IC21.9"); c("VCC", "IC21.10"); c("BUFEN#", "IC21.8", "IC12.19", "IC13.19")
+c(PU, "IC37.1", "IC37.4", "IC37.10", "IC37.13"); c("GND", "IC37.11", "IC37.12")
 c("F244#", "IC20.8", "IC15.1", "IC15.19")                                 # NOT MA19 OR W
 # a display cycle is the Background's (MRD high: the graphics word, loaded into IC22 / IC23) or, in superimposed
 # access, the Window's (MRD low: the character word, method A)
@@ -279,9 +285,10 @@ c("DISP1#", "IC1.63", "IC16.13"); c("DISPON", "IC16.12", "IC33.2"); c("DISPA", "
 c(PU, "IC33.1", "IC33.4", "IC33.10", "IC33.13")
 # IC40's two serial inputs AND the dot with display-on; its QH is that 8 dots later, in step with the text (10c)
 c("DISPQ", "IC33.9", "IC40.2"); c("VDOT", "IC23.17", "IC40.1"); c("VCC", "IC40.9"); c("GDEL", "IC40.13", "IC20.12", "IC18.9")
-# the two layers: T1 = the text dot AND TEXTON; OR, or XOR with TXOR: VIDN = NAND(G OR T1, NAND(G, T1, TXOR))
-c("TDOT", "IC48.17", "IC21.9", "R19.1"); c("GND", "R19.2"); c("TEXTON", "IC35.15", "IC21.10"); c("TXOR", "IC35.16", "IC18.11")
-c("T1", "IC21.8", "IC20.13", "IC18.10"); c("GOT", "IC20.11", "IC31.12"); c("NBX", "IC18.8", "IC31.13")
+# the two layers: T = the text dot (its shifter is held clear unless TEXTON); OR, or XOR with TXOR:
+# VIDN = NAND(G OR T, NAND(G, T, TXOR)). The two layers pass the same number of gates.
+c("TDOT", "IC48.17", "IC20.13", "IC18.10", "R19.1"); c("GND", "R19.2"); c("TEXTON", "IC35.15", "IC48.9"); c("TXOR", "IC35.16", "IC18.11")
+c("GOT", "IC20.11", "IC31.12"); c("NBX", "IC18.8", "IC31.13")
 c("VIDN", "IC31.11", "IC17.5", "IC17.8", "IC17.11")
 # the control register (10b): the attribute byte is on MAD in the data half of the last cycle before HSYNC rises. IC34
 # takes MAD0-7 at the end of every cycle while HSYNC is low - the last one leaves the attribute byte in it - and IC35
@@ -320,7 +327,7 @@ c("RA4", "IC1.33", "IC46.6"); c("CUD1#", "IC1.1", "IC46.7"); c("GND", "IC46.1", 
 for i in range(4):
     c("RL%d" % i, "IC46.%d" % (19 - i), "IC47.%d" % ROM_A[i])
 c("GND", "IC47.2", "IC47.26", "IC47.27", "IC47.20", "IC47.22"); c("VCC", "IC47.1")    # A12-A14 low; -CE, -OE on; Vpp
-c(PU, "IC48.1", "IC48.2", "IC48.3", "IC48.9"); c("GND", "IC48.11", "IC48.18")
+c(PU, "IC48.1", "IC48.2", "IC48.3"); c("GND", "IC48.11", "IC48.18")
 
 # ---- PS/2: IC24 ATmega328P, latches IC25 / IC26, status IC27, flags IC28, IC29, IC30 (V2.0's nets, new ports) --------
 c("MRST", "IC24.1", "R7.1", "C55.2", "IC29.12"); c("VCC", "R7.2")
@@ -355,6 +362,7 @@ NO_CONNECT = {
     "IC1": [2, 8, 10, 15, 25, 26, 27, 28, 29, 30, 31, 32, 62],             # CUD2, DREQ, DTACK, EXSYNC, D8-15, DISP2
     "IC2": [15, 14, 11, 10, 7], "IC3": [15, 14, 13, 12], "IC4": [3, 11, 8],
     "IC6": [11, 15], "IC7": [6, 8], "IC22": [8], "IC23": [8], "IC33": [6, 8], "IC35": [19],      # ATR bit 7: a spare
+    "IC37": [6, 8, 9],
     "IC40": [3, 4, 5, 6, 10, 11, 12], "IC41": [6], "IC42": [3, 11], "IC43": [6, 8, 11], "IC46": [12, 13, 14, 15], "IC48": [8],
     "IC24": [21], "IC28": [6, 8], "IC29": [2, 4, 6], "J4": [3], "J2": [2, 6], "J3": [2, 6],
     "J1": [4, 9, 11, 12, 15], "OSC1": [1],
@@ -376,7 +384,7 @@ TEXT_A = ["IC%d" % n for n in range(41, 49)] + ["C%d" % n for n in range(42, 50)
 SHARED = ("DATA", "MAD", "DL", "DH", "HD", "-INT", "MD", "CA")        # (AT0-7 are IC34's outputs alone)
 OUTPUTS = {"IC2": (13, 12, 9), "IC3": (11, 10, 9, 7), "IC4": (6,), "IC6": (14, 13, 12), "IC7": (5, 9),
            "IC16": (2, 4, 6, 8, 10, 12), "IC17": (1, 4, 10, 13), "IC18": (12, 6, 8), "IC19": (12, 6, 8), "IC20": (3, 6, 8, 11),
-           "IC21": (3, 6, 8, 11), "IC31": (3, 6, 8, 11), "IC32": (3, 6, 8, 11), "IC33": (5, 9), "IC34": (2, 5, 6, 9, 12, 15, 16, 19),
+           "IC21": (3, 6, 8, 11), "IC37": (5,), "IC31": (3, 6, 8, 11), "IC32": (3, 6, 8, 11), "IC33": (5, 9), "IC34": (2, 5, 6, 9, 12, 15, 16, 19),
            "IC35": (2, 5, 6, 9, 12, 15, 16), "IC36": (3, 6, 8, 11), "IC40": (13,), "IC41": (5, 9, 8), "IC42": (6, 8), "IC43": (3,),
            "IC46": (16, 17, 18, 19), "IC47": ROM_D, "IC48": (17,), "IC22": (17,), "IC23": (17,), "IC28": (5, 9), "IC29": (8, 10, 12), "IC30": (3, 6, 8, 11),
            "IC1": (52, 53, 54, 55, 34, 35, 36, 37, 12, 13, 63, 11), "OSC1": (8,),
