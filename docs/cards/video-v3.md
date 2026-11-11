@@ -106,9 +106,10 @@ A screen is 40 x 480 = 19,200 words (38,400 bytes).
 
 ## 5. The bus side
 
-**Ports.** IO-ADDR0..3 are steady through a whole I/O record and the strobe is one microcode step inside it
-([backplane](backplane.md)), so the chip's RS and R/W can come from the port number, set up a step before the strobe
-with nothing to race:
+**Ports.** IO-ADDR0..3 carry the port number from two microcode steps before the strobe
+([backplane](backplane.md)), so the chip's RS and R/W come from the port number, set up long before CS. They pass a
+latch that holds them while CS is low: an OUT record keeps the port number a step after -IO-WR, but an IN record
+drops it in the same step as -IO-RD, while CS is still low (section 10a):
 
 | Port | | The chip sees |
 |---|---|---|
@@ -127,11 +128,13 @@ and held until CS ends, which the strobes alone cannot give without a latch and 
 **Timing** (the 8 MHz grade): RS and R/W 50 ns before CS, hold 0; write data 40 ns before CS rises, hold 10 ns; read
 data 80 ns after CS, released within 60 ns. **CS must last at least three 2CLK cycles**: 477 ns at 6.29 MHz. The
 strobe is two CPU clock periods - 2 us at 1 MHz - so the card works up to a CPU clock of about 4 MHz; at 6 MHz the I/O
-records would need a second strobe step. DTACK (open drain) is not needed. The I/O records' data hold after -IO-WR is
-to check against the microcode when the schematic is drawn, as `tests/video/v20_timing.py` did for V2.0.
+records would need a second strobe step. DTACK (open drain) is not needed. The microcode's I/O records, read from
+`test.hex` (section 10d): the port number and an OUT's data are on the bus two steps before the strobe, and the data a
+step after -IO-WR. The bus buffer, enabled by CS, lets go of the chip's data pins as CS rises; their level stays (10k
+pull-ups) far longer than the 10 ns.
 
 **Drive.** The chip's outputs sink 2.2 mA. A 74HCT245 stands between D0-D7 and the bus (enabled by CS, direction from
-R/W), and the logic round the memory side has CMOS inputs (74HCT / 74ACT / 74AC).
+the latched R/W), and the logic round the memory side has CMOS inputs (74HCT / 74ACT / 74AC).
 
 **Reset and the 8-bit mode.** The bus -RESET drives RES (at least ten 2CLK cycles). DACK must be low for 100 ns before
 RES rises and may rise with it (hold 0): DACK follows RES through a spare gate, as the application note does without
@@ -143,13 +146,13 @@ The driver polls the status register; no emulator models -INT yet.
 
 ## 6. The memory side
 
-- **Address.** MAD0-MAD15 pass two transparent latches (74AC573) while AS is low and hold when it rises. MA16-MA19
-  (which are RA0-RA3 for a character screen), RA4 and CHR pass a third.
+- **Address.** MAD0-MAD15 pass two transparent latches (74ACT573) while AS is low and hold when it rises. MA16-MA19
+  (which are RA0-RA3 for a character screen), RA4 and CHR hold through the cycle and need none (section 10b).
 - **RAM.** Two 8-bit static RAMs side by side make the 16-bit word. Two **128K x 8, 55 ns** parts (AS6C1008-55, DIP-32,
   in production) give 128K words: six 640 x 480 screens, or a screen with fonts and saved areas off screen. Their
   footprint also takes the 512K x 8 part (section 9; the pinouts to compare before the footprint is fixed). Two 62256
   (32K words) would hold one 640 x 480 or one 800 x 600 screen and little else.
-- **Data.** Two 74AC245 between the RAM's data pins and MAD, enabled only in the data half of a drawing cycle (DRAW
+- **Data.** Two 74ACT245 between the RAM's data pins and MAD, enabled only in the data half of a drawing cycle (DRAW
   low, MCYC high), direction from MRD. In display cycles they stay off: the RAM drives the shift registers.
 - **Control.** The RAM reads in every display cycle (DRAW high; in superimposed mode MRD low then marks the Window's
   access, not a write) and in drawing reads; -WE is DRAW low, MRD low, MCYC high, cut short by 2CLK so it ends before
@@ -171,8 +174,8 @@ The driver polls the status register; no emulator models -INT yet.
 - **Sync.** HSYNC and VSYNC leave the chip active low. Two XOR gates give either polarity (640 x 480 wants both
   negative, 640 x 400 a positive VSYNC, 800 x 600 both positive), then a buffer to the connector.
 - **Eight free control bits.** The chip puts its user attribute byte (ATR, in DCR) on MAD0-MAD7 in the last cycle of
-  every HSYNC: two registers on the dot clock turn it into the card's control register with no port (section 10b;
-  HSYNC's own edge comes too late to clock it): three colour bits, the two sync polarities, the text layer on / off,
+  every HSYNC: two registers turn it into the card's control register with no port (section 10b; HSYNC's own edge
+  comes too late to clock it off MAD): three colour bits, the two sync polarities, the text layer on / off,
   OR or XOR.
 - **Output.** A DE-15 (HD15) socket at the front edge, right-angle, facing off the board. The video drives R, G and B
   (pins 1, 2, 3) through a resistor each, about 470 ohm from a 5 V CMOS output for 0.7 V into the monitor's 75 ohm;
@@ -297,9 +300,9 @@ Beyond that the limits are the 5 V logic and the chip: 1024 x 768 with flashless
 ## 10a. The circuit, part by part (first cut, 2026-11-11)
 
 The step between this note and a netlist: every chip the card needs, what it does, and the connections that are
-already fixed by sections 5-7. The netlist (`hardware/cards/video/kicad/v3.0/v30_netlist.py`, a first cut since 2026-11-11: the
-whole card, 46 ICs of which 8 are text method A's sockets, its own checks passing and
-simulated: section 10d) is the single source
+already fixed by sections 5-7. The netlist (`hardware/cards/video/kicad/v3.0/v30_netlist.py`, written 2026-11-11: the
+whole card, 47 ICs of which 8 are text method A's sockets, its own checks passing, simulated and timed with the
+parts' data-sheet numbers: section 10d) is the single source
 for the schematic and the board. Part numbers
 here are working numbers until the netlist gives the references.
 
@@ -324,33 +327,41 @@ used:
 | | Y7 | IN PF | the PS/2 data latch |
 
 CS is the AND of the four chip strobes (half a 74HCT21): low while any of them is. RS = IO-ADDR0 and R/W = IO-ADDR2
-straight from the bus (PA / PC have bit 0 clear, PC / PD bit 2 set), valid a microcode step before the strobe. An
-OUT to PC or PD and an IN from PA or PB select nothing.
+(PA / PC have bit 0 clear, PC / PD bit 2 set), valid two microcode steps before the strobe, through a 74HCT573 whose
+enable is CS: open while CS is high, holding while it is low. An OUT to PC or PD and an IN from PA or PB select
+nothing.
+
+The latch is there for the IN records. All sixteen end with the port number and -IO-RD dropped in one step, and CS,
+two gates behind the strobe, is still low for up to 80 ns after the port number has gone. Straight from the bus, R/W
+would fall while the chip is still selected - the end of every IN the beginning of a write - and the bus buffer would
+turn round against the chip's data pins for those 80 ns. Held by CS, RS and R/W move only after CS has risen, which
+is the chip's rule (hold 0), and the buffer is off before its direction changes.
 
 | Block | Parts | What they do |
 |---|---|---|
 | Bus | X1 DIN 41612 (the blank card's) | |
 | | 2 x 74HCT138, 74HCT21 | the port strobes and CS, above |
-| | 74HCT245 | D0-D7 to DATA0-7: enabled by CS, direction R/W (the chip's side drives the bus on a read) |
-| | 74HCT14 (or a spare gate) | -RESET buffered to RES and DACK; the spare sections square the oscillator if needed |
+| | 74HCT573 | RS and R/W held while CS is low |
+| | 74HCT245 | D0-D7 to DATA0-7: enabled by CS, direction the latched R/W (the chip's side drives the bus on a read) |
+| | a gate of the PS/2 section's 74HCT08 | -RESET buffered to RES and DACK |
 | | jumper | IRQ (open drain) to the bus -INT, as V2.0's JP3 |
 | Clock | 25.175 MHz oscillator in a socket | the dot clock |
-| | 74F163 | divides by 4 for 2CLK and counts the 16 dots of a display cycle (application note figure 4-1) |
+| | 74F163A | 2CLK (its QB) and the dot number within a memory cycle, in step with the chip's MCYC (section 10b) |
 | Memory | 2 x 74ACT573 | the address latches: MAD0-7, MAD8-15, open while AS is low (MA16-19 need none: section 10b) |
 | | 2 x 128K x 8 static RAM, 55 ns, DIP-32 | the low and the high byte of the frame buffer's word; the footprint takes the 512K part (pin 1 A18, pin 30 A17 instead of CE2: a jumper) |
 | | 2 x 74ACT245 | RAM data to MAD in the data half of a drawing cycle, direction from MRD |
 | | 27C256 EPROM | the font, selected instead of the RAM while the latched MA19 is high; its byte goes to both halves of the word |
 | | 74HCT244 | the EPROM's byte onto the high half |
-| | 74ACT00, 74ACT02, 74ACT04, 74ACT08, 74ACT10, 74ACT11, 74ACT32, 74F74 (section 10b's equations) | -OE, -WE, the buffers' enables, RAM or EPROM, the load |
+| | 74ACT00, 74ACT02, 74ACT04, 74ACT08, 74ACT10, 74ACT11, 2 x 74ACT32, 2 x 74F74, 74F21 (section 10b's equations) | P56, -OE, -WE, the buffers' enable, RAM or EPROM, CHR in the address, the load |
 | Dots | 2 x 74F299 | 16 dots, loaded at the end of the display access, bit 0 out first |
-| | 2 x 74ACT377, 74ACT00 | the control register: the chip's attribute byte (ATR) from MAD0-7 (section 10b) |
-| | 74ACT86 | the two syncs' polarity; XOR of the text and graphics layers |
-| | 74F74, gates of the 74ACT10 and 74ACT02 | blanking by DISP1 in step with the dots; a gate for each gun with its off bit |
+| | 2 x 74ACT273 | the control register: the chip's attribute byte (ATR) taken from MAD0-7, then copied as HSYNC rises (section 10b) |
+| | 74ACT86 | the two syncs' polarity (and NOT MRD, NOT CHR) |
+| | 74F299, half a 74F74, gates of the 74ACT10, 74ACT00, 74ACT32 and 74ACT02 | the graphics dot delayed 8 dots; the two layers mixed; the dot retimed to the dot clock; a gate for each gun with its off bit |
 | | 3 x 470 ohm, DE-15 socket | R, G, B and the syncs to the monitor |
-| Text A (sockets, fitted later) | 3 x 74ACT574, AT27C256R-70, 74F299, 74F74, 74ACT21, 74ACT32 (section 10c) | the two character codes and the raster line latched from the Window's cycle, the character generator addressed by them, its dots shifted and laid over the graphics; the card status bit TEXT says the parts are there |
+| Text A (sockets, fitted later) | 3 x 74ACT574, AT27C256R-70, 74F299, 74F74, 74F21, 74ACT32 (section 10c) | the two character codes and the raster line latched from the Window's cycle, the character generator addressed by them, its dots shifted and laid over the graphics; the card status bit TEXT says the parts are there |
 | PS/2 | ATmega328P, 2 x 74HCT374, 74HCT244, 74HCT74, 16 MHz crystal, 2 Mini-DIN-6, polyfuse, FTDI header | V2.0's section as it is (`embedded/video-ps2`): data on IN PF, commands on OUT PE, FULL / SRC / BUSY in the card status on IN PE with the TEXT bit and the ID 0110 |
 
-46 chips in the netlist with the PS/2 section, 8 of them method A's sockets (section 10c).
+47 chips in the netlist with the PS/2 section, 8 of them method A's sockets (section 10c).
 
 **The PS/2 section on the new ports** (V2.0's nets with the strobes renamed): OUT PE clocks the command latch and
 sets BUSY; IN PE enables the status buffer (a 74HCT244: FULL, SRC, BUSY and TEXT on bits 0-3, bits 7-4 wired 0110);
@@ -360,10 +371,10 @@ reaches -INT through an open-collector gate and the jumper, beside the chip's ow
 against a pull-down, fitted with method A's parts. A 7416 stays for -INT and for the ATmega's reset from the bus
 -RESET, as on V2.0.
 
-**What the netlist still needs** (the items of section 12 "to confirm", in the order they block it): the exact
-gating of -WE, -OE and the '299s' load from MCYC, AS, DRAW, MRD and the divider's count (the application note's
-figures 4-1 to 4-4, read against the manual's timing tables for the 8 MHz part); the 128K and 512K RAMs' pinouts from
-their data sheets; the I/O records' data hold after -IO-WR from the microcode (10 ns wanted).
+**Settled since the first cut** (2026-11-11): the gating of -WE, -OE and the loads (section 10b); the 128K RAM's
+pinout, from the figure in Alliance's data sheet (1 NC, 2 A16, 22 CE, 24 OE, 29 WE, 30 CE2, 31 A15); the I/O
+records, from `test.hex` (section 10d). Still open: whether a 512K x 8 static RAM is to be had in DIP-32, and its
+pinout against the footprint's two extra address pins (1 and 30).
 
 **From the application note's section 6, for those equations.** MCYC is 2CLK halved (the address half, then the data
 half); the note makes an early copy of it with a flip-flop on the oscillator rather than wait for the chip's output.
@@ -372,12 +383,12 @@ load must not happen in a drawing cycle or in a **dummy cycle**: when the chip h
 draw it runs a cycle that looks like a display read (DRAW and MRD high) but gives no AS strobe, and its address is
 0. A flip-flop set by AS and cleared at the end of the cycle tells the two apart; without it the dots of word 0
 would be loaded into the picture. The read buffers need not be held off in display cycles: the chip ignores what is
-on MAD then. The attribute byte is taken with 2CLK gated by HSYNC in the note (a transparent latch); the '273 on
-HSYNC's edge of section 7 is to be checked against that timing.
+on MAD then. The attribute byte is taken with 2CLK gated by HSYNC in the note (a transparent latch); the card
+uses two registers (section 10b).
 
 **Order of work.** (1) The netlist with its own checks (every pin on a net or listed as unconnected, no output tied
-to another, the text-A parts removable as V2.0's graphics parts are). (2) A timing check in the manner of
-`tests/video/v20_timing.py`: the memory cycle and the bus cycle against the parts' numbers. (3) The generator for
+to another, the text-A parts removable as V2.0's graphics parts are): done. (2) A timing check: the memory cycle and
+the bus cycle against the parts' numbers: done, in the simulation (section 10d). (3) The generator for
 the schematic sheets and the unrouted board, from V2.0's (`gen_v20.py`): the 218 mm card, four layers, the layout
 rules of section 10. (4) Routing, DRC, the placement and schematic PDFs, `pcb-check`. (5) The review of the design
 before any order, as V2.0 had (`hardware/cards/video/reviews/v2.0.md`).
@@ -405,25 +416,34 @@ C = NOT MCYC. MCYC is read at the clock edge that ends dot 3 or 7, when it has b
 it can move (it answers the 2CLK edge that this same clock edge makes). After one load QC is the cycle's half, low for
 the address and high for the data, with a flip-flop's edge instead of the chip's 40 ns.
 
-**The strobes.** W = NOR(DRAW, MRD): a drawing write.
+**One timing signal, and it is a flip-flop's.** Whatever acts on an edge by itself - a clock, a latch enable, a write
+pulse - must not be a gate's decode of the counter: where two counter bits change at one clock edge, one rising and
+one falling, such a gate can give a pulse a nanosecond or two wide (section 10d found two). So the counter's bits go
+only to D inputs and to loads, which a clock samples, and one flip-flop on the dot clock makes the edge the rest
+needs: **P56**, D = NAND(QC, NOT QB), high in dots 5 and 6 of every memory cycle whatever the cycle is. The RAM's
+-WE, the attribute register's clock and the start of a read's buffers hang on it.
+
+**The strobes.** W = NOR(DRAW, MRD): a drawing write. (DRAW, MRD, AS and CHR are the pins' levels: DRAW is low in a
+drawing cycle, AS low while the address is on MAD.)
 
 | Signal | Equation | Why |
 |---|---|---|
 | address latches' LE | NOT AS | open while AS is low; the address holds 10 ns after AS rises |
-| RAM -CE / EPROM -CE | MA19 / NOT MA19 | the font is the upper half of the address space |
-| RAM -OE, EPROM -OE | W | reading in every cycle but a write |
-| -WE | a flip-flop on the dot clock, D = NAND(QC, NOT QB, W): low in dots 5 and 6 | 79 ns wide; the data is at the RAM about 41 ns before it rises (25 wanted), and it rises a whole dot before the address or the data can move |
-| the MAD buffers' -OE | a flip-flop on the dot clock, D = DRAW OR NOT QC OR (QA AND QB), then one gate: on in dots 5-7 of a drawing cycle | a read and a write alike: on after the chip has let go of its address on MAD (50 ns into dot 4), off 16 ns after the cycle's last clock edge (a read's data is wanted for 10) |
+| RAM -CE / EPROM -CE | MA19 AND NOT CHR / NOT MA19 OR CHR | the font is the upper half of the address space (CHR: section 10c) |
+| VALID | a flip-flop preset by AS low, cleared by the clock at the end of each cycle (QC falling) | a dummy cycle - a drawing slot with nothing to draw - looks like a display cycle but has no AS |
+| MOE: the RAMs' -OE, the EPROM's -OE and, ORed with the EPROM's -CE, its copy's enable | NAND(VALID, AS, NOT W) | the memories drive the RAM data lines from the end of AS to the end of the cycle, in every cycle that has an AS and is not a drawing write. Every cycle so begins with nothing on those lines for the two dots of AS, which is when MA19 changes: the RAM and the font never hand over to each other with both on. A dummy cycle has them off throughout |
+| the 128K RAMs' CE2 (pin 30, JP4 1-2) | VALID | the RAM leaves the lines a gate sooner at the cycle's end (with the 512K part pin 30 is A17) |
+| -WE | NAND(P56, W): low in dots 5 and 6 of a drawing write | 80 ns wide (45 wanted); the data is at the RAM 48 ns before it rises (25 wanted), and it rises a whole dot before the address or the data can move |
+| the MAD buffers' -OE | a flip-flop on the dot clock, D = NOT DRAW AND QC AND NOT (QA AND QB) AND (P56 OR W), one 74F21 gate after the counter; then one gate: on in dots 5-7 of a drawing write, 6-7 of a drawing read | a read's buffers wait a dot longer: the chip may keep its address on MAD until 50 ns into the data half, which is 10 ns and more into dot 5. Off 16 ns after the cycle's last clock edge (a read's data is wanted for 10) |
 | the MAD buffers' direction | MRD | high: RAM to MAD |
-| VALID | a flip-flop preset by AS low, cleared by the clock at the start of each cycle (QC falling) | a dummy cycle - a drawing slot with nothing to draw - looks like a display cycle but has no AS |
-| the shift registers' load (S1; S0 is high) | QA AND QB AND QC AND DRAW AND VALID | dot 7 of a display cycle: the load is the clock edge that ends it, 16 dots apart in dual access |
-| the font's copy onto the high byte ('244 -OE) | NOT MA19 OR W | the EPROM's byte on both halves of the word, never against a write |
+| the graphics shift registers' load (S1; S0 is high) | QA AND QB AND QC AND (MRD AND DRAW AND VALID AND display on), the last a level, then one 74F21 gate after the counter | dot 7 of a Background cycle with the display on: the load is the clock edge that ends it, 16 dots apart in dual access |
 
-In a display cycle the RAM's address is steady about 5 ns into dot 2 and its data 55 ns later, in dot 3; the load is
-at the end of dot 7, so the RAM has 150 ns to spare and a 70 or 100 ns part would do. The figures of the simulation
-(section 10d) with the chip's delays at their maximum: a drawing read's data is at the chip 102 ns before the
-cycle's end (40 wanted); a write's data is steady at the RAM 40 ns before -WE rises (25 wanted) and the pulse is
-79 ns (45 wanted); the buffers and the chip are never on MAD together for more than 1 ns.
+In a display cycle the RAM's address is steady about 14 ns into dot 2 at the latest and its data 55 ns later, in dot
+3; the load is at the end of dot 7, so for the graphics a 70 or 100 ns part would do (it is method A's character
+word, wanted as dot 4 begins, that asks for 55 ns: section 10c). The figures of the simulation (section 10d) at
+their worst corner: a drawing read's data is at the chip 59 ns before the cycle's end (40 wanted); a write's data
+is steady at the RAM 48 ns before -WE rises, 39 with the parts' rises and falls set against each other (25 wanted),
+and the pulse is 80 ns; the buffers and the chip are never on MAD together for more than 3 ns.
 
 **The shift registers.** Two 74F299, S0 high and S1 the load, their outputs disabled (-OE high) so that the I/O pins
 are inputs on the RAM's data lines. They shift from QA towards QH; QH' of the second is the video. Bit 0 of the word
@@ -432,11 +452,14 @@ reverse order, the high byte on the first), and the first register's QH' feeds t
 
 **The control register (figure T-9).** The attribute byte is on MAD only in the data half of the last memory cycle
 before HSYNC rises: valid 80 ns after that half begins, gone 10 ns after the cycle ends, while HSYNC itself may rise
-up to 70 ns after it. So HSYNC's edge cannot clock it, and nothing outside the chip says which cycle is the last.
-Two 74ACT377 on the dot clock do it: the first takes MAD0-7 at the end of every cycle while HSYNC is low (enable =
-dot 7 AND HSYNC low), so after the last one it holds the attribute byte; the second copies the first at the end of
-every cycle while HSYNC is high. The second is the control register, and it never shows what the first holds in
-between (the syncs' polarity bits must not move during a sync pulse). Its bits, the ATR byte of the chip's DCR:
+up to 70 ns after it. So HSYNC's edge cannot clock it off MAD, and nothing outside the chip says which cycle is the
+last. Two 74ACT273 do it. The first is clocked by P56's end, the edge that begins dot 7, in every cycle: it holds
+whatever was on MAD0-7 then, and in the last cycle of HSYNC that is the attribute byte, steady at least 31 ns
+before the edge and 40 ns after it. The second is clocked by HSYNC's rise (through a gate, for a clean edge): the
+one moment in a line when the first holds the attribute byte, 35 ns and more after the first's clock and most of a
+cycle before its next. The second is the control register. It changes once a line, in the blanking, and never
+shows what the first holds in between (the syncs' polarity bits must not move during a sync pulse). -RESET clears
+both. Its bits, the ATR byte of the chip's DCR:
 
 | ATR bit | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
 |---|---|---|---|---|---|---|---|---|
@@ -445,11 +468,13 @@ between (the syncs' polarity bits must not move during a sync pulse). Its bits, 
 ATR = 00 is white on black with both syncs negative, what 640 x 480 wants: a driver that leaves ATR alone (the V3
 ROM writes DCR = $4000) gets a picture.
 
-**Blanking in step with the dots.** DISP1 (active low) moves up to 70 ns after a cycle begins, somewhere in the first
-two dots of a word. A 74F74 takes it when a word is loaded (clocked by the load signal's rise, in dot 7) and passes
-it on at the next dot clock, so the picture is switched on and off exactly on a word's first dot. Which word it
-belongs to is set by the chip's display skew (DSK in OMR). The dot is NAND(the shift register's output, that
-flip-flop), and each gun is a NOR of it with its off bit, through 470 ohm.
+**Blanking, and a dot exactly a clock wide.** DISP1 (active low) moves up to 70 ns after a cycle begins, but it is
+steady long before dot 7, where the load is decided: a word fetched while DISP1 is high is not loaded, and the shift
+registers, whose serial input is low, run empty behind the last word that was. The picture is so switched on and
+off on a word's first dot with no gate in the dot's path. Which word that is, is set by the chip's display skew
+(DSK in OMR). After the two layers are mixed (section 10c) a flip-flop on the dot clock retimes the dot, so that
+every dot reaches the guns one clock wide whatever the gates before it did. Each gun is a NOR of the retimed dot's
+complement with its off bit, through 470 ohm.
 
 
 ## 10c. Text method A in the circuit (2026-11-11)
@@ -468,8 +493,9 @@ half goes to drawing, as in interleaved access. Three things follow for the card
   64K words (on the 128K part), whatever the line; the graphics screens and the font's copy keep below word $10000.
 - **The text is a cycle behind the graphics, so the graphics wait for it.** The character word of a display cycle is
   read in its second half, 8 dots after the graphics word was loaded, and its glyph must still be looked up. A
-  74ACT164 delays the (already blanked) graphics dot by 8 dots; its two serial inputs are the AND of the dot and
-  display-on, so the blanking travels with it. Both builds have it: the picture sits 8 dots later against the
+  74F299 that only shifts delays the graphics dot by 8 dots (not a 74ACT164: its inputs want the dot held 3 ns
+  after the clock, and the shift register before it may change after 2.7). The blanking is in the dot already: a
+  word not loaded. Both builds have it: with the retiming flip-flop the picture sits 9 dots later against the
   syncs, which the horizontal timing registers take up.
 
 **The text parts** (eight sockets, empty on the first build; the netlist's `TEXT_A`):
@@ -481,11 +507,13 @@ half goes to drawing, as in interleaved access. Three things follow for the card
 | AT27C256R-70 | the character generator: address = code x 16 + line (A12 CUD1, A13 the second font, A14 CUD2), a byte = the line's 8 dots, bit 0 the left-hand one |
 | 74F299 | the text's dots, loaded 8 at a time |
 | 74F74 | A: the three latches' clock, WCK; B: WPH, "the cycle before this one was a Window cycle" |
-| 74ACT21, 74ACT32 | dot 3 of a Window cycle; the shifter's load |
+| 74F21, 74ACT32 | dot 3 of a Window cycle and the shifter's load (dot 7), each one gate after the counter; "a Window cycle or the one after it" |
 
-- The RAM's data in a Window cycle is steady by about 142 ns (address valid 70 ns after the chip's clock edge, the
-  latch, 55 ns of RAM), before the cycle's dot 4. WCK rises there (a flip-flop on the dot clock, D = dot 3 AND a
-  Window cycle) and clocks the codes and the line in, 20 ns to spare.
+- The RAM's data in a Window cycle is steady by 157 ns at the latest (CHR 70 ns after the chip's clock edge, which
+  is itself 11 ns after the dot clock's; two gates to the RAM's chip enable; 55 ns of RAM), as dot 4 begins. WCK
+  rises there (a flip-flop on the dot clock, D = dot 3 AND a Window cycle) and clocks the codes and the line in:
+  7.7 ns to spare with every part at its maximum, 2.9 if WCK's flip-flop is at its fastest as well. It is the
+  card's smallest margin, and the reason for a 55 ns RAM.
 - The left code drives the generator from then to the cycle's end, about 139 ns: a 70 ns EPROM with room, a 120 ns
   one just. Its dots load at the end of the Window cycle. The right code drives the generator through all of the
   next cycle (WPH) and loads at its end. So a character word read in display cycle N is on the screen through
@@ -511,39 +539,111 @@ half goes to drawing, as in interleaved access. Three things follow for the card
   byte, two to a word, the left one the low byte; 16 lines a cell (RA0-RA3). The card status bit TEXT (jumper JP3)
   says the parts are fitted.
 
-## 10d. The netlist simulated (2026-11-11)
+## 10d. The netlist simulated, and the timing check (2026-11-11)
 
 `tests/video/v30_netsim.py` (in `make check`) runs `v30_netlist.py` as a circuit, gate for gate, with delays in
 nanoseconds. Every 74xx part, the RAMs and the EPROMs are models written from the parts' pinouts and function tables,
 wired by the netlist's nets; the chip is a model of its memory side from the manual's figures (it answers the 2CLK the
-card gives it with MCYC, AS, the address and data, MRD, DRAW, CHR, the raster line, HSYNC and DISP1, each after its
-delay) and runs a script of memory cycles. Each script runs with the chip's delays at their maximum and near their
-minimum, and from both phases the dot counter can start in.
+card gives it with MCYC, AS, the address and data, MRD, DRAW, CHR, the raster line, HSYNC, DISP1 and the cursors, each
+after its delay) and runs a script of memory cycles. On the bus side the test bench is the machine: it drives the
+port number, the data and the strobes as the microcode's OUT and IN records do, and those records are read from
+`test.hex` to see that they do.
+
+**The delays are the data sheets'**: each part's minimum and maximum over temperature at 5 V +- 0.5 V into 50 pF, a
+rising and a falling output apart. TI's SN74F163A, SN74F74, SN74F299, SN74F21, SN74ACT00 / 04 / 08 / 10 / 11 / 32 /
+86 / 245 / 573 / 574, CD74ACT02 and CD74ACT273; Alliance's AS6C1008-55; Atmel's AT27C256R. The 74HCT parts of the bus
+side see only the 2 us strobes and have one generous figure (5 to 40 ns). The chip's delays are the manual's maximums
+and, for a fast chip, figures near its minimums - assumed, since the manual gives the hold times (10 ns) and no other
+minimum. Each script runs at these corners:
+
+| Corner | What it is for |
+|---|---|
+| the chip slow or fast, the card's parts all at their maximum or all at their minimum: four, each from both phases the dot counter can start in | set-up, hold, pulse widths, and the handovers on the shared lines |
+| the parts' rising outputs at their minimum and their falling ones at their maximum, and the other way round, with the chip slow and fast: four | what a gate makes of two signals that change at one clock edge: a runt pulse on a clock that the straight corners can miss shows here |
+
+**What is checked**
 
 - **Interleaved access, text sockets empty:** the counter falls into step; a write reaches both RAMs and nothing else;
-  a read is back in time; the font's byte reads on both halves; every display word leaves the shift registers bit 0
-  first, 8 dots later after the delay line, and on the guns; dummy and drawing cycles load nothing; the control
-  register takes the attribute byte and does not move while HSYNC is low; colours and sync polarity follow it.
+  a read is back in time; the font's byte reads on both halves, also with a dummy cycle after it; every display word
+  leaves the shift registers bit 0 first, 8 dots later after the delay line, and on the guns a dot clock after
+  that; a word fetched with the display off, a dummy cycle and a drawing cycle load nothing; the control register
+  takes the attribute byte as HSYNC rises and not before; colours and sync polarity follow it.
 - **Superimposed access, sockets fitted:** a character word comes out as its two glyphs, left code first, exactly under
   the graphics word of the same display cycle; a word written to the character screen lands in the RAM's top 64K
   words whatever the raster line; OR and XOR; the second font; the cursor on the left or the right character.
-- **The ports:** only OUT PA / PB and IN PC / PD select the chip, with the bus buffer the right way round.
-- **Everywhere:** no two outputs on a net at once (1 ns at a handover is the most), every register's set-up and hold,
-  the RAM's write pulse and data set-up.
+- **The ports:** only OUT PA / PB and IN PC / PD select the chip; RS and R/W are steady 50 ns before CS and until it
+  has risen; CS lasts three 2CLK cycles; an OUT's byte is at the chip 40 ns before CS rises and 10 ns after; an IN's
+  byte is on the bus when the record takes it; the chip and the bus buffer are never both on the chip's data pins.
+- **Everywhere:** every flip-flop's, register's and shift register's set-up and hold; the RAM's write pulse, data
+  set-up and address; no pulse shorter than 5 ns on any clock, clear, preset, latch enable or -WE; and, in the four
+  straight corners, no two outputs on a net for more than 3 ns at a handover. A memory counts as on from its
+  low-impedance time (10 ns after its chip enable, 5 ns after its output enable), not from when its data is good.
 
-Eight wiring faults put in on purpose (two data bits swapped, a latch enable inverted, a gate input left off, ...)
-are each caught. The smallest margins with every delay at its maximum: 4.7 ns at the buffers' enable flip-flop, 8.2 ns
-at the shift registers' load, 12.4 ns at the character latches, 14.7 ns of RAM data set-up.
+Seventeen wiring faults put in on purpose (the latch taken out of RS and R/W, each term of MOE left off, a read's
+buffers on a dot early, a register on the wrong edge of P56, -WE in every cycle, ...) are each caught.
 
-**What it found, and what changed for it:**
+**The margins**, the smallest over every corner (in brackets: with the rises and falls set against each other):
+
+| | Wanted | To spare |
+|---|---|---|
+| a drawing read's data at the chip | 40 ns before the cycle's end | 19 ns |
+| a write's data at the RAM before -WE rises | 25 ns | 23 ns (14) |
+| the write pulse | 45 ns | 35 ns |
+| the counter's -LOAD before its clock | 11.5 ns | 7.7 ns |
+| P56's D before its clock | 3 ns | 7.2 ns |
+| the graphics shift registers' load before their clock | 8.5 ns | 14.7 ns |
+| the attribute byte at the first register | 2 ns | 34 ns (29) |
+| two outputs on at a handover | 3 ns at most | 2.8 ns: the MAD buffers ending a read against a fast chip's next address |
+| text: the character codes at their latches | 2.5 ns | 7.7 ns (2.9) |
+| text: the shifter's load; the glyph's dots | 8.5 ns; 5.5 ns | 14.7 ns; 64 ns |
+| the bus, at a step of 500 ns (a 4 MHz CPU clock): CS low | 477 ns | 23 ns |
+| RS and R/W before CS; an OUT's byte before CS rises; an IN's byte before it is taken | 50; 40 ns; - | 955; 415; 300 ns |
+
+**What it found, and what changed for it**
+
+*The first run (logic, the delays guessed):*
 - The MAD buffers' enable was three gates deep from the counter: a read's data reached the chip only 5 ns inside its
   set-up, and the buffers were still on up to 18 ns into the next cycle, against the chip's address. It is now a
-  flip-flop on the dot clock (the row above), and reads and writes share one window.
+  flip-flop on the dot clock.
 - The text dot passed one gate more than the graphics dot and arrived after the dot's end. TEXTON now holds the text
   shifter clear instead of gating its output.
 
-The delays are the parts' data-sheet maximums as far as they are known; the timing check against the parts actually
-bought uses the same program with their numbers.
+*The timing check (the data sheets' numbers, eight corners):*
+- **The parts themselves.** A 74ACT gate is 10 ns at its slowest, not 8: the buffers' enable and the two loads are
+  now decoded by one 74F21 gate each. No data sheet or DIP source was found for the 74ACT377: the control register is two 74ACT273
+  with a clock each instead of an enable. The 74ACT164 delay line wants its input held 3 ns after the clock, and the
+  74F299 before it may change after 2.7: the delay line is a 74F299. The blanking gate left the dot's path (a word
+  with the display off is not loaded), and the dot is retimed by a flip-flop.
+- **Two clocks were decodes of the counter**: the control register's, "dot 7 while HSYNC is low" and "dot 3 while it
+  is high". The counter's outputs rise faster than they fall (8.5 ns against 11 at most), so where one bit rises as
+  another falls each gate showed a pulse of 1 to 1.5 ns at a clock edge where it should have stayed low, and the
+  first register lost its hold time on MAD. The first register is now
+  clocked by P56, a flip-flop's edge, and the second by HSYNC itself; the simulation looks for runt pulses on every
+  such input.
+- **A read's buffers met the chip's address.** The chip may keep its address on MAD until 50 ns into the data half;
+  with the card's parts at their fastest the buffers came on 43 ns into it: 6.9 ns of both. A read's buffers now come on
+  a dot later. The read's data is still 59 ns ahead of the cycle's end, where it was 99.
+- **The RAM and the font met on the RAM data lines.** Both had their outputs on in every cycle but a write, chosen
+  by MA19 alone; counted from their low-impedance time, the RAM came on while the font's copy (a 74HCT244, 40 ns to
+  let go) was still on: up to 40 ns of both after every read of the font. MOE now keeps all three off from the end
+  of a cycle to the end of the next AS.
+- **Every IN from the chip ended as the start of a write.** The microcode's IN records drop the port number in the
+  same step as -IO-RD; CS follows the strobe two gates later, so R/W, straight from the bus, fell while the chip was
+  still selected, and the bus buffer turned round against it for up to 80 ns. RS and R/W are now held by a latch
+  that CS closes.
+
+**What it cannot say, for the bench**
+
+- The chip's minimums. Two margins rest on them: the 2.8 ns above (the chip's next address is taken to come no
+  sooner than 15 ns after its clock edge; it cannot come before its own read's 10 ns of hold are over), and the
+  start of the dead time on the RAM data lines (MOE goes off at most 39 ns after the cycle's last clock edge; MA19
+  holds 10 ns after the chip's clock edge, which is up to 11 ns after that, and a memory needs 5 to 10 ns from its
+  enables before it drives: 2 ns to spare with a fast chip and slow gates).
+- The end of an IN on the decoders. The port number and -IO-RD leave the bus in one step; if the port number's bits
+  do not fall together a decoder can show a pulse of a few nanoseconds on another port's strobe (after IN PF, on IN
+  PD's, which is the chip's CS). Every card that decodes ports lives with this, the I/O card's UART among them, and
+  the chip asks for 477 ns of CS; to look at with a scope.
+- With the 512K RAMs pin 30 is A17, not CE2: the dead time is then MOE's alone.
 
 ## 11. Software, in the order it can be built
 
@@ -587,9 +687,13 @@ bought uses the same program with their numbers.
 **To decide**
 - A font with lower case: the first image is the V1.3 card's 64 glyphs, each line doubled into the 8 x 16 cell.
 
-**To confirm before a schematic**
-- The I/O records' data hold against the chip's 10 ns, from `test.hex`.
-- The RAM's write pulse and the '299's maximum clock, from the parts' data sheets; the 128K and 512K RAMs' pinouts.
-- The superimposed mode's exact load points for the two words (the manual's figure 2.1, the application note's 4-4).
+**Settled by the timing check (2026-11-11, section 10d)**
+- The I/O records, from `test.hex`: the data is on the bus a step after -IO-WR; an IN drops the port number with its
+  strobe, which the latch on RS and R/W answers.
+- The RAM's write pulse (80 ns against 45) and the 74F299's clock (25.175 MHz against 70); the 128K RAM's pinout.
+- The superimposed mode's load points for the two words, as the manual's figure 2.1 (c) gives them.
+
+**To confirm**
+- Whether a 512K x 8 static RAM is to be had in DIP-32, and its pinout.
 - How the pattern RAM is walked in a filled area (which way PPY steps), on the chip: the manual's text and its figure
   do not settle it. A solid fill does not depend on it.
