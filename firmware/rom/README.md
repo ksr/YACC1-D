@@ -25,6 +25,17 @@
   writing, `-P` sets it again afterwards, so on the machine a store into $E000-$FFFF (review M2: the v1.3 card has
   no write-protect jumper) is ignored by the chip. Nothing in the tree writes the ROM in place. Then read back and
   compare: `minipro -p AT28C64B -r /tmp/rb.bin && cmp /tmp/rb.bin firmware/rom/shipped/rom.bin`.
+- **2026-11-11 (branch `video-v3` only): `shipped/rom` and `rom.bin` are `ROM 2026-11-11 V3` — NOT BURNED, and not
+  for the machine as it is: it drives the video card V3 (the HD63484 ACRTC, a design note: `docs/cards/video-v3.md`),
+  not the V1.0 card in the machine.** The monitor's video unit finds the card by its ID on `IN PE` ($6x), starts the
+  chip for 640 x 480 (`V I`: the registers, the font's picture copied from the card's EPROM under the screen), draws
+  80 x 30 characters with one graphic copy each and scrolls with a copy command; every command waits for the chip's
+  write FIFO to be empty. The card's PS/2 keyboard is a second console input beside the UART; the mouse is turned
+  off and a mouse byte dropped. `V B`, `V F`, `V D` are gone, `V X` sends bytes to the chip. Monitor half 4,010
+  bytes (4,051 on `video-v2`); the vectors at $FFBC-$FFFF are where they were; BASIC unchanged.
+  `docs/programming/MONITOR.md` section 11b. **MD5 (rom.bin) 0eefe929dacc68f44b36bca4dff72597**;
+  `tools/verify_firmware.py`: FIRMWARE VERIFIED. On a machine without the V3 card it finds no video card and runs on
+  the UART.
 - **2026-11-10 (branch `video-v2` only): `shipped/rom` and `rom.bin` are `ROM 2026-11-10 V2` — NOT BURNED, and not
   for the machine as it is: it drives the video card V2.0 (not built), not the V1.0 card in the machine.** The monitor's
   video unit finds the card by its ID on `IN PC` ($5x), takes the width from its DOTS jumper (`IN PC` bit 0: 80 x 24 or

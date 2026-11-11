@@ -533,8 +533,8 @@ void print_usage(const char *progname) {
     printf("  -V           Video card: print the screen (and the CRTC registers) on stderr at exit\n");
     printf("  -W           Video card: log CRTC register writes on stderr\n");
     printf("  -N           No video card: $D000-$DFFF reads $FF, writes ignored\n");
-    printf("  (environment) the video card V2.0 by default on this branch (ports PA-PE, graphics window $D800),\n"
-           "               Y1VID_CARD=v1.0 the V1 card, v3 the V3 (HD63484); Y1VID_KEYS, Y1VID_MOUSE, Y1VID_KBD=stdin,\n"
+    printf("  (environment) the video card V3 by default on this branch (the HD63484 on ports PA-PD, 640 x 480),\n"
+           "               Y1VID_CARD=v1.0 the V1 card, v2.0 the V2.0; Y1VID_KEYS, Y1VID_MOUSE, Y1VID_KBD=stdin,\n"
            "               Y1VID_DOTS, Y1VID_TEXTONLY, Y1_CLOCK:\n"
            "               software/videomodel.h\n");
 }

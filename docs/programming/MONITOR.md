@@ -257,7 +257,8 @@ echo the machine produces. Under the interpreter the `0` command exits; under uc
 
 ## 11. The video unit (2026-09-25)
 
-**On the branch `video-v2` (since 2026-11-10) the unit drives the video card V2.0 instead of the V1 cards: section 11a.
+**On the branch `video-v2` (since 2026-11-10) the unit drives the video card V2.0 instead of the V1 cards: section 11a;
+on `video-v3` (since 2026-11-11) the V3: section 11b.
 This section is the V1 cards' unit, the ROM on `main` and in the machine.**
 
 The video card ([`docs/cards/video.md`](../cards/video.md): an MC6845 CRTC and an IDT7134 dual-port RAM in the $D000
@@ -388,3 +389,42 @@ jumper. `tests/video/emu.py` runs the unit on both emulators (case `keyboard`: t
 
 Not yet in the ROM: graphics (drawing in direct mode, GFX-ON switched in vertical blanking, refused in 6-dot mode),
 starting the screen at reset (`VIDAUTO` is still 0).
+
+## 11b. The video unit for the video card V3 (2026-11-11, branch `video-v3`)
+
+`ROM 2026-11-11 V3` (not burned; for a machine with the V3 card, [`docs/cards/video-v3.md`](../cards/video-v3.md), a
+design note: nothing is built). The card is the HD63484 ACRTC on I/O ports and a 640 x 480 picture: there is no text
+RAM, and the chip draws. The unit keeps section 11's shape - `VIDPRES` / `VIDMIR` and the variables at $0FF0-$0FF9,
+CHAROUT's mirror, `vputc`'s control characters, the `V` command, `VIDCTL` at $FFBC - on a new driver. Monitor half
+4,010 bytes.
+
+| | |
+|---|---|
+| Ports | PA `OUT` the chip's address register; PB `OUT` its data (a register, or the write FIFO while the address register is 0); PC `IN` its status (bit 0 WFE: the write FIFO empty); PD `IN` its data (the read FIFO); PE `IN` the card's status (bit 0 FULL, 1 SRC, 2 BUSY, 7..4 = 0110 the ID) and `OUT` the PS/2 command; PF `IN` the PS/2 byte |
+| Detection (`vprobe`) | `IN PE` reads $6x. A card found has its mouse turned off (PS/2 command 5) |
+| `V I` (`vinit`) | the chip's registers a byte at a time (`vregs`: 640 x 480 at 60 Hz, 2CLK = the dot clock / 4, interleaved access, the Base screen 40 words a line from word 0), then through the FIFO the origin (ORG: the bottom-left of the screen) and the font - two masked copies (SCPY) from the card's EPROM into the frame buffer under the screen, a picture of the 96 glyphs of $20-$7F - then clear and home |
+| The screen | 80 x 30 characters of 8 x 16 dots. `VROW` / `VCOL`, and `VYTOP` ($0FF6, a word) = the Y of the cursor row's top line (the chip's Y runs up: 479 for row 0, 16 less a row) |
+| A character (`vpchar`) | one command of 10 bytes: AGCPY $ED00, the glyph's place in the picture - x = (code and $1F) x 8, y = -1, -17 or -33 for $20-$3F, $40-$5F, $60-$7F - and 7, -15. The copy leaves the chip's pointer at the next cell, so only a new line, a backspace or `V W` sends a move (AMOVE, `vmove`). Lower case is drawn as the font has it (today the upper case's shapes) |
+| Scroll (`vscroll`) | the chip copies the screen up a row (CPY, 40 x 464 words) and clears the last (CLR): three packets, some 35 ms of the chip's time |
+| The FIFO (`vwfe`, `vsend`) | the chip is busy for milliseconds on a clear or a scroll and its write FIFO holds 16 bytes; a byte more is lost. Every command goes after `IN PC` shows the FIFO empty, in packets of at most 16 bytes |
+| Console input | the UART and the PS/2 keyboard as in section 11a, on PE / PF; `kbst` drops a byte from the mouse (SRC = 1) |
+
+| `V` command | |
+|---|---|
+| `VS`, `VP`, `VC`, `VM1` / `VM0` | as in section 11 (`VS`'s `CRTC` is 01 once the chip is started; `COLS 50`) |
+| `VI` | start the chip, the font, clear, home |
+| `VW rr cc text` | the cursor to row rr (00-1D), column cc (00-4F) and the text there, drawn like console output |
+| `VR rr [vv]` | write the chip's register byte rr, or read it (`VR85` is HDW's byte; `VR00` reads the read FIFO) |
+| `VX hh hh ..` | bytes to the chip's write FIFO: a command's words, each high byte first (`VX 80 00 00 10 01 CF` is AMOVE 16, 463). Turns mirroring off |
+
+`VW`, `VR` and `VX` are for the bench with the mirror off: the mirror's own commands would fall between theirs. `VB`,
+`VF` and `VD` are gone with the text RAM.
+
+**On the emulators** the V3 card is the default on this branch (`Y1VID_CARD=v1.0` / `v2.0` for the others). The model
+keeps the chip busy for each command's time and loses a byte written to a full FIFO, so a driver without its waits
+fails there as on the chip; `-V` prints the screen read back as text. `tests/video/emu.py` runs the unit on both
+emulators; `tests/video/v30/run.py` the card and the chip.
+
+Not yet: a cursor on the screen (the chip's cursor outputs are not modelled; the driver draws none), starting the
+screen at reset (`VIDAUTO` 0), graphics from BASIC and Y1/OS, a font with lower case, `software/y1dbg`'s view of this
+screen.

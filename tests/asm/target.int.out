@@ -24,7 +24,7 @@ BOOT FROM CF
 cherry 40 red
 fig 7 purple
 /s> 
-mon.img: 4051 bytes, 289 labels, load f000 exec f000
+mon.img: 4010 bytes, 283 labels, load f000 exec f000
 /s> 
 isa.img: 790 bytes, 40 labels, load 3000 exec f000
 /s> 
@@ -54,8 +54,8 @@ BOOT FROM CF
     424  hello.img  @5000
   12969  isa.asm  @B000
    2216  isa.img  @3000
-  11186  mon.img  @F000
-  49636  monitor.asm  @B000
+  11080  mon.img  @F000
+  47287  monitor.asm  @B000
     624  q.img  @3000
     549  quirks  @3000
    3325  quirks.asm  @B000

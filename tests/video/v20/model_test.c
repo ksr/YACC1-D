@@ -44,9 +44,8 @@ int main(void) {
     vid_write(0xD800, 14, mem); vid_write(0xD802, 0x2A, mem); vid_write(0xD800, 14, mem);
     CHECK(vid_read(0xD802, mem) == 0x2A, "v1.0: R14 through $D802");
 
-    /* V2.0 (the default on the branch video-v2): PA-PF, the status, the window */
-    fresh(NULL, NULL, NULL, NULL, NULL);
-    CHECK(vid2.card == 2, "the default card is V2.0");
+    /* V2.0: PA-PF, the status, the window */
+    fresh("v2.0", NULL, NULL, NULL, NULL);
     for (int p = 0; p < 16; p++) CHECK(vid_io_owns(p) == (p >= 10), "v2.0 port %X", p);
     CHECK(at(0, 0xC) == 0x50, "status %02X, want 50", at(0, 0xC));
     CHECK(at(0, 0xA) == -1 && at(0, 0xF) == -1, "PA / PF read float");

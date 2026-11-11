@@ -29,7 +29,9 @@
   (`Y1VID_CARD=v3`) - the font EPROM's image against its generator, `model_test.c` (the HD63484's registers, FIFOs
   and commands with the manual's examples, the keyboard and the mouse), and `v30card.asm` through the monitor on both
   emulators: a YACC1 program starts the chip, writes "V3 OK" from the font EPROM and draws; the frame buffer is
-  compared dot for dot with the same scene drawn in Python.
+  compared dot for dot with the same scene drawn in Python. On the branch `video-v3` `emu.py` runs the ROM's V3
+  video unit (the 80 x 30 screen read back from the picture, the scroll, the keyboard), and `tests/y1dbg` leaves out
+  its checks of the screen's contents (y1dbg shows the 6845 cards' screen only).
 - `basic/` — `test`, a small BASIC program (LET/FOR loops) used to exercise the interpreter.
 - `compiler/` — the C compiler's test programs (`*.c` + expected `.out`/`.in`/`.err`) and `run.py`, which compiles each with
   `software/compiler/y1cc.py --boot`, assembles it and runs it on `emulator -x`; `--oracle` regenerates the expectations with

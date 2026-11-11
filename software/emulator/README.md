@@ -17,5 +17,6 @@ the CRTC registers and the clocks every instruction adds (`../opclocks.h`), the 
 `Y1VID_CARD=v3` (2026-11-11) is the video card V3 of `docs/cards/video-v3.md`: the HD63484 ACRTC on ports PA-PD
 (`../acrtcmodel.h`: its registers, FIFOs and the commands a console and simple drawing need), a 640 x 480 frame buffer
 with the font EPROM, the PS/2 keyboard and mouse (`Y1VID_MOUSE`) on PE / PF; `-V` prints the screen read back as text.
+On the branch `video-v3` the V3 card is the default and the ROM drives it (`docs/programming/MONITOR.md` 11b).
 
 Load `firmware/rom/shipped/rom` (BASIC at $E000, monitor at $F000) to run what the machine runs.

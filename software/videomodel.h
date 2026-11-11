@@ -28,7 +28,7 @@
  *
  * 2026-11-10: the video card V2.0 (docs/cards/video-v2.md; hardware/cards/video/kicad/v2.0, not built), chosen in the
  * environment: Y1VID_CARD=v2.0, or v1.0 for the card above. On the branch video-v2 the default is v2.0 (its ROM drives
- * the V2.0 card); on main it is v1.0. On V2.0 the block holds the text RAM at $D000-$D7FF as
+ * the V2.0 card), on video-v3 the V3 card (below), on main v1.0. On V2.0 the block holds the text RAM at $D000-$D7FF as
  * before and the GRAPHICS WINDOW at $D800-$DFFF: 2K of the 62256's 32K, at CPAGE * 16K + PLANE * 2K + ADDR10..0. Every
  * register is on an I/O port (vid_io_read / vid_io_write; IC30 decodes PA..PF):
  *   PA  OUT the 6845's address register             PB  IN/OUT the 6845's data register (R14-R17 read back)
@@ -151,7 +151,7 @@ static const char *v2_mouse_packet(const char *m) {
 
 static void vid_init(void) {
     const char *e = getenv("Y1VID_CARD");
-    vid2.card = 2;                        /* the branch video-v2: the V2.0 card unless Y1VID_CARD says v1.0 */
+    vid2.card = 3;                        /* the branch video-v3: the V3 card unless Y1VID_CARD says v1.0 or v2.0 */
     if (e && *e) {
         if (!strcmp(e, "v2.0") || !strcmp(e, "2.0") || !strcmp(e, "2")) vid2.card = 2;
         else if (!strcmp(e, "v1.0") || !strcmp(e, "1.0") || !strcmp(e, "1")) vid2.card = 1;

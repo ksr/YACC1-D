@@ -67,8 +67,12 @@ def scene():
 def run(emu, img, state):
     cmd = [emu, "-x", "-m", "-V", "-l", "400000000" if emu.endswith("y1ucemu") else "50000000"] + \
         (["-E", MON_EXIT] if emu.endswith("y1ucemu") else [])
-    e = dict(os.environ, Y1VID_CARD="v3", Y1VID_KEYS="k", Y1VID_MOUSE="3,-2,2", Y1VIDSTATE=state)
-    r = subprocess.run(cmd, input=img + b"G3000" + b"0", capture_output=True, env=e, timeout=1800)
+    # (branch video-v3: the ROM's console is the V3 card's keyboard too, and it turns the mouse off. So everything is
+    # typed on the keyboard - the console, Y1VID_KBD=stdin: the image, G3000, the key k, the monitor's 0 - and the
+    # mouse's packet waits until the program turns the mouse on. The fast emulator with the keyboard takes the ROM's
+    # machine path, where 0 is the stop loop: its run ends at the instruction limit)
+    e = dict(os.environ, Y1VID_CARD="v3", Y1VID_KBD="stdin", Y1VID_MOUSE="3,-2,2", Y1VIDSTATE=state)
+    r = subprocess.run(cmd, input=img + b"G3000" + b"k" + b"0", capture_output=True, env=e, timeout=1800)
     out, err = r.stdout.decode("latin1").replace("\r", ""), r.stderr.decode("latin1")
     if VERBOSE: print(out[out.find("V3 CARD"):] + "\n" + "\n".join(l for l in err.splitlines() if l[:1] in "v|+"))
     i = out.find("V3 CARD")

@@ -32,9 +32,10 @@ edits; y1ucemu -G REV looks each step's decode up there (docs/cards/video.md sec
   a0fix    the fix the document warns against (/A0 tied high): crtcreg's read of $D801 makes the 6845 and the JP1
            latch drive DATA0..7 together - contention events - and the latch reads 00 instead of FF
 
-2026-11-10 (branch video-v2): the emulators' default card here is the V2.0 and the ROM drives it; these runs ask for
-the V1.0 card (Y1VID_CARD=v1.0, -G's card), so the monitor's video unit finds no card in them and the bring-up
-programs carry the comparison.
+2026-11-10 (branch video-v2), 2026-11-11 (video-v3): the emulators' default card here is the V3 and the ROM drives
+it; these runs ask for the V1.0 card (Y1VID_CARD=v1.0, -G's card), so the monitor's video unit finds no card in them
+- its commands (the V3 ROM's: VW, VR, VX, VI, VM) must leave the V1 card alone - and the bring-up programs carry the
+comparison.
 """
 import os, re, sys, shutil, subprocess, tempfile
 
@@ -81,16 +82,14 @@ def disk_copy(tag):
     return os.path.join(TMP, tag + ".img")
 
 
-WRITE = ("VC\nVW0102 hello, world\nVB D0A0 41 42 43\nVW1700 bottom row [x]\nVW1800 no\nVR0E 12\nVR0E\nVF2E\nVD\n"
-         "VB C000 41 00\nVW0050 0\n0")
+WRITE = "VC\nVW0102 hello, world\nVW1D00 bottom row [x]\nVW1E00 no\nVR8C 12\nVR8C\nVX 80 00 00 10 01 CF\nVW0050 0\n0"
 OS = ("O\nvideo\nvideo init\nvideo on\necho first\nvideo clear\necho mirrored line\nvideo off\necho not on the screen\n"
       "video -h\nvideo bogus\nexit\n0")
 SCENARIOS = [                                            # name, console input, options, environment, run to -E, Y1/OS disk
     ("present", b"VS\nVC\nH\n0", [], None, True, False),
     ("write", WRITE.encode(), [], None, True, False),
-    ("write2", b"VC\nVW0102 hello, world\nVB D0A0 41 42 43\nVW1700 bottom row [x]\n0", [], None, True, False),
     ("mirror", b"VI\nVM1\nH\nH\nVM0\nVS\n0", [], None, True, False),
-    ("vcmds", b"VS\nVI\nVR0E 12\nVR0E\nVW0000 HELLO\nVW1700 LAST ROW\nVM1\nVS\nH\nVM0\nVS\nVD\n0", ["-W"], None, True, False),
+    ("vcmds", b"VS\nVI\nVR85\nVW0000 HELLO\nVW1700 LAST ROW\nVM1\nVS\nH\nVM0\nVS\n0", ["-W"], None, True, False),
     ("os", OS.encode(), [], None, True, True),
     ("vram", img("vram") + b"0", [], None, True, False),
     ("crtcreg", img("crtcreg") + b"0", [], None, True, False),

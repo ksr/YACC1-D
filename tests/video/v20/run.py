@@ -12,8 +12,8 @@
    Each run checks the status port, the 6845 through PA/PB, the 16 plane/page pairs of the window, VSYNC's pulse and
    frame in polls (against the frame's clocks and the poll loop's clocks from software/opclocks.h), DE's share of
    256 polls (55% of the time; 30-75% allowed: the poll loop beats against the 54 or 40.5 clocks of a scan line),
-   the program loaded and its three keys typed on the PS/2 keyboard (the console, Y1VID_KBD=stdin: the V2.0 ROM's
-   console input), three keys from Y1VID_KEYS, and the -V line; int and uc must agree.
+   three keys from Y1VID_KEYS (on the branch video-v3 the ROM drives the V3 card, so the monitor is on the UART
+   here), and the -V line; int and uc must agree.
 3. tools/vidsim.py render draws a V2.0 state file (Y1VIDSTATE) with its graphics layer.
 """
 import os, re, sys, shutil, subprocess, tempfile
@@ -45,15 +45,13 @@ def build(d):
 
 
 def run(emu, img, env, state=None):
-    # (the fast emulator with the keyboard takes the ROM's machine path: its 0 command ends in the stop loop, so the
-    # run ends at the instruction limit)
-    cmd = [emu, "-x", "-m", "-V", "-l", "400000000" if emu.endswith("y1ucemu") else "20000000"] + \
-        (["-E", MON_EXIT] if emu.endswith("y1ucemu") else [])
-    # (2026-11-10, the V2.0 ROM: the monitor reads the keyboard too, so the program's three keys are typed after G3000
-    # on the console, which is the keyboard (Y1VID_KBD=stdin): the image, G3000, H i CR, 0 arrive in that order)
-    e = dict(os.environ, Y1VID_CARD="v2.0", Y1VID_KBD="stdin", **env)
+    cmd = [emu, "-x", "-m", "-V", "-l", "400000000"] + (["-E", MON_EXIT] if emu.endswith("y1ucemu") else [])
+    # (branch video-v3: the ROM drives the V3 card and does not know this one, so the monitor is on the UART - the
+    # console - and the program's three keys come from Y1VID_KEYS. The ROM's probe for a V3 card is an IN PE, which
+    # on this card is the keyboard's data: it takes the first byte waiting, so one stands in front for it)
+    e = dict(os.environ, Y1VID_CARD="v2.0", Y1VID_KEYS="\\x00Hi\\r", **env)
     if state: e["Y1VIDSTATE"] = state
-    r = subprocess.run(cmd, input=img + b"G3000" + b"Hi\r" + b"0", capture_output=True, env=e, timeout=1800)
+    r = subprocess.run(cmd, input=img + b"G3000" + b"0", capture_output=True, env=e, timeout=1800)
     out, err = r.stdout.decode("latin1").replace("\r", ""), r.stderr.decode("latin1")
     if VERBOSE: print(out[out.find("V2.0 CARD"):] + "\n" + "\n".join(l for l in err.splitlines() if l.startswith("video:")))
     res = dict(re.findall(r"^(STATUS|CRTC|GFX|VSYNC|DE|KEYS) (.*)$", out, re.M))
@@ -93,7 +91,7 @@ def main():
             vs = [int(x, 16) for x in r.get("VSYNC", "0 0").split()]
             de = int(r.get("DE", "0"), 16)
             ok = r["done"] and r.get("STATUS") == status and r.get("CRTC") == "15 A5" and r.get("GFX") == gfx and \
-                r.get("KEYS") == "48 69 0D 01" and abs(vs[0] - pulse) <= 2 and abs(sum(vs) - frame) <= 3 and \
+                r.get("KEYS") == "48 69 0D 00" and abs(vs[0] - pulse) <= 2 and abs(sum(vs) - frame) <= 3 and \
                 0.3 < de / 256 < 0.75 and r["vline"].startswith("video: V2.0 control 00")
             check("%s, %s" % (name, tag), ok, "%r; VSYNC want ~%.1f / ~%.1f polls" % (r, pulse, frame))
         a, b = got["int"], got["uc"]

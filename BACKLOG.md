@@ -334,8 +334,13 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   WFE fails here as on the chip; and the font as a picture of 96 glyphs the ROM copies under the screen (two masked
   copies from the EPROM), each character then one graphic copy (AGCPY). Not modelled yet: circles, ellipses, arcs,
   PAINT, PTN and the DMA transfers (each sets CER and says so), character screens (method A), the cursors, interrupts; `software/y1dbg` shows
-  the 6845 cards' screen only. **Next: the ROM's console driver for V3 on `video-v3` (method B: a glyph by AGCPY, a
-  scroll by CPY), the keyboard as on V2.0; then the netlist.** The aim: more graphics
+  the 6845 cards' screen only. **The ROM's console driver for V3: done 2026-11-11 on `video-v3` (`ROM 2026-11-11 V3`, not burned;
+  `docs/programming/MONITOR.md` 11b)** - the card found by its ID, `V I` starts the chip and copies the font, a
+  character is one AGCPY, the scroll a CPY, every command after WFE, the PS/2 keyboard beside the UART, the mouse off;
+  the emulators' card on that branch is the V3. **Open on `video-v3`:** a cursor on the screen; `VIDAUTO`; Y1/OS
+  `video`'s words ("at D000") and a graphics library; BASIC's graphics; a font with lower case; `software/y1dbg`'s
+  view of the V3 screen (`tests/y1dbg` leaves its screen checks out there); the commands the model lacks (circles,
+  PAINT, PTN). **Then the netlist.** The aim: more graphics
   resolution than V2.0's 512 x 192, on monitors sold today. That means VGA timing - 640 x 480 at 60 Hz, 31.47 kHz
   lines, a 25.175 MHz dot clock (the same crystal halved is the TV / CGA rate, 640 x 240 at 15.73 kHz) - which most
   LCDs and VGA-to-HDMI adapters take, where few take the 15.7 or 18.4 kHz of the V1 / V2.0 cards. Two **HD63484P8** are
