@@ -1,0 +1,99 @@
+basic
+10 rem squares
+20 for i = 1 to 3 : print i; " "; i*i : next i
+30 a$ = "hello" + ", world" : print a$; " "; len(a$); " "; mid$(a$, 8, 5)
+save "sq.bas"
+save "/bin"
+save ""
+save
+save 5
+new
+load "sq.bas"
+list
+load "nosuch.bas"
+list
+load ""
+load
+new
+10 open "d.txt" for output : for i = 1 to 3 : print# i * 10 : next i
+15 print# "text " + "line" : print# -5
+16 print#
+17 close
+20 open "d.txt" for input
+30 if eof(1) then 60
+40 input# n : print "read "; n : goto 30
+60 close
+70 open "d.txt" for input : input# a$ : input# b$ : input# c$ : input# d$
+75 print a$; b$; c$; d$ : print eof(1)
+80 input# e : input# f$ : print e; f$; "|"; eof(1) : input# g : print g; eof(1)
+90 close : print eof(1)
+run
+open "nosuch.txt" for input
+open "d.txt" for append
+open "d.txt"
+open "d.txt" input : input# x$ : print x$ : close
+open "o.txt" output : print# 1, 2 : close
+close
+open "o2.txt" for output : print#, 7 : print # 8 : print# "a" + "b" : print# "c"; "d" : close
+close
+print# 5
+input# x
+open "d.txt" for input : print# 5
+close : open "o3.txt" for output : input# x
+close
+open "d.txt" for input : open "sq.bas" for input : input# x$ : print x$ : close : close
+print eof(1), eof(0), eof(
+10 open "o4.txt" for output : print# "kept open"
+run
+print# "closed by the end of the program"
+10 load "sq.bas" : print "not printed"
+run
+list
+bye
+cat sq.bas
+cat d.txt
+cat o.txt
+cat o2.txt
+cat o3.txt
+cat o4.txt
+echo 10 print "from a file" > p1.bas
+echo 20 print 6 * 7 >> p1.bas
+echo print "no number" > p2.bas
+echo 10 print "ok" >> p2.bas
+echo 20 print ( >> p2.bas
+echo 30 then >> p2.bas
+basic p1.bas
+list
+run
+bye
+basic -r p1.bas
+
+basic -r p2.bas
+basic p2.bas
+list
+bye
+basic -r nosuch.bas
+basic nosuch.bas
+bye
+basic -r
+basic -x
+basic -R p1.bas
+
+basic   p1.bas   extra
+run
+bye
+echo print 5 * 5 > in.txt
+echo 10 print "piped" >> in.txt
+echo run >> in.txt
+echo input a >> in.txt
+echo 77 >> in.txt
+echo print a >> in.txt
+basic < in.txt
+cat in.txt | basic
+basic > out.txt
+print "to a file"
+help
+bye
+cat out.txt
+dir *.bas
+exit

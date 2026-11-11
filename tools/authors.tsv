@@ -69,6 +69,7 @@ mk/sdk.mk	claude	written in YACC1-D
 os/Makefile	claude	written in YACC1-D
 os/asm_optab.c	generated	its generator's GENERATED line says where it comes from
 os/commands-asm/asm.asm	claude	written in YACC1-D
+os/commands-asm/basic.asm	claude	written in YACC1-D
 os/commands-asm/asmtab.inc	generated	its generator's GENERATED line says where it comes from
 os/commands/asm.c	claude	written in YACC1-D
 os/commands/awk.c	claude-p8x	os/PORT-PLAN.md: ported from P8X
@@ -252,6 +253,7 @@ software/y1dbg/web.py	claude	written in YACC1-D
 tests/asm/host_asm.c	claude	written in YACC1-D
 tests/asm/host_sys.c	claude	written in YACC1-D
 tests/asm/run.py	claude	written in YACC1-D
+tests/ybasic/run.py	claude	written in YACC1-D
 tests/asm/src/err_dup.asm	claude	written in YACC1-D
 tests/asm/src/err_expr.asm	claude	written in YACC1-D
 tests/asm/src/err_line.asm	claude	written in YACC1-D

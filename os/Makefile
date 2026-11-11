@@ -119,6 +119,17 @@ $(ASMA): commands-asm/asm.asm commands-asm/asmtab.inc $(DEF)
 	@cd $(B)/asma && ../../$(ASM) asm -d=yacc1 > asm.lst && grep -q "^0 Errors" asm.lst || { grep "ERR" $(B)/asma/asm.lst | head; exit 1; }
 	@$(I2B) $(B)/asma/asm.img $@ --base 0x5000
 
+# BASIC in YACC1 assembly (commands-asm/basic.asm, 2026-11-11): the same program as commands/basic.c, assembled by the
+# host assembler at $5000. Not on the disk yet (`make basica` builds it): tests/ybasic/run.py runs it against
+# /bin/basic, the C one, session by session.
+BASICA = $(B)/basica/basic.bin
+$(BASICA): commands-asm/basic.asm $(DEF)
+	@mkdir -p $(B)/basica && cp $(DEF) commands-asm/basic.asm $(B)/basica/ && printf -- "-h\n-l\n" > $(B)/basica/rcasm.rc
+	@cd $(B)/basica && ../../$(ASM) basic -d=yacc1 > basic.lst && grep -q "^0 Errors" basic.lst || { grep "ERR" $(B)/basica/basic.lst | head; exit 1; }
+	@$(I2B) $(B)/basica/basic.img $@ --base 0x5000
+basica: $(BASICA) $(B)/bin/basic.bin
+	@printf "basic in assembly %6d bytes, in C %6d bytes (commands-asm/basic.asm, commands/basic.c)\n" $$(wc -c < $(BASICA)) $$(wc -c < $(B)/bin/basic.bin)
+
 # /bin/kermit's line I/O is assembly (kermit_io.asm, 2026-09-26), turned by mkkio.py into kermit_io.c: the bytes as a
 # C array and the offsets of its absolute addresses, which kermit.c relocates at start-up (y1cc has no inline asm)
 kermit_io.c: kermit_io.asm mkkio.py $(DEF)
@@ -196,5 +207,5 @@ test: disk.img
 	python3 $(ROOT)/tests/os/run.py
 clean:
 	rm -rf $(B) disk.img
-.PHONY: all sizes passes run run-int test clean FORCE
+.PHONY: all sizes passes basica run run-int test clean FORCE
 FORCE:
