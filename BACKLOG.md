@@ -323,8 +323,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **A VGA video card around the HD63484 ACRTC (idea, 2026-11-11; nothing designed).** The aim: more graphics
   resolution than V2.0's 512 x 192, on monitors sold today. That means VGA timing - 640 x 480 at 60 Hz, 31.47 kHz
   lines, a 25.175 MHz dot clock (the same crystal halved is the TV / CGA rate, 640 x 240 at 15.73 kHz) - which most
-  LCDs and VGA-to-HDMI adapters take, where few take the 15.7 or 18.4 kHz of the V1 / V2.0 cards. Two HD63484 chips
-  are in hand (speed grade and package to read off the marking). From Hitachi's user's manual (1985) and application
+  LCDs and VGA-to-HDMI adapters take, where few take the 15.7 or 18.4 kHz of the V1 / V2.0 cards. Two **HD63484P8** are
+  in hand (the 8 MHz grade, 64-pin plastic DIP: every access mode below is open at 640 x 480). From Hitachi's user's manual (1985) and application
   note (1986), both on bitsavers under `components/hitachi/_dataBooks`:
   - **Host side.** An 8-bit bus mode (DACK low at reset: D0-D7 only), two addresses (RS: address / status, and data),
     16-bit registers and the command FIFO written high byte then low byte. CS must stay low for at least three 2CLK
@@ -346,8 +346,14 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     memory width (MWR) is one line up; the start raster address (SRA) in SAR scrolls smoothly a scan line at a time;
     the address wraps at the end of the space. The bands scroll independently (a fixed status line under a
     scrolling screen). The chip has no text functions: the driver writes codes with WT and clears a line with CLR.
-  - **To decide or find out:** the two chips' grade (superimposed text at VGA needs the -8; a text window or band
-    that replaces the graphics behind it runs in single access on any grade); the DIP's pin pitch; the character
+  - **With the 8 MHz grade** the card can run superimposed access at 640 x 480 (2CLK = the dot clock / 4 = 6.29 MHz,
+    159 ns against the grade's 125 ns minimum): the graphics on the background screens, a character window laid over
+    them, and where the window is not on a line the chip uses its half of the cycle to draw, as in interleaved mode -
+    no flashing and no waiting for retrace. Each access is 318 ns (address, then data): 55-70 ns SRAM. 800 x 600
+    (36 MHz dots) fits single access only (4.5 MHz; dual would be 9).
+  - **To decide or find out:** the DIP's pin pitch (2.54 mm, about 81 mm long, or the shrink 1.778 mm, about 58 mm:
+    measure before choosing a socket and footprint); text as a superimposed character window, as bands, or drawn
+    into the bitmap from an off-screen font (the application note's third way, no character generator); the character
     generator and its two lookups a cycle; the shift registers and dot logic at 25 MHz (74AC / 74F); the VGA
     connector with both sync polarities; whether V2.0 is still ordered first; the emulators' model (the drawing
     commands) and the ROM's console driver.
