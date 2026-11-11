@@ -23,8 +23,8 @@ the terminal UI in a pseudo-terminal) and checks:
             glyphs), a breakpoint by command, keys typed into the UART (V I, V M1, H) appearing in the state's video RAM
             with the CRTC's geometry and cursor and in the console, pause, the memory window following `sp`, quit
   webstop   the web server ends cleanly, the emulator with it: SIGTERM during a run, SIGINT, and `q` typed as a command
-  gate      --video-rev passes the gate-level card through (y1ucemu -G, the V1.0 card): with v1.0 the monitor's
-            VB D800 0E / VB D802 12 writes R14 = 12 and `video` says "v1.0 at gate level, 0 bus events"; with v1.0-no-rs
+  gate      --video-rev passes the gate-level card through (y1ucemu -G, the V1.0 card): with v1.0 a loaded program's
+            stores to $D800 / $D802 write R14 = 12 and `video` says "v1.0 at gate level, 0 bus events"; with v1.0-no-rs
             (no RS fix) R14 is never written; an unknown revision ends y1dbg with an error; nothing left running
             (2026-11-10, branch video-v2: VR0E 12 / VR0E until then; this branch's VR reaches the V2.0 card's ports)
 """
@@ -354,9 +354,9 @@ def case_webstop():
 
 def case_gate():
     before = emulators()
-    # (2026-11-10, branch video-v2: the ROM's VR goes to the V2.0 card's ports, so the V1.0 card's 6845 is written as
-    # memory: VB D800 0E / VB D802 12, its address and data registers)
-    cmds = "until cmdloop; key VB D800 0E\\nVB D802 12\\nVS\\n; waitfor COLS 50; video"
+    # (2026-11-10, branch video-v2: the ROM's VR goes to the new card's ports, so the V1.0 card's 6845 is written by
+    # a program of 11 bytes through the : loader - LDAI 0E / STA D800 / LDAI 12 / STA D802 / RET - then G3000)
+    cmds = "until cmdloop; key :0b3000000e0ee5d8000e12e5d8020508\\n:00000001ff\\nG3000\\nVS\\n; waitfor COLS 50; video"
     got = {}
     for rev in ("v1.0", "v1.0-no-rs"):
         r = subprocess.run([sys.executable, os.path.join(ROOT, "software/y1dbg"), "--video-rev", rev, "-c", cmds],

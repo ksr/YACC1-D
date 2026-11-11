@@ -21,8 +21,8 @@ edits; y1ucemu -G REV looks each step's decode up there (docs/cards/video.md sec
            (on main the ROM also reads the latch at reset, V P and V I; the branch video-v2's ROM drives the V2.0 card
            and never touches the V1 card)
   rs       without the RS rework (-G v1.0-no-rs, the 6845 as drawn: RS = A0) the data register is unreachable, as
-           hardware/cards/video/docs/fix-6845-register-select.md says: the monitor's VB D800 0E / VB D802 12 (the
-           6845's two registers written as memory) leaves R14 unwritten, crtcreg reports BAD for R14/R15 and its
+           hardware/cards/video/docs/fix-6845-register-select.md says: a program that stores $0E at $D800 and $12
+           at $D802 (the 6845's two registers) leaves R14 unwritten, crtcreg reports BAD for R14/R15 and its
            repeat; every read of $D802 is an undriven-read event.
            With the 6845's socket empty (-G v1.0-no6845, the machine today) crtcreg fails the same way, the events
            name the empty socket; the RAM half still passes vram
@@ -141,7 +141,10 @@ def case_equal():
 
 
 def case_rs():
-    data = b"VB D800 0E\nVB D802 12\n0"            # (the V2.0 ROM's VR goes to the V2.0 card's ports)
+    # R14 <- $12 on the V1 card's 6845 at $D800 / $D802, by a program of 11 bytes through the monitor's : loader
+    # (LDAI 0E / STA D800 / LDAI 12 / STA D802 / RET): the branches' ROMs drive the V2.0 and V3 cards' ports and have no
+    # command left that writes the V1 card's chip
+    data = b":0b3000000e0ee5d8000e12e5d8020508\n:00000001ff\nG3000\n0"
     out, err, ev, st, n = run(data, ["-G", "v1.0"])
     good = re.search(r"^video: CRTC( --){14} 12", err, re.M)
     out2, err2, ev2, st2, n2 = run(data, ["-G", "v1.0-no-rs"])
