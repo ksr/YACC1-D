@@ -3,6 +3,11 @@
 **A design note, begun 2026-11-11. Nothing is drawn, ordered or built; "V3" is a working name.** The card in the
 machine is the [V1.0](video.md); the [V2.0](video-v2.md) is designed and not ordered.
 
+**Decided 2026-11-11** (section 12): text by method B first, on a board laid out from the start to take method A's
+parts; the font in an EPROM on the card, so the screen shows the boot; the card carries the PS/2 keyboard and mouse;
+V3 goes ahead whether or not V2.0 is ordered. The emulators' model of the card is on the branch `video-v2`
+(`Y1VID_CARD=v3`).
+
 The aim is more graphics resolution than V2.0's 512 x 192, on monitors sold today, with a CRT controller of the 6845's
 family. The plan: Hitachi's **HD63484 ACRTC** (the "advanced CRTC", the HD6845's successor) driving a **VGA** monitor
 at **640 x 480**, one bit a dot to begin with, on a board that can grow to 800 x 600 and 1024 x 768 (section 9).
@@ -108,7 +113,7 @@ with nothing to race:
 | PB | OUT | RS = 1, write: the register addressed, or the write FIFO (r00) |
 | PC | IN | RS = 0, read: the status register |
 | PD | IN | RS = 1, read: the register addressed, or the read FIFO |
-| PE | IN / OUT | the card: PS/2 status (FULL, SRC, BUSY, as V2.0's PD) and the card ID in bits 7..4; OUT the PS/2 command |
+| PE | IN / OUT | IN the card's status: bit 0 FULL, 1 SRC (0 keyboard, 1 mouse), 2 BUSY (the PS/2 section, as V2.0's PD), bit 3 TEXT (1 = method A's parts fitted), bits 7..4 = 0110, **the card ID $6x**; OUT the PS/2 command |
 | PF | IN | PS/2 data (as V2.0's PE) |
 
 RS = IO-ADDR0, R/W = IO-ADDR2 (high for PC and PD). CS is the port decode (a 74LS138 on IO-ADDR, as on V2.0) gated
@@ -200,10 +205,14 @@ No text hardware at all: the graphics path is the display. A font sits in frame 
 and the chip copies an 8 x 16 block from it to the screen for every character (the application note's "characters via
 graphics").
 
-- **Hardware added**: none - if the font can be loaded. The ROM has no room for one (4 KB for 256 glyphs of 8 x 16,
-  768 bytes for 96 of 8 x 8; the monitor half has 30 bytes free), so either the screen stays dark until Y1/OS loads a
-  font from disk, or the card carries **one font EPROM decoded into a corner of the frame buffer's address space**,
-  where the chip's copy commands read it like RAM.
+- **Hardware added**: one font EPROM. The ROM has no room for a font (4 KB for 256 glyphs of 8 x 16, 768 bytes for
+  96 of 8 x 8; the monitor half has 30 bytes free), and a font loaded from disk would leave the screen dark until
+  Y1/OS is up. So the card carries **a font EPROM decoded into the frame buffer's address space** (decided
+  2026-11-11), where the chip's copy commands read it like RAM: with MA19 high (words $80000-$FFFFF) a 27C256 answers
+  on MA0-MA14 in place of the RAM, its byte on both halves of the word, so a masked copy takes whichever half the
+  character falls in. Bit 0 is the left-hand dot. The glyphs are laid out the way a copy walks the screen: one word a
+  glyph, 16 lines down, 40 glyphs a band for the 40-word line of 640 dots; a wider mode's layout sits further up the
+  EPROM. `tools/v3font.py` makes the image.
 - **Writing a character**: SCPY (a masked copy of whole words: 1 word x 16 lines, the mask on the half the character
   occupies) or AGCPY (the graphic copy, in dot coordinates, any position). By the manual's table SCPY takes 268 2CLK
   cycles, about 43 us, and AGCPY about 1,000, 160 us (twice that while the display has every other cycle). The CPU
@@ -230,9 +239,9 @@ graphics").
 | Fonts | one EPROM, 8 x 16 cells | any, several, anywhere |
 | Screen before the OS boots | yes | with the font EPROM |
 
-**One board can be both.** Method A's parts stand apart from the graphics path; with their sockets empty the card is
-method B's, and a status bit tells the ROM which it is (as V2.0's TEXT-ONLY bit does). The first build can be B's: the
-fewest parts, and everything on the screen is the chip's own drawing.
+**One board is both** (decided 2026-11-11: B first, the board laid out for A from the start). Method A's parts stand
+apart from the graphics path; with their sockets empty the card is method B's, and IN PE bit 3 tells the ROM which it
+is (as V2.0's TEXT-ONLY bit does). 2CLK is the dot clock / 4 either way: B runs the chip interleaved, A superimposed.
 
 ## 9. Higher resolution
 
@@ -290,19 +299,36 @@ Beyond that the limits are the 5 V logic and the chip: 1024 x 768 with flashless
    statements for `/bin/basic`.
 4. **Bring-up programs** for the bench, as `tests/video/asm` are for V1.
 
-## 12. To decide, and to confirm
+## 12. Decided, to decide, and to confirm
+
+**Decided (2026-11-11)**
+- Text: method B on the first build; the board has method A's sockets and tracks from the start.
+- The font for B: an EPROM on the card in the frame buffer's address space, so the boot shows on the screen.
+- The card has the PS/2 keyboard and mouse section.
+- V3 is built whether or not V2.0 is ordered (that is still open).
+- The software: the emulators' model on the branch `video-v2`, chosen with `Y1VID_CARD=v3`, until the ROM for a V3
+  machine needs a line of its own.
+
+**Confirmed from the manual (2026-11-11)**
+- **The dot order.** X runs with the bit number: bit 0 of a word is its left-hand dot (the dot address DPD and the
+  ORG command's example). The shift registers send bit 0 first; of two characters in a word the left one is the low
+  byte.
+- **Y points up.** One line up is one memory width lower in memory, so the origin (ORG) goes at the bottom-left of
+  the screen: for 640 x 480 at address 0, word 479 x 40 = 19,160.
+- **The pointers.** RD, WT and MOD step the read / write pointer by one word; CLR and the copies leave it a line past
+  the area. A copy's source and destination are each scanned in a direction the command names (S and DSD, eight
+  ways), which is how a scroll copies over itself safely.
+- **After reset** the chip's abort bit (ABT in CCR) is set and the FIFOs are shut: the driver clears it first. In
+  8-bit mode WPTN counts bytes.
 
 **To decide**
-- Text: B alone on the first build with A's sockets empty, or A fitted from the start.
-- The font for B: an EPROM in the frame buffer's address space, or from disk.
 - Four ports for the chip (section 5), or two with a latched R/W.
 - Whether a TV-rate output (the DB9 / RCA of V2.0, the clock halved) stays on the card.
-- Whether V2.0 is ordered first: its PS/2 section and port decode are common to both.
-- Where the software goes: the `video-v2` branch, or a line of its own.
+- A font with lower case: the first image is the V1.3 card's 64 glyphs, each line doubled into the 8 x 16 cell.
 
 **To confirm before a schematic**
-- The dot order inside a word, and whether RWP steps after WT / MOD (the manual, section 6).
 - The I/O records' data hold against the chip's 10 ns, from `test.hex`.
 - The RAM's write pulse and the '299's maximum clock, from the parts' data sheets; the 128K and 512K RAMs' pinouts.
-- The superimposed mode's exact load points for the two words (the manual's figure 2.1, the application note's 4-4),
-  on the emulator's model first.
+- The superimposed mode's exact load points for the two words (the manual's figure 2.1, the application note's 4-4).
+- How the pattern RAM is walked in a filled area (which way PPY steps), on the chip: the manual's text and its figure
+  do not settle it. A solid fill does not depend on it.

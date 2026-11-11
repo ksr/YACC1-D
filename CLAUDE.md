@@ -24,6 +24,8 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
     Each worktree has its own builds (`make` there: the emulators, `os/disk.img`, `rom.bin`) and its own `make
     check`. Hardware steps (ROM burn, microcode, bench, CF card) are from `main` until the V2.0 card is in the machine.
   - Syncing YACC1-D means both branches. The website publishes from `main` only.
+  - The video card V3 (the HD63484 ACRTC, VGA: `docs/cards/video-v3.md`, a design note since 2026-11-11): its design
+    is on `main` like every card's; its software (the emulators' model, `Y1VID_CARD=v3`) is on `video-v2` for now.
 - **Never modify `~/Documents/YACCS`** (the historical archive the tree was migrated from; it only exists on Ken's
   first Mac and the repo does not need it).
 - **Migrated files** (sources that came from YACCS, e.g. `software/emulator/main.c`, `software/assembler/*`,
