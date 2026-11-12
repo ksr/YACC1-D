@@ -967,8 +967,9 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   `/src/os/commands-asm` with a Makefile rule (`make` there assembles it with `/bin/asm`; `tests/native/srcmake.py`
   compares the result with the Mac's), `basic.asm` in `tests/asm`'s corpus (the host assembler, `asmc` and `asm` give
   the same bytes), and `tests/ybasic` now puts the C one in `/bin/basic`'s place for its side of the comparison.
-  **The CF card in the machine still has the C BASIC as `/bin/basic`** until it is written again
-  (`tools/cfcard.py`). Where the instructions
+  The CF card (64 MB) was written 2026-11-11 with this disk (`os/disk.img` MD5 b55cef4d08214a9d594f5e1e5101d260,
+  read back identical): `/bin/basic` is the assembly BASIC, `/bin/basicc` the C one. **On the machine 2026-11-11:
+  Y1/OS boots from it and `basic` (the assembly BASIC) works.** Where the instructions
   still go: decimal numbers are converted every time they are met (128 of the 843: `32000` alone about 100), blanks
   skipped (136), names scanned twice (once to see whether a `$` ends them). A number or a name could be remembered
   by its place in the program text, as the GOTO lines are.
