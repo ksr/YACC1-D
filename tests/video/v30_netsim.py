@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
 
-"""tests/video/v30_netsim.py - the video card V3's netlist run as a circuit (2026-11-11).
+"""tests/video/v30_netsim.py - the video card V3's netlist run as a circuit, and its timing check (2026-11-11).
 
   v30_netsim.py [-v]      -v prints every run's measurements
 
@@ -9,26 +9,41 @@ hardware/cards/video/kicad/v3.0/v30_netlist.py is simulated gate for gate, with 
 part, the RAMs and the EPROMs are models written here from the parts' pinouts and function tables (not from the
 netlist), wired by the netlist's nets. The HD63484 is a model of its memory side from the manual's figures T-6, T-8,
 T-9 and 2.1: it answers the 2CLK the card gives it with MCYC, AS, the address and data on MAD, MRD, DRAW, CHR, the
-raster line, HSYNC and DISP1, each after its delay from the timing table, and runs a script of memory cycles.
+raster line, HSYNC, DISP1 and the cursors, each after its delay from the timing table, and runs a script of memory
+cycles. On the bus side the test bench is the machine: it drives the port number, the data and the strobes as the
+microcode's OUT and IN records do, and those records are read from test.hex to see that they do.
 
-What is checked, with the chip's delays at their maximum and near their minimum, and from both phases the dot counter
-can start in:
+The delays (the tables below) are the parts' data-sheet figures, minimum and maximum, a rising and a falling output
+apart. Every script runs at these corners, and from both phases the dot counter can start in:
+  the chip slow (the manual's maximums) or fast (near its minimums, assumed where the manual gives none: DMIN), with
+  the card's parts all at their maximum or all at their minimum: four straight corners;
+  the parts' rising outputs at their minimum and their falling ones at their maximum, and the other way round: what a
+  gate makes of two signals that change at the same clock edge. A clock, a clear or a latch enable that is a decode
+  of counter bits shows its runt pulse here even where the straight corners miss it.
+
+What is checked:
   interleaved access (text method A's sockets empty): the counter falls into step with MCYC; a drawing write puts
     the word into both RAMs and nowhere else; a drawing read gives the chip the word 40 ns before its cycle ends; the
-    font EPROM's byte reads on both halves; every display cycle's word leaves the shift registers bit 0 first for
-    16 dots, 8 dots later after the delay line, and on the three guns; a dummy cycle and a drawing cycle load
-    nothing; the control register takes the attribute byte of the last cycle before HSYNC rises and never moves
-    while HSYNC is low; the guns follow its off bits, the syncs its polarity bits
+    font EPROM's byte reads on both halves, also with a dummy cycle after it; every display cycle's word leaves the
+    shift registers bit 0 first for 16 dots, 8 dots later after the delay line, and on the three guns one dot clock
+    after that; a word fetched with the display off, a dummy cycle and a drawing cycle load nothing; the control
+    register takes the attribute byte of the last cycle before HSYNC rises, when HSYNC rises, and does not move
+    before; the guns follow its off bits, the syncs its polarity bits
   superimposed access (the sockets fitted): the character word of a Window cycle comes out as its two glyphs, the
     left code first, bit 0 first, exactly under the graphics word of the same display cycle, and only while the text
     layer is on (ATR bit 5); a word written to the character screen lands in the RAM's top 64K words whatever the
-    raster line says; the layers OR and XOR
-  the ports: OUT PA / PB and IN PC / PD select the chip with the bus buffer the right way round; nothing else does
-  everywhere: no two outputs fighting on a net, every flip-flop's and register's set-up and hold met, the RAM's
-    write pulse wide enough with its data set up
+    raster line says; the layers OR and XOR; the second font (ATR bit 7); the cursors: CUD1 low in a Window cycle
+    turns the left character to its cursor form, in the cycle after it the right one, CUD2 likewise
+  the ports: OUT PA / PB and IN PC / PD select the chip and nothing else does; RS and R/W steady 50 ns before CS
+    and until it has risen, though an IN record drops the port number with its strobe; CS three 2CLK cycles long
+    with a step of 500 ns (a 4 MHz CPU clock); an OUT's byte at the chip 40 ns before CS rises and 10 ns after; an
+    IN's byte on the bus when the record takes it; the chip and the bus buffer never both on the chip's data pins
+  everywhere: every flip-flop's, register's and shift register's set-up and hold; the RAM's write pulse, data set-up
+    and address; no pulse shorter than 5 ns on any clock, clear, preset, latch enable or -WE; and, in the four
+    straight corners, no two outputs on a net for more than 3 ns at a handover. The memories count as on from their
+    low-impedance time (10 ns after a chip enable, 5 ns after an output enable), not from when their data is good.
 
-The delays are the parts' data-sheet maximums as far as they are known here (the table DELAY): the netlist's logic
-is proved, and the margins printed are a first figure for the timing check against the parts actually bought.
+What the numbers are not: the chip's minimums (the manual gives maximums and a few hold times), and a bench.
 """
 import os, sys, heapq, importlib.util
 
@@ -39,27 +54,52 @@ N = importlib.util.module_from_spec(spec); spec.loader.exec_module(N)
 VERBOSE = "-v" in sys.argv
 DOT = 1000.0 / 25.175                                  # ns
 
-# propagation delays, ns (maximums at 5 V; F parts' are their typical 25 C figures plus a margin)
-DELAY = {"gate": 8.0, "74": 7.0, "163": 8.0, "573": 9.5, "574": 10.0, "377": 10.0, "299": 9.0, "164": 10.5,
-         "245": 8.5, "245en": 10.0, "245dis": 9.0, "244": 15.0, "244en": 20.0, "138": 25.0, "ram_aa": 55.0, "ram_oe": 30.0,
-         "ram_oh": 10.0, "ram_hz": 15.0, "rom_acc": 70.0, "rom_oh": 5.0, "rom_hz": 25.0}
-SETUP = {"74": 3.0, "163": 8.0, "377": 4.5, "574": 4.5, "299": 7.5, "164": 5.0}       # data (and mode) before the clock
-HOLD = {"74": 1.0, "163": 1.0, "377": 1.0, "574": 1.5, "299": 1.0, "164": 1.0}
-RAM_TWP, RAM_TDW = 45.0, 25.0                          # AS6C1008-55: write pulse, data set-up to its end
+# The parts' delays from their data sheets, 5 V +- 0.5 V, 50 pF, over temperature: (tPLH min, max, tPHL min, max) ns.
+# TI: SN74F163A (SDFS088A), SN74F74 (SDFS046A), SN74F299 (SDFS071B), SN74F21, SN74ACT00 / 04 / 08 / 10 / 11 / 32 / 86,
+# CD74ACT02, SN74ACT573 / 574 / 245, CD74ACT273 (SCHS249C). The 74HCT parts (the ports' decode and the bus buffer) only
+# see the bus's 2 us strobes: one generous figure.
+TPD = {("F", "163"): (2.7, 9.5, 2.7, 11.0),             # clock to Q: counting 2.7-8.5 / 2.7-11, loading 3.2-9.5
+       ("F", "74"): (3.0, 7.8, 3.6, 9.2), ("F", "299"): (3.2, 10.0, 2.7, 9.5), ("F", "21"): (1.0, 5.3, 1.5, 5.5),
+       ("ACT", "00"): (1.0, 9.5, 1.0, 8.0), ("ACT", "04"): (1.0, 9.0, 1.0, 8.5), ("ACT", "08"): (1.0, 10.0, 1.0, 10.0),
+       ("ACT", "10"): (1.0, 10.0, 1.0, 9.5), ("ACT", "11"): (1.0, 10.5, 1.0, 10.5), ("ACT", "32"): (1.0, 10.0, 1.0, 10.0),
+       ("ACT", "86"): (1.0, 10.0, 1.0, 10.5), ("ACT", "02"): (3.1, 11.1, 3.1, 11.1),
+       ("ACT", "573"): (2.0, 12.0, 2.0, 12.0), ("ACT", "574"): (2.0, 12.0, 1.5, 11.0), ("ACT", "273"): (3.5, 12.3, 3.5, 12.3),
+       ("ACT", "245"): (1.5, 8.0, 1.0, 9.0), ("HCT", "*"): (5.0, 40.0, 5.0, 40.0)}
+PRECLR = {("F", "74"): (2.4, 7.1, 2.7, 10.5), ("F", "299"): (3.7, 10.5, 3.7, 10.5), ("ACT", "273"): (3.5, 12.3, 3.5, 12.3)}
+ENABLE = {("ACT", "245"): (1.5, 12.0), ("ACT", "574"): (1.5, 10.0), ("ACT", "573"): (1.5, 11.0), ("HCT", "*"): (5.0, 45.0)}
+DISABLE = {("ACT", "245"): (1.0, 11.0), ("ACT", "574"): (1.5, 11.5), ("ACT", "573"): (1.0, 12.5), ("HCT", "*"): (5.0, 40.0)}
+# set-up and hold before / after the clock, ns
+SETUP = {("F", "74"): (3.0, 1.0), ("F", "163", "data"): (5.0, 2.0), ("F", "163", "load"): (11.5, 2.0),
+         ("F", "299", "mode"): (8.5, 0.0), ("F", "299", "data"): (5.5, 2.0), ("ACT", "273"): (2.0, 2.0), ("ACT", "574"): (2.5, 1.0)}
+# Alliance AS6C1008-55 (v1.2, 2023): tAA 55, tOE 30, tOH 10, tOLZ 5, tOHZ 20; write tWP 45, tDW 25, tAW 50.
+# Atmel AT27C256R-70 (doc 0014): tACC 70, tOE 30, tDF 25, tOH 7. (min, max): where the sheet gives no minimum, a small one
+# A memory's outputs are on (and fight whatever else is) from its low-impedance time at any corner: the RAM's tCLZ 10 ns
+# after its chip enable and tOLZ 5 ns after its output enable, whichever is later (the EPROM's sheet has neither: 5 ns
+# for both). What they carry is unknown (X) until the access time from the address, the chip enable or the output
+# enable, whichever is last. Outputs disabled again before the low-impedance time never came on
+MEM = {"ram_aa": (12.0, 55.0), "ram_oe": (5.0, 30.0), "ram_oh": (10.0, 10.0), "ram_hz": (2.0, 20.0), "ram_clz": (10.0, 10.0), "ram_olz": (5.0, 5.0),
+       "rom_acc": (9.0, 70.0), "rom_oe": (5.0, 30.0), "rom_oh": (7.0, 7.0), "rom_hz": (2.0, 25.0), "rom_clz": (5.0, 5.0), "rom_olz": (5.0, 5.0)}
+RAM_TWP, RAM_TDW, RAM_TAW = 45.0, 25.0, 50.0           # write pulse, data set-up to its end, address valid to its end
 OVERLAP = 3.0                                          # two three-state outputs may both be on this long at a handover
 FLOAT = 300.0                                          # a 10k pull-up needs about this long to move an undriven bus line
+# a clock, a clear, a preset, a latch enable or the RAM's -WE must not see a pulse shorter than this: a gate that decodes
+# two counter bits changing at once gives one (the bits' rise and fall times differ), and a flip-flop may take it or not
+MINPULSE = 5.0
+# the pins that act on an edge or a level by themselves (not sampled by a clock), by model
+EDGE_PINS = {"74": (3, 11, 1, 4, 10, 13), "163": (2,), "273": (11, 1), "574": (11,), "573": (11,), "299": (12, 9), "ram": (29,)}
 
 
-def kind(value):
-    """a part's type from its value: 74ACT04 -> 04, HD63484P8 -> chip, ..."""
-    if value.startswith("HD63484"): return "chip"
-    if value.startswith("AS6C"): return "ram"
-    if "27C256" in value: return "rom"
-    if value == "7416": return "16"
+def family(value):
+    """a part's family and type from its value: 74ACT04 -> (ACT, 04), 74F163A -> (F, 163), HD63484P8 -> (-, chip)"""
+    if value.startswith("HD63484"): return "-", "chip"
+    if value.startswith("AS6C"): return "-", "ram"
+    if "27C256" in value: return "-", "rom"
+    if value == "7416": return "-", "16"
     if value.startswith("74"):
-        d = value[2:].lstrip("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-        return d
-    return None
+        fam = value[2:].rstrip("0123456789A") if value[-1] == "A" else value[2:].rstrip("0123456789")
+        num = value[2 + len(fam):].rstrip("A")
+        return fam, num
+    return "-", None
 
 
 def AND(*a): return 0 if 0 in a else (None if None in a else 1)
@@ -69,10 +109,19 @@ def XOR(a, b): return None if a is None or b is None else a ^ b
 
 
 class Sim:
-    def __init__(self, fitted_out=()):
+    # which end of the parts' delay ranges this run uses: "max", "min", or the two that set a part's rising outputs
+    # against its falling ones, "rise" (tPLH at its minimum, tPHL at its maximum) and "fall" (the other way round).
+    # Enables, disables and the memories' times are at their maximum in those two
+    corner = "max"
+
+    def mem(self, key): return MEM[key][0 if self.corner == "min" else 1]
+
+    def __init__(self, fitted_out=(), joined={}):
+        """joined: nets a fitted jumper makes one, {net: the net it is joined to}"""
         self.t = 0.0; self.q = []; self.seq = 0; self.pending = {}; self.floating = {}
         self.netof = {}; self.onnet = {}
         for net, pins in N.NETS.items():
+            net = joined.get(net, net)
             for ref, pin in pins:
                 if ref in fitted_out: continue
                 self.netof[(ref, pin)] = net; self.onnet.setdefault(net, []).append((ref, pin))
@@ -92,8 +141,14 @@ class Sim:
         self.parts = {}; self.faults = []; self.fights = {}; self.fstart = {}; self.holds = []; self.margin = {}
         for ref, (value, sym, fp, note) in N.PARTS.items():
             if ref in fitted_out: continue
-            k = kind(value)
-            if k in MODELS: self.parts[ref] = MODELS[k](self, ref, k)
+            fam, k = family(value)
+            if k in MODELS: self.parts[ref] = MODELS[k](self, ref, fam, k)
+        self.edgenets = {}                              # net -> the pins on it that a runt pulse would upset
+        for ref, m in self.parts.items():
+            for pin in EDGE_PINS.get(m.k, ()):
+                net = self.netof.get((ref, str(pin)))
+                if net and net not in ("VCC", "GND", "CK"): self.edgenets.setdefault(net, []).append("%s.%d" % (ref, pin))
+        self.lastedge = {}; self.runts = {}
         self.byname = {}
         for ref, m in self.parts.items():
             for pin in N.PINS[ref]:
@@ -131,6 +186,7 @@ class Sim:
             t0, who = self.fstart.pop(net)
             if self.t - t0 > self.fights.get((net, who), (0, 0))[0]: self.fights[(net, who)] = (self.t - t0, t0)
         vals = [x for x in self.drv[net].values() if x is not None]
+        if "X" in vals: return None                    # an output is on, with nothing known on it yet
         if not vals:                                   # nothing drives: the net keeps its level; a pull resistor takes
             if net in self.pull and self.val[net] != self.pull[net] and not self.floating.get(net):     # FLOAT ns to move it
                 self.floating[net] = True; self.post(net, ("PULL", net), None, FLOAT)
@@ -150,6 +206,9 @@ class Sim:
                 self.drv[net][who] = value
                 new = self.resolve(net)
             if new != self.val[net]:
+                if net in self.edgenets and new in (0, 1) and self.val[net] in (0, 1):
+                    w = t - self.lastedge.get(net, -1e9); self.lastedge[net] = t
+                    if w < MINPULSE - 1e-9 and (net not in self.runts or w < self.runts[net][0]): self.runts[net] = (w, t)
                 self.val[net] = new; self.last[net] = t
                 for h in self.holds:
                     if h[0] == net and t - h[1] < h[2] - 1e-9: self.faults.append("%.1f ns: %s hold on %s: it moved %.1f ns after the clock (%.1f wanted)" % (t, h[3], net, t - h[1], h[2]))
@@ -172,10 +231,22 @@ class Sim:
 
 
 class Part:
-    def __init__(self, sim, ref, k): self.s = sim; self.ref = ref; self.k = k; self.init()
+    def __init__(self, sim, ref, fam, k): self.s = sim; self.ref = ref; self.fam = fam; self.k = k; self.init()
     def init(self): pass
     def v(self, pin): return self.s.v(self.ref, pin)
-    def out(self, pin, value, delay): self.s.drive(self.ref, pin, value, delay)
+    def key(self, table): return (self.fam, self.k) if (self.fam, self.k) in table else (self.fam, "*")
+    def tpd(self, value, table=None):
+        """the delay to an output's new value: tPLH for 1, tPHL for 0, at this run's end of the data sheet's range"""
+        t = (table or TPD)[self.key(table or TPD)]
+        cn = self.s.corner
+        if value == 1: return t[0 if cn in ("min", "rise") else 1]
+        if value == 0: return t[2 if cn in ("min", "fall") else 3]
+        return min(t[0], t[2]) if cn == "min" else max(t[1], t[3])
+    def out(self, pin, value, delay=None, table=None): self.s.drive(self.ref, pin, value, self.tpd(value, table) if delay is None else delay)
+    def onoff(self, on): return (ENABLE if on else DISABLE)[self.key(ENABLE)][0 if self.s.corner == "min" else 1]
+    def su(self, pin, what, sub=None):
+        tsu, th = SETUP[(self.fam, self.k, sub)] if sub else SETUP[(self.fam, self.k)]
+        self.s.setup(self.ref, pin, tsu, th, "74%s%s %s" % (self.fam, self.k, what))
     def rose(self, pin, name="ck"):
         now = self.v(pin); was = getattr(self, name, None); setattr(self, name, now)
         return was == 0 and now == 1
@@ -196,22 +267,22 @@ class Gate(Part):
     def eval(self):
         f, gates = self.TABLE[self.k]
         for g in gates:
-            self.out(g[-1], f(*[self.v(p) for p in g[:-1]]), DELAY["gate"])
+            self.out(g[-1], f(*[self.v(p) for p in g[:-1]]))
 
 
 class FF74(Part):
     def init(self): self.q = {0: 0, 1: 0}
     def eval(self):
         for i, (clr, d, ck, pre, q, qn) in enumerate(((1, 2, 3, 4, 5, 6), (13, 12, 11, 10, 9, 8))):
-            edge = self.rose(ck, "ck%d" % i); old = self.q[i]
-            if self.v(pre) == 0: self.q[i] = 1
-            elif self.v(clr) == 0: self.q[i] = 0
+            edge = self.rose(ck, "ck%d" % i); old = self.q[i]; table = None
+            if self.v(pre) == 0: self.q[i] = 1; table = PRECLR
+            elif self.v(clr) == 0: self.q[i] = 0; table = PRECLR
             elif edge:
-                self.s.setup(self.ref, d, SETUP["74"], HOLD["74"], "74F74 D")
+                self.su(d, "D")
                 self.q[i] = self.v(d)
             if self.q[i] != old or not hasattr(self, "up%d" % i):
                 setattr(self, "up%d" % i, 1)
-                self.out(q, self.q[i], DELAY["74"]); self.out(qn, NOT(self.q[i]), DELAY["74"])
+                self.out(q, self.q[i], table=table); self.out(qn, NOT(self.q[i]), table=table)
 
 
 class Counter163(Part):
@@ -220,29 +291,32 @@ class Counter163(Part):
         if self.rose(2):
             if self.v(1) == 0: self.n = 0
             elif self.v(9) == 0:
-                for p in (3, 4, 5, 6): self.s.setup(self.ref, p, SETUP["163"], HOLD["163"], "74F163 load data")
+                for p in (3, 4, 5, 6): self.su(p, "load data", "data")
                 bits = [self.v(p) for p in (3, 4, 5, 6)]
                 self.n = sum((b or 0) << i for i, b in enumerate(bits))
             elif self.v(7) == 1 and self.v(10) == 1: self.n = (self.n + 1) & 15
-            self.s.setup(self.ref, 9, SETUP["163"], HOLD["163"], "74F163 -LOAD")
+            self.su(9, "-LOAD", "load")
             self.first = True
         if self.first:
             self.first = False
-            for i, p in enumerate((14, 13, 12, 11)): self.out(p, self.n >> i & 1, DELAY["163"])
+            for i, p in enumerate((14, 13, 12, 11)): self.out(p, self.n >> i & 1)
 
 
-class Reg377(Part):
+class Reg273(Part):
     PAIRS = ((3, 2), (4, 5), (7, 6), (8, 9), (13, 12), (14, 15), (17, 16), (18, 19))
     def init(self): self.q = [0] * 8; self.up = False
     def eval(self):
-        if self.rose(11):
-            self.s.setup(self.ref, 1, SETUP["377"], HOLD["377"], "74ACT377 -E")
-            if self.v(1) == 0:
-                for d, q in self.PAIRS: self.s.setup(self.ref, d, SETUP["377"], HOLD["377"], "74ACT377 D")
-                self.q = [self.v(d) for d, q in self.PAIRS]; self.up = False
+        table = None
+        if self.v(1) == 0:
+            if any(self.q): self.up = False
+            self.q = [0] * 8; table = PRECLR
+        elif self.rose(11):
+            if self.ref != "IC34" or getattr(self.s, "atr_now", False):     # IC34 takes whatever floats on MAD in the
+                for d, q in self.PAIRS: self.su(d, "D")                    # other cycles of HSYNC: nothing uses it
+            self.q = [self.v(d) for d, q in self.PAIRS]; self.up = False
         if not self.up:
             self.up = True
-            for (d, q), x in zip(self.PAIRS, self.q): self.out(q, x, DELAY["377"])
+            for (d, q), x in zip(self.PAIRS, self.q): self.out(q, x, table=table)
 
 
 class Reg574(Part):
@@ -250,81 +324,78 @@ class Reg574(Part):
     def eval(self):
         new = self.rose(11)
         if new:
-            for d in range(2, 10): self.s.setup(self.ref, d, SETUP["574"], HOLD["574"], "74ACT574 D")
+            for d in range(2, 10): self.su(d, "D")
             self.q = [self.v(d) for d in range(2, 10)]
         oe = self.v(1)
         if new or oe != self.oe:
-            delay = DELAY["574"] if oe == self.oe else DELAY["574"] - (0 if oe == 0 else 1.5)     # off a little sooner than on
+            sw = oe != self.oe
             self.oe = oe
-            for i, x in enumerate(self.q): self.out(19 - i, x if oe == 0 else None, delay)
+            for i, x in enumerate(self.q):
+                val = x if oe == 0 else None
+                self.out(19 - i, val, self.onoff(oe == 0) if sw else None)
 
 
 class Latch573(Part):
     def init(self): self.q = [None] * 8
     def eval(self):
         if self.v(11) == 1: self.q = [self.v(d) for d in range(2, 10)]
-        for i, x in enumerate(self.q): self.out(19 - i, x if self.v(1) == 0 else None, DELAY["573"])
+        for i, x in enumerate(self.q): self.out(19 - i, x if self.v(1) == 0 else None)
 
 
 class Shift299(Part):
     IO = {0: 7, 1: 13, 2: 6, 3: 14, 4: 5, 5: 15, 6: 4, 7: 16}
     def init(self): self.q = [0] * 8; self.up = False; self.loads = []
     def eval(self):
-        if self.v(9) == 0: self.q = [0] * 8; self.up = False
+        table = None
+        if self.v(9) == 0:
+            if any(self.q): self.up = False
+            self.q = [0] * 8; table = PRECLR
         elif self.rose(12):
             s0, s1 = self.v(1), self.v(19)
-            self.s.setup(self.ref, 19, SETUP["299"], HOLD["299"], "74F299 S1")
+            self.su(19, "S1", "mode")
             if s0 == 1 and s1 == 1:
-                for i in range(8): self.s.setup(self.ref, self.IO[i], SETUP["299"], HOLD["299"], "74F299 data")
+                for i in range(8): self.su(self.IO[i], "data", "data")
                 self.q = [self.v(self.IO[i]) for i in range(8)]; self.loads.append(self.s.t)
-            elif s0 == 1 and s1 == 0: self.q = [self.v(11)] + self.q[:7]
+            elif s0 == 1 and s1 == 0:
+                self.su(11, "serial in", "data")
+                self.q = [self.v(11)] + self.q[:7]
             elif s0 == 0 and s1 == 1: self.q = self.q[1:] + [self.v(18)]
             self.up = False
+        else: self.rose(12)
         if not self.up:
             self.up = True
-            self.out(8, self.q[0], DELAY["299"]); self.out(17, self.q[7], DELAY["299"])
-
-
-class Shift164(Part):
-    def init(self): self.q = [0] * 8; self.up = False
-    def eval(self):
-        if self.v(9) == 0: self.q = [0] * 8; self.up = False
-        elif self.rose(8):
-            for p in (1, 2): self.s.setup(self.ref, p, SETUP["164"], HOLD["164"], "74ACT164 A, B")
-            self.q = [AND(self.v(1), self.v(2))] + self.q[:7]; self.up = False
-        if not self.up:
-            self.up = True
-            for p, x in zip((3, 4, 5, 6, 10, 11, 12, 13), self.q): self.out(p, x, DELAY["164"])
+            self.out(8, self.q[0], table=table); self.out(17, self.q[7], table=table)
 
 
 class Buf245(Part):
     def init(self): self.on = None
     def eval(self):
         on, d = self.v(19) == 0, self.v(1)
-        delay = DELAY["245"] if on == self.on else (DELAY["245en"] if on else DELAY["245dis"])
+        sw = on != self.on
         self.on = on
         for i in range(8):
             a, b = 2 + i, 18 - i
-            self.out(b, self.v(a) if on and d == 1 else None, delay); self.out(a, self.v(b) if on and d == 0 else None, delay)
+            vb = self.v(a) if on and d == 1 else None; va = self.v(b) if on and d == 0 else None
+            self.out(b, vb, self.onoff(on) if sw else None); self.out(a, va, self.onoff(on) if sw else None)
 
 
 class Buf244(Part):
     def eval(self):
         for oe, pairs in ((1, ((2, 18), (4, 16), (6, 14), (8, 12))), (19, ((11, 9), (13, 7), (15, 5), (17, 3)))):
-            for a, y in pairs: self.out(y, self.v(a) if self.v(oe) == 0 else None, DELAY["244"])
+            for a, y in pairs: self.out(y, self.v(a) if self.v(oe) == 0 else None)
 
 
 class Dec138(Part):
     def eval(self):
         en = self.v(6) == 1 and self.v(4) == 0 and self.v(5) == 0
         n = sum((self.v(p) or 0) << i for i, p in enumerate((1, 2, 3)))
-        for i, p in enumerate((15, 14, 13, 12, 11, 10, 9, 7)): self.out(p, 0 if en and i == n else 1, DELAY["138"])
+        for i, p in enumerate((15, 14, 13, 12, 11, 10, 9, 7)): self.out(p, 0 if en and i == n else 1)
 
 
 class Ram(Part):
     A = {0: 12, 1: 11, 2: 10, 3: 9, 4: 8, 5: 7, 6: 6, 7: 5, 8: 27, 9: 26, 10: 23, 11: 25, 12: 4, 13: 28, 14: 3, 15: 31, 16: 2}
     D = (13, 14, 15, 17, 18, 19, 20, 21)
-    def init(self): self.mem = {}; self.we = 1; self.wrote = []; self.outv = "?"
+    def init(self): self.mem = {}; self.we = 1; self.wrote = []; self.outv = "?"; self.was = (None, False, False); self.since = [-1e9] * 3
     def addr(self):
         bits = [self.v(self.A[i]) for i in range(17)]
         return None if None in bits else sum(b << i for i, b in enumerate(bits))
@@ -345,47 +416,77 @@ class Ram(Part):
             for i in range(17):
                 net = self.s.net(self.ref, self.A[i])
                 if self.s.last[net] > self.tfall: self.s.faults.append("%.1f ns: %s address A%d moved during the write pulse" % (self.s.t, self.ref, i))
+                st = self.s.t - self.s.last[net]
+                self.s.note("RAM address to write end", st - RAM_TAW, "%s A%d at %.1f ns: steady %.1f ns" % (self.ref, i, self.s.t, st))
             if a is None or None in data: self.s.faults.append("%.1f ns: %s written with an unknown address or data" % (self.s.t, self.ref))
             else:
                 self.mem[a] = sum(b << i for i, b in enumerate(data)); self.wrote.append((self.s.t, a, self.mem[a]))
         self.we = we
-        on = sel and self.v(24) == 0 and we == 1
+        oe = self.v(24) == 0 and we == 1
+        on = sel and oe
         a = self.addr()
+        now = (a, sel, oe)                                         # when each of the three last became what it is
+        for i in range(3):
+            if now[i] != self.was[i] and (i == 0 or now[i]): self.since[i] = self.s.t
+        self.was = now
         key = (on, a)
         if key == self.outv: return
         was_on = self.outv != "?" and self.outv[0]
         self.outv = key
         if not on:
-            for p in self.D: self.out(p, None, DELAY["ram_hz"])
+            never = self.s.t < getattr(self, "on_at", -1e9) - 1e-9      # disabled before the outputs came on at all
+            if never: self.s.note("memory off before it is on", self.on_at - self.s.t, "%s at %.1f ns" % (self.ref, self.s.t))
+            for p in self.D: self.out(p, None, 0.0 if never else self.s.mem("ram_hz"))
             return
         value = None if a is None else self.mem.get(a, self.default(a))
-        if was_on:
-            for p in self.D: self.out(p, None, DELAY["ram_oh"])         # the old word goes after its hold time
-        for i, p in enumerate(self.D): self.out(p, None if value is None else value >> i & 1, DELAY["ram_aa"])
+        m = self.s.mem
+        # the old word goes after its hold time; or the outputs come on
+        first = m("ram_oh") if was_on else max(self.since[1] + m("ram_clz"), self.since[2] + m("ram_olz"), self.s.t) - self.s.t
+        if not was_on: self.on_at = self.s.t + first
+        ready = max(self.since[0] + m("ram_aa"), self.since[1] + m("ram_aa"), self.since[2] + m("ram_oe")) - self.s.t
+        for i, p in enumerate(self.D):
+            self.out(p, "X", first); self.out(p, "X" if value is None else value >> i & 1, max(ready, first + 0.1))
 
 
 class Rom(Part):
     A = {0: 10, 1: 9, 2: 8, 3: 7, 4: 6, 5: 5, 6: 4, 7: 3, 8: 25, 9: 24, 10: 21, 11: 23, 12: 2, 13: 26, 14: 27}
     D = (11, 12, 13, 15, 16, 17, 18, 19)
-    def init(self): self.outv = "?"
-    def byte(self, a): return (a * 5 + 0x33) & 255 if self.ref == "IC14" else glyph(a >> 4 & 255, a & 15)
+    def init(self): self.outv = "?"; self.was = (None, False, False); self.since = [-1e9] * 3
+    def byte(self, a): return (a * 5 + 0x33) & 255 if self.ref == "IC14" else chargen(a)
     def eval(self):
-        on = self.v(20) == 0 and self.v(22) == 0
+        ce, oe = self.v(20) == 0, self.v(22) == 0
+        on = ce and oe
         bits = [self.v(self.A[i]) for i in range(15)]
         a = None if None in bits else sum(b << i for i, b in enumerate(bits))
+        now = (a, ce, oe)
+        for i in range(3):
+            if now[i] != self.was[i] and (i == 0 or now[i]): self.since[i] = self.s.t
+        self.was = now
         if (on, a) == self.outv: return
         was_on = self.outv != "?" and self.outv[0]
         self.outv = (on, a)
         if not on:
-            for p in self.D: self.out(p, None, DELAY["rom_hz"])
+            never = self.s.t < getattr(self, "on_at", -1e9) - 1e-9      # disabled before the outputs came on at all
+            if never: self.s.note("memory off before it is on", self.on_at - self.s.t, "%s at %.1f ns" % (self.ref, self.s.t))
+            for p in self.D: self.out(p, None, 0.0 if never else self.s.mem("rom_hz"))
             return
-        if was_on:
-            for p in self.D: self.out(p, None, DELAY["rom_oh"])
+        m = self.s.mem
+        first = m("rom_oh") if was_on else max(self.since[1] + m("rom_clz"), self.since[2] + m("rom_olz"), self.s.t) - self.s.t
+        if not was_on: self.on_at = self.s.t + first
+        ready = max(self.since[0] + m("rom_acc"), self.since[1] + m("rom_acc"), self.since[2] + m("rom_oe")) - self.s.t
         value = None if a is None else self.byte(a)
-        for i, p in enumerate(self.D): self.out(p, None if value is None else value >> i & 1, DELAY["rom_acc"])
+        for i, p in enumerate(self.D):
+            self.out(p, "X", first); self.out(p, "X" if value is None else value >> i & 1, max(ready, first + 0.1))
 
 
 def glyph(code, line): return (code * 3 + line * 17 + 1) & 255       # the test character generator's byte
+
+
+def chargen(a, cud1=None, font2=None, cud2=None):
+    """the test character generator: the glyph, turned over where CUD1 (A12) is low, and marked by the second font
+    (A13) and by CUD2 (A14) low"""
+    g = glyph(a >> 4 & 255, a & 15)
+    return g ^ (0 if a >> 12 & 1 else 0xFF) ^ (0x55 if a >> 13 & 1 else 0) ^ (0 if a >> 14 & 1 else 0x0F)
 
 
 class Chip(Part):
@@ -396,7 +497,7 @@ class Chip(Part):
     def init(self):
         self.ck = None; self.mcyc = 1; self.cyc = None; self.script = []; self.log = []; self.reads = []
         self.out(52, 1, 0); self.out(53, 1, 0); self.out(55, 1, 0); self.out(54, 1, 0); self.out(56, 0, 0)
-        self.out(12, 1, 0); self.out(13, 1, 0); self.out(63, 1, 0)
+        self.out(12, 1, 0); self.out(13, 1, 0); self.out(63, 1, 0); self.out(1, 1, 0); self.out(2, 1, 0)
         for p in (34, 35, 36, 37, 33): self.out(p, 0, 0)
 
     def mad(self, value, delay):
@@ -417,6 +518,7 @@ class Chip(Part):
             if c["kind"] == "write":
                 self.mad(None, d["maz"]); self.mad(c["data"], d["mwd"])
             elif c["kind"] == "atr":
+                self.s.atr_now = True
                 self.mad(None, d["maz"]); self.mad(c["data"], d["atr"])
                 for i, p in enumerate((37, 36, 35, 34)): self.out(p, c["data"] >> (8 + i) & 1, d["atr"])
             else: self.mad(None, d["maz"])
@@ -434,6 +536,7 @@ class Chip(Part):
             if c["kind"] in ("write", "atr"): self.mad(None, d["mwz"])
             self.log.append((t, c))
         self.mcyc = 0; self.out(52, 0, d["mcyc"])
+        if c is not None and c["kind"] != "atr": self.s.atr_now = False
         c = self.cyc = self.script.pop(0) if self.script else {"kind": "dummy"}
         k = c["kind"]; a = c.get("addr", 0); ch = c.get("chr", 0)
         self.out(54, 0 if k in ("read", "write") else 1, d["ctl"])                    # DRAW
@@ -443,26 +546,32 @@ class Chip(Part):
         for i, p in enumerate((37, 36, 35, 34)): self.out(p, hi >> i & 1, d["ctl"])
         self.out(33, c.get("ra", 0) >> 4 & 1 if ch else 0, d["ctl"])
         self.out(12, c.get("hs", 1), d["sync"]); self.out(63, c.get("disp", 1), d["sync"])
+        self.out(1, c.get("cud1", 1), d["sync"]); self.out(2, c.get("cud2", 1), d["sync"])     # the cursors, active low
         if k in ("dummy", "atr", "idle"): self.mad(0 if k == "dummy" else None, d["mad"])
         else:
             self.out(53, 0, d["as"]); self.mad(a & 0xFFFF, d["mad"])
 
 
 MODELS = {k: Gate for k in Gate.TABLE}
-MODELS.update({"74": FF74, "163": Counter163, "377": Reg377, "574": Reg574, "573": Latch573, "299": Shift299, "164": Shift164,
+MODELS.update({"74": FF74, "163": Counter163, "273": Reg273, "574": Reg574, "573": Latch573, "299": Shift299,
                "245": Buf245, "244": Buf244, "138": Dec138, "ram": Ram, "rom": Rom, "chip": Chip})
 PS2 = ["IC24", "IC25", "IC26", "IC27", "IC28", "IC29", "IC30"]            # not simulated (V2.0's section, proved there)
+def jp4():
+    """JP4 1-2, the 128K RAMs: the net of the RAMs' pin 30 is the net on JP4's pin 1"""
+    return {"RSEL": [n for n, pins in N.NETS.items() if ("JP4", "1") in pins][0]}
 DMAX = {"mcyc": 40.0, "as": 65.0, "asr": 12.0, "mad": 70.0, "maz": 50.0, "mwd": 70.0, "mwz": 40.0, "ctl": 70.0, "sync": 70.0, "atr": 80.0}
 DMIN = {"mcyc": 10.0, "as": 15.0, "asr": 4.0, "mad": 15.0, "maz": 12.0, "mwd": 20.0, "mwz": 12.0, "ctl": 12.0, "sync": 12.0, "atr": 20.0}
 
 
-def build(delays, count0, text):
-    Sim.count0 = count0
-    s = Sim(fitted_out=PS2 + ([] if text else N.TEXT_A))
+def build(delays, count0, text, corner="max"):
+    """the card with the chip's delays, the parts at the slow or the fast end of their ranges, the counter's first count"""
+    Sim.count0 = count0; Sim.corner = corner
+    s = Sim(fitted_out=PS2 + ([] if text else N.TEXT_A), joined=jp4())
     s.count0 = count0; s.d = delays
+    s.qb = TPD[("F", "163")][2 if corner in ("min", "fall") else 3]   # the chip's 2CLK edge (QB falling) comes this long after the dot clock's
+    s.force("RESB#", 1)                                               # (IC30, with the PS/2 section, is not simulated)
     s.parts["IC7"].q[0] = 1                                           # the -WE flip-flop starts high (at power-up it may not)
     s.force("-RESET", 1); s.force("-IO-WR", 1); s.force("-IO-RD", 1)
-    s.force("RSEL", 1)                                                # JP4 1-2: the 128K RAMs' CE2 high
     for i in range(4): s.force("IO-ADDR%d" % i, 0)
     s.run(0.0)
     for m in s.parts.values(): m.eval()
@@ -497,31 +606,38 @@ def word_at(s, a): return s.parts["IC10"].mem.get(a, s.parts["IC10"].default(a))
 
 def finish(s, name, checks):
     out = []
+    # handovers are judged in the four straight corners: the two others set every flip-flop's Q against its own -Q by the
+    # whole spread of the data sheet, and are there for what gates make of signals that change together
     for (net, who), (dur, t0) in sorted(s.fights.items()):
+        if s.corner in ("rise", "fall"): continue
         s.note("outputs overlapping", OVERLAP - dur, "%s (%s) for %.1f ns at %.1f ns" % (net, ", ".join(who), dur, t0))
         if dur > OVERLAP: out.append("two outputs on %s (%s) for %.1f ns from %.1f ns" % (net, ", ".join(who), dur, t0))
+    for net, (w, t) in sorted(s.runts.items()):
+        out.append("a pulse of %.1f ns on %s (%s) at %.1f ns: %.1f ns is the least a clock or an enable may be" % (w, net, ", ".join(s.edgenets[net]), t, MINPULSE))
     out += s.faults + [c for c in checks if c]
     if VERBOSE or out:
         for k in sorted(s.margin): print("      %-24s %6.1f ns to spare   %s" % (k, s.margin[k][0], s.margin[k][1]))
     return out
 
 
-def interleaved(delays, count0):
-    s = build(delays, count0, text=False)
+def interleaved(delays, count0, corner="max"):
+    s = build(delays, count0, False, corner)
     chip = s.parts["IC1"]; chk = []
     W1, W2 = 0xA55A, 0x0FF1
     script = [{"kind": "dummy"}] * 6 + [
-        {"kind": "disp", "addr": 0x00123}, {"kind": "write", "addr": 0x00200, "data": W1},
-        {"kind": "disp", "addr": 0x00124}, {"kind": "read", "addr": 0x00200},
-        {"kind": "disp", "addr": 0x00125}, {"kind": "dummy"},
-        {"kind": "disp", "addr": 0x00200}, {"kind": "read", "addr": 0x80321},
+        {"kind": "disp", "addr": 0x00123}, {"kind": "write", "addr": 0x00200, "data": W1},            # (the display off)
+        {"kind": "disp", "addr": 0x00124, "disp": 0}, {"kind": "read", "addr": 0x00200},
+        {"kind": "disp", "addr": 0x00125, "disp": 0}, {"kind": "dummy"},
+        {"kind": "disp", "addr": 0x00200, "disp": 0}, {"kind": "read", "addr": 0x80321},
         {"kind": "disp", "addr": 0x0FFFF}, {"kind": "write", "addr": 0x80010, "data": 0x1234},
         {"kind": "disp", "addr": 0x10000, "disp": 0}, {"kind": "write", "addr": 0x1FFFF, "data": W2},
         {"kind": "disp", "addr": 0x1FFFF, "disp": 0}, {"kind": "read", "addr": 0x1FFFF},
         # HSYNC: the display off, three cycles with HSYNC low, the attribute byte in the last
         {"kind": "dummy", "hs": 0}, {"kind": "write", "addr": 0x00300, "data": 0xFFEA, "hs": 0}, {"kind": "atr", "data": 0x15, "hs": 0},
         {"kind": "dummy"}, {"kind": "dummy"},
-        {"kind": "disp", "addr": 0x00200, "disp": 0}, {"kind": "dummy"}, {"kind": "disp", "addr": 0x00123, "disp": 0}, {"kind": "dummy"}, {"kind": "dummy"}]
+        {"kind": "disp", "addr": 0x00200, "disp": 0}, {"kind": "dummy"}, {"kind": "disp", "addr": 0x00123, "disp": 0}, {"kind": "dummy"}, {"kind": "dummy"},
+        # a font read with a dummy cycle after it: no AS in that one, so only VALID keeps the RAM off the font's heels
+        {"kind": "read", "addr": 0x80322}, {"kind": "dummy"}, {"kind": "disp", "addr": 0x00124, "disp": 0}, {"kind": "dummy"}]
     chip.script = list(script)
     clock(s, 8 * (len(script) + 4))
     # the counter in step: QC low in the address half
@@ -535,39 +651,40 @@ def interleaved(delays, count0):
         want = [(0x00200, W1 >> sh & 255), (0x1FFFF, W2 >> sh & 255), (0x00300, 0xFFEA >> sh & 255)]
         if got != want: chk.append("%s was written %r, not %r" % (ram, [(hex(a), hex(v)) for a, v in got], [(hex(a), hex(v)) for a, v in want]))
     # the reads: the word written; the font's byte on both halves; the last word of the RAM
-    fb = s.parts["IC14"].byte(0x321)
-    want = [(0x00200, W1), (0x80321, fb | fb << 8), (0x1FFFF, W2)]
+    fb = s.parts["IC14"].byte(0x321); fb2 = s.parts["IC14"].byte(0x322)
+    want = [(0x00200, W1), (0x80321, fb | fb << 8), (0x1FFFF, W2), (0x80322, fb2 | fb2 << 8)]
     if chip.reads != want: chk.append("the chip read %r, not %r" % ([(hex(a), v if v is None else hex(v)) for a, v in chip.reads], [(hex(a), hex(v)) for a, v in want]))
     # the loads: one for each display cycle, at its end, and the 16 dots after it
     disp = [(t, c) for t, c in by if c["kind"] == "disp"]
     loads = s.parts["IC23"].loads
-    if len(loads) != len(disp): chk.append("%d loads of the shift registers for %d display cycles" % (len(loads), len(disp)))
+    shown = [c for t, c in disp if c.get("disp", 1) == 0]              # DISP1 is active low
+    if len(loads) != len(shown): chk.append("%d loads of the shift registers for %d display cycles with the display on" % (len(loads), len(shown)))
     lag = None
     for t, c in disp:
-        e = edge_of(s, t - DELAY["163"])                               # the dot clock edge that made the chip's 2CLK edge
+        e = edge_of(s, t - s.qb)                                       # the dot clock edge that made the chip's 2CLK edge
         w = word_at(s, c["addr"])
-        if stream(s, "VDOT", e, 16) != bits(w): chk.append("the word at %05X left the shift registers as %r" % (c["addr"], stream(s, "VDOT", e, 16)))
-        on = c.get("disp", 1) == 0                                     # DISP1 is active low
-        want = bits(w) if on else [0] * 16
+        on = c.get("disp", 1) == 0
+        want = bits(w) if on else [0] * 16                              # a word fetched with the display off is not loaded
+        if stream(s, "VDOT", e, 16) != want: chk.append("the word at %05X, display %s, left the shift registers as %r" % (c["addr"], "on" if on else "off", stream(s, "VDOT", e, 16)))
         if stream(s, "GDEL", e + 8, 16) != want: chk.append("the word at %05X, 8 dots on, display %s: %r" % (c["addr"], "on" if on else "off", stream(s, "GDEL", e + 8, 16)))
         atr = 0x15 if t > [tt for tt, cc in by if cc["kind"] == "atr"][0] + 8 * DOT else 0
         for gun, bit in (("VR", 1), ("VG", 2), ("VB", 4)):
             w2 = [0] * 16 if atr & bit else want
-            if stream(s, gun, e + 8, 16) != w2: chk.append("%s for the word at %05X (ATR %02X): %r" % (gun, c["addr"], atr, stream(s, gun, e + 8, 16)))
+            if stream(s, gun, e + 9, 16) != w2: chk.append("%s for the word at %05X (ATR %02X): %r" % (gun, c["addr"], atr, stream(s, gun, e + 9, 16)))
     # the control register: 00 until the attribute cycle has passed and HSYNC is high again, then 15; HSYNC's pin follows
     ta = [t for t, c in by if c["kind"] == "atr"][0]; ea = edge_of(s, ta)
     reg = lambda n: sum((s.samples[n][k] or 0) << i for i, k in enumerate(("OFFR", "OFFG", "OFFB", "POLH", "POLV")))
-    for n in range(8, ea + 1):
+    for n in range(8, ea):
         if reg(n) != 0: chk.append("the control register is %02X at dot clock %d, before the attribute byte's cycle ended" % (reg(n), n)); break
-    if reg(ea + 12) != 0x15: chk.append("the control register is %02X after the attribute byte 15" % reg(ea + 12))
+    if reg(ea + 3) != 0x15: chk.append("the control register is %02X three dots after the attribute byte 15's cycle" % reg(ea + 3))
     th = [t for t, c in by if c.get("hs", 1) == 0][0]; eh = edge_of(s, th)
     if stream(s, "HSB", eh - 4, 2) != [0, 0] or s.samples[ea + 30]["HSB"] != 1: chk.append("HSYNC to the connector: low in the pulse, high after it, wanted")
     if s.samples[ea + 30]["VSB"] != 0: chk.append("VSYNC positive (ATR bit 4): the line should be low outside the pulse")
     return finish(s, "interleaved", chk)
 
 
-def superimposed(delays, count0):
-    s = build(delays, count0, text=True)
+def superimposed(delays, count0, corner="max"):
+    s = build(delays, count0, True, corner)
     chip = s.parts["IC1"]; chk = []
     CW = 0x4241                                                        # the character word: 'A' on the left, 'B' on the right
     line = 6                                                           # even lines too: RA0 is on the MA16 pin
@@ -582,7 +699,13 @@ def superimposed(delays, count0):
         {"kind": "disp", "addr": 0x00124, "disp": 0}, {"kind": "dummy", "disp": 0},
         {"kind": "dummy", "hs": 0}, {"kind": "atr", "data": 0x60, "hs": 0}, {"kind": "dummy"}, {"kind": "dummy"},     # TEXTON, XOR
         {"kind": "disp", "addr": 0x00123, "disp": 0}, {"kind": "win", "addr": 0x1234, "chr": 1, "ra": line, "disp": 0},
-        {"kind": "disp", "addr": 0x00124, "disp": 0}, {"kind": "dummy", "disp": 0}, {"kind": "dummy"}, {"kind": "dummy"}, {"kind": "dummy"}]
+        {"kind": "disp", "addr": 0x00124, "disp": 0}, {"kind": "dummy", "disp": 0},
+        {"kind": "dummy", "hs": 0}, {"kind": "atr", "data": 0xA0, "hs": 0}, {"kind": "dummy"}, {"kind": "dummy"},     # TEXTON, the second font
+        # the cursors: CUD1 low in the Window cycle (the left character), in the cycle after it (the right one); CUD2
+        {"kind": "disp", "addr": 0x00123, "disp": 0}, {"kind": "win", "addr": 0x1234, "chr": 1, "ra": line, "disp": 0, "cud1": 0},
+        {"kind": "disp", "addr": 0x00124, "disp": 0}, {"kind": "win", "addr": 0x1234, "chr": 1, "ra": 15, "disp": 0},
+        {"kind": "disp", "addr": 0x00125, "disp": 0, "cud1": 0}, {"kind": "win", "addr": 0x1235, "chr": 1, "ra": 0, "disp": 0, "cud2": 0},
+        {"kind": "disp", "addr": 0x00126, "disp": 0, "cud2": 0}, {"kind": "dummy", "disp": 0}, {"kind": "dummy"}, {"kind": "dummy"}, {"kind": "dummy"}]
     chip.script = list(script)
     clock(s, 8 * (len(script) + 4))
     by = list(chip.log)
@@ -591,71 +714,164 @@ def superimposed(delays, count0):
         if got != [(0x11234, CW >> sh & 255)]: chk.append("%s was written %r: the character word belongs at 11234" % (ram, [(hex(a), hex(v)) for a, v in got]))
     if chip.reads != [(0x1234, CW)]: chk.append("the chip read %r from the character screen, not %04X" % (chip.reads, CW))
     disp = [(t, c) for t, c in by if c["kind"] == "disp"]
-    if len(s.parts["IC23"].loads) != len(disp): chk.append("%d loads of the graphics shift registers for %d Background cycles" % (len(s.parts["IC23"].loads), len(disp)))
+    if len(s.parts["IC23"].loads) != len(disp): chk.append("%d loads of the graphics shift registers for %d Background cycles" % (len(s.parts["IC23"].loads), len(disp)))      # (all with the display on)
     wins = [(t, c) for t, c in by if c["kind"] == "win"]
-    atrs = [t for t, c in by if c["kind"] == "atr"]
-    shown = [t for t, c in wins if t > atrs[0]]                         # the text shifter is held clear until TEXTON
+    atrs = [(t, c["data"]) for t, c in by if c["kind"] == "atr"]
+    shown = [t for t, c in wins if t > atrs[0][0]]                      # the text shifter is held clear until TEXTON
     if len(s.parts["IC48"].loads) != 2 * len(shown): chk.append("%d loads of the text shifter for %d Window cycles with the text on" % (len(s.parts["IC48"].loads), len(shown)))
     for t, c in wins:
-        e = edge_of(s, t - DELAY["163"])
+        e = edge_of(s, t - s.qb)
         w = s.parts["IC10"].mem.get(0x10000 | c["addr"], s.parts["IC10"].default(0x10000 | c["addr"])) | \
             s.parts["IC11"].mem.get(0x10000 | c["addr"], s.parts["IC11"].default(0x10000 | c["addr"])) << 8
-        atr = 0x60 if len(atrs) > 1 and t > atrs[1] else 0x20 if t > atrs[0] else 0
-        text = bits(glyph(w & 255, c["ra"]), 8) + bits(glyph(w >> 8, c["ra"]), 8) if atr & 0x20 else [0] * 16
+        atr = ([0] + [a for ta, a in atrs if ta < t])[-1]
+        nxt = by[[id(cc) for tt, cc in by].index(id(c)) + 1][1]         # the cycle after: the right character's look-up
+        gen = lambda code, cyc: chargen(cyc.get("cud2", 1) << 14 | (atr >> 7 & 1) << 13 | cyc.get("cud1", 1) << 12 | code << 4 | c["ra"])
+        text = bits(gen(w & 255, c), 8) + bits(gen(w >> 8, nxt), 8) if atr & 0x20 else [0] * 16
         if stream(s, "TDOT", e, 16) != text: chk.append("the character word %04X on line %d came out as %r, not %r" % (w, c["ra"], stream(s, "TDOT", e, 16), text))
         # the graphics word of the same display cycle (the Background cycle before this one) is on GDEL in the same 16 dots
         tb, cb = [(tt, cc) for tt, cc in disp if tt < t][-1]
         g = bits(word_at(s, cb["addr"]))
         if stream(s, "GDEL", e, 16) != g: chk.append("the graphics word under the text at %04X: %r, not %r" % (c["addr"], stream(s, "GDEL", e, 16), g))
         want = [a ^ b for a, b in zip(g, text)] if atr & 0x40 else [a | b for a, b in zip(g, text)]
-        if stream(s, "VG", e, 16) != want: chk.append("the picture with ATR %02X at %04X: %r, not %r" % (atr, c["addr"], stream(s, "VG", e, 16), want))
+        if stream(s, "VG", e + 1, 16) != want: chk.append("the picture with ATR %02X at %04X: %r, not %r" % (atr, c["addr"], stream(s, "VG", e + 1, 16), want))
     # after the last Window cycle's two characters the text shifter is empty
-    t, c = wins[-1]; e = edge_of(s, t - DELAY["163"])
+    t, c = wins[-1]; e = edge_of(s, t - s.qb)
     if any(stream(s, "TDOT", e + 16, 24)): chk.append("text after the last Window cycle's two characters: %r" % stream(s, "TDOT", e + 16, 24))
     return finish(s, "superimposed", chk)
 
 
-def ports():
-    """the six ports' strobes: OUT PA / PB and IN PC / PD select the chip, with the bus buffer's direction; no other"""
-    s = build(DMAX, 0, text=False)
+STEP = 500.0                # a microcode step, two CPU clocks: 500 ns at 4 MHz, the fastest the chip's CS allows (477 ns)
+T_RSRW, T_WDATA, T_WHOLD, T_CS = 50.0, 40.0, 10.0, 3 * 4 * DOT       # the chip's host side (8 MHz grade), ns; CS three 2CLK cycles
+T_RDATA, T_RREL = 80.0, 60.0                                          # its read data after CS, and released after CS
+
+
+def records():
+    """the microcode's I/O records, which ports() imitates: what it relies on is checked here against the tree's
+    test.hex. Returns the faults"""
+    sys.path.insert(0, os.path.join(ROOT, "tools"))
+    import ucode_wavedrom as W
+    sig, recs = W.signal_table(), W.microcode()
+    S = {n: (b, bt) for n, b, bt in sig}
+    on = lambda w, n: W.active(w, S[n][0], S[n][1], n)
+    port = lambda w: sum(on(w, "IOADDR%d" % i) << i for i in range(4))
+    src = lambda w: tuple(n for n in ("-AC-RD", "-ALU-FUNC", "-MEM-RD", "-TMP-REG-RD0", "-TMP-REG-RD1", "-REG-FUNC-RD") if on(w, n))
+    out = []; nw = nr = 0; drops = 0
+    for op in range(256):
+        w = recs[op]; st = [w[i * 8:i * 8 + 8] for i in range(64)]
+        last = next((i for i in range(64) if on(st[i], "UCODE-COUNT-RESET")), 63)
+        for i in range(1, last + 1):
+            for strobe in ("-IO-WR", "-IO-RD"):
+                if not on(st[i], strobe) or on(st[i - 1], strobe): continue
+                j = i
+                while j < last and on(st[j + 1], strobe): j += 1
+                if i < 3 or port(st[i - 2]) != port(st[i]) or port(st[i - 1]) != port(st[i]):
+                    out.append("opcode %02X: the port number is not on the bus two steps before %s" % (op, strobe))
+                if any(port(st[k]) != port(st[i]) for k in range(i, j + 1)): out.append("opcode %02X: the port number moves during %s" % (op, strobe))
+                if strobe == "-IO-WR":
+                    nw += 1
+                    if j != i: out.append("opcode %02X: -IO-WR is %d steps" % (op, j - i + 1))
+                    if j + 1 > last or port(st[j + 1]) != port(st[i]): out.append("opcode %02X: the port number goes with -IO-WR" % op)
+                    if not src(st[i]) or any(src(st[k]) != src(st[i]) for k in (i - 2, i - 1, j + 1) if k <= last) or j + 1 > last:
+                        out.append("opcode %02X: the data is not on the bus from two steps before -IO-WR to a step after" % op)
+                else:
+                    nr += 1
+                    takes = [k for k in range(i, min(j + 2, last + 1)) if on(st[k], "-AC-LD")]
+                    if not takes or takes[0] < i + 1: out.append("opcode %02X: the byte is taken less than a step into -IO-RD" % op)
+                    if j == last or port(st[j + 1]) != port(st[i]): drops += 1
+    if not nw or not nr: out.append("no I/O records found in the microcode")
+    return out, "%d OUT and %d IN records: the port number and the data two steps before a strobe, a step after -IO-WR; " \
+                "%d of the IN records drop the port number with -IO-RD" % (nw, nr, drops)
+
+
+def ports(corner="max"):
+    """the bus side, driven as the microcode's records drive it (records() checks that they do): the port number, and
+    for an OUT the data, on the bus two steps before the strobe; -IO-WR one step, the port number and the data staying
+    a step more; -IO-RD four steps, the byte taken a step into it, the port number going in the same instant as the
+    strobe. The chip is a stand-in: it answers a read 80 ns after CS and lets go 60 ns after it.
+    Checked: OUT PA / PB and IN PC / PD select the chip and nothing else does, at any moment; RS and R/W are steady
+    50 ns before CS and until it has risen; CS lasts three 2CLK cycles; an OUT's byte is at the chip 40 ns before CS
+    rises and 10 ns after; an IN's byte is on the bus a step into the strobe; the chip and the bus buffer never drive
+    the chip's data pins together; the PS/2 section's strobes come for their ports only"""
+    s = build(DMAX, 0, False, corner)
     chk = []
+    hd = ["HD%d" % i for i in range(8)]
+    rsrw = (("RS", s.net("IC1", 5)), ("R/W", s.net("IC1", 3)))          # the nets at the chip's own pins
+    def chipd(v, delay):
+        for i in range(8): s.post(hd[i], ("IC1", str(17 + i)), None if v is None else v >> i & 1, delay)
+    def until(net, value, limit=400.0):
+        t0 = s.t
+        while s.val[net] != value and s.t < t0 + limit: s.run(s.t + 0.5)
+        return s.t
+    s.run(s.t + STEP)
     for port in range(16):
         for strobe in ("-IO-WR", "-IO-RD"):
+            wr = strobe == "-IO-WR"
+            chip = port in ((10, 11) if wr else (12, 13))
+            name = "%s port %X" % ("OUT" if wr else "IN", port)
             for i in range(4): s.force("IO-ADDR%d" % i, port >> i & 1)
-            s.force("-IO-WR", 1); s.force("-IO-RD", 1); s.run(s.t + 200)
-            for i in range(8): s.force("DATA%d" % i, None if strobe == "-IO-RD" else 0x5A >> i & 1)
-            for i in range(8): s.force("HD%d" % i, 0xC3 >> i & 1 if strobe == "-IO-RD" else None)      # the chip's answer to a read
-            s.force(strobe, 0); s.run(s.t + 400)
-            cs = s.val["CS#"]
-            want = 0 if (strobe == "-IO-WR" and port in (10, 11)) or (strobe == "-IO-RD" and port in (12, 13)) else 1
-            if cs != want: chk.append("port %X, %s: CS is %r" % (port, strobe, cs))
-            if cs == 0:
-                if s.v("IC1", 5) != (port & 1) or s.v("IC1", 3) != (port >> 2 & 1): chk.append("port %X: RS %r, R/W %r" % (port, s.v("IC1", 5), s.v("IC1", 3)))
-                if strobe == "-IO-WR":
-                    got = sum((s.val["HD%d" % i] or 0) << i for i in range(8))
-                    if got != 0x5A: chk.append("OUT port %X: the chip's data pins see %02X, not 5A" % (port, got))
-                else:
-                    got = sum((s.drv["DATA%d" % i].get(("IC5", str(18 - i))) or 0) << i for i in range(8))
-                    if got != 0xC3: chk.append("IN port %X: the buffer puts %02X on the bus, not C3" % (port, got))
+            for i in range(8): s.force("DATA%d" % i, 0x5A >> i & 1 if wr else None)
+            s.run(s.t + 2 * STEP)
+            cs_before = s.last["CS#"]
+            t0 = s.t; s.force(strobe, 0)
+            if chip:
+                tf = until("CS#", 0)
+                if s.val["CS#"] != 0: chk.append("%s: no CS" % name); continue
+                for pin, net in rsrw:
+                    s.note("RS, R/W before CS", tf - s.last[net] - T_RSRW, "%s: %s steady %.1f ns" % (name, pin, tf - s.last[net]))
+                    if tf - s.last[net] < T_RSRW: chk.append("%s: %s moved %.1f ns before CS (%.0f wanted)" % (name, pin, tf - s.last[net], T_RSRW))
+                if s.v("IC1", 5) != (port & 1) or s.v("IC1", 3) != (0 if wr else 1): chk.append("%s: RS %r, R/W %r" % (name, s.v("IC1", 5), s.v("IC1", 3)))
+                if not wr: chipd(0xC3, T_RDATA)
+            s.run(t0 + STEP)                                           # a step into the strobe: an IN's byte is taken here
+            if chip and not wr:
+                got = [s.val["DATA%d" % i] for i in range(8)]
+                if got != [0xC3 >> i & 1 for i in range(8)]: chk.append("%s: the bus has %r a step into -IO-RD, not C3" % (name, got))
+                s.note("IN byte before its take", s.t - max(s.last["DATA%d" % i] for i in range(8)), "%s" % name)
             others = {"WRPE#": ("-IO-WR", 14), "RDPE#": ("-IO-RD", 14), "RDPF#": ("-IO-RD", 15)}
             for net, (st, pt) in others.items():
-                if s.val[net] != (0 if (strobe, port) == (st, pt) else 1): chk.append("port %X, %s: %s is %r" % (port, strobe, net, s.val[net]))
-            s.force(strobe, 1); s.run(s.t + 200)
+                if s.val[net] != (0 if (strobe, port) == (st, pt) else 1): chk.append("%s: %s is %r" % (name, net, s.val[net]))
+            if wr: s.force(strobe, 1)                                   # -IO-WR ends; the port number and the data stay a step
+            else:
+                s.run(t0 + 4 * STEP); s.force(strobe, 1)                # -IO-RD ends, and the port number in the same instant
+                for i in range(4): s.force("IO-ADDR%d" % i, 0)
+            if chip:
+                tr = until("CS#", 1)
+                s.note("CS low", tr - tf - T_CS, "%s: %.1f ns" % (name, tr - tf))
+                if tr - tf < T_CS: chk.append("%s: CS low %.1f ns (%.1f wanted)" % (name, tr - tf, T_CS))
+                for pin, net in rsrw:
+                    if s.last[net] > tf: chk.append("%s: %s moved %.1f ns before CS rose" % (name, pin, tr - s.last[net]))
+                if wr:
+                    steady = tr - max(s.last[n] for n in hd)
+                    got = sum((s.val[n] or 0) << i for i, n in enumerate(hd))
+                    s.note("OUT data before CS ends", steady - T_WDATA, "%s: steady %.1f ns" % (name, steady))
+                    if got != 0x5A or steady < T_WDATA: chk.append("%s: the chip's data pins have %02X, steady %.1f ns, as CS rises" % (name, got, steady))
+                    s.run(tr + T_WHOLD)
+                    if max(s.last[n] for n in hd) > tr: chk.append("%s: the chip's data moved within %.0f ns of CS rising" % (name, T_WHOLD))
+                else: chipd(None, T_RREL)
+            s.run(s.t + STEP)
+            if not chip and s.last["CS#"] != cs_before: chk.append("%s: CS moved at %.1f ns" % (name, s.last["CS#"]))
+            for i in range(8): s.force("DATA%d" % i, None)
     s.fights = {k: v for k, v in s.fights.items() if "TB" not in k[1]}                        # not the test bench's own drivers
     return finish(s, "ports", chk)
 
 
 def main():
     fails = 0
-    runs = [("ports", ports, ())]
-    for dn, d in (("max", DMAX), ("min", DMIN)):
-        for c0 in (1, 6):
-            runs.append(("interleaved, chip delays %s, counter from %d" % (dn, c0), interleaved, (d, c0)))
-            runs.append(("superimposed, chip delays %s, counter from %d" % (dn, c0), superimposed, (d, c0)))
-    worst = {}
+    out, what = records()
+    print("%-66s %s" % ("the microcode's I/O records", "PASS" if not out else "FAIL"))
+    print("    " + what)
+    for x in out[:12]: print("    " + x)
+    fails += bool(out)
+    runs = [("ports, parts slow", ports, ("max",)), ("ports, parts fast", ports, ("min",))]
+    for cn, d, corner, phases in (("chip slow, parts slow", DMAX, "max", (1, 6)), ("chip slow, parts fast", DMAX, "min", (1,)),
+                                  ("chip fast, parts slow", DMIN, "max", (1,)), ("chip fast, parts fast", DMIN, "min", (1, 6)),
+                                  ("chip slow, rises fast, falls slow", DMAX, "rise", (1,)), ("chip slow, rises slow, falls fast", DMAX, "fall", (1,)),
+                                  ("chip fast, rises fast, falls slow", DMIN, "rise", (1,)), ("chip fast, rises slow, falls fast", DMIN, "fall", (1,))):
+        for c0 in phases:
+            runs.append(("interleaved, %s, counter from %d" % (cn, c0), interleaved, (d, c0, corner)))
+            runs.append(("superimposed, %s, counter from %d" % (cn, c0), superimposed, (d, c0, corner)))
     for name, f, args in runs:
         out = f(*args)
-        print("%-52s %s" % (name, "PASS" if not out else "FAIL"))
+        print("%-66s %s" % (name, "PASS" if not out else "FAIL"))
         for x in out[:12]: print("    " + x)
         fails += bool(out)
     print("v30_netsim: %d failed" % fails)
