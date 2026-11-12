@@ -1,8 +1,9 @@
-# Video card V4.0 (6845, VGA, 16 dots a count) - the circuit
+# Video card V4.0 (6845, VGA, 16 dots a count) - the circuit, the schematic, the first placement
 
-The circuit as data, checked and simulated; no schematic and no board yet. `v40_netlist.py` is the card's circuit
-(parts, nets, the pins left open), written 2026-11-12 from the design note `docs/cards/video-v4.md` (section 5 the
-clock and the stage, 6 the text, 7 the graphics RAM's two modes, 8 the dot path, 9 the ports).
+The circuit as data, checked and simulated; its schematic; and the board with every part placed and **nothing
+routed** (2026-11-12). Not ordered, not built. `v40_netlist.py` is the card's circuit (parts, nets, the pins left
+open), written from the design note `docs/cards/video-v4.md` (section 5 the clock and the stage, 6 the text, 7 the
+graphics RAM's two modes, 8 the dot path, 9 the ports).
 
 `python3 v40_netlist.py` checks the wiring (in `make check`): every pin of every part on a net or listed as open, no
 net with a single pin, no two outputs on one net, an output on every net of ICs, a capacitor for every IC, and the
@@ -79,8 +80,82 @@ hold), Hitachi's 6845 (the figures are Motorola's sheet), signal quality on the 
 - **46 ICs**, where the note's estimate was 42 or 43: four 74F74 where it counted two, and an inverter and an AND
   package more.
 
+## The schematic (2026-11-12)
+
+`gen_v40.py` (made from the V3 design's `gen_v30.py`, itself from the V2.0 card's; run it with KiCad's Python)
+draws the schematic from the netlist: `video-v4.0.kicad_sch`, the root, and eight sheets. KiCad's own netlist of it
+equals `v40_netlist.py` net for net (250 nets), and its electrical rules check finds nothing
+(`reports/netlist.net`, `reports/erc.json`, `reports/video-v4.0-schematic.pdf`).
+
+| Sheet | What is on it |
+|---|---|
+| 2 Bus and ports | the bus connector, the block select and its jumper, the port decode and strobes, the two control registers, the status |
+| 3 CRTC and clock | the 6845, the oscillator, the dot counter, the 6845's clock, the stage registers |
+| 4 Text | the text RAM, the code register, the character generator, the text shifter, the cursor flag |
+| 5 Graphics RAM | the address multiplexers, the RAM, the write buffer, the two read paths, the byte latch, the shifter |
+| 6 Slots | SELCPU, the write flip-flop, the -WE pulse, the RAM's -OE, the read latch's clock |
+| 7 Dots and syncs | the two layers mixed, the retimed dot, the three guns, the syncs, the VGA socket |
+| 8 PS2 | the ATmega328P, its latches, flags and status, the two jacks, the FTDI header |
+| 9 Power | the power units, the decoupling capacitors, the LED |
+
+| | |
+|---|---|
+| `gen_v40.py sch` | the local libraries and the schematic |
+| `gen_v40.py project` | `video-v4.0.kicad_pro` and `.kicad_dru`: 0.25 mm tracks, 0.2 mm clearance, GND and VCC as planes |
+| `gen_v40.py checknet reports/netlist.net` | KiCad's netlist of the schematic against `v40_netlist.py` |
+| `gen_v40.py board reports/netlist.net <out.kicad_pcb>` | the unrouted board: every part placed, every pad on its net, the silkscreen placed |
+| `gen_v40.py place <pcb>` | courtyards apart, everything inside the outline, the DIP sockets clear of each other and of the other parts |
+| `gen_v40.py verify reports/netlist.net <pcb>` | 424 key connections pin by pin, in the schematic and on the board; the layers; the planes |
+| `gen_v40.py drawing <pcb>` | `video-v4.0-placement.pdf` |
+| `gen_v40.py bom` | `BOM.md` |
+
+## The first placement (2026-11-12): 250 mm
+
+`video-v4.0.kicad_pcb` is the board with all 130 parts placed and no track: four layers (GND and VCC planes
+inside), the blank card's connector, 250.00 x 113.97 mm. `video-v4.0-placement.pdf` is its drawing, on a landscape
+sheet as the board lies; `reports/video-v4.0-top.png` shows it with the parts fitted.
+
+**The length.** The 46 ICs stand in thirteen columns: eleven of 300-mil sockets and two of 600-mil ones (the text
+RAM over the character generator, the 6845 over the graphics RAM), a capacitor beside every chip's VCC pin.
+
+| | Card length |
+|---|---|
+| Every long card today, V2.0 with its 40 ICs among them | 218 mm |
+| One column fewer, every column full to the last socket, at V2.0's spacing: no room left for the oscillator, the crystal, the jumpers or the resistors | 221 mm |
+| This placement at V2.0's spacing (columns 14 mm apart) | 235 mm |
+| This placement as it is: columns 15.24 mm apart | **250 mm** |
+
+So the card does not fit 218 mm. 235 mm is the shortest at V2.0's density, which routes on two signal layers only
+for some component orders; the 15 mm from there to 250 are spent between the columns, as room to route. 250 mm is
+the length chosen for the V3 design (2026-11-11).
+
+**What stands where**, from the bus connector to the front edge: the port decode, the strobes and the block select,
+with the block jumper SV1 at the bottom edge under it; the text RAM (turned so that its CPU port faces the bus)
+over the character generator; the 6845 (turned so that its bus pins face the bus and MA the stage) over the graphics
+RAM; the stage and the code register; the address multiplexers; the RAM's latches and buffers; the two shifters; the
+clock, the counter at the bottom of its column over the oscillator; the slot logic; the dots' and syncs' gates; the
+control registers and the status; the PS/2 latches; the ATmega (turned so that its crystal pins face the front).
+
+**The layout rules** (2026-10-24 and after) are kept from the start. At the front edge, facing out: the VGA
+socket, the two PS/2 jacks; beside them the INT jumper, the FTDI header and the power LED. The block jumper at the
+bottom edge. Every reference with its type or value on the silk outside its part, placed by the generator clear of
+every body and socket: none is under a part, none had to go into a legend. Each jumper position and the FTDI
+header's pins labelled; `cottageworker.com` beside the card's name and revision. Bypass capacitors on 0.1-inch
+leads.
+
+**The checks on this board**: the placement check clear (130 footprints, 47 sockets, the closest a capacitor
+0.47 mm from a socket's wall); 424 key connections right in the schematic and on the pads; KiCad's design rules
+check with no error (`reports/drc.json`: four warnings where the bus connector's own silk crosses the edge, as on
+every card, and 499 connections unrouted, which is all of them).
+
+**Found by the placement check**: the VGA socket's rotation. The V3 design's placement, never checked, had the
+DE-15 turned with its face into the board; here it faces the edge.
+
+Not done: routing (Freerouting, as V2.0's `build.sh`), the planes' check on the routed board, `pcb-check`, a design
+review. They wait for the length.
+
 ## Next
 
-1. The emulators' model and the ROM driver (on the branch `video-v2`).
-2. The generator for the schematic and the board, from V2.0's `gen_v20.py`; the placement (which says whether 46
-   ICs fit the 218 mm card or want the 250 mm one), `pcb-check`, a review.
+1. The length: 250 mm, or another.
+2. Then `build.sh`: the routing and its reports; `pcb-check`; a design review.
+3. Beside it: the emulators' model and the ROM driver (on the branch `video-v2`).
