@@ -391,8 +391,18 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   the three fast decodes, two 74ACT273 for the control register, a 74F299 as the delay line); no clock from a decode
   of the counter (P56, a flip-flop, is the one timing edge); a read's buffers a dot later than a write's; the
   memories' outputs off from the end of a cycle to the end of the next AS (MOE); a latch on RS and R/W, because the
-  microcode's IN records drop the port number with -IO-RD. **Next, in order:** the generator for the schematic and
-  the board from V2.0's; routing, DRC, PDFs, `pcb-check`; a design review. Settled 2026-11-11: the chip on four
+  microcode's IN records drop the port number with -IO-RD. **The schematic is generated** (2026-11-11,
+  `hardware/cards/video/kicad/v3.0/gen_v30.py sch`, from V2.0's generator: a root and eight sheets, the exported
+  netlist equal to `v30_netlist.py` net by net, ERC clean, `reports/video-v3.0-schematic.pdf`, `BOM.md`).
+  **DECISION PENDING, the card's length:** the first placement trial shows that the 47 ICs do not fit the 218 mm
+  outline at V2.0's spacing - about 250 mm is needed (V2.0 filled 218 mm with 40 ICs). The ways out: (a) a 250 mm
+  card, 32 mm more slot space than the sequencer logic card, nothing else changed; (b) 218 mm without text method A's
+  eight sockets (method A then needs a later board); (c) 218 mm without the PS/2 section (a keyboard card of its own;
+  about 220 mm, to be squeezed); (d) the control gates in one or two GALs, a redesign with its simulation.
+  `gen_v30.py` has `LENGTH = 250` and a provisional placement (`gen_v30.py place` does not pass yet); the board
+  waits for the answer. Also to verify before any order: the DE-15 socket's footprint (KiCad's) against the part
+  bought. **Next, in order:** the placement at the length chosen, `build.sh` (routing, DRC, PDFs), `pcb-check`; a
+  design review. Settled 2026-11-11: the chip on four
   ports (PA-PD; with PS/2 on PE / PF the card has all of PA-PF, a later card uses P2-P7), and VGA only (one DE-15;
   no DB9, RCA or halved clock). Open: whether a 512K x 8 static RAM exists in DIP-32 (the footprint's option). For
   the bench (section 10d, "what it cannot say"): the chip's minimum delays, on which two margins of 2 to 3 ns rest;
