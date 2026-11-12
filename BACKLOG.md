@@ -412,7 +412,14 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   no DB9, RCA or halved clock). Open: whether a 512K x 8 static RAM exists in DIP-32 (the footprint's option). For
   the bench (section 10d, "what it cannot say"): the chip's minimum delays, on which two margins of 2 to 3 ns rest;
   a decoder pulse at the end of an IN; the cursor skew's count.
-- **Video card V2.0 (designed 2026-10-22; `hardware/cards/video/kicad/v2.0`; re-reviewed and READY TO ORDER 2026-10-23, not ordered).** V1.3 (DOTS jumper, 12 MHz,
+- **Video card V2.0 (designed 2026-10-22; `hardware/cards/video/kicad/v2.0`; re-reviewed and READY TO ORDER 2026-10-23, not ordered; ON HOLD 2026-11-12).**
+  **On hold (2026-11-12):** the design stays as it is, ready to order (the pre-order check run again 2026-11-12:
+  no failures, the four warnings of 2026-11-10), and may still be ordered; it waits while a VGA card with the 6845
+  is looked at again, now that the V3 card (the ACRTC) is not built. The thought, nothing designed: this card's
+  circuit at VGA rates - a 25.175 MHz dot clock, 8 dots a character, the 6845 at 3.147 MHz (Hitachi's S type; its
+  clock rating to verify on a data sheet), 80 x 25 characters of 8 x 16 dots on a 640 x 480 raster, graphics
+  640 x 400 in 16 planes of 2K, a DE-15 - with the ports, the PS/2 section and the software model of V2.0.
+  The card: V1.3 (DOTS jumper, 12 MHz,
   both fonts in one EPROM, 4 layers) plus a graphics layer, two PS/2 ports and every register on I/O ports. Board 218 mm
   long (the sequencer logic V2.1l's length; X1 where every card has it), 4 layers: In1 GND plane, In2 VCC plane.
   - **Memory map**: text RAM **$D000-$D7FF** as before (IDT7134, the 6845 reads the other port); **graphics window
