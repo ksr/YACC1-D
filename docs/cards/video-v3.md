@@ -292,7 +292,11 @@ Beyond that the limits are the 5 V logic and the chip: 1024 x 768 with flashless
   blank card's bus connector, the 218 mm four-layer outline with the planes.
 - Gone: everything in the $D000 block (the 74S85 select and SV3, the IDT7134, the window logic), the 6845, the
   DB9 and RCA outputs (VGA only).
-- About 22 chips without the keyboard section and 29 with it; method A adds about 7. V2.0 has 40.
+- 39 chips with the keyboard section, and method A's 8 sockets: 47 (the first estimate was 29 and 7). V2.0 has 40.
+- **The 218 mm outline is too short for them** (2026-11-11, the first placement trial with `gen_v30.py`). At V2.0's
+  spacing - columns of sockets 14 mm apart with a capacitor beside each chip, 6.3 mm between the chips of a column -
+  the 47 ICs, with the 0.9-inch DIP-64 and four 0.6-inch parts, fill ten narrow columns, two wide ones and the chip's
+  own: about 250 mm. Without method A's sockets, or without the PS/2 section, about 218 mm. To decide (section 12).
 - The board-layout rules of 2026-10-24 and after apply from the start: the DE-15 and the PS/2 jacks at the front edge
   facing out, jumpers at an edge, every reference and value on the silk outside its part, `cottageworker.com`.
 - `pcb-check` before any order.
@@ -388,10 +392,11 @@ uses two registers (section 10b).
 
 **Order of work.** (1) The netlist with its own checks (every pin on a net or listed as unconnected, no output tied
 to another, the text-A parts removable as V2.0's graphics parts are): done. (2) A timing check: the memory cycle and
-the bus cycle against the parts' numbers: done, in the simulation (section 10d). (3) The generator for
-the schematic sheets and the unrouted board, from V2.0's (`gen_v20.py`): the 218 mm card, four layers, the layout
-rules of section 10. (4) Routing, DRC, the placement and schematic PDFs, `pcb-check`. (5) The review of the design
-before any order, as V2.0 had (`hardware/cards/video/reviews/v2.0.md`).
+the bus cycle against the parts' numbers: done, in the simulation (section 10d). (3) The generator for the schematic
+sheets and the unrouted board, from V2.0's (`gen_v20.py`): the schematic is done (2026-11-11, `gen_v30.py sch`: a root
+and eight sheets, its exported netlist equal to `v30_netlist.py`, ERC clean); the board waits for its length (section
+10), then four layers and the layout rules of section 10. (4) Routing, DRC, the placement and schematic PDFs,
+`pcb-check`. (5) The review of the design before any order, as V2.0 had (`hardware/cards/video/reviews/v2.0.md`).
 
 ## 10b. The memory cycle and the control logic (2026-11-11)
 
@@ -685,6 +690,10 @@ buffers on a dot early, a register on the wrong edge of P56, -WE in every cycle,
   8-bit mode WPTN counts bytes.
 
 **To decide**
+- **The card's length** (section 10): about 250 mm with everything on it, 32 mm more slot space than the longest card
+  today; or 218 mm without text method A's sockets (the first build leaves them empty; method A would then need a
+  later board); or 218 mm without the PS/2 section (a keyboard card of its own; about 220 mm, to be squeezed); or the
+  control gates gathered into one or two GALs, a redesign that the timing simulation would have to follow.
 - A font with lower case: the first image is the V1.3 card's 64 glyphs, each line doubled into the 8 x 16 cell.
 
 **Settled by the timing check (2026-11-11, section 10d)**
