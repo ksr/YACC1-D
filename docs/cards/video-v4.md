@@ -424,6 +424,8 @@ On the branch `video-v2`, beside the V2.0 card's:
 - 25 rows of text. The ROM and Y1/OS use 24 today.
 - One RAM read twice a count for each layer, not two RAMs side by side (which would give a slot of 318 ns in place
   of 159, at the price of a second 48-pin text RAM, a second graphics RAM and a second set of buffers and latches).
+- The card is 250 mm long (2026-11-12, after the first placement: 218 mm does not hold it, 235 mm is the shortest at
+  V2.0's spacing; section 11).
 - 46 ICs: the two ways to 44 that were looked at are not taken (the read latch as a transparent latch that is also
   direct mode's buffer; one quad flip-flop, a 74F175, for two 74F74).
 
@@ -431,8 +433,6 @@ On the branch `video-v2`, beside the V2.0 card's:
 - **The raster**: 640 x 480 at 60 Hz with the text in a 400-line band, as the card's table; 640 x 400 at 70 Hz as a
   second table for the driver to offer.
 - **The control bits' places** (section 9), which are not V2.0's. The netlist is wired to them.
-- **The card's length**: the first placement is on 250 mm. 218 mm does not hold the card; 235 mm is the shortest at
-  V2.0's spacing (section 11).
 - **The font**: 256 glyphs of 8 x 16 with lower case, and their cursor forms. V2.0's fonts are 8 lines high; the V3
   design's first image is the V1.3 glyphs with each line doubled.
 - **V2.0**: ordered as well, or left as it is. If ordered: its slot mode has the write pulse that the strobe can
