@@ -43,11 +43,12 @@ character generator looks up a character in that time and the shift registers ru
 | Text | 80 x 24 (6 dots) or 64 x 24 (8 dots), 8 lines a row | 80 x 25 of 8 x 16 | in the bitmap, or a character screen |
 | Graphics | 512 x 192, 8 planes of 2K | 640 x 400, 16 planes of 2K | 640 x 480 |
 | Who draws | the CPU, through a 2K window | the CPU, through a 2K window | the chip, by command |
+| The window against the CPU's clock | to 1.8 MHz with the layer shown; to the machine's own limit, about 6 MHz, with it hidden (direct mode) | to about 3.5 MHz shown (an estimate); to about 6 MHz hidden (direct mode, as V2.0's) | no window |
 | The CPU's view | text RAM at $D000, the window at $D800, ports PA-PE | the same, and port PF | ports only |
 | Text RAM / graphics RAM | IDT7134 / 62256 (32K, two pages) | IDT7134 / 128K part (64K used, two pages) | two 128K RAMs |
 | Keyboard and mouse | PS/2 on an ATmega328P | the same section | the same section |
 | Outputs | RCA, DB9 | DE-15 | DE-15 |
-| ICs | 40 | about 42 (an estimate) | 47 |
+| ICs | 40 | 42 or 43 (an estimate) | 47 |
 
 ## 3. Monitor timing and the 6845's table
 
@@ -98,6 +99,7 @@ card (section 13).
                                                                                         |--> mix, retime
  $D800-$DFFF <--> 128K RAM, four slots a count: display, CPU, display, CPU              |    --> R G B
                         |          address: page, RA, MA, half / page, plane, ADDR      |
+                        |          GFX-ON = 0, direct mode: the CPU's alone             |
                   byte latch --> 74F299 -------------------------------------------------+
                                                  HSYNC, VSYNC --> two lines --> polarity --> DE-15
  PS/2 keyboard and mouse: the V2.0 card's section
@@ -144,12 +146,14 @@ reach the connector a dot later (the retiming flip-flop of section 8).
 | The 6845's outputs to the stage registers | 596 ns | 160 ns (MA); 300 ns (the others, assumed) |
 | The text RAM: address to the code register | 159 ns a half | about 31 ns for the address and 55 to 90 ns for the IDT7134, by grade |
 | The character generator: code to the shift register's load | 318 ns | about 22 ns for the code and 150 ns for the AT28C64B-15 |
-| The graphics RAM, a display slot: the stage and the multiplexer, then the RAM, to the byte latch | 159 ns | about 40 ns and 55 ns |
+| The graphics RAM, a display slot: the stage, direct mode's gate in the select and the multiplexer, then the RAM, to the byte latch | 159 ns | about 45 ns and 55 ns |
 | The graphics RAM, a CPU slot | 159 ns | a write pulse of 79 ns (45 wanted), the data 25 ns before it ends |
 
 Nothing is closer than about 35 ns, and that with a 90 ns text RAM. V2.0's graphics RAM changes hands every 333 ns
 and the V3 design's memory cycle is 318 ns with an 80 ns write pulse: these are the same order, and the netlist is to
 be timed as V3's was, with the parts' data-sheet numbers (`tests/video/v30_netsim.py` has the models of these parts).
+The table is slot mode's. In direct mode (section 7) the graphics RAM follows the CPU's strobes and not the dot
+counter: its margins are V2.0's kind, computed against the microcode.
 
 ## 6. Text
 
@@ -197,25 +201,60 @@ $D800 + (y / 16) x 80 + x / 8        in plane y mod 16
 **The RAM's address.** For the display: DPAGE, RA3..0, MA9..0, the half. For the CPU: CPAGE, PLANE3..0, ADDR10..0.
 Four 74ACT157 choose between them.
 
-**Four slots a count.** The RAM belongs to the display in dots 0-3 and 8-11 and to the CPU in dots 4-7 and 12-15: the
-multiplexers' select is the counter's D2. A display slot reads one byte, which a latch takes at the slot's end (the
-clock of the text's code register) and the graphics 74F299 loads with the text's dots. A CPU slot comes every 318 ns
-and is 159 ns long:
+The RAM has two modes, as on V2.0, chosen by the control bit GFX-ON: **slot mode** with the layer shown, and
+**direct mode** with it hidden.
+
+**Slot mode (GFX-ON = 1): four slots a count.** The RAM belongs to the display in dots 0-3 and 8-11 and to the CPU in
+dots 4-7 and 12-15: the multiplexers' select is the counter's D2, through direct mode's gate. A display slot reads one
+byte, which a latch takes at the slot's end (the clock of the text's code register) and the graphics 74F299 loads
+with the text's dots. A CPU slot comes every 318 ns and is 159 ns long:
 
 - **A write** is taken as a slot begins (V2.0's WRQ) and -WE is low in the slot's two middle dots, a flip-flop's
   pulse. The write buffer is enabled by -WE itself, as on V2.0. A 2 us strobe writes the byte several times.
 - **A read**: a latch takes the RAM's byte as every CPU slot ends and drives the bus while the window is read.
 
-A strobe that holds one whole CPU slot is enough: about 480 ns. The YACC1's strobes are a microcode step, 2 us at
-1 MHz, so the window works up to a CPU clock of about 3.5 MHz (V2.0's slot mode: 1.8 MHz), to be worked out on the
-netlist as V2.0's was (`tests/video/v20_timing.py`).
+A strobe that holds one whole CPU slot is enough: about 480 ns, a wait of up to 318 for the slot and the slot's 159.
+The YACC1's strobes are a microcode step, 2 us at 1 MHz, so slot mode works up to a CPU clock of about 3.5 MHz (V2.0's
+slot mode: 1.8 MHz): an estimate, to be worked out on the netlist as V2.0's was (`tests/video/v20_timing.py`).
 
-**No direct mode.** V2.0 hands the RAM to the CPU while the layer is off, for a 6 MHz clock, with rules for the
-switch. Here the slots are always there and drawing is the same with the layer shown or hidden; GFX-ON only shows it.
-Whether a card for more than 3.5 MHz is wanted is to decide (section 13).
+**Direct mode (GFX-ON = 0, the reset state; decided 2026-11-12)** is V2.0's. The CPU owns the RAM and the window is a
+plain static RAM, with no slot to wait for. The machine's own limit is about 6 MHz, where a strobe is 333 ns: less
+than a slot-mode access needs, and enough for a RAM of 55 ns that is the CPU's alone. Without this mode the card
+would hold a machine that draws to 3.5 MHz.
 
-**The text-only build** is V2.0's: the graphics parts left off, a resistor holding the graphics dot low and a status
-bit saying so.
+- **The address**: the multiplexers' select is D2 OR NOT GFX-ON, so the CPU's address is held for good. This is the
+  one gate direct mode puts into slot mode's path (section 5).
+- **A write**: -WE is the window's write strobe itself: the write flip-flop is held preset and the pulse's term
+  forced, as on V2.0. The write buffer follows -WE, as in slot mode.
+- **A read**: the RAM's outputs are on only while the window is read, and a buffer (74HCT244, V2.0's IC55) passes them
+  to the bus in place of the read latch, whose outputs are then off. A 10k x 8 network holds the RAM's data lines
+  between accesses, when nothing drives them.
+- **The display**: the layer is not shown. GFX-ON low holds the graphics 74F299 clear (section 8), so what the byte
+  latch takes in this mode never reaches the screen.
+
+A program draws at full speed with the layer hidden and shows it with GFX-ON = 1. The second page does not change
+that: to draw on the hidden page while the other is shown the display needs its slots, so that is slot mode's, to
+about 3.5 MHz. Above it the order is hide, draw, show.
+
+**The rules for the window** are V2.0's (`hardware/cards/video/kicad/v2.0/README.md`, "The software rules for the
+window"):
+
+1. No code in the window, at any clock.
+2. At 6 MHz, no stack and no BRVR vector table in the window.
+3. Above about 3.5 MHz, the window only in direct mode.
+4. The instruction that writes control 1 does not access the window: entering slot mode, the write flip-flop stays
+   preset until the next slot (at most 318 ns), and a write begun in that time could open -WE in the middle of one.
+5. GFX-ON is switched in vertical blanking (IN PC bit 1): the bytes the pipeline took in direct mode are then never
+   loaded, where they would show once as up to 16 dots.
+
+Rules 1 and 2 are the register cards': a register counted in the step it is read through settles late, whatever the
+video card does, so faster parts here do not lift them. The margins are to be computed on the netlist against the
+microcode's strobes, as V2.0's were. V2.0 has 38 ns of read margin at 6 MHz on a selected register, with a RAM of
+the same 55 ns and 74LS157 multiplexers; this card's are 74ACT157, so that figure or better is to be expected, and is
+not yet computed.
+
+**The text-only build** is V2.0's: the graphics parts left off (direct mode's buffer and network with them), a
+resistor holding the graphics dot low and a status bit saying so.
 
 ## 8. The dot path, the syncs and the connector
 
@@ -240,13 +279,13 @@ on PA / PB with E made from the two I/O strobes, the PS/2 section on PD / PE.
 |---|---|---|
 | PA | - | 6845 address register |
 | PB | 6845 data (R14-R17) | 6845 data |
-| PC | status: bit 0 = 0, 1 VSYNC, 2 DE, 3 TEXT-ONLY, bits 7..4 = 0111, **the card ID $7x** | **control 1**: bits 3..0 PLANE, 4 CPAGE, 5 DPAGE, 6 GFX-ON, 7 XOR |
+| PC | status: bit 0 = 0, 1 VSYNC, 2 DE, 3 TEXT-ONLY, bits 7..4 = 0111, **the card ID $7x** | **control 1**: bits 3..0 PLANE, 4 CPAGE, 5 DPAGE, 6 GFX-ON (0 = direct mode), 7 XOR |
 | PD | PS/2 status: FULL, SRC, BUSY | PS/2 command |
 | PE | PS/2 data | - |
 | PF | - | **control 2**: bit 0 TEXT-OFF, 1 CURH (the cursor on the right-hand character of its count), 2 HSYNC positive, 3 VSYNC positive, 4 spare, 5 red off, 6 green off, 7 blue off |
 
--RESET clears both control registers: plane 0, page 0, text on, graphics off, both syncs negative, white. That is
-what 640 x 480 wants, so a driver that only loads the 6845's table has a picture.
+-RESET clears both control registers: plane 0, page 0, text on, graphics off and its RAM in direct mode, both syncs
+negative, white. That is what 640 x 480 wants, so a driver that only loads the 6845's table has a picture.
 
 Against V2.0: PLANE has a fourth bit, so CPAGE, DPAGE and TEXT-OFF have moved, and control 2 is new; the status has no
 DOTS bit (8 dots only: the jumper is gone); the ID is $7x where V2.0 reads $5x and the V3 design $6x.
@@ -270,41 +309,46 @@ At the machine's 1 MHz the 6845 of the V1.0 card can be tried on this card as it
 | Bus, ports, registers | as V2.0: 74S85, 74LS138, 2 x 74LS32, the status buffer, gates; two 74HCT273 where V2.0 has one | about 8 |
 | The 6845 and the clock | the 6845; a 25.175 MHz oscillator (DIP-14 can) in place of the crystal circuit and the DOTS logic; 74F163A, 74F74, a 74ACT04 | 4 |
 | Text | IDT7134; 2 x 74ACT574 (the stage); 74ACT574 (the code); AT28C64B-15; 74F299 | 6 |
-| Graphics | 128K RAM; 4 x 74ACT157; the write buffer, the read latch, the byte latch; 74F299; the slot logic (a 74F74, gates) | about 11, as V2.0's |
+| Graphics | 128K RAM; 4 x 74ACT157; the write buffer, the read latch, direct mode's read buffer (74HCT244), the byte latch; 74F299; the slot and mode logic (a 74F74, gates); a 10k x 8 network | 12 or 13: V2.0's twelve, and a gate package if the spare gates do not hold direct mode's half dozen |
 | Dots and syncs | the mixing gates, the guns' gates, 74ACT86, a 74HCT74 for the vertical sync; 3 x 470 ohm, the DE-15 | about 5 |
 | PS/2 | V2.0's section as it is: ATmega328P, the latches and flags, two Mini-DIN-6, the FTDI header | 7 |
-| | | **about 42** |
+| | | **42 or 43** |
 
 An estimate until the netlist. V2.0 has 40 and fills the 218 mm card; the V3 design's 47 needed 250 mm. Whether 42
-fit 218 mm is for the first placement to say. The text-only build leaves the graphics block off.
+or 43 fit 218 mm is for the first placement to say. The text-only build leaves the graphics block off.
 
 The board: four layers with the planes, the blank card's connector, and the layout rules from the start - the DE-15
 and the two PS/2 jacks at the front edge facing out, jumpers and the FTDI header at an edge, every reference and value
 on the silk outside its part, bypass capacitors on 0.1-inch leads, `cottageworker.com`. `pcb-check` before any order.
 
 **From V2.0, unchanged:** the bus connector and the block select, the port decode, the 6845's bus side, the text
-RAM's CPU port, the PS/2 section with its firmware (`embedded/video-ps2`), the text-only build's idea.
+RAM's CPU port, the PS/2 section with its firmware (`embedded/video-ps2`), the text-only build's idea, direct mode
+(its read buffer, its pull-ups and its rules).
 **New:** the clock and the stage, the two fetches a count, the character generator's pipeline, the four slots, the
 dot path at 25 MHz, the second control register, the syncs, the DE-15.
-**Gone:** the DOTS jumper and the 6-dot mode, direct mode with its read buffer, the RCA jack and the DB9 with their
-drivers and the VSYNC jumper, the crystal circuit.
+**Gone:** the DOTS jumper and the 6-dot mode, the RCA jack and the DB9 with their drivers and the VSYNC jumper, the
+crystal circuit.
 
 ## 12. Software
 
 On the branch `video-v2`, beside the V2.0 card's:
 
 - **The ROM driver**: the card by its ID, $7x; the table of section 3; 80 columns always; the cursor as R14 / R15 and
-  CURH; PLANE's four bits and the moved control bits, with a copy of control 2 kept in RAM (it cannot be read back).
-  The keyboard is V2.0's code unchanged.
+  CURH; PLANE's four bits and the moved control bits, with a copy of control 2 kept in RAM (it cannot be read back);
+  GFX-ON left 0 on a text-only card and switched only in vertical blanking. The keyboard is V2.0's code unchanged.
 - **The emulators' model** (`software/videomodel.h`): a third card beside `v1.0` and `v2.0`: 16 dots a count, two
-  bytes, sixteen planes, the two control registers. `tools/vidsim.py` draws it and checks the table.
+  bytes, sixteen planes, the two control registers, the layer hidden while GFX-ON = 0. `tools/vidsim.py` draws it and
+  checks the table.
 - **Graphics**: what is open for V2.0 (drawing routines, in Y1/OS or a library; `video`) is open here in the same
-  way, at 640 x 400, without direct mode's rules.
+  way, at 640 x 400 and under the same rules for the window (section 7): drawn in direct mode with the layer hidden,
+  or in slot mode with it shown.
 
 ## 13. Decided, to decide, and to confirm
 
 **Decided (2026-11-12)**
 - 16 dots a count, two bytes fetched in each: the 6845 at 1.573 MHz.
+- Direct mode, as V2.0's (GFX-ON = 0): the window follows the machine to its own limit, about 6 MHz, with the layer
+  hidden; slot mode, with the layer shown, to about 3.5 MHz. One 74HCT244, a resistor network and about six gates.
 
 **Proposed here, to decide**
 - **The raster**: 640 x 480 at 60 Hz with the text in a 400-line band, as the card's table; 640 x 400 at 70 Hz as a
@@ -313,8 +357,6 @@ On the branch `video-v2`, beside the V2.0 card's:
 - **One RAM read twice a count for each layer**, not two RAMs side by side. Two would give a slot of 318 ns in
   place of 159, at the price of a second text RAM (a 48-pin part), a second graphics RAM and a second set of buffers
   and latches.
-- **No direct mode**: the window works to about 3.5 MHz. Keeping V2.0's direct mode (a buffer and a few gates more,
-  and its rules) would allow 6 MHz.
 - **The control bits' places** (section 9), which are not V2.0's.
 - **The font**: 256 glyphs of 8 x 16 with lower case, and their cursor forms. V2.0's fonts are 8 lines high; the V3
   design's first image is the V1.3 glyphs with each line doubled.
@@ -331,6 +373,7 @@ On the branch `video-v2`, beside the V2.0 card's:
 - On a monitor: the 16-dot granularity of the horizontal porches (19 and 45 dots for 16 and 48); the two-line
   vertical sync; the 400-line raster's 4 lines.
 - The 128K RAM in DIP-32 and the IDT7134 in stock; the grade of the IDT7134 in hand.
+- On the netlist: slot mode's limit (about 3.5 MHz is an estimate) and direct mode's margins at 6 MHz.
 
 **Order of work**
 1. This note, checked.
