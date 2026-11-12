@@ -429,9 +429,22 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   ICs. **Direct mode is in the design (decided 2026-11-12)**, as V2.0's: GFX-ON = 0 gives the graphics RAM to the
   CPU, so the window follows the machine to about 6 MHz with the layer hidden (slot mode, layer shown: about
   3.5 MHz, an estimate); a 74HCT244, a resistor network and about six gates, and V2.0's rules for the window.
-  **Next: the note checked; its section 13 lists what is proposed and to decide** (the raster, 25 rows, one RAM or
-  two for each layer, the control bits' places, the font, V2.0's order); then the netlist from V2.0's and its
-  timing simulation.
+  **Decided 2026-11-12: 25 rows; one RAM for each layer, read twice a count.**
+  **The netlist is written (2026-11-12): `hardware/cards/video/kicad/v4.0/v40_netlist.py`** - 130 parts, **46 ICs**
+  (the note's estimate was 42 or 43), references of its own, the PS/2 section V2.0's. `python3 v40_netlist.py` (in
+  `make check`) proves the wiring complete: every pin on a net or listed open, no net with one pin, no two outputs
+  on a net, the text-only build (eleven ICs left off; three resistors fitted in both builds). **It is not
+  simulated**: that the circuit does what the note says, and its margins, are not shown yet. What the netlist
+  settled is in the folder's README (the read latch a 74ACT574 clocked by a flip-flop's pulse in dots 8 and 0, with
+  about 6 ns of hold on paper; the status's VSYNC and DE from the stage; the vertical sync about 1.8 lines).
+  **Next: the simulation** - the netlist run with the parts' data-sheet delays at both ends of their ranges, the
+  6845 and the bus as test benches, as `tests/video/v30_netsim.py` did for the V3 design (it has the models of
+  most of these parts; to add: the 74ACT157, the IDT7134's display port, the 28C64, a 6845 that steps MA, RA, DE,
+  CURSOR and the syncs). Then the emulators' model and the ROM driver, the schematic and the board.
+  **To decide** (the note's section 13): the raster; the control bits' places (the netlist is wired to the
+  proposed ones); the font; **the card's length** - 46 ICs are to be expected at about 250 mm, as the V3 design's
+  47 were, where V2.0's 40 fill 218 mm; **46 ICs or 44** (two ways down, neither taken: the read latch as a
+  transparent latch that is also direct mode's buffer; one quad flip-flop for two 74F74); V2.0's order.
   The card: V1.3 (DOTS jumper, 12 MHz,
   both fonts in one EPROM, 4 layers) plus a graphics layer, two PS/2 ports and every register on I/O ports. Board 218 mm
   long (the sequencer logic V2.1l's length; X1 where every card has it), 4 layers: In1 GND plane, In2 VCC plane.
