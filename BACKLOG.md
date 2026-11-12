@@ -416,9 +416,13 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   **On hold (2026-11-12):** the design stays as it is, ready to order (the pre-order check run again 2026-11-12:
   no failures, the four warnings of 2026-11-10), and may still be ordered; it waits while a VGA card with the 6845
   is looked at again, now that the V3 card (the ACRTC) is not built. The thought, nothing designed: this card's
-  circuit at VGA rates - a 25.175 MHz dot clock, 8 dots a character, the 6845 at 3.147 MHz (Hitachi's S type; its
-  clock rating to verify on a data sheet), 80 x 25 characters of 8 x 16 dots on a 640 x 480 raster, graphics
-  640 x 400 in 16 planes of 2K, a DE-15 - with the ports, the PS/2 section and the software model of V2.0.
+  circuit at VGA rates - a 25.175 MHz dot clock, 80 x 25 characters of 8 x 16 dots on a 640 x 480 raster, graphics
+  640 x 400 in 16 planes of 2K, a DE-15 - with the ports, the PS/2 section and the software model of V2.0. Two
+  ways to clock the 6845: **16 dots a count** (the thought of 2026-11-11: two bytes fetched in each character
+  period, as the CGA does in its graphics modes - the 6845 at 1.573 MHz, inside every grade, a line 50 counts with
+  40 shown, VGA's porches and sync whole counts; it costs a 16-bit fetch and a half-count bit for a cursor one
+  character wide), or 8 dots a count (the 6845 at 3.147 MHz: Hitachi's S type only, its clock rating to verify
+  on a data sheet).
   The card: V1.3 (DOTS jumper, 12 MHz,
   both fonts in one EPROM, 4 layers) plus a graphics layer, two PS/2 ports and every register on I/O ports. Board 218 mm
   long (the sequencer logic V2.1l's length; X1 where every card has it), 4 layers: In1 GND plane, In2 VCC plane.
