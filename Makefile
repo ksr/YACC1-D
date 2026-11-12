@@ -20,6 +20,7 @@
 #                   the video card V3's model (the HD63484) in both emulators, Y1VID_CARD=v3 (tests/video/v30/run.py),
 #                   the clock and register figures of the ACRTC design note, docs/cards/video-v3.md (tools/acrtc_timing.py --check),
 #                   the video card V4's netlist: every pin accounted for, the text-only build (hardware/cards/video/kicad/v4.0/v40_netlist.py),
+#                   and run as a circuit with the parts' data-sheet delays at eight corners (tests/video/v40_netsim.py),
 #                   Kermit transfers between /BIN/KERMIT and tools/y1kermit.py over a pty on both emulators (tests/kermit/run.py)
 #                   the debugger: y1ucemu's debug server and software/y1dbg, scripted and its UI in a pty (tests/y1dbg/run.py)
 #   make cc-test    just the compiler tests (on both emulators) and the twin comparisons (y1cc.c, the passes)
@@ -87,6 +88,7 @@ check:
 	python3 tests/video/v30/run.py
 	python3 tests/video/v30_netsim.py
 	python3 hardware/cards/video/kicad/v4.0/v40_netlist.py
+	python3 tests/video/v40_netsim.py
 	python3 tools/acrtc_timing.py --check
 	python3 tests/sequencer/run.py
 	python3 tests/assembler/romcount/run.py

@@ -436,18 +436,33 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   **The netlist is written (2026-11-12): `hardware/cards/video/kicad/v4.0/v40_netlist.py`** - 130 parts, **46 ICs**
   (the note's estimate was 42 or 43), references of its own, the PS/2 section V2.0's. `python3 v40_netlist.py` (in
   `make check`) proves the wiring complete: every pin on a net or listed open, no net with one pin, no two outputs
-  on a net, the text-only build (eleven ICs left off; three resistors fitted in both builds). **It is not
-  simulated**: that the circuit does what the note says, and its margins, are not shown yet. What the netlist
-  settled is in the folder's README (the read latch a 74ACT574 clocked by a flip-flop's pulse in dots 8 and 0, with
-  about 6 ns of hold on paper; the status's VSYNC and DE from the stage; the vertical sync about 1.8 lines).
-  **Next: the simulation** - the netlist run with the parts' data-sheet delays at both ends of their ranges, the
-  6845 and the bus as test benches, as `tests/video/v30_netsim.py` did for the V3 design (it has the models of
-  most of these parts; to add: the 74ACT157, the IDT7134's display port, the 28C64, a 6845 that steps MA, RA, DE,
-  CURSOR and the syncs). Then the emulators' model and the ROM driver, the schematic and the board.
+  on a net, the text-only build (eleven ICs left off; three resistors fitted in both builds). What the netlist
+  settled is in the folder's README (the read latch a 74ACT574 clocked by a flip-flop's pulse in dots 8 and 0; the
+  status's VSYNC and DE from the stage; the vertical sync about 1.8 lines).
+  **The netlist is simulated (2026-11-12): `tests/video/v40_netsim.py`, in `make check`** - run as a circuit with
+  the parts' data-sheet delays at eight corners, on the V3 check's simulator, the 6845 a model that steps a script
+  of counts, the bus a model of the microcode's strobes at every phase of the count. 48 runs, none failing; the
+  closest margins 5.6 ns (the retimed dot's set-up), 8.7 ns (the read latch's hold), 14.7 ns (the shifters' load);
+  the write pulse 69.6 ns at its shortest. The window: slot mode to a CPU clock of 3.8 MHz (3.5 the figure to use),
+  direct mode to 8.1 MHz (the machine's 6 MHz comes first; 88 ns to spare there). `--faults` puts 23 wiring faults
+  into the netlist in memory: every one is reported. **Two changes to the circuit came of it:** a write pulse in
+  slot mode is now always whole (-WE no longer contains the CPU's strobe, which could cut a pulse short as it
+  ended; WRQ is held clear in direct mode), and two gates changed places for 5 ns more set-up. **46 ICs stay
+  (decided 2026-11-12).** The data sheets read for it corrected three figures of the note: the 6845's DE, CURSOR
+  and sync delays are 250 ns (300 was assumed) and its clock wants 150 ns low and high, 3.0 MHz at most
+  (Motorola's sheet; Hitachi's not read); the IDT7134 has no 90 ns grade (55 ns commercial, 70 the slowest).
+  **Next:** the emulators' model and the ROM driver (branch `video-v2`); the generator for the schematic and the
+  board from V2.0's, the first placement, `pcb-check`, a review. `tools/vidsim.py timing` is still to learn 16
+  dots a count, to check the 6845's tables.
   **To decide** (the note's section 13): the raster; the control bits' places (the netlist is wired to the
   proposed ones); the font; **the card's length** - 46 ICs are to be expected at about 250 mm, as the V3 design's
-  47 were, where V2.0's 40 fill 218 mm; **46 ICs or 44** (two ways down, neither taken: the read latch as a
-  transparent latch that is also direct mode's buffer; one quad flip-flop for two 74F74); V2.0's order.
+  47 were, where V2.0's 40 fill 218 mm; V2.0's order.
+  **For V2.0, if it is ordered (seen 2026-11-12 while simulating this card; V2.0's files are not changed):** its
+  slot mode has the strobe as a term of -WE, so a write strobe that ends inside a pulse cuts the pulse short. The
+  re-review of 2026-10-23 judged that harmless (the same byte written again). Not shown harmless: in a cut pulse's
+  first nanoseconds the write buffer is not yet on and the RAM's data lines still hold the display's byte. Direct
+  mode, in which the driver is to draw, is not affected. And its parts list names the IDT7134 as "55-90 ns": there
+  is no 90 ns grade.
   The card: V1.3 (DOTS jumper, 12 MHz,
   both fonts in one EPROM, 4 layers) plus a graphics layer, two PS/2 ports and every register on I/O ports. Board 218 mm
   long (the sequencer logic V2.1l's length; X1 where every card has it), 4 layers: In1 GND plane, In2 VCC plane.
