@@ -428,10 +428,13 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   on a data sheet). **The design note for 16 dots a count is written (2026-11-12): `docs/cards/video-v4.md`**
   ("V4", a working name): the 6845's tables for 640 x 480 and 640 x 400, the count dot by dot (the 6845's outputs
   taken into a stage as each count ends, one text RAM and one graphics RAM each read twice a count, four slots a
-  count for the graphics RAM, no direct mode), the cursor's half bit, a second control register on PF, the card ID
-  $7x, about 42 ICs. **Next: the note checked; its section 13 lists what is proposed and to decide** (the raster,
-  25 rows, one RAM or two for each layer, direct mode, the control bits' places, the font, V2.0's order); then the
-  netlist from V2.0's and its timing simulation.
+  count for the graphics RAM), the cursor's half bit, a second control register on PF, the card ID $7x, 42 or 43
+  ICs. **Direct mode is in the design (decided 2026-11-12)**, as V2.0's: GFX-ON = 0 gives the graphics RAM to the
+  CPU, so the window follows the machine to about 6 MHz with the layer hidden (slot mode, layer shown: about
+  3.5 MHz, an estimate); a 74HCT244, a resistor network and about six gates, and V2.0's rules for the window.
+  **Next: the note checked; its section 13 lists what is proposed and to decide** (the raster, 25 rows, one RAM or
+  two for each layer, the control bits' places, the font, V2.0's order); then the netlist from V2.0's and its
+  timing simulation.
   The card: V1.3 (DOTS jumper, 12 MHz,
   both fonts in one EPROM, 4 layers) plus a graphics layer, two PS/2 ports and every register on I/O ports. Board 218 mm
   long (the sequencer logic V2.1l's length; X1 where every card has it), 4 layers: In1 GND plane, In2 VCC plane.
