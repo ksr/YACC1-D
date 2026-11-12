@@ -10,10 +10,10 @@ the clock, the stage and one count dot by dot, 6 the text, 7 the graphics RAM's 
 Plain Python data, no KiCad import; the generator for the schematic and the board (as V2.0's gen_v20.py reads
 v20_netlist.py) is still to be written.
 
-NOT A BOARD YET, AND NOT SIMULATED: check() below proves the wiring is complete (every pin on a net or listed as
-open, no net with one pin, no two outputs on a net, the text-only build). That the circuit does what the note says,
-and with what margins, is for the simulation with the parts' data-sheet delays (as tests/video/v30_netsim.py did for
-the V3 design).
+NOT A BOARD YET. check() below proves the wiring is complete (every pin on a net or listed as open, no net with one
+pin, no two outputs on a net, the text-only build). tests/video/v40_netsim.py runs this netlist as a circuit with the
+parts' data-sheet delays at both ends of their ranges: that is the proof that it does what the note says, and the
+timing check (docs/cards/video-v4.md section 5 has its figures). The parts here are the ones it was run with.
 
 The names: D0-D3 are the dot counter's bits (IC11: the dot within a count, 0-15), and "as dot n begins" is the clock
 edge at which the counter becomes n. Net names ending in # are active low.
@@ -33,12 +33,14 @@ edge at which the counter becomes n. Net names ending in # are active low.
   the slots      SELCPU = D2 OR NOT GFX-ON (IC36/A) is the address multiplexers' select: with GFX-ON = 1 the display
                  has the graphics RAM in dots 0-3 and 8-11 and the CPU in dots 4-7 and 12-15; with GFX-ON = 0 the CPU
                  has it for good (direct mode). The byte latch IC32 takes the display's byte on D2's rise.
-  a write        WRQ (IC34/A) is the window's write strobe GWR taken as a CPU slot begins (D2); GFX-ON = 0 presets
-                 it. P56 (IC35/A's -Q) is high in dots 5-6 and 13-14, a flip-flop's pulse. -WE = NAND(WRQ AND GWR,
-                 P56 OR NOT GFX-ON) (IC23/D, IC36/B, IC37/D): the pulse in slot mode, the strobe itself in direct
-                 mode. The write buffer IC29 is enabled by -WE.
-  the RAM's -OE  GOE# = WRQ AND SELCPU AND GRDOE# (IC38/A): off in a CPU slot with a write waiting; in direct mode on
-                 only while the window is read.
+  a write        WRQ (IC34/A) is the window's write strobe GWR taken as a CPU slot begins (D2); GFX-ON = 0 holds it
+                 clear. P56 (IC35/A) is high in dots 5-6 and 13-14, a flip-flop's pulse. -WE = WEP# AND WED#
+                 (IC23/D): WEP# = NAND(WRQ, P56) (IC37/C) is slot mode's pulse - once WRQ has taken the strobe the
+                 pulse is whole, whenever the strobe ends (the microcode holds the address and the data a step
+                 longer) - and WED# = NAND(NOT GFX-ON, GWR) (IC37/D) is the strobe itself in direct mode. The write
+                 buffer IC29 is enabled by -WE.
+  the RAM's -OE  GOE# = (WRQ OR NOT GFX-ON) AND SELCPU AND GRDOE# (IC36/B, IC38/A): off in a CPU slot with a write
+                 waiting; in direct mode on only while the window is read.
   a read         slot mode: IC30 takes the RAM's byte as every CPU slot ends (RDCK, IC35/B: high in dots 8 and 0) and
                  drives the bus while the window is read (SRDOE#). Direct mode: IC31 passes the RAM's byte (DRDOE#).
   the dots       VIDN = NOR(text, graphics) OR (text AND graphics AND XOR) (IC39/A, IC38/B, IC36/C), retimed by
@@ -101,9 +103,9 @@ PARTS = {
     "IC18": ("AT28C64B-15", "Memory_EEPROM:KM28C64A", DIPW[28], "character generator: line + 16 x code + 4096 x cursor"),
     "IC19": ("74F299", "74xx:74LS299", DIP[20], "text dot shifter, bit 7 first; held clear by TEXT-OFF"),
     "IC20": ("74F74", "74xx:74LS74", DIP[14], "A: CURF, the cursor flag of the code in IC17; B: the mixed dot retimed to the dot clock"),
-    "IC21": ("74F21", "74xx:74LS21", DIP[14], "the shift registers' load (dots 3 and 11, display enabled); the read latch's clock flip-flop's D (dots 7 and 15)"),
+    "IC21": ("74F21", "74xx:74LS21", DIP[14], "the shift registers' load (dots 3 and 11, display enabled); the P56 flip-flop's D (the fast gate after the inverter)"),
     "IC22": ("74ACT86", "74xx:74LS86", DIP[14], "the 6845's E; the cursor's half; the two syncs' polarity"),
-    "IC23": ("74ACT08", "74xx:74LS08", DIP[14], "the window's select and write strobe; the cursor flag's D; a write waiting AND its strobe"),
+    "IC23": ("74ACT08", "74xx:74LS08", DIP[14], "the window's select and write strobe; the cursor flag's D; the RAM's -WE"),
     # --- graphics (left off in the text-only build: IC24-IC34, RN2)
     "IC24": ("74ACT157", "74xx:74LS157", DIP[16], "graphics address mux GA0-3"),
     "IC25": ("74ACT157", "74xx:74LS157", DIP[16], "graphics address mux GA4-7"),
@@ -115,13 +117,13 @@ PARTS = {
     "IC31": ("74HCT244", "74xx:74LS244", DIP[20], "direct-mode read buffer GD -> DATA (GFX-ON = 0)"),
     "IC32": ("74ACT574", "74xx:74LS574", DIP[20], "graphics display byte latch (dots 4 and 12)"),
     "IC33": ("74F299", "74xx:74LS299", DIP[20], "graphics dot shifter, bit 7 first; held clear while GFX-ON = 0"),
-    "IC34": ("74F74", "74xx:74LS74", DIP[14], "A: WRQ, a window write waiting; B: TXTONLY, held 0 (the graphics parts are fitted)"),
+    "IC34": ("74F74", "74xx:74LS74", DIP[14], "A: WRQ, a window write waiting (held clear in direct mode); B: TXTONLY, held 0 (the graphics parts are fitted)"),
     "RN2":  ("10k x8", "Device:R_Network08", "Resistor_THT:R_Array_SIP9", "GD0-7 pull-ups (GD idles undriven in direct mode)"),
     # --- the slot logic and the dots (fitted in both builds)
     "IC35": ("74F74", "74xx:74LS74", DIP[14], "A: P56, dots 5-6 and 13-14 (the RAM's -WE); B: RDCK, dots 8 and 0 (the read latch's clock)"),
-    "IC36": ("74ACT32", "74xx:74LS32", DIP[14], "SELCPU; the -WE pulse or direct mode; the mixed dot; VSYNC cut to two lines"),
-    "IC37": ("74ACT00", "74xx:74LS00", DIP[14], "the text RAM's -CE; a window read; the P56 flip-flop's D; the RAM's -WE"),
-    "IC38": ("74ACT11", "74xx:74LS11", DIP[14], "the RAM's -OE; text AND graphics AND XOR; one spare"),
+    "IC36": ("74ACT32", "74xx:74LS32", DIP[14], "SELCPU; a write waiting or direct mode (for the RAM's -OE); the mixed dot; VSYNC cut to two lines"),
+    "IC37": ("74ACT00", "74xx:74LS00", DIP[14], "the text RAM's -CE; a window read; slot mode's write pulse; direct mode's write strobe"),
+    "IC38": ("74ACT11", "74xx:74LS11", DIP[14], "the RAM's -OE; text AND graphics AND XOR; the read latch's clock flip-flop's D (dots 7 and 15)"),
     "IC39": ("74ACT02", "74xx:74LS02", DIP[14], "NOR(text, graphics); the three guns' gates"),
     "IC40": ("74HCT74", "74xx:74LS74", DIP[14], "VSYNC seen at one HSYNC and at two: the vertical sync's length"),
     "J1":   ("VGA", "Connector:DE15_Socket_HighDensity_MountingHoles", FP_VGA, "monitor: 1 R, 2 G, 3 B, 13 HSYNC, 14 VSYNC; SH the shell"),
@@ -238,7 +240,7 @@ c("TXTCE#", "IC37.3", "IC14.47")                                           # NAN
 c("GSEL", "IC23.3", "IC23.4", "IC37.4")                                    # BOARDSEL AND ADDR11
 c("-MEM-RD", "IC8.5"); c("MEMRD", "IC8.6", "IC37.5")
 c("-MEM-WR", "IC8.9"); c("MEMWR", "IC8.8", "IC23.5")
-c("GWR", "IC23.6", "IC34.2", "IC23.12")                                    # GSEL AND MEMWR: a window write strobe
+c("GWR", "IC23.6", "IC34.2", "IC37.13")                                    # GSEL AND MEMWR: a window write strobe
 c("GRDOE#", "IC37.6", "IC38.13", "IC4.9", "IC4.12")                        # NAND(GSEL, MEMRD): a window read
 
 # ---- text RAM IC14 (IDT7134): the right port the CPU's, the left port the display's ----------------------------------
@@ -303,14 +305,14 @@ c("TXTONLY", "IC7.8", "IC34.9", "R10.1"); c("VCC", "R10.2")               # bit 
 c("CK", "OSC1.8", "IC11.2", "IC12.3", "IC20.11", "IC35.3", "IC35.11", "IC19.12", "IC33.12")
 c(PU, "IC11.1", "IC11.7", "IC11.9", "IC11.10")                             # -CLR, ENP, -LOAD, ENT: it only counts
 c("GND", "IC11.3", "IC11.4", "IC11.5", "IC11.6")
-c("D0", "IC11.14", "IC21.1", "IC21.9")
-c("D1", "IC11.13", "IC21.2", "IC21.10", "IC13.5")
-c("D2", "IC11.12", "IC13.3", "IC21.12", "IC17.11", "IC32.11", "IC20.3", "IC34.3", "IC36.1", "IC37.9")
+c("D0", "IC11.14", "IC21.1", "IC38.9")
+c("D1", "IC11.13", "IC21.2", "IC38.10", "IC13.5")
+c("D2", "IC11.12", "IC13.3", "IC21.9", "IC17.11", "IC32.11", "IC20.3", "IC34.3", "IC36.1", "IC38.11")
 c("D3", "IC11.11", "IC12.2", "IC12.11", "IC13.1")
 c(PU, "IC12.1", "IC12.4", "IC12.10", "IC12.13")
 c("SDE2", "IC12.9", "IC21.5")
-c("D2N", "IC13.4", "IC21.4"); c("D1N", "IC13.6", "IC37.10")
-c("GFXON", "IC13.9"); c("NGFX", "IC13.8", "IC36.2", "IC36.5", "IC4.10")
+c("D2N", "IC13.4", "IC21.4"); c("D1N", "IC13.6", "IC21.10")
+c("GFXON", "IC13.9"); c("NGFX", "IC13.8", "IC36.2", "IC36.5", "IC4.10", "IC37.12")
 c("TEXTOFF", "IC13.11"); c("TEXTON", "IC13.10", "IC19.9")
 c("NSVS", "IC13.12", "IC36.12")
 
@@ -350,7 +352,7 @@ for k, (ref, *sections) in enumerate(MUX):
         c("GA%d" % (4 * k + j), "%s.%d" % (ref, z), "IC28.%d" % RAM_A[4 * k + j])
 c("GND", "IC28.%d" % RAM_A[16], "IC28.22"); c("VCC", "IC28.30")          # A16 low: the lower 64K; -CE low, CE2 high
 c("GOE#", "IC38.12", "IC28.24")
-c("GWE#", "IC37.11", "IC28.29", "IC29.1", "IC29.19")                       # the write buffer is on only during -WE
+c("GWE#", "IC23.11", "IC28.29", "IC29.1", "IC29.19")                       # the write buffer is on only during -WE
 
 # ---- the write buffer IC29, the read latch IC30, the direct-mode buffer IC31, the byte latch IC32, the shifter IC33 --
 for i, (a, y) in enumerate(Y244):
@@ -367,15 +369,17 @@ c("GDOT", "IC33.17", "IC39.3", "IC38.4", "R8.1"); c("GND", "R8.2")
 
 # ---- the slot logic: SELCPU, WRQ (IC34/A), P56 and RDCK (IC35), -WE, -OE ----------------------------------------------
 c("SELCPU", "IC36.3", "IC38.2")                                            # D2 OR NOT GFX-ON (IC36/A)
-c("P56D", "IC37.8", "IC35.2")                                              # NAND(D2, NOT D1): low in dots 4, 5, 12, 13
-c("P56", "IC35.6", "IC36.4"); c("WEPH2", "IC36.6", "IC37.13")             # P56 OR NOT GFX-ON (IC36/B)
-c("WRQ", "IC34.5", "IC23.13", "IC38.1", "R9.1"); c("GND", "R9.2")
-c("WGO", "IC23.11", "IC37.12")                                             # WRQ AND GWR (IC23/D); -WE = NAND(WGO, WEPH2)
-c("GFXON", "IC34.4"); c(PU, "IC34.1", "IC34.10")                          # GFX-ON = 0 presets WRQ: direct mode
+c("P56D", "IC21.8", "IC35.2")                                              # D2 AND NOT D1 (IC21/B): dots 4, 5, 12, 13
+c("P56", "IC35.5", "IC37.10")                                              # IC35/A's Q: dots 5-6 and 13-14
+# WRQ: GWR taken on D2's rise; GFX-ON = 0 holds it clear, so no pulse can come as slot mode begins. Once WRQ is set
+# the pulse WEP# = NAND(WRQ, P56) is a whole one: the strobe's end does not cut it short
+c("WRQ", "IC34.5", "IC36.4", "IC37.9", "R9.1"); c("GND", "R9.2")
+c("GFXON", "IC34.1"); c(PU, "IC34.4", "IC34.10")
+c("WOE", "IC36.6", "IC38.1")                                               # WRQ OR NOT GFX-ON (IC36/B), for GOE#
+c("WEP#", "IC37.8", "IC23.12"); c("WED#", "IC37.11", "IC23.13")           # -WE = WEP# AND WED# (IC23/D)
 c("GND", "IC34.11", "IC34.12", "IC34.13")                                  # IC34/B: -CLR held low, Q = 0 = TXTONLY
-c("RDCKD", "IC21.8", "IC35.12")                                            # D0 AND D1 AND D2 (IC21/B): dots 7 and 15
-c(PU, "IC21.13", "IC35.1", "IC35.4", "IC35.10", "IC35.13")
-c("GND", "IC38.9", "IC38.10", "IC38.11")                                   # the spare AND
+c("RDCKD", "IC38.8", "IC35.12")                                            # D0 AND D1 AND D2 (IC38/C): dots 7 and 15
+c(PU, "IC21.12", "IC21.13", "IC35.1", "IC35.4", "IC35.10", "IC35.13")
 
 # ---- the dots: mix, retime, guns; the syncs; the VGA socket ----------------------------------------------------------
 c("XORM", "IC38.5"); c("BX", "IC38.6", "IC36.10"); c("NGOT", "IC39.1", "IC36.9")
@@ -424,7 +428,7 @@ c("GND", "IC46.1", "IC46.3", "IC46.5")                                     # thr
 NO_CONNECT = {
     "IC1": [5, 7], "IC2": [15, 14], "IC6": [12], "IC8": [12], "IC10": [14, 15, 16, 17, 34],     # MA10-13, RA4
     "IC11": [15], "IC12": [6, 8], "IC16": [13, 12], "IC18": [1, 26], "IC19": [8], "IC20": [6, 8], "IC21": [3, 11],
-    "IC28": [1], "IC33": [8], "IC34": [6, 8], "IC35": [5, 8], "IC38": [8], "IC40": [6, 8],
+    "IC28": [1], "IC33": [8], "IC34": [6, 8], "IC35": [6, 8], "IC40": [6, 8],
     "IC41": [21], "IC45": [6, 8], "IC46": [2, 4, 6], "J4": [3], "J2": [2, 6], "J3": [2, 6],
     "J1": [4, 9, 11, 12, 15], "OSC1": [1],
 }
@@ -458,7 +462,7 @@ BUY = {
     "IC10": "HD68B45SP (Hitachi) or MC68B45P (Motorola), the 2 MHz (B) bus grade for a CPU clock above 1 MHz (a 6 MHz "
             "CPU's OUT gives E 333 ns high); the card's 1.573 MHz character clock is inside every grade. At the "
             "machine's 1 MHz the V1.0 card's 6845 fits",
-    "IC14": "IDT7134 (SA/LA, 55-90 ns, DIP-48), or the V1.0 card's chip",
+    "IC14": "IDT7134 SA or LA, 55 ns (the commercial grade; the sheet's slowest is 70 ns, there is no 90), DIP-48; or the V1.0 card's chip",
     "IC18": "AT28C64B-15PU (Microchip), 150 ns, burned with the card's character generator image (256 glyphs of "
             "8 x 16 and their cursor forms: to be made)",
     "IC28": "AS6C1008-55PCN (Alliance, 128K x 8, 55 ns, 600-mil DIP-32)",
@@ -466,6 +470,7 @@ BUY = {
     "IC11": "74F163A: the type the timing is worked out with (not LS or HCT)",
     "IC12": "74F74", "IC20": "74F74", "IC34": "74F74", "IC35": "74F74", "IC19": "74F299", "IC33": "74F299", "IC21": "74F21",
     "IC30": "74ACT574: its hold time (1 ns) is what the read latch's clock is worked out with; it drives the bus",
+    "IC29": "SN74ACT244N: the type the timing check was run with; TI's package list marked the DIP 'last time buy' in 2026-11",
     "IC31": "74HCT244; a 74ACT244 (24 mA) if DATA0's low level during a window read is above 0.5 V (V2.0's R2-6)",
     "IC41": "ATmega328P-PU with the Arduino Uno bootloader burned (ISP) before fitting",
     "IC1": "74S85 (the V1.x card's; a 74LS85 also works)",
