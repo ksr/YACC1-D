@@ -1,8 +1,9 @@
 # Video card V4 — design note (6845, VGA, 16 dots a count)
 
-**A design note, begun 2026-11-12. Nothing is drawn, ordered or built; "V4" is a working name.** The circuit is
+**A design note, begun 2026-11-12. Nothing is ordered or built; "V4" is a working name.** The circuit is
 written as a netlist (2026-11-12: `hardware/cards/video/kicad/v4.0/v40_netlist.py`, 46 ICs) and simulated with the parts'
-data-sheet delays, with no fault left (2026-11-12: sections 5 and 11). The card in the machine is the [V1.0](video.md). The [V2.0](video-v2.md) is designed, ready to order and on hold while this card is
+data-sheet delays, with no fault left (sections 5 and 11). Its schematic is drawn and its board placed on a 250 mm
+outline, not routed (2026-11-12: section 11). The card in the machine is the [V1.0](video.md). The [V2.0](video-v2.md) is designed, ready to order and on hold while this card is
 looked at. The [V3](video-v3.md), round the HD63484, is not built.
 
 The aim is the V2.0 card's picture on monitors sold today: a **VGA** monitor at 31.47 kHz, **80 x 25 characters of
@@ -364,10 +365,28 @@ reference). The first estimate here was 42 or 43: the netlist needs four 74F74 w
 inverter and an AND package more. Every gate package is full or one gate short of it, but for the PS/2 section's
 7416 (three of six used, as on V2.0).
 
-**The card's length is open again.** V2.0's 40 ICs fill the 218 mm card. The V3 design's first placement found 39
-ICs at about 218 mm and 47 at about 250 mm (`video-v3.md` section 10), and chose 250 mm. 46 ICs, four of them
-0.6 inches wide, are to be expected at about 250 mm: the first placement says. The count stays at 46 (decided
-2026-11-12: section 13).
+The count stays at 46 (decided 2026-11-12: section 13).
+
+**The schematic and the first placement (2026-11-12).** `gen_v40.py`, in the netlist's folder, draws the schematic
+(a root and eight sheets; KiCad's netlist of it equals the netlist's 250 nets, its rules check finds nothing) and
+places the board: all 130 parts, no track yet (`video-v4.0.kicad_pcb`, `video-v4.0-placement.pdf`; the folder's
+README has what stands where).
+
+**The card does not fit 218 mm.** The ICs stand in thirteen columns, eleven of 300-mil sockets and two of 600-mil
+ones, a capacitor beside every chip:
+
+| | Card length |
+|---|---|
+| Every long card today, V2.0 with its 40 ICs among them | 218 mm |
+| One column fewer, every column full to the last socket, at V2.0's spacing: nowhere for the oscillator, the crystal, the jumpers and the resistors | 221 mm |
+| The placement at V2.0's spacing (columns 14 mm apart) | 235 mm |
+| The placement as it is, the columns 15.24 mm apart | **250 mm** |
+
+235 mm is the shortest at V2.0's density, and V2.0's board routes on its two signal layers only for some component
+orders; the 15 mm from there to 250 are between the columns, as room to route. 250 mm is the V3 design's length
+(chosen 2026-11-11). The placement check is clear, 424 key connections are right in the schematic and on the pads,
+and every reference stands with its type or value on the silk outside its part. Routing, `pcb-check` and a review
+wait for the length.
 
 The board: four layers with the planes, the blank card's connector, and the layout rules from the start - the DE-15
 and the two PS/2 jacks at the front edge facing out, jumpers and the FTDI header at an edge, every reference and value
@@ -412,7 +431,8 @@ On the branch `video-v2`, beside the V2.0 card's:
 - **The raster**: 640 x 480 at 60 Hz with the text in a 400-line band, as the card's table; 640 x 400 at 70 Hz as a
   second table for the driver to offer.
 - **The control bits' places** (section 9), which are not V2.0's. The netlist is wired to them.
-- **The card's length**: 218 mm or 250 mm (section 11), for the first placement to say.
+- **The card's length**: the first placement is on 250 mm. 218 mm does not hold the card; 235 mm is the shortest at
+  V2.0's spacing (section 11).
 - **The font**: 256 glyphs of 8 x 16 with lower case, and their cursor forms. V2.0's fonts are 8 lines high; the V3
   design's first image is the V1.3 glyphs with each line doubled.
 - **V2.0**: ordered as well, or left as it is. If ordered: its slot mode has the write pulse that the strobe can
@@ -441,4 +461,5 @@ On the branch `video-v2`, beside the V2.0 card's:
 3. The netlist simulated and timed with the parts' data-sheet numbers, as V3's was: **done 2026-11-12**
    (`tests/video/v40_netsim.py`, in `make check`; two changes to the circuit came of it: the netlist's README).
 4. Beside it: the emulators' model and the ROM driver.
-5. The schematic and the board, `pcb-check`, a design review; then the order.
+5. The schematic and the board: **the schematic drawn and the board placed 2026-11-12** (`gen_v40.py`). To come,
+   once the length is settled: the routing, `pcb-check`, a design review; then the order.

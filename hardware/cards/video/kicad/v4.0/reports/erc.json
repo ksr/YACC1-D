@@ -1,0 +1,77 @@
+{
+    "$schema": "https://schemas.kicad.org/erc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-11-12T11:57:11",
+    "ignored_checks": [
+        {
+            "description": "Global label only appears once in the schematic",
+            "key": "single_global_label"
+        },
+        {
+            "description": "Four connection points are joined together",
+            "key": "four_way_junction"
+        },
+        {
+            "description": "SPICE model issue",
+            "key": "simulation_model_issue"
+        },
+        {
+            "description": "Assigned footprint doesn't match footprint filters",
+            "key": "footprint_filter"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.6",
+    "sheets": [
+        {
+            "path": "/",
+            "uuid_path": "/5f6482ba-bbeb-5852-8b4a-311eb28de4d2",
+            "violations": []
+        },
+        {
+            "path": "/Bus and ports/",
+            "uuid_path": "/5f6482ba-bbeb-5852-8b4a-311eb28de4d2/acbad8a4-7e41-5e1f-8af3-553bf32bc83c",
+            "violations": []
+        },
+        {
+            "path": "/CRTC and clock/",
+            "uuid_path": "/5f6482ba-bbeb-5852-8b4a-311eb28de4d2/627a4f2e-ce1a-5c90-8f3d-f55159cf7784",
+            "violations": []
+        },
+        {
+            "path": "/Text/",
+            "uuid_path": "/5f6482ba-bbeb-5852-8b4a-311eb28de4d2/8e01d4f0-bbf6-5c35-baf7-ac5aa839f6be",
+            "violations": []
+        },
+        {
+            "path": "/Graphics RAM/",
+            "uuid_path": "/5f6482ba-bbeb-5852-8b4a-311eb28de4d2/d447f5cf-52d1-56a9-991a-d5bb3401c523",
+            "violations": []
+        },
+        {
+            "path": "/Slots/",
+            "uuid_path": "/5f6482ba-bbeb-5852-8b4a-311eb28de4d2/cde84ca2-de4d-5aa6-ad23-141776030e2c",
+            "violations": []
+        },
+        {
+            "path": "/Dots and syncs/",
+            "uuid_path": "/5f6482ba-bbeb-5852-8b4a-311eb28de4d2/a0f13eb2-1aed-5fd3-86ec-3ef41c00226e",
+            "violations": []
+        },
+        {
+            "path": "/PS2/",
+            "uuid_path": "/5f6482ba-bbeb-5852-8b4a-311eb28de4d2/256f9b83-dcae-5c49-adf1-7f1b349a277c",
+            "violations": []
+        },
+        {
+            "path": "/Power/",
+            "uuid_path": "/5f6482ba-bbeb-5852-8b4a-311eb28de4d2/18bd670e-ad31-5f91-9504-b10a09965cfc",
+            "violations": []
+        }
+    ],
+    "source": "video-v4.0.kicad_sch"
+}

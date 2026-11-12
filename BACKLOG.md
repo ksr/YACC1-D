@@ -448,12 +448,20 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   (decided 2026-11-12).** The data sheets read for it corrected three figures of the note: the 6845's DE, CURSOR
   and sync delays are 250 ns (300 was assumed) and its clock wants 150 ns low and high, 3.0 MHz at most
   (Motorola's sheet; Hitachi's not read); the IDT7134 has no 90 ns grade (55 ns commercial, 70 the slowest).
-  **Next:** the emulators' model and the ROM driver (branch `video-v2`); the generator for the schematic and the
-  board from V2.0's, the first placement, `pcb-check`, a review. `tools/vidsim.py timing` is still to learn 16
-  dots a count, to check the 6845's tables.
-  **To decide** (the note's section 13): the raster; the control bits' places (the netlist is wired to the
-  proposed ones); the font; **the card's length** - 46 ICs are to be expected at about 250 mm, as the V3 design's
-  47 were, where V2.0's 40 fill 218 mm; V2.0's order.
+  **The schematic is drawn and the board placed (2026-11-12): `gen_v40.py`** in the netlist's folder, made from
+  the V3 design's generator. The schematic: a root and eight sheets, KiCad's netlist of it equal to the netlist's
+  250 nets, ERC clean. The board: all 130 parts placed on a **250 mm** outline, four layers, **nothing routed**
+  (`video-v4.0.kicad_pcb`, `video-v4.0-placement.pdf`, `reports/video-v4.0-top.png`); the placement check clear,
+  424 key connections right, every reference with its value on the silk outside its part, the layout rules kept
+  from the start. **The card does not fit 218 mm**: thirteen columns of sockets; 221 mm with one column fewer and
+  every column full (no room for the small parts), 235 mm for this placement at V2.0's 14 mm column spacing, 250 mm
+  with the columns 15.24 mm apart for routing room. The placement check found the VGA socket turned face inwards
+  (carried over from the V3 design's unchecked placement): corrected.
+  **Next:** the length settled (250 mm, or another); then `build.sh` - the routing (Freerouting, as V2.0's), the
+  reports, `pcb-check`, a design review. Beside it: the emulators' model and the ROM driver (branch `video-v2`).
+  `tools/vidsim.py timing` is still to learn 16 dots a count, to check the 6845's tables.
+  **To decide** (the note's section 13): **the card's length**; the raster; the control bits' places (the netlist
+  is wired to the proposed ones); the font; V2.0's order.
   **For V2.0, if it is ordered (seen 2026-11-12 while simulating this card; V2.0's files are not changed):** its
   slot mode has the strobe as a term of -WE, so a write strobe that ends inside a pulse cuts the pulse short. The
   re-review of 2026-10-23 judged that harmless (the same byte written again). Not shown harmless: in a cut pulse's
