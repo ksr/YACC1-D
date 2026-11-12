@@ -422,7 +422,13 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   period, as the CGA does in its graphics modes - the 6845 at 1.573 MHz, inside every grade, a line 50 counts with
   40 shown, VGA's porches and sync whole counts; it costs a 16-bit fetch and a half-count bit for a cursor one
   character wide), or 8 dots a count (the 6845 at 3.147 MHz: Hitachi's S type only, its clock rating to verify
-  on a data sheet).
+  on a data sheet). **The design note for 16 dots a count is written (2026-11-12): `docs/cards/video-v4.md`**
+  ("V4", a working name): the 6845's tables for 640 x 480 and 640 x 400, the count dot by dot (the 6845's outputs
+  taken into a stage as each count ends, one text RAM and one graphics RAM each read twice a count, four slots a
+  count for the graphics RAM, no direct mode), the cursor's half bit, a second control register on PF, the card ID
+  $7x, about 42 ICs. **Next: the note checked; its section 13 lists what is proposed and to decide** (the raster,
+  25 rows, one RAM or two for each layer, direct mode, the control bits' places, the font, V2.0's order); then the
+  netlist from V2.0's and its timing simulation.
   The card: V1.3 (DOTS jumper, 12 MHz,
   both fonts in one EPROM, 4 layers) plus a graphics layer, two PS/2 ports and every register on I/O ports. Board 218 mm
   long (the sequencer logic V2.1l's length; X1 where every card has it), 4 layers: In1 GND plane, In2 VCC plane.
