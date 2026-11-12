@@ -1,7 +1,8 @@
 # Video card V4 — design note (6845, VGA, 16 dots a count)
 
-**A design note, begun 2026-11-12. Nothing is drawn, ordered or built; "V4" is a working name.** The card in the
-machine is the [V1.0](video.md). The [V2.0](video-v2.md) is designed, ready to order and on hold while this card is
+**A design note, begun 2026-11-12. Nothing is drawn, ordered or built; "V4" is a working name.** The circuit is
+written as a netlist (2026-11-12: `hardware/cards/video/kicad/v4.0/v40_netlist.py`, 46 ICs, its wiring checked and
+not yet simulated: section 11). The card in the machine is the [V1.0](video.md). The [V2.0](video-v2.md) is designed, ready to order and on hold while this card is
 looked at. The [V3](video-v3.md), round the HD63484, is not built.
 
 The aim is the V2.0 card's picture on monitors sold today: a **VGA** monitor at 31.47 kHz, **80 x 25 characters of
@@ -48,7 +49,7 @@ character generator looks up a character in that time and the shift registers ru
 | Text RAM / graphics RAM | IDT7134 / 62256 (32K, two pages) | IDT7134 / 128K part (64K used, two pages) | two 128K RAMs |
 | Keyboard and mouse | PS/2 on an ATmega328P | the same section | the same section |
 | Outputs | RCA, DB9 | DE-15 | DE-15 |
-| ICs | 40 | 42 or 43 (an estimate) | 47 |
+| ICs | 40 | 46 (the netlist) | 47 |
 
 ## 3. Monitor timing and the 6845's table
 
@@ -131,7 +132,7 @@ The count after the stage has taken MA, dot by dot:
 | 0 | the stage has the count's MA; the half is 0: the text RAM reads the **left** character | **display** slot: the left byte |
 | 4 | the code register takes the left character's code, with its cursor flag (clock: D2) | the byte latch takes the left byte (clock: D2); the **CPU's** slot begins |
 | 5, 6 | | -WE, when a write waits |
-| 8 | the half is 1 (D3): the **right** character; DE and CURSOR move a stage on | **display** slot: the right byte; the CPU's read latch has taken its byte |
+| 8 | the half is 1 (D3): the **right** character; DE moves a stage on (SDE2), for the two loads to come | **display** slot: the right byte; the CPU's read latch has taken its byte |
 | 12 | the code register takes the right code; the shift register loads the left character's dots | the byte latch takes the right byte; the shift register loads the left byte; the **CPU's** slot |
 | 13, 14 | | -WE, when a write waits |
 | 4, in the next count | the shift register loads the right character's dots | the shift register loads the right byte |
@@ -147,9 +148,11 @@ reach the connector a dot later (the retiming flip-flop of section 8).
 | The text RAM: address to the code register | 159 ns a half | about 31 ns for the address and 55 to 90 ns for the IDT7134, by grade |
 | The character generator: code to the shift register's load | 318 ns | about 22 ns for the code and 150 ns for the AT28C64B-15 |
 | The graphics RAM, a display slot: the stage, direct mode's gate in the select and the multiplexer, then the RAM, to the byte latch | 159 ns | about 45 ns and 55 ns |
-| The graphics RAM, a CPU slot | 159 ns | a write pulse of 79 ns (45 wanted), the data 25 ns before it ends |
+| The graphics RAM, a CPU slot's write | 159 ns | a write pulse of 79 ns (45 wanted), the data 25 ns before it ends |
+| The graphics RAM, a CPU slot's read: the multiplexer, then the RAM, to the read latch | 159 ns | about 35 ns and 55 ns |
 
-Nothing is closer than about 35 ns, and that with a 90 ns text RAM. V2.0's graphics RAM changes hands every 333 ns
+Of these set-up times nothing is closer than about 35 ns, and that with a 90 ns text RAM. One hold time is close:
+the read latch's (section 7), a few nanoseconds, for the simulation to give its figure. V2.0's graphics RAM changes hands every 333 ns
 and the V3 design's memory cycle is 318 ns with an 80 ns write pulse: these are the same order, and the netlist is to
 be timed as V3's was, with the parts' data-sheet numbers (`tests/video/v30_netsim.py` has the models of these parts).
 The table is slot mode's. In direct mode (section 7) the graphics RAM follows the CPU's strobes and not the dot
@@ -211,7 +214,11 @@ with the text's dots. A CPU slot comes every 318 ns and is 159 ns long:
 
 - **A write** is taken as a slot begins (V2.0's WRQ) and -WE is low in the slot's two middle dots, a flip-flop's
   pulse. The write buffer is enabled by -WE itself, as on V2.0. A 2 us strobe writes the byte several times.
-- **A read**: a latch takes the RAM's byte as every CPU slot ends and drives the bus while the window is read.
+- **A read**: a latch takes the RAM's byte as every CPU slot ends and drives the bus while the window is read. Its
+  clock is a flip-flop's pulse in dots 8 and 0, so the whole slot is the RAM's access time. The latch's clock and the
+  address's change then come from the same edge of the dot clock: the latch is a 74ACT574 for its 1 ns of hold, and
+  on paper about 6 ns are left (the multiplexers' own delay and the RAM's 10 ns of output hold against the
+  flip-flop's delay).
 
 A strobe that holds one whole CPU slot is enough: about 480 ns, a wait of up to 318 for the slot and the slot's 159.
 The YACC1's strobes are a microcode step, 2 us at 1 MHz, so slot mode works up to a CPU clock of about 3.5 MHz (V2.0's
@@ -253,8 +260,9 @@ microcode's strobes, as V2.0's were. V2.0 has 38 ns of read margin at 6 MHz on a
 the same 55 ns and 74LS157 multiplexers; this card's are 74ACT157, so that figure or better is to be expected, and is
 not yet computed.
 
-**The text-only build** is V2.0's: the graphics parts left off (direct mode's buffer and network with them), a
-resistor holding the graphics dot low and a status bit saying so.
+**The text-only build** is V2.0's: the graphics parts left off (eleven ICs and the network), with three 10k
+resistors that are fitted in both builds: one holds the graphics dot low, one the write flip-flop's output, and one
+pulls the status bit TEXT-ONLY high. No resistor is fitted for this build only.
 
 ## 8. The dot path, the syncs and the connector
 
@@ -287,6 +295,9 @@ on PA / PB with E made from the two I/O strobes, the PS/2 section on PD / PE.
 -RESET clears both control registers: plane 0, page 0, text on, graphics off and its RAM in direct mode, both syncs
 negative, white. That is what 640 x 480 wants, so a driver that only loads the 6845's table has a picture.
 
+The status's VSYNC and DE are the stage's: what the 6845's pins showed a count before. VSYNC there is the 6845's
+own pulse, 16 lines of Motorola's part, not the two lines the connector gets.
+
 Against V2.0: PLANE has a fourth bit, so CPAGE, DPAGE and TEXT-OFF have moved, and control 2 is new; the status has no
 DOTS bit (8 dots only: the jumper is gone); the ID is $7x where V2.0 reads $5x and the V3 design $6x.
 
@@ -306,16 +317,23 @@ At the machine's 1 MHz the 6845 of the V1.0 card can be tried on this card as it
 
 | Block | Parts | ICs |
 |---|---|---|
-| Bus, ports, registers | as V2.0: 74S85, 74LS138, 2 x 74LS32, the status buffer, gates; two 74HCT273 where V2.0 has one | about 8 |
-| The 6845 and the clock | the 6845; a 25.175 MHz oscillator (DIP-14 can) in place of the crystal circuit and the DOTS logic; 74F163A, 74F74, a 74ACT04 | 4 |
-| Text | IDT7134; 2 x 74ACT574 (the stage); 74ACT574 (the code); AT28C64B-15; 74F299 | 6 |
-| Graphics | 128K RAM; 4 x 74ACT157; the write buffer, the read latch, direct mode's read buffer (74HCT244), the byte latch; 74F299; the slot and mode logic (a 74F74, gates); a 10k x 8 network | 12 or 13: V2.0's twelve, and a gate package if the spare gates do not hold direct mode's half dozen |
-| Dots and syncs | the mixing gates, the guns' gates, 74ACT86, a 74HCT74 for the vertical sync; 3 x 470 ohm, the DE-15 | about 5 |
-| PS/2 | V2.0's section as it is: ATmega328P, the latches and flags, two Mini-DIN-6, the FTDI header | 7 |
-| | | **42 or 43** |
+| Bus, ports, registers | as V2.0: 74S85, 74LS138, 2 x 74LS32; two 74HCT273 where V2.0 has one; the status buffer (74LS244); 74HCT04, 74HCT08 | 9 |
+| The 6845 and the clock | the 6845; a 25.175 MHz oscillator (DIP-14 can) in place of the crystal circuit and the DOTS logic; 74F163A, 74F74 (the 6845's clock, DE's delay), 74ACT04 | 4 |
+| Text | IDT7134; 2 x 74ACT574 (the stage); 74ACT574 (the code); AT28C64B-15; 74F299; 74F74 (the cursor flag, the retimed dot); 74F21 (the load); 74ACT86; 74ACT08 | 10 |
+| Graphics, left off in the text-only build | 128K RAM; 4 x 74ACT157; the write buffer (74ACT244), the read latch (74ACT574), direct mode's read buffer (74HCT244), the byte latch (74ACT574); 74F299; 74F74 (the write flip-flop, TEXT-ONLY); a 10k x 8 network | 11 |
+| Slot logic, dots and syncs | 74F74 (the -WE pulse, the read latch's clock); 74ACT32, 74ACT00, 74ACT11; 74ACT02 (the guns); a 74HCT74 for the vertical sync; 3 x 470 ohm, the DE-15 | 6 |
+| PS/2 | V2.0's section as it is: ATmega328P, two latches, the status, the flags, the 7416; two Mini-DIN-6, the FTDI header | 6 |
+| | | **46** |
 
-An estimate until the netlist. V2.0 has 40 and fills the 218 mm card; the V3 design's 47 needed 250 mm. Whether 42
-or 43 fit 218 mm is for the first placement to say. The text-only build leaves the graphics block off.
+The count is the netlist's (`hardware/cards/video/kicad/v4.0/v40_netlist.py`, 130 parts; its README has the list by
+reference). The first estimate here was 42 or 43: the netlist needs four 74F74 where two were counted, and an
+inverter and an AND package more. Every gate package is full or one gate short of it, but for the PS/2 section's
+7416 (three of six used, as on V2.0).
+
+**The card's length is open again.** V2.0's 40 ICs fill the 218 mm card. The V3 design's first placement found 39
+ICs at about 218 mm and 47 at about 250 mm (`video-v3.md` section 10), and chose 250 mm. 46 ICs, four of them
+0.6 inches wide, are to be expected at about 250 mm: the first placement says. Two ways to 44 ICs were left out of
+the netlist, each a step away from V2.0's proven circuit (section 13).
 
 The board: four layers with the planes, the blank card's connector, and the layout rules from the start - the DE-15
 and the two PS/2 jacks at the front edge facing out, jumpers and the FTDI header at an edge, every reference and value
@@ -333,7 +351,8 @@ crystal circuit.
 
 On the branch `video-v2`, beside the V2.0 card's:
 
-- **The ROM driver**: the card by its ID, $7x; the table of section 3; 80 columns always; the cursor as R14 / R15 and
+- **The ROM driver**: the card by its ID, $7x; the table of section 3; 80 columns and 25 rows (the ROM and Y1/OS
+  have 24 rows today: the screen's height becomes the card's); the cursor as R14 / R15 and
   CURH; PLANE's four bits and the moved control bits, with a copy of control 2 kept in RAM (it cannot be read back);
   GFX-ON left 0 on a text-only card and switched only in vertical blanking. The keyboard is V2.0's code unchanged.
 - **The emulators' model** (`software/videomodel.h`): a third card beside `v1.0` and `v2.0`: 16 dots a count, two
@@ -349,15 +368,20 @@ On the branch `video-v2`, beside the V2.0 card's:
 - 16 dots a count, two bytes fetched in each: the 6845 at 1.573 MHz.
 - Direct mode, as V2.0's (GFX-ON = 0): the window follows the machine to its own limit, about 6 MHz, with the layer
   hidden; slot mode, with the layer shown, to about 3.5 MHz. One 74HCT244, a resistor network and about six gates.
+- 25 rows of text. The ROM and Y1/OS use 24 today.
+- One RAM read twice a count for each layer, not two RAMs side by side (which would give a slot of 318 ns in place
+  of 159, at the price of a second 48-pin text RAM, a second graphics RAM and a second set of buffers and latches).
 
 **Proposed here, to decide**
 - **The raster**: 640 x 480 at 60 Hz with the text in a 400-line band, as the card's table; 640 x 400 at 70 Hz as a
   second table for the driver to offer.
-- **Rows**: 25. The ROM and Y1/OS use 24 today.
-- **One RAM read twice a count for each layer**, not two RAMs side by side. Two would give a slot of 318 ns in
-  place of 159, at the price of a second text RAM (a 48-pin part), a second graphics RAM and a second set of buffers
-  and latches.
-- **The control bits' places** (section 9), which are not V2.0's.
+- **The control bits' places** (section 9), which are not V2.0's. The netlist is wired to them.
+- **The card's length**: 218 mm or 250 mm (section 11), for the first placement to say.
+- **46 ICs or 44.** Two ways down, neither in the netlist:
+  - the read latch as a transparent latch (74ACT573) held open in direct mode, in place of the latch and direct
+    mode's buffer: one 20-pin chip less, and a latch enable to make where there is a clock now;
+  - the four flip-flops on the dot clock (the 6845's clock, the retimed dot, the -WE pulse, the read latch's clock)
+    in one quad part (74F175) for two 74F74: one chip less, and a part the V3 design's timing check has no model of.
 - **The font**: 256 glyphs of 8 x 16 with lower case, and their cursor forms. V2.0's fonts are 8 lines high; the V3
   design's first image is the V1.3 glyphs with each line doubled.
 - **V2.0**: ordered as well, or left as it is.
@@ -377,7 +401,8 @@ On the branch `video-v2`, beside the V2.0 card's:
 
 **Order of work**
 1. This note, checked.
-2. The netlist, from V2.0's (`v20_netlist.py`), with its own checks.
+2. The netlist, from V2.0's (`v20_netlist.py`), with its own checks: **written 2026-11-12**
+   (`hardware/cards/video/kicad/v4.0/v40_netlist.py`; its checks pass and are in `make check`).
 3. The netlist simulated and timed with the parts' data-sheet numbers, as V3's was.
 4. Beside it: the emulators' model and the ROM driver.
 5. The schematic and the board, `pcb-check`, a design review; then the order.
