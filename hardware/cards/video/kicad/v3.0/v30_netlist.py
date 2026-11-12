@@ -42,6 +42,8 @@ FP_R = "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal"
 FP_C = "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm"            # 0.1-inch leads: the rule for every bypass capacitor
 FP_H = "Connector_PinHeader_2.54mm:PinHeader_1x%02d_P2.54mm_Vertical"
 FP_RN = "Resistor_THT:R_Array_SIP9"
+# the DE-15 socket: KiCad's footprint for the common right-angle part (pins 3.03 mm, mounting holes 4.94 mm from the edge)
+FP_VGA = "Connector_Dsub:DSUB-15-HD_Socket_Horizontal_P2.29x1.90mm_EdgePinOffset3.03mm_Housed_MountingHolesOffset4.94mm"
 LOCAL = "video-v3.0-local"
 BUSLIB = "blank-card-v3.2-eagle"
 
@@ -94,7 +96,7 @@ PARTS = {
     # --- dots
     "IC22": ("74F299", "74xx:74LS299", DIP[20], "shift register, dots 8-15 of the word"),
     "IC23": ("74F299", "74xx:74LS299", DIP[20], "shift register, dots 0-7; QH' is the video"),
-    "J1":   ("VGA", "Connector:DE15_Socket_HighDensity_MountingHoles", LOCAL + ":DE15_HD_RA", "monitor: 1 R, 2 G, 3 B, 13 HSYNC, 14 VSYNC"),
+    "J1":   ("VGA", "Connector:DE15_Socket_HighDensity_MountingHoles", FP_VGA, "monitor: 1 R, 2 G, 3 B, 13 HSYNC, 14 VSYNC; SH the shell"),
     "R2":   ("470", "Device:R", FP_R, "video to R (0.7 V into 75 ohm)"),
     "R3":   ("470", "Device:R", FP_R, "video to G"),
     "R4":   ("470", "Device:R", FP_R, "video to B"),
@@ -152,7 +154,7 @@ for cap, ic in DECOUPLE.items():
 
 # every pin a part has, for check(): DIP pins by number, the others by name
 PINS = {"X1": ["%s%d" % (r, n) for r in "ABC" for n in range(1, 33)],
-        "OSC1": ["1", "7", "8", "14"], "J1": [str(n) for n in range(16)], "Y1": ["1", "2"], "F1": ["1", "2"],
+        "OSC1": ["1", "7", "8", "14"], "J1": [str(n) for n in range(1, 16)] + ["SH"], "Y1": ["1", "2"], "F1": ["1", "2"],
         "J2": ["1", "2", "3", "4", "5", "6", "S"], "J3": ["1", "2", "3", "4", "5", "6", "S"], "LED1": ["1", "2"]}
 for ref, (val, sym, fp, note) in PARTS.items():
     if ref in PINS: continue
@@ -334,7 +336,7 @@ c("VR", "IC17.4", "R2.1"); c("VG", "IC17.10", "R3.1"); c("VB", "IC17.13", "R4.1"
 c("RED", "R2.2", "J1.1"); c("GREEN", "R3.2", "J1.2"); c("BLUE", "R4.2", "J1.3")
 c("VSYNC#", "IC1.13", "IC32.4")
 c("HSB", "IC32.3", "R5.1"); c("HSOUT", "R5.2", "J1.13"); c("VSB", "IC32.6", "R6.1"); c("VSOUT", "R6.2", "J1.14")
-c("GND", "J1.5", "J1.6", "J1.7", "J1.8", "J1.10", "J1.0")
+c("GND", "J1.5", "J1.6", "J1.7", "J1.8", "J1.10", "J1.SH")
 
 # ---- text method A (10c): IC41-IC48, sockets ------------------------------------------------------------------------------
 # A Window cycle's RAM data is the character word: two codes. It is steady before the cycle's dot 4, so the codes and
