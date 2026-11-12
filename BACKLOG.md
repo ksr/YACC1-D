@@ -373,29 +373,30 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     connector with both sync polarities; whether V2.0 is still ordered first; the emulators' model (the drawing
     commands) and the ROM's console driver.
 - **Video card V3, the build-out (begun 2026-11-11).** `docs/cards/video-v3.md` section 10a is the circuit part by
-  part: the chip's DIP-64 pins, the six ports' strobes from two 74HCT138 (CS, RS = IO-ADDR0, R/W = IO-ADDR2), about
-  30 chips with the PS/2 section and 36 with text method A's. The memory cycle and every control equation are in section 10b (from the manual's figures T-6
+  part: the chip's DIP-64 pins, the six ports' strobes from two 74HCT138 (CS; RS = IO-ADDR0 and R/W = IO-ADDR2 through a latch),
+  39 chips with the PS/2 section and 47 with text method A's. The memory cycle and every control equation are in section 10b (from the manual's figures T-6
   and T-8: a dot counter that keeps step with the chip's MCYC by loading itself, -WE from a flip-flop in dots 5 and
-  6, the buffers' two enable windows, the dummy-cycle flip-flop for the load). **The netlist's first cut is written**
-  (`hardware/cards/video/kicad/v3.0/v30_netlist.py`, 2026-11-11: 136 parts, 46 ICs, 228 nets; `python3
+  6, the buffers' two enable windows, the dummy-cycle flip-flop for the load). **The netlist is written**
+  (`hardware/cards/video/kicad/v3.0/v30_netlist.py`, 2026-11-11: 138 parts, 47 ICs, 233 nets; `python3
   v30_netlist.py` proves every pin accounted for): the bus and ports, the chip, clock and control, RAM, the font
   EPROM, the shift registers, the control register from the attribute byte (colours, sync polarity; ATR 00 =
-  white, both syncs negative), blanking in step with the dots, the VGA output, the PS/2 section, and **text method
-  A** (section 10c, from the manual's figure 2.1 (c): eight sockets left empty on the first build - the character
-  codes and raster line latched from the Window's cycle, a 70 ns character generator, a shifter, the layers mixed
-  OR / XOR; CHR forces a character screen into the RAM's top 64K words; the graphics dot is delayed 8 dots to
-  meet the text). **The netlist is simulated** (`tests/video/v30_netsim.py`, in `make check`, section 10d:
-  every part a model, the chip's memory cycles scripted, delays in ns at both ends; interleaved and superimposed
-  access, the ports; eight planted wiring faults caught). It found two faults, both fixed: the MAD buffers' enable
-  is now a flip-flop (a read was 5 ns inside its set-up and the buffers fought the chip's next address), and the
-  text layer is switched at its shifter's clear (it was a gate late). **Next, in order:** the cursor's place in the
-  video (CUD1's sense and timing); the timing check with the bought parts' data-sheet numbers in the simulation's
-  delay table, and the bus cycle's data hold from the microcode;
-  the generator for the schematic and the board from V2.0's; routing, DRC, PDFs, `pcb-check`; a design review. Settled
-  2026-11-11: the chip on four ports (PA-PD; with PS/2 on PE / PF the card has all of PA-PF, a later card uses
-  P2-P7), and VGA only (one DE-15; no DB9, RCA or halved clock). To confirm from the parts' data sheets in the timing
-  check: the RAMs' pinout and write timing, the 74F299's set-up, the few nanoseconds between the buffers going off and
-  the RAM's outputs coming on after a write, and the chip's cursor outputs' sense.
+  white, both syncs negative), the VGA output, the PS/2 section, and **text method A** (section 10c, from the
+  manual's figure 2.1 (c): eight sockets left empty on the first build - the character codes and raster line latched
+  from the Window's cycle, a 70 ns character generator, a shifter, the layers mixed OR / XOR; CHR forces a character
+  screen into the RAM's top 64K words; the graphics dot is delayed 8 dots to meet the text; the cursor is CUD1 /
+  CUD2 on the character generator's address). **The netlist is simulated and the timing check is done**
+  (`tests/video/v30_netsim.py`, in `make check`, section 10d): every part a model with its data-sheet minimum and
+  maximum, the chip's memory cycles scripted, the bus driven as the microcode's I/O records drive it; eight corners;
+  seventeen planted wiring faults caught. What the timing check changed (2026-11-11): the parts (74F163A, 74F21 for
+  the three fast decodes, two 74ACT273 for the control register, a 74F299 as the delay line); no clock from a decode
+  of the counter (P56, a flip-flop, is the one timing edge); a read's buffers a dot later than a write's; the
+  memories' outputs off from the end of a cycle to the end of the next AS (MOE); a latch on RS and R/W, because the
+  microcode's IN records drop the port number with -IO-RD. **Next, in order:** the generator for the schematic and
+  the board from V2.0's; routing, DRC, PDFs, `pcb-check`; a design review. Settled 2026-11-11: the chip on four
+  ports (PA-PD; with PS/2 on PE / PF the card has all of PA-PF, a later card uses P2-P7), and VGA only (one DE-15;
+  no DB9, RCA or halved clock). Open: whether a 512K x 8 static RAM exists in DIP-32 (the footprint's option). For
+  the bench (section 10d, "what it cannot say"): the chip's minimum delays, on which two margins of 2 to 3 ns rest;
+  a decoder pulse at the end of an IN; the cursor skew's count.
 - **Video card V2.0 (designed 2026-10-22; `hardware/cards/video/kicad/v2.0`; re-reviewed and READY TO ORDER 2026-10-23, not ordered).** V1.3 (DOTS jumper, 12 MHz,
   both fonts in one EPROM, 4 layers) plus a graphics layer, two PS/2 ports and every register on I/O ports. Board 218 mm
   long (the sequencer logic V2.1l's length; X1 where every card has it), 4 layers: In1 GND plane, In2 VCC plane.
