@@ -28,7 +28,7 @@ The machine and its bus as a whole: `docs/system/` (architecture, microcode, bus
 | [`io.md`](io.md) | I/O V1.1 | 16550 UART behind P0/P1, switches, LEDs, TIL311s, LCD, IN/OUT; the full programming model; the CompactFlash interface on P8/P9 as the next device on the ports |
 | [`cf.md`](cf.md) | CompactFlash interface: the CF card v1.0 circuit (designed 2026-09-23, not built); planned 2026-09-24 onto the memory card, not designed yet | two I/O ports: a P8 register-select latch with a CF reset bit, P9 data through a 74LS245; 8-bit True IDE via a CF-to-IDE adapter (SinLoon or TAODAN, undecided); the timing argument for tying -CS0 low |
 | [`video.md`](video.md) | Video V1: V1.0 built, v1.1–v1.3 KiCad designs | 6845 + IDT7134 dual-port RAM at $D000, the register-select fix, the +5V rail wire, the plan to move the 6845 onto ports |
-| [`video-v3.md`](video-v3.md) | Video V3 (a design note, 2026-11-11; nothing drawn) | a VGA card round the HD63484 ACRTC: 640 x 480 with the chip drawing, ports only, two ways to do text, the steps to 800 x 600 and 1024 x 768 |
+| [`video-v3.md`](video-v3.md) | Video V3 (a design note, 2026-11-11; not built: stopped 2026-11-12 after the schematic) | a VGA card round the HD63484 ACRTC: 640 x 480 with the chip drawing, ports only, two ways to do text, the steps to 800 x 600 and 1024 x 768 |
 | [`video-v2.md`](video-v2.md) | Video V2.0 (ready to order) | v1.3 plus a 512 x 192 graphics layer, every register on I/O ports PA-PE, two PS/2 ports on an ATmega328P; 218 mm, 4 layers |
 
 ## Test and bring-up cards

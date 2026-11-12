@@ -8,7 +8,7 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
 
 ## Standing rules (Ken's)
 
-- **Commit to `main`** (or to `video-v2` / `video-v3` for the new video cards' work, below) with conventional commits (`feat:`, `fix:`,
+- **Commit to `main`** (or to `video-v2` for the video card V2.0's work, below; `video-v3` is frozen) with conventional commits (`feat:`, `fix:`,
   `docs:`, `chore:`, `test:`…) and **push after each commit**. No other branches, and no PRs, unless Ken asks. Stage explicit paths (never `git add -A` / `git add .`): other work
   may be in the tree. End every commit message with the co-author line the session's attribution instructions give.
 - **Two lines of development (Ken, 2026-11-10).** `main` is the YACC1 as built, with the video card V1.0: its ROM,
@@ -23,18 +23,19 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
   - Side by side on one Mac, as a second worktree: `git worktree add ~/Developer/YACC1-D-v2 video-v2` (once per Mac).
     Each worktree has its own builds (`make` there: the emulators, `os/disk.img`, `rom.bin`) and its own `make
     check`. Hardware steps (ROM burn, microcode, bench, CF card) are from `main` until the V2.0 card is in the machine.
-  - Syncing YACC1-D means both branches. The website publishes from `main` only.
-  - **A third line, `video-v3` (Ken, 2026-11-11): the YACC1 with the video card V3** (the HD63484 ACRTC, VGA:
-    `docs/cards/video-v3.md`, a design note since 2026-11-11). The card's design is on `main` like every card's. The
-    branch was made from `video-v2` and has everything of it; its ROM drives the V3 card (the V2.0 ROM stays on
-    `video-v2`: the monitor has no room for both drivers) and its emulators' card is the V3 unless `Y1VID_CARD` says
-    otherwise. `main` is merged into both branches; something only the two video branches share (the emulators'
-    card models, the PS/2 code) is changed on `video-v2` and merged into `video-v3`, never the other way. Its
-    worktree: `git worktree add ~/Developer/YACC1-D-v3 video-v3` (once per Mac). Syncing YACC1-D means all three.
-    **Stopped (Ken, 2026-11-12): the V3 card will not be built for the YACC1.** Its design is the basis of another
-    machine's video card (`docs/cards/video-v3.md` section 13 is the handover). No further V3 work here - no board,
-    no ROM or model work. The branch and its worktree stay as they are, still merged into and synced, until Ken
-    says what becomes of them.
+  - Syncing YACC1-D means both branches, `main` and `video-v2` (not the frozen `video-v3`, below). The website
+    publishes from `main` only.
+  - **A third line, `video-v3`: FROZEN (Ken, 2026-11-12).** It was the YACC1 with the video card V3 (the HD63484
+    ACRTC, VGA: `docs/cards/video-v3.md`), begun 2026-11-11: made from `video-v2` with everything of it, its ROM
+    driving the V3 card (the V2.0 ROM stays on `video-v2`) and its emulators' card the V3 unless `Y1VID_CARD` says
+    otherwise. **The V3 card will not be built for the YACC1**; its design is the basis of another machine's video
+    card (`docs/cards/video-v3.md` section 13 is the handover; the card's design files are on `main` like every
+    card's, the chip's emulator model on `video-v2`). The branch is kept on GitHub as reference - its ROM is the
+    only driver written for the chip - and nothing more goes into it: no commits, no merges from `main` or
+    `video-v2` (the merge that brought this note was the last), and it is not part of syncing. Do not delete it.
+    To read it on a Mac without its worktree: `git worktree add ~/Developer/YACC1-D-v3 video-v3`, or
+    `git show origin/video-v3:<path>`. No further V3 work here - no board, no ROM or model work - unless Ken asks.
+    The chip's manual and application note are in `../private-resources/YACC1-D/docs/datasheets/`.
 - **Never modify `~/Documents/YACCS`** (the historical archive the tree was migrated from; it only exists on Ken's
   first Mac and the repo does not need it).
 - **Migrated files** (sources that came from YACCS, e.g. `software/emulator/main.c`, `software/assembler/*`,
@@ -178,8 +179,8 @@ that travels.
 Claude's conversation history and memory stay on the Mac where they happened; the commits and `BACKLOG.md` are how
 one Mac's session learns what the other did. So, without being asked:
 
-- **At the start of a session**: `git fetch` and `git status` (in the worktree of the line being worked on; both
-  `main`, `video-v2` and `video-v3` are checked the same way). If the tree is behind and clean, `git pull --ff-only`;
+- **At the start of a session**: `git fetch` and `git status` (in the worktree of the line being worked on;
+  `main` and `video-v2` are checked the same way; the frozen `video-v3` is not). If the tree is behind and clean, `git pull --ff-only`;
   if it has uncommitted changes or has diverged, stop and tell Ken before touching anything. Then summarize for Ken
   the commits that arrived (`git log` of the new range, subjects plus anything the messages leave open), and read
   `BACKLOG.md` for the open items those commits touch, before starting on his request.

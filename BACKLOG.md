@@ -373,9 +373,11 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
 - **Video card V3, the build-out (begun 2026-11-11; STOPPED 2026-11-12: the card is not built for the YACC1).**
   The design is kept as the starting point for a video card on another machine, where the work goes on;
   `docs/cards/video-v3.md` section 13 sorts it into what holds on any bus and what is the YACC1's, and says where
-  each file is. No further V3 work here: no board, no ROM or model work. **To decide:** what becomes of the branch
-  `video-v3` and its worktree (the V3 ROM; the emulators' card defaulting to the V3) and of the V3 model on
-  `video-v2`; until then they stay as they are and are still synced. What was done, and where it stopped:
+  each file is. No further V3 work here: no board, no ROM or model work. **The branch
+  `video-v3` is frozen (2026-11-12):** kept on GitHub, with its worktree, as reference (the V3 ROM is the only
+  driver written for the chip); nothing is committed to it or merged into it, and it is not part of syncing. The
+  V3 model on `video-v2` (`Y1VID_CARD=v3`) stays, with its tests. The chip's manual and application note are kept
+  in `../private-resources/YACC1-D/docs/datasheets/` (2026-11-12). What was done, and where it stopped:
   `docs/cards/video-v3.md` section 10a is the circuit part by
   part: the chip's DIP-64 pins, the six ports' strobes from two 74HCT138 (CS; RS = IO-ADDR0 and R/W = IO-ADDR2 through a latch),
   39 chips with the PS/2 section and 47 with text method A's. The memory cycle and every control equation are in section 10b (from the manual's figures T-6

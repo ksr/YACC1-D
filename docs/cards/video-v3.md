@@ -18,7 +18,8 @@ at **640 x 480**, one bit a dot to begin with, on a board that can grow to 800 x
 Two **HD63484P8** are in hand: the 8 MHz grade, in the 64-pin plastic DIP with 2.54 mm pin spacing.
 
 Sources: Hitachi's *HD63484 ACRTC User's Manual* (1985, U75) and *Application Note* (1986, U90), both on bitsavers
-under `components/hitachi/_dataBooks`; section and table numbers below are the manual's. `tools/acrtc_timing.py`
+under `components/hitachi/_dataBooks` (a copy of each is kept outside the repository, in
+`../private-resources/YACC1-D/docs/datasheets/`); section and table numbers below are the manual's. `tools/acrtc_timing.py`
 computes every clock and register figure here (`--check` in `make check`). Where a figure is an estimate, or a point is
 still to confirm from the manual or a data sheet, the text says so.
 
@@ -675,6 +676,8 @@ buffers on a dot early, a register on the wrong edge of P56, -WE in every cycle,
 - The card is not built for the YACC1. What exists - this note, the netlist and its simulation, the schematic, the
   emulators' model, the V3 ROM - is kept, as the starting point for a video card on another machine (section 13).
   What follows is the design's own list, as it stood.
+- The branch `video-v3`, with the V3 ROM, is frozen: kept as reference, nothing more committed to it or merged
+  into it.
 
 **Decided (2026-11-11)**
 - Text: method B on the first build; the board has method A's sockets and tracks from the start.
@@ -736,9 +739,9 @@ proven by the simulation of section 10d, for this netlist and these parts.
 | The simulation and the timing check | `tests/video/v30_netsim.py` (in `make check`) | `main` |
 | The schematic (eight sheets and a PDF), the bill of materials | `hardware/cards/video/kicad/v3.0/`: `reports/video-v3.0-schematic.pdf`, `BOM.md`, drawn by `gen_v30.py sch` | `main` |
 | The emulators' model of the chip and of the card, its tests, the font image, the picture drawn from the frame buffer | `software/acrtcmodel.h`, `software/videomodel.h`, `tests/video/v30/`, `tools/v3font.py`, `tools/vidsim.py`; `software/emulator/README.md` says what is modelled | `video-v2` |
-| A driver: the start sequence and a console by method B (glyphs by SCPY, a scroll by CPY) | `firmware/monitor/monitor.asm`, `docs/programming/MONITOR.md` | `video-v3` |
+| A driver: the start sequence and a console by method B (glyphs by SCPY, a scroll by CPY) | `firmware/monitor/monitor.asm`, `docs/programming/MONITOR.md` | `video-v3` (frozen 2026-11-12: kept as reference) |
 | The PS/2 keyboard and mouse firmware (ATmega328P) | `embedded/video-ps2` | `main` |
-| The manuals | bitsavers, `components/hitachi/_dataBooks` (the head of this note); not in the repository | |
+| The manuals | bitsavers, `components/hitachi/_dataBooks` (the head of this note); not in the repository: a copy of each in `../private-resources/YACC1-D/docs/datasheets/` | |
 
 **Holds on any bus: the chip's memory side and the dot path** (sections 6, 7, 10b, 10c)
 
