@@ -1,6 +1,7 @@
 # Video card V3.0 (HD63484, VGA) - the circuit and the schematic
 
-Not a board yet. `v30_netlist.py` is the card's circuit as data (parts, nets, the pins left open), written
+The circuit and its schematic, and no board: the card is not built for the YACC1 (decided 2026-11-12; the last
+section). `v30_netlist.py` is the card's circuit as data (parts, nets, the pins left open), written
 2026-11-11 from the design note `docs/cards/video-v3.md` (sections 5, 10a and 10b: the ports, the parts, the memory
 cycle and every control equation). `python3 v30_netlist.py` checks it: every pin of every part on a net or listed as
 unconnected, no net with a single pin, no two outputs on one net.
@@ -44,14 +45,18 @@ State: the schematic's exported netlist matches `v30_netlist.py` (233 nets) and 
 MD-60SM, drawn from its data sheet as on V2.0). The DE-15 socket has KiCad's own footprint for the common right-angle
 part; **its row spacing is to be verified against the part bought before any order.**
 
-## The board: waiting for its length
+## The board: not laid out
+
+The card is not built for the YACC1 (decided 2026-11-12), and the work stopped after the schematic. The design is
+kept as the starting point for a video card on another machine: the design note's section 13 says what of it holds
+on any bus and what is the YACC1's.
 
 `gen_v30.py board reports/netlist.net <out.kicad_pcb>` writes an unrouted four-layer board, but the placement in it is
 a first trial and `gen_v30.py place` does not pass. The reason is the card's size. At the V2.0 card's spacing (columns
 of sockets 14 mm apart with a capacitor beside each chip, 6.3 mm between the chips of a column) the 47 ICs, with the
 0.9-inch DIP-64 and four 0.6-inch parts, need about 250 mm; the outline the long cards have is 218 mm, which V2.0
 filled with 40 ICs. Without text method A's eight sockets, or without the PS/2 section, the rest comes to about
-218 mm. `LENGTH` in `gen_v30.py` is 250 for the trial. The choice is in `BACKLOG.md`.
+218 mm. A 250 mm card was chosen (2026-11-11; `LENGTH` in `gen_v30.py`).
 
-Then: the placement, `build.sh` (routing, DRC, the PDFs), `pcb-check`, a design review. Nothing here is ordered or
-built.
+Not begun: the real placement, `build.sh` (routing, DRC, the PDFs), `pcb-check`, a design review. Nothing here is
+ordered or built.

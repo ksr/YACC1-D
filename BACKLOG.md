@@ -320,7 +320,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     CPU read latch (74LS374) and write latch, the bank/control register (bank, TEXT-ON, GFX-ON), a 74LS166, three gates. Goes with the PS/2 and IBM-monitor
     revision. Model: `python3 tools/vidsim.py overlay --tint --png ov.png` (the test card plus a drawing; `--overlay FILE`
     any 16K image, also in run/render; `--gmode or|xor`, `--layers text,gfx|text|gfx|none`); `tests/video/overlay_check.py` checks the addressing.
-- **A VGA video card around the HD63484 ACRTC (idea, 2026-11-11; nothing designed). The design note is
+- **A VGA video card around the HD63484 ACRTC (idea, 2026-11-11; not built: stopped 2026-11-12, the build-out item
+  below). The design note is
   `docs/cards/video-v3.md` (begun 2026-11-11: the clock and registers for 640 x 480, the bus and memory sides, both
   text methods, the steps to higher resolution; its section 12 lists what is to decide and to confirm), with
   `tools/acrtc_timing.py` for the figures. Decided 2026-11-11: text by method B first on a board laid out for A, the font in an EPROM in the frame buffer's
@@ -372,7 +373,13 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     generator and its two lookups a cycle; the shift registers and dot logic at 25 MHz (74AC / 74F); the VGA
     connector with both sync polarities; whether V2.0 is still ordered first; the emulators' model (the drawing
     commands) and the ROM's console driver.
-- **Video card V3, the build-out (begun 2026-11-11).** `docs/cards/video-v3.md` section 10a is the circuit part by
+- **Video card V3, the build-out (begun 2026-11-11; STOPPED 2026-11-12: the card is not built for the YACC1).**
+  The design is kept as the starting point for a video card on another machine, where the work goes on;
+  `docs/cards/video-v3.md` section 13 sorts it into what holds on any bus and what is the YACC1's, and says where
+  each file is. No further V3 work here: no board, no ROM or model work. **To decide:** what becomes of the branch
+  `video-v3` and its worktree (the V3 ROM; the emulators' card defaulting to the V3) and of the V3 model on
+  `video-v2`; until then they stay as they are and are still synced. What was done, and where it stopped:
+  `docs/cards/video-v3.md` section 10a is the circuit part by
   part: the chip's DIP-64 pins, the six ports' strobes from two 74HCT138 (CS; RS = IO-ADDR0 and R/W = IO-ADDR2 through a latch),
   39 chips with the PS/2 section and 47 with text method A's. The memory cycle and every control equation are in section 10b (from the manual's figures T-6
   and T-8: a dot counter that keeps step with the chip's MCYC by loading itself, -WE from a flip-flop in dots 5 and
@@ -394,15 +401,14 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   microcode's IN records drop the port number with -IO-RD. **The schematic is generated** (2026-11-11,
   `hardware/cards/video/kicad/v3.0/gen_v30.py sch`, from V2.0's generator: a root and eight sheets, the exported
   netlist equal to `v30_netlist.py` net by net, ERC clean, `reports/video-v3.0-schematic.pdf`, `BOM.md`).
-  **DECISION PENDING, the card's length:** the first placement trial shows that the 47 ICs do not fit the 218 mm
+  **The card's length, where the work stopped:** the first placement trial shows that the 47 ICs do not fit the 218 mm
   outline at V2.0's spacing - about 250 mm is needed (V2.0 filled 218 mm with 40 ICs). The ways out: (a) a 250 mm
   card, 32 mm more slot space than the sequencer logic card, nothing else changed; (b) 218 mm without text method A's
   eight sockets (method A then needs a later board); (c) 218 mm without the PS/2 section (a keyboard card of its own;
   about 220 mm, to be squeezed); (d) the control gates in one or two GALs, a redesign with its simulation.
-  `gen_v30.py` has `LENGTH = 250` and a provisional placement (`gen_v30.py place` does not pass yet); the board
-  waits for the answer. Also to verify before any order: the DE-15 socket's footprint (KiCad's) against the part
-  bought. **Next, in order:** the placement at the length chosen, `build.sh` (routing, DRC, PDFs), `pcb-check`; a
-  design review. Settled 2026-11-11: the chip on four
+  (a) was chosen (2026-11-11). `gen_v30.py` has `LENGTH = 250` and a provisional placement (`gen_v30.py place` does
+  not pass); not begun: the real placement, `build.sh` (routing, DRC, PDFs), `pcb-check`, a design review. Never
+  verified: the DE-15 socket's footprint (KiCad's) against a part in hand. Settled 2026-11-11: the chip on four
   ports (PA-PD; with PS/2 on PE / PF the card has all of PA-PF, a later card uses P2-P7), and VGA only (one DE-15;
   no DB9, RCA or halved clock). Open: whether a 512K x 8 static RAM exists in DIP-32 (the footprint's option). For
   the bench (section 10d, "what it cannot say"): the chip's minimum delays, on which two margins of 2 to 3 ns rest;

@@ -1,7 +1,11 @@
 # Video card V3 — design note (HD63484 ACRTC, VGA)
 
-**A design note, begun 2026-11-11. Nothing is drawn, ordered or built; "V3" is a working name.** The card in the
-machine is the [V1.0](video.md); the [V2.0](video-v2.md) is designed and not ordered.
+**A design note, begun 2026-11-11. The card is not built for the YACC1 (decided 2026-11-12).** The design stops where
+it stood that day: the circuit as a netlist, simulated gate for gate and timed with the parts' data-sheet numbers,
+the schematic drawn from it, the emulators' model of the chip and a ROM that drives it. No board was laid out;
+nothing was ordered or built. The design is kept as the starting point for a video card on another machine: section
+13 sorts it into what holds on any bus and what is the YACC1's. "V3" is a working name. The card in the machine is
+the [V1.0](video.md); the [V2.0](video-v2.md) is designed and not ordered.
 
 **Decided 2026-11-11** (section 12): text by method B first, on a board laid out from the start to take method A's
 parts; the font in an EPROM on the card, so the screen shows the boot; the card carries the PS/2 keyboard and mouse;
@@ -296,7 +300,8 @@ Beyond that the limits are the 5 V logic and the chip: 1024 x 768 with flashless
 - **The 218 mm outline is too short for them** (2026-11-11, the first placement trial with `gen_v30.py`). At V2.0's
   spacing - columns of sockets 14 mm apart with a capacitor beside each chip, 6.3 mm between the chips of a column -
   the 47 ICs, with the 0.9-inch DIP-64 and four 0.6-inch parts, fill ten narrow columns, two wide ones and the chip's
-  own: about 250 mm. Without method A's sockets, or without the PS/2 section, about 218 mm. To decide (section 12).
+  own: about 250 mm. Without method A's sockets, or without the PS/2 section, about 218 mm. The 250 mm card was
+  chosen (2026-11-11); no board was laid out before the card was dropped (2026-11-12).
 - The board-layout rules of 2026-10-24 and after apply from the start: the DE-15 and the PS/2 jacks at the front edge
   facing out, jumpers at an edge, every reference and value on the silk outside its part, `cottageworker.com`.
 - `pcb-check` before any order.
@@ -394,9 +399,10 @@ uses two registers (section 10b).
 to another, the text-A parts removable as V2.0's graphics parts are): done. (2) A timing check: the memory cycle and
 the bus cycle against the parts' numbers: done, in the simulation (section 10d). (3) The generator for the schematic
 sheets and the unrouted board, from V2.0's (`gen_v20.py`): the schematic is done (2026-11-11, `gen_v30.py sch`: a root
-and eight sheets, its exported netlist equal to `v30_netlist.py`, ERC clean); the board waits for its length (section
-10), then four layers and the layout rules of section 10. (4) Routing, DRC, the placement and schematic PDFs,
-`pcb-check`. (5) The review of the design before any order, as V2.0 had (`hardware/cards/video/reviews/v2.0.md`).
+and eight sheets, its exported netlist equal to `v30_netlist.py`, ERC clean); the board - 250 mm, four layers, the
+layout rules of section 10 - was not laid out. (4) Routing, DRC, the placement and schematic PDFs, `pcb-check`: not
+begun. (5) The review of the design before any order, as V2.0 had (`hardware/cards/video/reviews/v2.0.md`): not
+begun. **The work stopped after the schematic (2026-11-12): the card is not built.**
 
 ## 10b. The memory cycle and the control logic (2026-11-11)
 
@@ -665,6 +671,11 @@ buffers on a dot early, a register on the wrong edge of P56, -WE in every cycle,
 
 ## 12. Decided, to decide, and to confirm
 
+**Decided (2026-11-12)**
+- The card is not built for the YACC1. What exists - this note, the netlist and its simulation, the schematic, the
+  emulators' model, the V3 ROM - is kept, as the starting point for a video card on another machine (section 13).
+  What follows is the design's own list, as it stood.
+
 **Decided (2026-11-11)**
 - Text: method B on the first build; the board has method A's sockets and tracks from the start.
 - The font for B: an EPROM on the card in the frame buffer's address space, so the boot shows on the screen.
@@ -689,11 +700,13 @@ buffers on a dot early, a register on the wrong edge of P56, -WE in every cycle,
 - **After reset** the chip's abort bit (ABT in CCR) is set and the FIFOs are shut: the driver clears it first. In
   8-bit mode WPTN counts bytes.
 
-**To decide**
-- **The card's length** (section 10): about 250 mm with everything on it, 32 mm more slot space than the longest card
+**The card's length (decided 2026-11-11: 250 mm)**
+- Section 10. The ways there were: about 250 mm with everything on it, 32 mm more slot space than the longest card
   today; or 218 mm without text method A's sockets (the first build leaves them empty; method A would then need a
   later board); or 218 mm without the PS/2 section (a keyboard card of its own; about 220 mm, to be squeezed); or the
   control gates gathered into one or two GALs, a redesign that the timing simulation would have to follow.
+
+**Left open when the design stopped**
 - A font with lower case: the first image is the V1.3 card's 64 glyphs, each line doubled into the 8 x 16 cell.
 
 **Settled by the timing check (2026-11-11, section 10d)**
@@ -702,7 +715,83 @@ buffers on a dot early, a register on the wrong edge of P56, -WE in every cycle,
 - The RAM's write pulse (80 ns against 45) and the 74F299's clock (25.175 MHz against 70); the 128K RAM's pinout.
 - The superimposed mode's load points for the two words, as the manual's figure 2.1 (c) gives them.
 
-**To confirm**
+**To confirm, by whoever builds from this design**
 - Whether a 512K x 8 static RAM is to be had in DIP-32, and its pinout.
 - How the pattern RAM is walked in a filled area (which way PPY steps), on the chip: the manual's text and its figure
   do not settle it. A solid fill does not depend on it.
+
+## 13. What carries over to another machine (2026-11-12)
+
+The card is not built for the YACC1. The design is the starting point for a video card on another machine, with
+another bus, and this section sorts it for that work. Nothing in this note was ever on a bench: what is proven is
+proven by the simulation of section 10d, for this netlist and these parts.
+
+**Where everything is**
+
+| What | Where | Branch |
+|---|---|---|
+| The design | this note, `docs/cards/video-v3.md` | `main` |
+| The clock and register figures of section 3, for any mode | `tools/acrtc_timing.py` (`--check` in `make check`) | `main` |
+| The circuit: parts, nets, the pins left open, with its own checks | `hardware/cards/video/kicad/v3.0/v30_netlist.py` | `main` |
+| The simulation and the timing check | `tests/video/v30_netsim.py` (in `make check`) | `main` |
+| The schematic (eight sheets and a PDF), the bill of materials | `hardware/cards/video/kicad/v3.0/`: `reports/video-v3.0-schematic.pdf`, `BOM.md`, drawn by `gen_v30.py sch` | `main` |
+| The emulators' model of the chip and of the card, its tests, the font image, the picture drawn from the frame buffer | `software/acrtcmodel.h`, `software/videomodel.h`, `tests/video/v30/`, `tools/v3font.py`, `tools/vidsim.py`; `software/emulator/README.md` says what is modelled | `video-v2` |
+| A driver: the start sequence and a console by method B (glyphs by SCPY, a scroll by CPY) | `firmware/monitor/monitor.asm`, `docs/programming/MONITOR.md` | `video-v3` |
+| The PS/2 keyboard and mouse firmware (ATmega328P) | `embedded/video-ps2` | `main` |
+| The manuals | bitsavers, `components/hitachi/_dataBooks` (the head of this note); not in the repository | |
+
+**Holds on any bus: the chip's memory side and the dot path** (sections 6, 7, 10b, 10c)
+
+- The clock: the 25.175 MHz oscillator and the 74F163A that makes 2CLK and counts the dots of a memory cycle, kept
+  in step with the chip's MCYC by loading itself.
+- The one timing edge, P56, and the rule behind it: no clock, latch enable or write pulse is a gate's decode of the
+  counter.
+- The address latches, the two RAMs, the MAD buffers with their enable flip-flop, -WE, the dummy-cycle flip-flop
+  (VALID), MOE and CE2: every equation of section 10b's table.
+- The font EPROM in the upper half of the chip's address space, and its copy onto the high byte.
+- The shift registers, the delay line, the retiming flip-flop, the three guns' gates and resistors, the syncs'
+  polarity, the DE-15.
+- The control register taken from the chip's attribute byte: eight control bits that need no address on the bus.
+- Text method A's eight parts, and the cursor on the character generator's address (section 10c).
+- The register values of section 3 and what section 12 lists as confirmed from the manual.
+
+The margins of section 10d belong to these parts wired this way. A changed part, a gate moved into a GAL or an
+equation rewritten is a new circuit to the timing check: put the change into the netlist and the part's model, and run
+`v30_netsim.py` again.
+
+**The YACC1's, to be designed again for another bus** (sections 5 and 10a)
+
+| Here | Because | What stays true on any bus |
+|---|---|---|
+| Six I/O ports, PA-PF, from two 74HCT138 and a 74HCT21 | the YACC1 reaches a card by a port number and two strobes | the chip has two addresses (RS) and a direction (R/W) |
+| RS and R/W through a 74HCT573 that CS closes | the microcode's IN records drop the port number in the same step as -IO-RD | RS and R/W steady 50 ns before CS falls and until it has risen |
+| Nothing waits for the chip | the strobe is 2 us, at a 1 MHz CPU clock | CS low for at least three 2CLK cycles: 477 ns at 6.29 MHz. A faster bus stretches its cycle, by a count or by the chip's DTACK (pin 10, open drain), which this card leaves open and the simulation never drives |
+| The 8-bit mode: DACK low as RES rises, D8-D15 open | an 8-bit data bus | the chip has a 16-bit host bus (DACK high as RES rises): a register or a FIFO word in one transfer. The model and the ROM driver are written for the 8-bit mode (the high byte, then the low byte; WPTN counts bytes) |
+| A 74HCT245 on D0-D7, enabled by CS, its direction the latched R/W | | the chip's outputs sink 2.2 mA, so a buffer stands between it and the bus; a write's data 40 ns before CS rises and 10 ns after; a read's data 80 ns after CS falls, released within 60 ns |
+| The card status on IN PE (FULL, SRC, BUSY, TEXT, the ID $6x); the PS/2 section on PE and PF | the V2.0 card's section on this card's port strobes | the ATmega328P's side of it: two latches, three flags, `embedded/video-ps2` |
+| IRQ and the PS/2 interrupt to -INT through jumpers and a 7416 | one interrupt line, no vector | IRQ is open drain; the driver here polls the status register |
+| -RESET to RES, to DACK and to the two control registers' clear | | RES low for at least ten 2CLK cycles |
+| The blank card's DIN 41612 connector, a 250 mm outline, four layers: the board half of `gen_v30.py` | the YACC1's card frame | nothing: its placement is a first trial that fails its own check |
+
+**The simulation on another bus.** The memory side's scripts in `v30_netsim.py` (interleaved and superimposed
+access) do not depend on the bus. `ports()` is the YACC1: it drives IO-ADDR, DATA and the two strobes as the
+microcode's records do. For another bus that function and the bus side's parts are written again; what it checks at
+the chip - the right-hand column above - stays.
+
+**Not designed here**
+
+- The 16-bit host mode, DTACK, DMA (DREQ, DACK, DONE), the light pen, EXSYNC.
+- More than one bit a dot. Section 9 is arithmetic and no circuit.
+- An attribute for each character. Method A's cell is a byte, two to a word: a character code and nothing else.
+  The attribute byte (ATR) is one for the picture, or for a line if the driver rewrites it between lines. A cell with
+  its own attribute needs more than 16 bits in a Window cycle, and nothing here provides them.
+- The emulators' model stops short of the chip. Not modelled: circles, ellipses, arcs, PAINT, PTN and the DMA
+  transfers (each sets the command error bit and says so), command times, character screens (method A), the cursors,
+  interrupts.
+
+**Never seen on a bench**
+
+- Everything; and in particular what section 10d leaves for the bench (the chip's minimum delays behind the two
+  smallest margins, the decoders at the end of an IN) and what section 12 leaves to confirm (a 512K RAM in DIP-32,
+  the pattern RAM's walk). Section 10c: which cycle the chip counts the cursor's skew from.
+- The DE-15 socket's footprint is KiCad's for the common right-angle part, not checked against a part in hand.
