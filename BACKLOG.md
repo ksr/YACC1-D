@@ -1032,6 +1032,12 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   a P8XFS entry) for a `make` that rebuilds what is out of date. Open: the DS12C887's data sheet (it could not be read
   that day), P6/P7 checked free on the I/O card, a card of its own or the protocard first, the C kernel's room for
   the date stamping (69 bytes free).
+  - **Proposed 2026-11-12: the clock on the I/O card's next revision (V1.2)** (`docs/cards/rtc.md` section 5.1): its
+    IC5 already decodes P6/P7 (unused), so the clock needs only its gates; it sits behind V1.2's planned 74LS245 and
+    shares the card's `-INT` through a jumper. Chip: a DS12885 with a CR2032 holder (replaceable cell) or the DS12C887
+    module; the same registers and software. The control latch has no free bit, so the clock keeps its own ports.
+    Not drawn; the I/O card V1.1 in the machine is unchanged. Before drawing: the chosen chip's data sheet, P6/P7 free
+    on the card in the machine, the board rules and the pcb-check pre-order check.
 - **2026-11-03: every name on the Y1/OS disk is lower case**, as in Unix (`/bin/cat`, `/lib/cc/cc1`, `/man`, `/docs`,
   `/src`, `fruit.txt`, `make.sh`, cc's `ccw.*`, asm's `.asm`/`.img`, `/pipe0.tmp`, `kermit.tmp`), Unix's own capitals
   kept (`README`, the `Makefile`s). Both kernels look up `/bin/name` with the command word lower-cased (any case runs

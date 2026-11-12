@@ -35,6 +35,7 @@ Alternatives considered:
 | The video card V2.0's ATmega (PD/PE, 16 MHz crystal) | no new hardware: a firmware reply with a tick count | no battery (the time is lost at power-off: fine for timeouts, useless for file dates); needs that card built |
 | 82C54 counter/timer from the UART's 1.8432 MHz | timeouts and ticks | no calendar, no battery |
 | DS1307 / DS3231 (I2C) | cheap modules | the bus has no I2C: a bit-banged port or the ATmega |
+| DS12885 + 32.768 kHz crystal + CR2032 holder (added 2026-11-12) | the DS12C887's registers and software, with a coin cell that can be replaced (the module's sealed cell lasts about 10 years, then the module goes) | two more parts; the crystal wants short tracks and a guard |
 
 ## 3. Ports
 
@@ -94,6 +95,32 @@ shipped stopped (register A's DV bits) to save the cell: the first `date -s` sta
 
 Proposed: a hand-wired prototype on the protocard to prove the software, then a small card.
 
+### 5.1 On the I/O card's next revision (proposed 2026-11-12)
+
+The I/O card is the natural home once it is revised: most of the circuit of section 4 is already on it.
+
+- **The decode is there.** Its IC5 (74LS138) decodes all eight ports P0-P7 of its half and only P0 and P1 are used;
+  `-IO-SEL6` and `-IO-SEL7` reach only the IO-ADDR and DATA-ADDR headers (`docs/cards/io.md` 3.1). The clock takes
+  them directly: no 74LS138 of its own, only the gates that make AS, `-WR`, `-RD` and `-CS` from them and
+  `-IO-RD`/`-IO-WR` (section 4).
+- **The data buffer is planned.** V1.2's first idea (`docs/cards/io.md` section 8) is a 74LS245 between the card and
+  the data bus, DIR from `-IO-RD`; the clock sits behind it with the UART, the latches and the LCD, so it needs no
+  245 of its own.
+- **The interrupt path is there.** The card drives the bus `-INT` for the UART (IC8, open collector); the clock's IRQ
+  joins it through the INT-EN jumper.
+- **Its own ports, not P1.** The control latch IC10 has no free bit (switches/LEDs, LCD E and RS, UART A0-A2, UART CS,
+  TIL311: section 3.3 there), so the clock cannot be another device behind P0/P1 as the UART is. P6/P7 also keep the
+  software of section 6 as it is: the register number to P6, the data on P7, the PC's $70/$71.
+- **The chip:** the DS12885 with a CR2032 holder (the battery can be changed), or the DS12C887 module for one part.
+  Either way the registers and the software are the same.
+- **The board rules** (`CLAUDE.md`) apply to the new revision: the INT-EN jumper near an edge, the square-wave LED
+  (if fitted) labelled and on the front edge, every part's reference and value on the silk outside its outline,
+  `cottageworker.com` beside the name and revision, bypass capacitors on 0.1-inch spacing, and the `pcb-check`
+  pre-order check before it is ordered. The I/O card V1.1 in the machine is not changed; the clock comes with V1.2.
+
+This replaces the small card of section 5 as the plan when the I/O card is revised; the protocard prototype is still
+the quickest way to prove the software first, on the same ports.
+
 ## 6. Software
 
 In the order it can be done, all testable on the emulators before the hardware exists:
@@ -123,6 +150,7 @@ In the order it can be done, all testable on the emulators before the hardware e
 
 - The DS12C887's pinout, timing, RESET and shipped oscillator state from its data sheet (sections 2 and 4).
 - P6/P7: confirm on the I/O card that no header jumper selects them.
-- A card of its own (and which slot), or the protocard first.
+- A card of its own, the protocard first, or (proposed 2026-11-12, section 5.1) on the I/O card V1.2.
+- DS12885 + coin cell or the DS12C887 module: availability and price of both.
 - The interrupt: wire INT-EN now (off), or leave it out until the OS has interrupts.
 - File dates: the FAT layout in bytes 26-29, and P8X's use of the spare bytes.
