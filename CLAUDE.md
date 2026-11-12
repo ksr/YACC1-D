@@ -31,6 +31,10 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
     otherwise. `main` is merged into both branches; something only the two video branches share (the emulators'
     card models, the PS/2 code) is changed on `video-v2` and merged into `video-v3`, never the other way. Its
     worktree: `git worktree add ~/Developer/YACC1-D-v3 video-v3` (once per Mac). Syncing YACC1-D means all three.
+    **Stopped (Ken, 2026-11-12): the V3 card will not be built for the YACC1.** Its design is the basis of another
+    machine's video card (`docs/cards/video-v3.md` section 13 is the handover). No further V3 work here - no board,
+    no ROM or model work. The branch and its worktree stay as they are, still merged into and synced, until Ken
+    says what becomes of them.
 - **Never modify `~/Documents/YACCS`** (the historical archive the tree was migrated from; it only exists on Ken's
   first Mac and the repo does not need it).
 - **Migrated files** (sources that came from YACCS, e.g. `software/emulator/main.c`, `software/assembler/*`,

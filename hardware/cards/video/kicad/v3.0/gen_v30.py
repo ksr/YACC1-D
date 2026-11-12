@@ -2,16 +2,18 @@
 # Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
 
 """gen_v30.py - the YACC1 video card V3.0 (HD63484 ACRTC, VGA; 2026-11-11): the schematic, the project rules and the
-unrouted 4-layer board, all from v30_netlist.py (the circuit); build.sh routes and checks it. Design note:
+unrouted 4-layer board, all from v30_netlist.py (the circuit). Design note:
 docs/cards/video-v3.md (10a the parts, 10b and 10c every equation, 10d the simulation that timed them).
 
 Made from the V2.0 card's gen_v20.py: the sheet writer's use, the silkscreen placer and the checks are its; the sheets,
 the local symbols and footprints, the placement and the key connections are this card's.
 
-THE SCHEMATIC IS DONE; THE BOARD IS NOT (2026-11-11). The card's length is not decided: at the V2.0 card's spacing
-(columns 14 mm apart, a capacitor beside every chip, 6.3 mm between the chips of a column) the 47 ICs need about
-250 mm, and the outline every long card has is 218 mm. LENGTH is 250 here so that `gen_v30.py board` shows the columns;
-the small parts are not placed clear yet (`gen_v30.py place` fails) and there is no build.sh. BACKLOG.md has the choice.
+THE SCHEMATIC IS DONE; THERE IS NO BOARD, AND THE CARD IS NOT BUILT (decided 2026-11-12). The work stopped after the
+schematic. At the V2.0 card's spacing (columns 14 mm apart, a capacitor beside every chip, 6.3 mm between the chips of
+a column) the 47 ICs need about 250 mm, against the 218 mm of every long card; a 250 mm card was chosen (2026-11-11:
+LENGTH) and `gen_v30.py board` shows the columns, but the small parts are not placed clear (`gen_v30.py place` fails)
+and there is no build.sh. The design is kept as the starting point for a video card on another machine: the design
+note's section 13.
 
 The schematic is a root sheet and one sheet per functional block (SHEETS), each drawn by tools/kicad/sch_wire.py: ELK
 places the parts and the nets between them are wires; the bus signals, power and one-pin nets keep a stub to a label or
