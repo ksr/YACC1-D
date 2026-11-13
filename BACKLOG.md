@@ -468,7 +468,21 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   time, so a sleeping Mac no longer ends a run. **Optimised 2026-11-13** (`build.sh` with Freerouting's
   optimiser, its default now): 350 vias, 26.2 m of track, all checks passing again; all four orders routed and
   optimised, three of them clean, in 94 minutes together (V2.0's board has 285 vias). **Not ordered.**
-  **Next:** a design review of the board; `pcb-check` with the order's files; then the order. Beside it: the
+  **Design review 2026-11-13: `hardware/cards/video/reviews/v4.0.md` - HIGH 0, MED 4, LOW 12, INFO 7. Verdict: not
+  to be ordered as it is.** Three independent passes (circuit, timing, board), findings only, each checked again
+  before it was accepted; nothing found says the card will not work. **V4-1** the dot clock: 177 mm of branched,
+  unterminated track to seven 74F clock inputs - a series resistor footprint at the oscillator, an oscillator rated
+  for the load. **V4-2** D2, D3 and STG 240-270 mm from fast outputs (the counter's column is 60 mm from the stage's
+  since the columns were reordered) - series resistors at their sources and / or the clock's column moved; a new
+  route either way. **V4-3** the VGA socket has no part named to check KiCad's footprint against (rows 1.90 mm,
+  3.03 mm from the edge). **V4-4** a stack or a BRVR vector table in the window fails in slot mode above about
+  2.8 MHz (their address comes 218-256 ns after the step's edge, not the 114 ns simulated); the note's rules allow
+  it to 3.5 MHz - a rule to change, no board change. The LOW ones include three figures to correct in the note
+  and the README: the smallest margin is a hold of 2.2 ns at the shifters' loads (not the 5.6 ns of set-up); slot
+  mode's read has 42 ns at 3.5 MHz (not 50) and its limit is 3.76 MHz (not 3.8); the cursor's address must include
+  the start address. Nothing is changed in the design yet.
+  **Next:** which of the review's fixes go in (V4-1 / V4-2 mean a new route, about an hour and a half); then the
+  board routed again and looked at again; `pcb-check` with the order's files; then the order. Beside it: the
   emulators' model and the ROM driver (branch `video-v2`). `tools/vidsim.py timing` is still to learn 16 dots a
   count, to check the 6845's tables.
   **To decide** (the note's section 13): the raster; the control bits' places (the netlist is wired to the proposed

@@ -182,9 +182,19 @@ right in the schematic and on the pads.
   Freerouting saves only at its end. The search for a placement that routes was therefore made without the
   optimiser (`MT=0`: an answer in about half an hour), and the optimiser run on the placement that did.
 
-Not done: `pcb-check` (it wants the order's files); a design review.
+**The design review (2026-11-13): `hardware/cards/video/reviews/v4.0.md`. HIGH 0, MED 4, LOW 12, INFO 7; not to
+be ordered as it is.** The four: the dot clock on 177 mm of branched, unterminated track to seven inputs (V4-1);
+D2, D3 and STG 240 to 270 mm long, the counter far from the registers it clocks (V4-2); no part named for the VGA
+socket to check its footprint against (V4-3); a stack or a BRVR vector table in the window fails in slot mode above
+about 2.8 MHz, which the note's rules allow (V4-4). The review also corrects three figures given above and in the
+note: the smallest margin is a hold of 2.2 ns at the shifters, not the 5.6 ns of set-up (V4-5); a byte read in slot
+mode at 3.5 MHz has 42 ns, not 50, and the limit is 3.76 MHz, not 3.8 (V4-6).
+
+Not done: the review's fixes (V4-1 and V4-2 mean parts added and a new route); `pcb-check` (it wants the order's
+files).
 
 ## Next
 
-1. A design review of the board, and `pcb-check` with the order's files, before any order.
-2. Beside it: the emulators' model and the ROM driver (on the branch `video-v2`).
+1. The design review's findings (`../../reviews/v4.0.md`): which fixes go in; then the board routed again.
+2. `pcb-check` with the order's files, before any order.
+3. Beside it: the emulators' model and the ROM driver (on the branch `video-v2`).
