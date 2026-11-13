@@ -21,15 +21,17 @@ CLI=/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli
 FRJAR="${FRJAR:-$HOME/freerouting/freerouting.jar}"
 JAVA="${JAVA:-$(command -v java || echo /opt/homebrew/opt/openjdk/bin/java)}"
 SEEDS=${SEEDS:-"0 1 2 3"}     # the component orders tried, all at once: at most four (the M3 Pro's performance cores).
-                             # The committed board (2026-11-12): these four, MT=0, MP=100 - all four routed every
-                             # connection in about 33 minutes each; orders 1 and 2 without a DRC error of
-                             # Freerouting's making, order 1 kept (469 vias)
+                             # The committed board (2026-11-13): these four, MT=1, MP=100 - all four routed every
+                             # connection (18-28 minutes) and were optimised (34-74 minutes more); orders 1, 2
+                             # and 3 without a DRC error of Freerouting's making, order 1 kept (350 vias; the
+                             # same order without the optimiser, 2026-11-12: 469)
 MP=${MP:-100}                # Freerouting's most passes
-MT=${MT:-0}                  # its optimiser's threads: 0, no optimising after the passes (a run killed while it
-                             # optimises leaves no result at all, and optimising takes an hour or more); MT=1 for it
+MT=${MT:-1}                  # its optimiser's threads. MT=0: no optimising after the passes, for a quick answer to
+                             # "does this placement route?" (half an hour; a run killed while it optimises leaves
+                             # no result at all)
 KEEP=${KEEP:-}               # a folder to keep each run's log and board in (for a look at a route that failed)
-WATCHDOG=${WATCHDOG:-5400}   # seconds of running time (a sleeping Mac's hours do not count); a completed route is
-                             # optimised for some time after the passes that route it
+WATCHDOG=${WATCHDOG:-10800}  # seconds of running time (a sleeping Mac's hours do not count): the four runs of the
+                             # committed board took 5645 s, the slowest optimising for 74 minutes
 P=video-v4.0
 R="$HERE/reports"
 export PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1

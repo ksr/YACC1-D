@@ -465,8 +465,9 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   600-mil sockets, FTX under the ATmega, three ground pins of the VGA socket that the plane could not reach). The
   columns were reordered (the code register and the stage now between the text RAM and the 6845), the resistors
   under the ATmega moved aside, the socket's ground pins connected solid. `build.sh`'s watchdog counts running
-  time, so a sleeping Mac no longer ends a run. **Not ordered. Not optimised** (`MT=1 ./build.sh`, an hour or more
-  a run; V2.0's optimised board has 285 vias).
+  time, so a sleeping Mac no longer ends a run. **Optimised 2026-11-13** (`build.sh` with Freerouting's
+  optimiser, its default now): 350 vias, 26.2 m of track, all checks passing again; all four orders routed and
+  optimised, three of them clean, in 94 minutes together (V2.0's board has 285 vias). **Not ordered.**
   **Next:** a design review of the board; `pcb-check` with the order's files; then the order. Beside it: the
   emulators' model and the ROM driver (branch `video-v2`). `tools/vidsim.py timing` is still to learn 16 dots a
   count, to check the 6845's tables.

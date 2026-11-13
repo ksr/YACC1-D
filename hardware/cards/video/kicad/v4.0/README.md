@@ -149,19 +149,19 @@ header's pins labelled; `cottageworker.com` beside the card's name and revision.
 leads.
 
 **The routing.** Freerouting 1.9, the two outer layers, GND and VCC left to the planes; one run for each of four
-orders of the components (`SEEDS`), without its optimiser (`MT=0`), at most 100 passes. All four routed every
-connection, each in about 33 minutes; two of the four had no clearance or short of Freerouting's own making, and of
-those the one with fewer vias is kept:
+orders of the components (`SEEDS`), at most 100 passes, then its optimiser (`MT=1`). All four routed every
+connection (18 to 28 minutes) and were optimised (34 to 74 minutes more); three of the four had no clearance or
+short of Freerouting's own making, and of those the one with the fewest vias is kept:
 
-| | |
-|---|---|
-| Connections | 499 routed, 0 left |
-| Vias | 469 |
-| Track | 27.2 m, all 0.25 mm: 11.4 m on the front, 15.8 m on the back |
-| Planes | GND and VCC, one piece each |
+| | Optimised (the board) | The same order before optimising |
+|---|---|---|
+| Connections | 499 routed, 0 left | 499 routed, 0 left |
+| Vias | 350 | 469 |
+| Track, all 0.25 mm | 26.2 m: 11.0 m on the front, 15.2 m on the back | 27.2 m |
+| Planes | GND and VCC, one piece each | the same |
 
-The route is not optimised: Freerouting's optimiser would take out vias and length (V2.0's optimised board has
-285 vias) at an hour or more a run. `MT=1 ./build.sh` runs it.
+(V2.0's board, 40 ICs on 218 mm, has 285 vias.) Freerouting does not route the same file the same way twice: a
+repeat gives other figures of this size.
 
 **The checks, all passing** (`build.sh: ALL CHECKS PASS`): KiCad's netlist of the schematic equal to
 `v40_netlist.py`; ERC nothing; DRC no unconnected item, no copper violation, schematic parity 0 (four warnings
@@ -179,12 +179,12 @@ right in the schematic and on the pads.
   the socket's other pins. The columns were put in the present order, the resistors moved aside, and the socket's
   ground pins connected solid to the plane: every order then routed.
 - Two runs of the first routing had finished their passes and were lost to the watchdog while optimising:
-  Freerouting saves only at its end. Hence `MT=0` for the search.
+  Freerouting saves only at its end. The search for a placement that routes was therefore made without the
+  optimiser (`MT=0`: an answer in about half an hour), and the optimiser run on the placement that did.
 
-Not done: the route optimised; `pcb-check` (it wants the order's files); a design review.
+Not done: `pcb-check` (it wants the order's files); a design review.
 
 ## Next
 
 1. A design review of the board, and `pcb-check` with the order's files, before any order.
-2. Perhaps the route optimised (`MT=1`), if fewer vias are wanted.
-3. Beside it: the emulators' model and the ROM driver (on the branch `video-v2`).
+2. Beside it: the emulators' model and the ROM driver (on the branch `video-v2`).
