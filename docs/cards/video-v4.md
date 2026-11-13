@@ -2,8 +2,8 @@
 
 **A design note, begun 2026-11-12. Nothing is ordered or built; "V4" is a working name.** The circuit is
 written as a netlist (2026-11-12: `hardware/cards/video/kicad/v4.0/v40_netlist.py`, 46 ICs) and simulated with the parts'
-data-sheet delays, with no fault left (sections 5 and 11). Its schematic is drawn and its board placed on a 250 mm
-outline, not routed (2026-11-12: section 11). The card in the machine is the [V1.0](video.md). The [V2.0](video-v2.md) is designed, ready to order and on hold while this card is
+data-sheet delays, with no fault left (sections 5 and 11). Its schematic is drawn and its board, 250 mm long, is
+placed and routed, all checks passing (2026-11-12: section 11); the pre-order check and a design review are to come. The card in the machine is the [V1.0](video.md). The [V2.0](video-v2.md) is designed, ready to order and on hold while this card is
 looked at. The [V3](video-v3.md), round the HD63484, is not built.
 
 The aim is the V2.0 card's picture on monitors sold today: a **VGA** monitor at 31.47 kHz, **80 x 25 characters of
@@ -367,10 +367,10 @@ inverter and an AND package more. Every gate package is full or one gate short o
 
 The count stays at 46 (decided 2026-11-12: section 13).
 
-**The schematic and the first placement (2026-11-12).** `gen_v40.py`, in the netlist's folder, draws the schematic
-(a root and eight sheets; KiCad's netlist of it equals the netlist's 250 nets, its rules check finds nothing) and
-places the board: all 130 parts, no track yet (`video-v4.0.kicad_pcb`, `video-v4.0-placement.pdf`; the folder's
-README has what stands where).
+**The schematic and the board (2026-11-12).** `gen_v40.py`, in the netlist's folder, draws the schematic (a root
+and eight sheets; KiCad's netlist of it equals the netlist's 250 nets, its rules check finds nothing) and places the
+board's 130 parts; `build.sh` routes it and runs the checks (`video-v4.0.kicad_pcb`, `video-v4.0-placement.pdf`; the
+folder's README has what stands where).
 
 **The card does not fit 218 mm.** The ICs stand in thirteen columns, eleven of 300-mil sockets and two of 600-mil
 ones, a capacitor beside every chip:
@@ -383,10 +383,16 @@ ones, a capacitor beside every chip:
 | The placement as it is, the columns 15.24 mm apart | **250 mm** |
 
 235 mm is the shortest at V2.0's density, and V2.0's board routes on its two signal layers only for some component
-orders; the 15 mm from there to 250 are between the columns, as room to route. 250 mm is the V3 design's length
-(chosen 2026-11-11). The placement check is clear, 424 key connections are right in the schematic and on the pads,
-and every reference stands with its type or value on the silk outside its part. Routing, `pcb-check` and a review
-wait for the length.
+orders; the 15 mm from there to 250 are between the columns, as room to route. **250 mm it is (decided
+2026-11-12)**, the V3 design's length.
+
+**The board is routed (2026-11-12):** Freerouting, the two outer layers, GND and VCC as planes inside. All 499
+connections, 469 vias, 27.2 m of 0.25 mm track; every one of four component orders routed it, in about 33 minutes
+each. The checks pass: the schematic's netlist equal to the netlist's, ERC nothing, DRC no unconnected item and no
+copper violation, the board's nets equal to the schematic's, the placement clear, 424 key connections right, every
+reference with its type or value on the silk outside its part. The first placement did not route to the end (7
+connections left: the folder's README has which, and what was moved). The route is not optimised. Still to come
+before any order: a design review and `pcb-check`.
 
 The board: four layers with the planes, the blank card's connector, and the layout rules from the start - the DE-15
 and the two PS/2 jacks at the front edge facing out, jumpers and the FTDI header at an edge, every reference and value
@@ -461,5 +467,5 @@ On the branch `video-v2`, beside the V2.0 card's:
 3. The netlist simulated and timed with the parts' data-sheet numbers, as V3's was: **done 2026-11-12**
    (`tests/video/v40_netsim.py`, in `make check`; two changes to the circuit came of it: the netlist's README).
 4. Beside it: the emulators' model and the ROM driver.
-5. The schematic and the board: **the schematic drawn and the board placed 2026-11-12** (`gen_v40.py`). To come,
-   once the length is settled: the routing, `pcb-check`, a design review; then the order.
+5. The schematic and the board: **the schematic drawn, the board placed and routed 2026-11-12** (`gen_v40.py`,
+   `build.sh`: all checks pass). To come: a design review, `pcb-check`; then the order.

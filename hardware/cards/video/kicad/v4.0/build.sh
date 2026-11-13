@@ -20,9 +20,16 @@ PYK=/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/
 CLI=/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli
 FRJAR="${FRJAR:-$HOME/freerouting/freerouting.jar}"
 JAVA="${JAVA:-$(command -v java || echo /opt/homebrew/opt/openjdk/bin/java)}"
-SEEDS=${SEEDS:-"0 1 2 3"}     # the component orders tried, all at once: at most four (the M3 Pro's performance cores)
-MP=${MP:-60}
-WATCHDOG=${WATCHDOG:-5400}   # seconds; a completed route is optimised for some time after the passes that route it
+SEEDS=${SEEDS:-"0 1 2 3"}     # the component orders tried, all at once: at most four (the M3 Pro's performance cores).
+                             # The committed board (2026-11-12): these four, MT=0, MP=100 - all four routed every
+                             # connection in about 33 minutes each; orders 1 and 2 without a DRC error of
+                             # Freerouting's making, order 1 kept (469 vias)
+MP=${MP:-100}                # Freerouting's most passes
+MT=${MT:-0}                  # its optimiser's threads: 0, no optimising after the passes (a run killed while it
+                             # optimises leaves no result at all, and optimising takes an hour or more); MT=1 for it
+KEEP=${KEEP:-}               # a folder to keep each run's log and board in (for a look at a route that failed)
+WATCHDOG=${WATCHDOG:-5400}   # seconds of running time (a sleeping Mac's hours do not count); a completed route is
+                             # optimised for some time after the passes that route it
 P=video-v4.0
 R="$HERE/reports"
 export PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
@@ -31,6 +38,9 @@ cd "$HERE" || exit 1
 TMP=$(mktemp -d "${TMPDIR:-/tmp}/video-v40-build.XXXXXX")
 trap 'rm -rf "$TMP"' EXIT
 mkdir -p "$R"
+# no idle sleep while this runs (macOS; it ends with this script). A closed lid still sleeps the Mac: the runs then
+# go on when it wakes
+command -v caffeinate >/dev/null 2>&1 && caffeinate -i -w $$ &
 
 echo "== 1  schematic, netlist, project rules, the unrouted board =="
 "$PYK" gen_v40.py sch 2>&1 | q
@@ -47,20 +57,20 @@ pids=""
 for s in $SEEDS; do
   mkdir -p "$TMP/s$s"
   "$PYK" gen_v40.py shuffle "$TMP/v40.dsn" "$s" "$TMP/s$s/v40.dsn" 2>&1 | q
-  ( cd "$TMP/s$s" && exec "$JAVA" -jar "$FRJAR" -de v40.dsn -do v40.ses -mp "$MP" -oit 100 -mt 1 -inc Power ) \
+  ( cd "$TMP/s$s" && exec "$JAVA" -jar "$FRJAR" -de v40.dsn -do v40.ses -mp "$MP" -oit 100 -mt "$MT" -inc Power ) \
     > "$TMP/s$s/fr.log" 2>&1 &
   pids="$pids $!"
 done
-t0=$(date +%s)
+t0=$(date +%s); ran=0
 alive() { for p in $pids; do kill -0 "$p" 2>/dev/null && return 0; done; return 1; }
 while alive; do
-  if [ $(( $(date +%s) - t0 )) -gt "$WATCHDOG" ]; then
+  if [ "$ran" -gt "$WATCHDOG" ]; then
     echo "  watchdog: Freerouting still running after ${WATCHDOG}s - killed"; kill $pids 2>/dev/null
     sleep 2; kill -9 $pids 2>/dev/null; break
   fi
-  sleep 5
+  sleep 5; ran=$(( ran + 5 ))
 done
-echo "  Freerouting: $(( $(date +%s) - t0 )) s"
+echo "  Freerouting: $ran s of running time, $(( $(date +%s) - t0 )) s by the clock"
 for s in $SEEDS; do
   D="$TMP/s$s"
   [ -s "$D/v40.ses" ] || { echo "  seed $s: no session"; continue; }
@@ -69,6 +79,12 @@ for s in $SEEDS; do
   "$CLI" pcb drc --format json --severity-all -o "$D/drc.json" "$D/r.kicad_pcb" >/dev/null 2>&1
   printf "  seed %s: " "$s"; "$PYK" gen_v40.py stats "$D/r.kicad_pcb" "$D/drc.json" "$D/stats.json" 2>&1 | q
 done
+if [ -n "$KEEP" ]; then
+  mkdir -p "$KEEP"
+  for s in $SEEDS; do
+    for f in fr.log r.kicad_pcb drc.json; do [ -f "$TMP/s$s/$f" ] && cp "$TMP/s$s/$f" "$KEEP/s$s-$f"; done
+  done
+fi
 BEST=$(python3 - "$TMP" $SEEDS <<'EOF'
 import json, os, sys
 t = sys.argv[1]; best = None
