@@ -2,19 +2,19 @@
 # Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
 
 """gen_v40.py - the YACC1 video card V4.0 (a 6845 at 16 dots a count, VGA; 2026-11-12): the schematic, the project rules
-and the unrouted 4-layer board with its first placement, all from v40_netlist.py (the circuit). Design note:
+and the unrouted 4-layer board with its placement, all from v40_netlist.py (the circuit). Design note:
 docs/cards/video-v4.md (section 5 the clock and the stage, 6 the text, 7 the graphics RAM's two modes, 8 the dots).
 
 Made from the V3 design's gen_v30.py (itself from the V2.0 card's gen_v20.py): the sheet writer's use, the silkscreen
 placer and the checks are theirs; the sheets, the local symbols, the placement and the key connections are this card's.
 
-THE BOARD IS PLACED, NOT ROUTED (2026-11-12). The 46 ICs stand in thirteen columns, eleven of 300-mil sockets and two
-of 600-mil ones, a capacitor beside every chip's VCC pin. At the V2.0 card's spacing (columns 14 mm apart, 6.3 mm
+THE BOARD IS PLACED AND ROUTED (2026-11-12, build.sh; not ordered). The 46 ICs stand in thirteen columns, eleven of
+300-mil sockets and two of 600-mil ones, a capacitor beside every chip's VCC pin. At the V2.0 card's spacing (columns 14 mm apart, 6.3 mm
 between the chips of a column) this placement is 235 mm long, against the 218 mm of every long card; with one
 column fewer and every column full to the last socket it would still be 221 mm, with nowhere for the oscillator, the
 crystal, the jumpers and the resistors. The outline here is 250 mm (LENGTH), the V3 design's choice, with the
-columns 15.24 mm apart: the 15 mm more are routing room, which the V2.0 board has none of. There is no build.sh
-yet: routing, the reports and the order's checks come after the length is settled.
+columns 15.24 mm apart: the 15 mm more are routing room, which the V2.0 board has none of (250 mm decided
+2026-11-12). build.sh routes it with Freerouting and runs the reports and the checks.
 
 The schematic is a root sheet and one sheet per functional block (SHEETS), each drawn by tools/kicad/sch_wire.py: ELK
 places the parts and the nets between them are wires; the bus signals, power and one-pin nets keep a stub to a label or
@@ -656,14 +656,16 @@ def project():
 
 
 # --- placement: (x, y, rotation) of each footprint's origin (pad 1 of every DIP / header / resistor / capacitor) --------
-# THE FIRST PLACEMENT (2026-11-12), on the 250 mm outline. The ICs stand in columns, pin 1 at the top left (two of the
-# 600-mil parts turned round, pin 1 at the bottom right: ~), a capacitor beside each VCC pin. Left to right: the port
-# decode and the block select by the bus connector; the text RAM (its CPU port towards the bus) over the character
-# generator; the 6845 (its bus pins towards the bus, MA towards the stage) over the graphics RAM; the stage and the
-# code register; the address multiplexers; the RAM's latches and buffers; the two shifters; the clock (the counter
-# at the bottom, over the oscillator); the slot logic; the dots' and syncs' gates; the control registers and the
-# status; the PS/2 latches; the ATmega; the front edge with the VGA socket, the two PS/2 jacks, the INT jumper, the
-# FTDI header and the LED.
+# THE PLACEMENT (2026-11-12), on the 250 mm outline. The ICs stand in columns, pin 1 at the top left (two parts turned
+# round, pin 1 at the bottom right: ~), a capacitor beside each VCC pin. Left to right: the port decode and the block
+# select by the bus connector; the character generator over the text RAM (turned: its CPU port towards the bus, its
+# display port towards the next column); the code register and the stage, beside the text RAM's display port on one
+# side and the 6845's MA pins on the other; the graphics RAM over the 6845; the address multiplexers; the RAM's
+# latches and buffers; the two shifters; the clock (the counter at the bottom, over the oscillator); the slot logic;
+# the dots' and syncs' gates; the control registers and the status; the PS/2 latches; the ATmega; the front edge with
+# the VGA socket, the two PS/2 jacks, the INT jumper, the FTDI header and the LED.
+# The first placement had the 6845 and the graphics RAM between the text RAM and the code register: its first routing
+# left the code's lines VD5-VD7 unrouted in the 5 mm channel between the two columns of 600-mil sockets.
 GAP = 6.3                                                 # between two chips in a column, end pin to end pin
 PITCH = 15.24                                             # from one column of 300-mil sockets to the next (V2.0: 14)
 PLACE = {}
@@ -690,9 +692,9 @@ def stack(x, y, *refs):
 
 TOP = 15.0
 COLUMNS = [("N0", ("IC2", "IC3", "IC4", "IC1")),                 # port decode, the strobes, the block select (over SV1)
-           ("W0", ("~IC14", "IC18")),                            # text RAM, character generator
-           ("W1", ("~IC10", "IC28")),                            # the 6845, the graphics RAM
-           ("N1", ("IC15", "IC16", "IC17", "IC8")),              # the stage, the code register, the bus's inverters
+           ("W0", ("IC18", "~IC14")),                            # character generator, text RAM
+           ("N1", ("IC8", "IC17", "IC15", "IC16")),              # the bus's inverters, the code register, the stage
+           ("W1", ("IC28", "IC10")),                             # the graphics RAM, the 6845
            ("N2", ("IC24", "IC25", "IC26", "IC27")),             # the graphics address multiplexers
            ("N3", ("IC32", "IC30", "IC29", "IC34")),             # byte latch, read latch, write buffer, WRQ
            ("N4", ("IC31", "IC33", "IC19", "IC20")),             # direct-mode buffer, the two shifters, CURF / the retimed dot
@@ -741,9 +743,9 @@ _a, _b = COLX["N10"] + 14.4, COLX["N10"] + 17.9           # two lines of standin
                                                           # column and the jacks
 PLACE.update({
     # the bus side: the block jumper under the block select, its pull-ups beside it, the bulk capacitor
-    "SV1": (33.0, 108.0, 0), "RN1": (GAPX("N0"), 105.5, 270), "C1": (53.0, 119.5, 0),
+    "SV1": (33.0, 106.0, 0), "RN1": (31.5, 120.6, 0), "C1": (53.0, 119.5, 0),
     # the RAM's data pull-ups standing beside it
-    "RN2": (COLX["W1"] + 15.24 + 3.2, 76.0, 270),
+    "RN2": (COLX["W1"] + 15.24 + 3.2, 21.5, 270),
     # one resistor each beside the chip it belongs to, in the capacitors' line: GDOT's pull-down (IC33), WRQ's (IC34),
     # TXTONLY's pull-up (IC7), PU (the F parts)
     "R8": (GAPX("N4"), 50.0, 270), "R9": (GAPX("N3"), 108.3, 270), "R10": (GAPX("N8"), 79.2, 270),
@@ -759,8 +761,10 @@ PLACE.update({
     "J2": (X1F, 58.0, 0), "J3": (X1F, 76.0, 0),
     "R16": (_a, 55.0, 270), "R17": (_b, 55.0, 270), "F1": (_a + 0.8, 66.3, 0), "R18": (_a, 71.0, 270), "R19": (_b, 71.0, 270),
     # under the ATmega: its reset pull-up, the DTR capacitor, RESETH's pull-up; the latches' pull-ups, INTREQ's pull-down
-    "R11": (COLX["N10"] + 1.9, 82.0, 270), "C52": (COLX["N10"] + 5.9, 82.0, 270), "R12": (COLX["N10"] + 9.9, 82.0, 270),
-    "R13": (COLX["N10"] + 1.9, 97.0, 270), "R14": (COLX["N10"] + 5.9, 97.0, 270), "R15": (COLX["N10"] + 9.9, 97.0, 270),
+    # (kept to the left under the ATmega: the channel right of them, down from its pins 1-6 to the FTDI header, stays
+    # open - the first routing left FTX unrouted there)
+    "R11": (COLX["N10"] + 0.6, 82.0, 270), "C52": (COLX["N10"] + 4.4, 82.0, 270), "R12": (COLX["N10"] + 8.2, 82.0, 270),
+    "R13": (COLX["N10"] + 0.6, 97.0, 270), "R14": (COLX["N10"] + 4.4, 97.0, 270), "R15": (COLX["N10"] + 8.2, 97.0, 270),
     # the INT jumper, the FTDI header and the LED at the front edge
     "JP1": (X1F - 2.2, 86.6, 0), "J4": (X1F - 2.2, 94.5, 0),
     "LED1": (X1F - 3.5, 113.5, 90), "R1": (X1F - 3.5, 120.0, 180),
@@ -834,6 +838,11 @@ def board(netfile, out):
                 p.SetNet(net(UNCONNECTED[key]))
             else:
                 p.SetNetCode(0)
+    # the VGA socket's ground pins stand 2.29 mm apart among its other pins: thermal reliefs leave the GND plane no
+    # way to three of them (the first routing's DRC). Connected solid, as X1's supply pins are
+    for p in fps["J1"].Pads():
+        if p.GetNetname() == "GND":
+            p.SetLocalZoneConnection(pcbnew.ZONE_CONNECTION_FULL)
     import math
     for p in fps["X1"].Pads():                          # copper keepouts round the DIN connector's two screws
         if p.GetAttribute() != pcbnew.PAD_ATTRIB_NPTH:

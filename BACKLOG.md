@@ -460,11 +460,21 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   every column full (no room for the small parts), 235 mm for this placement at V2.0's 14 mm column spacing, 250 mm
   with the columns 15.24 mm apart for routing room. The placement check found the VGA socket turned face inwards
   (carried over from the V3 design's unchecked placement): corrected.
-  **Next:** the length settled (250 mm, or another); then `build.sh` - the routing (Freerouting, as V2.0's), the
-  reports, `pcb-check`, a design review. Beside it: the emulators' model and the ROM driver (branch `video-v2`).
-  `tools/vidsim.py timing` is still to learn 16 dots a count, to check the 6845's tables.
-  **To decide** (the note's section 13): **the card's length**; the raster; the control bits' places (the netlist
-  is wired to the proposed ones); the font; V2.0's order.
+  **250 mm decided, and the board routed (2026-11-12): `build.sh`, ALL CHECKS PASS.** All 499 connections on the
+  two outer layers (Freerouting 1.9, `MT=0`: no optimiser, 100 passes at most), 469 vias, 27.2 m of track, GND and
+  VCC one plane each; DRC no unconnected item and no copper violation, schematic parity 0, the board's nets equal
+  to the schematic's, 424 key connections right. All four component orders routed, each in about 33 minutes. The
+  first placement did not: 7 connections left in its best order (VD5-VD7 in the channel between the two columns of
+  600-mil sockets, FTX under the ATmega, three ground pins of the VGA socket that the plane could not reach). The
+  columns were reordered (the code register and the stage now between the text RAM and the 6845), the resistors
+  under the ATmega moved aside, the socket's ground pins connected solid. `build.sh`'s watchdog counts running
+  time, so a sleeping Mac no longer ends a run. **Not ordered. Not optimised** (`MT=1 ./build.sh`, an hour or more
+  a run; V2.0's optimised board has 285 vias).
+  **Next:** a design review of the board; `pcb-check` with the order's files; then the order. Beside it: the
+  emulators' model and the ROM driver (branch `video-v2`). `tools/vidsim.py timing` is still to learn 16 dots a
+  count, to check the 6845's tables.
+  **To decide** (the note's section 13): the raster; the control bits' places (the netlist is wired to the proposed
+  ones); the font; V2.0's order.
   **For V2.0, if it is ordered (seen 2026-11-12 while simulating this card; V2.0's files are not changed):** its
   slot mode has the strobe as a term of -WE, so a write strobe that ends inside a pulse cuts the pulse short. The
   re-review of 2026-10-23 judged that harmless (the same byte written again). Not shown harmless: in a cut pulse's
