@@ -386,13 +386,13 @@ ones, a capacitor beside every chip:
 orders; the 15 mm from there to 250 are between the columns, as room to route. **250 mm it is (decided
 2026-11-12)**, the V3 design's length.
 
-**The board is routed (2026-11-12):** Freerouting, the two outer layers, GND and VCC as planes inside. All 499
-connections, 469 vias, 27.2 m of 0.25 mm track; every one of four component orders routed it, in about 33 minutes
-each. The checks pass: the schematic's netlist equal to the netlist's, ERC nothing, DRC no unconnected item and no
+**The board is routed (2026-11-12, optimised 2026-11-13):** Freerouting, the two outer layers, GND and VCC as
+planes inside. All 499 connections, 350 vias, 26.2 m of 0.25 mm track (469 vias and 27.2 m before its optimiser);
+every one of four component orders routed it. The checks pass: the schematic's netlist equal to the netlist's, ERC nothing, DRC no unconnected item and no
 copper violation, the board's nets equal to the schematic's, the placement clear, 424 key connections right, every
 reference with its type or value on the silk outside its part. The first placement did not route to the end (7
-connections left: the folder's README has which, and what was moved). The route is not optimised. Still to come
-before any order: a design review and `pcb-check`.
+connections left: the folder's README has which, and what was moved). Still to come before any order: a design
+review and `pcb-check`.
 
 The board: four layers with the planes, the blank card's connector, and the layout rules from the start - the DE-15
 and the two PS/2 jacks at the front edge facing out, jumpers and the FTDI header at an edge, every reference and value
