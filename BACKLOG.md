@@ -528,8 +528,10 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   (the run of 2026-11-13 took 8 hours by the clock for 2 h 12 min of work, the Mac asleep three times).
   **Decided 2026-11-14: the raster** - 640 x 480 at 60 Hz, the text in a 400-line band, is the card's table and
   the driver's default; 640 x 400 at 70 Hz is a second table for the driver to offer, to try on a monitor.
-  **To decide** (the note's section 13): the control bits' places (the netlist is wired to the proposed
-  ones); the font; V2.0's order.
+  **Decided 2026-11-14: the control bits' places** - as the netlist, the emulators' model and the V4 ROM have
+  them (the note's sections 9 and 13, with the arrangements looked at and not taken). Nothing on the board or in
+  the software changes.
+  **To decide** (the note's section 13): the font; V2.0's order.
   **For V2.0, if it is ordered (seen 2026-11-12 while simulating this card; V2.0's files are not changed):** its
   slot mode has the strobe as a term of -WE, so a write strobe that ends inside a pulse cuts the pulse short. The
   re-review of 2026-10-23 judged that harmless (the same byte written again). Not shown harmless: in a cut pulse's

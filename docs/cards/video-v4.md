@@ -398,7 +398,12 @@ The status's VSYNC and DE are the stage's: what the 6845's pins showed a count b
 own pulse, 16 lines of Motorola's part, not the 1.84 lines the connector gets.
 
 Against V2.0: PLANE has a fourth bit, so CPAGE, DPAGE and TEXT-OFF have moved, and control 2 is new; the status has no
-DOTS bit (8 dots only: the jumper is gone); the ID is $7x where V2.0 reads $5x and the V3 design $6x.
+DOTS bit (8 dots only: the jumper is gone); the ID is $7x where V2.0 reads $5x and the V3 design $6x. The bits'
+places are decided (2026-11-14; section 13, with the arrangements that were not taken).
+
+The six port numbers are all in use, but not both halves of each. Free: **OUT PE** (PE is only read) and **IN PF**
+(PF is only written). IN PA is not: PA selects the 6845 for a read as for a write. One more register that is only
+written has its strobe in OUT PE and the spare OR gate.
 
 ## 10. Which 6845
 
@@ -582,9 +587,23 @@ address: section 13, "Possible later".
   table and the driver's default, the raster that every VGA monitor takes; 640 x 400 at 70 Hz, which fills the
   screen, is a second table for the driver to offer. Nothing on the board depends on it: the clock is the same and
   the sync polarities are control bits.
+- The control bits' places (decided 2026-11-14; section 9), as the netlist is wired. Control 1 is the graphics
+  RAM's register: PLANE in bits 3..0 and CPAGE in bit 4, together the number of the 2K bank in the window, then
+  DPAGE, GFX-ON and XOR, so a page flip is one write. Control 2 is the text's and the monitor's: TEXT-OFF, CURH,
+  the syncs' polarities, the three guns. The text driver writes control 2 alone, and from its copy, at every move
+  of the cursor: a program changes control 2 through that copy (`VIDC2`).
+  Looked at and not taken:
+  - V2.0's places kept (PLANE 2..0, CPAGE, DPAGE, TEXT-OFF, GFX-ON, XOR) with the fourth plane bit in control 2:
+    the plane's number would lie in two registers, neither of which can be read back, and a V2.0 program does
+    not run on this card unchanged whatever the places (the picture's size, the lines of a row, the columns,
+    the ID).
+  - TEXT-OFF in control 1's bit 7 beside GFX-ON, XOR in control 2, CURH in bit 0: both layers' switches in one
+    write, and one instruction less at each move of the cursor; against it, bit 7 of port PC would be XOR on
+    V2.0 and TEXT-OFF here. A small gain for a small loss.
+  - A third register for CURH alone, on OUT PE (free: section 9), so that the driver never writes control 2
+    after it has set it up: a 47th IC.
 
 **Proposed here, to decide**
-- **The control bits' places** (section 9), which are not V2.0's. The netlist is wired to them.
 - **The font**: 256 glyphs of 8 x 16 with lower case, and their cursor forms. V2.0's fonts are 8 lines high; the V3
   design's first image is the V1.3 glyphs with each line doubled.
 - **V2.0**: ordered as well, or left as it is. If ordered: its slot mode has the write pulse that the strobe can
@@ -596,7 +615,8 @@ address: section 13, "Possible later".
 - A second font: a 32K EPROM and control 2's spare bit.
 - The graphics layer scrolled apart from the text in hardware (asked 2026-11-14; section 12): an offset register
   and an adder between the 6845's address and the graphics RAM, about five chips (three 74F283, two for the
-  register) and a port to load it, where all six of the card's ports are taken. The adder stands in the display's
+  register) and a write strobe for each of the register's two chips, where the card has one free: OUT PE
+  (section 9). The adder stands in the display's
   read path, which has 52 ns to spare. It would move the layer by rows of text and 16 dots; by scan lines wants
   more. Not on the board as routed: a new placement and route.
 
