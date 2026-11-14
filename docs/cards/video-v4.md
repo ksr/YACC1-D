@@ -61,7 +61,8 @@ character generator looks up a character in that time and the shift registers ru
 
 A count is 16 dots, 635.6 ns. A line is 800 dots, 50 counts: 31.469 kHz.
 
-**640 x 480 at 60 Hz, the text in a band of 400 lines** (the card's table):
+**640 x 480 at 60 Hz, the text in a band of 400 lines** (the card's table, and what the driver sets at power-on:
+decided 2026-11-14):
 
 | Register | Value | What |
 |---|---|---|
@@ -80,11 +81,11 @@ A count is 16 dots, 635.6 ns. A line is 800 dots, 50 counts: 31.469 kHz.
 
 Both syncs negative. 80 lines of the monitor's 480 stay black, 42 above the text and 38 below.
 
-**640 x 400 at 70 Hz** (VGA's own text raster, the same clock; the picture fills the screen): R4, R5 = 27, 1 (449
-lines, 70.09 Hz), R7 = 26 (the sync at line 416), the rest as above; HSYNC negative, VSYNC positive. The 6845 places
-the vertical sync by whole rows, so the picture starts 4 lines above where VGA's 400-line mode has it: for the
-monitor's own adjustment to take up, and to try. The two polarities are control bits (section 9), so the driver
-chooses the raster with its table.
+**640 x 400 at 70 Hz** (VGA's own text raster, the same clock; the picture fills the screen; a second table for
+the driver to offer, to try on a monitor): R4, R5 = 27, 1 (449 lines, 70.09 Hz), R7 = 26 (the sync at line 416),
+the rest as above; HSYNC negative, VSYNC positive. The 6845 places the vertical sync by whole rows, so the picture
+starts 4 lines above where VGA's 400-line mode has it: for the monitor's own adjustment to take up, and to try. The
+two polarities are control bits (section 9), so the driver chooses the raster with its table.
 
 A screen is 2,000 characters, which the 2K at $D000 holds. Thirty rows on the 480 lines would be 2,400: not on this
 card (section 13).
@@ -547,10 +548,12 @@ On the branch `video-v2`, beside the V2.0 card's:
 - The four clocks are laid on the empty board first and kept while the rest is routed (decided 2026-11-13, on the
   board since 2026-11-14; section 11): their lengths are a property of the placement and not of the router's luck.
   The dot clock's farthest input is 134 mm from its resistor.
+- The raster (decided 2026-11-14; section 3): 640 x 480 at 60 Hz with the text in a 400-line band is the card's
+  table and the driver's default, the raster that every VGA monitor takes; 640 x 400 at 70 Hz, which fills the
+  screen, is a second table for the driver to offer. Nothing on the board depends on it: the clock is the same and
+  the sync polarities are control bits.
 
 **Proposed here, to decide**
-- **The raster**: 640 x 480 at 60 Hz with the text in a 400-line band, as the card's table; 640 x 400 at 70 Hz as a
-  second table for the driver to offer.
 - **The control bits' places** (section 9), which are not V2.0's. The netlist is wired to them.
 - **The font**: 256 glyphs of 8 x 16 with lower case, and their cursor forms. V2.0's fonts are 8 lines high; the V3
   design's first image is the V1.3 glyphs with each line doubled.

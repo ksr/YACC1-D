@@ -507,7 +507,9 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   order. Beside it: the emulators' model and the ROM driver (branch `video-v2`). `tools/vidsim.py timing` is still
   to learn 16 dots a count, to check the 6845's tables. A routing run needs the Mac awake: lid open, charger in
   (the run of 2026-11-13 took 8 hours by the clock for 2 h 12 min of work, the Mac asleep three times).
-  **To decide** (the note's section 13): the raster; the control bits' places (the netlist is wired to the proposed
+  **Decided 2026-11-14: the raster** - 640 x 480 at 60 Hz, the text in a 400-line band, is the card's table and
+  the driver's default; 640 x 400 at 70 Hz is a second table for the driver to offer, to try on a monitor.
+  **To decide** (the note's section 13): the control bits' places (the netlist is wired to the proposed
   ones); the font; V2.0's order.
   **For V2.0, if it is ordered (seen 2026-11-12 while simulating this card; V2.0's files are not changed):** its
   slot mode has the strobe as a term of -WE, so a write strobe that ends inside a pulse cuts the pulse short. The
