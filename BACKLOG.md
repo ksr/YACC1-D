@@ -512,8 +512,19 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   has them (`SILK=1 build.sh`: silk only, nothing moved). Nothing is ordered.
   **Next, before any order:** the check's pictures and the fab's gerber viewer by eye; the VGA socket laid on a
   1:1 print; the oscillator's pin 1; then the
-  order. Beside it: the emulators' model and the ROM driver (branch `video-v2`). `tools/vidsim.py timing` is still
-  to learn 16 dots a count, to check the 6845's tables. A routing run needs the Mac awake: lid open, charger in
+  order. `pcb-check --tests` (the system's `make check`) passes too.
+  **The emulators' model and the ROM's text driver are written (2026-11-14, branch `video-v2`):** `Y1VID_CARD=v4`
+  in both emulators (`software/videomodel.h`), and `ROM 2026-11-14 V4` (`firmware/rom/shipped/rom-v4.bin`, not
+  burned), a second build of `monitor.asm` made by `tools/monvariant.py v4` - the V2.0 ROM has 45 bytes free and
+  the assembler no conditional assembly, so the source carries both builds line by line (`;;V2` / `;;V4`) and still
+  assembles to the V2.0 ROM byte for byte. 80 x 25, lower case, the 640 x 480 table, the cursor's address halved
+  with CURH. `tests/video/v40/run.py` (in `make check` there): 0 failed on both emulators.
+  `tools/vidsim.py timing --card v4` checks the 6845's two tables (on `main`).
+  **Open for the V4's software:** graphics in the ROM or a library; the 70 Hz table in the driver; Y1/OS, BASIC
+  and the commands on 25 rows (they take the screen for 24); `tools/vidsim.py`'s picture of the card (wants the
+  font). Scrolling the graphics apart from the text: in software (the note's section 12 has the three ways and
+  their cost); in hardware it is a board change, listed in the note's "Possible later".
+  A routing run needs the Mac awake: lid open, charger in
   (the run of 2026-11-13 took 8 hours by the clock for 2 h 12 min of work, the Mac asleep three times).
   **Decided 2026-11-14: the raster** - 640 x 480 at 60 Hz, the text in a 400-line band, is the card's table and
   the driver's default; 640 x 400 at 70 Hz is a second table for the driver to offer, to try on a monitor.

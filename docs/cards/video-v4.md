@@ -19,8 +19,8 @@ counts**. The 6845 then runs at 1.57 MHz, inside every grade of the part, where 
 The figures for the monitor are VGA's. The 6845's are the Motorola data sheet's (read 2026-11-12): the clock low and
 high at least 150 ns each and 3.0 MHz at most; the memory address and RA 160 ns after the clock's falling edge, DE,
 CURSOR and the syncs 250 ns; no minimums given. The circuit's timing is the simulation's (section 5). The 6845's
-tables of section 3 are not yet checked by a tool (`tools/vidsim.py timing` knows 5, 6 and 8 dots a count: to
-extend).
+tables of section 3 are checked by `tools/vidsim.py timing --card v4` (and `--v4raster 70`; 2026-11-14): the line
+and frame rates, the porches, and the monitor's lines the text lands on.
 
 ## 1. The idea: the 6845 counts pairs of bytes
 
@@ -528,18 +528,38 @@ crystal circuit.
 
 ## 12. Software
 
-On the branch `video-v2`, beside the V2.0 card's:
+On the branch `video-v2`, beside the V2.0 card's. **The emulators' model and the ROM's text driver are written
+(2026-11-14)**; graphics are open.
 
-- **The ROM driver**: the card by its ID, $7x; the table of section 3; 80 columns and 25 rows (the ROM and Y1/OS
-  have 24 rows today: the screen's height becomes the card's); the cursor as R14 / R15 and
-  CURH; PLANE's four bits and the moved control bits, with a copy of control 2 kept in RAM (it cannot be read back);
-  GFX-ON left 0 on a text-only card and switched only in vertical blanking. The keyboard is V2.0's code unchanged.
-- **The emulators' model** (`software/videomodel.h`): a third card beside `v1.0` and `v2.0`: 16 dots a count, two
-  bytes, sixteen planes, the two control registers, the layer hidden while GFX-ON = 0. `tools/vidsim.py` draws it and
-  checks the table.
+- **The ROM driver (done 2026-11-14: `ROM 2026-11-14 V4`, not burned)**: the card by its ID, $7x; the table of
+  section 3 for 640 x 480 at 60 Hz; 80 columns and 25 rows; characters stored as they come, lower case with them;
+  the cursor as R14 / R15, its offset halved, and CURH; a copy of control 2 kept in RAM (it cannot be read back).
+  The keyboard is V2.0's code unchanged. It is a second build of the same monitor source, since the V2.0 ROM has no
+  room for a second driver: `docs/programming/MONITOR.md` section 11b on that branch. Not in it yet: graphics
+  (PLANE's four bits, GFX-ON left 0 on a text-only card and switched only in vertical blanking), the 70 Hz table,
+  and Y1/OS, BASIC and the commands, which still take the screen for 24 rows.
+- **The emulators' model (done 2026-11-14: `software/videomodel.h`, `Y1VID_CARD=v4`)**: 16 dots a count, two bytes,
+  sixteen planes in two pages, the two control registers, the text-only build, the status's VSYNC and DE to the
+  clock. `tests/video/v40/run.py` on that branch runs the model and the ROM on both emulators.
+  `tools/vidsim.py timing --card v4` checks the table; it draws no picture of this card yet (the font is open).
 - **Graphics**: what is open for V2.0 (drawing routines, in Y1/OS or a library; `video`) is open here in the same
   way, at 640 x 400 and under the same rules for the window (section 7): drawn in direct mode with the layer hidden,
   or in slot mode with it shown.
+
+**Scrolling.** One address, the 6845's, goes to both RAMs, so the card cannot move one layer without the other in
+hardware. The 6845's start address (R12 / R13, in counts) scrolls text and graphics together, by a row of text (40
+counts, 16 scan lines) or by 16 dots sideways; each RAM is a ring of 1,024 counts for a screen of 1,000, so a
+screen can start anywhere in it. What a program can do with that:
+
+| | How | Work for one row |
+|---|---|---|
+| The text scrolls, the graphics stay | the driver copies 24 rows of text up and blanks the last (what the ROM does) | 8,800 instructions: 112 ms at 1 MHz, 32 ms at 3.5 MHz |
+| The graphics scroll, the text stays | both scrolled with the start address, then the text copied back one row | the same 8,800 instructions; the text is out of place meanwhile, or blanked with TEXT-OFF |
+| The graphics moved by copying | 1,920 bytes in each of the sixteen planes | 140,800 instructions: 1.8 s at 1 MHz, 0.5 s at 3.5 MHz; the second page hides it |
+
+(The clocks are the microcode's in the tree, `software/opclocks.h`; the vertical blanking is 4 ms, so no scroll is
+out of sight.) Graphics scrolled apart from the text in hardware would want an offset added to the graphics RAM's
+address: section 13, "Possible later".
 
 ## 13. Decided, to decide, and to confirm
 
@@ -574,6 +594,11 @@ On the branch `video-v2`, beside the V2.0 card's:
 - 80 x 30 and 640 x 480 graphics: 2,400 characters and 1,200 counts a plane, more than the two 2K windows hold.
 - The other two pages of the 128K RAM.
 - A second font: a 32K EPROM and control 2's spare bit.
+- The graphics layer scrolled apart from the text in hardware (asked 2026-11-14; section 12): an offset register
+  and an adder between the 6845's address and the graphics RAM, about five chips (three 74F283, two for the
+  register) and a port to load it, where all six of the card's ports are taken. The adder stands in the display's
+  read path, which has 52 ns to spare. It would move the layer by rows of text and 16 dots; by scan lines wants
+  more. Not on the board as routed: a new placement and route.
 
 **To confirm**
 - On Hitachi's data sheet, if an HD6845S is fitted: its output delays, its clock and its R3 (the figures here are
@@ -595,7 +620,8 @@ On the branch `video-v2`, beside the V2.0 card's:
    (`hardware/cards/video/kicad/v4.0/v40_netlist.py`; its checks pass and are in `make check`).
 3. The netlist simulated and timed with the parts' data-sheet numbers, as V3's was: **done 2026-11-12**
    (`tests/video/v40_netsim.py`, in `make check`; two changes to the circuit came of it: the netlist's README).
-4. Beside it: the emulators' model and the ROM driver.
+4. Beside it: the emulators' model and the ROM driver: **done 2026-11-14** on the branch `video-v2` (the text
+   driver; graphics open).
 5. The schematic and the board: **the schematic drawn, the board placed and routed 2026-11-12** (`gen_v40.py`,
    `build.sh`: all checks pass). **Reviewed 2026-11-13** (`hardware/cards/video/reviews/v4.0.md`: HIGH 0, MED 4,
    LOW 12), **the review's changes made and the board routed again** the same day, and **once more 2026-11-14 with

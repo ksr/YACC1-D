@@ -14,6 +14,10 @@ what the real card should show.
         read the REAL card's 2K display RAM through the bus tester (bus-driver firmware, CPU out) and draw it with the
         given CRTC table (default: the ROM's); R14/R15 are read from the card when a 6845 answers
   vidsim.py timing [--regs R0,R1,...] [--dotclock HZ]
+  vidsim.py timing --card v4 [--v4raster 60|70] [--regs R0,R1,...]
+        the video card V4's table (docs/cards/video-v4.md section 3): 16 dots to a count of the 6845, 25.175 MHz -
+        the line, the frame, the porches and where the 400 lines of text land on a VGA monitor, with warnings for
+        a table the card or VGA cannot take. Of this card only the timing is here: no picture yet (its font is open)
         the raster the registers make: line and frame rates, displayed/sync positions, against a TV-rate monitor
         (15.734 kHz / 60 Hz), an IBM 5151 (MDA 18.432 kHz / 50 Hz) and an IBM 5153 (CGA 15.7 kHz / 60 Hz)
   vidsim.py overlay [--overlay FILE] [--save-overlay FILE] [--gmode or|xor] [--layers L] [--tint] [--png OUT.png]
@@ -76,7 +80,13 @@ DOTS = 6                     # dots per character: IC28 a 74163 (synchronous cle
 ROM_TABLE = [116, 80, 94, 9, 31, 6, 24, 27, 0, 7, 0x67, 7, 0, 0, 0, 0]    # the monitor's vcrtab (monitor.asm): 80 x 24, 11.0592 MHz
 CARD = "v1.0"                # v1.0: the card in the machine (11.0592 MHz, IC24 loads EPROM D7..D3 only, A..C grounded);
                              # v1.3: the design (12 MHz, the DOTS jumper: 6 or 8 dots, IC24 loads all eight bits, two fonts)
-CARD_CLOCK = {"v1.0": 11.0592e6, "v1.3": 12e6, "v2.0": 12e6}
+CARD_CLOCK = {"v1.0": 11.0592e6, "v1.3": 12e6, "v2.0": 12e6, "v4": 25.175e6}
+# the video card V4 (docs/cards/video-v4.md section 3; the V4 ROM's vcrtab on the branch video-v2): 640 x 480 at 60 Hz
+# with the text in a band of 400 lines, and 640 x 400 at 70 Hz, VGA's own text raster
+V4_TABLES = {60: [49, 40, 42, 0x26, 31, 13, 25, 28, 0, 15, 0x6E, 15, 0, 0, 0, 0],
+             70: [49, 40, 42, 0x26, 27, 1, 25, 26, 0, 15, 0x6E, 15, 0, 0, 0, 0]}
+V4_RASTER = 60
+V4_PIPE = 13                 # dots from the 6845's DE to the picture at the connector, more than its sync has (section 5)
 V13_TABLES = {6: [126, 80, 98, 10, 31, 6, 24, 27, 0, 7, 0x67, 7, 0, 0, 0, 0],    # DOTS open: /6, 2.0 MHz, 80 x 24
               8: [94, 64, 75, 8, 31, 6, 24, 27, 0, 7, 0x67, 7, 0, 0, 0, 0]}     # DOTS fitted: /8, 1.5 MHz, 64 x 24
 
@@ -84,6 +94,7 @@ V13_TABLES = {6: [126, 80, 98, 10, 31, 6, 24, 27, 0, 7, 0x67, 7, 0, 0, 0, 0],   
 def card_table(card=None, dots=None):
     """the 6845 table for a card (and, on v1.3, the DOTS mode): R0..R15"""
     card = card or CARD; dots = dots or DOTS
+    if card == "v4": return list(V4_TABLES[V4_RASTER])
     return list(V13_TABLES[dots] if card in ("v1.3", "v2.0") else ROM_TABLE)
 
 # 5x7 glyphs for ASCII $20-$5F, column-major (bit 0 = top row), the classic HD44780-style shapes
@@ -337,7 +348,62 @@ def overlay_demo(cols=80):
     return ov
 
 
+def timing_v4(r, dotclock, out=print):
+    """the V4 card's table: a count of the 6845 is 16 dots and two characters. Returns (line Hz, frame Hz, warnings)"""
+    count = dotclock / 16
+    htot = r[0] + 1; lr = (r[9] & 0x1F) + 1; vtot = (r[4] + 1) * lr + (r[5] & 0x1F)
+    hfreq = count / htot; vfreq = hfreq / vtot
+    hsw = r[3] & 0x0F or 16; vsw = r[3] >> 4 or 16; vs = r[7] * lr; shown = r[6] * lr
+    front, back = (r[2] - r[1]) * 16 - V4_PIPE, (htot - r[2] - hsw) * 16 + V4_PIPE
+    out("dot clock %.3f MHz, 16 dots a count -> the 6845 at %.3f MHz (%.1f ns a count; 150 ns low and high and 3.0 MHz "
+        "at most on its sheet)" % (dotclock / 1e6, count / 1e6, 1e9 / count))
+    out("line: %d counts = %d dots = %.2f us -> %.3f kHz; shown %d counts = %d characters, %d dots (%.2f us); HSYNC at "
+        "count %d for %d counts (%d dots, %.2f us)" % (htot, htot * 16, htot / count * 1e6, hfreq / 1e3, r[1], r[1] * 2,
+                                                         r[1] * 16, r[1] / count * 1e6, r[2], hsw, hsw * 16, hsw / count * 1e6))
+    out("      porches with the card's pipeline (the picture %d dots after the 6845's DE): front %d dots, back %d "
+        "(VGA: 16 and 48)" % (V4_PIPE, front, back))
+    out("frame: %d rows x %d lines + %d = %d lines -> %.2f Hz; shown %d rows = %d lines; VSYNC from line %d: 1.84 lines at "
+        "the connector (the card cuts it), on the status port the 6845's own, %d lines on Hitachi's S type and 16 on "
+        "Motorola's" % (r[4] + 1, lr, r[5] & 0x1F, vtot, vfreq, r[6], shown, vs, vsw))
+    out("visible: %d x %d dots; cursor R10 = %02X (lines %d-%d, %s); start R12:R13 = %04X, cursor R14:R15 = %04X, in "
+        "counts" % (r[1] * 16, shown, r[10], r[10] & 0x1F, r[11] & 0x1F,
+                    ["steady", "off", "blink 1/16", "blink 1/32"][(r[10] >> 5) & 3], (r[12] & 0x3F) << 8 | r[13],
+                    (r[14] & 0x3F) << 8 | r[15]))
+    warn = []
+    for name, h, v, lines, bp, pol in (("VGA 640 x 480 at 60 Hz", 31469, 59.94, 480, 33, "both syncs negative: control 2 bits 2, 3 = 0"),
+                                       ("VGA 640 x 400 at 70 Hz", 31469, 70.09, 400, 35, "HSYNC negative, VSYNC positive: control 2 bit 3 = 1")):
+        ok = abs(hfreq - h) / h < 0.005 and abs(vfreq - v) / v < 0.005
+        if ok:
+            top = vtot - vs - 2 - bp                         # the monitor's line the first text line lands on
+            if 0 <= top and top + shown <= lines:
+                where = "the text on lines %d-%d of the monitor's %d" % (top, top + shown - 1, lines)
+            elif lines == shown and -8 <= top < 0:           # the 6845 places VSYNC by whole rows
+                where = "the picture %d lines above VGA's place for it (for the monitor's own adjustment to take up)" % -top
+            else:
+                where = "THE TEXT IS NOT ALL ON THE SCREEN (lines %d-%d of %d)" % (top, top + shown - 1, lines)
+                warn.append("the text does not land on the monitor's %d lines" % lines)
+            out("  %s (%.3f kHz / %g Hz): MATCH; %s; %s" % (name, h / 1e3, v, pol, where))
+        else:
+            out("  %s (%.3f kHz / %g Hz): no (%.1f%% / %.1f%% off)" % (name, h / 1e3, v, (hfreq - h) / h * 100, (vfreq - v) / v * 100))
+    if abs(hfreq - 31469) / 31469 >= 0.005: warn.append("the line rate is not VGA's 31.469 kHz")
+    if not any(abs(vfreq - v) / v < 0.005 for v in (59.94, 70.09)): warn.append("the frame rate is neither 59.94 nor 70.09 Hz")
+    if 1e9 / count / 2 < 150 or count > 3.0e6: warn.append("the 6845's clock is outside its sheet (150 ns low and high, 3.0 MHz)")
+    if r[1] >= htot: warn.append("R1 (shown) must be less than R0+1 (total)")
+    if not (r[1] <= r[2] and r[2] + hsw <= htot): warn.append("HSYNC (R2..R2+R3) should start after the picture and end within the line")
+    if front < 8 or back < 16: warn.append("a porch of %d / %d dots: too little for a monitor to place the picture" % (front, back))
+    if hsw * 16 < 64: warn.append("HSYNC is %d dots: VGA's is 96" % (hsw * 16))
+    if r[6] > r[4] + 1: warn.append("R6 (rows shown) exceeds the rows in the frame (R4+1)")
+    if not (r[6] <= r[7] <= r[4] + 1): warn.append("VSYNC (R7) should come after the rows shown and within the frame")
+    if lr != 16: warn.append("R9+1 = %d lines a row: the card's glyphs and planes are 16 lines" % lr)
+    if r[1] * r[6] > 1024: warn.append("%d counts shown: more than the 1,024 (2K of characters, 2K a plane) the card holds" % (r[1] * r[6]))
+    if r[1] * 2 * r[6] > 2000 and r[1] * r[6] <= 1024: warn.append("%d characters: the note's screen is 2,000" % (r[1] * 2 * r[6]))
+    if r[8] & 3: warn.append("R8: the card is not interlaced")
+    for w in warn: out("  WARNING: " + w)
+    return hfreq, vfreq, warn
+
+
 def timing(regs, dotclock, out=print):
+    if CARD == "v4": return timing_v4(regs, dotclock, out)
     r = regs
     char = dotclock / DOTS
     htot = r[0] + 1; lines_row = (r[9] & 0x1F) + 1
@@ -509,9 +575,12 @@ def main():
     ap.add_argument("--go", default="3000"); ap.add_argument("--input", default=""); ap.add_argument("--steps", type=int, default=300000000)
     ap.add_argument("--png"); ap.add_argument("--dotclock", type=float, help="the crystal (default: the card's: v1.0 11.0592 MHz, v1.3 12 MHz)")
     ap.add_argument("--chargen")
-    ap.add_argument("--card", choices=["v1.0", "v1.3", "v2.0"], default="v1.0", help="v1.0 = the card in the machine (default); "
+    ap.add_argument("--card", choices=["v1.0", "v1.3", "v2.0", "v4"], default="v1.0", help="v1.0 = the card in the machine (default); "
                     "v1.3 = the design with the DOTS jumper (--dots 6: 80 x 24, --dots 8: 64 x 24, 12 MHz, two fonts); "
-                    "v2.0 = v1.3 + the graphics layer (8-dot mode only; --dots 8 the default)")
+                    "v2.0 = v1.3 + the graphics layer (8-dot mode only; --dots 8 the default); "
+                    "v4 = the VGA card, 16 dots a count (timing only)")
+    ap.add_argument("--v4raster", type=int, choices=[60, 70], default=60, help="v4: the card's table for 640 x 480 at 60 Hz "
+                    "(the default: the driver's) or for 640 x 400 at 70 Hz")
     ap.add_argument("--raster", action="store_true"); ap.add_argument("--nocursor", action="store_true"); ap.add_argument("--scale", type=int, default=2)
     ap.add_argument("--regs"); ap.add_argument("--port", default="/dev/cu.usbserial-AB6WZCQX"); ap.add_argument("--out")
     ap.add_argument("--dots", type=int, help="dots a character. v1.0: 6 = IC28 a 74163 (a clean CHARCLOCK and a blank 6th dot; "
@@ -526,8 +595,13 @@ def main():
                     "PLANE, 3 CPAGE, 4 DPAGE, 5 TEXT-OFF, 6 GFX-ON, 7 XOR (overrides --layers, --gmode, --dpage)")
     ap.add_argument("--dpage", type=int, choices=[0, 1], default=0, help="v2.0: the page displayed (DPAGE)")
     a = ap.parse_args()
-    global DOTS, CARD
+    global DOTS, CARD, V4_RASTER
     CARD = a.card
+    if CARD == "v4":
+        if a.cmd != "timing": ap.error("--card v4: timing only (the card's font is not decided: no picture yet)")
+        V4_RASTER = a.v4raster
+        timing(parse_regs(a.regs) if a.regs else card_table(), a.dotclock or CARD_CLOCK[CARD])
+        return
     DOTS = a.dots or (8 if CARD == "v2.0" else 6)
     if DOTS not in ((5, 6) if CARD == "v1.0" else (6, 8)):
         ap.error("--dots %d does not exist on card %s" % (DOTS, CARD))

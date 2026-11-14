@@ -324,6 +324,9 @@ silk: IC10, IC28 and IC41 were shortened to "68B45", "AS6C1008-55" and "ATmega32
 has them, "HD68B45SP / MC68B45P", "AS6C1008-55PCN" and "ATmega328P-P" (the silk only, by `SILK=1 build.sh`: no
 part, track or via moved, and of the gerbers only the front silkscreen differs).
 
+With `--tests` the check also runs the system's tests (`make && make check`, the settings' `tests`): they pass
+(2026-11-14).
+
 Still by hand before an order: the check's four pictures of the copper, by eye; the zip in the fab's own gerber
 viewer; the VGA socket laid on a 1:1 print of the board.
 
@@ -331,4 +334,5 @@ viewer; the VGA socket laid on a 1:1 print of the board.
 
 1. Before any order: `pcb-check` once more on the board as it then is, its pictures and the fab's viewer; the VGA
    socket laid on a 1:1 print of the board; the oscillator's data sheet for its pin 1.
-2. Beside it: the emulators' model and the ROM driver (on the branch `video-v2`).
+2. The emulators' model and the ROM's text driver are on the branch `video-v2` (2026-11-14: `Y1VID_CARD=v4`,
+   `ROM 2026-11-14 V4`; the note's section 12). Open there: graphics, and Y1/OS on 25 rows.
