@@ -6,7 +6,8 @@ parts' data-sheet delays, with no fault left (sections 5 and 11). Its schematic 
 is placed and routed, all checks passing (section 11). A design review (2026-11-13:
 `hardware/cards/video/reviews/v4.0.md`) found nothing that stops the card working and four things to settle before
 an order; they are settled and the board is routed again (2026-11-13; and once more 2026-11-14, its four clocks
-laid first). The pre-order check is to come. The card in the machine is the [V1.0](video.md). The
+laid first). The pre-order check finds no failure (2026-11-14, one warning: section 11). The card in the machine
+is the [V1.0](video.md). The
 [V2.0](video-v2.md) is designed, ready to order and on hold while this card is looked at. The [V3](video-v3.md),
 round the HD63484, is not built.
 
@@ -463,7 +464,15 @@ others left one or two open. The checks pass: the schematic's netlist equal to t
 unconnected item and no copper violation, the board's nets equal to the schematic's, the placement clear, 432 key
 connections right, the clocks as they were laid, every reference with its type or value on the silk outside its
 part. The first placement of all did not route to the end (7 connections
-left: the folder's README has which, and what was moved). Still to come before any order: `pcb-check`.
+left: the folder's README has which, and what was moved).
+
+**The pre-order check (2026-11-14): no failures, one warning.** `pcb-check` rebuilds the copper from the order's
+gerbers and drill files alone and finds the schematic's 254 nets, no short and no open; the bus connector's 96
+pins are the bus template's; the layout rules hold. Its one warning is two inputs with nothing on them: pin 1 of
+the graphics RAM, which is not connected inside the 128K part, and pin 1 of the oscillator, an enable with its own
+pull-up on the cans that have one (to confirm on the data sheet of the part bought: section 13). The order's files
+(`gerbers/`, `video-v4.0-gerbers.zip`) are in the board's folder, written anew by every build; nothing is ordered.
+The folder's README has the check's results in full.
 
 (Earlier versions of this note said 499 connections. That is the most that KiCad's rule check lists; its
 connectivity count, which has no such limit, gives 515 for that board and 519 for this one, and 0 open on both.)
@@ -506,7 +515,8 @@ counter's pin) and the graphics shifter 0.1 ns (61 and 70 mm): 2.2, 2.9 and 2.6 
 
 The board: four layers with the planes, the blank card's connector, and the layout rules from the start - the DE-15
 and the two PS/2 jacks at the front edge facing out, jumpers and the FTDI header at an edge, every reference and value
-on the silk outside its part, bypass capacitors on 0.1-inch leads, `cottageworker.com`. `pcb-check` before any order.
+on the silk outside its part, bypass capacitors on 0.1-inch leads, `cottageworker.com`. `pcb-check` passes
+(above), and is run again before any order.
 
 **From V2.0, unchanged:** the bus connector and the block select, the port decode, the 6845's bus side, the text
 RAM's CPU port, the PS/2 section with its firmware (`embedded/video-ps2`), the text-only build's idea, direct mode
@@ -589,4 +599,5 @@ On the branch `video-v2`, beside the V2.0 card's:
 5. The schematic and the board: **the schematic drawn, the board placed and routed 2026-11-12** (`gen_v40.py`,
    `build.sh`: all checks pass). **Reviewed 2026-11-13** (`hardware/cards/video/reviews/v4.0.md`: HIGH 0, MED 4,
    LOW 12), **the review's changes made and the board routed again** the same day, and **once more 2026-11-14 with
-   the four clocks laid first**. To come: `pcb-check`; then the order.
+   the four clocks laid first**. **`pcb-check`: no failures, one warning (2026-11-14).** To come: the order, when
+   the things to confirm are confirmed.

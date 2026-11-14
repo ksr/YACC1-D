@@ -2,7 +2,8 @@
 
 The circuit as data, checked and simulated; its schematic; and the board, 250 mm long, every part placed and
 **every connection routed** (2026-11-12; reviewed, changed and routed again 2026-11-13; routed once more
-2026-11-14, its four clocks laid first). Not ordered, not built: the pre-order check is still to come. `v40_netlist.py` is the card's circuit (parts, nets, the pins left open), written from the design note
+2026-11-14, its four clocks laid first). Not ordered, not built. The pre-order check (`pcb-check`, 2026-11-14)
+finds no failure and leaves one warning: "The pre-order check", below. `v40_netlist.py` is the card's circuit (parts, nets, the pins left open), written from the design note
 `docs/cards/video-v4.md` (section 5 the clock and the stage, 6 the text, 7 the graphics RAM's two modes, 8 the dot
 path, 9 the ports).
 
@@ -155,7 +156,9 @@ equals `v40_netlist.py` net for net (254 nets), and its electrical rules check f
 | `gen_v40.py verify reports/netlist.net <pcb>` | 432 key connections pin by pin, in the schematic and on the board; the layers; the planes |
 | `gen_v40.py drawing <pcb>` | `video-v4.0-placement.pdf` |
 | `gen_v40.py bom` | `BOM.md` |
-| `build.sh` | all of it, with the routing, the reports and the checks |
+| `gen_v40.py fab <pcb>` | the order's files: `gerbers/` and `video-v4.0-gerbers.zip`. It orders nothing |
+| `build.sh` | all of it, with the routing, the reports, the checks and, when they pass, the order's files |
+| `SILK=1 build.sh` | the routed board kept: its silkscreen texts written and placed afresh, then the reports, the checks and the order's files |
 
 ## The board (2026-11-12): 250 mm, placed and routed
 
@@ -294,9 +297,38 @@ the design review changed" above, and the review's status table for each finding
 and V4-2 have their resistors, and since 2026-11-14 the clocks are laid first: each one's farthest input is nearer
 than on either route before.
 
-Not done: `pcb-check` (it wants the order's files).
+## The pre-order check (2026-11-14): no failures, one warning
+
+`~/Developer/pcb-check/pcb-check video-v4.0.kicad_pcb video-v4.0-gerbers.zip --layers 4`, with the settings in
+`pcb-check.ini` beside the board. The order's files are `gerbers/` and `video-v4.0-gerbers.zip`, written by
+`gen_v40.py fab` (and by `build.sh` after every build whose checks pass); `video-v4.0-jlcpcb-order.txt` has the
+order's parameters. **Nothing is ordered.**
+
+What it proves from the zip alone: the four copper layers, 1630 plated holes and 1175 pads rebuilt from the gerbers
+and the drill files give the schematic's 254 nets with no short and no open; each plane is one piece; the layers
+are in order; the outline is closed, 250.0 x 114.0 mm; the plated and the two non-plated holes are in files of their
+own. And on the board: the bus connector's 96 pins as the Bus Template V3.2 has them (`tools/bus_pins.py` reads
+them from the template's schematic); every chip's footprint as the real part's; the bypass capacitors on 2.54 mm;
+the name, the revision and `cottageworker.com` on the silk; every reference and value on the silk clear of the
+parts; the panel parts at the front edge; one revision, 4.0, in the settings, the schematic, the job file and the
+zip's name; the tree as committed.
+
+| | |
+|---|---|
+| WARN, DESIGN | Two inputs with nothing on them: IC28 pin 1 and OSC1 pin 1. IC28's pin 1 is not connected inside the AS6C1008 (it is A18 of the 512K part with the same pins: the symbol calls it NC/A18). OSC1's pin 1 has no connection in a plain oscillator can and is the enable of one that has it, with its own pull-up: running when left open. **To confirm on the data sheet of the oscillator that is bought** (the note's section 13) |
+| NOTE | INTOC, the PS/2 interrupt's open-collector output, has its pull-up on another card: with JP1 on it is the bus's -INT, pulled up on the I/O card (RN2) |
+
+The first run had four more warnings, all settled the same day. No bus definition, and the front edge taken for the
+bottom one: the settings `bus_pins` and `bus_edge`. The zip not committed: it is. Three values not found on the
+silk: IC10, IC28 and IC41 were shortened to "68B45", "AS6C1008-55" and "ATmega328P", and now read as the parts list
+has them, "HD68B45SP / MC68B45P", "AS6C1008-55PCN" and "ATmega328P-P" (the silk only, by `SILK=1 build.sh`: no
+part, track or via moved, and of the gerbers only the front silkscreen differs).
+
+Still by hand before an order: the check's four pictures of the copper, by eye; the zip in the fab's own gerber
+viewer; the VGA socket laid on a 1:1 print of the board.
 
 ## Next
 
-1. `pcb-check` with the order's files, before any order. The VGA socket laid on a 1:1 print of the board.
+1. Before any order: `pcb-check` once more on the board as it then is, its pictures and the fab's viewer; the VGA
+   socket laid on a 1:1 print of the board; the oscillator's data sheet for its pin 1.
 2. Beside it: the emulators' model and the ROM driver (on the branch `video-v2`).
