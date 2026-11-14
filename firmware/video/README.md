@@ -25,6 +25,34 @@ read; the copy only makes the chip's upper half harmless. Burn it like the ROM:
 (`minipro -p AT28C64B -r /tmp/cg.bin && cmp /tmp/cg.bin firmware/video/chargen-v20.bin`). Not burned (no V2.0 board
 exists). `tests/video/overlay_check.py` checks the file.
 
+`chargen-v40.bin` (2026-11-14) - the character generator of the V4 card (`hardware/cards/video/kicad/v4.0`, IC18, an
+**AT28C64B-15**, 8K): 256 characters of 8 x 16 dots and, for each, its cursor form. Written by
+`python3 tools/vidsim.py chargen --card v4` from **Terminus Font's bold 8 x 16** (`upstream/terminus-font-4.49.1/`:
+the font's own file and its licence, the SIL Open Font License 1.1; the image, made from the font, is under the same
+licence). The font was chosen 2026-11-14 from seven drawn as the card's screen: two-dot strokes, and `0 O`, `1 l I |`,
+`5 S` told apart.
+
+- **Address** = flag x 4096 + code x 16 + line: A3..0 the 6845's RA3..0, A11..4 the code from the text RAM, A12 the
+  cursor flag. Bit 7 of a byte is the left-hand dot. All eight dots of a cell are shown and the rows touch, so lines
+  and blocks join from cell to cell.
+- **$20-$7E**: ASCII, lower case with it; the ROM driver stores characters as they come. **$7F** blank.
+- **$00-$1F** (the driver acts on control codes and stores none, so these places are free for a program that writes
+  the text RAM itself): $00 blank; $01-$0B the lines of a frame (horizontal, vertical, the four corners down-right,
+  down-left, up-right, up-left, the four tees right, left, down, up, the cross); $0C-$0F the quarters upper left,
+  upper right, lower left, lower right; $10 the upper half, $11 the left half, $12 the diagonal pair (upper left and
+  lower right); $13 light shade, $14 medium shade; $15-$18 arrows left, up, right, down; $19-$1F bullet, degree,
+  plus-minus, micro, pi, ohm, divide.
+- **$80-$FF**: the same 128 inverted - **inverse video is code + $80** (the text RAM has no attribute bits). So $A0
+  is a solid cell, and the blocks' inverses complete the set: with $0C-$12, their inverses, the space and $A0, all
+  sixteen patterns of a cell cut in 2 x 2 (160 x 50 blocks on the screen); $93 is the dark shade.
+- **$1000-$1FFF, the cursor's forms**: every glyph inverted, shown on the scan lines the 6845's R10 / R11 name (the
+  ROM's table: lines 14-15, an underline, blinking). The form of code c is the glyph of code c XOR $80.
+
+`python3 tools/vidsim.py testcard --card v4 --png card.png` draws the card's test card with it (`--raster`: in the
+monitor's 480 lines). Burn it like the ROM: `minipro -p AT28C64B -u -P -w firmware/video/chargen-v40.bin`, then read
+back and compare. The chip can be burned again: another font, or other glyphs in $00-$1F, is a new image and no change
+to the card. Not burned (no V4 board exists). `tests/video/overlay_check.py` checks the file.
+
 ## The card's own EPROM (read 2026-10-18)
 
 `chargen-read.bin` is IC25 as found, read twice with the TL866II+ (`minipro -p 2732A@DIP24 -r`, MD5

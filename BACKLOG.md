@@ -524,8 +524,7 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   with CURH. `tests/video/v40/run.py` (in `make check` there): 0 failed on both emulators.
   `tools/vidsim.py timing --card v4` checks the 6845's two tables (on `main`).
   **Open for the V4's software:** graphics in the ROM or a library; the 70 Hz table in the driver; Y1/OS, BASIC
-  and the commands on 25 rows (they take the screen for 24); `tools/vidsim.py`'s picture of the card (wants the
-  font). Scrolling the graphics apart from the text: in software (the note's section 12 has the three ways and
+  and the commands on 25 rows (they take the screen for 24). Scrolling the graphics apart from the text: in software (the note's section 12 has the three ways and
   their cost); in hardware it is a board change, listed in the note's "Possible later".
   A routing run needs the Mac awake: lid open, charger in
   (the run of 2026-11-13 took 8 hours by the clock for 2 h 12 min of work, the Mac asleep three times).
@@ -534,7 +533,13 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   **Decided 2026-11-14: the control bits' places** - as the netlist, the emulators' model and the V4 ROM have
   them (the note's sections 9 and 13, with the arrangements looked at and not taken). Nothing on the board or in
   the software changes.
-  **To decide** (the note's section 13): the font; V2.0's order.
+  **Decided 2026-11-14: the font** - Terminus Font's bold 8 x 16 (SIL Open Font License 1.1), chosen from seven
+  drawn as the card's screen. `firmware/video/chargen-v40.bin` is the AT28C64B's image (not burned: no board), written
+  by `tools/vidsim.py chargen --card v4` from the font's own file in `firmware/video/upstream/`: ASCII with lower
+  case, lines / blocks / arrows / symbols at $00-$1F, inverse video = code + $80, the cursor's forms in the upper
+  4K. `tools/vidsim.py testcard --card v4` and `render` now draw the card's screen; `tests/video/overlay_check.py`
+  checks the image and the picture. The glyphs at $00-$1F are a first choice: a new image changes them.
+  **To decide** (the note's section 13): V2.0's order.
   **For V2.0, if it is ordered (seen 2026-11-12 while simulating this card; V2.0's files are not changed):** its
   slot mode has the strobe as a term of -WE, so a write strobe that ends inside a pulse cuts the pulse short. The
   re-review of 2026-10-23 judged that harmless (the same byte written again). Not shown harmless: in a cut pulse's

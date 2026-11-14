@@ -6,7 +6,10 @@
 comes out at the right place in the picture with each combine mode; and (2026-10-22) the v1.3 card's model - 8-dot
 cells (the overlay 512 x 192, a byte's eight bits), both 6845 tables' rates, the two-font EPROM image
 (firmware/video/chargen-v13.bin) and a glyph drawn in each mode; the V2.0 card's control register, CPU window and
-picture, and after its design review its status bit, direct mode, text-only build and 28C64 image (chargen-v20.bin).
+picture, and after its design review its status bit, direct mode, text-only build and 28C64 image (chargen-v20.bin);
+and (2026-11-14) the V4 card's character generator image (firmware/video/chargen-v40.bin: that it is what the tool
+writes from the font, its layout, its lines and blocks) and its picture: the two characters of a count, the cursor's
+half, the control registers' bits, the graphics layer, the monitor's frame.
 No hardware; part of `make check`."""
 import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "tools"))
@@ -141,6 +144,66 @@ path20 = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "f
 check("chargen-v20.bin = vidsim.py chargen --card v2.0", open(path20, "rb").read() == img20)
 check("chargen-v20 layout: 8K, the v1.3 image at $0000 and $1000", len(img20) == 8192 and
       img20[:4096] == img20[4096:] == vidsim.chargen_v13_image())
+
+# the video card V4 (2026-11-14): its character generator - Terminus Font's bold 8 x 16 laid out for the card - and
+# its picture: two characters a count, the cursor's half, the two control registers, the graphics layer
+img40 = vidsim.chargen_v40_image()
+path40 = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "firmware", "video", "chargen-v40.bin")
+check("chargen-v40.bin = vidsim.py chargen --card v4", open(path40, "rb").read() == img40)
+def gl(code, flag=0): return img40[flag * 4096 + code * 16:flag * 4096 + code * 16 + 16]
+def inv(b): return bytes(x ^ 0xFF for x in b)
+check("chargen-v40 layout: 8K, $80-$FF inverse, cursor forms", len(img40) == 8192 and
+      all(gl(c | 0x80) == inv(gl(c)) for c in range(128)) and all(gl(c, 1) == inv(gl(c)) == gl(c ^ 0x80) for c in range(256)))
+bdf = vidsim.bdf_glyphs(os.path.join(vidsim.ROOT, vidsim.V4_FONT))
+check("chargen-v40: ASCII is the font's, unchanged", all(gl(c) == bdf[c] for c in range(0x20, 0x7F)) and
+      gl(0x41) == bytes.fromhex("00007cc6c6c6c6fec6c6c6c600000000") and gl(0x67)[13:15] == b"\x06\x7c")
+check("chargen-v40: $00 $20 $7F blank, $A0 solid", gl(0) == gl(0x20) == gl(0x7F) == bytes(16) and gl(0xA0) == b"\xff" * 16)
+check("chargen-v40: a frame's lines join cell to cell", gl(1)[7] == gl(1)[8] == 0xFF and set(gl(2)) == {0x18} and
+      gl(0x0B) == bytes(a | b for a, b in zip(gl(1), gl(2))))
+check("chargen-v40: 2 x 2 blocks are exact quarters", gl(0x0C) == b"\xf0" * 8 + bytes(8) and gl(0x0D) == b"\x0f" * 8 + bytes(8) and
+      gl(0x0E) == bytes(8) + b"\xf0" * 8 and gl(0x0F) == bytes(8) + b"\x0f" * 8 and gl(0x10) == b"\xff" * 8 + bytes(8) and
+      gl(0x11) == b"\xf0" * 16 and gl(0x12) == b"\xf0" * 8 + b"\x0f" * 8)
+vidsim.CARD = "v4"
+tb = vidsim.card_table()
+check("v4 table: 40 counts = 80 characters, 25 rows of 16 lines", (tb[1], tb[6], tb[9]) == (40, 25, 15))
+row, col = vidsim.V4_TESTCARD_CURSOR
+st = vidsim.State(tb[:14] + [(row * 40 + col // 2) >> 8, (row * 40 + col // 2) & 0xFF], vidsim.testcard_ram_v4())
+off = (10, 10, 10)
+def cell(pic, r, c): return bytes(sum((pic[r * 16 + l][c * 8 + d] != off) << (7 - d) for d in range(8)) for l in range(16))
+def curs(b): return b[:14] + inv(b[14:])                 # R10 / R11 = 14 / 15: the cursor's form on the last two lines
+W, H, pic = vidsim.picture_v4(st, control2=2)
+check("v4 picture: 640 x 400, a character is its glyph", (W, H) == (640, 400) and cell(pic, 0, 1) == gl(ord("Y")) and
+      cell(pic, 4, 33) == inv(gl(ord("!"))))
+check("v4 cursor: CURH = 1, the right-hand character", cell(pic, row, col) == curs(gl(st.ram[row * 80 + col])) and
+      cell(pic, row, col - 1) == gl(st.ram[row * 80 + col - 1]))
+pic0 = vidsim.picture_v4(st, control2=0)[2]
+check("v4 cursor: CURH = 0, the left-hand one", cell(pic0, row, col - 1) == curs(gl(st.ram[row * 80 + col - 1])) and
+      cell(pic0, row, col) == gl(st.ram[row * 80 + col]))
+check("v4 TEXT-OFF: no text, no cursor", all(p == off for r in vidsim.picture_v4(st, control2=3)[2] for p in r))
+check("v4 guns: red off, the dots are cyan", {p for r in vidsim.picture_v4(st, control2=0x22)[2] for p in r} == {off, (0, 230, 230)})
+st.regs[13] = 40                                          # the start address is in counts: 40 = a row
+up = vidsim.picture_v4(st, cursor=False)[2]             # the last row: bytes 2000-2047, then the ring's bytes 0-31
+check("v4 start address 40: the screen a row up, the RAM a ring", cell(up, 0, 0) == gl(ord("0")) and
+      all(cell(up, 24, c) == bytes(16) for c in range(49)) and cell(up, 24, 49) == gl(ord("Y")))
+st.regs[13] = 0
+Wf, Hf, fr = vidsim.picture_v4(st, raster=True, control2=2)
+check("v4 --raster: 480 lines, the text on 42-441", (Wf, Hf) == (640, 480) and fr[42:442] == pic and fr[41][0] == fr[442][0] == (48, 48, 48))
+vidsim.V4_RASTER = 70
+Wf, Hf, fr = vidsim.picture_v4(vidsim.State(vidsim.card_table(), st.ram), raster=True, cursor=False)
+check("v4 --raster, the 70 Hz table: 400 lines, all text", (Wf, Hf) == (640, 400) and cell(fr, 0, 1) == gl(ord("Y")))
+vidsim.V4_RASTER = 60
+blank = vidsim.State(tb, bytes(b" " * 2048))
+gram = bytearray(65536); gram[32768 + 5 * 2048 + 83] = 0xA5      # page 1, plane 5, the place of row 1, column 3
+def lit(pic): return [(x, y) for y in range(len(pic)) for x in range(640) if pic[y][x] != off]
+check("v4 graphics: page DPAGE, plane = the scan line", lit(vidsim.picture_v4(blank, cursor=False, control=0x60, gram=gram)[2]) ==
+      [(24, 21), (26, 21), (29, 21), (31, 21)])
+check("v4 graphics: not the other page, not with GFX-ON = 0", lit(vidsim.picture_v4(blank, cursor=False, control=0x40, gram=gram)[2]) == [] and
+      lit(vidsim.picture_v4(blank, cursor=False, control=0x20, gram=gram)[2]) == [])
+ram = bytearray(b" " * 2048); ram[83] = ord("A")
+gram = bytearray(65536)
+for plane in range(16): gram[plane * 2048 + 83] = 0xFF
+check("v4 layers: OR and XOR", cell(vidsim.picture_v4(vidsim.State(tb, ram), cursor=False, control=0x40, gram=gram)[2], 1, 3) == b"\xff" * 16 and
+      cell(vidsim.picture_v4(vidsim.State(tb, ram), cursor=False, control=0xC0, gram=gram)[2], 1, 3) == inv(gl(ord("A"))))
 vidsim.CARD, vidsim.DOTS = "v1.0", 6
 
 print("overlay model: %s" % ("ALL PASS" if not fails else "%d FAIL" % fails))

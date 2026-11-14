@@ -39,10 +39,11 @@ for root, dirs, files in os.walk(DST):
         elif f == "Makefile": buckets["mine: hand-written Makefile (2026-09)"] += 1
         # third-party source kept unmodified next to its port (2026-09-26: os/upstream/ekermit-1.8, E-Kermit for
         # /BIN/KERMIT): a folder <x>/upstream/<name>/ whose README.md says where it came from and holds its licence
+        # (2026-11-14: firmware/video/upstream/terminus-font-4.49.1, the V4 video card's font, its licence in OFL.TXT)
         elif "/upstream/" in rel and os.path.exists(os.path.join(DST, rel.split("/upstream/")[0], "upstream",
                 rel.split("/upstream/")[1].split("/")[0], "README.md")) and any(os.path.exists(os.path.join(DST,
                 rel.split("/upstream/")[0], "upstream", rel.split("/upstream/")[1].split("/")[0], lic))
-                for lic in ("LICENSE", "COPYING", "LICENSE.txt")): buckets["third-party: unmodified upstream source with its licence (README.md = origin, version, checksums)"] += 1
+                for lic in ("LICENSE", "COPYING", "LICENSE.txt", "OFL.TXT")): buckets["third-party: unmodified upstream source with its licence (README.md = origin, version, checksums)"] += 1
         elif rel.startswith(HAND_MADE): buckets["mine: session captures"] += 1
         # the design reviews, in each card's (or bus board's) own reviews/ folder (moved there 2026-10-26)
         elif rel.startswith(("hardware/cards/", "hardware/bus/")) and rel.split("/")[3:4] == ["reviews"] and f.endswith(".md"): buckets["mine: design reviews (hardware/<cards|bus>/<board>/reviews/)"] += 1

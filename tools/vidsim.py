@@ -17,7 +17,7 @@ what the real card should show.
   vidsim.py timing --card v4 [--v4raster 60|70] [--regs R0,R1,...]
         the video card V4's table (docs/cards/video-v4.md section 3): 16 dots to a count of the 6845, 25.175 MHz -
         the line, the frame, the porches and where the 400 lines of text land on a VGA monitor, with warnings for
-        a table the card or VGA cannot take. Of this card only the timing is here: no picture yet (its font is open)
+        a table the card or VGA cannot take
         the raster the registers make: line and frame rates, displayed/sync positions, against a TV-rate monitor
         (15.734 kHz / 60 Hz), an IBM 5151 (MDA 18.432 kHz / 50 Hz) and an IBM 5153 (CGA 15.7 kHz / 60 Hz)
   vidsim.py overlay [--overlay FILE] [--save-overlay FILE] [--gmode or|xor] [--layers L] [--tint] [--png OUT.png]
@@ -25,7 +25,11 @@ what the real card should show.
         with a demo drawing (or a 16K overlay image) in a second RAM that the same 6845 scans - see "The overlay" below
   vidsim.py testcard [--card v1.0|v1.3|v2.0] [--dots N] [--regs R0,R1,...] [--png OUT.png]
         the test card (tests/video/asm/testcard.asm's layout, laid out for R1 columns) with the card's own table
-  vidsim.py chargen [--card v1.0|v1.3|v2.0] [--out FILE]
+  vidsim.py testcard --card v4 [--raster] [--control2 BYTE] [--png OUT.png]
+  vidsim.py render STATE --card v4 [--control BYTE] [--control2 BYTE] [--overlay FILE] [--png OUT.png]
+        the video card V4's screen (see "V4" below): its test card, or a state file (an emulator's, of
+        Y1VID_CARD=v4, names its card and brings both control registers and the graphics RAM: no --card needed)
+  vidsim.py chargen [--card v1.0|v1.3|v2.0|v4] [--out FILE]
         write a character-generator image for the card's wiring with the fonts drawn here (2513-style 64-character
         sets): address = code*8 + row (code = VDATA0..5 on A3..A8, row = RA0..2), D7 the leftmost dot, shifted out first
         by the 74LS166. v1.0 (firmware/video/chargen.bin, a 2732, 4K): 5 dots in D7..D3, D2..D0 unused. v1.3
@@ -33,6 +37,9 @@ what the real card should show.
         font at $400 (D7..D3), A10 = the DOTS jumper; burn with `minipro -p 2732A@DIP24 -w FILE`. v2.0
         (firmware/video/chargen-v20.bin, an AT28C64B, 8K): the v1.3 image at $0000-$0FFF, A12 and A11 grounded on the
         card (the copy at $1000 is never read); burn with `minipro -p AT28C64B -u -P -w FILE`, as the ROM.
+        v4 (firmware/video/chargen-v40.bin, an AT28C64B, 8K): not drawn here - the glyphs are Terminus Font's bold
+        8 x 16 (firmware/video/upstream/terminus-font-4.49.1, SIL Open Font License 1.1), laid out for the card:
+        address = flag*4096 + code*16 + line, see "V4" below.
 
 Common options: --card v1.0 (the card in the machine, the default) | v1.3 (the design with the DOTS jumper: 12 MHz, --dots 6
 = 80 x 24, --dots 8 = 64 x 24, both fonts in one EPROM; BACKLOG "Video v1.3") | v2.0 (v1.3 + the graphics layer, 8-dot
@@ -72,6 +79,18 @@ After the design review (2026-10-22): GFX-ON = 0 is DIRECT MODE - the CPU owns t
 at most ~1.8 MHz (review V2-24). `V20Card` models the CPU side: OUT PC, IN PC (`v20_status`: bit 0 DOTS, 1 VSYNC,
 2 DE, 3 TEXT-ONLY, 7..4 = 0101), the window in both modes, and the text-only build (no graphics chips: bit 3 = 1, the
 window reads the floating bus, writes go nowhere).
+
+V4 (docs/cards/video-v4.md; `--card v4`): the 6845 counts pairs of characters, 16 dots a count. A row of the screen is
+R1 counts = 2 x R1 characters of 8 x 16 dots; character n of the screen is byte n of the text RAM (a ring of 2,048),
+shown from the start address R12:R13 x 2. The character generator (`chargen_v40_image`) is addressed by the cursor
+flag (A12), the code (A11..4) and the scan line (A3..0), bit 7 of a byte the left-hand dot: codes $20-$7E are ASCII,
+$00-$1F lines, blocks, arrows and symbols (`V4_LOW`), $7F blank, $80-$FF the same 128 inverted; the upper 4K holds
+every glyph's cursor form, the glyph inverted. The cursor is on the count R14:R15, lines R10-R11, and on the
+character of that count that CURH names. Control 1 (OUT PC, --control): bits 3..0 PLANE, 4 CPAGE, 5 DPAGE, 6 GFX-ON,
+7 XOR. Control 2 (OUT PF, --control2): bit 0 TEXT-OFF, 1 CURH, 2 / 3 the syncs' polarity, 5 / 6 / 7 red / green /
+blue off. The graphics layer (GFX-ON, a 64K image: --overlay FILE, or a state file's): page DPAGE, plane = the scan
+line of the row, a byte for each character place, 640 x 400. --raster draws the monitor's frame (480 lines, or 400
+with the 70 Hz table) with the text where the table puts it. The dots are square.
 """
 import os, re, sys, zlib, struct, argparse, subprocess, tempfile
 
@@ -175,6 +194,56 @@ def chargen_image():
         for r, bits in enumerate(font_rows(code)):
             img[code * 8 + r] = bits << 3              # D7..D3 = the five dots, D7 leftmost
     return bytes(img)
+
+
+# The video card V4's character generator (2026-11-14). The glyphs are not drawn here: they are Terminus Font's bold
+# 8 x 16 (Dimitar Zhekov; SIL Open Font License 1.1), read from the font's own file.
+V4_FONT = "firmware/video/upstream/terminus-font-4.49.1/ter-u16b.bdf"
+# codes $00-$1F, which the driver never stores as characters (it acts on control codes): by Unicode code point
+V4_LOW = [0x20,                                                                          # $00 blank
+          0x2500, 0x2502, 0x250C, 0x2510, 0x2514, 0x2518, 0x251C, 0x2524, 0x252C, 0x2534, 0x253C,   # $01-$0B the lines of a frame
+          0x2598, 0x259D, 0x2596, 0x2597, 0x2580, 0x258C, 0x259A,                        # $0C-$12 quarters, the upper and the left half, a diagonal
+          0x2591, 0x2592,                                                                # $13-$14 light and medium shade
+          0x2190, 0x2191, 0x2192, 0x2193,                                                # $15-$18 arrows: left, up, right, down
+          0x2022, 0x00B0, 0x00B1, 0x00B5, 0x03C0, 0x03A9, 0x00F7]                        # $19-$1F bullet, degree, plus-minus, micro, pi, ohm, divide
+
+
+def v4_codepoints():
+    """the Unicode code point of each of the V4 card's codes $00-$7F ($7F is blank; $80-$FF are these inverted)"""
+    return V4_LOW + list(range(0x20, 0x7F)) + [0x20]
+
+
+def bdf_glyphs(path):
+    """a BDF font's characters of 8 dots, by code point: each 16 bytes, the lines from the top, bit 7 the left-hand dot"""
+    g = {}; asc = 12; enc = bbx = rows = None; dw = 8
+    for s in open(path, encoding="latin-1"):
+        t = s.split()
+        if not t: continue
+        if rows is not None:
+            if t[0] != "ENDCHAR": rows.append(t[0]); continue
+            w, h, xo, yo = bbx; cell = [0] * 16; top = asc - yo - h
+            for k, hx in enumerate(rows):
+                b = (int(hx, 16) << 8) >> (len(hx) * 4)       # the row's first 8 dots
+                if 0 <= top + k < 16: cell[top + k] = (b >> xo if xo >= 0 else b << -xo) & 0xFF
+            if dw == 8 and enc is not None and enc >= 0: g[enc] = bytes(cell)
+            rows = None
+        elif t[0] == "FONT_ASCENT": asc = int(t[1])
+        elif t[0] == "ENCODING": enc = int(t[1])
+        elif t[0] == "DWIDTH": dw = int(t[1])
+        elif t[0] == "BBX": bbx = [int(v) for v in t[1:5]]
+        elif t[0] == "BITMAP": rows = []
+    return g
+
+
+def chargen_v40_image(font=None):
+    """the V4 card's AT28C64B (8K): address = flag*4096 + code*16 + line (A12 the cursor flag, A11..4 the code, A3..0
+    the 6845's RA3..0), bit 7 of a byte the left-hand dot. $0000: codes $00-$7F (v4_codepoints), then $80-$FF, the
+    same 128 glyphs inverted. $1000: the cursor's forms, every glyph inverted - so the form of code c is the glyph
+    of code c ^ $80"""
+    g = bdf_glyphs(font or os.path.join(ROOT, V4_FONT))
+    low = b"".join(g[cp] for cp in v4_codepoints())
+    half = low + bytes(b ^ 0xFF for b in low)
+    return half + bytes(b ^ 0xFF for b in half)
 
 
 class State:
@@ -542,6 +611,144 @@ def text_view(st, out=print):
     out("+" + "-" * r[1] + "+")
 
 
+def picture_v4(st, chargen=None, raster=False, cursor=True, control=0, control2=0, gram=None):
+    """the video card V4's picture -> (width, height, rows of RGB tuples), a pixel a dot. control, control2: the two
+    control registers; gram: the 64K of graphics RAM (shown with GFX-ON); raster: the monitor's frame, the text where
+    the table puts it (the lines above and below it grey here, black on the monitor)"""
+    r = st.regs; cg = chargen or chargen_v40_image()
+    lr = (r[9] & 0x1F) + 1; counts, rows = r[1], r[6]
+    start = (r[12] & 0x3F) << 8 | r[13]; cur = (r[14] & 0x3F) << 8 | r[15]
+    cs, ce, mode = r[10] & 0x1F, r[11] & 0x1F, (r[10] >> 5) & 3
+    text_on, curh = not control2 & 1, control2 >> 1 & 1
+    gfx_on, xor, dpage = bool(control & 0x40) and gram is not None, control >> 7 & 1, control >> 5 & 1
+    on = tuple(0 if control2 >> b & 1 else 230 for b in (5, 6, 7)); off = (10, 10, 10)     # the guns' off bits
+    W, H = counts * 16, rows * lr
+    img = [[off] * W for _ in range(H)]
+    for row in range(rows):
+        for line in range(lr):
+            out = img[row * lr + line]
+            for n in range(counts):
+                ma = (start + row * counts + n) & 0x3FFF     # the 6845's address: 14 bits, compared whole with R14:R15
+                for half in (0, 1):
+                    a = (ma & 0x3FF) << 1 | half             # both RAMs: the count's ten bits, then the half
+                    t = 0
+                    if text_on:                             # TEXT-OFF holds the text's shift register clear: no cursor either
+                        flag = cursor and ma == cur and half == curh and mode != 1 and cs <= line <= ce
+                        t = cg[(0x1000 if flag else 0) + st.ram[a] * 16 + (line & 15)]
+                    g = gram[dpage * 32768 + (line & 15) * 2048 + a] if gfx_on else 0
+                    b = t ^ g if xor else t | g
+                    for d in range(8):
+                        if b >> (7 - d) & 1: out[n * 16 + half * 8 + d] = on
+    if raster:
+        vtot = (r[4] + 1) * lr + (r[5] & 0x1F)
+        lines, bp = (480, 33) if vtot > 500 else (400, 35)   # VGA's two frames and their back porches (timing_v4)
+        top = vtot - r[7] * lr - 2 - bp
+        if lines == H and -8 <= top < 0: top = 0             # the 6845 places VSYNC by whole rows: the monitor takes it up
+        frame = [[(48, 48, 48)] * W for _ in range(lines)]
+        for y in range(H):
+            if 0 <= top + y < lines: frame[top + y] = img[y]
+        return W, lines, frame
+    return W, H, img
+
+
+def text_view_v4(st, out=print):
+    """the V4 card's screen as text: 2 x R1 characters a row; an inverse character ($80-$FF) as its plain one, a
+    code that is no ASCII character as a dot"""
+    r = st.regs; start = (r[12] & 0x3F) << 8 | r[13]; cols = r[1] * 2
+    out("+" + "-" * cols + "+")
+    for row in range(r[6]):
+        s = ""
+        for col in range(cols):
+            c = st.ram[((start + row * r[1]) * 2 + col) & 0x7FF] & 0x7F
+            s += chr(c) if 0x20 <= c < 0x7F else "."
+        out("|" + s + "|")
+    out("+" + "-" * cols + "+")
+
+
+V4_TESTCARD_CURSOR = (12, 41)                                # row, column: an odd column, so CURH = 1
+
+
+def testcard_ram_v4():
+    """the V4 card's test card: 80 x 25, every code of the character generator, upper and lower case"""
+    ram = bytearray(b" " * 2048)
+    def put(row, text, col=0):
+        b = text.encode("ascii") if isinstance(text, str) else text
+        ram[row * 80 + col:row * 80 + col + len(b)] = b
+    put(0, " YACC1 video card V4 - test card - 80 x 25 characters of 8 x 16 dots"); put(1, "0123456789" * 8)
+    for k in range(4):
+        put(2 + k, bytes(range(k * 64, k * 64 + 64)))
+        put(2 + k, (" $%02X-$%02X inverse" if k > 1 else " codes $%02X-$%02X") % (k * 64, k * 64 + 63), 64)
+    text = "The quick brown fox jumps over the lazy dog. PACK MY BOX WITH FIVE DOZEN JUGS. 0123456789 " * 2
+    for row in range(6, 24):
+        put(row, "%02d*" % row + text[row - 6:row - 6 + 76] + "*")
+    put(24, "Row 24, the last. Cursor: row %d, column %d, the right-hand one of its count." % V4_TESTCARD_CURSOR)
+    return bytes(ram)
+
+
+def v4_registers(control, control2):
+    c, d = control, control2
+    return ("control 1 (OUT PC) = $%02X: plane %d, CPU page %d, display page %d, graphics %s, %s; control 2 (OUT PF) = "
+            "$%02X: text %s, cursor on the %s character, HSYNC %s, VSYNC %s, guns off: %s" % (
+                c, c & 15, c >> 4 & 1, c >> 5 & 1, "on (slot mode)" if c & 0x40 else "off (direct mode)",
+                "XOR" if c & 0x80 else "OR", d, "off" if d & 1 else "on", "right-hand" if d & 2 else "left-hand",
+                "positive" if d & 4 else "negative", "positive" if d & 8 else "negative",
+                " ".join(n for n, b in (("red", 5), ("green", 6), ("blue", 7)) if d >> b & 1) or "none"))
+
+
+def show_v4(st, a, label, control=0, control2=0, gram=None):
+    print("== %s" % label)
+    if not any(st.written[:16]):
+        print("(the program never wrote the CRTC: drawn with the card's table)")
+        st.regs[:16] = card_table()
+    timing(st.regs, a.dotclock)
+    print(v4_registers(control, control2))
+    text_view_v4(st)
+    if a.png:
+        cg = open(a.chargen, "rb").read() if a.chargen else None
+        W, H, img = picture_v4(st, cg, a.raster, not a.nocursor, control, control2, gram)
+        write_png(a.png, W, H, img, a.scale, a.scale)
+        print("picture: %s (%d x %d dots%s)" % (a.png, W, H, ", the monitor's frame" if a.raster else ""))
+
+
+def state_card(path):
+    """the card a state file names ("card v4"), or None: the older files name none"""
+    for line in open(path):
+        if line.startswith("card "): return line.split()[1]
+    return None
+
+
+def main_v4(a, ap):
+    """the video card V4's commands: timing, chargen, testcard, render"""
+    global V4_RASTER
+    V4_RASTER = a.v4raster
+    a.dotclock = a.dotclock or CARD_CLOCK["v4"]
+    table = parse_regs(a.regs) if a.regs else card_table()
+    gram = None
+    if a.overlay:                                           # a page (32K) or both (64K)
+        gram = open(a.overlay, "rb").read(); gram = (gram + bytes(65536))[:65536]
+    if a.cmd == "timing":
+        timing(table, a.dotclock)
+    elif a.cmd == "chargen":
+        out = a.out or os.path.join(ROOT, "firmware/video/chargen-v40.bin")
+        img = chargen_v40_image()
+        open(out, "wb").write(img)
+        print("wrote %s (%d bytes, an AT28C64B: 256 glyphs of 16 lines at $0000, their cursor forms at $1000)" % (out, len(img)))
+    elif a.cmd == "testcard":
+        row, col = V4_TESTCARD_CURSOR
+        cur = row * table[1] + col // 2
+        st = State(table[:14] + [cur >> 8, cur & 0xFF], testcard_ram_v4())
+        c2 = a.control2 if a.control2 is not None else (col & 1) << 1
+        show_v4(st, a, "the test card, card v4", a.control or (0x40 if gram else 0), c2, gram)
+    elif a.cmd == "render":
+        st = State.load(a.arg); x = st.extra
+        c1 = a.control if a.control is not None else int(x.get("control", "0"), 16)
+        c2 = a.control2 if a.control2 is not None else int(x.get("control2", "0"), 16)
+        if gram is None and "gram" in x and x.get("textonly") != "1": gram = bytes.fromhex(x["gram"])
+        show_v4(st, a, a.arg, c1, c2, gram)
+    else:
+        ap.error("--card v4: timing, chargen, testcard and render")
+
+
 def show(st, a, label, overlay=None):
     cg = open(a.chargen, "rb").read() if a.chargen else None
     if overlay is None and a.overlay:
@@ -621,7 +828,7 @@ def main():
     ap.add_argument("--card", choices=["v1.0", "v1.3", "v2.0", "v4"], default="v1.0", help="v1.0 = the card in the machine (default); "
                     "v1.3 = the design with the DOTS jumper (--dots 6: 80 x 24, --dots 8: 64 x 24, 12 MHz, two fonts); "
                     "v2.0 = v1.3 + the graphics layer (8-dot mode only; --dots 8 the default); "
-                    "v4 = the VGA card, 16 dots a count (timing only)")
+                    "v4 = the VGA card, 16 dots a count, 80 x 25 of 8 x 16 (timing, chargen, testcard, render)")
     ap.add_argument("--v4raster", type=int, choices=[60, 70], default=60, help="v4: the card's table for 640 x 480 at 60 Hz "
                     "(the default: the driver's) or for 640 x 400 at 70 Hz")
     ap.add_argument("--raster", action="store_true"); ap.add_argument("--nocursor", action="store_true"); ap.add_argument("--scale", type=int, default=2)
@@ -635,7 +842,10 @@ def main():
                     "(the proposed TEXT-ON / GFX-ON control bits)")
     ap.add_argument("--tint", action="store_true", help="draw overlay dots green where the text has none (the card is monochrome)")
     ap.add_argument("--control", type=lambda v: int(v, 0), help="v2.0: the control register (OUT PC) outright: bits 0-2 "
-                    "PLANE, 3 CPAGE, 4 DPAGE, 5 TEXT-OFF, 6 GFX-ON, 7 XOR (overrides --layers, --gmode, --dpage)")
+                    "PLANE, 3 CPAGE, 4 DPAGE, 5 TEXT-OFF, 6 GFX-ON, 7 XOR (overrides --layers, --gmode, --dpage). "
+                    "v4: control 1 - bits 3..0 PLANE, 4 CPAGE, 5 DPAGE, 6 GFX-ON, 7 XOR")
+    ap.add_argument("--control2", type=lambda v: int(v, 0), help="v4: control 2 (OUT PF) - bit 0 TEXT-OFF, 1 CURH, "
+                    "2 / 3 HSYNC / VSYNC positive, 5 / 6 / 7 red / green / blue off")
     ap.add_argument("--dpage", type=int, choices=[0, 1], default=0, help="v2.0: the page displayed (DPAGE)")
     a = ap.parse_args()
     if a.cmd == "render" and a.arg and read_state_file(a.arg).get("card") == "v3":   # 2026-11-11: the V3 card
@@ -653,11 +863,10 @@ def main():
                 if extra.get("textonly") == "1": a.control &= ~0x40     # no graphics chips: no layer
     global DOTS, CARD, V4_RASTER
     CARD = a.card
+    if CARD == "v1.0" and a.cmd == "render" and a.arg and state_card(a.arg) == "v4":
+        CARD = "v4"                                         # an emulator's state file of Y1VID_CARD=v4 names its card
     if CARD == "v4":
-        if a.cmd != "timing": ap.error("--card v4: timing only (the card's font is not decided: no picture yet)")
-        V4_RASTER = a.v4raster
-        timing(parse_regs(a.regs) if a.regs else card_table(), a.dotclock or CARD_CLOCK[CARD])
-        return
+        return main_v4(a, ap)
     DOTS = a.dots or (8 if CARD == "v2.0" else 6)
     if DOTS not in ((5, 6) if CARD == "v1.0" else (6, 8)):
         ap.error("--dots %d does not exist on card %s" % (DOTS, CARD))
