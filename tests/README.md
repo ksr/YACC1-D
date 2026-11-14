@@ -34,6 +34,9 @@
   images, `model_test.c` (the ports, both control registers, the 64K behind the window, VSYNC / DE at 16 dots a
   count), `v40card.asm` through the V4 monitor on both emulators in three builds (as designed, text-only, a 3.5 MHz
   CPU), and `v40scr.asm`, the ROM's screen driver: 80 x 25, lower case, six scrolls, the cursor's address and CURH.
+  Its last part draws that screen: the emulator's state file through `tools/vidsim.py render` with the card's
+  character generator (`firmware/video/chargen-v40.bin`), a character checked against its glyph and the cursor
+  against CURH.
   `v30_netsim.py` (2026-11-11, in `make check`): the video card V3's netlist
   (`hardware/cards/video/kicad/v3.0/v30_netlist.py`) run as a circuit, every part a model with its data-sheet
   delays at both ends of their ranges, against a model of the HD63484's memory cycles and against the microcode's

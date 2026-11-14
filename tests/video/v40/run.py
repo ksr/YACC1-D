@@ -21,6 +21,10 @@ software/videomodel.h with Y1VID_CARD=v4, the V4 build of firmware/monitor/monit
    24), the 6845's table the card's, its cursor (24 * 80 + 3) / 2 with CURH set; int and uc must show the same screen.
 5. The table the ROM loaded is tools/vidsim.py's table for the card (V4_TABLES[60]), and its timing check passes that
    table and the 70 Hz one with no warning: VGA's 31.469 kHz, 59.94 and 70.09 Hz.
+6. The picture: the state file the emulator writes after v40scr (Y1VIDSTATE), drawn by tools/vidsim.py with the
+   card's character generator (firmware/video/chargen-v40.bin). `vidsim.py render` takes the card from the file and
+   prints the screen the emulator's -V printed; in the picture a character is its glyph from the image, and the
+   cursor is the last two lines of the character CURH names, the right-hand one of count $03C1.
 """
 import os, re, sys, shutil, subprocess, tempfile
 
@@ -150,6 +154,29 @@ def main():
     text = open(st).read() if os.path.exists(st) else ""
     check("the state file", "card v4" in text and bool(re.search(r"^control2 00$", text, re.M)) and
           bool(re.search(r"^gram [0-9A-F]{131072}$", text, re.M)), text[:200])
+
+    # 6. the picture of the ROM's screen
+    st = os.path.join(d, "scr.vid"); png = os.path.join(d, "scr.png")
+    run(EMUS[0][1], img, {"Y1VIDSTATE": st})
+    r = subprocess.run([sys.executable, os.path.join(ROOT, "tools/vidsim.py"), "render", st, "--png", png],
+                       capture_output=True, text=True)
+    rows = [l[1:-1] for l in r.stdout.splitlines() if l.startswith("|") and l.endswith("|")]
+    check("vidsim render: the card from the file", r.returncode == 0 and "== " + st in r.stdout and
+          "control 2 (OUT PF) = $02" in r.stdout and "cursor on the right-hand character" in r.stdout and
+          "640 x 400 dots" in r.stdout and os.path.exists(png), r.stdout[-300:] + r.stderr[-300:])
+    check("vidsim render: the emulator's screen", rows == screens["int"] and len(rows) == 25,
+          "\n" + "\n".join(x.rstrip() for x in rows[:2] + rows[-2:]))
+    s = vidsim.State.load(st); x = s.extra
+    cg = open(os.path.join(ROOT, "firmware/video/chargen-v40.bin"), "rb").read()
+    W, H, pic = vidsim.picture_v4(s, cg, control=int(x["control"], 16), control2=int(x["control2"], 16),
+                                  gram=bytes.fromhex(x["gram"]))
+    def cell(row, col):
+        return bytes(sum((pic[row * 16 + l][col * 8 + k] != (10, 10, 10)) << (7 - k) for k in range(8)) for l in range(16))
+    def glyph(ch): return cg[ord(ch) * 16:ord(ch) * 16 + 16]
+    check("the picture: 640 x 400, glyphs", (W, H) == (640, 400) and cell(0, 0) == glyph("l") and
+          cell(0, 9) == glyph("b") and cell(23, 38) == glyph("~") and cell(24, 0) == glyph("e"))
+    check("the picture: the cursor, row 24 column 3", cell(24, 3) == bytes(14) + b"\xff\xff" and cell(24, 2) == glyph("d") and
+          sum(map(sum, (cell(24, c) for c in range(3, 80)))) == 2 * 255)
 
     shutil.rmtree(d)
     print("v40: %d failed" % fails)

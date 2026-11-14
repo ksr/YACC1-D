@@ -852,9 +852,6 @@ def main():
         return v3_render(read_state_file(a.arg), a)
     if a.cmd == "render" and a.arg:                         # 2026-11-10: a V2.0 state (Y1VID_CARD=v2.0) names its card
         extra = State.load(a.arg).extra
-        if extra.get("card") == "v4":                       # 2026-11-14: a V4 state (Y1VID_CARD=v4)
-            ap.error("%s is a V4 card's state: no picture of that card here yet (its font is open); the emulator's "
-                     "-V prints its screen" % a.arg)
         if extra.get("card") == "v2.0":
             a.card = "v2.0"
             a.dots = a.dots or int(extra.get("dots", "8"))
