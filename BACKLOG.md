@@ -503,7 +503,15 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   12 connections open in every order); the trees follow the layers' grain now - the top across the board, the
   bottom up and down - with nine vias. The route: 519 connections, 455 vias (377 with the router's own clocks),
   27.6 m; one of four component orders complete; 2 h 40 min of running time.
-  **Next:** `pcb-check` with the order's files and the VGA socket laid on a 1:1 print; then the
+  **The pre-order check (2026-11-14): no failures, one warning.** `pcb-check` on the committed board and its
+  order files (`gerbers/`, `video-v4.0-gerbers.zip`, written by `gen_v40.py fab` and by every build that passes;
+  `pcb-check.ini` has the settings; `tools/bus_pins.py` gives the check the bus's pinout from the Bus Template
+  V3.2). The warning: two inputs with nothing on them, the RAM's pin 1 (not connected in the 128K part) and the
+  oscillator's pin 1 (an enable with its own pull-up where there is one: **to confirm on the data sheet of the
+  oscillator bought**). Its LABELS warning was settled on the silk: IC10, IC28 and IC41 now read as the parts list
+  has them (`SILK=1 build.sh`: silk only, nothing moved). Nothing is ordered.
+  **Next, before any order:** the check's pictures and the fab's gerber viewer by eye; the VGA socket laid on a
+  1:1 print; the oscillator's pin 1; then the
   order. Beside it: the emulators' model and the ROM driver (branch `video-v2`). `tools/vidsim.py timing` is still
   to learn 16 dots a count, to check the 6845's tables. A routing run needs the Mac awake: lid open, charger in
   (the run of 2026-11-13 took 8 hours by the clock for 2 h 12 min of work, the Mac asleep three times).
