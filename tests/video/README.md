@@ -17,11 +17,16 @@ the socket empty (`v1.0-no6845`) `crtcreg` fails as the fix document predicts; w
 write to $9010 lands at $D010, the 2026-09-18 fault; the wrong fix (`v1.0-a0fix`) is a fight at $D801. About 50 s.
 
 
-`v40_netsim.py` (2026-11-12, in `make check`, about 80 s): the video card V4's netlist (`hardware/cards/video/kicad/v4.0/v40_netlist.py`) run as a circuit, gate for gate, with the parts' data-sheet delays
+`v40_netsim.py` (2026-11-12, in `make check`, about two minutes): the video card V4's netlist
+(`hardware/cards/video/kicad/v4.0/v40_netlist.py`) run as a circuit, gate for gate, with the parts' data-sheet delays
 at eight corners; the 6845 a model that steps a script of counts, the bus a model of the microcode's strobes started at
-every phase of the dot counter. It uses `v30_netsim.py` (the V3 design's check) as its simulator. `--limits` searches the
-shortest microcode step the graphics window works at; `--faults` breaks the netlist in memory, one wiring fault at a
-time, to see that the runs notice. `docs/cards/video-v4.md` section 5 has the results.
+every phase of the dot counter. It uses `v30_netsim.py` (the V3 design's check) as its simulator. Since 2026-11-13
+(the card's design review) it also runs the window at 160 phases of a count, reads whose address was counted in the
+step before (a stack or a vector table in the window), takes a delay for each clock's series resistor, and prints the
+least hold margin of each kind beside the set-up margins. `--limits` searches the shortest microcode step the graphics
+window works at, in both modes and for the three kinds of address (about ten minutes); `--faults` breaks the netlist
+in memory, one wiring fault at a time, to see that the runs notice. `docs/cards/video-v4.md` sections 5 and 7 have
+the results.
 
 `video_ram_test.py [port] [--quick]` drives the Bus Test Card (`tools/busdrv.py`, FTDI 19200) and exercises the video
 card's 1K display RAM at $D000–$D3FF: address-derived and inverted patterns over every cell, one-cell neighbour isolation

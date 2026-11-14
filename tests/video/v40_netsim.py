@@ -42,6 +42,13 @@ What is checked:
   everywhere    every flip-flop's, register's and shift register's set-up and hold; the RAM's write pulse, data
                 set-up and address; no pulse shorter than 5 ns on any clock, clear, preset or -WE; in the four
                 straight corners no two outputs on a net for more than 3 ns at a handover; the 6845's clock.
+                The table at the end has the least set-up and the least hold margin of each kind.
+
+Since the design review of 2026-11-13 (hardware/cards/video/reviews/v4.0.md): the four clocks' series resistors
+R20-R23 are in it, each as one delay (the resistor with its net's capacitance and wire: SERIES); the hold margins
+are in the table (V4-5); the window is also run at 160 phases of a count, and with the later address of a register
+that was counted, at 2.8 MHz (V4-4, V4-6). Not in it: a delay for each wire by its length - the clocks' loads all
+see their net move at once.
 
 Not checked here: the 6845's own minimum delays (assumed), signal quality, and a bench.
 """
@@ -72,7 +79,10 @@ SELTPD = {("ACT", "157"): (3.8, 13.2, 3.8, 13.2)}
 E.PRECLR.update({("HCT", "*"): (5.0, 40.0, 5.0, 40.0)})
 E.ENABLE.update({("ACT", "244"): (1.0, 10.5), ("HCT", "244"): (4.0, 38.0), ("LS", "244"): (5.0, 30.0)})
 E.DISABLE.update({("ACT", "244"): (1.5, 10.5), ("HCT", "244"): (4.0, 38.0), ("LS", "244"): (5.0, 25.0)})
-E.SETUP.update({("HCT", "273"): (20.0, 5.0), ("HCT", "74"): (20.0, 5.0)})
+E.SETUP.update({("HCT", "273"): (20.0, 5.0), ("HCT", "74"): (15.0, 3.0)})
+# (the 74HCT74's hold: 3 ns on NXP's sheet, 0 on TI's. IC40's second flip-flop takes the first one's Q on their common
+# clock, HSYNC: its hold margin is the first's least clock-to-output, which no sheet gives - 5 ns is taken above - less
+# those 3 ns. Two flip-flops of one package as a shift register: the ordinary case.)
 # The text RAM's display port and the character generator: (min, max) ns; where a sheet gives no minimum, a small one.
 # Renesas 7134SA/LA (2021): tAA 55 (the commercial grade) or 70 (the slowest the sheet has; there is no 90), tOH 0.
 # The 70 ns figure is used: it covers both. Atmel AT28C64B-15 (0270H): tACC 150, tOH 0.
@@ -91,6 +101,11 @@ BUS_FAST = {"strobe": 8.0, "addr": 35.0, "take": 25.0}
 STEP_SLOT = 2000.0 / 3.5                                            # a microcode step at 3.5 MHz, slot mode's clock
 STEP_DIRECT = 2000.0 / 6.0                                          # at 6 MHz, the machine's own limit
 STEP_IO = 500.0                                                     # OUT and IN: nothing here is near the dot clock
+SERIES = (0.3, 2.0)                                                 # a clock's 33 ohm series resistor with its net's
+                                                                    # 40 to 60 pF and the wire behind it: one delay, ns
+BUS_COUNTED = (218.0, 256.0)                                        # the address of a one-step read whose register was
+                                                                    # counted in the step before (RET, POPR, BRVR's vector):
+                                                                    # within the window, and into it (v20_timing.py, 85 C)
 PS2 = ["IC%d" % n for n in range(41, 47)]                          # not simulated (V2.0's section, proved there)
 WATCH = ("TDOT", "GDOT", "VR", "VG", "VB", "HSB", "VSB")
 
@@ -194,6 +209,16 @@ class Crtc(E.Part):
         self.put(c, self.s.d)
 
 
+class SeriesR(E.Part):
+    """a clock's series resistor (R20-R23): what is on pin 1 is on pin 2 a little later"""
+    def init(self): self.x = "?"
+    def eval(self):
+        x = self.v(1)
+        if x == self.x: return
+        self.x = x
+        self.s.drive(self.ref, 2, x, SERIES[0 if self.s.corner == "min" else 1])
+
+
 class Tap:
     """records when a net changes (for the margins the parts' own checks do not give)"""
     def __init__(self, sim, net): self.s = sim; self.net = net; self.t = []; sim.byname.setdefault(net, []).append(self)
@@ -206,9 +231,10 @@ def family(value):
     if "68B45" in value: return "-", "crtc"
     if value.startswith("IDT7134"): return "-", "dpram"
     if "28C64" in value: return "-", "cgen"
+    if value == "33": return "-", "rser"
     return _family(value)
 E.family = family
-E.MODELS.update({"157": Mux157, "244": Buf244, "85": Cmp85, "dpram": TextRam, "cgen": CharGen, "crtc": Crtc})
+E.MODELS.update({"157": Mux157, "244": Buf244, "85": Cmp85, "dpram": TextRam, "cgen": CharGen, "crtc": Crtc, "rser": SeriesR})
 E.EDGE_PINS["crtc"] = (21,)
 
 
@@ -220,10 +246,30 @@ class Sim(E.Sim):
     it takes then is never loaded: RA moves only in such a count, as a scan line ends); and everything while a
     control register is being written (quiet: the mode is switched in the vertical blanking)"""
     quiet = False
+    def __init__(self, *a, **k):
+        E.Sim.__init__(self, *a, **k)
+        self.h2 = []                                    # [net, the clock's time, the hold wanted, what, where]
+        self.last = _Last(self.last, self.moved)        # (the engine writes a net's time here whenever it moves)
     def setup(self, ref, pin, tsu, th, what):
         if (ref, str(pin)) == ("IC34", "2") or ref == "IC30" or self.quiet: return
         if ref == "IC32" and (self.val.get("GFXON") != 1 or self.val.get("SDE") != 1): return
         E.Sim.setup(self, ref, pin, tsu, th, what)
+        net = self.netof.get((ref, str(pin)))
+        if net not in (None, "VCC", "GND") and not (net in self.pull and not self.drv[net]):
+            self.h2.append((net, self.t, th, what + " hold", "%s.%s (%s) at %.1f ns" % (ref, pin, net, self.t)))
+    def moved(self, net, t):
+        """the engine fails a run on a hold violation; this keeps the least hold margin of each kind for the table"""
+        keep = []
+        for h in self.h2:
+            if h[0] == net and t > h[1]: self.note(h[3], t - h[1] - h[2], h[4])
+            elif t - h[1] < 60.0: keep.append(h)
+        self.h2 = keep
+
+
+class _Last(dict):
+    def __init__(self, d, cb): dict.__init__(self, d); self.cb = cb
+    def __setitem__(self, k, v):
+        self.cb(k, v); dict.__setitem__(self, k, v)
 
 
 # ---- the bench --------------------------------------------------------------------------------------------------------
@@ -260,10 +306,10 @@ def clock(s, dots):
     just before edge k + 1); in that period the dot counter holds (count0 + k) mod 16"""
     for _ in range(dots):
         t = s.t0 + s.nck * DOT
-        runp(s, t + DOT / 2 - 0.01); s.force("CK", 0)
+        runp(s, t + DOT / 2 - 0.01); s.force("OSCO", 0)             # the oscillator's pin; CK is behind R20
         runp(s, t + DOT - 0.01)
         s.samples[s.nck] = {w: s.val.get(w) for w in WATCH}
-        s.force("CK", 1); s.nck += 1
+        s.force("OSCO", 1); s.nck += 1
 
 
 def clock_to(s, t):
@@ -434,10 +480,12 @@ def read_margins(s, t_take, chk, what):
     if after - te < E.SETUP[("ACT", "574")][1]: chk.append("%s: the RAM's data moved %.1f ns after the read latch's clock" % (what, after - te))
 
 
-def window(d, count0, corner, step=STEP_SLOT, phases=32, direct=False, quick=False):
+def window(d, count0, corner, step=STEP_SLOT, phases=32, direct=False, addr=None):
     """the window in slot mode (GFX-ON = 1, the picture from page 0 while the CPU works on page 1) or in direct mode:
-    a write and two reads at every phase of the count"""
+    a write and two reads at every phase of the count. addr: the address's delay from the step's edge, for a register
+    that was counted (BUS_COUNTED) where the bus's own figure is a register selected"""
     s = build(d, count0, corner); chk = []
+    if addr: s.bus = dict(s.bus, addr=addr)
     ram = s.parts["IC28"]
     clock(s, 40)
     # the CPU's page is the one not shown (slot mode), and two planes in turn: between them every two of the five
@@ -552,9 +600,9 @@ def syncs(d, corner):
     return finish(s, chk)
 
 
-def limit(direct, corner="max", lo=120.0, hi=900.0):
+def limit(direct, corner="max", lo=120.0, hi=900.0, addr=None):
     """the shortest microcode step at which the window's write and reads work at every phase: a binary search"""
-    ok = lambda step: not window(D6845_MAX, 1, corner, step=step, phases=48, direct=direct)
+    ok = lambda step: not window(D6845_MAX, 1, corner, step=step, phases=128, direct=direct, addr=addr)
     while hi - lo > 4.0:
         mid = (lo + hi) / 2
         if ok(mid): hi = mid
@@ -642,14 +690,19 @@ def main():
         runs.append(("the text-only build, %s" % cn, text_only, (d, 1, corner)))
     runs += [("the syncs, parts slow", syncs, (D6845_MAX, "max")), ("the syncs, parts fast", syncs, (D6845_MIN, "min")),
              ("the window in slot mode at 1 MHz, parts slow", lambda: window(D6845_MAX, 1, "max", step=2000.0, phases=16), ()),
-             ("the window in direct mode at 1 MHz, parts slow", lambda: window(D6845_MAX, 1, "max", step=2000.0, phases=16, direct=True), ())]
+             ("the window in direct mode at 1 MHz, parts slow", lambda: window(D6845_MAX, 1, "max", step=2000.0, phases=16, direct=True), ()),
+             # 160 phases of a count, 4 ns apart: the worst one for a read lies between the 32 of the runs above
+             ("the window in slot mode at 3.5 MHz, 160 phases, parts slow", lambda: window(D6845_MAX, 1, "max", phases=160), ()),
+             # a stack or a BRVR vector table in the window: the address comes later (the design review's V4-4)
+             ("slot mode at 2.8 MHz, the address counted within the window", lambda: window(D6845_MAX, 1, "max", step=2000.0 / 2.8, phases=64, addr=BUS_COUNTED[0]), ()),
+             ("slot mode at 2.8 MHz, the address counted into the window", lambda: window(D6845_MAX, 1, "max", step=2000.0 / 2.8, phases=64, addr=BUS_COUNTED[1]), ())]
     for name, f, args in runs:
         out = f(*args)
         print("%-66s %s" % (name, "PASS" if not out else "FAIL"))
         for x in out[:12]: print("    " + x)
         fails += bool(out)
     print("the closest margins over all runs (ns to spare):")
-    for k in sorted(SUMMARY, key=lambda k: SUMMARY[k][0])[:14]: print("    %-28s %7.1f   %s" % (k, SUMMARY[k][0], SUMMARY[k][1]))
+    for k in sorted(SUMMARY, key=lambda k: SUMMARY[k][0])[:18]: print("    %-28s %7.1f   %s" % (k, SUMMARY[k][0], SUMMARY[k][1]))
     if "--faults" in sys.argv:
         keep = dict(SUMMARY)
         n, missed = faults()
@@ -657,9 +710,11 @@ def main():
         print("wiring faults put into the netlist: %d of %d noticed%s" % (n - len(missed), n, "".join("\n    NOT NOTICED: " + m for m in missed)))
         fails += bool(missed)
     if "--limits" in sys.argv:
-        for direct, name in ((False, "slot mode"), (True, "direct mode")):
-            st = limit(direct)
-            print("the window in %s, parts slow: the shortest step %.0f ns, a CPU clock of %.1f MHz" % (name, st, 2000.0 / st))
+        for direct, name, addr in ((False, "slot mode, a register selected", None), (True, "direct mode, a register selected", None),
+                                   (False, "slot mode, the address counted within the window", BUS_COUNTED[0]),
+                                   (False, "slot mode, the address counted into the window", BUS_COUNTED[1])):
+            st = limit(direct, addr=addr)
+            print("the window in %s, parts slow: the shortest step %.0f ns, a CPU clock of %.2f MHz" % (name, st, 2000.0 / st))
     print("v40_netsim: %d failed" % fails)
     sys.exit(1 if fails else 0)
 

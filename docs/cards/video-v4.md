@@ -1,10 +1,13 @@
 # Video card V4 — design note (6845, VGA, 16 dots a count)
 
 **A design note, begun 2026-11-12. Nothing is ordered or built; "V4" is a working name.** The circuit is
-written as a netlist (2026-11-12: `hardware/cards/video/kicad/v4.0/v40_netlist.py`, 46 ICs) and simulated with the parts'
-data-sheet delays, with no fault left (sections 5 and 11). Its schematic is drawn and its board, 250 mm long, is
-placed and routed, all checks passing (2026-11-12: section 11); the pre-order check and a design review are to come. The card in the machine is the [V1.0](video.md). The [V2.0](video-v2.md) is designed, ready to order and on hold while this card is
-looked at. The [V3](video-v3.md), round the HD63484, is not built.
+written as a netlist (2026-11-12: `hardware/cards/video/kicad/v4.0/v40_netlist.py`, 46 ICs) and simulated with the
+parts' data-sheet delays, with no fault left (sections 5 and 11). Its schematic is drawn and its board, 250 mm long,
+is placed and routed, all checks passing (section 11). A design review (2026-11-13:
+`hardware/cards/video/reviews/v4.0.md`) found nothing that stops the card working and four things to settle before
+an order; they are settled and the board is routed again (2026-11-13). The pre-order check is to come. The card in
+the machine is the [V1.0](video.md). The [V2.0](video-v2.md) is designed, ready to order and on hold while this card
+is looked at. The [V3](video-v3.md), round the HD63484, is not built.
 
 The aim is the V2.0 card's picture on monitors sold today: a **VGA** monitor at 31.47 kHz, **80 x 25 characters of
 8 x 16 dots** and a **640 x 400 graphics layer**, still made by a **6845**, with V2.0's ports, PS/2 section and
@@ -46,7 +49,7 @@ character generator looks up a character in that time and the shift registers ru
 | Text | 80 x 24 (6 dots) or 64 x 24 (8 dots), 8 lines a row | 80 x 25 of 8 x 16 | in the bitmap, or a character screen |
 | Graphics | 512 x 192, 8 planes of 2K | 640 x 400, 16 planes of 2K | 640 x 480 |
 | Who draws | the CPU, through a 2K window | the CPU, through a 2K window | the chip, by command |
-| The window against the CPU's clock | to 1.8 MHz with the layer shown; to the machine's own limit, about 6 MHz, with it hidden (direct mode) | to 3.5 MHz shown (the simulation: 3.8); to the machine's 6 MHz hidden (direct mode, as V2.0's; the card alone 8.1) | no window |
+| The window against the CPU's clock | to 1.8 MHz with the layer shown; to the machine's own limit, about 6 MHz, with it hidden (direct mode) | to 3.5 MHz shown (the simulation: 3.76); to the machine's 6 MHz hidden (direct mode, as V2.0's; the card alone 8.1) | no window |
 | The CPU's view | text RAM at $D000, the window at $D800, ports PA-PE | the same, and port PF | ports only |
 | Text RAM / graphics RAM | IDT7134 / 62256 (32K, two pages) | IDT7134 / 128K part (64K used, two pages) | two 128K RAMs |
 | Keyboard and mouse | PS/2 on an ATmega328P | the same section | the same section |
@@ -72,7 +75,7 @@ A count is 16 dots, 635.6 ns. A line is 800 dots, 50 counts: 31.469 kHz.
 | R9 | 15 | 16 scan lines a row |
 | R10, R11 | $6E, 15 | the cursor on scan lines 14-15, blinking every 32 frames ($60, 15: a block) |
 | R12, R13 | 0 | the start address, in counts |
-| R14, R15 | | the cursor's count: (row x 80 + column) / 2 |
+| R14, R15 | | the cursor's count: the start address + row x 40 + column / 2 (section 6) |
 
 Both syncs negative. 80 lines of the monitor's 480 stay black, 42 above the text and 38 below.
 
@@ -104,7 +107,7 @@ card (section 13).
                         |          address: page, RA, MA, half / page, plane, ADDR      |
                         |          GFX-ON = 0, direct mode: the CPU's alone             |
                   byte latch --> 74F299 -------------------------------------------------+
-                                                 HSYNC, VSYNC --> two lines --> polarity --> DE-15
+                                                 HSYNC, VSYNC --> 1.8 lines --> polarity --> DE-15
  PS/2 keyboard and mouse: the V2.0 card's section
 ```
 
@@ -119,13 +122,24 @@ dot 1 begins.
 
 **The stage.** Two 74ACT574 take the 6845's outputs **as dot 0 begins**: MA9..0, DE, CURSOR, HSYNC and VSYNC, all for
 the count that is just ending. They have had 596 ns to settle, against 160 ns (MA) and 250 ns (the others); and the
-6845 does not move until a dot later, so nothing is taken while it changes. From here on nothing depends on the
-6845's own delays: the rest of the card sees addresses and flags that change once a count, on a clock edge, and stay
+6845 does not step until a dot later, so nothing is taken while it changes: with the parts at their worst the 6845's
+clock falls 19 ns after the stage's (the stage's clock up to 24 ns after the dot clock's edge, the 6845's at least
+43 ns), which is the hold the stage has from a 6845 that answers its clock in no time. From here on nothing depends
+on the 6845's own delays: the rest of the card sees addresses and flags that change once a count, on a clock edge, and stay
 16 dots. RA needs no register: it changes once a line, in the blanking.
 
 **No clock is a decode of the counter** (the V3 design's rule, from its timing check: a gate that decodes two counter
 bits can give a pulse a nanosecond wide where one rises as another falls). The clocks here are counter bits
 themselves, or a flip-flop's output; decodes go only to D inputs and to loads.
+
+**The clocks' wiring (2026-11-13, from the design review).** Four nets carry edges of 2 to 3 ns to clock inputs
+across the card: the dot clock CK (seven 74F clock inputs), the counter's D2 and D3, and the stage's clock STG. Each
+has a 33 ohm resistor in series at its source: R20 at the oscillator's pin, R21 and R22 at the counter's two outputs,
+R23 at the inverter that makes STG. A line with several inputs along it and nothing at its far end rings; the
+resistor, with the driver's own output resistance, is about the track's impedance and damps that, so that an edge
+arrives at each clock input rising or falling once. The price is an edge up to 2 ns later, which is in the
+simulation. The chips that make these clocks stand next to the registers they clock (section 11), and the
+oscillator is to be one rated for 50 pF or ten TTL loads.
 
 The count after the stage has taken MA, dot by dot:
 
@@ -161,31 +175,53 @@ for gate, with every part's delays from its data sheet at both ends of their ran
 card's parts all slow and all fast, and the two mixed corners that set rising outputs against falling ones (what
 shows a runt pulse on a clock). The 6845 is a model that steps a script of counts and checks the clock it is given;
 the bus is a model of the microcode's strobes, started at every phase of the count. The simulator and the models of
-the 74F and 74ACT parts are the V3 check's (`tests/video/v30_netsim.py`).
+the 74F and 74ACT parts are the V3 check's (`tests/video/v30_netsim.py`). The four series resistors of the clocks
+are in it as a delay of 0.3 to 2 ns each: the resistor with its net's load and wire, taken together.
 
-48 runs, none failing: every count's two characters and two graphics bytes come out as sections 6 and 7 say, 27
+51 runs, none failing: every count's two characters and two graphics bytes come out as sections 6 and 7 say, 27
 dots after the 6845 stepped and a dot later on the guns; the cursor on the half CURH names; nothing where DE is low;
-OR and XOR, the pages, the colour bits; the window written and read in both modes while the picture goes on; the
-mode switched at every phase of the count with nothing written; the text-only build; the ports; the syncs. No pulse
-shorter than 5 ns on any clock, clear or -WE, and no two outputs on a net for more than 3 ns. The check itself was
-checked: 23 wiring faults put into the netlist in memory, one at a time (`--faults`), are each reported by a run.
+OR and XOR, the pages, the colour bits; the window written and read in both modes while the picture goes on (at 32
+phases of the count in every corner, and at 160 phases, 4 ns apart, with the parts slow); a stack's or a vector
+table's read in the window at 2.8 MHz (section 7); the mode switched at every phase of the count with nothing
+written; the text-only build; the ports; the syncs. No pulse shorter than 5 ns on any clock, clear or -WE, and no
+two outputs on a net for more than 3 ns. The check itself was checked: 23 wiring faults put into the netlist in
+memory, one at a time (`--faults`), are each reported by a run.
 
-| The closest margins, over all corners | To spare |
+| The closest margins, over all runs | To spare |
 |---|---|
-| The retimed dot: a shifter's output through two gates to the flip-flop (set-up) | 5.6 ns |
-| The read latch's hold (section 7) | 8.7 ns |
-| The shifters' load (the mode input's set-up) | 14.7 ns |
+| **Hold**: a register takes a signal that the same edge of the clock is about to change | |
+| The 6845's clock flip-flop (74F74) takes the counter's D3 | 2.0 ns |
+| The vertical sync's second flip-flop (74HCT74) takes the first's output | 2.0 ns |
+| The shifters (74F299) load a byte as the code register and the byte latch take the next | 2.5 ns |
+| The shifters' load itself, as it ends | 3.7 ns |
+| The stage, the code register, the byte latch (74ACT574) | 9.6 ns |
+| The read latch (section 7) | 10.7 ns |
+| **Set-up and widths** | |
+| The retimed dot: a shifter's output through two gates to the flip-flop | 5.6 ns |
+| The shifters' load (the mode input) | 14.7 ns |
 | The RAM's write pulse, 69.6 ns at its shortest | 24.6 ns over the 45 wanted |
 | The RAM's data before the pulse ends | 34.6 ns |
-| A byte read in slot mode at 3.5 MHz, on the bus before the microcode takes it | 50 ns |
-| The text RAM, as the 70 ns grade, to the code register | 63.9 ns |
-| The RAM to the read latch (set-up) | 66 ns |
+| A byte read in slot mode at 3.5 MHz, on the bus before the microcode takes it | 40 ns |
+| The RAM to the read latch | 52.1 ns |
+| The RAM's address before a write pulse ends | 57.6 ns |
+| The text RAM, as the 70 ns grade, to the code register | 61.9 ns |
 | A byte read in direct mode at 6 MHz, on the bus before it is taken | 88 ns |
-| The 6845's clock, low and high | over 160 ns each |
+| The 6845's clock, low and high | 161 ns over the 150 wanted |
 
-The smallest, 5.6 ns, is three parts' slowest delays (a 74F299, a 74ACT02, a 74ACT32) and a set-up time in one dot
-of 39.7 ns. Not in the simulation: the 6845's own minimum delays (its sheet gives none; the stage has a whole dot
-of hold), Hitachi's part, the bus's signal quality, and a bench.
+**The holds are the smallest margins on the card, and they are of one kind.** A flip-flop takes a signal that
+another flip-flop, on the same edge of the same clock, is just changing. That is how every counter and shift
+register works, and it is safe at any frequency by the parts' own figures: the sender's output cannot move sooner
+than its least delay (2.7 ns for the 74F163A, 1.5 ns for a 74ACT574 with the character generator's 0 ns behind it)
+and the taker wants its input held 1 to 2 ns. What such a path needs is that the clock does not reach the taker
+later than the sender, by more than the margin: a matter of the wiring (section 11), and the reason the clocks'
+chips stand together. With typical parts the shifters' margin is about 9 ns. The first table here gave set-up
+margins and one hold; the design review found the others, and the simulation lists them now.
+
+The smallest set-up, 5.6 ns, is three parts' slowest delays (a 74F299, a 74ACT02, a 74ACT32) and a set-up time in
+one dot of 39.7 ns. Not in the simulation: the 6845's own minimum delays (its sheet gives none; the stage has 19 ns
+of hold from a 6845 that answers in no time), Hitachi's part, each wire's own delay (the four clock nets have one
+delay each, for the resistor, the load and the wire together; the others none), the bus's signal quality, and a
+bench.
 
 ## 6. Text
 
@@ -210,7 +246,9 @@ name, blinking as R10 says. A count is two characters, so one control bit, **CUR
 character is CURSOR AND (its half = CURH), taken with its code. The flag is an address line of the character
 generator: the upper half of the EPROM holds each glyph's cursor form (turned over, or what the image holds), so the
 cursor is in the dots when they are loaded and needs no gate after the shift register. The driver writes R14 / R15
-with the character's number halved, and its lowest bit to CURH.
+with **the start address + row x 40 + column / 2**, and the column's lowest bit to CURH. The 6845 compares all 14
+bits of its address counter, which runs on past 1,024 where the text RAM's address wraps: the cursor's registers
+hold the counter's own value, not wrapped. With the start address 0 that is the character's number halved.
 
 **Scrolling** can be the 6845's: the start address (R12 / R13) moves the screen a row for 40 counts, and the RAM's
 address wraps at 1,024 counts, 2,048 characters, 48 more than a screen. The graphics layer is addressed by the same
@@ -249,13 +287,30 @@ with the text's dots. A CPU slot comes every 318 ns and is 159 ns long:
 - **A read**: a latch takes the RAM's byte as every CPU slot ends and drives the bus while the window is read. Its
   clock is a flip-flop's pulse in dots 8 and 0, so the whole slot is the RAM's access time. The latch's clock and the
   address's change then come from the same edge of the dot clock: the latch is a 74ACT574 for its 1 ns of hold, and
-  8.7 ns are left at the worst corner (the multiplexers' own delay and the RAM's 10 ns of output hold against the
+  10.7 ns are left at the worst corner (the multiplexers' own delay and the RAM's 10 ns of output hold against the
   flip-flop's delay).
 
 A read needs a step that holds one whole CPU slot after the address has come: a wait of up to 318 ns for the slot
 and the slot's 159. The simulation, with the bus's own delays as `tests/video/v20_timing.py` has them, finds the
-shortest step 522 ns: a CPU clock of 3.8 MHz (V2.0's slot mode: 1.8 MHz). **3.5 MHz** is the figure to use, and the
-one every corner is run at. A write needs less: one slot's beginning inside the strobe.
+shortest step 531 ns: a CPU clock of 3.76 MHz (V2.0's slot mode: 1.8 MHz). **3.5 MHz** is the figure to use, and the
+one every corner is run at; a byte read there is on the bus 40 ns before the microcode takes it, at the worst of 160
+phases of the count. A write needs less: one slot's beginning inside the strobe.
+
+That is for an address that stands on the bus from the step's beginning: a register selected in the step, 114 ns
+after its edge. **An address that was counted in the step before comes later**, 218 ns after the edge when the
+count stays within the window and 256 ns when it enters it (`tests/video/v20_timing.py`, at 85 C). Those are the
+reads through a stack pointer (RET, IRET, POPR) and of the second byte of a BRVR vector: a stack or a vector table
+that lies in the window. The step then has that much less for the slot:
+
+| The address, after the step's edge | Slot mode works to | Direct mode works to |
+|---|---|---|
+| 114 ns: a register selected in the step | 3.76 MHz (a step of 531 ns) | 8.07 MHz (248 ns): the machine's 6 MHz comes first |
+| 218 ns: counted, within the window | 3.15 MHz (635 ns) | 5.69 MHz (352 ns) |
+| 256 ns: counted, into the window | 2.97 MHz (675 ns) | 5.15 MHz (388 ns) |
+
+The simulation's shortest steps, the parts slow. At 2.8 MHz both counted cases are run in `make check` and pass,
+with 44 ns to spare in the later one; at 3.5 MHz they fail (the design review's V4-4: the first rules here allowed
+them). Rule 2 below is the consequence.
 
 **Direct mode (GFX-ON = 0, the reset state; decided 2026-11-12)** is V2.0's. The CPU owns the RAM and the window is a
 plain static RAM, with no slot to wait for. The machine's own limit is about 6 MHz, where a strobe is 333 ns: less
@@ -280,7 +335,8 @@ about 3.5 MHz. Above it the order is hide, draw, show.
 window"):
 
 1. No code in the window, at any clock.
-2. At 6 MHz, no stack and no BRVR vector table in the window.
+2. A stack or a BRVR vector table in the window: in slot mode only to about 2.8 MHz, in direct mode only to about
+   5 MHz (V2.0's rule names 6 MHz, where they fail on this card too). Simplest: neither in the window.
 3. Above about 3.5 MHz, the window only in direct mode.
 4. The instruction that writes control 1 does not access the window: the read path changes hands with the mode.
    (A write no longer needs the rule: the write flip-flop is clear as slot mode begins, and the simulation switches
@@ -288,11 +344,11 @@ window"):
 5. GFX-ON is switched in vertical blanking (IN PC bit 1): the bytes the pipeline took in direct mode are then never
    loaded, where they would show once as up to 16 dots.
 
-Rules 1 and 2 are the register cards': a register counted in the step it is read through settles late, whatever the
-video card does, so faster parts here do not lift them. In the simulation direct mode works at the machine's 6 MHz
-at every corner, with a byte read on the bus 88 ns before the microcode takes it (a register selected in the step,
-the bus's delays at 85 C), and down to a step of 248 ns, 8.1 MHz: the machine's own limit comes first. V2.0 has
-38 ns at 6 MHz; the difference is the faster gates in the path to the RAM's -OE.
+Rules 1 and 2 are the register cards': a register counted in the step before it is read through settles late,
+whatever the video card does, so faster parts here do not lift them. In the simulation direct mode works at the
+machine's 6 MHz at every corner, with a byte read on the bus 88 ns before the microcode takes it (a register selected
+in the step, the bus's delays at 85 C), and down to a step of 248 ns, 8.1 MHz: the machine's own limit comes first.
+V2.0 has 38 ns at 6 MHz; the difference is the faster gates in the path to the RAM's -OE.
 
 **The text-only build** is V2.0's: the graphics parts left off (eleven ICs and the network), with three 10k
 resistors that are fitted in both builds: one holds the graphics dot low, one the write flip-flop's output, and one
@@ -306,11 +362,16 @@ pulls the status bit TEXT-ONLY high. No resistor is fitted for this build only.
   that every dot reaches the guns one clock wide whatever the gates before it did.
 - **Three guns**: a gate for each with its off bit (control 2), then 470 ohm to the DE-15's pins 1, 2, 3: 0.7 V
   into the monitor's 75 ohm. White, or one of seven other colours for the whole picture.
-- **The syncs** come from the stage registers, so their edges are the dot clock's. VSYNC is cut to about two lines by two
-  flip-flops that count HSYNC, which makes the card indifferent to the 6845's own pulse (section 10). Two XOR gates
-  give each sync either polarity; pins 13 and 14; the returns pins 5-8 and 10.
+- **The syncs** come from the stage registers, so their edges are the dot clock's. VSYNC is cut short by two
+  flip-flops that count HSYNC, which makes the card indifferent to the 6845's own pulse (section 10): it lasts from
+  the staged VSYNC's rise, at a line's first count, to the second HSYNC after it, 92 counts or 1.84 lines (58.5 us;
+  VGA's is 2 lines). Two XOR gates give each sync either polarity; pins 13 and 14; the returns pins 5-8 and 10.
 - **VGA only**: one DE-15 at the front edge, right-angle, facing out. No RCA jack, no DB9, no halved clock: V1.0 and
   V2.0 are the cards for TV-rate monitors. (The crystal halved would give the TV rate with the same table.)
+- **The socket** is Kycon's K61X-E15S-NJ (chosen 2026-11-13): its drawing's hole pattern is the footprint's within
+  0.06 mm (the rows 1.95 mm apart, the front row 3.05 mm and the board locks 5.00 mm from the board's edge, the locks
+  24.99 mm apart), with 4-40 jackscrews for the cable. Right-angle HD-15 sockets come in a second pattern that does
+  not fit (the rows 2.54 mm apart, 8.89 mm from the edge): the part is to be laid on a 1:1 print before an order.
 
 ## 9. The bus side: ports and registers
 
@@ -330,7 +391,7 @@ on PA / PB with E made from the two I/O strobes, the PS/2 section on PD / PE.
 negative, white. That is what 640 x 480 wants, so a driver that only loads the 6845's table has a picture.
 
 The status's VSYNC and DE are the stage's: what the 6845's pins showed a count before. VSYNC there is the 6845's
-own pulse, 16 lines of Motorola's part, not the two lines the connector gets.
+own pulse, 16 lines of Motorola's part, not the 1.84 lines the connector gets.
 
 Against V2.0: PLANE has a fourth bit, so CPAGE, DPAGE and TEXT-OFF have moved, and control 2 is new; the status has no
 DOTS bit (8 dots only: the jumper is gone); the ID is $7x where V2.0 reads $5x and the V3 design $6x.
@@ -341,8 +402,12 @@ Any grade runs at 1.57 MHz. Two things still differ between the makers' parts:
 
 - **The vertical sync's width.** Motorola's MC6845 makes it 16 lines, always (its data sheet: "fixed at 16
   scan-line times", R3's upper half not implemented); Hitachi's S type is said to take it from the upper half of R3
-  (a secondary note: its data sheet has not been read). VGA's is 2 lines. The card cuts it to two lines itself (section 8), so either part gives the same
-  pulse; R3 = $26 is right for both.
+  (a secondary note: its data sheet has not been read). VGA's is 2 lines. The card cuts it to 1.84 lines itself
+  (section 8), so either part gives the same pulse; R3 = $26 is right for both.
+- **The sheet's revision.** Older Motorola sheets give the clock 160 ns low and 200 ns high (2.5 MHz) and 300 ns for
+  DE, CURSOR and the syncs; the figures used here (150 and 150 ns, 3.0 MHz, 250 ns) are the later revision's. The
+  card has room for either: its clock's halves are at least 311 ns, and the stage takes the outputs 596 ns after
+  the 6845 stepped.
 - **The bus side.** As on V2.0: the B grade (HD68B45SP, MC68B45P) for a CPU clock above 1 MHz, where E is shorter than
   the 1 MHz grade's 450 ns.
 
@@ -353,14 +418,14 @@ At the machine's 1 MHz the 6845 of the V1.0 card can be tried on this card as it
 | Block | Parts | ICs |
 |---|---|---|
 | Bus, ports, registers | as V2.0: 74S85, 74LS138, 2 x 74LS32; two 74HCT273 where V2.0 has one; the status buffer (74LS244); 74HCT04, 74HCT08 | 9 |
-| The 6845 and the clock | the 6845; a 25.175 MHz oscillator (DIP-14 can) in place of the crystal circuit and the DOTS logic; 74F163A, 74F74 (the 6845's clock, DE's delay), 74ACT04 | 4 |
+| The 6845 and the clock | the 6845; a 25.175 MHz oscillator (DIP-14 can) in place of the crystal circuit and the DOTS logic; 74F163A, 74F74 (the 6845's clock, DE's delay), 74ACT04; four 33 ohm resistors in series with the clocks | 4 |
 | Text | IDT7134; 2 x 74ACT574 (the stage); 74ACT574 (the code); AT28C64B-15; 74F299; 74F74 (the cursor flag, the retimed dot); 74F21 (the load); 74ACT86; 74ACT08 | 10 |
 | Graphics, left off in the text-only build | 128K RAM; 4 x 74ACT157; the write buffer (74ACT244), the read latch (74ACT574), direct mode's read buffer (74HCT244), the byte latch (74ACT574); 74F299; 74F74 (the write flip-flop, TEXT-ONLY); a 10k x 8 network | 11 |
 | Slot logic, dots and syncs | 74F74 (the -WE pulse, the read latch's clock); 74ACT32, 74ACT00, 74ACT11; 74ACT02 (the guns); a 74HCT74 for the vertical sync; 3 x 470 ohm, the DE-15 | 6 |
 | PS/2 | V2.0's section as it is: ATmega328P, two latches, the status, the flags, the 7416; two Mini-DIN-6, the FTDI header | 6 |
 | | | **46** |
 
-The count is the netlist's (`hardware/cards/video/kicad/v4.0/v40_netlist.py`, 130 parts; its README has the list by
+The count is the netlist's (`hardware/cards/video/kicad/v4.0/v40_netlist.py`, 134 parts; its README has the list by
 reference). The first estimate here was 42 or 43: the netlist needs four 74F74 where two were counted, and an
 inverter and an AND package more. Every gate package is full or one gate short of it, but for the PS/2 section's
 7416 (three of six used, as on V2.0).
@@ -368,8 +433,8 @@ inverter and an AND package more. Every gate package is full or one gate short o
 The count stays at 46 (decided 2026-11-12: section 13).
 
 **The schematic and the board (2026-11-12).** `gen_v40.py`, in the netlist's folder, draws the schematic (a root
-and eight sheets; KiCad's netlist of it equals the netlist's 250 nets, its rules check finds nothing) and places the
-board's 130 parts; `build.sh` routes it and runs the checks (`video-v4.0.kicad_pcb`, `video-v4.0-placement.pdf`; the
+and eight sheets; KiCad's netlist of it equals the netlist's 254 nets, its rules check finds nothing) and places the
+board's 134 parts; `build.sh` routes it and runs the checks (`video-v4.0.kicad_pcb`, `video-v4.0-placement.pdf`; the
 folder's README has what stands where).
 
 **The card does not fit 218 mm.** The ICs stand in thirteen columns, eleven of 300-mil sockets and two of 600-mil
@@ -386,13 +451,39 @@ ones, a capacitor beside every chip:
 orders; the 15 mm from there to 250 are between the columns, as room to route. **250 mm it is (decided
 2026-11-12)**, the V3 design's length.
 
-**The board is routed (2026-11-12, optimised 2026-11-13):** Freerouting, the two outer layers, GND and VCC as
-planes inside. All 499 connections, 350 vias, 26.2 m of 0.25 mm track (469 vias and 27.2 m before its optimiser);
-every one of four component orders routed it. The checks pass: the schematic's netlist equal to the netlist's, ERC nothing, DRC no unconnected item and no
-copper violation, the board's nets equal to the schematic's, the placement clear, 424 key connections right, every
-reference with its type or value on the silk outside its part. The first placement did not route to the end (7
-connections left: the folder's README has which, and what was moved). Still to come before any order: a design
-review and `pcb-check`.
+**The board is routed (2026-11-12; again 2026-11-13, with the design review's changes):** Freerouting, the two
+outer layers, GND and VCC as planes inside. All 519 connections, 377 vias, 27.4 m of 0.25 mm track (the board before
+the review's changes: 515 connections, 350 vias, 26.2 m). Of four component orders three routed every connection,
+two of those without an error of the router's own making; the fourth left one open. The checks pass: the
+schematic's netlist equal to the netlist's, ERC nothing, DRC no unconnected item and no copper violation, the
+board's nets equal to the schematic's, the placement clear, 432 key connections right, every reference with its
+type or value on the silk outside its part. The first placement of all did not route to the end (7 connections
+left: the folder's README has which, and what was moved). Still to come before any order: `pcb-check`.
+
+(Earlier versions of this note said 499 connections. That is the most that KiCad's rule check lists; its
+connectivity count, which has no such limit, gives 515 for that board and 519 for this one, and 0 open on both.)
+
+**The four clocks on the board.** Each has its series resistor (section 5). What the new place of the clock's
+column did to their length is mixed:
+
+| Net | Track, before the review's changes | Now | The way to its farthest input, before | Now |
+|---|---|---|---|---|
+| CK, the dot clock | 177 mm | 231 mm, and 10 mm from the oscillator to R20 | 166 mm (IC35 pin 11) | 188 mm (IC35 pin 11) |
+| D2 | 267 mm | 246 mm | 197 mm (IC17 pin 11) | 101 mm (IC36 pin 1) |
+| D3 | 241 mm | 232 mm | 128 mm (IC24 pin 2) | 117 mm (IC14 pin 6) |
+| STG | 239 mm | 237 mm | 200 mm (IC15 pin 11) | 153 mm (IC15 pin 11) |
+
+D2's inputs are half as far from the counter as they were and the stage a quarter nearer. The dot clock's are
+farther: the shifters and the slot logic's flip-flops stand where they stood, and the counter moved away from them.
+The router does not know a clock from any other net, so these lengths are also a matter of chance: on the other
+clean route of this run CK's farthest input is 137 mm away and D2's 228 mm. Clocks that are short by construction
+want the four routed first, on the empty board, and kept while the rest is routed: not done here, and open
+(section 13).
+
+At 6.5 ps a millimetre these wires move the closest holds of section 5 by little: the 6845's clock flip-flop gains
+0.2 ns (its clock arrives 21 mm after the counter's, its input 57 mm after the counter's pin), the text shifter
+0.1 ns, and the graphics shifter loses 0.2 ns (its clock 114 mm after the counter's, the byte latch's 84 mm): 2.2,
+2.6 and 2.3 ns to spare.
 
 The board: four layers with the planes, the blank card's connector, and the layout rules from the start - the DE-15
 and the two PS/2 jacks at the front edge facing out, jumpers and the FTDI header at an edge, every reference and value
@@ -426,7 +517,8 @@ On the branch `video-v2`, beside the V2.0 card's:
 **Decided (2026-11-12)**
 - 16 dots a count, two bytes fetched in each: the 6845 at 1.573 MHz.
 - Direct mode, as V2.0's (GFX-ON = 0): the window follows the machine to its own limit, about 6 MHz, with the layer
-  hidden; slot mode, with the layer shown, to about 3.5 MHz. One 74HCT244, a resistor network and about six gates.
+  hidden; slot mode, with the layer shown, to about 3.5 MHz (a stack or a vector table in the window: 5 and
+  2.8 MHz, section 7). One 74HCT244, a resistor network and about six gates.
 - 25 rows of text. The ROM and Y1/OS use 24 today.
 - One RAM read twice a count for each layer, not two RAMs side by side (which would give a slot of 318 ns in place
   of 159, at the price of a second 48-pin text RAM, a second graphics RAM and a second set of buffers and latches).
@@ -443,6 +535,10 @@ On the branch `video-v2`, beside the V2.0 card's:
   design's first image is the V1.3 glyphs with each line doubled.
 - **V2.0**: ordered as well, or left as it is. If ordered: its slot mode has the write pulse that the strobe can
   cut short (section 7), which the 2026-10-23 re-review judged harmless.
+- **The clocks routed first** (from the second route, 2026-11-13: section 11). The four clock nets laid on the
+  empty board by a run of their own and kept, then everything else: their lengths become a property of the
+  placement and not of the router's luck. It wants a change to `build.sh` and one more routing run. Without it the
+  board stands as it is: every clock behind its series resistor, the dot clock's farthest input 188 mm from it.
 
 **Possible later, not in this design**
 - 80 x 30 and 640 x 480 graphics: 2,400 characters and 1,200 counts a plane, more than the two 2K windows hold.
@@ -452,13 +548,16 @@ On the branch `video-v2`, beside the V2.0 card's:
 **To confirm**
 - On Hitachi's data sheet, if an HD6845S is fitted: its output delays, its clock and its R3 (the figures here are
   Motorola's sheet).
-- On a monitor: the 16-dot granularity of the horizontal porches (19 and 45 dots for 16 and 48); the two-line
-  vertical sync; the 400-line raster's 4 lines.
+- On a monitor: the 16-dot granularity of the horizontal porches (19 and 45 dots for 16 and 48); the vertical sync
+  of 1.84 lines, whose leading edge is not on an HSYNC; the 400-line raster's 4 lines.
 - The 128K RAM in DIP-32 and the IDT7134 in stock; the grade of the IDT7134 in hand (55 ns is the commercial
   grade; the simulation takes 70). The 74ACT244 in DIP: TI's package list marked SN74ACT244N "last time buy" in
   2026-11.
-- On a bench: the simulation's two closest margins (the retimed dot, the read latch's hold), and the bus's own
-  delays, which are `tests/video/v20_timing.py`'s.
+- On a bench: the four clocks at the inputs farthest from their resistors (CK at IC35, D2 at IC17 and IC36, STG at
+  IC15), each edge rising and falling once; the simulation's closest margins (the holds of 2 ns, the retimed dot); the
+  6845's E against R/-W at the first `OUT PB` (as on V2.0); and the bus's own delays, which are
+  `tests/video/v20_timing.py`'s.
+- The VGA socket laid on a 1:1 print of the board; the oscillator's data sheet for its load and its pin 1.
 
 **Order of work**
 1. This note, checked.
@@ -468,4 +567,6 @@ On the branch `video-v2`, beside the V2.0 card's:
    (`tests/video/v40_netsim.py`, in `make check`; two changes to the circuit came of it: the netlist's README).
 4. Beside it: the emulators' model and the ROM driver.
 5. The schematic and the board: **the schematic drawn, the board placed and routed 2026-11-12** (`gen_v40.py`,
-   `build.sh`: all checks pass). To come: a design review, `pcb-check`; then the order.
+   `build.sh`: all checks pass). **Reviewed 2026-11-13** (`hardware/cards/video/reviews/v4.0.md`: HIGH 0, MED 4,
+   LOW 12), **the review's changes made and the board routed again** the same day. To come: `pcb-check`; then the
+   order.
