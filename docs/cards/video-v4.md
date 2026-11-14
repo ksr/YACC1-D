@@ -5,9 +5,10 @@ written as a netlist (2026-11-12: `hardware/cards/video/kicad/v4.0/v40_netlist.p
 parts' data-sheet delays, with no fault left (sections 5 and 11). Its schematic is drawn and its board, 250 mm long,
 is placed and routed, all checks passing (section 11). A design review (2026-11-13:
 `hardware/cards/video/reviews/v4.0.md`) found nothing that stops the card working and four things to settle before
-an order; they are settled and the board is routed again (2026-11-13). The pre-order check is to come. The card in
-the machine is the [V1.0](video.md). The [V2.0](video-v2.md) is designed, ready to order and on hold while this card
-is looked at. The [V3](video-v3.md), round the HD63484, is not built.
+an order; they are settled and the board is routed again (2026-11-13; and once more 2026-11-14, its four clocks
+laid first). The pre-order check is to come. The card in the machine is the [V1.0](video.md). The
+[V2.0](video-v2.md) is designed, ready to order and on hold while this card is looked at. The [V3](video-v3.md),
+round the HD63484, is not built.
 
 The aim is the V2.0 card's picture on monitors sold today: a **VGA** monitor at 31.47 kHz, **80 x 25 characters of
 8 x 16 dots** and a **640 x 400 graphics layer**, still made by a **6845**, with V2.0's ports, PS/2 section and
@@ -139,7 +140,8 @@ R23 at the inverter that makes STG. A line with several inputs along it and noth
 resistor, with the driver's own output resistance, is about the track's impedance and damps that, so that an edge
 arrives at each clock input rising or falling once. The price is an edge up to 2 ns later, which is in the
 simulation. The chips that make these clocks stand next to the registers they clock (section 11), and the
-oscillator is to be one rated for 50 pF or ten TTL loads.
+oscillator is to be one rated for 50 pF or ten TTL loads. On the board the four are laid before anything else, each
+as a tree from its resistor, and kept as laid while the rest is routed (section 11).
 
 The count after the stage has taken MA, dot by dot:
 
@@ -451,39 +453,55 @@ ones, a capacitor beside every chip:
 orders; the 15 mm from there to 250 are between the columns, as room to route. **250 mm it is (decided
 2026-11-12)**, the V3 design's length.
 
-**The board is routed (2026-11-12; again 2026-11-13, with the design review's changes):** Freerouting, the two
-outer layers, GND and VCC as planes inside. All 519 connections, 377 vias, 27.4 m of 0.25 mm track (the board before
-the review's changes: 515 connections, 350 vias, 26.2 m). Of four component orders three routed every connection,
-two of those without an error of the router's own making; the fourth left one open. The checks pass: the
-schematic's netlist equal to the netlist's, ERC nothing, DRC no unconnected item and no copper violation, the
-board's nets equal to the schematic's, the placement clear, 432 key connections right, every reference with its
-type or value on the silk outside its part. The first placement of all did not route to the end (7 connections
+**The board is routed (2026-11-12; again 2026-11-13, with the design review's changes; and 2026-11-14, with the
+four clocks laid first):** the clocks by the generator, everything else by Freerouting, on the two outer layers, GND
+and VCC as planes inside. All 519 connections, 455 vias, 27.6 m of 0.25 mm track (the route of 2026-11-13, its
+clocks the router's own: 377 vias, 27.4 m; the board before the review's changes: 515 connections, 350 vias,
+26.2 m). Of four component orders one routed every connection, without an error of the router's own making; the
+others left one or two open. The checks pass: the schematic's netlist equal to the netlist's, ERC nothing, DRC no
+unconnected item and no copper violation, the board's nets equal to the schematic's, the placement clear, 432 key
+connections right, the clocks as they were laid, every reference with its type or value on the silk outside its
+part. The first placement of all did not route to the end (7 connections
 left: the folder's README has which, and what was moved). Still to come before any order: `pcb-check`.
 
 (Earlier versions of this note said 499 connections. That is the most that KiCad's rule check lists; its
 connectivity count, which has no such limit, gives 515 for that board and 519 for this one, and 0 open on both.)
 
-**The four clocks on the board.** Each has its series resistor (section 5). What the new place of the clock's
-column did to their length is mixed:
+**The four clocks on the board: laid first (decided 2026-11-13).** Each has its series resistor (section 5). The
+router does not know a clock from any other net: on the route of 2026-11-13 the way from a clock's resistor to its
+farthest input was 100 to 190 mm, by chance (on another clean route of the same run the dot clock's was 137 mm
+where the kept one had 188, and D2's 228 for 101). So the generator lays the four itself, on the empty board, before
+Freerouting sees it (`gen_v40.py clockroute`): each net is a tree that grows from its resistor one input at a time,
+always taking next the input that costs least in new track and in distance from the resistor. The tracks and their
+nine vias are locked; Freerouting gets them as fixed wiring and routes the other 492 connections round them. The
+clocks are the same on every build.
 
-| Net | Track, before the review's changes | Now | The way to its farthest input, before | Now |
-|---|---|---|---|---|
-| CK, the dot clock | 177 mm | 231 mm, and 10 mm from the oscillator to R20 | 166 mm (IC35 pin 11) | 188 mm (IC35 pin 11) |
-| D2 | 267 mm | 246 mm | 197 mm (IC17 pin 11) | 101 mm (IC36 pin 1) |
-| D3 | 241 mm | 232 mm | 128 mm (IC24 pin 2) | 117 mm (IC14 pin 6) |
-| STG | 239 mm | 237 mm | 200 mm (IC15 pin 11) | 153 mm (IC15 pin 11) |
+| Net | Track | Vias | The way to its farthest input | On the route of 2026-11-13: track, farthest input | Before the review's changes |
+|---|---|---|---|---|---|
+| CK, the dot clock | 187 mm, and 10 mm from the oscillator to R20 | 1 | 134 mm (IC35 pin 11) | 231 mm, 188 mm (IC35 pin 11) | 177 mm, 166 mm |
+| D2 | 288 mm | 5 | 91 mm (IC17 pin 11) | 246 mm, 101 mm (IC36 pin 1) | 267 mm, 197 mm |
+| D3 | 185 mm | 2 | 108 mm (IC24 pin 2) | 232 mm, 117 mm (IC14 pin 6) | 241 mm, 128 mm |
+| STG | 172 mm | 1 | 102 mm (IC16 pin 11) | 237 mm, 153 mm (IC15 pin 11) | 239 mm, 200 mm |
 
-D2's inputs are half as far from the counter as they were and the stage a quarter nearer. The dot clock's are
-farther: the shifters and the slot logic's flip-flops stand where they stood, and the counter moved away from them.
-The router does not know a clock from any other net, so these lengths are also a matter of chance: on the other
-clean route of this run CK's farthest input is 137 mm away and D2's 228 mm. Clocks that are short by construction
-want the four routed first, on the empty board, and kept while the rest is routed: not done here, and open
-(section 13).
+Every clock's farthest input is nearer than on either route before. D2 has more track than the router gave it: a
+tree spends track on short ways to its inputs, where the router's net was nearer one line through them all.
+`reports/clocks.txt` has the way to every input.
 
-At 6.5 ps a millimetre these wires move the closest holds of section 5 by little: the 6845's clock flip-flop gains
-0.2 ns (its clock arrives 21 mm after the counter's, its input 57 mm after the counter's pin), the text shifter
-0.1 ns, and the graphics shifter loses 0.2 ns (its clock 114 mm after the counter's, the byte latch's 84 mm): 2.2,
-2.6 and 2.3 ns to spare.
+**The clocks follow the layers' grain.** Freerouting lays this board's tracks across the board on the top and up
+and down it on the bottom, so that the two layers can cross anywhere. A track laid the other way is a wall on its
+layer: whatever crosses it needs two vias, or goes round. The first clock trees (2026-11-13) took the shortest way
+on either layer, with no vias: 188 mm of them up and down on the top, 175 mm across on the bottom. Their farthest
+inputs were at 131, 102, 98 and 90 mm, and the rest of the board could not be routed round them: 4 to 12
+connections stayed open in each of four orders, with 580 to 680 vias. The trees as they are pay three times a
+step's length across the grain and change sides in a via: 1 mm across the grain on each layer, and the board
+routes. Fixed clocks still have their price: 455 vias where the router's own clocks left 377, and one order of
+four routed to the end where three did.
+
+At 6.5 ps a millimetre these wires move the closest holds of section 5 by little, and all three the right way: the
+6845's clock flip-flop gains 0.2 ns (its clock arrives 19 mm after the counter's, its input 55 mm after the
+counter's pin), the text shifter 0.4 ns (its clock 30 mm after the counter's, the code register's 97 mm after the
+counter's pin) and the graphics shifter 0.1 ns (61 and 70 mm): 2.2, 2.9 and 2.6 ns to spare. On the route of
+2026-11-13 the graphics shifter lost 0.2 ns.
 
 The board: four layers with the planes, the blank card's connector, and the layout rules from the start - the DE-15
 and the two PS/2 jacks at the front edge facing out, jumpers and the FTDI header at an edge, every reference and value
@@ -526,6 +544,9 @@ On the branch `video-v2`, beside the V2.0 card's:
   V2.0's spacing; section 11).
 - 46 ICs: the two ways to 44 that were looked at are not taken (the read latch as a transparent latch that is also
   direct mode's buffer; one quad flip-flop, a 74F175, for two 74F74).
+- The four clocks are laid on the empty board first and kept while the rest is routed (decided 2026-11-13, on the
+  board since 2026-11-14; section 11): their lengths are a property of the placement and not of the router's luck.
+  The dot clock's farthest input is 134 mm from its resistor.
 
 **Proposed here, to decide**
 - **The raster**: 640 x 480 at 60 Hz with the text in a 400-line band, as the card's table; 640 x 400 at 70 Hz as a
@@ -535,10 +556,6 @@ On the branch `video-v2`, beside the V2.0 card's:
   design's first image is the V1.3 glyphs with each line doubled.
 - **V2.0**: ordered as well, or left as it is. If ordered: its slot mode has the write pulse that the strobe can
   cut short (section 7), which the 2026-10-23 re-review judged harmless.
-- **The clocks routed first** (from the second route, 2026-11-13: section 11). The four clock nets laid on the
-  empty board by a run of their own and kept, then everything else: their lengths become a property of the
-  placement and not of the router's luck. It wants a change to `build.sh` and one more routing run. Without it the
-  board stands as it is: every clock behind its series resistor, the dot clock's farthest input 188 mm from it.
 
 **Possible later, not in this design**
 - 80 x 30 and 640 x 480 graphics: 2,400 characters and 1,200 counts a plane, more than the two 2K windows hold.
@@ -553,8 +570,8 @@ On the branch `video-v2`, beside the V2.0 card's:
 - The 128K RAM in DIP-32 and the IDT7134 in stock; the grade of the IDT7134 in hand (55 ns is the commercial
   grade; the simulation takes 70). The 74ACT244 in DIP: TI's package list marked SN74ACT244N "last time buy" in
   2026-11.
-- On a bench: the four clocks at the inputs farthest from their resistors (CK at IC35, D2 at IC17 and IC36, STG at
-  IC15), each edge rising and falling once; the simulation's closest margins (the holds of 2 ns, the retimed dot); the
+- On a bench: the four clocks at the inputs farthest from their resistors (CK at IC35 pin 11, D2 at IC17, D3 at
+  IC24, STG at IC16), each edge rising and falling once; the simulation's closest margins (the holds of 2 ns, the retimed dot); the
   6845's E against R/-W at the first `OUT PB` (as on V2.0); and the bus's own delays, which are
   `tests/video/v20_timing.py`'s.
 - The VGA socket laid on a 1:1 print of the board; the oscillator's data sheet for its load and its pin 1.
@@ -568,5 +585,5 @@ On the branch `video-v2`, beside the V2.0 card's:
 4. Beside it: the emulators' model and the ROM driver.
 5. The schematic and the board: **the schematic drawn, the board placed and routed 2026-11-12** (`gen_v40.py`,
    `build.sh`: all checks pass). **Reviewed 2026-11-13** (`hardware/cards/video/reviews/v4.0.md`: HIGH 0, MED 4,
-   LOW 12), **the review's changes made and the board routed again** the same day. To come: `pcb-check`; then the
-   order.
+   LOW 12), **the review's changes made and the board routed again** the same day, and **once more 2026-11-14 with
+   the four clocks laid first**. To come: `pcb-check`; then the order.

@@ -1,8 +1,8 @@
 # Video card V4.0 (6845, VGA, 16 dots a count) - the circuit, the schematic, the routed board
 
 The circuit as data, checked and simulated; its schematic; and the board, 250 mm long, every part placed and
-**every connection routed** (2026-11-12; reviewed, changed and routed again 2026-11-13). Not ordered, not built: the
-pre-order check is still to come. `v40_netlist.py` is the card's circuit (parts, nets, the pins left open), written from the design note
+**every connection routed** (2026-11-12; reviewed, changed and routed again 2026-11-13; routed once more
+2026-11-14, its four clocks laid first). Not ordered, not built: the pre-order check is still to come. `v40_netlist.py` is the card's circuit (parts, nets, the pins left open), written from the design note
 `docs/cards/video-v4.md` (section 5 the clock and the stage, 6 the text, 7 the graphics RAM's two modes, 8 the dot
 path, 9 the ports).
 
@@ -110,6 +110,9 @@ has what was done with each finding. In the circuit and on the board:
 - **The clock's column moved** two columns towards the bus connector, 30 mm: next to the multiplexers and the
   RAM's latches, and that much nearer the stage and the code register. It had been left behind when the columns
   were reordered for the first route.
+- **The four clocks are laid before the rest of the board** (decided 2026-11-13, on the board since 2026-11-14):
+  by `gen_v40.py clockroute`, as trees from their resistors, locked while Freerouting routes everything else. "The
+  routing", below.
 - **The VGA socket is a part**: Kycon K61X-E15S-NJ, whose drawing's hole pattern is KiCad's footprint within
   0.06 mm; its fifteen signal holes are drilled 1.1 mm, as the drawing asks (the footprint: 1.0).
 - **On the silk**: a "1" at the oscillator's pin 1 (turned round, the can has VCC on its ground pin); the text-only
@@ -147,6 +150,8 @@ equals `v40_netlist.py` net for net (254 nets), and its electrical rules check f
 | `gen_v40.py checknet reports/netlist.net` | KiCad's netlist of the schematic against `v40_netlist.py` |
 | `gen_v40.py board reports/netlist.net <out.kicad_pcb>` | the unrouted board: every part placed, every pad on its net, the silkscreen placed |
 | `gen_v40.py place <pcb>` | courtyards apart, everything inside the outline, the DIP sockets clear of each other and of the other parts |
+| `gen_v40.py clockroute <unrouted.kicad_pcb> <out.kicad_pcb>` | the four clocks, and the stubs from their sources to the series resistors, laid as locked tracks and vias; nothing else touched |
+| `gen_v40.py clocks <pcb> [report.txt]` | the clock nets as they are on a board: track, vias, the copper's length from each source to every input (`reports/clocks.txt`). Fails if an input is not reached or a clock's track is not locked |
 | `gen_v40.py verify reports/netlist.net <pcb>` | 432 key connections pin by pin, in the schematic and on the board; the layers; the planes |
 | `gen_v40.py drawing <pcb>` | `video-v4.0-placement.pdf` |
 | `gen_v40.py bom` | `BOM.md` |
@@ -154,8 +159,8 @@ equals `v40_netlist.py` net for net (254 nets), and its electrical rules check f
 
 ## The board (2026-11-12): 250 mm, placed and routed
 
-`build.sh` makes everything from `v40_netlist.py`: the schematic, the unrouted board, the routing, the reports and
-the checks. `video-v4.0.kicad_pcb` is the board: four layers (GND and VCC planes inside, the signals on the two
+`build.sh` makes everything from `v40_netlist.py`: the schematic, the unrouted board, the clocks, the routing, the
+reports and the checks. `video-v4.0.kicad_pcb` is the board: four layers (GND and VCC planes inside, the signals on the two
 outer layers), the blank card's connector, 250.00 x 113.97 mm, 134 parts. `video-v4.0-placement.pdf` is its
 placement drawing, on a landscape sheet as the board lies; `reports/video-v4.0-top.png` and `-bottom.png` show it
 with the parts fitted.
@@ -190,50 +195,82 @@ every body and socket: none is under a part, none had to go into a legend. Each 
 header's pins labelled; `cottageworker.com` beside the card's name and revision. Bypass capacitors on 0.1-inch
 leads.
 
-**The routing.** Freerouting 1.9, the two outer layers, GND and VCC left to the planes; one run for each of four
-orders of the components (`SEEDS`), at most 100 passes, then its optimiser (`MT=1`). Of the clean results - every
-connection routed, no clearance or short of Freerouting's own making - the one with the fewest vias is kept.
+**The routing.** The four clocks first, by the generator (below). Then Freerouting 1.9 for the other 492
+connections, on the two outer layers, GND and VCC left to the planes: one run for each of four orders of the
+components (`SEEDS`), at most 100 passes, then its optimiser (`MT=1`). Of the clean results - every connection
+routed, no clearance or short of Freerouting's own making, the clocks as they were laid - the one with the fewest
+vias is kept.
 
-| | The board (2026-11-13, with the review's changes) | Before the review's changes (`feb171b`) | That one before optimising |
-|---|---|---|---|
-| Connections | 519 routed, 0 left | 515 routed, 0 left | 515 routed, 0 left |
-| Vias | 377 | 350 | 469 |
-| Track, all 0.25 mm | 27.4 m: 11.3 m on the front, 16.0 m on the back | 26.2 m | 27.2 m |
-| Planes | GND and VCC, one piece each | the same | the same |
+| | The board (2026-11-14, the clocks laid first) | The route of 2026-11-13 (`3d9a12f`: the review's changes, the clocks the router's own) | Before the review's changes (`feb171b`) | That one before optimising |
+|---|---|---|---|---|
+| Connections | 519 routed, 0 left | 519 routed, 0 left | 515 routed, 0 left | 515 routed, 0 left |
+| Vias | 455, nine of them the clocks' | 377 | 350 | 469 |
+| Track, all 0.25 mm | 27.6 m: 11.8 m on the front, 15.8 m on the back | 27.4 m: 11.3 m and 16.0 m | 26.2 m | 27.2 m |
+| Planes | GND and VCC, one piece each | the same | the same | the same |
 
-The four orders of the board's run: order 0, 377 vias and 27.4 m, clean (kept); order 1, 378 vias and 27.0 m,
-clean; order 2, 362 vias, routed to the end with four shorts and a clearance error of the router's making; order 3
-gave up with one connection open (IO-ADDR0 at IC2 pin 1, beside the bus connector). About 40 minutes of routing
-and up to 90 of optimising, 2 h 12 min of running time in all. Before the review's changes all four orders routed
-to the end, in 18 to 28 minutes: the placement is a little harder to route now. (V2.0's board, 40 ICs on 218 mm,
-has 285 vias.) Freerouting does not route the same file the same way twice: a repeat gives other figures of this
-size.
+The four orders of the board's run: order 0 routed every connection, clean, 455 vias and 27.6 m after optimising
+(kept); orders 1 and 3 stopped with two connections open and order 2 with one (orders 1 and 2 with shorts and
+clearance errors of the router's making besides). 40 to 57 minutes of routing each, and 1 h 56 min of optimising
+for the one that was complete: 2 h 40 min of running time in all. The run of 2026-11-13, with nothing fixed, had
+three orders of four complete after about 40 minutes (order 0 kept; order 1 as good, 378 vias; order 3 left
+IO-ADDR0 open at IC2 pin 1), and the board before the review's changes all four in 18 to 28 minutes. Fixed clocks
+cost 78 vias and leave the router less room. (V2.0's board, 40 ICs on 218 mm, has 285 vias.) Freerouting does not
+route the same file the same way twice: a repeat gives other figures of this size. The clocks are the same on
+every build.
 
 The connections were given as 499 here before. That is the most KiCad's rule check lists of one kind of error;
 its connectivity count, which has no limit, says 515 for the first board and 519 for this one. Both boards have 0
 open by that count too.
 
-**The four clocks on this route** (measured on the board: track, and the copper's length from the series resistor
-to each input):
+**The four clocks: laid first, and kept** (`gen_v40.py clockroute`; decided 2026-11-13). Freerouting does not
+know a clock from any other net. On the route of 2026-11-13 the dot clock's farthest input was 188 mm from its
+resistor and D2's 101; on another clean route of the same run, 137 and 228. Given the clocks alone on the empty
+board it strings a net's inputs into one chain and leaves connections open. So the generator lays them: each net a
+tree that grows from its series resistor one input at a time, the next input always the one that is cheapest to
+reach, where the price is the new track plus `CK_ALPHA` (0.6) times the distance along the tree from the resistor
+to the point where the branch leaves it (0 would give the least track, 1 every input its own shortest way). The
+ways are found on a 0.25 mm grid over both outer layers, round every other net's pads at the board's clearance.
+The tracks and vias are locked: KiCad's Specctra export hands them to Freerouting as fixed wiring, and its session
+import leaves locked items alone. `build.sh` runs KiCad's rule check on the clocks alone before the routing and
+`gen_v40.py clocks` on every result after it: an input that is not reached, or a clock track that is not locked,
+fails the build.
+
+Measured on the board (`reports/clocks.txt`: track, and the copper's length from the series resistor to each
+input):
 
 | Net | Track | Vias | From its resistor to each input |
 |---|---|---|---|
-| CK (R20; 10 mm from OSC1 pin 8 to R20) | 231 mm | 2 | IC11.2 16, IC12.3 37, IC20.11 75, IC19.12 94, IC33.12 130, IC35.3 180, IC35.11 188 mm |
-| D2 (R21) | 246 mm | 3 | IC34.3 17, IC20.3 33, IC13.3 60, IC21.9 72, IC38.11 73, IC32.11 78, IC17.11 96, IC36.1 101 mm |
-| D3 (R22) | 232 mm | 5 | IC12.2 53, IC12.11 63, IC13.1 83, IC24.2 106, IC14.6 117 mm |
-| STG (R23) | 237 mm | 5 | IC22.4 99, IC16.11 122, IC15.11 153 mm |
+| CK (R20; 10 mm from OSC1 pin 8 to R20) | 187 mm | 1 | IC11.2 16, IC12.3 35, IC19.12 46, IC20.11 54, IC33.12 77, IC35.3 125, IC35.11 134 mm |
+| D2 (R21; 6 mm from IC11 pin 12 to R21) | 288 mm | 5 | IC34.3 18, IC20.3 34, IC38.11 45, IC32.11 64, IC13.3 81, IC21.9 84, IC36.1 86, IC17.11 91 mm |
+| D3 (R22; 5 mm from IC11 pin 11 to R22) | 185 mm | 2 | IC12.11 41, IC12.2 50, IC14.6 73, IC13.1 75, IC24.2 108 mm |
+| STG (R23; 8 mm from IC13 pin 2 to R23) | 172 mm | 1 | IC22.4 70, IC15.11 71, IC16.11 102 mm |
 
-Before the review's changes: CK 177 mm (its farthest input at 166), D2 267 (197), D3 241 (128), STG 239 (200). So
-D2's inputs are half as far away as they were and the stage a quarter nearer, and the dot clock's are farther: the
-counter moved away from the shifters and the slot logic's flip-flops, which stayed. And the router treats a clock
-as any net: order 1 of the same run has CK's farthest input at 137 mm and D2's at 228. **The clocks are not routed
-first and kept**, which would make them short by construction: open, see Next.
+| The way to the farthest input | The board | The route of 2026-11-13 | Before the review's changes |
+|---|---|---|---|
+| CK | 134 mm | 188 mm | 166 mm |
+| D2 | 91 mm | 101 mm | 197 mm |
+| D3 | 108 mm | 117 mm | 128 mm |
+| STG | 102 mm | 153 mm | 200 mm |
+
+On the route of 2026-11-13 the clocks had 231, 246, 232 and 237 mm of track; before the review's changes 177,
+267, 241 and 239.
+
+**The clocks follow the layers' grain** (`CK_GRAIN`, `CK_VIA`). Freerouting lays this board's tracks across the
+board on the top and up and down it on the bottom (on the route of 2026-11-13, 9.2 m of the top's 11.3 m ran
+across and 8.9 m of the bottom's 16.0 m up and down), so that the layers can cross anywhere. A track the other way
+is a wall on its layer: whatever crosses it needs two vias, or goes round. The first clock trees (2026-11-13) had
+no vias and took the shortest way on either layer: 188 mm up and down on the top and 175 mm across on the bottom,
+their farthest inputs at 131, 102, 98 and 90 mm. Round them the rest did not route: 5, 4, 7 and 12 connections
+open in the four orders after all 100 passes (two hours), with 580 to 680 vias. So a step across a layer's grain
+costs three times its length and a slanted one one and a half times, and a clock changes sides in a via (at the
+price of 3 mm of track) as well as in its own pads. The trees now have 1 mm across the grain on each layer and
+nine vias; CK's, D3's and STG's farthest inputs are 3 to 12 mm farther than the first trees', D2's 11 mm nearer.
 
 **The checks, all passing** (`build.sh: ALL CHECKS PASS`): KiCad's netlist of the schematic equal to
 `v40_netlist.py`; ERC nothing; DRC no unconnected item, no copper violation, schematic parity 0 (four warnings
 where the bus connector's own silk crosses the edge, as on every card); the board's nets equal to the schematic's
 (`reports/netlist-compare.txt`: MATCH); the placement clear (134 footprints, 47 sockets); 432 key connections
-right in the schematic and on the pads.
+right in the schematic and on the pads; the clocks as they were laid, every input reached and every track locked.
 
 **How it got there.**
 - The placement check found the VGA socket turned with its face into the board, carried over from the V3 design's
@@ -254,13 +291,12 @@ four MED findings: the dot clock on 177 mm of branched, unterminated track to se
 its footprint against (V4-3); a stack or a BRVR vector table in the window fails in slot mode above about 2.8 MHz,
 which the note's rules allowed (V4-4). **Its changes are made and the board is routed again (2026-11-13)**: "What
 the design review changed" above, and the review's status table for each finding. V4-3 and V4-4 are closed. V4-1
-and V4-2 have their resistors; the clocks' lengths are as the table above shows, not all shorter.
+and V4-2 have their resistors, and since 2026-11-14 the clocks are laid first: each one's farthest input is nearer
+than on either route before.
 
 Not done: `pcb-check` (it wants the order's files).
 
 ## Next
 
-1. To decide: the four clocks routed first and kept (a change to `build.sh` and one more routing run), or the board
-   as it is, with every clock behind its series resistor.
-2. `pcb-check` with the order's files, before any order. The VGA socket laid on a 1:1 print of the board.
-3. Beside it: the emulators' model and the ROM driver (on the branch `video-v2`).
+1. `pcb-check` with the order's files, before any order. The VGA socket laid on a 1:1 print of the board.
+2. Beside it: the emulators' model and the ROM driver (on the branch `video-v2`).

@@ -36,6 +36,9 @@ Run with KiCad's bundled Python (pcbnew), from this folder:
                                              DIP sockets' outlines clear of each other and of the other parts
   gen_v40.py drawing <pcb> [out.pdf]      -> the placement drawing, video-v4.0-placement.pdf, on a landscape sheet
   gen_v40.py silk <pcb> [out]             -> the silkscreen texts placed clear (board() does it on every new board)
+  gen_v40.py clockroute <pcb> <out.pcb>   -> the four clocks (CK, D2, D3, STG and the stubs to their series
+                                             resistors) laid as trees from their sources and locked, before Freerouting
+  gen_v40.py clocks <pcb> [report.txt]    -> the clock nets on a board: track, and the copper's length to every input
   gen_v40.py planes <pcb>                 -> each plane one piece (on the routed board)
   gen_v40.py dsn|shuffle|ses|stats ...    -> as gen_v13.py (Specctra export/import, Freerouting seeds, route stats)
   gen_v40.py link <netlist> <pcb>         -> the footprints' schematic links (path) set from the netlist, nothing else
@@ -674,8 +677,9 @@ def project():
 # left the code's lines VD5-VD7 unrouted in the 5 mm channel between the two columns of 600-mil sockets.
 # Since the design review (2026-11-13, V4-2) the clock's column stands between the multiplexers and the RAM's latches
 # (it was two columns further right, 84 mm from the stage and the code register that D2 and STG clock), and CK, D2, D3
-# and STG each leave their source through a series resistor (R20-R23) standing beside it. The router does not know a
-# clock from any other net: how long the four come out differs from one component order to the next (README).
+# and STG each leave their source through a series resistor (R20-R23) standing beside it. Freerouting does not know a
+# clock from any other net (how long the four came out differed from one component order to the next), so they are
+# laid first, here: clockroute(), below.
 GAP = 6.3                                                 # between two chips in a column, end pin to end pin
 PITCH = 15.24                                             # from one column of 300-mil sockets to the next (V2.0: 14)
 PLACE = {}
@@ -1406,6 +1410,270 @@ def planes(pcb):
     return not fix
 
 
+# ---------------------------------------------------------------------------------------------------------------------
+# The four clocks, routed here before Freerouting sees the board (2026-11-13)
+#
+# Freerouting knows no clock from any other net. Left to it, the way from a clock's source to its farthest input was
+# 100 to 230 mm, by chance, on the routes of 2026-11-13; given the clocks alone on the empty board it strings a net's
+# inputs into one chain (D2's last input 230 mm from the counter) and leaves connections open. So the clocks are laid
+# by clockroute(): each net a tree that grows from its source, one input at a time, the next input always the one that
+# is cheapest to reach from the tree so far, where "cheap" is the new track's length plus CK_ALPHA times the distance
+# along the tree from the source to the point where it branches off (0 would be the least track, 1 every input by its
+# own shortest way; the rule of Alpert, Hu, Huang and Kahng's Prim-Dijkstra trees). The paths are found on a grid of
+# CK_GRID mm over both outer layers, round every other net's pads at the board's clearance, with 45-degree moves, a
+# price for a bend and a higher price close to foreign pads (so a track runs down the middle of a channel when it
+# can). The tracks are locked; KiCad's Specctra export hands them to Freerouting as fixed wiring, and its session
+# import leaves locked tracks and vias alone.
+#
+# The clocks follow the board's grain (CK_GRAIN). Freerouting lays this board's tracks across the board on the top and
+# up and down it on the bottom (the route of 3d9a12f: 9.2 m of the top's 11.3 m run across, 8.9 m of the bottom's
+# 16.0 m up and down), so that the two layers cross anywhere without meeting. A track laid the other way is a wall
+# on its layer: all that crosses it needs two vias, or goes round. The first clock trees had no vias and went any way
+# that was short - 188 mm up and down on the top, 175 mm across on the bottom - and the rest could not be routed
+# round them: 4 to 12 connections stayed open in each of four orders, with 580 to 680 vias for 377 (2026-11-13). So a
+# step across a layer's grain costs CK_GRAIN[0] times its length and a slanted one CK_GRAIN[1] times, and a clock
+# changes sides in a via (CK_VIA) as well as in its own through-hole pads: 1 mm across the grain on each layer, nine
+# vias, and the board routes (2026-11-14: one order of four, 455 vias).
+CLOCKS = (("OSCO", "OSC1", "8"), ("QC", "IC11", "12"), ("QD", "IC11", "11"), ("STGO", "IC13", "2"),   # net, its source:
+          ("CK", "R20", "2"), ("D2", "R21", "2"), ("D3", "R22", "2"), ("STG", "R23", "2"))            # routed in this order
+CK_GRID = 0.25
+CK_ALPHA = 0.6
+CK_TURN = 0.3                                              # a bend's price, in mm of track
+CK_NEAR = (0.5, 0.6)                                       # within 0.5 mm more of a foreign pad a step costs 0.6 more
+CK_GRAIN = (3.0, 1.5)                                      # a step across the layer's grain, a slanted step: times its length
+CK_VIA = 3.0                                               # a via's price, in mm of track
+
+
+def _clock_pads(b):
+    """{net: [(ref, pin, x, y)]} of the board's pads, and every pad's box (net, left, top, right, bottom), in mm"""
+    import pcbnew
+    MM = pcbnew.ToMM
+    bynet, boxes = collections.defaultdict(list), []
+    for fp in b.GetFootprints():
+        for p in fp.Pads():
+            n = p.GetNetname().lstrip("/"); q = p.GetBoundingBox()
+            bynet[n].append((fp.GetReference(), p.GetNumber(), MM(p.GetPosition().x), MM(p.GetPosition().y)))
+            boxes.append((n, MM(q.GetLeft()), MM(q.GetTop()), MM(q.GetRight()), MM(q.GetBottom())))
+    return bynet, boxes
+
+
+def clockroute(pcb, out):
+    """gen_v40.py clockroute <unrouted.pcb> <out.pcb>: the eight clock nets (CLOCKS) laid as locked tracks and vias, nothing
+    else touched"""
+    import pcbnew, heapq, math
+    b = pcbnew.LoadBoard(pcb); MM = pcbnew.ToMM; FM = pcbnew.FromMM
+    R = G13.RULES; g = CK_GRID
+    reach = R["track"] / 2 + R["clearance"] + 0.01          # a track's centre line from foreign copper's edge
+    apart = R["track"] + R["clearance"] + 0.01              # ... and from another clock's centre line
+    vreach = R["via"] / 2 + R["clearance"] + 0.01           # a via's centre from a pad's edge (the net's own too: the
+    #                                                         holes stay apart, and a pad changes sides without a via)
+    e = b.GetBoardEdgesBoundingBox()
+    x0, y0 = MM(e.GetLeft()), MM(e.GetTop())
+    W, H = int(MM(e.GetWidth()) / g) + 1, int(MM(e.GetHeight()) / g) + 1
+    bynet, boxes = _clock_pads(b)
+    keepout = [z.GetBoundingBox() for z in b.Zones() if z.GetIsRuleArea()]
+    keepout = [(MM(k.GetLeft()), MM(k.GetTop()), MM(k.GetRight()), MM(k.GetBottom())) for k in keepout]
+
+    def node(x, y): return int(round((x - x0) / g)), int(round((y - y0) / g))
+
+    def mark(m, l, t, r, btm, d):
+        i0, i1 = max(0, int(math.ceil((l - d - x0) / g))), min(W - 1, int(math.floor((r + d - x0) / g)))
+        j0, j1 = max(0, int(math.ceil((t - d - y0) / g))), min(H - 1, int(math.floor((btm + d - y0) / g)))
+        if i1 >= i0:
+            for j in range(j0, j1 + 1): m[j * W + i0:j * W + i1 + 1] = b"\1" * (i1 - i0 + 1)
+
+    def mark_track(m, xa, ya, xb, yb, d):
+        i0, i1 = max(0, int((min(xa, xb) - d - x0) / g)), min(W - 1, int((max(xa, xb) + d - x0) / g) + 1)
+        j0, j1 = max(0, int((min(ya, yb) - d - y0) / g)), min(H - 1, int((max(ya, yb) + d - y0) / g) + 1)
+        dx, dy = xb - xa, yb - ya; L2 = dx * dx + dy * dy
+        for j in range(j0, j1 + 1):
+            y = y0 + j * g
+            for i in range(i0, i1 + 1):
+                x = x0 + i * g
+                t = 0.0 if L2 == 0 else max(0.0, min(1.0, ((x - xa) * dx + (y - ya) * dy) / L2))
+                if (x - xa - t * dx) ** 2 + (y - ya - t * dy) ** 2 < d * d: m[j * W + i] = 1
+
+    margin = int(math.ceil((R["edge"] + R["track"] / 2 + 0.25) / g))
+    DIRS = ((1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1))
+    STEP = tuple(g * (1.4142135623730951 if di and dj else 1.0) for di, dj in DIRS)
+    COST = tuple(tuple(STEP[k] * (CK_GRAIN[1] if di and dj else 1.0 if (dj == 0) == (L == 0) else CK_GRAIN[0])
+                       for k, (di, dj) in enumerate(DIRS)) for L in (0, 1))   # the top across the board, the bottom up and down
+    laid = []                                               # (net, layer 0 / 1, xa, ya, xb, yb)
+    holes = []                                              # (net, x, y): the vias
+    vbase = bytearray(W * H)                                # where no via's centre may be, whatever its net
+    for j in range(H):
+        if j < margin + 2 or j >= H - margin - 2: vbase[j * W:(j + 1) * W] = b"\1" * W
+        else: vbase[j * W:j * W + margin + 2] = b"\1" * (margin + 2); vbase[(j + 1) * W - margin - 2:(j + 1) * W] = b"\1" * (margin + 2)
+    for k in keepout: mark(vbase, k[0], k[1], k[2], k[3], vreach)
+    for n, l, t, r, btm in boxes: mark(vbase, l, t, r, btm, vreach)
+    report = []
+    for net, sref, spin in CLOCKS:
+        mine = bynet[net]
+        own = {node(x, y): (ref, pin, x, y) for ref, pin, x, y in mine}
+        src = [nd for nd, (ref, pin, _, _) in own.items() if (ref, pin) == (sref, spin)]
+        if len(src) != 1: raise SystemExit("clockroute: %s has no pad %s.%s" % (net, sref, spin))
+        base, near = bytearray(W * H), bytearray(W * H)
+        for j in range(H):
+            if j < margin or j >= H - margin: base[j * W:(j + 1) * W] = b"\1" * W
+            else: base[j * W:j * W + margin] = b"\1" * margin; base[(j + 1) * W - margin:(j + 1) * W] = b"\1" * margin
+        for k in keepout: mark(base, k[0], k[1], k[2], k[3], reach)
+        for n, l, t, r, btm in boxes:
+            if n != net: mark(base, l, t, r, btm, reach); mark(near, l, t, r, btm, reach + CK_NEAR[0])
+        blk = [bytearray(base), bytearray(base)]
+        vb = bytearray(vbase)
+        for n, L, xa, ya, xb, yb in laid:
+            if n != net: mark_track(blk[L], xa, ya, xb, yb, apart); mark_track(vb, xa, ya, xb, yb, vreach + R["track"] / 2)
+        for n, x, y in holes:
+            if n != net:
+                for m in blk: mark_track(m, x, y, x, y, vreach + R["track"] / 2)
+                mark_track(vb, x, y, x, y, R["via"] + R["clearance"] + 0.01)
+        tree = {(0,) + src[0]: 0.0, (1,) + src[0]: 0.0}     # node -> mm of copper from the source
+        todo = {nd: v for nd, v in own.items() if nd != src[0]}
+        segs, ways, nvia = [], {}, 0
+        while todo:
+            best, prev, pq, hit = {}, {}, [], None
+            for nd, d in tree.items():
+                best[nd] = CK_ALPHA * d; heapq.heappush(pq, (CK_ALPHA * d, nd, -1))
+            while pq:
+                c, nd, dr = heapq.heappop(pq)
+                if c > best[nd]: continue
+                L, i, j = nd
+                if (i, j) in todo: hit = nd; break
+                if (i, j) in own:                           # the net's own pad: through to the other side
+                    o = (1 - L, i, j)
+                    if c < best.get(o, 1e18): best[o] = c; prev[o] = nd; heapq.heappush(pq, (c, o, -1))
+                elif not vb[j * W + i] and not blk[1 - L][j * W + i]:                  # a via
+                    o = (1 - L, i, j)
+                    if c + CK_VIA < best.get(o, 1e18): best[o] = c + CK_VIA; prev[o] = nd; heapq.heappush(pq, (c + CK_VIA, o, -1))
+                m = blk[L]; cost = COST[L]
+                for k in range(8):
+                    di, dj = DIRS[k]; ii, jj = i + di, j + dj
+                    if ii < 0 or jj < 0 or ii >= W or jj >= H or m[jj * W + ii]: continue
+                    if di and dj and (m[j * W + ii] or m[jj * W + i]): continue        # no cutting a corner
+                    cc = c + cost[k] + STEP[k] * CK_NEAR[1] * near[jj * W + ii] + (CK_TURN if dr >= 0 and dr != k else 0.0)
+                    o = (L, ii, jj)
+                    if cc < best.get(o, 1e18): best[o] = cc; prev[o] = nd; heapq.heappush(pq, (cc, o, k))
+            if hit is None:
+                raise SystemExit("clockroute: no way for %s to %s" % (net, ", ".join("%s.%s" % v[:2] for v in todo.values())))
+            path = [hit]
+            while path[-1] not in tree: path.append(prev[path[-1]])
+            path.reverse()
+            d = tree[path[0]]
+            for a, c in zip(path, path[1:]):
+                if a[0] == c[0]: d += math.hypot(c[1] - a[1], c[2] - a[2]) * g
+                tree[c] = d
+            tree[(1 - hit[0],) + hit[1:]] = d
+            ref, pin, _, _ = todo.pop(hit[1:]); ways["%s.%s" % (ref, pin)] = d
+            run = [path[0]]                                 # the path as straight pieces
+            for a, c in zip(path, path[1:]):
+                if a[0] != c[0]:
+                    if len(run) > 1: segs.append((run[0], run[-1]))
+                    if a[1:] not in own:                    # a via, and no other of this net beside it
+                        x, y = x0 + a[1] * g, y0 + a[2] * g
+                        holes.append((net, x, y)); nvia += 1; mark_track(vb, x, y, x, y, R["via"] + R["hole_to_hole"])
+                    run = [c]; continue
+                if len(run) > 1 and (run[-1][1] - run[-2][1], run[-1][2] - run[-2][2]) != (c[1] - a[1], c[2] - a[2]):
+                    segs.append((run[0], run[-1])); run = [run[-1]]
+                run.append(c)
+            if len(run) > 1: segs.append((run[0], run[-1]))
+        mm = 0.0
+        for a, c in segs:
+            xa, ya, xb, yb = x0 + a[1] * g, y0 + a[2] * g, x0 + c[1] * g, y0 + c[2] * g
+            laid.append((net, a[0], xa, ya, xb, yb)); mm += math.hypot(xb - xa, yb - ya)
+        used = {(a[0],) + a[1:] for a, c in segs} | {(c[0],) + c[1:] for a, c in segs}
+        for nd, (ref, pin, x, y) in own.items():            # from the grid's point in a pad to the pad's centre
+            for L in (0, 1):
+                xn, yn = x0 + nd[0] * g, y0 + nd[1] * g
+                if (L,) + nd in used and math.hypot(x - xn, y - yn) > 0.001: laid.append((net, L, xn, yn, x, y))
+        report.append("%-5s %6.1f mm, %d vias, from %s.%s: %s" % (net, mm, nvia, sref, spin, ", ".join(
+            "%s %.0f" % (k, v) for k, v in sorted(ways.items(), key=lambda kv: kv[1]))))
+    for net, L, xa, ya, xb, yb in laid:
+        t = pcbnew.PCB_TRACK(b)
+        t.SetStart(pcbnew.VECTOR2I(FM(xa), FM(ya))); t.SetEnd(pcbnew.VECTOR2I(FM(xb), FM(yb)))
+        t.SetWidth(FM(R["track"])); t.SetLayer(pcbnew.B_Cu if L else pcbnew.F_Cu)
+        t.SetNet(b.FindNet("/" + net)); t.SetLocked(True); b.Add(t)
+    for net, x, y in holes:
+        v = pcbnew.PCB_VIA(b)
+        v.SetViaType(pcbnew.VIATYPE_THROUGH); v.SetLayerPair(pcbnew.F_Cu, pcbnew.B_Cu)
+        v.SetPosition(pcbnew.VECTOR2I(FM(x), FM(y))); v.SetWidth(pcbnew.F_Cu, FM(R["via"])); v.SetDrill(FM(R["via_drill"]))
+        v.SetNet(b.FindNet("/" + net)); v.SetLocked(True); b.Add(v)
+    pcbnew.SaveBoard(out, b)
+    across = [sum(math.hypot(xb - xa, yb - ya) for n, L, xa, ya, xb, yb in laid
+                  if L == k and (abs(xb - xa) < 0.4 * abs(yb - ya) if k == 0 else abs(yb - ya) < 0.4 * abs(xb - xa))) for k in (0, 1)]
+    print("clockroute: %d nets, %d locked tracks, %d vias (grid %.2f mm, alpha %.1f); across the grain %.0f mm on the top, "
+          "%.0f mm on the bottom" % (len(CLOCKS), len(laid), len(holes), g, CK_ALPHA, across[0], across[1]))
+    for r in report: print("  " + r)
+
+
+def clocks(pcb, out=None):
+    """gen_v40.py clocks <pcb> [report.txt]: the clock nets as they are on a board - track, vias, and the copper's
+    length from each net's source to every input (the shortest way through its tracks, vias and pads). False if an
+    input is not reached, or if a clock's track is not locked"""
+    import pcbnew, heapq, math
+    b = pcbnew.LoadBoard(pcb); MM = pcbnew.ToMM
+    bynet, _ = _clock_pads(b)
+    boxes = {}
+    for fp in b.GetFootprints():
+        for p in fp.Pads():
+            q = p.GetBoundingBox()
+            boxes[(fp.GetReference(), p.GetNumber())] = (MM(q.GetLeft()), MM(q.GetTop()), MM(q.GetRight()), MM(q.GetBottom()))
+    segs, vias, free = collections.defaultdict(list), collections.defaultdict(list), 0
+    names = {c[0] for c in CLOCKS}
+    for t in b.GetTracks():
+        n = t.GetNetname().lstrip("/")
+        if n not in names: continue
+        free += not t.IsLocked()
+        if t.Type() == pcbnew.PCB_VIA_T: vias[n].append((MM(t.GetPosition().x), MM(t.GetPosition().y)))
+        else: segs[n].append((t.GetLayerName(), (MM(t.GetStart().x), MM(t.GetStart().y)), (MM(t.GetEnd().x), MM(t.GetEnd().y))))
+    d = lambda a, c: math.hypot(a[0] - c[0], a[1] - c[1])
+
+    def on(p, a, c):                                        # p inside the piece a-c, not at its ends
+        L = d(a, c)
+        if L < 1e-6: return False
+        t = ((p[0] - a[0]) * (c[0] - a[0]) + (p[1] - a[1]) * (c[1] - a[1])) / L / L
+        return 1e-6 < t < 1 - 1e-6 and d(p, (a[0] + t * (c[0] - a[0]), a[1] + t * (c[1] - a[1]))) < 0.002
+    key = lambda ly, p: (ly, round(p[0], 3), round(p[1], 3))
+    lines, bad, total, far = [], 0, 0.0, {}
+    for net, sref, spin in CLOCKS:
+        g = collections.defaultdict(list)
+        def link(u, v, w): g[u].append((v, w)); g[v].append((u, w))
+        pts = collections.defaultdict(set)
+        for ly, a, c in segs[net]: pts[ly].add(a); pts[ly].add(c)
+        for v in vias[net]:
+            for ly in ("F.Cu", "B.Cu"): pts[ly].add(v)
+            link(key("F.Cu", v), key("B.Cu", v), 0.0)
+        for ref, pin, x, y in bynet[net]:
+            l, t, r, btm = boxes[(ref, pin)]
+            for ly in ("F.Cu", "B.Cu"):
+                for p in pts[ly]:
+                    if l <= p[0] <= r and t <= p[1] <= btm: link((ref, pin), key(ly, p), d(p, (x, y)))
+        for ly, a, c in segs[net]:
+            chain = [a] + sorted((p for p in pts[ly] if on(p, a, c)), key=lambda p: d(a, p)) + [c]
+            for u, v in zip(chain, chain[1:]): link(key(ly, u), key(ly, v), d(u, v))
+        dist, h = {(sref, spin): 0.0}, [(0.0, 0, (sref, spin))]; k = 0
+        while h:
+            w, _, u = heapq.heappop(h)
+            if w > dist.get(u, 1e18): continue
+            for v, x in g[u]:
+                if w + x < dist.get(v, 1e18): k += 1; dist[v] = w + x; heapq.heappush(h, (w + x, k, v))
+        loads = sorted((dist.get((ref, pin), None), "%s.%s" % (ref, pin)) for ref, pin, _, _ in bynet[net] if (ref, pin) != (sref, spin))
+        opens = [n for w, n in loads if w is None]; bad += len(opens)
+        mm = sum(d(a, c) for _, a, c in segs[net]); total += mm
+        if loads and not opens: far[net] = loads[-1][0]
+        lines.append("%-5s %6.1f mm, %d vias, from %s.%s: %s%s" % (net, mm, len(vias[net]), sref, spin, ", ".join(
+            "%s %.0f" % (n, w) for w, n in loads if w is not None), "; NOT REACHED: " + " ".join(opens) if opens else ""))
+    lines.append("clock track in all %.0f mm; the farthest input of CK %.0f, D2 %.0f, D3 %.0f, STG %.0f mm from its resistor; "
+                 "%s" % (total, far.get("CK", -1), far.get("D2", -1), far.get("D3", -1), far.get("STG", -1),
+                         "every clock track locked" if not free else "%d clock tracks NOT locked" % free))
+    text = "\n".join(lines)
+    print(text)
+    if out: open(out, "w").write("The clock nets on %s (gen_v40.py clocks): track, vias, and the copper's length in mm from each\n"
+                                 "net's source to every input.\n\n%s\n" % (os.path.basename(pcb), text))
+    ok = not bad and not free
+    print("clocks: %s" % ("PASS" if ok else "FAIL"))
+    return ok
+
+
 def drawing(pcb, out=None):
     """gen_v40.py drawing <pcb> [out.pdf]: the placement drawing - the outline, every part's body with its reference
     (F.Fab) and the silkscreen's texts, in one orientation, on a landscape sheet as the board lies (the board-layout
@@ -1679,6 +1947,10 @@ if __name__ == "__main__":
         ok = silk_cmd(*a)
     elif cmd == "planes":
         ok = planes(*a)
+    elif cmd == "clockroute":
+        clockroute(*a)
+    elif cmd == "clocks":
+        ok = clocks(*a)
     elif cmd == "verify":
         ok = verify(*a)
     elif cmd == "bom":
