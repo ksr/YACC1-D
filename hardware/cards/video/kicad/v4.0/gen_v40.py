@@ -44,6 +44,7 @@ Run with KiCad's bundled Python (pcbnew), from this folder:
   gen_v40.py link <netlist> <pcb>         -> the footprints' schematic links (path) set from the netlist, nothing else
   gen_v40.py verify <netlist> <pcb>       -> the key connections pin by pin (schematic and board), layers, planes
   gen_v40.py bom                          -> BOM.md: the bill of materials from v40_netlist.PARTS (plain Python)
+  gen_v40.py fab <pcb>                    -> the order's files: gerbers/ and video-v4.0-gerbers.zip (nothing is ordered)
 """
 import os, sys, re, json, uuid, shutil, subprocess, collections, importlib.util
 
@@ -1674,6 +1675,33 @@ def clocks(pcb, out=None):
     return ok
 
 
+def fab(pcb):
+    """gen_v40.py fab <pcb>: the order's files beside the board - gerbers/ (the four copper layers, both masks, both
+    silkscreens, the outline, the plated and the non-plated drill file with their maps) and <board>-gerbers.zip of
+    them, with the export options of the memory card v2.0's order (finish_v2.py fab). It orders nothing: the zip is
+    what pcb-check reads before an order"""
+    import glob, zipfile
+    d = os.path.dirname(os.path.abspath(pcb)); name = os.path.basename(pcb)[:-len(".kicad_pcb")]
+    ger, zipf = os.path.join(d, "gerbers"), os.path.join(d, name + "-gerbers.zip")
+    if os.path.isdir(ger): shutil.rmtree(ger)
+    os.makedirs(ger)
+    run = lambda *a: subprocess.run(list(a), check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    run(CLI, "pcb", "export", "gerbers", "--no-protel-ext", "--layers",
+        "F.Cu,In1.Cu,In2.Cu,B.Cu,F.Mask,B.Mask,F.Silkscreen,B.Silkscreen,Edge.Cuts", "-o", ger + "/", pcb)
+    run(CLI, "pcb", "export", "drill", "--format", "excellon", "--excellon-units", "mm", "--generate-map",
+        "--map-format", "gerberx2", "--excellon-separate-th", "-o", ger + "/", pcb)
+    if os.path.exists(zipf): os.remove(zipf)
+    files = sorted(glob.glob(ger + "/*"))
+    with zipfile.ZipFile(zipf, "w", zipfile.ZIP_DEFLATED) as z:
+        for f in files: z.write(f, os.path.basename(f))
+    holes = {}
+    for kind in ("PTH", "NPTH"):                            # the drill files' own count: a hole is a line X..Y.., a
+        text = open(os.path.join(ger, "%s-%s.drl" % (name, kind))).read()                  # slot one with G85 after it
+        holes[kind] = len(re.findall(r"^X-?[\d.]+Y-?[\d.]+", text, re.M)); holes[kind + " slots"] = text.count("G85")
+    print("fab: %d files in gerbers/ and %s; %d plated holes, %d of them slots; %d not plated"
+          % (len(files), os.path.basename(zipf), holes["PTH"], holes["PTH slots"], holes["NPTH"]))
+
+
 def drawing(pcb, out=None):
     """gen_v40.py drawing <pcb> [out.pdf]: the placement drawing - the outline, every part's body with its reference
     (F.Fab) and the silkscreen's texts, in one orientation, on a landscape sheet as the board lies (the board-layout
@@ -1953,6 +1981,8 @@ if __name__ == "__main__":
         ok = clocks(*a)
     elif cmd == "verify":
         ok = verify(*a)
+    elif cmd == "fab":
+        fab(*a)
     elif cmd == "bom":
         bom()
     elif cmd in ("dsn", "shuffle", "ses", "stats", "refill"):

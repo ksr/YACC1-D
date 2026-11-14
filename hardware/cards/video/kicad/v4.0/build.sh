@@ -15,7 +15,8 @@
 # GND/VCC not routed: -inc Power; the clocks are fixed wiring to it), each imported, its planes refilled and DRC'd,
 # its clocks looked at again; the best kept (fewest unrouted, then fewest vias, then shortest) and its planes made
 # one piece each (gen_v40.py planes); the reports (netlist, ERC, DRC with schematic parity, schematic PDF, the
-# placement drawing, renders, netlist proof, the clock nets, BOM); gen_v40.py verify. Needs KiCad 10 and Freerouting
+# placement drawing, renders, netlist proof, the clock nets, BOM); gen_v40.py verify; and, when every check has
+# passed, the order's files (gen_v40.py fab: gerbers/ and the zip that pcb-check reads). Needs KiCad 10 and Freerouting
 # 1.9 (FRJAR, default ~/freerouting/freerouting.jar; it opens a window for each run while it works).
 HERE=$(cd "$(dirname "$0")" && pwd)
 PYK=/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3
@@ -158,5 +159,11 @@ EOF
 run "$PYK" gen_v40.py place "$P.kicad_pcb" || fail=1
 run "$PYK" gen_v40.py verify "$R/netlist.net" "$P.kicad_pcb" || fail=1
 "$PYK" gen_v40.py clocks "$P.kicad_pcb" > "$TMP/run.log" 2>&1 || fail=1; tail -1 "$TMP/run.log"
+if [ $fail = 0 ]; then
+  echo "== 6  the order's files, for pcb-check (nothing is ordered) =="
+  run "$PYK" gen_v40.py fab "$P.kicad_pcb" || fail=1
+else                         # no order's files beside a board that failed: they would be another board's
+  rm -rf gerbers "$P-gerbers.zip"
+fi
 [ $fail = 0 ] && echo "build.sh: ALL CHECKS PASS" || echo "build.sh: FAILED"
 exit $fail
