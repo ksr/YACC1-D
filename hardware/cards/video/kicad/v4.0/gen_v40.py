@@ -912,7 +912,9 @@ _jp1x, _jp1y = PLACE["JP1"][:2]
 SILK += [("ON: PS/2 -INT", _jp1x - 13.0, _jp1y + 1.3, 1.0)]
 # the text beside a reference (the board-layout rules): each IC's type, the LED's and the jumpers' function, every
 # resistor's, network's, capacitor's and crystal's value, the oscillator's frequency
-TYPE_SHORT = {"IC10": "68B45", "IC28": "AS6C1008-55", "IC41": "ATmega328P"}
+# (as the parts list has it, the grade with it: "IC10 HD68B45SP / MC68B45P", "IC28 AS6C1008-55PCN", "IC41
+# ATmega328P-P". Until 2026-11-14 these three were shortened, and pcb-check did not find their values on the silk)
+TYPE_SHORT = {}
 VALUE_SHORT = {"C1": "47u", "F1": "0.5A"}
 COMPANION = dict({r: TYPE_SHORT.get(r, v[0]) for r, v in N.PARTS.items() if r.startswith("IC")},
                  **{r: VALUE_SHORT.get(r, v[0]) for r, v in N.PARTS.items() if re.match(r"(RN?|C|Q|Y|F)\d", r)},

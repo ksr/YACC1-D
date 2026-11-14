@@ -6,6 +6,7 @@
 # the checks. The V2.0 card's build (../v2.0/build.sh) is the model.
 #
 #   hardware/cards/video/kicad/v4.0/build.sh        rebuild everything from v40_netlist.py, then verify
+#   SILK=1 hardware/cards/video/kicad/v4.0/build.sh the routed board kept: its silkscreen texts anew, then verify
 #
 # Steps: gen_v40.py sch (local libraries + the schematic: a root and eight wired sheets, node + elkjs) and its netlist
 # checked against v40_netlist.py; the project rules; the unrouted board (gen_v40.py board: the blank card's X1, a
@@ -34,6 +35,9 @@ MT=${MT:-1}                  # its optimiser's threads. MT=0: no optimising afte
                              # "does this placement route?" (half an hour; a run killed while it optimises leaves
                              # no result at all)
 KEEP=${KEEP:-}               # a folder to keep each run's log and board in (for a look at a route that failed)
+SILK=${SILK:-}               # SILK=1: no new board and no routing - the board as it is gets its silkscreen texts
+                             # written and placed afresh (gen_v40.py silk: no part, track, via or plane is touched),
+                             # then the reports, the checks and the order's files as after any build
 WATCHDOG=${WATCHDOG:-14400}  # seconds of running time (a sleeping Mac's hours do not count): the four runs of the
                              # committed board took 9580 s, those of 2026-11-13 7950 s (8 hours by the clock: the
                              # Mac slept three times). A run stopped while it optimises leaves no result
@@ -51,6 +55,11 @@ mkdir -p "$R"
 # go on when it wakes
 command -v caffeinate >/dev/null 2>&1 && caffeinate -i -w $$ &
 
+if [ -n "$SILK" ]; then
+  echo "== the silk only: the board as it is, its texts written and placed afresh =="
+  [ -f "$P.kicad_pcb" ] || { echo "no board"; exit 1; }
+  run "$PYK" gen_v40.py silk "$P.kicad_pcb" || exit 1
+else
 echo "== 1  schematic, netlist, project rules, the unrouted board =="
 "$PYK" gen_v40.py sch 2>&1 | q
 "$PYK" gen_v40.py project 2>&1 | q
@@ -124,6 +133,7 @@ echo "  kept: seed $BEST"
 cp "$TMP/s$BEST/r.kicad_pcb" "$P.kicad_pcb"
 "$PYK" gen_v40.py planes "$P.kicad_pcb" > "$TMP/planes.log" 2>&1; st=$?   # each plane one piece
 q < "$TMP/planes.log"; [ $st = 0 ] || exit 1
+fi
 
 echo "== 4  reports =="
 "$CLI" sch erc --format json --severity-all -o "$R/erc.json" "$P.kicad_sch" >/dev/null 2>&1
