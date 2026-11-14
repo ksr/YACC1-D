@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.kicad.org/drc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-11-13T19:26:07",
+    "date": "2026-11-14T02:00:42",
     "ignored_checks": [
         {
             "description": "Footprint has no courtyard defined",
@@ -47,7 +47,7 @@
                         "x": 17.747,
                         "y": 123.995
                     },
-                    "uuid": "dd928f0a-6990-4258-929f-795992d79464"
+                    "uuid": "ae5e9761-212a-4d63-8819-f934940ec3f1"
                 },
                 {
                     "description": "Segment of X1 on F.Silkscreen",
@@ -55,7 +55,7 @@
                         "x": 19.017,
                         "y": 24.935
                     },
-                    "uuid": "6fa74e94-51ac-4d43-8f71-5754927d7a63"
+                    "uuid": "a4c37faa-d058-44aa-85f1-70259a4420bf"
                 }
             ],
             "severity": "warning",
@@ -70,7 +70,7 @@
                         "x": 17.747,
                         "y": 123.995
                     },
-                    "uuid": "dd928f0a-6990-4258-929f-795992d79464"
+                    "uuid": "ae5e9761-212a-4d63-8819-f934940ec3f1"
                 },
                 {
                     "description": "Segment of X1 on F.Silkscreen",
@@ -78,7 +78,7 @@
                         "x": 19.017,
                         "y": 108.755
                     },
-                    "uuid": "f850b417-a108-49f1-a289-e8c26afd2b4f"
+                    "uuid": "6cd4c874-7684-4d45-a730-7fa6fa44e293"
                 }
             ],
             "severity": "warning",
@@ -93,7 +93,7 @@
                         "x": 17.747,
                         "y": 123.995
                     },
-                    "uuid": "dd928f0a-6990-4258-929f-795992d79464"
+                    "uuid": "ae5e9761-212a-4d63-8819-f934940ec3f1"
                 },
                 {
                     "description": "Segment of X1 on F.Silkscreen",
@@ -101,7 +101,7 @@
                         "x": 22.827,
                         "y": 19.855
                     },
-                    "uuid": "5aae7a84-ecfd-489e-9187-80722c821370"
+                    "uuid": "82c2c609-4be4-4feb-abc4-8ae01f4a23be"
                 }
             ],
             "severity": "warning",
@@ -116,7 +116,7 @@
                         "x": 17.747,
                         "y": 123.995
                     },
-                    "uuid": "dd928f0a-6990-4258-929f-795992d79464"
+                    "uuid": "ae5e9761-212a-4d63-8819-f934940ec3f1"
                 },
                 {
                     "description": "Segment of X1 on F.Silkscreen",
@@ -124,7 +124,7 @@
                         "x": 22.827,
                         "y": 113.7951
                     },
-                    "uuid": "1a853c97-f504-4c80-b436-8660cf26c426"
+                    "uuid": "8c6bef2d-a84e-4542-8b74-8fd502bbe494"
                 }
             ],
             "severity": "warning",
@@ -139,7 +139,7 @@
                         "x": 260.917,
                         "y": 22.5
                     },
-                    "uuid": "7d636dd2-0f66-4749-a6a7-9fe63f4569a8"
+                    "uuid": "a39bcf2c-cc6b-4ea0-86c6-d59757a3f796"
                 }
             ],
             "severity": "warning",

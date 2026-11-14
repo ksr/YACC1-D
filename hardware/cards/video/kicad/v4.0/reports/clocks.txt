@@ -1,0 +1,12 @@
+The clock nets on video-v4.0.kicad_pcb (gen_v40.py clocks): track, vias, and the copper's length in mm from each
+net's source to every input.
+
+OSCO    10.0 mm, 0 vias, from OSC1.8: R20.1 10
+QC       6.3 mm, 0 vias, from IC11.12: R21.1 6
+QD       4.6 mm, 0 vias, from IC11.11: R22.1 5
+STGO     8.0 mm, 0 vias, from IC13.2: R23.1 8
+CK     187.0 mm, 1 vias, from R20.2: IC11.2 16, IC12.3 35, IC19.12 46, IC20.11 54, IC33.12 77, IC35.3 125, IC35.11 134
+D2     288.4 mm, 5 vias, from R21.2: IC34.3 18, IC20.3 34, IC38.11 45, IC32.11 64, IC13.3 81, IC21.9 84, IC36.1 86, IC17.11 91
+D3     184.6 mm, 2 vias, from R22.2: IC12.11 41, IC12.2 50, IC14.6 73, IC13.1 75, IC24.2 108
+STG    172.0 mm, 1 vias, from R23.2: IC22.4 70, IC15.11 71, IC16.11 102
+clock track in all 861 mm; the farthest input of CK 134, D2 91, D3 108, STG 102 mm from its resistor; every clock track locked

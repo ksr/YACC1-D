@@ -496,13 +496,17 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   vias, 27.4 m (three of four component orders complete, two clean; 2 h 12 min of running time). The status of
   each finding is in the review's table. Also corrected: the board never had "499 connections" - that is the most
   KiCad's rule check lists; the count is 515 before the fixes and 519 now, 0 open either way.
-  **The clocks are not all shorter.** Measured on the new route: D2's farthest input 101 mm from its resistor (197
-  before), STG's 153 (200), D3's 117 (128), but the dot clock's 188 mm (166) on 231 mm of track (177): the counter
-  moved away from the shifters and the slot logic's flip-flops, and Freerouting treats a clock as any net (the
-  other clean route of the run has CK's farthest input at 137 mm and D2's at 228). **To decide: the four clocks
-  routed first, on the empty board, and kept while the rest is routed** - a change to `build.sh` and one more
-  routing run - or the board as it is, every clock behind its series resistor.
-  **Next:** that decision; `pcb-check` with the order's files and the VGA socket laid on a 1:1 print; then the
+  **The four clocks are laid first (decided 2026-11-13; on the board 2026-11-14, `build.sh`: ALL CHECKS PASS).**
+  On the route of 2026-11-13 the clocks were not all shorter (the dot clock's farthest input 188 mm from its
+  resistor, 166 before the review): Freerouting treats a clock as any net. `gen_v40.py clockroute` now lays CK,
+  D2, D3 and STG as trees from their series resistors before Freerouting sees the board, locked, and Freerouting
+  routes the other 492 connections round them. The way to each clock's farthest input: CK 134 mm (188 on the route
+  of 2026-11-13, 166 before the review), D2 91 (101, 197), D3 108 (117, 128), STG 102 (153, 200); the same on
+  every build. The first trees took the shortest way on either layer, and the board did not route round them (4 to
+  12 connections open in every order); the trees follow the layers' grain now - the top across the board, the
+  bottom up and down - with nine vias. The route: 519 connections, 455 vias (377 with the router's own clocks),
+  27.6 m; one of four component orders complete; 2 h 40 min of running time.
+  **Next:** `pcb-check` with the order's files and the VGA socket laid on a 1:1 print; then the
   order. Beside it: the emulators' model and the ROM driver (branch `video-v2`). `tools/vidsim.py timing` is still
   to learn 16 dots a count, to check the 6845's tables. A routing run needs the Mac awake: lid open, charger in
   (the run of 2026-11-13 took 8 hours by the clock for 2 h 12 min of work, the Mac asleep three times).
