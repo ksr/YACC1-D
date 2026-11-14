@@ -8,7 +8,8 @@ is placed and routed, all checks passing (section 11). A design review (2026-11-
 an order; they are settled and the board is routed again (2026-11-13; and once more 2026-11-14, its four clocks
 laid first). The pre-order check finds no failure (2026-11-14, one warning: section 11). The card in the machine
 is the [V1.0](video.md). The
-[V2.0](video-v2.md) is designed, ready to order and on hold while this card is looked at. The [V3](video-v3.md),
+[V2.0](video-v2.md) is designed and stays on file, ready to order: it is not ordered (decided 2026-11-14: this card
+is the one to build) and will probably never be built. The [V3](video-v3.md),
 round the HD63484, is not built.
 
 The aim is the V2.0 card's picture on monitors sold today: a **VGA** monitor at 31.47 kHz, **80 x 25 characters of
@@ -621,9 +622,17 @@ address: section 13, "Possible later".
   glyph inverted, so the 6845's R10 / R11 still choose block or underline. Nothing on the board depends on any of
   it: the chip is an EEPROM and is burned again for another font or other glyphs at $00-$1F.
 
-**Proposed here, to decide**
-- **V2.0**: ordered as well, or left as it is. If ordered: its slot mode has the write pulse that the strobe can
-  cut short (section 7), which the 2026-10-23 re-review judged harmless.
+- V2.0 is not ordered (decided 2026-11-14): this card is the video card to build, alone. V2.0 stays on file as it
+  is, ready to order (`hardware/cards/video/kicad/v2.0`), and will probably never be built. This card shows all that
+  V2.0 shows and more - lower case, 25 rows, 640 x 400, graphics shown to a 3.5 MHz CPU clock where V2.0's limit is
+  1.8 - on a monitor sold today; a second card is a second set of parts and a second line of software to keep; and
+  the V1.0 card in the machine is what the YACC1 falls back on while this card is on the bench. V2.0's software
+  stays on the branch `video-v2`, beside this card's, until this card runs in the machine. Should V2.0 be ordered
+  after all: its slot mode has the write pulse that the strobe can cut short (section 7), which the 2026-10-23
+  re-review judged harmless.
+
+**To decide**: nothing. The control bits' places, the raster, the font and V2.0's order were the note's open
+questions; all four are answered (2026-11-14).
 
 **Possible later, not in this design**
 - 80 x 30 and 640 x 480 graphics: 2,400 characters and 1,200 counts a plane, more than the two 2K windows hold.
