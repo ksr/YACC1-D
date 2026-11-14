@@ -19,7 +19,9 @@ The names: D0-D3 are the dot counter's bits (IC11: the dot within a count, 0-15)
 edge at which the counter becomes n. Net names ending in # are active low.
 
   the clock      CRTCCK, the 6845's clock, is D3 a dot late (IC12/A): low in dots 1-8, high in 9-0. The 6845 steps as
-                 it falls, as dot 1 begins.
+                 it falls, as dot 1 begins. The four nets that clock parts across the board each leave their source
+                 through a 33 ohm resistor (the design review's V4-1 and V4-2: series termination): CK from the
+                 oscillator (R20), D2 and D3 from the counter's QC and QD (R21, R22), STG from its inverter (R23).
   the stage      IC15 / IC16 take MA0-9, DE, CURSOR, HSYNC and VSYNC as dot 0 begins (STG = NOT D3), 15 dots after
                  the 6845 stepped: SA0-9, SDE, SCUR, SHS, SVS, steady for a count. RA0-3 are not staged (they move
                  once a line, in the blanking).
@@ -64,7 +66,7 @@ Pin numbers are the physical DIP pins. Bus pins: the V3.2 DIN 41612 connector (d
 
 CARD = "YACC1 video card"
 REV = "V4.0"
-DATE = "2026-11-12"
+DATE = "2026-11-13"
 
 DIP = {n: "Package_DIP:DIP-%d_W7.62mm" % n for n in (14, 16, 20, 28)}
 DIPW = {n: "Package_DIP:DIP-%d_W15.24mm" % n for n in (28, 32, 40, 48)}
@@ -135,6 +137,10 @@ PARTS = {
     "R8":   ("10k", "Device:R", FP_R, "GDOT pull-down: no graphics dot in the text-only build (IC33 not fitted)"),
     "R9":   ("10k", "Device:R", FP_R, "WRQ pull-down for the text-only build (IC34 not fitted)"),
     "R10":  ("10k", "Device:R", FP_R, "TXTONLY pull-up: IN PC bit 3 = 1 when IC34 is not fitted"),
+    "R20":  ("33", "Device:R", FP_R, "CK: series termination at the oscillator's output"),
+    "R21":  ("33", "Device:R", FP_R, "D2: series termination at the counter's QC"),
+    "R22":  ("33", "Device:R", FP_R, "D3: series termination at the counter's QD"),
+    "R23":  ("33", "Device:R", FP_R, "STG: series termination at its inverter's output"),
     # --- PS/2 (the V2.0 card's section; embedded/video-ps2)
     "IC41": ("ATmega328P-P", "MCU_Microchip_ATmega:ATmega48PV-10P", DIP[28], "PS/2 controller (embedded/video-ps2)"),
     "IC42": ("74LS374", "74xx:74LS374", DIP[20], "PS/2 data latch (IN PE)"),
@@ -266,7 +272,8 @@ c("GND", "IC16.8", "IC16.9", "IC15.1", "IC16.1")                           # two
 c("SA8", "IC16.19"); c("SA9", "IC16.18")
 c("SDE", "IC16.17", "IC12.12", "IC7.6"); c("SCUR", "IC16.16", "IC23.9")
 c("SHS", "IC16.15", "IC8.11", "IC40.3", "IC40.11"); c("SVS", "IC16.14", "IC13.13", "IC40.2", "IC7.4")
-c("STG", "IC13.2", "IC15.11", "IC16.11", "IC22.4")                         # NOT D3: rises as dot 0 begins
+c("STGO", "IC13.2", "R23.1")                                               # NOT D3: rises as dot 0 begins
+c("STG", "R23.2", "IC15.11", "IC16.11", "IC22.4")
 c("CRTCCK", "IC12.5", "IC10.21")
 c("-IO-WR", "IC10.22"); c("CRTCE", "IC22.3", "IC10.23"); c("IO-ADDR0", "IC10.24"); c("CRTCCS#", "IC9.3", "IC10.25")
 for i in range(8):
@@ -302,13 +309,15 @@ c("GND", "IC7.2", "IC7.17"); c("VCC", "IC7.11", "IC7.13", "IC7.15")       # bit 
 c("TXTONLY", "IC7.8", "IC34.9", "R10.1"); c("VCC", "R10.2")               # bit 3: 0 = graphics fitted (IC34/B's Q)
 
 # ---- the dot clock, the counter IC11, the 6845's clock and SDE2 (IC12), the inverters IC13 ---------------------------
-c("CK", "OSC1.8", "IC11.2", "IC12.3", "IC20.11", "IC35.3", "IC35.11", "IC19.12", "IC33.12")
+c("OSCO", "OSC1.8", "R20.1")
+c("CK", "R20.2", "IC11.2", "IC12.3", "IC20.11", "IC35.3", "IC35.11", "IC19.12", "IC33.12")
 c(PU, "IC11.1", "IC11.7", "IC11.9", "IC11.10")                             # -CLR, ENP, -LOAD, ENT: it only counts
 c("GND", "IC11.3", "IC11.4", "IC11.5", "IC11.6")
 c("D0", "IC11.14", "IC21.1", "IC38.9")
 c("D1", "IC11.13", "IC21.2", "IC38.10", "IC13.5")
-c("D2", "IC11.12", "IC13.3", "IC21.9", "IC17.11", "IC32.11", "IC20.3", "IC34.3", "IC36.1", "IC38.11")
-c("D3", "IC11.11", "IC12.2", "IC12.11", "IC13.1")
+c("QC", "IC11.12", "R21.1"); c("QD", "IC11.11", "R22.1")                 # the counter's own pins, before R21 / R22
+c("D2", "R21.2", "IC13.3", "IC21.9", "IC17.11", "IC32.11", "IC20.3", "IC34.3", "IC36.1", "IC38.11")
+c("D3", "R22.2", "IC12.2", "IC12.11", "IC13.1")
 c(PU, "IC12.1", "IC12.4", "IC12.10", "IC12.13")
 c("SDE2", "IC12.9", "IC21.5")
 c("D2N", "IC13.4", "IC21.4"); c("D1N", "IC13.6", "IC21.10")
@@ -466,7 +475,14 @@ BUY = {
     "IC18": "AT28C64B-15PU (Microchip), 150 ns, burned with the card's character generator image (256 glyphs of "
             "8 x 16 and their cursor forms: to be made)",
     "IC28": "AS6C1008-55PCN (Alliance, 128K x 8, 55 ns, 600-mil DIP-32)",
-    "OSC1": "25.175 MHz oscillator, 5 V, TTL / HCMOS output, full-size DIP-14 can, in a 4-pin socket",
+    "OSC1": "25.175 MHz oscillator, 5 V, full-size DIP-14 can, its output rated for 50 pF or 10 TTL loads (seven 74F "
+            "clock inputs and 240 mm of track hang on it, behind R20), its pin 1 not connected or an enable that is on when left "
+            "open; in a socket: four socket pins or a 4-pin oscillator socket on the DIP-14's corners. PIN 1 AT THE "
+            "SILK'S 1: turned round it has VCC on its ground pin",
+    "R20": "33 ohm (22 to 33): the clock's series termination", "R21": "33 ohm (22 to 33)", "R22": "33 ohm (22 to 33)",
+    "R23": "33 ohm (22 to 33)",
+    "SV1": "2x4 pin header and one 2.54 mm shunt (on 5-6: the $D000 block)",
+    "JP1": "1x2 pin header and one 2.54 mm shunt (fitted: the card may drive -INT)",
     "IC11": "74F163A: the type the timing is worked out with (not LS or HCT)",
     "IC12": "74F74", "IC20": "74F74", "IC34": "74F74", "IC35": "74F74", "IC19": "74F299", "IC33": "74F299", "IC21": "74F21",
     "IC30": "74ACT574: its hold time (1 ns) is what the read latch's clock is worked out with; it drives the bus",
@@ -474,15 +490,21 @@ BUY = {
     "IC31": "74HCT244; a 74ACT244 (24 mA) if DATA0's low level during a window read is above 0.5 V (V2.0's R2-6)",
     "IC41": "ATmega328P-PU with the Arduino Uno bootloader burned (ISP) before fitting",
     "IC1": "74S85 (the V1.x card's; a 74LS85 also works)",
-    "J2": "Same Sky (CUI Devices) MD-60SM, date code after 2022-03-03 (the footprint follows that layout)",
-    "J3": "Same Sky (CUI Devices) MD-60SM, date code after 2022-03-03",
+    "J2": "Same Sky (CUI Devices) MD-60SM, date code after 2022-03-03 (the footprint follows that layout): lay the "
+          "part on the footprint before soldering, a buyer cannot choose the date code",
+    "J3": "Same Sky (CUI Devices) MD-60SM, as J2",
     "F1": "Bourns MF-RHT050 (0.5 A hold, radial)",
     "J4": "1x6 pin header; a 5 V FTDI cable (TTL-232R-5V) or a 5 V FTDI Basic",
     "Y1": "16 MHz, HC-49/U, parallel resonant, 18-20 pF load (for C50 / C51 22 pF, as on an Arduino Uno)",
     "RN1": "10k x4 BUSSED, pin 1 common, 5-pin SIP; not an isolated network",
     "RN2": "10k x8 BUSSED, pin 1 common, 9-pin SIP; not an isolated network",
     "C1": "47 uF electrolytic, 16 V or more, radial 6.3 mm, 2.5 mm pitch",
-    "J1": "DE-15 (HD-15) socket, right-angle PCB mount, 3.03 mm from the pins to the edge",
+    "J1": "Kycon K61X-E15S-NJ (its drawing rev A5, 2017-12-31): right-angle HD-15 socket, 4-40 jackscrews fitted, "
+          "board locks. Its hole pattern is the footprint's within 0.06 mm (rows 1.95 mm apart for the footprint's "
+          "1.90, the front row 3.05 mm from the board's edge for 3.03, the locks 5.00 mm from it for 4.94, 24.99 mm "
+          "apart for 25.0); the signal holes are drilled 1.1 mm for it. NOT a part with rows 2.54 mm apart (Amphenol "
+          "ICD15S13E..., NorComp 181-015-...): another pattern, 8.89 mm from the edge. Lay the part on a 1:1 print "
+          "of the board before ordering",
 }
 for _r, _p in PARTS.items():
     if _p[0] == "100n": BUY[_r] = "ceramic X7R, 50 V, 2.5 mm lead spacing"

@@ -207,11 +207,15 @@ def minidin_footprint():
     return "\n".join(L)
 
 
-# The DE-15 (VGA) socket J1 has KiCad's own footprint (v40_netlist.FP_VGA): the common right-angle PCB part with a
-# stamped shell, pins in three rows 2.29 mm apart along the rows, the first row 3.03 mm and the two 3.2 mm mounting
-# holes 4.94 mm inside the board's edge, 25 mm apart. Its origin is pin 1; the board's edge is the line y = 6.83 of the
-# footprint, and the shell reaches 6.4 mm past it.
-# TO VERIFY against the part bought before any order: the rows' spacing (1.90 mm here; 1.98 on some makers' drawings).
+# The DE-15 (VGA) socket J1 has KiCad's own footprint (v40_netlist.FP_VGA): a right-angle PCB part with a stamped
+# shell, pins in three rows 2.29 mm apart along the rows and 1.90 mm from row to row, the front row 3.03 mm and the
+# two 3.2 mm lock holes 4.94 mm inside the board's edge, 25 mm apart. Its origin is pin 1; the board's edge is the line
+# y = 6.83 of the footprint, and the shell reaches 6.4 mm past it.
+# The part (the design review's V4-3, 2026-11-13): Kycon K61X-E15S-NJ, whose drawing (rev A5) has the rows 1.95 mm
+# apart, the front row 3.05 mm and the locks 5.00 mm from the edge, 24.99 mm apart: the footprint's pattern within
+# 0.06 mm. Its drawing asks for 1.09 mm signal holes: board() drills J1's fifteen to DE15_DRILL (the footprint: 1.0).
+# The other common pattern (rows 2.54 mm apart, 8.89 mm from the edge: Amphenol ICD15S13E..., NorComp 181) does not fit.
+DE15_DRILL = 1.1
 DE15_EDGE = 6.83                                         # the footprint's y of the board edge
 
 
@@ -314,11 +318,13 @@ SHEETS = [
      "its write strobe GWR and its read GRDOE. IC2 decodes IO-ADDR0-3: ports PA-PF = 1010-1111; IC3 / IC4 gate each\n"
      "select with a strobe. IC5 = control 1 (OUT PC), IC6 = control 2 (OUT PF), IC7 = the status (IN PC): the ID 0111."),
     ("crtc", "CRTC and clock", "THE 6845, THE DOT CLOCK, THE DOT COUNTER, THE 6845'S CLOCK, THE STAGE REGISTERS",
-     _whole("IC10") + _g("IC22", 3) + _whole("OSC1", "IC11", "IC12") + _g("IC13", 2, 4, 6) + _whole("IC15", "IC16"), None,
+     _whole("IC10") + _g("IC22", 3) + _whole("OSC1", "R20", "IC11", "R21", "R22", "IC12") + _g("IC13", 2, 4, 6) +
+     _whole("R23", "IC15", "IC16"), None,
      "IC11 counts the 25.175 MHz dot clock: D0-D3, the 16 dots of a count. The 6845's clock is D3 a dot late (IC12/A):\n"
      "it steps as dot 1 begins. IC15 / IC16, the stage, take MA0-9, DE, CURSOR, HSYNC and VSYNC as dot 0 begins (STG =\n"
      "NOT D3), 15 dots later: SA0-9, SDE, SCUR, SHS, SVS, steady for a count. IC12/B is SDE2, SDE as dot 8 begins.\n"
-     "The 6845's bus side: -CS = PA or PB (IC9/A, sheet 2), E = -IO-RD XOR -IO-WR (IC22/A), RS = IO-ADDR0."),
+     "The 6845's bus side: -CS = PA or PB (IC9/A, sheet 2), E = -IO-RD XOR -IO-WR (IC22/A), RS = IO-ADDR0.\n"
+     "R20-R23 (33 ohm): series termination of CK, D2, D3 and STG at their sources."),
     ("text", "Text", "THE TEXT RAM, THE CODE REGISTER, THE CHARACTER GENERATOR, THE TEXT SHIFTER, THE CURSOR FLAG",
      _whole("IC14", "IC17", "IC18", "IC19") + _u("IC20", 1) + _g("IC21", 6) + _g("IC22", 6) + _g("IC23", 8) + _g("IC13", 10), None,
      "The text RAM's display port reads SA9-0 then D3 (the half: 0 the left character, 1 the right). IC17 takes a\n"
@@ -666,6 +672,10 @@ def project():
 # the VGA socket, the two PS/2 jacks, the INT jumper, the FTDI header and the LED.
 # The first placement had the 6845 and the graphics RAM between the text RAM and the code register: its first routing
 # left the code's lines VD5-VD7 unrouted in the 5 mm channel between the two columns of 600-mil sockets.
+# Since the design review (2026-11-13, V4-2) the clock's column stands between the multiplexers and the RAM's latches
+# (it was two columns further right, 84 mm from the stage and the code register that D2 and STG clock), and CK, D2, D3
+# and STG each leave their source through a series resistor (R20-R23) standing beside it. The router does not know a
+# clock from any other net: how long the four come out differs from one component order to the next (README).
 GAP = 6.3                                                 # between two chips in a column, end pin to end pin
 PITCH = 15.24                                             # from one column of 300-mil sockets to the next (V2.0: 14)
 PLACE = {}
@@ -696,9 +706,9 @@ COLUMNS = [("N0", ("IC2", "IC3", "IC4", "IC1")),                 # port decode, 
            ("N1", ("IC8", "IC17", "IC15", "IC16")),              # the bus's inverters, the code register, the stage
            ("W1", ("IC28", "IC10")),                             # the graphics RAM, the 6845
            ("N2", ("IC24", "IC25", "IC26", "IC27")),             # the graphics address multiplexers
+           ("N5", ("IC21", "IC13", "IC12", "IC11")),             # the load, the inverters, the 6845's clock, the counter
            ("N3", ("IC32", "IC30", "IC29", "IC34")),             # byte latch, read latch, write buffer, WRQ
            ("N4", ("IC31", "IC33", "IC19", "IC20")),             # direct-mode buffer, the two shifters, CURF / the retimed dot
-           ("N5", ("IC21", "IC13", "IC12", "IC11")),             # the load, the inverters, the 6845's clock, the counter
            ("N6", ("IC35", "IC36", "IC37", "IC38")),             # P56 and RDCK, the slot logic's gates
            ("N7", ("IC39", "IC22", "IC23", "IC40")),             # the guns, the XORs, the ANDs, the vertical sync
            ("N8", ("IC5", "IC6", "IC7", "IC9")),                 # control 1, control 2, the status, the bus-side ANDs
@@ -733,9 +743,9 @@ def cap_at(ref, pin, gnd):
 for _cap, _ic in N.DECOUPLE.items():
     if _ic.startswith("IC"):
         PLACE[_cap] = cap_at(_ic, N.POWER_PINS[_ic][0][0], N.POWER_PINS[_ic][1][0])
-_ox, _oy = COLX["N5"] + 1.1, 119.0                        # the oscillator lying under the counter: pin 1 bottom left,
-PLACE["OSC1"] = (_ox, _oy, 0)                             # its output (pin 8) at the top right
-PLACE["C48"] = (GAPX("N4"), 110.5, 270)                   # at the oscillator's VCC pin (14, top left)
+_ox, _oy = COLX["N2"] + 1.1, 119.0                        # the oscillator lying under the multiplexers and the counter:
+PLACE["OSC1"] = (_ox, _oy, 0)                             # pin 1 bottom left, its output (pin 8) top right, under IC11
+PLACE["C48"] = (COLX["W1"] + 15.24 + 3.2, 112.0, 270)     # at the oscillator's VCC pin (14, top left)
 PLACE["C49"] = (COLX["N10"] - 3.2, 50.2, 270)             # the ATmega's AVCC (pin 20), a little below the pin: clear of
                                                           # IC43's capacitor in the same gap
 X1F = X1R                                                 # the front edge
@@ -750,6 +760,10 @@ PLACE.update({
     # TXTONLY's pull-up (IC7), PU (the F parts)
     "R8": (GAPX("N4"), 50.0, 270), "R9": (GAPX("N3"), 108.3, 270), "R10": (GAPX("N8"), 79.2, 270),
     "R2": (GAPX("N5"), 63.9, 270),
+    # the clocks' series resistors, each beside its source: R20 from the oscillator's pin 8 up to the counter's clock
+    # (its pin 1 at the bottom), R21 and R22 at the counter's QC and QD, R23 at IC13's pin 2
+    "R20": (GAPX("N2"), 104.0, 90), "R21": (GAPX("N5"), 85.0, 270), "R22": (GAPX("N5"), 95.0, 270),
+    "R23": (GAPX("N2"), 45.0, 270),
     # the front edge: the VGA socket, its three video and two sync resistors lying left of it
     # (turned 90: the footprint's mating face, its +y, towards the edge; the socket then lies from y 10.8 to 42.8)
     "J1": (X1F - DE15_EDGE, 22.5, 90),
@@ -843,6 +857,8 @@ def board(netfile, out):
     for p in fps["J1"].Pads():
         if p.GetNetname() == "GND":
             p.SetLocalZoneConnection(pcbnew.ZONE_CONNECTION_FULL)
+        if p.GetNumber() != "SH":                       # the fifteen signal holes, for the Kycon part's pins
+            p.SetDrillSize(VECTOR2I(FM(DE15_DRILL), FM(DE15_DRILL)))
     import math
     for p in fps["X1"].Pads():                          # copper keepouts round the DIN connector's two screws
         if p.GetAttribute() != pcbnew.PAD_ATTRIB_NPTH:
@@ -863,7 +879,7 @@ def board(netfile, out):
         b.Add(z)
     tb = b.GetTitleBlock()
     tb.SetTitle("YACC1 video card V4.0"); tb.SetDate(N.DATE); tb.SetRevision(N.REV); tb.SetCompany("YACC1")
-    tb.SetComment(0, "The first placement, %.0f mm, not routed: gen_v40.py from v40_netlist.py" % LENGTH)
+    tb.SetComment(0, "%.0f mm, four layers: gen_v40.py and build.sh from v40_netlist.py" % LENGTH)
     unclear = silk_place(b, silk_texts(b))
     pcbnew.SaveBoard(out, b)
     print("silk: every reference and legend placed clear of other silk, the pads and the edge%s" % (
@@ -877,7 +893,8 @@ SILK_H, SILK_W = 1.0, 0.15       # every text on the silk: JLCPCB's standard cha
 # the legends: (text, x, y, size) left-justified at (x, y), or (text, x, y, size, angle) centred on (x, y)
 _lx = COLX["N6"] - 0.5
 SILK = [("YACC1 Video Card V4.0", _lx, 100.3, 1.5), ("cottageworker.com", _lx, 103.6, 1.0),
-        ("TEXT-ONLY BUILD: NO IC24-IC34, RN2", _lx, 106.2, 1.0),
+        ("TEXT-ONLY BUILD: NO IC24-IC34,", _lx, 106.2, 1.0), ("RN2, C25-C35", _lx, 108.3, 1.0),
+        ("1", _ox - 4.4, _oy + 0.2, 1.2, 0),                # the oscillator's pin 1 (V4-12): turned round it dies
         ("KEYBOARD (PURPLE)", X1R - 14.6, 58.0, 1.0, 90), ("MOUSE (GREEN)", X1R - 14.6, 76.0, 1.0, 90)]
 _j4x, _j4y = PLACE["J4"][:2]
 SILK += [(t, _j4x - 9.5, _j4y + 2.54 * k, 1.0) for k, t in enumerate(("1 GND (BLK)", "CTS", "VCC nc", "TXD", "RXD", "DTR"))]
@@ -1030,6 +1047,7 @@ def silk_place(b, comp=None):
             xs = [MM(p.GetPosition().x) for p in fp.Pads()]
             ys = [MM(p.GetPosition().y) for p in fp.Pads()]
             ax, ay = (END_WALL, SIDE_WALL) if max(xs) - min(xs) > max(ys) - min(ys) else (SIDE_WALL, END_WALL)
+            ax, ay = ax + 0.2, ay + 0.2                 # (the review's V4-14: a text's strokes stood up to 0.13 mm inside)
             body = fab + [(min(xs) - ax, min(ys) - ay, max(xs) + ax, max(ys) + ay)]
         elif ref in ("X1", "J1", "X2"):                 # the housings: their silk and pads (X1: also 2.5 mm past its
             body = fab + silk + pads                    # ends, the DIN 41612 housing's ends beyond its silk, with room)
@@ -1471,14 +1489,16 @@ KEY = [
     ("IC10", "22", "-IO-WR"), ("IC10", "24", "IO-ADDR0"), ("IC10", "2", "-RESET"), ("IC10", "3", "GND"),
     ("IC10", "33", "DATA0"), ("IC10", "26", "DATA7"), ("IC10", "20", "VCC"), ("IC10", "1", "GND"),
     ("IC10", "21", "CRTCCK"), ("IC12", "5", "CRTCCK"), ("IC12", "2", "D3"), ("IC12", "3", "CK"),
+    ("R20", "1", "OSCO"), ("R20", "2", "CK"), ("R21", "1", "QC"), ("R21", "2", "D2"), ("R22", "1", "QD"), ("R22", "2", "D3"),
+    ("R23", "1", "STGO"), ("R23", "2", "STG"),
     ("IC10", "4", "MA0"), ("IC15", "2", "MA0"), ("IC15", "19", "SA0"), ("IC10", "13", "MA9"), ("IC16", "3", "MA9"),
     ("IC16", "18", "SA9"), ("IC10", "18", "DE"), ("IC16", "4", "DE"), ("IC16", "17", "SDE"), ("IC10", "19", "CURSOR"),
     ("IC16", "16", "SCUR"), ("IC10", "39", "HSYNC"), ("IC16", "15", "SHS"), ("IC10", "40", "VSYNC"), ("IC16", "14", "SVS"),
-    ("IC15", "11", "STG"), ("IC16", "11", "STG"), ("IC13", "1", "D3"), ("IC13", "2", "STG"), ("IC15", "1", "GND"),
+    ("IC15", "11", "STG"), ("IC16", "11", "STG"), ("IC13", "1", "D3"), ("IC13", "2", "STGO"), ("IC15", "1", "GND"),
     ("IC10", "38", "RA0"), ("IC10", "35", "RA3"), ("IC18", "10", "RA0"), ("IC18", "7", "RA3"),
     # the dot clock and the counter
-    ("OSC1", "8", "CK"), ("IC11", "2", "CK"), ("IC11", "14", "D0"), ("IC11", "13", "D1"), ("IC11", "12", "D2"),
-    ("IC11", "11", "D3"), ("IC11", "1", "PU"), ("IC11", "7", "PU"), ("IC11", "9", "PU"), ("IC11", "10", "PU"),
+    ("OSC1", "8", "OSCO"), ("IC11", "2", "CK"), ("IC11", "14", "D0"), ("IC11", "13", "D1"), ("IC11", "12", "QC"),
+    ("IC11", "11", "QD"), ("IC11", "1", "PU"), ("IC11", "7", "PU"), ("IC11", "9", "PU"), ("IC11", "10", "PU"),
     ("R2", "1", "VCC"), ("R2", "2", "PU"),
     # the text: the display port's address, the code register, the character generator, the shifter and its load
     ("IC14", "6", "D3"), ("IC14", "7", "SA0"), ("IC14", "15", "SA8"), ("IC14", "4", "SA9"), ("IC14", "3", "GND"),

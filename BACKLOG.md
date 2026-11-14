@@ -483,11 +483,29 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   it to 3.5 MHz - a rule to change, no board change. The LOW ones include three figures to correct in the note
   and the README: the smallest margin is a hold of 2.2 ns at the shifters' loads (not the 5.6 ns of set-up); slot
   mode's read has 42 ns at 3.5 MHz (not 50) and its limit is 3.76 MHz (not 3.8); the cursor's address must include
-  the start address. Nothing is changed in the design yet.
-  **Next:** which of the review's fixes go in (V4-1 / V4-2 mean a new route, about an hour and a half); then the
-  board routed again and looked at again; `pcb-check` with the order's files; then the order. Beside it: the
-  emulators' model and the ROM driver (branch `video-v2`). `tools/vidsim.py timing` is still to learn 16 dots a
-  count, to check the 6845's tables.
+  the start address.
+  **The review's fixes are in and the board is routed again (2026-11-13): `build.sh`, ALL CHECKS PASS.** 134
+  parts, 254 nets: a 33 ohm resistor in series with each of the four clocks at its source (R20 at the oscillator,
+  R21 / R22 at the counter's D2 / D3, R23 at the stage's clock); the clock's column two columns nearer the stage;
+  **the VGA socket a part, Kycon K61X-E15S-NJ** (its drawing's holes are KiCad's footprint within 0.06 mm; the
+  signal holes drilled 1.1 mm for it); a "1" at the oscillator's pin 1, the capacitors in the text-only legend, the
+  title block, the BOM's shunts and oscillator. The simulation: 51 runs, none failing, with the hold margins listed
+  (the smallest 2.0 ns), 160 phases, and reads whose address was counted in the step before - **rule 2 of the note
+  is now: a stack or a BRVR vector table in the window only to about 2.8 MHz in slot mode and 5 MHz in direct
+  mode**. Slot mode's figures corrected: 40 ns at 3.5 MHz, the limit 3.76 MHz. The route: 519 connections, 377
+  vias, 27.4 m (three of four component orders complete, two clean; 2 h 12 min of running time). The status of
+  each finding is in the review's table. Also corrected: the board never had "499 connections" - that is the most
+  KiCad's rule check lists; the count is 515 before the fixes and 519 now, 0 open either way.
+  **The clocks are not all shorter.** Measured on the new route: D2's farthest input 101 mm from its resistor (197
+  before), STG's 153 (200), D3's 117 (128), but the dot clock's 188 mm (166) on 231 mm of track (177): the counter
+  moved away from the shifters and the slot logic's flip-flops, and Freerouting treats a clock as any net (the
+  other clean route of the run has CK's farthest input at 137 mm and D2's at 228). **To decide: the four clocks
+  routed first, on the empty board, and kept while the rest is routed** - a change to `build.sh` and one more
+  routing run - or the board as it is, every clock behind its series resistor.
+  **Next:** that decision; `pcb-check` with the order's files and the VGA socket laid on a 1:1 print; then the
+  order. Beside it: the emulators' model and the ROM driver (branch `video-v2`). `tools/vidsim.py timing` is still
+  to learn 16 dots a count, to check the 6845's tables. A routing run needs the Mac awake: lid open, charger in
+  (the run of 2026-11-13 took 8 hours by the clock for 2 h 12 min of work, the Mac asleep three times).
   **To decide** (the note's section 13): the raster; the control bits' places (the netlist is wired to the proposed
   ones); the font; V2.0's order.
   **For V2.0, if it is ordered (seen 2026-11-12 while simulating this card; V2.0's files are not changed):** its
