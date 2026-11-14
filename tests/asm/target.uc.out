@@ -34,7 +34,7 @@ BOOT FROM CF
 fig 7 purple
 /s> asm -h monitor.asm mon.img
 
-mon.img: 4051 bytes, 289 labels, load f000 exec f000
+mon.img: 4051 bytes, 290 labels, load f000 exec f000
 /s> asm -h isa.asm
 
 isa.img: 790 bytes, 40 labels, load 3000 exec f000
@@ -73,7 +73,7 @@ BOOT FROM CF
   12969  isa.asm  @B000
    2216  isa.img  @3000
   11186  mon.img  @F000
-  49636  monitor.asm  @B000
+  54679  monitor.asm  @B000
     624  q.img  @3000
     549  quirks  @3000
    3325  quirks.asm  @B000
