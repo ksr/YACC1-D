@@ -25,6 +25,13 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
     check`. Hardware steps (ROM burn, microcode, bench, CF card) are from `main` until the V2.0 card is in the machine.
   - Syncing YACC1-D means both branches, `main` and `video-v2` (not the frozen `video-v3`, below). The website
     publishes from `main` only.
+  - **The video card to build is the V4; V2.0 stays on file (Ken, 2026-11-14).** The V4 (`docs/cards/video-v4.md`:
+    the 6845 on VGA, 80 x 25 of 8 x 16, 640 x 400 graphics; registers on PA-PF) is the card to be ordered and built,
+    alone. V2.0 is not ordered and will probably never be built: its design stays as it is, ready to order, and none
+    of its files is changed. `video-v2` carries both cards' software - `monitor.asm` as it stands assembles to the
+    V2.0 ROM, and `tools/monvariant.py v4` makes the V4 ROM from the same source - and V2.0's stays there, untouched,
+    until the V4 runs in the machine. Above, "when the V2.0 card runs in the machine" and "until the V2.0 card is in
+    the machine" now mean the V4 card.
   - **A third line, `video-v3`: FROZEN (Ken, 2026-11-12).** It was the YACC1 with the video card V3 (the HD63484
     ACRTC, VGA: `docs/cards/video-v3.md`), begun 2026-11-11: made from `video-v2` with everything of it, its ROM
     driving the V3 card (the V2.0 ROM stays on `video-v2`) and its emulators' card the V3 unless `Y1VID_CARD` says

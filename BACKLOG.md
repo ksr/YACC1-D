@@ -415,7 +415,12 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   no DB9, RCA or halved clock). Open: whether a 512K x 8 static RAM exists in DIP-32 (the footprint's option). For
   the bench (section 10d, "what it cannot say"): the chip's minimum delays, on which two margins of 2 to 3 ns rest;
   a decoder pulse at the end of an IN; the cursor skew's count.
-- **Video card V2.0 (designed 2026-10-22; `hardware/cards/video/kicad/v2.0`; re-reviewed and READY TO ORDER 2026-10-23, not ordered; ON HOLD 2026-11-12).**
+- **Video card V2.0 (designed 2026-10-22; `hardware/cards/video/kicad/v2.0`; re-reviewed and READY TO ORDER 2026-10-23, not ordered; ON HOLD 2026-11-12; ON FILE, NOT TO BE ORDERED 2026-11-14).**
+  **On file (2026-11-14):** the V4 card is the video card to build, alone. V2.0 is not ordered and will probably
+  never be built. Its design stays as it is, ready to order, and no file of it is changed. Its software (the ROM
+  driver that `monitor.asm` assembles to as it stands, the emulators' model, `tests/video/v20`) stays on `video-v2`
+  until the V4 runs in the machine; what becomes of it then - both builds of the monitor kept, or the V2.0 one
+  dropped - is to decide then.
   **On hold (2026-11-12):** the design stays as it is, ready to order (the pre-order check run again 2026-11-12:
   no failures, the four warnings of 2026-11-10), and may still be ordered; it waits while a VGA card with the 6845
   is looked at again, now that the V3 card (the ACRTC) is not built. The thought, nothing designed: this card's
@@ -539,7 +544,10 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   case, lines / blocks / arrows / symbols at $00-$1F, inverse video = code + $80, the cursor's forms in the upper
   4K. `tools/vidsim.py testcard --card v4` and `render` now draw the card's screen; `tests/video/overlay_check.py`
   checks the image and the picture. The glyphs at $00-$1F are a first choice: a new image changes them.
-  **To decide** (the note's section 13): V2.0's order.
+  **Decided 2026-11-14: V2.0 is not ordered** - this card alone is built; V2.0 stays on file (the top of this entry).
+  Nothing of the note's section 13 is left to decide: the control bits' places, the raster, the font and V2.0's
+  order are answered. What is left before an order is the list above (the pre-order check's pictures and the fab's
+  viewer by eye, the VGA socket on a 1:1 print, the oscillator's pin 1), and the order itself.
   **For V2.0, if it is ordered (seen 2026-11-12 while simulating this card; V2.0's files are not changed):** its
   slot mode has the strobe as a term of -WE, so a write strobe that ends inside a pulse cuts the pulse short. The
   re-review of 2026-10-23 judged that harmless (the same byte written again). Not shown harmless: in a cut pulse's
