@@ -19,6 +19,8 @@ software/videomodel.h with Y1VID_CARD=v4, the V4 build of firmware/monitor/monit
 4. v40scr.asm, the ROM's screen driver: the video unit started through $FFBC, the console mirrored, 30 lines with
    lower case printed. The -V screen must be 80 x 25, scrolled six times (lines 07-1E on rows 0-23, "end" on row
    24), the 6845's table the card's, its cursor (24 * 80 + 3) / 2 with CURH set; int and uc must show the same screen.
+5. The table the ROM loaded is tools/vidsim.py's table for the card (V4_TABLES[60]), and its timing check passes that
+   table and the 70 Hz one with no warning: VGA's 31.469 kHz, 59.94 and 70.09 Hz.
 """
 import os, re, sys, shutil, subprocess, tempfile
 
@@ -132,6 +134,22 @@ def main():
               "CUR 03 C1" in out and bool(ctl) and ctl.groups() == ("02", "right") and "DONE" in out,
               "%s; %s; console %r" % (crtc and crtc.group(1).split()[14:16], ctl and ctl.groups(), out[-60:]))
     check("the screen, int = uc", screens["int"] == screens["uc"] and bool(screens["int"]))
+
+    # 5. the ROM's table is the one tools/vidsim.py checks
+    import vidsim
+    check("the ROM's table is vidsim's", " ".join("%02X" % v for v in vidsim.V4_TABLES[60][:14]) == TABLE)
+    for raster, rate in ((60, "640 x 480 at 60 Hz"), (70, "640 x 400 at 70 Hz")):
+        r = subprocess.run([sys.executable, os.path.join(ROOT, "tools/vidsim.py"), "timing", "--card", "v4", "--v4raster",
+                            str(raster)], capture_output=True, text=True)
+        ok = r.returncode == 0 and "WARNING" not in r.stdout and re.search(r"VGA %s .*: MATCH" % rate, r.stdout) and \
+            "31.469 kHz" in r.stdout
+        check("vidsim timing, %d Hz" % raster, bool(ok), r.stdout[-400:] + r.stderr[-200:])
+    st = os.path.join(d, "v4.vid")
+    subprocess.run([EMUS[0][1], "-x", "-m", "-V", "-l", "200000"], input=b"0", capture_output=True,
+                   env=dict(os.environ, Y1VID_CARD="v4", Y1VIDSTATE=st))
+    text = open(st).read() if os.path.exists(st) else ""
+    check("the state file", "card v4" in text and bool(re.search(r"^control2 00$", text, re.M)) and
+          bool(re.search(r"^gram [0-9A-F]{131072}$", text, re.M)), text[:200])
 
     shutil.rmtree(d)
     print("v40: %d failed" % fails)
