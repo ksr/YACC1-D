@@ -5,6 +5,8 @@
 Proves the tree can reproduce what is in the machine. Never writes into the tree.
   1. software/assembler  -> asm ; assemble firmware/monitor/monitor.asm + firmware/basic/basic.asm with yacc1.def
      -> compare monitor.img / basic.img ; makerom -> compare firmware/rom/shipped/rom (the image to burn; the chip capture is eprom-captured-2026-09-18.*)
+     (2026-11-14, branch video-v2: and the video card V4's ROM - the V4 build of monitor.asm from tools/monvariant.py
+     -> monitor-v4.img, with basic.img -> firmware/rom/shipped/rom-v4, and its 8K burn image rom-v4.bin)
   2. firmware/microcode/ucode-generator2 -> regenerate test.hex -> compare the committed test.hex
 Exit 1 on any mismatch."""
 import os, sys, subprocess, tempfile, shutil, hashlib, glob
@@ -23,6 +25,15 @@ try:
         print("%-32s %s" % (name + ".img", "IDENTICAL" if same else "MISMATCH")); ok &= same
     r = sh("awk 'n>=1 { print a[n%1] } { a[n%1]=$0; n=n+1 }' basic.img > tmprom && cat tmprom monitor.img > rom", B)   # = firmware/rom/makerom
     same = md5(os.path.join(B, "rom")) == md5(os.path.join(ROOT, "firmware/rom/shipped/rom")); print("%-32s %s" % ("rom (shipped = image to burn)", "IDENTICAL" if same else "MISMATCH")); ok &= same
+    # 2026-11-14: the V4 ROM, from the same monitor.asm
+    V = os.path.join(tmp, "asm-v4"); os.makedirs(V); shutil.copy(os.path.join(A, "rcasm.rc"), V); shutil.copy(os.path.join(A, "yacc1.def"), V)
+    r = sh("python3 %s v4 %s %s/monitor.asm && %s/asm-bin monitor -d=yacc1 > monitor.log" % (os.path.join(ROOT, "tools/monvariant.py"), os.path.join(ROOT, "firmware/monitor/monitor.asm"), V, tmp), V)
+    same = os.path.exists(os.path.join(V, "monitor.img")) and md5(os.path.join(V, "monitor.img")) == md5(os.path.join(ROOT, "firmware/monitor/monitor-v4.img"))
+    print("%-32s %s" % ("monitor-v4.img (the V4 build)", "IDENTICAL" if same else "MISMATCH")); ok &= same
+    r = sh("cat %s/tmprom monitor.img > rom-v4 && python3 %s rom-v4 rom-v4.bin --base 0xE000 --end 0x10000 --fill 0xFF --size 8192" % (B, os.path.join(ROOT, "tools/img2bin.py")), V)
+    for name in ("rom-v4", "rom-v4.bin"):
+        same = os.path.exists(os.path.join(V, name)) and md5(os.path.join(V, name)) == md5(os.path.join(ROOT, "firmware/rom/shipped", name))
+        print("%-32s %s" % (name + " (the V4 card's ROM)", "IDENTICAL" if same else "MISMATCH")); ok &= same
     G = os.path.join(ROOT, "firmware/microcode/ucode-generator2"); GT = os.path.join(tmp, "ucode"); shutil.copytree(G, GT, ignore=shutil.ignore_patterns("nbproject"))
     # the generator uses ../../opcodes.h and ../yaccsignal*.h relative to its folder: reproduce that layout in tmp
     os.makedirs(os.path.join(tmp, "u", "gen")); shutil.rmtree(GT); shutil.copytree(G, os.path.join(tmp, "u", "gen", "g"), ignore=shutil.ignore_patterns("nbproject"))

@@ -49,6 +49,10 @@ for root, dirs, files in os.walk(DST):
         elif rel.startswith("hardware/bus/blank-card/eagle/v3.2/"): buckets["mine: derived design (Blank V3.2, tools/make_blank_v32.py)"] += 1
         elif rel == "hardware/PROVENANCE.md": buckets["generated: provenance index (tools/gen_provenance.py)"] += 1
         elif rel == "firmware/rom/shipped/rom.bin": buckets["generated: 8K burn image of shipped/rom (tools/img2bin.py --fill 0xFF --size 8192)"] += 1
+        # 2026-11-14 (branch video-v2): the video card V4's ROM, the V4 build of monitor.asm (tools/monvariant.py v4);
+        # tools/verify_firmware.py rebuilds all four and compares
+        elif rel in ("firmware/monitor/monitor-v4.img", "firmware/monitor/monitor-v4.lst", "firmware/rom/shipped/rom-v4",
+                     "firmware/rom/shipped/rom-v4.bin"): buckets["generated: the video card V4's monitor and ROM (tools/monvariant.py v4, tools/verify_firmware.py)"] += 1
         elif f.endswith(".md") and os.path.exists(os.path.join(root, f[:-3] + ".rtf")): buckets["generated: Markdown twins of .rtf notes (tools/rtf_to_md.py)"] += 1
         elif f == "FABRICATED" or rel == "hardware/FABRICATED.md": buckets["generated: FABRICATED markers/index"] += 1
         elif rel == "hardware/NEWER-DESIGNS-vs-ACTIVE.txt": buckets["generated: design comparison report (tools/compare_eagle.py)"] += 1

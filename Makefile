@@ -18,6 +18,7 @@
 #                   the video card V2.0's direct mode against the microcode's strobe timing (tests/video/v20_timing.py),
 #                   the video card V2.0's model in both emulators, Y1VID_CARD=v2.0 (tests/video/v20/run.py),
 #                   the video card V3's model (the HD63484) in both emulators, Y1VID_CARD=v3 (tests/video/v30/run.py),
+#                   the video card V4's model and its ROM, the V4 build of the monitor, in both emulators, Y1VID_CARD=v4 (tests/video/v40/run.py),
 #                   the clock and register figures of the ACRTC design note, docs/cards/video-v3.md (tools/acrtc_timing.py --check),
 #                   the video card V4's netlist: every pin accounted for, the text-only build (hardware/cards/video/kicad/v4.0/v40_netlist.py),
 #                   and run as a circuit with the parts' data-sheet delays at eight corners (tests/video/v40_netsim.py),
@@ -86,6 +87,7 @@ check:
 	python3 tests/video/v20_timing.py
 	python3 tests/video/v20/run.py
 	python3 tests/video/v30/run.py
+	python3 tests/video/v40/run.py
 	python3 tests/video/v30_netsim.py
 	python3 hardware/cards/video/kicad/v4.0/v40_netlist.py
 	python3 tests/video/v40_netsim.py

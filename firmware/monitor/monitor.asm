@@ -69,11 +69,21 @@ line_buffer:    EQU 0f80h    ; 112 bytes long max ($0FF0-$0FFF are the video var
 ; 0 DOTS, 1 VSYNC, 2 DE, 3 TEXT-ONLY, 7..4 = 0101, the card ID), PD/PE the PS/2 keyboard (IN PD: 0 FULL, 1 SRC, 2 BUSY;
 ; IN PE the byte, only after IN PD showed FULL). $D800-$DFFF is the graphics window (graphics RAM, never the 6845).
 ; The keyboard is a second console input beside the UART (kbst: uartin, uartinne, const).
+; 2026-11-14 (branch video-v2): a second ROM from this source, for the video card V4 (docs/cards/video-v4.md: VGA,
+; 16 dots to a count of the 6845, 80 x 25 characters of 8 x 16; the card's ID on IN PC is $7x). The assembler has no
+; conditional assembly, so the two builds are marked in the source: a line that ends in the tag ;;V2 is the V2.0
+; ROM's only, a line that begins ;;V4 is the V4 ROM's only - a comment as this file stands, so that assembling it
+; as it is gives the V2.0 ROM as before. tools/monvariant.py v4 makes the V4 source: it drops the first kind and
+; takes the tag off the second. The V4 driver: control 1 on PC (3..0 PLANE, 4 CPAGE, 5 DPAGE, 6 GFX-ON, 7 XOR) and
+; control 2 on PF (0 TEXT-OFF, 1 CURH, 2/3 the syncs' polarity, 5-7 the guns off), which cannot be read back: VIDC2
+; is its copy; lower case is stored as it comes (the card's EPROM has 256 glyphs); the 6845 counts pairs of
+; characters, so its cursor R14/R15 is the cursor's offset halved and CURH its odd bit.
 ;
 VIDAUTO:        EQU 0        ; 1 = reset also runs V I (CRTC table, clear, home) and sets VIDMIR when a card is found
 VIDRAM:         EQU 0d000h   ; display RAM, CPU side (A11 = 0); its first byte is the probe byte
 VIDSIZE:        EQU 2048     ; the RAM the CPU reaches (IC15 A11R grounded): VIDRAM..VIDRAM+2047
-VROWS:          EQU 24       ; screen geometry: VCOLSV x 24, one byte per character (2026-10-22: the columns are a
+VROWS:          EQU 24       ; screen geometry: VCOLSV x 24, one byte per character (2026-10-22: the columns are a ;;V2
+;;V4 VROWS:          EQU 25       ; V4: 80 x 25 (the scroll's 80 * 24 / 8 = 240 passes)
                              ;   variable, 80 or 64, set from the card's latch by vmode; cols*(VROWS-1) must be a
                              ;   multiple of 8 and at most 2,040: the scroll's loop - 80: 230 passes, 64: 184)
 VIDPRES:        EQU 0ff0h    ; 1 = the video card V2.0 answered at reset (or at the last V P): IN PC = $5x
@@ -84,7 +94,8 @@ VCOL:           EQU 0ff4h    ; text cursor column 0..VCOLSV-1
 VCHAR:          EQU 0ff5h    ; the driver's scratch byte
 VLINE:          EQU 0ff6h    ; word ($0FF6 high, $0FF7 low): the address of the cursor row's first byte
 VCOLSV:         EQU 0ff8h    ; (2026-10-22) the screen's columns: 80, or 64 with the card's DOTS jumper fitted
-VSCRLN:         EQU 0ff9h    ;   and the scroll's passes for it, VCOLSV*(VROWS-1)/8 (both set by vmode)
+VSCRLN:         EQU 0ff9h    ;   and the scroll's passes for it, VCOLSV*(VROWS-1)/8 (both set by vmode) ;;V2
+;;V4 VIDC2:          EQU 0ff9h    ; V4: the copy of control 2 (OUT PF), which the card cannot read back
 
 
 ;
@@ -898,7 +909,8 @@ vidrx:  RET
 ; floating bus: $FF on the pull-ups, or the INP's own opcode $9C - neither is $5x.
 vprobe: INP PC
         ANDI 0f0h
-        LDTI 050h
+        LDTI 050h                      ;;V2
+;;V4         LDTI 070h
         BRNEQ vprno
         LDAI 1
         BR vprset
@@ -911,34 +923,41 @@ vprset: STA VIDPRES
 ; vmode (2026-10-22; 2026-11-10 the V2.0 card): the geometry from the DOTS jumper, IN PC bit 0 (read only when the
 ; probe found the card): 1 (open) = 6 dots, 80 x 24; 0 (fitted) = 8 dots, 64 x 24, the mode the graphics layer needs;
 ; both from the 12 MHz crystal. Sets VCOLSV and VSCRLN; R6 = the CRTC's R0..R3 for vinit (the rest are common: vcrtab)
-vmode:  MVIW R6,vcr80
-        LDAI 80
-        STA VCOLSV
-        LDAI 230                ; 80*(VROWS-1)/8
-        STA VSCRLN
-        LDA VIDPRES
-        BRZ vmodex
-        INP PC
-        ANDI 1
-        BRNZ vmodex
-        MVIW R6,vcr64
-        LDAI 64
-        STA VCOLSV
-        LDAI 184                ; 64*(VROWS-1)/8
-        STA VSCRLN
-vmodex: RET
+vmode:  MVIW R6,vcr80           ;;V2
+        LDAI 80                 ;;V2
+        STA VCOLSV              ;;V2
+        LDAI 230                ; 80*(VROWS-1)/8 ;;V2
+        STA VSCRLN              ;;V2
+        LDA VIDPRES             ;;V2
+        BRZ vmodex              ;;V2
+        INP PC                  ;;V2
+        ANDI 1                  ;;V2
+        BRNZ vmodex             ;;V2
+        MVIW R6,vcr64           ;;V2
+        LDAI 64                 ;;V2
+        STA VCOLSV              ;;V2
+        LDAI 184                ; 64*(VROWS-1)/8 ;;V2
+        STA VSCRLN              ;;V2
+vmodex: RET                     ;;V2
+;;V4 vmode:  LDAI 80                 ; V4: 80 columns, always
+;;V4         STA VCOLSV
+;;V4         RET
 ;
 ; vinit: the control register 0 (text on, graphics off: direct mode, plane and pages 0), the CRTC's 16 registers -
 ; R0..R3 for the mode vmode found, R4..R15 from vcrtab - through OUT PA / OUT PB, the CRTC cursor on, then vcls
 ; (R6, R7 clobbered)
 vinit:  JSR vmode
         OUTI PC,0
+;;V4         LDAI 0                  ; V4: control 2 and its copy 0 - text on, the cursor's left half, both syncs
+;;V4         STA VIDC2               ;   negative, the three guns on (white)
+;;V4         OUTA PF
+;;V4         MVIW R6,vcrtab
         LDAI 0
 vinitl: OUTA PA
         PUSH
-        LDTI 4
-        BRNEQ vinitn
-        MVIW R6,vcrtab
+        LDTI 4                         ;;V2
+        BRNEQ vinitn                   ;;V2
+        MVIW R6,vcrtab                 ;;V2
 vinitn: LDAVR R6
         OUTA PB
         INCR R6
@@ -998,7 +1017,7 @@ vputc:  STA VCHAR
         BRLT vpctl
         LDTI 07fh
         BREQ vpdone
-        JSR vupper
+        JSR vupper                     ;;V2
         JSR vpchar
 vpdone: JSR vcursor
         POPR R7
@@ -1071,7 +1090,8 @@ vscroll:
         PUSHR R7
         POPR R6                 ; R6 = VIDRAM + VCOLSV: row 1
         MVIW R7,VIDRAM
-        LDA VSCRLN
+        LDA VSCRLN                     ;;V2
+;;V4         LDAI 240                ; 80*(VROWS-1)/8
         MVARL R5
 vscrl:  LDAVR R6
         STAVR R7
@@ -1121,10 +1141,10 @@ vscrb:  LDIVR R7,' '
 ;
 ; vupper: $60-$7F down to $40-$5F (lower case to upper; the monitor's toupper also moves [ \ ] ^ _, which the
 ; 64-glyph set has)
-vupper: LDTI 060h
-        BRLT vuppx
-        SUBI 020h
-vuppx:  RET
+vupper: LDTI 060h               ;;V2
+        BRLT vuppx              ;;V2
+        SUBI 020h               ;;V2
+vuppx:  RET                     ;;V2
 ;
 ; vcaddr: R7 = VLINE + VCOL, the cursor's address (TMP clobbered)
 vcaddr: LDT VCOL
@@ -1144,15 +1164,43 @@ vcursor:
         LDA VIDCUR
         BRZ vcurx
         JSR vcaddr
-        LDAI 14
-        OUTA PA
-        MVRHA R7
-        SUBI (VIDRAM).1
-        OUTA PB
-        LDAI 15
-        OUTA PA
-        MVRLA R7
-        OUTA PB
+        LDAI 14                 ;;V2
+        OUTA PA                 ;;V2
+        MVRHA R7                ;;V2
+        SUBI (VIDRAM).1         ;;V2
+        OUTA PB                 ;;V2
+        LDAI 15                 ;;V2
+        OUTA PA                 ;;V2
+        MVRLA R7                ;;V2
+        OUTA PB                 ;;V2
+;;V4 ; V4: the 6845 counts pairs of characters. R14/R15 = the cursor's offset from VIDRAM halved (the start address is
+;;V4 ; 0), and the offset's bit 0 is CURH, control 2's bit 1: the cursor on the right-hand character of its count
+;;V4         LDAI 14
+;;V4         OUTA PA
+;;V4         MVRHA R7
+;;V4         SUBI (VIDRAM).1         ; the offset's high byte, 0..7
+;;V4         SHR
+;;V4         OUTA PB
+;;V4         LDAI 15
+;;V4         OUTA PA
+;;V4         MVRHA R7                ; its bit 0 ((VIDRAM).1 is even) is bit 7 of the halved low byte
+;;V4         ANDI 1
+;;V4         BRZ vcur1
+;;V4         LDAI 080h
+;;V4 vcur1:  MVAT
+;;V4         MVRLA R7
+;;V4         SHR
+;;V4         ORT
+;;V4         OUTA PB
+;;V4         MVRLA R7                ; CURH
+;;V4         ANDI 1
+;;V4         SHL
+;;V4         MVAT
+;;V4         LDA VIDC2
+;;V4         ANDI 0fdh
+;;V4         ORT
+;;V4         STA VIDC2
+;;V4         OUTA PF
 vcurx:  RET
 ;
 ; vidctl: the video entry at $FFBC (JSR vidctl / RET, below the full vector table), for Y1/OS and programs.
@@ -1272,7 +1320,7 @@ vcwrs:  LDTI 0dh
         BREQ vcok
         LDTI 0ah
         BREQ vcok
-        JSR vupper
+        JSR vupper                     ;;V2
         STAVR R7
         INCR R7
         MVRHA R7
@@ -1322,10 +1370,13 @@ vcdrow: MVRLA R5
         LDA VCOLSV
         MVARL R6
 vcdcol: LDAVR R7
-        ADDI 020h
-        ANDI 03fh
-        ADDI 020h
-        JSR charout
+        ADDI 020h                      ;;V2
+        ANDI 03fh                      ;;V2
+        ADDI 020h                      ;;V2
+;;V4         LDTI 01fh               ; V4: a code is its character; a control code shows as '.'
+;;V4         BRGT vcdsh
+;;V4         LDAI '.'
+vcdsh:  JSR charout
         INCR R7
         DECR R6
         MVRLA R6
@@ -1379,20 +1430,39 @@ vgetb:  JSR vskip
 ; (15.79 kHz), 64 x 24 - the 64-column table proven on the monitor 2026-10-21 (then from 9 MHz / 6, the same 1.5 MHz).
 ; 2026-11-10 (branch video-v2): the V2.0 card, 12 MHz like the V1.3; the V1.0-V1.2 table (11.0592 MHz: 116, 80, 94, 9)
 ; is gone with the card.
-vcr80:  DB 126,80,98,10   ; DOTS open: 6 dots, 80 x 24 (R0 total-1, R1 displayed, R2 sync position, R3 sync width)
-vcr64:  DB 94,64,75,8     ; DOTS fitted: 8 dots, 64 x 24
-vcrtab: DB 31             ; R4  vertical total - 1 (rows)
-        DB 6              ; R5  vertical total adjust (scan lines)
-        DB VROWS          ; R6  rows displayed
-        DB 27             ; R7  vertical sync position (row)
-        DB 0              ; R8  interlace mode: off
-        DB 7              ; R9  scan lines per row - 1
-        DB 067h           ; R10 cursor start line 7, blinking (1/16 field rate)
-        DB 7              ; R11 cursor end line 7
-        DB 0              ; R12 start address high
-        DB 0              ; R13 start address low
-        DB 0              ; R14 cursor address high
-        DB 0              ; R15 cursor address low
+vcr80:  DB 126,80,98,10   ; DOTS open: 6 dots, 80 x 24 (R0 total-1, R1 displayed, R2 sync position, R3 sync width) ;;V2
+vcr64:  DB 94,64,75,8     ; DOTS fitted: 8 dots, 64 x 24 ;;V2
+vcrtab: DB 31             ; R4  vertical total - 1 (rows) ;;V2
+        DB 6              ; R5  vertical total adjust (scan lines) ;;V2
+        DB VROWS          ; R6  rows displayed ;;V2
+        DB 27             ; R7  vertical sync position (row) ;;V2
+        DB 0              ; R8  interlace mode: off ;;V2
+        DB 7              ; R9  scan lines per row - 1 ;;V2
+        DB 067h           ; R10 cursor start line 7, blinking (1/16 field rate) ;;V2
+        DB 7              ; R11 cursor end line 7 ;;V2
+        DB 0              ; R12 start address high ;;V2
+        DB 0              ; R13 start address low ;;V2
+        DB 0              ; R14 cursor address high ;;V2
+        DB 0              ; R15 cursor address low ;;V2
+;;V4 ; V4 (docs/cards/video-v4.md section 3): 640 x 480 at 60 Hz with the text in a band of 400 lines. A count is 16
+;;V4 ; dots of the 25.175 MHz oscillator, 635.6 ns: 50 counts a line (31.469 kHz), 32 rows of 16 lines and 13 lines (525
+;;V4 ; lines, 59.94 Hz); both syncs negative, which is control 2 = 0. tools/vidsim.py timing --card v4 checks the table.
+;;V4 vcrtab: DB 49             ; R0  counts a line - 1
+;;V4         DB 40             ; R1  counts shown: 80 characters
+;;V4         DB 42             ; R2  the horizontal sync from count 42
+;;V4         DB 026h           ; R3  the horizontal sync 6 counts (96 dots); the vertical 2 lines on Hitachi's S type
+;;V4         DB 31             ; R4  vertical total - 1 (rows)
+;;V4         DB 13             ; R5  vertical total adjust (scan lines)
+;;V4         DB VROWS          ; R6  rows displayed
+;;V4         DB 28             ; R7  vertical sync position (row): line 448
+;;V4         DB 0              ; R8  interlace mode: off
+;;V4         DB 15             ; R9  scan lines per row - 1
+;;V4         DB 06eh           ; R10 cursor start line 14, blinking (1/32 field rate)
+;;V4         DB 15             ; R11 cursor end line 15
+;;V4         DB 0              ; R12 start address high (in counts)
+;;V4         DB 0              ; R13 start address low
+;;V4         DB 0              ; R14 cursor address high
+;;V4         DB 0              ; R15 cursor address low
 ;
 getaddress:
 ;
@@ -1834,7 +1904,8 @@ loffloop:
 ;
 ; MONITOR STRINGS
 ;
-hello:  DB 0ah,0dh,"YACC 2020: hello world  ROM 2026-11-10 V2",0ah,0dh,0    ; the build date tells ROMs apart at a glance
+hello:  DB 0ah,0dh,"YACC 2020: hello world  ROM 2026-11-10 V2",0ah,0dh,0    ; the build date tells ROMs apart at a glance ;;V2
+;;V4 hello:  DB 0ah,0dh,"YACC 2020: hello world  ROM 2026-11-14 V4",0ah,0dh,0
 PROMPT: DB ">",0
 CRLF: DB 0ah,0dh,0
 ERROR: DB "UNRECOGINIZED COMMAND",0ah,0dh,0

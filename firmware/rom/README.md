@@ -35,6 +35,14 @@
   `docs/programming/MONITOR.md` section 11a. **MD5 (rom.bin) 02ec541711c41cc461e48d9b72456a70**;
   `tools/verify_firmware.py`: FIRMWARE VERIFIED. On a machine without the V2.0 card it finds no video card and runs
   as before on the UART. The machine keeps `main`'s `ROM 2026-10-21` until the V2.0 card is built.
+- **2026-11-14 (branch `video-v2` only): `shipped/rom-v4` and `rom-v4.bin` are `ROM 2026-11-14 V4` — NOT BURNED, and
+  not for the machine as it is: it drives the video card V4 (designed and routed, not built).** A second build of the
+  same `monitor.asm` (`tools/monvariant.py v4`: the V2.0 ROM has no room for a second driver, and `shipped/rom` /
+  `rom.bin` beside it are the V2.0 ROM as before, byte for byte). The card by its ID on `IN PC` ($7x), 80 x 25, the
+  6845's table for 640 x 480 at 60 Hz, lower case stored as it comes, the cursor's address halved with CURH in
+  control 2 (`OUT PF`). Monitor half 4,028 bytes; the vectors at $FFBC-$FFFF where they were; BASIC unchanged.
+  `docs/programming/MONITOR.md` section 11b. **MD5 (rom-v4.bin) 6bc8afb1eea50b85b4f97e4f9f02a676**;
+  `tools/verify_firmware.py`: FIRMWARE VERIFIED (it builds both ROMs). On the emulators: `Y1VID_CARD=v4`.
 - **2026-10-22: `shipped/rom` and `rom.bin` are `ROM 2026-10-22` — NOT BURNED** (the chip holds `ROM 2026-10-21`,
   MD5 68b584fc04885ac6abbfc26a96548696). The video geometry from the card: at reset, after the probe, `vmode` reads
   the JP1 latch at $D801 - bit 2 = 1 the V1.0-V1.2 card (80 x 24, the 11.0592 MHz table as before), bit 2 = 0 a V1.3

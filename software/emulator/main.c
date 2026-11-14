@@ -522,7 +522,8 @@ static void exe_relative(char *out, size_t outlen, const char *rel, const char *
 void print_usage(const char *progname) {
     printf("Usage: %s [-h] [-m] [-f filename]\n", progname);
     printf("  -h           Show this help message\n");
-    printf("  -m           Load firmware/basic/basic.img and firmware/monitor/monitor.img from the tree (found relative to this program; default)\n");
+    printf("  -m           Load firmware/basic/basic.img and firmware/monitor/monitor.img from the tree (found relative to this program; default;\n"
+           "               with Y1VID_CARD=v4 the monitor is monitor-v4.img, the video card V4's ROM)\n");
     printf("  -f filename  Load the specified file using load_file\n");
     printf("  -x           Scripted run: no load/dump chatter, HALT exits (instruction count on stderr)\n");
     printf("  -c image     Attach a CompactFlash image on ports P8/P9 (created zero-filled if missing)\n");
@@ -606,12 +607,14 @@ int main(int argc, char** argv) {
     pushpopdepth = 0;
     pushpoprdepth = 0;
 
+    vid_init();                 /* YACC1-D 2026-11-10: Y1VID_CARD (v1.0 / v2.0) and the V2.0 card's options */
     if (load_standard) {
         char img[4096];                                  /* YACC1-D 2026-09-20: images found relative to the executable */
         exe_relative(img, sizeof img, "../../firmware/basic/basic.img", argv[0]);   load_file(img);
-        exe_relative(img, sizeof img, "../../firmware/monitor/monitor.img", argv[0]); load_file(img);
+        /* YACC1-D 2026-11-14: Y1VID_CARD=v4 has its own monitor, the V4 build of monitor.asm (tools/monvariant.py) */
+        exe_relative(img, sizeof img, vid2.card == 4 ? "../../firmware/monitor/monitor-v4.img" : "../../firmware/monitor/monitor.img", argv[0]);
+        load_file(img);
     }
-    vid_init();                 /* YACC1-D 2026-11-10: Y1VID_CARD (v1.0 / v2.0) and the V2.0 card's options */
     vid_key_ready = uart_ready; vid_key_get = uart_byte;     /* Y1VID_KBD=stdin: the console feeds the PS/2 keyboard */
     if (load_filename) {
         load_file(load_filename);

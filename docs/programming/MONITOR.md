@@ -388,3 +388,40 @@ jumper. `tests/video/emu.py` runs the unit on both emulators (case `keyboard`: t
 
 Not yet in the ROM: graphics (drawing in direct mode, GFX-ON switched in vertical blanking, refused in 6-dot mode),
 starting the screen at reset (`VIDAUTO` is still 0).
+
+## 11b. The video unit for the video card V4 (2026-11-14, branch `video-v2`)
+
+`ROM 2026-11-14 V4` (`firmware/rom/shipped/rom-v4.bin`; not burned; for a machine with the V4 card,
+[`docs/cards/video-v4.md`](../cards/video-v4.md), which is not built). It is a second build of the same
+`monitor.asm`. The V2.0 ROM has 45 bytes free, so one ROM cannot hold both drivers, and the assembler has no
+conditional assembly: the lines of the V2.0 ROM alone end in the tag `;;V2`, the V4 ROM's lines are comments that
+begin `;;V4`, and `tools/monvariant.py v4` makes the V4 source by dropping the first kind and taking the tag off
+the second. The file as it stands assembles to the V2.0 monitor, byte for byte as before.
+`tools/verify_firmware.py` builds and compares both. The V4 monitor half is 4,028 bytes, its code ending at $FF66;
+the vectors at $FFBC-$FFFF are where they are in every ROM, BASIC is the same.
+
+| | V2.0 card (section 11a) | V4 card |
+|---|---|---|
+| Detection (`vprobe`) | `IN PC` reads $5x | `IN PC` reads $7x |
+| Geometry | 80 x 24 or 64 x 24, by the DOTS jumper | **80 x 25**, always (`VROWS` 25; the card has no DOTS jumper) |
+| The 6845's table | R0..R3 by the jumper, R4..R15 common, 12 MHz | one table, the note's section 3: 49, 40, 42, $26, 31, 13, 25, 28, 0, 15, $6E, 15 - 640 x 480 at 60 Hz with the text in a band of 400 lines; a count of the 6845 is 16 dots, two characters |
+| `V I` | `OUTI PC,0`, the table, clear, home | the same, and control 2 (`OUT PF`) cleared with its copy `VIDC2` ($0FF9): text on, both syncs negative, white |
+| Characters | upper case only: $60-$7F stored as $40-$5F | **stored as they come**: the card's EPROM has 256 glyphs, lower case among them |
+| The cursor (`vcursor`) | R14/R15 = its offset in the text RAM | R14/R15 = the offset **halved** (the 6845 counts pairs of characters), and the offset's odd bit is **CURH**, bit 1 of control 2: the cursor on the right-hand character of its count. Control 2 cannot be read back, so the driver keeps its copy in `VIDC2` and writes the whole byte |
+| The scroll | 230 or 184 passes of 8 bytes (`VSCRLN`) | 240 passes: 24 rows of 80 up one row, 8,800 instructions |
+| `V D` | each byte as its 2513-style glyph | each code as its character; a control code as `.` |
+| $0FF9 | `VSCRLN` | `VIDC2` |
+
+The keyboard, mirroring, the `V` command, `VIDCTL` at $FFBC and the other variables are section 11a's unchanged. A
+program that changes control 2 itself (the guns, the syncs' polarity, TEXT-OFF) changes `VIDC2` with it, or the
+next cursor move puts the old byte back.
+
+**On the emulators** `Y1VID_CARD=v4` chooses the card's model (`software/videomodel.h`), and `-m` then loads this
+ROM (`firmware/monitor/monitor-v4.img`) in place of the V2.0 one. `tests/video/v40/run.py` (in `make check`) builds
+both ROMs from the one source, runs the model's own test, the card's ports and window through the monitor
+(`v40card.asm`) and the screen driver (`v40scr.asm`: 30 lines with lower case, six scrolls, the cursor and CURH) on
+both emulators.
+
+Not in this ROM: graphics; the 640 x 400 at 70 Hz table (the driver's second raster, decided 2026-11-14: to come
+with the first program that wants it); starting the screen at reset (`VIDAUTO` is 0). Y1/OS, BASIC and the
+commands on the disk still take the screen for 24 rows.

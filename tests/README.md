@@ -29,7 +29,11 @@
   (`Y1VID_CARD=v3`) - the font EPROM's image against its generator, `model_test.c` (the HD63484's registers, FIFOs
   and commands with the manual's examples, the keyboard and the mouse), and `v30card.asm` through the monitor on both
   emulators: a YACC1 program starts the chip, writes "V3 OK" from the font EPROM and draws; the frame buffer is
-  compared dot for dot with the same scene drawn in Python.
+  compared dot for dot with the same scene drawn in Python. `v40/run.py` (2026-11-14, in `make check`): the video
+  card V4 (`Y1VID_CARD=v4`) and its ROM - both ROMs built from the one `monitor.asm` and compared with the committed
+  images, `model_test.c` (the ports, both control registers, the 64K behind the window, VSYNC / DE at 16 dots a
+  count), `v40card.asm` through the V4 monitor on both emulators in three builds (as designed, text-only, a 3.5 MHz
+  CPU), and `v40scr.asm`, the ROM's screen driver: 80 x 25, lower case, six scrolls, the cursor's address and CURH.
   `v30_netsim.py` (2026-11-11, in `make check`): the video card V3's netlist
   (`hardware/cards/video/kicad/v3.0/v30_netlist.py`) run as a circuit, every part a model with its data-sheet
   delays at both ends of their ranges, against a model of the HD63484's memory cycles and against the microcode's

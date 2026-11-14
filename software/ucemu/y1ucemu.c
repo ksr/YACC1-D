@@ -28,7 +28,8 @@
  * usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-l N] [-D PORT]
  *   -c   attach a CompactFlash image (software/cfmodel.h: P8 = register select, P9 = data; created if missing)
  *   -u   control store (default: firmware/microcode/ucode-generator2/test.hex relative to the executable)
- *   -m   load firmware/basic/basic.img + firmware/monitor/monitor.img (the ROM), as the other emulator does
+ *   -m   load firmware/basic/basic.img + firmware/monitor/monitor.img (the ROM), as the other emulator does; with
+ *        Y1VID_CARD=v4 the monitor is monitor-v4.img, the video card V4's ROM (2026-11-14)
  *   -f   load an Intel-hex image (repeatable; later files overwrite earlier ones)
  *   -x   scripted: quiet, stdout flushed, SOFT-HALT exits; a status line on stderr
  *   -t   one line per instruction fetch on stderr; -T every step with the signals asserted
@@ -1073,7 +1074,7 @@ int main(int argc, char **argv) {
     if (vgate) {                         /* -G is the V1.0 card at gate level: it chooses that card (the branch's default
                                             is V2.0), unless Y1VID_CARD asks for V2.0 outright */
         const char *c = getenv("Y1VID_CARD");
-        if (c && *c && vid2.card == 2) { fprintf(stderr, "y1ucemu: -G models the video card V1.0; Y1VID_CARD=%s has no gate model\n", c); return 1; }
+        if (c && *c && vid2.card != 1) { fprintf(stderr, "y1ucemu: -G models the video card V1.0; Y1VID_CARD=%s has no gate model\n", c); return 1; }
         vid2.card = 1;
     }
     resolve_signals();
@@ -1086,7 +1087,9 @@ int main(int argc, char **argv) {
     if (load_std) {
         char img[4096];
         exe_relative(img, sizeof img, "../../firmware/basic/basic.img", argv[0]); load_hex(img);
-        exe_relative(img, sizeof img, "../../firmware/monitor/monitor.img", argv[0]); load_hex(img);
+        /* 2026-11-14: Y1VID_CARD=v4 has its own monitor, the V4 build of monitor.asm (tools/monvariant.py) */
+        exe_relative(img, sizeof img, vid2.card == 4 ? "../../firmware/monitor/monitor-v4.img" : "../../firmware/monitor/monitor.img", argv[0]);
+        load_hex(img);
     }
     for (int i = 0; i < nimages; i++) if (!load_hex(images[i])) return 2;
     if (gen_clocks) {                             /* -Y: software/opclocks.h, from the microcode just loaded */

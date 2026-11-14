@@ -46,7 +46,7 @@
  * scan code translation; Enter = CR), a byte loaded into PE 20 us after the last was read, BUSY for 20 us after a
  * command; its interrupt request (INTREQ AND FULL, through JP3 to the bus -INT) is kept but not wired to the CPU (no
  * emulator models -INT yet); there is no mouse. Environment:
- *   Y1VID_CARD=v1.0      the V1 card (default here: v2.0) Y1VID_DOTS=6      the DOTS jumper open (default 8: fitted)
+ *   Y1VID_CARD=v1.0      the V1 card (default here: v2.0; v3 and v4 below) Y1VID_DOTS=6   the DOTS jumper open (default 8: fitted)
  *   Y1VID_TEXTONLY=1     the text-only build (IC35-IC45, IC55, RN3 not fitted: IN PC bit 3 = 1, the window floats)
  *   Y1VID_KEYS=TEXT      bytes the keyboard sends, in order (\r \n \e \t \\ and \xHH)
  *   Y1VID_KBD=stdin      the terminal is the PS/2 keyboard: console input goes to PE, and the UART receives nothing
@@ -69,6 +69,26 @@
  *        where a \m stands among them: three bytes with SRC = 1 (buttons, the signs; dx; dy). The packets wait
  *        until a program turns the mouse on (command $04: the scripted hand moves it then, never while a ROM is
  *        still reading the keyboard as its console); the keys behind them go on. Command $05 makes them wait again
+ *
+ * 2026-11-14: the video card V4 (docs/cards/video-v4.md; hardware/cards/video/kicad/v4.0, routed, not built),
+ * Y1VID_CARD=v4. V2.0's ports and windows with the 6845 counting 16 dots at a time from a 25.175 MHz oscillator:
+ *   the text RAM at $D000-$D7FF: 80 x 25 characters, the character at (row, column) at $D000 + row * 80 + column
+ *       (the 6845's address counts pairs: the card fetches two bytes in each count)
+ *   the GRAPHICS WINDOW at $D800-$DFFF: 2K of the RAM's lower 64K, at CPAGE * 32K + PLANE * 2K + ADDR10..0 - two pages
+ *       of sixteen planes, plane p the scan line p of every character row (640 x 400 dots)
+ *   PA  OUT the 6845's address register             PB  IN/OUT the 6845's data register (R14-R17 read back)
+ *   PC  OUT control 1 (cleared at reset): 3..0 PLANE, 4 CPAGE, 5 DPAGE, 6 GFX-ON (0 = direct mode, the layer hidden),
+ *       7 XOR;  IN status: 0 = 0, 1 VSYNC, 2 DE, 3 TEXT-ONLY, 7..4 = 0111 (the card ID $7x)
+ *   PD, PE  the PS/2 controller, as V2.0's
+ *   PF  OUT control 2 (cleared at reset): 0 TEXT-OFF, 1 CURH (the cursor on the right-hand character of its count),
+ *       2 HSYNC positive, 3 VSYNC positive, 4 spare, 5 red off, 6 green off, 7 blue off;  IN: nothing drives the bus
+ * As V2.0's model it is the card's CPU side: both window modes are plain RAM (slot mode's clock limit, 3.5 MHz, is
+ * the hardware's: tests/video/v40_netsim.py), the text-only build answers nothing in the window. VSYNC and DE in the
+ * status are the 6845's own (VSYNC 16 scan lines: Motorola's part), counted from its registers and the CPU's clocks
+ * at 16 dots a count; the stage's one count of delay, 0.64 us, is under a CPU clock and not modelled. Y1VID_DOTS has
+ * no meaning here (the card has no DOTS jumper). -V prints the 80 x 25 screen as ASCII (the card's EPROM has 256
+ * glyphs: a code is its character; '.' for a code that is no printing character), and a line with both control
+ * registers; Y1VIDSTATE writes "card v4", both control registers and the 64K of graphics RAM.
  *
  * Include after <stdio.h>/<stdint.h>/<stdlib.h>/<string.h>. vid_init() once at start (reads the environment);
  * vid_in(a) says whether an address is the card's; vid_read/vid_write serve it, with mem = the emulator's memory array
@@ -117,12 +137,13 @@ static void vid_crtc_write(int rs, uint8_t v) {
 
 /* ---- V2.0 (2026-11-10) ---- */
 #define V2_GRAM  16384                    /* a page: 8 planes x 2K */
+#define V4_GRAM  32768                    /* V4 (2026-11-14): a page of sixteen planes */
 static unsigned long long vid_clk;        /* the CPU's clocks so far: kept by the emulator (VSYNC, DE, the PS/2 delays) */
 static int (*vid_key_ready)(void), (*vid_key_get)(void);   /* Y1VID_KBD=stdin: the emulator's console input */
 static struct {
     int card, dots, textonly, kbd_stdin;
     unsigned long long cpu_hz, dot_hz;
-    uint8_t control, gram[2 * V2_GRAM];
+    uint8_t control, control2, gram[2 * V4_GRAM];   /* (V2.0 uses the first 32K; control2 is V4's, OUT PF) */
     uint8_t q[256], qs[256]; unsigned qh, qt;   /* the controller's queue (the firmware's is 64 bytes; this one 256) and
                                              each byte's source: 0 the keyboard, 1 the mouse; 2 = taken already */
     int full, src, ints, acked, mouse, leds;
@@ -131,6 +152,7 @@ static struct {
 } vid2;
 
 static unsigned long long v2_us(unsigned us) { return vid2.cpu_hz * us / 1000000; }
+static unsigned v2_gsize(void) { return vid2.card == 4 ? 2 * V4_GRAM : 2 * V2_GRAM; }   /* the card's graphics RAM in use */
 
 static void v2_queue(int c, int src) {
     if (vid2.qh - vid2.qt < sizeof vid2.q) { vid2.q[vid2.qh & 255] = (uint8_t)c; vid2.qs[vid2.qh++ & 255] = (uint8_t)src; }
@@ -156,8 +178,9 @@ static void vid_init(void) {
         if (!strcmp(e, "v2.0") || !strcmp(e, "2.0") || !strcmp(e, "2")) vid2.card = 2;
         else if (!strcmp(e, "v1.0") || !strcmp(e, "1.0") || !strcmp(e, "1")) vid2.card = 1;
         else if (!strcmp(e, "v3") || !strcmp(e, "v3.0") || !strcmp(e, "3")) vid2.card = 3;
+        else if (!strcmp(e, "v4") || !strcmp(e, "v4.0") || !strcmp(e, "4.0") || !strcmp(e, "4")) vid2.card = 4;
         else {
-            fprintf(stderr, "Y1VID_CARD=%s: the cards are v1.0, v2.0 and v3\n", e); exit(2);
+            fprintf(stderr, "Y1VID_CARD=%s: the cards are v1.0, v2.0, v3 and v4\n", e); exit(2);
         }
     }
     ac_reset(); ac.log = vid.log;
@@ -168,6 +191,7 @@ static void vid_init(void) {
     vid2.mouse = 0;                       /* the scripted packets begin when a program turns the mouse on (command $04) */
     e = getenv("Y1_CLOCK"); vid2.cpu_hz = e && atof(e) > 0 ? (unsigned long long)atof(e) : 1000000;
     vid2.dot_hz = 12000000;               /* Q2, SV4 on 1-2 */
+    if (vid2.card == 4) { vid2.dots = 16; vid2.dot_hz = 25175000; }     /* V4: OSC1, and a count is 16 dots */
     for (e = getenv("Y1VID_KEYS"); e && *e; e++) {
         int c = (uint8_t)*e;
         if (c == '\\' && e[1]) {
@@ -266,6 +290,7 @@ static int vid_io_read(int p) {
         case 0xA: return -1;                                    /* the 6845's address register is write-only */
         case 0xB: return vid_crtc_read(1);
         case 0xC: { int vs, de; v2_raster(&vs, &de);
+                    if (vid2.card == 4) return 0x70 | vs << 1 | de << 2 | vid2.textonly << 3;    /* no DOTS bit */
                     return 0x50 | (vid2.dots == 6) | vs << 1 | de << 2 | vid2.textonly << 3; }
         case 0xD: v2_fill(); return vid2.full | vid2.src << 1 | (vid_clk < vid2.busy_until) << 2;
         case 0xE: v2_fill();
@@ -283,24 +308,38 @@ static int vid_io_write(int p, uint8_t v) {
         case 0xA: vid_crtc_write(0, v); break;
         case 0xB: vid_crtc_write(1, v); break;
         case 0xC: vid2.control = v;
+                  if (vid.log && vid2.card == 4)
+                      fprintf(stderr, "video: control 1 %02X (plane %d, CPU page %d, display page %d, graphics %s, %s)\n",
+                              v, v & 15, v >> 4 & 1, v >> 5 & 1, v & 0x40 ? "on (slot mode)" : "off (direct mode)",
+                              v & 0x80 ? "XOR" : "OR");
+                  else
                   if (vid.log) fprintf(stderr, "video: control %02X (plane %d, CPU page %d, display page %d, text %s, "
                                        "graphics %s, %s)\n", v, v & 7, v >> 3 & 1, v >> 4 & 1, v & 0x20 ? "off" : "on",
                                        v & 0x40 ? "on (slot mode)" : "off (direct mode)", v & 0x80 ? "XOR" : "OR");
                   break;
         case 0xD: v2_command(v); break;
+        case 0xF: if (vid2.card != 4) break;                    /* V2.0: the spare port */
+                  vid2.control2 = v;
+                  if (vid.log) fprintf(stderr, "video: control 2 %02X (text %s, cursor on the %s character, HSYNC %s, "
+                                       "VSYNC %s, guns%s%s%s%s)\n", v, v & 1 ? "off" : "on", v & 2 ? "right" : "left",
+                                       v & 4 ? "positive" : "negative", v & 8 ? "positive" : "negative",
+                                       v & 0xE0 ? "" : " all on", v & 0x20 ? " red off" : "", v & 0x40 ? " green off" : "",
+                                       v & 0x80 ? " blue off" : "");
+                  break;
         default:  break;
     }
     return 1;
 }
 
 static unsigned v2_window(unsigned a) {   /* the 62256 address of a CPU access: CPAGE, PLANE, ADDR10..0 */
+    if (vid2.card == 4) return (vid2.control >> 4 & 1) * V4_GRAM + (vid2.control & 15) * 2048u + (a & 0x7FF);
     return (vid2.control >> 3 & 1) * V2_GRAM + (vid2.control & 7) * 2048u + (a & 0x7FF);
 }
 
 static int vid_read(unsigned a, const uint8_t *mem) {   /* the byte a read of a returns; -1 = nothing drives the bus */
     if (vid.absent || vid2.card == 3) return -1;          /* the V3 card has nothing in the $D000 block */
     if (a < VID_CRTC) return mem[a];
-    if (vid2.card == 2) return vid2.textonly ? -1 : vid2.gram[v2_window(a)];   /* V2.0: the graphics window */
+    if (vid2.card == 2 || vid2.card == 4) return vid2.textonly ? -1 : vid2.gram[v2_window(a)];   /* the graphics window */
     if (a & 1) return vid_latch();                        /* the JP1 latch (Y1VID_LATCH; FF: nothing jumpered) */
     return vid_crtc_read((a >> 1) & 1);
 }
@@ -308,7 +347,7 @@ static int vid_read(unsigned a, const uint8_t *mem) {   /* the byte a read of a 
 static void vid_write(unsigned a, uint8_t v, uint8_t *mem) {
     if (vid.absent || vid2.card == 3) return;
     if (a < VID_CRTC) { mem[a] = v; return; }
-    if (vid2.card == 2) { if (!vid2.textonly) vid2.gram[v2_window(a)] = v; return; }
+    if (vid2.card == 2 || vid2.card == 4) { if (!vid2.textonly) vid2.gram[v2_window(a)] = v; return; }
     if (a & 1) { if (vid.log) fprintf(stderr, "video: write %02X to $%04X, the JP1 latch (a bus fight on the card)\n", v, a); return; }
     vid_crtc_write((a >> 1) & 1, v);
 }
@@ -387,9 +426,11 @@ static void vid_state(const uint8_t *mem) {
     fprintf(f, "\nsel %d\nram ", vid.sel);
     for (unsigned a = VID_BASE; a < VID_CRTC; a++) fprintf(f, "%02X", mem[a]);
     fprintf(f, "\n");
-    if (vid2.card == 2) {                                 /* 2026-11-10: the V2.0 card's graphics side */
-        fprintf(f, "card v2.0\ncontrol %02X\ndots %d\ntextonly %d\ngram ", vid2.control, vid2.dots, vid2.textonly);
-        for (unsigned i = 0; i < sizeof vid2.gram; i++) fprintf(f, "%02X", vid2.gram[i]);
+    if (vid2.card == 2 || vid2.card == 4) {               /* 2026-11-10: the V2.0 card's graphics side; V4's */
+        if (vid2.card == 4) fprintf(f, "card v4\ncontrol %02X\ncontrol2 %02X\n", vid2.control, vid2.control2);
+        else fprintf(f, "card v2.0\ncontrol %02X\n", vid2.control);
+        fprintf(f, "dots %d\ntextonly %d\ngram ", vid2.dots, vid2.textonly);
+        for (unsigned i = 0; i < v2_gsize(); i++) fprintf(f, "%02X", vid2.gram[i]);
         fprintf(f, "\n");
     }
     fclose(f);
@@ -400,16 +441,19 @@ static void vid_dump(const uint8_t *mem) {
     if (!vid.dump) return;
     if (vid.absent) { fprintf(stderr, "video: no card (-N)\n"); return; }
     if (vid2.card == 3) { v3_dump(); return; }
-    int cols = vid2.card == 2 && vid2.dots == 8 ? 64 : VID_COLS, rows = VID_ROWS; unsigned start = VID_BASE;
+    int cols = vid2.card == 2 && vid2.dots == 8 ? 64 : VID_COLS, rows = vid2.card == 4 ? 25 : VID_ROWS; unsigned start = VID_BASE;
     int crtc = vid.written[1] && vid.written[6] && vid.reg[1] && vid.reg[6];
-    if (crtc) { cols = vid.reg[1]; rows = vid.reg[6] & 0x7F; start = VID_BASE + (((vid.reg[12] & 0x3F) << 8 | vid.reg[13]) & 0x7FF); }
+    int per = vid2.card == 4 ? 2 : 1;                     /* V4: two characters in each of the 6845's counts */
+    if (crtc) { cols = vid.reg[1] * per; rows = vid.reg[6] & 0x7F;
+                start = VID_BASE + ((((vid.reg[12] & 0x3F) << 8 | vid.reg[13]) * per) & 0x7FF); }
     fprintf(stderr, "video: %d x %d from $%04X (%s)\n", cols, rows, start, crtc ? "CRTC R1/R6/R12/R13" : "default geometry");
     fprintf(stderr, "+"); for (int c = 0; c < cols; c++) fputc('-', stderr); fprintf(stderr, "+\n");
     for (int r = 0; r < rows; r++) {
         fputc('|', stderr);
         for (int c = 0; c < cols; c++) {
             unsigned a = VID_BASE + (((start - VID_BASE) + r * cols + c) & 0x7FF);   /* the CPU sees 2K */
-            fputc(((mem[a] + 0x20) & 0x3F) + 0x20, stderr);
+            if (vid2.card == 4) fputc(mem[a] >= 0x20 && mem[a] < 0x7F ? mem[a] : '.', stderr);   /* a code is its character */
+            else fputc(((mem[a] + 0x20) & 0x3F) + 0x20, stderr);
         }
         fprintf(stderr, "|\n");
     }
@@ -417,14 +461,23 @@ static void vid_dump(const uint8_t *mem) {
     fprintf(stderr, "video: CRTC");
     for (int i = 0; i < 18; i++) fprintf(stderr, vid.written[i] ? " %02X" : " --", vid.reg[i]);
     fprintf(stderr, "  (R0..R17, -- = never written)\n");
-    if (vid2.card == 2) {
+    if (vid2.card == 2 || vid2.card == 4) {
         unsigned lit = 0;
-        for (unsigned i = 0; i < sizeof vid2.gram; i++) lit += vid2.gram[i] != 0;
-        fprintf(stderr, "video: V2.0 control %02X (plane %d, CPU page %d, display page %d, text %s, graphics %s, %s); "
-                "%d dots%s; graphics RAM %u of %u bytes not 0; PS/2 %s, %u queued, interrupts %s, LEDs %d\n",
-                vid2.control, vid2.control & 7, vid2.control >> 3 & 1, vid2.control >> 4 & 1,
-                vid2.control & 0x20 ? "off" : "on", vid2.control & 0x40 ? "on" : "off", vid2.control & 0x80 ? "XOR" : "OR",
-                vid2.dots, vid2.textonly ? ", text-only build" : "", lit, (unsigned)sizeof vid2.gram,
+        for (unsigned i = 0; i < v2_gsize(); i++) lit += vid2.gram[i] != 0;
+        if (vid2.card == 4)
+            fprintf(stderr, "video: V4 control 1 %02X (plane %d, CPU page %d, display page %d, graphics %s, %s), "
+                    "control 2 %02X (text %s, cursor %s, HSYNC %s, VSYNC %s, guns off %d%d%d)%s; ",
+                    vid2.control, vid2.control & 15, vid2.control >> 4 & 1, vid2.control >> 5 & 1,
+                    vid2.control & 0x40 ? "on" : "off", vid2.control & 0x80 ? "XOR" : "OR", vid2.control2,
+                    vid2.control2 & 1 ? "off" : "on", vid2.control2 & 2 ? "right" : "left", vid2.control2 & 4 ? "+" : "-",
+                    vid2.control2 & 8 ? "+" : "-", vid2.control2 >> 5 & 1, vid2.control2 >> 6 & 1, vid2.control2 >> 7 & 1,
+                    vid2.textonly ? ", text-only build" : "");
+        else
+            fprintf(stderr, "video: V2.0 control %02X (plane %d, CPU page %d, display page %d, text %s, graphics %s, %s); "
+                    "%d dots%s; ", vid2.control, vid2.control & 7, vid2.control >> 3 & 1, vid2.control >> 4 & 1,
+                    vid2.control & 0x20 ? "off" : "on", vid2.control & 0x40 ? "on" : "off", vid2.control & 0x80 ? "XOR" : "OR",
+                    vid2.dots, vid2.textonly ? ", text-only build" : "");
+        fprintf(stderr, "graphics RAM %u of %u bytes not 0; PS/2 %s, %u queued, interrupts %s, LEDs %d\n", lit, v2_gsize(),
                 vid2.full ? "FULL" : "empty", vid2.qh - vid2.qt, vid2.ints ? "on" : "off", vid2.leds);
     }
 }
