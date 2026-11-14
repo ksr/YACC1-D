@@ -235,7 +235,11 @@ character n of the screen is byte n at $D000, n = row x 80 + column, as today. T
 the left character in the count's first 8 dots and the right one in the last 8.
 
 **The character generator** is addressed by the code, the scan line RA3..0 and the cursor flag: 256 glyphs of 16
-lines, twice: 8K, an AT28C64B-15 as on V2.0. Bit 7 of a byte is the left-hand dot. The font is to choose (section 13).
+lines, twice: 8K, an AT28C64B-15 as on V2.0. Bit 7 of a byte is the left-hand dot. The image is
+`firmware/video/chargen-v40.bin` (2026-11-14; its README has every code): Terminus Font's bold 8 x 16 for ASCII
+with lower case at $20-$7E; lines, blocks, arrows and symbols at $00-$1F, which the driver never stores; and at
+$80-$FF the same 128 glyphs inverted, so **inverse video is code + $80** - the text RAM has no attribute bits. All
+eight dots of a cell are shown and the rows touch: a frame's lines and the blocks join from cell to cell.
 
 **The pipeline.** A code waits in the code register (74ACT574) while the generator looks it up, a whole 8 dots; its
 dots load into a 74F299 as the next code is taken. The right character of a count is so on the screen directly after
@@ -546,7 +550,9 @@ On the branch `video-v2`, beside the V2.0 card's. **The emulators' model and the
 - **The emulators' model (done 2026-11-14: `software/videomodel.h`, `Y1VID_CARD=v4`)**: 16 dots a count, two bytes,
   sixteen planes in two pages, the two control registers, the text-only build, the status's VSYNC and DE to the
   clock. `tests/video/v40/run.py` on that branch runs the model and the ROM on both emulators.
-  `tools/vidsim.py timing --card v4` checks the table; it draws no picture of this card yet (the font is open).
+  `tools/vidsim.py timing --card v4` checks the table, and (2026-11-14) the tool draws the card's screen with the
+  character generator's image: `testcard --card v4`, and `render` of an emulator's state file (the text, the cursor
+  on its half, both control registers, the graphics layer; `--raster` in the monitor's frame).
 - **Graphics**: what is open for V2.0 (drawing routines, in Y1/OS or a library; `video`) is open here in the same
   way, at 640 x 400 and under the same rules for the window (section 7): drawn in direct mode with the layer hidden,
   or in slot mode with it shown.
@@ -603,9 +609,19 @@ address: section 13, "Possible later".
   - A third register for CURH alone, on OUT PE (free: section 9), so that the driver never writes control 2
     after it has set it up: a 47th IC.
 
+- The font (decided 2026-11-14; section 6): Terminus Font's bold 8 x 16 (SIL Open Font License 1.1;
+  `firmware/video/upstream/terminus-font-4.49.1/`), as the image `firmware/video/chargen-v40.bin`. Seven were drawn
+  as the card's screen, 80 x 25 in the 640 x 480 raster, and compared: Terminus bold and medium, Spleen, GNU Unifont,
+  the X11 8x16, and the V2.0 font and the old EPROM's with each line doubled. The bold's strokes are two dots wide,
+  which a monitor that samples the analog signal a little off still shows whole, and it keeps `0 O`, `1 l I |` and
+  `5 S` apart. Looked at and not taken: Spleen (its capital V reads as a U at this size); the medium weight and
+  Unifont (strokes of one dot); the X11 font (`0` and `O` alike); the doubled fonts (upper case only, or five dots
+  wide with no descenders). The upper 128 codes are the lower 128 inverted, not a second set of glyphs: the card has
+  no attribute bits, and inverse video is what a status line, a menu or a selection wants. The cursor's form is the
+  glyph inverted, so the 6845's R10 / R11 still choose block or underline. Nothing on the board depends on any of
+  it: the chip is an EEPROM and is burned again for another font or other glyphs at $00-$1F.
+
 **Proposed here, to decide**
-- **The font**: 256 glyphs of 8 x 16 with lower case, and their cursor forms. V2.0's fonts are 8 lines high; the V3
-  design's first image is the V1.3 glyphs with each line doubled.
 - **V2.0**: ordered as well, or left as it is. If ordered: its slot mode has the write pulse that the strobe can
   cut short (section 7), which the 2026-10-23 re-review judged harmless.
 

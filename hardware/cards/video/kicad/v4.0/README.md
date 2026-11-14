@@ -336,3 +336,6 @@ viewer; the VGA socket laid on a 1:1 print of the board.
    socket laid on a 1:1 print of the board; the oscillator's data sheet for its pin 1.
 2. The emulators' model and the ROM's text driver are on the branch `video-v2` (2026-11-14: `Y1VID_CARD=v4`,
    `ROM 2026-11-14 V4`; the note's section 12). Open there: graphics, and Y1/OS on 25 rows.
+3. IC18's image is `firmware/video/chargen-v40.bin` (2026-11-14: Terminus Font's bold 8 x 16; `firmware/video/README.md`
+   has the codes and the burn command). `python3 tools/vidsim.py testcard --card v4 --raster --png card.png` draws what
+   the card should show.
