@@ -20,7 +20,6 @@ coding and documentation.
 
 [:material-play-circle: Watch it run](https://youtu.be/6pjIE4_MxIA){ .md-button .md-button--primary }
 [:material-github: Source on GitHub](https://github.com/ksr/YACC1-D){ .md-button }
-[:material-home: My other projects](https://cottageworker.com){ .md-button }
 
 ## At a glance
 
