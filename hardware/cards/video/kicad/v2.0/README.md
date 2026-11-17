@@ -1,5 +1,9 @@
 # video-v2.0 — KiCad design master for the video card
 
+**This card will not be built (decided 2026-11-17): the video card to build is the V4 (`../v4.0`,
+`docs/cards/video-v4.md`). Nothing here was ordered. The design is kept as it stood, unchanged, for reference; do
+not order from this folder.**
+
 **The master since 2026-10-22. Ready to order since 2026-10-23 (re-reviewed, every re-review finding applied); not
 ordered. Revised 2026-10-26 before the order: the DB9's VSYNC polarity jumper JP4** (below), the board routed again
 2026-10-27, with the board-layout rules' silkscreen and cottageworker.com on it; the gerbers exported again

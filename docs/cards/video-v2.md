@@ -2,9 +2,10 @@
 
 The video card's second generation: the v1.3 card plus a graphics layer, every register on I/O ports and two PS/2
 ports. **Designed 2026-10-22, re-reviewed 2026-10-23, the DB9's VSYNC polarity jumper added 2026-10-26; not ordered or
-built.** **On file since 2026-11-14: the [V4 card](video-v4.md) is the video card to build, and this one is not
-ordered and will probably never be built.** The design stays as it is, ready to order; its ROM driver, its model in
-the emulators and its tests stay on the branch `video-v2`.
+built.** **This card will not be built (decided 2026-11-17; on file since 2026-11-14): the [V4 card](video-v4.md)
+is the video card to build.** The design is kept as it stood, for reference: the V4's ports, windows, direct mode
+and PS/2 section are this card's. Its ROM driver, its model in the emulators and its tests are still on the branch
+`video-v2`.
 
 The text circuit (the 6845, the IDT7134 text RAM, the character pipeline, the DOTS jumper) is the v1 cards': its
 theory is the [V1 page](video.md). This page is what V2.0 adds and changes. It was section 7a of the V1 page until

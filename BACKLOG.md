@@ -415,12 +415,21 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   no DB9, RCA or halved clock). Open: whether a 512K x 8 static RAM exists in DIP-32 (the footprint's option). For
   the bench (section 10d, "what it cannot say"): the chip's minimum delays, on which two margins of 2 to 3 ns rest;
   a decoder pulse at the end of an IN; the cursor skew's count.
-- **Video card V2.0 (designed 2026-10-22; `hardware/cards/video/kicad/v2.0`; re-reviewed and READY TO ORDER 2026-10-23, not ordered; ON HOLD 2026-11-12; ON FILE, NOT TO BE ORDERED 2026-11-14).**
-  **On file (2026-11-14):** the V4 card is the video card to build, alone. V2.0 is not ordered and will probably
-  never be built. Its design stays as it is, ready to order, and no file of it is changed. Its software (the ROM
-  driver that `monitor.asm` assembles to as it stands, the emulators' model, `tests/video/v20`) stays on `video-v2`
-  until the V4 runs in the machine; what becomes of it then - both builds of the monitor kept, or the V2.0 one
-  dropped - is to decide then.
+- **Video card V2.0 (designed 2026-10-22; `hardware/cards/video/kicad/v2.0`; re-reviewed and READY TO ORDER 2026-10-23, not ordered; ON HOLD 2026-11-12; ON FILE, NOT TO BE ORDERED 2026-11-14; WILL NOT BE BUILT 2026-11-17).**
+  **Will not be built (2026-11-17).** The design stays on file as it stood - nothing of it is changed or deleted,
+  and nothing was ever ordered - with a note at the top of its README. What follows from it, open:
+  - **The branch `video-v2` becomes the V4's alone.** Today `monitor.asm` as it stands still assembles to the V2.0
+    ROM (the V4 ROM is the second build, `tools/monvariant.py v4`), the emulators' card there is V2.0 unless
+    `Y1VID_CARD=v4`, and Y1/OS, BASIC and the commands take the screen for V2.0's 24 rows. To do: the V4 build as
+    the source stands (the `;;V2` lines out, the `;;V4` tags off, one ROM image), the emulators' default card the
+    V4, the OS on 25 rows. To decide first: whether V2.0's driver, model and `tests/video/v20` are taken out or
+    left in as a card that no ROM drives.
+  - **`pcb-check/tests/boards.txt` still lists this board** (the list of new boards awaiting an order): to take off.
+  - On `main`, V2.0's parts of `tools/vidsim.py` (`--card v2.0`), `firmware/video/chargen-v20.bin` and
+    `tests/video/v20_timing.py` stay: they are the record of the design, and `make check` runs them.
+  **On file (2026-11-14):** the V4 card is the video card to build, alone, and V2.0 is not ordered. (Then:
+  "probably never built", its software to stay on `video-v2` until the V4 runs in the machine. Since 2026-11-17 it
+  is not built at all: above.)
   **On hold (2026-11-12):** the design stays as it is, ready to order (the pre-order check run again 2026-11-12:
   no failures, the four warnings of 2026-11-10), and may still be ordered; it waits while a VGA card with the 6845
   is looked at again, now that the V3 card (the ACRTC) is not built. The thought, nothing designed: this card's
@@ -548,7 +557,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   Nothing of the note's section 13 is left to decide: the control bits' places, the raster, the font and V2.0's
   order are answered. What is left before an order is the list above (the pre-order check's pictures and the fab's
   viewer by eye, the VGA socket on a 1:1 print, the oscillator's pin 1), and the order itself.
-  **For V2.0, if it is ordered (seen 2026-11-12 while simulating this card; V2.0's files are not changed):** its
+  **For V2.0, had it been ordered (seen 2026-11-12 while simulating this card; V2.0's files are not changed; kept
+  for the record, the card will not be built):** its
   slot mode has the strobe as a term of -WE, so a write strobe that ends inside a pulse cuts the pulse short. The
   re-review of 2026-10-23 judged that harmless (the same byte written again). Not shown harmless: in a cut pulse's
   first nanoseconds the write buffer is not yet on and the RAM's data lines still hold the display's byte. Direct

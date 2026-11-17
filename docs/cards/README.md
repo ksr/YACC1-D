@@ -30,7 +30,7 @@ The machine and its bus as a whole: `docs/system/` (architecture, microcode, bus
 | [`video.md`](video.md) | Video V1: V1.0 built, v1.1–v1.3 KiCad designs | 6845 + IDT7134 dual-port RAM at $D000, the register-select fix, the +5V rail wire, the plan to move the 6845 onto ports |
 | [`video-v3.md`](video-v3.md) | Video V3 (a design note, 2026-11-11; not built: stopped 2026-11-12 after the schematic) | a VGA card round the HD63484 ACRTC: 640 x 480 with the chip drawing, ports only, two ways to do text, the steps to 800 x 600 and 1024 x 768 |
 | [`video-v4.md`](video-v4.md) | Video V4 (design note, netlist, schematic, 2026-11-12; simulated; the board routed, 250 mm; reviewed 2026-11-13, the review's fixes in and the board routed again, since 2026-11-14 with its four clocks laid first; the pre-order check without a failure; its model in the emulators and its ROM on the branch `video-v2`; its font and control bits decided 2026-11-14; the video card to build; not ordered) | VGA with the 6845: 16 dots a count, two bytes fetched in each, so the 6845 runs at 1.57 MHz; 80 x 25 of 8 x 16 and 640 x 400 graphics with V2.0's ports, windows, direct mode and PS/2 section |
-| [`video-v2.md`](video-v2.md) | Video V2.0 (ready to order; on file since 2026-11-14, not ordered: the V4 is the card to build) | v1.3 plus a 512 x 192 graphics layer, every register on I/O ports PA-PE, two PS/2 ports on an ATmega328P; 218 mm, 4 layers |
+| [`video-v2.md`](video-v2.md) | Video V2.0 (designed, never ordered; will not be built, decided 2026-11-17: the V4 is the card to build) | v1.3 plus a 512 x 192 graphics layer, every register on I/O ports PA-PE, two PS/2 ports on an ATmega328P; 218 mm, 4 layers |
 
 ## Test and bring-up cards
 

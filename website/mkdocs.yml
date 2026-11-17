@@ -12,6 +12,7 @@ not_in_nav: |
   /docs/isa/*.md
 hooks:
   - hooks.py
+  - lastupdated.py                 # "Last updated <date>" at the foot of every page
 
 theme:
   name: material
@@ -50,7 +51,7 @@ markdown_extensions:
 
 nav:
   - "← cottageworker.com": https://cottageworker.com
-  - Home: index.md
+  - Home YACC1: index.md
   - The machine:
       - What is in it today: docs/system/MACHINE.md
       - Architecture: docs/system/ARCHITECTURE.md
@@ -191,3 +192,8 @@ nav:
       - References: docs/references/README.md
       - Datasheets: docs/datasheets/README.md
       - Documentation plan: docs/DOC-PLAN.md
+
+# lastupdated.py: the source of each page stage.py generates (the others are their own repository file)
+extra:
+  last_updated_sources:
+    "docs/isa/": "docs/isa/{name}.svg"     # one page per timing diagram
