@@ -437,12 +437,12 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   **Next, before any order:** the check's pictures and the fab's gerber viewer by eye; the VGA socket laid on a
   1:1 print; the oscillator's pin 1; then the
   order. `pcb-check --tests` (the system's `make check`) passes too.
-  **The emulators' model and the ROM's text driver are written (2026-11-14, branch `video-v2`):** `Y1VID_CARD=v4`
-  in both emulators (`software/videomodel.h`), and `ROM 2026-11-14 V4` (`firmware/rom/shipped/rom-v4.bin`, not
-  burned), a second build of `monitor.asm` made by `tools/monvariant.py v4` - the V2.0 ROM has 45 bytes free and
-  the assembler no conditional assembly, so the source carries both builds line by line (`;;V2` / `;;V4`) and still
-  assembles to the V2.0 ROM byte for byte. 80 x 25, lower case, the 640 x 480 table, the cursor's address halved
-  with CURH. `tests/video/v40/run.py` (in `make check` there): 0 failed on both emulators.
+  **The emulators' model and the ROM's text driver are written (2026-11-14, branch `video-v2`, now `video-v4`):**
+  the card in both emulators (`software/videomodel.h`; the branch's default card since 2026-11-18), and `ROM
+  2026-11-14 V4` (the branch's `firmware/rom/shipped/rom.bin` since 2026-11-18, when the V2.0 build left the source;
+  until then a second build, `rom-v4.bin`), not burned. 80 x 25, lower case, the 640 x 480 table, the cursor's
+  address halved with CURH. `tests/video/v40/run.py` (in `make check` there): 0 failed on both emulators. The
+  debugger (`software/y1dbg`) shows the V4's screen there since 2026-11-18.
   `tools/vidsim.py timing --card v4` checks the 6845's two tables (on `main`).
   **Open for the V4's software:** graphics in the ROM or a library; the 70 Hz table in the driver; Y1/OS, BASIC
   and the commands on 25 rows (they take the screen for 24). Scrolling the graphics apart from the text: in software (the note's section 12 has the three ways and
