@@ -377,6 +377,11 @@ The never-done **V1.2** ideas (`Notes.md`, `BACKLOG.md`):
    instead of four flags) or at least document the rule; a series resistor for the LCD backlight; a TTL-level serial
    header beside the DB9 if that is how the Mac is cabled.
 4. Leave -IO-ADDR-LD unconnected as now, and let the generator drop its steps (L-2).
+5. **The DB9 (J1) at the top edge** (2026-11-18), the edge opposite the bus connector: a right-angle DB9 with its
+   mating face at the board edge, facing off the card, so the console cable plugs straight in with the card standing
+   in the backplane. The board-layout rules put the switches, the LEDs, the TIL311 displays and the LCD on that edge
+   too, and the null-modem jumper JP1 near an edge beside J1, labelled for straight and crossed.
+6. **The real-time clock on P6/P7** (2026-11-12, `docs/cards/rtc.md` section 5.1), behind the buffer of idea 1.
 
 ### The next device on the ports: CompactFlash on P8/P9
 
