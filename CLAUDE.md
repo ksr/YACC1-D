@@ -8,32 +8,40 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
 
 ## Standing rules (Ken's)
 
-- **Commit to `main`** (or to `video-v4` for the video card V4's work, below) with conventional commits (`feat:`, `fix:`,
-  `docs:`, `chore:`, `test:`…) and **push after each commit**. No other branches, and no PRs, unless Ken asks. Stage explicit paths (never `git add -A` / `git add .`): other work
-  may be in the tree. End every commit message with the co-author line the session's attribution instructions give.
+- **Commit to `main`** (or to `video-v4-software` for the video card V4's software, below) with conventional commits
+  (`feat:`, `fix:`, `docs:`, `chore:`, `test:`…) and **push after each commit**. No other branches, and no PRs, unless
+  Ken asks. Stage explicit paths (never `git add -A` / `git add .`): other work may be in the tree. End every commit
+  message with the co-author line the session's attribution instructions give.
 - **Two lines of development (Ken, 2026-11-10; the second renamed 2026-11-18).** `main` is the YACC1 as built, with the
   video card V1.0: its ROM, BIOS, Y1/OS, BASIC and emulators are what runs on the machine today. The branch
-  **`video-v4`** is the YACC1 with the video card V4 (`docs/cards/video-v4.md`: the 6845 on VGA, 80 x 25 of 8 x 16,
-  640 x 400 graphics, registers on I/O ports PA-PF, graphics window $D800-$DFFF, PS/2 keyboard and mouse): its ROM
-  driver, BIOS console, Y1/OS, BASIC and the emulators' V4 card model.
+  **`video-v4-software`** is the YACC1 with the video card V4 (`docs/cards/video-v4.md`: the 6845 on VGA, 80 x 25 of
+  8 x 16, 640 x 400 graphics, registers on I/O ports PA-PF, graphics window $D800-$DFFF, PS/2 keyboard and mouse): its
+  ROM driver, BIOS console, Y1/OS, BASIC and the emulators' V4 card model. The name says what the branch holds: the
+  card's software. The card itself (the board, its design note, its tests) is on `main`.
   - What goes where: V1 work, and everything shared - card designs (the V4 board itself included), the compiler,
-    tools, tests and docs that are not V4-only - on `main`; V4-only software on `video-v4`. A fix that both need goes
-    on `main` first.
-  - Bring `main` into `video-v4` often, by merging (`git merge main` on `video-v4`; never rebase it: both Macs push
-    it). `video-v4` is merged into `main` when the V4 card runs in the machine.
-  - Side by side on one Mac, as a second worktree: `git worktree add ~/Developer/video-v4-software video-v4` (once per Mac;
-    called `YACC1-D-v4` until 2026-11-18: remove that one with `git worktree remove ~/Developer/YACC1-D-v4`).
+    tools, tests and docs that are not V4-only - on `main`; V4-only software on `video-v4-software`. A fix that both
+    need goes on `main` first.
+  - Bring `main` into `video-v4-software` often, by merging (`git merge main` on `video-v4-software`; never rebase it:
+    both Macs push it). `video-v4-software` is merged into `main` when the V4 card runs in the machine.
+  - Side by side on one Mac, as a second worktree in a folder with the branch's name:
+    `git worktree add ~/Developer/video-v4-software video-v4-software` (once per Mac).
     Each worktree has its own builds (`make` there: the emulators, `os/disk.img`, `rom.bin`) and its own `make
     check`. Hardware steps (ROM burn, microcode, bench, CF card) are from `main` until the V4 card is in the machine.
-  - Syncing YACC1-D means both branches, `main` and `video-v4`. The website publishes from `main` only.
+  - Syncing YACC1-D means both branches, `main` and `video-v4-software`. The website publishes from `main` only.
   - **The V4 is the only next video card (Ken, 2026-11-14 and 17).** The V2.0 (TV rate, 512 x 192 graphics) and V3
     (the HD63484 ACRTC) designs were never built and were **removed on 2026-11-18** (Ken: "they will never be
-    built"): their files on `main`, V2.0's software on the V4 line, and the branch `video-v3` (deleted). The branch
-    `video-v2` became `video-v4` the same day; a Mac with the old `YACC1-D-v2` worktree removes it and adds the
-    `video-v4` one. The git history before 2026-11-18 has both designs; V3's design, its emulator model and its ROM
-    driver are kept in `../private-resources/YACC1-D/video-v3/` as the start of another machine's video card (with
-    the chip's manual and application note in `../private-resources/YACC1-D/docs/datasheets/`). Do not bring V2.0
-    or V3 back unless Ken asks.
+    built"): their files on `main`, V2.0's software on the V4 line, and the branch `video-v3` (deleted). The git
+    history before 2026-11-18 has both designs; V3's design, its emulator model and its ROM driver are kept in
+    `../private-resources/YACC1-D/video-v3/` as the start of another machine's video card (with the chip's manual
+    and application note in `../private-resources/YACC1-D/docs/datasheets/`). Do not bring V2.0 or V3 back unless
+    Ken asks.
+  - **The V4 line's names (2026-11-18).** The branch was `video-v2` while it also carried V2.0's software, `video-v4`
+    for part of 2026-11-18, and is `video-v4-software` since (Ken: the branch and its folder carry one name). Its
+    worktree folder was `~/Developer/YACC1-D-v2`, then `YACC1-D-v4`. GitHub has only `main` and `video-v4-software`.
+    A Mac that still has an old name: `git fetch --prune`; check that the old folder has no uncommitted work and
+    that `git log origin/video-v4-software..video-v2` (or `..video-v4`) shows no commits (if either does, stop and
+    tell Ken); then `git worktree remove` the old folder, `git branch -D` the old branches (`video-v2`, `video-v3`,
+    `video-v4`) and add the worktree as above.
 - **Never modify `~/Documents/YACCS`** (the historical archive the tree was migrated from; it only exists on Ken's
   first Mac and the repo does not need it).
 - **Migrated files** (sources that came from YACCS, e.g. `software/emulator/main.c`, `software/assembler/*`,
@@ -182,7 +190,7 @@ Claude's conversation history and memory stay on the Mac where they happened; th
 one Mac's session learns what the other did. So, without being asked:
 
 - **At the start of a session**: `git fetch` and `git status` (in the worktree of the line being worked on;
-  `main` and `video-v4` are checked the same way). If the tree is behind and clean, `git pull --ff-only`;
+  `main` and `video-v4-software` are checked the same way). If the tree is behind and clean, `git pull --ff-only`;
   if it has uncommitted changes or has diverged, stop and tell Ken before touching anything. Then summarize for Ken
   the commits that arrived (`git log` of the new range, subjects plus anything the messages leave open), and read
   `BACKLOG.md` for the open items those commits touch, before starting on his request.

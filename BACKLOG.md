@@ -332,8 +332,9 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   V2.0 left the tree: its board (`hardware/cards/video/kicad/v2.0`), `docs/cards/video-v2.md`, its reviews, renders and
   character ROM image, `tests/video/v20_timing.py` (its microcode checks kept as `tests/video/bus_records.py`) and its
   part of `tools/vidsim.py`; on the V4 line its ROM, BIOS, emulator model and tests, and the branch was renamed
-  `video-v2` -> `video-v4`. The git history before 2026-11-18 has all of it. The V4 keeps V2.0's ports, its CPU
-  window, direct mode and its PS/2 section with the firmware (`embedded/video-ps2`). The history of both cards:
+  `video-v2` -> `video-v4`, then `video-v4-software`. The git history before 2026-11-18 has all of it. The V4 keeps
+  V2.0's ports, its CPU window, direct mode and its PS/2 section with the firmware (`embedded/video-ps2`). The history
+  of both cards:
   **On file (2026-11-14):** the V4 card is the video card to build, alone, and V2.0 is not ordered. (Then:
   "probably never built", its software to stay on `video-v2` until the V4 runs in the machine. Since 2026-11-17 it
   is not built at all: above.)
@@ -437,7 +438,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   **Next, before any order:** the check's pictures and the fab's gerber viewer by eye; the VGA socket laid on a
   1:1 print; the oscillator's pin 1; then the
   order. `pcb-check --tests` (the system's `make check`) passes too.
-  **The emulators' model and the ROM's text driver are written (2026-11-14, branch `video-v2`, now `video-v4`):**
+  **The emulators' model and the ROM's text driver are written (2026-11-14, branch `video-v2`, now
+  `video-v4-software`):**
   the card in both emulators (`software/videomodel.h`; the branch's default card since 2026-11-18), and `ROM
   2026-11-14 V4` (the branch's `firmware/rom/shipped/rom.bin` since 2026-11-18, when the V2.0 build left the source;
   until then a second build, `rom-v4.bin`), not burned. 80 x 25, lower case, the 640 x 480 table, the cursor's

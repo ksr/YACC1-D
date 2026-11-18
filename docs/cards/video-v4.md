@@ -538,8 +538,8 @@ crystal circuit.
 
 ## 12. Software
 
-On the branch `video-v4` (`video-v2` until 2026-11-18). **The emulators' model and the ROM's text driver are written
-(2026-11-14)**; graphics are open.
+On the branch `video-v4-software` (`video-v2` until 2026-11-18). **The emulators' model and the ROM's text driver are
+written (2026-11-14)**; graphics are open.
 
 - **The ROM driver (done 2026-11-14: `ROM 2026-11-14 V4`, not burned)**: the card by its ID, $7x; the table of
   section 3 for 640 x 480 at 60 Hz; 80 columns and 25 rows; characters stored as they come, lower case with them;
@@ -627,7 +627,7 @@ address: section 13, "Possible later".
   V2.0 shows and more - lower case, 25 rows, 640 x 400, graphics shown to a 3.5 MHz CPU clock where V2.0's limit is
   1.8 - on a monitor sold today; a second card is a second set of parts and a second line of software to keep; and
   the V1.0 card in the machine is what the YACC1 falls back on while this card is on the bench. The branch of this
-  card's software is `video-v4` (until 2026-11-18 `video-v2`, which also carried V2.0's).
+  card's software is `video-v4-software` (until 2026-11-18 `video-v2`, which also carried V2.0's).
 
 **To decide**: nothing. The control bits' places, the raster, the font and V2.0's order were the note's open
 questions; all four are answered (2026-11-14).
@@ -663,7 +663,7 @@ questions; all four are answered (2026-11-14).
    (`hardware/cards/video/kicad/v4.0/v40_netlist.py`; its checks pass and are in `make check`).
 3. The netlist simulated and timed with the parts' data-sheet numbers, as V3's was: **done 2026-11-12**
    (`tests/video/v40_netsim.py`, in `make check`; two changes to the circuit came of it: the netlist's README).
-4. Beside it: the emulators' model and the ROM driver: **done 2026-11-14** on the branch `video-v4` (the text
+4. Beside it: the emulators' model and the ROM driver: **done 2026-11-14** on the branch `video-v4-software` (the text
    driver; graphics open).
 5. The schematic and the board: **the schematic drawn, the board placed and routed 2026-11-12** (`gen_v40.py`,
    `build.sh`: all checks pass). **Reviewed 2026-11-13** (`hardware/cards/video/reviews/v4.0.md`: HIGH 0, MED 4,
