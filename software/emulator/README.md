@@ -10,12 +10,12 @@ opcode counts and the CF sectors. The clocks come from `../opclocks.h`, generate
 `tools/speed.py` turns this into a report (`docs/system/SPEED.md`).
 
 **The video card** is `../videomodel.h`, shared with `software/ucemu` (2026-09-25: `-V` the screen at exit, `-W` the
-CRTC write log, `-N` no card). On the branch `video-v4` the card is the video card V4 of `docs/cards/video-v4.md`
-(`Y1VID_CARD=v1.0` in the environment for the V1 card): its ports PA-PF on `INP` / `OUTA` / `OUTI` (the card ID $7x,
-two control registers on PC and PF), 80 x 25 characters stored as ASCII, a graphics window at $D800-$DFFF of sixteen
-planes in two pages (64K), VSYNC and DE from the CRTC registers and the clocks every instruction adds
-(`../opclocks.h`) at 16 dots a count of 25.175 MHz, the PS/2 keyboard from `Y1VID_KEYS` or, with `Y1VID_KBD=stdin`,
-from the console (the UART then receives nothing); the options are in `videomodel.h`. `-m` loads this branch's ROM,
-the V4 card's. (The V2.0 and V3 cards' models, 2026-11-10 and 11, were removed with those designs on 2026-11-18.)
+CRTC write log, `-N` no card). On the branch `video-v4-software` the card is the video card V4 of
+`docs/cards/video-v4.md` (`Y1VID_CARD=v1.0` in the environment for the V1 card): its ports PA-PF on `INP` / `OUTA` /
+`OUTI` (the card ID $7x, two control registers on PC and PF), 80 x 25 characters stored as ASCII, a graphics window at
+$D800-$DFFF of sixteen planes in two pages (64K), VSYNC and DE from the CRTC registers and the clocks every instruction
+adds (`../opclocks.h`) at 16 dots a count of 25.175 MHz, the PS/2 keyboard from `Y1VID_KEYS` or, with `Y1VID_KBD=stdin`,
+from the console (the UART then receives nothing); the options are in `videomodel.h`. `-m` loads this branch's ROM, the
+V4 card's. (The V2.0 and V3 cards' models, 2026-11-10 and 11, were removed with those designs on 2026-11-18.)
 
 Load `firmware/rom/shipped/rom` (BASIC at $E000, monitor at $F000) to run what the machine runs.

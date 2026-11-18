@@ -161,8 +161,8 @@ def glyph(b, card=1):
 
 DOTCLOCK = 11.0592e6                       # the card's crystal (Q2, fitted 2026-10-21; SV4 on 1-2): the ROM's CRTC table's
 DOTS = 6                                   # dots a character: IC28 a 74163 (tools/vidsim.py DOTS)
-# The video card V4 (the branch video-v4's default card; the `video` reply's "card" 4): the 6845 counts pairs of
-# characters, 16 dots a count of 25.175 MHz; a screen row is 2 x R1 characters of 8 x 16 dots, character n of the
+# The video card V4 (the branch video-v4-software's default card; the `video` reply's "card" 4): the 6845 counts pairs
+# of characters, 16 dots a count of 25.175 MHz; a screen row is 2 x R1 characters of 8 x 16 dots, character n of the
 # screen is byte n of the 2K text RAM from (R12:R13) x 2, and the cursor is the character (R14:R15) x 2 + CURH
 # (control 2 bit 1)
 V4_DOTCLOCK, V4_DOTS = 25.175e6, 16

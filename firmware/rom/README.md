@@ -25,16 +25,16 @@
   writing, `-P` sets it again afterwards, so on the machine a store into $E000-$FFFF (review M2: the v1.3 card has
   no write-protect jumper) is ignored by the chip. Nothing in the tree writes the ROM in place. Then read back and
   compare: `minipro -p AT28C64B -r /tmp/rb.bin && cmp /tmp/rb.bin firmware/rom/shipped/rom.bin`.
-- **2026-11-18 (branch `video-v4` only, renamed from `video-v2`): `shipped/rom` and `rom.bin` are `ROM 2026-11-14 V4`
-  — NOT BURNED, and not for the machine as it is: it drives the video card V4 (designed and routed, not built), not
-  the V1.0 card in the machine.** The card by its ID on `IN PC` ($7x), 80 x 25, the 6845's table for 640 x 480 at
-  60 Hz, lower case stored as it comes, the cursor's address halved with CURH in control 2 (`OUT PF`); the card's
-  PS/2 keyboard is a second console input beside the UART (`uartin`, `uartinne`, `const`). Monitor half 4,028 bytes;
-  the vectors at $FFBC-$FFFF where they were; BASIC unchanged. `docs/programming/MONITOR.md` section 11b. **MD5
-  (rom.bin) 6bc8afb1eea50b85b4f97e4f9f02a676**; `tools/verify_firmware.py`: FIRMWARE VERIFIED. On a machine without
-  the V4 card it finds no video card and runs as before on the UART. The machine keeps `main`'s ROM until the V4 card
-  is built. (From 2026-11-10 to 2026-11-18 this branch's `rom.bin` was `ROM 2026-11-10 V2`, for the V2.0 card, which
-  was never built; the V4 ROM was a second build, `rom-v4.bin`, from the same source.)
+- **2026-11-18 (branch `video-v4-software` only, renamed from `video-v2`): `shipped/rom` and `rom.bin` are
+  `ROM 2026-11-14 V4` — NOT BURNED, and not for the machine as it is: it drives the video card V4 (designed and routed,
+  not built), not the V1.0 card in the machine.** The card by its ID on `IN PC` ($7x), 80 x 25, the 6845's table for
+  640 x 480 at 60 Hz, lower case stored as it comes, the cursor's address halved with CURH in control 2 (`OUT PF`); the
+  card's PS/2 keyboard is a second console input beside the UART (`uartin`, `uartinne`, `const`). Monitor half 4,028
+  bytes; the vectors at $FFBC-$FFFF where they were; BASIC unchanged. `docs/programming/MONITOR.md` section 11a. **MD5
+  (rom.bin) 6bc8afb1eea50b85b4f97e4f9f02a676**; `tools/verify_firmware.py`: FIRMWARE VERIFIED. On a machine without the
+  V4 card it finds no video card and runs as before on the UART. The machine keeps `main`'s ROM until the V4 card is
+  built. (From 2026-11-10 to 2026-11-18 this branch's `rom.bin` was `ROM 2026-11-10 V2`, for the V2.0 card, which was
+  never built; the V4 ROM was a second build, `rom-v4.bin`, from the same source.)
 - **2026-10-22: `shipped/rom` and `rom.bin` are `ROM 2026-10-22` — NOT BURNED** (the chip holds `ROM 2026-10-21`,
   MD5 68b584fc04885ac6abbfc26a96548696). The video geometry from the card: at reset, after the probe, `vmode` reads
   the JP1 latch at $D801 - bit 2 = 1 the V1.0-V1.2 card (80 x 24, the 11.0592 MHz table as before), bit 2 = 0 a V1.3

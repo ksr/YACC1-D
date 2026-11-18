@@ -41,7 +41,7 @@ sys.path.insert(0, os.path.join(ROOT, "tools"))
 import vidsim                                       # noqa: E402
 
 VERBOSE = "-v" in sys.argv
-# On the branch video-v4 the emulators' default card is the V4: 80 x 25 characters of 8 x 16, the 6845 counting
+# On the branch video-v4-software the emulators' default card is the V4: 80 x 25 characters of 8 x 16, the 6845 counting
 # pairs of them (y1dbg and the y1ucemu it starts inherit it)
 MON = os.path.join(ROOT, "firmware/monitor/monitor.lst")
 BAS = os.path.join(ROOT, "firmware/basic/basic.lst")

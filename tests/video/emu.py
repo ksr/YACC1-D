@@ -24,8 +24,9 @@ level emulator (int) and the microcode one (uc) through the monitor, as a bench 
   os        Y1/OS (os/disk.img): video (status), video init, video on, echo, video clear, echo, video off, echo:
             the screen shows what came between the clear and off and nothing else; video -h, a bad word
 
-On the branch video-v4 the ROM drives the video card V4, the emulators' default card here (the 6845 on ports PA/PB,
-the card found by its ID on IN PC): 80 x 25, lower case shown as it is (until 2026-11-18 the V2.0 card's 80 x 24).
+On the branch video-v4-software the ROM drives the video card V4, the emulators' default card here (the 6845 on ports
+PA/PB, the card found by its ID on IN PC): 80 x 25, lower case shown as it is (until 2026-11-18 the V2.0 card's
+80 x 24).
 """
 import os, sys, re, subprocess, shutil
 

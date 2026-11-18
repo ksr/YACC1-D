@@ -257,8 +257,8 @@ echo the machine produces. Under the interpreter the `0` command exits; under uc
 
 ## 11. The video unit (2026-09-25)
 
-**On the branch `video-v4` the unit drives the video card V4 instead of the V1 cards: section 11a. This section is
-the V1 cards' unit, the ROM on `main` and in the machine.**
+**On the branch `video-v4-software` the unit drives the video card V4 instead of the V1 cards: section 11a. This section
+is the V1 cards' unit, the ROM on `main` and in the machine.**
 
 The video card ([`docs/cards/video.md`](../cards/video.md): an MC6845 CRTC and an IDT7134 dual-port RAM in the $D000
 block) is in the machine for bring-up without its 6845. The ROM carries the whole driver; **it does not start the
@@ -355,7 +355,7 @@ shows the console. After fitting the 6845 with the RS-to-A1 fix: `VR0E 12` then 
 high byte: readable on every 6845; R12/R13 are write-only on Motorola's MC6845); `VI`, then a picture; adjust timing with `VR`. Details in [`docs/cards/video.md`](../cards/video.md)
 section 8 and [`docs/procedures/VIDEO-BRINGUP.md`](../procedures/VIDEO-BRINGUP.md).
 
-## 11a. The video unit for the video card V4 (branch `video-v4`)
+## 11a. The video unit for the video card V4 (branch `video-v4-software`)
 
 `ROM 2026-11-14 V4` (`firmware/rom/shipped/rom.bin` on this branch; not burned; for a machine with the V4 card,
 [`docs/cards/video-v4.md`](../cards/video-v4.md), which is not built). The text side is section 11's driver - the text

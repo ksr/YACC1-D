@@ -18,8 +18,8 @@ edits; y1ucemu -G REV looks each step's decode up there (docs/cards/video.md sec
            testcard + vstress, estrobe with -W)
   events   with the card as fitted (-G v1.0) every one of those runs has no bus events but reads of the JP1 latch at
            $D801, reported as reads of floating inputs: crtcreg's two deliberate ones ($D801, $D803) - nothing else
-           (on main the ROM also reads the latch at reset, V P and V I; the branch video-v4's ROM drives the V4 card
-           and never touches the V1 card)
+           (on main the ROM also reads the latch at reset, V P and V I; the branch video-v4-software's ROM drives the V4
+           card and never touches the V1 card)
   rs       without the RS rework (-G v1.0-no-rs, the 6845 as drawn: RS = A0) the data register is unreachable, as
            hardware/cards/video/docs/fix-6845-register-select.md says: a program that stores $0E at $D800 and $12
            at $D802 (the 6845's two registers) leaves R14 unwritten, crtcreg reports BAD for R14/R15 and its
@@ -32,7 +32,7 @@ edits; y1ucemu -G REV looks each step's decode up there (docs/cards/video.md sec
   a0fix    the fix the document warns against (/A0 tied high): crtcreg's read of $D801 makes the 6845 and the JP1
            latch drive DATA0..7 together - contention events - and the latch reads 00 instead of FF
 
-On the branch video-v4 the emulators' default card is the V4 and the ROM drives it; these runs ask for
+On the branch video-v4-software the emulators' default card is the V4 and the ROM drives it; these runs ask for
 the V1.0 card (Y1VID_CARD=v1.0, -G's card), so the monitor's video unit finds no card in them and the bring-up
 programs carry the comparison.
 """
