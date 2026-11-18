@@ -895,21 +895,32 @@ def board(netfile, out):
 
 
 SILK_H, SILK_W = 1.0, 0.15       # every text on the silk: JLCPCB's standard characters (>= 1.0 mm high, >= 0.15 mm strokes)
-# the legends: (text, x, y, size) left-justified at (x, y), or (text, x, y, size, angle) centred on (x, y)
+# UP (2026-11-18, the board-layout rules, every board of every system): every silk text reads upright, left to right,
+# with the card standing in the backplane, X1 down. X1 is on the left as drawn, so that is KiCad's angle 270 (0 reads
+# up the card, 90 upside down). The one exception: the board's name and cottageworker.com, which may run up a side
+# edge (angle 0 as drawn) and do
+UP = 270
+# the legends: (text, x, y, size) left-justified at (x, y) at angle 0 (the name only), or (text, x, y, size, angle)
+# centred on (x, y)
 _lx = COLX["N6"] - 0.5
 SILK = [("YACC1 Video Card V4.0", _lx, 100.3, 1.5), ("cottageworker.com", _lx, 103.6, 1.0),
-        ("TEXT-ONLY BUILD: NO IC24-IC34,", _lx, 106.2, 1.0), ("RN2, C25-C35", _lx, 108.3, 1.0),
-        ("1", _ox - 4.4, _oy + 0.2, 1.2, 0),                # the oscillator's pin 1 (V4-12): turned round it dies
-        ("KEYBOARD (PURPLE)", X1R - 14.6, 58.0, 1.0, 90), ("MOUSE (GREEN)", X1R - 14.6, 76.0, 1.0, 90)]
+        ("TEXT-ONLY BUILD: NO IC24-IC34,", _lx + 3.2, 112.0, 1.0, UP), ("RN2, C25-C35", _lx + 1.5, 112.0, 1.0, UP),
+        ("1", _ox - 4.4, _oy + 0.2, 1.2, UP),               # the oscillator's pin 1 (V4-12): turned round it dies
+        ("KEYBOARD (PURPLE)", X1R - 14.6, 58.0, 1.0, UP), ("MOUSE (GREEN)", X1R - 14.6, 76.0, 1.0, UP)]
+# J4's pins run down the card as drawn: across it, 2.54 mm apart, with the card standing. Each pin's name in one of
+# two staggered columns at its left (5.08 mm for each name), the cable's colour and the unused VCC in a line beside
 _j4x, _j4y = PLACE["J4"][:2]
-SILK += [(t, _j4x - 9.5, _j4y + 2.54 * k, 1.0) for k, t in enumerate(("1 GND (BLK)", "CTS", "VCC nc", "TXD", "RXD", "DTR"))]
+SILK += [(t, _j4x - 2.6 - 1.6 * (k % 2), _j4y + 2.54 * k, 1.0, UP)
+         for k, t in enumerate(("GND", "CTS", "VCC", "TXD", "RXD", "DTR"))]
+SILK += [("PIN 1 GND: BLACK WIRE. VCC NC", _j4x - 5.6, _j4y + 8.5, 1.0, UP)]
 # the jumpers' positions (the board-layout rules: every position labelled with what it selects; the function itself
-# stands beside the reference, COMPANION)
-_sv1x, _sv1y = PLACE["SV1"][:2]                           # the four positions, top to bottom: A15, A14, A13, A12
-SILK += [("A%d" % (15 - k), _sv1x + 5.9, _sv1y + 2.54 * k + 0.05, 1.0, 0) for k in range(4)]
-SILK += [("ON=0", _sv1x + 1.3, _sv1y - 2.9, 1.0, 0)]
+# stands beside the reference, COMPANION). SV1's four rows, top to bottom A15, A14, A13, A12: each row's address line
+# by its number at its right (2.54 mm apart across the standing card: "A15" would not fit), the key in a line above
+_sv1x, _sv1y = PLACE["SV1"][:2]
+SILK += [("%d" % (15 - k), _sv1x + 4.9, _sv1y + 2.54 * k, 1.0, UP) for k in range(4)]
+SILK += [("A15-A12, ON=0", _sv1x + 6.6, _sv1y + 3.81, 1.0, UP)]
 _jp1x, _jp1y = PLACE["JP1"][:2]
-SILK += [("ON: PS/2 -INT", _jp1x - 13.0, _jp1y + 1.3, 1.0)]
+SILK += [("ON: PS/2 -INT", _jp1x - 4.2, _jp1y + 1.27, 1.0, UP)]
 # the text beside a reference (the board-layout rules): each IC's type, the LED's and the jumpers' function, every
 # resistor's, network's, capacitor's and crystal's value, the oscillator's frequency
 # (as the parts list has it, the grade with it: "IC10 HD68B45SP / MC68B45P", "IC28 AS6C1008-55PCN", "IC41
@@ -1037,6 +1048,9 @@ def silk_place(b, comp=None):
                     it.SetTextSize(VECTOR2I(FM(0.8), FM(0.8)))
                 if it.GetTextThickness() < FM(SILK_W):
                     it.SetTextThickness(FM(SILK_W))
+                if it.GetTextAngleDegrees() % 360 != UP:       # the library's own texts (X1's row letters a, b, c and
+                    it.SetTextAngleDegrees(UP)                 # pin numbers): turned in place to read with the card standing
+                it.SetKeepUpright(False)                       # (KiCad's "keep upright" would draw a 270 as a 90)
                 fixed.append(ink(it, CLR_SILK))
             else:
                 fixed.extend(shape_boxes(it, CLR_SILK))
@@ -1087,6 +1101,9 @@ def silk_place(b, comp=None):
         x, y, a = MM(d.GetPosition().x), MM(d.GetPosition().y), d.GetTextAngleDegrees()
         offs = sorted({(i * 0.25, j * 0.25) for i in range(-12, 13) for j in range(-12, 13)},
                       key=lambda o: (abs(o[0]) + abs(o[1]), abs(o[1]), o))
+        # then, if nothing within 3 mm is clear (2026-11-18: the legends turned to UP), the nearest clear spot within 15
+        offs += sorted({(i * 0.25, j * 0.25) for i in range(-60, 61) for j in range(-60, 61)} - set(offs),
+                       key=lambda o: (math.hypot(*o), o))
         for i, j in offs:
             put(d, x + i, y + j, a)
             if free(ink(d), d):
@@ -1113,7 +1130,9 @@ def silk_place(b, comp=None):
         put(t, 0, 0, a)
         return ink(t)
 
-    SIDES = {"above": 0.0, "below": 2.0, "right": 4.0, "left": 6.0}
+    # an IC's label runs along the side it is on, and every label is at UP (along the chip's long side, as drawn): at the
+    # chip's right as drawn (above it, with the card standing), else at its left
+    SIDES = {"right": 0.0, "left": 2.0, "above": 4.0, "below": 6.0}
     del SPLIT[:]                                        # the parts whose value stands apart from the reference
     # 2. the references (ICs, then the others with a companion). A part that found no room beside it (far) is placed
     # earlier in the next round, before the neighbours that took its room; the round with the fewest such parts is kept.
@@ -1134,9 +1153,12 @@ def silk_place(b, comp=None):
             if not t.IsVisible() or t.GetLayer() != pcbnew.F_SilkS:
                 continue
             t.SetTextSize(VECTOR2I(FM(SILK_H), FM(SILK_H))); t.SetTextThickness(FM(SILK_W))
+            t.SetKeepUpright(False)                         # KiCad's "keep upright" would draw UP (270) as 90
             t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_CENTER)
             t.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_CENTER)
             c = comp.get(ref)
+            if c is not None:
+                c.SetKeepUpright(False)
             o = outline[ref]
             x0, y0, x1, y1 = o
             cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
@@ -1152,7 +1174,7 @@ def silk_place(b, comp=None):
                         for side, bx0, by0 in (("above", cx + s - W / 2, y0 - gap - H), ("below", cx + s - W / 2, y1 + gap),
                                                ("left", x0 - gap - W, cy + s - H / 2), ("right", x1 + gap, cy + s - H / 2)):
                             along = "x" if side in ("above", "below") else "y"
-                            if isic and (a == 0) != (along == "x"):
+                            if isic and (a % 180 == 0) != (along == "x"):
                                 continue                    # an IC's reference and type run along the side they are on
                             # beside the part: the block within the outline's span on that side (1 mm over at most)
                             span, size = (x1 - x0, W) if along == "x" else (y1 - y0, H)
@@ -1167,7 +1189,7 @@ def silk_place(b, comp=None):
                 return out
 
             cands, alone, lone = [], [], []                 # the blocks; the reference alone; the companion alone
-            for a in (0, 90):
+            for a in (UP,):
                 er = extent(t, a)
                 ec = extent(c, a) if c else None
                 # an IC's type goes on the reference's line; on a second line beside it (stacked) only where no line
@@ -1178,14 +1200,11 @@ def silk_place(b, comp=None):
                     if kind == "one":
                         pc, U = None, er
                     else:
-                        if kind == "line" and a == 0:       # "IC30 74LS138": the companion after the reference
-                            pc = (er[2] + 0.7 - ec[0], 0.0)
-                        elif kind == "line":                # turned, read upwards: the companion above the reference
-                            pc = (0.0, er[1] - 0.7 - ec[3])
-                        elif a == 0:                        # stacked: the companion on the next line
-                            pc = (0.0, er[3] + 0.35 - ec[1])
-                        else:
-                            pc = (er[2] + 0.35 - ec[0], 0.0)
+                        # (a = UP, 270: the text reads down the board as drawn, its top towards the front edge)
+                        if kind == "line":                  # "IC30 74LS138": the companion after the reference
+                            pc = (0.0, er[3] + 0.7 - ec[1])
+                        else:                               # stacked: the companion on the next line, towards X1
+                            pc = (er[0] - 0.35 - ec[2], 0.0)
                         U = union([er, (ec[0] + pc[0], ec[1] + pc[1], ec[2] + pc[0], ec[3] + pc[1])])
                     cands += spots(U, a, pen, pc)
                 if c is not None and not isic:
@@ -1312,7 +1331,7 @@ def silk_place(b, comp=None):
         offs = sorted(((i * 0.25, j * 0.25) for i in range(-100, 101) for j in range(-100, 101)),
                       key=lambda o: (math.hypot(*o), o))
         for i, j in offs:
-            put(t, gx + i, gy + j, 0)
+            put(t, gx + i, gy + j, UP)
             if free(ink(t), t):
                 break
         else:

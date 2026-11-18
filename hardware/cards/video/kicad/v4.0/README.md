@@ -198,6 +198,16 @@ every body and socket: none is under a part, none had to go into a legend. Each 
 header's pins labelled; `cottageworker.com` beside the card's name and revision. Bypass capacitors on 0.1-inch
 leads.
 
+**Every silk text reads with the card standing in the backplane, X1 down** (2026-11-18, the layout rules for every
+board): KiCad's angle 270 for all of them (`gen_v40.py`'s `UP`), the card's name and `cottageworker.com` excepted,
+which run up the side as drawn. Before, the texts read with the card lying flat, X1 at the left: 139 at 0, 146 at 90, 3 at 180 (X1's row letters), 3 at 270.
+The texts turned to 270 are placed afresh, each IC's reference and type along the chip's long side, at its right as
+drawn (above it, with the card standing), else at its left; KiCad's "keep upright" is off for the footprints' texts,
+which would otherwise draw a 270 as a 90. With the card standing the FTDI header's and the block jumper's pins run
+across it 2.54 mm apart: J4's pin names stand in two staggered columns, with "PIN 1 GND: BLACK WIRE. VCC NC" beside
+them, and SV1's rows carry the address line's number (15, 14, 13, 12) under "A15-A12, ON=0". Done by `SILK=1
+build.sh`: no part, track, via or plane moved; of the gerbers only the front silkscreen differs.
+
 **The routing.** The four clocks first, by the generator (below). Then Freerouting 1.9 for the other 492
 connections, on the two outer layers, GND and VCC left to the planes: one run for each of four orders of the
 components (`SEEDS`), at most 100 passes, then its optimiser (`MT=1`). Of the clean results - every connection

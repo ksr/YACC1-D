@@ -525,7 +525,8 @@ counter's pin) and the graphics shifter 0.1 ns (61 and 70 mm): 2.2, 2.9 and 2.6 
 
 The board: four layers with the planes, the blank card's connector, and the layout rules from the start - the DE-15
 and the two PS/2 jacks at the front edge facing out, jumpers and the FTDI header at an edge, every reference and value
-on the silk outside its part, bypass capacitors on 0.1-inch leads, `cottageworker.com`. `pcb-check` passes
+on the silk outside its part and reading upright with the card standing in the backplane (2026-11-18), bypass
+capacitors on 0.1-inch leads, `cottageworker.com`. `pcb-check` passes
 (above), and is run again before any order.
 
 **From V2.0, unchanged:** the bus connector and the block select, the port decode, the 6845's bus side, the text
