@@ -1,4 +1,4 @@
-# Author: Claude (Anthropic) for Ken Rother, 2026
+# Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
 """MkDocs hook: "Last updated <date>" at the foot of every page (Ken, 2026-11-16), the date of the last git commit
 that changed the page's source in this repository.
 
