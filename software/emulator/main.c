@@ -522,8 +522,7 @@ static void exe_relative(char *out, size_t outlen, const char *rel, const char *
 void print_usage(const char *progname) {
     printf("Usage: %s [-h] [-m] [-f filename]\n", progname);
     printf("  -h           Show this help message\n");
-    printf("  -m           Load firmware/basic/basic.img and firmware/monitor/monitor.img from the tree (found relative to this program; default;\n"
-           "               with Y1VID_CARD=v4 the monitor is monitor-v4.img, the video card V4's ROM)\n");
+    printf("  -m           Load firmware/basic/basic.img and firmware/monitor/monitor.img from the tree (found relative to this program; default)\n");
     printf("  -f filename  Load the specified file using load_file\n");
     printf("  -x           Scripted run: no load/dump chatter, HALT exits (instruction count on stderr)\n");
     printf("  -c image     Attach a CompactFlash image on ports P8/P9 (created zero-filled if missing)\n");
@@ -534,9 +533,9 @@ void print_usage(const char *progname) {
     printf("  -V           Video card: print the screen (and the CRTC registers) on stderr at exit\n");
     printf("  -W           Video card: log CRTC register writes on stderr\n");
     printf("  -N           No video card: $D000-$DFFF reads $FF, writes ignored\n");
-    printf("  (environment) the video card V2.0 by default on this branch (ports PA-PE, graphics window $D800),\n"
-           "               Y1VID_CARD=v1.0 the V1 card, v3 the V3 (HD63484); Y1VID_KEYS, Y1VID_MOUSE, Y1VID_KBD=stdin,\n"
-           "               Y1VID_DOTS, Y1VID_TEXTONLY, Y1_CLOCK:\n"
+    printf("  (environment) the video card V4 by default on this branch (ports PA-PF, graphics window $D800),\n"
+           "               Y1VID_CARD=v1.0 the V1 card; Y1VID_KEYS, Y1VID_MOUSE, Y1VID_KBD=stdin,\n"
+           "               Y1VID_TEXTONLY, Y1_CLOCK:\n"
            "               software/videomodel.h\n");
 }
 
@@ -607,12 +606,11 @@ int main(int argc, char** argv) {
     pushpopdepth = 0;
     pushpoprdepth = 0;
 
-    vid_init();                 /* YACC1-D 2026-11-10: Y1VID_CARD (v1.0 / v2.0) and the V2.0 card's options */
+    vid_init();                 /* YACC1-D 2026-11-10: Y1VID_CARD (v1.0 / v4) and the V4 card's options */
     if (load_standard) {
         char img[4096];                                  /* YACC1-D 2026-09-20: images found relative to the executable */
         exe_relative(img, sizeof img, "../../firmware/basic/basic.img", argv[0]);   load_file(img);
-        /* YACC1-D 2026-11-14: Y1VID_CARD=v4 has its own monitor, the V4 build of monitor.asm (tools/monvariant.py) */
-        exe_relative(img, sizeof img, vid2.card == 4 ? "../../firmware/monitor/monitor-v4.img" : "../../firmware/monitor/monitor.img", argv[0]);
+        exe_relative(img, sizeof img, "../../firmware/monitor/monitor.img", argv[0]);   /* the V4 card's ROM on this branch */
         load_file(img);
     }
     vid_key_ready = uart_ready; vid_key_get = uart_byte;     /* Y1VID_KBD=stdin: the console feeds the PS/2 keyboard */
@@ -626,7 +624,7 @@ int main(int argc, char** argv) {
 
         ins = memory_read(register_read_word(PC));
         icount++;
-        vid_clk += opclocks[ins & 255];     /* YACC1-D 2026-11-10: the clock, for the V2.0 card's VSYNC / DE */
+        vid_clk += opclocks[ins & 255];     /* YACC1-D 2026-11-10: the clock, for the V4 card's VSYNC / DE */
         if (pcfile) {
             unsigned pa = register_read_word(PC);
             pchist[pa]++; pcclk[pa] += opclocks[ins & 255]; ophist[ins & 255]++;
@@ -966,7 +964,7 @@ int main(int argc, char** argv) {
                 }
                 if (portaddr == 1 && port[0] == 0x40) myputchar(port[1]);   /* 2026-09-26: THR */
                 if (portaddr == CF_PORT_SEL || portaddr == CF_PORT_DATA) cf_io_write(portaddr, acc);
-                vid_io_write(portaddr, acc);                    /* 2026-11-10: the V2.0 card's ports PA-PF */
+                vid_io_write(portaddr, acc);                    /* 2026-11-10: the V4 card's ports PA-PF */
                 break;
 
             case OUTI + PORT0:
@@ -993,7 +991,7 @@ int main(int argc, char** argv) {
                 if ((port[0] == 0x40) && (portaddr == 1))
                     myputchar(port[portaddr]);
                 if (portaddr == CF_PORT_SEL || portaddr == CF_PORT_DATA) cf_io_write(portaddr, port[portaddr]);
-                vid_io_write(portaddr, port[portaddr]);         /* 2026-11-10: the V2.0 card's ports PA-PF */
+                vid_io_write(portaddr, port[portaddr]);         /* 2026-11-10: the V4 card's ports PA-PF */
                 break;
 
             case LDZ + REG0:    /* YACC1-D 2026-09-24: LDZ Rn,d = Rn <- the word at (R6.hi : d), as the microcode */
@@ -1060,7 +1058,7 @@ int main(int argc, char** argv) {
                     //printf("in char %x\n", acc);
                 }
                 if (portaddr == CF_PORT_DATA || portaddr == CF_PORT_SEL) acc = cf_io_read(portaddr);
-                if (vid_io_owns(portaddr)) { int v = vid_io_read(portaddr); acc = v < 0 ? 0xFF : v; }   /* 2026-11-10: V2.0 */
+                if (vid_io_owns(portaddr)) { int v = vid_io_read(portaddr); acc = v < 0 ? 0xFF : v; }   /* 2026-11-10: the V4 card */
                 break;
                 
             case OPCODE_A5:
@@ -1188,7 +1186,7 @@ int main(int argc, char** argv) {
                         break;
 
                     case BRDEV: // emulator does not branch, hardware does branch
-                        if (vid2.kbd_stdin) {   /* YACC1-D 2026-11-10: the console is the V2.0 card's keyboard: the */
+                        if (vid2.kbd_stdin) {   /* YACC1-D 2026-11-10: the console is the V4 card's keyboard: the */
                             register_write_hi(PC, hi);   /* ROM takes the machine's path (the UART and the keyboard) */
                             register_write_lo(PC, lo);
                         }

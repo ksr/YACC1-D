@@ -150,17 +150,22 @@ def listing(read, a, count, syms=None):
 
 
 # ---------------------------------------------------------------------------------------------------- the screen
-def glyph(b):
+def glyph(b, card=1):
+    """the character a display byte shows: the V1 card's 2513-style set (bits 0-5), or the V4's ASCII ($80-$FF the same
+    inverted; '.' for a code that is no printing character)"""
+    if card == 4:
+        c = b & 0x7F
+        return chr(c) if 0x20 <= c < 0x7F else "."
     return chr(((b + 0x20) & 0x3F) + 0x20)
 
 
 DOTCLOCK = 11.0592e6                       # the card's crystal (Q2, fitted 2026-10-21; SV4 on 1-2): the ROM's CRTC table's
 DOTS = 6                                   # dots a character: IC28 a 74163 (tools/vidsim.py DOTS)
-# 2026-11-10 (branch video-v2): the emulators' card is the V2.0 unless Y1VID_CARD=v1.0 - its 12 MHz crystal and the DOTS
-# jumper of Y1VID_DOTS (8 fitted, the default; 6 open), as software/videomodel.h has them (the field rate and the
-# cursor's blink only; --video-rev, the V1.0 card at gate level, keeps these V2.0 figures)
-if os.environ.get("Y1VID_CARD", "v2.0") not in ("v1.0", "1.0", "1"):
-    DOTCLOCK, DOTS = 12e6, 6 if os.environ.get("Y1VID_DOTS") == "6" else 8
+# The video card V4 (the branch video-v4's default card; the `video` reply's "card" 4): the 6845 counts pairs of
+# characters, 16 dots a count of 25.175 MHz; a screen row is 2 x R1 characters of 8 x 16 dots, character n of the
+# screen is byte n of the 2K text RAM from (R12:R13) x 2, and the cursor is the character (R14:R15) x 2 + CURH
+# (control 2 bit 1)
+V4_DOTCLOCK, V4_DOTS = 25.175e6, 16
 BLINK = {0: 0, 1: 0, 2: 16, 3: 32}           # R10 bits 5-6: steady, off, blink every 16 / 32 fields
 
 
@@ -171,25 +176,28 @@ def geometry(v):
     blink period, 0 = steady), period (seconds)). Before a program has written R1 and R6: the monitor's 80 x 24 from
     $D000, 8 lines a row. Shared by the text screen (screen()) and the browser's canvas."""
     regs, written = v["regs"], v["written"]
+    v4 = v.get("card") == 4
+    per = 2 if v4 else 1                        # characters in a count of the 6845
     crtc = bool(written[1] and written[6] and regs[1] and regs[6])
     if crtc:
-        cols, rows, start = regs[1], regs[6] & 0x7F, (regs[12] & 0x3F) << 8 | regs[13]
-        lines = (regs[9] & 0x1F) + 1 if written[9] else 8
+        cols, rows, start = regs[1] * per, regs[6] & 0x7F, ((regs[12] & 0x3F) << 8 | regs[13]) * per
+        lines = (regs[9] & 0x1F) + 1 if written[9] else (16 if v4 else 8)
     else:
-        cols, rows, start, lines = 80, 24, 0, 8
+        cols, rows, start, lines = (80, 25, 0, 16) if v4 else (80, 24, 0, 8)
     field = 60.0
     if crtc and written[0] and written[4]:
         total = (regs[4] + 1) * lines + (regs[5] & 0x1F)
-        if regs[0] and total: field = DOTCLOCK / DOTS / (regs[0] + 1) / total
+        clock, dots = (V4_DOTCLOCK, V4_DOTS) if v4 else (DOTCLOCK, DOTS)
+        if regs[0] and total: field = clock / dots / (regs[0] + 1) / total
     cursor = None
-    cur = (regs[14] & 0x3F) << 8 | regs[15]
+    cur = ((regs[14] & 0x3F) << 8 | regs[15]) * per + (v.get("control2", 0) >> 1 & 1 if v4 else 0)
     mode = (regs[10] >> 5) & 3
     if (written[10] or written[14] or written[15]) and mode != 1:
-        off = (cur - start) & 0x3FFF
+        off = (cur - start) & (0x7FF if v4 else 0x3FFF)
         if off < rows * cols:
             cursor = {"row": off // cols, "col": off % cols, "addr": cur, "first": regs[10] & 0x1F, "last": regs[11] & 0x1F,
                       "blink": BLINK[mode], "period": BLINK[mode] / field if BLINK[mode] else 0}
-    return {"cols": cols, "rows": rows, "start": start, "lines": lines, "crtc": crtc, "field_hz": round(field, 2),
+    return {"cols": cols, "rows": rows, "start": start, "lines": lines, "crtc": crtc, "field_hz": round(field, 2), "card": 4 if v4 else 1,
             "source": "CRTC R1/R6/R12/R13" if crtc else "default geometry", "cursor": cursor, "absent": v.get("absent", 0)}
 
 
@@ -203,9 +211,10 @@ def screen(v):
     for r in range(rows):
         s, inv = [], []
         for c in range(cols):
-            ma = (start + r * cols + c) & 0xFFF
+            if g["card"] == 4: ma = (start + r * cols + c) & 0x7FF    # the V4's text RAM is a ring of 2,048
+            else: ma = (start + r * cols + c) & 0xFFF
             if ma >= 2048: s.append("#"); inv.append(False); continue
-            b = ram[ma]; s.append(glyph(b)); inv.append(bool(b & 0x80))
+            b = ram[ma]; s.append(glyph(b, g["card"])); inv.append(bool(b & 0x80))
         lines.append("".join(s)); inverse.append(inv)
     cursor = (g["cursor"]["row"], g["cursor"]["col"]) if g["cursor"] else None
     return {"cols": cols, "rows": rows, "start": start, "absent": g["absent"], "source": g["source"], "lines": lines,

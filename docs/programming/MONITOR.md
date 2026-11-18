@@ -257,8 +257,8 @@ echo the machine produces. Under the interpreter the `0` command exits; under uc
 
 ## 11. The video unit (2026-09-25)
 
-**On the branch `video-v2` (since 2026-11-10) the unit drives the video card V2.0 instead of the V1 cards: section 11a.
-This section is the V1 cards' unit, the ROM on `main` and in the machine.**
+**On the branch `video-v4` the unit drives the video card V4 instead of the V1 cards: section 11a. This section is
+the V1 cards' unit, the ROM on `main` and in the machine.**
 
 The video card ([`docs/cards/video.md`](../cards/video.md): an MC6845 CRTC and an IDT7134 dual-port RAM in the $D000
 block) is in the machine for bring-up without its 6845. The ROM carries the whole driver; **it does not start the
@@ -355,22 +355,33 @@ shows the console. After fitting the 6845 with the RS-to-A1 fix: `VR0E 12` then 
 high byte: readable on every 6845; R12/R13 are write-only on Motorola's MC6845); `VI`, then a picture; adjust timing with `VR`. Details in [`docs/cards/video.md`](../cards/video.md)
 section 8 and [`docs/procedures/VIDEO-BRINGUP.md`](../procedures/VIDEO-BRINGUP.md).
 
-## 11a. The video unit for the video card V2.0 (2026-11-10, branch `video-v2`)
+## 11a. The video unit for the video card V4 (branch `video-v4`)
 
-`ROM 2026-11-10 V2` (not burned; for a machine with the V2.0 card, [`docs/cards/video-v2.md`](../cards/video-v2.md)).
-The text side is section 11's driver - the text RAM at $D000-$D7FF, `vputc`, the scroll, mirroring, the `V` command,
-`VIDCTL` at $FFBC, the variables at $0FF0-$0FF9 - with the card reached through its ports; the V1 cards' code is gone
-(the JP1 latch, the 6845 at $D800/$D802, the 11.0592 MHz table), which also pays for the keyboard: the monitor half is
-4,051 bytes (4,066 before).
+`ROM 2026-11-14 V4` (`firmware/rom/shipped/rom.bin` on this branch; not burned; for a machine with the V4 card,
+[`docs/cards/video-v4.md`](../cards/video-v4.md), which is not built). The text side is section 11's driver - the text
+RAM at $D000-$D7FF, `vputc`, the scroll, mirroring, the `V` command, `VIDCTL` at $FFBC, the variables at $0FF0-$0FF9 -
+with the card reached through its ports; the V1 cards' code is gone (the JP1 latch, the 6845 at $D800/$D802, the
+11.0592 MHz table), which also pays for the keyboard. The monitor half is 4,028 bytes, its code ending at $FF66; the
+vectors at $FFBC-$FFFF are where they are in every ROM, BASIC is the same. (The driver was first written on
+2026-11-10 for the video card V2.0, which was never built; from 2026-11-14 the V4's was a second build of the same
+source, and since 2026-11-18 it is the only one.)
 
-| | V1 cards (section 11) | V2.0 card |
+| | V1 cards (section 11) | V4 card |
 |---|---|---|
-| Detection (`vprobe`) | $55 / $AA written and read back at $D000 | `IN PC` (the status) reads $5x: the card ID in bits 7..4. With no card the port is undecoded and reads the floating bus ($FF, or the `INP`'s own opcode $9C) |
-| Geometry (`vmode`) | the JP1 latch at $D801 | the DOTS jumper, `IN PC` bit 0: 1 (open) 80 x 24, R0..R3 = 126, 80, 98, 10; 0 (fitted) 64 x 24, 94, 64, 75, 8 - both 12 MHz, R4..R15 from `vcrtab` |
+| Detection (`vprobe`) | $55 / $AA written and read back at $D000 | `IN PC` (the status) reads $7x: the card ID in bits 7..4. With no card the port is undecoded and reads the floating bus ($FF, or the `INP`'s own opcode $9C) |
+| Geometry | the JP1 latch at $D801 | **80 x 25**, always (`VROWS` 25) |
 | The 6845 | `STA $D800` (address) / `STA $D802`, `LDA $D802` (data) | `OUTA PA` (address) / `OUTA PB`, `INP PB` (data): `vinit`, `vcursor`, `V R` |
-| `V I` | the CRTC table, clear, home | first `OUTI PC,0`: the control register cleared (text on, graphics off, direct mode, plane and pages 0), then the same |
-| $D800-$DFFF | the 6845 and the latch | the graphics window (2K of the 62256: `OUT PC` picks the plane and page); `V B` writes it like any byte of the block |
+| The 6845's table | by the card, 11.0592 or 12 MHz | one table, the note's section 3: 49, 40, 42, $26, 31, 13, 25, 28, 0, 15, $6E, 15 - 640 x 480 at 60 Hz with the text in a band of 400 lines; a count of the 6845 is 16 dots, two characters |
+| `V I` | the CRTC table, clear, home | first `OUTI PC,0` (control 1: graphics off, direct mode, plane and pages 0) and control 2 (`OUT PF`) cleared with its copy `VIDC2` ($0FF9: text on, both syncs negative, white), then the same |
+| Characters | upper case only: $60-$7F stored as $40-$5F | **stored as they come**: the card's EPROM has 256 glyphs, lower case among them |
+| The cursor (`vcursor`) | R14/R15 = its offset in the text RAM | R14/R15 = the offset **halved** (the 6845 counts pairs of characters), and the offset's odd bit is **CURH**, bit 1 of control 2: the cursor on the right-hand character of its count. Control 2 cannot be read back, so the driver keeps its copy in `VIDC2` and writes the whole byte |
+| The scroll | by the geometry | 240 passes: 24 rows of 80 up one row, 8,800 instructions |
+| `V D` | each byte as its 2513-style glyph | each code as its character; a control code as `.` |
+| $D800-$DFFF | the 6845 and the latch | the graphics window (2K of the graphics RAM: `OUT PC` picks the plane and page); `V B` writes it like any byte of the block |
 | Console input | the UART | the UART **and the PS/2 keyboard** (below) |
+
+A program that changes control 2 itself (the guns, the syncs' polarity, TEXT-OFF) changes `VIDC2` with it, or the
+next cursor move puts the old byte back.
 
 **The keyboard.** The card's ATmega turns the keyboard's scan codes into ASCII (Enter = CR, the arrows as VT100
 sequences: `embedded/video-ps2/README.md`) and hands each byte over in a latch: `IN PD` bit 0 (FULL) says one is
@@ -378,49 +389,15 @@ waiting, `IN PE` reads it and clears FULL. `kbst` gives ACC = FULL (0 when no ca
 take a key when there is one and otherwise poll the UART, so both inputs work at once, and `const` (CONST, $FFF8)
 counts either. CR becomes LF on both paths as before. The card's rule holds everywhere: `IN PE` only after `IN PD`
 showed FULL. Nothing is needed in BASIC, Y1/OS or the programs: they read the console through these vectors. The
-keyboard's interrupt (JP3) is not used.
+keyboard's interrupt (the INT jumper) is not used.
 
-**On the emulators** the V2.0 card is the default on this branch (`Y1VID_CARD=v1.0` for the V1 card): `Y1VID_KEYS`
-types on the keyboard, `Y1VID_KBD=stdin` makes the terminal the keyboard (the UART then receives nothing; on the
-instruction-level emulator `BRDEV` then branches, so the ROM takes the machine's path), `Y1VID_DOTS=6` opens the DOTS
-jumper. `tests/video/emu.py` runs the unit on both emulators (case `keyboard`: the monitor driven from the keyboard);
-`tests/video/v20/run.py` the card itself.
-
-Not yet in the ROM: graphics (drawing in direct mode, GFX-ON switched in vertical blanking, refused in 6-dot mode),
-starting the screen at reset (`VIDAUTO` is still 0).
-
-## 11b. The video unit for the video card V4 (2026-11-14, branch `video-v2`)
-
-`ROM 2026-11-14 V4` (`firmware/rom/shipped/rom-v4.bin`; not burned; for a machine with the V4 card,
-[`docs/cards/video-v4.md`](../cards/video-v4.md), which is not built). It is a second build of the same
-`monitor.asm`. The V2.0 ROM has 45 bytes free, so one ROM cannot hold both drivers, and the assembler has no
-conditional assembly: the lines of the V2.0 ROM alone end in the tag `;;V2`, the V4 ROM's lines are comments that
-begin `;;V4`, and `tools/monvariant.py v4` makes the V4 source by dropping the first kind and taking the tag off
-the second. The file as it stands assembles to the V2.0 monitor, byte for byte as before.
-`tools/verify_firmware.py` builds and compares both. The V4 monitor half is 4,028 bytes, its code ending at $FF66;
-the vectors at $FFBC-$FFFF are where they are in every ROM, BASIC is the same.
-
-| | V2.0 card (section 11a) | V4 card |
-|---|---|---|
-| Detection (`vprobe`) | `IN PC` reads $5x | `IN PC` reads $7x |
-| Geometry | 80 x 24 or 64 x 24, by the DOTS jumper | **80 x 25**, always (`VROWS` 25; the card has no DOTS jumper) |
-| The 6845's table | R0..R3 by the jumper, R4..R15 common, 12 MHz | one table, the note's section 3: 49, 40, 42, $26, 31, 13, 25, 28, 0, 15, $6E, 15 - 640 x 480 at 60 Hz with the text in a band of 400 lines; a count of the 6845 is 16 dots, two characters |
-| `V I` | `OUTI PC,0`, the table, clear, home | the same, and control 2 (`OUT PF`) cleared with its copy `VIDC2` ($0FF9): text on, both syncs negative, white |
-| Characters | upper case only: $60-$7F stored as $40-$5F | **stored as they come**: the card's EPROM has 256 glyphs, lower case among them |
-| The cursor (`vcursor`) | R14/R15 = its offset in the text RAM | R14/R15 = the offset **halved** (the 6845 counts pairs of characters), and the offset's odd bit is **CURH**, bit 1 of control 2: the cursor on the right-hand character of its count. Control 2 cannot be read back, so the driver keeps its copy in `VIDC2` and writes the whole byte |
-| The scroll | 230 or 184 passes of 8 bytes (`VSCRLN`) | 240 passes: 24 rows of 80 up one row, 8,800 instructions |
-| `V D` | each byte as its 2513-style glyph | each code as its character; a control code as `.` |
-| $0FF9 | `VSCRLN` | `VIDC2` |
-
-The keyboard, mirroring, the `V` command, `VIDCTL` at $FFBC and the other variables are section 11a's unchanged. A
-program that changes control 2 itself (the guns, the syncs' polarity, TEXT-OFF) changes `VIDC2` with it, or the
-next cursor move puts the old byte back.
-
-**On the emulators** `Y1VID_CARD=v4` chooses the card's model (`software/videomodel.h`), and `-m` then loads this
-ROM (`firmware/monitor/monitor-v4.img`) in place of the V2.0 one. `tests/video/v40/run.py` (in `make check`) builds
-both ROMs from the one source, runs the model's own test, the card's ports and window through the monitor
-(`v40card.asm`) and the screen driver (`v40scr.asm`: 30 lines with lower case, six scrolls, the cursor and CURH) on
-both emulators.
+**On the emulators** the V4 card is the default on this branch (`software/videomodel.h`; `Y1VID_CARD=v1.0` for the V1
+card), and `-m` loads this ROM: `Y1VID_KEYS` types on the keyboard, `Y1VID_KBD=stdin` makes the terminal the keyboard
+(the UART then receives nothing; on the instruction-level emulator `BRDEV` then branches, so the ROM takes the
+machine's path). `tests/video/emu.py` runs the unit on both emulators (case `keyboard`: the monitor driven from the
+keyboard); `tests/video/v40/run.py` (in `make check`) the model's own test, the card's ports and window through the
+monitor (`v40card.asm`) and the screen driver (`v40scr.asm`: 30 lines with lower case, six scrolls, the cursor and
+CURH) on both emulators.
 
 Not in this ROM: graphics; the 640 x 400 at 70 Hz table (the driver's second raster, decided 2026-11-14: to come
 with the first program that wants it); starting the screen at reset (`VIDAUTO` is 0). Y1/OS, BASIC and the

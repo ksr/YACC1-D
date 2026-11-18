@@ -209,22 +209,26 @@ function drawScreen(now) {
   const FG = rgba(P.fg, 1), FG2 = rgba(P.fg, .45), BG = rgba(P.bg, 1), HATCH = rgba([90, 40, 40], 1), stride = W * SX;
   for (let row = 0; row < g.rows; row++) {
     for (let col = 0; col < g.cols; col++) {
-      const ma = (g.start + row * g.cols + col) & 0xFFF;       // the 6845 scans MA0..11; the CPU reaches the lower 2K
+      const ma = font.v4 ? (g.start + row * g.cols + col) & 0x7FF    // the V4: a ring of 2,048 characters
+                         : (g.start + row * g.cols + col) & 0xFFF;       // the 6845 scans MA0..11; the CPU reaches the lower 2K
       const b = ma < 2048 ? ram[ma] : -1;
       const isCur = cur && on && cur.row === row && cur.col === col;
       for (let line = 0; line < g.lines; line++) {
         const y = row * g.lines + line;
         let bits = 0, inv = 0;
         if (b >= 0) {
-          bits = font.glyphs[b & 0x3F][line & 7];                 // RA0..2 only: past line 8 the glyph repeats
-          inv = (b >> 7) & 1;                                     // bit 7 = inverse video; bit 6 is not wired
+          if (font.v4) bits = font.glyphs[b][line & 15];          // the V4: 256 glyphs, $80-$FF already inverted
+          else {
+            bits = font.glyphs[b & 0x3F][line & 7];               // RA0..2 only: past line 8 the glyph repeats
+            inv = (b >> 7) & 1;                                   // bit 7 = inverse video; bit 6 is not wired
+          }
           if (isCur && cur.first <= line && line <= cur.last) inv ^= 1;
         }
         for (let d = 0; d < D; d++) {
           const x = col * D + d;
           let c0, c1;
           if (b < 0) { c0 = c1 = (x + y) % 4 === 0 ? HATCH : BG; }   // the upper 2K no one can write (as vidsim)
-          else if ((d < 5 ? (bits >> (4 - d)) & 1 : 0) ^ inv) { c0 = FG; c1 = FG2; }   // 5 glyph dots, the 6th (IC28 /6) blank
+          else if ((font.v4 ? (bits >> (7 - d)) & 1 : d < 5 ? (bits >> (4 - d)) & 1 : 0) ^ inv) { c0 = FG; c1 = FG2; }   // V1: 5 glyph dots, the 6th (IC28 /6) blank
           else c0 = c1 = BG;
           const base = y * SY * stride + x * SX;
           for (let sy = 0; sy < SY; sy++) {

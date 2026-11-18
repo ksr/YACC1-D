@@ -10,15 +10,12 @@ opcode counts and the CF sectors. The clocks come from `../opclocks.h`, generate
 `tools/speed.py` turns this into a report (`docs/system/SPEED.md`).
 
 **The video card** is `../videomodel.h`, shared with `software/ucemu` (2026-09-25: `-V` the screen at exit, `-W` the
-CRTC write log, `-N` no card). `Y1VID_CARD=v2.0` in the environment (2026-11-10, branch `video-v2`) puts the video card
-V2.0 there instead: its ports PA-PF on `INP` / `OUTA` / `OUTI`, the graphics window at $D800-$DFFF, VSYNC and DE from
-the CRTC registers and the clocks every instruction adds (`../opclocks.h`), the PS/2 keyboard from `Y1VID_KEYS` or, with
-`Y1VID_KBD=stdin`, from the console (the UART then receives nothing); the options are in `videomodel.h`.
-`Y1VID_CARD=v3` (2026-11-11) is the video card V3 of `docs/cards/video-v3.md`: the HD63484 ACRTC on ports PA-PD
-(`../acrtcmodel.h`: its registers, FIFOs and the commands a console and simple drawing need), a 640 x 480 frame buffer
-with the font EPROM, the PS/2 keyboard and mouse (`Y1VID_MOUSE`) on PE / PF; `-V` prints the screen read back as text.
-`Y1VID_CARD=v4` (2026-11-14) is the video card V4 of `docs/cards/video-v4.md`: V2.0's ports with the second control
-register on PF, the card ID $7x, 80 x 25 characters stored as ASCII, a graphics window of sixteen planes in two
-pages (64K), VSYNC and DE at 16 dots a count of 25.175 MHz; `-m` then loads the V4 ROM, `firmware/monitor/monitor-v4.img`.
+CRTC write log, `-N` no card). On the branch `video-v4` the card is the video card V4 of `docs/cards/video-v4.md`
+(`Y1VID_CARD=v1.0` in the environment for the V1 card): its ports PA-PF on `INP` / `OUTA` / `OUTI` (the card ID $7x,
+two control registers on PC and PF), 80 x 25 characters stored as ASCII, a graphics window at $D800-$DFFF of sixteen
+planes in two pages (64K), VSYNC and DE from the CRTC registers and the clocks every instruction adds
+(`../opclocks.h`) at 16 dots a count of 25.175 MHz, the PS/2 keyboard from `Y1VID_KEYS` or, with `Y1VID_KBD=stdin`,
+from the console (the UART then receives nothing); the options are in `videomodel.h`. `-m` loads this branch's ROM,
+the V4 card's. (The V2.0 and V3 cards' models, 2026-11-10 and 11, were removed with those designs on 2026-11-18.)
 
 Load `firmware/rom/shipped/rom` (BASIC at $E000, monitor at $F000) to run what the machine runs.

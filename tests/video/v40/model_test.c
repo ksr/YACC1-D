@@ -22,7 +22,7 @@ static void fresh(const char *card, const char *keys, const char *textonly) {
     setenv("Y1VID_CARD", card, 1);
     if (keys) setenv("Y1VID_KEYS", keys, 1); else unsetenv("Y1VID_KEYS");
     if (textonly) setenv("Y1VID_TEXTONLY", textonly, 1); else unsetenv("Y1VID_TEXTONLY");
-    unsetenv("Y1VID_KBD"); unsetenv("Y1VID_DOTS"); unsetenv("Y1_CLOCK");
+    unsetenv("Y1VID_KBD"); unsetenv("Y1_CLOCK");
     vid_init();
 }
 
@@ -42,8 +42,8 @@ int main(void) {
     CHECK(at(0, 0xA) == -1 && at(0, 0xF) == -1, "PA / PF read float");
     vid_io_write(0xA, 15); vid_io_write(0xB, 0x5A); vid_io_write(0xA, 15);
     CHECK(at(0, 0xB) == 0x5A, "R15 through PA/PB");
-    setenv("Y1VID_DOTS", "6", 1); vid_init(); unsetenv("Y1VID_DOTS");
-    CHECK(at(0, 0xC) == 0x70 && vid2.dots == 16, "Y1VID_DOTS means nothing on V4");
+    vid_init();
+    CHECK(at(0, 0xC) == 0x70 && vid2.dots == 16, "the status: ID $7x, 16 dots a count");
 
     /* the window: PLANE's four bits and CPAGE of control 1; control 2 on PF, not part of the address */
     fresh("v4", NULL, NULL);

@@ -2,12 +2,11 @@
 # Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
 
 """tests/video/v40/run.py - the video card V4 in both emulators, and its ROM (2026-11-14; docs/cards/video-v4.md,
-software/videomodel.h with Y1VID_CARD=v4, the V4 build of firmware/monitor/monitor.asm: monitor-v4.img).
+software/videomodel.h, the branch's default card; firmware/monitor/monitor.asm, the V4 card's ROM).
 
   run.py [-v]      -v prints each run's console output and the emulator's -V lines
 
-1. The V4 monitor image is the V4 build of monitor.asm (tools/monvariant.py v4, assembled here), and the source as it
-   stands still assembles to the V2.0 image: the two ROMs come from one file.
+1. The monitor image is monitor.asm assembled here, and it ends below the ISR code.
 2. model_test.c, the model on its own: the ports, both control registers, the 64K behind the window, the text-only
    build, VSYNC / DE to the clock at 16 dots a count.
 3. v40card.asm through the V4 monitor, on the instruction-level emulator (int) and the microcode one (uc), in three
@@ -33,7 +32,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
 ASM = os.path.join(ROOT, "software/assembler/asm"); DEF = os.path.join(ROOT, "software/assembler/yacc1.def")
 EMUS = [("int", os.path.join(ROOT, "software/emulator/emulator")), ("uc", os.path.join(ROOT, "software/ucemu/y1ucemu"))]
 MON = os.path.join(ROOT, "firmware/monitor")
-LST = open(os.path.join(MON, "monitor-v4.lst"), errors="replace").read()
+LST = open(os.path.join(MON, "monitor.lst"), errors="replace").read()
 MON_EXIT = re.search(r"^([0-9a-f]{4})h: CMD_EXIT\b", LST, re.M).group(1).upper()
 CLOCKS = [int(x) for x in re.findall(r"(\d+),", open(os.path.join(ROOT, "software/opclocks.h")).read().split("{", 1)[1])]
 TABLE = "31 28 2A 26 1F 0D 19 1C 00 0F 6E 0F 00 00"          # R0-R13 of the note's section 3
@@ -60,7 +59,7 @@ def assemble(d, name, text=None):
 
 
 def run(emu, img, env, keys=b""):
-    # (as tests/video/v20/run.py: the fast emulator's 0 command ends in the stop loop, so its run ends at the limit)
+    # (the fast emulator's 0 command ends in the stop loop, so its run ends at the limit)
     cmd = [emu, "-x", "-m", "-V", "-l", "400000000" if emu.endswith("y1ucemu") else "20000000"] + \
         (["-E", MON_EXIT] if emu.endswith("y1ucemu") else [])
     e = dict(os.environ, Y1VID_CARD="v4", **env)
@@ -73,14 +72,10 @@ def run(emu, img, env, keys=b""):
 def main():
     d = tempfile.mkdtemp()
 
-    # 1. one source, two ROMs
-    sys.path.insert(0, os.path.join(ROOT, "tools")); import monvariant
+    # 1. the ROM's monitor
     src = open(os.path.join(MON, "monitor.asm")).read()
-    v4 = assemble(os.path.join(d, "v4"), "monitor", monvariant.variant(src, "v4"))
-    check("monitor-v4.img is the V4 build", v4 == open(os.path.join(MON, "monitor-v4.img"), "rb").read())
-    v2 = assemble(os.path.join(d, "v2"), "monitor", src)
-    check("monitor.img is the source as it is", v2 == open(os.path.join(MON, "monitor.img"), "rb").read())
-    check("the tags come off for V2.0", assemble(os.path.join(d, "v2b"), "monitor", monvariant.variant(src, "v2")) == v2)
+    v4 = assemble(os.path.join(d, "v4"), "monitor", src)
+    check("monitor.img is monitor.asm", v4 == open(os.path.join(MON, "monitor.img"), "rb").read())
     end = max(int(a, 16) for a in re.findall(r"^\s*\d+ ([0-9a-f]{4}): [0-9a-f]{2} ", LST.split("isrcode:")[0], re.M))
     check("the V4 monitor ends below $FF90", end < 0xFF90, "its last byte is at $%04X" % end)
 
@@ -140,7 +135,7 @@ def main():
     check("the screen, int = uc", screens["int"] == screens["uc"] and bool(screens["int"]))
 
     # 5. the ROM's table is the one tools/vidsim.py checks
-    import vidsim
+    sys.path.insert(0, os.path.join(ROOT, "tools")); import vidsim
     check("the ROM's table is vidsim's", " ".join("%02X" % v for v in vidsim.V4_TABLES[60][:14]) == TABLE)
     for raster, rate in ((60, "640 x 480 at 60 Hz"), (70, "640 x 400 at 70 Hz")):
         r = subprocess.run([sys.executable, os.path.join(ROOT, "tools/vidsim.py"), "timing", "--card", "v4", "--v4raster",

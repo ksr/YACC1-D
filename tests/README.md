@@ -20,18 +20,9 @@
 - `video/` — `video_ram_test.py`, the video card's display-RAM test over the bus tester (patterns, inverse, neighbour
   isolation, the block-0/9 write-through check, read stability); 8/8 on 2026-09-21 after the +5V/VCC join. `gate.py`
   (2026-10-11, in `make check`): the card at gate level (`y1ucemu -G`) against the behavioural model, byte for byte
-  with 0 bus events, and without each bench rework (the RS fix, the +5V wire) the faults they fixed. `v20/run.py`
-  (2026-11-10, branch `video-v2`, in `make check`): the video card V2.0's model (`Y1VID_CARD=v2.0`) - `model_test.c`
-  on its own (the PS/2 keyboard from the console, the controller's timing, VSYNC / DE to the clock) and `v20card.asm`
-  through the monitor on both emulators in four builds of the card (as designed, text-only, DOTS open, a 2 MHz CPU):
-  the status port, the 6845 on PA/PB, the 16 plane/page pairs of the window, VSYNC's pulse and frame, DE, the keys;
-  `tools/vidsim.py render` on its state file. `v30/run.py` (2026-11-11, in `make check`): the video card V3's model
-  (`Y1VID_CARD=v3`) - the font EPROM's image against its generator, `model_test.c` (the HD63484's registers, FIFOs
-  and commands with the manual's examples, the keyboard and the mouse), and `v30card.asm` through the monitor on both
-  emulators: a YACC1 program starts the chip, writes "V3 OK" from the font EPROM and draws; the frame buffer is
-  compared dot for dot with the same scene drawn in Python. `v40/run.py` (2026-11-14, in `make check`): the video
-  card V4 (`Y1VID_CARD=v4`) and its ROM - both ROMs built from the one `monitor.asm` and compared with the committed
-  images, `model_test.c` (the ports, both control registers, the 64K behind the window, VSYNC / DE at 16 dots a
+  with 0 bus events, and without each bench rework (the RS fix, the +5V wire) the faults they fixed.
+  `v40/run.py` (2026-11-14, in `make check`): the video
+  card V4 (the branch's default card) and its ROM - `monitor.asm` built and compared with the committed image, `model_test.c` (the ports, both control registers, the 64K behind the window, VSYNC / DE at 16 dots a
   count), `v40card.asm` through the V4 monitor on both emulators in three builds (as designed, text-only, a 3.5 MHz
   CPU), and `v40scr.asm`, the ROM's screen driver: 80 x 25, lower case, six scrolls, the cursor's address and CURH.
   Its last part draws that screen: the emulator's state file through `tools/vidsim.py render` with the card's

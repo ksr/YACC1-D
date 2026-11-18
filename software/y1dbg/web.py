@@ -6,7 +6,9 @@
 
   GET  /              the page (web/index.html)
   GET  /api/font      the character generator: 64 glyphs x 8 rows of 5 dots (bit 4 the leftmost), from tools/vidsim.py
-                      (font_rows, the same font `vidsim.py chargen` writes for the 2732), or a 2732 image (--chargen)
+                      (font_rows, the same font `vidsim.py chargen` writes for the 2732), or a 2732 image (--chargen);
+                      for the V4 card 256 glyphs x 16 rows of 8 dots (bit 7 the leftmost), from
+                      firmware/video/chargen-v40.bin or the --chargen image (v4: true)
   GET  /api/state?con=N&log=N
                       the status, registers, code at PC, breakpoints and watches, the memory window, the video card
                       (the 2K display RAM, the CRTC registers and the scan geometry: debugger.geometry), and the UART
@@ -34,8 +36,15 @@ CODE = 24                                     # instructions in the code panel
 CON_WIDTH = 80                                # the UART console's lines, as a terminal shows them
 
 
-def font(chargen=None):
-    """the 64 glyphs for the page: [[8 rows of 5 dots]]; chargen = a 2732 image (dots in D7..D3, code*8 + row)"""
+def font(chargen=None, card=1):
+    """the glyphs for the page. The V1 card: 64 x [8 rows of 5 dots]; chargen = a 2732 image (dots in D7..D3,
+    code*8 + row). The V4 (card 4): 256 x [16 rows of 8 dots], the card's image (code*16 + line; $80-$FF the glyphs
+    inverted, as the EPROM holds them)"""
+    if card == 4:
+        path = chargen or os.path.join(ROOT, "firmware", "video", "chargen-v40.bin")
+        img = open(path, "rb").read()
+        return {"dots": 8, "rows": 16, "v4": True, "glyphs": [list(img[c * 16:c * 16 + 16]) for c in range(256)],
+                "source": os.path.basename(path)}
     sys.path.insert(0, os.path.join(ROOT, "tools"))
     import vidsim                               # noqa: E402 - the one source of the drawn font
     if chargen:
@@ -61,7 +70,7 @@ class App:
     def __init__(self, shell, chargen=None, ran=()):
         self.sh = shell; shell.blocking = False
         self.lock = threading.RLock()
-        self.font = font(chargen)
+        self.font = font(chargen, shell.emu.ok("video").get("card", 1))
         self.out = ["y1dbg - the YACC1 debugger on y1ucemu (microcode level). 'help' for commands, F5 or Run to run."]
         self.out_total = len(self.out)        # lines ever logged (the page asks for the tail when this grows)
         for t in ran: self.log(t)             # what -c / --script ran before the page opened
@@ -122,7 +131,7 @@ class App:
             "watches": [{"a": a, "k": {1: "r", 2: "w", 3: "rw"}[k], "s": syms.name(a) or ""} for a, k in snap["watches"]],
             "mem": {"expr": self.mem_expr, "addr": mem, "hex": snap["mem"].hex(), "error": err},
             "video": {"absent": v.get("absent", 0), "ram": v["ram"], "regs": v["regs"], "written": v["written"],
-                      "sel": v["sel"], "geom": geometry(v)},
+                      "sel": v["sel"], "card": v.get("card", 1), "control2": v.get("control2", 0), "geom": geometry(v)},
             "console": {"total": con_total, "lines": con},
             "out": {"total": self.out_total, "lines": self.out[-500:] if self.out_total != out_seen else None},
         }

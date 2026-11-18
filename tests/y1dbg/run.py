@@ -26,7 +26,7 @@ the terminal UI in a pseudo-terminal) and checks:
   gate      --video-rev passes the gate-level card through (y1ucemu -G, the V1.0 card): with v1.0 a loaded program's
             stores to $D800 / $D802 write R14 = 12 and `video` says "v1.0 at gate level, 0 bus events"; with v1.0-no-rs
             (no RS fix) R14 is never written; an unknown revision ends y1dbg with an error; nothing left running
-            (2026-11-10, branch video-v2: VR0E 12 / VR0E until then; this branch's VR reaches the V2.0 card's ports)
+            (2026-11-10: VR0E 12 / VR0E until then; this branch's VR reaches the V4 card's ports)
 """
 import os, re, sys, time, socket, subprocess, select, struct, json, signal, urllib.request, urllib.error
 
@@ -41,9 +41,8 @@ sys.path.insert(0, os.path.join(ROOT, "tools"))
 import vidsim                                       # noqa: E402
 
 VERBOSE = "-v" in sys.argv
-# 2026-11-10 (branch video-v2): the emulators' default card is the V2.0; with its DOTS jumper open it is the 80 x 24
-# screen these cases were written for (y1dbg and the y1ucemu it starts inherit this)
-os.environ.setdefault("Y1VID_DOTS", "6")
+# On the branch video-v4 the emulators' default card is the V4: 80 x 25 characters of 8 x 16, the 6845 counting
+# pairs of them (y1dbg and the y1ucemu it starts inherit it)
 MON = os.path.join(ROOT, "firmware/monitor/monitor.lst")
 BAS = os.path.join(ROOT, "firmware/basic/basic.lst")
 CMDLOOP = int(re.search(r"^([0-9a-f]{4})h: CMDLOOP\b", open(MON).read(), re.M).group(1), 16)
@@ -107,15 +106,15 @@ def case_video():
         out = x(sh, "waitfor INTEL-HEX LOAD")
         sc = screen(sh.emu.ok("video"))
         text = x(sh, "screen")
-        ok = out.startswith("found") and sc["cols"] == 80 and sc["rows"] == 24 and "CRTC" in sc["source"] and \
+        ok = out.startswith("found") and sc["cols"] == 80 and sc["rows"] == 25 and "CRTC" in sc["source"] and \
             any("INTEL-HEX LOAD" in l for l in sc["lines"]) and sc["cursor"] is not None and "INTEL-HEX LOAD" in text
         check("video", ok, "%s\n%s" % (out, text))
-        x(sh, "poke D000 19 80 99 21")                  # Y, @ inverse, Y inverse, !
+        x(sh, "poke D000 59 C0 D9 21")                  # Y, @ inverse, Y inverse, ! (the V4's codes are ASCII)
         sc = screen(sh.emu.ok("video"))
         check("video", sc["lines"][0][:4] == "Y@Y!" and sc["inverse"][0][:4] == [False, True, True, False],
               "%r %r" % (sc["lines"][0][:4], sc["inverse"][0][:4]))
         v = x(sh, "video")
-        check("video", v.startswith("CRTC 7E 50 62") and " 18 " in v, v)   # the V2.0 ROM's 80-column table
+        check("video", v.startswith("CRTC 31 28 2A") and " 19 " in v, v)   # the V4 ROM's table: 40 counts, 25 rows
     finally:
         sh.emu.close()
 
@@ -241,8 +240,9 @@ def case_tui():
     text = open(snap).read() if os.path.exists(snap) else ""
     if VERBOSE: print(text)
     rows = text.splitlines()
-    pane = [l[1:81] for l in rows[1:25]] if len(rows) > 25 else []
-    ok = status == 0 and any("HELLO, SCREEN" == l.strip() for l in pane) and "registers" in text and "console (UART)" in text and \
+    pane = [l[1:81] for l in rows[1:26]] if len(rows) > 26 else []
+    # (the V4 shows lower case as it comes)
+    ok = status == 0 and any("hello, screen" == l.strip() for l in pane) and "registers" in text and "console (UART)" in text and \
         "stopped: paused" in text
     check("tui", ok, "exit %r\n%s" % (status, text))
     time.sleep(0.2)
@@ -293,8 +293,9 @@ def case_web():
         code, page = http(base, "/")
         check("web", code == 200 and "<canvas" in page and "/api/state" in page, "page %d" % code)
         code, f = http(base, "/api/font")
-        check("web", code == 200 and f["dots"] == 6 and len(f["glyphs"]) == 64 and
-              all(f["glyphs"][c] == vidsim.font_rows(c) for c in range(64)), "font %d" % code)
+        cg = open(os.path.join(ROOT, "firmware/video/chargen-v40.bin"), "rb").read()
+        check("web", code == 200 and f["dots"] == 8 and f["v4"] and len(f["glyphs"]) == 256 and
+              all(f["glyphs"][c] == list(cg[c * 16:c * 16 + 16]) for c in range(256)), "font %d" % code)
         check("web", key_escape("a b\\\r~") == "a\\x20b\\\\\\x0D~", key_escape("a b\\\r~"))
         _, r = http(base, "/api/cmd", {"cmd": "b cmdloop"})
         _, r2 = http(base, "/api/cmd", {"cmd": "c"})
@@ -309,9 +310,9 @@ def case_web():
         http(base, "/api/cmd", {"cmd": "c"})
         st = web_until(base, lambda s: s["console"]["lines"] and any("INTEL-HEX LOAD" in l for l in s["console"]["lines"]))
         v = st["video"]; g = v["geom"]; sc = screen(v)
-        ok = k["queued"] == 8 and st["status"]["state"] == "running" and g["crtc"] and g["cols"] == 80 and g["rows"] == 24 and \
-            g["lines"] == 8 and g["cursor"] is not None and g["cursor"]["blink"] == 32 and len(v["ram"]) == 4096 and \
-            any("INTEL-HEX LOAD" in l for l in sc["lines"]) and v["regs"][:3] == [0x7E, 0x50, 0x62]
+        ok = k["queued"] == 8 and st["status"]["state"] == "running" and g["crtc"] and g["cols"] == 80 and g["rows"] == 25 and \
+            g["lines"] == 16 and g["cursor"] is not None and g["cursor"]["blink"] == 32 and len(v["ram"]) == 4096 and \
+            any("INTEL-HEX LOAD" in l for l in sc["lines"]) and v["regs"][:3] == [0x31, 0x28, 0x2A]
         check("web", ok, "%r %r" % (k, g))
         _, again = http(base, "/api/state?con=%d&log=%d" % (st["console"]["total"], st["out"]["total"]))
         check("web", again["console"]["lines"] is None and again["out"]["lines"] is None, "unchanged console/log resent")
