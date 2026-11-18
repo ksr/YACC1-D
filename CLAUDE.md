@@ -21,7 +21,8 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
     on `main` first.
   - Bring `main` into `video-v4` often, by merging (`git merge main` on `video-v4`; never rebase it: both Macs push
     it). `video-v4` is merged into `main` when the V4 card runs in the machine.
-  - Side by side on one Mac, as a second worktree: `git worktree add ~/Developer/YACC1-D-v4 video-v4` (once per Mac).
+  - Side by side on one Mac, as a second worktree: `git worktree add ~/Developer/video-v4-software video-v4` (once per Mac;
+    called `YACC1-D-v4` until 2026-11-18: remove that one with `git worktree remove ~/Developer/YACC1-D-v4`).
     Each worktree has its own builds (`make` there: the emulators, `os/disk.img`, `rom.bin`) and its own `make
     check`. Hardware steps (ROM burn, microcode, bench, CF card) are from `main` until the V4 card is in the machine.
   - Syncing YACC1-D means both branches, `main` and `video-v4`. The website publishes from `main` only.
