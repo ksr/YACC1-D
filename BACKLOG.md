@@ -1192,7 +1192,8 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
   - **Decided 2026-11-18 for the I/O card V1.2: the DB9 (J1) moves to the top edge**, opposite the bus connector, a
     right-angle part facing off the card so the console cable plugs straight in; with it the other front-panel parts
     the board rules put there (switches, LEDs, TIL311s, LCD) and JP1 (null modem) near an edge beside J1. The V1.2
-    list is `docs/cards/io.md` section 8. Not drawn; V1.1 in the machine unchanged.
+    list is `docs/cards/io.md` section 8. The board may be longer than V1.1's if the edge needs the room. Not drawn;
+    V1.1 in the machine unchanged.
 - **2026-11-03: every name on the Y1/OS disk is lower case**, as in Unix (`/bin/cat`, `/lib/cc/cc1`, `/man`, `/docs`,
   `/src`, `fruit.txt`, `make.sh`, cc's `ccw.*`, asm's `.asm`/`.img`, `/pipe0.tmp`, `kermit.tmp`), Unix's own capitals
   kept (`README`, the `Makefile`s). Both kernels look up `/bin/name` with the command word lower-cased (any case runs
