@@ -83,10 +83,10 @@ coding and documentation.
     **[Video](docs/cards/video.md)** — an MC6845 alphanumeric display (KiCad render of v1.1, populated; the built V1.0
     is in bring-up).
 
--   ![Video card V2.0, KiCad render](docs/cards/images/video-v2.0-render-angled.png)
+-   ![Video card V4.0, KiCad render](docs/cards/images/video-v4.0-render-top.png)
 
-    **[Video V2.0](docs/cards/video-v2.md)** — the next video card: v1.3 plus 512 x 192 graphics and two PS/2 ports
-    (KiCad render, populated; ready to order, not built).
+    **[Video V4](docs/cards/video-v4.md)** — the next video card: VGA, 80 x 25 characters, 640 x 400 graphics and two
+    PS/2 ports (KiCad render; not built yet).
 
 -   ![Bus tester](media/test-board-v1.1-top.jpg)
 

@@ -4,8 +4,8 @@
 """sch_wire.py - wired schematic sheets for the generated YACC1 cards (2026-10-24): the parts of one functional block
 placed by ELK (the Eclipse Layout Kernel: tools/kicad/elk_layout.js, elkjs) and the nets between them drawn as
 orthogonal wires; power, the bus signals and one-pin nets keep a short stub to a label or a power symbol, as before.
-Shared by hardware/cards/video/kicad/v2.0/gen_v20.py (the V2.0 card, a hierarchical schematic) and
-hardware/cards/memory/kicad/v2.0/gen_mem_v2.py (sheet 7, the CF section). The model is the P8X project's
+Shared by hardware/cards/video/kicad/v4.0/gen_v40.py (the V4.0 card, a hierarchical schematic; first written for the
+V2.0 design's) and hardware/cards/memory/kicad/v2.0/gen_mem_v2.py (sheet 7, the CF section). The model is the P8X project's
 generators/sch (p8x_kicad_wire.py, elk_layout.js); the symbols, stubs, labels and power symbols are written by the CF
 card's sheet writer (hardware/cards/cf/kicad/v1.0/gen_cf.py, class Sheet), used read-only through a subclass.
 

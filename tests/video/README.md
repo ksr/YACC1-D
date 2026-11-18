@@ -20,7 +20,7 @@ write to $9010 lands at $D010, the 2026-09-18 fault; the wrong fix (`v1.0-a0fix`
 `v40_netsim.py` (2026-11-12, in `make check`, about two minutes): the video card V4's netlist
 (`hardware/cards/video/kicad/v4.0/v40_netlist.py`) run as a circuit, gate for gate, with the parts' data-sheet delays
 at eight corners; the 6845 a model that steps a script of counts, the bus a model of the microcode's strobes started at
-every phase of the dot counter. It uses `v30_netsim.py` (the V3 design's check) as its simulator. Since 2026-11-13
+every phase of the dot counter. Its simulator and part models are `netsim.py` (first written for the V3 design's check, removed with that design on 2026-11-18); `bus_records.py` checks that the microcode's strobes are as its bus model assumes. Since 2026-11-13
 (the card's design review) it also runs the window at 160 phases of a count, reads whose address was counted in the
 step before (a stack or a vector table in the window), takes a delay for each clock's series resistor, and prints the
 least hold margin of each kind beside the set-up margins. `--limits` searches the shortest microcode step the graphics

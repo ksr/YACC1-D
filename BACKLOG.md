@@ -320,110 +320,20 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     CPU read latch (74LS374) and write latch, the bank/control register (bank, TEXT-ON, GFX-ON), a 74LS166, three gates. Goes with the PS/2 and IBM-monitor
     revision. Model: `python3 tools/vidsim.py overlay --tint --png ov.png` (the test card plus a drawing; `--overlay FILE`
     any 16K image, also in run/render; `--gmode or|xor`, `--layers text,gfx|text|gfx|none`); `tests/video/overlay_check.py` checks the addressing.
-- **A VGA video card around the HD63484 ACRTC (idea, 2026-11-11; not built: stopped 2026-11-12, the build-out item
-  below). The design note is
-  `docs/cards/video-v3.md` (begun 2026-11-11: the clock and registers for 640 x 480, the bus and memory sides, both
-  text methods, the steps to higher resolution; its section 12 lists what is to decide and to confirm), with
-  `tools/acrtc_timing.py` for the figures. Decided 2026-11-11: text by method B first on a board laid out for A, the font in an EPROM in the frame buffer's
-  address space, the PS/2 keyboard and mouse on the card, V3 goes ahead (V2.0's order still open); the V3 ROM is on its own branch, `video-v3` (2026-11-11). **The emulators' model:
-  begun 2026-11-11 on `video-v2`** - `Y1VID_CARD=v3`: the four ports, the HD63484's registers, FIFOs and status, the
-  register / data transfer commands and the simple drawing ones (move, dot, line, rectangle, polyline, polygon, filled
-  rectangle, the copies) with the colour, operation and area modes, the 128K-word frame buffer with the font EPROM
-  (`tools/v3font.py`), the raster count, the PS/2 keyboard and mouse (`Y1VID_MOUSE`); `-V` reads the screen back as
-  text; `tests/video/v30/run.py`. Not modelled yet: circles, ellipses, arcs, PAINT, PTN and the DMA transfers (each
-  sets CER and says so), command times, character screens (method A), the cursors, interrupts; `software/y1dbg` shows
-  the 6845 cards' screen only. **Next: the ROM's console driver for V3 (method B: glyphs by SCPY, a scroll by CPY),
-  the keyboard as on V2.0; then the netlist.** The aim: more graphics
-  resolution than V2.0's 512 x 192, on monitors sold today. That means VGA timing - 640 x 480 at 60 Hz, 31.47 kHz
-  lines, a 25.175 MHz dot clock (the same crystal halved is the TV / CGA rate, 640 x 240 at 15.73 kHz) - which most
-  LCDs and VGA-to-HDMI adapters take, where few take the 15.7 or 18.4 kHz of the V1 / V2.0 cards. Two **HD63484P8** are
-  in hand (the 8 MHz grade, 64-pin plastic DIP: every access mode below is open at 640 x 480). From Hitachi's user's manual (1985) and application
-  note (1986), both on bitsavers under `components/hitachi/_dataBooks`:
-  - **Host side.** An 8-bit bus mode (DACK low at reset: D0-D7 only), two addresses (RS: address / status, and data),
-    16-bit registers and the command FIFO written high byte then low byte. CS must stay low for at least three 2CLK
-    cycles (0.95 us at 3.15 MHz: the YACC1's 2 us I/O strobe at 1 MHz meets it; a faster CPU clock needs a wait or a
-    stretched strobe). DTACK is open drain. Two I/O ports are the whole interface: no window in the $D000 block.
-  - **Clock.** 2CLK is 1 MHz to 4 / 6 / 8 MHz by grade. A display cycle is two 2CLK cycles (single access) or four
-    (interleaved, superimposed) and fetches one 16-bit word: the memory cycle rate is dots x bits a pixel x (1 single,
-    2 dual) / 16. 640 x 480 at one bit a pixel, single access: 2CLK = 3.15 MHz, any grade. Text superimposed on
-    graphics (dual access): 6.29 MHz, the 8 MHz grade only.
-  - **The chip draws.** 38 commands (line, rectangle, circle, ellipse, polygon, paint, copy, ...) on a frame buffer of
-    its own (two 62256s hold 640 x 480); the CPU sends coordinates. The CPU reaches the memory only through commands
-    (the read/write pointer RWP with WT, RD, MOD, CLR, CPY).
-  - **Text needs no second CRTC.** Each of the four screens (Upper, Base, Lower: three bands; and the Window) is
-    graphic or character (MWR bit 15). A character screen has its own 64K-word space; the chip puts the raster
-    address on RA0-RA4 (up to 32 lines a character) and CHR high for an external character generator, the 6845's
-    job. One word a display cycle: two 8-bit codes make the same 16 dots as one graphics word. The application note's
-    own example system superimposes character-generator text on graphics with one ACRTC.
-  - **Scrolling a character screen** is a register write, not a move: the screen's start address (SAR) plus its
-    memory width (MWR) is one line up; the start raster address (SRA) in SAR scrolls smoothly a scan line at a time;
-    the address wraps at the end of the space. The bands scroll independently (a fixed status line under a
-    scrolling screen). The chip has no text functions: the driver writes codes with WT and clears a line with CLR.
-  - **With the 8 MHz grade** the card can run superimposed access at 640 x 480 (2CLK = the dot clock / 4 = 6.29 MHz,
-    159 ns against the grade's 125 ns minimum): the graphics on the background screens, a character window laid over
-    them, and where the window is not on a line the chip uses its half of the cycle to draw, as in interleaved mode -
-    no flashing and no waiting for retrace. Each access is 318 ns (address, then data): 55-70 ns SRAM. 800 x 600
-    (36 MHz dots) fits single access only (4.5 MHz; dual would be 9).
-  - **To decide or find out:** the DIP's pin pitch (2.54 mm, about 81 mm long, or the shrink 1.778 mm, about 58 mm:
-    measure before choosing a socket and footprint); text as a superimposed character window, as bands, or drawn
-    into the bitmap from an off-screen font (the application note's third way, no character generator); the character
-    generator and its two lookups a cycle; the shift registers and dot logic at 25 MHz (74AC / 74F); the VGA
-    connector with both sync polarities; whether V2.0 is still ordered first; the emulators' model (the drawing
-    commands) and the ROM's console driver.
-- **Video card V3, the build-out (begun 2026-11-11; STOPPED 2026-11-12: the card is not built for the YACC1).**
-  The design is kept as the starting point for a video card on another machine, where the work goes on;
-  `docs/cards/video-v3.md` section 13 sorts it into what holds on any bus and what is the YACC1's, and says where
-  each file is. No further V3 work here: no board, no ROM or model work. **The branch
-  `video-v3` is frozen (2026-11-12):** kept on GitHub, with its worktree, as reference (the V3 ROM is the only
-  driver written for the chip); nothing is committed to it or merged into it, and it is not part of syncing. The
-  V3 model on `video-v2` (`Y1VID_CARD=v3`) stays, with its tests. The chip's manual and application note are kept
-  in `../private-resources/YACC1-D/docs/datasheets/` (2026-11-12). What was done, and where it stopped:
-  `docs/cards/video-v3.md` section 10a is the circuit part by
-  part: the chip's DIP-64 pins, the six ports' strobes from two 74HCT138 (CS; RS = IO-ADDR0 and R/W = IO-ADDR2 through a latch),
-  39 chips with the PS/2 section and 47 with text method A's. The memory cycle and every control equation are in section 10b (from the manual's figures T-6
-  and T-8: a dot counter that keeps step with the chip's MCYC by loading itself, -WE from a flip-flop in dots 5 and
-  6, the buffers' two enable windows, the dummy-cycle flip-flop for the load). **The netlist is written**
-  (`hardware/cards/video/kicad/v3.0/v30_netlist.py`, 2026-11-11: 138 parts, 47 ICs, 233 nets; `python3
-  v30_netlist.py` proves every pin accounted for): the bus and ports, the chip, clock and control, RAM, the font
-  EPROM, the shift registers, the control register from the attribute byte (colours, sync polarity; ATR 00 =
-  white, both syncs negative), the VGA output, the PS/2 section, and **text method A** (section 10c, from the
-  manual's figure 2.1 (c): eight sockets left empty on the first build - the character codes and raster line latched
-  from the Window's cycle, a 70 ns character generator, a shifter, the layers mixed OR / XOR; CHR forces a character
-  screen into the RAM's top 64K words; the graphics dot is delayed 8 dots to meet the text; the cursor is CUD1 /
-  CUD2 on the character generator's address). **The netlist is simulated and the timing check is done**
-  (`tests/video/v30_netsim.py`, in `make check`, section 10d): every part a model with its data-sheet minimum and
-  maximum, the chip's memory cycles scripted, the bus driven as the microcode's I/O records drive it; eight corners;
-  seventeen planted wiring faults caught. What the timing check changed (2026-11-11): the parts (74F163A, 74F21 for
-  the three fast decodes, two 74ACT273 for the control register, a 74F299 as the delay line); no clock from a decode
-  of the counter (P56, a flip-flop, is the one timing edge); a read's buffers a dot later than a write's; the
-  memories' outputs off from the end of a cycle to the end of the next AS (MOE); a latch on RS and R/W, because the
-  microcode's IN records drop the port number with -IO-RD. **The schematic is generated** (2026-11-11,
-  `hardware/cards/video/kicad/v3.0/gen_v30.py sch`, from V2.0's generator: a root and eight sheets, the exported
-  netlist equal to `v30_netlist.py` net by net, ERC clean, `reports/video-v3.0-schematic.pdf`, `BOM.md`).
-  **The card's length, where the work stopped:** the first placement trial shows that the 47 ICs do not fit the 218 mm
-  outline at V2.0's spacing - about 250 mm is needed (V2.0 filled 218 mm with 40 ICs). The ways out: (a) a 250 mm
-  card, 32 mm more slot space than the sequencer logic card, nothing else changed; (b) 218 mm without text method A's
-  eight sockets (method A then needs a later board); (c) 218 mm without the PS/2 section (a keyboard card of its own;
-  about 220 mm, to be squeezed); (d) the control gates in one or two GALs, a redesign with its simulation.
-  (a) was chosen (2026-11-11). `gen_v30.py` has `LENGTH = 250` and a provisional placement (`gen_v30.py place` does
-  not pass); not begun: the real placement, `build.sh` (routing, DRC, PDFs), `pcb-check`, a design review. Never
-  verified: the DE-15 socket's footprint (KiCad's) against a part in hand. Settled 2026-11-11: the chip on four
-  ports (PA-PD; with PS/2 on PE / PF the card has all of PA-PF, a later card uses P2-P7), and VGA only (one DE-15;
-  no DB9, RCA or halved clock). Open: whether a 512K x 8 static RAM exists in DIP-32 (the footprint's option). For
-  the bench (section 10d, "what it cannot say"): the chip's minimum delays, on which two margins of 2 to 3 ns rest;
-  a decoder pulse at the end of an IN; the cursor skew's count.
-- **Video card V2.0 (designed 2026-10-22; `hardware/cards/video/kicad/v2.0`; re-reviewed and READY TO ORDER 2026-10-23, not ordered; ON HOLD 2026-11-12; ON FILE, NOT TO BE ORDERED 2026-11-14; WILL NOT BE BUILT 2026-11-17).**
-  **Will not be built (2026-11-17).** The design stays on file as it stood - nothing of it is changed or deleted,
-  and nothing was ever ordered - with a note at the top of its README. What follows from it, open:
-  - **The branch `video-v2` becomes the V4's alone.** Today `monitor.asm` as it stands still assembles to the V2.0
-    ROM (the V4 ROM is the second build, `tools/monvariant.py v4`), the emulators' card there is V2.0 unless
-    `Y1VID_CARD=v4`, and Y1/OS, BASIC and the commands take the screen for V2.0's 24 rows. To do: the V4 build as
-    the source stands (the `;;V2` lines out, the `;;V4` tags off, one ROM image), the emulators' default card the
-    V4, the OS on 25 rows. To decide first: whether V2.0's driver, model and `tests/video/v20` are taken out or
-    left in as a card that no ROM drives.
-  - **`pcb-check/tests/boards.txt` still lists this board** (the list of new boards awaiting an order): to take off.
-  - On `main`, V2.0's parts of `tools/vidsim.py` (`--card v2.0`), `firmware/video/chargen-v20.bin` and
-    `tests/video/v20_timing.py` stay: they are the record of the design, and `make check` runs them.
+- **Video card V3 (the HD63484 ACRTC on VGA; begun 2026-11-11, stopped 2026-11-12, REMOVED 2026-11-18).** Never
+  built: the V4 is the card to build. On 2026-11-18 the design (`hardware/cards/video/kicad/v3.0`, `docs/cards/video-v3.md`,
+  `tools/acrtc_timing.py`, `tests/video/v30_netsim.py`), the chip's emulator model on `video-v2` (`software/acrtcmodel.h`,
+  `tests/video/v30/`) and the branch `video-v3` (its ROM driver, the only one written for the chip) were taken out of
+  YACC1-D and the branch deleted; all of it is kept in `../private-resources/YACC1-D/video-v3/` as the starting point
+  for another machine's video card (its README; the design note's section 13 is the handover). The part simulator
+  the V4 check uses stays, as `tests/video/netsim.py`. The git history before 2026-11-18 has the rest.
+- **Video card V4 (the card to build: `docs/cards/video-v4.md`, `hardware/cards/video/kicad/v4.0`), grown out of the
+  V2.0 design (designed 2026-10-22, never ordered; WILL NOT BE BUILT 2026-11-17; REMOVED 2026-11-18).** On 2026-11-18
+  V2.0 left the tree: its board (`hardware/cards/video/kicad/v2.0`), `docs/cards/video-v2.md`, its reviews, renders and
+  character ROM image, `tests/video/v20_timing.py` (its microcode checks kept as `tests/video/bus_records.py`) and its
+  part of `tools/vidsim.py`; on the V4 line its ROM, BIOS, emulator model and tests, and the branch was renamed
+  `video-v2` -> `video-v4`. The git history before 2026-11-18 has all of it. The V4 keeps V2.0's ports, its CPU
+  window, direct mode and its PS/2 section with the firmware (`embedded/video-ps2`). The history of both cards:
   **On file (2026-11-14):** the V4 card is the video card to build, alone, and V2.0 is not ordered. (Then:
   "probably never built", its software to stay on `video-v2` until the V4 runs in the machine. Since 2026-11-17 it
   is not built at all: above.)

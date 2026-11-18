@@ -1,11 +1,12 @@
-# video-ps2 — the PS/2 keyboard and mouse controller of the video card V2.0
+# video-ps2 — the PS/2 keyboard and mouse controller of the video card V4.0
 
-The firmware of the ATmega328P on the video card V2.0 (`hardware/cards/video/kicad/v2.0`, design note in `BACKLOG.md`
-"Video card V2.0", theory in `docs/cards/video.md`). Designed 2026-10-22; the card is not built, so the sketch has run
-on no hardware yet. `tools/verify_embedded.py` compiles it with every other sketch (`make check`): 5,838 bytes of flash
+The firmware of the ATmega328P on the video card V4.0 (`hardware/cards/video/kicad/v4.0`, design note
+`docs/cards/video-v4.md`), whose PS/2 section is the V2.0 design's unchanged (the V2.0 card was never built; its design
+and reviews were removed on 2026-11-18 and are in the git history). Designed 2026-10-22; no card with it is built yet,
+so the sketch has run on no hardware. `tools/verify_embedded.py` compiles it with every other sketch (`make check`): 5,838 bytes of flash
 (Arduino Uno target = the ATmega328P at 16 MHz).
 
-**Revised 2026-10-22 after the design review** (`hardware/cards/video/reviews/v2.0.md`), together with the board:
+**Revised 2026-10-22 after the V2.0 design's review**, together with that board (the IC numbers below are V2.0's):
 
 | Finding | Change |
 |---|---|

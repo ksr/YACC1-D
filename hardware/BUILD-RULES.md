@@ -34,9 +34,9 @@ Source: [`CLAUDE.md`](../CLAUDE.md) (board-layout rules, 2026-10-24).
   `onepagecomputer.com`, which stays on the boards already built or ordered and on the never-ordered designs (blank
   card V3.2, CF v1.0, bus tester V3.1) until one of them is next revised.
 
-Silk sizes used on the video card V2.0, the first board drawn to these rules: text 1.0 mm high, 0.15 mm strokes,
+Silk sizes, first used on the video card V2.0 (never built) and kept on the V4.0: text 1.0 mm high, 0.15 mm strokes,
 card name 1.5 mm; 0.15 mm from other silk, 0.2 mm from pads, 0.4 mm from the board edge
-([video V2.0 README](cards/video/kicad/v2.0/README.md)).
+([video V4.0 README](cards/video/kicad/v4.0/README.md)).
 
 ## 2. Size and mounting
 

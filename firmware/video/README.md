@@ -16,15 +16,6 @@ column; v1.3's 74LS166 loads all eight bits); $400-$5FF the 6-dot font (DOTS ope
 `chargen.bin`, D7..D3, D2..D0 = 0. Same 2513 order and code x 8 + row addressing; the rest zero. Not burned (no v1.3
 board exists). `tests/video/overlay_check.py` checks that this file is what the tool writes.
 
-`chargen-v20.bin` (2026-10-22) - the character generator of the V2.0 card (`hardware/cards/video/kicad/v2.0`), whose
-IC25 is a 28-pin **AT28C64B-15** (8K, the ROM's part, 150 ns: design review V2-10) instead of the 2732. Written by
-`python3 tools/vidsim.py chargen --card v2.0`: `chargen-v13.bin` at $0000-$0FFF (the same two fonts, A10 = DOTS) and a
-copy of it at $1000-$1FFF. The card grounds A12, A11 and A9 and holds -WE high, so only $0000-$01FF and $0400-$05FF are
-read; the copy only makes the chip's upper half harmless. Burn it like the ROM:
-`minipro -p AT28C64B -u -P -w firmware/video/chargen-v20.bin`, then read back and compare
-(`minipro -p AT28C64B -r /tmp/cg.bin && cmp /tmp/cg.bin firmware/video/chargen-v20.bin`). Not burned (no V2.0 board
-exists). `tests/video/overlay_check.py` checks the file.
-
 `chargen-v40.bin` (2026-11-14) - the character generator of the V4 card (`hardware/cards/video/kicad/v4.0`, IC18, an
 **AT28C64B-15**, 8K): 256 characters of 8 x 16 dots and, for each, its cursor form. Written by
 `python3 tools/vidsim.py chargen --card v4` from **Terminus Font's bold 8 x 16** (`upstream/terminus-font-4.49.1/`:

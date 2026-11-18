@@ -5,7 +5,7 @@
 and the unrouted 4-layer board with its placement, all from v40_netlist.py (the circuit). Design note:
 docs/cards/video-v4.md (section 5 the clock and the stage, 6 the text, 7 the graphics RAM's two modes, 8 the dots).
 
-Made from the V3 design's gen_v30.py (itself from the V2.0 card's gen_v20.py): the sheet writer's use, the silkscreen
+Made from the generators of the V3 and V2.0 designs (gen_v30.py, gen_v20.py; removed 2026-11-18, in the git history): the sheet writer's use, the silkscreen
 placer and the checks are theirs; the sheets, the local symbols, the placement and the key connections are this card's.
 
 THE BOARD IS PLACED AND ROUTED (2026-11-12, build.sh; not ordered). The 46 ICs stand in thirteen columns, eleven of

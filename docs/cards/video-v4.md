@@ -7,10 +7,10 @@ is placed and routed, all checks passing (section 11). A design review (2026-11-
 `hardware/cards/video/reviews/v4.0.md`) found nothing that stops the card working and four things to settle before
 an order; they are settled and the board is routed again (2026-11-13; and once more 2026-11-14, its four clocks
 laid first). The pre-order check finds no failure (2026-11-14, one warning: section 11). The card in the machine
-is the [V1.0](video.md). The
-[V2.0](video-v2.md) is designed and was never ordered: it will not be built (decided 2026-11-14: this card is the
-one to build; 2026-11-17: V2.0 not at all), and its design stays on file. The [V3](video-v3.md),
-round the HD63484, is not built.
+is the [V1.0](video.md). Two earlier designs were never built: the V2.0 (the 6845 at TV rate with a 512 x 192
+graphics layer and the PS/2 section this card keeps) and the V3 (round the HD63484 ACRTC, on VGA). This card replaced
+both (decided 2026-11-14 and 2026-11-17), and both designs left the tree on 2026-11-18; they are in the git history,
+and V3's is kept for another machine.
 
 The aim is the V2.0 card's picture on monitors sold today: a **VGA** monitor at 31.47 kHz, **80 x 25 characters of
 8 x 16 dots** and a **640 x 400 graphics layer**, still made by a **6845**, with V2.0's ports, PS/2 section and
@@ -180,7 +180,7 @@ for gate, with every part's delays from its data sheet at both ends of their ran
 card's parts all slow and all fast, and the two mixed corners that set rising outputs against falling ones (what
 shows a runt pulse on a clock). The 6845 is a model that steps a script of counts and checks the clock it is given;
 the bus is a model of the microcode's strobes, started at every phase of the count. The simulator and the models of
-the 74F and 74ACT parts are the V3 check's (`tests/video/v30_netsim.py`). The four series resistors of the clocks
+the 74F and 74ACT parts are `tests/video/netsim.py` (first written for the V3 design's check). The four series resistors of the clocks
 are in it as a delay of 0.3 to 2 ns each: the resistor with its net's load and wire, taken together.
 
 51 runs, none failing: every count's two characters and two graphics bytes come out as sections 6 and 7 say, 27
@@ -300,14 +300,14 @@ with the text's dots. A CPU slot comes every 318 ns and is 159 ns long:
   flip-flop's delay).
 
 A read needs a step that holds one whole CPU slot after the address has come: a wait of up to 318 ns for the slot
-and the slot's 159. The simulation, with the bus's own delays as `tests/video/v20_timing.py` has them, finds the
+and the slot's 159. The simulation, with the bus's own delays as the V2.0 design's direct-mode budget had them, finds the
 shortest step 531 ns: a CPU clock of 3.76 MHz (V2.0's slot mode: 1.8 MHz). **3.5 MHz** is the figure to use, and the
 one every corner is run at; a byte read there is on the bus 40 ns before the microcode takes it, at the worst of 160
 phases of the count. A write needs less: one slot's beginning inside the strobe.
 
 That is for an address that stands on the bus from the step's beginning: a register selected in the step, 114 ns
 after its edge. **An address that was counted in the step before comes later**, 218 ns after the edge when the
-count stays within the window and 256 ns when it enters it (`tests/video/v20_timing.py`, at 85 C). Those are the
+count stays within the window and 256 ns when it enters it (the V2.0 design's budget, at 85 C). Those are the
 reads through a stack pointer (RET, IRET, POPR) and of the second byte of a BRVR vector: a stack or a vector table
 that lies in the window. The step then has that much less for the slot:
 
@@ -340,8 +340,7 @@ A program draws at full speed with the layer hidden and shows it with GFX-ON = 1
 that: to draw on the hidden page while the other is shown the display needs its slots, so that is slot mode's, to
 about 3.5 MHz. Above it the order is hide, draw, show.
 
-**The rules for the window** are V2.0's (`hardware/cards/video/kicad/v2.0/README.md`, "The software rules for the
-window"):
+**The rules for the window** (from the V2.0 design, which had the same window):
 
 1. No code in the window, at any clock.
 2. A stack or a BRVR vector table in the window: in slot mode only to about 2.8 MHz, in direct mode only to about
@@ -539,17 +538,17 @@ crystal circuit.
 
 ## 12. Software
 
-On the branch `video-v2`, beside the V2.0 card's. **The emulators' model and the ROM's text driver are written
+On the branch `video-v4` (`video-v2` until 2026-11-18). **The emulators' model and the ROM's text driver are written
 (2026-11-14)**; graphics are open.
 
 - **The ROM driver (done 2026-11-14: `ROM 2026-11-14 V4`, not burned)**: the card by its ID, $7x; the table of
   section 3 for 640 x 480 at 60 Hz; 80 columns and 25 rows; characters stored as they come, lower case with them;
   the cursor as R14 / R15, its offset halved, and CURH; a copy of control 2 kept in RAM (it cannot be read back).
-  The keyboard is V2.0's code unchanged. It is a second build of the same monitor source, since the V2.0 ROM has no
-  room for a second driver: `docs/programming/MONITOR.md` section 11b on that branch. Not in it yet: graphics
+  The keyboard is V2.0's code unchanged. Since 2026-11-18 it is the branch's only ROM (until then a second build of
+  the same source beside the V2.0 ROM): `docs/programming/MONITOR.md` section 11a on that branch. Not in it yet: graphics
   (PLANE's four bits, GFX-ON left 0 on a text-only card and switched only in vertical blanking), the 70 Hz table,
   and Y1/OS, BASIC and the commands, which still take the screen for 24 rows.
-- **The emulators' model (done 2026-11-14: `software/videomodel.h`, `Y1VID_CARD=v4`)**: 16 dots a count, two bytes,
+- **The emulators' model (done 2026-11-14: `software/videomodel.h`, the branch's default card)**: 16 dots a count, two bytes,
   sixteen planes in two pages, the two control registers, the text-only build, the status's VSYNC and DE to the
   clock. `tests/video/v40/run.py` on that branch runs the model and the ROM on both emulators.
   `tools/vidsim.py timing --card v4` checks the table, and (2026-11-14) the tool draws the card's screen with the
@@ -623,12 +622,12 @@ address: section 13, "Possible later".
   glyph inverted, so the 6845's R10 / R11 still choose block or underline. Nothing on the board depends on any of
   it: the chip is an EEPROM and is burned again for another font or other glyphs at $00-$1F.
 
-- V2.0 is not ordered (decided 2026-11-14) and will not be built (decided 2026-11-17): this card is the video card
-  to build, alone. V2.0's design stays on file as it is (`hardware/cards/video/kicad/v2.0`). This card shows all that
+- V2.0 was not ordered (decided 2026-11-14) and will not be built (decided 2026-11-17): this card is the video card
+  to build, alone. V2.0's design was removed on 2026-11-18 (the git history has it). This card shows all that
   V2.0 shows and more - lower case, 25 rows, 640 x 400, graphics shown to a 3.5 MHz CPU clock where V2.0's limit is
   1.8 - on a monitor sold today; a second card is a second set of parts and a second line of software to keep; and
-  the V1.0 card in the machine is what the YACC1 falls back on while this card is on the bench. V2.0's software
-  is still on the branch `video-v2`, beside this card's: the branch becomes this card's alone (`BACKLOG.md`).
+  the V1.0 card in the machine is what the YACC1 falls back on while this card is on the bench. The branch of this
+  card's software is `video-v4` (until 2026-11-18 `video-v2`, which also carried V2.0's).
 
 **To decide**: nothing. The control bits' places, the raster, the font and V2.0's order were the note's open
 questions; all four are answered (2026-11-14).
@@ -655,16 +654,16 @@ questions; all four are answered (2026-11-14).
 - On a bench: the four clocks at the inputs farthest from their resistors (CK at IC35 pin 11, D2 at IC17, D3 at
   IC24, STG at IC16), each edge rising and falling once; the simulation's closest margins (the holds of 2 ns, the retimed dot); the
   6845's E against R/-W at the first `OUT PB` (as on V2.0); and the bus's own delays, which are
-  `tests/video/v20_timing.py`'s.
+  the V2.0 design's budget's.
 - The VGA socket laid on a 1:1 print of the board; the oscillator's data sheet for its load and its pin 1.
 
 **Order of work**
 1. This note, checked.
-2. The netlist, from V2.0's (`v20_netlist.py`), with its own checks: **written 2026-11-12**
+2. The netlist, from V2.0's, with its own checks: **written 2026-11-12**
    (`hardware/cards/video/kicad/v4.0/v40_netlist.py`; its checks pass and are in `make check`).
 3. The netlist simulated and timed with the parts' data-sheet numbers, as V3's was: **done 2026-11-12**
    (`tests/video/v40_netsim.py`, in `make check`; two changes to the circuit came of it: the netlist's README).
-4. Beside it: the emulators' model and the ROM driver: **done 2026-11-14** on the branch `video-v2` (the text
+4. Beside it: the emulators' model and the ROM driver: **done 2026-11-14** on the branch `video-v4` (the text
    driver; graphics open).
 5. The schematic and the board: **the schematic drawn, the board placed and routed 2026-11-12** (`gen_v40.py`,
    `build.sh`: all checks pass). **Reviewed 2026-11-13** (`hardware/cards/video/reviews/v4.0.md`: HIGH 0, MED 4,

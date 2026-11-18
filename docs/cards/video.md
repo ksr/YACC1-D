@@ -251,7 +251,8 @@ If it misbehaves:
 | v1.1 | KiCad master 2026-09-21 .. 2026-10-22 | design only, superseded | `+5V` folded into `VCC` with a joining track (proof 116/116, DRC clean) |
 | v1.2 | KiCad master 2026-10-22, superseded by v1.3 the same day | design only, not ordered | v1.1 plus every bench fix up to 2026-10-21: the 6845's RS on ADDR1, LPSTB to GND, R13/R14 4.7k pull-ups on N$16 (the latch's -OC) and N$5 (/A0), E straight from the strobe XOR (IC1 pin 2 to VCC; R1, C1 and the one-shot removed), IC28 a 74163, Q2 11.0592 MHz (`hardware/cards/video/kicad/v1.2/README.md`: proof 114/114, DRC 0 unconnected). The next revision (BACKLOG): the 6845 on I/O ports, PS/2, an IBM-monitor DB9, the graphics overlay and 8-dot characters |
 | v1.3 | KiCad master 2026-10-22, superseded by V2.0 the same day | design only, not ordered | v1.2 plus **6 or 8 dots a character by one jumper** (JP2 DOTS, R15 4.7k pull-up): IC28 loads 8 or 10 on its carry (divide by 8 or 6), CHARCLOCK = NOT RCO (IC19/C), IC24 loads all eight EPROM bits, DOTS on EPROM A10 (two fonts: `firmware/video/chargen-v13.bin`) and on latch input 1D (`$D801` bit 0; the latch's LE tied high), Q2 12 MHz: 80 x 24 (6 dots) or 64 x 24 (8 dots), both 15.75 kHz / 60 Hz. **A 4-layer board routed from scratch**: In1 GND plane, In2 VCC plane, power never routed, signals 0.25 mm / 0.2 mm, vias 0.8/0.4 (the memory card v2.0's rules), v1.2's outline and placement (`hardware/cards/video/kicad/v1.3/README.md`, `build.sh`: proof 116/116, DRC 0 unconnected). The 6-dot mode's 6845 clock is low for 167 ns at 12 MHz (MC6845 minimum 160 ns: a faster grade advised). Next: the ROM reads `$D801` bit 0 and picks its table |
-| V2.0 | KiCad master since 2026-10-22 | design only, not ordered | v1.3 plus a **graphics layer** (8-dot mode: 512 x 192, a time-shared 62256 behind the window $D800-$DFFF, two pages), the **6845 and every register on I/O ports PA-PE** (the JP1 latch and the memory-mapped 6845 gone), **two PS/2 ports** on an ATmega328P (`embedded/video-ps2`) with an INT jumper; 218 mm, 4 layers, schematic and board generated from `v20_netlist.py` ([the V2.0 page](video-v2.md), `hardware/cards/video/kicad/v2.0/README.md`) |
+| V2.0 | KiCad master 2026-10-22 .. 2026-11-12 | design only, never built; removed 2026-11-18 (the git history has it) | v1.3 plus a **graphics layer** (8-dot mode: 512 x 192, a time-shared 62256 behind the window $D800-$DFFF, two pages), the **6845 and every register on I/O ports PA-PE** (the JP1 latch and the memory-mapped 6845 gone), **two PS/2 ports** on an ATmega328P (`embedded/video-ps2`) with an INT jumper; 218 mm, 4 layers, schematic and board generated from `v20_netlist.py` (both removed 2026-11-18) |
+| V4.0 | KiCad master since 2026-11-12 | design only, on the next PCB order | the 6845 on VGA at 16 dots a count: 80 x 25 of 8 x 16, 640 x 400 graphics, registers on ports PA-PF, PS/2 keyboard and mouse; 250 mm, 4 layers ([video-v4.md](video-v4.md)) |
 
 The v1.1 board as KiCad renders it, populated (`hardware/cards/video/kicad/v1.1/video-v1.1.kicad_pcb`, rendered
 2026-10-27 by `tools/render_populated.py`, which gives each Eagle-converted part KiCad's standard 3D model in a copy of
@@ -272,10 +273,12 @@ the memory card's $D000 jumper set to RAM for a 36K TPA. Phase 4 of the plan pai
 controller behind the console vectors. The review items 6.2/6.3/6.5 (character clock, HC levels, LPSTB) and the
 crystal/C1 values belong in that redesign whichever interface it keeps.
 
-## 7a. Video card V2.0
+## 7a. The next video card: V4
 
-V2.0 (designed 2026-10-22, re-reviewed 2026-10-23, ready to order, not built) has its own page:
-[Video card V2.0 — theory of operation](video-v2.md).
+The card after V1 is the V4 (VGA, 80 x 25 characters of 8 x 16 dots, 640 x 400 graphics, registers on ports PA-PF,
+PS/2 keyboard and mouse), on its own page: [Video card V4](video-v4.md). Two designs came between and were never
+built: V2.0 (v1.3 plus a 512 x 192 graphics layer, the registers on ports, PS/2; designed 2026-10-22) and V3 (the
+HD63484 ACRTC on VGA, 2026-11-11). Both were removed on 2026-11-18; the git history has them.
 
 ## 8. Software: the ROM's driver and bring-up with the `V` command (2026-09-25)
 

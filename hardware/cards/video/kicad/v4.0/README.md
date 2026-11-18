@@ -31,8 +31,8 @@ The references are new (this card keeps none of V1.3's or V2.0's numbers); the P
 
 ## The simulation (2026-11-12; the hold margins and the counted addresses 2026-11-13)
 
-The simulator and the models of the 74F and 74ACT parts and of the 128K RAM are the V3 check's
-(`tests/video/v30_netsim.py`); added are the 74ACT157, the 74ACT244 with its enable times, the text RAM's display
+The simulator and the models of the 74F and 74ACT parts and of the 128K RAM are `tests/video/netsim.py` (first
+written for the V3 design's check); added are the 74ACT157, the 74ACT244 with its enable times, the text RAM's display
 port, the character generator, a 6845 that steps a script of counts and checks the clock it is given, and the bus
 as the microcode drives it, started at every phase of the dot counter. Eight corners: the 6845 slow or fast, the
 parts all slow or all fast, and the two mixed corners that set rising outputs against falling ones. A clock's
@@ -128,7 +128,7 @@ not rest on the parts' least delays: it would leave the load's set-up about 6 ns
 
 ## The schematic (2026-11-12)
 
-`gen_v40.py` (made from the V3 design's `gen_v30.py`, itself from the V2.0 card's; run it with KiCad's Python)
+`gen_v40.py` (made from the V3 and V2.0 designs' generators, in the git history; run it with KiCad's Python)
 draws the schematic from the netlist: `video-v4.0.kicad_sch`, the root, and eight sheets. KiCad's own netlist of it
 equals `v40_netlist.py` net for net (254 nets), and its electrical rules check finds nothing
 (`reports/netlist.net`, `reports/erc.json`, `reports/video-v4.0-schematic.pdf`).
