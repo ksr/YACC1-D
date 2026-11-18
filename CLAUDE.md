@@ -96,6 +96,11 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
     Never obscured by any fitted part (chip, socket, module, standoff, adapter, cable): the card can be stuffed from
     the silk alone.
   - Every switch, button and LED carries its function on the silk, and each position of a switch is labelled.
+  - **All silk text reads upright, left to right, with the card standing in the backplane connector down** (Ken,
+    2026-11-18, all boards on all systems, unless he says otherwise for a board or a text). YACC1 cards are drawn
+    with the DIN 96 on the left, so that is KiCad angle 270 for every text (0 reads up the card, 90 upside down);
+    the board's name, revision and `cottageworker.com` may also run up a side edge (angle 0 along the top or bottom
+    edge as drawn). Example of the problem: System-5's MEM3-E, drawn to be read lying flat.
   - `cottageworker.com` on the silk beside the board's name and revision (Ken, 2026-10-26), replacing
     `onepagecomputer.com`. Video V2.0 has it. Existing boards keep `onepagecomputer.com`, including the
     never-ordered blank card V3.2, CF v1.0 and bus tester V3.1 (Ken, 2026-10-27: the rule only, no board edits);
