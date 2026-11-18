@@ -9,8 +9,8 @@
       --faults  also breaks the netlist in memory, one wiring fault at a time, and reports whether the runs notice
 
 hardware/cards/video/kicad/v4.0/v40_netlist.py is simulated gate for gate, with delays in nanoseconds. The simulator
-and the models of the parts both designs use (the 74F and 74ACT parts, the 128K RAM) are the V3 check's
-(tests/video/v30_netsim.py, imported here); added are the 74ACT157, the 74ACT244 with its enable times, the 74S85,
+and the models of the shared parts (the 74F and 74ACT parts, the 128K RAM) are tests/video/netsim.py's (first written
+for the V3 design's check); added here are the 74ACT157, the 74ACT244 with its enable times, the 74S85,
 the text RAM's display port, the character generator, and the two test benches:
 
   the 6845      a model of its display side: at every falling edge of the clock the card gives it, it puts out the
@@ -20,12 +20,12 @@ the text RAM's display port, the character generator, and the two test benches:
                 strobe one step, both held a step after. A read: -MEM-RD and the address early in a step, the byte
                 taken at the step's end (25 ns before it: the backplane and the slowest destination's set-up). An
                 OUT: the port number and the data two steps before -IO-WR, a step after. These are what
-                tests/video/v20_timing.py (checks 1-3) and v30_netsim.py's records() read out of test.hex; the
-                address's and the strobes' delays from the step's edge are v20_timing.py's (register selected, 85 C).
+                tests/video/bus_records.py reads out of test.hex; the address's and the strobes' delays from the
+                step's edge are the V2.0 design's direct-mode budget (register selected, 85 C; in the git history).
                 The bus operations start at every phase of the dot counter.
 
 The delays are the parts' data-sheet figures, minimum and maximum, a rising and a falling output apart; every run is
-repeated at the corners of the V3 check: the 6845 slow or fast, the card's parts all slow or all fast, and the two
+repeated at netsim.py's corners: the 6845 slow or fast, the card's parts all slow or all fast, and the two
 mixed corners that set a part's rising outputs against its falling ones (what shows a runt pulse on a clock).
 
 What is checked:
@@ -57,7 +57,7 @@ import os, sys, io, copy, heapq, contextlib, importlib.util
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, HERE)
-import v30_netsim as E                                              # noqa: E402  the simulator and the shared models
+import netsim as E                                                  # noqa: E402  the simulator and the shared models
 spec = importlib.util.spec_from_file_location("v40_netlist", os.path.join(ROOT, "hardware/cards/video/kicad/v4.0/v40_netlist.py"))
 N = importlib.util.module_from_spec(spec); spec.loader.exec_module(N)
 E.N = N                                                             # the simulator wires what this netlist says
@@ -65,10 +65,10 @@ VERBOSE = E.VERBOSE
 DOT = E.DOT
 COUNT = 16 * DOT
 
-# ---- delays added to the V3 check's tables: (tPLH min, max, tPHL min, max) ns ----------------------------------------
+# ---- delays added to netsim.py's tables: (tPLH min, max, tPHL min, max) ns ----------------------------------------
 # TI CD74ACT157 (SCHS340D), 5 V +- 0.5 V, 50 pF, -40..85 C: A / B to Y 2.5-8.6, select to Y 3.8-13.2.
 # TI SN74ACT244 (SCAS517G), -40..85 C: A to Y 1.5-10, enable 1-10.5, disable 1.5-10.5.
-# The bus side's parts see only the bus's strobes; their figures are the ones tests/video/v20_timing.py uses (TI 74LS,
+# The bus side's parts see only the bus's strobes; their figures are the ones the V2.0 design's budget used (TI 74LS,
 # NXP 74HCT at 85 C, the 74S85), with small minimums.
 E.TPD.update({("ACT", "157"): (2.5, 8.6, 2.5, 8.6), ("ACT", "244"): (1.5, 10.0, 1.5, 10.0),
               ("HCT", "04"): (4.0, 30.0, 4.0, 30.0), ("HCT", "08"): (4.0, 30.0, 4.0, 30.0), ("HCT", "244"): (4.0, 31.0, 4.0, 31.0),
@@ -94,7 +94,7 @@ CHARGEN = {"acc": (20.0, 150.0), "oh": (0.0, 0.0)}
 D6845_MAX = {"ma": 160.0, "ra": 160.0, "de": 250.0, "cur": 250.0, "hs": 250.0, "vs": 250.0}
 D6845_MIN = {"ma": 20.0, "ra": 20.0, "de": 20.0, "cur": 20.0, "hs": 20.0, "vs": 20.0}
 PWCL, PWCH = 150.0, 150.0
-# The machine's bus (tests/video/v20_timing.py: the sequencer's pipeline register 28 ns, a register's address on the
+# The machine's bus (the V2.0 design's budget: the sequencer's pipeline register 28 ns, a register's address on the
 # bus through a 74LS139 and a 74HC244's enable 104 ns at 25 C, 114 at 85 C; the byte wanted 25 ns before the step ends)
 BUS_SLOW = {"strobe": 28.0, "addr": 114.0, "take": 25.0}
 BUS_FAST = {"strobe": 8.0, "addr": 35.0, "take": 25.0}
@@ -105,8 +105,8 @@ SERIES = (0.3, 2.0)                                                 # a clock's 
                                                                     # 40 to 60 pF and the wire behind it: one delay, ns
 BUS_COUNTED = (218.0, 256.0)                                        # the address of a one-step read whose register was
                                                                     # counted in the step before (RET, POPR, BRVR's vector):
-                                                                    # within the window, and into it (v20_timing.py, 85 C)
-PS2 = ["IC%d" % n for n in range(41, 47)]                          # not simulated (V2.0's section, proved there)
+                                                                    # within the window, and into it (the V2.0 budget, 85 C)
+PS2 = ["IC%d" % n for n in range(41, 47)]                          # not simulated (the PS/2 section: its own ATmega, not timed here)
 WATCH = ("TDOT", "GDOT", "VR", "VG", "VB", "HSB", "VSB")
 
 
@@ -239,7 +239,7 @@ E.EDGE_PINS["crtc"] = (21,)
 
 
 class Sim(E.Sim):
-    """the V3 check's simulator, with the inputs that are asynchronous by design left out of the set-up checks:
+    """netsim.py's simulator, with the inputs that are asynchronous by design left out of the set-up checks:
     IC34/A's D (WRQ takes the CPU's write strobe: a synchronizer, with a whole dot before its output is used); the
     read latch IC30's D (the CPU's address may move in a slot: that slot's byte is not the one taken, and the read
     checks below time the one that is); the byte latch IC32's D in direct mode and in a count whose DE is low (what

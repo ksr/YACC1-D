@@ -7,8 +7,7 @@ clock, 80 x 25 characters of 8 x 16 dots from the V2.0 card's dual-port text RAM
 static RAM behind the window $D800-$DFFF, two control registers (OUT PC, OUT PF), the card status (IN PC) and the PS/2
 keyboard and mouse section of the V2.0 card on ports PD / PE. The design note is docs/cards/video-v4.md: section 5
 the clock, the stage and one count dot by dot, 6 the text, 7 the graphics RAM's two modes, 8 the dot path, 9 the ports.
-Plain Python data, no KiCad import; the generator for the schematic and the board (as V2.0's gen_v20.py reads
-v20_netlist.py) is still to be written.
+Plain Python data, no KiCad import; gen_v40.py reads it for the schematic and the board.
 
 NOT A BOARD YET. check() below proves the wiring is complete (every pin on a net or listed as open, no net with one
 pin, no two outputs on a net, the text-only build). tests/video/v40_netsim.py runs this netlist as a circuit with the

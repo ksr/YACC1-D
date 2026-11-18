@@ -8,43 +8,31 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
 
 ## Standing rules (Ken's)
 
-- **Commit to `main`** (or to `video-v2` for the video card V2.0's work, below; `video-v3` is frozen) with conventional commits (`feat:`, `fix:`,
+- **Commit to `main`** (or to `video-v4` for the video card V4's work, below) with conventional commits (`feat:`, `fix:`,
   `docs:`, `chore:`, `test:`…) and **push after each commit**. No other branches, and no PRs, unless Ken asks. Stage explicit paths (never `git add -A` / `git add .`): other work
   may be in the tree. End every commit message with the co-author line the session's attribution instructions give.
-- **Two lines of development (Ken, 2026-11-10).** `main` is the YACC1 as built, with the video card V1.0: its ROM,
-  BIOS, Y1/OS, BASIC and emulators are what runs on the machine today. The branch **`video-v2`** is the YACC1 with the
-  video card V2.0 (registers on I/O ports PA-PE, graphics window $D800-$DFFF, PS/2 keyboard and mouse): its ROM
-  driver, BIOS console, Y1/OS, BASIC and the emulators' V2.0 card model.
-  - What goes where: V1 work, and everything shared - card designs (the V2.0 board itself included), the compiler,
-    tools, tests and docs that are not V2-only - on `main`; V2-only software on `video-v2`. A fix that both need goes
+- **Two lines of development (Ken, 2026-11-10; the second renamed 2026-11-18).** `main` is the YACC1 as built, with the
+  video card V1.0: its ROM, BIOS, Y1/OS, BASIC and emulators are what runs on the machine today. The branch
+  **`video-v4`** is the YACC1 with the video card V4 (`docs/cards/video-v4.md`: the 6845 on VGA, 80 x 25 of 8 x 16,
+  640 x 400 graphics, registers on I/O ports PA-PF, graphics window $D800-$DFFF, PS/2 keyboard and mouse): its ROM
+  driver, BIOS console, Y1/OS, BASIC and the emulators' V4 card model.
+  - What goes where: V1 work, and everything shared - card designs (the V4 board itself included), the compiler,
+    tools, tests and docs that are not V4-only - on `main`; V4-only software on `video-v4`. A fix that both need goes
     on `main` first.
-  - Bring `main` into `video-v2` often, by merging (`git merge main` on `video-v2`; never rebase it: both Macs push
-    it). `video-v2` is merged into `main` when the V2.0 card runs in the machine.
-  - Side by side on one Mac, as a second worktree: `git worktree add ~/Developer/YACC1-D-v2 video-v2` (once per Mac).
+  - Bring `main` into `video-v4` often, by merging (`git merge main` on `video-v4`; never rebase it: both Macs push
+    it). `video-v4` is merged into `main` when the V4 card runs in the machine.
+  - Side by side on one Mac, as a second worktree: `git worktree add ~/Developer/YACC1-D-v4 video-v4` (once per Mac).
     Each worktree has its own builds (`make` there: the emulators, `os/disk.img`, `rom.bin`) and its own `make
-    check`. Hardware steps (ROM burn, microcode, bench, CF card) are from `main` until the V2.0 card is in the machine.
-  - Syncing YACC1-D means both branches, `main` and `video-v2` (not the frozen `video-v3`, below). The website
-    publishes from `main` only.
-  - **The video card to build is the V4 (Ken, 2026-11-14); V2.0 will not be built (Ken, 2026-11-17).** The V4
-    (`docs/cards/video-v4.md`: the 6845 on VGA, 80 x 25 of 8 x 16, 640 x 400 graphics; registers on PA-PF) is the
-    card to be ordered and built, alone. V2.0 was never ordered and will not be built: its design stays on file as
-    it stood (`hardware/cards/video/kicad/v2.0`) - do not change its design files, do not delete them, do not order
-    from them, and it is no board for `pcb-check`. `video-v2` is now the V4's line. It still carries V2.0's software
-    as well - `monitor.asm` as it stands assembles to the V2.0 ROM, and `tools/monvariant.py v4` makes the V4 ROM
-    from the same source - and making the branch the V4's alone is open work (`BACKLOG.md`, the V2.0 entry): ask Ken
-    before taking V2.0's software out. Above, "the video card V2.0's work", "when the V2.0 card runs in the
-    machine" and "until the V2.0 card is in the machine" now mean the V4 card.
-  - **A third line, `video-v3`: FROZEN (Ken, 2026-11-12).** It was the YACC1 with the video card V3 (the HD63484
-    ACRTC, VGA: `docs/cards/video-v3.md`), begun 2026-11-11: made from `video-v2` with everything of it, its ROM
-    driving the V3 card (the V2.0 ROM stays on `video-v2`) and its emulators' card the V3 unless `Y1VID_CARD` says
-    otherwise. **The V3 card will not be built for the YACC1**; its design is the basis of another machine's video
-    card (`docs/cards/video-v3.md` section 13 is the handover; the card's design files are on `main` like every
-    card's, the chip's emulator model on `video-v2`). The branch is kept on GitHub as reference - its ROM is the
-    only driver written for the chip - and nothing more goes into it: no commits, no merges from `main` or
-    `video-v2` (the merge that brought this note was the last), and it is not part of syncing. Do not delete it.
-    To read it on a Mac without its worktree: `git worktree add ~/Developer/YACC1-D-v3 video-v3`, or
-    `git show origin/video-v3:<path>`. No further V3 work here - no board, no ROM or model work - unless Ken asks.
-    The chip's manual and application note are in `../private-resources/YACC1-D/docs/datasheets/`.
+    check`. Hardware steps (ROM burn, microcode, bench, CF card) are from `main` until the V4 card is in the machine.
+  - Syncing YACC1-D means both branches, `main` and `video-v4`. The website publishes from `main` only.
+  - **The V4 is the only next video card (Ken, 2026-11-14 and 17).** The V2.0 (TV rate, 512 x 192 graphics) and V3
+    (the HD63484 ACRTC) designs were never built and were **removed on 2026-11-18** (Ken: "they will never be
+    built"): their files on `main`, V2.0's software on the V4 line, and the branch `video-v3` (deleted). The branch
+    `video-v2` became `video-v4` the same day; a Mac with the old `YACC1-D-v2` worktree removes it and adds the
+    `video-v4` one. The git history before 2026-11-18 has both designs; V3's design, its emulator model and its ROM
+    driver are kept in `../private-resources/YACC1-D/video-v3/` as the start of another machine's video card (with
+    the chip's manual and application note in `../private-resources/YACC1-D/docs/datasheets/`). Do not bring V2.0
+    or V3 back unless Ken asks.
 - **Never modify `~/Documents/YACCS`** (the historical archive the tree was migrated from; it only exists on Ken's
   first Mac and the repo does not need it).
 - **Migrated files** (sources that came from YACCS, e.g. `software/emulator/main.c`, `software/assembler/*`,
@@ -96,8 +84,13 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
     Never obscured by any fitted part (chip, socket, module, standoff, adapter, cable): the card can be stuffed from
     the silk alone.
   - Every switch, button and LED carries its function on the silk, and each position of a switch is labelled.
+  - **All silk text reads upright, left to right, with the card standing in the backplane connector down** (Ken,
+    2026-11-18, all boards on all systems, unless he says otherwise for a board or a text). YACC1 cards are drawn
+    with the DIN 96 on the left, so that is KiCad angle 270 for every text (0 reads up the card, 90 upside down);
+    the board's name, revision and `cottageworker.com` may also run up a side edge (angle 0 along the top or bottom
+    edge as drawn). Example of the problem: System-5's MEM3-E, drawn to be read lying flat.
   - `cottageworker.com` on the silk beside the board's name and revision (Ken, 2026-10-26), replacing
-    `onepagecomputer.com`. Video V2.0 has it. Existing boards keep `onepagecomputer.com`, including the
+    `onepagecomputer.com`. Video V4.0 has it. Existing boards keep `onepagecomputer.com`, including the
     never-ordered blank card V3.2, CF v1.0 and bus tester V3.1 (Ken, 2026-10-27: the rule only, no board edits);
     they get the new URL when next revised.
 
@@ -108,8 +101,7 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
     memory card v2.0 (ordered 2026-10-09). Leave those as they are.
   - They apply to all future YACC1 board work.
   - When it is not clear whether a board counts as built/ordered or as future work, ask Ken before applying them.
-  - The video card V2.0 (not ordered) follows them: settled 2026-10-24, as silk changes only, with J4 (the FTDI
-    header) left where it is.
+  - The video card V4.0 (not ordered) follows them from the start, silk at 270 included (2026-11-18).
 
 ## Machine facts that bite
 
@@ -189,7 +181,7 @@ Claude's conversation history and memory stay on the Mac where they happened; th
 one Mac's session learns what the other did. So, without being asked:
 
 - **At the start of a session**: `git fetch` and `git status` (in the worktree of the line being worked on;
-  `main` and `video-v2` are checked the same way; the frozen `video-v3` is not). If the tree is behind and clean, `git pull --ff-only`;
+  `main` and `video-v4` are checked the same way). If the tree is behind and clean, `git pull --ff-only`;
   if it has uncommitted changes or has diverged, stop and tell Ken before touching anything. Then summarize for Ken
   the commits that arrived (`git log` of the new range, subjects plus anything the messages leave open), and read
   `BACKLOG.md` for the open items those commits touch, before starting on his request.

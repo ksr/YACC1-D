@@ -54,4 +54,4 @@ Generated 2026-09-23 by `tools/eagle_to_kicad_all.py`: every Eagle design under 
 - [`cards/video/kicad/v1.1`](cards/video/kicad/v1.1/) — see its README (superseded by v1.2)
 - [`cards/video/kicad/v1.2`](cards/video/kicad/v1.2/) — see its README (v1.1 + the bench fixes; superseded by v1.3)
 - [`cards/video/kicad/v1.3`](cards/video/kicad/v1.3/) — see its README (6 or 8 dots a character by the DOTS jumper; 4 layers, GND/VCC planes, routed from scratch by `build.sh`; superseded by V2.0; NOT ORDERED)
-- [`cards/video/kicad/v2.0`](cards/video/kicad/v2.0/) — see its README (the master since 2026-10-22: v1.3 + graphics layer, registers on I/O ports, two PS/2 ports; generated from `v20_netlist.py` by `build.sh`; NOT ORDERED)
+- [`cards/video/kicad/v4.0`](cards/video/kicad/v4.0/) — see its README (the master since 2026-11-12: the 6845 on VGA, 640 x 400 graphics, registers on I/O ports PA-PF, two PS/2 ports; generated from `v40_netlist.py` by `build.sh`; NOT ORDERED, on the next PCB order). The V2.0 and V3 designs before it were removed on 2026-11-18 (git history)

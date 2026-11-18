@@ -15,9 +15,8 @@
 #                   the ROM's video unit and Y1/OS's video command on both emulators' card model (tests/video/emu.py),
 #                   the video card at gate level (y1ucemu -G) against that model and without each bench rework (tests/video/gate.py),
 #                   the proposed graphics overlay's model in vidsim (tests/video/overlay_check.py),
-#                   the video card V2.0's direct mode against the microcode's strobe timing (tests/video/v20_timing.py),
+#                   the microcode's memory and I/O strobes as the video card's timing check assumes them (tests/video/bus_records.py),
 #                   the video card V4's model and its ROM in both emulators (tests/video/v40/run.py),
-#                   the clock and register figures of the ACRTC design note, docs/cards/video-v3.md (tools/acrtc_timing.py --check),
 #                   the video card V4's netlist: every pin accounted for, the text-only build (hardware/cards/video/kicad/v4.0/v40_netlist.py),
 #                   and run as a circuit with the parts' data-sheet delays at eight corners (tests/video/v40_netsim.py),
 #                   Kermit transfers between /BIN/KERMIT and tools/y1kermit.py over a pty on both emulators (tests/kermit/run.py)
@@ -82,12 +81,10 @@ check:
 	python3 tests/video/asm/run.py
 	python3 tests/video/gate.py
 	python3 tests/video/overlay_check.py
-	python3 tests/video/v20_timing.py
+	python3 tests/video/bus_records.py
 	python3 tests/video/v40/run.py
-	python3 tests/video/v30_netsim.py
 	python3 hardware/cards/video/kicad/v4.0/v40_netlist.py
 	python3 tests/video/v40_netsim.py
-	python3 tools/acrtc_timing.py --check
 	python3 tests/sequencer/run.py
 	python3 tests/assembler/romcount/run.py
 	python3 tests/assembler/romdiag/run.py

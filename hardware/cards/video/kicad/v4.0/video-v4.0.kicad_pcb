@@ -103,7 +103,8 @@
 		(descr "CP, Radial series, Radial, pin pitch=2.50mm, diameter=6.3mm, height=7mm, Electrolytic Capacitor")
 		(tags "CP Radial series Radial pin pitch 2.50mm diameter 6.3mm height 7mm Electrolytic Capacitor")
 		(property "Reference" "C1"
-			(at 6.069285 -3.228629 0)
+			(at 5.309819 -3.115476 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "7df8fa4a-02b1-46c3-881f-81f5e6789ba5")
 			(effects
@@ -1624,7 +1625,8 @@
 		(descr "Through hole straight pin header, 1x02, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x02 2.54mm single row")
 		(property "Reference" "JP1"
-			(at -8.731664 -1.68482 0)
+			(at -2.26018 -1.13119 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "a2270353-cabc-480d-a7bc-ec5830f0334d")
 			(effects
@@ -1852,7 +1854,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R15"
-			(at 5.425475 -2.25018 90)
+			(at 2.194524 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "2318284a-7b9b-42a9-9323-bcdbf92c74e9")
 			(effects
@@ -2061,7 +2064,8 @@
 		(descr "16-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC27"
-			(at -0.210238 -2.829819 0)
+			(at -2.3678 4.869762 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "ea505c3c-9d62-4971-badc-eee26be9453d")
 			(effects
@@ -2423,7 +2427,8 @@
 		(descr "28-lead though-hole mounted DIP package, row spacing 15.24mm (600 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 15.24mm 600mil")
 		(property "Reference" "IC18"
-			(at 2.028334 -2.829819 0)
+			(at 17.469818 10.918334 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "7f3eca0e-c6c1-43f0-a84e-9b7ad6d02567")
 			(effects
@@ -2893,7 +2898,8 @@
 		(descr "40-lead though-hole mounted DIP package, row spacing 15.24mm (600 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 15.24mm 600mil")
 		(property "Reference" "IC10"
-			(at -2.28119 -3.067914 0)
+			(at 17.707914 14.228809 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "480e6667-c3fa-4bfc-a781-0882f43589c2")
 			(effects
@@ -3471,7 +3477,8 @@
 		(descr "20-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC19"
-			(at 0.718334 -2.829819 0)
+			(at 9.849818 8.338334 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "e6508003-baa2-4046-8934-df48e26bc8e3")
 			(effects
@@ -3869,7 +3876,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C36"
-			(at 4.341666 -2.25018 90)
+			(at -0.841666 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "78d9ef58-7301-47f8-bed5-85a55f10c079")
 			(effects
@@ -4038,7 +4046,8 @@
 		(descr "16-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC25"
-			(at -0.186429 -2.82982 0)
+			(at -2.3678 6.393572 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "5906d093-6cc4-4e8b-8d0d-ee4c6f0e2d9a")
 			(effects
@@ -4400,7 +4409,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R16"
-			(at 6.16357 2.159819 90)
+			(at 6.31 2.25018 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "17e43b9a-dcae-47dd-a841-a6cddc984d20")
 			(effects
@@ -4609,7 +4619,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C40"
-			(at 4.341666 -2.2978 90)
+			(at -0.841666 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "9b4d673c-3049-4b42-a04e-65d3ea109765")
 			(effects
@@ -4778,7 +4789,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C14"
-			(at -3.395476 -0.318991 90)
+			(at -0.865476 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "af7a1dfc-90ae-4652-a2c5-f5561d868d26")
 			(effects
@@ -4947,7 +4959,8 @@
 		(descr "16-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC26"
-			(at -0.186429 -2.82982 0)
+			(at 9.849819 5.893571 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "8f35241b-026e-4ba1-a9ba-c6e766bb0357")
 			(effects
@@ -5309,7 +5322,8 @@
 		(descr "32-lead though-hole mounted DIP package, row spacing 15.24mm (600 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 15.24mm 600mil")
 		(property "Reference" "IC28"
-			(at 0.456905 -2.829819 0)
+			(at -2.32018 27.386905 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "233eab02-a8ef-457c-a5d8-6cfa8a9046e1")
 			(effects
@@ -5815,7 +5829,8 @@
 		(descr "16-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC1"
-			(at 1.146905 -2.829819 0)
+			(at 9.849819 6.226904 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "56bbff70-fc02-4dd4-be5d-1836d610241c")
 			(effects
@@ -6177,7 +6192,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC4"
-			(at 0.718333 -2.82982 0)
+			(at 9.849819 5.528333 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "fd28f3b9-a5e5-4616-9e7c-d5265d28ff48")
 			(effects
@@ -6521,7 +6537,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C8"
-			(at 3.841666 -2.250179 90)
+			(at -0.841667 -2.159818 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "8dba4a31-164e-4c56-88fa-e8b9dee80b88")
 			(effects
@@ -6690,7 +6707,8 @@
 		(descr "20-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC32"
-			(at -0.186428 -2.829819 0)
+			(at 9.849819 7.433571 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "676f862d-c9af-4871-bfd2-3d5b1add52c1")
 			(effects
@@ -7088,7 +7106,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C50"
-			(at 2.913094 -2.250179 90)
+			(at -0.413095 -2.493152 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "38dd7182-f386-483e-86b5-2104d670c2cf")
 			(effects
@@ -7257,7 +7276,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C46"
-			(at 3.341666 -2.297799 90)
+			(at -0.841666 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "b0e01141-2547-4c61-a7e6-87a6c50da60c")
 			(effects
@@ -7426,7 +7446,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R5"
-			(at 10.333094 -0.728629 0)
+			(at -1.6678 -2.186905 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "e8f88610-0070-4537-b767-5063da68b592")
 			(effects
@@ -7635,7 +7656,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC40"
-			(at 0.194524 -2.829819 0)
+			(at 9.849819 6.004524 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "c8609915-d62e-4f3e-8698-050688033760")
 			(effects
@@ -7979,7 +8001,8 @@
 		(descr "20-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC33"
-			(at 0.718334 -2.82982 0)
+			(at 9.849818 16.338333 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "cc9c6730-8d5e-46c1-890c-0c422c8b033f")
 			(effects
@@ -8377,7 +8400,8 @@
 		(descr "16-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC11"
-			(at 0.242143 -2.829819 0)
+			(at -2.3678 -2.677857 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "ae46ac71-c0c4-473e-83b1-9cba4a2f4dec")
 			(effects
@@ -8739,7 +8763,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R13"
-			(at 0.833809 3.659818 90)
+			(at 1.78619 2.25018 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "2b88fd45-9605-4109-862d-c25e022afcb9")
 			(effects
@@ -8948,7 +8973,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC46"
-			(at 1.623096 -2.829819 0)
+			(at 9.849819 5.933096 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "3f81254b-029e-4e45-93db-07ff9a312ada")
 			(effects
@@ -9292,7 +9318,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C20"
-			(at -3.395476 -0.295181 90)
+			(at -0.841666 -2.159818 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "ef791134-1d06-4ea0-b5ae-373451ab955f")
 			(effects
@@ -9461,7 +9488,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=10.16mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 10.16mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R1"
-			(at 6.790714 -2.25018 0)
+			(at 4.375181 2.943095 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "7e2a9229-f8e8-4879-9165-fa4cd1a8ba30")
 			(effects
@@ -9641,7 +9669,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C11"
-			(at -0.841666 -2.159819 90)
+			(at 5.847858 -0.295182 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "9863698e-37bb-4208-8495-8ee176f7d928")
 			(effects
@@ -9810,7 +9839,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC38"
-			(at 0.313572 -2.829819 0)
+			(at 9.849819 5.623572 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "98878d89-4a5a-4970-92de-d212dc839b37")
 			(effects
@@ -10154,7 +10184,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R9"
-			(at 5.425476 -2.25018 90)
+			(at 2.194524 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "c3691129-0a98-4f46-93eb-de6e2d0df039")
 			(effects
@@ -10363,7 +10394,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C38"
-			(at 4.341665 -2.25018 90)
+			(at -0.841667 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "144e3eff-8b87-4cfe-82f1-d7b5a765edae")
 			(effects
@@ -10532,7 +10564,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC22"
-			(at 0.313572 -2.82982 0)
+			(at 9.849819 5.623571 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "16797e0c-e646-4377-aa2e-ab0e56e0b4ac")
 			(effects
@@ -10876,7 +10909,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C30"
-			(at 4.341666 -2.25018 90)
+			(at -0.841666 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "79cf0896-7976-4f48-9aba-232982ef9544")
 			(effects
@@ -11045,7 +11079,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C44"
-			(at 2.865475 -2.297799 90)
+			(at -1.365476 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "f09ed1d7-3d7c-422c-929e-d45bfd75cdfb")
 			(effects
@@ -11214,7 +11249,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C31"
-			(at 4.341665 -2.25018 90)
+			(at -0.841667 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "f663b194-806c-4692-bb0b-86aaf589a92d")
 			(effects
@@ -11383,7 +11419,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C24"
-			(at 3.365475 -2.2978 90)
+			(at -0.865476 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "d2434c9c-e5f8-4c0c-b6c9-0b58cd593e01")
 			(effects
@@ -11552,7 +11589,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C45"
-			(at 3.341666 -2.297799 90)
+			(at -0.841666 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "5a389e04-22bb-47e0-b51b-146d6ee423a0")
 			(effects
@@ -11721,7 +11759,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C48"
-			(at 3.341666 2.15982 90)
+			(at -0.841666 2.297801 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "4c1a769a-b05b-4817-8d7c-0753290fbc77")
 			(effects
@@ -11890,7 +11929,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R22"
-			(at 5.044523 -2.25018 90)
+			(at 2.575477 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "1a388a97-32e0-4bed-babd-d728de9fbfd8")
 			(effects
@@ -12099,7 +12139,8 @@
 		(descr "5-pin Resistor SIP pack")
 		(tags "R")
 		(property "Reference" "RN1"
-			(at 3.678809 -2.499819 0)
+			(at 14.247438 -1.02381 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "5555f68a-01cc-46b5-aa06-10d888c72971")
 			(effects
@@ -12286,7 +12327,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C26"
-			(at 3.341665 -2.25018 90)
+			(at -0.841667 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "0bb25560-3097-435a-8756-97b9f4b6fd45")
 			(effects
@@ -12455,7 +12497,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC35"
-			(at 1.170715 -2.829819 0)
+			(at 9.849819 5.980714 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "92fda5f4-e17c-4493-a06d-c122cada330c")
 			(effects
@@ -12799,7 +12842,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C27"
-			(at 3.365475 -2.25018 90)
+			(at 5.466904 -1.454819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "14205c0d-e425-47ed-badc-39e98a6772df")
 			(effects
@@ -12968,7 +13012,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C15"
-			(at -0.841666 -2.55982 90)
+			(at 3.341666 -2.65018 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "2d62335a-1917-47a7-a7da-f43a62ac7963")
 			(effects
@@ -13136,7 +13181,7 @@
 		(at 20.287 66.845 180)
 		(descr "CONNECTOR\n\nfemale, 96 pins, type R, rows ABC, grid 2.54 mm")
 		(property "Reference" "X1"
-			(at -9.2498 14.836956 90)
+			(at -9.511819 25.163145 270)
 			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "6ba012ab-eb35-4268-a3a4-5caecafa9eb7")
@@ -13148,7 +13193,7 @@
 			)
 		)
 		(property "Value" "DIN41612 96"
-			(at -9.2498 21.186954 90)
+			(at -9.511819 18.813147 270)
 			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "2f489dd9-a3fa-47ca-8dda-983669740941")
@@ -13913,6 +13958,7 @@
 		)
 		(fp_text user "DIN41612-R"
 			(at 8.255 -22.86 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "d37bbd20-b23c-4549-9e7a-b30f87d58cc4")
 			(effects
@@ -13925,6 +13971,7 @@
 		)
 		(fp_text user "32"
 			(at 0 40.005 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "f5cddb29-9317-45b9-9c64-cc3b2b4d8c16")
 			(effects
@@ -13937,6 +13984,7 @@
 		)
 		(fp_text user "1"
 			(at 0 -39.116 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "c61bda0a-0c32-4729-89f7-143227897d24")
 			(effects
@@ -13948,7 +13996,8 @@
 			)
 		)
 		(fp_text user "a"
-			(at -3.048 -40.64 180)
+			(at -3.048 -40.64 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "d0610d8d-9df7-42e1-8fc0-c6559b1e8746")
 			(effects
@@ -13960,7 +14009,8 @@
 			)
 		)
 		(fp_text user "b"
-			(at -5.588 -40.64 180)
+			(at -5.588 -40.64 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "30f3caf0-44f9-4671-80ff-35e30147f7eb")
 			(effects
@@ -13972,7 +14022,8 @@
 			)
 		)
 		(fp_text user "c"
-			(at -8.128 -40.64 180)
+			(at -8.128 -40.64 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "1259a54e-3c33-4298-8e60-491d035f7f90")
 			(effects
@@ -15586,7 +15637,8 @@
 		(descr "9-pin Resistor SIP pack")
 		(tags "R")
 		(property "Reference" "RN2"
-			(at 11.53738 -2.19018 90)
+			(at 23.666903 0.545181 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "5170b978-c219-4e0d-be8b-5eac905baa78")
 			(effects
@@ -15809,7 +15861,8 @@
 		(descr "20-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC7"
-			(at 0.218333 -2.829819 0)
+			(at 9.849818 15.838333 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "9180d53f-26c6-45c7-b4fb-0025646a26b1")
 			(effects
@@ -16207,7 +16260,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R6"
-			(at -1.860714 -1.704819 0)
+			(at 9.549819 -2.210714 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "f440ab0d-ee36-4e1a-8dd0-abc3953a98b4")
 			(effects
@@ -16416,7 +16470,8 @@
 		(descr "20-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC15"
-			(at -0.186429 -2.82982 0)
+			(at 9.849819 7.433571 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "48939bd1-96bf-4e34-b88e-123018e077b7")
 			(effects
@@ -16814,7 +16869,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C49"
-			(at 3.841666 2.159819 90)
+			(at 5.466904 -0.931009 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "e1f75661-7b02-419b-8357-768246e3498b")
 			(effects
@@ -16983,7 +17039,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC3"
-			(at 0.742143 -2.82982 0)
+			(at 9.849819 5.552143 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "b6a3a8ef-eba3-4f97-b853-123d39cc4f6f")
 			(effects
@@ -17327,7 +17384,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC37"
-			(at 0.289762 -2.82982 0)
+			(at 9.849819 6.099762 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "7f29f396-c0c6-445c-8803-91cd996c4ad9")
 			(effects
@@ -17671,7 +17729,8 @@
 		(descr "PTC Resettable Fuse, Ihold = 0.5A, Itrip=0.92A, http://www.bourns.com/docs/product-datasheets/mfrht.pdf")
 		(tags "ptc resettable fuse polyfuse THT")
 		(property "Reference" "F1"
-			(at 5.09518 -2.001667 90)
+			(at -2.13018 -1.824999 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "869b67e8-65c2-4e4b-9e7e-b0ebb39849d8")
 			(effects
@@ -17860,7 +17919,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C10"
-			(at 4.341666 -2.250179 90)
+			(at -0.841666 -2.159818 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "539d3d88-4872-4c04-9e50-6ce7a8314347")
 			(effects
@@ -18029,7 +18089,8 @@
 		(descr "20-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC16"
-			(at -0.186429 -2.829819 0)
+			(at 9.849819 15.933571 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "3aa25d02-ca10-4943-a365-8cbf2d86cdd1")
 			(effects
@@ -18427,7 +18488,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C21"
-			(at 3.341666 -2.65018 90)
+			(at -0.841666 -2.559819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "a178863f-9b85-4cdc-b9f4-012d8e0228df")
 			(effects
@@ -18596,7 +18658,8 @@
 		(descr "16-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC24"
-			(at -0.210238 -2.829819 0)
+			(at 9.849819 5.869762 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "038f19ac-ff79-489f-b269-d39d5ec790e1")
 			(effects
@@ -18958,7 +19021,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC23"
-			(at 0.313572 -2.82982 0)
+			(at 9.849819 5.623571 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "a76f6960-c9ef-40b2-92fe-866b120eace8")
 			(effects
@@ -19302,7 +19366,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C18"
-			(at 3.341665 -2.25018 90)
+			(at -3.347858 -1.704818 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "5cba88bb-86c5-4af5-a8fa-06fa3f36d23c")
 			(effects
@@ -19471,7 +19536,8 @@
 		(descr "20-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC5"
-			(at -0.257858 -2.829819 0)
+			(at 9.849818 7.362143 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "4d65ff2b-6a6a-4c27-8973-0c1258dc0484")
 			(effects
@@ -19869,7 +19935,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C22"
-			(at 4.341666 -2.25018 90)
+			(at -0.841666 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "338eb86e-c14c-4b5c-b9d4-544640e8f1c2")
 			(effects
@@ -20038,7 +20105,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R14"
-			(at -1.529819 0.639286 0)
+			(at -2.384523 -1.681009 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "b24a87a0-7935-431d-b7fc-da5924aa7035")
 			(effects
@@ -20247,7 +20315,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C52"
-			(at -2.159819 1.091667 0)
+			(at -3.347858 -1.704819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "08697e32-c113-4bf1-98a8-742f05105a07")
 			(effects
@@ -20416,7 +20485,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C37"
-			(at 4.365475 -2.25018 90)
+			(at -0.865476 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "6eec0609-2aa1-4268-a03b-13a1384d0194")
 			(effects
@@ -20585,7 +20655,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC13"
-			(at 0.289762 -2.82982 0)
+			(at 9.849819 6.099762 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "116b5a63-1af1-4512-bd26-162ac5167a63")
 			(effects
@@ -20929,7 +21000,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C47"
-			(at 3.365475 -2.2978 90)
+			(at -3.014523 -0.431009 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "ab433797-c384-4bea-b43b-7af9df1cf4f5")
 			(effects
@@ -21098,7 +21170,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC36"
-			(at 0.313572 -2.82982 0)
+			(at 9.849819 5.623571 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "2d5d19f3-e05d-4648-b252-342efaedf79a")
 			(effects
@@ -21442,7 +21515,8 @@
 		(descr "20-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC43"
-			(at -0.281666 -2.82982 0)
+			(at 9.849819 11.838333 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "5215b825-e009-4961-b4e2-8dde75e01655")
 			(effects
@@ -21840,7 +21914,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C16"
-			(at 3.341665 -2.25018 90)
+			(at -0.841667 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "d64ac713-125c-452b-84a3-adcef1ea7770")
 			(effects
@@ -22009,7 +22084,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC39"
-			(at 0.313572 -2.829819 0)
+			(at 9.849819 5.623571 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "11af0058-9c61-41aa-b816-8005e27d43f9")
 			(effects
@@ -22353,7 +22429,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C19"
-			(at 4.341666 -2.25018 90)
+			(at -0.841666 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "2a82705e-0005-4f63-9506-ccd04eae8a1b")
 			(effects
@@ -22522,7 +22599,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R19"
-			(at 5.66357 -2.297799 90)
+			(at 1.956429 -2.159818 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "8c30731a-3cf8-45d6-960c-e31812c66969")
 			(effects
@@ -22731,7 +22809,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R23"
-			(at 5.044523 -2.25018 90)
+			(at 2.575477 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "2f677a3b-a6d1-48f1-9c34-c59a6f08c957")
 			(effects
@@ -22940,7 +23019,8 @@
 		(descr "Oscillator, DIP14, http://cdn-reichelt.de/documents/datenblatt/B400/OSZI.pdf")
 		(tags "oscillator")
 		(property "Reference" "OSC1"
-			(at 12.119999 -12.949818 0)
+			(at 13.824819 -14.57119 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "7ea0aea5-3014-4f65-bba7-9e0704cd0aa5")
 			(effects
@@ -23316,7 +23396,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C3"
-			(at 3.341666 -2.25018 90)
+			(at -0.841667 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "bbbd10b2-8831-4374-9811-9617d50ab891")
 			(effects
@@ -23485,7 +23566,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC12"
-			(at 1.170715 -2.82982 0)
+			(at -2.3678 -3.519286 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "3a17481a-dd46-4f7b-9b22-e64ab9bf176b")
 			(effects
@@ -23829,7 +23911,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R17"
-			(at 2.81 -2.250179 90)
+			(at 1.93262 -2.159818 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "a0ff2e8e-1006-405b-bf97-9d16c3606ff5")
 			(effects
@@ -24038,7 +24121,8 @@
 		(descr "48-lead though-hole mounted DIP package, row spacing 15.24mm (600 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 15.24mm 600mil")
 		(property "Reference" "IC14"
-			(at 10.925952 61.24982 0)
+			(at -2.229818 32.515952 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "64044e3b-573a-46d6-8210-0f3fc6c7f0fc")
 			(effects
@@ -24688,7 +24772,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C2"
-			(at 3.341666 -2.25018 90)
+			(at -0.841667 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "5b5f6940-e0ed-4484-af7d-1063b5a4e0f2")
 			(effects
@@ -24857,7 +24942,8 @@
 		(descr "Through hole straight pin header, 1x06, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x06 2.54mm single row")
 		(property "Reference" "J4"
-			(at -2.734524 -2.169819 0)
+			(at -0.068991 -2.429285 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "7705214c-04e4-48d2-a498-56cbb543c823")
 			(effects
@@ -25121,7 +25207,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C12"
-			(at 3.341666 -2.25018 90)
+			(at -0.841666 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "cc8a2488-8187-48bf-b393-855ea2864777")
 			(effects
@@ -25290,7 +25377,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C28"
-			(at 3.341666 -2.25018 90)
+			(at 5.895475 -1.704819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "d69f20de-f35b-4758-ae68-619a16e0d546")
 			(effects
@@ -25459,7 +25547,8 @@
 		(descr "15-pin D-Sub connector, horizontal/angled (90 deg), THT-mount, socket (female), pitch 2.29x1.9mm, pin-PCB-offset 3.03mm, distance of mounting holes 25mm, distance of mounting holes to PCB edge 4.94mm, see https://disti-assets.s3.amazonaws.com/tonar/files/datasheets/16730.pdf")
 		(tags "15-pin D-Sub connector horizontal angled 90deg THT socket pitch 2.29x1.9mm pin-PCB-offset 3.03mm mounting-holes-distance 25mm mounting-hole-offset 4.94mm")
 		(property "Reference" "J1"
-			(at -5.978094 -3.514157 90)
+			(at -2.651905 -3.604518 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "d15684cf-54c4-4756-a3c1-b161ca1773b7")
 			(effects
@@ -25902,7 +25991,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C29"
-			(at 4.341666 -2.25018 90)
+			(at -0.841666 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "1d3ed6a6-b938-43f4-898f-13ca5bd7c943")
 			(effects
@@ -26071,7 +26161,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R18"
-			(at 5.66357 2.159819 90)
+			(at 1.956429 2.2978 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "b4c4ef3e-b51c-46e0-8e89-43faceedd1d0")
 			(effects
@@ -26280,7 +26371,8 @@
 		(descr "20-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC6"
-			(at -0.257858 -2.82982 0)
+			(at 9.849818 7.362142 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "1a5fe95b-aa6f-4ca7-a17b-4035da3a868b")
 			(effects
@@ -26678,7 +26770,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C39"
-			(at 4.341666 -2.25018 90)
+			(at -0.841666 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "8ea1d91e-81af-443b-a60b-227fcdb9ceac")
 			(effects
@@ -26847,7 +26940,8 @@
 		(descr "20-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC30"
-			(at -0.186428 -2.82982 0)
+			(at 9.849819 7.433571 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "7db328b6-f599-4c47-b537-dcfaf4baa378")
 			(effects
@@ -27245,7 +27339,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C34"
-			(at 3.365475 -2.297799 90)
+			(at -0.865476 -2.159818 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "a56725bc-318f-4c31-98a6-248dc8d9e66c")
 			(effects
@@ -27414,7 +27509,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C41"
-			(at 3.341666 -2.2978 90)
+			(at -0.841666 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "5e4f05b9-771f-44ab-85bd-ba56dced9e15")
 			(effects
@@ -27583,7 +27679,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R20"
-			(at 2.575477 2.25018 90)
+			(at 7.544523 2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "c6b3f38e-aa94-45c6-a436-1a4a352a6dc7")
 			(effects
@@ -27792,7 +27889,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C17"
-			(at 3.365475 -2.25018 90)
+			(at -0.865476 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "ede9875c-8144-41cc-a959-b89e5cffff9a")
 			(effects
@@ -27961,7 +28059,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R4"
-			(at 9.2878 0.710714 90)
+			(at 9.549819 -0.54762 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "7034c042-8f54-46e6-9b10-615254d7c558")
 			(effects
@@ -28170,7 +28269,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R2"
-			(at 3.949285 -2.25018 90)
+			(at 2.670714 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "2ef77add-2db1-4d22-8bc3-21722c1840f6")
 			(effects
@@ -28379,7 +28479,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C6"
-			(at 3.841666 -2.250179 90)
+			(at -0.841667 -2.159818 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "44aba258-da07-4e96-ba27-7a1ad846ab45")
 			(effects
@@ -28548,7 +28649,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R12"
-			(at 5.66357 -2.2978 90)
+			(at 1.956429 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "65deee55-1dd2-4287-8abf-a812dec036b9")
 			(effects
@@ -28757,7 +28859,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C7"
-			(at 3.865476 -2.250179 90)
+			(at -0.865477 -2.159818 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "7ebd5659-6009-4def-9b94-caeea9829610")
 			(effects
@@ -28926,7 +29029,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C35"
-			(at 3.341666 -2.25018 90)
+			(at -0.841666 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "8a132e99-5011-448f-baea-e43219735ee7")
 			(effects
@@ -29095,7 +29199,8 @@
 		(descr "28-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC41"
-			(at 9.973095 36.183153 0)
+			(at -2.563152 33.673095 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "e3e5d586-d94a-41f4-bd98-c051f465f16c")
 			(effects
@@ -29565,7 +29670,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C13"
-			(at 3.341665 -2.25018 90)
+			(at -0.841667 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "95ba931f-1961-40bd-b220-0630cba8efbb")
 			(effects
@@ -29733,7 +29839,8 @@
 		(at 267.747 58)
 		(descr "Mini-DIN-6 (PS/2) right-angle PCB jack Same Sky (CUI) MD-60SM, data sheet MD-SM rev 1.09 2024-09-12, PCB layout for date codes after 03/03/2022; mating face at x = 0, opening towards +x (YACC1 video V2.0 and V4.0)")
 		(property "Reference" "J2"
-			(at -6.431191 -8.42982 0)
+			(at -6.500181 -8.641667 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "101ba7d7-3726-4ef3-8b6a-3701c06cba86")
 			(effects
@@ -29951,7 +30058,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C51"
-			(at 0.25 -2.250179 90)
+			(at 5.466904 -0.871485 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "6c0f2c75-9d19-4209-9695-da1c019cff41")
 			(effects
@@ -30120,7 +30228,8 @@
 		(descr "20-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC29"
-			(at -0.186428 -2.829819 0)
+			(at 9.849819 7.433571 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "bf8a4c74-d661-4f82-9f51-53f4b3650133")
 			(effects
@@ -30518,7 +30627,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C23"
-			(at -3.395476 -0.295181 90)
+			(at -0.841667 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "1547437e-629b-40c9-b62f-d612d81eb260")
 			(effects
@@ -30686,7 +30796,8 @@
 		(at 267.747 76)
 		(descr "Mini-DIN-6 (PS/2) right-angle PCB jack Same Sky (CUI) MD-60SM, data sheet MD-SM rev 1.09 2024-09-12, PCB layout for date codes after 03/03/2022; mating face at x = 0, opening towards +x (YACC1 video V2.0 and V4.0)")
 		(property "Reference" "J3"
-			(at -6.431191 -8.429819 0)
+			(at -6.500181 -8.641666 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "0bb05873-58fd-42b6-bb40-12d43291db47")
 			(effects
@@ -30904,7 +31015,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R3"
-			(at 2.123095 -2.159819 0)
+			(at 9.549819 -2.686905 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "450b4899-9e92-4391-8dd8-6701dda56430")
 			(effects
@@ -31113,7 +31225,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC20"
-			(at 1.170715 -2.829819 0)
+			(at 9.849818 5.980715 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "8f2ef745-b02f-472a-9377-dae2ba916146")
 			(effects
@@ -31457,7 +31570,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R11"
-			(at 5.833809 -2.25018 90)
+			(at 7.28619 -3.659818 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "b6b7e4f5-a309-4fbb-bc7f-cdb51372f18f")
 			(effects
@@ -31666,7 +31780,8 @@
 		(descr "20-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC17"
-			(at -0.210238 -2.82982 0)
+			(at 9.849819 7.409762 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "7ea3ad15-8c76-4789-af39-8e32982e9c0d")
 			(effects
@@ -32064,7 +32179,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R7"
-			(at 2.575476 2.25018 0)
+			(at -1.62018 -2.234524 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "759016ae-7de3-4e94-8362-3ae81833b32f")
 			(effects
@@ -32272,7 +32388,8 @@
 		(at 246.02 44 -90)
 		(descr "HC-49/U, Crystal, http://5hertz.com/pdfs/04404_D.pdf")
 		(property "Reference" "Y1"
-			(at -3.90982 1.663095 0)
+			(at -0.223095 3.31518 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "98db9c5d-a3b3-44e7-a681-d092955c97cb")
 			(effects
@@ -32505,7 +32622,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R21"
-			(at 5.044523 -2.25018 90)
+			(at 2.575477 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "04828555-6e98-400f-bd75-eabeda6598ef")
 			(effects
@@ -32714,7 +32832,8 @@
 		(descr "20-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC44"
-			(at 0.218334 -2.829819 0)
+			(at 9.849819 7.838334 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "c587f326-c332-4014-ac25-822396558d19")
 			(effects
@@ -33112,7 +33231,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC34"
-			(at 1.146905 -2.829819 0)
+			(at -2.3678 4.956905 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "4e215292-bc40-4016-91bb-1c7689e830f3")
 			(effects
@@ -33456,7 +33576,8 @@
 		(descr "20-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC42"
-			(at 0.242143 -2.829819 0)
+			(at 9.849819 7.862143 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "634d1ecf-94d6-4dad-aca4-8d3c53616ce6")
 			(effects
@@ -33854,7 +33975,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C42"
-			(at 5.895475 -0.681009 90)
+			(at -3.395475 0.681009 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "5078d15a-969a-4e0e-a926-dc8db9f3e021")
 			(effects
@@ -34023,7 +34145,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC21"
-			(at 1.194524 -2.829819 0)
+			(at 9.849819 6.004524 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "4c155bda-418e-4d25-a605-63c85ebcd763")
 			(effects
@@ -34365,7 +34488,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R8"
-			(at 9.861666 -0.295181 90)
+			(at 2.194524 -2.159818 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "a3b79e6e-33bd-403b-b9ef-a4dfe9e2994d")
 			(effects
@@ -34574,7 +34698,8 @@
 		(descr "20-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC31"
-			(at -0.281666 -2.829819 0)
+			(at 9.849818 7.338334 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "328afba1-ea7e-4457-9ee8-7454d2c31c4e")
 			(effects
@@ -34972,7 +35097,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C25"
-			(at 3.341666 -2.25018 90)
+			(at -0.841666 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "23fe26fe-343b-4168-9158-a3bac15367a6")
 			(effects
@@ -35141,7 +35267,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C43"
-			(at 3.341666 -2.297799 90)
+			(at -0.841666 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "e3253bb3-f4a1-49bc-be47-0a71007020ed")
 			(effects
@@ -35310,7 +35437,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C32"
-			(at 3.341666 -2.250179 90)
+			(at -0.841666 -2.159818 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "79889f8a-e58f-421b-8e53-1b74a150dc8d")
 			(effects
@@ -35479,7 +35607,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C33"
-			(at 4.341666 -2.25018 90)
+			(at -0.841666 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "d528ec34-4aad-44b4-937b-00a14aef9db0")
 			(effects
@@ -35648,7 +35777,8 @@
 		(descr "Through hole straight pin header, 2x04, 2.54mm pitch, double rows")
 		(tags "Through hole pin header THT 2x04 2.54mm double row")
 		(property "Reference" "SV1"
-			(at 5.445475 -1.64482 0)
+			(at -2.26018 -0.829286 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "b36ac123-9e90-4469-b21c-9bd74865fe76")
 			(effects
@@ -35954,7 +36084,8 @@
 		(descr "Resistor, Axial_DIN0207 series, Axial, Horizontal, pin pitch=7.62mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Horizontal pin pitch 7.62mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R10"
-			(at 5.425475 -2.250179 90)
+			(at 2.194524 -2.159818 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "cdbf3915-91fd-4a8d-a9c8-a0959493f1c5")
 			(effects
@@ -36163,7 +36294,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C4"
-			(at 3.365476 -2.2978 90)
+			(at -0.865476 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "b94ee183-e7bb-4447-9b4b-2ce5845e975e")
 			(effects
@@ -36332,7 +36464,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC9"
-			(at 0.218333 -2.829819 0)
+			(at 9.849818 5.528333 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "431b875a-216d-4c93-804b-1d0987c8ee25")
 			(effects
@@ -36676,7 +36809,8 @@
 		(descr "16-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC2"
-			(at 0.265952 -2.829819 0)
+			(at 9.849819 5.345952 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "34400029-1c1d-4b45-be15-3d02d92c17a0")
 			(effects
@@ -37038,7 +37172,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C5"
-			(at 3.341666 -2.25018 90)
+			(at -0.841667 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "39402ff4-db02-4c15-9f9f-071fced64eac")
 			(effects
@@ -37207,7 +37342,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC8"
-			(at 0.194524 -2.829819 0)
+			(at 9.849819 5.504523 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "a773046b-de2b-4129-8eed-d141453ad376")
 			(effects
@@ -37551,7 +37687,8 @@
 		(descr "LED, diameter 5.0mm, 2 pins, http://cdn-reichelt.de/documents/datenblatt/A500/LL-504BC2E-009.pdf, generated by kicad-footprint-generator")
 		(tags "LED")
 		(property "Reference" "LED1"
-			(at -0.320951 -4.179819 90)
+			(at -3.620236 1.954819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "1f1da985-475d-415d-bd5f-59e9ad48a9fc")
 			(effects
@@ -37750,7 +37887,8 @@
 		(descr "C, Disc series, Radial, pin pitch=2.50mm, diameter*width=5*2.5mm^2, Capacitor, http://cdn-reichelt.de/documents/datenblatt/B300/DS_KERKO_TC.pdf")
 		(tags "C Disc series Radial pin pitch 2.50mm diameter 5mm width 2.5mm Capacitor")
 		(property "Reference" "C9"
-			(at 3.841666 -2.25018 90)
+			(at -0.841667 -2.159819 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "285f11d7-9987-4b1f-ba7a-6bbd9ab2af80")
 			(effects
@@ -37919,7 +38057,8 @@
 		(descr "14-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils)")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil")
 		(property "Reference" "IC45"
-			(at 0.194524 -2.829819 0)
+			(at 9.849819 6.004524 270)
+			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "e6ca1733-a4b6-4c51-977e-9ee4da51f3d9")
 			(effects
@@ -38297,9 +38436,9 @@
 		(uuid "a8b2c884-74fc-4595-b40f-337c00364422")
 	)
 	(gr_text "cottageworker.com"
-		(at 168.66 103.6 0)
+		(at 172.66 103.6 0)
 		(layer "F.SilkS")
-		(uuid "037ec3e6-ffe8-41c4-8976-ccd1bc535bcd")
+		(uuid "8f81e895-936d-4417-bf7e-256d34805b76")
 		(effects
 			(font
 				(size 1 1)
@@ -38308,118 +38447,76 @@
 			(justify left)
 		)
 	)
-	(gr_text "TEXT-ONLY BUILD: NO IC24-IC34,"
-		(at 168.66 106.2 0)
+	(gr_text "BLOCK"
+		(at 30.73982 109.401665 270)
 		(layer "F.SilkS")
-		(uuid "a3c61cdc-4335-4228-aba8-e6df8edd86c3")
+		(uuid "987490e2-1020-40bd-ab7b-b2975d4c1c6a")
 		(effects
 			(font
 				(size 1 1)
 				(thickness 0.15)
 			)
-			(justify left)
 		)
 	)
-	(gr_text "RN2, C25-C35"
-		(at 168.66 108.3 0)
+	(gr_text "15"
+		(at 37.9 106 270)
 		(layer "F.SilkS")
-		(uuid "71474983-3ca3-422b-a74a-5c60060d9815")
+		(uuid "ca7728c8-6442-4c09-a2b8-74e34fd43257")
 		(effects
 			(font
 				(size 1 1)
 				(thickness 0.15)
 			)
-			(justify left)
 		)
 	)
-	(gr_text "ON: PS/2 -INT"
-		(at 252.297 87.899999 0)
+	(gr_text "14"
+		(at 37.9 108.54 270)
 		(layer "F.SilkS")
-		(uuid "15e07384-eeaa-4d7c-9f79-7497b284a261")
+		(uuid "0c45c085-fc3a-46c6-ac49-c3bc363edbf4")
 		(effects
 			(font
 				(size 1 1)
 				(thickness 0.15)
 			)
-			(justify left)
 		)
 	)
-	(gr_text "1 GND (BLK)"
-		(at 254.297 94.5 0)
+	(gr_text "13"
+		(at 37.9 111.08 270)
 		(layer "F.SilkS")
-		(uuid "be1c4065-3881-453f-86a5-e0bb14a9b837")
+		(uuid "4e98bba1-a3f0-4855-a5ca-d2a2812d091c")
 		(effects
 			(font
 				(size 1 1)
 				(thickness 0.15)
 			)
-			(justify left)
 		)
 	)
-	(gr_text "CTS"
-		(at 256.047 97.04 0)
+	(gr_text "12"
+		(at 37.9 113.62 270)
 		(layer "F.SilkS")
-		(uuid "c41cc41b-ebda-4b66-b621-8fc8fb961726")
+		(uuid "66853318-fd7c-42f3-96e7-5e98a134209b")
 		(effects
 			(font
 				(size 1 1)
 				(thickness 0.15)
 			)
-			(justify left)
 		)
 	)
-	(gr_text "VCC nc"
-		(at 256.047 99.58 0)
+	(gr_text "A15-A12, ON=0"
+		(at 39.6 109.81 270)
 		(layer "F.SilkS")
-		(uuid "9c6316bd-7126-4358-99b4-8165f961300f")
+		(uuid "d6b0bc45-edb4-476d-936c-d57cd232beba")
 		(effects
 			(font
 				(size 1 1)
 				(thickness 0.15)
 			)
-			(justify left)
 		)
 	)
-	(gr_text "TXD"
-		(at 256.047 102.12 0)
+	(gr_text "100n"
+		(at 41.38982 113.200713 270)
 		(layer "F.SilkS")
-		(uuid "5e301688-ca68-45fc-b9e0-117453041c03")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-			(justify left)
-		)
-	)
-	(gr_text "RXD"
-		(at 256.047 104.66 0)
-		(layer "F.SilkS")
-		(uuid "9c694b1b-5b48-493f-8c8c-9772fdc96626")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-			(justify left)
-		)
-	)
-	(gr_text "DTR"
-		(at 256.047 107.2 0)
-		(layer "F.SilkS")
-		(uuid "8bafb5c4-1d2b-42b8-a2f8-c298ee3bcdaf")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-			(justify left)
-		)
-	)
-	(gr_text "ON=0"
-		(at 34.3 103.1 0)
-		(layer "F.SilkS")
-		(uuid "0e5441f2-0b27-400f-be44-3b19ee01ea0f")
+		(uuid "2b471fc6-cd74-48a2-b703-457c1aba9d8a")
 		(effects
 			(font
 				(size 1 1)
@@ -38428,9 +38525,9 @@
 		)
 	)
 	(gr_text "74LS138"
-		(at 37.258808 12.170181 0)
+		(at 41.849819 25.338808 270)
 		(layer "F.SilkS")
-		(uuid "aad388fd-4205-47cd-bd0d-46bba82af805")
+		(uuid "3f95c92a-8841-467a-a000-2bd019381e84")
 		(effects
 			(font
 				(size 1 1)
@@ -38439,9 +38536,20 @@
 		)
 	)
 	(gr_text "74LS32"
-		(at 37.258808 36.25018 0)
+		(at 41.849819 49.148808 270)
 		(layer "F.SilkS")
-		(uuid "0946ec4a-b338-41e6-8e94-721a42d45b8c")
+		(uuid "b90942a9-0d3b-4bc7-9788-315483dec73f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74LS32"
+		(at 41.849819 70.712617 270)
+		(layer "F.SilkS")
+		(uuid "b1a1e56a-cd1e-4a69-a373-75dadc31ed60")
 		(effects
 			(font
 				(size 1 1)
@@ -38450,64 +38558,9 @@
 		)
 	)
 	(gr_text "74S85"
-		(at 37.258808 79.330181 0)
+		(at 41.849819 92.498807 270)
 		(layer "F.SilkS")
-		(uuid "4fc58b85-798f-41f5-b0c4-b18f3da51f1e")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74LS32"
-		(at 37.282617 57.79018 0)
-		(layer "F.SilkS")
-		(uuid "ddf98523-ff44-4a5e-b288-4d4e51f202a0")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "A15"
-		(at 38.9 106.05 0)
-		(layer "F.SilkS")
-		(uuid "d9e25b5e-4a03-41e7-b5af-0182890553b5")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "A14"
-		(at 38.9 108.59 0)
-		(layer "F.SilkS")
-		(uuid "f161a5d1-5529-4ff0-8f74-8af334e19e9c")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "A13"
-		(at 38.9 111.13 0)
-		(layer "F.SilkS")
-		(uuid "629cc84f-2c47-4df7-836a-bb448bffbf7f")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "A12"
-		(at 38.9 113.67 0)
-		(layer "F.SilkS")
-		(uuid "1f8b3370-17e2-4a23-9b6c-7beed7bd7aa6")
+		(uuid "0fe6089d-a49f-46eb-ab24-75a0ef6f4fd1")
 		(effects
 			(font
 				(size 1 1)
@@ -38516,9 +38569,9 @@
 		)
 	)
 	(gr_text "10k x4"
-		(at 39.766903 118.100181 0)
+		(at 44.199819 119.57619 270)
 		(layer "F.SilkS")
-		(uuid "79c0351c-a354-473b-aaae-c7744775c433")
+		(uuid "b08960b6-d326-4207-b27e-ba1ae6983f6e")
 		(effects
 			(font
 				(size 1 1)
@@ -38526,10 +38579,10 @@
 			)
 		)
 	)
-	(gr_text "BLOCK"
-		(at 42.676426 104.35518 0)
+	(gr_text "100n"
+		(at 44.979819 17.484522 270)
 		(layer "F.SilkS")
-		(uuid "6550f81f-8d3c-4b10-8ba6-dd45da0f6581")
+		(uuid "9cc05591-79e0-471c-898a-5a5b90533dfd")
 		(effects
 			(font
 				(size 1 1)
@@ -38537,10 +38590,10 @@
 			)
 		)
 	)
-	(gr_text "IDT7134"
-		(at 56.737379 51.49018 0)
+	(gr_text "100n"
+		(at 44.979819 41.588331 270)
 		(layer "F.SilkS")
-		(uuid "f8bc3047-670d-487c-8a20-f6f6a0d729af")
+		(uuid "0b0cd3f1-e5d1-4bd9-86d4-bf984f959c9c")
 		(effects
 			(font
 				(size 1 1)
@@ -38548,10 +38601,21 @@
 			)
 		)
 	)
-	(gr_text "AT28C64B-15"
-		(at 56.808808 12.170181 0)
+	(gr_text "100n"
+		(at 44.979819 63.104522 270)
 		(layer "F.SilkS")
-		(uuid "7c8d6668-bd26-4f23-8895-94cb314b92b7")
+		(uuid "af331f4d-5522-4b6e-aaa9-5028cfb993e7")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "100n"
+		(at 44.979819 84.644522 270)
+		(layer "F.SilkS")
+		(uuid "cd4578de-9d31-4cb6-95fe-36557b17c258")
 		(effects
 			(font
 				(size 1 1)
@@ -38560,9 +38624,42 @@
 		)
 	)
 	(gr_text "47u"
-		(at 59.069285 117.81899 0)
+		(at 58.309819 119.234523 270)
 		(layer "F.SilkS")
-		(uuid "5ebec3d4-064a-4528-bcad-08403e1ea2ff")
+		(uuid "9f5c49b4-7ca7-4d6c-a3fd-2af19f554428")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "AT28C64B-15"
+		(at 64.709818 33.458808 270)
+		(layer "F.SilkS")
+		(uuid "11377814-6904-41f4-9f5f-538603b2eb2d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "IDT7134"
+		(at 64.709818 85.407379 270)
+		(layer "F.SilkS")
+		(uuid "772d5f7f-b577-4e07-a0cb-7885f6719ba6")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "100n"
+		(at 67.839819 17.960713 270)
+		(layer "F.SilkS")
+		(uuid "d32dc5aa-f992-40d9-a614-c07aee3f4461")
 		(effects
 			(font
 				(size 1 1)
@@ -38571,9 +38668,9 @@
 		)
 	)
 	(gr_text "74HCT04"
-		(at 75.334999 12.170181 0)
+		(at 79.949819 25.544998 270)
 		(layer "F.SilkS")
-		(uuid "a3d71ba2-028d-4139-bafb-46c7aef5ec7f")
+		(uuid "b18034cb-474e-4ced-a052-677073c81e71")
 		(effects
 			(font
 				(size 1 1)
@@ -38582,9 +38679,9 @@
 		)
 	)
 	(gr_text "74ACT574"
-		(at 75.811188 62.87018 0)
+		(at 79.949819 49.894998 270)
 		(layer "F.SilkS")
-		(uuid "7f0fcc61-a0b1-4e31-8a0d-8569f79ce2c2")
+		(uuid "b9af63d2-5e1f-4e49-9c0b-ce43289f12f5")
 		(effects
 			(font
 				(size 1 1)
@@ -38593,9 +38690,9 @@
 		)
 	)
 	(gr_text "74ACT574"
-		(at 75.811188 92.030181 0)
+		(at 79.949819 79.031188 270)
 		(layer "F.SilkS")
-		(uuid "7fbb1a95-a927-4bad-a3ba-aaa155df3e3e")
+		(uuid "34819e8b-32df-4067-8aaa-84f0563a78af")
 		(effects
 			(font
 				(size 1 1)
@@ -38604,9 +38701,9 @@
 		)
 	)
 	(gr_text "74ACT574"
-		(at 75.834998 33.71018 0)
+		(at 79.949819 116.691188 270)
 		(layer "F.SilkS")
-		(uuid "2b24af82-b450-47b5-9201-a8b7a6a427af")
+		(uuid "7b892a18-9e19-4ccb-9ed0-c62dda52eb2c")
 		(effects
 			(font
 				(size 1 1)
@@ -38614,10 +38711,21 @@
 			)
 		)
 	)
-	(gr_text "HD68B45SP / MC68B45P"
-		(at 94.83738 56.332086 0)
+	(gr_text "100n"
+		(at 80.344819 101.812142 270)
 		(layer "F.SilkS")
-		(uuid "8e4be077-9351-4fff-b5be-58130fcee015")
+		(uuid "a8d8dc0d-d9bb-4dfe-802f-8abd2705dd28")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "100n"
+		(at 81.124819 33.192142 270)
+		(layer "F.SilkS")
+		(uuid "5e33a894-d4b7-47c4-a4c9-e525c077ae51")
 		(effects
 			(font
 				(size 1 1)
@@ -38626,405 +38734,9 @@
 		)
 	)
 	(gr_text "AS6C1008-55PCN"
-		(at 94.932617 12.170181 0)
+		(at 83.01982 51.522617 270)
 		(layer "F.SilkS")
-		(uuid "b5f0a0c9-3e95-4554-9117-3ead6c7ee7e9")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74ACT157"
-		(at 113.911188 36.25018 0)
-		(layer "F.SilkS")
-		(uuid "ad8b8bfd-0b3d-4c78-baed-62b5b285ac69")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74ACT157"
-		(at 113.911188 60.33018 0)
-		(layer "F.SilkS")
-		(uuid "e38384bb-2ea4-4391-ab2c-9c615024e271")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74ACT157"
-		(at 113.934998 12.170181 0)
-		(layer "F.SilkS")
-		(uuid "36d16528-f7a2-4fa5-a3e7-73922f4231e8")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74ACT157"
-		(at 113.934998 84.410181 0)
-		(layer "F.SilkS")
-		(uuid "14c7060a-18fa-4223-9bff-dea1f4780da5")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "25.175MHz"
-		(at 121.419999 107.550181 0)
-		(layer "F.SilkS")
-		(uuid "6a937322-0bc7-4024-8c6d-d42bac3c129b")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74F163A"
-		(at 129.127379 76.790181 0)
-		(layer "F.SilkS")
-		(uuid "5c2ea65c-f123-466a-8ab7-56efbf3a579f")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74F74"
-		(at 129.151188 55.25018 0)
-		(layer "F.SilkS")
-		(uuid "93a4ef11-8972-4efd-a0f3-7fccb6096cf5")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74ACT04"
-		(at 129.151189 33.71018 0)
-		(layer "F.SilkS")
-		(uuid "219ef347-a6b8-4f4e-b419-c3743f6eef2f")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74F21"
-		(at 129.174998 12.170181 0)
-		(layer "F.SilkS")
-		(uuid "b67d4df8-97e7-4606-9633-2783a0d28a03")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74ACT574"
-		(at 144.391189 12.170181 0)
-		(layer "F.SilkS")
-		(uuid "363bfb01-2282-4cdb-9830-d46144b970e1")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74ACT574"
-		(at 144.391189 41.33018 0)
-		(layer "F.SilkS")
-		(uuid "a408e76e-e817-40ad-9123-b2374c25ce12")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74ACT244"
-		(at 144.391189 70.490181 0)
-		(layer "F.SilkS")
-		(uuid "9caf371f-5ef9-4526-8afa-66ec1570b3e2")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74F74"
-		(at 144.414998 99.650181 0)
-		(layer "F.SilkS")
-		(uuid "484c7ed0-f677-41f5-90ab-614f4a7c6bc5")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74HCT244"
-		(at 159.631188 12.170181 0)
-		(layer "F.SilkS")
-		(uuid "e7812de5-c1ed-4462-9969-722a3102e0ab")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74F74"
-		(at 159.631188 99.650181 0)
-		(layer "F.SilkS")
-		(uuid "28ed9bd0-2405-4883-8d92-8307f19de725")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74F299"
-		(at 159.654998 41.33018 0)
-		(layer "F.SilkS")
-		(uuid "322ced00-83c3-4348-85d0-e3d63d533efe")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74F299"
-		(at 159.654998 70.490181 0)
-		(layer "F.SilkS")
-		(uuid "b565b7cf-56ca-45a2-a3d5-f708c81bf6e8")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74F74"
-		(at 174.871189 12.170181 0)
-		(layer "F.SilkS")
-		(uuid "c9686b2b-edac-4be9-8d42-514c3f4987a9")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74ACT32"
-		(at 174.894998 33.71018 0)
-		(layer "F.SilkS")
-		(uuid "38271501-e825-4315-a9eb-775e92274222")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74ACT11"
-		(at 174.894998 76.790181 0)
-		(layer "F.SilkS")
-		(uuid "810bced4-8193-4ed6-91ed-c4da65df22cc")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74ACT00"
-		(at 174.918808 55.25018 0)
-		(layer "F.SilkS")
-		(uuid "058c70bb-71e8-4c21-bc44-25192c00216a")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74HCT74"
-		(at 190.111189 76.790181 0)
-		(layer "F.SilkS")
-		(uuid "7f10c035-3216-4b48-839c-bc9fc55a811a")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74ACT02"
-		(at 190.134999 12.170181 0)
-		(layer "F.SilkS")
-		(uuid "3472f195-ca0b-4f20-be63-0c2a1d52f23c")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74ACT86"
-		(at 190.134999 33.71018 0)
-		(layer "F.SilkS")
-		(uuid "ef84c873-70dd-4828-92ef-184fd816d437")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74ACT08"
-		(at 190.134999 55.25018 0)
-		(layer "F.SilkS")
-		(uuid "32d91670-fbca-4a2a-804f-269224279f84")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74HCT273"
-		(at 204.898807 12.170181 0)
-		(layer "F.SilkS")
-		(uuid "896451fa-8d9c-4515-8040-f2b7b5290736")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74HCT273"
-		(at 204.898807 41.33018 0)
-		(layer "F.SilkS")
-		(uuid "a1481040-c861-4f67-8db0-d9c70dd1439c")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74LS244"
-		(at 204.898808 70.490181 0)
-		(layer "F.SilkS")
-		(uuid "22162c3b-5dfd-4d62-83de-14fa2091318c")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74HCT08"
-		(at 204.898808 99.650181 0)
-		(layer "F.SilkS")
-		(uuid "6277c381-03f0-49be-b8bb-4f42e9747028")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74LS374"
-		(at 220.591189 12.170181 0)
-		(layer "F.SilkS")
-		(uuid "9a397985-936f-48a9-9a9d-e73feaf18383")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74HCT374"
-		(at 220.591189 41.33018 0)
-		(layer "F.SilkS")
-		(uuid "6f0fd0a4-95c2-4a3a-b64c-f56e5451e8a6")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74HCT74"
-		(at 220.591189 99.650181 0)
-		(layer "F.SilkS")
-		(uuid "2e43885c-21a0-42ad-87be-df4b4ebb4350")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "74LS244"
-		(at 220.614998 70.490181 0)
-		(layer "F.SilkS")
-		(uuid "206a517a-0685-40ff-b666-2783825c3f1c")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "7416"
-		(at 235.854999 12.170181 0)
-		(layer "F.SilkS")
-		(uuid "ee6dad4d-01e1-4c97-ab22-68c5baabcaac")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "ATmega328P-P"
-		(at 235.878808 33.376847 0)
-		(layer "F.SilkS")
-		(uuid "1afaba85-77f4-4f48-99c9-987762aad9e0")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "10k"
-		(at 237.206903 95.470181 0)
-		(layer "F.SilkS")
-		(uuid "1d3394dd-9d95-4ba7-9fc0-8e50b58c9a3c")
+		(uuid "a06fe1b4-333b-4510-b8fc-9f65c44064a9")
 		(effects
 			(font
 				(size 1 1)
@@ -39033,97 +38745,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 237.230712 79.840181 0)
+		(at 83.079819 17.484522 270)
 		(layer "F.SilkS")
-		(uuid "6d4e4683-36ce-429b-970b-9242906def44")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "68"
-		(at 243.159286 23.39518 0)
-		(layer "F.SilkS")
-		(uuid "9066b093-ef93-4cb9-99b6-56f49cf05a25")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "16MHz"
-		(at 248.183094 40.09018 0)
-		(layer "F.SilkS")
-		(uuid "e51cfbfd-4154-4f95-ad6c-7bc509a08468")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "470"
-		(at 250.016903 11.840181 0)
-		(layer "F.SilkS")
-		(uuid "e5bb994b-304d-45c3-bc89-7021c893a595")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "68"
-		(at 250.040713 29.05018 0)
-		(layer "F.SilkS")
-		(uuid "bef0810c-4cb0-4540-9405-6cc2a46b9090")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "470"
-		(at 255.353094 21.21899 0)
-		(layer "F.SilkS")
-		(uuid "c52d195a-7fca-4882-9e53-5016afce4bfc")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "330"
-		(at 260.377713 122.25018 0)
-		(layer "F.SilkS")
-		(uuid "e04cb6be-e92b-4e41-ae2b-afa014537da1")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "INT-EN"
-		(at 261.332001 84.91518 0)
-		(layer "F.SilkS")
-		(uuid "5f1c7533-26bd-47a7-b307-26357e863289")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "FTDI"
-		(at 265.686284 92.330181 0)
-		(layer "F.SilkS")
-		(uuid "c0e0ae30-b7b1-4189-8061-40a747389c86")
+		(uuid "db319027-6171-42a4-a4ef-79237a79b0e2")
 		(effects
 			(font
 				(size 1 1)
@@ -39132,9 +38756,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 41.48018 109.779287 90)
+		(at 83.079819 68.660712 270)
 		(layer "F.SilkS")
-		(uuid "0e5c7248-1efc-463f-a779-d06ab35157b2")
+		(uuid "d64a75a4-90dc-485d-814c-10f189330d96")
 		(effects
 			(font
 				(size 1 1)
@@ -39143,9 +38767,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 45.07018 15.015477 90)
+		(at 83.079819 97.844522 270)
 		(layer "F.SilkS")
-		(uuid "658e4003-9c7c-4321-b9dc-0d31d5a815f7")
+		(uuid "7c51ad59-9fb0-48bf-aa18-af009d3d67a4")
 		(effects
 			(font
 				(size 1 1)
@@ -39154,9 +38778,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 45.07018 60.635477 90)
+		(at 101.482199 114.960713 270)
 		(layer "F.SilkS")
-		(uuid "49931768-3061-45b7-ae3f-37d5751bc997")
+		(uuid "b2eec880-2bed-4225-bd51-74b056c29400")
 		(effects
 			(font
 				(size 1 1)
@@ -39164,98 +38788,10 @@
 			)
 		)
 	)
-	(gr_text "100n"
-		(at 45.07018 82.175477 90)
+	(gr_text "HD68B45SP / MC68B45P"
+		(at 103.047914 85.407379 270)
 		(layer "F.SilkS")
-		(uuid "b0aba8ba-aa38-4251-a96c-939d752691ae")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "100n"
-		(at 45.1178 39.071668 90)
-		(layer "F.SilkS")
-		(uuid "db4f208a-0703-49dc-826b-b9aee97e56ae")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "100n"
-		(at 67.93018 15.539287 90)
-		(layer "F.SilkS")
-		(uuid "9aa0cf29-cbb9-48a4-ace6-40d4851f1962")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "100n"
-		(at 79.980181 104.699287 90)
-		(layer "F.SilkS")
-		(uuid "5c6fbe62-a351-4ee2-a625-81dbad937ad4")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "100n"
-		(at 83.17018 15.515477 90)
-		(layer "F.SilkS")
-		(uuid "92d41ed3-455a-4330-861b-29976ba4f818")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "100n"
-		(at 83.17018 36.079286 90)
-		(layer "F.SilkS")
-		(uuid "ba6a704e-8399-4f9f-a8db-51da4b1f172b")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "100n"
-		(at 83.17018 65.239286 90)
-		(layer "F.SilkS")
-		(uuid "61895bc5-7806-4279-b055-b7ad09a8b72f")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "100n"
-		(at 83.17018 94.375477 90)
-		(layer "F.SilkS")
-		(uuid "4990d991-8311-4f65-9acd-018ca69d291a")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "100n"
-		(at 101.62018 111.539287 90)
-		(layer "F.SilkS")
-		(uuid "af97bcda-7453-4eff-ad83-982e4bf91e1f")
+		(uuid "65528c29-0f97-4ac6-b11a-1f1ec7e97ebc")
 		(effects
 			(font
 				(size 1 1)
@@ -39264,9 +38800,31 @@
 		)
 	)
 	(gr_text "10k x8"
-		(at 105.97018 28.449286 90)
+		(at 103.234819 49.754997 270)
 		(layer "F.SilkS")
-		(uuid "6d116ea7-0803-4cf7-890c-8eff8e9c7172")
+		(uuid "a517f5f3-6230-4a34-8158-58bad680cb06")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74ACT157"
+		(at 105.8322 51.371189 270)
+		(layer "F.SilkS")
+		(uuid "3564915d-4bca-4401-83d1-7ed69ab4d5b6")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74ACT157"
+		(at 105.8322 98.054998 270)
+		(layer "F.SilkS")
+		(uuid "841ca960-3cd1-4958-9a3b-1a9c70700fc7")
 		(effects
 			(font
 				(size 1 1)
@@ -39275,9 +38833,31 @@
 		)
 	)
 	(gr_text "100n"
-		(at 106.03018 15.539287 90)
+		(at 105.939819 17.960713 270)
 		(layer "F.SilkS")
-		(uuid "0386aaa3-e445-424a-83a2-9f78de1442ff")
+		(uuid "a974595f-57a4-4c7c-acec-80cb7b5df627")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74ACT157"
+		(at 118.049819 26.814998 270)
+		(layer "F.SilkS")
+		(uuid "050f0bf4-d246-45ae-b229-3fc67f10948b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74ACT157"
+		(at 118.049819 74.951188 270)
+		(layer "F.SilkS")
+		(uuid "6862fa90-c016-46fb-b9ad-78c79236ce5f")
 		(effects
 			(font
 				(size 1 1)
@@ -39286,9 +38866,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 121.27018 14.539287 90)
+		(at 119.22482 93.135475 270)
 		(layer "F.SilkS")
-		(uuid "986290cb-f9f2-4f81-afe7-eda4f34548fb")
+		(uuid "15a96d0b-9ceb-4fa5-97e2-0199fde6b9db")
 		(effects
 			(font
 				(size 1 1)
@@ -39297,9 +38877,53 @@
 		)
 	)
 	(gr_text "100n"
-		(at 121.27018 38.619286 90)
+		(at 120.474819 72.476902 270)
 		(layer "F.SilkS")
-		(uuid "ce18a922-805d-446e-b048-562615bdf906")
+		(uuid "500968ad-b104-4154-9c1e-2178aee28593")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74F74"
+		(at 121.0722 59.101188 270)
+		(layer "F.SilkS")
+		(uuid "42375952-9b02-4030-8e33-b22ec912579a")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74F163A"
+		(at 121.0722 82.387379 270)
+		(layer "F.SilkS")
+		(uuid "483379a8-fe2e-4415-9eae-c8d7b4093600")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "100n"
+		(at 121.179819 17.960713 270)
+		(layer "F.SilkS")
+		(uuid "9d44c902-1a7c-4733-8e75-ecf1f3c3890a")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "100n"
+		(at 121.179819 42.040713 270)
+		(layer "F.SilkS")
+		(uuid "9046f2c2-4789-49c5-aaf9-fe490b8689b2")
 		(effects
 			(font
 				(size 1 1)
@@ -39308,31 +38932,9 @@
 		)
 	)
 	(gr_text "33"
-		(at 121.27018 47.123096 90)
+		(at 121.179819 50.496904 270)
 		(layer "F.SilkS")
-		(uuid "e94b5398-a9c9-4fec-bd23-ff0c23c9992d")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "100n"
-		(at 121.27018 62.675477 90)
-		(layer "F.SilkS")
-		(uuid "ec8247f5-6654-4eb1-8702-9cf64129834c")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "100n"
-		(at 121.27018 86.779287 90)
-		(layer "F.SilkS")
-		(uuid "c9509207-64d6-447f-a576-e60646dfe4e3")
+		(uuid "759d69ab-c821-44f8-9ba7-18c1f832ed9b")
 		(effects
 			(font
 				(size 1 1)
@@ -39341,9 +38943,53 @@
 		)
 	)
 	(gr_text "33"
-		(at 121.27018 98.503096 90)
+		(at 121.179819 99.376904 270)
 		(layer "F.SilkS")
-		(uuid "840f07f0-4d70-45e7-a189-c395bc44425e")
+		(uuid "ad1af701-1118-4f3b-8b35-2059fd53dea7")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "25.175MHz"
+		(at 121.62482 104.42881 270)
+		(layer "F.SilkS")
+		(uuid "1e2db8fd-264e-419e-83a8-ca7cba215e67")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74F21"
+		(at 133.289819 25.544998 270)
+		(layer "F.SilkS")
+		(uuid "bca708ea-f8d8-4571-9180-93b9197b0a1c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74ACT04"
+		(at 133.289819 48.061189 270)
+		(layer "F.SilkS")
+		(uuid "ca5e50df-834d-4822-a5eb-b54aa5676b4c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74F74"
+		(at 136.3122 112.024998 270)
+		(layer "F.SilkS")
+		(uuid "1056d163-160a-47bb-b298-8fee7de0cc81")
 		(effects
 			(font
 				(size 1 1)
@@ -39352,9 +38998,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 136.07899 33.144524 90)
+		(at 136.419819 17.960713 270)
 		(layer "F.SilkS")
-		(uuid "52b2e6c5-63b9-47a9-b6cc-57cba5c730e8")
+		(uuid "790b036d-e8cd-40cc-a7e8-c320735ec245")
 		(effects
 			(font
 				(size 1 1)
@@ -39363,9 +39009,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 136.51018 15.539287 90)
+		(at 136.419819 39.524522 270)
 		(layer "F.SilkS")
-		(uuid "3913ff24-87ac-435d-b074-b817c8466fe3")
+		(uuid "ca3084ea-6f62-4282-85e7-81d853ca08ef")
 		(effects
 			(font
 				(size 1 1)
@@ -39374,9 +39020,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 136.51018 57.619286 90)
+		(at 136.419819 61.040713 270)
 		(layer "F.SilkS")
-		(uuid "4cdaf96f-563b-48c8-ba36-2b08165f7fb1")
+		(uuid "b47c738b-d8d1-4686-a4a6-ec0ab84c7097")
 		(effects
 			(font
 				(size 1 1)
@@ -39385,9 +39031,9 @@
 		)
 	)
 	(gr_text "1k"
-		(at 136.51018 65.523096 90)
+		(at 136.419819 68.896903 270)
 		(layer "F.SilkS")
-		(uuid "ae4c2368-6143-40d7-b05b-86b3a77fb014")
+		(uuid "9da98fc7-b18a-40e3-be6f-7ac0e97a4414")
 		(effects
 			(font
 				(size 1 1)
@@ -39396,9 +39042,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 136.51018 79.159287 90)
+		(at 136.419819 82.580713 270)
 		(layer "F.SilkS")
-		(uuid "fdb931f1-3f85-4c22-912c-391ae27a113f")
+		(uuid "d0b33919-969a-4637-96f6-dbe9ea45a3e9")
 		(effects
 			(font
 				(size 1 1)
@@ -39407,9 +39053,9 @@
 		)
 	)
 	(gr_text "33"
-		(at 136.51018 87.123096 90)
+		(at 136.419819 90.496904 270)
 		(layer "F.SilkS")
-		(uuid "be7b4c87-44bd-4ce4-9074-e5df8910b7c2")
+		(uuid "e88a8be6-f037-448e-b2f1-ca6593a8e005")
 		(effects
 			(font
 				(size 1 1)
@@ -39418,9 +39064,42 @@
 		)
 	)
 	(gr_text "33"
-		(at 136.51018 97.123096 90)
+		(at 136.419819 100.496904 270)
 		(layer "F.SilkS")
-		(uuid "fdb5020a-f0fb-4e45-a82b-0ddf4271e9b5")
+		(uuid "8d415d7d-19a6-4de6-bf3b-a73563b2fc71")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74ACT574"
+		(at 148.529819 28.331189 270)
+		(layer "F.SilkS")
+		(uuid "ebd96705-8859-4e05-bebf-e334c19aa22b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74ACT574"
+		(at 148.529819 57.491188 270)
+		(layer "F.SilkS")
+		(uuid "d28e0c41-0d7e-41d6-858d-29fa38c045ff")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74ACT244"
+		(at 148.529819 86.651188 270)
+		(layer "F.SilkS")
+		(uuid "16d2cf80-3d41-4b1f-b61d-68c20d7b496c")
 		(effects
 			(font
 				(size 1 1)
@@ -39429,9 +39108,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 151.75018 15.539287 90)
+		(at 151.659819 17.960713 270)
 		(layer "F.SilkS")
-		(uuid "7a6cb99e-9599-4f90-83cf-a028c23c2977")
+		(uuid "7bf78558-fe52-44c2-a640-5dd29b2cd2ae")
 		(effects
 			(font
 				(size 1 1)
@@ -39440,9 +39119,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 151.75018 44.699286 90)
+		(at 151.659819 47.120712 270)
 		(layer "F.SilkS")
-		(uuid "ef367dd3-01bf-4223-a047-8d2fe3566556")
+		(uuid "d45d021d-45b5-4aee-8416-666917345297")
 		(effects
 			(font
 				(size 1 1)
@@ -39451,9 +39130,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 151.75018 73.859287 90)
+		(at 151.659819 76.280713 270)
 		(layer "F.SilkS")
-		(uuid "afd2a297-b966-4063-b8e8-b7a97eb074bd")
+		(uuid "eeb67b8e-346a-40b3-bd24-a561ed4ed315")
 		(effects
 			(font
 				(size 1 1)
@@ -39462,9 +39141,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 151.75018 102.019286 90)
+		(at 151.659819 105.440713 270)
 		(layer "F.SilkS")
-		(uuid "b3e25bcb-78fa-4a6c-a861-a697a9c055d1")
+		(uuid "3af767e6-391e-4651-9368-982988d59e87")
 		(effects
 			(font
 				(size 1 1)
@@ -39473,9 +39152,75 @@
 		)
 	)
 	(gr_text "10k"
-		(at 151.75018 110.923096 90)
+		(at 151.659819 113.296904 270)
 		(layer "F.SilkS")
-		(uuid "cc9f1390-cd6e-4910-8156-03fbeea39f88")
+		(uuid "363f4788-01f6-4628-933c-164843d27dd9")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74HCT244"
+		(at 163.769818 28.331189 270)
+		(layer "F.SilkS")
+		(uuid "c0ea31c4-7890-458c-82f0-e17d19b8d2a6")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74F299"
+		(at 163.769818 65.514998 270)
+		(layer "F.SilkS")
+		(uuid "1c5e8256-e312-46ab-bf99-e7fa97c2598c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74F299"
+		(at 163.769818 86.674999 270)
+		(layer "F.SilkS")
+		(uuid "7d272e99-b641-4be8-b72c-47d0383bb922")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74F74"
+		(at 163.769818 113.001189 270)
+		(layer "F.SilkS")
+		(uuid "ee30b3ef-4840-47cd-b2b5-28c48c449ada")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "100n"
+		(at 166.899818 17.960713 270)
+		(layer "F.SilkS")
+		(uuid "7b16bbfa-14ce-435f-aa09-53ebcfb6b4df")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "100n"
+		(at 166.899818 47.144522 270)
+		(layer "F.SilkS")
+		(uuid "44be37d5-00fd-4185-a49e-d5d6bdcc4515")
 		(effects
 			(font
 				(size 1 1)
@@ -39484,9 +39229,9 @@
 		)
 	)
 	(gr_text "10k"
-		(at 166.53518 59.861666 90)
+		(at 166.899818 54.996904 270)
 		(layer "F.SilkS")
-		(uuid "a5fbf412-d884-440d-b79d-6b96a8e2e24e")
+		(uuid "ef3bf81b-6857-4d35-a60f-372431a2c889")
 		(effects
 			(font
 				(size 1 1)
@@ -39495,9 +39240,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 166.53518 69.924524 90)
+		(at 166.899818 76.280713 270)
 		(layer "F.SilkS")
-		(uuid "27d49787-9868-44fd-8e10-3ffcaed1e391")
+		(uuid "66f477c7-06e2-4ecb-bc5d-99c4d2a64d1d")
 		(effects
 			(font
 				(size 1 1)
@@ -39506,9 +39251,75 @@
 		)
 	)
 	(gr_text "100n"
-		(at 166.990179 14.539287 90)
+		(at 167.299819 105.440713 270)
 		(layer "F.SilkS")
-		(uuid "03343657-1706-437e-955a-a7ac4915de9c")
+		(uuid "215c4924-920b-47af-b705-6ebc645b5502")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "RN2, C25-C35"
+		(at 170.16 112 270)
+		(layer "F.SilkS")
+		(uuid "60094fd0-1300-48a4-8ec3-a0736028919c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "TEXT-ONLY BUILD: NO IC24-IC34,"
+		(at 171.86 110.5 270)
+		(layer "F.SilkS")
+		(uuid "a41f8104-6861-44cb-94ed-89b72bff96f7")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74F74"
+		(at 179.009819 25.521188 270)
+		(layer "F.SilkS")
+		(uuid "7f147b23-22ab-49cd-a726-09c8e3349f72")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74ACT32"
+		(at 179.009819 47.584998 270)
+		(layer "F.SilkS")
+		(uuid "6105712d-6185-47cf-9e50-135b4b33f3bf")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74ACT00"
+		(at 179.009819 69.648808 270)
+		(layer "F.SilkS")
+		(uuid "0b3cfcb2-2262-42c2-8d5e-a785a5eaef1c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74ACT11"
+		(at 179.009819 90.664999 270)
+		(layer "F.SilkS")
+		(uuid "f44a2955-8fb0-4478-938a-b7e517d7244b")
 		(effects
 			(font
 				(size 1 1)
@@ -39517,9 +39328,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 167.037799 43.675477 90)
+		(at 182.139819 17.960713 270)
 		(layer "F.SilkS")
-		(uuid "46617009-93e5-4c5c-93e2-bcb233c62743")
+		(uuid "e0c4e7bf-eb38-4cfd-a223-ec2bddacd311")
 		(effects
 			(font
 				(size 1 1)
@@ -39528,9 +39339,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 167.39018 102.019286 90)
+		(at 182.139819 39.524522 270)
 		(layer "F.SilkS")
-		(uuid "da4c4eed-7668-40c6-bd40-32ed9daee6e5")
+		(uuid "944ddd49-0ccc-4989-9509-bf8067a6b348")
 		(effects
 			(font
 				(size 1 1)
@@ -39539,9 +39350,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 182.23018 15.539287 90)
+		(at 182.139819 61.040713 270)
 		(layer "F.SilkS")
-		(uuid "13dcc37e-ccf4-4912-ae0a-39f1f8b42876")
+		(uuid "bdaf5324-7b4e-4c62-91b7-905c2b47c77b")
 		(effects
 			(font
 				(size 1 1)
@@ -39550,9 +39361,53 @@
 		)
 	)
 	(gr_text "100n"
-		(at 182.23018 37.055477 90)
+		(at 182.139819 82.580713 270)
 		(layer "F.SilkS")
-		(uuid "f4a4f659-97d2-4b71-9228-c719a0abf7f3")
+		(uuid "314a17ba-cdd0-419d-8aee-6678bf6cf4ba")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74ACT02"
+		(at 194.249819 26.044998 270)
+		(layer "F.SilkS")
+		(uuid "65764fdf-a5c4-4dc5-9293-05af2bed5fd4")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74ACT86"
+		(at 194.249819 47.584998 270)
+		(layer "F.SilkS")
+		(uuid "f03bbe08-18af-431b-b491-9ee80eba17b0")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74ACT08"
+		(at 194.249819 69.124998 270)
+		(layer "F.SilkS")
+		(uuid "9b6b5dd5-66a3-46a4-8943-5c65fc79cea5")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74HCT74"
+		(at 194.249819 91.141189 270)
+		(layer "F.SilkS")
+		(uuid "47f1fa55-776b-4b62-b1c7-5aaf9ef9a7cc")
 		(effects
 			(font
 				(size 1 1)
@@ -39561,9 +39416,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 182.23018 58.619286 90)
+		(at 197.379819 17.960713 270)
 		(layer "F.SilkS")
-		(uuid "8bd2a0f6-807d-4598-90d6-fde58887d9e0")
+		(uuid "983d4ed3-fbf8-4202-ab61-b30aa409f761")
 		(effects
 			(font
 				(size 1 1)
@@ -39572,9 +39427,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 182.23018 80.159287 90)
+		(at 197.379819 39.500713 270)
 		(layer "F.SilkS")
-		(uuid "0ebd2d69-11c2-4a47-92b6-d72af9155b35")
+		(uuid "0e0b97a4-b59a-44c6-9204-e28a4a3036bc")
 		(effects
 			(font
 				(size 1 1)
@@ -39583,9 +39438,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 197.01518 33.144524 90)
+		(at 197.379819 61.064522 270)
 		(layer "F.SilkS")
-		(uuid "79167f27-62b7-439c-9d53-efd6ae9c6139")
+		(uuid "06a1311d-8f08-42a6-9fdc-ab61e3ec8ce4")
 		(effects
 			(font
 				(size 1 1)
@@ -39594,9 +39449,53 @@
 		)
 	)
 	(gr_text "100n"
-		(at 197.5178 15.539287 90)
+		(at 197.379819 82.580713 270)
 		(layer "F.SilkS")
-		(uuid "ea596543-2ab3-4c1a-8c43-51fb7bcb5bde")
+		(uuid "cb40b2f9-20ad-4fc4-92ad-4ae389c3baac")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74HCT273"
+		(at 209.489818 27.878808 270)
+		(layer "F.SilkS")
+		(uuid "74fb5c6d-0cb1-4c79-bbc4-dc4b5726fc16")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74HCT273"
+		(at 209.489818 57.038807 270)
+		(layer "F.SilkS")
+		(uuid "bc52d229-1cb9-41b6-aed1-c406fd616d35")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74LS244"
+		(at 209.489818 94.198808 270)
+		(layer "F.SilkS")
+		(uuid "ffa6137d-2354-42c3-ac11-65f32b903c5a")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "74HCT08"
+		(at 209.489818 113.048808 270)
+		(layer "F.SilkS")
+		(uuid "9693dfb9-17bb-43b3-b417-0dbb3dd9806a")
 		(effects
 			(font
 				(size 1 1)
@@ -39605,9 +39504,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 197.5178 57.595477 90)
+		(at 212.619818 17.484522 270)
 		(layer "F.SilkS")
-		(uuid "84b74ffe-3ade-431a-a25e-fa2aa5fa80f3")
+		(uuid "d637c40e-275a-4138-a72c-25fce233a46d")
 		(effects
 			(font
 				(size 1 1)
@@ -39616,9 +39515,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 197.5178 79.159287 90)
+		(at 212.619818 46.668331 270)
 		(layer "F.SilkS")
-		(uuid "6f5d2fb8-7d0a-4746-b6b0-ea8dd57d2a4c")
+		(uuid "caa22006-f0fc-4a87-808f-b9b7b443b569")
 		(effects
 			(font
 				(size 1 1)
@@ -39627,31 +39526,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 212.710179 15.515477 90)
+		(at 212.619818 75.804522 270)
 		(layer "F.SilkS")
-		(uuid "96335124-0116-4ef7-a25f-ce54fc6d5de5")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "100n"
-		(at 212.710179 44.651668 90)
-		(layer "F.SilkS")
-		(uuid "8a16e52b-d584-4bfc-b6bb-d243ae8e4df6")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "100n"
-		(at 212.710179 73.835477 90)
-		(layer "F.SilkS")
-		(uuid "fcffcd74-61cb-4c4f-a6dd-c648a98be98c")
+		(uuid "b098e3fe-45ac-4a43-bb07-188bee444625")
 		(effects
 			(font
 				(size 1 1)
@@ -39660,9 +39537,9 @@
 		)
 	)
 	(gr_text "10k"
-		(at 212.710179 81.346905 90)
+		(at 212.619818 84.673094 270)
 		(layer "F.SilkS")
-		(uuid "616374b0-5e0d-4a1e-a1ce-30b40813eeaa")
+		(uuid "b50e0b67-307f-4302-8df7-5eea05ae26c1")
 		(effects
 			(font
 				(size 1 1)
@@ -39671,9 +39548,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 212.710179 103.019286 90)
+		(at 212.619818 105.440713 270)
 		(layer "F.SilkS")
-		(uuid "5322989c-c193-4fe0-80d3-df95586342ca")
+		(uuid "ff647616-b574-4563-ac81-52e81ed566eb")
 		(effects
 			(font
 				(size 1 1)
@@ -39681,10 +39558,10 @@
 			)
 		)
 	)
-	(gr_text "100n"
-		(at 224.760181 50.239287 90)
+	(gr_text "74LS374"
+		(at 224.729819 28.331189 270)
 		(layer "F.SilkS")
-		(uuid "c265e388-e640-4953-9c30-f3e5eac867a9")
+		(uuid "2e3c0e2a-fe07-43fd-81f4-2facc2ee7181")
 		(effects
 			(font
 				(size 1 1)
@@ -39692,10 +39569,10 @@
 			)
 		)
 	)
-	(gr_text "100n"
-		(at 227.997799 14.539287 90)
+	(gr_text "74HCT374"
+		(at 224.729819 61.991188 270)
 		(layer "F.SilkS")
-		(uuid "4f4574ea-4199-422b-b048-10978e8fb2e9")
+		(uuid "609e1c7f-1a54-4dc7-94c6-203dcc97925b")
 		(effects
 			(font
 				(size 1 1)
@@ -39703,10 +39580,10 @@
 			)
 		)
 	)
-	(gr_text "100n"
-		(at 227.997799 43.175477 90)
+	(gr_text "74LS244"
+		(at 224.729819 86.674999 270)
 		(layer "F.SilkS")
-		(uuid "0629a4cb-c2a6-49da-b7e7-77b793870b52")
+		(uuid "82971bde-46c6-4ef7-bb40-6a4d10ce130d")
 		(effects
 			(font
 				(size 1 1)
@@ -39714,21 +39591,10 @@
 			)
 		)
 	)
-	(gr_text "100n"
-		(at 227.997799 72.859287 90)
+	(gr_text "74HCT74"
+		(at 224.729819 114.001189 270)
 		(layer "F.SilkS")
-		(uuid "cf4f81d7-dd3a-47f3-937d-b4477a1c4e7f")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "100n"
-		(at 227.997799 102.019286 90)
-		(layer "F.SilkS")
-		(uuid "3ce6ebce-a38c-4682-9188-347d33c604fe")
+		(uuid "fd28cb72-e8d5-4321-8779-fc7f8765c8eb")
 		(effects
 			(font
 				(size 1 1)
@@ -39737,9 +39603,64 @@
 		)
 	)
 	(gr_text "10k"
-		(at 228.560181 97.833809 90)
+		(at 226.969821 98.78619 270)
 		(layer "F.SilkS")
-		(uuid "ec8d29ef-0251-474a-b5b4-6991cf989e64")
+		(uuid "7e5e09bd-6ae5-4dbc-9883-27a2c3ff1443")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "100n"
+		(at 227.851009 59.469283 270)
+		(layer "F.SilkS")
+		(uuid "f7eee374-52ea-4725-830e-00508dd5b2c0")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "100n"
+		(at 227.859819 17.960713 270)
+		(layer "F.SilkS")
+		(uuid "cdcd5c5a-aa9c-470e-8499-d0ed66280f79")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "100n"
+		(at 227.859819 46.644522 270)
+		(layer "F.SilkS")
+		(uuid "6494e316-c6d8-4c0e-9598-9042b3a5d0f7")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "100n"
+		(at 227.859819 76.280713 270)
+		(layer "F.SilkS")
+		(uuid "5c9b560c-1a1a-448b-9113-a2caf50acf23")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "100n"
+		(at 227.859819 105.440713 270)
+		(layer "F.SilkS")
+		(uuid "c83984b6-a7f1-4ffc-bbcc-57fcc4c39c02")
 		(effects
 			(font
 				(size 1 1)
@@ -39748,9 +39669,9 @@
 		)
 	)
 	(gr_text "10k"
-		(at 234.470179 87.833809 90)
+		(at 232.879819 89.28619 270)
 		(layer "F.SilkS")
-		(uuid "fc6e6f25-0326-404c-b036-c5fa6a401f65")
+		(uuid "db2c42da-7b14-47d4-9fcb-4ff6b0fa87af")
 		(effects
 			(font
 				(size 1 1)
@@ -39759,9 +39680,53 @@
 		)
 	)
 	(gr_text "10k"
-		(at 240.57018 99.146905 90)
+		(at 234.70101 94.615477 270)
 		(layer "F.SilkS")
-		(uuid "1b7ba0ed-53fd-40c4-9b5a-802fd4f4e780")
+		(uuid "1a625fa3-cd63-4774-8458-4297f88141a5")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "100n"
+		(at 234.72482 78.652142 270)
+		(layer "F.SilkS")
+		(uuid "4056fa02-c962-4f7b-b484-41ce8222ef86")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "7416"
+		(at 239.969819 25.044998 270)
+		(layer "F.SilkS")
+		(uuid "d3c6ffbc-2186-4fcd-9e03-95f45f037053")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "100n"
+		(at 240.12101 57.715475 270)
+		(layer "F.SilkS")
+		(uuid "003cbf93-d622-4b0f-9708-b9246032f08d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "ATmega328P-P"
+		(at 240.303152 43.998808 270)
+		(layer "F.SilkS")
+		(uuid "8ab25af9-9d77-4fbd-9188-0d3e5d02f6a7")
 		(effects
 			(font
 				(size 1 1)
@@ -39770,9 +39735,53 @@
 		)
 	)
 	(gr_text "4.7k"
-		(at 240.6178 84.146905 90)
+		(at 240.479819 87.473094 270)
 		(layer "F.SilkS")
-		(uuid "509ab7f9-b140-479f-a8f2-ed8b91e40e1b")
+		(uuid "936bbe6c-6452-4dc6-9b00-4add21d7f480")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "10k"
+		(at 240.479819 102.473094 270)
+		(layer "F.SilkS")
+		(uuid "fd4fdf17-aef3-4137-a4ba-677b9b616e2b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "4.7k"
+		(at 240.722201 61.31 270)
+		(layer "F.SilkS")
+		(uuid "5d9c9fc1-0f43-45e6-a8c6-c84f594088d2")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "4.7k"
+		(at 242.2222 76.473094 270)
+		(layer "F.SilkS")
+		(uuid "7482ea2a-18b3-4e24-ba1c-c37a86eaf2c8")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "16MHz"
+		(at 242.70482 47.603094 270)
+		(layer "F.SilkS")
+		(uuid "27ce4c7b-32f3-43a1-a856-c2cb7dc5f451")
 		(effects
 			(font
 				(size 1 1)
@@ -39781,53 +39790,9 @@
 		)
 	)
 	(gr_text "100n"
-		(at 241.75899 48.424525 90)
+		(at 243.099819 14.773809 270)
 		(layer "F.SilkS")
-		(uuid "e5247353-86b6-4c4d-9552-ab7742d1d184")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "4.7k"
-		(at 242.360181 57.646905 90)
-		(layer "F.SilkS")
-		(uuid "50582a32-327c-4d65-b2d4-08e69e129f5d")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "4.7k"
-		(at 242.360181 73.146905 90)
-		(layer "F.SilkS")
-		(uuid "1568e5af-4742-4dee-94cf-d8bfd87032f6")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "100n"
-		(at 243.2378 14.515477 90)
-		(layer "F.SilkS")
-		(uuid "6536c5f7-f77e-4b2c-baea-e7de6c9a83ff")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "4.7k"
-		(at 250.317799 73.146905 90)
-		(layer "F.SilkS")
-		(uuid "670799f5-9ca9-46a6-9ffc-397f0ea443b7")
+		(uuid "88a52436-a72f-4557-80d7-dd5cd592b07a")
 		(effects
 			(font
 				(size 1 1)
@@ -39836,53 +39801,9 @@
 		)
 	)
 	(gr_text "0.5A"
-		(at 250.41518 61.305478 90)
+		(at 243.18982 67.467856 270)
 		(layer "F.SilkS")
-		(uuid "f7223fea-f29e-498e-8320-1cc858703dfa")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "4.7k"
-		(at 251.817798 57.81 90)
-		(layer "F.SilkS")
-		(uuid "bf8cd56c-905c-43e9-921a-0cf465b7874f")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "MOUSE (GREEN)"
-		(at 253.147 76 90)
-		(layer "F.SilkS")
-		(uuid "4cff3a25-d302-47da-abe2-b6d9de432ecb")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "22p"
-		(at 253.270179 42.039286 90)
-		(layer "F.SilkS")
-		(uuid "258741ef-f996-49c4-aae2-57dfd6645222")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "KEYBOARD (PURPLE)"
-		(at 253.397 58 90)
-		(layer "F.SilkS")
-		(uuid "a2cf41b8-5b82-479c-8039-25c648ce23cd")
+		(uuid "d88f42ec-f203-41fa-a2dd-467bc509ba5e")
 		(effects
 			(font
 				(size 1 1)
@@ -39891,9 +39812,42 @@
 		)
 	)
 	(gr_text "470"
-		(at 254.3078 14.989287 90)
+		(at 243.3522 21.086903 270)
 		(layer "F.SilkS")
-		(uuid "0ad7c2f9-38c7-4bbf-bdc2-8c3e45863df8")
+		(uuid "3474dd2f-b3d6-4fc7-abd1-70e486333f89")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "68"
+		(at 243.39982 27.010713 270)
+		(layer "F.SilkS")
+		(uuid "395908da-0d30-400f-be94-d00bb236c800")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "4.7k"
+		(at 250.179818 60.496904 270)
+		(layer "F.SilkS")
+		(uuid "9da4ad22-4684-4331-8992-3f649cbaf43d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "4.7k"
+		(at 250.179818 76.473094 270)
+		(layer "F.SilkS")
+		(uuid "c444d6a6-8595-4bcc-be99-b2429f74a3e5")
 		(effects
 			(font
 				(size 1 1)
@@ -39902,9 +39856,75 @@
 		)
 	)
 	(gr_text "22p"
-		(at 254.770178 48.45 90)
+		(at 250.391486 53.666904 270)
 		(layer "F.SilkS")
-		(uuid "21418b45-63d6-4842-8d6f-077a2cb6eafb")
+		(uuid "3fb7d33c-f124-4c02-8710-2797bd0fef04")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "MOUSE (GREEN)"
+		(at 253.147 76 270)
+		(layer "F.SilkS")
+		(uuid "e9f804d6-973b-491b-ac38-be164337b578")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "22p"
+		(at 253.513152 45.460713 270)
+		(layer "F.SilkS")
+		(uuid "f06d6e6a-424e-4f8e-a3c6-a526dd40e09e")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "KEYBOARD (PURPLE)"
+		(at 253.647 58 270)
+		(layer "F.SilkS")
+		(uuid "276ee8b1-1955-4d6c-a246-c93067ee93ec")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "470"
+		(at 254.569819 14.186903 270)
+		(layer "F.SilkS")
+		(uuid "441d046e-b5a1-4084-ab02-593cca79fc5d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "68"
+		(at 254.569819 23.786904 270)
+		(layer "F.SilkS")
+		(uuid "73cf63c7-355c-49cf-b0c8-415d12178c1a")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "470"
+		(at 255.969819 16.699999 270)
+		(layer "F.SilkS")
+		(uuid "5aced190-227a-4966-bd7e-51ce92d53ac8")
 		(effects
 			(font
 				(size 1 1)
@@ -39913,9 +39933,130 @@
 		)
 	)
 	(gr_text "VGA"
-		(at 257.402843 25.699524 90)
+		(at 257.312482 27.930475 270)
 		(layer "F.SilkS")
-		(uuid "08120ca7-5a4f-4aa3-9528-dc726fb78c9b")
+		(uuid "a617d344-976a-40cf-bf04-27038f57ecb2")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "J4: FTDI"
+		(at 258.297 100.85 270)
+		(layer "F.SilkS")
+		(uuid "34e69e56-297d-46ee-90f7-c0d9f4f71379")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "330"
+		(at 258.37182 117.056905 270)
+		(layer "F.SilkS")
+		(uuid "f93f6c1d-4e91-4417-8ac0-eb6a14ce56a5")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "PIN 1 GND: BLACK WIRE. VCC NC"
+		(at 259.697 103 270)
+		(layer "F.SilkS")
+		(uuid "9f81d716-d785-4b13-b21f-01d304a4e558")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "CTS"
+		(at 261.346998 97.04 270)
+		(layer "F.SilkS")
+		(uuid "ca776416-6090-4b37-b979-66217a673de1")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "TXD"
+		(at 261.346998 102.12 270)
+		(layer "F.SilkS")
+		(uuid "2da511dd-5716-4e1a-9657-3d25bd6d4074")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "DTR"
+		(at 261.346998 107.2 270)
+		(layer "F.SilkS")
+		(uuid "ec06c4ed-e7d1-4197-a2df-521db44935d5")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "ON: PS/2 -INT"
+		(at 261.346999 89.619999 270)
+		(layer "F.SilkS")
+		(uuid "0d0fc042-579d-489e-9314-7d60e25fa29d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "GND"
+		(at 262.947 94.5 270)
+		(layer "F.SilkS")
+		(uuid "f97d3d2c-e6a7-4feb-be8c-044da130a6bf")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "VCC"
+		(at 262.947 99.58 270)
+		(layer "F.SilkS")
+		(uuid "3368b3da-0efe-4e17-b0a2-46399eb58903")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "RXD"
+		(at 262.947 104.66 270)
+		(layer "F.SilkS")
+		(uuid "f5e89190-8b85-4d3f-a105-8f393ea715d3")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "INT-EN"
+		(at 263.28682 89.985475 270)
+		(layer "F.SilkS")
+		(uuid "19638dee-9f5b-444f-8ece-764ac3926d28")
 		(effects
 			(font
 				(size 1 1)
@@ -39924,9 +40065,9 @@
 		)
 	)
 	(gr_text "PWR"
-		(at 260.067181 109.994762 90)
+		(at 266.201819 120.946425 270)
 		(layer "F.SilkS")
-		(uuid "b64a8614-19f6-4f68-96c7-90b8e42a5383")
+		(uuid "896d5e2a-da31-49d0-82da-e6ba3891f818")
 		(effects
 			(font
 				(size 1 1)
@@ -39935,9 +40076,9 @@
 		)
 	)
 	(gr_text "1"
-		(at 104.899999 119.2 0)
+		(at 104.899999 119.2 270)
 		(layer "F.SilkS")
-		(uuid "9be74df2-6488-44d8-9f37-b9b21c1c3018")
+		(uuid "c0493d12-0bcf-4a5c-bc0d-d4fbffa74377")
 		(effects
 			(font
 				(size 1.2 1.2)
@@ -39946,9 +40087,9 @@
 		)
 	)
 	(gr_text "YACC1 Video Card V4.0"
-		(at 168.66 100.3 0)
+		(at 172.66 99.55 0)
 		(layer "F.SilkS")
-		(uuid "2c6ad623-d15f-4d7d-83f0-0fb3c35a1812")
+		(uuid "be42d766-83b8-4b23-8421-6c66a7ccdb26")
 		(effects
 			(font
 				(size 1.5 1.5)

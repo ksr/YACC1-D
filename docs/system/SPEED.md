@@ -82,4 +82,4 @@ The tables below are the baseline, before these changes.
    work files; fewer or smaller ones, or a tighter CF loop, reduce it.
 4. **Byte-at-a-time helpers** (`io_getc`, `bcat`, `io_wput`) are small and hot in every pass.
 5. **A faster clock** is the plain multiplier: 2 MHz halves every figure here. The cards' margins at 6 MHz are in
-   `docs/cards/video-v2.md` and `hardware/cards/memory/reviews/v2.0.md`.
+   `docs/cards/video-v4.md` and `hardware/cards/memory/reviews/v2.0.md`.
