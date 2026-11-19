@@ -153,12 +153,14 @@ equals `v40_netlist.py` net for net (254 nets), and its electrical rules check f
 | `gen_v40.py place <pcb>` | courtyards apart, everything inside the outline, the DIP sockets clear of each other and of the other parts |
 | `gen_v40.py clockroute <unrouted.kicad_pcb> <out.kicad_pcb>` | the four clocks, and the stubs from their sources to the series resistors, laid as locked tracks and vias; nothing else touched |
 | `gen_v40.py clocks <pcb> [report.txt]` | the clock nets as they are on a board: track, vias, the copper's length from each source to every input (`reports/clocks.txt`). Fails if an input is not reached or a clock's track is not locked |
-| `gen_v40.py verify reports/netlist.net <pcb>` | 432 key connections pin by pin, in the schematic and on the board; the layers; the planes |
+| `gen_v40.py verify reports/netlist.net <pcb>` | 433 key connections pin by pin, in the schematic and on the board; the layers; the planes |
 | `gen_v40.py drawing <pcb>` | `video-v4.0-placement.pdf` |
 | `gen_v40.py bom` | `BOM.md` |
 | `gen_v40.py fab <pcb>` | the order's files: `gerbers/` and `video-v4.0-gerbers.zip`. It orders nothing |
 | `build.sh` | all of it, with the routing, the reports, the checks and, when they pass, the order's files |
 | `SILK=1 build.sh` | the routed board kept: its silkscreen texts written and placed afresh, then the reports, the checks and the order's files |
+| `gen_v40.py padnets reports/netlist.net <pcb>` | the routed board kept through a change of the netlist that needs no track: an open through-hole pad that the netlist now has on GND or VCC gets that net (the plane joins it when it is filled again). Any other difference between the board and the netlist is refused: it needs a route |
+| `PADS=1 build.sh` | that change, whole: the schematic written anew and checked, `padnets`, the planes filled again, then the reports, the checks and the order's files. No part, track or via is touched (2026-11-18: the oscillator's pin 1) |
 
 ## The board (2026-11-12): 250 mm, placed and routed
 
@@ -282,7 +284,7 @@ nine vias; CK's, D3's and STG's farthest inputs are 3 to 12 mm farther than the 
 **The checks, all passing** (`build.sh: ALL CHECKS PASS`): KiCad's netlist of the schematic equal to
 `v40_netlist.py`; ERC nothing; DRC no unconnected item, no copper violation, schematic parity 0 (four warnings
 where the bus connector's own silk crosses the edge, as on every card); the board's nets equal to the schematic's
-(`reports/netlist-compare.txt`: MATCH); the placement clear (134 footprints, 47 sockets); 432 key connections
+(`reports/netlist-compare.txt`: MATCH); the placement clear (134 footprints, 47 sockets); 433 key connections
 right in the schematic and on the pads; the clocks as they were laid, every input reached and every track locked.
 
 **How it got there.**
@@ -307,7 +309,7 @@ the design review changed" above, and the review's status table for each finding
 and V4-2 have their resistors, and since 2026-11-14 the clocks are laid first: each one's farthest input is nearer
 than on either route before.
 
-## The pre-order check (2026-11-14): no failures, one warning
+## The pre-order check (2026-11-14, and again 2026-11-18): no failures, one warning
 
 `~/Developer/pcb-check/pcb-check video-v4.0.kicad_pcb video-v4.0-gerbers.zip --layers 4`, with the settings in
 `pcb-check.ini` beside the board. The order's files are `gerbers/` and `video-v4.0-gerbers.zip`, written by
@@ -325,8 +327,22 @@ zip's name; the tree as committed.
 
 | | |
 |---|---|
-| WARN, DESIGN | Two inputs with nothing on them: IC28 pin 1 and OSC1 pin 1. IC28's pin 1 is not connected inside the AS6C1008 (it is A18 of the 512K part with the same pins: the symbol calls it NC/A18). OSC1's pin 1 has no connection in a plain oscillator can and is the enable of one that has it, with its own pull-up: running when left open. **To confirm on the data sheet of the oscillator that is bought** (the note's section 13) |
+| WARN, DESIGN | One input with nothing on it: IC28 pin 1. It is not connected inside the AS6C1008 (it is A18 of the 512K part with the same pins: the symbol calls it NC/A18). **Accepted (2026-11-18): the pin stays open.** `pcb-check.ini` has no exemption for an open input, so the check goes on reporting it. Until 2026-11-18 the warning named OSC1's pin 1 too: below |
 | NOTE | INTOC, the PS/2 interrupt's open-collector output, has its pull-up on another card: with JP1 on it is the bus's -INT, pulled up on the I/O card (RN2) |
+
+**The oscillator's pin 1 is tied to +5 V (2026-11-18).** It was left open: a plain can has nothing on pin 1, and a
+can with an enable there has a pull-up of its own and runs with the pin open, which was to be confirmed on the data
+sheet of the can that is bought. Tied high, the card runs with either kind and does not rest on that pull-up. In
+`v40_netlist.py` the pin is on VCC; on the board its through-hole pad is joined to the VCC plane (In2.Cu) by a
+thermal relief of four spokes, with no track and no via. `PADS=1 build.sh` made the change on the routed board: the
+schematic written anew (KiCad's netlist of it equal to `v40_netlist.py`), the pad given its net by `gen_v40.py
+padnets`, the planes filled again, then the reports and the checks, all passing. No part, track or via moved. Of the
+order's files the VCC plane differs round the pad, the three other copper layers in that pad's net name, and
+every other file in its date alone. `pcb-check` on the new files: no failures, and its DESIGN warning names IC28's
+pin alone. What is left for the buyer is in the BOM: not a
+can whose output is off with pin 1 high. The usual tri-state can is on with pin 1 high or open; no can of the other
+kind was found among the full-size 5 V cans looked at (Abracon ACO, ECS-P145X, Ecliptek EC11, Fox F5C-2E,
+Pletronics P1145).
 
 The first run had four more warnings, all settled the same day. No bus definition, and the front edge taken for the
 bottom one: the settings `bus_pins` and `bus_edge`. The zip not committed: it is. Three values not found on the
@@ -343,9 +359,11 @@ viewer; the VGA socket laid on a 1:1 print of the board.
 ## Next
 
 1. Before any order: `pcb-check` once more on the board as it then is, its pictures and the fab's viewer; the VGA
-   socket laid on a 1:1 print of the board; the oscillator's data sheet for its pin 1.
-2. The emulators' model and the ROM's text driver are on the branch `video-v2` (2026-11-14: `Y1VID_CARD=v4`,
-   `ROM 2026-11-14 V4`; the note's section 12). Open there: graphics, and Y1/OS on 25 rows.
+   socket laid on a 1:1 print of the board; the data sheet of the oscillator that is bought, for its load and its
+   pin 1 (tied to +5 V on the board: the BOM says which cans fit).
+2. The emulators' model and the ROM's text driver are on the branch `video-v4-software` (`video-v2` until
+   2026-11-18; written 2026-11-14: the V4 is that branch's card and `ROM 2026-11-14 V4` its ROM; the note's
+   section 12). Open there: graphics, and Y1/OS on 25 rows.
 3. IC18's image is `firmware/video/chargen-v40.bin` (2026-11-14: Terminus Font's bold 8 x 16; `firmware/video/README.md`
    has the codes and the burn command). `python3 tools/vidsim.py testcard --card v4 --raster --png card.png` draws what
    the card should show.

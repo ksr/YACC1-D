@@ -470,16 +470,19 @@ and VCC as planes inside. All 519 connections, 455 vias, 27.6 m of 0.25 mm track
 clocks the router's own: 377 vias, 27.4 m; the board before the review's changes: 515 connections, 350 vias,
 26.2 m). Of four component orders one routed every connection, without an error of the router's own making; the
 others left one or two open. The checks pass: the schematic's netlist equal to the netlist's, ERC nothing, DRC no
-unconnected item and no copper violation, the board's nets equal to the schematic's, the placement clear, 432 key
+unconnected item and no copper violation, the board's nets equal to the schematic's, the placement clear, 433 key
 connections right, the clocks as they were laid, every reference with its type or value on the silk outside its
 part. The first placement of all did not route to the end (7 connections
 left: the folder's README has which, and what was moved).
 
-**The pre-order check (2026-11-14): no failures, one warning.** `pcb-check` rebuilds the copper from the order's
-gerbers and drill files alone and finds the schematic's 254 nets, no short and no open; the bus connector's 96
-pins are the bus template's; the layout rules hold. Its one warning is two inputs with nothing on them: pin 1 of
-the graphics RAM, which is not connected inside the 128K part, and pin 1 of the oscillator, an enable with its own
-pull-up on the cans that have one (to confirm on the data sheet of the part bought: section 13). The order's files
+**The pre-order check (2026-11-14, and again 2026-11-18): no failures, one warning.** `pcb-check` rebuilds the
+copper from the order's gerbers and drill files alone and finds the schematic's 254 nets, no short and no open; the
+bus connector's 96 pins are the bus template's; the layout rules hold. Its one warning is an input with nothing on
+it: pin 1 of the graphics RAM, which is not connected inside the 128K part (accepted 2026-11-18: it stays open).
+Until 2026-11-18 it named the oscillator's pin 1 as well, an enable with its own pull-up on the cans that have one.
+**That pin is tied to +5 V since 2026-11-18**, on the VCC plane through its own pad, with no track or via moved:
+the card then runs with a can whose pin 1 is not connected and with one whose pin 1 is an enable, on when high,
+whether or not the enable has a pull-up (section 13 has what is left to read on the data sheet). The order's files
 (`gerbers/`, `video-v4.0-gerbers.zip`) are in the board's folder, written anew by every build; nothing is ordered.
 The folder's README has the check's results in full.
 
@@ -655,7 +658,10 @@ questions; all four are answered (2026-11-14).
   IC24, STG at IC16), each edge rising and falling once; the simulation's closest margins (the holds of 2 ns, the retimed dot); the
   6845's E against R/-W at the first `OUT PB` (as on V2.0); and the bus's own delays, which are
   the V2.0 design's budget's.
-- The VGA socket laid on a 1:1 print of the board; the oscillator's data sheet for its load and its pin 1.
+- The VGA socket laid on a 1:1 print of the board; the oscillator's data sheet for its load and its pin 1. Pin 1 is
+  tied to +5 V on the board (2026-11-18), so the can's pin 1 is to be not connected, or an enable that is on when
+  high (the usual tri-state can: on with pin 1 high or open). Not a can whose output is off with pin 1 high: none
+  was found among the full-size 5 V cans looked at, and the BOM names them.
 
 **Order of work**
 1. This note, checked.

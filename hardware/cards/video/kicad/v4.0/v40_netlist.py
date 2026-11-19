@@ -65,7 +65,7 @@ Pin numbers are the physical DIP pins. Bus pins: the V3.2 DIN 41612 connector (d
 
 CARD = "YACC1 video card"
 REV = "V4.0"
-DATE = "2026-11-13"
+DATE = "2026-11-18"
 
 DIP = {n: "Package_DIP:DIP-%d_W7.62mm" % n for n in (14, 16, 20, 28)}
 DIPW = {n: "Package_DIP:DIP-%d_W15.24mm" % n for n in (28, 32, 40, 48)}
@@ -216,6 +216,9 @@ for ref, (vcc, gnd) in POWER_PINS.items():
 for cap in DECOUPLE:
     c("VCC", cap + ".1"); c("GND", cap + ".2")
 c("VCC", "C1.1", "OSC1.14", *["X1.%s" % p for p in ("A2", "B2", "C2", "A31", "B31", "C31")])
+# the oscillator's pin 1 is tied high (2026-11-18; open until then): a can has nothing on it, or its enable, on when
+# high. The card then runs with either kind, whether or not the enable has a pull-up of its own
+c("VCC", "OSC1.1")
 c("GND", "C1.2", "OSC1.7", *["X1.%s" % p for p in ("A1", "B1", "C1", "A32", "B32", "C32")])
 c("VCC", "R1.1"); c("LEDA", "R1.2", "LED1.2"); c("GND", "LED1.1")
 c("VCC", "R2.1"); PU = "PU"                                                # the F parts' tie-high net (R2)
@@ -438,7 +441,7 @@ NO_CONNECT = {
     "IC11": [15], "IC12": [6, 8], "IC16": [13, 12], "IC18": [1, 26], "IC19": [8], "IC20": [6, 8], "IC21": [3, 11],
     "IC28": [1], "IC33": [8], "IC34": [6, 8], "IC35": [6, 8], "IC40": [6, 8],
     "IC41": [21], "IC45": [6, 8], "IC46": [2, 4, 6], "J4": [3], "J2": [2, 6], "J3": [2, 6],
-    "J1": [4, 9, 11, 12, 15], "OSC1": [1],
+    "J1": [4, 9, 11, 12, 15],
 }
 _X1_USED = ({"A1", "B1", "C1", "A32", "B32", "C32", "A2", "B2", "C2", "A31", "B31", "C31", "B23", "B24", "B25", "B26",
              "C7", "C8", "C9", "C10", "C12", "C13", "C30"} | {"A%d" % n for n in range(3, 27)})
@@ -475,9 +478,13 @@ BUY = {
             "8 x 16 and their cursor forms: to be made)",
     "IC28": "AS6C1008-55PCN (Alliance, 128K x 8, 55 ns, 600-mil DIP-32)",
     "OSC1": "25.175 MHz oscillator, 5 V, full-size DIP-14 can, its output rated for 50 pF or 10 TTL loads (seven 74F "
-            "clock inputs and 240 mm of track hang on it, behind R20), its pin 1 not connected or an enable that is on when left "
-            "open; in a socket: four socket pins or a 4-pin oscillator socket on the DIP-14's corners. PIN 1 AT THE "
-            "SILK'S 1: turned round it has VCC on its ground pin",
+            "clock inputs and 240 mm of track hang on it, behind R20). Its pin 1 is tied to +5 V on the board: buy a can "
+            "whose pin 1 is not connected, or is an enable that is on when high (the usual tri-state can: output on "
+            "with pin 1 high or open, off with it low). NOT a can whose output is off with pin 1 high: none was found "
+            "among the full-size 5 V cans looked at on 2026-11-18 (Abracon ACO, ECS-P145X, Ecliptek EC11, Fox F5C-2E, "
+            "Pletronics P1145), but read pin 1's line in the data sheet of the can that is bought. In a socket: four "
+            "socket pins or a 4-pin oscillator socket on the DIP-14's corners. PIN 1 AT THE SILK'S 1: turned round it "
+            "has VCC on its ground pin and on its output",
     "R20": "33 ohm (22 to 33): the clock's series termination", "R21": "33 ohm (22 to 33)", "R22": "33 ohm (22 to 33)",
     "R23": "33 ohm (22 to 33)",
     "SV1": "2x4 pin header and one 2.54 mm shunt (on 5-6: the $D000 block)",

@@ -433,11 +433,15 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   `pcb-check.ini` has the settings; `tools/bus_pins.py` gives the check the bus's pinout from the Bus Template
   V3.2). The warning: two inputs with nothing on them, the RAM's pin 1 (not connected in the 128K part) and the
   oscillator's pin 1 (an enable with its own pull-up where there is one: **to confirm on the data sheet of the
-  oscillator bought**). Its LABELS warning was settled on the silk: IC10, IC28 and IC41 now read as the parts list
+  oscillator bought**). **2026-11-18: the oscillator's pin 1 is tied to +5 V** - on the VCC plane through its own
+  pad, by `PADS=1 build.sh` on the routed board (no part, track or via moved; ALL CHECKS PASS) - so the card runs
+  with a can whose pin 1 is not connected and with one whose pin 1 is an enable, on when high; and the RAM's pin 1
+  is accepted as it is, open. `pcb-check` again on the new files: no failures, the warning names the RAM's pin
+  alone. Its LABELS warning was settled on the silk: IC10, IC28 and IC41 now read as the parts list
   has them (`SILK=1 build.sh`: silk only, nothing moved). Nothing is ordered.
   **Next, before any order:** the check's pictures and the fab's gerber viewer by eye; the VGA socket laid on a
-  1:1 print; the oscillator's pin 1; then the
-  order. `pcb-check --tests` (the system's `make check`) passes too.
+  1:1 print; the data sheet of the oscillator that is bought (its load; its pin 1 not connected, or an enable
+  that is on when high: the BOM); then the order. `pcb-check --tests` (the system's `make check`) passes too.
   **The emulators' model and the ROM's text driver are written (2026-11-14, branch `video-v2`, now
   `video-v4-software`):**
   the card in both emulators (`software/videomodel.h`; the branch's default card since 2026-11-18), and `ROM
@@ -465,7 +469,7 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   **Decided 2026-11-14: V2.0 is not ordered** - this card alone is built; V2.0 stays on file (the top of this entry).
   Nothing of the note's section 13 is left to decide: the control bits' places, the raster, the font and V2.0's
   order are answered. What is left before an order is the list above (the pre-order check's pictures and the fab's
-  viewer by eye, the VGA socket on a 1:1 print, the oscillator's pin 1), and the order itself.
+  viewer by eye, the VGA socket on a 1:1 print, the bought oscillator's data sheet), and the order itself.
   **For V2.0, had it been ordered (seen 2026-11-12 while simulating this card; V2.0's files are not changed; kept
   for the record, the card will not be built):** its
   slot mode has the strobe as a term of -WE, so a write strobe that ends inside a pulse cuts the pulse short. The
