@@ -245,8 +245,18 @@ alone). pcb-check without `--tests` on that board: **no failures**; its two note
 stands with each. The other 642 texts, the parts, pads, tracks, vias and planes are as they were; of the order's
 fourteen files only the front silkscreen differs, and in it the 413 strokes of those ten texts, each gone from the
 text's old place and drawn at its new one (9566 shapes before and after, 9153 of them untouched). pcb-check
-`f93259d` without `--tests` on that board: **no failures**, the same warning and notes. **The check with `--tests`
-is to be run again on the committed board.**
+`f93259d` without `--tests` on that board: **no failures**, the same warning and notes.
+
+**2026-11-19, with `--tests` on the committed board, commit `7312c10`** (the `+` and the five labels; pcb-check
+`45146a1`, 17 minutes): **no failures, one warning** - 37 lines pass, among them the tree's `make && make check`;
+the warning is the DS12885+ of the table, and its two notes are the table's. Beside the run, the gerbers were held
+against those of `9c96b2e` shape for shape: the four copper layers, both masks and the outline draw the same, the two
+drill files are the same line for line, and on the front silkscreen 413 strokes moved and 2 are new. The board is
+row 11 of pcb-check's `orders/next-order.md`, checked. **This is the board as it stands; nothing is ordered.**
+
+The check's four pictures of the copper draw each pad as the shape it is since pcb-check `e65eabd` (2026-11-19); in
+the pictures of the runs before it a rounded-square pad (pin 1 of every DIP) is a speck, an oval pad a circle. The
+gerbers were right throughout: only the picture was wrong.
 
 **Settled 2026-11-19: the board stays as drawn and checked.** Four layers; the 218 mm length; the panel's
 arrangement (the DB9 and the LEDs at the top edge, the switches, the LCD and the TIL311s under them); the labels,
