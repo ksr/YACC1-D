@@ -34,6 +34,8 @@ Run with KiCad's bundled Python (pcbnew), from this folder:
   gen_io12.py xtal <pcb> <out.pcb>         -> the crystal's two tracks to the clock chip, locked, and the keepouts
                                               round them, before Freerouting
   gen_io12.py drawing <pcb> [out.pdf]      -> the placement drawing, io-v1.2-placement.pdf, on a landscape sheet
+  gen_io12.py geom <pcb> <out.json>        -> the board's outline, silkscreen, bodies, pads and holes in mm, for
+                                              print_1to1.py (the 1:1 check print, io-v1.2-1to1.pdf)
   gen_io12.py silk <pcb> [out]             -> the silkscreen texts placed clear (board() does it on every new board)
   gen_io12.py planes <pcb>                 -> each plane one piece (on the routed board)
   gen_io12.py padnets <netlist> <pcb>      -> the routed board kept: open through-hole pads that the netlist now has on
@@ -1540,6 +1542,65 @@ def drawing(pcb, out=None):
     return ok
 
 
+def geom(pcb, out):
+    """gen_io12.py geom <pcb> <out.json>: what print_1to1.py draws, in board mm, read from the board itself - the
+    outline; the front silkscreen as KiCad's own filled outlines, texts included, so the print shows it as the board
+    has it; the parts' bodies (the Fab layer's lines) the same way; every pad's outline with its hole; each part's
+    place and the box of its body; and the board file's SHA-256, which the print carries: a sheet of paper can be
+    matched to the board it was made from"""
+    import pcbnew, hashlib
+    b = pcbnew.LoadBoard(pcb)
+    T = lambda v: round(pcbnew.ToMM(v), 3)
+    ring = lambda c: [(T(c.CPoint(k).x), T(c.CPoint(k).y)) for k in range(c.PointCount())]
+
+    def rings(ps):                                         # [[outline, hole, hole...], ...]
+        return [[ring(ps.Outline(i))] + [ring(ps.Hole(i, h)) for h in range(ps.HoleCount(i))]
+                for i in range(ps.OutlineCount())]
+
+    silk = pcbnew.SHAPE_POLY_SET()                         # the whole layer, texts and all, as it is plotted
+    b.ConvertBrdLayerToPolygonalContours(pcbnew.F_SilkS, silk)
+    fab = pcbnew.SHAPE_POLY_SET()                          # the bodies' lines alone: the Fab layer's texts (each part's
+    for f in b.GetFootprints():                            # reference and value again, turned with the part) left out
+        for g in f.GraphicalItems():
+            if g.GetClass() == "PCB_SHAPE" and g.GetLayer() == pcbnew.F_Fab:
+                g.TransformShapeToPolygon(fab, pcbnew.F_Fab, 0, pcbnew.FromMM(0.005), pcbnew.ERROR_INSIDE)
+    fab.Simplify()
+
+    cuts = [d for d in b.GetDrawings() if d.GetLayer() == pcbnew.Edge_Cuts]
+    ends = [(T(p.x), T(p.y)) for d in cuts for p in (d.GetStart(), d.GetEnd())]
+    edge = (min(x for x, y in ends), min(y for x, y in ends), max(x for x, y in ends), max(y for x, y in ends))
+    if len(cuts) != 4 or any(d.GetShape() != pcbnew.SHAPE_T_SEGMENT for d in cuts) or \
+            any(x not in (edge[0], edge[2]) or y not in (edge[1], edge[3]) for x, y in ends):
+        raise SystemExit("geom: the outline is no longer four straight lines: print_1to1.py draws a rectangle")
+    back = [f.GetReference() for f in b.GetFootprints() if f.GetLayer() != pcbnew.F_Cu]
+    if back:
+        raise SystemExit("geom: parts on the back (%s): print_1to1.py draws the front only" % ", ".join(back))
+    fps = []
+    for f in sorted(b.GetFootprints(), key=lambda f: f.GetReference()):
+        pads, box = [], None
+        for p in f.Pads():
+            ps = pcbnew.SHAPE_POLY_SET()
+            p.TransformShapeToPolygon(ps, pcbnew.F_Cu, 0, pcbnew.FromMM(0.005), pcbnew.ERROR_INSIDE)
+            size = p.GetSize(pcbnew.F_Cu)
+            pads.append(dict(n=p.GetNumber(), x=T(p.GetPosition().x), y=T(p.GetPosition().y), poly=ring(ps.Outline(0)),
+                             size=sorted((T(size.x), T(size.y))), drill=(T(p.GetDrillSize().x), T(p.GetDrillSize().y)),
+                             plated=p.GetAttribute() != pcbnew.PAD_ATTRIB_NPTH))
+        for g in f.GraphicalItems():                       # the body: what is drawn on the Fab layer, texts apart,
+            if g.GetClass() == "PCB_SHAPE" and g.GetLayer() == pcbnew.F_Fab:               # to the middle of its lines
+                bb, w = g.GetBoundingBox(), pcbnew.ToMM(g.GetWidth()) / 2
+                r = (T(bb.GetX()) + w, T(bb.GetY()) + w, T(bb.GetRight()) - w, T(bb.GetBottom()) - w)
+                box = r if box is None else (min(box[0], r[0]), min(box[1], r[1]), max(box[2], r[2]), max(box[3], r[3]))
+        fps.append(dict(ref=f.GetReference(), value=f.GetValue(), fp=f.GetFPID().GetUniStringLibItemName(),
+                        x=T(f.GetPosition().x), y=T(f.GetPosition().y), rot=f.GetOrientationDegrees(), pads=pads, box=box))
+    tb = b.GetTitleBlock()
+    d = dict(card=N.CARD, rev=N.REV, date=tb.GetDate(), pcb=os.path.basename(pcb),
+             sha256=hashlib.sha256(open(pcb, "rb").read()).hexdigest(), edge=edge,
+             silk=rings(silk), fab=rings(fab), fps=fps)
+    json.dump(d, open(out, "w"))
+    print("geom: %d parts, %d pads, %d silkscreen and %d body outlines -> %s"
+          % (len(fps), sum(len(f["pads"]) for f in fps), len(d["silk"]), len(d["fab"]), os.path.basename(out)))
+
+
 def placement_check(pcb):
     """courtyards must not overlap, every courtyard inside the outline (the connectors' fronts may reach the edge); the
     DIP sockets clear of each other and of the other parts (socket_check)"""
@@ -1765,6 +1826,8 @@ if __name__ == "__main__":
         ok = placement_check(*a)
     elif cmd == "drawing":
         ok = drawing(*a)
+    elif cmd == "geom":
+        geom(*a)
     elif cmd == "silk":
         ok = silk_cmd(*a)
     elif cmd == "planes":
