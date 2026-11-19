@@ -1134,10 +1134,13 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
     Before an order: the check again if the board changes; the check's pictures and the fab's viewer by
     eye; the DB9, a toggle, a TIL311, the LCD module and the cell's holder laid on the 1:1 print (`io-v1.2-1to1.pdf`,
     made 2026-11-19 by `gen_io12.py geom` and `print_1to1.py`: US Letter at 100 %, two 100 mm check bars, the board's
-    figures for the five parts beside it; the folder's README). Seen on that print, to judge by eye: three places
-    where two labels read as one although none overlaps - `C20 100n` runs into JP4's `CTL PORT`, RN2's `RN2` /
-    `10k x8` stand against JP10's `ALWAYS` / `JP10`, S8's `0` stands beside DS1's `TIL311 HI`; moving them is
-    `SILK=1 build.sh` (texts only) and the pre-order check again. After it: the clock's
+    figures for the five parts beside it; the folder's README). Seen on that print: three places where two labels
+    read as one although none overlapped - `C20 100n` ran into JP4's `CTL PORT`, RN2's `RN2` / `10k x8` stood
+    against JP10's `ALWAYS` / `JP10`, S8's `0` stood beside DS1's `TIL311 HI`. **Moved 2026-11-19** (`LABEL_AT` in
+    `gen_io12.py`, `SILK=1 build.sh`): C20's label 1.4 mm towards C19 and JP4's a line higher; RN2's beside the
+    network's top end; DS1's and DS2's under their displays, on two lines each. Ten texts, nothing else: the same
+    proof as for the `+`, and pcb-check without `--tests`: no failures. The check with `--tests` (above) is for
+    the board with both changes. After it: the clock's
     software (`docs/cards/rtc.md` section 6), and the microcode's -IO-ADDR-LD steps (L-2, below) if they are to go.
 - **2026-11-03: every name on the Y1/OS disk is lower case**, as in Unix (`/bin/cat`, `/lib/cc/cc1`, `/man`, `/docs`,
   `/src`, `fruit.txt`, `make.sh`, cc's `ccw.*`, asm's `.asm`/`.img`, `/pipe0.tmp`, `kermit.tmp`), Unix's own capitals

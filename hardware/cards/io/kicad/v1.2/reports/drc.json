@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.kicad.org/drc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-11-19T08:59:41",
+    "date": "2026-11-19T09:10:52",
     "ignored_checks": [
         {
             "description": "Footprint has no courtyard defined",
@@ -194,6 +194,144 @@
                         "y": 96.46
                     },
                     "uuid": "7b530198-8f11-4a38-9c7a-09061cf839d8"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of DS2 on F.Silkscreen",
+                    "pos": {
+                        "x": 173.745,
+                        "y": 105.85
+                    },
+                    "uuid": "20c52c82-64ce-4f3e-a8e9-c4e3a861974d"
+                },
+                {
+                    "description": "PTH pad 7 [GND] of DS2",
+                    "pos": {
+                        "x": 175.777,
+                        "y": 107.12
+                    },
+                    "uuid": "5525b049-7145-43bb-8c17-5e97ad3a2a80"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of DS2 on F.Silkscreen",
+                    "pos": {
+                        "x": 173.745,
+                        "y": 105.85
+                    },
+                    "uuid": "20c52c82-64ce-4f3e-a8e9-c4e3a861974d"
+                },
+                {
+                    "description": "PTH pad 1 [VCC] of DS2",
+                    "pos": {
+                        "x": 191.017,
+                        "y": 107.12
+                    },
+                    "uuid": "384fd902-c08a-4d7d-ab8a-3d51abbdc7e2"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of DS2 on F.Silkscreen",
+                    "pos": {
+                        "x": 173.745,
+                        "y": 105.85
+                    },
+                    "uuid": "20c52c82-64ce-4f3e-a8e9-c4e3a861974d"
+                },
+                {
+                    "description": "PTH pad 2 [/TL1] of DS2",
+                    "pos": {
+                        "x": 188.477,
+                        "y": 107.12
+                    },
+                    "uuid": "59f29e07-46b5-4726-bfc5-0f4a4ee476ce"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of DS2 on F.Silkscreen",
+                    "pos": {
+                        "x": 173.745,
+                        "y": 105.85
+                    },
+                    "uuid": "20c52c82-64ce-4f3e-a8e9-c4e3a861974d"
+                },
+                {
+                    "description": "PTH pad 3 [/TL0] of DS2",
+                    "pos": {
+                        "x": 185.937,
+                        "y": 107.12
+                    },
+                    "uuid": "c7b68c04-e2b2-4f19-9308-3158e32a46d6"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of DS2 on F.Silkscreen",
+                    "pos": {
+                        "x": 173.745,
+                        "y": 105.85
+                    },
+                    "uuid": "20c52c82-64ce-4f3e-a8e9-c4e3a861974d"
+                },
+                {
+                    "description": "PTH pad 4 [unconnected-(DS2-DP_L-Pad4)] of DS2",
+                    "pos": {
+                        "x": 183.397,
+                        "y": 107.12
+                    },
+                    "uuid": "c169ddbd-c13f-446f-8801-26f8429a7894"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_over_copper"
+        },
+        {
+            "description": "Silkscreen clipped by solder mask",
+            "items": [
+                {
+                    "description": "Segment of DS2 on F.Silkscreen",
+                    "pos": {
+                        "x": 173.745,
+                        "y": 105.85
+                    },
+                    "uuid": "20c52c82-64ce-4f3e-a8e9-c4e3a861974d"
+                },
+                {
+                    "description": "PTH pad 5 [GND] of DS2",
+                    "pos": {
+                        "x": 180.857,
+                        "y": 107.12
+                    },
+                    "uuid": "ce7f5186-f979-4f66-8d1d-c8066c148e13"
                 }
             ],
             "severity": "warning",
@@ -447,144 +585,6 @@
                         "y": 103.31
                     },
                     "uuid": "3d444028-09bf-4ae0-b489-bd488eb8a72b"
-                }
-            ],
-            "severity": "warning",
-            "type": "silk_over_copper"
-        },
-        {
-            "description": "Silkscreen clipped by solder mask",
-            "items": [
-                {
-                    "description": "Segment of DS2 on F.Silkscreen",
-                    "pos": {
-                        "x": 173.745,
-                        "y": 105.85
-                    },
-                    "uuid": "20c52c82-64ce-4f3e-a8e9-c4e3a861974d"
-                },
-                {
-                    "description": "PTH pad 7 [GND] of DS2",
-                    "pos": {
-                        "x": 175.777,
-                        "y": 107.12
-                    },
-                    "uuid": "5525b049-7145-43bb-8c17-5e97ad3a2a80"
-                }
-            ],
-            "severity": "warning",
-            "type": "silk_over_copper"
-        },
-        {
-            "description": "Silkscreen clipped by solder mask",
-            "items": [
-                {
-                    "description": "Segment of DS2 on F.Silkscreen",
-                    "pos": {
-                        "x": 173.745,
-                        "y": 105.85
-                    },
-                    "uuid": "20c52c82-64ce-4f3e-a8e9-c4e3a861974d"
-                },
-                {
-                    "description": "PTH pad 1 [VCC] of DS2",
-                    "pos": {
-                        "x": 191.017,
-                        "y": 107.12
-                    },
-                    "uuid": "384fd902-c08a-4d7d-ab8a-3d51abbdc7e2"
-                }
-            ],
-            "severity": "warning",
-            "type": "silk_over_copper"
-        },
-        {
-            "description": "Silkscreen clipped by solder mask",
-            "items": [
-                {
-                    "description": "Segment of DS2 on F.Silkscreen",
-                    "pos": {
-                        "x": 173.745,
-                        "y": 105.85
-                    },
-                    "uuid": "20c52c82-64ce-4f3e-a8e9-c4e3a861974d"
-                },
-                {
-                    "description": "PTH pad 2 [/TL1] of DS2",
-                    "pos": {
-                        "x": 188.477,
-                        "y": 107.12
-                    },
-                    "uuid": "59f29e07-46b5-4726-bfc5-0f4a4ee476ce"
-                }
-            ],
-            "severity": "warning",
-            "type": "silk_over_copper"
-        },
-        {
-            "description": "Silkscreen clipped by solder mask",
-            "items": [
-                {
-                    "description": "Segment of DS2 on F.Silkscreen",
-                    "pos": {
-                        "x": 173.745,
-                        "y": 105.85
-                    },
-                    "uuid": "20c52c82-64ce-4f3e-a8e9-c4e3a861974d"
-                },
-                {
-                    "description": "PTH pad 3 [/TL0] of DS2",
-                    "pos": {
-                        "x": 185.937,
-                        "y": 107.12
-                    },
-                    "uuid": "c7b68c04-e2b2-4f19-9308-3158e32a46d6"
-                }
-            ],
-            "severity": "warning",
-            "type": "silk_over_copper"
-        },
-        {
-            "description": "Silkscreen clipped by solder mask",
-            "items": [
-                {
-                    "description": "Segment of DS2 on F.Silkscreen",
-                    "pos": {
-                        "x": 173.745,
-                        "y": 105.85
-                    },
-                    "uuid": "20c52c82-64ce-4f3e-a8e9-c4e3a861974d"
-                },
-                {
-                    "description": "PTH pad 4 [unconnected-(DS2-DP_L-Pad4)] of DS2",
-                    "pos": {
-                        "x": 183.397,
-                        "y": 107.12
-                    },
-                    "uuid": "c169ddbd-c13f-446f-8801-26f8429a7894"
-                }
-            ],
-            "severity": "warning",
-            "type": "silk_over_copper"
-        },
-        {
-            "description": "Silkscreen clipped by solder mask",
-            "items": [
-                {
-                    "description": "Segment of DS2 on F.Silkscreen",
-                    "pos": {
-                        "x": 173.745,
-                        "y": 105.85
-                    },
-                    "uuid": "20c52c82-64ce-4f3e-a8e9-c4e3a861974d"
-                },
-                {
-                    "description": "PTH pad 5 [GND] of DS2",
-                    "pos": {
-                        "x": 180.857,
-                        "y": 107.12
-                    },
-                    "uuid": "ce7f5186-f979-4f66-8d1d-c8066c148e13"
                 }
             ],
             "severity": "warning",

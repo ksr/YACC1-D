@@ -911,6 +911,24 @@ VALUE_FIELD = {"X1"}
 SHOW_REF = {"J1", "DS1", "DS2", "DS3", "RV1", "BT1"}
 # the parts whose reference stands in a legend of SILK instead (the switches): the footprint's own text hidden
 HIDE_REF = {"S%d" % n for n in range(9)}
+# the labels given their place (2026-11-19): {reference: (x, y, "line" | "stack")} - where the reference's text
+# stands (its centre) and how its companion stands to it: after it on its line, or on the next line down the standing
+# card. silk_place() puts these before it places the rest, and names any that is not clear where it is put. They
+# are the places where the placer, which keeps two texts 0.15 mm apart and knows nothing of what they say, left two
+# labels reading as one (seen on the 1:1 print):
+LABEL_AT = {
+    # IC15's capacitor: 1.4 mm towards C19, as far as C19's outline lets it go. Its "100n" ended 0.33 mm before JP4's
+    # "CTL PORT" on the same line: "C20 100nCTL PORT"
+    "C20": (PLACE["C20"][0] - 2.25, PLACE["C20"][1] - 4.74, "line"),
+    # the control port's block: its name a line higher, off the capacitor's line
+    "JP4": (PLACE["JP4"][0] + 17.07, PLACE["JP4"][1] - 9.53, "stack"),
+    # the pull-ups: beside the network's top end. It stood in JP10's legends: "RN2 ALWAYS" over "10k x8 JP10"
+    "RN2": (PLACE["RN2"][0] + 20.61, PLACE["RN2"][1] + 4.07, "stack"),
+    # the two displays: each one's name under it, on two lines. DS1's stood over it, its second line in the row of
+    # the switches' 0s ("TIL311 HI 0"); DS2's, one line under it, goes the same way so that the pair reads alike
+    "DS1": (PLACE["DS1"][0] - 10.95, PLACE["DS1"][1], "stack"),
+    "DS2": (PLACE["DS2"][0] - 10.95, PLACE["DS2"][1], "stack"),
+}
 UNCONNECTED = {}                                         # filled from the schematic's netlist by board()
 
 
@@ -1112,6 +1130,30 @@ def silk_place(b, comp=None):
     # chip's right as drawn (above it, with the card standing), else at its left
     SIDES = {"right": 0.0, "left": 2.0, "above": 4.0, "below": 6.0}
     del SPLIT[:]                                        # the parts whose value stands apart from the reference
+    # 1b. the labels given their place (LABEL_AT): the reference there, its companion on its line or on the next one,
+    # before the placer takes the rest. One that is not clear there is named: the place is to be chosen again
+    byref = {fp.GetReference(): fp for fp in fps}
+    for ref, (x, y, kind) in sorted(LABEL_AT.items()):
+        t, c = byref[ref].Reference(), comp.get(ref)
+        t.SetVisible(True); t.SetLayer(pcbnew.F_SilkS)
+        for u in (t, c):
+            if u is not None:
+                u.SetTextSize(VECTOR2I(FM(SILK_H), FM(SILK_H))); u.SetTextThickness(FM(SILK_W))
+                u.SetKeepUpright(False)
+                u.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_CENTER); u.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_CENTER)
+        er = extent(t, UP)
+        put(t, x, y, UP)
+        ok = free(ink(t), t)
+        if c is not None:
+            ec = extent(c, UP)                          # (the same two arrangements as the placer's "line" and "stack")
+            pc = (0.0, er[3] + 0.7 - ec[1]) if kind == "line" else (er[0] - 0.35 - ec[2], 0.0)
+            put(c, x + pc[0], y + pc[1], UP)
+            ok = ok and free(ink(c), c) and not hit(ink(c), ink(t, CLR_SILK))
+        if not ok:
+            unclear.append("%s (LABEL_AT)" % ref)
+        placed.append(ink(t, CLR_SILK))
+        if c is not None:
+            placed.append(ink(c, CLR_SILK))
     # 2. the references (ICs, then the others with a companion). A part that found no room beside it (far) is placed
     # earlier in the next round, before the neighbours that took its room; the round with the fewest such parts is kept.
     placed0, unclear0 = list(placed), list(unclear)
@@ -1126,6 +1168,8 @@ def silk_place(b, comp=None):
         for fp in sorted(fps, key=order):
             ref = fp.GetReference()
             t = fp.Reference()
+            if ref in LABEL_AT:                             # placed already, in 1b
+                continue
             if ref in SHOW_REF:                             # a footprint that hides its reference, or keeps it off the silk
                 t.SetVisible(True); t.SetLayer(pcbnew.F_SilkS)
             if ref in HIDE_REF:                             # its reference is one of SILK's legends
