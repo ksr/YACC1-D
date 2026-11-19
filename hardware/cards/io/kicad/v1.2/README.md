@@ -1,7 +1,8 @@
 # I/O card V1.2 - the circuit, the schematic, the routed board
 
 **Designed and routed 2026-11-18; settled as drawn 2026-11-19 (four layers, 218 mm, the panel's arrangement, the
-labels), with a `+` at the cell's holder added to the silkscreen that day. Not ordered.** The V1.1 card in the machine (`../../eagle/v1.1`, built 2020-11-29)
+labels); that day's two changes to the silkscreen: a `+` at the cell's holder, and five labels moved. Not ordered.**
+The V1.1 card in the machine (`../../eagle/v1.1`, built 2020-11-29)
 with what `docs/cards/io.md` section 8 lists for a next revision: a data buffer between the bus and the card, a DS12885
 real-time clock on ports 6 and 7, a TTL serial header, the DB9 at the top edge with the panel under it. **To software
 it is the V1.1 card**: the ROM in the machine runs on it unchanged. `io12_netlist.py` is the card's circuit (parts,
@@ -130,6 +131,19 @@ board beside the holder's neck counts as under it (a `+` there is moved out and 
 along), and a `+` a quarter of a millimetre nearer the bus connector pushes JP9's two labels away. It is 1.2 mm high
 (the labels beside it 1.0).
 
+**Five labels are given their place** (`LABEL_AT` in `gen_io12.py`, 2026-11-19). The placer keeps two texts 0.15 mm
+apart and knows nothing of what they say; on the 1:1 print three places read as one label although nothing
+overlapped. Each of these stands where the table puts it, before the placer places the rest (a place that is not
+clear is named by the build):
+
+| Label | It read as | Where it stands now |
+|---|---|---|
+| `C20 100n` (IC15's capacitor) | `C20 100nCTL PORT`: its value ended 0.33 mm before JP4's name on the same line | 1.4 mm towards C19, as far as C19's outline lets it go |
+| `JP4` / `CTL PORT` | the same | a line higher, off the capacitor's line: 1.7 mm along from `100n` and a line above it |
+| `RN2` / `10k x8` | `RN2 ALWAYS` over `10k x8 JP10`, in among JP10's two positions and its name | beside the network's top end, 4.6 mm above JP10's `-BUS-EN` |
+| `DS1` / `TIL311 HI` | `TIL311 HI 0`: its second line stood in the row of the switches' 0s, 2.6 mm from S8's | under the display, on two lines |
+| `DS2` / `TIL311 LO` | (one line under its display) | under the display, on two lines, as DS1's: the pair reads alike |
+
 **The crystal** (`gen_io12.py xtal`, before the router): Y1 stands beside the clock chip's pins 2 and 3; its two
 tracks, 2.8 mm each on the front, are drawn and locked, and keepouts hold every other track and via off the back
 under them and off the front round them. The GND plane is whole under them.
@@ -191,13 +205,14 @@ and the bodies, to hold against the part or its data sheet:
 | 5 | BT1, the CR2032 holder (Keystone 103) | two pins 20.49 mm apart, holes 1.50 mm; + is pin 1, the square pad |
 
 The foot of the sheet carries the first 16 digits of the board file's SHA-256 (compare them with
-`shasum -a 256 io-v1.2.kicad_pcb`), so a sheet of paper can be matched to the board it was made from: a sheet
-printed before the `+` at the cell's holder (2026-11-19) shows `b1cadcebf2c9a4bf` and is the earlier board. The same
-board gives the same PDF, byte for byte.
+`shasum -a 256 io-v1.2.kicad_pcb`), so a sheet of paper can be matched to the board it was made from. Two earlier
+sheets were made on 2026-11-19: `b1cadcebf2c9a4bf` is the board before the `+` at the cell's holder,
+`7612b5bdf44d3f79` the board with it and before the five labels moved. The same board gives the same PDF, byte for
+byte.
 
-Seen on it, 2026-11-19, three places where two labels read as one although none overlaps: `C20 100n` runs into JP4's
-`CTL PORT`; RN2's `RN2` and `10k x8` stand against JP10's `ALWAYS` and `JP10`; S8's `0` stands beside DS1's
-`TIL311 HI`. Left as they are; moving them is `SILK=1 build.sh` (texts only) and the pre-order check again.
+Seen on the first sheet, 2026-11-19, three places where two labels read as one although none overlapped:
+`C20 100n` ran into JP4's `CTL PORT`; RN2's `RN2` and `10k x8` stood against JP10's `ALWAYS` and `JP10`; S8's `0`
+stood beside DS1's `TIL311 HI`. Moved the same day ("Five labels are given their place", above).
 
 ## The pre-order check
 
@@ -224,8 +239,14 @@ shows with the parts fitted, and notes that the holder's own `+` does not. The m
 is the board's one new text: the other 651 texts, the 89 parts, their 637 pads, the 1644 tracks and vias and the
 planes are as they were, and of the order's fourteen files only the front silkscreen differs, by the mark's two
 strokes (9564 shapes before, the same 9564 and two more after; the other thirteen files differ in their date lines
-alone). pcb-check without `--tests` on that board: **no failures**; its two notes are in the table. **The check
-with `--tests` is to be run again on the committed board.**
+alone). pcb-check without `--tests` on that board: **no failures**; its two notes are in the table.
+
+**2026-11-19, the five labels moved** (`LABEL_AT`, `SILK=1 build.sh`): ten texts, the five references and what
+stands with each. The other 642 texts, the parts, pads, tracks, vias and planes are as they were; of the order's
+fourteen files only the front silkscreen differs, and in it the 413 strokes of those ten texts, each gone from the
+text's old place and drawn at its new one (9566 shapes before and after, 9153 of them untouched). pcb-check
+`f93259d` without `--tests` on that board: **no failures**, the same warning and notes. **The check with `--tests`
+is to be run again on the committed board.**
 
 **Settled 2026-11-19: the board stays as drawn and checked.** Four layers; the 218 mm length; the panel's
 arrangement (the DB9 and the LEDs at the top edge, the switches, the LCD and the TIL311s under them); the labels,

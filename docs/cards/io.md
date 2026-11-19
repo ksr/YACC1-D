@@ -428,9 +428,11 @@ Three things V1.2 changes that were not on the list:
 
 The board passed the pre-order check with the system's tests on 2026-11-18 (no failures; one warning: the clock chip
 is not in the check's table of footprints) and was settled as drawn on 2026-11-19: four layers, 218 mm, the panel as
-above, each reference with its function on the silkscreen. A `+` just under the positive pin of the cell's holder
-was added to the silkscreen that day: the holder's own `+` is printed inside its outline and is covered once the
-holder is fitted. The pre-order check is run again on that board. It is not ordered.
+above, each reference with its function on the silkscreen. Two changes to the silkscreen followed that day. A `+`
+just under the positive pin of the cell's holder: the holder's own `+` is printed inside its outline and is covered
+once the holder is fitted. And five labels moved, where two read as one on the 1:1 print (`C20 100n` into JP4's
+`CTL PORT`, RN2's among JP10's positions, DS1's `TIL311 HI` beside a switch's `0`): the two displays' names now
+stand under them. The pre-order check is run again on that board. It is not ordered.
 
 ### The next device on the ports: CompactFlash on P8/P9
 
