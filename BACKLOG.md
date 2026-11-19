@@ -1134,7 +1134,10 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
     jumper (off) and a RAM-clear jumper. Also: the UART's INT jumper behind IC8/F (on V1.1 an open INT header lets the
     gate's input float high and the gate holds -INT low: **to verify on the card in the machine**); the oscillator's
     pin 1 high. 218 x 114 mm, four layers, `build.sh: ALL CHECKS PASS`. **Not ordered**: row 11 of pcb-check's
-    `orders/next-order.md`. Before an order: `pcb-check --tests`; the check's pictures and the fab's viewer by eye;
+    `orders/next-order.md`. **`pcb-check --layers 4 --tests` at `9c96b2e` (2026-11-18): no failures, one warning**
+    (the DS12885+ is not in pcb-check's table of chips, as on System-5's IO panel). Still to confirm before the
+    board is final: four layers, the 218 mm length, the panel's arrangement, the label style. Before an order: the
+    check again if the board changes; the check's pictures and the fab's viewer by eye;
     the DB9, a toggle, a TIL311 and the LCD module laid on a 1:1 print; the label style (references with the function,
     as the rules have it, or the function alone as on System-5's IO panel). After it: the clock's software
     (`docs/cards/rtc.md` section 6), and the microcode's -IO-ADDR-LD steps (L-2, below) if they are to go.
