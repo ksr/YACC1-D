@@ -882,6 +882,18 @@ SILK += [("ALWAYS", _jx + 1.27, _jy - 2.0 - 0.45 * 6, 1.0, UP), ("-BUS-EN", _jx 
 for _ref, _t in (("JP6", "ON: IN SWITCH"), ("JP7", "ON: UART INT"), ("JP8", "ON: RTC INT"), ("JP9", "ON, POWER OFF: CLEAR")):
     _jx, _jy = PLACE[_ref][:2]
     SILK += [(_t, _jx + (1.27 if _ref == "JP6" else 0.0), _jy + (-2.6 if _ref == "JP6" else 5.6), 1.0, UP)]
+# the cell's polarity (2026-11-19): a + at the holder's positive end (BT1 pin 1, VBAT), just under that pin with the
+# card standing, past the end of the holder: the line under the holder reads "BT1 CR2032 +". The footprint's own +
+# is printed inside the holder's outline, between pin 1 and the cell: it shows which way round the holder goes while
+# the board is bare and is covered once the holder is fitted, so this one is the mark that stays. (Beside the
+# holder's neck there is bare board too, but the silkscreen placer and pcb-check both take the holder's body as the
+# box round its drawing, and the neck's sides are inside that box: a + there was moved out and pushed the two labels
+# 5 mm along.) Its place is exact: 1.2 mm high at 3.3 mm under the pin, its whole text box (which pcb-check's LABELS
+# measures) ends 0.13 mm short of the holder's box and its strokes stand 0.33 mm off JP9's reference. A quarter of a
+# millimetre nearer the bus connector and JP9's two labels are pushed away, as much nearer the holder and the placer
+# moves the + itself
+_jx, _jy = PLACE["BT1"][:2]
+SILK += [("+", _jx - 3.3, _jy + 0.95, 1.2, UP)]
 # the text beside a reference (the board-layout rules): each IC's type, every LED's, switch's and jumper's function,
 # every resistor's, network's, capacitor's and crystal's value, the oscillator's frequency
 TYPE_SHORT = {}

@@ -1,7 +1,7 @@
 # I/O card V1.2 - the circuit, the schematic, the routed board
 
 **Designed and routed 2026-11-18; settled as drawn 2026-11-19 (four layers, 218 mm, the panel's arrangement, the
-labels). Not ordered.** The V1.1 card in the machine (`../../eagle/v1.1`, built 2020-11-29)
+labels), with a `+` at the cell's holder added to the silkscreen that day. Not ordered.** The V1.1 card in the machine (`../../eagle/v1.1`, built 2020-11-29)
 with what `docs/cards/io.md` section 8 lists for a next revision: a data buffer between the bus and the card, a DS12885
 real-time clock on ports 6 and 7, a TTL serial header, the DB9 at the top edge with the panel under it. **To software
 it is the V1.1 card**: the ROM in the machine runs on it unchanged. `io12_netlist.py` is the card's circuit (parts,
@@ -122,6 +122,14 @@ Every silkscreen text reads upright with the card standing (KiCad angle 270); th
 `cottageworker.com` run up the left side edge. Each switch has its reference and bit over it, a 1 above and a 0
 under it; each LED its reference and bit; each jumper block its positions.
 
+**The cell's `+`** (2026-11-19) stands just under the holder's positive pin (BT1 pin 1, VBAT), past the end of the
+holder: the line under it reads `BT1 CR2032 +`. The footprint's own `+` is printed inside the holder's outline,
+between the pin and the cell, and is covered once the holder is fitted; this one stays in sight. Its place is
+narrow: the silkscreen placer and pcb-check both take the holder's body as the box round its drawing, so the bare
+board beside the holder's neck counts as under it (a `+` there is moved out and pushes `BT1` and `CR2032` 5 mm
+along), and a `+` a quarter of a millimetre nearer the bus connector pushes JP9's two labels away. It is 1.2 mm high
+(the labels beside it 1.0).
+
 **The crystal** (`gen_io12.py xtal`, before the router): Y1 stands beside the clock chip's pins 2 and 3; its two
 tracks, 2.8 mm each on the front, are drawn and locked, and keepouts hold every other track and via off the back
 under them and off the front round them. The GND plane is whole under them.
@@ -182,9 +190,10 @@ and the bodies, to hold against the part or its data sheet:
 | 4 | DS3, the LCD module | 16 pins in a row 2.54 mm apart, holes 0.80 mm; four mounting holes 2.80 mm, not plated, 74.92 x 30.92 mm apart; pin 1 is 5.46 mm from the nearest of them; the module 80.0 x 36.0 mm |
 | 5 | BT1, the CR2032 holder (Keystone 103) | two pins 20.49 mm apart, holes 1.50 mm; + is pin 1, the square pad |
 
-The foot of the sheet carries the first 16 digits of the board file's SHA-256 (`shasum -a 256 io-v1.2.kicad_pcb`:
-`b1cadcebf2c9a4bf` for the board checked at `9c96b2e`), so a sheet of paper can be matched to the board it was made
-from. The same board gives the same PDF, byte for byte.
+The foot of the sheet carries the first 16 digits of the board file's SHA-256 (compare them with
+`shasum -a 256 io-v1.2.kicad_pcb`), so a sheet of paper can be matched to the board it was made from: a sheet
+printed before the `+` at the cell's holder (2026-11-19) shows `b1cadcebf2c9a4bf` and is the earlier board. The same
+board gives the same PDF, byte for byte.
 
 Seen on it, 2026-11-19, three places where two labels read as one although none overlaps: `C20 100n` runs into JP4's
 `CTL PORT`; RN2's `RN2` and `10k x8` stand against JP10's `ALWAYS` and `JP10`; S8's `0` stands beside DS1's
@@ -205,9 +214,18 @@ parts; the panel parts are at the front edge.
 |---|---|
 | WARN, FOOTPRINTS | the DS12885+ is not in pcb-check's table of chips, so its footprint is not compared with the part (as on System-5's IO panel). It is KiCad's `DIP-24_W15.24mm` |
 | NOTE, DESIGN | RTC-IRQ# and UINT# are open-collector lines with no pull-up of their own: each ends at its jumper (JP8, JP7), and the pull-up, RN1 on -INT, stands on the other side of it |
+| NOTE, LABELS (pcb-check `7e47352` and later) | BT1's own `+` is printed inside the holder and hidden once it is fitted. It is the library footprint's mark and is left there; the `+` under the positive pin is the one that shows |
 
 The same evening, with `--tests` (the tree's `make && make check`, 18 minutes) on the committed board, commit
-`9c96b2e`: **no failures**, the same one warning. The board file and the order's files have not changed since.
+`9c96b2e`: **no failures**, the same one warning.
+
+**2026-11-19, the `+` at the cell's holder.** pcb-check `7e47352` holds every silkscreen text to the rule that it
+shows with the parts fitted, and notes that the holder's own `+` does not. The mark added for it (`SILK=1 build.sh`)
+is the board's one new text: the other 651 texts, the 89 parts, their 637 pads, the 1644 tracks and vias and the
+planes are as they were, and of the order's fourteen files only the front silkscreen differs, by the mark's two
+strokes (9564 shapes before, the same 9564 and two more after; the other thirteen files differ in their date lines
+alone). pcb-check without `--tests` on that board: **no failures**; its two notes are in the table. **The check
+with `--tests` is to be run again on the committed board.**
 
 **Settled 2026-11-19: the board stays as drawn and checked.** Four layers; the 218 mm length; the panel's
 arrangement (the DB9 and the LEDs at the top edge, the switches, the LCD and the TIL311s under them); the labels,
