@@ -121,6 +121,26 @@ The I/O card is the natural home once it is revised: most of the circuit of sect
 This replaces the small card of section 5 as the plan when the I/O card is revised; the protocard prototype is still
 the quickest way to prove the software first, on the same ports.
 
+**Drawn 2026-11-18, on the I/O card V1.2** (`hardware/cards/io/kicad/v1.2`, `docs/cards/io.md` section 8; designed and
+routed, not ordered). As drawn:
+
+- **The chip**: a DS12885+ in the 24-pin PDIP, with a 32.768 kHz crystal for a 6 pF load (Y1, beside the chip's pins 2
+  and 3: 3 mm of track each, nothing else routed beside or under them) and a CR2032 in a flat holder (BT1, Keystone
+  103) straight on VBAT. Its pins are the data sheet's as System-5's IO panel has them (`~/Developer/elf`
+  `hardware/io-panel/kicad/rev-a`, read from the data sheet on 2026-11-18): MOT low for Intel bus timing, -CS low,
+  -RESET high (the data sheet's typical connection: the control registers then keep their state through a power
+  failure), SQW open.
+- **The strobes**, from the bus's own -IO-RD and -IO-WR and the card's selects of ports 6 and 7: AS = NOT(-IO-SEL6 OR
+  -IO-WR), the chip's DS = -IO-SEL7 OR -IO-RD, its R/-W = -IO-SEL7 OR -IO-WR (a 74LS32 and a spare gate of the card's
+  74LS00). AS falls as -IO-WR ends, with the register number still on the data lines: the microcode holds it a step.
+- **The data lines**: the card's ID0-7, behind its 74LS245.
+- **-IRQ**: open drain, to the bus -INT through JP8 (off). The pull-up is the card's RN1 (2.2k: 2.3 mA, inside the
+  chip's 4 mA).
+- **-RCLR**: JP9 to GND, no pull-up (the chip has its own, and its data sheet asks for none outside). Fitted for a
+  moment with the power off, it clears the chip's 114 bytes of RAM, never the clock.
+- **The ports**: the card's ports 6 and 7, P6 and P7 with the card in the low half (its JP3), so the software of section
+  6 stands as written.
+
 ## 6. Software
 
 In the order it can be done, all testable on the emulators before the hardware exists:
@@ -150,7 +170,7 @@ In the order it can be done, all testable on the emulators before the hardware e
 
 - The DS12C887's pinout, timing, RESET and shipped oscillator state from its data sheet (sections 2 and 4).
 - P6/P7: confirm on the I/O card that no header jumper selects them.
-- A card of its own, the protocard first, or (proposed 2026-11-12, section 5.1) on the I/O card V1.2.
-- DS12885 + coin cell or the DS12C887 module: availability and price of both.
-- The interrupt: wire INT-EN now (off), or leave it out until the OS has interrupts.
+- A card of its own, the protocard first, or on the I/O card V1.2: **on the I/O card V1.2 (2026-11-18, section 5.1)**.
+- DS12885 + coin cell or the DS12C887 module: **the DS12885 with a CR2032 (2026-11-18)**.
+- The interrupt: **wired, through a jumper that is left off (JP8 on the I/O card V1.2)**.
 - File dates: the FAT layout in bytes 26-29, and P8X's use of the spare bytes.

@@ -1,0 +1,67 @@
+{
+    "$schema": "https://schemas.kicad.org/erc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-11-18T22:45:16",
+    "ignored_checks": [
+        {
+            "description": "Global label only appears once in the schematic",
+            "key": "single_global_label"
+        },
+        {
+            "description": "Four connection points are joined together",
+            "key": "four_way_junction"
+        },
+        {
+            "description": "SPICE model issue",
+            "key": "simulation_model_issue"
+        },
+        {
+            "description": "Assigned footprint doesn't match footprint filters",
+            "key": "footprint_filter"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.6",
+    "sheets": [
+        {
+            "path": "/",
+            "uuid_path": "/7eb9afc0-2202-5830-b320-407a54f6a248",
+            "violations": []
+        },
+        {
+            "path": "/Bus and ports/",
+            "uuid_path": "/7eb9afc0-2202-5830-b320-407a54f6a248/81425634-1063-5156-a0e9-d5f74c150724",
+            "violations": []
+        },
+        {
+            "path": "/UART/",
+            "uuid_path": "/7eb9afc0-2202-5830-b320-407a54f6a248/280b93ba-6c87-5161-90ce-c630480adf01",
+            "violations": []
+        },
+        {
+            "path": "/Panel/",
+            "uuid_path": "/7eb9afc0-2202-5830-b320-407a54f6a248/e8743122-9b04-52e2-bc30-755b8249168d",
+            "violations": []
+        },
+        {
+            "path": "/LCD/",
+            "uuid_path": "/7eb9afc0-2202-5830-b320-407a54f6a248/b9e106eb-6564-502b-8cc2-c87b344bb048",
+            "violations": []
+        },
+        {
+            "path": "/Clock/",
+            "uuid_path": "/7eb9afc0-2202-5830-b320-407a54f6a248/a5f4509d-12c4-50e4-8e72-19aefdf37cb3",
+            "violations": []
+        },
+        {
+            "path": "/Power/",
+            "uuid_path": "/7eb9afc0-2202-5830-b320-407a54f6a248/2c94ecf5-9708-53b3-9618-aa170381633d",
+            "violations": []
+        }
+    ],
+    "source": "io-v1.2.kicad_sch"
+}
