@@ -1,6 +1,7 @@
 # I/O card V1.2 - the circuit, the schematic, the routed board
 
-**Designed and routed 2026-11-18. Not ordered.** The V1.1 card in the machine (`../../eagle/v1.1`, built 2020-11-29)
+**Designed and routed 2026-11-18; settled as drawn 2026-11-19 (four layers, 218 mm, the panel's arrangement, the
+labels). Not ordered.** The V1.1 card in the machine (`../../eagle/v1.1`, built 2020-11-29)
 with what `docs/cards/io.md` section 8 lists for a next revision: a data buffer between the bus and the card, a DS12885
 real-time clock on ports 6 and 7, a TTL serial header, the DB9 at the top edge with the panel under it. **To software
 it is the V1.1 card**: the ROM in the machine runs on it unchanged. `io12_netlist.py` is the card's circuit (parts,
@@ -170,11 +171,18 @@ parts; the panel parts are at the front edge.
 | WARN, FOOTPRINTS | the DS12885+ is not in pcb-check's table of chips, so its footprint is not compared with the part (as on System-5's IO panel). It is KiCad's `DIP-24_W15.24mm` |
 | NOTE, DESIGN | RTC-IRQ# and UINT# are open-collector lines with no pull-up of their own: each ends at its jumper (JP8, JP7), and the pull-up, RN1 on -INT, stands on the other side of it |
 
+The same evening, with `--tests` (the tree's `make && make check`, 18 minutes) on the committed board, commit
+`9c96b2e`: **no failures**, the same one warning. The board file and the order's files have not changed since.
+
+**Settled 2026-11-19: the board stays as drawn and checked.** Four layers; the 218 mm length; the panel's
+arrangement (the DB9 and the LEDs at the top edge, the switches, the LCD and the TIL311s under them); the labels,
+each reference with its function (`S7 BIT 7`, `LED8 OUT`), as the board-layout rules have it.
+
 ## Next
 
-1. Before any order: `pcb-check --tests` on the committed board; the check's four pictures of the copper and the zip
-   in the fab's gerber viewer, by eye; the DB9, a toggle, a TIL311, the LCD module and the cell's holder laid on a
-   1:1 print of the board.
+1. Before any order: the check's four pictures of the copper and the zip in the fab's gerber viewer, by eye; the
+   DB9, a toggle, a TIL311, the LCD module and the cell's holder laid on a 1:1 print of the board. `pcb-check
+   --tests` again if the board changes.
 2. To verify on the V1.1 card in the machine: whether its INT header is fitted and what -INT reads (above); the
    frequency on its oscillator can (1.8432 MHz is what the monitor's divisor says); the fitted values of RN2 and
    R3-R10, for the record.

@@ -1122,12 +1122,13 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
     gate's input float high and the gate holds -INT low: **to verify on the card in the machine**); the oscillator's
     pin 1 high. 218 x 114 mm, four layers, `build.sh: ALL CHECKS PASS`. **Not ordered**: row 11 of pcb-check's
     `orders/next-order.md`. **`pcb-check --layers 4 --tests` at `9c96b2e` (2026-11-18): no failures, one warning**
-    (the DS12885+ is not in pcb-check's table of chips, as on System-5's IO panel). Still to confirm before the
-    board is final: four layers, the 218 mm length, the panel's arrangement, the label style. Before an order: the
-    check again if the board changes; the check's pictures and the fab's viewer by eye;
-    the DB9, a toggle, a TIL311 and the LCD module laid on a 1:1 print; the label style (references with the function,
-    as the rules have it, or the function alone as on System-5's IO panel). After it: the clock's software
-    (`docs/cards/rtc.md` section 6), and the microcode's -IO-ADDR-LD steps (L-2, below) if they are to go.
+    (the DS12885+ is not in pcb-check's table of chips, as on System-5's IO panel). **Settled 2026-11-19: the board
+    stays as drawn and checked** - four layers, the 218 mm length, the panel's arrangement (the DB9 and the LEDs at
+    the top edge, the switches, the LCD and the TIL311s under them) and the labels (each reference with its function,
+    as the rules have it; not the function alone, as on System-5's IO panel). The board file is the one checked at
+    `9c96b2e`. Before an order: the check again if the board changes; the check's pictures and the fab's viewer by
+    eye; the DB9, a toggle, a TIL311, the LCD module and the cell's holder laid on a 1:1 print. After it: the clock's
+    software (`docs/cards/rtc.md` section 6), and the microcode's -IO-ADDR-LD steps (L-2, below) if they are to go.
 - **2026-11-03: every name on the Y1/OS disk is lower case**, as in Unix (`/bin/cat`, `/lib/cc/cc1`, `/man`, `/docs`,
   `/src`, `fruit.txt`, `make.sh`, cc's `ccw.*`, asm's `.asm`/`.img`, `/pipe0.tmp`, `kermit.tmp`), Unix's own capitals
   kept (`README`, the `Makefile`s). Both kernels look up `/bin/name` with the command word lower-cased (any case runs
