@@ -17,10 +17,11 @@
 # DRC of that alone; one Freerouting run per DSN component order (SEEDS, in parallel; Power = GND/VCC not routed:
 # -inc Power; the crystal's tracks are fixed wiring to it), each imported, its planes refilled and DRC'd; the best
 # kept (fewest unrouted, then fewest vias, then shortest) and its planes made one piece each (gen_io12.py planes);
-# the reports (netlist, ERC, DRC with schematic parity, schematic PDF, the placement drawing, renders, netlist proof,
-# BOM); gen_io12.py verify; and, when every check has passed, the order's files (gen_io12.py fab: gerbers/ and the
-# zip that pcb-check reads). Needs KiCad 10 and Freerouting 1.9 (FRJAR, default ~/freerouting/freerouting.jar; it
-# opens a window for each run while it works).
+# the reports (netlist, ERC, DRC with schematic parity, schematic PDF, the placement drawing, the 1:1 check print,
+# renders, netlist proof, BOM); gen_io12.py verify; and, when every check has passed, the order's files (gen_io12.py
+# fab: gerbers/ and the zip that pcb-check reads). Needs KiCad 10 and Freerouting 1.9 (FRJAR, default
+# ~/freerouting/freerouting.jar; it opens a window for each run while it works); the 1:1 print needs reportlab in the
+# system python3.
 HERE=$(cd "$(dirname "$0")" && pwd)
 PYK=/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3
 CLI=/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli
@@ -151,6 +152,9 @@ echo "== 4  reports =="
 "$CLI" pcb render --side top --width 2400 --height 1200 --zoom 1.9 -o "$R/$P-top.png" "$P.kicad_pcb" >/dev/null 2>&1
 "$CLI" pcb render --side bottom --width 2400 --height 1200 --zoom 1.9 -o "$R/$P-bottom.png" "$P.kicad_pcb" >/dev/null 2>&1
 "$PYK" gen_io12.py drawing "$P.kicad_pcb" 2>&1 | q
+# the 1:1 check print, US Letter: the board's own silkscreen, pads, holes and bodies (to lay the parts on, by hand)
+{ run "$PYK" gen_io12.py geom "$P.kicad_pcb" "$TMP/geom.json" && python3 print_1to1.py "$TMP/geom.json" "$P-1to1.pdf"; } ||
+  { rm -f "$P-1to1.pdf"; echo "  1:1 print: NOT made (reportlab in the system python3?)"; }   # none, rather than another board's
 "$PYK" gen_io12.py bom 2>&1 | q
 python3 ../../../../../tools/kicad/compare_netlists.py "$R/netlist.net" "$P.kicad_pcb" > "$R/netlist-compare.txt"
 tail -1 "$R/netlist-compare.txt"

@@ -146,6 +146,7 @@ the fab clips); the board's nets equal to the schematic's (`reports/netlist-comp
 | `gen_io12.py xtal <unrouted.kicad_pcb> <out.kicad_pcb>` | the crystal's two tracks, locked, and the keepouts round them |
 | `gen_io12.py verify reports/netlist.net <pcb>` | 279 key connections pin by pin, in the schematic and on the board; the layers; the planes |
 | `gen_io12.py drawing <pcb>` | `io-v1.2-placement.pdf` |
+| `gen_io12.py geom <pcb> <out.json>`, then `python3 print_1to1.py <out.json> io-v1.2-1to1.pdf` | the 1:1 check print (below): KiCad's Python reads the board, the system python3 (reportlab) draws the sheet |
 | `gen_io12.py bom` | `BOM.md` |
 | `gen_io12.py fab <pcb>` | the order's files: `gerbers/` and `io-v1.2-gerbers.zip`. It orders nothing |
 | `build.sh` | all of it, with the routing, the reports, the checks and, when they pass, the order's files (about two minutes) |
@@ -154,6 +155,40 @@ the fab clips); the board's nets equal to the schematic's (`reports/netlist-comp
 
 `gen_io12.py` is made from the video card V4.0's generator (`../../../video/kicad/v4.0/gen_v40.py`): the sheet
 writer's use, the silkscreen placer, the planes and the checks are its code.
+
+## The 1:1 check print
+
+`io-v1.2-1to1.pdf` (2026-11-19; `build.sh` makes it on every build): one US Letter sheet, portrait, with the board at
+1:1, component side up, as the card stands in the backplane - X1 at the bottom, the front edge at the top, so the
+silkscreen reads upright. **Print it at 100 % ("Actual size", not "Fit") and measure its two 100 mm bars, one across
+and one down, before laying anything on it.**
+
+- Black is the silkscreen as the board has it: KiCad's own outlines of every text and line, so the labels are seen
+  at their real size.
+- Grey is each pad, with its hole at the drilled size in white (a cross in the holes of 1.5 mm and more).
+- Blue is the parts' bodies (the Fab layer's lines): the DB9's D past the front edge, the LCD module, the cell's
+  holder.
+- Yellow marks the five parts to lay on it, numbered. Every pin must stand in a white hole and the body inside its
+  blue outline.
+
+Beside the board the sheet lists what the board has for each of the five, measured by `print_1to1.py` from the pads
+and the bodies, to hold against the part or its data sheet:
+
+| | Part | On the board |
+|---|---|---|
+| 1 | J1, the DB9 socket (right angle) | 9 pins in two rows 2.84 mm apart, 2.77 mm from pin to pin, holes 1.02 mm; mounting holes 25.00 mm apart, 3.30 mm, their line 10.17 mm inside the front edge; the body 5.6 mm beyond the edge |
+| 2 | S0-S8, the M9040P toggle | three lugs 4.70 mm apart, holes 1.80 mm, pads 2.71 x 5.41 mm; switch to switch 10.16 mm |
+| 3 | DS1, DS2, the TIL311 | 11 pins of 14 (no pin 6, 9, 11), rows 7.62 mm apart, 2.54 mm from pin to pin, holes 0.81 mm |
+| 4 | DS3, the LCD module | 16 pins in a row 2.54 mm apart, holes 0.80 mm; four mounting holes 2.80 mm, not plated, 74.92 x 30.92 mm apart; pin 1 is 5.46 mm from the nearest of them; the module 80.0 x 36.0 mm |
+| 5 | BT1, the CR2032 holder (Keystone 103) | two pins 20.49 mm apart, holes 1.50 mm; + is pin 1, the square pad |
+
+The foot of the sheet carries the first 16 digits of the board file's SHA-256 (`shasum -a 256 io-v1.2.kicad_pcb`:
+`b1cadcebf2c9a4bf` for the board checked at `9c96b2e`), so a sheet of paper can be matched to the board it was made
+from. The same board gives the same PDF, byte for byte.
+
+Seen on it, 2026-11-19, three places where two labels read as one although none overlaps: `C20 100n` runs into JP4's
+`CTL PORT`; RN2's `RN2` and `10k x8` stand against JP10's `ALWAYS` and `JP10`; S8's `0` stands beside DS1's
+`TIL311 HI`. Left as they are; moving them is `SILK=1 build.sh` (texts only) and the pre-order check again.
 
 ## The pre-order check
 
@@ -181,8 +216,8 @@ each reference with its function (`S7 BIT 7`, `LED8 OUT`), as the board-layout r
 ## Next
 
 1. Before any order: the check's four pictures of the copper and the zip in the fab's gerber viewer, by eye; the
-   DB9, a toggle, a TIL311, the LCD module and the cell's holder laid on a 1:1 print of the board. `pcb-check
-   --tests` again if the board changes.
+   DB9, a toggle, a TIL311, the LCD module and the cell's holder laid on the 1:1 print (`io-v1.2-1to1.pdf`, above).
+   `pcb-check --tests` again if the board changes.
 2. To verify on the V1.1 card in the machine: whether its INT header is fitted and what -INT reads (above); the
    frequency on its oscillator can (1.8432 MHz is what the monitor's divisor says); the fitted values of RN2 and
    R3-R10, for the record.

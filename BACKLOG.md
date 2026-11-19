@@ -1127,7 +1127,12 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
     the top edge, the switches, the LCD and the TIL311s under them) and the labels (each reference with its function,
     as the rules have it; not the function alone, as on System-5's IO panel). The board file is the one checked at
     `9c96b2e`. Before an order: the check again if the board changes; the check's pictures and the fab's viewer by
-    eye; the DB9, a toggle, a TIL311, the LCD module and the cell's holder laid on a 1:1 print. After it: the clock's
+    eye; the DB9, a toggle, a TIL311, the LCD module and the cell's holder laid on the 1:1 print (`io-v1.2-1to1.pdf`,
+    made 2026-11-19 by `gen_io12.py geom` and `print_1to1.py`: US Letter at 100 %, two 100 mm check bars, the board's
+    figures for the five parts beside it; the folder's README). Seen on that print, to judge by eye: three places
+    where two labels read as one although none overlaps - `C20 100n` runs into JP4's `CTL PORT`, RN2's `RN2` /
+    `10k x8` stand against JP10's `ALWAYS` / `JP10`, S8's `0` stands beside DS1's `TIL311 HI`; moving them is
+    `SILK=1 build.sh` (texts only) and the pre-order check again. After it: the clock's
     software (`docs/cards/rtc.md` section 6), and the microcode's -IO-ADDR-LD steps (L-2, below) if they are to go.
 - **2026-11-03: every name on the Y1/OS disk is lower case**, as in Unix (`/bin/cat`, `/lib/cc/cc1`, `/man`, `/docs`,
   `/src`, `fruit.txt`, `make.sh`, cc's `ccw.*`, asm's `.asm`/`.img`, `/pipe0.tmp`, `kermit.tmp`), Unix's own capitals
