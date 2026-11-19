@@ -1138,8 +1138,13 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
     (the DS12885+ is not in pcb-check's table of chips, as on System-5's IO panel). **Settled 2026-11-19: the board
     stays as drawn and checked** - four layers, the 218 mm length, the panel's arrangement (the DB9 and the LEDs at
     the top edge, the switches, the LCD and the TIL311s under them) and the labels (each reference with its function,
-    as the rules have it; not the function alone, as on System-5's IO panel). The board file is the one checked at
-    `9c96b2e`. Before an order: the check again if the board changes; the check's pictures and the fab's viewer by
+    as the rules have it; not the function alone, as on System-5's IO panel). **2026-11-19: a `+` on the silkscreen
+    just under the holder's positive pin** (BT1 pin 1; the line reads `BT1 CR2032 +`), where it shows with the holder
+    fitted: the holder's own `+` is inside its outline and covered then (pcb-check `7e47352` notes it). `SILK=1
+    build.sh`: the one new text, no other text, part, track or plane moved; of the order's files only the front
+    silkscreen differs. pcb-check without `--tests` on it: no failures. **The check with `--tests` to be run again on
+    the committed board** (the result at `9c96b2e` is the board before the mark).
+    Before an order: the check again if the board changes; the check's pictures and the fab's viewer by
     eye; the DB9, a toggle, a TIL311, the LCD module and the cell's holder laid on the 1:1 print (`io-v1.2-1to1.pdf`,
     made 2026-11-19 by `gen_io12.py geom` and `print_1to1.py`: US Letter at 100 %, two 100 mm check bars, the board's
     figures for the five parts beside it; the folder's README). Seen on that print, to judge by eye: three places

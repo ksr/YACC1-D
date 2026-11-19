@@ -428,7 +428,9 @@ Three things V1.2 changes that were not on the list:
 
 The board passed the pre-order check with the system's tests on 2026-11-18 (no failures; one warning: the clock chip
 is not in the check's table of footprints) and was settled as drawn on 2026-11-19: four layers, 218 mm, the panel as
-above, each reference with its function on the silkscreen. It is not ordered.
+above, each reference with its function on the silkscreen. A `+` just under the positive pin of the cell's holder
+was added to the silkscreen that day: the holder's own `+` is printed inside its outline and is covered once the
+holder is fitted. The pre-order check is run again on that board. It is not ordered.
 
 ### The next device on the ports: CompactFlash on P8/P9
 
