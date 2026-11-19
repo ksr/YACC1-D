@@ -7,6 +7,8 @@
 #
 #   hardware/cards/video/kicad/v4.0/build.sh        rebuild everything from v40_netlist.py, then verify
 #   SILK=1 hardware/cards/video/kicad/v4.0/build.sh the routed board kept: its silkscreen texts anew, then verify
+#   PADS=1 hardware/cards/video/kicad/v4.0/build.sh the routed board kept through a netlist change that needs no track:
+#                                                   the schematic anew, open pads joined to a plane, then verify
 #
 # Steps: gen_v40.py sch (local libraries + the schematic: a root and eight wired sheets, node + elkjs) and its netlist
 # checked against v40_netlist.py; the project rules; the unrouted board (gen_v40.py board: the blank card's X1, a
@@ -38,6 +40,12 @@ KEEP=${KEEP:-}               # a folder to keep each run's log and board in (for
 SILK=${SILK:-}               # SILK=1: no new board and no routing - the board as it is gets its silkscreen texts
                              # written and placed afresh (gen_v40.py silk: no part, track, via or plane is touched),
                              # then the reports, the checks and the order's files as after any build
+PADS=${PADS:-}               # PADS=1: no new board and no routing, for a change in v40_netlist.py that only ties
+                             # open pins to GND or VCC (2026-11-18: the oscillator's pin 1 to VCC). The schematic is
+                             # written anew and checked as in step 1; gen_v40.py padnets gives those through-hole
+                             # pads their net on the board as it is and refuses any other difference (that needs a
+                             # route: the whole build); the planes are filled again, which joins the pads; then the
+                             # reports, the checks and the order's files. No part, track or via is touched
 WATCHDOG=${WATCHDOG:-14400}  # seconds of running time (a sleeping Mac's hours do not count): the four runs of the
                              # committed board took 9580 s, those of 2026-11-13 7950 s (8 hours by the clock: the
                              # Mac slept three times). A run stopped while it optimises leaves no result
@@ -59,6 +67,17 @@ if [ -n "$SILK" ]; then
   echo "== the silk only: the board as it is, its texts written and placed afresh =="
   [ -f "$P.kicad_pcb" ] || { echo "no board"; exit 1; }
   run "$PYK" gen_v40.py silk "$P.kicad_pcb" || exit 1
+elif [ -n "$PADS" ]; then
+  echo "== the routed board kept: the schematic anew, open pads the netlist now has on a plane joined to it =="
+  [ -f "$P.kicad_pcb" ] || { echo "no board"; exit 1; }
+  "$PYK" gen_v40.py sch 2>&1 | q
+  "$PYK" gen_v40.py project 2>&1 | q
+  "$CLI" sch export netlist --format kicadsexpr -o "$R/netlist.net" "$P.kicad_sch" >/dev/null 2>&1 || exit 1
+  run "$PYK" gen_v40.py checknet "$R/netlist.net" || exit 1
+  run "$PYK" gen_v40.py padnets "$R/netlist.net" "$P.kicad_pcb" || exit 1
+  # the planes filled again: the pads joined, each plane still one piece
+  "$PYK" gen_v40.py planes "$P.kicad_pcb" > "$TMP/planes.log" 2>&1; st=$?
+  q < "$TMP/planes.log"; [ $st = 0 ] || exit 1
 else
 echo "== 1  schematic, netlist, project rules, the unrouted board =="
 "$PYK" gen_v40.py sch 2>&1 | q

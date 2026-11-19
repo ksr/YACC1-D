@@ -1,8 +1,8 @@
 (export
 	(version "E")
 	(design
-		(source "/Users/ksr77/Developer/YACC1-D/hardware/cards/video/kicad/v4.0/video-v4.0.kicad_sch")
-		(date "2026-11-13T23:18:52")
+		(source "/Users/ken/Developer/YACC1-D/hardware/cards/video/kicad/v4.0/video-v4.0.kicad_sch")
+		(date "2026-11-18T21:21:19")
 		(tool "Eeschema 10.0.6")
 		(sheet
 			(number "1")
@@ -12,7 +12,7 @@
 				(title "YACC1 video card V4.0")
 				(company "YACC1")
 				(rev "V4.0")
-				(date "2026-11-13")
+				(date "2026-11-18")
 				(source "video-v4.0.kicad_sch")
 				(comment
 					(number "1")
@@ -60,7 +60,7 @@
 				(title "YACC1 video card V4.0: Bus and ports")
 				(company "YACC1")
 				(rev "V4.0")
-				(date "2026-11-13")
+				(date "2026-11-18")
 				(source "video-v4.0-bus.kicad_sch")
 				(comment
 					(number "1")
@@ -108,7 +108,7 @@
 				(title "YACC1 video card V4.0: CRTC and clock")
 				(company "YACC1")
 				(rev "V4.0")
-				(date "2026-11-13")
+				(date "2026-11-18")
 				(source "video-v4.0-crtc.kicad_sch")
 				(comment
 					(number "1")
@@ -156,7 +156,7 @@
 				(title "YACC1 video card V4.0: Text")
 				(company "YACC1")
 				(rev "V4.0")
-				(date "2026-11-13")
+				(date "2026-11-18")
 				(source "video-v4.0-text.kicad_sch")
 				(comment
 					(number "1")
@@ -204,7 +204,7 @@
 				(title "YACC1 video card V4.0: Graphics RAM")
 				(company "YACC1")
 				(rev "V4.0")
-				(date "2026-11-13")
+				(date "2026-11-18")
 				(source "video-v4.0-gfx.kicad_sch")
 				(comment
 					(number "1")
@@ -252,7 +252,7 @@
 				(title "YACC1 video card V4.0: Slots")
 				(company "YACC1")
 				(rev "V4.0")
-				(date "2026-11-13")
+				(date "2026-11-18")
 				(source "video-v4.0-slot.kicad_sch")
 				(comment
 					(number "1")
@@ -300,7 +300,7 @@
 				(title "YACC1 video card V4.0: Dots and syncs")
 				(company "YACC1")
 				(rev "V4.0")
-				(date "2026-11-13")
+				(date "2026-11-18")
 				(source "video-v4.0-video.kicad_sch")
 				(comment
 					(number "1")
@@ -348,7 +348,7 @@
 				(title "YACC1 video card V4.0: PS2")
 				(company "YACC1")
 				(rev "V4.0")
-				(date "2026-11-13")
+				(date "2026-11-18")
 				(source "video-v4.0-ps2.kicad_sch")
 				(comment
 					(number "1")
@@ -396,7 +396,7 @@
 				(title "YACC1 video card V4.0: Power")
 				(company "YACC1")
 				(rev "V4.0")
-				(date "2026-11-13")
+				(date "2026-11-18")
 				(source "video-v4.0-power.kicad_sch")
 				(comment
 					(number "1")
@@ -22177,6 +22177,12 @@
 			)
 			(node
 				(ref "OSC1")
+				(pin "1")
+				(pinfunction "EN_1")
+				(pintype "input")
+			)
+			(node
+				(ref "OSC1")
 				(pin "14")
 				(pinfunction "Vcc_14")
 				(pintype "power_in")
@@ -22773,17 +22779,6 @@
 		)
 		(net
 			(code "300")
-			(name "unconnected-(OSC1-EN-Pad1)")
-			(class "Default")
-			(node
-				(ref "OSC1")
-				(pin "1")
-				(pinfunction "EN_1")
-				(pintype "input+no_connect")
-			)
-		)
-		(net
-			(code "301")
 			(name "unconnected-(X1A-DATA8-PadA27)")
 			(class "Default")
 			(node
@@ -22794,7 +22789,7 @@
 			)
 		)
 		(net
-			(code "302")
+			(code "301")
 			(name "unconnected-(X1A-DATA9-PadA28)")
 			(class "Default")
 			(node
@@ -22805,7 +22800,7 @@
 			)
 		)
 		(net
-			(code "303")
+			(code "302")
 			(name "unconnected-(X1A-DATA10-PadA29)")
 			(class "Default")
 			(node
@@ -22816,7 +22811,7 @@
 			)
 		)
 		(net
-			(code "304")
+			(code "303")
 			(name "unconnected-(X1A-DATA11-PadA30)")
 			(class "Default")
 			(node
@@ -22827,7 +22822,7 @@
 			)
 		)
 		(net
-			(code "305")
+			(code "304")
 			(name "unconnected-(X1B--REG-DN-PadB21)")
 			(class "Default")
 			(node
@@ -22838,7 +22833,7 @@
 			)
 		)
 		(net
-			(code "306")
+			(code "305")
 			(name "unconnected-(X1B--REG-FUNC-LD-PadB8)")
 			(class "Default")
 			(node
@@ -22849,7 +22844,7 @@
 			)
 		)
 		(net
-			(code "307")
+			(code "306")
 			(name "unconnected-(X1B--REG-FUNC-RD-PadB7)")
 			(class "Default")
 			(node
@@ -22860,7 +22855,7 @@
 			)
 		)
 		(net
-			(code "308")
+			(code "307")
 			(name "unconnected-(X1B--REG-LD-HI-PadB20)")
 			(class "Default")
 			(node
@@ -22871,7 +22866,7 @@
 			)
 		)
 		(net
-			(code "309")
+			(code "308")
 			(name "unconnected-(X1B--REG-LD-LO-PadB18)")
 			(class "Default")
 			(node
@@ -22882,7 +22877,7 @@
 			)
 		)
 		(net
-			(code "310")
+			(code "309")
 			(name "unconnected-(X1B--REG-RD-HI-PadB19)")
 			(class "Default")
 			(node
@@ -22893,7 +22888,7 @@
 			)
 		)
 		(net
-			(code "311")
+			(code "310")
 			(name "unconnected-(X1B--REG-RD-LO-PadB17)")
 			(class "Default")
 			(node
@@ -22904,7 +22899,7 @@
 			)
 		)
 		(net
-			(code "312")
+			(code "311")
 			(name "unconnected-(X1B--REG-UP-PadB22)")
 			(class "Default")
 			(node
@@ -22915,7 +22910,7 @@
 			)
 		)
 		(net
-			(code "313")
+			(code "312")
 			(name "unconnected-(X1B--TMP-REG-LD0-PadB28)")
 			(class "Default")
 			(node
@@ -22926,7 +22921,7 @@
 			)
 		)
 		(net
-			(code "314")
+			(code "313")
 			(name "unconnected-(X1B--TMP-REG-LD1-PadB30)")
 			(class "Default")
 			(node
@@ -22937,7 +22932,7 @@
 			)
 		)
 		(net
-			(code "315")
+			(code "314")
 			(name "unconnected-(X1B--TMP-REG-RD0-PadB27)")
 			(class "Default")
 			(node
@@ -22948,7 +22943,7 @@
 			)
 		)
 		(net
-			(code "316")
+			(code "315")
 			(name "unconnected-(X1B--TMP-REG-RD1-PadB29)")
 			(class "Default")
 			(node
@@ -22959,7 +22954,7 @@
 			)
 		)
 		(net
-			(code "317")
+			(code "316")
 			(name "unconnected-(X1B-DATA12-PadB3)")
 			(class "Default")
 			(node
@@ -22970,7 +22965,7 @@
 			)
 		)
 		(net
-			(code "318")
+			(code "317")
 			(name "unconnected-(X1B-DATA13-PadB4)")
 			(class "Default")
 			(node
@@ -22981,7 +22976,7 @@
 			)
 		)
 		(net
-			(code "319")
+			(code "318")
 			(name "unconnected-(X1B-DATA14-PadB5)")
 			(class "Default")
 			(node
@@ -22992,7 +22987,7 @@
 			)
 		)
 		(net
-			(code "320")
+			(code "319")
 			(name "unconnected-(X1B-DATA15-PadB6)")
 			(class "Default")
 			(node
@@ -23003,7 +22998,7 @@
 			)
 		)
 		(net
-			(code "321")
+			(code "320")
 			(name "unconnected-(X1B-REG-LD-ID0-PadB13)")
 			(class "Default")
 			(node
@@ -23014,7 +23009,7 @@
 			)
 		)
 		(net
-			(code "322")
+			(code "321")
 			(name "unconnected-(X1B-REG-LD-ID1-PadB14)")
 			(class "Default")
 			(node
@@ -23025,7 +23020,7 @@
 			)
 		)
 		(net
-			(code "323")
+			(code "322")
 			(name "unconnected-(X1B-REG-LD-ID2-PadB15)")
 			(class "Default")
 			(node
@@ -23036,7 +23031,7 @@
 			)
 		)
 		(net
-			(code "324")
+			(code "323")
 			(name "unconnected-(X1B-REG-LD-ID3-PadB16)")
 			(class "Default")
 			(node
@@ -23047,7 +23042,7 @@
 			)
 		)
 		(net
-			(code "325")
+			(code "324")
 			(name "unconnected-(X1B-REG-RD-ID0-PadB9)")
 			(class "Default")
 			(node
@@ -23058,7 +23053,7 @@
 			)
 		)
 		(net
-			(code "326")
+			(code "325")
 			(name "unconnected-(X1B-REG-RD-ID1-PadB10)")
 			(class "Default")
 			(node
@@ -23069,7 +23064,7 @@
 			)
 		)
 		(net
-			(code "327")
+			(code "326")
 			(name "unconnected-(X1B-REG-RD-ID2-PadB11)")
 			(class "Default")
 			(node
@@ -23080,7 +23075,7 @@
 			)
 		)
 		(net
-			(code "328")
+			(code "327")
 			(name "unconnected-(X1B-REG-RD-ID3-PadB12)")
 			(class "Default")
 			(node
@@ -23091,7 +23086,7 @@
 			)
 		)
 		(net
-			(code "329")
+			(code "328")
 			(name "unconnected-(X1C--AC-LD-INV-PadC20)")
 			(class "Default")
 			(node
@@ -23102,7 +23097,7 @@
 			)
 		)
 		(net
-			(code "330")
+			(code "329")
 			(name "unconnected-(X1C--AC-LD-PadC22)")
 			(class "Default")
 			(node
@@ -23113,7 +23108,7 @@
 			)
 		)
 		(net
-			(code "331")
+			(code "330")
 			(name "unconnected-(X1C--AC-RD-PadC21)")
 			(class "Default")
 			(node
@@ -23124,7 +23119,7 @@
 			)
 		)
 		(net
-			(code "332")
+			(code "331")
 			(name "unconnected-(X1C--ALU-FUNC-PadC15)")
 			(class "Default")
 			(node
@@ -23135,7 +23130,7 @@
 			)
 		)
 		(net
-			(code "333")
+			(code "332")
 			(name "unconnected-(X1C--BUS-EN-PadC28)")
 			(class "Default")
 			(node
@@ -23146,7 +23141,7 @@
 			)
 		)
 		(net
-			(code "334")
+			(code "333")
 			(name "unconnected-(X1C--HL-SWAP-PadC25)")
 			(class "Default")
 			(node
@@ -23157,7 +23152,7 @@
 			)
 		)
 		(net
-			(code "335")
+			(code "334")
 			(name "unconnected-(X1C--INTA-PadC14)")
 			(class "Default")
 			(node
@@ -23168,7 +23163,7 @@
 			)
 		)
 		(net
-			(code "336")
+			(code "335")
 			(name "unconnected-(X1C--IO-ADDR-LD-PadC11)")
 			(class "Default")
 			(node
@@ -23179,7 +23174,7 @@
 			)
 		)
 		(net
-			(code "337")
+			(code "336")
 			(name "unconnected-(X1C--RUN-PadC29)")
 			(class "Default")
 			(node
@@ -23190,7 +23185,7 @@
 			)
 		)
 		(net
-			(code "338")
+			(code "337")
 			(name "unconnected-(X1C--SR-LD-PadC23)")
 			(class "Default")
 			(node
@@ -23201,7 +23196,7 @@
 			)
 		)
 		(net
-			(code "339")
+			(code "338")
 			(name "unconnected-(X1C-ADDR-REG-ID0-PadC3)")
 			(class "Default")
 			(node
@@ -23212,7 +23207,7 @@
 			)
 		)
 		(net
-			(code "340")
+			(code "339")
 			(name "unconnected-(X1C-ADDR-REG-ID1-PadC4)")
 			(class "Default")
 			(node
@@ -23223,7 +23218,7 @@
 			)
 		)
 		(net
-			(code "341")
+			(code "340")
 			(name "unconnected-(X1C-ADDR-REG-ID2-PadC5)")
 			(class "Default")
 			(node
@@ -23234,7 +23229,7 @@
 			)
 		)
 		(net
-			(code "342")
+			(code "341")
 			(name "unconnected-(X1C-ADDR-REG-ID3-PadC6)")
 			(class "Default")
 			(node
@@ -23245,7 +23240,7 @@
 			)
 		)
 		(net
-			(code "343")
+			(code "342")
 			(name "unconnected-(X1C-ALU0-PadC16)")
 			(class "Default")
 			(node
@@ -23256,7 +23251,7 @@
 			)
 		)
 		(net
-			(code "344")
+			(code "343")
 			(name "unconnected-(X1C-ALU1-PadC17)")
 			(class "Default")
 			(node
@@ -23267,7 +23262,7 @@
 			)
 		)
 		(net
-			(code "345")
+			(code "344")
 			(name "unconnected-(X1C-ALU2-PadC18)")
 			(class "Default")
 			(node
@@ -23278,7 +23273,7 @@
 			)
 		)
 		(net
-			(code "346")
+			(code "345")
 			(name "unconnected-(X1C-ALU3-PadC19)")
 			(class "Default")
 			(node
@@ -23289,7 +23284,7 @@
 			)
 		)
 		(net
-			(code "347")
+			(code "346")
 			(name "unconnected-(X1C-BR-COND-PadC24)")
 			(class "Default")
 			(node
@@ -23300,7 +23295,7 @@
 			)
 		)
 		(net
-			(code "348")
+			(code "347")
 			(name "unconnected-(X1C-IN-PadC26)")
 			(class "Default")
 			(node
@@ -23311,7 +23306,7 @@
 			)
 		)
 		(net
-			(code "349")
+			(code "348")
 			(name "unconnected-(X1C-OUT-PadC27)")
 			(class "Default")
 			(node

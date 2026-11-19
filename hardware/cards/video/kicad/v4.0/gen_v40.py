@@ -40,6 +40,8 @@ Run with KiCad's bundled Python (pcbnew), from this folder:
                                              resistors) laid as trees from their sources and locked, before Freerouting
   gen_v40.py clocks <pcb> [report.txt]    -> the clock nets on a board: track, and the copper's length to every input
   gen_v40.py planes <pcb>                 -> each plane one piece (on the routed board)
+  gen_v40.py padnets <netlist> <pcb>      -> the routed board kept: open through-hole pads that the netlist now has on
+                                             GND or VCC given that net (the plane joins them); any other change refused
   gen_v40.py dsn|shuffle|ses|stats ...    -> as gen_v13.py (Specctra export/import, Freerouting seeds, route stats)
   gen_v40.py link <netlist> <pcb>         -> the footprints' schematic links (path) set from the netlist, nothing else
   gen_v40.py verify <netlist> <pcb>       -> the key connections pin by pin (schematic and board), layers, planes
@@ -1432,6 +1434,53 @@ def planes(pcb):
     return not fix
 
 
+def padnets(netfile, pcb):
+    """gen_v40.py padnets <netlist> <pcb>: the routed board kept through a change of the netlist that needs no new
+    track (2026-11-18: the oscillator's pin 1 tied to VCC). Every pad's net on the board is compared with the
+    schematic's netlist. A pad that was open (no net, or KiCad's net of one unconnected pin) and is now on a plane's net
+    (GND or VCC) is given that net, if it is a through-hole pad: its hole stands in the plane, and the plane joins it
+    with a thermal relief when it is filled again (planes(), which build.sh runs next). Anything else that differs - a
+    pad that moves between two signals, a pad that leaves a plane, a surface pad - needs a route and is refused: that
+    is build.sh's whole run. No footprint, track or via is touched; the title block's date follows the netlist's.
+    Saves <pcb> when every difference could be settled."""
+    import pcbnew
+    nodes, comps = read_netlist(netfile)
+    open_pins = read_unconnected(netfile)
+    b = pcbnew.LoadBoard(pcb)
+    plane = {z.GetNetname(): b.GetLayerName(z.GetFirstLayer()) for z in b.Zones()
+             if not z.GetIsRuleArea() and b.GetLayerName(z.GetFirstLayer()).startswith("In")}
+    join, refuse, same = [], [], 0
+    for fp in b.GetFootprints():
+        ref = fp.GetReference()
+        for p in fp.Pads():
+            if not p.GetNumber():
+                continue
+            key = (ref, p.GetNumber())
+            want = nodes.get(key) or open_pins.get(key) or ""
+            have = p.GetNetname()
+            if have == want:
+                same += 1
+            elif (not have or have.startswith("unconnected-")) and want in plane \
+                    and p.GetAttribute() == pcbnew.PAD_ATTRIB_PTH:
+                join.append((ref, p, want))
+            else:
+                refuse.append("%s.%s: on the board %s, in the netlist %s" % (ref, p.GetNumber(), have or "open",
+                                                                            want or "open"))
+    if refuse:
+        print("padnets: %d pad(s) need a route - the whole build (build.sh), not this step:" % len(refuse))
+        for r in refuse[:20]:
+            print("  " + r)
+        return False
+    for ref, p, want in join:
+        p.SetNet(b.FindNet(want))
+    b.GetTitleBlock().SetDate(N.DATE)
+    pcbnew.SaveBoard(pcb, b)
+    print("padnets: %d pads as the netlist has them; joined to a plane: %s" % (
+        same, ", ".join("%s.%s to %s (%s)" % (ref, p.GetNumber(), want, plane[want]) for ref, p, want in join)
+        or "none"))
+    return True
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 # The four clocks, routed here before Freerouting sees the board (2026-11-13)
 #
@@ -1814,7 +1863,8 @@ KEY = [
     ("IC15", "11", "STG"), ("IC16", "11", "STG"), ("IC13", "1", "D3"), ("IC13", "2", "STGO"), ("IC15", "1", "GND"),
     ("IC10", "38", "RA0"), ("IC10", "35", "RA3"), ("IC18", "10", "RA0"), ("IC18", "7", "RA3"),
     # the dot clock and the counter
-    ("OSC1", "8", "OSCO"), ("IC11", "2", "CK"), ("IC11", "14", "D0"), ("IC11", "13", "D1"), ("IC11", "12", "QC"),
+    ("OSC1", "8", "OSCO"), ("OSC1", "1", "VCC"),            # pin 1 tied high (2026-11-18): either kind of can runs
+    ("IC11", "2", "CK"), ("IC11", "14", "D0"), ("IC11", "13", "D1"), ("IC11", "12", "QC"),
     ("IC11", "11", "QD"), ("IC11", "1", "PU"), ("IC11", "7", "PU"), ("IC11", "9", "PU"), ("IC11", "10", "PU"),
     ("R2", "1", "VCC"), ("R2", "2", "PU"),
     # the text: the display port's address, the code register, the character generator, the shifter and its load
@@ -1996,6 +2046,8 @@ if __name__ == "__main__":
         ok = silk_cmd(*a)
     elif cmd == "planes":
         ok = planes(*a)
+    elif cmd == "padnets":
+        ok = padnets(*a)
     elif cmd == "clockroute":
         clockroute(*a)
     elif cmd == "clocks":
