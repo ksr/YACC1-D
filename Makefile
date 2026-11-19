@@ -18,6 +18,8 @@
 #                   the microcode's memory and I/O strobes as the video card's timing check assumes them (tests/video/bus_records.py),
 #                   the video card V4's netlist: every pin accounted for, the text-only build (hardware/cards/video/kicad/v4.0/v40_netlist.py),
 #                   and run as a circuit with the parts' data-sheet delays at eight corners (tests/video/v40_netsim.py),
+#                   the I/O card V1.2's circuit: its own checks, and every connection it keeps from the built V1.1 card's
+#                   board file (hardware/cards/io/kicad/v1.2/io12_netlist.py),
 #                   Kermit transfers between /BIN/KERMIT and tools/y1kermit.py over a pty on both emulators (tests/kermit/run.py)
 #                   the debugger: y1ucemu's debug server and software/y1dbg, scripted and its UI in a pty (tests/y1dbg/run.py)
 #   make cc-test    just the compiler tests (on both emulators) and the twin comparisons (y1cc.c, the passes)
@@ -83,6 +85,7 @@ check:
 	python3 tests/video/bus_records.py
 	python3 hardware/cards/video/kicad/v4.0/v40_netlist.py
 	python3 tests/video/v40_netsim.py
+	python3 hardware/cards/io/kicad/v1.2/io12_netlist.py
 	python3 tests/sequencer/run.py
 	python3 tests/assembler/romcount/run.py
 	python3 tests/assembler/romdiag/run.py

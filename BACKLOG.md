@@ -646,6 +646,7 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   -BUS-EN without shorting the LS04. With that, the tester loads RAM with everything plugged in. Until then: ROM monitor
   over the UART, or unplug the logic card.
 - **IO V1.2 ideas** (IO notes): directional data-bus buffer driven by -IO-RD; 74138 IC5 pin 5 tied to -BUS-EN.
+  **Both drawn on the I/O card V1.2 (2026-11-18, `docs/cards/io.md` section 8); not ordered.**
 - **Index Registers**: notes ask whether bus direction should follow -RD-SEL (the same question as the IO buffer).
 - **Memory v1.3 notes**: "should TMP registers move to the ALU", hard-jumper a boot-loader enable, 4K-block EEPROM select.
 - **Sequencer logic notes**: expose ucode-count-reset / instruction number for an external debugger; HALT LED.
@@ -1110,6 +1111,20 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
     the board rules put there (switches, LEDs, TIL311s, LCD) and JP1 (null modem) near an edge beside J1. The V1.2
     list is `docs/cards/io.md` section 8. The board may be longer than V1.1's if the edge needs the room. Not drawn;
     V1.1 in the machine unchanged.
+  - **Designed 2026-11-18: the I/O card V1.2** (`hardware/cards/io/kicad/v1.2`: `io12_netlist.py`, `gen_io12.py`,
+    `build.sh`; its README; `docs/cards/io.md` section 8). To software it is V1.1 (the netlist's own check compares
+    every connection with the built card's board file), with all six ideas of the list: the 74LS245 data buffer; IC5's
+    G2B on a jumper, GND or -BUS-EN (JP10: wired to -BUS-EN alone the bus tester could not drive the card); the
+    resistors' values, a backlight resistor, a TTL serial header beside the DB9 (the device bits stay four flags: a
+    decoder would change what the ROM writes); -IO-ADDR-LD open; the DB9 at the top edge with the LEDs beside it and
+    the switches, the LCD and the TIL311s under them; the DS12885 clock on ports 6 and 7 with a CR2032, its -IRQ on a
+    jumper (off) and a RAM-clear jumper. Also: the UART's INT jumper behind IC8/F (on V1.1 an open INT header lets the
+    gate's input float high and the gate holds -INT low: **to verify on the card in the machine**); the oscillator's
+    pin 1 high. 218 x 114 mm, four layers, `build.sh: ALL CHECKS PASS`. **Not ordered**: row 11 of pcb-check's
+    `orders/next-order.md`. Before an order: `pcb-check --tests`; the check's pictures and the fab's viewer by eye;
+    the DB9, a toggle, a TIL311 and the LCD module laid on a 1:1 print; the label style (references with the function,
+    as the rules have it, or the function alone as on System-5's IO panel). After it: the clock's software
+    (`docs/cards/rtc.md` section 6), and the microcode's -IO-ADDR-LD steps (L-2, below) if they are to go.
 - **2026-11-03: every name on the Y1/OS disk is lower case**, as in Unix (`/bin/cat`, `/lib/cc/cc1`, `/man`, `/docs`,
   `/src`, `fruit.txt`, `make.sh`, cc's `ccw.*`, asm's `.asm`/`.img`, `/pipe0.tmp`, `kermit.tmp`), Unix's own capitals
   kept (`README`, the `Makefile`s). Both kernels look up `/bin/name` with the command word lower-cased (any case runs

@@ -36,9 +36,10 @@ What V1.2 adds or changes (docs/cards/io.md section 8):
                  backlight (R11); the MAX232's unused inputs tied off; pull-ups on the two port-select lines (no
                  jumper: no port); the DB9's shell on GND; every resistor's value written down.
 
-Not taken from the list: IC5's G2B on -BUS-EN. The bus tester drives this card with -BUS-EN high (tests/io/io_test.py:
-it owns the bus then), and the decoder would be off. G2B stays on GND. And the device bits stay four flags, not a
-code: a decoder in their place would change what the ROM writes to P0.
+Two of the list's ideas as far as they can go. IC5's G2B on -BUS-EN: on a jumper (JP10), GND or -BUS-EN. The bus
+tester drives this card with -BUS-EN high (tests/io/io_test.py: it owns the bus then), and with G2B wired to -BUS-EN
+the decoder would be off for it; on GND the card is V1.1 there. And the device bits stay four flags, not a code: a
+decoder in their place would change what the ROM writes to P0.
 
 Pin numbers are the physical pins. Bus pins: the V3.2 DIN 41612 connector (docs/system/BUS.md, tools/bus_pins.py).
 Net names ending in # are active low; the bus's own names keep their leading minus.
@@ -71,7 +72,7 @@ PARTS = {
     "X1":   ("DIN41612 96", BUSLIB + ":FABC96R", BUSLIB + ":FABC96R", "bus connector (blank V3.2 card)"),
     # --- the ports, the strobes and the control latch (V1.1's, pin for pin)
     "IC5":  ("74LS138", "74xx:74LS138", DIP[16], "port decode: -IO-SEL0..7, the eight ports of the card's half (JP3)"),
-    "IC8":  ("74LS06", "74xx:74LS06", DIP[14], "open collector: IO-RD, IO-WR, RESET, -B-RESET, IO-SELDATA, the UART's -INT"),
+    "IC8":  ("74LS06", "74xx:74LS05", DIP[14], "open collector: IO-RD, IO-WR, RESET, -B-RESET, IO-SELDATA, the UART's -INT"),
     "IC7":  ("74LS00", "74xx:74LS00", DIP[14], "the LCD's E; the control latch's clock; the clock chip's AS; IO-ADDRSEL"),
     "IC6":  ("74LS10", "74xx:74LS10", DIP[14], "the LEDs' clock; the switch buffer's enable; the LCD's strobe"),
     "IC11": ("74LS10", "74xx:74LS10", DIP[14], "the TIL311 latch's clock; two gates spare"),
@@ -80,7 +81,7 @@ PARTS = {
     "IC12": ("74LS245", "74xx:74LS245", DIP[20], "data buffer: the bus's DATA0-7 to the card's ID0-7, direction from -IO-RD"),
     "IC13": ("74LS08", "74xx:74LS08", DIP[14], "the buffer's enable: one of the card's four ports addressed; one gate spare"),
     # --- the UART and the serial line
-    "IC1":  ("16C550", LOCAL + ":UART_16550_DIP40", DIPW[40], "console UART behind P0 / P1"),
+    "IC1":  ("16C550", "Interface_UART:16550", DIPW[40], "console UART behind P0 / P1"),
     "OSC1": ("1.8432MHz", "Oscillator:CXO_DIP8", "Oscillator:Oscillator_DIP-8", "the UART's clock: divisor 3 = 38400 baud"),
     "IC2":  ("MAX232", "Interface_UART:MAX232", DIP[16], "RS-232 levels for the DB9"),
     "C1":   ("1u", "Device:C_Polarized", FP_CP, "MAX232 charge pump, C1+ / C1-"),
@@ -88,7 +89,7 @@ PARTS = {
     "C3":   ("1u", "Device:C_Polarized", FP_CP, "MAX232 V+ (to VCC)"),
     "C4":   ("1u", "Device:C_Polarized", FP_CP, "MAX232 V- (from GND)"),
     "J1":   ("RS-232", "Connector:DE9_Socket_MountingHoles", FP_DB9, "console: 2 and 3 through JP1, 5 GND"),
-    "JP1":  ("NULL MODEM", "Connector_Generic:Conn_02x03_Odd_Even", FP_H2 % 3, "1-3 and 2-4: the card sends on DB9 pin 2; 3-5 and 4-6: on pin 3"),
+    "JP1":  ("TX PIN", "Connector_Generic:Conn_02x03_Odd_Even", FP_H2 % 3, "the null-modem block. 1-3 and 2-4: the card sends on DB9 pin 2; 3-5 and 4-6: on pin 3"),
     "J2":   ("TTL SERIAL", "Connector_Generic:Conn_01x06", FP_H % 6, "GND CTS VCC(nc) TXD RXD RTS(nc): an FTDI TTL-232R cable"),
     "JP2":  ("RX FROM", "Connector_Generic:Conn_01x03", FP_H % 3, "1-2: the UART hears the DB9; 2-3: the TTL header"),
     "R12":  ("10k", "Device:R", FP_R, "the TTL header's line into the UART held high with no cable"),
@@ -105,7 +106,7 @@ PARTS = {
     "R1":   ("330", "Device:R", FP_R, "OUT LED"),
     "R2":   ("330", "Device:R", FP_R, "PWR LED"),
     # --- the LCD
-    "DS3":  ("LCD 1602", "Display_Character:WC1602A", FP_LCD, "HD44780 16 x 2 module: write only (R/W on GND)"),
+    "DS3":  ("LCD 1602", LOCAL + ":LCD1602", FP_LCD, "HD44780 16 x 2 module: write only (R/W on GND)"),
     "RV1":  ("10k", "Device:R_Potentiometer_Trim", FP_TRIM, "LCD contrast"),
     "R11":  ("47", "Device:R", FP_R, "LCD backlight, in series with the module's pin 15"),
     # --- the clock (new)
@@ -120,6 +121,7 @@ PARTS = {
     "JP4":  ("CTL PORT", "Connector_Generic:Conn_02x08_Odd_Even", FP_H2 % 8, "one jumper: the control port. 15-16 = port 0 ... 1-2 = port 7"),
     "JP5":  ("DATA PORT", "Connector_Generic:Conn_02x08_Odd_Even", FP_H2 % 8, "one jumper: the data port. 13-14 = port 1"),
     "JP7":  ("UART INT", "Connector_Generic:Conn_01x02", FP_H % 2, "fitted: the UART's INT drives -INT"),
+    "JP10": ("DECODE", "Connector_Generic:Conn_01x03", FP_H % 3, "1-2: the ports are decoded always, as on V1.1 (the bus tester can drive the card); 2-3: only while -BUS-EN is low"),
     "RN1":  ("2.2k x8", "Device:R_Network08", "Resistor_THT:R_Array_SIP9", "pull-ups: the open-collector strobes, -INT, the two port selects"),
     "RN2":  ("10k x8", "Device:R_Network08", "Resistor_THT:R_Array_SIP9", "ID0-7 pull-ups (the buffer off)"),
     "C5":   ("47u 16V", "Device:C_Polarized", "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm", "bulk"),
@@ -136,7 +138,7 @@ for cap, ic in DECOUPLE.items():
 
 # every pin a part has, for check(): DIP pins by number, the others as their symbols and footprints name them
 PINS = {"X1": ["%s%d" % (r, n) for r in "ABC" for n in range(1, 33)],
-        "OSC1": ["1", "4", "5", "8"], "J1": [str(n) for n in range(1, 10)] + ["0"],
+        "OSC1": ["1", "4", "5", "8"], "J1": [str(n) for n in range(1, 10)] + ["SH"],
         "DS1": ["1", "2", "3", "4", "5", "7", "8", "10", "12", "13", "14"],
         "DS2": ["1", "2", "3", "4", "5", "7", "8", "10", "12", "13", "14"],
         "DS3": [str(n) for n in range(1, 17)], "RV1": ["1", "2", "3"],
@@ -195,7 +197,8 @@ c("GND", "IC13.12", "IC13.13")                                             # the
 # ---- the port decode IC5, the half (JP3), the control and data ports (JP4, JP5) --------------------------------------
 c("IO-ADDR0", "X1.C7", "IC5.1"); c("IO-ADDR1", "X1.C8", "IC5.2"); c("IO-ADDR2", "X1.C9", "IC5.3")
 c("IO-ADDR3", "X1.C10", "JP3.2", "JP3.5")
-c("GND", "JP3.1", "IC5.5"); c("VCC", "JP3.6")                              # G2B on GND, as V1.1 (not -BUS-EN: the tester)
+c("GND", "JP3.1"); c("VCC", "JP3.6")
+c("G2B#", "IC5.5", "JP10.2"); c("GND", "JP10.1"); c("-BUS-EN", "JP10.3", "X1.C28")   # G2B: GND as V1.1, or -BUS-EN
 c("HALF-G2A", "JP3.3", "IC5.4"); c("HALF-G1", "JP3.4", "IC5.6")
 for n, pin in enumerate((15, 14, 13, 12, 11, 10, 9, 7)):                   # Y0..Y7; header pin 16 = port 0 ... pin 2 = port 7
     c("-IO-SEL%d" % n, "IC5.%d" % pin, "JP4.%d" % (16 - 2 * n), "JP5.%d" % (16 - 2 * n))
@@ -239,7 +242,7 @@ c("C1+", "IC2.1", "C1.1"); c("C1-", "IC2.3", "C1.2"); c("C2+", "IC2.4", "C2.1");
 c("V+", "IC2.2", "C3.1"); c("VCC", "C3.2"); c("V-", "IC2.6", "C4.2"); c("GND", "C4.1")
 c("VCC", "IC2.10"); c("GND", "IC2.8")                                      # T2IN, R2IN: the second channel is not used
 c("TX-OUT", "IC2.14", "JP1.2", "JP1.5"); c("RX-IN", "IC2.13", "JP1.1", "JP1.6")
-c("DB9-3", "JP1.3", "J1.3"); c("DB9-2", "JP1.4", "J1.2"); c("GND", "J1.5", "J1.0")
+c("DB9-3", "JP1.3", "J1.3"); c("DB9-2", "JP1.4", "J1.2"); c("GND", "J1.5", "J1.SH")                                                  # the shell (the two mounting holes)
 
 # ---- switches and LEDs --------------------------------------------------------------------------------------------------
 c("IO-RD", "IC6.3"); c("IO-SELDATA", "IC6.4", "IC6.2", "IC6.9", "IC11.2"); c("IO-WR", "IC6.1", "IC6.11", "IC11.1")
@@ -292,7 +295,7 @@ NO_CONNECT = {
     "J1": [1, 4, 6, 7, 8, 9], "J2": [3, 6],
 }
 _X1_USED = ({"A1", "B1", "C1", "A32", "B32", "C32", "A2", "B2", "C2", "A31", "B31", "C31", "B25", "B26",
-             "C7", "C8", "C9", "C10", "C13", "C26", "C27", "C30"} | {"A%d" % n for n in range(19, 27)})
+             "C7", "C8", "C9", "C10", "C13", "C26", "C27", "C28", "C30"} | {"A%d" % n for n in range(19, 27)})
 NO_CONNECT["X1"] = [p for p in PINS["X1"] if p not in _X1_USED]
 NO_CONNECT = {r: [str(p) for p in ps] for r, ps in NO_CONNECT.items()}
 
@@ -377,6 +380,7 @@ V11_CHANGED = {
     "X1.A19", "X1.A20", "X1.A21", "X1.A22", "X1.A23", "X1.A24", "X1.A25", "X1.A26",   # DATA0-7: behind the buffer now
     "JP7.1", "JP7.2", "IC8.12",    # the INT jumper: after IC8/F here, before it on V1.1
     "IC7.9", "IC7.10",             # V1.1's spare gate (inputs on GND): AS's inverter here
+    "IC5.5",                       # the decoder's G2B: on GND there, on JP10 here (GND or -BUS-EN)
     "IC2.12", "IC1.10",            # R1OUT to the UART's RX: through JP2 here
     "DS3.15",                      # the backlight: through R11 here
     "C6", "C7", "C8", "C9", "C10", "C11", "C12", "C13", "C14", "C15", "C16", "C17",   # V1.1's decoupling, numbered anew

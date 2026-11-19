@@ -365,24 +365,66 @@ If it misbehaves:
 |---|---|---|---|
 | V1.0 | 2020-07 | fabricated, retired 2021-01 | no IC9 latch / IC11; two 1x10 headers instead of the 2x3 jumper (README) |
 | V1.1 | 2020-11-29 | **in the machine** (`media/io v1.1 top.jpeg`, `bottom.jpeg`) | TIL311 latch pins to GND and VCC to pin 14; LED bit order; keep-out under the LCD; DB9 with the null-modem jumper; TIL311 broken out to its own control bit (bit 7). The Working copy of 2020-07-31 was the same board with the V3.1 bus names; folded 2026-09-20 |
+| V1.2 | 2026-11-18 | **designed and routed, not ordered** (`hardware/cards/io/kicad/v1.2`) | a data buffer; a DS12885 clock on ports 6 and 7; the DB9 at the top edge with the panel under it; a TTL serial header; the INT jumper behind IC8/F; 218 mm, four layers. The list below |
 
-The never-done **V1.2** ideas (`Notes.md`, `BACKLOG.md`):
+### V1.2 (designed 2026-11-18, not ordered)
 
-1. **A directional data-bus buffer driven by -IO-RD.** Today the UART, the LCD and the three 74273 D-inputs load the
-   bus directly and IC3/the UART drive it directly. A 74LS245 with DIR = -IO-RD and G from the card select would
-   isolate the card (the same question the index-register notes ask about -RD-SEL).
-2. **IC5 pin 5 (G2B) to -BUS-EN**, so the decoder is off while the tester owns the bus. The review found no
-   functional need (everything is strobe-qualified) but it costs nothing.
-3. From the reviews: record RN2, R1, R3-R10 values; make the device bits exclusive in hardware (a 74LS138 on Q0..Q2
-   instead of four flags) or at least document the rule; a series resistor for the LCD backlight; a TTL-level serial
-   header beside the DB9 if that is how the Mac is cabled.
-4. Leave -IO-ADDR-LD unconnected as now, and let the generator drop its steps (L-2).
-5. **The DB9 (J1) at the top edge** (2026-11-18), the edge opposite the bus connector: a right-angle DB9 with its
-   mating face at the board edge, facing off the card, so the console cable plugs straight in with the card standing
-   in the backplane. The board-layout rules put the switches, the LEDs, the TIL311 displays and the LCD on that edge
-   too, and the null-modem jumper JP1 near an edge beside J1, labelled for straight and crossed.
-   The board may be made longer than V1.1's if the front edge needs the room.
-6. **The real-time clock on P6/P7** (2026-11-12, `docs/cards/rtc.md` section 5.1), behind the buffer of idea 1.
+[![I/O card V1.2, top](images/io-v1.2-render-top.png)](images/io-v1.2-render-top.png "Open full size")
+
+As drawn: the bus connector on the left, the front edge on the right. With the card standing in the backplane the
+front edge is the top.
+
+`hardware/cards/io/kicad/v1.2`: `io12_netlist.py` is its circuit, `gen_io12.py` and `build.sh` draw the schematic
+and the board from it, and the folder's README has the build and the checks. **To software it is the V1.1 card**:
+the control latch's bits, P0 / P1 and the UART are V1.1's pin for pin (the netlist's own check compares every
+connection with the built card's board file), so the ROM in the machine runs on it unchanged. The references are new
+where V1.1's were Eagle's names: the README has the table (LED0-LED7 for UNK0-UNK7, S8 for IN0, DS1 / DS2 for HI0 /
+LO0, DS3 for X2, OSC1 for Y1, RN1 for RN2, JP3-JP7 for the headers). What it makes of the list of ideas for a next
+revision (`Notes.md`, `BACKLOG.md`, the reviews), all six of them:
+
+1. **A data-bus buffer: in.** IC12, a 74LS245, between the bus's DATA0-7 and the card's own data lines ID0-7, where
+   the UART, the three latches, the switch buffer, the LCD and the clock chip sit. Direction from the bus's -IO-RD;
+   enabled while one of the card's four ports is addressed (IC13: the control port's and the data port's selects,
+   ports 6 and 7). The enable is the address alone, not a strobe: the latches clock late, through the open-collector
+   strobes, and the microcode holds the port number and the data a step past -IO-WR. RN2 (10k) holds ID0-7 high
+   while the buffer is off. The bus sees one LS input on each data line where V1.1 put five or six.
+2. **IC5's G2B on -BUS-EN: in, on a jumper.** JP10 puts G2B on GND (1-2: the ports decoded always, as on V1.1) or on
+   -BUS-EN (2-3: only while the CPU has the bus). It is a jumper because the bus tester drives this card with -BUS-EN
+   high, when it owns the bus (`tests/io/io_test.py`): with G2B wired to -BUS-EN the decoder would be off and the
+   card could not be tested from the tester. The review found no need for the gating either way (everything is
+   qualified by a strobe).
+3. **From the reviews.** The resistors have values: RN1 2.2k (the open-collector strobes rise in about 100 ns, four
+   times faster than through 10k, and the clock chip's -IRQ can sink it), R1-R10 330, R11 47 in series with the LCD's
+   backlight (a wire link if the module has its own resistor). The device bits stay four flags, **not** a decoder: a
+   code in their place would change what the ROM writes to P0; section 4.5's rule stands. A TTL-level serial header,
+   J2, stands beside the DB9 with an FTDI cable's pins: the UART's TX goes to both, and JP2 picks where its RX comes
+   from (R12 holds the header's line high with no cable).
+4. **-IO-ADDR-LD stays unconnected**, as on V1.1. (The idea's other half, the microcode's two or three steps for
+   that strobe, is the microcode's: `BACKLOG.md`, not this board.)
+5. **The DB9 (J1) at the top edge** (2026-11-18), the edge opposite the bus connector: the built card's right-angle
+   socket with its face on the board's edge, the D off the card, so the console cable plugs straight down into it
+   with the card standing in the backplane. The rest of the panel is below it, as the board-layout rules ask: the
+   eight LEDs with OUT and PWR along the edge beside the DB9, the eight switches and IN under them, then the LCD and
+   the two TIL311s. The null-modem block (JP1) and JP2 stand between the IN switch and the DB9. The board is 218 mm
+   long, every long card's length (V1.1: 178 mm), and has four layers (GND and VCC planes), as the video card V4.0
+   and the memory card v2.0.
+6. **The real-time clock: in**, on the card's ports 6 and 7 (`docs/cards/rtc.md` section 5.1): IC15, a DS12885 with a
+   32.768 kHz crystal and a CR2032 in a flat holder, behind the buffer, wired as on System-5's IO panel (Intel
+   timing, -CS low, -RESET high). Its strobes come from the bus's own -IO-RD and -IO-WR (IC14, and V1.1's spare gate
+   of IC7 as AS's inverter). JP8 puts its open-drain -IRQ on the bus -INT (off until something uses interrupts); JP9
+   clears its RAM. With the clock there, the control and the data port must not be set to ports 6 or 7.
+
+Three things V1.2 changes that were not on the list:
+
+- **The UART's INT jumper stands behind IC8/F.** On V1.1 the INT header is before the gate: with the header open the
+  gate's input floats high, and its open-collector output holds the bus -INT low. On V1.2 the UART's INT goes straight
+  to the gate, and the jumper (JP7) is between the gate's output and the bus: off, the card never touches -INT, and
+  the line is free for the clock chip (JP8) and for the video card V4's PS/2 interrupt. **To verify on the V1.1 card
+  in the machine**: whether its INT header is fitted, and what -INT reads.
+- **The oscillator's pin 1 is tied to +5 V** (as the video card V4.0's, 2026-11-18): nothing in a plain can, the
+  enable of a tri-state one.
+- **The MAX232's unused inputs are tied off** (T2IN high, R2IN low), the DB9's shell is on GND, and the two port-select
+  lines have pull-ups (no jumper on JP4 or JP5: no port).
 
 ### The next device on the ports: CompactFlash on P8/P9
 
