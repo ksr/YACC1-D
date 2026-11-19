@@ -426,6 +426,10 @@ Three things V1.2 changes that were not on the list:
 - **The MAX232's unused inputs are tied off** (T2IN high, R2IN low), the DB9's shell is on GND, and the two port-select
   lines have pull-ups (no jumper on JP4 or JP5: no port).
 
+The board passed the pre-order check with the system's tests on 2026-11-18 (no failures; one warning: the clock chip
+is not in the check's table of footprints) and was settled as drawn on 2026-11-19: four layers, 218 mm, the panel as
+above, each reference with its function on the silkscreen. It is not ordered.
+
 ### The next device on the ports: CompactFlash on P8/P9
 
 Decided 2026-09-22 (`docs/system/OS-PLAN.md` decision 1, `firmware/abi/README.md`, `software/cfmodel.h`), not built.
