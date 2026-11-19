@@ -1129,8 +1129,7 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
     just under the holder's positive pin** (BT1 pin 1; the line reads `BT1 CR2032 +`), where it shows with the holder
     fitted: the holder's own `+` is inside its outline and covered then (pcb-check `7e47352` notes it). `SILK=1
     build.sh`: the one new text, no other text, part, track or plane moved; of the order's files only the front
-    silkscreen differs. pcb-check without `--tests` on it: no failures. **The check with `--tests` to be run again on
-    the committed board** (the result at `9c96b2e` is the board before the mark).
+    silkscreen differs. pcb-check without `--tests` on it: no failures.
     Before an order: the check again if the board changes; the check's pictures and the fab's viewer by
     eye; the DB9, a toggle, a TIL311, the LCD module and the cell's holder laid on the 1:1 print (`io-v1.2-1to1.pdf`,
     made 2026-11-19 by `gen_io12.py geom` and `print_1to1.py`: US Letter at 100 %, two 100 mm check bars, the board's
@@ -1139,8 +1138,12 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
     against JP10's `ALWAYS` / `JP10`, S8's `0` stood beside DS1's `TIL311 HI`. **Moved 2026-11-19** (`LABEL_AT` in
     `gen_io12.py`, `SILK=1 build.sh`): C20's label 1.4 mm towards C19 and JP4's a line higher; RN2's beside the
     network's top end; DS1's and DS2's under their displays, on two lines each. Ten texts, nothing else: the same
-    proof as for the `+`, and pcb-check without `--tests`: no failures. The check with `--tests` (above) is for
-    the board with both changes. After it: the clock's
+    proof as for the `+`, and pcb-check without `--tests`: no failures. **`pcb-check --layers 4 --tests` at
+    `7312c10` (2026-11-19, the board with both changes): no failures, one warning** (the DS12885+, as before); row 11
+    of the order list is checked again. Its pictures of the copper draw each pad as the shape it is since pcb-check
+    `e65eabd` (before it, pin 1 of every DIP was a speck in them). Open on this card: whether the DS12885+ goes into
+    pcb-check's table of chips; the holder's own `+` inside its outline, left there (pcb-check's note stays; taking
+    it off is one more `SILK=1 build.sh`); the by-hand steps above; the order itself. After it: the clock's
     software (`docs/cards/rtc.md` section 6), and the microcode's -IO-ADDR-LD steps (L-2, below) if they are to go.
 - **2026-11-03: every name on the Y1/OS disk is lower case**, as in Unix (`/bin/cat`, `/lib/cc/cc1`, `/man`, `/docs`,
   `/src`, `fruit.txt`, `make.sh`, cc's `ccw.*`, asm's `.asm`/`.img`, `/pipe0.tmp`, `kermit.tmp`), Unix's own capitals
