@@ -6,6 +6,8 @@
   run.py [-v] [--png FILE]      -v: the costs' table in clocks too; --png: the scene's picture (tools/vidsim.py)
   run.py --try [--port=N]       wkmouse.asm in the browser debugger (software/y1dbg --ui web): the browser's mouse
                                 moves the pointer on the emulated screen
+  run.py --try desk [--port=N]  wmdesk.c (os/lib_wm.c) under Y1/OS in the browser debugger: windows to drag, bring
+                                to the front and close
 
 wkdemo.asm draws a desktop - a grey ground, a menu bar, two windows that overlap, text in both, the pointer twice
 (once over the right and bottom edges) - with wk.inc's routines, which work on cells of 8 x 16 dots (its header).
@@ -30,6 +32,10 @@ wkmouse.asm moves the pointer with the card's mouse. Checks:
 5. Under Y1/OS: wkc.c (os/lib_wk.c) compiled for the OS and put on a copy of os/disk.img, its image and data below
    $C000; booted on both emulators, the PS/2 keyboard as the console, `wkc` typed: it loads the kernel from
    /lib/wmk and must leave the same picture and print the same line as wkmouse.
+6. Windows (os/lib_wm.c): wmdesk.c under Y1/OS the same way, with a script of packets (DESK_PACKETS) that drags
+   Notes by its title bar, brings About to the front and closes it, brings Files to the front and presses in it,
+   and presses in the menu bar. The 64K must then be the desktop painted afresh with the windows where the script
+   left them (desk_model) - what each repaint uncovered painted again exactly - and the line its counts.
 """
 import os, re, sys, shutil, subprocess, tempfile
 
@@ -204,25 +210,59 @@ def cost(d, scene):
     return n, c
 
 
-def os_check(d, want, line, menv):
-    """wkc.c compiled for Y1/OS and put on a copy of os/disk.img as /bin/wkc; booted and run on both emulators with
-    the mouse's packets: the same picture and line as wkmouse, the kernel loaded from the disk"""
+# wmdesk.c's script, from the pointer's start (320, 200); the arrow's tip is one dot right and below its place
+DESK_PACKETS = [(-160, 148, 0), (0, 0, 1), (80, -64, 1), (0, 0, 0),          # Notes: to the front, dragged 10 right, 4 down
+                (130, 48, 0), (0, 0, 1), (0, 0, 0), (0, 0, 1), (0, 0, 0),     # About: to the front, then its close box
+                (30, -204, 0), (0, 0, 1), (0, 0, 0), (0, 0, 1), (0, 0, 0),    # Files: to the front, then a press in it
+                (-192, 134, 0), (-192, 134, 0), (0, 0, 1), (0, 0, 0)]         # the menu bar
+
+
+def desk_window(x, y, w, h, title, lines):
+    """os/lib_wm.c's wm_draw as a script"""
+    t = int((w - len(title) - 2) // 2)
+    sc = ["1,%d,%d,%d,%d,0ffh,0ffh" % (x, y, w, h), "1,%d,%d,%d,1,0ffh,000h" % (x, y, w), "2,%d,%d,%d,%d" % (x, y, w, h),
+          "1,%d,%d,1,1,0ffh,0ffh" % (x + 1, y), "2,%d,%d,1,1" % (x + 1, y),
+          "3,%d,%d,0ffh,' ',0" % (x + t, y), "3,%d,%d,0ffh,'%s',0" % (x + t + 1, y, title), "3,%d,%d,0ffh,' ',0" % (x + t + 1 + len(title), y)]
+    return sc + ["3,%d,%d,0ffh,'%s',0" % (x + 1 + c, y + 1 + r, s) for r, c, s in lines]
+
+
+NOTES = [(1, 1, "Drag a window by its title"), (2, 1, "bar: its outline follows"), (3, 1, "the mouse. The box at the"),
+         (4, 1, "left closes it. A line too long for the window is cut at its edge."[:27]), (6, 1, "q ends this.")]
+FILES = [(0, 1, "Name         Size"), (1, 1, "asm         11046"), (2, 1, "basic       11209"), (3, 1, "cat          1322"),
+         (4, 1, "kermit       9834"), (5, 1, "make         6002"), (6, 1, "vi           7421"), (8, 1, "/lib/wmk     3783")]
+
+
+def desk_model():
+    """where wmdesk's script leaves things - Notes at (15, 7) behind, Files in front, About closed, the pointer at the
+    menu bar - painted afresh: -> (the 64K, the line it prints)"""
+    sc = ["1,0,0,80,1,0ffh,0ffh", "2,0,0,80,1", "3,1,0,0ffh,'YACC1   File   Edit   View',0", "1,0,1,80,24,0aah,055h"]
+    sc += desk_window(15, 7, 30, 9, "Notes", NOTES) + desk_window(28, 8, 28, 12, "Files", FILES)
+    x, y = 320, 200
+    for dx, dy, b in DESK_PACKETS: x = min(639, max(0, x + dx)); y = min(399, max(0, y - dy))
+    sc.append("4,%d,%d,%d,%d" % (x >> 8, x & 255, y >> 8, y & 255))
+    text = "".join("        DB %s\n" % l for l in sc) + "        DB 0\n"
+    return bytes(model(script_bytes("\nscene:\n" + text + "\nscend:\n"))), "MENU 01 CLOSED 01 CLICKS 01 FRONT 02"
+
+
+def os_check(d, want, line, menv, prog="wkc", what="the same picture and line as wkmouse"):
+    """PROG.c compiled for Y1/OS and put on a copy of os/disk.img as /bin/PROG; booted and run on both emulators with
+    the mouse's packets: the picture and the line it must leave, the kernel loaded from the disk"""
     subprocess.run(["make", "-s", "-C", os.path.join(ROOT, "os"), "disk.img"], check=True, capture_output=True)
-    c = os.path.join(d, "c"); os.makedirs(c, exist_ok=True)
-    asm = os.path.join(c, "wkc.asm")
-    r = subprocess.run([sys.executable, os.path.join(ROOT, "software/compiler/y1cc.py"), os.path.join(HERE, "wkc.c"), "-o", asm,
+    c = os.path.join(d, "c-" + prog); os.makedirs(c, exist_ok=True)
+    asm = os.path.join(c, prog + ".asm")
+    r = subprocess.run([sys.executable, os.path.join(ROOT, "software/compiler/y1cc.py"), os.path.join(HERE, prog + ".c"), "-o", asm,
                         "--org", "0x5000", "--os"], capture_output=True, text=True)
-    check("wkc.c compiles", r.returncode == 0, (r.stdout + r.stderr)[-300:])
+    check("%s.c compiles" % prog, r.returncode == 0, (r.stdout + r.stderr)[-300:])
     if r.returncode: return
     shutil.copy(DEF, c); open(os.path.join(c, "rcasm.rc"), "w").write("-h\n-l\n")
-    r = subprocess.run([ASM, "wkc", "-d=yacc1"], cwd=c, capture_output=True, text=True, errors="replace")
+    r = subprocess.run([ASM, prog, "-d=yacc1"], cwd=c, capture_output=True, text=True, errors="replace")
     top = max([int(m.group(1), 16) for m in re.finditer(r"^\s*\d+\s+([0-9a-f]{4}):", r.stdout, re.M)] or [0x10000])
-    binf = os.path.join(c, "wkc.bin")
-    subprocess.run([sys.executable, os.path.join(ROOT, "tools/img2bin.py"), os.path.join(c, "wkc.img"), binf, "--base", "0x5000"],
+    binf = os.path.join(c, prog + ".bin")
+    subprocess.run([sys.executable, os.path.join(ROOT, "tools/img2bin.py"), os.path.join(c, prog + ".img"), binf, "--base", "0x5000"],
                    check=True, capture_output=True)
-    check("wkc: image and data end at $%04X, below the kernel" % top, "\n0 Errors" in r.stdout and top < 0xC000, r.stdout[-200:])
+    check("%s: image and data end at $%04X, below the kernel" % (prog, top), "\n0 Errors" in r.stdout and top < 0xC000, r.stdout[-200:])
     disk = os.path.join(c, "disk.img"); shutil.copy(os.path.join(ROOT, "os/disk.img"), disk)
-    subprocess.run([sys.executable, os.path.join(ROOT, "tools/p8xfs.py"), "put", disk, binf, "--name", "/bin/wkc",
+    subprocess.run([sys.executable, os.path.join(ROOT, "tools/p8xfs.py"), "put", disk, binf, "--name", "/bin/" + prog,
                     "--load", "0x5000", "--exec", "0x5000"], check=True, capture_output=True)
     for tag in ("int", "uc"):
         run_disk = os.path.join(c, "run.img"); shutil.copy(disk, run_disk)
@@ -231,19 +271,44 @@ def os_check(d, want, line, menv):
         cmd = [EMUS[tag], "-x", "-m", "-V", "-c", run_disk, "-l", "8000000000" if tag == "uc" else "300000000"] + \
             (["-E", MON_EXIT] if tag == "uc" else [])
         env = dict(os.environ, Y1VID_CARD="v4", Y1VIDSTATE=st, **menv)
-        rr = subprocess.run(cmd, input=b"O\rwkc\rqexit\r0", capture_output=True, env=env, timeout=3600)
+        rr = subprocess.run(cmd, input=b"O\r" + prog.encode() + b"\rqexit\r0", capture_output=True, env=env, timeout=3600)
         out = rr.stdout.decode("latin1")
         s = dict(l.strip().partition(" ")[::2] for l in open(st)) if os.path.exists(st) else {}
         gm = bytes.fromhex(s.get("gram", ""))
         bad = [i for i in range(65536) if gm[i] != want[i]] if len(gm) == 65536 else [-1]
-        check("Y1/OS: /bin/wkc with /lib/wmk, %s" % tag, not bad and line in out and int(s.get("control2", "1"), 16) & 1 == 0,
+        check("Y1/OS: /bin/%s, %s" % (prog, tag), not bad and line in out and int(s.get("control2", "1"), 16) & 1 == 0,
               "%d bytes are not the model's, the first at $%04X; the console %r" % (len(bad), bad[0] if bad else 0,
                                                                                       out[-300:].replace("\r", "")))
 
 
+def try_desk(d):
+    """--try desk: wmdesk on a copy of the disk in the browser debugger, Y1/OS booted and wmdesk typed"""
+    subprocess.run(["make", "-s", "-C", os.path.join(ROOT, "os"), "disk.img"], check=True)
+    asm = os.path.join(d, "wmdesk.asm")
+    subprocess.run([sys.executable, os.path.join(ROOT, "software/compiler/y1cc.py"), os.path.join(HERE, "wmdesk.c"), "-o", asm,
+                    "--org", "0x5000", "--os"], check=True)
+    shutil.copy(DEF, d); open(os.path.join(d, "rcasm.rc"), "w").write("-h\n")
+    subprocess.run([ASM, "wmdesk", "-d=yacc1"], cwd=d, capture_output=True)
+    binf = os.path.join(d, "wmdesk.bin")
+    subprocess.run([sys.executable, os.path.join(ROOT, "tools/img2bin.py"), os.path.join(d, "wmdesk.img"), binf, "--base", "0x5000"],
+                   check=True, capture_output=True)
+    disk = os.path.join(d, "disk.img"); shutil.copy(os.path.join(ROOT, "os/disk.img"), disk)
+    subprocess.run([sys.executable, os.path.join(ROOT, "tools/p8xfs.py"), "put", disk, binf, "--name", "/bin/wmdesk",
+                    "--load", "0x5000", "--exec", "0x5000"], check=True, capture_output=True)
+    print("wmdesk in the browser debugger (Y1/OS on a copy of the disk). On its page: tick \"and the mouse\" under the\n"
+          "screen, press Run (F5), click the screen (Esc gives the mouse back). Drag a window by its title bar, click\n"
+          "one behind to bring it to the front, the box at a title's left closes it. \"keys to\" the PS/2 keyboard and\n"
+          "q ends it. Ctrl-C here ends the debugger.")
+    subprocess.run([sys.executable, os.path.join(ROOT, "software/y1dbg"), "--ui", "web", "--disk", disk,
+                    "-c", "key O\\nwmdesk\\n"] + [a for a in sys.argv[1:] if a.startswith("--port=")])
+
+
 def try_it():
-    """--try: wkmouse.asm in the browser debugger, the browser's mouse the card's"""
+    """--try: wkmouse.asm in the browser debugger, the browser's mouse the card's; --try desk: wmdesk under Y1/OS"""
     d = tempfile.mkdtemp(prefix="wm-try-")
+    if "desk" in sys.argv:
+        try: return try_desk(d)
+        finally: shutil.rmtree(d, ignore_errors=True)
     kimg, msg = assemble(os.path.join(d, "k"), source(name="wmk"))
     if kimg is None: sys.exit("os/wm/wmk.asm did not assemble: " + msg)
     img, msg = assemble(d, source(name="wkmouse"))
@@ -327,12 +392,13 @@ def main():
         if l.startswith(":") and l[7:9] == "00":
             a = int(l[3:7], 16)
             for k2 in range(int(l[1:3], 16)): hexmem[a + k2] = int(l[9 + 2 * k2:11 + 2 * k2], 16)
-    entries = ["k_init", "wkfill", "wkframe", "wkinv", "wktext", "k_show", "k_hide", "k_script", "k_event", "k_done"]
-    names = ["wk_init", "wk_fill", "wk_frame", "wk_inv", "wk_text", "wk_show", "wk_hide", "wk_script", "wk_event", "wk_done"]
+    entries = ["k_init", "wkfill", "wkframe", "wkinv", "wktext", "k_show", "k_hide", "k_script", "k_event", "k_done", "wkxframe"]
+    names = ["wk_init", "wk_fill", "wk_frame", "wk_inv", "wk_text", "wk_show", "wk_hide", "wk_script", "wk_event", "wk_done",
+             "wk_xframe"]
     table = all(hexmem.get(abi[n]) is not None and (hexmem[abi[n] + 1] << 8 | hexmem[abi[n] + 2]) == klabel(e)
                 for n, e in zip(names, entries))
     end = klabel("WK_FONT") + 95 * 16
-    check("the kernel: 'WK' 1, its table, $C000-$%04X" % (end - 1), [hexmem.get(0xC000 + i) for i in range(4)] == [87, 75, 1, 0] and
+    check("the kernel: 'WK' 2, its table, $C000-$%04X" % (end - 1), [hexmem.get(0xC000 + i) for i in range(4)] == [87, 75, 2, 0] and
           table and min(hexmem) == 0xC000 and 0xC050 <= klabel("k_init") and end <= 0xD000 and
           not any(0xC030 <= a < 0xC050 for a in hexmem), "end $%04X, table %r" % (end, table))
     mtext = source(name="wkmouse")
@@ -355,6 +421,10 @@ def main():
                       len(bad), bad[0] if bad else 0, out[-60:], s.get("control"), s.get("control2")))
     # 5. under Y1/OS: the kernel from /lib/wmk, a C program of it (wkc.c, os/lib_wk.c)
     if mimg is not None: os_check(d, g, line, menv)
+    # 6. windows (os/lib_wm.c): wmdesk.c, its packets, and the desktop painted afresh as the script leaves it
+    g, line = desk_model()
+    os_check(d, g, line, {"Y1VID_KBD": "stdin", "Y1VID_MOUSE": ";".join("%d,%d,%d" % p for p in DESK_PACKETS)},
+             "wmdesk", "the desktop as it would be painted afresh")
     shutil.rmtree(d, ignore_errors=True)
     print("wm: %d failed" % fails)
     sys.exit(1 if fails else 0)

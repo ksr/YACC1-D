@@ -1,7 +1,7 @@
 ; Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
 
 ;
-; wmk.asm - the window kernel for the video card V4 (version 1, 2026-11-20; BACKLOG.md, "The P8X's desktop on this
+; wmk.asm - the window kernel for the video card V4 (version 2, 2026-11-20; BACKLOG.md, "The P8X's desktop on this
 ; machine", step 3). Drawing in dots (wk.inc), the mouse's pointer and the keys as events, in 4K at $C000-$CFFF (and,
 ; while it runs, 816 bytes of the card's text RAM for the pointer, the text layer being off): loaded
 ; once, above the program that uses it, and called through a table of entries at $C004 (wkabi.inc has them, the
@@ -16,7 +16,7 @@
 VIDMIR:     EQU 0ff1h           ; the ROM's: nonzero = the console is also written to the text screen
 
         ORG 0c000h
-        DB 'W','K',1,0
+        DB 'W','K',2,0
         BR k_init
         BR wkfill
         BR wkframe
@@ -27,6 +27,7 @@ VIDMIR:     EQU 0ff1h           ; the ROM's: nonzero = the console is also writt
         BR k_script
         BR k_event
         BR k_done
+        BR wkxframe
 
         ORG 0c050h              ; after the parameter block ($C030-$C04F)
 k_init: LDA VIDMIR              ; the ROM's console mirror off while the text RAM is the pointer's

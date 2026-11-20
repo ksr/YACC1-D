@@ -95,7 +95,9 @@
   mouse's fifteen scripted packets (`Y1VID_MOUSE`) worked out, with the line the program prints at the end. Then
   what each thing costs, in instructions from the instruction-level emulator's PC histogram, each held under a
   ceiling. Under Y1/OS: `wkc.c` (`os/lib_wk.c`) on a copy of the disk loads the kernel from `/lib/wmk` and must
-  draw and print what `wkmouse` does. `run.py --png FILE` writes the scene's picture; `run.py --try` opens `wkmouse` in the browser debugger,
+  draw and print what `wkmouse` does. Windows (`os/lib_wm.c`): `wmdesk.c` under Y1/OS with scripted packets drags,
+  raises and closes windows; the screen must then be the same desktop painted afresh. `run.py --png FILE` writes the
+  scene's picture; `run.py --try desk` opens `wmdesk` in the debugger; `run.py --try` opens `wkmouse` in the browser debugger,
   where the browser's mouse is the card's.
 - `ybasic/` — BASIC in assembly against BASIC in C (2026-11-11): `run.py` runs each session (`expr`, `prog`, `files`, `limits`)
   on a copy of the disk, whose `/bin/basic` is `os/commands-asm/basic.asm`, and on a copy with the C BASIC

@@ -18,6 +18,7 @@
 ;   wkframe  a rectangle of cells' outer edge in black: the top line of its top cells, the bottom line of its bottom
 ;            ones, the left dot of its left column and the right dot of its right column.
 ;   wkinv    a rectangle of cells inverted (a selected line, a button pressed).
+;   wkxframe the frame's edge inverted: drawn twice it is gone (a window's outline while it is dragged).
 ;   wktext   the string at WK_S from the cell on, a character 8 x 16 from the card's own font (WK_FONT: the codes
 ;            $20-$7E of firmware/video/chargen-v40.bin, which tests/wm/run.py appends to the program): sixteen planes,
 ;            sixteen bytes at one address, each XORed with WK_M ($00 lit letters, $FF dark letters on lit paper).
@@ -404,8 +405,13 @@ wf_run:
         INCR R6
 wf_ret: RET
 
-; wkframe: the outer edge of the cells WK_X, WK_Y, WK_W, WK_H in black (dots off)
-wkframe: LDA WK_W
+; wkframe: the outer edge of the cells WK_X, WK_Y, WK_W, WK_H in black (dots off). wkxframe: the same edge inverted,
+; so that drawing it twice leaves the screen as it was (a window's outline while it is dragged)
+wkxframe: LDAI 1
+        BR wr_m
+wkframe: LDAI 0
+wr_m:   STA WK_XM
+        LDA WK_W
         BRZ rts
         LDA WK_H
         BRZ rts
@@ -414,9 +420,7 @@ wkframe: LDA WK_W
         JSR wkplane
         LDA WK_Y
         JSR wkaddr
-        LDR R5,WK_ENT
-        LDAI 0
-        JSRUR R5
+        JSR wr_line
         LDAI 15                 ; the bottom line: plane 15 of the bottom row
         JSR wkplane
         LDT WK_H
@@ -424,9 +428,7 @@ wkframe: LDA WK_W
         ADDT
         SUBI 1
         JSR wkaddr
-        LDR R5,WK_ENT
-        LDAI 0
-        JSRUR R5
+        JSR wr_line
         LDAI 0                  ; the sides: every plane of every row
         STA WK_P
 wr_p:   LDA WK_P
@@ -445,22 +447,51 @@ wr_p:   LDA WK_P
         MVIW R4,0
         LDA WK_H
         MVARL R4
+        LDA WK_XM
+        BRNZ wr_x
 wr_r:   LDAVR R6
         ANDI 7fh
         STAVR R6
         LDAVR R7
         ANDI 0feh
         STAVR R7
-        ADDIW R6,80
+wr_n:   ADDIW R6,80
         ADDIW R7,80
         DECR R4
         MVRLA R4
-        BRNZ wr_r
-        LDA WK_P
+        BRZ wr_q
+        LDA WK_XM
+        BRZ wr_r
+wr_x:   LDAVR R6                ; inverted: the left dot, the right dot
+        XORI 80h
+        STAVR R6
+        LDAVR R7
+        XORI 01h
+        STAVR R7
+        BR wr_n
+wr_q:   LDA WK_P
         ADDI 1
         STA WK_P
         LDTI 16
         BRLT wr_p
+        RET
+; wr_line: WK_W bytes from R6 on: 0 (wkframe), or each inverted (wkxframe)
+wr_line: LDA WK_XM
+        BRNZ wl_x
+        LDR R5,WK_ENT
+        LDAI 0
+        JSRUR R5
+        RET
+wl_x:   MVIW R4,0
+        LDA WK_W
+        MVARL R4
+wl_1:   LDAVR R6
+        INVA
+        STAVR R6
+        INCR R6
+        DECR R4
+        MVRLA R4
+        BRNZ wl_1
         RET
 
 ; wkinv: the cells WK_X, WK_Y, WK_W, WK_H inverted: every dot the other
@@ -898,6 +929,7 @@ WK_R:   DS 1
 WK_V:   DS 1
 WK_ENT: DS 2
 WK_SKIP: DS 1
+WK_XM:  DS 1                    ; 1: wkxframe
 WK_PX:  DS 2                    ; the pointer
 WK_PY:  DS 2
 WK_YY:  DS 2

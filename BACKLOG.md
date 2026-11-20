@@ -600,7 +600,22 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
        $C000 does not hold its signature) and `tests/wm/wkc.c`, a C program of it that `tests/wm/run.py` puts on a
        copy of the disk and runs on both emulators: the same picture and line as `wkmouse`. A C program of the
        kernel needs no `--stack`: its image and data stay under $C000, and it runs on the OS's stack.
-    4. Windows: their order, what is under one (the card's second page can keep it), dragging; a menu bar.
+    4. (done 2026-11-20) Windows, `os/lib_wm.c` (C, over the kernel; the kernel had 368 bytes left, and the
+       P8X found the same split: the core in the kernel, the windows in the program). Decided that day: outline
+       dragging, and what a window uncovers painted again from the window list rather than kept. A window list,
+       bottom first, each window its cells, title, tag and content function (`funcaddr`, called with `wm_cur` set;
+       `wm_text` cuts a line at the window's edge). The Macintosh's rules: a press in a window behind brings it to
+       the front (in its title bar, and drags it too); in the front one the close box closes it, the title bar
+       drags it - an outline follows the pointer a cell at a time (the kernel's new `wk_xframe`, version 2, drawn
+       twice and gone) and the window is drawn at its place when the button is let go - and a press in the
+       content comes back to the program; a press in the menu bar too. What is uncovered: the grey, then from the
+       bottom up every window that meets it or one painted again. `tests/wm/wmdesk.c`, three windows under Y1/OS
+       with a script of packets: the screen afterwards must be the desktop painted afresh. What it costs (the
+       window routines, the event loop's polling left out): the start with three windows 226,895 instructions
+       (about 3 s at 1 MHz); a window brought to the front 34,000-55,000 (0.5-0.75 s); brought to the front,
+       dragged and dropped 211,332 (2.8 s); closed 108,158 (1.4 s). The kernel ends at $CEC7 (312 bytes left).
+       `tests/wm/run.py --try desk` runs it in the browser debugger.
+       Open: the menu bar's own pull-down menus; a window's content larger than the window (scrolling).
     5. The Finder: the file list and the launcher (`SYS_EXEC`; an application starts the Finder again when it ends).
     6. The applications, one at a time: `write`, `term`, `sheet`, `paint`, pictures.
   **Open for the V4's software:** the 70 Hz table in the driver; Y1/OS, BASIC
