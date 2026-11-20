@@ -1,7 +1,8 @@
 basic
 help
 screen 1 : cls
-pixelw 10,10 : print pixelr(10,10); pixelr(11,10); pixelr(-1,5); pixelr(640,0); pixelr(0,400); pixelr(639,399)
+pixelw 10,10
+print pixelr(10,10); pixelr(11,10); pixelr(-1,5); pixelr(640,0); pixelr(0,400); pixelr(639,399)
 color 0 : pixelw 10,10 : print pixelr(10,10)
 color 2 : pixelw 10,10 : print pixelr(10,10) : pixelw 10,10 : print pixelr(10,10)
 color 256 : pixelw 12,10 : color -1 : pixelw 13,10 : color 1 : print pixelr(12,10); pixelr(13,10)
@@ -9,12 +10,19 @@ line 0,0,7,0 : print peek(0xD800)
 line 8,0,23,0 : line 16,0,23,0 : print peek(0xD801); peek(0xD802)
 box 0,16,15,31,fill : print peek(0xD850); peek(0xD851); peek(0xD852)
 box 32,32,47,47 : print pixelr(32,32); pixelr(47,47); pixelr(33,33); pixelr(40,32); pixelr(32,40)
-color 2 : box 32,32,47,47 : color 1 : print pixelr(32,32); pixelr(47,47); pixelr(47,32); pixelr(32,47); pixelr(40,47)
-circle 100,100,10 : print pixelr(110,100); pixelr(90,100); pixelr(100,110); pixelr(100,90); pixelr(100,100); pixelr(107,107)
-circle 200,100,0 : circle 210,100,1 : print pixelr(200,100); pixelr(211,100); pixelr(210,101); pixelr(210,100)
-line -5,-5,5,5 : box -10,390,10,410 : circle 639,0,20 : print pixelr(5,5); pixelr(10,395); pixelr(619,0); pixelr(639,20)
-box 300,300,300,300 : box 310,300,320,300 : box 330,300,330,310 : print pixelr(300,300); pixelr(315,300); pixelr(330,305)
-line 400,300,390,280 : line 400,300,410,280 : line 400,300,380,310 : print pixelr(390,280); pixelr(410,280); pixelr(380,310)
+color 2 : box 32,32,47,47 : color 1
+print pixelr(32,32); pixelr(47,47); pixelr(47,32); pixelr(32,47); pixelr(40,47)
+circle 100,100,10
+print pixelr(110,100); pixelr(90,100); pixelr(100,110); pixelr(100,90); pixelr(100,100)
+print pixelr(107,107)
+circle 200,100,0 : circle 210,100,1
+print pixelr(200,100); pixelr(211,100); pixelr(210,101); pixelr(210,100)
+line -5,-5,5,5 : box -10,390,10,410 : circle 639,0,20
+print pixelr(5,5); pixelr(10,395); pixelr(619,0); pixelr(639,20)
+box 300,300,300,300 : box 310,300,320,300 : box 330,300,330,310
+print pixelr(300,300); pixelr(315,300); pixelr(330,305)
+line 400,300,390,280 : line 400,300,410,280 : line 400,300,380,310
+print pixelr(390,280); pixelr(410,280); pixelr(380,310)
 10 line 1,2,3,4 : box 5,6,7,8,fill : circle 9,10,11 : pixelw 1,1 : color 1 : cls : screen 0
 20 a = pixelr(3,3) + 1 : if pixelr(1,1) = 1 then print "on"
 30 for i = 0 to 3 : pixelw i * 2, 50 : next i
@@ -24,8 +32,10 @@ list
 10
 x = 3 : pixelw x, x * 2 : print pixelr(3,6); pixelr(x, x + x); pixelr((x), (6))
 lines = 5 : boxes = 6 : colors = 7 : print lines + boxes + colors
-screen 2 : print peek(0x0FF9) : screen 3 : print peek(0x0FF9) : screen 0 : print peek(0x0FF9) : screen 1
-page 1,0 : print pixelr(3,6) : pixelw 3,6 : print pixelr(3,6) : page 0,1 : print pixelr(3,6) : page 1,1 : cls : page 0,0
+screen 2 : print peek(0x0FF9) : screen 3 : print peek(0x0FF9) : screen 0 : print peek(0x0FF9)
+screen 1
+page 1,0 : print pixelr(3,6) : pixelw 3,6 : print pixelr(3,6) : page 0,1 : print pixelr(3,6)
+page 1,1 : cls : page 0,0
 print pixelr(3,6) : page 1,0 : print pixelr(3,6) : page 2,2 : print pixelr(3,6) : page 0,0
 40 page 0,1 : page a,b
 list
@@ -34,12 +44,18 @@ page 1
 page
 page 1,2,3
 page = 1
-cls : circle 100,100,10,fill : print pixelr(100,100); pixelr(105,105); pixelr(111,100); pixelr(110,100)
-circle 300,100,20,5 : print pixelr(320,100); pixelr(300,105); pixelr(300,100); pixelr(300,95); pixelr(280,100)
-circle 300,150,20,5,fill : print pixelr(300,150); pixelr(319,150); pixelr(300,156); pixelr(300,155)
-color 2 : circle 300,150,20,5,fill : color 1 : print pixelr(300,150); pixelr(320,150); pixelr(300,155)
-circle 400,100,0 : circle 410,100,0,7 : circle 430,100,7,0 : print pixelr(400,100); pixelr(410,107); pixelr(437,100); pixelr(411,100)
-circle 100,300,512 : circle 100,300,-1,5 : circle 100,300,5,-1,fill : print pixelr(100,300); pixelr(105,300)
+cls : circle 100,100,10,fill
+print pixelr(100,100); pixelr(105,105); pixelr(111,100); pixelr(110,100)
+circle 300,100,20,5
+print pixelr(320,100); pixelr(300,105); pixelr(300,100); pixelr(300,95); pixelr(280,100)
+circle 300,150,20,5,fill
+print pixelr(300,150); pixelr(319,150); pixelr(300,156); pixelr(300,155)
+color 2 : circle 300,150,20,5,fill : color 1
+print pixelr(300,150); pixelr(320,150); pixelr(300,155)
+circle 400,100,0 : circle 410,100,0,7 : circle 430,100,7,0
+print pixelr(400,100); pixelr(410,107); pixelr(437,100); pixelr(411,100)
+circle 100,300,512 : circle 100,300,-1,5 : circle 100,300,5,-1,fill
+print pixelr(100,300); pixelr(105,300)
 50 circle 1,2,3,fill : circle 1,2,3,4 : circle 1,2,3,4,fill : circle a,b,r
 list
 50
@@ -51,11 +67,15 @@ circle 1,2,3,4,5
 circle 1,2,3,4,fill,5
 circle 1,2,3 fill
 circle 1,2,fill
-cls : gtext 0,0,1,"A" : print pixelr(2,0); pixelr(0,1); pixelr(0,6); pixelr(4,6); pixelr(5,0); pixelr(0,7)
-gtext 10,0,2,"A" : print pixelr(14,0); pixelr(15,1); pixelr(10,2); pixelr(10,13); pixelr(19,13); pixelr(10,14)
-a$ = "ab" : gtext 0,20,1,a$ + "c" + chr$(65) : print pixelr(1,22); pixelr(6,20); pixelr(13,22); pixelr(20,20)
+cls : gtext 0,0,1,"A"
+print pixelr(2,0); pixelr(0,1); pixelr(0,6); pixelr(4,6); pixelr(5,0); pixelr(0,7)
+gtext 10,0,2,"A"
+print pixelr(14,0); pixelr(15,1); pixelr(10,2); pixelr(10,13); pixelr(19,13); pixelr(10,14)
+a$ = "ab" : gtext 0,20,1,a$ + "c" + chr$(65)
+print pixelr(1,22); pixelr(6,20); pixelr(13,22); pixelr(20,20)
 gtext 0,40,0,"x" : gtext 0,40,64,"x" : gtext 0,40,-1,"x" : print pixelr(0,42); pixelr(2,44)
-gtext 636,395,1,"W" : gtext -3,-3,1,"W" : print pixelr(636,395); pixelr(639,399); pixelr(0,0); pixelr(1,3)
+gtext 636,395,1,"W" : gtext -3,-3,1,"W"
+print pixelr(636,395); pixelr(639,399); pixelr(0,0); pixelr(1,3)
 gtext 0,60,1,chr$(7) + "!" : print pixelr(2,60); pixelr(8,60); pixelr(8,66)
 color 2 : gtext 0,0,1,"A" : color 1 : print pixelr(2,0); pixelr(0,1)
 60 gtext 1,2,3,"hi" : gtext x,y,s,a$ + "!"
@@ -69,6 +89,26 @@ gtext 1,2,3,"a",5
 gtext 1,2,3,"a" "b"
 gtext
 gtext = 1
+cls : box 100,100,120,110 : paint 110,105
+print pixelr(101,101); pixelr(119,109); pixelr(121,105); pixelr(99,105)
+paint 110,105 : print pixelr(110,105) : color 0 : paint 110,105 : color 1
+print pixelr(110,105); pixelr(100,100)
+box 100,100,120,110 : box 98,98,122,112 : color 2 : paint 99,99
+print pixelr(99,99); pixelr(121,111); pixelr(110,105)
+paint 110,105 : print pixelr(110,105); pixelr(99,99) : paint 99,99 : color 1
+print pixelr(99,99); pixelr(100,100); pixelr(98,98)
+line 0,380,19,399 : paint 0,399
+print pixelr(0,399); pixelr(18,399); pixelr(5,386); pixelr(6,385); pixelr(20,399)
+paint 640,0 : paint 0,400 : paint -1,-1 : print pixelr(0,0); pixelr(639,0)
+70 paint 1,2 : paint x,y + 1
+list
+70
+paint 1
+paint 1,
+paint
+paint 700,2,3
+paint 700,2 fill
+paint = 1
 pixelw 1
 pixelw 1,
 pixelw

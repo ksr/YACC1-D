@@ -561,7 +561,7 @@ What the port changed:
 **BASIC in assembly (2026-11-11).** `os/commands-asm/basic.asm` is the same interpreter hand-written in YACC1
 assembly, with `basic.c` as its specification: every routine names the C function it implements and follows it, the
 error flag included, so the two print the same thing on every line. It is `/bin/basic`
-(`os/build/basica/basic.bin`, 7,546 bytes) and the C one is `/bin/basicc`; `tests/ybasic/run.py` runs every session
+(`os/build/basica/basic.bin`, 7,546 bytes then) and the C one is `/bin/basicc`; `tests/ybasic/run.py` runs every session
 on the disk as it is and on a copy with the C one in `/bin/basic`'s place, compares the console output, and counts
 both on a loop: `20 a=a+1` /
 `30 if a<32000 then goto 20` is 5,319 instructions a pass in C and 843 in assembly. It runs on a stack of its own
@@ -569,6 +569,21 @@ both on a loop: `20 a=a+1` /
 addresses in a table and the last lines a GOTO named, and clears only its variables at the start, not the 12 K of
 program area. `make` in `/src/os/commands-asm` assembles it on the machine, and in `/src/os/commands` builds
 `basicc` from the C.
+
+**Graphics (2026-11-20, the video card V4).** Both BASICs draw on the card's graphics layer, 640 x 400 dots, each
+on or off: `SCREEN n` (what is shown: the text, the graphics, both, or the two XORed), `CLS`, `COLOR c` (the ink:
+draw, erase, invert), `PIXELW x,y`, `LINE`, `BOX x0,y0,x1,y1[,FILL]`, `CIRCLE x,y,r[,ry][,FILL]` (a circle or an
+ellipse), `GTEXT x,y,size,a$` (text as dots, a 5 x 7 font at any size), `PAINT x,y` (the flood fill), `PAGE draw,show`
+(the card's two pages: draw on the hidden one, then show it) and the function `PIXELR(x,y)`. `os/lib_gfx.c` is the C
+BASIC's library and the definition of every shape's dots - any C program can include it (`tests/video/v40/v40gfx.c`
+does) - and `basic.asm` has the same routines by hand. `/bin/basic` is 11,209 bytes with them and keeps its 12,288
+bytes of program area. The C BASIC, the reference, is 28,195 of the 32,768 bytes a program may take, with 4,104 bytes
+of program area: it runs the small programs that try a statement. `tests/ybasic` holds the two to the same
+transcript and the same 64K of graphics RAM, and both to `tests/ybasic/gfxref.py`, the library once more in Python.
+Two limits of the tools shape it. GTEXT's font is eight arrays of 60 values: the compiler on the machine takes no
+longer initialiser (a few over 60 are `declaration too big`). And its compiled source has 1,500 labels, which need
+18,284 bytes of an assembler's symbol table: `/bin/asm` has 20,260 and assembles it, `asmc` (asm.c, the assembler's
+C twin) has 17,088 and says `symbol table full`.
 
 The ROM's BASIC (the monitor's `I` command, `firmware/basic/`) is a different, smaller interpreter (uBASIC): it has no
 string variables and cannot load or save programs. `tests/os/ybasic.session` runs a program, saves, loads, edits and

@@ -100,6 +100,7 @@ STTAB:  DW st_print
         DW synerr               ; FILL
         DW st_page
         DW st_gtext
+        DW st_paint
 
 ; ---- the Y1/OS syscall interface (os/lib_abi.c) ------------------------------------------------------------------
 SYSARG0:    EQU 0F06H           ; the syscall arguments and result, big-endian words
@@ -145,7 +146,7 @@ T_VAL:      EQU 163
 T_EOF:      EQU 164
 T_PIXELR:   EQU 169
 T_FILL:     EQU 173
-NKW:        EQU 48              ; the keywords: tokens 128..175
+NKW:        EQU 49              ; the keywords: tokens 128..176
 
 ; =====================================================================================================================
 ; main (basic.c main): the variables cleared, the arguments, then the prompt's loop.
@@ -3047,7 +3048,7 @@ stmt:   JSR skipsp
         BRZ rts
         LDTI 128
         BRLT sm_ch
-        LDTI 176
+        LDTI 177
         BRLT sm_tk
         BR synerr
 sm_tk:  SHL                     ; 2 x (the token - 128): its place in STTAB, which is at $5004
@@ -3360,6 +3361,170 @@ gxci1:  JSR eval
         LDAI 1
         STA GX_FILL
         BR gxell
+
+; PAINT x,y: the dots joined to (x, y) - up, down, left, right - that are as it is become what the ink makes of it
+; (on, off, the other); nothing when the dot is that already, or is off the screen. Row by row, with a stack of 128
+; places still to do (os/lib_gfx.c gfx_paint, step for step: a region that needs more stops at the same dot, with
+; ?PAINT TOO DEEP). While it runs GX_INK is what the dots become.
+st_paint: LDAI 2
+        JSR gargs
+        BRZ rts
+        LDR R3,GX_ARG
+        JSR ge640
+        BRNZ rts
+        STR R3,GX_PX
+        LDR R3,GX_ARG+2
+        JSR ge400
+        BRNZ rts
+        STR R3,GX_PY
+        LDR R4,GX_PY
+        LDR R3,GX_PX
+        JSR gxpoint
+        MVRLA R3
+        STA GX_PT               ; what the dot is
+        LDA GX_INK              ; what it becomes: on, off, or the other
+        LDTI 2
+        BRNEQ gxpa1
+        LDA GX_PT
+        XORI 1
+gxpa1:  STA GX_PN
+        LDT GX_PT
+        BREQ rts
+        LDA GX_INK
+        STA GX_PSV
+        LDA GX_PN
+        STA GX_INK
+        MVIW R3,GX_PSTK
+        STR R3,GX_PSP
+        LDAI 0
+        STA GX_PCNT
+        STA GX_PERR
+        LDR R3,GX_PX
+        LDR R4,GX_PY
+        JSR gxpush
+gxpa2:  LDA GX_PCNT             ; while a place is on the stack: the last one
+        BRZ gxpa9
+        ADDI 255
+        STA GX_PCNT
+        LDR R6,GX_PSP
+        ADDIW R6,0FFFCH
+        STR R6,GX_PSP
+        LDAVR R6
+        MVARH R3
+        INCR R6
+        LDAVR R6
+        MVARL R3
+        INCR R6
+        LDAVR R6
+        MVARH R4
+        INCR R6
+        LDAVR R6
+        MVARL R4
+        STR R3,GX_PX
+        STR R4,GX_PY
+        JSR gxpis
+        BRZ gxpa2
+gxpa3:  LDR R3,GX_PX            ; left along the row while the dots are as the first
+        MVRHA R3
+        BRNZ gxpa3a
+        MVRLA R3
+        BRZ gxpa4
+gxpa3a: DECR R3
+        STR R3,GX_PXL
+        LDR R4,GX_PY
+        JSR gxpis
+        BRZ gxpa4
+        LDR R3,GX_PXL
+        STR R3,GX_PX
+        BR gxpa3
+gxpa4:  LDAI 0
+        STA GX_PUP
+        STA GX_PDN
+gxpa5:  LDR R3,GX_PX            ; then to the right, dot by dot while they are
+        JSR ge640
+        BRNZ gxpa2
+        LDR R4,GX_PY
+        JSR gxpis
+        BRZ gxpa2
+        LDR R3,GX_PX
+        LDR R4,GX_PY
+        JSR gxplot              ; the dot, changed
+        LDR R4,GX_PY            ; the dot above: its place goes on the stack if it is as the first and the one
+        MVRHA R4                ; before it in this walk was not
+        BRNZ gxpa5a
+        MVRLA R4
+        BRZ gxpa6
+gxpa5a: DECR R4
+        STR R4,GX_PY2
+        LDR R3,GX_PX
+        JSR gxpis
+        BRZ gxpa5b
+        LDA GX_PUP
+        BRNZ gxpa6
+        LDR R3,GX_PX
+        LDR R4,GX_PY2
+        JSR gxpush
+        LDAI 1
+gxpa5b: STA GX_PUP
+gxpa6:  LDR R3,GX_PY            ; the dot below, the same
+        INCR R3
+        JSR ge400
+        BRNZ gxpa7
+        STR R3,GX_PY2
+        LDR R4,GX_PY2
+        LDR R3,GX_PX
+        JSR gxpis
+        BRZ gxpa6b
+        LDA GX_PDN
+        BRNZ gxpa7
+        LDR R3,GX_PX
+        LDR R4,GX_PY2
+        JSR gxpush
+        LDAI 1
+gxpa6b: STA GX_PDN
+gxpa7:  LDA GX_PERR
+        BRNZ gxpa8
+        LDR R3,GX_PX
+        INCR R3
+        STR R3,GX_PX
+        BR gxpa5
+gxpa8:  LDA GX_PSV              ; the stack ran out: the fill stops here
+        STA GX_INK
+        MVIW R3,S_PDEEP
+        BR msgerr
+gxpa9:  LDA GX_PSV
+        STA GX_INK
+        RET
+; gxpis: ACC = 1 if the dot (R3, R4) is as the first one was
+gxpis:  JSR gxpoint
+        MVRLA R3
+        LDT GX_PT
+        BREQ ret1
+        BR ret0
+; gxpush: the place (R3, R4) on PAINT's stack; with 128 there already it is not, and GX_PERR = 1
+gxpush: LDA GX_PCNT
+        LDTI 128
+        BRNEQ gxph1
+        LDAI 1
+        STA GX_PERR
+        RET
+gxph1:  ADDI 1
+        STA GX_PCNT
+        LDR R6,GX_PSP
+        MVRHA R3
+        STAVR R6
+        INCR R6
+        MVRLA R3
+        STAVR R6
+        INCR R6
+        MVRHA R4
+        STAVR R6
+        INCR R6
+        MVRLA R4
+        STAVR R6
+        INCR R6
+        STR R6,GX_PSP
+        RET
 
 ; gxctl: control 1 <- ACC, and its copy
 gxctl:  STA GX_C1
@@ -4191,6 +4356,7 @@ KWTAB:  DB 'PRINT',0,0,0
         DB 'FILL',0,0,0,0
         DB 'PAGE',0,0,0,0
         DB 'GTEXT',0,0,0
+        DB 'PAINT',0,0,0
         DB 0
 GX_BIT: DB 128,64,32,16,8,4,2,1
 ; GTEXT's font: the 95 characters $20-$7E, 5 x 7 dots, 5 bytes each: the columns from the left, bit 0 the top dot
@@ -4243,6 +4409,7 @@ S_GSDEEP:   DB '?GOSUB TOO DEEP',10,0
 S_RETNOGS:  DB '?RETURN WITHOUT GOSUB',10,0
 S_FORPROG:  DB '?FOR ONLY IN A PROGRAM',10,0
 S_FORDEEP:  DB '?FOR TOO DEEP',10,0
+S_PDEEP:    DB '?PAINT TOO DEEP',10,0
 S_NEXTNOFOR: DB '?NEXT WITHOUT FOR',10,0
 S_UNDEF:    DB '?UNDEF',39,'D LINE ',0
 S_IN:       DB ' IN ',0
@@ -4254,7 +4421,7 @@ S_HELP:     DB 'STATEMENTS: PRINT LET IF/THEN FOR/TO/STEP NEXT GOTO GOSUB RETURN
             DB 'FUNCTIONS: ABS(x) RND(n) PEEK(a) LEN ASC VAL CHR$ LEFT$ RIGHT$ MID$ STR$',10
             DB 'GRAPHICS (640 x 400): SCREEN n  CLS  COLOR c  PAGE draw,show  PIXELW x,y',10
             DB '  LINE x,y,x,y  BOX x,y,x,y[,FILL]  CIRCLE x,y,r[,ry][,FILL]',10
-            DB '  GTEXT x,y,size,a$  PIXELR(x,y)   man basic',10
+            DB '  GTEXT x,y,size,a$  PAINT x,y  PIXELR(x,y)   man basic',10
             DB 'NUMBERS: integers -32768..32767, 0x1F hex  OPERATORS: + - * / %',10
             DB '  = <> < > <= >=   STRINGS: A$ (up to 32 chars), + joins',10
             DB 'Ctrl-C stops a running program. man basic for more.',10,0
@@ -4385,6 +4552,18 @@ GX_DA:  DS 2
 GX_DB:  DS 2
 GX_DY2: DS 2
 GX_MODE: DS 2
+GX_PX:  DS 2                    ; PAINT: the dot, the one to its left, the row above or below
+GX_PY:  DS 2
+GX_PXL: DS 2
+GX_PY2: DS 2
+GX_PSP: DS 2                    ; its stack: the next free place, the places on it
+GX_PCNT: DS 1
+GX_PERR: DS 1                   ; 1: the stack ran out
+GX_PT:  DS 1                    ; what the first dot was, what the dots become, COLOR's ink while it runs
+GX_PN:  DS 1
+GX_PSV: DS 1
+GX_PUP: DS 1                    ; the dot before this one in the walk had its upper (lower) neighbour as the first
+GX_PDN: DS 1
 LBUF:   DS 100                  ; the input line
 NMBUF:  DS 6                    ; a name, upper case, blank-padded
 GSTK:   DS 32                   ; the GOSUB frames: line record, text
@@ -4399,6 +4578,7 @@ PBUF:   DS 52                   ; a path
 NAME:   DS 52                   ; the file named on the command line
 ZEND:
 ZLEN:   EQU ZEND-ZBEG
+GX_PSTK: DS 512                 ; PAINT's stack: 128 places, x and y
 VCPAD:  DS (256-(VCPAD).0)&255 ; to a page's start
 VCPAGE: DS 256                  ; 0..31: RUN's 8 lines (number, record); 130..181: the one-letter variables' addresses
 PROG:   DS PROGSZ               ; the program

@@ -25,9 +25,11 @@ shipped /bin/basic is the same source with its own number, and check 5 is about 
      limits  32 variables and 16 strings, GOSUB and FOR 8 deep, brackets 20 deep, numbers, the lines RUN remembers,
              a typed token, a program that uses most statements, the program area filled to the byte (?OUT OF
              MEMORY: 44 lines of 93 bytes and the probes after them, for the reference's 4,104 bytes)
-     gfx     the graphics statements (2026-11-20): SCREEN, CLS, COLOR, PIXELW, LINE, BOX [,FILL], CIRCLE and PIXELR(),
-             what they leave on the screen as PIXELR and PEEK of the window see it, in a program and LISTed, with
-             names that only begin like a keyword, and every way to write them wrong
+     gfx     the graphics statements (2026-11-20): SCREEN, CLS, COLOR, PIXELW, LINE, BOX [,FILL], CIRCLE (a circle
+             or an ellipse, [,FILL]), PAGE, GTEXT, PAINT and PIXELR(), what they leave on the screen as PIXELR and
+             PEEK of the window see it, in a program and LISTed, with names that only begin like a keyword, and
+             every way to write them wrong. No line of it may be longer than the 98 characters BASIC takes: both
+             BASICs cut a longer one alike, and what is cut would not be tried (2026-11-20: 24 lines were)
    A key typed while a program runs is read by the Ctrl-C check and kept for the next INPUT or prompt; one typed while
    `basic -r` runs is lost. The emulator's console always has the rest of the session waiting, so the sessions have a
    spare empty line where a key is lost.
@@ -37,11 +39,14 @@ shipped /bin/basic is the same source with its own number, and check 5 is about 
    RUN of  10 a=0 / 20 a=a+1 / 30 if a<1000 then goto 20  on both. The assembly BASIC must need less than a quarter of
    the C one's instructions (2026-11-11: 843 against 5,319 for a pass of lines 20 and 30).
 
-4. The picture (2026-11-20): one program of all the graphics statements - every ink, boxes filled and not, circles,
-   lines in every direction, shapes over each edge of the screen - RUN by both BASICs with the emulator writing the
-   video card's state (Y1VIDSTATE). The 64K of graphics RAM must be the same from the assembly BASIC and from the C
-   one on the instruction-level emulator and from the assembly one on the microcode emulator, and the same as
-   tests/ybasic/gfxref.py draws it (os/lib_gfx.c in Python); control 1 and control 2 as the last SCREEN left them.
+4. The picture (2026-11-20): all the graphics statements - every ink, boxes filled and not, circles and ellipses,
+   lines in every direction, shapes over each edge of the screen, text, both pages, PAINT of regions of every kind
+   and of one that takes more than its stack (the fill stops with ?PAINT TOO DEEP, once, at the same dot) - as
+   programs of at most 3,000 bytes (the reference's area), RUN one after the other by both BASICs with the emulator
+   writing the video card's state (Y1VIDSTATE). The 64K of graphics RAM must be the same from the assembly BASIC and
+   from the C one on the instruction-level emulator and from the assembly one on the microcode emulator, and the same
+   as tests/ybasic/gfxref.py draws it (os/lib_gfx.c in Python); control 1 and control 2 as the last SCREEN and PAGE
+   left them.
 
 5. The shipped /bin/basic's own program area: its banner says 12286 bytes, 132 lines of 93 bytes go in, the line
    that leaves exactly 2 bytes is taken and the next one is refused - the same probes as `limits`, at 12,288.
@@ -59,6 +64,8 @@ FS = os.path.join(ROOT, "tools/p8xfs.py")
 MON_EXIT = re.search(r"^([0-9a-f]{4})h: CMD_EXIT\b", open(os.path.join(ROOT, "firmware/monitor/monitor.lst")).read(),
                      re.M).group(1).upper()
 VERBOSE = "-v" in sys.argv
+LINE = 98                                     # the characters of a typed line BASIC takes (basic.c getline)
+WHOLE = ("gfx",)                              # the sessions that must not have a longer line
 fails = 0
 
 
@@ -135,7 +142,9 @@ def compare(tag, name, c, a):
     ci, ai = fresh(c, "run.c.img"), fresh(a, "run.asm.img")
     (co, ce), (ao, ae) = run(tag, ci, script), run(tag, ai, script)
     why = ""
-    if not re.search(r"\n\r?bye", co): why = "the C BASIC's run did not reach the end: " + ce.strip()
+    cut = [n for n, l in enumerate(script.split(b"\n")) if len(l) > LINE] if name in WHOLE else []
+    if cut: why = "longer than the %d characters BASIC takes, so cut and not tried: line %s" % (LINE, ", ".join(map(str, cut)))
+    elif not re.search(r"\n\r?bye", co): why = "the C BASIC's run did not reach the end: " + ce.strip()
     elif co != ao:
         d = list(difflib.unified_diff(co.replace("\r", "").splitlines(), ao.replace("\r", "").splitlines(),
                                       "C", "assembly", lineterm="", n=1))
@@ -191,17 +200,30 @@ PICTURE = [("cls",), ("box", 0, 0, 639, 399), ("line", 0, 0, 639, 399), ("line",
            ("gtext", 30, 60, 2, "in"), ("color", 0), ("gtext", 25, 30, 1, "erased"), ("color", 1),
            ("gtext", 600, 200, 2, "edge"), ("gtext", -8, 300, 3, "left"), ("gtext", 300, -5, 2, "top"), ("gtext", 300, 392, 2, "bottom"),
            ("gtext", 400, 250, 0, "none"), ("gtext", 400, 250, 64, "none"), ("gtext", 400, 250, -2, "none"), ("gtext", 400, 250, 63, " "),
-           ("gtext", 400, 260, 1, ""), ("gtext", 400, 270, 1, "12345678901234567890123456789012")]
+           ("gtext", 400, 260, 1, ""), ("gtext", 400, 270, 1, "12345678901234567890123456789012"),
+           # PAINT: a box, a ring, the inverting ink on a disc and on what it then belongs to, a letter's hole, a
+           # block erased round a hole, a corner cut off by a line, places off the screen, each ink on a dot that is
+           # already so, and a comb that takes more than the stack has (the fill stops: "?PAINT TOO DEEP")
+           ("page", 1, 1), ("cls",), ("box", 10, 10, 60, 40), ("paint", 30, 20), ("paint", 30, 20), ("circle", 120, 60, 40),
+           ("circle", 120, 60, 20), ("paint", 120, 30), ("color", 2), ("paint", 120, 60), ("paint", 121, 60), ("color", 1),
+           ("gtext", 200, 20, 6, "O8B"), ("paint", 210, 40), ("paint", 250, 30), ("paint", 250, 50), ("paint", 284, 30),
+           ("boxf", 300, 100, 400, 160), ("color", 0), ("circlef", 350, 130, 20), ("paint", 301, 101), ("paint", 301, 101),
+           ("color", 1), ("line", 0, 300, 100, 399), ("paint", 5, 395), ("paint", 700, 10), ("paint", 10, 500), ("paint", -1, -1),
+           ("circle", 500, 300, 60), ("paint", 500, 300), ("color", 0), ("circlef", 500, 300, 30), ("color", 2), ("paint", 500, 300),
+           ("color", 1), ("line", 0, 220, 639, 220), ("line", 0, 223, 639, 223), ("comb", 221), ("paint", 0, 222)]
 
 
 def picture_check(c, a):
     sys.path.insert(0, HERE); import gfxref
-    ref = gfxref.Gfx(); lines = []
+    ref = gfxref.Gfx(); lines = []; size = 0; deep = 0
     for n, (op, *v) in enumerate(PICTURE):
         text = {"boxf": "box %d,%d,%d,%d,fill", "box": "box %d,%d,%d,%d", "line": "line %d,%d,%d,%d", "circle": "circle %d,%d,%d",
                 "circlef": "circle %d,%d,%d,fill", "ellipse": "circle %d,%d,%d,%d", "ellipsef": "circle %d,%d,%d,%d,fill",
-                "pixelw": "pixelw %d,%d", "color": "color %d", "screen": "screen %d", "cls": "cls", "page": "page %d,%d", "gtext": 'gtext %d,%d,%d,"%s"'}[op] % tuple(v)
-        lines.append("%d %s" % (10 * n + 10, text))
+                "pixelw": "pixelw %d,%d", "color": "color %d", "screen": "screen %d", "cls": "cls", "page": "page %d,%d", "gtext": 'gtext %d,%d,%d,"%s"', "paint": "paint %d,%d",
+                "comb": "for i = 0 to 319 : pixelw i + i, %d : next i"}[op] % tuple(v)
+        if size + len(text) + 8 > 3000:                    # the reference's program area: on with a new program
+            lines += ["run", "new"]; size = 0
+        lines.append("%d %s" % (10 * n + 10, text)); size += len(text) + 8
         if op == "color": ref.ink = v[0]
         elif op == "boxf": ref.box(*v, 1)
         elif op in ("box", "line", "circle"): getattr(ref, op)(*v)
@@ -210,6 +232,9 @@ def picture_check(c, a):
         elif op == "pixelw": ref.plot(*v)
         elif op in ("screen", "page"): getattr(ref, op)(*v)
         elif op == "gtext": ref.text(*v)
+        elif op == "paint": deep += ref.paint(*v)
+        elif op == "comb":
+            for i in range(320): ref.plot(i + i, v[0])
         elif op == "cls": ref.g[ref.base():ref.base() + 32768] = bytes(32768)
     script = ("O\nbasic\n" + "".join(l + "\n" for l in lines) + "run\nbye\nexit\n0").encode()
     got = {}
@@ -220,7 +245,8 @@ def picture_check(c, a):
         d = dict(l.strip().partition(" ")[::2] for l in open(st)) if os.path.exists(st) else {}
         g = got[who, tag] = bytes.fromhex(d.get("gram", ""))
         bad = [i for i in range(65536) if g[i] != ref.g[i]] if len(g) == 65536 else [-1]
-        check("the picture, %s BASIC, %s" % (who, tag), "Ok" in out and not bad and d.get("control", "")[:1] == "%X" % (ref.hi >> 4) and
+        check("the picture, %s BASIC, %s" % (who, tag), "Ok" in out and "MEMORY" not in out and out.count("?PAINT TOO DEEP") == deep == 1 and
+              not bad and d.get("control", "")[:1] == "%X" % (ref.hi >> 4) and
               d.get("control2") == "00", "%d bytes are not the reference's, the first at $%04X; control %s / %s; %s" %
               (len(bad), bad[0] if bad else 0, d.get("control"), d.get("control2"), err.strip()[-80:]))
     check("the picture: %d dots, the same from all three" % sum(bin(b).count("1") for b in ref.g),

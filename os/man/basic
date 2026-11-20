@@ -64,11 +64,27 @@ DESCRIPTION
                        statements draw on (and PIXELR reads, and CLS
                        clears) and the one on the screen. Draw on the
                        hidden page, then show it: PAGE 1,0 ... PAGE 0,1
+        PAINT x,y      fills the region the dot x,y is in: the dots
+                       joined to it - up, down, left, right - that
+                       are as it is (off, or on) all become what the
+                       COLOR makes of it: on with 1, off with 0, the
+                       other with 2. So PAINT fills an outline's
+                       inside, COLOR 0 : PAINT takes a filled shape
+                       away. Nothing if the dot is that already. A
+                       dot takes three times as long as one of a
+                       filled BOX: 100 x 100 dots about two minutes.
+                       PAINT remembers up to 128 places it must come
+                       back to; a region of very many separate arms
+                       needs more and stops partly filled:
+                       ?PAINT TOO DEEP
         PIXELR(x,y)    a function: 1 if the dot is on, else 0
     What is off the screen is not drawn: a shape may hang over an
     edge. Draw with SCREEN 0 and show the picture afterwards, or with
     SCREEN 1 and watch. The names of these statements, and FILL, can
     no longer be variables.
+    A statement runs to its end: Ctrl-C is looked at between the
+    lines of a program. A filled BOX of the whole screen takes about
+    a quarter of an hour and a PAINT of it three quarters.
 
     SAVE writes the program as text, exactly as LIST shows it, so a
     saved program can be read with cat, changed with vi and LOADed
@@ -108,6 +124,7 @@ EXAMPLES
     > 10 screen 1 : cls : box 0,0,639,399
     > 20 for i = 0 to 390 step 30 : line 0,i,639,399-i : next i
     > 30 circle 320,200,100 : box 280,180,360,220,fill
+    > 40 circle 100,100,30 : paint 100,100
     > run
 
 NOTES

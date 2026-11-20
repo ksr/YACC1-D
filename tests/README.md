@@ -76,7 +76,9 @@
   different (2026-11-11). Before the corpus RC/asm is put at its own limits - a line of 254 characters and one of
   255, names of 30 and 40 characters as operands, a label of 30, the cross-reference of a 29-character label: the
   exit status and the message of each (all but the label ended it on a signal with no message until 2026-11-11);
-  a source RC/asm dies on is a failure, never one "refused by both". `run.py --target` (`target.py`, `target.session`, the
+  a source RC/asm dies on is a failure, never one "refused by both". The C BASIC's compiled source is beyond asm.c's
+  symbol table since 2026-11-20 (it needs 18,284 bytes of the 17,088; asm.asm has 20,260): for it, and only for the
+  sources of `run.py`'s list BEYOND, asm.c must say `symbol table full` and asm.asm's files must be RC/asm's. `run.py --target` (`target.py`, `target.session`, the
   transcripts `target.int.out`/`target.uc.out`) runs `asm` under Y1/OS on both emulators - y1cc programs assembled
   and run, the ROM monitor, `isa.asm`, compiler pass cc4 - and compares every file it wrote with RC/asm's output.
   `make asm-test`; both in `make check`.
@@ -86,8 +88,9 @@
   Then `tests/os/ybasic.session` with the C BASIC against the OS tests' expected transcripts on both emulators,
   and both interpreters counted in instructions on a loop (the assembly one must need under a quarter). `--uc` runs
   the sessions on the microcode emulator too. (`tests/basic/` is the ROM's uBASIC, not this.) The graphics statements
-  (2026-11-20, the video card V4's layer): the session `gfx`, and a picture of all of them - every ink, boxes, circles,
-  lines in every direction, shapes over each edge - whose 64K of graphics RAM must be the same from the assembly BASIC
+  (2026-11-20, the video card V4's layer): the session `gfx`, and a picture of all of them - every ink, boxes, circles
+  and ellipses, lines in every direction, shapes over each edge, text, both pages, PAINT of regions of every kind
+  and of one too intricate for it (`?PAINT TOO DEEP`) - whose 64K of graphics RAM must be the same from the assembly BASIC
   and the C one on the instruction-level emulator, from the assembly one on the microcode emulator, and from
   `gfxref.py`, `os/lib_gfx.c` written again in Python.
   The C BASIC's program area is smaller than the assembly one's (4,104 bytes against 12,288), so `run.py` assembles

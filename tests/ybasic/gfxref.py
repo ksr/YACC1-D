@@ -6,7 +6,7 @@ assembly BASIC and the C BASIC must both have drawn."""
 import os, re
 M = 0xFFFF
 _LIB = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "os", "lib_gfx.c")).read()
-FONT = bytes(int(v) for name in ("gfx_f0", "gfx_f1", "gfx_f2")                       # GTEXT's font, as the C has it
+FONT = bytes(int(v) for name in ("gfx_f%d" % k for k in range(8))                    # GTEXT's font, as the C has it
              for v in re.search(r"char %s\[\d+\] = \{(.*?)\};" % name, _LIB, re.S).group(1).split(","))
 def sg(v): return (v & M) ^ 0x8000                       # the bias of a signed compare
 
@@ -105,3 +105,33 @@ class Gfx:
                             px, py = x + col * size, y + row * size
                             self.box(px, py, px + size - 1, py + size - 1, 1, ink)
             x += 6 * size
+    def paint(self, x, y, ink=None):
+        """-> 1 if the stack of 128 places ran out (the fill stopped there), else 0"""
+        ink = self.ink if ink is None else ink
+        x &= M; y &= M
+        if x >= 640 or y >= 400: return 0
+        t = self.point(x, y)
+        n = 1 if ink == 1 else 0 if ink == 0 else 1 - t
+        if n == t: return 0
+        st = [(x, y)]; over = [False]
+        def push(px, py):
+            if len(st) == 128: over[0] = True
+            else: st.append((px, py))
+        while st:
+            x, y = st.pop()
+            if self.point(x, y) != t: continue
+            while x and self.point(x - 1, y) == t: x -= 1
+            up = dn = False
+            while x < 640 and self.point(x, y) == t:
+                self.plot(x, y, n)
+                if y:
+                    if self.point(x, y - 1) == t:
+                        if not up: push(x, y - 1); up = True
+                    else: up = False
+                if y < 399:
+                    if self.point(x, y + 1) == t:
+                        if not dn: push(x, y + 1); dn = True
+                    else: dn = False
+                if over[0]: return 1
+                x += 1
+        return 0

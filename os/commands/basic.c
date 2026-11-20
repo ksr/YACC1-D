@@ -11,7 +11,7 @@
    PRINT#, INPUT#, EOF(n), CLOSE; functions ABS RND PEEK LEN ASC VAL CHR$ LEFT$ RIGHT$ MID$ STR$ (man basic).
    Graphics on the video card V4 (2026-11-20; ../lib_gfx.c): SCREEN n, CLS, COLOR c, PIXELW x,y, LINE x0,y0,x1,y1,
    BOX x0,y0,x1,y1[,FILL], CIRCLE x,y,r[,FILL], CIRCLE x,y,rx,ry[,FILL] (an ellipse), PAGE draw,show,
-   GTEXT x,y,size,string and the function PIXELR(x,y).
+   GTEXT x,y,size,string, PAINT x,y and the function PIXELR(x,y).
    SAVE writes the program as text, as LIST shows it (one line a record, LF at the end), so a saved program can be
    read with cat, edited with vi and LOADed back; LOAD reads such a file line by line as if it were typed.
    Ctrl-C stops a running program ("BREAK IN n"): the check reads a waiting key before each line and keeps any
@@ -86,6 +86,7 @@
 #define T_FILL 173
 #define T_PAGE 174
 #define T_GTEXT 175
+#define T_PAINT 176
 /* relation bits */
 #define R_LT 1
 #define R_EQ 2
@@ -95,7 +96,7 @@
    string literal over 160 characters): the n-th word of the two is token 128 + n, the order of the T_ numbers above */
 char *kwtab[] = { "PRINT LET IF THEN FOR TO NEXT GOTO GOSUB RETURN INPUT REM END RUN LIST NEW ABS RND PEEK POKE",
                   "STEP BYE HELP SAVE LOAD CHR$ LEFT$ RIGHT$ MID$ LEN ASC OPEN CLOSE OUTPUT STR$ VAL EOF",
-                  "SCREEN CLS COLOR PIXELW PIXELR LINE BOX CIRCLE FILL PAGE GTEXT" };
+                  "SCREEN CLS COLOR PIXELW PIXELR LINE BOX CIRCLE FILL PAGE GTEXT PAINT" };
 int pow10[] = { 10000, 1000, 100, 10, 1 };
 
 char lbuf[100];             /* the input line */
@@ -880,6 +881,11 @@ int st_circle() {
     return 0;
 }
 int st_page() { if (gargs(2)) gfx_pages(garg[0], garg[1]); return 0; }
+int st_paint() {
+    if (!gargs(2)) return 0;
+    if (gfx_paint(garg[0], garg[1], ink)) return msgerr("?PAINT TOO DEEP\n");
+    return 0;
+}
 /* GTEXT x,y,size,string */
 int st_gtext() {
     if (!gargs(3)) return 0;
@@ -982,7 +988,7 @@ int st_help() {
     outs("FUNCTIONS: ABS(x) RND(n) PEEK(a) LEN ASC VAL CHR$ LEFT$ RIGHT$ MID$ STR$\n");
     outs("GRAPHICS (640 x 400): SCREEN n  CLS  COLOR c  PAGE draw,show  PIXELW x,y\n");
     outs("  LINE x,y,x,y  BOX x,y,x,y[,FILL]  CIRCLE x,y,r[,ry][,FILL]\n");
-    outs("  GTEXT x,y,size,a$  PIXELR(x,y)   man basic\n");
+    outs("  GTEXT x,y,size,a$  PAINT x,y  PIXELR(x,y)   man basic\n");
     outs("NUMBERS: integers -32768..32767, 0x1F hex  OPERATORS: + - * / %\n");
     outs("  = <> < > <= >=   STRINGS: A$ (up to 32 chars), + joins\n");
     outs("Ctrl-C stops a running program. man basic for more.\n");
@@ -1022,6 +1028,7 @@ int stmt() {
     if (c == T_CIRCLE) return st_circle();
     if (c == T_PAGE) return st_page();
     if (c == T_GTEXT) return st_gtext();
+    if (c == T_PAINT) return st_paint();
     return synerr();
 }
 int stmtline() {

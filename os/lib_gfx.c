@@ -254,41 +254,47 @@ void gfx_ellipse(int cx, int cy, int a, int b, int fill, int ink) {
 }
 
 /* Text as dots. The font: 5 x 7 dots a character, the 95 characters $20-$7E, 5 bytes each - its columns from the
-   left, bit 0 the top dot - in three arrays of 32, 32 and 31 characters (y1cc's passes on the machine take no
-   longer initialiser). The capitals, digits and signs are tools/vidsim.py's (the V1 card's set); the small letters
+   left, bit 0 the top dot - in eight arrays of 12 characters (the last has 11): y1cc's passes on the machine
+   take an initialiser of 60 values, and no more than a few over (the parser's nodes for one declaration; three
+   arrays of 160 compiled on the Mac and not on the machine, 2026-11-20). The capitals, digits and signs are tools/vidsim.py's (the V1 card's set); the small letters
    are drawn to go with them. gfx_text() draws n characters with (x, y) the first one's top left dot: each dot of
    the font a square of size x size dots in the ink, the dots between left as they are; a character is 6 x size
    further right than the one before. A size of 0, or over 63, draws nothing; a code outside $20-$7E is a blank. */
-char gfx_f0[160] = {
+char gfx_f0[60] = {
     0, 0, 0, 0, 0, 0, 0, 95, 0, 0, 0, 7, 0, 7, 0, 20, 127, 20, 127, 20,
     36, 42, 127, 42, 18, 35, 19, 8, 100, 98, 54, 73, 85, 34, 80, 0, 5, 3, 0, 0,
-    0, 28, 34, 65, 0, 0, 65, 34, 28, 0, 8, 42, 28, 42, 8, 8, 8, 62, 8, 8,
+    0, 28, 34, 65, 0, 0, 65, 34, 28, 0, 8, 42, 28, 42, 8, 8, 8, 62, 8, 8 };
+char gfx_f1[60] = {
     0, 80, 48, 0, 0, 8, 8, 8, 8, 8, 0, 96, 96, 0, 0, 32, 16, 8, 4, 2,
     62, 81, 73, 69, 62, 0, 66, 127, 64, 0, 66, 97, 81, 73, 70, 33, 65, 69, 75, 49,
-    24, 20, 18, 127, 16, 39, 69, 69, 69, 57, 60, 74, 73, 73, 48, 1, 113, 9, 5, 3,
+    24, 20, 18, 127, 16, 39, 69, 69, 69, 57, 60, 74, 73, 73, 48, 1, 113, 9, 5, 3 };
+char gfx_f2[60] = {
     54, 73, 73, 73, 54, 6, 73, 73, 41, 30, 0, 54, 54, 0, 0, 0, 86, 54, 0, 0,
-    0, 8, 20, 34, 65, 20, 20, 20, 20, 20, 65, 34, 20, 8, 0, 2, 1, 81, 9, 6 };
-char gfx_f1[160] = {
-    50, 73, 121, 65, 62, 126, 17, 17, 17, 126, 127, 73, 73, 73, 54, 62, 65, 65, 65, 34,
+    0, 8, 20, 34, 65, 20, 20, 20, 20, 20, 65, 34, 20, 8, 0, 2, 1, 81, 9, 6,
+    50, 73, 121, 65, 62, 126, 17, 17, 17, 126, 127, 73, 73, 73, 54, 62, 65, 65, 65, 34 };
+char gfx_f3[60] = {
     127, 65, 65, 34, 28, 127, 73, 73, 73, 65, 127, 9, 9, 1, 1, 62, 65, 65, 81, 50,
     127, 8, 8, 8, 127, 0, 65, 127, 65, 0, 32, 64, 65, 63, 1, 127, 8, 20, 34, 65,
-    127, 64, 64, 64, 64, 127, 2, 4, 2, 127, 127, 4, 8, 16, 127, 62, 65, 65, 65, 62,
+    127, 64, 64, 64, 64, 127, 2, 4, 2, 127, 127, 4, 8, 16, 127, 62, 65, 65, 65, 62 };
+char gfx_f4[60] = {
     127, 9, 9, 9, 6, 62, 65, 81, 33, 94, 127, 9, 25, 41, 70, 70, 73, 73, 73, 49,
     1, 1, 127, 1, 1, 63, 64, 64, 64, 63, 31, 32, 64, 32, 31, 127, 32, 24, 32, 127,
-    99, 20, 8, 20, 99, 3, 4, 120, 4, 3, 97, 81, 73, 69, 67, 0, 0, 127, 65, 65,
-    2, 4, 8, 16, 32, 65, 65, 127, 0, 0, 4, 2, 1, 2, 4, 64, 64, 64, 64, 64 };
-char gfx_f2[155] = {
+    99, 20, 8, 20, 99, 3, 4, 120, 4, 3, 97, 81, 73, 69, 67, 0, 0, 127, 65, 65 };
+char gfx_f5[60] = {
+    2, 4, 8, 16, 32, 65, 65, 127, 0, 0, 4, 2, 1, 2, 4, 64, 64, 64, 64, 64,
     0, 1, 2, 4, 0, 32, 84, 84, 84, 120, 127, 72, 68, 68, 56, 56, 68, 68, 68, 32,
-    56, 68, 68, 72, 127, 56, 84, 84, 84, 24, 8, 126, 9, 1, 2, 8, 20, 84, 84, 56,
+    56, 68, 68, 72, 127, 56, 84, 84, 84, 24, 8, 126, 9, 1, 2, 8, 20, 84, 84, 56 };
+char gfx_f6[60] = {
     127, 8, 4, 4, 120, 0, 68, 125, 64, 0, 32, 64, 68, 61, 0, 127, 16, 40, 68, 0,
     0, 65, 127, 64, 0, 124, 4, 24, 4, 120, 124, 8, 4, 4, 120, 56, 68, 68, 68, 56,
-    124, 20, 20, 20, 8, 8, 20, 20, 24, 124, 124, 8, 4, 4, 8, 72, 84, 84, 84, 32,
+    124, 20, 20, 20, 8, 8, 20, 20, 24, 124, 124, 8, 4, 4, 8, 72, 84, 84, 84, 32 };
+char gfx_f7[55] = {
     4, 63, 68, 64, 32, 60, 64, 64, 32, 124, 28, 32, 64, 32, 28, 60, 64, 48, 64, 60,
     68, 40, 16, 40, 68, 12, 80, 80, 80, 60, 68, 100, 84, 76, 68, 0, 8, 54, 65, 0,
     0, 0, 127, 0, 0, 0, 65, 54, 8, 0, 8, 4, 8, 16, 8 };
 
 void gfx_text(int x, int y, int size, char *s, int n, int ink) {
-    int i, g, col, row, bits, px, py, adv;
+    int i, g, k, col, row, bits, px, py, adv;
     char *f;
     if (size == 0) return;
     if (size > 63) return;
@@ -297,9 +303,16 @@ void gfx_text(int x, int y, int size, char *s, int n, int ink) {
         g = s[i] & 255;
         if (g >= 32 && g < 127) {
             g = g - 32;
-            if (g < 32) f = gfx_f0;
-            else if (g < 64) { f = gfx_f1; g = g - 32; }
-            else { f = gfx_f2; g = g - 64; }
+            k = 0;
+            while (g >= 12) { g = g - 12; k++; }
+            if (k == 0) f = gfx_f0;
+            else if (k == 1) f = gfx_f1;
+            else if (k == 2) f = gfx_f2;
+            else if (k == 3) f = gfx_f3;
+            else if (k == 4) f = gfx_f4;
+            else if (k == 5) f = gfx_f5;
+            else if (k == 6) f = gfx_f6;
+            else f = gfx_f7;
             f = f + (g << 2) + g;
             px = x;
             for (col = 0; col < 5; col++) {
@@ -315,6 +328,62 @@ void gfx_text(int x, int y, int size, char *s, int n, int ink) {
         }
         x = x + adv;
     }
+}
+
+/* gfx_paint(): the dots joined to (x, y) - up, down, left, right - that are as it is (on, or off) become what the
+   ink makes of it: on with GFX_SET, off with GFX_CLR, the other with GFX_INV. Nothing happens when that is what
+   the dot is already, or when it is off the screen. Row by row, with a stack of the places still to do:
+       the place (x, y) on the stack; then, while there is one: take the last; if its dot is still as the first
+       one was: go left along the row while the dots are; then to the right, dot by dot while they are: change the
+       dot; if the dot above is as the first one was and the one before it in this row's walk was not (or this is
+       the walk's first), its place goes on the stack; the same for the dot below.
+   The stack holds GFX_PMAX places. A region that needs more is too intricate: the fill stops where it is and
+   gfx_paint() returns 1 (else 0). */
+#define GFX_PMAX 128
+int gfx_ps[256];
+int gfx_psp, gfx_perr;
+
+void gfx_push(int x, int y) {
+    if (gfx_psp == GFX_PMAX) { gfx_perr = 1; return; }
+    gfx_ps[gfx_psp + gfx_psp] = x;
+    gfx_ps[gfx_psp + gfx_psp + 1] = y;
+    gfx_psp++;
+}
+
+int gfx_paint(int x, int y, int ink) {
+    int t, n, up, dn;
+    if (x >= GFX_W) return 0;
+    if (y >= GFX_H) return 0;
+    t = gfx_point(x, y);
+    if (ink == GFX_SET) n = 1;
+    else if (ink == GFX_CLR) n = 0;
+    else n = 1 - t;
+    if (n == t) return 0;
+    gfx_psp = 0; gfx_perr = 0;
+    gfx_push(x, y);
+    while (gfx_psp) {
+        gfx_psp--;
+        x = gfx_ps[gfx_psp + gfx_psp];
+        y = gfx_ps[gfx_psp + gfx_psp + 1];
+        if (gfx_point(x, y) == t) {
+            while (x && gfx_point(x - 1, y) == t) x--;
+            up = 0; dn = 0;
+            while (x < GFX_W && gfx_point(x, y) == t) {
+                gfx_plot(x, y, n);
+                if (y) {
+                    if (gfx_point(x, y - 1) == t) { if (!up) { gfx_push(x, y - 1); up = 1; } }
+                    else up = 0;
+                }
+                if (y < GFX_H - 1) {
+                    if (gfx_point(x, y + 1) == t) { if (!dn) { gfx_push(x, y + 1); dn = 1; } }
+                    else dn = 0;
+                }
+                if (gfx_perr) return 1;
+                x++;
+            }
+        }
+    }
+    return 0;
 }
 
 void gfx_screen(int mode) {

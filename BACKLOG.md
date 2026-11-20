@@ -504,7 +504,41 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   - **Done:** GTEXT x,y,size,string: text as dots, a 5 x 7 font of the 95 characters $20-$7E (the capitals, digits
     and signs of `tools/vidsim.py`'s V1 set, small letters drawn to go with them; 475 bytes in each BASIC), every
     font dot a filled box of size x size.
-  - **To do:** PAINT x,y (the region a dot is in, switched).
+  - **Done:** PAINT x,y, the flood fill: the dots joined to (x, y) - up, down, left, right - that are as it is
+    become what the ink makes of it. COLOR 1 fills an outline's inside, COLOR 0 takes a filled shape away, COLOR 2
+    switches either; nothing happens when the dot is that already. A row at a time, with a stack of 128 places to
+    come back to (512 bytes in each BASIC). A region that needs more stops partly filled with `?PAINT TOO DEEP`, at
+    the same dot in both BASICs (the picture test has one: a comb of 320 teeth).
+    A dot costs 474 instructions in the assembly BASIC against 152 for a dot of a filled box (1,091 and 286 in the C
+    one): 100 x 100 dots are 4.7 million instructions, the whole screen 121 million (at 1 MHz and 21 clocks an
+    instruction about 100 seconds and 42 minutes). **Possible later:** PAINT goes through the general dot routine
+    four times a dot (is it, change it, the one above, the one below); taking the eight dots of a byte at once where
+    they are alike would make a large fill several times faster, with the same dots and the same stopping place.
+    The same for a filled box, circle and GTEXT, whose rows go dot by dot (152 instructions a dot: the whole screen
+    39 million, about 14 minutes). And no statement can be stopped: Ctrl-C is looked at between a program's lines,
+    so a PAINT typed on an empty screen runs its 42 minutes; a look at the keyboard for each row would end that.
+  - With all five (2026-11-20) `/bin/basic` is 11,209 bytes and the C BASIC 28,195 of its 32,768 (4.6K free).
+  - **Two limits the C BASIC met with GTEXT (2026-11-20; the commit 175744f was pushed with both, after the BASIC,
+    OS and video tests only - the whole check would have shown them):**
+    - The machine's compiler refused it: `y1cc: declaration too big (NODES_MAX)`. The font was three arrays of 160
+      values, and the passes on the machine take an initialiser of 60 values and no more than a few over (64 are
+      refused: the parser's nodes for one declaration). `make` in `/src` stopped there (`tests/native/srcmake.py`,
+      `mkdisk.py`). The font is eight arrays of 60 values now, and the machine builds `basicc` again, the same bytes
+      as the Mac's.
+    - Its compiled source is beyond `asmc`'s symbol table: 1,500 labels that need 18,284 bytes, and asm.c
+      (`/bin/asmc`, the assembler's C twin) has 17,088 and no room for more (its image and data fill the 32K
+      program area to 13 bytes). asm.asm, the `/bin/asm` that every build uses, has 20,260 and assembles it: 2K to
+      grow into. `asmc` says `symbol table full`. `tests/asm` has a list for it (BEYOND: asm.c must refuse the
+      source, and asm.asm's two files must be RC/asm's), where it held asm.asm to asm.c's files. **Ways back under
+      asm.c's limit, if wanted:** shorter labels from y1cc (`Lend684`, `Lelse689` as `L684`, `L689`: about 3K of
+      the 18K; the compiler, its C twin and the passes change together), or fewer functions and variables in
+      `os/lib_gfx.c`.
+  - The session `tests/ybasic/gfx.session` had 24 lines longer than the 98 characters BASIC takes of a typed line:
+    both BASICs cut them alike (most were then refused, `?SYNTAX ERROR`), so the two transcripts agreed and the
+    lines tested nothing. Split 2026-11-20; `run.py` now fails the session on such a line, and the values its PRINTs
+    of PIXELR show were checked once against `gfxref.py` (38 lines, both BASICs). **To look at:** `prog.session`
+    has two such lines from 2026-11-11 (11: 108 characters, 61: 119, seven nested FORs) and `limits.session` one
+    (86: 127); whether each is meant to be cut is not written down.
   **Open for the V4's software:** the 70 Hz table in the driver; Y1/OS, BASIC
   and the commands on 25 rows (they take the screen for 24). Scrolling the graphics apart from the text: in software (the note's section 12 has the three ways and
   their cost); in hardware it is a board change, listed in the note's "Possible later".

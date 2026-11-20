@@ -24,7 +24,12 @@
    sources in directories of 18, 72 to a session, the sessions in parallel; each source assembled with -h and to a
    program file, and the console output (the messages, the summary) and the file written (bytes, load, exec) must
    be what the host build of asm.c gives for the same command line. Where asm.c's symbol table is full (y1cc.c's
-   own compile), asm.asm's bigger table gets further: it must refuse the source too. The instruction counts of the
+   own compile), asm.asm's bigger table gets further: it must refuse the source too. The sources of BEYOND are the
+   exception (2026-11-20: the C BASIC, os/commands/basic.c, with its graphics - 1,500 labels that need 18,284 bytes
+   of asm.c's 17,088; asm.asm's table is 20,260): in 3, asm.c must say "symbol table full" and leave no file, and
+   here asm.asm must assemble them without a message and its two files must be RC/asm's - the .img byte for byte,
+   and the program file the .img's bytes with its lowest address as the load address and END's as the start. A
+   source of BEYOND that asm.c assembles again is a failure: it comes off the list. The instruction counts of the
    emulator's program watch are summed. --uc: also the sources of UC_SET on the microcode emulator (~2 minutes).
 5. --target: the Y1/OS runs on both emulators (tests/asm/target.py): a disk with sources, `asm` run under the OS,
    the results fetched back and compared with RC/asm's.
@@ -117,14 +122,28 @@ def rcasm(d, name):
     return ok, errs, os.path.join(d, name + ".img"), int(m.group(1), 16) if m else 0
 
 
+BEYOND = re.compile(r"bin_basic_\d+(_x)?$")    # the sources asm.c's symbol table cannot hold and asm.asm's can
+
+
 def check(item):
     """One source: RC/asm, then the native assembler both ways. Returns (name, status, detail)."""
     title, name, d = item
-    r = check1(name, d)
+    r = check1(name, d, bool(BEYOND.match(title)))
     return (title,) + r[1:]
 
 
-def check1(name, d):
+def rc_ref(d, name):
+    """what RC/asm made of d/NAME.asm, for a source asm.c cannot hold: (the .img's bytes, the program file's bytes,
+    its load address, its start address)"""
+    img = os.path.join(d, name + ".img")
+    recs, mem = hexmem(img)
+    lo, hi = min(mem), max(mem)
+    m = re.search(r"^\*([0-9a-f]{4})$", open(os.path.join(d, "prg", name + ".prg")).read(), re.M)
+    start = int(m.group(1), 16) if m else 0
+    return open(img, "rb").read(), bytes(mem.get(a, 0) for a in range(lo, hi + 1)), lo, start if start else lo
+
+
+def check1(name, d, beyond=False):
     ok, errs, img, start = rcasm(d, name)
     src = name + ".asm"
     nimg, nbin = name + ".n.img", name + ".n.bin"
@@ -137,7 +156,10 @@ def check1(name, d):
             return name, "error", "both report errors (RC/asm: %s | asm: %s)" % (
                 errs.splitlines()[0] if errs else "?", err.strip().splitlines()[0] if err.strip() else "?")
         return name, "FAIL", "RC/asm reports errors, the native assembler does not: " + errs[:200]
+    if rc and beyond and "symbol table full" in err and not os.path.exists(os.path.join(d, nimg)):
+        return name, "beyond", "asm.c's symbol table is full, as expected: asm.asm is held to RC/asm's files"
     if rc: return name, "FAIL", "native -h failed: " + err.strip()[:300]
+    if beyond: return name, "FAIL", "asm.c assembles it: it is no longer beyond its symbol table - take it off BEYOND"
     if open(img, "rb").read() != open(os.path.join(d, nimg), "rb").read():
         return name, "FAIL", "-h output differs from RC/asm's .img"
     recs, mem = hexmem(img)
@@ -283,6 +305,18 @@ def native_batch(job):
         got = seq[i]
         fails = []
         if got is None: fails.append("no output")
+        elif "symbol table full" in con and BEYOND.match(name):     # asm.asm's bigger table holds it: RC/asm's files
+            himg, prog, lo, start = rc_ref(d, short)
+            gf = tree.get("/d%d/%s.%s" % (j, short, tag))
+            if not re.fullmatch(r"\S+: \d+ bytes, \d+ labels(, load [0-9A-F]{4} exec [0-9A-F]{4})?\n", got):
+                fails.append("%s: asm.asm says %r" % (tag, got[:160]))
+            elif gf is None: fails.append("%s: no file" % tag)
+            elif tag == "xh" and gf[0] != himg: fails.append("xh: not RC/asm's .img (%d bytes, RC/asm %d)" % (len(gf[0]), len(himg)))
+            elif tag == "xp" and (gf[0], gf[1], gf[2]) != (prog, lo, start):
+                fails.append("xp: %d bytes load %04X exec %04X, RC/asm %d %04X %04X" % (len(gf[0]), gf[1], gf[2], len(prog), lo, start))
+            if emu == "int" and i < len(counts): ins[(name, tag)] = counts[i]
+            res.append((name, "FAIL" if fails else "beyond", "; ".join(fails)))
+            continue
         elif "symbol table full" in con:              # asm.c's capacity: asm.asm's table is bigger, it must refuse the
             if gf_absent(tree, j, short, tag) and re.search(r"^asm: \d+ errors?\n$", got, re.M):   # source (y1cc.c)
                 res.append((name, "full", "asm.c's symbol table is full; asm.asm refuses it too: " + got.splitlines()[0]))
@@ -298,7 +332,7 @@ def native_batch(job):
         res.append((name, "FAIL" if fails else "ok", "; ".join(fails)))
     merged = {}
     for name, st, det in res:
-        if name not in merged or st == "FAIL" or (st == "full" and merged[name][0] == "ok"): merged[name] = (st, det)
+        if name not in merged or st == "FAIL" or (st in ("full", "beyond") and merged[name][0] == "ok"): merged[name] = (st, det)
     if emu == "int" and len(counts) != len(cmds): merged[cmds[0][0]] = ("FAIL", "the program watch saw %d runs, not %d" % (len(counts), len(cmds)))
     return [(n,) + v for n, v in merged.items()], ins
 
@@ -403,8 +437,9 @@ def main():
             if status == "FAIL": fails.append((name, detail))
             if verbose or status == "FAIL": print("%-44s %-7s %s" % (name, status, detail))
     print("tests/asm: %d sources: %d identical (hex and program file), %d identical in hex (program file refused: "
-          "an ORG back), %d rejected by both assemblers, %d FAILED" % (len(items), counts.get("ok", 0),
-          counts.get("ok-hex", 0), counts.get("error", 0), counts.get("FAIL", 0)))
+          "an ORG back), %d rejected by both assemblers, %d beyond asm.c's symbol table, %d FAILED" % (
+              len(items), counts.get("ok", 0), counts.get("ok-hex", 0), counts.get("error", 0), counts.get("beyond", 0),
+              counts.get("FAIL", 0)))
     if "--no-native" not in sys.argv:                 # asm.asm, the installed /bin/asm, on the same corpus
         sys.stdout.flush()
         r = subprocess.run(["make", "-s", "-C", os.path.join(ROOT, "os"), "build/asma/asm.bin", "build/y1os.bin"],
@@ -419,8 +454,8 @@ def main():
                 if st == "FAIL": fails.append((name, det))
                 if verbose or st == "FAIL": print("%-44s %-7s %s" % (name, st + " " + emu, det[:300]))
             print("tests/asm: asm.asm under Y1/OS (%s emulator): %d sources, %d with the same messages and files as "
-                  "asm.c, %d refused by both where asm.c's symbol table is full, %d FAILED%s" % (
-                      emu, len(res), c.get("ok", 0), c.get("full", 0), c.get("FAIL", 0),
+                  "asm.c, %d refused by both where asm.c's symbol table is full, %d beyond it with RC/asm's files, "
+                  "%d FAILED%s" % (emu, len(res), c.get("ok", 0), c.get("full", 0), c.get("beyond", 0), c.get("FAIL", 0),
                                           (", %d instructions" % sum(ins.values())) if ins else ""))
     if "--target" in sys.argv:
         sys.stdout.flush()
