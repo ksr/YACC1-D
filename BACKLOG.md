@@ -479,7 +479,9 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   picture with it under the monitor: 3.24 million instructions on the microcode emulator for 8,128 dots and the
   clearing of the page's 32K (71 s at 1 MHz), the same 64K on both emulators and as drawn in Python
   (`tests/video/v40/run.py`, part 7). Not in the ROM: the monitor has 42 bytes free.
-  **Open for the V4's software:** the graphics layer in the debugger's page and in BASIC; the 70 Hz table in the driver; Y1/OS, BASIC
+  **The layer in the debugger (2026-11-20):** the browser UI draws it with the text (`/api/gram`, the server's
+  `gram`; OR / XOR, TEXT-OFF, the guns); `tests/y1dbg/run.py gfx`.
+  **Open for the V4's software:** the graphics layer in BASIC; the 70 Hz table in the driver; Y1/OS, BASIC
   and the commands on 25 rows (they take the screen for 24). Scrolling the graphics apart from the text: in software (the note's section 12 has the three ways and
   their cost); in hardware it is a board change, listed in the note's "Possible later".
   A routing run needs the Mac awake: lid open, charger in

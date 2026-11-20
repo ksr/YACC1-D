@@ -177,6 +177,20 @@ try { phos = localStorage.getItem("y1dbg.phosphor") || "green"; } catch (e) {}
 if (!PHOSPHOR[phos]) phos = "green";
 $("phosphor").value = phos;
 let ramText = null, ram = null, drawnKey = "";
+// the V4 card's graphics layer: the page that is shown (32K, plane * 2048 + the character's place), fetched when the
+// layer is on and the emulator's count of changes (gseq) has grown
+let gram = null, gramKey = "", gramBusy = false;
+async function fetchGram(v) {
+  const want = v.gseq + "/" + ((v.control >> 5) & 1);
+  if (gramBusy || want === gramKey) return;
+  gramBusy = true;
+  try {
+    const r = await api("/api/gram"), t = r.gram, a = new Uint8Array(t.length / 2);
+    for (let i = 0; i < a.length; i++) a[i] = parseInt(t.substr(i * 2, 2), 16);
+    gram = a; gramKey = r.seq + "/" + r.page; drawnKey = "";
+  } catch (e) { /* an emulator without the layer: the text alone */ }
+  gramBusy = false;
+}
 
 function setPhosphor(p) {
   phos = p; const P = PHOSPHOR[p];
@@ -195,7 +209,10 @@ function drawScreen(now) {
   const cur = g.cursor;
   // the 6845 blinks the cursor with the field count: on for half of 16 or 32 fields
   const on = !cur || !cur.blink || Math.floor(now / (cur.period * 500)) % 2 === 0;
-  const key = v.ram + "|" + JSON.stringify(g) + "|" + on + "|" + phos;
+  // the V4's two control registers: the graphics layer on, XORed or ORed with the text; the text off; the guns off
+  const ctl1 = v.control || 0, ctl2 = v.control2 || 0;
+  const gfxOn = !!(font.v4 && v.gfx && (ctl1 & 0x40) && gram), gxor = !!(ctl1 & 0x80), textOff = !!(font.v4 && (ctl2 & 1));
+  const key = v.ram + "|" + JSON.stringify(g) + "|" + on + "|" + phos + "|" + ctl1 + "|" + ctl2 + "|" + (gfxOn ? gramKey : "");
   if (key === drawnKey) return;
   drawnKey = key;
   if (v.ram !== ramText) {
@@ -206,7 +223,9 @@ function drawScreen(now) {
   if (cv.width !== W * SX || cv.height !== H * SY) { cv.width = W * SX; cv.height = H * SY; }
   const ctx = cv.getContext("2d"), img = ctx.createImageData(W * SX, H * SY), px = new Uint32Array(img.data.buffer);
   const P = PHOSPHOR[phos], rgba = (c, k) => (255 << 24) | (Math.round(c[2] * k) << 16) | (Math.round(c[1] * k) << 8) | Math.round(c[0] * k);
-  const FG = rgba(P.fg, 1), FG2 = rgba(P.fg, .45), BG = rgba(P.bg, 1), HATCH = rgba([90, 40, 40], 1), stride = W * SX;
+  // a gun switched off (control 2 bits 5-7: red, green, blue) colours the dots; all three on is the phosphor chosen
+  const guns = font.v4 ? (ctl2 >> 5) & 7 : 0, lit = guns ? [guns & 1 ? 0 : 255, guns & 2 ? 0 : 255, guns & 4 ? 0 : 255] : P.fg;
+  const FG = rgba(lit, 1), FG2 = rgba(lit, .45), BG = rgba(P.bg, 1), HATCH = rgba([90, 40, 40], 1), stride = W * SX;
   for (let row = 0; row < g.rows; row++) {
     for (let col = 0; col < g.cols; col++) {
       const ma = font.v4 ? (g.start + row * g.cols + col) & 0x7FF    // the V4: a ring of 2,048 characters
@@ -224,11 +243,16 @@ function drawScreen(now) {
           }
           if (isCur && cur.first <= line && line <= cur.last) inv ^= 1;
         }
+        const gb = gfxOn ? gram[(line & 15) * 2048 + ma] : 0;     // the graphics layer's 8 dots here, bit 7 the left
         for (let d = 0; d < D; d++) {
           const x = col * D + d;
           let c0, c1;
           if (b < 0) { c0 = c1 = (x + y) % 4 === 0 ? HATCH : BG; }   // the upper 2K no one can write (as vidsim)
-          else if ((font.v4 ? (bits >> (7 - d)) & 1 : d < 5 ? (bits >> (4 - d)) & 1 : 0) ^ inv) { c0 = FG; c1 = FG2; }   // V1: 5 glyph dots, the 6th (IC28 /6) blank
+          else if (font.v4) {                                    // the V4: text (unless TEXT-OFF) ORed or XORed with graphics
+            const t = textOff ? 0 : ((bits >> (7 - d)) & 1) ^ inv, gd = (gb >> (7 - d)) & 1;
+            if (gxor ? t ^ gd : t | gd) { c0 = FG; c1 = FG2; } else c0 = c1 = BG;
+          }
+          else if ((d < 5 ? (bits >> (4 - d)) & 1 : 0) ^ inv) { c0 = FG; c1 = FG2; }   // V1: 5 glyph dots, the 6th (IC28 /6) blank
           else c0 = c1 = BG;
           const base = y * SY * stride + x * SX;
           for (let sy = 0; sy < SY; sy++) {
@@ -254,7 +278,10 @@ function render(s) {
   const g = s.video.geom;
   $("geom").textContent = s.video.absent ? "no video card (-N)" :
     `${g.cols} x ${g.rows}, ${g.lines} lines a row, from $${hex(0xD000 + (g.start & 0x7FF), 4)} (${g.crtc ? "CRTC" : "default: the CRTC not set"})` +
-    (g.cursor ? ` · cursor ${g.cursor.row},${g.cursor.col}${g.cursor.blink ? " blink/" + g.cursor.blink : ""}` : "");
+    (g.cursor ? ` · cursor ${g.cursor.row},${g.cursor.col}${g.cursor.blink ? " blink/" + g.cursor.blink : ""}` : "") +
+    (s.video.card === 4 && (s.video.control & 0x40) ? ` · graphics page ${(s.video.control >> 5) & 1}, ${s.video.control & 0x80 ? "XOR" : "OR"}` : "") +
+    (s.video.card === 4 && (s.video.control2 & 1) ? " · text off" : "");
+  if (s.video.card === 4 && s.video.gfx && (s.video.control & 0x40)) fetchGram(s.video);
 
   // registers: values changed since the last stop are marked
   const r = s.regs;

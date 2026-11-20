@@ -11,8 +11,13 @@
                       firmware/video/chargen-v40.bin or the --chargen image (v4: true)
   GET  /api/state?con=N&log=N
                       the status, registers, code at PC, breakpoints and watches, the memory window, the video card
-                      (the 2K display RAM, the CRTC registers and the scan geometry: debugger.geometry), and the UART
+                      (the 2K display RAM, the CRTC registers and the scan geometry: debugger.geometry; of the V4 card
+                      also control 1 and 2, gfx = it has its graphics chips, gseq = the changes to its graphics RAM so
+                      far), and the UART
                       console and the command output when they have grown past N (their totals so far)
+  GET  /api/gram      the V4 card's graphics RAM, the page that is shown: page, seq (gseq when it was read), control
+                      and gram, 32K as hex - plane p (the scan line of a row of text) at p * 2048, in it a byte for the
+                      8 dots of a character's place. The page fetches it when the layer is on and gseq has grown
   POST /api/cmd       {"cmd": "..."} -> {"out": "..."}   any command of the language (shell.py); q ends the debugger
   POST /api/key       {"text": "..."}                   typed into the UART (as `key`, every byte escaped)
   POST /api/mem       {"addr": "..."}                   the memory window: an address, kept as written, so `sp` or
@@ -131,10 +136,18 @@ class App:
             "watches": [{"a": a, "k": {1: "r", 2: "w", 3: "rw"}[k], "s": syms.name(a) or ""} for a, k in snap["watches"]],
             "mem": {"expr": self.mem_expr, "addr": mem, "hex": snap["mem"].hex(), "error": err},
             "video": {"absent": v.get("absent", 0), "ram": v["ram"], "regs": v["regs"], "written": v["written"],
-                      "sel": v["sel"], "card": v.get("card", 1), "control2": v.get("control2", 0), "geom": geometry(v)},
+                      "sel": v["sel"], "card": v.get("card", 1), "control2": v.get("control2", 0), "geom": geometry(v),
+                      "control": v.get("control", 0), "gfx": v.get("gfx", 0), "gseq": v.get("gseq", 0)},
             "console": {"total": con_total, "lines": con},
             "out": {"total": self.out_total, "lines": self.out[-500:] if self.out_total != out_seen else None},
         }
+
+
+    def gram(self):
+        """the page of the V4 card's graphics RAM that is shown: {"page", "seq", "control", "gram" (32K as hex, plane by
+        plane: plane * 2048 + the character's place)}. The page asks for it when the state's gseq has grown."""
+        with self.lock:
+            return self.sh.emu.ok("gram")
 
 
 def serve(shell, port=PORT, chargen=None, announce=print, ran=()):
@@ -166,6 +179,8 @@ def serve(shell, port=PORT, chargen=None, announce=print, ran=()):
                 self._send(open(os.path.join(HERE, "web", "index.html"), "rb").read(), "text/html; charset=utf-8")
             elif u.path == "/api/font":
                 self._json(app.font)
+            elif u.path == "/api/gram":
+                self._guard(lambda: self._json(app.gram()))
             elif u.path == "/api/state":
                 self._guard(lambda: self._json(app.state(int(q.get("con", ["-1"])[0]), int(q.get("log", ["-1"])[0]))))
             else:

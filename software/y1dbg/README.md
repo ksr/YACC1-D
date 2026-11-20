@@ -123,6 +123,12 @@ the ELF repository's System-5 debugger uses 8802). It prints the URL; open it in
 terminal, Quit on the page, or `q` on the page's command line ends the debugger and the emulator with it. The
 commands of `-c`/`--script` run first and their output opens the page's command log.
 
+- **The V4 card's graphics layer (2026-11-20)** is drawn with the text: when control 1 has GFX-ON, the page fetches
+  the page of the graphics RAM that is shown (`/api/gram`, again only when the emulator's count of changes to it has
+  grown) and puts its dots with the text's, ORed or XORed as control 1 says. Control 2's TEXT-OFF takes the text and
+  its cursor away, and a gun switched off colours the dots (red off: cyan, and so on; all three on, the phosphor
+  chosen). The line over the screen says `graphics page N, OR` or `XOR`. The terminal UI and `screen` show the text
+  only, and say that the layer is on.
 - **The screen** is the video card's picture, dot by dot on a canvas: the 2K display RAM scanned with the 6845's
   geometry (R1 x R6 from R12:R13, R9+1 scan lines a row; 80 x 24 with 8 lines before a program sets the CRTC, as the
   terminal UI), every character 6 dots wide as on the card (5 glyph dots and a blank: IC28 a 74163 divides by 6), each dot drawn 2 x 3 pixels with a
@@ -151,7 +157,8 @@ commands of `-c`/`--script` run first and their output opens the page's command 
 |---|---|
 | `GET /` | the page |
 | `GET /api/font` | `dots` (6: the 5 glyph dots and the blank 6th), `rows` (8), `glyphs` (64 x 8 rows, bit 4 the leftmost dot), `source` |
-| `GET /api/state?con=N&log=N` | `status`, `regs`, `code`, `breaks`, `watches`, `mem`, `video` (`ram`, `regs`, `written`, `geom`: the scan), `console` and `out` (their totals, and their lines when the total is not N) |
+| `GET /api/state?con=N&log=N` | `status`, `regs`, `code`, `breaks`, `watches`, `mem`, `video` (`ram`, `regs`, `written`, `geom`: the scan; the V4 card's `control`, `control2`, `gfx` and `gseq`), `console` and `out` (their totals, and their lines when the total is not N) |
+| `GET /api/gram` | the V4 card's graphics RAM, the page shown: `page`, `seq`, `control`, `gram` (32K as hex: plane * 2048 + the character's place) |
 | `POST /api/cmd {"cmd": ...}` | `{"out": ...}`: `Shell.exec`, as the terminal UI (`c`, `until`, `n` return `running` at once) |
 | `POST /api/key {"text": ...}` | into the UART (`key`, every byte escaped) |
 | `POST /api/mem {"addr": ...}` | the memory window's address (400 if it is not one) |
@@ -191,7 +198,8 @@ and the status: `state` (`stopped`, `running`, `halted`), `reason` (why it last 
 | `set NAME VALUE` | as `regs` | `r0`..`r7`, `pc`, `sp`, `acc`, `tmp0`, `tmp1`, `carry`, `sreg` |
 | `key TEXT` | `queued`, `pending` | escapes `\n \r \t \e \\ \xHH`; CR becomes LF |
 | `console` | `text`, `lost` | the output since the last fetch (1 MB kept) |
-| `video` | `absent`, `model` (`behavioural` or the `-G` revision), `events` (with `-G`: the card's bus events so far), `sel`, `regs` (R0-R17), `written`, `ram` (hex, $D000-$D7FF) | |
+| `video` | `absent`, `model` (`behavioural` or the `-G` revision), `events` (with `-G`: the card's bus events so far), `sel`, `regs` (R0-R17), `written`, `ram` (hex, $D000-$D7FF); of the V4 card `card` (4), `control`, `control2`, `gfx` (1: its graphics chips are fitted), `gseq` (the bytes of the graphics RAM changed so far) | |
+| `gram [PAGE]` | `page`, `seq` (`gseq` now), `control`, `gram` (32K as hex) | a page of the V4 card's graphics RAM, the one shown unless PAGE (0 or 1) names one: plane p, the scan line p of every row of text, at p * 2048 |
 | `trace [N]` | `trace`: [pc, opcode, acc, carry, r0..r7] each, oldest first | the last N of 4,096 |
 | `reset` | | registers, IR and UART cleared, FORCE-ROM set; memory and the video card kept; the counts restart |
 | `load FILE` | `bytes` | Intel hex, as `-f` |

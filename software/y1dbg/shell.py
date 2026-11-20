@@ -164,13 +164,20 @@ class Shell:
             border = "+" + "-" * sc["cols"] + "+"
             head = "video: %d x %d from $%04X (%s)%s" % (sc["cols"], sc["rows"], 0xD000 + (sc["start"] & 0x7FF), sc["source"],
                                                         ", cursor row %d col %d" % sc["cursor"] if sc["cursor"] else "")
-            return "\n".join([head, border] + ["|%s|" % l for l in sc["lines"]] + [border])
+            v = e.ok("video")
+            more = []
+            if v.get("card") == 4 and v.get("control", 0) & 0x40:       # the V4's graphics layer is not text
+                more = ["(the graphics layer is on, page %d, %s with the text: the browser UI draws it, and tools/vidsim.py "
+                        "render from a state file)" % (v["control"] >> 5 & 1, "XORed" if v["control"] & 0x80 else "ORed")]
+            return "\n".join([head, border] + ["|%s|" % l for l in sc["lines"]] + [border] + more)
         if cmd == "video":
             v = e.ok("video")
             card = "behavioural model" if v.get("model", "behavioural") == "behavioural" else \
                 "%s at gate level, %d bus events" % (v["model"], v.get("events", 0))
             return "CRTC " + " ".join("%02X" % r if w else "--" for r, w in zip(v["regs"], v["written"])) + \
-                "  (R0..R17, -- = never written); address register = R%d; card: %s" % (v["sel"], card)
+                "  (R0..R17, -- = never written); address register = R%d; card: %s" % (v["sel"], card) + \
+                ("; V4 control 1 = %02X, control 2 = %02X, %d changes to the graphics RAM" % (v.get("control", 0), v["control2"],
+                 v.get("gseq", 0)) if v.get("card") == 4 else "")
         if cmd == "key":
             r = e.ok("key " + rest); return "typed %d" % r["queued"]
         if cmd == "console":

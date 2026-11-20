@@ -27,8 +27,14 @@ the terminal UI in a pseudo-terminal) and checks:
             stores to $D800 / $D802 write R14 = 12 and `video` says "v1.0 at gate level, 0 bus events"; with v1.0-no-rs
             (no RS fix) R14 is never written; an unknown revision ends y1dbg with an error; nothing left running
             (2026-11-10: VR0E 12 / VR0E until then; this branch's VR reaches the V4 card's ports)
+  gfx       the V4 card's graphics layer (2026-11-20): tests/video/v40/v40gfx.c, compiled and loaded, draws its picture
+            under the monitor. The server's `video` has control 1 = $43, gfx and a count of changes; `gram` gives the
+            page shown, the same 32K as the scene drawn in Python, and `gram 1` the untouched second page; `screen`
+            and `video` say that the layer is on. The browser's /api/state and /api/gram give the same, and the page
+            fetches /api/gram
 """
 import os, re, sys, time, socket, subprocess, select, struct, json, signal, urllib.request, urllib.error
+import shutil, tempfile, importlib.util
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
@@ -249,9 +255,9 @@ def case_tui():
     check("tui", emulators() <= before, "left running: %s" % (emulators() - before))
 
 
-def web_start():
-    """python3 software/y1dbg --ui web --port 0 -> (process, base URL)"""
-    p = subprocess.Popen([sys.executable, os.path.join(ROOT, "software/y1dbg"), "--ui", "web", "--port", "0"],
+def web_start(*more):
+    """python3 software/y1dbg --ui web --port 0 [more options] -> (process, base URL)"""
+    p = subprocess.Popen([sys.executable, os.path.join(ROOT, "software/y1dbg"), "--ui", "web", "--port", "0"] + list(more),
                          stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
     line = p.stdout.readline()
     m = re.search(r"http://127\.0\.0\.1:(\d+)/", line)
@@ -380,9 +386,59 @@ def case_gate():
     check("gate", emulators() <= before, "left running: %s" % (emulators() - before))
 
 
+def case_gfx():
+    before = emulators()
+    d = tempfile.mkdtemp()
+    asm = os.path.join(d, "v40gfx.asm")
+    subprocess.run([sys.executable, os.path.join(ROOT, "software/compiler/y1cc.py"), os.path.join(ROOT, "tests/video/v40/v40gfx.c"),
+                    "-o", asm], check=True, capture_output=True)
+    shutil.copy(os.path.join(ROOT, "software/assembler/yacc1.def"), d); open(os.path.join(d, "rcasm.rc"), "w").write("-h\n")
+    subprocess.run([os.path.join(ROOT, "software/assembler/asm"), "v40gfx", "-d=yacc1"], cwd=d, capture_output=True)
+    img = os.path.join(d, "v40gfx.img")
+    spec = importlib.util.spec_from_file_location("v40run", os.path.join(ROOT, "tests/video/v40/run.py"))
+    v40 = importlib.util.module_from_spec(spec); spec.loader.exec_module(v40)
+    want = v40.scene()                                   # the same picture drawn in Python: 64K, page 0 first
+    # the debug server and the shell
+    syms = Symbols(); syms.load(MON)
+    sh = Shell(Emulator(["-m", "-f", img]), syms, timeout=180)
+    try:
+        v0 = sh.emu.ok("video")
+        x(sh, "key G3000"); out = x(sh, "waitfor GFX DONE 180")
+        v, g, g1 = sh.emu.ok("video"), sh.emu.ok("gram"), sh.emu.ok("gram 1")
+        check("gfx", "found" in out and (v0["control"], v0["gseq"], v0["gfx"]) == (0, 0, 1) and v["control"] == 0x43 and
+              v["gseq"] > 8000, "%r; before %r, after control %r gseq %r" % (out, (v0["control"], v0["gseq"]), v["control"], v["gseq"]))
+        check("gfx", (g["page"], g["seq"], g["control"]) == (0, v["gseq"], 0x43) and bytes.fromhex(g["gram"]) == want[:32768],
+              "the page shown is not the picture (%d bytes)" % (len(g["gram"]) // 2))
+        check("gfx", g1["page"] == 1 and len(g1["gram"]) == 65536 and not any(bytes.fromhex(g1["gram"])), "the second page")
+        try: sh.emu.ok("gram 2"); bad = "accepted"
+        except Exception as e: bad = str(e)
+        scr, vid = x(sh, "screen"), x(sh, "video")
+        check("gfx", "gram [PAGE]" in bad and "the graphics layer is on, page 0, ORed" in scr and "YACC1 video card V4" in scr and
+              "V4 control 1 = 43, control 2 = 00" in vid, "%r\n%s\n%s" % (bad, scr[-200:], vid))
+    finally:
+        sh.emu.close()
+    # the browser's API: what the page draws from
+    p, base = web_start("-f", img)
+    try:
+        http(base, "/api/key", {"text": "G3000"}); http(base, "/api/cmd", {"cmd": "c"})
+        st = web_until(base, lambda s: s["video"]["control"] == 0x43, 180)
+        code, g = http(base, "/api/gram")
+        _, page = http(base, "/")
+        ok = st["video"]["gfx"] == 1 and st["video"]["card"] == 4 and code == 200 and g["page"] == 0 and \
+            bytes.fromhex(g["gram"]) == want[:32768] and "/api/gram" in page and "fetchGram" in page
+        check("gfx", ok, "state control %r gfx %r; /api/gram %r" % (st["video"]["control"], st["video"]["gfx"], code))
+        code, _ = http(base, "/api/quit", {})
+        check("gfx", code == 200 and web_gone(p) and p.returncode == 0, "quit: exit %r" % p.returncode)
+    finally:
+        if p.poll() is None: p.kill(); p.wait()
+    shutil.rmtree(d)
+    time.sleep(0.2)
+    check("gfx", emulators() <= before, "left running: %s" % (emulators() - before))
+
+
 CASES = {"break": case_break, "video": case_video, "basic": case_basic, "pause": case_pause, "reset": case_reset,
          "cli": case_cli, "gone": case_gone, "tui": case_tui,
-         "web": case_web, "webstop": case_webstop, "gate": case_gate}
+         "web": case_web, "webstop": case_webstop, "gate": case_gate, "gfx": case_gfx}
 names = [a for a in sys.argv[1:] if not a.startswith("-")] or list(CASES)
 for n in names:
     CASES[n]()

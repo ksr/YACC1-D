@@ -932,13 +932,28 @@ static COLD void dbg_command(char *line) {
         dbg_con_len = 0; dbg_con_lost = 0;
     }
     else if (!strcmp(cmd, "video")) {
-        sb_add(&s, "\"absent\":%d,\"model\":\"%s\",\"events\":%ld,\"sel\":%d,\"card\":%d,\"control2\":%u,\"regs\":[", vid.absent,
+        sb_add(&s, "\"absent\":%d,\"model\":\"%s\",\"events\":%ld,\"sel\":%d,\"card\":%d,\"control2\":%u,", vid.absent,
                vgate ? vgate->name : "behavioural", vg_events, vid.sel, vid2.card, vid2.control2);   /* card: 1 V1.0, 4 V4 */
+        sb_add(&s, "\"control\":%u,\"gfx\":%d,\"gseq\":%lu,\"regs\":[", vid2.control,   /* 2026-11-20: the V4's control 1, whether */
+               vid2.card == 4 && !vid2.textonly, vid2.gseq);   /* it has its graphics chips, the changes to its graphics RAM */
         for (int i = 0; i < 18; i++) sb_add(&s, i ? ",%u" : "%u", vid.reg[i]);
         sb_add(&s, "],\"written\":[");
         for (int i = 0; i < 18; i++) sb_add(&s, i ? ",%u" : "%u", vid.written[i]);
         sb_add(&s, "],\"ram\":\"");
         for (unsigned i = VID_BASE; i < VID_CRTC; i++) sb_add(&s, "%02X", mem[i]);
+        sb_add(&s, "\",");
+    }
+    else if (!strcmp(cmd, "gram")) {             /* 2026-11-20: a page (32K) of the V4 card's graphics RAM, plane by plane */
+        NEED(vid2.card == 4 && !vid2.textonly && !vid.absent, "gram: this card has no graphics RAM");
+        n = vid2.control >> 5 & 1;               /* the page shown (DPAGE), unless one is named */
+        if (argc) NEED(dbg_count(argv[0], &n) && n < 2, "gram [PAGE] (0 or 1; default the page shown)");
+        sb_add(&s, "\"page\":%ld,\"seq\":%lu,\"control\":%u,\"gram\":\"", n, vid2.gseq, vid2.control);
+        static const char hx[] = "0123456789ABCDEF";
+        char line[129]; line[128] = 0;
+        for (unsigned i = 0; i < V4_GRAM; i += 64) {
+            for (unsigned k = 0; k < 64; k++) { uint8_t b = vid2.gram[n * V4_GRAM + i + k]; line[2 * k] = hx[b >> 4]; line[2 * k + 1] = hx[b & 15]; }
+            sb_add(&s, "%s", line);
+        }
         sb_add(&s, "\",");
     }
     else if (!strcmp(cmd, "trace")) {

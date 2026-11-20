@@ -119,6 +119,8 @@ static struct {
     int card, dots, textonly, kbd_stdin;
     unsigned long long cpu_hz, dot_hz;
     uint8_t control, control2, gram[2 * V4_GRAM];   /* control 1 (OUT PC), control 2 (OUT PF), two pages */
+    unsigned long gseq;                       /* the bytes of the graphics RAM changed so far (2026-11-20: the debugger
+                                                 fetches a page again only when this has grown) */
     uint8_t q[256], qs[256]; unsigned qh, qt;   /* the controller's queue (the firmware's is 64 bytes; this one 256) and
                                              each byte's source: 0 the keyboard, 1 the mouse; 2 = taken already */
     int full, src, ints, acked, mouse, leds;
@@ -283,7 +285,11 @@ static int vid_read(unsigned a, const uint8_t *mem) {   /* the byte a read of a 
 static void vid_write(unsigned a, uint8_t v, uint8_t *mem) {
     if (vid.absent) return;
     if (a < VID_CRTC) { mem[a] = v; return; }
-    if (vid2.card == 4) { if (!vid2.textonly) vid2.gram[v2_window(a)] = v; return; }
+    if (vid2.card == 4) {
+        unsigned w = v2_window(a);
+        if (!vid2.textonly && vid2.gram[w] != v) { vid2.gram[w] = v; vid2.gseq++; }
+        return;
+    }
     if (a & 1) { if (vid.log) fprintf(stderr, "video: write %02X to $%04X, the JP1 latch (a bus fight on the card)\n", v, a); return; }
     vid_crtc_write((a >> 1) & 1, v);
 }
