@@ -33,6 +33,13 @@
   and of the microcode's strobes; `bus_records.py` (in `make check`) checks in test.hex that the microcode drives the
   bus as that model does. `docs/cards/video-v4.md` sections 5 and 7.
 - `basic/` — `test`, a small BASIC program (LET/FOR loops) used to exercise the interpreter.
+- `io/rtc/` — the I/O card V1.2's clock chip, a DS12885, in both emulators (2026-11-20, in `make check`; no hardware:
+  the card is designed, not built). `run.py` builds and runs `model_test.c`, the model `software/rtcmodel.h` on its
+  own (the registers in binary and BCD, 12- and 24-hour, the calendar, UIP, SET and the oscillator's bits, the RAM,
+  register C's flags, the chip on the host's clock), then `rtc.asm` through the monitor on the instruction-level and
+  the microcode emulator with `Y1IO_CARD=v1.2` and a fixed `Y1RTC_TIME`: a YACC1 program finds the chip on ports 6
+  and 7, reads it, sets it across the end of 2099 and waits for seconds to pass; both emulators must print the same.
+  The same program with no card named finds no chip: the V1.1 card of the machine has nothing on those ports.
 - `compiler/` — the C compiler's test programs (`*.c` + expected `.out`/`.in`/`.err`) and `run.py`, which compiles each with
   `software/compiler/y1cc.py --boot`, assembles it and runs it on `emulator -x`; `--oracle` regenerates the expectations with
   the host C compiler through `host_shim.h`. 15/15 on 2026-09-22 (switch.c also compiled with `--no-brur` as switchnb.c); `make cc-test`.

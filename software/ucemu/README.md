@@ -52,6 +52,12 @@ the bit positions:
   ready and THRE, DLAB divisor writes accepted), the switches (`-s`) and LEDs. Port 2 is also a console, the old
   emulator's shortcut, so `OUTA P2` programs still print. A port read is sampled once at the leading edge of -IO-RD;
   a port write happens once, at the trailing edge of -IO-WR. Reading with nothing left gives 0 with "ready" set.
+  That is the V1.1 card of the machine, and ports 6 and 7 read $FF. With `Y1IO_CARD=v1.2` in the environment the card
+  is the V1.2 (designed, not built): the same, and its DS12885 clock on port 6 (the register number) and port 7 (its
+  data) - `software/rtcmodel.h`, shared with the other emulator (2026-11-20). The chip has the Mac's local time and
+  runs with the Mac's clock; `Y1RTC_TIME="2026-11-20 12:34:56"` starts it at that time and runs it on this emulator's
+  clocks (at `Y1_CLOCK` Hz, default 1 MHz), so a transcript repeats; `Y1RTC_NEW=1` is a chip never set. Its -IRQ is
+  not wired to -INT here (JP8 on the card is left off). `tests/io/rtc/run.py`.
 - **CompactFlash** (`-c disk.img`, 2026-09-22): `software/cfmodel.h`, shared with the other emulator, on P8 (register
   select) and P9 (data) (`docs/cards/cf.md`). With no image every read gives $FF; `tests/os` boots Y1/OS through it.
 - **Reset** is the real one: registers and IR cleared, FORCE-ROM set, so record $00 fetches $0000 and gets ROM[$F000];

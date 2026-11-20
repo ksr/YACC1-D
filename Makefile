@@ -21,6 +21,8 @@
 #                   and run as a circuit with the parts' data-sheet delays at eight corners (tests/video/v40_netsim.py),
 #                   the I/O card V1.2's circuit: its own checks, and every connection it keeps from the built V1.1 card's
 #                   board file (hardware/cards/io/kicad/v1.2/io12_netlist.py),
+#                   that card's clock chip in both emulators: the model on its own, and from a YACC1 program
+#                   (tests/io/rtc/run.py),
 #                   Kermit transfers between /BIN/KERMIT and tools/y1kermit.py over a pty on both emulators (tests/kermit/run.py)
 #                   the debugger: y1ucemu's debug server and software/y1dbg, scripted and its UI in a pty (tests/y1dbg/run.py)
 #   make cc-test    just the compiler tests (on both emulators) and the twin comparisons (y1cc.c, the passes)
@@ -79,6 +81,7 @@ check:
 	python3 tests/kermit/run.py
 	python3 tests/bench/run.py
 	python3 tests/cfcard/run.py
+	python3 tests/io/rtc/run.py
 	python3 tests/video/emu.py
 	python3 tests/video/asm/run.py
 	python3 tests/video/gate.py

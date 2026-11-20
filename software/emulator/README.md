@@ -19,3 +19,11 @@ from the console (the UART then receives nothing); the options are in `videomode
 V4 card's. (The V2.0 and V3 cards' models, 2026-11-10 and 11, were removed with those designs on 2026-11-18.)
 
 Load `firmware/rom/shipped/rom` (BASIC at $E000, monitor at $F000) to run what the machine runs.
+
+The I/O card V1.2's clock (2026-11-20; `../rtcmodel.h`, shared with `y1ucemu`): with `Y1IO_CARD=v1.2` in the
+environment a DS12885 answers on port 6 (the register number) and port 7 (its data), as on the card that is designed
+(`docs/cards/rtc.md`, `hardware/cards/io/kicad/v1.2`). Without it the I/O card is the V1.1 of the machine and nothing
+is on those ports. The chip has the Mac's local time and runs with the Mac's clock; `Y1RTC_TIME="2026-11-20 12:34:56"`
+starts it at that time and runs it on the machine's own clocks (each instruction's, from `../opclocks.h`, at `Y1_CLOCK`
+Hz, default 1 MHz), so a transcript repeats; `Y1RTC_NEW=1` is a chip never set, its oscillator stopped.
+`tests/io/rtc/run.py` (in `make check`).

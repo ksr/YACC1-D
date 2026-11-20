@@ -10,7 +10,7 @@ include ../../mk/sdk.mk
 CFLAGS += $(SDKFLAGS)
 all: y1ucemu
 CARD   = ../../hardware/cards/video/kicad/v1.0-fusion-export-2026-09-18/reports
-y1ucemu: y1ucemu.c videogate.h ../videomodel.h ../cfmodel.h ../../firmware/microcode/yaccsignaldata2.h
+y1ucemu: y1ucemu.c videogate.h ../videomodel.h ../cfmodel.h ../rtcmodel.h ../../firmware/microcode/yaccsignaldata2.h
 	$(CC) $(CFLAGS) -o $@ y1ucemu.c
 # the video card at gate level (-G): generated from its netlist by software/gatemodel (committed; tests/video/gate.py
 # checks it is current)
