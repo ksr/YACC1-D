@@ -32,7 +32,7 @@ Alternatives considered:
 | Option | For | Against |
 |---|---|---|
 | DS12C887 on two I/O ports (chosen) | one part: time, date, battery, RAM; the PC's interface, well known | a 24-pin module, not the cheapest part |
-| The video card V2.0's ATmega (PD/PE, 16 MHz crystal) | no new hardware: a firmware reply with a tick count | no battery (the time is lost at power-off: fine for timeouts, useless for file dates); needs that card built |
+| The video card's ATmega (V2.0's PS/2 section, kept on the V4; PD/PE, 16 MHz crystal) | no new hardware: a firmware reply with a tick count | no battery (the time is lost at power-off: fine for timeouts, useless for file dates); needs that card built |
 | 82C54 counter/timer from the UART's 1.8432 MHz | timeouts and ticks | no calendar, no battery |
 | DS1307 / DS3231 (I2C) | cheap modules | the bus has no I2C: a bit-banged port or the ATmega |
 | DS12885 + 32.768 kHz crystal + CR2032 holder (added 2026-11-12) | the DS12C887's registers and software, with a coin cell that can be replaced (the module's sealed cell lasts about 10 years, then the module goes) | two more parts; the crystal wants short tracks and a guard |
@@ -46,8 +46,8 @@ The clock needs two ports, as the PC's $70/$71: one for the register number, one
 | **P6** | write | the register number (0..127): latched by the chip on AS's falling edge |
 | **P7** | read / write | the register P6 selected |
 
-Why P6/P7: the video card V2.0 uses PA-PE, the CF section P8/P9, the I/O card P0/P1, which leaves PF alone in the upper
-half. The I/O card decodes P2-P7 (its IC5, strapped to the low half) but nothing on it uses P2-P7: the six selects
+Why P6/P7: the video card V4 uses PA-PF (V2.0, removed 2026-11-18, used PA-PE), the CF section P8/P9, the I/O card
+P0/P1, which leaves nothing in the upper half. The I/O card decodes P2-P7 (its IC5, strapped to the low half) but nothing on it uses P2-P7: the six selects
 only reach its IO-ADDR and DATA-ADDR headers (`docs/cards/io.md` 3.1, `docs/programming/IO-PORTS.md`). A card that
 decodes P6/P7 itself does not meet the I/O card on the data bus. **To verify on the I/O card in the machine** before
 the RTC answers there: no jumper on IO-ADDR or DATA-ADDR selects P6 or P7.
@@ -79,7 +79,7 @@ MC146818 family's limits are in the hundreds of nanoseconds (a bus cycle of abou
 VCC (the PC does), or to the bus -RESET once the data sheet confirms that. **To verify.**
 
 **Interrupt.** IRQ is open drain, so it can share -INT (C13) with the UART's 7406, through a jumper (INT-EN, off by
-default) as the video card V2.0 does with its PS/2 interrupt. Nothing in the ROM or Y1/OS uses interrupts yet, so the
+default) as the video card's PS/2 section does with its interrupt (V2.0's section, kept on the V4). Nothing in the ROM or Y1/OS uses interrupts yet, so the
 jumper stays off until something does.
 
 **Power-up.** The family needs about 200 ms after VCC rises before the bus may be used, and the oscillator may be

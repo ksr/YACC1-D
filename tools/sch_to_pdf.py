@@ -53,7 +53,7 @@ with open(os.path.join(HW, "SCHEMATICS.md"), "w") as f:
     f.write("# Schematic PDFs\n\nGenerated %s by `tools/sch_to_pdf.py` from every Eagle `.sch` under `hardware/` "
             "(active and deprecated revisions), rendered by KiCad after conversion with `tools/kicad/eagle_sch_to_kicad.py`. "
             "Page 1 of each PDF is KiCad's sheet index; the circuit starts on page 2. These are derived files: "
-            "re-run the script after any change to a `.sch`.\n\n| Schematic | PDF |\n|---|---|\n")
+            "re-run the script after any change to a `.sch`.\n\n| Schematic | PDF |\n|---|---|\n" % time.strftime("%Y-%m-%d"))
     for rel, st, pdf in results:
         f.write("| `%s` | %s |\n" % (rel, ("[`%s`](%s)" % (os.path.basename(pdf), os.path.relpath(pdf, HW))) if pdf else "**" + st + "**"))
 made = sum(1 for r in results if r[1] == "made"); upd = sum(1 for r in results if r[1] == "up to date")

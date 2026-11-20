@@ -17,7 +17,8 @@ missing, and the command for each), `make` (the C tools), then `make check`.
 YACC1 ("Yet Another Custom CPU") is a hand-built 8-bit TTL computer: an 8-bit accumulator and TMP register, eight
 16-bit registers R0-R7, microcoded, on a 96-pin bus. The cards: backplane, a two-board sequencer (logic + microcode
 memory), ALU, two index-register cards, memory (RAM, the 8K ROM, TMP registers), I/O (16550 UART console, switches,
-LEDs, TIL311s), a 6845 video card in bring-up, and a bus tester for driving the bus by hand.
+LEDs, TIL311s), a 6845 video card (working since 2026-10-21; its VGA successor, V4, designed and not ordered), and
+a bus tester for driving the bus by hand.
 
 Around the hardware, all in this tree:
 
