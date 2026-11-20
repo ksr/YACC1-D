@@ -2,7 +2,7 @@
 	(version "E")
 	(design
 		(source "/Users/ken/Developer/YACC1-D/hardware/cards/video/kicad/v4.0/video-v4.0.kicad_sch")
-		(date "2026-11-18T21:21:19")
+		(date "2026-11-20T05:12:50")
 		(tool "Eeschema 10.0.6")
 		(sheet
 			(number "1")
@@ -12,7 +12,7 @@
 				(title "YACC1 video card V4.0")
 				(company "YACC1")
 				(rev "V4.0")
-				(date "2026-11-18")
+				(date "2026-11-20")
 				(source "video-v4.0.kicad_sch")
 				(comment
 					(number "1")
@@ -60,7 +60,7 @@
 				(title "YACC1 video card V4.0: Bus and ports")
 				(company "YACC1")
 				(rev "V4.0")
-				(date "2026-11-18")
+				(date "2026-11-20")
 				(source "video-v4.0-bus.kicad_sch")
 				(comment
 					(number "1")
@@ -108,7 +108,7 @@
 				(title "YACC1 video card V4.0: CRTC and clock")
 				(company "YACC1")
 				(rev "V4.0")
-				(date "2026-11-18")
+				(date "2026-11-20")
 				(source "video-v4.0-crtc.kicad_sch")
 				(comment
 					(number "1")
@@ -156,7 +156,7 @@
 				(title "YACC1 video card V4.0: Text")
 				(company "YACC1")
 				(rev "V4.0")
-				(date "2026-11-18")
+				(date "2026-11-20")
 				(source "video-v4.0-text.kicad_sch")
 				(comment
 					(number "1")
@@ -204,7 +204,7 @@
 				(title "YACC1 video card V4.0: Graphics RAM")
 				(company "YACC1")
 				(rev "V4.0")
-				(date "2026-11-18")
+				(date "2026-11-20")
 				(source "video-v4.0-gfx.kicad_sch")
 				(comment
 					(number "1")
@@ -252,7 +252,7 @@
 				(title "YACC1 video card V4.0: Slots")
 				(company "YACC1")
 				(rev "V4.0")
-				(date "2026-11-18")
+				(date "2026-11-20")
 				(source "video-v4.0-slot.kicad_sch")
 				(comment
 					(number "1")
@@ -300,7 +300,7 @@
 				(title "YACC1 video card V4.0: Dots and syncs")
 				(company "YACC1")
 				(rev "V4.0")
-				(date "2026-11-18")
+				(date "2026-11-20")
 				(source "video-v4.0-video.kicad_sch")
 				(comment
 					(number "1")
@@ -348,7 +348,7 @@
 				(title "YACC1 video card V4.0: PS2")
 				(company "YACC1")
 				(rev "V4.0")
-				(date "2026-11-18")
+				(date "2026-11-20")
 				(source "video-v4.0-ps2.kicad_sch")
 				(comment
 					(number "1")
@@ -396,7 +396,7 @@
 				(title "YACC1 video card V4.0: Power")
 				(company "YACC1")
 				(rev "V4.0")
-				(date "2026-11-18")
+				(date "2026-11-20")
 				(source "video-v4.0-power.kicad_sch")
 				(comment
 					(number "1")
@@ -2977,21 +2977,21 @@
 		(comp
 			(ref "OSC1")
 			(value "25.175MHz")
-			(footprint "Oscillator:Oscillator_DIP-14")
-			(description "dot clock, in a socket")
+			(footprint "Oscillator:Oscillator_DIP-8")
+			(description "dot clock: a half-size can, in a socket")
 			(fields
 				(field
-					(name "Footprint") "Oscillator:Oscillator_DIP-14")
+					(name "Footprint") "Oscillator:Oscillator_DIP-8")
 				(field
 					(name "Datasheet")
 				)
 				(field
-					(name "Description") "dot clock, in a socket")
+					(name "Description") "dot clock: a half-size can, in a socket")
 			)
 			(libsource
 				(lib "Oscillator")
-				(part "CXO_DIP14")
-				(description "Crystal Clock Oscillator, DIP14-style metal package")
+				(part "CXO_DIP8")
+				(description "Crystal Clock Oscillator, DIP8-style metal package")
 			)
 			(property
 				(name "Sheetname")
@@ -3007,7 +3007,7 @@
 			)
 			(property
 				(name "ki_fp_filters")
-				(value "Oscillator*DIP*14*")
+				(value "Oscillator*DIP*8*")
 			)
 			(sheetpath
 				(names "/CRTC and clock/")
@@ -3022,13 +3022,13 @@
 							(num "1")
 						)
 						(pin
-							(num "14")
-						)
-						(pin
-							(num "7")
-						)
-						(pin
 							(num "8")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
 						)
 					)
 				)
@@ -13807,23 +13807,23 @@
 		)
 		(libpart
 			(lib "Oscillator")
-			(part "CXO_DIP14")
-			(description "Crystal Clock Oscillator, DIP14-style metal package")
+			(part "CXO_DIP8")
+			(description "Crystal Clock Oscillator, DIP8-style metal package")
 			(docs "http://cdn-reichelt.de/documents/datenblatt/B400/OSZI.pdf")
 			(footprints
-				(fp "Oscillator*DIP*14*")
+				(fp "Oscillator*DIP*8*")
 			)
 			(fields
 				(field
 					(name "Reference") "Y")
 				(field
-					(name "Value") "CXO_DIP14")
+					(name "Value") "CXO_DIP8")
 				(field
-					(name "Footprint") "Oscillator:Oscillator_DIP-14")
+					(name "Footprint") "Oscillator:Oscillator_DIP-8")
 				(field
 					(name "Datasheet") "http://cdn-reichelt.de/documents/datenblatt/B400/OSZI.pdf")
 				(field
-					(name "Description") "Crystal Clock Oscillator, DIP14-style metal package")
+					(name "Description") "Crystal Clock Oscillator, DIP8-style metal package")
 			)
 			(pins
 				(pin
@@ -13832,17 +13832,17 @@
 					(type "input")
 				)
 				(pin
-					(num "7")
+					(num "4")
 					(name "GND")
 					(type "power_in")
 				)
 				(pin
-					(num "8")
+					(num "5")
 					(name "OUT")
 					(type "output")
 				)
 				(pin
-					(num "14")
+					(num "8")
 					(name "Vcc")
 					(type "power_in")
 				)
@@ -18730,8 +18730,8 @@
 			(class "Default")
 			(node
 				(ref "OSC1")
-				(pin "8")
-				(pinfunction "OUT_8")
+				(pin "5")
+				(pinfunction "OUT_5")
 				(pintype "output")
 			)
 			(node
@@ -21470,8 +21470,8 @@
 			)
 			(node
 				(ref "OSC1")
-				(pin "7")
-				(pinfunction "GND_7")
+				(pin "4")
+				(pinfunction "GND_4")
 				(pintype "power_in")
 			)
 			(node
@@ -22183,8 +22183,8 @@
 			)
 			(node
 				(ref "OSC1")
-				(pin "14")
-				(pinfunction "Vcc_14")
+				(pin "8")
+				(pinfunction "Vcc_8")
 				(pintype "power_in")
 			)
 			(node
