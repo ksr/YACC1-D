@@ -669,7 +669,8 @@ questions; all four are answered (2026-11-14).
   its output end, on the same output and ground pads, so the dot clock's track to R20 serves both cans and is as it
   was routed, with no stub on it. Two pads on the +5 V plane are all the copper added to the board the pre-order
   check passed (the folder's README has the measure). On the silkscreen a `1` beside each can's pin 1, and over
-  the outline which is whose: `HALF CAN: UPPER 1`, `FULL CAN: LOWER 1`. The half-size can is square and goes into
+  the outline which is whose and what a full-size can asks: `HALF CAN: UPPER 1`, `FULL CAN: LOWER 1,`, `MIDDLE
+  HOLES EMPTY`. The half-size can is square and goes into
   its socket four ways. Of another make: not a can whose output is off with pin 1 high. Socket pins in the four
   holes of the can that is used and in no others: under a full-size can the two middle holes are +5 V, and the
   can's case is its ground pin.

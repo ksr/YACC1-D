@@ -22084,7 +22084,7 @@
 		(descr "Oscillator in a metal can: the full-size can (DIP-14) on pads 1, 7, 8, 14, or the half-size can (DIP-8) at its output end on pads 4, 7, 8, 11")
 		(tags "oscillator")
 		(property "Reference" "OSC1"
-			(at 23.300001 -8.210001 270)
+			(at 16.6 -15.05 270)
 			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "3afbdaac-5cba-4814-8fe5-82e30515f6cf")
@@ -38991,10 +38991,32 @@
 			)
 		)
 	)
-	(gr_text "FULL CAN: LOWER 1"
+	(gr_text "25.175MHz"
+		(at 124.4 103.95 270)
+		(layer "F.SilkS")
+		(uuid "a47b23ec-ee93-4b50-8a2e-8bb301ac02f2")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "MIDDLE HOLES EMPTY"
 		(at 129.399999 115.19 270)
 		(layer "F.SilkS")
-		(uuid "9351a49e-cf00-453d-be14-a70afc1e4db2")
+		(uuid "13ef665c-8334-4b17-9067-31d2051f138b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "FULL CAN: LOWER 1,"
+		(at 130.999999 115.19 270)
+		(layer "F.SilkS")
+		(uuid "d2236535-0517-4483-9d45-5bef4ed8a3cf")
 		(effects
 			(font
 				(size 1 1)
@@ -39003,20 +39025,9 @@
 		)
 	)
 	(gr_text "HALF CAN: UPPER 1"
-		(at 130.999999 115.19 270)
+		(at 132.6 115.19 270)
 		(layer "F.SilkS")
-		(uuid "589c18a3-daea-44b9-b3e1-64c284ce00a0")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "25.175MHz"
-		(at 132.6 117.401902 270)
-		(layer "F.SilkS")
-		(uuid "128aca5a-41c7-4c37-8956-68cbba4ba619")
+		(uuid "c3260c55-0a24-496a-84a5-c406c4745b36")
 		(effects
 			(font
 				(size 1 1)
@@ -40160,7 +40171,7 @@
 	(gr_text "1"
 		(at 109.299999 122.75 270)
 		(layer "F.SilkS")
-		(uuid "0a61b071-ee64-49cb-9e9a-e32c1dd304c7")
+		(uuid "cd4a1d33-3a83-47fa-96e1-c28b79943949")
 		(effects
 			(font
 				(size 1.2 1.2)
@@ -40171,7 +40182,7 @@
 	(gr_text "1"
 		(at 116.919999 122.75 270)
 		(layer "F.SilkS")
-		(uuid "5d3a0ced-1f5b-41e4-9cd2-98ddda95a124")
+		(uuid "8e1ba185-25b1-48cd-ae90-0f751f5e12d6")
 		(effects
 			(font
 				(size 1.2 1.2)
