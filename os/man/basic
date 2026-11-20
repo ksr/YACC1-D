@@ -50,7 +50,14 @@ DESCRIPTION
         LINE x0,y0,x1,y1
         BOX x0,y0,x1,y1[,FILL]   a rectangle by two opposite corners,
                        its outline, or filled
-        CIRCLE x,y,r   a circle's outline
+        CIRCLE x,y,r[,FILL]      a circle, its outline, or filled
+        CIRCLE x,y,rx,ry[,FILL]  an ellipse: rx to each side of the
+                       middle, ry above and below it. A radius is 0
+                       to 511 (0: a line, or a dot)
+        PAGE draw,show the card has two pages, 0 and 1: the one the
+                       statements draw on (and PIXELR reads, and CLS
+                       clears) and the one on the screen. Draw on the
+                       hidden page, then show it: PAGE 1,0 ... PAGE 0,1
         PIXELR(x,y)    a function: 1 if the dot is on, else 0
     What is off the screen is not drawn: a shape may hang over an
     edge. Draw with SCREEN 0 and show the picture afterwards, or with
@@ -83,7 +90,7 @@ LIMITS
     division by 0 gives 0). Names: 6 significant letters or digits,
     32 number variables and 16 strings of up to 32 characters. FOR and
     GOSUB nest 8 deep. Program lines up to 98 characters; 12286 bytes
-    of program. No arrays.
+    of program (basicc, the reference in C: 4102). No arrays.
 
 EXAMPLES
     > 10 for i = 1 to 3 : print i, i*i : next i
@@ -102,7 +109,9 @@ NOTES
     statements. New: programs saved as text, basic -r, INPUT with a
     prompt, Ctrl-C, deeper FOR and GOSUB. Graphics for this
     machine's video card V4 since 2026-11-20 (os/lib_gfx.c); a
-    circle is not filled and a line is one dot wide.
+    line is one dot wide. basicc, the reference this BASIC is
+    held to, has a program area of 4102 bytes: its room goes to
+    its code.
     Written in C (os/commands/basic.c, now basicc, the specification)
     and 2026-11-11 again in YACC1 assembly
     (os/commands-asm/basic.asm): this basic, which behaves exactly as

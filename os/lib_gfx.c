@@ -25,11 +25,19 @@
    by one each time; an error term starts at major / 2 (rounded down), grows by minor at each step, and when it
    reaches major it loses major and the minor coordinate steps. tests/video/v40/run.py draws the same in Python.
 
-   gfx_box() and gfx_circle() draw every dot once, so the inverting ink leaves none of them as it was. A box's
+   gfx_box() and gfx_ellipse() draw every dot once, so the inverting ink leaves none of them as it was. A box's
    outline is its top row, its bottom row, and the two columns between them; filled, it is its rows from the top,
-   cut to the screen first. A circle is the midpoint circle: x from 0 and y from the radius, d from 1 - radius; the
-   eight dots (cx +- x, cy +- y) and (cx +- y, cy +- x), each once; then d < 0: d += 2x + 3, else d += 2(x - y) + 5
-   and y steps down; x steps up; until x passes y.
+   cut to the screen first.
+
+   gfx_ellipse(cx, cy, a, b) is the ellipse with the half-axes a (across) and b (up), and a circle when they are
+   the same; a radius over 511 (a negative one is that) draws nothing. Its dots are those of one walk of a quarter
+   of it, from (a, 0) to (0, b), reflected four ways (Zingl's ellipse; 32-bit sums, kept in two ints):
+       dx = b*b - 2*a*b*b, dy = a*a, er = dx + dy, x = a, y = 0
+       each step: the dot (x, y); e2 = 2*er; if e2 >= dx: x steps in (the walk ends when x is already 0),
+           dx += 2*b*b, er += dx; if e2 <= dy (the e2 of before): y steps up, dy += 2*a*a, er += dy
+       then, for a thin one whose walk ended below the top, the dots (0, y) up to b.
+   Filled, each row is drawn once, between the reflections of the first dot the walk makes in it, which is its
+   widest. A radius of 0 gives a line, both a dot.
 
    gfx_screen() is what is on the screen: 0 the text alone, 1 the text and the graphics, 2 the graphics alone,
    3 the two XORed. The text is switched in control 2 (OUT PF, port 15), through the ROM's copy of it (VIDC2,
@@ -159,16 +167,90 @@ void gfx_dot4(int cx, int cy, int x, int y, int ink) {
     }
 }
 
-void gfx_circle(int cx, int cy, int r, int ink) {
-    int x, y, d;
-    x = 0; y = r; d = 1 - r;
-    while (x <= y) {
-        gfx_dot4(cx, cy, x, y, ink);
-        if (x != y) gfx_dot4(cx, cy, y, x, ink);
-        if (d & 32768) d = d + x + x + 3;
-        else { d = d + x + x - y - y + 5; y--; }
-        x++;
+/* 32-bit numbers for the ellipse, in two ints, the high one first: add (d may be s), negate, multiply by an int,
+   and "a >= b" for two signed ones */
+int ge_dx[2];
+int ge_dy[2];
+int ge_er[2];
+int ge_e2[2];
+int ge_ta[2];
+int ge_tb[2];
+int ge_t[2];
+int ge_cx, ge_cy, ge_fill, ge_ink, ge_last;
+
+void g32add(int *d, int *s) {
+    int l;
+    l = d[1] + s[1];
+    d[0] = d[0] + s[0];
+    if (l < s[1]) d[0] = d[0] + 1;
+    d[1] = l;
+}
+void g32neg(int *d) {
+    d[0] = d[0] ^ 65535;
+    d[1] = (d[1] ^ 65535) + 1;
+    if (d[1] == 0) d[0] = d[0] + 1;
+}
+void g32mul(int *d, int *s, int k) {
+    ge_t[0] = s[0]; ge_t[1] = s[1];
+    d[0] = 0; d[1] = 0;
+    while (k) {
+        if (k & 1) g32add(d, ge_t);
+        g32add(ge_t, ge_t);
+        k = k >> 1;
     }
+}
+int g32ge(int *a, int *b) {
+    if (a[0] != b[0]) return (a[0] ^ 32768) > (b[0] ^ 32768);
+    return a[1] >= b[1];
+}
+
+/* a dot of the ellipse's walk, x to the side of the centre and y above it: its four reflections - or, filled, the
+   two rows it bounds, at the first dot of a row */
+void gfx_erow(int x, int y) {
+    if (!ge_fill) gfx_dot4(ge_cx, ge_cy, x, y, ge_ink);
+    else if (y != ge_last) {
+        gfx_line(ge_cx - x, ge_cy + y, ge_cx + x, ge_cy + y, ge_ink);
+        if (y) gfx_line(ge_cx - x, ge_cy - y, ge_cx + x, ge_cy - y, ge_ink);
+    }
+    ge_last = y;
+}
+
+void gfx_ellipse(int cx, int cy, int a, int b, int fill, int ink) {
+    int x, y, sx, sy, done;
+    if (a > 511) return;
+    if (b > 511) return;
+    ge_cx = cx; ge_cy = cy; ge_fill = fill; ge_ink = ink; ge_last = 65535;
+    ge_e2[0] = 0; ge_e2[1] = b;
+    g32mul(ge_tb, ge_e2, b);
+    g32mul(ge_dx, ge_tb, a + a);
+    g32neg(ge_dx);
+    g32add(ge_dx, ge_tb);
+    g32add(ge_tb, ge_tb);
+    ge_e2[1] = a;
+    g32mul(ge_ta, ge_e2, a);
+    ge_dy[0] = ge_ta[0]; ge_dy[1] = ge_ta[1];
+    g32add(ge_ta, ge_ta);
+    ge_er[0] = ge_dx[0]; ge_er[1] = ge_dx[1];
+    g32add(ge_er, ge_dy);
+    x = a; y = 0; done = 0;
+    while (!done) {
+        gfx_erow(x, y);
+        ge_e2[0] = ge_er[0]; ge_e2[1] = ge_er[1];
+        g32add(ge_e2, ge_e2);
+        sx = g32ge(ge_e2, ge_dx);
+        sy = g32ge(ge_dy, ge_e2);
+        if (sx) {
+            if (x == 0) done = 1; else x--;
+            g32add(ge_dx, ge_tb);
+            g32add(ge_er, ge_dx);
+        }
+        if (sy) {
+            y++;
+            g32add(ge_dy, ge_ta);
+            g32add(ge_er, ge_dy);
+        }
+    }
+    for (y = ge_last + 1; y <= b; y++) gfx_erow(0, y);
 }
 
 void gfx_screen(int mode) {

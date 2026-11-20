@@ -10,7 +10,8 @@
    GOSUB RETURN INPUT POKE REM END; commands RUN LIST NEW SAVE LOAD HELP BYE; data files OPEN name FOR INPUT|OUTPUT,
    PRINT#, INPUT#, EOF(n), CLOSE; functions ABS RND PEEK LEN ASC VAL CHR$ LEFT$ RIGHT$ MID$ STR$ (man basic).
    Graphics on the video card V4 (2026-11-20; ../lib_gfx.c): SCREEN n, CLS, COLOR c, PIXELW x,y, LINE x0,y0,x1,y1,
-   BOX x0,y0,x1,y1[,FILL], CIRCLE x,y,r and the function PIXELR(x,y).
+   BOX x0,y0,x1,y1[,FILL], CIRCLE x,y,r[,FILL], CIRCLE x,y,rx,ry[,FILL] (an ellipse), PAGE draw,show and the
+   function PIXELR(x,y).
    SAVE writes the program as text, as LIST shows it (one line a record, LF at the end), so a saved program can be
    read with cat, edited with vi and LOADed back; LOAD reads such a file line by line as if it were typed.
    Ctrl-C stops a running program ("BREAK IN n"): the check reads a waiting key before each line and keeps any
@@ -33,7 +34,9 @@
 #define NSVARS 16
 #define GSMAX 8
 #define FSMAX 8
-#define PROGSZ 12288
+#define PROGSZ 4104         /* the program area. This BASIC is the reference: it runs small test programs, and its room
+                               goes to the statements (2026-11-20). /bin/basic, the assembly one, has 12288; the tests
+                               assemble it with this number too and then the two say and do the same (tests/ybasic) */
 /* tokens */
 #define T_PRINT 128
 #define T_LET 129
@@ -81,6 +84,7 @@
 #define T_BOX 171
 #define T_CIRCLE 172
 #define T_FILL 173
+#define T_PAGE 174
 /* relation bits */
 #define R_LT 1
 #define R_EQ 2
@@ -90,7 +94,7 @@
    string literal over 160 characters): the n-th word of the two is token 128 + n, the order of the T_ numbers above */
 char *kwtab[] = { "PRINT LET IF THEN FOR TO NEXT GOTO GOSUB RETURN INPUT REM END RUN LIST NEW ABS RND PEEK POKE",
                   "STEP BYE HELP SAVE LOAD CHR$ LEFT$ RIGHT$ MID$ LEN ASC OPEN CLOSE OUTPUT STR$ VAL EOF",
-                  "SCREEN CLS COLOR PIXELW PIXELR LINE BOX CIRCLE FILL" };
+                  "SCREEN CLS COLOR PIXELW PIXELR LINE BOX CIRCLE FILL PAGE" };
 int pow10[] = { 10000, 1000, 100, 10, 1 };
 
 char lbuf[100];             /* the input line */
@@ -853,7 +857,28 @@ int st_box() {
     gfx_box(garg[0], garg[1], garg[2], garg[3], f, ink);
     return 0;
 }
-int st_circle() { if (gargs(3)) gfx_circle(garg[0], garg[1], garg[2], ink); return 0; }
+/* CIRCLE x,y,r[,FILL] and the ellipse CIRCLE x,y,rx,ry[,FILL] */
+int st_circle() {
+    int f, ry;
+    if (!gargs(3)) return 0;
+    f = 0; ry = garg[2]; skipsp();
+    if (*tp == ',') {
+        tp = tp + 1; skipsp();
+        if ((*tp & 255) == T_FILL) { tp = tp + 1; f = 1; }
+        else {
+            ry = eval(); if (err) return 0;
+            skipsp();
+            if (*tp == ',') {
+                tp = tp + 1; skipsp();
+                if ((*tp & 255) != T_FILL) return synerr();
+                tp = tp + 1; f = 1;
+            }
+        }
+    }
+    gfx_ellipse(garg[0], garg[1], garg[2], ry, f, ink);
+    return 0;
+}
+int st_page() { if (gargs(2)) gfx_pages(garg[0], garg[1]); return 0; }
 int st_gosub() {
     tp = tp + 1; skipsp(); st_gotoN(); skipsp();
     if (*tp == ':') tp = tp + 1;
@@ -947,7 +972,7 @@ int st_help() {
     outs("FILES: OPEN \"f\" FOR OUTPUT|INPUT  PRINT# x  INPUT# x  EOF(1)  CLOSE\n");
     outs("FUNCTIONS: ABS(x) RND(n) PEEK(a) LEN ASC VAL CHR$ LEFT$ RIGHT$ MID$ STR$\n");
     outs("GRAPHICS: SCREEN n  CLS  COLOR c  PIXELW x,y  LINE x,y,x,y  BOX x,y,x,y[,FILL]\n");
-    outs("  CIRCLE x,y,r  PIXELR(x,y)   640 x 400 dots; man basic\n");
+    outs("  CIRCLE x,y,r[,ry][,FILL]  PAGE draw,show  PIXELR(x,y)   640 x 400; man basic\n");
     outs("NUMBERS: integers -32768..32767, 0x1F hex  OPERATORS: + - * / %\n");
     outs("  = <> < > <= >=   STRINGS: A$ (up to 32 chars), + joins\n");
     outs("Ctrl-C stops a running program. man basic for more.\n");
@@ -985,6 +1010,7 @@ int stmt() {
     if (c == T_LINE) return st_line();
     if (c == T_BOX) return st_box();
     if (c == T_CIRCLE) return st_circle();
+    if (c == T_PAGE) return st_page();
     return synerr();
 }
 int stmtline() {

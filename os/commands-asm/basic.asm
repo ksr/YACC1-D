@@ -43,7 +43,8 @@
 ; - The graphics statements (2026-11-20; basic.c with os/lib_gfx.c): COLOR's ink is kept as 0, 1 or 2 (C keeps the
 ;   number and tests it at each dot); the line's two branches are one loop over a major and a minor axis; the
 ;   numbers of a statement and of each shape are variables (GX_...). The dots, and the order control 1 is written
-;   in, are the C's: tests/ybasic/run.py compares the graphics RAM.
+;   in, are the C's: tests/ybasic/run.py compares the graphics RAM. The ellipse's 32-bit numbers are four bytes each,
+;   added a word at a time with the carry worked out as the C does (the sum below what was added).
 ; =====================================================================================================================
 
         ORG 5000H
@@ -97,6 +98,7 @@ STTAB:  DW st_print
         DW st_box
         DW st_circle
         DW synerr               ; FILL
+        DW st_page
 
 ; ---- the Y1/OS syscall interface (os/lib_abi.c) ------------------------------------------------------------------
 SYSARG0:    EQU 0F06H           ; the syscall arguments and result, big-endian words
@@ -115,7 +117,8 @@ SY_CONOUT:  EQU 0F3AH
 SY_STDIO:   EQU 0F3EH
 
 ; ---- the limits (basic.c's #defines) -----------------------------------------------------------------------------
-PROGSZ:     EQU 12288           ; the program area
+PROGSZ:     EQU 12288           ; the program area (basic.c, the reference, has 4104: its room goes to its code.
+                                ; tests/ybasic assembles this file with that number, and then the two are the same)
 STKSZ:      EQU 1024            ; this program's stack
 ; the tokens that are tested by name: 128 + the keyword's place in KWTAB
 T_LET:      EQU 129
@@ -141,7 +144,7 @@ T_VAL:      EQU 163
 T_EOF:      EQU 164
 T_PIXELR:   EQU 169
 T_FILL:     EQU 173
-NKW:        EQU 46              ; the keywords: tokens 128..173
+NKW:        EQU 47              ; the keywords: tokens 128..174
 
 ; =====================================================================================================================
 ; main (basic.c main): the variables cleared, the arguments, then the prompt's loop.
@@ -3043,7 +3046,7 @@ stmt:   JSR skipsp
         BRZ rts
         LDTI 128
         BRLT sm_ch
-        LDTI 174
+        LDTI 175
         BRLT sm_tk
         BR synerr
 sm_tk:  SHL                     ; 2 x (the token - 128): its place in STTAB, which is at $5004
@@ -3177,11 +3180,70 @@ st_box: LDAI 4
         LDAI 1
         STA GX_FILL
         BR gxbox
-; CIRCLE x,y,r
+; PAGE draw,show: the page the statements draw on, and the page on the screen (0 or 1 each)
+st_page: LDAI 2
+        JSR gargs
+        BRZ rts
+        LDA GX_ARG+1
+        ANDI 1
+        SHL
+        SHL
+        SHL
+        SHL
+        STA GX_M
+        LDA GX_ARG+3
+        ANDI 1
+        SHL
+        SHL
+        SHL
+        SHL
+        SHL
+        MVAT
+        LDA GX_M
+        ORT
+        MVAT
+        LDA GX_C1
+        ANDI 0CFH
+        ORT
+        BR gxctl
+; CIRCLE x,y,r[,FILL] and the ellipse CIRCLE x,y,rx,ry[,FILL]
 st_circle: LDAI 3
         JSR gargs
         BRZ rts
-        BR gxcirc
+        LDAI 0
+        STA GX_FILL
+        LDR R3,GX_ARG+4
+        STR R3,GX_ERY
+        JSR skipsp
+        LDTI 44
+        BRNEQ gxell
+        INCR R5
+        STR R5,TP
+        JSR skipsp
+        LDTI T_FILL
+        BRNEQ gxci1
+        INCR R5
+        STR R5,TP
+        LDAI 1
+        STA GX_FILL
+        BR gxell
+gxci1:  JSR eval
+        LDA ERR
+        BRNZ rts
+        STR R3,GX_ERY
+        JSR skipsp
+        LDTI 44
+        BRNEQ gxell
+        INCR R5
+        STR R5,TP
+        JSR skipsp
+        LDTI T_FILL
+        BRNEQ synerr
+        INCR R5
+        STR R5,TP
+        LDAI 1
+        STA GX_FILL
+        BR gxell
 
 ; gxctl: control 1 <- ACC, and its copy
 gxctl:  STA GX_C1
@@ -3556,59 +3618,296 @@ gxrow:  STR R3,GX_Y0
         LDR R3,GX_BX1
         STR R3,GX_X1
         BR gxline
-; gxcirc: the midpoint circle about (GX_ARG, +2) with the radius +4: x from 0, y from the radius, d from 1 - radius;
-; the eight dots of (x, y), each once; d < 0: d += 2x + 3, else d += 2(x - y) + 5 and y steps down; x steps up; until
-; x passes y.
-gxcirc: MVIW R3,0
-        STR R3,GX_CX
-        LDR R4,GX_ARG+4
-        STR R4,GX_CY
-        MVIW R3,1
-        JSR sub34
-        STR R3,GX_CD
-gxc1:   LDR R3,GX_CY
-        LDR R4,GX_CX
+; 32-bit numbers, for the ellipse: four bytes, the high word first, named by their address.
+; gxldw: R3 = the word at R6, R4 = the word at R7. gxstw: the word at R6 = R3. Both keep R6, R7.
+gxldw:  LDAVR R6
+        MVARH R3
+        INCR R6
+        LDAVR R6
+        MVARL R3
+        DECR R6
+        LDAVR R7
+        MVARH R4
+        INCR R7
+        LDAVR R7
+        MVARL R4
+        DECR R7
+        RET
+gxstw:  MVRHA R3
+        STAVR R6
+        INCR R6
+        MVRLA R3
+        STAVR R6
+        DECR R6
+        RET
+; gxa32: the number at R6 += the number at R7 (they may be the same). The low words, a carry if the sum is below
+; what was added, the high words. R6 and R7 come back as they were.
+gxa32:  ADDIW R6,2
+        ADDIW R7,2
+        JSR gxldw
+        JSR add34
+        JSR uge34
+        STA GX_CARRY            ; 1: no carry
+        JSR gxstw
+        ADDIW R6,0FFFEH
+        ADDIW R7,0FFFEH
+        JSR gxldw
+        JSR add34
+        LDA GX_CARRY
+        BRNZ gxa32a
+        INCR R3
+gxa32a: BR gxstw
+; gxneg: the number at R6 = 0 - itself: both words turned over, the low one + 1, and the high one + 1 if that is 0
+gxneg:  MOVRR R6,R7
+        JSR gxldw
+        JSR gxinv3
+        JSR gxstw
+        ADDIW R6,2
+        MOVRR R6,R7
+        JSR gxldw
+        JSR gxinv3
+        INCR R3
+        JSR gxstw
+        ADDIW R6,0FFFEH
+        MVRLA R3
+        MVAT
+        MVRHA R3
+        ORT
+        BRNZ rts
+        MOVRR R6,R7
+        JSR gxldw
+        INCR R3
+        BR gxstw
+gxinv3: MVRHA R3
+        INVA
+        MVARH R3
+        MVRLA R3
+        INVA
+        MVARL R3
+        RET
+; gxm32: the number at R6 = the number at R7 x R3 (shift and add; GX_ET is the one that doubles)
+gxm32:  STR R3,GX_MK
+        STR R6,GX_MD
+        LDAVR R7
+        STA GX_ET
+        INCR R7
+        LDAVR R7
+        STA GX_ET+1
+        INCR R7
+        LDAVR R7
+        STA GX_ET+2
+        INCR R7
+        LDAVR R7
+        STA GX_ET+3
+        LDIVR R6,0
+        INCR R6
+        LDIVR R6,0
+        INCR R6
+        LDIVR R6,0
+        INCR R6
+        LDIVR R6,0
+gxm1:   LDR R3,GX_MK
+        MVRLA R3
+        MVAT
+        MVRHA R3
+        ORT
+        BRZ rts
+        MVRLA R3
+        ANDI 1
+        BRZ gxm2
+        LDR R6,GX_MD
+        MVIW R7,GX_ET
+        JSR gxa32
+gxm2:   MVIW R6,GX_ET
+        MVIW R7,GX_ET
+        JSR gxa32
+        LDR R3,GX_MK            ; k >> 1
+        MVRLA R3
+        SHR
+        MVARL R3
+        MVRHA R3
+        ANDI 1
+        BRZ gxm3
+        MVRLA R3
+        ORI 128
+        MVARL R3
+gxm3:   MVRHA R3
+        SHR
+        MVARH R3
+        STR R3,GX_MK
+        BR gxm1
+; gxge32: ACC = 1 if the number at R6 >= the number at R7, both signed, else 0
+gxge32: JSR gxldw
+        JSR eq34
+        BRZ sge34               ; the high words differ: they decide, as signed numbers
+        ADDIW R6,2
+        ADDIW R7,2
+        JSR gxldw
+        BR uge34
+; gxell: the ellipse about (GX_ARG, +2) with the half-axes +4 (across) and GX_ERY (up); GX_FILL: filled. A radius
+; over 511 draws nothing. One walk of a quarter, from (a, 0) to (0, b), reflected four ways (os/lib_gfx.c
+; gfx_ellipse): dx = b*b - 2*a*b*b, dy = a*a, er = dx + dy; each step the dot (x, y), e2 = 2*er; e2 >= dx: x steps in
+; (the walk ends when x is 0 already), dx += 2*b*b, er += dx; e2 <= dy: y steps up, dy += 2*a*a, er += dy; then the
+; dots (0, y) up to b that a thin one's walk left out.
+gxell:  LDR R3,GX_ARG+4
+        MVRHA R3
+        LDTI 1
+        BRGT rts
+        LDR R3,GX_ERY
+        MVRHA R3
+        LDTI 1
+        BRGT rts
+        MVIW R3,0               ; e2 = b; tb = b * b
+        STR R3,GX_EE2
+        LDR R3,GX_ERY
+        STR R3,GX_EE2+2
+        MVIW R6,GX_ETB
+        MVIW R7,GX_EE2
+        JSR gxm32
+        LDR R3,GX_ARG+4         ; dx = tb * 2a; dx = -dx + tb; tb = 2 * tb
+        SHL16 R3
+        MVIW R6,GX_EDX
+        MVIW R7,GX_ETB
+        JSR gxm32
+        MVIW R6,GX_EDX
+        JSR gxneg
+        MVIW R6,GX_EDX
+        MVIW R7,GX_ETB
+        JSR gxa32
+        MVIW R6,GX_ETB
+        MVIW R7,GX_ETB
+        JSR gxa32
+        LDR R3,GX_ARG+4         ; e2 = a; ta = a * a; dy = ta; ta = 2 * ta
+        STR R3,GX_EE2+2
+        MVIW R6,GX_ETA
+        MVIW R7,GX_EE2
+        JSR gxm32
+        LDR R3,GX_ETA
+        STR R3,GX_EDY
+        LDR R3,GX_ETA+2
+        STR R3,GX_EDY+2
+        MVIW R6,GX_ETA
+        MVIW R7,GX_ETA
+        JSR gxa32
+        LDR R3,GX_EDX           ; er = dx + dy
+        STR R3,GX_EER
+        LDR R3,GX_EDX+2
+        STR R3,GX_EER+2
+        MVIW R6,GX_EER
+        MVIW R7,GX_EDY
+        JSR gxa32
+        LDR R3,GX_ARG+4
+        STR R3,GX_EX
+        MVIW R3,0
+        STR R3,GX_EY
+        MVIW R3,65535
+        STR R3,GX_ELAST
+gxe1:   JSR gxerow
+        LDR R3,GX_EER           ; e2 = er + er
+        STR R3,GX_EE2
+        LDR R3,GX_EER+2
+        STR R3,GX_EE2+2
+        MVIW R6,GX_EE2
+        MVIW R7,GX_EE2
+        JSR gxa32
+        MVIW R6,GX_EE2
+        MVIW R7,GX_EDX
+        JSR gxge32
+        STA GX_ESX
+        MVIW R6,GX_EDY
+        MVIW R7,GX_EE2
+        JSR gxge32
+        STA GX_ESY
+        LDAI 0
+        STA GX_EDONE
+        LDA GX_ESX
+        BRZ gxe4
+        LDR R3,GX_EX
+        MVRLA R3
+        MVAT
+        MVRHA R3
+        ORT
+        BRNZ gxe2
+        LDAI 1
+        STA GX_EDONE
+        BR gxe3
+gxe2:   DECR R3
+        STR R3,GX_EX
+gxe3:   MVIW R6,GX_EDX
+        MVIW R7,GX_ETB
+        JSR gxa32
+        MVIW R6,GX_EER
+        MVIW R7,GX_EDX
+        JSR gxa32
+gxe4:   LDA GX_ESY
+        BRZ gxe5
+        LDR R3,GX_EY
+        INCR R3
+        STR R3,GX_EY
+        MVIW R6,GX_EDY
+        MVIW R7,GX_ETA
+        JSR gxa32
+        MVIW R6,GX_EER
+        MVIW R7,GX_EDY
+        JSR gxa32
+gxe5:   LDA GX_EDONE
+        BRZ gxe1
+        LDR R3,GX_ELAST         ; the top of a thin one
+        INCR R3
+        STR R3,GX_EY
+        MVIW R3,0
+        STR R3,GX_EX
+gxe6:   LDR R3,GX_ERY
+        LDR R4,GX_EY
         JSR uge34
         BRZ rts
-        LDR R3,GX_CX
-        STR R3,GX_DA
-        LDR R3,GX_CY
-        STR R3,GX_DB
-        JSR gxdot4
-        LDR R3,GX_CX
-        LDR R4,GX_CY
-        JSR eq34
-        BRNZ gxc2
-        LDR R3,GX_CY
-        STR R3,GX_DA
-        LDR R3,GX_CX
-        STR R3,GX_DB
-        JSR gxdot4
-gxc2:   LDR R3,GX_CD
-        MVRHA R3
-        ANDI 128
-        BRZ gxc3
-        LDR R4,GX_CX
-        JSR add34
-        JSR add34
-        ADDIW R3,3
-        STR R3,GX_CD
-        BR gxc4
-gxc3:   LDR R4,GX_CX
-        JSR add34
-        JSR add34
-        LDR R4,GX_CY
-        JSR sub34
-        JSR sub34
-        ADDIW R3,5
-        STR R3,GX_CD
-        LDR R3,GX_CY
-        DECR R3
-        STR R3,GX_CY
-gxc4:   LDR R3,GX_CX
+        JSR gxerow
+        LDR R3,GX_EY
         INCR R3
-        STR R3,GX_CX
-        BR gxc1
+        STR R3,GX_EY
+        BR gxe6
+; gxerow: a dot of the walk, GX_EX to the side and GX_EY above: its four reflections - or, filled, the two rows it
+; bounds, at the first dot of a row
+gxerow: LDA GX_FILL
+        BRNZ gxer1
+        LDR R3,GX_EX
+        STR R3,GX_DA
+        LDR R3,GX_EY
+        STR R3,GX_DB
+        JSR gxdot4
+        BR gxer3
+gxer1:  LDR R3,GX_EY
+        LDR R4,GX_ELAST
+        JSR eq34
+        BRNZ gxer3
+        LDR R3,GX_ARG+2
+        LDR R4,GX_EY
+        JSR add34
+        JSR gxer4
+        LDR R3,GX_EY
+        MVRLA R3
+        MVAT
+        MVRHA R3
+        ORT
+        BRZ gxer3
+        LDR R3,GX_ARG+2
+        LDR R4,GX_EY
+        JSR sub34
+        JSR gxer4
+gxer3:  LDR R3,GX_EY
+        STR R3,GX_ELAST
+        RET
+gxer4:  STR R3,GX_Y0            ; the row R3 from cx - x to cx + x
+        STR R3,GX_Y1
+        LDR R3,GX_ARG
+        LDR R4,GX_EX
+        JSR sub34
+        STR R3,GX_X0
+        LDR R3,GX_ARG
+        LDR R4,GX_EX
+        JSR add34
+        STR R3,GX_X1
+        BR gxline
 ; gxdot4: the four dots (cx +- GX_DA, cy +- GX_DB), each once
 gxdot4: JSR gxyp
         JSR gxxp
@@ -3774,6 +4073,7 @@ KWTAB:  DB 'PRINT',0,0,0
         DB 'BOX',0,0,0,0,0
         DB 'CIRCLE',0,0
         DB 'FILL',0,0,0,0
+        DB 'PAGE',0,0,0,0
         DB 0
 GX_BIT: DB 128,64,32,16,8,4,2,1
 S_USAGE:    DB 'usage: basic [file] | basic -r file   (BYE or Ctrl-D: back to the shell)',0
@@ -3809,7 +4109,7 @@ S_HELP:     DB 'STATEMENTS: PRINT LET IF/THEN FOR/TO/STEP NEXT GOTO GOSUB RETURN
             DB 'FILES: OPEN ',34,'f',34,' FOR OUTPUT|INPUT  PRINT# x  INPUT# x  EOF(1)  CLOSE',10
             DB 'FUNCTIONS: ABS(x) RND(n) PEEK(a) LEN ASC VAL CHR$ LEFT$ RIGHT$ MID$ STR$',10
             DB 'GRAPHICS: SCREEN n  CLS  COLOR c  PIXELW x,y  LINE x,y,x,y  BOX x,y,x,y[,FILL]',10
-            DB '  CIRCLE x,y,r  PIXELR(x,y)   640 x 400 dots',59,' man basic',10
+            DB '  CIRCLE x,y,r[,ry][,FILL]  PAGE draw,show  PIXELR(x,y)   640 x 400',59,' man basic',10
             DB 'NUMBERS: integers -32768..32767, 0x1F hex  OPERATORS: + - * / %',10
             DB '  = <> < > <= >=   STRINGS: A$ (up to 32 chars), + joins',10
             DB 'Ctrl-C stops a running program. man basic for more.',10,0
@@ -3907,9 +4207,23 @@ GX_BY0: DS 2
 GX_BX1: DS 2
 GX_BY1: DS 2
 GX_BY:  DS 2
-GX_CX:  DS 2                    ; the circle
-GX_CY:  DS 2
-GX_CD:  DS 2
+GX_ERY: DS 2                    ; the ellipse: its half-axis up, the walk's x and y, the last row drawn
+GX_EX:  DS 2
+GX_EY:  DS 2
+GX_ELAST: DS 2
+GX_EDX: DS 4                    ; its 32-bit numbers
+GX_EDY: DS 4
+GX_EER: DS 4
+GX_EE2: DS 4
+GX_ETA: DS 4
+GX_ETB: DS 4
+GX_ET:  DS 4
+GX_MK:  DS 2
+GX_MD:  DS 2
+GX_CARRY: DS 1
+GX_ESX: DS 1
+GX_ESY: DS 1
+GX_EDONE: DS 1
 GX_DA:  DS 2
 GX_DB:  DS 2
 GX_DY2: DS 2

@@ -490,13 +490,18 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   The C BASIC is now 32,334 bytes of the 32,768 its image, tables and program area may take: 434 to spare.
   Not there: a filled circle, an ellipse, text drawn on the graphics layer, the second page from BASIC; and the
   ROM's own BASIC (the monitor's I) has no graphics: the ROM is full.
-  **Next (2026-11-20): more graphics in BASIC.** As for everything in BASIC, a statement is written in the C
-  BASIC first - `os/commands/basic.c` with `os/lib_gfx.c`, the reference - and then in the assembly one, and
-  `tests/ybasic` holds the two to the same transcript and the same graphics RAM. Before the next statement
-  the C BASIC needs room: 434 bytes are left of its 32K. The ways: a smaller program area in both (PROGSZ,
-  12,288 bytes today: the two must refuse a program at the same size), or the C BASIC's code made smaller.
-  To choose with the statements wanted: a filled circle, an ellipse, text on the graphics layer, the second
-  page and a page flip, a flood fill.
+  **More graphics in BASIC (2026-11-20, in steps).** A statement is written in the C BASIC first - `os/commands/basic.c`
+  with `os/lib_gfx.c`, the reference - and then in the assembly one; `tests/ybasic` holds the two to the same
+  transcript and the same graphics RAM.
+  - **The reference's room.** The C BASIC's program area is 4,104 bytes (it runs small test programs; its room
+    goes to its code: 25,546 of its 32,768 bytes are taken, 7.2K are free). `/bin/basic` keeps 12,288. The tests
+    assemble `basic.asm` once more with the reference's number and compare that build; the shipped one's own area
+    has a check of its own.
+  - **Done:** PAGE draw,show (the two pages); CIRCLE x,y,r[,FILL] and the ellipse CIRCLE x,y,rx,ry[,FILL]. Circles
+    and ellipses are one routine, Zingl's ellipse with 32-bit sums: one walk of a quarter, every dot once, a filled
+    row at the first dot of each row. Kennedy's ellipse, tried first, leaves rows or columns out of thin ones (502
+    of 14,161 pairs of radii to 119). A radius is 0 to 511.
+  - **To do:** GTEXT x,y,size,text (a 5 x 7 font with lower case); PAINT x,y (the region a dot is in, switched).
   **Open for the V4's software:** the 70 Hz table in the driver; Y1/OS, BASIC
   and the commands on 25 rows (they take the screen for 24). Scrolling the graphics apart from the text: in software (the note's section 12 has the three ways and
   their cost); in hardware it is a board change, listed in the note's "Possible later".

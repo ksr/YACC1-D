@@ -90,6 +90,9 @@
   lines in every direction, shapes over each edge - whose 64K of graphics RAM must be the same from the assembly BASIC
   and the C one on the instruction-level emulator, from the assembly one on the microcode emulator, and from
   `gfxref.py`, `os/lib_gfx.c` written again in Python.
+  The C BASIC's program area is smaller than the assembly one's (4,104 bytes against 12,288), so `run.py` assembles
+  `basic.asm` once more with the C one's number and compares that build; the shipped BASIC's own area is checked
+  apart, to the byte.
 - `disasm/` — `/bin/disasm` (os/commands/disasm.c, 2026-09-29): `run.py` builds it for the Mac (`host_disasm.c`,
   `host_sys.c`: int = unsigned short, OPEN/GETC/CLOSE/ENTRY/SEEK and peek emulated) and round-trips - `disasm -s`,
   RC/asm, the same bytes, the listing true to them - over tests/asm's corpus, every program of the OS build, the ROM
