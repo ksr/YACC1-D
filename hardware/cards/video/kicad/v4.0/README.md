@@ -395,6 +395,14 @@ and is as it was routed, with no second output pad hanging on it as a stub, and 
 The four other pads are on the +5 V plane. C48, the oscillator's capacitor, is at the full-size can's VCC pad
 (5.5 mm) and 13 mm from the half-size can's, both on the planes.
 
+**Under a full-size can the two middle pads, 4 and 11, are +5 V, and the can's case is its ground pin** (CTS's
+sheet: "circuit & package ground"). The pads are bare and flat and the can stands in its socket above them, so
+nothing meets. A socket pin standing in one of those two holes would reach the case and short the supply: **socket
+pins go in the four holes of the can that is used, and in no others** - 1, 7, 8, 14 for the full-size can, the
+upper four for the half-size one - or the can goes in the oscillator socket of its size. A full-size can soldered
+straight to the board would keep off those pads by its standoffs alone, 1 mm at most: in a socket, as every IC is.
+With the half-size can the two idle pads, 1 and 14, are beside the can, not under it.
+
 On the silkscreen, with the card standing: the full-size can's outline, a line across it where the half-size can
 ends, a `1` at the right of each can's pin 1 (beside the two square pads), and over the outline, where neither can
 covers it, `OSC1 25.175MHz`, `HALF CAN: UPPER 1`, `FULL CAN: LOWER 1`. (The label stood beside R20's `R20 33`, the

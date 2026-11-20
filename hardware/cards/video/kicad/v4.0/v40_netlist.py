@@ -494,7 +494,9 @@ BUY = {
             "connected, on the MXO45T and MXO45HST it is an enable, the output on with pin 1 high or open and off "
             "with it low, so each of the four runs (CTS's sheet 008-0258-0 rev. M). NOT a can whose output is off "
             "with pin 1 high: read pin 1's line in the data sheet of any other make. In a socket: the oscillator "
-            "socket of the can's size (half-size: Aries 1108800), or six single socket pins, which take both",
+            "socket of the can's size (half-size: Aries 1108800), or four single socket pins in the four holes of "
+            "the can that is used. NO SOCKET PIN IN THE OTHER TWO HOLES: under a full-size can the two middle holes "
+            "are +5 V and the can's case is its ground pin, so a socket pin standing there shorts the supply",
     "R20": "33 ohm (22 to 33): the clock's series termination", "R21": "33 ohm (22 to 33)", "R22": "33 ohm (22 to 33)",
     "R23": "33 ohm (22 to 33)",
     "SV1": "2x4 pin header and one 2.54 mm shunt (on 5-6: the $D000 block)",
