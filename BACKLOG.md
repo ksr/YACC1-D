@@ -1170,6 +1170,10 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
     there (pcb-check's note stays; taking it off is one more `SILK=1 build.sh`); the by-hand steps above; the order
     itself. After it: the clock's
     software (`docs/cards/rtc.md` section 6), and the microcode's -IO-ADDR-LD steps (L-2, below) if they are to go.
+    **The clock in the emulators (2026-11-20, the first step of that section): done.** `software/rtcmodel.h`, in both
+    emulators with `Y1IO_CARD=v1.2` (off by default: the machine has the V1.1 card); the Mac's time, or
+    `Y1RTC_TIME` for a fixed start on the machine's own clocks; `tests/io/rtc/run.py` in `make check`. Next in that
+    section, none of it begun: `os/lib_rtc.c`, `/bin/date`, Kermit's timeouts in real seconds, file dates.
 - **2026-11-03: every name on the Y1/OS disk is lower case**, as in Unix (`/bin/cat`, `/lib/cc/cc1`, `/man`, `/docs`,
   `/src`, `fruit.txt`, `make.sh`, cc's `ccw.*`, asm's `.asm`/`.img`, `/pipe0.tmp`, `kermit.tmp`), Unix's own capitals
   kept (`README`, the `Makefile`s). Both kernels look up `/bin/name` with the command word lower-cased (any case runs

@@ -28,6 +28,7 @@
 #include <stdint.h>
 #include "../opclocks.h"       /* YACC1-D 2026-11-05: clocks per opcode, from the microcode, for -P */
 #include "../cfmodel.h"        /* YACC1-D 2026-09-22: the CompactFlash card on ports P8 (select) / P9 (data), -c image */
+#include "../rtcmodel.h"       /* YACC1-D 2026-11-20: the I/O card V1.2's clock, a DS12885 on P6 / P7: Y1IO_CARD=v1.2 */
 #include "../videomodel.h"     /* YACC1-D 2026-09-25: the video card in $D000-$DFFF (-V screen dump, -W CRTC log, -N absent) */
 
 #define DEBUG 0
@@ -527,6 +528,8 @@ void print_usage(const char *progname) {
     printf("  -x           Scripted run: no load/dump chatter, HALT exits (instruction count on stderr)\n");
     printf("  -c image     Attach a CompactFlash image on ports P8/P9 (created zero-filled if missing)\n");
     printf("  -C image     The same as drive 1, the IDE slave (/bin/mkdisk writes it)\n");
+    printf("  (environment) Y1IO_CARD=v1.2: the I/O card V1.2's clock, a DS12885, on ports P6/P7; Y1RTC_TIME=\"2026-11-20 12:34:56\"\n"
+           "               starts it at that time, on the machine's clocks (software/rtcmodel.h)\n");
     printf("  -l N         Stop after N instructions (with -x: status on stderr)\n");
     printf("  -P file      PC histogram: instructions and clocks per address, opcodes and CF sectors, a block per program Y1/OS starts, into file\n");
     printf("  -S           Program watch: per program Y1/OS starts (JSRUR $5000) its instructions and own stack, on stderr\n");
@@ -597,6 +600,7 @@ int main(int argc, char** argv) {
      }
      */
 
+    rtc_init();                 /* YACC1-D 2026-11-20: Y1IO_CARD=v1.2, the clock on P6 / P7 (software/rtcmodel.h) */
     in = 0;
     registers[PC].word = 0xf000;
     pushpopdepth = 0;
@@ -616,6 +620,7 @@ int main(int argc, char** argv) {
     while (1) {
 
         ins = memory_read(register_read_word(PC));
+        rtc_clk += opclocks[ins & 255];     /* YACC1-D 2026-11-20: the machine's clocks, the clock chip's time with Y1RTC_TIME */
         icount++;
         if (pcfile) {
             unsigned pa = register_read_word(PC);
@@ -955,6 +960,7 @@ int main(int argc, char** argv) {
                     DEBUG_PRINTF(" ");
                 }
                 if (portaddr == 1 && port[0] == 0x40) myputchar(port[1]);   /* 2026-09-26: THR */
+                if (rtc.present && (portaddr == RTC_PORT_REG || portaddr == RTC_PORT_DATA)) rtc_io_write(portaddr, acc);   /* 2026-11-20 */
                 if (portaddr == CF_PORT_SEL || portaddr == CF_PORT_DATA) cf_io_write(portaddr, acc);
                 break;
 
@@ -981,6 +987,7 @@ int main(int argc, char** argv) {
 
                 if ((port[0] == 0x40) && (portaddr == 1))
                     myputchar(port[portaddr]);
+                if (rtc.present && (portaddr == RTC_PORT_REG || portaddr == RTC_PORT_DATA)) rtc_io_write(portaddr, port[portaddr]);   /* 2026-11-20 */
                 if (portaddr == CF_PORT_SEL || portaddr == CF_PORT_DATA) cf_io_write(portaddr, port[portaddr]);
                 break;
 
@@ -1047,6 +1054,7 @@ int main(int argc, char** argv) {
                     
                     //printf("in char %x\n", acc);
                 }
+                if (rtc.present && (portaddr == RTC_PORT_REG || portaddr == RTC_PORT_DATA)) acc = rtc_io_read(portaddr);   /* 2026-11-20: the I/O card V1.2's clock */
                 if (portaddr == CF_PORT_DATA || portaddr == CF_PORT_SEL) acc = cf_io_read(portaddr);
                 break;
                 

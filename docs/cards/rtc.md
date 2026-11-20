@@ -145,9 +145,24 @@ routed, not ordered). As drawn:
 
 In the order it can be done, all testable on the emulators before the hardware exists:
 
-1. **The emulators' model** (`software/rtcmodel.h`, beside `cfmodel.h`): P6/P7 in both emulators, the time from the
-   host's clock, the RAM in memory, register A's UIP never set (or set briefly, to test the reader). `-R` could start it
-   at a fixed time for repeatable transcripts.
+1. **The emulators' model** (`software/rtcmodel.h`, beside `cfmodel.h`): **done 2026-11-20.** P6/P7 in both
+   emulators, when the environment names the card: `Y1IO_CARD=v1.2` (without it the I/O card is the V1.1 of the
+   machine, with nothing on those ports). The time is the host's local time and runs with the host's clock;
+   `Y1RTC_TIME="2026-11-20 12:34:56"` starts the chip at that time and runs it on the emulated machine's own clocks,
+   for transcripts that repeat (an environment variable and not `-R`, which `y1ucemu` has for something else);
+   `Y1RTC_NEW=1` is a chip never set: the oscillator stopped, BCD and 12-hour, what the first `date -s` meets. As a
+   chip already set it starts in binary and 24-hour mode (register B = $06). Modelled: the ten time, calendar and
+   alarm registers in binary or BCD, 12- or 24-hour; SET and the oscillator's DV bits (the first update 500 ms after
+   it starts); UIP, set from 244 us before a second ends to 1984 us after, so a reader that waits for it is
+   tested; register C's flags (UF, AF, PF by the rate, IRQF by the enables), cleared by the read; the 114 bytes of
+   RAM. Not modelled: the -IRQ pin (JP8 is left off), SQW, daylight saving, the cell (the RAM and a time that was
+   set last as long as the emulator runs). `tests/io/rtc/run.py`, in `make check`: the model on its own, and a
+   YACC1 program that finds the chip, reads and sets it on both emulators.
+   - **Finding the chip.** A read of an empty port does not give one value: the microcode emulator reads $FF (as the
+     V1.2 card's own pulled-up data lines would with the chip out), the instruction-level emulator leaves ACC as it
+     was, and on the V1.1 card in the machine the data bus floats. So `rtc_present()` (below) writes two different
+     bytes to two RAM registers and reads both back, with the register number the last byte on the bus before each
+     read, as `tests/io/rtc/rtc.asm` does.
 2. **`os/lib_rtc.c`**: `rtc_present()` (write and read back a RAM byte: an absent card reads as whatever is left on the
    bus), `rtc_rd(reg)`, `rtc_wr(reg, v)`, `rtc_time(buf)` (wait while UIP is set, then read the registers; or read twice
    until two reads agree), `rtc_set(...)`. Binary and 24-hour mode, set once by `date -s`.

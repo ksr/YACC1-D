@@ -27,6 +27,9 @@
  *
  * usage: y1ucemu [-u test.hex] [-m] [-f image.hex ...] [-c disk.img] [-x] [-t] [-T] [-w] [-F and|src] [-s NN] [-l N] [-D PORT]
  *   -c   attach a CompactFlash image (software/cfmodel.h: P8 = register select, P9 = data; created if missing)
+ *   (environment) Y1IO_CARD=v1.2: the I/O card V1.2, with its DS12885 clock on P6 (register number) and P7 (data);
+ *        Y1RTC_TIME="2026-11-20 12:34:56" starts it there and runs it on the machine's clocks (software/rtcmodel.h).
+ *        The default is the V1.1 card in the machine: nothing on P6 / P7
  *   -u   control store (default: firmware/microcode/ucode-generator2/test.hex relative to the executable)
  *   -m   load firmware/basic/basic.img + firmware/monitor/monitor.img (the ROM), as the other emulator does
  *   -f   load an Intel-hex image (repeatable; later files overwrite earlier ones)
@@ -85,6 +88,8 @@
 struct signal { char *name; int chip; int port; int bit; };
 #include "../../firmware/microcode/yaccsignaldata2.h"
 #include "../cfmodel.h"          /* the CompactFlash card on ports P8 (select) / P9 (data), -c image */
+#include "../rtcmodel.h"         /* 2026-11-20: the I/O card V1.2's clock, a DS12885 on P6 (register) / P7 (data): Y1IO_CARD=v1.2 */
+static unsigned long nclocks;    /* (the clocks so far, with nsteps further down: here for the clock chip's time in io_read) */
 #include "../videomodel.h"       /* the video card in $D000-$DFFF (2026-09-25): -V screen dump, -W CRTC log, -N absent */
 #include "videogate.h"           /* -G REV (2026-10-11): the same card at gate level, generated from its netlist */
 
@@ -285,6 +290,7 @@ static void console_out(int c) {
 
 static inline __attribute__((always_inline)) uint8_t io_read(int p) {
     if (p == CF_PORT_SEL || p == CF_PORT_DATA) return cf_io_read(p);
+    if (rtc.present && (p == RTC_PORT_REG || p == RTC_PORT_DATA)) { rtc_clk = nclocks; return rtc_io_read(p); }
     if (p == 2) return (uint8_t)input_byte();
     if (p != 1) return 0xFF;
     uint8_t ctl = port[0];
@@ -306,6 +312,7 @@ static inline __attribute__((always_inline)) uint8_t io_read(int p) {
 static inline __attribute__((always_inline)) void io_write(int p, uint8_t v) {
     port[p] = v;
     if (p == CF_PORT_SEL || p == CF_PORT_DATA) { cf_io_write(p, v); return; }
+    if (rtc.present && (p == RTC_PORT_REG || p == RTC_PORT_DATA)) { rtc_clk = nclocks; rtc_io_write(p, v); return; }
     if (p == 2) { console_out(v); return; }
     if (p != 1) return;
     uint8_t ctl = port[0];
@@ -1070,6 +1077,7 @@ int main(int argc, char **argv) {
     int recs = load_ucode(ucode_path);
     if (!recs) return 2;
     if (!scripted) printf("   Control store: %d records from %s\n", recs, ucode_path);
+    rtc_init();                              /* 2026-11-20: Y1IO_CARD=v1.2, the clock on P6 / P7 (software/rtcmodel.h) */
     memset(mem, 0xFF, sizeof mem);           /* unprogrammed EEPROM and unwritten RAM read as $FF */
     if (load_std) {
         char img[4096];
