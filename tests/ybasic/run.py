@@ -183,7 +183,15 @@ PICTURE = [("cls",), ("box", 0, 0, 639, 399), ("line", 0, 0, 639, 399), ("line",
            ("circle", 270, 300, 1), ("circlef", 280, 300, 1), ("circle", 290, 300, 2), ("circlef", 300, 300, 2),
            ("circlef", 0, 0, 50), ("circle", 639, 399, 60), ("ellipsef", 639, 200, 30, 90), ("ellipse", 320, -20, 200, 60),
            ("ellipsef", 320, 420, 100, 60), ("circle", 100, 300, 511), ("circle", 100, 300, 512), ("circlef", 100, 300, -5),
-           ("ellipse", 100, 300, 600, 10), ("ellipsef", 100, 300, 10, 600), ("ellipse", 400, 100, 511, 511)]
+           ("ellipse", 100, 300, 600, 10), ("ellipsef", 100, 300, 10, 600), ("ellipse", 400, 100, 511, 511),
+           # text: every character, sizes, inks over what is there, over the edges, sizes that draw nothing
+           ("page", 0, 0), ("gtext", 220, 20, 1, " !#$%&'()*+,-./0123456789:;<=>?"), ("gtext", 220, 30, 1, "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"),
+           ("gtext", 220, 40, 1, "`abcdefghijklmnopqrstuvwxyz{|}~"), ("gtext", 220, 60, 2, "YACC1 Basic 640x400"),
+           ("gtext", 220, 80, 3, "Size 3"), ("gtext", 130, 150, 7, "Big"), ("color", 2), ("gtext", 30, 60, 2, "invert"),
+           ("gtext", 30, 60, 2, "in"), ("color", 0), ("gtext", 25, 30, 1, "erased"), ("color", 1),
+           ("gtext", 600, 200, 2, "edge"), ("gtext", -8, 300, 3, "left"), ("gtext", 300, -5, 2, "top"), ("gtext", 300, 392, 2, "bottom"),
+           ("gtext", 400, 250, 0, "none"), ("gtext", 400, 250, 64, "none"), ("gtext", 400, 250, -2, "none"), ("gtext", 400, 250, 63, " "),
+           ("gtext", 400, 260, 1, ""), ("gtext", 400, 270, 1, "12345678901234567890123456789012")]
 
 
 def picture_check(c, a):
@@ -192,7 +200,7 @@ def picture_check(c, a):
     for n, (op, *v) in enumerate(PICTURE):
         text = {"boxf": "box %d,%d,%d,%d,fill", "box": "box %d,%d,%d,%d", "line": "line %d,%d,%d,%d", "circle": "circle %d,%d,%d",
                 "circlef": "circle %d,%d,%d,fill", "ellipse": "circle %d,%d,%d,%d", "ellipsef": "circle %d,%d,%d,%d,fill",
-                "pixelw": "pixelw %d,%d", "color": "color %d", "screen": "screen %d", "cls": "cls", "page": "page %d,%d"}[op] % tuple(v)
+                "pixelw": "pixelw %d,%d", "color": "color %d", "screen": "screen %d", "cls": "cls", "page": "page %d,%d", "gtext": 'gtext %d,%d,%d,"%s"'}[op] % tuple(v)
         lines.append("%d %s" % (10 * n + 10, text))
         if op == "color": ref.ink = v[0]
         elif op == "boxf": ref.box(*v, 1)
@@ -201,6 +209,7 @@ def picture_check(c, a):
         elif op in ("ellipse", "ellipsef"): ref.ellipse(*v, op == "ellipsef")
         elif op == "pixelw": ref.plot(*v)
         elif op in ("screen", "page"): getattr(ref, op)(*v)
+        elif op == "gtext": ref.text(*v)
         elif op == "cls": ref.g[ref.base():ref.base() + 32768] = bytes(32768)
     script = ("O\nbasic\n" + "".join(l + "\n" for l in lines) + "run\nbye\nexit\n0").encode()
     got = {}

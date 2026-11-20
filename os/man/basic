@@ -54,6 +54,12 @@ DESCRIPTION
         CIRCLE x,y,rx,ry[,FILL]  an ellipse: rx to each side of the
                        middle, ry above and below it. A radius is 0
                        to 511 (0: a line, or a dot)
+        GTEXT x,y,size,a$   text as dots, x,y its top left corner.
+                       The characters are 5 x 7 dots in a cell of
+                       6 x 8, each dot size x size (size 1 to 63):
+                       106 characters across at size 1, 53 at size 2.
+                       Only the letters' own dots are drawn, in the
+                       COLOR's ink; a$ is any string expression
         PAGE draw,show the card has two pages, 0 and 1: the one the
                        statements draw on (and PIXELR reads, and CLS
                        clears) and the one on the screen. Draw on the

@@ -3,7 +3,11 @@
 """tests/ybasic/gfxref.py - os/lib_gfx.c in Python (2026-11-20): the 64K of the video card V4's graphics RAM after the
 same calls, with the machine's 16-bit arithmetic. The reference of tests/ybasic/run.py's graphics check: what the
 assembly BASIC and the C BASIC must both have drawn."""
+import os, re
 M = 0xFFFF
+_LIB = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "os", "lib_gfx.c")).read()
+FONT = bytes(int(v) for name in ("gfx_f0", "gfx_f1", "gfx_f2")                       # GTEXT's font, as the C has it
+             for v in re.search(r"char %s\[\d+\] = \{(.*?)\};" % name, _LIB, re.S).group(1).split(","))
 def sg(v): return (v & M) ^ 0x8000                       # the bias of a signed compare
 
 class Gfx:
@@ -89,3 +93,15 @@ class Gfx:
             if sy:
                 y += 1; dy += ta; er += dy
         for y in range(last[0] + 1, b + 1): row(0, y)
+    def text(self, x, y, size, t, ink=None):
+        size &= M
+        if size == 0 or size > 63: return
+        for ch in t.encode("latin1"):
+            if 32 <= ch < 127:
+                f = FONT[(ch - 32) * 5:(ch - 32) * 5 + 5]
+                for col in range(5):
+                    for row in range(7):
+                        if f[col] >> row & 1:
+                            px, py = x + col * size, y + row * size
+                            self.box(px, py, px + size - 1, py + size - 1, 1, ink)
+            x += 6 * size

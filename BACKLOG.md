@@ -501,7 +501,10 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     and ellipses are one routine, Zingl's ellipse with 32-bit sums: one walk of a quarter, every dot once, a filled
     row at the first dot of each row. Kennedy's ellipse, tried first, leaves rows or columns out of thin ones (502
     of 14,161 pairs of radii to 119). A radius is 0 to 511.
-  - **To do:** GTEXT x,y,size,text (a 5 x 7 font with lower case); PAINT x,y (the region a dot is in, switched).
+  - **Done:** GTEXT x,y,size,string: text as dots, a 5 x 7 font of the 95 characters $20-$7E (the capitals, digits
+    and signs of `tools/vidsim.py`'s V1 set, small letters drawn to go with them; 475 bytes in each BASIC), every
+    font dot a filled box of size x size.
+  - **To do:** PAINT x,y (the region a dot is in, switched).
   **Open for the V4's software:** the 70 Hz table in the driver; Y1/OS, BASIC
   and the commands on 25 rows (they take the screen for 24). Scrolling the graphics apart from the text: in software (the note's section 12 has the three ways and
   their cost); in hardware it is a board change, listed in the note's "Possible later".

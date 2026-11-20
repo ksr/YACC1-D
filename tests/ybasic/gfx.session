@@ -51,6 +51,24 @@ circle 1,2,3,4,5
 circle 1,2,3,4,fill,5
 circle 1,2,3 fill
 circle 1,2,fill
+cls : gtext 0,0,1,"A" : print pixelr(2,0); pixelr(0,1); pixelr(0,6); pixelr(4,6); pixelr(5,0); pixelr(0,7)
+gtext 10,0,2,"A" : print pixelr(14,0); pixelr(15,1); pixelr(10,2); pixelr(10,13); pixelr(19,13); pixelr(10,14)
+a$ = "ab" : gtext 0,20,1,a$ + "c" + chr$(65) : print pixelr(1,22); pixelr(6,20); pixelr(13,22); pixelr(20,20)
+gtext 0,40,0,"x" : gtext 0,40,64,"x" : gtext 0,40,-1,"x" : print pixelr(0,42); pixelr(2,44)
+gtext 636,395,1,"W" : gtext -3,-3,1,"W" : print pixelr(636,395); pixelr(639,399); pixelr(0,0); pixelr(1,3)
+gtext 0,60,1,chr$(7) + "!" : print pixelr(2,60); pixelr(8,60); pixelr(8,66)
+color 2 : gtext 0,0,1,"A" : color 1 : print pixelr(2,0); pixelr(0,1)
+60 gtext 1,2,3,"hi" : gtext x,y,s,a$ + "!"
+list
+60
+gtext 1,2,3
+gtext 1,2,3,
+gtext 1,2,3,4
+gtext 1,2,"a"
+gtext 1,2,3,"a",5
+gtext 1,2,3,"a" "b"
+gtext
+gtext = 1
 pixelw 1
 pixelw 1,
 pixelw

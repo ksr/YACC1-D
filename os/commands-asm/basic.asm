@@ -99,6 +99,7 @@ STTAB:  DW st_print
         DW st_circle
         DW synerr               ; FILL
         DW st_page
+        DW st_gtext
 
 ; ---- the Y1/OS syscall interface (os/lib_abi.c) ------------------------------------------------------------------
 SYSARG0:    EQU 0F06H           ; the syscall arguments and result, big-endian words
@@ -144,7 +145,7 @@ T_VAL:      EQU 163
 T_EOF:      EQU 164
 T_PIXELR:   EQU 169
 T_FILL:     EQU 173
-NKW:        EQU 47              ; the keywords: tokens 128..174
+NKW:        EQU 48              ; the keywords: tokens 128..175
 
 ; =====================================================================================================================
 ; main (basic.c main): the variables cleared, the arguments, then the prompt's loop.
@@ -3046,7 +3047,7 @@ stmt:   JSR skipsp
         BRZ rts
         LDTI 128
         BRLT sm_ch
-        LDTI 175
+        LDTI 176
         BRLT sm_tk
         BR synerr
 sm_tk:  SHL                     ; 2 x (the token - 128): its place in STTAB, which is at $5004
@@ -3206,6 +3207,121 @@ st_page: LDAI 2
         ANDI 0CFH
         ORT
         BR gxctl
+; GTEXT x,y,size,string: the string's characters as dots, (x, y) the first one's top left dot; each dot of the 5 x 7
+; font a square of size x size dots in the ink (a filled box), a character 6 x size further right than the last. A
+; size of 0 or over 63 draws nothing; a code outside $20-$7E is a blank. (os/lib_gfx.c gfx_text)
+st_gtext: LDAI 3
+        JSR gargs
+        BRZ rts
+        LDAI 44
+        JSR expect
+        LDA ERR
+        BRNZ rts
+        JSR seval
+        LDA ERR
+        BRNZ rts
+        LDR R3,GX_ARG
+        STR R3,GX_TX
+        LDR R3,GX_ARG+2
+        STR R3,GX_TY
+        LDR R3,GX_ARG+4
+        STR R3,GX_TS
+        MVRHA R3                ; the size: 1..63
+        BRNZ rts
+        MVRLA R3
+        BRZ rts
+        LDTI 63
+        BRGT rts
+        MOVRR R3,R4             ; a character's step: 6 x size
+        SHL16 R3
+        SHL16 R3
+        JSR add34
+        JSR add34
+        STR R3,GX_TADV
+        LDA SACC
+        STA GX_TN
+        MVIW R3,SACC+1
+        STR R3,GX_TP
+gxt1:   LDA GX_TN
+        BRZ rts
+        SUBI 1
+        STA GX_TN
+        LDR R6,GX_TP
+        LDAVR R6
+        INCR R6
+        STR R6,GX_TP
+        LDTI 32
+        BRLT gxt7
+        LDTI 126
+        BRGT gxt7
+        SUBI 32                 ; its 5 bytes: GX_FONT + 5 x (the code - 32)
+        MVAT
+        MVARL R6
+        LDAI 0
+        MVARH R6
+        SHL16 R6
+        SHL16 R6
+        MVTA
+        JSR adda6
+        ADDIW R6,GX_FONT
+        STR R6,GX_TF
+        LDR R3,GX_TX
+        STR R3,GX_TPX
+        LDAI 0
+        STA GX_TCOL
+gxt2:   LDR R6,GX_TF            ; a column
+        LDAVR R6
+        STA GX_TBITS
+        INCR R6
+        STR R6,GX_TF
+        LDR R3,GX_TY
+        STR R3,GX_TPY
+        LDAI 0
+        STA GX_TROW
+gxt3:   LDA GX_TBITS            ; a dot of the font
+        ANDI 1
+        BRZ gxt4
+        LDR R3,GX_TPX
+        STR R3,GX_ARG
+        LDR R4,GX_TS
+        JSR add34
+        DECR R3
+        STR R3,GX_ARG+4
+        LDR R3,GX_TPY
+        STR R3,GX_ARG+2
+        LDR R4,GX_TS
+        JSR add34
+        DECR R3
+        STR R3,GX_ARG+6
+        LDAI 1
+        STA GX_FILL
+        JSR gxbox
+gxt4:   LDA GX_TBITS
+        SHR
+        STA GX_TBITS
+        LDR R3,GX_TPY
+        LDR R4,GX_TS
+        JSR add34
+        STR R3,GX_TPY
+        LDA GX_TROW
+        ADDI 1
+        STA GX_TROW
+        LDTI 7
+        BRNEQ gxt3
+        LDR R3,GX_TPX
+        LDR R4,GX_TS
+        JSR add34
+        STR R3,GX_TPX
+        LDA GX_TCOL
+        ADDI 1
+        STA GX_TCOL
+        LDTI 5
+        BRNEQ gxt2
+gxt7:   LDR R3,GX_TX            ; the next character's place
+        LDR R4,GX_TADV
+        JSR add34
+        STR R3,GX_TX
+        BR gxt1
 ; CIRCLE x,y,r[,FILL] and the ellipse CIRCLE x,y,rx,ry[,FILL]
 st_circle: LDAI 3
         JSR gargs
@@ -4074,8 +4190,36 @@ KWTAB:  DB 'PRINT',0,0,0
         DB 'CIRCLE',0,0
         DB 'FILL',0,0,0,0
         DB 'PAGE',0,0,0,0
+        DB 'GTEXT',0,0,0
         DB 0
 GX_BIT: DB 128,64,32,16,8,4,2,1
+; GTEXT's font: the 95 characters $20-$7E, 5 x 7 dots, 5 bytes each: the columns from the left, bit 0 the top dot
+; (os/lib_gfx.c's gfx_f0, gfx_f1, gfx_f2 in one piece)
+GX_FONT:
+        DB 0,0,0,0,0,0,0,95,0,0,0,7,0,7,0,20,127,20,127,20
+        DB 36,42,127,42,18,35,19,8,100,98,54,73,85,34,80,0,5,3,0,0
+        DB 0,28,34,65,0,0,65,34,28,0,8,42,28,42,8,8,8,62,8,8
+        DB 0,80,48,0,0,8,8,8,8,8,0,96,96,0,0,32,16,8,4,2
+        DB 62,81,73,69,62,0,66,127,64,0,66,97,81,73,70,33,65,69,75,49
+        DB 24,20,18,127,16,39,69,69,69,57,60,74,73,73,48,1,113,9,5,3
+        DB 54,73,73,73,54,6,73,73,41,30,0,54,54,0,0,0,86,54,0,0
+        DB 0,8,20,34,65,20,20,20,20,20,65,34,20,8,0,2,1,81,9,6
+        DB 50,73,121,65,62,126,17,17,17,126,127,73,73,73,54,62,65,65,65,34
+        DB 127,65,65,34,28,127,73,73,73,65,127,9,9,1,1,62,65,65,81,50
+        DB 127,8,8,8,127,0,65,127,65,0,32,64,65,63,1,127,8,20,34,65
+        DB 127,64,64,64,64,127,2,4,2,127,127,4,8,16,127,62,65,65,65,62
+        DB 127,9,9,9,6,62,65,81,33,94,127,9,25,41,70,70,73,73,73,49
+        DB 1,1,127,1,1,63,64,64,64,63,31,32,64,32,31,127,32,24,32,127
+        DB 99,20,8,20,99,3,4,120,4,3,97,81,73,69,67,0,0,127,65,65
+        DB 2,4,8,16,32,65,65,127,0,0,4,2,1,2,4,64,64,64,64,64
+        DB 0,1,2,4,0,32,84,84,84,120,127,72,68,68,56,56,68,68,68,32
+        DB 56,68,68,72,127,56,84,84,84,24,8,126,9,1,2,8,20,84,84,56
+        DB 127,8,4,4,120,0,68,125,64,0,32,64,68,61,0,127,16,40,68,0
+        DB 0,65,127,64,0,124,4,24,4,120,124,8,4,4,120,56,68,68,68,56
+        DB 124,20,20,20,8,8,20,20,24,124,124,8,4,4,8,72,84,84,84,32
+        DB 4,63,68,64,32,60,64,64,32,124,28,32,64,32,28,60,64,48,64,60
+        DB 68,40,16,40,68,12,80,80,80,60,68,100,84,76,68,0,8,54,65,0
+        DB 0,0,127,0,0,0,65,54,8,0,8,4,8,16,8
 S_USAGE:    DB 'usage: basic [file] | basic -r file   (BYE or Ctrl-D: back to the shell)',0
 S_USAGER:   DB 'usage: basic -r file',0
 S_BANNER:   DB 'Y1 BASIC  ',0
@@ -4108,8 +4252,9 @@ S_HELP:     DB 'STATEMENTS: PRINT LET IF/THEN FOR/TO/STEP NEXT GOTO GOSUB RETURN
             DB 'COMMANDS: RUN LIST NEW SAVE ',34,'f',34,' LOAD ',34,'f',34,' HELP BYE (or Ctrl-D)',10
             DB 'FILES: OPEN ',34,'f',34,' FOR OUTPUT|INPUT  PRINT# x  INPUT# x  EOF(1)  CLOSE',10
             DB 'FUNCTIONS: ABS(x) RND(n) PEEK(a) LEN ASC VAL CHR$ LEFT$ RIGHT$ MID$ STR$',10
-            DB 'GRAPHICS: SCREEN n  CLS  COLOR c  PIXELW x,y  LINE x,y,x,y  BOX x,y,x,y[,FILL]',10
-            DB '  CIRCLE x,y,r[,ry][,FILL]  PAGE draw,show  PIXELR(x,y)   640 x 400',59,' man basic',10
+            DB 'GRAPHICS (640 x 400): SCREEN n  CLS  COLOR c  PAGE draw,show  PIXELW x,y',10
+            DB '  LINE x,y,x,y  BOX x,y,x,y[,FILL]  CIRCLE x,y,r[,ry][,FILL]',10
+            DB '  GTEXT x,y,size,a$  PIXELR(x,y)   man basic',10
             DB 'NUMBERS: integers -32768..32767, 0x1F hex  OPERATORS: + - * / %',10
             DB '  = <> < > <= >=   STRINGS: A$ (up to 32 chars), + joins',10
             DB 'Ctrl-C stops a running program. man basic for more.',10,0
@@ -4207,6 +4352,18 @@ GX_BY0: DS 2
 GX_BX1: DS 2
 GX_BY1: DS 2
 GX_BY:  DS 2
+GX_TX:  DS 2                    ; GTEXT: the character's place, the size, the step, the string, the font's bytes
+GX_TY:  DS 2
+GX_TS:  DS 2
+GX_TADV: DS 2
+GX_TP:  DS 2
+GX_TF:  DS 2
+GX_TPX: DS 2
+GX_TPY: DS 2
+GX_TN:  DS 1
+GX_TCOL: DS 1
+GX_TROW: DS 1
+GX_TBITS: DS 1
 GX_ERY: DS 2                    ; the ellipse: its half-axis up, the walk's x and y, the last row drawn
 GX_EX:  DS 2
 GX_EY:  DS 2
