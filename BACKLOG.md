@@ -458,7 +458,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   pcb-check without `--tests`: no failures. **To do: `pcb-check --tests` on the committed board.** **When the
   card is built: socket pins in the four holes of the can that is used and in no others** - under a full-size can
   the two middle holes are +5 V and the can's case is ground (the BOM line said "six single socket pins, which
-  take both" for an hour, and was wrong: corrected the same day).
+  take both" for an hour, and was wrong: corrected the same day). The silkscreen says it too, over the outline:
+  `FULL CAN: LOWER 1,` / `MIDDLE HOLES EMPTY` (`SILK=1 RELABEL="OSC1" build.sh`: texts only).
   **Next, before any order:** the check's pictures and the fab's gerber viewer by eye; the VGA socket laid on a
   1:1 print; then the order.
   **The emulators' model and the ROM's text driver are written (2026-11-14, branch `video-v2`, now

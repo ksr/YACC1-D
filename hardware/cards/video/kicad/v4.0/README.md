@@ -405,8 +405,10 @@ With the half-size can the two idle pads, 1 and 14, are beside the can, not unde
 
 On the silkscreen, with the card standing: the full-size can's outline, a line across it where the half-size can
 ends, a `1` at the right of each can's pin 1 (beside the two square pads), and over the outline, where neither can
-covers it, `OSC1 25.175MHz`, `HALF CAN: UPPER 1`, `FULL CAN: LOWER 1`. (The label stood beside R20's `R20 33`, the
-frequency beginning where the value ended: `3325.175MHz`.)
+covers it, three lines: `HALF CAN: UPPER 1`, `FULL CAN: LOWER 1,`, `MIDDLE HOLES EMPTY`. The last is the warning
+above, on the board itself (2026-11-20). `OSC1` and `25.175MHz` stand at the left of the can's top, between the
+counter and the can. (They stood beside R20's `R20 33`, the frequency beginning where the value ended:
+`3325.175MHz`.)
 
 **The half-size can is square: it goes into its socket four ways, and one is right.** Its pin 1 at the upper `1`.
 Either can turned half round has +5 V on its ground pin and on its output.
@@ -422,13 +424,13 @@ alone):
   two holes; the outline, the back silkscreen and the other drill file the same;
 - the planes: copper gone round those two pads and nowhere else, 8.6 mm2 of the GND plane (two clearance holes)
   and 6.9 mm2 of the VCC plane (two thermal reliefs); each plane one piece;
-- the front silkscreen: the line across the can, the two legends and the second `1`, OSC1's label, and the texts
-  of the two headers by the power LED; every other text as it stood;
+- the front silkscreen: the line across the can, the three lines over it and the second `1`, OSC1's label, and the
+  texts of the two headers by the power LED; every other text as it stood;
 - `build.sh: ALL CHECKS PASS`: the netlist KiCad makes of the schematic equal to `v40_netlist.py`, DRC with nothing
   unconnected and no copper violation, the four clocks as laid (CK 187 mm, its farthest input 134 mm from R20), 437
   key connections;
-- `pcb-check` (`59f75f8`) without `--tests`: **no failures**; its one warning is IC28's pin 1, as before. **The
-  check with `--tests` is to be run on the committed board.**
+- `pcb-check` (`4431a9b`) without `--tests`, on the board with the warning on its silkscreen: **no failures**; its
+  one warning is IC28's pin 1, as before. **The check with `--tests` is to be run on the committed board.**
 
 The first run had four more warnings, all settled the same day. No bus definition, and the front edge taken for the
 bottom one: the settings `bus_pins` and `bus_edge`. The zip not committed: it is. Three values not found on the

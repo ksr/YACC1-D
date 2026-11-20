@@ -941,7 +941,8 @@ SILK_H, SILK_W = 1.0, 0.15       # every text on the silk: JLCPCB's standard cha
 # edge (angle 0 as drawn) and do
 UP = 270
 # the legends: (text, x, y, size) left-justified at (x, y) at angle 0 (the name only), or (text, x, y, size, angle)
-# centred on (x, y)
+# centred on (x, y), or (text, x, y, size, angle, owner): a legend that belongs to a part and is written again, at
+# its place here, whenever that part's labels are (silk_texts(b, only): the other legends stay where they stand)
 _lx = COLX["N6"] - 0.5
 SILK = [("YACC1 Video Card V4.0", _lx + 4.0, 99.55, 1.5), ("cottageworker.com", _lx + 4.0, 103.6, 1.0),   # (where the
         # placer set them on the first board, 4 mm from the place given then: a legend more than 3.2 mm from its
@@ -949,9 +950,12 @@ SILK = [("YACC1 Video Card V4.0", _lx + 4.0, 99.55, 1.5), ("cottageworker.com", 
         ("TEXT-ONLY BUILD: NO IC24-IC34,", _lx + 3.2, 112.0, 1.0, UP), ("RN2, C25-C35", _lx + 1.5, 112.0, 1.0, UP),
         # the oscillator's pin 1 (V4-12): turned round it dies. At the can's right with the card standing, beside
         # each can's pin 1: the lower 1 the full-size can's (pad 1), the upper 1 the half-size can's (pad 4); and
-        # above the outline, where neither can covers it, which is which
-        ("1", _ox, _oy + 3.75, 1.2, UP), ("1", _ox + 7.62, _oy + 3.75, 1.2, UP),
-        ("HALF CAN: UPPER 1", _ox + 21.7, _oy - 3.81, 1.0, UP), ("FULL CAN: LOWER 1", _ox + 20.1, _oy - 3.81, 1.0, UP),
+        # above the outline, where neither can covers it, which is which, and that under a full-size can the two
+        # middle holes take no socket pin (they are +5 V, the can's case is ground: a pin there shorts the supply)
+        ("1", _ox, _oy + 3.75, 1.2, UP, "OSC1"), ("1", _ox + 7.62, _oy + 3.75, 1.2, UP, "OSC1"),
+        ("HALF CAN: UPPER 1", _ox + 23.3, _oy - 3.81, 1.0, UP, "OSC1"),
+        ("FULL CAN: LOWER 1,", _ox + 21.7, _oy - 3.81, 1.0, UP, "OSC1"),
+        ("MIDDLE HOLES EMPTY", _ox + 20.1, _oy - 3.81, 1.0, UP, "OSC1"),
         ("KEYBOARD (PURPLE)", X1R - 14.6, 58.0, 1.0, UP), ("MOUSE (GREEN)", X1R - 14.6, 76.0, 1.0, UP)]
 # J4's pins run down the card as drawn: across it, 2.54 mm apart, with the card standing. Each pin's name in one of
 # two staggered lines under it (5.08 mm for each name). Under those, centred on the header (2026-11-20): its name
@@ -988,10 +992,10 @@ VALUE_FIELD = {"X1"}
 # down the standing card. silk_place() puts these before it places the rest, and names any that is not clear where it
 # is put. The placer keeps two texts 0.15 mm apart and knows nothing of what they say:
 LABEL_AT = {
-    # the oscillator: over its outline with the card standing, one line, where neither can covers it, with the two
-    # lines that say which 1 is whose (SILK) under it. Its two texts stood beside R20's, and the frequency began
-    # where the resistor's value ended: "R20 3325.175MHz"
-    "OSC1": (_ox + 23.3, _oy - 8.21, "line"),
+    # the oscillator: at the left of the can's top with the card standing, between the counter and the can, a line
+    # and more above R20's label. (Its two texts stood beside R20's, and the frequency began where the resistor's
+    # value ended: "R20 3325.175MHz".) Over the outline stand the three lines about the two cans (SILK)
+    "OSC1": (_ox + 16.6, _oy - 15.05, "stack"),
     # the two headers by the power LED: JP1's name under JP1, J4's under J4's pins' names (SILK, above)
     "JP1": (_jp1x + _LINE(0), _jp1y + 1.27, "stack"),
     "J4": (_j4x + _LINE(2), _j4y + 4.3, "line"),
@@ -1008,7 +1012,8 @@ def silk_texts(b, only=None):
 
     With only, a set of references (2026-11-20): the board's texts stay as they are but for those parts' and for the
     legends that are new, gone or moved. Kept: a legend of SILK that stands within 3.2 mm of its place (silk_place()
-    moves a legend by up to 3 mm), every other part's companion, a value legend ("C3 C20: 100n") of other parts.
+    moves a legend by up to 3 mm) and does not belong to one of those parts (its sixth item), every other part's
+    companion, a value legend ("C3 C20: 100n") of other parts.
     Taken off: the named parts' companions and value legends, and every other text that SILK no longer has. Written
     anew: the named parts' companions, and the legends of SILK that found no text of theirs (FRESH). The placer run
     over the whole board again moved labels of parts nobody had touched - which of them find no room beside their
@@ -1029,7 +1034,7 @@ def silk_texts(b, only=None):
         only = set(only)
         at = lambda d: (MM(d.GetPosition().x), MM(d.GetPosition().y))
         near = sorted((math.hypot(at(d)[0] - e[1], at(d)[1] - e[2]), k, i) for k, e in enumerate(SILK)
-                      for i, d in enumerate(old) if d.GetText() == e[0])
+                      for i, d in enumerate(old) if d.GetText() == e[0] and not (len(e) > 5 and e[5] in only))
         mine = set()
         for dist, k, i in near:                           # each legend its nearest text, each text one legend
             if dist <= 3.2 and k not in have and i not in mine:
