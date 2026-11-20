@@ -92,7 +92,7 @@ PARTS = {
     "IC9":  ("74HCT08", "74xx:74LS08", DIP[14], "the 6845's -CS; INTREQ AND FULL; the -RESET buffer for IC46; FULL's clear"),
     # --- the 6845 and the clock
     "IC10": ("HD68B45SP / MC68B45P", "GPU:MC6845", DIPW[40], "CRTC on ports PA (address) / PB (data); a count is 16 dots"),
-    "OSC1": ("25.175MHz", "Oscillator:CXO_DIP8", "Oscillator:Oscillator_DIP-8", "dot clock: a half-size can, in a socket"),
+    "OSC1": ("25.175MHz", LOCAL + ":OSC_DIP14_DIP8", LOCAL + ":Oscillator_DIP-14_DIP-8", "dot clock: a half-size or a full-size can, in a socket"),
     "IC11": ("74F163A", "74xx:74LS161", DIP[16], "dot counter D0-D3: the 16 dots of a count"),
     "IC12": ("74F74", "74xx:74LS74", DIP[14], "A: the 6845's clock, D3 a dot late; B: SDE2, DE taken as dot 8 begins"),
     "IC13": ("74ACT04", "74xx:74LS04", DIP[14], "STG (NOT D3), NOT D2, NOT D1, NOT GFX-ON, TEXT-ON, NOT VSYNC"),
@@ -183,7 +183,7 @@ for cap, ic in DECOUPLE.items():
 
 # every pin a part has, for check(): DIP pins by number, the others by name
 PINS = {"X1": ["%s%d" % (r, n) for r in "ABC" for n in range(1, 33)],
-        "OSC1": ["1", "4", "5", "8"], "J1": [str(n) for n in range(1, 16)] + ["SH"], "Y1": ["1", "2"], "F1": ["1", "2"],
+        "OSC1": ["1", "4", "7", "8", "11", "14"], "J1": [str(n) for n in range(1, 16)] + ["SH"], "Y1": ["1", "2"], "F1": ["1", "2"],
         "J2": ["1", "2", "3", "4", "5", "6", "S"], "J3": ["1", "2", "3", "4", "5", "6", "S"], "LED1": ["1", "2"],
         "RN1": [str(n) for n in range(1, 6)], "RN2": [str(n) for n in range(1, 10)], "SV1": [str(n) for n in range(1, 9)]}
 for ref, (val, sym, fp, note) in PARTS.items():
@@ -215,13 +215,17 @@ for ref, (vcc, gnd) in POWER_PINS.items():
     c("VCC", *["%s.%d" % (ref, p) for p in vcc]); c("GND", *["%s.%d" % (ref, p) for p in gnd])
 for cap in DECOUPLE:
     c("VCC", cap + ".1"); c("GND", cap + ".2")
-# the oscillator is a half-size can (2026-11-20; a full-size one, pins 1, 7, 8 and 14, until then: no 25.175 MHz can of
-# that size was in stock): four pins on an 8-pin DIP's corners, 4 ground, 5 the output, 8 VCC
-c("VCC", "C1.1", "OSC1.8", *["X1.%s" % p for p in ("A2", "B2", "C2", "A31", "B31", "C31")])
-# the oscillator's pin 1 is tied high (2026-11-18; open until then): a can has nothing on it, or its enable, on when
-# high. The card then runs with either kind, whether or not the enable has a pull-up of its own
-c("VCC", "OSC1.1")
-c("GND", "C1.2", "OSC1.4", *["X1.%s" % p for p in ("A1", "B1", "C1", "A32", "B32", "C32")])
+# the oscillator's place takes either can (2026-11-20; the full-size can alone until then, and no 25.175 MHz can of
+# that size was in stock). Its pads carry the numbers of a 14-pin DIP's places. The full-size can stands on 1, 7
+# (ground), 8 (the output) and 14 (VCC). The half-size can has four pins on an 8-pin DIP's corners - its 1, 4
+# (ground), 5 (the output) and 8 (VCC) - and stands at the output end, on the places 4, 7, 8 and 11: its ground and
+# its output on the full-size can's own pads
+c("VCC", "C1.1", "OSC1.14", "OSC1.11", *["X1.%s" % p for p in ("A2", "B2", "C2", "A31", "B31", "C31")])
+# the can's pin 1 is tied high (2026-11-18; open until then): a can has nothing on it, or its enable, on when high.
+# The card then runs with either kind, whether or not the enable has a pull-up of its own. Place 1 is the full-size
+# can's pin 1, place 4 the half-size can's
+c("VCC", "OSC1.1", "OSC1.4")
+c("GND", "C1.2", "OSC1.7", *["X1.%s" % p for p in ("A1", "B1", "C1", "A32", "B32", "C32")])
 c("VCC", "R1.1"); c("LEDA", "R1.2", "LED1.2"); c("GND", "LED1.1")
 c("VCC", "R2.1"); PU = "PU"                                                # the F parts' tie-high net (R2)
 c(PU, "R2.2")
@@ -313,7 +317,7 @@ c("GND", "IC7.2", "IC7.17"); c("VCC", "IC7.11", "IC7.13", "IC7.15")       # bit 
 c("TXTONLY", "IC7.8", "IC34.9", "R10.1"); c("VCC", "R10.2")               # bit 3: 0 = graphics fitted (IC34/B's Q)
 
 # ---- the dot clock, the counter IC11, the 6845's clock and SDE2 (IC12), the inverters IC13 ---------------------------
-c("OSCO", "OSC1.5", "R20.1")
+c("OSCO", "OSC1.8", "R20.1")
 c("CK", "R20.2", "IC11.2", "IC12.3", "IC20.11", "IC35.3", "IC35.11", "IC19.12", "IC33.12")
 c(PU, "IC11.1", "IC11.7", "IC11.9", "IC11.10")                             # -CLR, ENP, -LOAD, ENT: it only counts
 c("GND", "IC11.3", "IC11.4", "IC11.5", "IC11.6")
@@ -460,7 +464,7 @@ _GATE4 = (3, 6, 8, 11)
 _FF = (5, 6, 9, 8)
 OUTPUTS = {"IC1": (5, 6, 7), "IC2": (15, 14, 13, 12, 11, 10, 9, 7), "IC3": _GATE4, "IC4": _GATE4, "IC5": _Q374, "IC6": _Q374,
            "IC7": _Y244, "IC8": (2, 4, 6, 8, 10, 12), "IC9": _GATE4,
-           "IC10": tuple(range(4, 20)) + (34, 35, 36, 37, 38, 39, 40), "OSC1": (5,),
+           "IC10": tuple(range(4, 20)) + (34, 35, 36, 37, 38, 39, 40), "OSC1": (8,),
            "IC11": (11, 12, 13, 14, 15), "IC12": _FF, "IC13": (2, 4, 6, 8, 10, 12),
            "IC14": tuple(range(16, 24)), "IC15": _Q574, "IC16": _Q574, "IC17": _Q574, "IC18": ROM_D, "IC19": (8, 17),
            "IC20": _FF, "IC21": (6, 8), "IC22": _GATE4, "IC23": _GATE4,
@@ -479,16 +483,18 @@ BUY = {
     "IC18": "AT28C64B-15PU (Microchip), 150 ns, burned with the card's character generator image (256 glyphs of "
             "8 x 16 and their cursor forms: to be made)",
     "IC28": "AS6C1008-55PCN (Alliance, 128K x 8, 55 ns, 600-mil DIP-32)",
-    "OSC1": "CTS MXO45HS-3C-25M1750: 25.175 MHz, 5 V, the half-size can (13.2 mm square, four pins on an 8-pin DIP's "
-            "corners: 1, 4 ground, 5 the output, 8 VCC), +/-50 ppm, -20 to +70 C; its output is rated for 50 pF or 10 "
-            "TTL loads (seven 74F clock inputs and 240 mm of track hang on it, behind R20). Half-size since 2026-11-20: "
-            "no full-size 25.175 MHz can was in stock. Its pin 1 is tied to +5 V on the board: on the MXO45HS that pin "
-            "is not connected, and on the MXO45HST, the same can with an enable, the output is on with pin 1 high or "
-            "open and off with it low, so either runs (CTS's sheet 008-0258-0 rev. M). NOT a can whose output is off "
-            "with pin 1 high: read pin 1's line in the data sheet of any other make. In a socket: a half-size "
-            "oscillator socket (Aries 1108800) or four socket pins. PIN 1 AT THE SILK'S 1 AND THE SQUARE PAD: the can "
-            "is square and goes in four ways, one of them right; turned half round it has VCC on its ground pin and "
-            "on its output",
+    "OSC1": "25.175 MHz oscillator, 5 V, in a metal can of either size; its output rated for 50 pF or 10 TTL loads "
+            "(seven 74F clock inputs and 240 mm of track hang on it, behind R20). The one in stock on 2026-11-19: "
+            "CTS MXO45HS-3C-25M1750, the half-size can (13.2 mm square, four pins on an 8-pin DIP's corners: 1, 4 "
+            "ground, 5 the output, 8 VCC), +/-50 ppm, -20 to +70 C; the full-size MXO45-3C-25M1750 was to be had by "
+            "the thousand only. THE HALF-SIZE CAN at the outline's upper end with the card standing, above the line "
+            "across it, its pin 1 at the upper 1; it is square and goes in four ways, one of them right. THE FULL-SIZE "
+            "CAN over the whole outline, its pin 1 at the lower 1. Turned half round either has VCC on its ground pin "
+            "and on its output. The can's pin 1 is tied to +5 V on the board: on the MXO45 and MXO45HS it is not "
+            "connected, on the MXO45T and MXO45HST it is an enable, the output on with pin 1 high or open and off "
+            "with it low, so each of the four runs (CTS's sheet 008-0258-0 rev. M). NOT a can whose output is off "
+            "with pin 1 high: read pin 1's line in the data sheet of any other make. In a socket: the oscillator "
+            "socket of the can's size (half-size: Aries 1108800), or six single socket pins, which take both",
     "R20": "33 ohm (22 to 33): the clock's series termination", "R21": "33 ohm (22 to 33)", "R22": "33 ohm (22 to 33)",
     "R23": "33 ohm (22 to 33)",
     "SV1": "2x4 pin header and one 2.54 mm shunt (on 5-6: the $D000 block)",

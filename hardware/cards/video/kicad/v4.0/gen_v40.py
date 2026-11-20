@@ -158,8 +158,13 @@ def local_symbols():
     mdin = box_symbol("MINIDIN6", "J", "Mini-DIN-6 female (PS/2): 1 data, 3 GND, 4 +5V, 5 clock, 2/6 unused; S = shell",
                       left=[(str(i), ("DATA", "nc", "GND", "+5V", "CLK", "nc")[i - 1], pas) for i in range(1, 7)],
                       right=[("S", "SHELL", pas)], width=12.7)
+    # the oscillator's place for either can (osc_footprint()): its pins are the pads, numbered as a 14-pin DIP's places
+    osc = box_symbol("OSC_DIP14_DIP8", "OSC", "Clock oscillator in a metal can: the full-size can on the places 1, 7, 8 "
+                     "and 14 of a 14-pin DIP, or the half-size can (its pins 1, 4, 5, 8) on the places 4, 7, 8 and 11",
+                     left=[("1", "1 of 14: EN or NC", inp), ("4", "1 of 8: EN or NC", inp)], right=[("8", "OUT", "output")],
+                     top=[("14", "VCC (14)", pw), ("11", "VCC (8)", pw)], bottom=[("7", "GND", pw)], width=20.32)
     text = "\n".join(['(kicad_symbol_lib', '\t(version 20251024)', '\t(generator "gen_v40")', '\t(generator_version "1.0")',
-                      s7134, sram, mdin, ')', ''])
+                      s7134, sram, mdin, osc, ')', ''])
     path = os.path.join(HERE, LOCAL + ".kicad_sym")
     open(path, "w").write(text)
     gen_cf.kicad_cli("sym", "upgrade", "--force", path)
@@ -228,6 +233,29 @@ DE15_DRILL = 1.1
 DE15_EDGE = 6.83                                         # the footprint's y of the board edge
 
 
+def osc_footprint():
+    """the oscillator's place for either can (2026-11-20): KiCad's Oscillator_DIP-14 with two pads more, at a 14-pin
+    DIP's places 4 and 11, and a line across it where the half-size can ends. The full-size can stands on 1, 7, 8 and
+    14. The half-size can (pins 1, 4, 5, 8 on an 8-pin DIP's corners) stands at the output end, on 4, 7, 8 and 11: its
+    ground and its output on the full-size can's own pads 7 and 8, so the clock's track serves both; its pin 1 on pad
+    4, square as pad 1 is, and its VCC on pad 11. (With the half-size can at the other end, pin 1 on pin 1, the
+    output would need a second pad and the clock a stub.) The 3D model stays the full-size can's"""
+    t = open(os.path.join(KFP, "Oscillator.pretty", "Oscillator_DIP-14.kicad_mod")).read()
+    for old, new in (('(footprint "Oscillator_DIP-14"', '(footprint "Oscillator_DIP-14_DIP-8"'),
+                     ('(descr "Oscillator, DIP14, http://cdn-reichelt.de/documents/datenblatt/B400/OSZI.pdf")',
+                      '(descr "Oscillator in a metal can: the full-size can (DIP-14) on pads 1, 7, 8, 14, or the '
+                      'half-size can (DIP-8) at its output end on pads 4, 7, 8, 11")'),
+                     ('\t(embedded_fonts no)', "\n".join([
+                         '\t(pad "4" thru_hole rect (at 7.62 0) (size 1.6 1.6) (drill 0.8) (layers "*.Cu" "*.Mask"))',
+                         '\t(pad "11" thru_hole circle (at 7.62 -7.62) (size 1.6 1.6) (drill 0.8) (layers "*.Cu" "*.Mask"))',
+                         '\t(fp_line (start 4.98 -10.26) (end 4.98 2.64) (stroke (width 0.12) (type solid)) (layer "F.SilkS"))',
+                         '\t(fp_line (start 5.08 -10.16) (end 5.08 2.54) (stroke (width 0.1) (type solid)) (layer "F.Fab"))',
+                         '\t(embedded_fonts no)']))):
+        assert t.count(old) == 1, old
+        t = t.replace(old, new)
+    return t
+
+
 def local_libs():
     for ext in (".kicad_sym",):
         shutil.copy(os.path.join(CFDIR, N.BUSLIB + ext), os.path.join(HERE, N.BUSLIB + ext))
@@ -238,16 +266,17 @@ def local_libs():
         os.makedirs(d)
     shutil.copy(os.path.join(CFDIR, N.BUSLIB + ".pretty", "FABC96R.kicad_mod"), os.path.join(HERE, N.BUSLIB + ".pretty"))
     open(os.path.join(HERE, LOCAL + ".pretty", "MiniDIN6_MD-60SM.kicad_mod"), "w").write(minidin_footprint())
+    open(os.path.join(HERE, LOCAL + ".pretty", "Oscillator_DIP-14_DIP-8.kicad_mod"), "w").write(osc_footprint())
     local_symbols()
     open(os.path.join(HERE, "sym-lib-table"), "w").write(
         '(sym_lib_table\n\t(version 7)\n'
         '\t(lib (name "%s")(type "KiCad")(uri "${KIPRJMOD}/%s.kicad_sym")(options "")(descr "YACC1 bus connector, three rows"))\n'
-        '\t(lib (name "%s")(type "KiCad")(uri "${KIPRJMOD}/%s.kicad_sym")(options "")(descr "IDT7134, 32-pin static RAM, Mini-DIN (gen_v40.py)"))\n'
+        '\t(lib (name "%s")(type "KiCad")(uri "${KIPRJMOD}/%s.kicad_sym")(options "")(descr "IDT7134, 32-pin static RAM, Mini-DIN, the oscillator of either size (gen_v40.py)"))\n'
         ')\n' % (N.BUSLIB, N.BUSLIB, LOCAL, LOCAL))
     open(os.path.join(HERE, "fp-lib-table"), "w").write(
         '(fp_lib_table\n\t(version 7)\n'
         '\t(lib (name "%s")(type "KiCad")(uri "${KIPRJMOD}/%s.pretty")(options "")(descr "FABC96R from the blank V3.2 card"))\n'
-        '\t(lib (name "%s")(type "KiCad")(uri "${KIPRJMOD}/%s.pretty")(options "")(descr "MiniDIN6_MD-60SM (gen_v40.py)"))\n'
+        '\t(lib (name "%s")(type "KiCad")(uri "${KIPRJMOD}/%s.pretty")(options "")(descr "MiniDIN6_MD-60SM, the oscillator of either size (gen_v40.py)"))\n'
         ')\n' % (N.BUSLIB, N.BUSLIB, LOCAL, LOCAL))
 
 
@@ -753,15 +782,15 @@ def cap_at(ref, pin, gnd):
 for _cap, _ic in N.DECOUPLE.items():
     if _ic.startswith("IC"):
         PLACE[_cap] = cap_at(_ic, N.POWER_PINS[_ic][0][0], N.POWER_PINS[_ic][1][0])
-# the oscillator lying under the multiplexers and the counter. The half-size can (2026-11-20; the full-size can's
-# footprint until then, its pin 1 7.62 mm nearer the bus connector) stands at the output end of the full-size can's
-# place: its output (pin 5) and its ground (pin 4) are on the very pads the full-size can's pins 8 and 7 had, so the
-# clock's track from the can to R20 and the ground pin are as they were routed. Pin 1 and VCC (pin 8), both on the
-# +5 V plane, are the two pads that moved
-_ox, _oy = COLX["N2"] + 1.1 + 7.62, 119.0
-PLACE["OSC1"] = (_ox, _oy, 0)                             # pin 1 bottom left, its output (pin 5) top right, under IC11
-PLACE["C48"] = (COLX["W1"] + 15.24 + 3.2, 112.0, 270)     # the oscillator's capacitor, where the full-size can's VCC
-                                                          # pin (14) was: 13 mm from the half-size can's, on the planes
+# the oscillator lying under the multiplexers and the counter: a place for either can (2026-11-20, osc_footprint();
+# the full-size can's footprint until then, and for some hours the half-size can's). The full-size can's pin 1 is
+# bottom left and its output (pad 8) top right, under IC11. The half-size can stands at that output end, 7.62 mm
+# along, its output and its ground on the same two pads: the clock's track from the can to R20 serves both and is as
+# it was routed. The other four pads are on the +5 V plane: each can's pin 1 and VCC
+_ox, _oy = COLX["N2"] + 1.1, 119.0
+PLACE["OSC1"] = (_ox, _oy, 0)
+PLACE["C48"] = (COLX["W1"] + 15.24 + 3.2, 112.0, 270)     # the oscillator's capacitor, at the full-size can's VCC pad
+                                                          # (14, top left): 13 mm from the half-size can's (11)
 PLACE["C49"] = (COLX["N10"] - 3.2, 50.2, 270)             # the ATmega's AVCC (pin 20), a little below the pin: clear of
                                                           # IC43's capacitor in the same gap
 X1F = X1R                                                 # the front edge
@@ -918,8 +947,11 @@ SILK = [("YACC1 Video Card V4.0", _lx + 4.0, 99.55, 1.5), ("cottageworker.com", 
         # placer set them on the first board, 4 mm from the place given then: a legend more than 3.2 mm from its
         # place here is taken for a moved one and written again, silk_texts(b, only))
         ("TEXT-ONLY BUILD: NO IC24-IC34,", _lx + 3.2, 112.0, 1.0, UP), ("RN2, C25-C35", _lx + 1.5, 112.0, 1.0, UP),
-        ("1", _ox, _oy + 3.75, 1.2, UP),                    # the oscillator's pin 1 (V4-12): turned round it dies.
-                                                            # At the can's right with the card standing, beside pin 1
+        # the oscillator's pin 1 (V4-12): turned round it dies. At the can's right with the card standing, beside
+        # each can's pin 1: the lower 1 the full-size can's (pad 1), the upper 1 the half-size can's (pad 4); and
+        # above the outline, where neither can covers it, which is which
+        ("1", _ox, _oy + 3.75, 1.2, UP), ("1", _ox + 7.62, _oy + 3.75, 1.2, UP),
+        ("HALF CAN: UPPER 1", _ox + 21.7, _oy - 3.81, 1.0, UP), ("FULL CAN: LOWER 1", _ox + 20.1, _oy - 3.81, 1.0, UP),
         ("KEYBOARD (PURPLE)", X1R - 14.6, 58.0, 1.0, UP), ("MOUSE (GREEN)", X1R - 14.6, 76.0, 1.0, UP)]
 # J4's pins run down the card as drawn: across it, 2.54 mm apart, with the card standing. Each pin's name in one of
 # two staggered lines under it (5.08 mm for each name). Under those, centred on the header (2026-11-20): its name
@@ -956,9 +988,10 @@ VALUE_FIELD = {"X1"}
 # down the standing card. silk_place() puts these before it places the rest, and names any that is not clear where it
 # is put. The placer keeps two texts 0.15 mm apart and knows nothing of what they say:
 LABEL_AT = {
-    # the oscillator: under the can with the card standing, where the full-size can's other half lay. Its two texts
-    # stood beside R20's, and the frequency began where the resistor's value ended: "R20 3325.175MHz"
-    "OSC1": (_ox - 3.72, _oy - 3.81, "stack"),
+    # the oscillator: over its outline with the card standing, one line, where neither can covers it, with the two
+    # lines that say which 1 is whose (SILK) under it. Its two texts stood beside R20's, and the frequency began
+    # where the resistor's value ended: "R20 3325.175MHz"
+    "OSC1": (_ox + 23.3, _oy - 8.21, "line"),
     # the two headers by the power LED: JP1's name under JP1, J4's under J4's pins' names (SILK, above)
     "JP1": (_jp1x + _LINE(0), _jp1y + 1.27, "stack"),
     "J4": (_j4x + _LINE(2), _j4y + 4.3, "line"),
@@ -1738,7 +1771,7 @@ def refit(netfile, pcb, *refs):
 # step across a layer's grain costs CK_GRAIN[0] times its length and a slanted one CK_GRAIN[1] times, and a clock
 # changes sides in a via (CK_VIA) as well as in its own through-hole pads: 1 mm across the grain on each layer, nine
 # vias, and the board routes (2026-11-14: one order of four, 455 vias).
-CLOCKS = (("OSCO", "OSC1", "5"), ("QC", "IC11", "12"), ("QD", "IC11", "11"), ("STGO", "IC13", "2"),   # net, its source:
+CLOCKS = (("OSCO", "OSC1", "8"), ("QC", "IC11", "12"), ("QD", "IC11", "11"), ("STGO", "IC13", "2"),   # net, its source:
           ("CK", "R20", "2"), ("D2", "R21", "2"), ("D3", "R22", "2"), ("STG", "R23", "2"))            # routed in this order
 CK_GRID = 0.25
 CK_ALPHA = 0.6
@@ -2096,8 +2129,9 @@ KEY = [
     ("IC15", "11", "STG"), ("IC16", "11", "STG"), ("IC13", "1", "D3"), ("IC13", "2", "STGO"), ("IC15", "1", "GND"),
     ("IC10", "38", "RA0"), ("IC10", "35", "RA3"), ("IC18", "10", "RA0"), ("IC18", "7", "RA3"),
     # the dot clock and the counter
-    ("OSC1", "5", "OSCO"), ("OSC1", "1", "VCC"),            # pin 1 tied high (2026-11-18): either kind of can runs
-    ("OSC1", "4", "GND"), ("OSC1", "8", "VCC"),             # the half-size can's two supply pins (2026-11-20)
+    ("OSC1", "8", "OSCO"), ("OSC1", "1", "VCC"),            # pin 1 tied high (2026-11-18): either kind of can runs
+    ("OSC1", "7", "GND"), ("OSC1", "14", "VCC"),            # ... and either size (2026-11-20): the half-size can's
+    ("OSC1", "4", "VCC"), ("OSC1", "11", "VCC"),            # pin 1 and VCC on the places 4 and 11
     ("IC11", "2", "CK"), ("IC11", "14", "D0"), ("IC11", "13", "D1"), ("IC11", "12", "QC"),
     ("IC11", "11", "QD"), ("IC11", "1", "PU"), ("IC11", "7", "PU"), ("IC11", "9", "PU"), ("IC11", "10", "PU"),
     ("R2", "1", "VCC"), ("R2", "2", "PU"),
@@ -2218,8 +2252,8 @@ def bom():
         rows.setdefault(key, [[], note])[0].append(ref)
     nsock = collections.Counter(ic_size(r) for r in N.PARTS if "DIP-" in N.PARTS[r][2] and r.startswith("IC"))
     L = ["# Video card V4.0 - bill of materials", "",
-         "GENERATED by `gen_v40.py bom` from `v40_netlist.py` (%s) - do not edit. %d parts. Buy %s: %s, and a "
-         "half-size oscillator socket (four pins on an 8-pin DIP's corners) for the oscillator. **Text-only build**: leave off the parts marked *off*; nothing is fitted for "
+         "GENERATED by `gen_v40.py bom` from `v40_netlist.py` (%s) - do not edit. %d parts. Buy %s: %s, and for "
+         "the oscillator the socket of its can's size, or six single socket pins. **Text-only build**: leave off the parts marked *off*; nothing is fitted for "
          "that build only." % (N.DATE, len(N.PARTS), N.SOCKETS,
                                ", ".join("%d x %d-pin %.2f mm" % (n, p, w) for (p, w), n in sorted(nsock.items()))), "",
          "| Qty | Value | Footprint | References | Text-only | Buy / note |", "|---|---|---|---|---|---|"]

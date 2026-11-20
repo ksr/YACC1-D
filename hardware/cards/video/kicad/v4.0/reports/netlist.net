@@ -2,7 +2,7 @@
 	(version "E")
 	(design
 		(source "/Users/ken/Developer/YACC1-D/hardware/cards/video/kicad/v4.0/video-v4.0.kicad_sch")
-		(date "2026-11-20T05:12:50")
+		(date "2026-11-20T05:23:16")
 		(tool "Eeschema 10.0.6")
 		(sheet
 			(number "1")
@@ -2565,7 +2565,7 @@
 				(names "/CRTC and clock/")
 				(tstamps "/627a4f2e-ce1a-5c90-8f3d-f55159cf7784/")
 			)
-			(tstamps "e83855b4-e56f-50a7-a142-50e69533afbc" "efe0dd4c-d49e-5b29-a393-907bc8c158f5"
+			(tstamps "efe0dd4c-d49e-5b29-a393-907bc8c158f5" "e83855b4-e56f-50a7-a142-50e69533afbc"
 				"2b8c9337-3dca-5e8c-9372-48f5e2705868"
 			)
 			(units
@@ -2977,21 +2977,21 @@
 		(comp
 			(ref "OSC1")
 			(value "25.175MHz")
-			(footprint "Oscillator:Oscillator_DIP-8")
-			(description "dot clock: a half-size can, in a socket")
+			(footprint "video-v4.0-local:Oscillator_DIP-14_DIP-8")
+			(description "dot clock: a half-size or a full-size can, in a socket")
 			(fields
 				(field
-					(name "Footprint") "Oscillator:Oscillator_DIP-8")
+					(name "Footprint") "video-v4.0-local:Oscillator_DIP-14_DIP-8")
 				(field
 					(name "Datasheet")
 				)
 				(field
-					(name "Description") "dot clock: a half-size can, in a socket")
+					(name "Description") "dot clock: a half-size or a full-size can, in a socket")
 			)
 			(libsource
-				(lib "Oscillator")
-				(part "CXO_DIP8")
-				(description "Crystal Clock Oscillator, DIP8-style metal package")
+				(lib "video-v4.0-local")
+				(part "OSC_DIP14_DIP8")
+				(description "Clock oscillator in a metal can: the full-size can on the places 1, 7, 8 and 14 of a 14-pin DIP, or the half-size can (its pins 1, 4, 5, 8) on the places 4, 7, 8 and 11")
 			)
 			(property
 				(name "Sheetname")
@@ -3000,14 +3000,6 @@
 			(property
 				(name "Sheetfile")
 				(value "video-v4.0-crtc.kicad_sch")
-			)
-			(property
-				(name "ki_keywords")
-				(value "Crystal Clock Oscillator")
-			)
-			(property
-				(name "ki_fp_filters")
-				(value "Oscillator*DIP*8*")
 			)
 			(sheetpath
 				(names "/CRTC and clock/")
@@ -3022,13 +3014,19 @@
 							(num "1")
 						)
 						(pin
-							(num "8")
-						)
-						(pin
 							(num "4")
 						)
 						(pin
-							(num "5")
+							(num "14")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "11")
+						)
+						(pin
+							(num "8")
 						)
 					)
 				)
@@ -13806,49 +13804,6 @@
 			)
 		)
 		(libpart
-			(lib "Oscillator")
-			(part "CXO_DIP8")
-			(description "Crystal Clock Oscillator, DIP8-style metal package")
-			(docs "http://cdn-reichelt.de/documents/datenblatt/B400/OSZI.pdf")
-			(footprints
-				(fp "Oscillator*DIP*8*")
-			)
-			(fields
-				(field
-					(name "Reference") "Y")
-				(field
-					(name "Value") "CXO_DIP8")
-				(field
-					(name "Footprint") "Oscillator:Oscillator_DIP-8")
-				(field
-					(name "Datasheet") "http://cdn-reichelt.de/documents/datenblatt/B400/OSZI.pdf")
-				(field
-					(name "Description") "Crystal Clock Oscillator, DIP8-style metal package")
-			)
-			(pins
-				(pin
-					(num "1")
-					(name "EN")
-					(type "input")
-				)
-				(pin
-					(num "4")
-					(name "GND")
-					(type "power_in")
-				)
-				(pin
-					(num "5")
-					(name "OUT")
-					(type "output")
-				)
-				(pin
-					(num "8")
-					(name "Vcc")
-					(type "power_in")
-				)
-			)
-		)
-		(libpart
 			(lib "blank-card-v3.2-eagle")
 			(part "FABC96R")
 			(description "DIN 41612 96-pin connector, rows a/b/c (YACC1 bus V3.2). Unit A/B/C = row a/b/c; pin names are the V3.2 bus signals. Redrawn by gen_cf.py from the blank V3.2 card's Eagle import (con-vg FABC96R).")
@@ -14667,6 +14622,57 @@
 		)
 		(libpart
 			(lib "video-v4.0-local")
+			(part "OSC_DIP14_DIP8")
+			(description "Clock oscillator in a metal can: the full-size can on the places 1, 7, 8 and 14 of a 14-pin DIP, or the half-size can (its pins 1, 4, 5, 8) on the places 4, 7, 8 and 11")
+			(fields
+				(field
+					(name "Reference") "OSC")
+				(field
+					(name "Value") "OSC_DIP14_DIP8")
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Clock oscillator in a metal can: the full-size can on the places 1, 7, 8 and 14 of a 14-pin DIP, or the half-size can (its pins 1, 4, 5, 8) on the places 4, 7, 8 and 11")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "1_of_14:_EN_or_NC")
+					(type "input")
+				)
+				(pin
+					(num "4")
+					(name "1_of_8:_EN_or_NC")
+					(type "input")
+				)
+				(pin
+					(num "7")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "8")
+					(name "OUT")
+					(type "output")
+				)
+				(pin
+					(num "11")
+					(name "VCC_(8)")
+					(type "power_in")
+				)
+				(pin
+					(num "14")
+					(name "VCC_(14)")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "video-v4.0-local")
 			(part "SRAM_DIP32")
 			(description "128K x 8 static RAM, DIP-32 600 mil (AS6C1008); pins 1 and 30 are A18 and A17 of the 512K part")
 			(fields
@@ -14875,10 +14881,6 @@
 		(library
 			(logical "Memory_EEPROM")
 			(uri "${KICAD10_SYMBOL_DIR}/Memory_EEPROM.kicad_sym")
-		)
-		(library
-			(logical "Oscillator")
-			(uri "${KICAD10_SYMBOL_DIR}/Oscillator.kicad_sym")
 		)
 		(library
 			(logical "blank-card-v3.2-eagle")
@@ -18730,8 +18732,8 @@
 			(class "Default")
 			(node
 				(ref "OSC1")
-				(pin "5")
-				(pinfunction "OUT_5")
+				(pin "8")
+				(pinfunction "OUT_8")
 				(pintype "output")
 			)
 			(node
@@ -21470,8 +21472,8 @@
 			)
 			(node
 				(ref "OSC1")
-				(pin "4")
-				(pinfunction "GND_4")
+				(pin "7")
+				(pinfunction "GND_7")
 				(pintype "power_in")
 			)
 			(node
@@ -22178,14 +22180,26 @@
 			(node
 				(ref "OSC1")
 				(pin "1")
-				(pinfunction "EN_1")
+				(pinfunction "1_of_14:_EN_or_NC_1")
 				(pintype "input")
 			)
 			(node
 				(ref "OSC1")
-				(pin "8")
-				(pinfunction "Vcc_8")
+				(pin "11")
+				(pinfunction "VCC_(8)_11")
 				(pintype "power_in")
+			)
+			(node
+				(ref "OSC1")
+				(pin "14")
+				(pinfunction "VCC_(14)_14")
+				(pintype "power_in")
+			)
+			(node
+				(ref "OSC1")
+				(pin "4")
+				(pinfunction "1_of_8:_EN_or_NC_4")
+				(pintype "input")
 			)
 			(node
 				(ref "R1")
