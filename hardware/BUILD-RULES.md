@@ -6,11 +6,15 @@ The rules the YACC1 cards follow, gathered in one place from the documents and b
 every known exception. Nothing here is new: each rule names its source, and where two files disagree both are
 listed at the end. When a rule changes, change its source and this page together.
 
+The video card V2.0 and V3 designs were removed on 2026-11-18 (commit `4f9950f`; neither will be built). Where a
+source below is a video V2.0 README or review, it is in the git history before that commit.
+
 ## Scope
 
 - **Rules for new boards** (section 1) are for future work only. They do not apply to any card already built or
   ordered: everything in [`docs/system/MACHINE.md`](../docs/system/MACHINE.md), and the memory card v2.0 (ordered
-  2026-10-09). The video card V2.0 (not ordered) follows them, as silk changes only, with J4 left where it is.
+  2026-10-09). The video card V4.0 (not ordered) follows them from the start, silk at angle 270 included
+  (2026-11-18).
 - **Always ask Ken before changing a card that might be built, ordered or in production**, for any change at all.
 - The other sections describe how the existing cards were built.
 
@@ -27,6 +31,14 @@ Source: [`CLAUDE.md`](../CLAUDE.md) (board-layout rules, 2026-10-24).
   USB port facing that edge.
 - Every reference (U12, R3, ...) stays readable with the parts fitted: printed outside the part, never under a chip,
   socket or module. ICs get their type (74LS374, ...) printed beside it.
+- Every part's type or value is on the silk beside its reference (2026-11-02, starting with the next memory
+  revision): `IC30 74LS138`, `R10 10k`, `RN9 10k x8`, `C25 100n`, `C30 10u`, crystals their frequency. Never
+  obscured by any fitted part (chip, socket, module, standoff, adapter, cable): the card can be stuffed from the
+  silk alone.
+- All silk text reads upright, left to right, with the card standing in the backplane connector down (2026-11-18,
+  all boards on all systems). YACC1 cards are drawn with the DIN 96 on the left, so every text is at KiCad angle
+  270 (0 reads up the card, 90 upside down). The board's name, revision and `cottageworker.com` may also run up a
+  side edge (angle 0 along the top or bottom edge as drawn).
 - Every switch, button and LED is labelled with its function (RESET, STEP, RUN, ...), and each switch position with
   what it selects.
 - Placement drawings (PDF) show the outline and the parts in one orientation, on a sheet shaped like the board.
@@ -34,7 +46,7 @@ Source: [`CLAUDE.md`](../CLAUDE.md) (board-layout rules, 2026-10-24).
   `onepagecomputer.com`, which stays on the boards already built or ordered and on the never-ordered designs (blank
   card V3.2, CF v1.0, bus tester V3.1) until one of them is next revised.
 
-Silk sizes, first used on the video card V2.0 (never built) and kept on the V4.0: text 1.0 mm high, 0.15 mm strokes,
+Silk sizes, first used on the video card V2.0 (never built, removed) and kept on the V4.0: text 1.0 mm high, 0.15 mm strokes,
 card name 1.5 mm; 0.15 mm from other silk, 0.2 mm from pads, 0.4 mm from the board edge
 ([video V4.0 README](cards/video/kicad/v4.0/README.md)).
 
@@ -87,7 +99,7 @@ card name 1.5 mm; 0.15 mm from other silk, 0.2 mm from pads, 0.4 mm from the boa
 | JLCPCB orders: FR-4, 4 layers, 1.6 mm, 1 oz outer / 0.5 oz inner, green mask, white silk, leaded HASL, plugged vias; separate PTH and NPTH drill files | memory v2.0 order and README, video V2.0 README |
 
 Seen on every board but not written down as a rule: the silk title reads `YACC1 <CARD> V<x.y>`; the Eagle boards use
-an OSH Park design-rule set. Every board before the video card V2.0 carries `onepagecomputer.com` (section 1: new
+an OSH Park design-rule set. Every board built or ordered so far carries `onepagecomputer.com` (section 1: new
 boards carry `cottageworker.com`).
 
 ## 7. Exceptions
@@ -95,7 +107,6 @@ boards carry `cottageworker.com`).
 | Board | How it differs | Source |
 |---|---|---|
 | Sequencer-logic V2.1l | 218 × 114 mm (lengthened) | `FABRICATED.md` |
-| Video V2.0 | 218.42 × 113.97 mm; J4 (FTDI header) 24 mm in from the front edge; C18, C22 and C49 13–48 mm from their VCC pins; HCT parts on the bus | video V2.0 README and design reviews |
 | Sequencer-memory | 114 × 152 mm, no bus connector | `BUS.md` |
 | Bus tester v3.1 | 114 × 178 mm, never built | `BUS.md` |
 | Bus jumpers (horizontal v3.0 / v3.2, vertical) | 231 × 70, 231 × 115 and 76 × 114 mm; obsolete, not fitted | `FABRICATED.md` |
