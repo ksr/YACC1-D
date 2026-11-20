@@ -27,7 +27,10 @@
   CPU), and `v40scr.asm`, the ROM's screen driver: 80 x 25, lower case, six scrolls, the cursor's address and CURH.
   Its last part draws that screen: the emulator's state file through `tools/vidsim.py render` with the card's
   character generator (`firmware/video/chargen-v40.bin`), a character checked against its glyph and the cursor
-  against CURH.
+  against CURH. And a picture on the graphics layer (2026-11-20): `v40gfx.c`, a C program compiled by y1cc with
+  `os/lib_gfx.c`, draws a frame, the diagonals, a fan of sixteen lines and a filled block and writes three lines of
+  text; the graphics RAM both emulators end with is the same scene drawn in Python, byte for byte, and the picture
+  `tools/vidsim.py` makes of it has the text ORed over the dots.
   `v40_netsim.py` (2026-11-12, in `make check`): the video card V4's netlist run as a circuit, every part a model
   with its data-sheet delays at both ends of their ranges (the simulator `netsim.py`), against a model of the 6845
   and of the microcode's strobes; `bus_records.py` (in `make check`) checks in test.hex that the microcode drives the

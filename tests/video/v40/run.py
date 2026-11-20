@@ -24,6 +24,11 @@ software/videomodel.h, the branch's default card; firmware/monitor/monitor.asm, 
    card's character generator (firmware/video/chargen-v40.bin). `vidsim.py render` takes the card from the file and
    prints the screen the emulator's -V printed; in the picture a character is its glyph from the image, and the
    cursor is the last two lines of the character CURH names, the right-hand one of count $03C1.
+7. Graphics: v40gfx.c, a C program (y1cc, os/lib_gfx.c) that draws on the graphics layer - a frame, the diagonals, a
+   fan of sixteen lines, a filled block with two inverting lines through it - and writes three lines of text. The
+   64K of graphics RAM the emulator ends with is the same scene drawn here in Python (scene(), the line of
+   lib_gfx.c), byte for byte, on both emulators; the second page is untouched; control 1 has GFX-ON; and in
+   vidsim's picture the text is ORed over the dots.
 """
 import os, re, sys, shutil, subprocess, tempfile
 
@@ -67,6 +72,40 @@ def run(emu, img, env, keys=b""):
     out, err = r.stdout.decode("latin1").replace("\r", ""), r.stderr.decode("latin1")
     if VERBOSE: print(out[-900:] + "\n" + "\n".join(l for l in err.splitlines() if l.startswith(("video:", "|"))))
     return out, err
+
+
+def scene():
+    """v40gfx.c's picture as the 64K of graphics RAM: page 0, plane = y & 15, a byte for 8 dots, bit 7 the left one"""
+    g = bytearray(65536)
+
+    def plot(x, y, ink):
+        if not (0 <= x < 640 and 0 <= y < 400): return
+        a = (y & 15) * 2048 + (y >> 4) * 80 + (x >> 3); m = 0x80 >> (x & 7)
+        g[a] = g[a] | m if ink == 1 else g[a] & ~m & 255 if ink == 0 else g[a] ^ m
+
+    def line(x0, y0, x1, y1, ink=1):                    # os/lib_gfx.c's gfx_line
+        dx, sx = (x1 - x0, 1) if x1 >= x0 else (x0 - x1, -1)
+        dy, sy = (y1 - y0, 1) if y1 >= y0 else (y0 - y1, -1)
+        major, minor = max(dx, dy), min(dx, dy)
+        e = major >> 1
+        for _ in range(major + 1):
+            plot(x0, y0, ink)
+            if dx >= dy: x0 += sx
+            else: y0 += sy
+            e += minor
+            if e >= major:
+                e -= major
+                if dx >= dy: y0 += sy
+                else: x0 += sx
+
+    for a in ((0, 0, 639, 0), (639, 0, 639, 399), (639, 399, 0, 399), (0, 399, 0, 0), (0, 0, 639, 399), (639, 0, 0, 399)):
+        line(*a)
+    fx = [520, 520, 520, 420, 320, 220, 120, 120, 120, 120, 120, 220, 320, 420, 520, 520]
+    fy = [200, 275, 350, 350, 350, 350, 350, 275, 200, 125, 50, 50, 50, 50, 50, 125]
+    for x, y in zip(fx, fy): line(320, 200, x, y)
+    for i in range(32): line(32, 336 + i, 95, 336 + i)
+    line(24, 332, 103, 371, 2); line(103, 332, 24, 371, 2)
+    return bytes(g)
 
 
 def main():
@@ -172,6 +211,37 @@ def main():
           cell(0, 9) == glyph("b") and cell(23, 38) == glyph("~") and cell(24, 0) == glyph("e"))
     check("the picture: the cursor, row 24 column 3", cell(24, 3) == bytes(14) + b"\xff\xff" and cell(24, 2) == glyph("d") and
           sum(map(sum, (cell(24, c) for c in range(3, 80)))) == 2 * 255)
+
+    # 7. a picture on the graphics layer
+    asm = os.path.join(d, "v40gfx.asm")
+    r = subprocess.run([sys.executable, os.path.join(ROOT, "software/compiler/y1cc.py"), os.path.join(HERE, "v40gfx.c"), "-o", asm],
+                       capture_output=True, text=True)
+    check("v40gfx.c compiles", r.returncode == 0 and os.path.exists(asm), (r.stdout + r.stderr)[-300:])
+    img = assemble(os.path.join(d, "gfx"), "v40gfx", open(asm).read())
+    want = scene(); grams = {}
+    for tag, emu in EMUS:
+        st = os.path.join(d, "gfx.%s.vid" % tag)
+        out, err = run(emu, img, {"Y1VIDSTATE": st})
+        x = vidsim.State.load(st).extra if os.path.exists(st) else {}
+        g = grams[tag] = bytes.fromhex(x.get("gram", ""))
+        bad = [i for i in range(len(g)) if g[i] != want[i]] if len(g) == 65536 else [-1]
+        check("the picture's 64K, %s" % tag, "GFX DONE" in out and not bad and x.get("control") == "43",
+              "%d bytes differ, the first at $%04X; control %s; %r" % (len(bad), bad[0] if bad else 0, x.get("control"), out[-80:]))
+    check("the picture, int = uc", grams["int"] == grams["uc"] and len(grams["int"]) == 65536)
+    check("8,128 dots, none on the second page", sum(bin(b).count("1") for b in want) == 8128 and not any(grams["int"][32768:]))
+    s = vidsim.State.load(os.path.join(d, "gfx.int.vid")); x = s.extra
+    check("the text beside it", bytes(s.ram[82:101]) == b"YACC1 video card V4" and s.ram[23 * 80 + 14:23 * 80 + 22] == b"the text")
+    W, H, pic = vidsim.picture_v4(s, cg, cursor=False, control=int(x["control"], 16), control2=int(x["control2"], 16),
+                                  gram=bytes.fromhex(x["gram"]))
+    lit = lambda px, py: pic[py][px] != (10, 10, 10)
+    def cell(row, col):
+        return bytes(sum(lit(col * 8 + k, row * 16 + l) << (7 - k) for k in range(8)) for l in range(16))
+    dot = lambda px, py: want[(py & 15) * 2048 + (py >> 4) * 80 + (px >> 3)] >> (7 - (px & 7)) & 1
+    check("the picture: every dot of the rows with no text", (W, H) == (640, 400) and lit(0, 0) and lit(639, 399) and
+          lit(320, 200) and all(lit(px, py) == dot(px, py) for py in range(48, 368) for px in range(640)))
+    row1 = [cell(1, c) for c in range(2, 21)]
+    check("the picture: text ORed over the dots", all(bytes(a | b for a, b in zip(glyph(ch), bytes(want[l * 2048 + 80 + c] for l in range(16)))) == got
+                                                   for c, (ch, got) in enumerate(zip("YACC1 video card V4", row1), 2)))
 
     shutil.rmtree(d)
     print("v40: %d failed" % fails)
