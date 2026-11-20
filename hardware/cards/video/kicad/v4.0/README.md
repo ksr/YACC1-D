@@ -302,7 +302,8 @@ nine vias; CK's, D3's and STG's farthest inputs are 3 to 12 mm farther than the 
 
 **The checks, all passing** (`build.sh: ALL CHECKS PASS`): KiCad's netlist of the schematic equal to
 `v40_netlist.py`; ERC nothing; DRC no unconnected item, no copper violation, schematic parity 0 (four warnings
-where the bus connector's own silk crosses the edge, as on every card); the board's nets equal to the schematic's
+where the bus connector's own silk crosses the edge, as on every card; KiCad 10.0.6 adds a fifth, 2026-11-20: J1's
+DSUB-15-HD footprint differs from the library's copy); the board's nets equal to the schematic's
 (`reports/netlist-compare.txt`: MATCH); the placement clear (134 footprints, 47 sockets); 433 key connections
 right in the schematic and on the pads; the clocks as they were laid, every input reached and every track locked.
 
