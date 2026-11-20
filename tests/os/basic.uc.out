@@ -78,6 +78,7 @@ BOOT FROM CF
   dir  list, sorted; -R -S, globs          dump hex dump, a page a key
   echo print the arguments                 examine view/change memory
   find names matching a pattern (tree)     grep lines matching a regex; -r
+  finder the desktop's file browser on the video card V4 (the mouse; man finder)
   head first lines                         help this list
   kermit file transfer on the console line: -r receive, -s send, -x server
   ls   plain directory list                make build targets from a Makefile (-n -B)

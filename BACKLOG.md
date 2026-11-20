@@ -616,7 +616,15 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
        dragged and dropped 211,332 (2.8 s); closed 108,158 (1.4 s). The kernel ends at $CEC7 (312 bytes left).
        `tests/wm/run.py --try desk` runs it in the browser debugger.
        Open: the menu bar's own pull-down menus; a window's content larger than the window (scrolling).
-    5. The Finder: the file list and the launcher (`SYS_EXEC`; an application starts the Finder again when it ends).
+    5. (done 2026-11-20) The Finder, `/bin/finder` (`os/commands/finder.c`, `man finder`): a folder in a window -
+       name, size, folder / program / script / file - a press selects a row, a press on the selected row opens it
+       (Enter, the menu bar's Open too); Up (Backspace, the row ..) and Quit (q) in the menu bar; the arrows move
+       the selection and the list scrolls with it. A program, a script or `more` of a file runs through a script
+       the finder writes, `/finder.sh`: the command, then `finder -w FOLDER`, which waits for a key (to read what
+       the program printed) and comes back in the same folder; the kernel is loaded again if the program overwrote
+       it. `tests/wm/run.py`: / listed, bin opened, dir run and its listing printed, a key, back in /bin as the
+       picture worked out from the disk's own listing, both emulators. The menu bar's words act when pressed (no
+       pull-down menus yet); a program that ends with an error stops the script (type finder again).
     6. The applications, one at a time: `write`, `term`, `sheet`, `paint`, pictures.
   **Open for the V4's software:** the 70 Hz table in the driver; Y1/OS, BASIC
   and the commands on 25 rows (they take the screen for 24). Scrolling the graphics apart from the text: in software (the note's section 12 has the three ways and

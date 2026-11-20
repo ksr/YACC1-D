@@ -36,6 +36,10 @@ wkmouse.asm moves the pointer with the card's mouse. Checks:
    Notes by its title bar, brings About to the front and closes it, brings Files to the front and presses in it,
    and presses in the menu bar. The 64K must then be the desktop painted afresh with the windows where the script
    left them (desk_model) - what each repaint uncovered painted again exactly - and the line its counts.
+7. The finder (/bin/finder, os/commands/finder.c) on a copy of the disk: / listed, bin pressed twice (opened),
+   dir pressed twice (run: the finder writes /finder.sh, "/bin/dir" and "finder -w /bin", and EXECs it), a key,
+   q. dir's listing of / and the finder's prompt on the console, /finder.sh as written, and the 64K the finder back in
+   /bin with nothing selected and the pointer in the middle (finder_model, from the disk's own listing of /bin).
 """
 import os, re, sys, shutil, subprocess, tempfile
 
@@ -244,6 +248,60 @@ def desk_model():
     return bytes(model(script_bytes("\nscene:\n" + text + "\nscend:\n"))), "MENU 01 CLOSED 01 CLICKS 01 FRONT 02"
 
 
+# the finder's script: / listed; bin pressed twice (opened); dir, the 12th row of /bin, pressed twice (run: it lists /).
+# Then a key (the finder -w that comes back) and q
+FINDER_PACKETS = [(-237, 146, 0), (0, 0, 1), (0, 0, 0), (0, 0, 1), (0, 0, 0),
+                  (0, -176, 0), (0, 0, 1), (0, 0, 0), (0, 0, 1), (0, 0, 0)]
+
+
+def finder_model(disk):
+    """the finder come back in /bin, nothing selected, the pointer in the middle: -> the 64K"""
+    r = subprocess.run([sys.executable, os.path.join(ROOT, "tools/p8xfs.py"), "ls", disk, "/bin"], capture_output=True, text=True)
+    rows = [("..", "dir", "(up)")]
+    for l in r.stdout.splitlines()[2:]:
+        f = l.split()
+        if len(f) < 4 or f[0].startswith("."): continue
+        if "<DIR>" in l: rows.append((f[0], "dir", "folder")); continue
+        kind = "program" if f[3].startswith("5000/") else "script" if f[0].endswith(".sh") else "file"
+        rows.append((f[0], f[1], kind))
+    sc = ["1,0,0,80,1,0ffh,0ffh", "2,0,0,80,1", "3,1,0,0ffh,'YACC1   Open   Up   Quit',0", "1,0,1,80,24,0aah,055h"]
+    lines = [(0, 1, "Name           Size  Kind")] + [(i + 1, 1, ("%-13s%6s  %s" % r).ljust(47)) for i, r in enumerate(rows[:20])]
+    sc += desk_window(2, 1, 50, 24, "/bin", lines)
+    sc.append("4,1,64,0,200")
+    text = "".join("        DB %s\n" % l for l in sc) + "        DB 0\n"
+    return bytes(model(script_bytes("\nscene:\n" + text + "\nscend:\n"))), rows
+
+
+def finder_check(d):
+    """/bin/finder on a copy of the disk, both emulators: open /bin, run dir, a key, back in /bin, q"""
+    subprocess.run(["make", "-s", "-C", os.path.join(ROOT, "os"), "disk.img"], check=True, capture_output=True)
+    c = os.path.join(d, "finder"); os.makedirs(c, exist_ok=True)
+    disk = os.path.join(c, "disk.img"); shutil.copy(os.path.join(ROOT, "os/disk.img"), disk)
+    want, rows = finder_model(disk)
+    check("the finder's model: dir is the 12th row of /bin", [r[0] for r in rows].index("dir") == 11, "%r" % rows[:22])
+    menv = {"Y1VID_KBD": "stdin", "Y1VID_MOUSE": ";".join("%d,%d,%d" % p for p in FINDER_PACKETS)}
+    for tag in ("int", "uc"):
+        run_disk = os.path.join(c, "run.img"); shutil.copy(disk, run_disk)
+        st = os.path.join(c, tag + ".vid")
+        if os.path.exists(st): os.remove(st)
+        cmd = [EMUS[tag], "-x", "-m", "-V", "-c", run_disk, "-l", "8000000000" if tag == "uc" else "400000000"] + \
+            (["-E", MON_EXIT] if tag == "uc" else [])
+        env = dict(os.environ, Y1VID_CARD="v4", Y1VIDSTATE=st, **menv)
+        rr = subprocess.run(cmd, input=b"O\rfinder\r qexit\r0", capture_output=True, env=env, timeout=3600)
+        out = rr.stdout.decode("latin1").replace("\r", "")
+        s = dict(l.strip().partition(" ")[::2] for l in open(st)) if os.path.exists(st) else {}
+        gm = bytes.fromhex(s.get("gram", ""))
+        bad = [i for i in range(65536) if gm[i] != want[i]] if len(gm) == 65536 else [-1]
+        sh = subprocess.run([sys.executable, os.path.join(ROOT, "tools/p8xfs.py"), "get", run_disk, "/finder.sh", "--out",
+                             os.path.join(c, "f.sh")], capture_output=True)
+        fsh = open(os.path.join(c, "f.sh")).read() if sh.returncode == 0 else None
+        check("the finder, %s: /bin opened, dir run, back" % tag,
+              not bad and "fruit.txt" in out and "-- a key: back to the desktop --" in out and
+              fsh == "/bin/dir\nfinder -w /bin\n" and int(s.get("control2", "1"), 16) & 1 == 0 and "sh: stopped" not in out,
+              "%d bytes are not the model's, the first at $%04X; /finder.sh %r; the console %r" % (
+                  len(bad), bad[0] if bad else 0, fsh, out[out.find("finder"):][-500:]))
+
+
 def os_check(d, want, line, menv, prog="wkc", what="the same picture and line as wkmouse"):
     """PROG.c compiled for Y1/OS and put on a copy of os/disk.img as /bin/PROG; booted and run on both emulators with
     the mouse's packets: the picture and the line it must leave, the kernel loaded from the disk"""
@@ -425,6 +483,8 @@ def main():
     g, line = desk_model()
     os_check(d, g, line, {"Y1VID_KBD": "stdin", "Y1VID_MOUSE": ";".join("%d,%d,%d" % p for p in DESK_PACKETS)},
              "wmdesk", "the desktop as it would be painted afresh")
+    # 7. the finder (os/commands/finder.c, /bin/finder)
+    finder_check(d)
     shutil.rmtree(d, ignore_errors=True)
     print("wm: %d failed" % fails)
     sys.exit(1 if fails else 0)

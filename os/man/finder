@@ -1,0 +1,29 @@
+NAME
+    finder - the desktop's file browser (the video card V4)
+
+SYNOPSIS
+    finder [dir]
+
+DESCRIPTION
+    Shows the folder dir (default /) in a window on the graphics
+    screen. A row is a file: its name, its size (dir for a folder)
+    and what it is - folder, program, script (.sh) or file.
+
+    Press on a row to select it, press on it again to open it (or
+    Enter, or Open in the menu bar). A folder is listed in the
+    window; a program or a script runs, and another file is shown
+    with more. When it ends, a key brings the finder back in the
+    same folder. Up in the menu bar (or Backspace, or the row ..)
+    goes to the folder above; the arrow keys move the selection;
+    Quit (or q) ends the finder.
+
+    The window can be dragged by its title bar (an outline follows
+    the mouse).
+
+NOTES
+    Needs the video card V4 and /lib/wmk, the window kernel (loaded
+    again when a program has overwritten it). A program is run by
+    the script /finder.sh, which the finder writes: the program,
+    then finder -w (wait for a key, then the desktop). A program
+    that ends with an error stops the script: type finder again.
+    Written 2026-11-20 after the P8X's finder (os/lib_wm.c).

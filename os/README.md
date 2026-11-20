@@ -400,6 +400,7 @@ names, globs and `-` (the console until Ctrl-D) work wherever a command reads te
 | `tree [dir]` | the tree, indented, depth first |
 | `uniq [file...]` | drop adjacent repeats |
 | `vi [file]` | the screen editor (VT100) |
+| `finder [dir]` | the desktop's file browser on the video card V4 (2026-11-20; `os/lib_wm.c` over the window kernel `/lib/wmk`): a folder in a window, a press to select, again to open - a folder listed, a program or script run (through `/finder.sh`, and the finder back afterwards), a file shown with `more` |
 | `video [on\|off\|clear\|init\|probe]` | the video card (2026-09-25, below): status, mirror the console on the screen, clear it, program the CRTC |
 | `wc [file...]` | lines, words, bytes (32-bit) |
 
