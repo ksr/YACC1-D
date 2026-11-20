@@ -583,9 +583,21 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     and below it. Still to do of this step: the events as a routine a program calls (a move, a button down or up,
     a key), which comes with the kernel. A row of the pointer costs about 140 instructions, most of them the
     row's address worked out afresh: stepping it from the row before would halve a move.
+  - **Done 2026-11-20: the window kernel, `os/wm/wmk.asm` (version 1).** Where it lives (decided that day): a module
+    of its own, 4K at $C000-$CFFF above the program, loaded once; a program of it keeps below $C000, its stack too.
+    `os/wm/wkabi.inc` is its interface: the signature 'WK' and the version at $C000, ten entries from $C004 (init,
+    fill, frame, invert, text, show and hide the pointer, a script, the next event, done), a parameter block at
+    $C030 (a C program pokes it and `call()`s an entry). `wk_event` never waits: 0 nothing, 1 a key, 2 the mouse
+    moved (the kernel has moved the pointer), 3 a button down, 4 one up. It assembles to $C000-$CE8E: 368 bytes to
+    spare. It fitted only with the pointer's 816 bytes of work in the card's text RAM, which is idle while the text
+    layer is off; meanwhile the ROM's console mirror is off, and `wk_done` clears the text RAM and puts both back.
+    `tests/wm/wkmouse.asm` is now a program of the kernel (the same picture and line as before, both emulators).
   - **Next, in this order:**
     1. (done, above)
-    2. (the mouse: done, above; the events' call with step 3)
+    2. (done, above)
+    3. The kernel under Y1/OS: `/lib/wmk.bin` on the disk (`os/Makefile`), a C library (`os/lib_wk.c`: the
+       entries as functions, and a load of the kernel when $C000 does not hold its signature) and a C test program.
+       Programs of the kernel are compiled with `y1cc --stack` below $C000.
     3. The routines as a kernel that programs call. Where it lives is open: the OS's 16K is full, so a module
        loaded above a program (the P8X's first design, with the program's stack below it) or the routines
        assembled into each program. A C program reaches machine code with `call()`.

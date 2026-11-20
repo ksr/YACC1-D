@@ -2,13 +2,15 @@
 
 ;
 ; wk.inc - windows in dots on the video card V4: the drawing routines (2026-11-20; BACKLOG.md, "The P8X's desktop on
-; this machine"). INCLUDEd by the programs here (wkdemo.asm, wkmouse.asm); it will be the window kernel's drawing.
+; this machine"). INCLUDEd by the window kernel (os/wm/wmk.asm) and by tests/wm/wkdemo.asm, after wkabi.inc (the
+; call's numbers WK_X .. WK_S are the kernel's parameter block, at fixed addresses).
 ;
 ; The V4 card is a bitmap of 640 x 400 dots that the CPU fills a byte at a time through the 2K window at $D800. The
 ; routines work in cells: a cell is a character's place, 8 dots wide and 16 high, 80 x 25 of them. A cell's sixteen
 ; lines are the sixteen planes (control 1, bits 3..0) at ONE address, $D800 + row * 80 + column: a byte is 8 dots of
 ; one line of one cell. A call's numbers are in WK_X, WK_Y (a cell), WK_W, WK_H (cells) and the routine's own.
-;   wkinit   the video unit started (the ROM), the text layer off, the graphics layer on, page 0
+;   wkinit   the video unit started (the ROM), the text layer off, the graphics layer on, page 0. The text RAM
+;            holds the pointer's work from then on (below)
 ;   wkfill   a rectangle of cells in a pattern: WK_PA for the even lines, WK_PB for the odd ($AA/$55 the grey
 ;            desktop, $FF/$00 a striped title bar, $FF/$FF paper). A plane at a time, a row of cells at a time, the
 ;            bytes of a row by a run of 80 STAVR / INCR pairs entered at the place that leaves the row's width: 2
@@ -888,14 +890,6 @@ WK_ARO:
         DW 0e000h, 0b000h, 09800h, 08c00h, 08600h, 08300h, 08180h, 080c0h
         DW 08040h, 083c0h, 09300h, 0b900h, 0e980h, 00c80h, 00480h, 00780h
 SCP:    DS 2                    ; the script's place
-WK_X:   DS 1                    ; a call's cells
-WK_Y:   DS 1
-WK_W:   DS 1
-WK_H:   DS 1
-WK_PA:  DS 1
-WK_PB:  DS 1
-WK_M:   DS 1
-WK_S:   DS 2
 WK_A:   DS 2
 WK_HI:  DS 1                    ; control 1's bits 7..4
 WK_CT:  DS 16                   ; control 1 for each plane
@@ -915,7 +909,10 @@ WK_SVY: DS 2
 WK_B0:  DS 1
 WK_B1:  DS 1
 WK_B2:  DS 1
-WK_SAVE: DS 48                  ; what is under the pointer: 16 lines of three bytes
-WK_SPA: DS 384                  ; its eight forms: the dots to keep ...
-WK_SPO: DS 384                  ; ... and, 384 bytes on, the dots to light
-; WK_FONT (the 95 glyphs $20-$7E, 16 bytes each) is appended by tests/wm/run.py from firmware/video/chargen-v40.bin
+; The pointer's work, 816 bytes, is in the card's text RAM ($D000-$D7FF): the text layer is off while windows are
+; drawn, so its RAM is idle. Whoever turns the text back on clears it first (the kernel's wk_done does).
+WK_SAVE: EQU 0d000h             ; what is under the pointer: 16 lines of three bytes
+WK_SPA: EQU 0d030h              ; its eight forms: the dots to keep ...
+WK_SPO: EQU 0d1b0h              ; ... and, 384 bytes on, the dots to light
+; WK_FONT (the 95 glyphs $20-$7E, 16 bytes each) follows: the program's last lines, made from
+; firmware/video/chargen-v40.bin by tests/wm/run.py

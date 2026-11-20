@@ -83,12 +83,14 @@
   and run, the ROM monitor, `isa.asm`, compiler pass cc4 - and compares every file it wrote with RC/asm's output.
   `make asm-test`; both in `make check`.
 - `wm/` — windows in dots on the video card V4 (2026-11-20, the first steps towards the P8X's desktop on this
-  machine; BACKLOG): `wk.inc` has the drawing routines in assembly - a fill in a two-line pattern, a frame, cells
+  machine; BACKLOG): `os/wm/wk.inc` has the drawing routines in assembly - a fill in a two-line pattern, a frame, cells
   inverted, text in the card's own font, the mouse pointer (a dark arrow with a lit outline, what is under it kept
   and put back) - on cells of 8 x 16 dots, whose sixteen lines are the sixteen planes at one address, and a script
-  of them. `wkdemo.asm` is a scene: a grey desktop, a menu bar, two windows that overlap. `wkmouse.asm` reads the
-  card's PS/2 controller: the mouse's packets move the pointer, held to the screen, and the left button inverts a
-  cell. `run.py` assembles them with the font (`firmware/video/chargen-v40.bin`), runs them on both emulators and
+  of them; `os/wm/wmk.asm` is the window kernel, those routines and the mouse's events in 4K at $C000 behind a
+  table of entries (`os/wm/wkabi.inc`). `wkdemo.asm` is a scene: a grey desktop, a menu bar, two windows that
+  overlap. `wkmouse.asm` is a program of the kernel: the mouse's packets move the pointer, held to the screen, and
+  the left button inverts a cell. The kernel must assemble to $C000-$CFFF with its signature and its table where
+  `wkabi.inc` says. `run.py` assembles them with the font (`firmware/video/chargen-v40.bin`), runs them on both emulators and
   draws the same in Python: the 64K of graphics RAM must be the same - the scene's script read from the source, the
   mouse's fifteen scripted packets (`Y1VID_MOUSE`) worked out, with the line the program prints at the end. Then
   what each thing costs, in instructions from the instruction-level emulator's PC histogram, each held under a

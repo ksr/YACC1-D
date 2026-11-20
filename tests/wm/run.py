@@ -65,19 +65,22 @@ def font_text():
                                   for c in range(32, 127))
 
 
-def source(scene=None, name="wkdemo"):
-    """a program here with the font; scene = other lines for the script (the costs' runs)"""
-    s = open(os.path.join(HERE, name + ".asm")).read()
+WM = os.path.join(ROOT, "os/wm")
+
+
+def source(scene=None, name="wkdemo", font=True):
+    """a program here (or the kernel, name "wmk") with the font; scene = other lines for the script (the costs' runs)"""
+    s = open(os.path.join(WM if name == "wmk" else HERE, name + ".asm")).read()
     if scene is not None:
         i = s.index("\nscene:"); j = s.index("\nscend:")
         s = s[:i] + "\nscene:" + "".join("\n        DB " + l for l in scene) + "\n        DB 0" + s[j:]
-    return s + font_text()
+    return s + (font_text() if font else "")
 
 
 def assemble(d, text):
     os.makedirs(d, exist_ok=True)
     shutil.copy(DEF, d); open(os.path.join(d, "rcasm.rc"), "w").write("-h\n-l\n")
-    shutil.copy(os.path.join(HERE, "wk.inc"), d)
+    for f in ("wk.inc", "wkabi.inc"): shutil.copy(os.path.join(WM, f), d)
     open(os.path.join(d, "wkdemo.asm"), "w").write(text)
     r = subprocess.run([ASM, "wkdemo", "-d=yacc1"], cwd=d, capture_output=True, text=True, errors="replace")
     img = os.path.join(d, "wkdemo.img")
@@ -202,8 +205,11 @@ def cost(d, scene):
 def try_it():
     """--try: wkmouse.asm in the browser debugger, the browser's mouse the card's"""
     d = tempfile.mkdtemp(prefix="wm-try-")
-    img, msg = assemble(d, source(name="wkmouse"))
+    kimg, msg = assemble(os.path.join(d, "k"), source(name="wmk"))
+    if kimg is None: sys.exit("os/wm/wmk.asm did not assemble: " + msg)
+    img, msg = assemble(d, source(name="wkmouse", font=False))
     if img is None: sys.exit("wkmouse.asm did not assemble: " + msg)
+    open(os.path.join(d, "wkdemo.img"), "wb").write(kimg + img)
     print("wkmouse in the browser debugger. On its page: tick \"and the mouse\" under the screen, press Run (F5), click the\n"
           "screen (the pointer is now the card's mouse; Esc gives it back). \"keys to\" the PS/2 keyboard and q ends the\n"
           "program. Ctrl-C here ends the debugger.")
@@ -268,11 +274,33 @@ def main():
     n, k = cost(c, None)
     print("  %-52s %7d  (%.2f s)" % ("the scene and the pointer's eight forms", n, k / 1e6))
 
-    # 4. the mouse
-    mtext = source(name="wkmouse")
+    # 4. the kernel, and the mouse through it
+    kimg, msg = assemble(os.path.join(d, "k"), source(name="wmk"))
+    check("os/wm/wmk.asm assembles", kimg is not None, msg)
+    if kimg is None: sys.exit(1)
+    klst = open(os.path.join(d, "k", "wkdemo.lst"), errors="replace").read()
+    def klabel(name):
+        m = re.search(r"^\s*\d+\s+([0-9a-f]{4}):[ 0-9a-f]*?\s%s:" % re.escape(name), klst, re.M)
+        return int(m.group(1), 16) if m else -1
+    abi = dict((n, int(v, 16)) for n, v in re.findall(r"^(\w+):\s+EQU\s+0([0-9a-f]+)h", open(os.path.join(WM, "wkabi.inc")).read(), re.M))
+    hexmem = {}
+    for l in kimg.decode().splitlines():
+        if l.startswith(":") and l[7:9] == "00":
+            a = int(l[3:7], 16)
+            for k2 in range(int(l[1:3], 16)): hexmem[a + k2] = int(l[9 + 2 * k2:11 + 2 * k2], 16)
+    entries = ["k_init", "wkfill", "wkframe", "wkinv", "wktext", "k_show", "k_hide", "k_script", "k_event", "k_done"]
+    names = ["wk_init", "wk_fill", "wk_frame", "wk_inv", "wk_text", "wk_show", "wk_hide", "wk_script", "wk_event", "wk_done"]
+    table = all(hexmem.get(abi[n]) is not None and (hexmem[abi[n] + 1] << 8 | hexmem[abi[n] + 2]) == klabel(e)
+                for n, e in zip(names, entries))
+    end = klabel("WK_FONT") + 95 * 16
+    check("the kernel: 'WK' 1, its table, $C000-$%04X" % (end - 1), [hexmem.get(0xC000 + i) for i in range(4)] == [87, 75, 1, 0] and
+          table and min(hexmem) == 0xC000 and 0xC050 <= klabel("k_init") and end <= 0xD000 and
+          not any(0xC030 <= a < 0xC050 for a in hexmem), "end $%04X, table %r" % (end, table))
+    mtext = source(name="wkmouse", font=False)
     mimg, msg = assemble(os.path.join(d, "m"), mtext)
     check("wkmouse.asm assembles", mimg is not None, msg)
     if mimg is not None:
+        mimg = kimg + mimg
         g = model(script_bytes(mtext)); x, y, bt, n = mouse_model(g)
         line = "X %04X Y %04X B %02X N %02X" % (x, y, bt, n)
         menv = {"Y1VID_KBD": "stdin", "Y1VID_MOUSE": ";".join("%d,%d,%d" % p for p in PACKETS)}

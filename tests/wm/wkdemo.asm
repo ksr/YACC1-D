@@ -1,7 +1,7 @@
 ; Author: Claude (Anthropic) for Ken Rother's YACC1 project, 2026
 
 ;
-; wkdemo.asm - windows in dots on the video card V4: a desktop drawn with wk.inc's routines (2026-11-20)
+; wkdemo.asm - windows in dots on the video card V4: a desktop drawn with os/wm/wk.inc's routines (2026-11-20)
 ;
 ; The first step towards the P8X's desktop on this machine (BACKLOG.md). The P8X's graphics card draws for itself:
 ; rectangles, text, clipping. The V4 card is a bitmap the CPU fills, so what a window costs is what wk.inc's
@@ -9,7 +9,8 @@
 ; scene to the label scend; wk.inc's wkscript), which tests/wm/run.py reads from this file and draws again in
 ; Python: the 64K of graphics RAM must be the same from both emulators and from that. The text layer is switched
 ; off: the picture is dots alone.
-; Load: the monitor's : loader, then G3000 (the RET returns to the monitor's command loop). No R2.
+; The routines are assembled into this program (their parameter block at the kernel's place, $C030; the
+; kernel itself is not loaded). Load: the monitor's : loader, then G3000 (the RET returns to the command loop). No R2.
 ;
         ORG 3000h
 start:  JSR wkinit
@@ -55,4 +56,5 @@ scene:  DB 1,0,0,80,25,0aah,055h
         DB 0
 scend:
 
+        INCLUDE wkabi.inc
         INCLUDE wk.inc
