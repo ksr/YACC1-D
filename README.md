@@ -52,7 +52,7 @@ YACC1-D/
 │   ├── procedures/           bring-up, CF card, testing, Kermit
 │   ├── bom/                  bills of material, one per card
 │   ├── history/              dated design notes kept verbatim (2016-2021), presentations
-│   ├── datasheets/           third-party PDFs the designs use
+│   ├── datasheets/           the list of third-party datasheets (the PDFs: ../private-resources/YACC1-D/)
 │   └── references/           external papers and books
 ├── hardware/
 │   ├── bus/                  backplane, bus template, bus jumpers, blank card

@@ -1,5 +1,10 @@
 # docs/datasheets (third-party)
 
+The datasheets are other makers' documents, so since 2026-11-20 they are kept out of this public repository, in the
+private `../private-resources/YACC1-D/docs/datasheets/` beside it, under the same file names: a mention such as
+`docs/datasheets/74245.pdf` in these docs is that folder's `74245.pdf`. The makers publish their own copies. This
+README stays to say what the folder holds.
+
 TTL: 74139 74150 74192 74194 (+ truth table PNG) 74240 74244 74245 74374 744078 7474 7483 7485 74HC/HCT04.
 Memory: AS6C62256 / AS6C6264 SRAM, 28C64 / 27C64 / 27C256 (E)EPROM, 24LC64 / 24LC512 I2C EEPROM, MX25L4006E flash.
 I/O: PC16550D UART, MAX220–249 RS-232, UM245R USB FIFO, TIL311 hex display (two different sheets: TI Rev D and a

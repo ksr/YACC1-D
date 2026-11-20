@@ -41,3 +41,12 @@ software/ucemu/y1ucemu
 /software/compiler/c/y1ccp
 /software/compiler/c/y1ccp16
 /software/compiler/c/y1ccps
+# third-party files kept in ../private-resources/YACC1-D/ (same paths) since 2026-11-20, out of this public
+# repository: ignored here so a copy brought back is never committed by accident
+/docs/datasheets/*
+!/docs/datasheets/README.md
+/docs/references/*.pdf
+/archive/third-party/
+/archive/gen1-2015-2018/YACC1A/External Resources/
+/archive/gen1-2015-2018/YACC1A1/External Resources/
+/archive/gen1-2015-2018/YACC1A1/Data Sheets/
