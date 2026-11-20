@@ -8,7 +8,8 @@
 ; parameter block at $C030 and what each does). The P8X kept its window kernel inside its OS; the Y1/OS's 16K is
 ; full, so this one is a module of its own, as the P8X's first design was. A program that is not a window program
 ; may overwrite it: one that is checks the signature at $C000 ('WK', the version) and loads it again.
-; Built with the font appended (tests/wm/run.py: firmware/video/chargen-v40.bin's codes $20-$7E as WK_FONT).
+; The font is wkfont.inc, made by os/wm/mkfont.py. os/Makefile builds it as /lib/wmk on the disk (loaded at $C000);
+; os/lib_wk.c loads it for a C program and calls it.
 ; No R2.
 ;
         INCLUDE wkabi.inc
@@ -246,3 +247,5 @@ MS_N:   DS 1
 MS_T:   DS 1
 MS_MV:  DS 1
 MS_MIR: DS 1                    ; the ROM's console mirror (VIDMIR) as wk_init found it
+
+        INCLUDE wkfont.inc

@@ -914,5 +914,4 @@ WK_B2:  DS 1
 WK_SAVE: EQU 0d000h             ; what is under the pointer: 16 lines of three bytes
 WK_SPA: EQU 0d030h              ; its eight forms: the dots to keep ...
 WK_SPO: EQU 0d1b0h              ; ... and, 384 bytes on, the dots to light
-; WK_FONT (the 95 glyphs $20-$7E, 16 bytes each) follows: the program's last lines, made from
-; firmware/video/chargen-v40.bin by tests/wm/run.py
+; WK_FONT (the 95 glyphs $20-$7E, 16 bytes each) is wkfont.inc (os/wm/mkfont.py), which the program INCLUDEs last

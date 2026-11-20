@@ -24,7 +24,12 @@ wkmouse.asm moves the pointer with the card's mouse. Checks:
    pointer stops there, and at the bottom right corner is cut off), the left button pressed three times and held
    across a move, the right button. Then q. The graphics RAM must be the desktop with the three cells inverted and
    the pointer at the last place, and the program's line the same place, buttons and count: all worked out here.
-   The text layer is back (control 2) and the layer hidden (control 1) when it ends.
+   The text layer is back (control 2) and the layer hidden (control 1) when it ends. Before that, the kernel
+   (os/wm/wmk.asm): it assembles to $C000-$CFFF with 'WK' 1 at $C000 and its table of entries where wkabi.inc says;
+   wkmouse is a program of it, loaded beside it.
+5. Under Y1/OS: wkc.c (os/lib_wk.c) compiled for the OS and put on a copy of os/disk.img, its image and data below
+   $C000; booted on both emulators, the PS/2 keyboard as the console, `wkc` typed: it loads the kernel from
+   /lib/wmk and must leave the same picture and print the same line as wkmouse.
 """
 import os, re, sys, shutil, subprocess, tempfile
 
@@ -59,28 +64,25 @@ def check(name, ok, why=""):
     if not ok: fails += 1
 
 
-def font_text():
-    """WK_FONT: the glyphs $20-$7E of the card's character generator, 16 bytes each"""
-    return "WK_FONT:\n" + "".join("        DB " + ", ".join("0%02xh" % b for b in CG[c * 16:c * 16 + 16]) + "\n"
-                                  for c in range(32, 127))
-
-
 WM = os.path.join(ROOT, "os/wm")
+sys.path.insert(0, WM)
+import mkfont                                       # noqa: E402 - the kernel's font, as os/Makefile makes it
 
 
-def source(scene=None, name="wkdemo", font=True):
-    """a program here (or the kernel, name "wmk") with the font; scene = other lines for the script (the costs' runs)"""
+def source(scene=None, name="wkdemo"):
+    """a program here (or the kernel, name "wmk"); scene = other lines for the script (the costs' runs)"""
     s = open(os.path.join(WM if name == "wmk" else HERE, name + ".asm")).read()
     if scene is not None:
         i = s.index("\nscene:"); j = s.index("\nscend:")
         s = s[:i] + "\nscene:" + "".join("\n        DB " + l for l in scene) + "\n        DB 0" + s[j:]
-    return s + (font_text() if font else "")
+    return s
 
 
 def assemble(d, text):
     os.makedirs(d, exist_ok=True)
     shutil.copy(DEF, d); open(os.path.join(d, "rcasm.rc"), "w").write("-h\n-l\n")
     for f in ("wk.inc", "wkabi.inc"): shutil.copy(os.path.join(WM, f), d)
+    open(os.path.join(d, "wkfont.inc"), "w").write(mkfont.text())
     open(os.path.join(d, "wkdemo.asm"), "w").write(text)
     r = subprocess.run([ASM, "wkdemo", "-d=yacc1"], cwd=d, capture_output=True, text=True, errors="replace")
     img = os.path.join(d, "wkdemo.img")
@@ -202,12 +204,49 @@ def cost(d, scene):
     return n, c
 
 
+def os_check(d, want, line, menv):
+    """wkc.c compiled for Y1/OS and put on a copy of os/disk.img as /bin/wkc; booted and run on both emulators with
+    the mouse's packets: the same picture and line as wkmouse, the kernel loaded from the disk"""
+    subprocess.run(["make", "-s", "-C", os.path.join(ROOT, "os"), "disk.img"], check=True, capture_output=True)
+    c = os.path.join(d, "c"); os.makedirs(c, exist_ok=True)
+    asm = os.path.join(c, "wkc.asm")
+    r = subprocess.run([sys.executable, os.path.join(ROOT, "software/compiler/y1cc.py"), os.path.join(HERE, "wkc.c"), "-o", asm,
+                        "--org", "0x5000", "--os"], capture_output=True, text=True)
+    check("wkc.c compiles", r.returncode == 0, (r.stdout + r.stderr)[-300:])
+    if r.returncode: return
+    shutil.copy(DEF, c); open(os.path.join(c, "rcasm.rc"), "w").write("-h\n-l\n")
+    r = subprocess.run([ASM, "wkc", "-d=yacc1"], cwd=c, capture_output=True, text=True, errors="replace")
+    top = max([int(m.group(1), 16) for m in re.finditer(r"^\s*\d+\s+([0-9a-f]{4}):", r.stdout, re.M)] or [0x10000])
+    binf = os.path.join(c, "wkc.bin")
+    subprocess.run([sys.executable, os.path.join(ROOT, "tools/img2bin.py"), os.path.join(c, "wkc.img"), binf, "--base", "0x5000"],
+                   check=True, capture_output=True)
+    check("wkc: image and data end at $%04X, below the kernel" % top, "\n0 Errors" in r.stdout and top < 0xC000, r.stdout[-200:])
+    disk = os.path.join(c, "disk.img"); shutil.copy(os.path.join(ROOT, "os/disk.img"), disk)
+    subprocess.run([sys.executable, os.path.join(ROOT, "tools/p8xfs.py"), "put", disk, binf, "--name", "/bin/wkc",
+                    "--load", "0x5000", "--exec", "0x5000"], check=True, capture_output=True)
+    for tag in ("int", "uc"):
+        run_disk = os.path.join(c, "run.img"); shutil.copy(disk, run_disk)
+        st = os.path.join(c, tag + ".vid")
+        if os.path.exists(st): os.remove(st)
+        cmd = [EMUS[tag], "-x", "-m", "-V", "-c", run_disk, "-l", "8000000000" if tag == "uc" else "300000000"] + \
+            (["-E", MON_EXIT] if tag == "uc" else [])
+        env = dict(os.environ, Y1VID_CARD="v4", Y1VIDSTATE=st, **menv)
+        rr = subprocess.run(cmd, input=b"O\rwkc\rqexit\r0", capture_output=True, env=env, timeout=3600)
+        out = rr.stdout.decode("latin1")
+        s = dict(l.strip().partition(" ")[::2] for l in open(st)) if os.path.exists(st) else {}
+        gm = bytes.fromhex(s.get("gram", ""))
+        bad = [i for i in range(65536) if gm[i] != want[i]] if len(gm) == 65536 else [-1]
+        check("Y1/OS: /bin/wkc with /lib/wmk, %s" % tag, not bad and line in out and int(s.get("control2", "1"), 16) & 1 == 0,
+              "%d bytes are not the model's, the first at $%04X; the console %r" % (len(bad), bad[0] if bad else 0,
+                                                                                      out[-300:].replace("\r", "")))
+
+
 def try_it():
     """--try: wkmouse.asm in the browser debugger, the browser's mouse the card's"""
     d = tempfile.mkdtemp(prefix="wm-try-")
     kimg, msg = assemble(os.path.join(d, "k"), source(name="wmk"))
     if kimg is None: sys.exit("os/wm/wmk.asm did not assemble: " + msg)
-    img, msg = assemble(d, source(name="wkmouse", font=False))
+    img, msg = assemble(d, source(name="wkmouse"))
     if img is None: sys.exit("wkmouse.asm did not assemble: " + msg)
     open(os.path.join(d, "wkdemo.img"), "wb").write(kimg + img)
     print("wkmouse in the browser debugger. On its page: tick \"and the mouse\" under the screen, press Run (F5), click the\n"
@@ -296,7 +335,7 @@ def main():
     check("the kernel: 'WK' 1, its table, $C000-$%04X" % (end - 1), [hexmem.get(0xC000 + i) for i in range(4)] == [87, 75, 1, 0] and
           table and min(hexmem) == 0xC000 and 0xC050 <= klabel("k_init") and end <= 0xD000 and
           not any(0xC030 <= a < 0xC050 for a in hexmem), "end $%04X, table %r" % (end, table))
-    mtext = source(name="wkmouse", font=False)
+    mtext = source(name="wkmouse")
     mimg, msg = assemble(os.path.join(d, "m"), mtext)
     check("wkmouse.asm assembles", mimg is not None, msg)
     if mimg is not None:
@@ -314,6 +353,8 @@ def main():
                   s.get("control", "")[:1] == "0",
                   "%d bytes are not the model's, the first at $%04X; the console %r; control %s / %s" % (
                       len(bad), bad[0] if bad else 0, out[-60:], s.get("control"), s.get("control2")))
+    # 5. under Y1/OS: the kernel from /lib/wmk, a C program of it (wkc.c, os/lib_wk.c)
+    if mimg is not None: os_check(d, g, line, menv)
     shutil.rmtree(d, ignore_errors=True)
     print("wm: %d failed" % fails)
     sys.exit(1 if fails else 0)

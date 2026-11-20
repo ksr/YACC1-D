@@ -595,12 +595,11 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   - **Next, in this order:**
     1. (done, above)
     2. (done, above)
-    3. The kernel under Y1/OS: `/lib/wmk.bin` on the disk (`os/Makefile`), a C library (`os/lib_wk.c`: the
-       entries as functions, and a load of the kernel when $C000 does not hold its signature) and a C test program.
-       Programs of the kernel are compiled with `y1cc --stack` below $C000.
-    3. The routines as a kernel that programs call. Where it lives is open: the OS's 16K is full, so a module
-       loaded above a program (the P8X's first design, with the program's stack below it) or the routines
-       assembled into each program. A C program reaches machine code with `call()`.
+    3. (done 2026-11-20) The kernel under Y1/OS: `/lib/wmk` on the disk (`os/Makefile`, loaded at $C000; its font
+       made by `os/wm/mkfont.py`), `os/lib_wk.c` (the entries as C functions; `wk_load()` reads the kernel in when
+       $C000 does not hold its signature) and `tests/wm/wkc.c`, a C program of it that `tests/wm/run.py` puts on a
+       copy of the disk and runs on both emulators: the same picture and line as `wkmouse`. A C program of the
+       kernel needs no `--stack`: its image and data stay under $C000, and it runs on the OS's stack.
     4. Windows: their order, what is under one (the card's second page can keep it), dragging; a menu bar.
     5. The Finder: the file list and the launcher (`SYS_EXEC`; an application starts the Finder again when it ends).
     6. The applications, one at a time: `write`, `term`, `sheet`, `paint`, pictures.

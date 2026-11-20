@@ -131,6 +131,15 @@ $(BASICA): commands-asm/basic.asm $(DEF)
 basica: $(BASICA) $(B)/bin/basic.bin
 	@printf "basic in assembly %6d bytes, in C %6d bytes (commands-asm/basic.asm, commands/basic.c)\n" $$(wc -c < $(BASICA)) $$(wc -c < $(B)/bin/basic.bin)
 
+# the window kernel for the video card V4 (wm/wmk.asm, 2026-11-20): assembled at $C000 with its font (wm/mkfont.py),
+# /lib/wmk on the disk; os/lib_wk.c loads it for a C program
+WMK    = $(B)/wm/wmk.bin
+$(WMK): wm/wmk.asm wm/wk.inc wm/wkabi.inc wm/mkfont.py $(ROOT)/firmware/video/chargen-v40.bin $(DEF)
+	@mkdir -p $(B)/wm && cp $(DEF) wm/wmk.asm wm/wk.inc wm/wkabi.inc $(B)/wm/ && printf -- "-h\n-l\n" > $(B)/wm/rcasm.rc
+	@python3 wm/mkfont.py > $(B)/wm/wkfont.inc
+	@cd $(B)/wm && ../../$(ASM) wmk -d=yacc1 > wmk.lst && grep -q "^0 Errors" wmk.lst || { grep "ERR" $(B)/wm/wmk.lst | head; exit 1; }
+	@$(I2B) $(B)/wm/wmk.img $@ --base 0xC000
+
 # /bin/kermit's line I/O is assembly (kermit_io.asm, 2026-09-26), turned by mkkio.py into kermit_io.c: the bytes as a
 # C array and the offsets of its absolute addresses, which kermit.c relocates at start-up (y1cc has no inline asm)
 kermit_io.c: kermit_io.asm mkkio.py $(DEF)
@@ -160,7 +169,7 @@ $(B)/y1os_str.inc: strings.txt mkstrings.py
 	@mkdir -p $(B)
 	python3 mkstrings.py strings.txt > $@
 
-disk.img: $(B)/y1os.bin $(B)/y1os_str.inc help.txt $(CMDS) $(ASMA) $(BASICA) $(PASSES) $(RTLIB) $(FILES) $(MANS) $(foreach d,$(DOCS),$(firstword $(subst :, ,$(d)))) $(SRCS:%=$(ROOT)/%) mksrcmk.py Makefile
+disk.img: $(B)/y1os.bin $(B)/y1os_str.inc help.txt $(CMDS) $(ASMA) $(BASICA) $(WMK) $(PASSES) $(RTLIB) $(FILES) $(MANS) $(foreach d,$(DOCS),$(firstword $(subst :, ,$(d)))) $(SRCS:%=$(ROOT)/%) mksrcmk.py Makefile
 	@rm -f $@
 	$(FS) create $@ --sectors $(SECTORS)
 	$(FS) boot $@ $(B)/y1os.bin
@@ -179,6 +188,7 @@ disk.img: $(B)/y1os.bin $(B)/y1os_str.inc help.txt $(CMDS) $(ASMA) $(BASICA) $(P
 	@for f in $(RTLIB); do $(FS) put $@ $$f --name /lib/$$(basename $$f); done
 	$(FS) put $@ help.txt --name /lib/help.txt
 	$(FS) put $@ $(B)/y1os.bin --name /lib/y1os --load 0x1000 --exec 0x1000
+	$(FS) put $@ $(WMK) --name /lib/wmk --load 0xC000 --exec 0xC000
 	$(FS) mkdir $@ /lib/cc
 	@n=1; for p in $(PASSN); do $(FS) put $@ $(B)/cc/$$p.bin --name /lib/cc/cc$$n --load 0x5000 --exec 0x5000; n=$$((n + 1)); done
 	$(FS) mkdir $@ /src

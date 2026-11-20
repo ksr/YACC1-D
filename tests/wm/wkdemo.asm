@@ -58,3 +58,4 @@ scend:
 
         INCLUDE wkabi.inc
         INCLUDE wk.inc
+        INCLUDE wkfont.inc
