@@ -4,9 +4,12 @@
 """tests/wm/run.py - windows in dots on the video card V4: the drawing routines of wkdemo.asm (2026-11-20).
 
   run.py [-v] [--png FILE]      -v: the costs' table in clocks too; --png: the scene's picture (tools/vidsim.py)
+  run.py --try [--port=N]       wkmouse.asm in the browser debugger (software/y1dbg --ui web): the browser's mouse
+                                moves the pointer on the emulated screen
 
 wkdemo.asm draws a desktop - a grey ground, a menu bar, two windows that overlap, text in both, the pointer twice
-(once over the right and bottom edges) - with four routines that work on cells of 8 x 16 dots (its header). Checks:
+(once over the right and bottom edges) - with wk.inc's routines, which work on cells of 8 x 16 dots (its header).
+wkmouse.asm moves the pointer with the card's mouse. Checks:
 
 1. It assembles (RC/asm), with the card's font appended: firmware/video/chargen-v40.bin's codes $20-$7E as WK_FONT.
    The run of 80 "byte, next byte" pairs is 160 bytes (it is entered by an address computed from the width).
@@ -16,6 +19,12 @@ wkdemo.asm draws a desktop - a grey ground, a menu bar, two windows that overlap
 3. What it costs, in instructions (the instruction-level emulator's PC histogram, -P, summed over the program): the
    script replaced by one thing at a time, less the run of an empty script. Printed, and held under a ceiling each
    (a third over the 2026-11-20 figures) so a slower routine shows.
+4. The mouse: wkmouse.asm (its header) on both emulators with the keyboard on the console (Y1VID_KBD=stdin) and a
+   script of fifteen packets (Y1VID_MOUSE, PACKETS below): movement both ways, past each edge of the screen (the
+   pointer stops there, and at the bottom right corner is cut off), the left button pressed three times and held
+   across a move, the right button. Then q. The graphics RAM must be the desktop with the three cells inverted and
+   the pointer at the last place, and the program's line the same place, buttons and count: all worked out here.
+   The text layer is back (control 2) and the layer hidden (control 1) when it ends.
 """
 import os, re, sys, shutil, subprocess, tempfile
 
@@ -27,8 +36,20 @@ LST = open(os.path.join(ROOT, "firmware/monitor/monitor.lst"), errors="replace")
 MON_EXIT = re.search(r"^([0-9a-f]{4})h: CMD_EXIT\b", LST, re.M).group(1).upper()
 CG = open(os.path.join(ROOT, "firmware/video/chargen-v40.bin"), "rb").read()
 VERBOSE = "-v" in sys.argv
-ARROW = [0x8000, 0xC000, 0xE000, 0xF000, 0xF800, 0xFC00, 0xFE00, 0xFF00, 0xFF80, 0xFFC0, 0xFC00, 0xEE00, 0xC700, 0x8700,
-         0x0380, 0x0380]
+# the pointer: the arrow's body, a word a line (bit 15 the left dot); its outline is every dot beside the body
+BODY = [0, 0x4000, 0x6000, 0x7000, 0x7800, 0x7C00, 0x7E00, 0x7F00, 0x7F80, 0x7C00, 0x6C00, 0x4600, 0x0600, 0x0300, 0x0300, 0]
+def outline(body):
+    """the body and every dot beside it (the eight neighbours), within the 16 x 16"""
+    out = []
+    for r in range(16):
+        m = 0
+        for q in (r - 1, r, r + 1):
+            if 0 <= q < 16: m |= body[q] | body[q] << 1 | body[q] >> 1
+        out.append(m & 0xFFFF)
+    return out
+
+
+MASK = outline(BODY)
 fails = 0
 
 
@@ -44,9 +65,9 @@ def font_text():
                                   for c in range(32, 127))
 
 
-def source(scene=None):
-    """wkdemo.asm with the font; scene = other lines for the script (the costs' runs)"""
-    s = open(os.path.join(HERE, "wkdemo.asm")).read()
+def source(scene=None, name="wkdemo"):
+    """a program here with the font; scene = other lines for the script (the costs' runs)"""
+    s = open(os.path.join(HERE, name + ".asm")).read()
     if scene is not None:
         i = s.index("\nscene:"); j = s.index("\nscend:")
         s = s[:i] + "\nscene:" + "".join("\n        DB " + l for l in scene) + "\n        DB 0" + s[j:]
@@ -56,6 +77,7 @@ def source(scene=None):
 def assemble(d, text):
     os.makedirs(d, exist_ok=True)
     shutil.copy(DEF, d); open(os.path.join(d, "rcasm.rc"), "w").write("-h\n-l\n")
+    shutil.copy(os.path.join(HERE, "wk.inc"), d)
     open(os.path.join(d, "wkdemo.asm"), "w").write(text)
     r = subprocess.run([ASM, "wkdemo", "-d=yacc1"], cwd=d, capture_output=True, text=True, errors="replace")
     img = os.path.join(d, "wkdemo.img")
@@ -64,12 +86,12 @@ def assemble(d, text):
     return (open(img, "rb").read() if ok else None), r.stdout[-600:]
 
 
-def run(tag, img, st=None, prof=None):
+def run(tag, img, st=None, prof=None, keys=b"", env=None):
     cmd = [EMUS[tag], "-x", "-m", "-V", "-l", "4000000000" if tag == "uc" else "40000000"] + \
         (["-E", MON_EXIT] if tag == "uc" else []) + (["-P", prof] if prof else [])
-    env = dict(os.environ, Y1VID_CARD="v4", **({"Y1VIDSTATE": st} if st else {}))
+    env = dict(os.environ, Y1VID_CARD="v4", **({"Y1VIDSTATE": st} if st else {}), **(env or {}))
     if st and os.path.exists(st): os.remove(st)
-    r = subprocess.run(cmd, input=img + b"G3000" + b"0", capture_output=True, env=env, timeout=3600)
+    r = subprocess.run(cmd, input=img + b"G3000" + keys + b"0", capture_output=True, env=env, timeout=3600)
     return r.stdout.decode("latin1"), r.stderr.decode("latin1")
 
 
@@ -88,15 +110,45 @@ def script_bytes(text):
     return out
 
 
+def at(p, r, c): return p * 2048 + r * 80 + c
+
+
+def pointer(g, px, py):
+    """wkpon: the arrow with its top left dot at (px, py) - the outline's dots lit, the body's dark, the others as
+    they were -> what was under it, for pointer_off: [(place, byte)]"""
+    under = []
+    for r in range(16):
+        yy = py + r
+        if yy >= 400: break
+        m = MASK[r] << 8 >> (px & 7); o = (MASK[r] & ~BODY[r]) << 8 >> (px & 7)   # 24 bits: three bytes from column px >> 3
+        for k in range(3):
+            c = (px >> 3) + k
+            if c < 80:
+                a = at(yy & 15, yy >> 4, c); under.append((a, g[a]))
+                g[a] = g[a] & ~(m >> (16 - 8 * k)) & 255 | o >> (16 - 8 * k) & 255
+    return under
+
+
+def pointer_off(g, under):
+    for a, v in under: g[a] = v
+
+
+def invert(g, x, y, w, h):
+    for p in range(16):
+        for r in range(y, y + h):
+            for c in range(x, x + w): g[at(p, r, c)] ^= 0xFF
+
+
 def model(b):
     """the script drawn in Python -> the 64K of graphics RAM (page 0: plane * 2048 + row * 80 + column)"""
-    g = bytearray(65536); i = 0
-    def at(p, r, c): return p * 2048 + r * 80 + c
+    g = bytearray(65536); i = 0; under = []
     while b[i]:
         op = b[i]; i += 1
-        if op in (1, 2):
+        if op == 6: pointer_off(g, under)
+        elif op in (1, 2, 5):
             x, y, w, h = b[i:i + 4]; i += 4
-            if op == 1:
+            if op == 5: invert(g, x, y, w, h)
+            elif op == 1:
                 pa, pb = b[i:i + 2]; i += 2
                 for p in range(16):
                     for r in range(y, y + h):
@@ -114,14 +166,24 @@ def model(b):
             i += 1
         else:
             px = b[i] << 8 | b[i + 1]; py = b[i + 2] << 8 | b[i + 3]; i += 4
-            for r, bits in enumerate(ARROW):
-                yy = py + r
-                if yy >= 400: break
-                v = bits << 8 >> (px & 7)                       # 24 bits: three bytes from column px >> 3
-                for k in range(3):
-                    c = (px >> 3) + k
-                    if c < 80: g[at(yy & 15, yy >> 4, c)] ^= v >> (16 - 8 * k) & 255
-    return bytes(g)
+            under = pointer(g, px, py)
+    return g
+
+
+# wkmouse.asm's script of packets: (across, up, buttons), from the middle of the screen
+PACKETS = [(10, 5, 0), (-30, -20, 0), (0, 0, 1), (4, 0, 1), (0, 0, 0), (-255, 255, 0), (-255, 0, 0), (0, 0, 1), (0, 0, 0),
+           (255, -255, 0), (255, -255, 0), (255, -255, 0), (0, 0, 1), (0, 0, 0), (-100, 50, 2)]
+
+
+def mouse_model(g):
+    """the packets on wkmouse's desktop -> (x, y, buttons, packets): the pointer moved, a cell inverted at each press"""
+    x, y, bt = 320, 200, 0
+    for dx, dy, b in PACKETS:
+        x = min(639, max(0, x + dx)); y = min(399, max(0, y - dy))
+        if b & 1 and not bt & 1: invert(g, x >> 3, y >> 4, 1, 1)
+        bt = b
+    pointer(g, x, y)
+    return x, y, bt, len(PACKETS)
 
 
 def cost(d, scene):
@@ -137,7 +199,23 @@ def cost(d, scene):
     return n, c
 
 
+def try_it():
+    """--try: wkmouse.asm in the browser debugger, the browser's mouse the card's"""
+    d = tempfile.mkdtemp(prefix="wm-try-")
+    img, msg = assemble(d, source(name="wkmouse"))
+    if img is None: sys.exit("wkmouse.asm did not assemble: " + msg)
+    print("wkmouse in the browser debugger. On its page: tick \"and the mouse\" under the screen, press Run (F5), click the\n"
+          "screen (the pointer is now the card's mouse; Esc gives it back). \"keys to\" the PS/2 keyboard and q ends the\n"
+          "program. Ctrl-C here ends the debugger.")
+    try:
+        subprocess.run([sys.executable, os.path.join(ROOT, "software/y1dbg"), "--ui", "web", "-f", os.path.join(d, "wkdemo.img"),
+                        "-c", "key G3000"] + [a for a in sys.argv[1:] if a.startswith("--port=")])
+    finally:
+        shutil.rmtree(d, ignore_errors=True)
+
+
 def main():
+    if "--try" in sys.argv: return try_it()
     d = tempfile.mkdtemp(prefix="wm-")
     text = source()
     img, msg = assemble(os.path.join(d, "a"), text)
@@ -150,7 +228,7 @@ def main():
     check("the run is 160 bytes, the image under $5000", label("wf_ret") - label("wf_run") == 160 and
           0 < label("WK_FONT") + 95 * 16 <= 0x5000, "wf_run %04X wf_ret %04X WK_FONT %04X" % (label("wf_run"), label("wf_ret"), label("WK_FONT")))
 
-    want = model(script_bytes(text)); got = {}
+    want = bytes(model(script_bytes(text))); got = {}
     for tag in ("int", "uc"):
         st = os.path.join(d, tag + ".vid")
         out, err = run(tag, img, st)
@@ -178,7 +256,8 @@ def main():
              ("a window of 36 x 14 cells: paper, title bar, frame", ['1,4,3,36,14,0ffh,0ffh', '1,4,3,36,1,0ffh,000h', '2,4,3,36,14'], 37000),
              ("40 characters of text", ['3,0,5,0ffh,' + line + ',0'], 6500),
              ("the whole screen of text: 2000 characters", ['3,0,%d,0ffh,%s,%s,0' % (r, line, line) for r in range(25)], 320000),
-             ("the pointer, drawn once", ['4,1,44,0,180'], 2200)]
+             ("the pointer drawn", ['4,1,44,0,180'], 3000),
+             ("the pointer drawn and taken away: a move", ['4,1,44,0,180', '6'], 5200)]
     print("  what it costs: instructions (seconds at 1 MHz from each instruction's clocks with the tree's microcode,")
     print("  software/opclocks.h; the image in the machine since 2026-10-04 takes about a quarter longer)")
     for name, scene, ceiling in parts:
@@ -188,6 +267,25 @@ def main():
         check("  under %d" % ceiling, 0 < n < ceiling, "%d instructions" % n)
     n, k = cost(c, None)
     print("  %-52s %7d  (%.2f s)" % ("the scene and the pointer's eight forms", n, k / 1e6))
+
+    # 4. the mouse
+    mtext = source(name="wkmouse")
+    mimg, msg = assemble(os.path.join(d, "m"), mtext)
+    check("wkmouse.asm assembles", mimg is not None, msg)
+    if mimg is not None:
+        g = model(script_bytes(mtext)); x, y, bt, n = mouse_model(g)
+        line = "X %04X Y %04X B %02X N %02X" % (x, y, bt, n)
+        menv = {"Y1VID_KBD": "stdin", "Y1VID_MOUSE": ";".join("%d,%d,%d" % p for p in PACKETS)}
+        for tag in ("int", "uc"):
+            st = os.path.join(d, tag + ".m.vid")
+            out, err = run(tag, mimg, st, keys=b"q", env=menv)
+            s = dict(l.strip().partition(" ")[::2] for l in open(st)) if os.path.exists(st) else {}
+            gm = bytes.fromhex(s.get("gram", ""))
+            bad = [i for i in range(65536) if gm[i] != g[i]] if len(gm) == 65536 else [-1]
+            check("the mouse, %s: %s" % (tag, line), not bad and line in out and int(s.get("control2", "1"), 16) & 1 == 0 and
+                  s.get("control", "")[:1] == "0",
+                  "%d bytes are not the model's, the first at $%04X; the console %r; control %s / %s" % (
+                      len(bad), bad[0] if bad else 0, out[-60:], s.get("control"), s.get("control2")))
     shutil.rmtree(d, ignore_errors=True)
     print("wm: %d failed" % fails)
     sys.exit(1 if fails else 0)

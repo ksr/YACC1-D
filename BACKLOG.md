@@ -558,8 +558,9 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     the same scene drawn in Python. What it costs, in instructions (seconds at 1 MHz with the tree's microcode; a
     quarter more with the image in the machine): the whole screen grey 72,176 (0.97 s); a window of 36 x 14 cells
     with its title bar and frame 27,291 (0.44 s); a character 123 (a line of 40 in 0.09 s, a screen of 2,000 in
-    4.5 s); the pointer 1,644 (0.03 s, and a move is two). Windows and text stand on the cell grid: that is what
-    makes them a byte at a time. A window at any dot, and text at any dot, would cost several times this.
+    4.5 s); the pointer 2,263, and a move - taken away and drawn - 3,864 (0.08 s: twelve moves a second). Windows
+    and text stand on the cell grid: that is what makes them a byte at a time. A window at any dot, and text at any
+    dot, would cost several times this. The routines are in `tests/wm/wk.inc` since step 2.
   - **Done 2026-11-20: the debugger's keyboard and mouse are the card's.** `y1ucemu -D` has `ps2 key TEXT` and
     `ps2 mouse DX DY [B]` (`software/videomodel.h`: a key or a whole packet into the controller's queue as
     `embedded/video-ps2` queues it - 63 bytes, a packet dropped while the mouse is off or three bytes do not fit),
@@ -572,9 +573,19 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     plugged in, so on the built card moving the mouse would type into the monitor. The emulator's mouse starts off,
     which hides it. To do with the next change of the V4 ROM: at reset the command $05 (mouse off), or `kbst`
     throwing a mouse byte away.
+  - **Done 2026-11-20: the mouse moves the pointer, `tests/wm/wkmouse.asm`.** The bytes of the card's controller
+    sorted by their source, a mouse packet gathered from its three (the first has bit 3 set), the pointer's place
+    the old one plus the 9-bit movement, held to the screen; the left button going down inverts the cell under it.
+    The pointer is a dark arrow with a lit outline that keeps what is under it (`wkpon` / `wkpoff`): the first one,
+    XORed, could not be seen on the grey desktop. `tests/wm/run.py`: fifteen scripted packets on both emulators,
+    the picture and the last place as worked out in Python; `run.py --try` is the same program in the browser
+    debugger with the browser's mouse. The pointer's top left dot is the place: the arrow's tip is one dot right
+    and below it. Still to do of this step: the events as a routine a program calls (a move, a button down or up,
+    a key), which comes with the kernel. A row of the pointer costs about 140 instructions, most of them the
+    row's address worked out afresh: stepping it from the row before would halve a move.
   - **Next, in this order:**
     1. (done, above)
-    2. The mouse and the keys as events (the P8X's `lib_ptr`).
+    2. (the mouse: done, above; the events' call with step 3)
     3. The routines as a kernel that programs call. Where it lives is open: the OS's 16K is full, so a module
        loaded above a program (the P8X's first design, with the program's stack below it) or the routines
        assembled into each program. A C program reaches machine code with `call()`.
