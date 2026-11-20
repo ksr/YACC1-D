@@ -17,6 +17,7 @@
 #                   the proposed graphics overlay's model in vidsim (tests/video/overlay_check.py),
 #                   the microcode's memory and I/O strobes as the video card's timing check assumes them (tests/video/bus_records.py),
 #                   the video card V4's model and its ROM in both emulators (tests/video/v40/run.py),
+#                   windows in dots on it: the drawing routines, their picture and their cost (tests/wm/run.py),
 #                   the video card V4's netlist: every pin accounted for, the text-only build (hardware/cards/video/kicad/v4.0/v40_netlist.py),
 #                   and run as a circuit with the parts' data-sheet delays at eight corners (tests/video/v40_netsim.py),
 #                   the I/O card V1.2's circuit: its own checks, and every connection it keeps from the built V1.1 card's
@@ -88,6 +89,7 @@ check:
 	python3 tests/video/overlay_check.py
 	python3 tests/video/bus_records.py
 	python3 tests/video/v40/run.py
+	python3 tests/wm/run.py
 	python3 hardware/cards/video/kicad/v4.0/v40_netlist.py
 	python3 tests/video/v40_netsim.py
 	python3 hardware/cards/io/kicad/v1.2/io12_netlist.py

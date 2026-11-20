@@ -82,6 +82,14 @@
   transcripts `target.int.out`/`target.uc.out`) runs `asm` under Y1/OS on both emulators - y1cc programs assembled
   and run, the ROM monitor, `isa.asm`, compiler pass cc4 - and compares every file it wrote with RC/asm's output.
   `make asm-test`; both in `make check`.
+- `wm/` — windows in dots on the video card V4 (2026-11-20, the first step towards the P8X's desktop on this
+  machine; BACKLOG): `wkdemo.asm` has the drawing routines in assembly - a fill in a two-line pattern, a frame, text
+  in the card's own font, the mouse pointer - all on cells of 8 x 16 dots, whose sixteen lines are the sixteen planes
+  at one address, and a scene written as a script of them: a grey desktop, a menu bar, two windows that overlap.
+  `run.py` assembles it with the font (`firmware/video/chargen-v40.bin`), runs it on both emulators, reads the script
+  from the source and draws it again in Python: the 64K of graphics RAM must be the same. Then what each thing
+  costs, in instructions from the instruction-level emulator's PC histogram, each held under a ceiling.
+  `run.py --png FILE` writes the picture.
 - `ybasic/` — BASIC in assembly against BASIC in C (2026-11-11): `run.py` runs each session (`expr`, `prog`, `files`, `limits`)
   on a copy of the disk, whose `/bin/basic` is `os/commands-asm/basic.asm`, and on a copy with the C BASIC
   (`os/commands/basic.c`, `/bin/basicc`) in its place: the console transcripts must be the same byte for byte and so must the files left behind.

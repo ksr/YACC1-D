@@ -544,6 +544,32 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     of PIXELR show were checked once against `gfxref.py` (38 lines, both BASICs). **To look at:** `prog.session`
     has two such lines from 2026-11-11 (11: 108 characters, 61: 119, seven nested FORs) and `limits.session` one
     (86: 127); whether each is meant to be cut is not written down.
+  **The P8X's desktop on this machine (started 2026-11-20).** The P8X has a window system and applications
+  (`~/Developer/p8x`: `docs/p8x-wm-design.md`, `docs/p8x-two-mode-design.md`; the windows of `desk` and `wdesk`, then
+  a Finder with full-screen applications: `finder`, `term`, `write`, `sheet`, `paint`, `image`). Its graphics card
+  draws for itself - rectangles, text, clipping to a window, lists kept on the card - and its CPU runs at 9 MHz. The
+  V4 card is a bitmap the CPU fills, at about 45,000 instructions a second. **Decided 2026-11-20: full graphics**,
+  windows drawn in dots on the 640 x 400 layer and not on the text layer. The applications' logic is taken from the
+  P8X as a reference (it is not kept in step with it); the drawing and the input are written for this machine. The
+  card is not built: all of it runs on the emulators.
+  - **Done: the drawing routines tried out, `tests/wm/wkdemo.asm`.** In assembly, on cells of 8 x 16 dots (a cell's
+    sixteen lines are the sixteen planes at one address): a fill in a two-line pattern, a frame, text in the card's
+    own font, the pointer. `tests/wm/run.py` draws a desktop with two windows on both emulators and holds the 64K to
+    the same scene drawn in Python. What it costs, in instructions (seconds at 1 MHz with the tree's microcode; a
+    quarter more with the image in the machine): the whole screen grey 72,176 (0.97 s); a window of 36 x 14 cells
+    with its title bar and frame 27,291 (0.44 s); a character 123 (a line of 40 in 0.09 s, a screen of 2,000 in
+    4.5 s); the pointer 1,644 (0.03 s, and a move is two). Windows and text stand on the cell grid: that is what
+    makes them a byte at a time. A window at any dot, and text at any dot, would cost several times this.
+  - **Next, in this order:**
+    1. The browser debugger's keyboard and mouse into the emulated card's PS/2 section (today the page types into
+       the UART and the mouse is a script, `Y1VID_MOUSE`).
+    2. The mouse and the keys as events (the P8X's `lib_ptr`).
+    3. The routines as a kernel that programs call. Where it lives is open: the OS's 16K is full, so a module
+       loaded above a program (the P8X's first design, with the program's stack below it) or the routines
+       assembled into each program. A C program reaches machine code with `call()`.
+    4. Windows: their order, what is under one (the card's second page can keep it), dragging; a menu bar.
+    5. The Finder: the file list and the launcher (`SYS_EXEC`; an application starts the Finder again when it ends).
+    6. The applications, one at a time: `write`, `term`, `sheet`, `paint`, pictures.
   **Open for the V4's software:** the 70 Hz table in the driver; Y1/OS, BASIC
   and the commands on 25 rows (they take the screen for 24). Scrolling the graphics apart from the text: in software (the note's section 12 has the three ways and
   their cost); in hardware it is a board change, listed in the note's "Possible later".
