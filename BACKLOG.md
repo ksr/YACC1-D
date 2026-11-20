@@ -529,10 +529,15 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
       (`/bin/asmc`, the assembler's C twin) has 17,088 and no room for more (its image and data fill the 32K
       program area to 13 bytes). asm.asm, the `/bin/asm` that every build uses, has 20,260 and assembles it: 2K to
       grow into. `asmc` says `symbol table full`. `tests/asm` has a list for it (BEYOND: asm.c must refuse the
-      source, and asm.asm's two files must be RC/asm's), where it held asm.asm to asm.c's files. **Ways back under
-      asm.c's limit, if wanted:** shorter labels from y1cc (`Lend684`, `Lelse689` as `L684`, `L689`: about 3K of
-      the 18K; the compiler, its C twin and the passes change together), or fewer functions and variables in
-      `os/lib_gfx.c`.
+      source, and asm.asm's two files must be RC/asm's), where it held asm.asm to asm.c's files.
+  - **Decided 2026-11-20: the reference need not build on the machine.** `basic.c` stays the reference and is not
+    bent to fit the native compiler or assembler: it stays beyond `asmc`'s table, and when it next outgrows the
+    compiler passes or `/bin/asm` (2K of symbol table left), `basicc` comes out of the on-machine build of `/src`
+    and is built on the Mac only, for `tests/ybasic`. Today the machine still builds it.
+    `basic.asm` is the one that must stay assemblable on the machine, and has room: 759 labels that need 7,732
+    bytes of symbol table (asm.c has 17,088, asm.asm 20,260), and 5.6K of the 32K program area free above its
+    stack before the 12,288 bytes for a program would have to shrink.
+    **Later, perhaps:** `sbasic.c`, a small BASIC in C that the machine can compile and assemble. Not started.
   - The session `tests/ybasic/gfx.session` had 24 lines longer than the 98 characters BASIC takes of a typed line:
     both BASICs cut them alike (most were then refused, `?SYNTAX ERROR`), so the two transcripts agreed and the
     lines tested nothing. Split 2026-11-20; `run.py` now fails the session on such a line, and the values its PRINTs

@@ -50,6 +50,18 @@ tree; `BACKLOG.md` is what is open; `docs/system/MACHINE.md` is what is actually
 - **`python3 tools/audit_tree.py` must report 0 unexplained** files after every commit.
 - **Y1/OS has two kernels kept in step**: `os/y1os.asm` (the real one) and `os/y1os.c` (the specification, `make -C os
   OS=c`). Every OS change goes into both; `tests/os` runs with both.
+- **BASIC has a reference and the real one (Ken, 2026-11-20).** `os/commands/basic.c` (`/bin/basicc`) is the
+  reference: a change is written there first, with `os/lib_gfx.c` for graphics, then by hand in
+  `os/commands-asm/basic.asm` (`/bin/basic`), and `tests/ybasic` holds the two to the same transcript and the same
+  graphics RAM.
+  - **`basic.asm` must stay assemblable on the machine**: by `/bin/asm` under Y1/OS (`tests/asm`,
+    `tests/native/srcmake.py`). Its room is in `BACKLOG.md`.
+  - **`basic.c` need not build on the machine.** Do not bend the reference to fit the native compiler or
+    assembler. It is already beyond `asmc`'s symbol table (`tests/asm`'s list BEYOND). When it next outgrows the
+    compiler passes or `/bin/asm`, take `basicc` out of the on-machine build of `/src` (and off the disk if it no
+    longer fits a program's 32K), keep building it on the Mac for `tests/ybasic`, and tell Ken.
+  - A small BASIC in C that the machine can build, `sbasic.c`, is an idea for later: not started, ask before
+    starting it.
 - **Y1/OS and its commands are not kept in sync with the P8X project** (`~/Developer/p8x`, a sibling machine); P8X is
   read-only reference.
 - **The ROM and the microcode are burned/loaded by Ken at the machine.** Build and verify images
