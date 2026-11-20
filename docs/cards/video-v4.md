@@ -481,7 +481,8 @@ bus connector's 96 pins are the bus template's; the layout rules hold. Its one w
 it: pin 1 of the graphics RAM, which is not connected inside the 128K part (accepted 2026-11-18: it stays open).
 Until 2026-11-18 it named the oscillator's pin 1 as well, an enable with its own pull-up on the cans that have one.
 (2026-11-20: a place for the oscillator in a can of either size, and the labels by the power LED set apart, both
-on the routed board; the check is run again: section 13's list.)
+on the routed board; the check with the system's tests passed again on that board, with the same one warning:
+section 13's list.)
 **That pin is tied to +5 V since 2026-11-18**, on the VCC plane through its own pad, with no track or via moved:
 the card then runs with a can whose pin 1 is not connected and with one whose pin 1 is an enable, on when high,
 whether or not the enable has a pull-up (section 13 has what is left to read on the data sheet). The order's files

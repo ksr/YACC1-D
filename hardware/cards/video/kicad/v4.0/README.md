@@ -430,7 +430,10 @@ alone):
   unconnected and no copper violation, the four clocks as laid (CK 187 mm, its farthest input 134 mm from R20), 437
   key connections;
 - `pcb-check` (`4431a9b`) without `--tests`, on the board with the warning on its silkscreen: **no failures**; its
-  one warning is IC28's pin 1, as before. **The check with `--tests` is to be run on the committed board.**
+  one warning is IC28's pin 1, as before;
+- **`pcb-check --layers 4 --tests` on the committed board, commit `91a8299` (2026-11-20, 05:37 to 05:57): no
+  failures, one warning**, IC28's pin 1 (accepted 2026-11-18); the tree's `make && make check` among the passes.
+  The card is row 6 of pcb-check's `orders/next-order.md`, checked. Nothing is ordered.
 
 The first run had four more warnings, all settled the same day. No bus definition, and the front edge taken for the
 bottom one: the settings `bus_pins` and `bus_edge`. The zip not committed: it is. Three values not found on the
