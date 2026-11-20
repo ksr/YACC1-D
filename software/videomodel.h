@@ -43,6 +43,8 @@
  *        turns the mouse on (command $04: the scripted hand moves it then, never while a ROM is still reading the
  *        keyboard as its console); the keys behind them go on. Command $05 makes them wait again
  *   Y1_CLOCK=HZ          the CPU clock (default 1000000), for VSYNC / DE and the PS/2 delays
+ * Live keys and mouse packets (2026-11-20): y1ucemu -D's `ps2 key TEXT` and `ps2 mouse DX DY [BUTTONS]`, which the
+ * debugger's page sends from the browser's keyboard and mouse (v2_live_key, v2_live_mouse below).
  * -W also logs OUT PC, OUT PF and OUT PD. y1ucemu -G is the V1.0 card at gate level: it chooses that card
  * (Y1VID_CARD=v4 with -G is refused).
  *
@@ -144,6 +146,30 @@ static const char *v2_mouse_packet(const char *m) {
     if (*m == ';') m++;
     v2_queue(0x08 | (b & 7) | (dx < 0) << 4 | (dy < 0) << 5, 1); v2_queue(dx & 0xFF, 1); v2_queue(dy & 0xFF, 1);
     return m;
+}
+
+/* 2026-11-20, live input (the debugger's `ps2`, software/ucemu): bytes as the firmware queues them
+   (embedded/video-ps2: a queue of 64, 63 of them usable). A key goes in while there is room. A mouse packet goes in
+   whole, when the mouse is on (command $04) and its three bytes fit; else it is dropped, as the firmware drops it.
+   -> the bytes queued. v2_pending(): the bytes the CPU has not taken yet */
+static unsigned __attribute__((unused)) v2_pending(void) {
+    unsigned n = 0;
+    for (unsigned i = vid2.qt; i != vid2.qh; i++) n += vid2.qs[i & 255] != 2;
+    return n;
+}
+static int __attribute__((unused)) v2_live_key(int c) {
+    if (v2_pending() >= 63) return 0;
+    v2_queue(c, 0);
+    return 1;
+}
+static int __attribute__((unused)) v2_live_mouse(int dx, int dy, int b) {
+    if (!vid2.mouse || v2_pending() > 60) return 0;
+    if (dx > 255) dx = 255;                /* a PS/2 packet's movement is 9 bits: the sign in byte 1 */
+    if (dx < -255) dx = -255;
+    if (dy > 255) dy = 255;
+    if (dy < -255) dy = -255;
+    v2_queue(0x08 | (b & 7) | (dx < 0) << 4 | (dy < 0) << 5, 1); v2_queue(dx & 0xFF, 1); v2_queue(dy & 0xFF, 1);
+    return 3;
 }
 
 static void vid_init(void) {

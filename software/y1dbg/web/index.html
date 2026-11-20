@@ -113,9 +113,12 @@
       <div class="bezel"><div class="tube" id="tube"><canvas id="screen" width="800" height="576"></canvas><textarea id="sink" aria-label="keys for the YACC1's UART" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea></div></div>
       <div class="screenbar">
         <span class="typing" id="typing">click the screen to type</span>
-        <span class="hint">Keys go to the UART: Enter = CR, Backspace = BS, Esc = ESC, Ctrl-letter = the control code.</span>
+        <span class="hint" id="keyhint">Keys go to the UART: Enter = CR, Backspace = BS, Esc = ESC, Ctrl-letter = the control code.</span>
+        <span class="hint" id="ps2box" hidden>keys to <select id="keysto" title="Where the screen's keys go: the UART, or the video card V4's PS/2 keyboard"><option value="uart">the UART</option><option value="ps2">the PS/2 keyboard</option></select>
+          <label title="A click on the screen takes the mouse for the card's PS/2 mouse; Esc gives it back"><input type="checkbox" id="mousecap"> and the mouse</label>
+          <span id="mousestate"></span></span>
         <span class="spacer"></span>
-        <label class="hint">phosphor <select id="phosphor"><option value="green">green</option><option value="amber">amber</option><option value="white">white</option></select></label>
+        <label class="hint">phosphor <select id="phosphor"><option value="white">white</option><option value="green">green</option><option value="amber">amber</option></select></label>
       </div>
     </section>
     <section>
@@ -172,9 +175,11 @@ const PHOSPHOR = {
   amber: {fg: [255, 182, 40], bg: [10, 7, 2], glow: "rgba(255,182,40,.5)"},
   white: {fg: [228, 232, 240], bg: [8, 8, 10], glow: "rgba(220,225,255,.45)"},
 };
-let phos = "green";
-try { phos = localStorage.getItem("y1dbg.phosphor") || "green"; } catch (e) {}
-if (!PHOSPHOR[phos]) phos = "green";
+// white unless another is chosen (2026-11-20: paper white, as a Mac's screen; green until then). Only a choice made
+// here is kept, under a new name: the old one held "green" for everyone, written at every load
+let phos = "white";
+try { phos = localStorage.getItem("y1dbg.screen") || "white"; } catch (e) {}
+if (!PHOSPHOR[phos]) phos = "white";
 $("phosphor").value = phos;
 let ramText = null, ram = null, drawnKey = "";
 // the V4 card's graphics layer: the page that is shown (32K, plane * 2048 + the character's place), fetched when the
@@ -192,15 +197,15 @@ async function fetchGram(v) {
   gramBusy = false;
 }
 
-function setPhosphor(p) {
+function setPhosphor(p, keep) {
   phos = p; const P = PHOSPHOR[p];
   $("tube").style.setProperty("--crt-bg", `rgb(${P.bg})`); $("tube").style.setProperty("--crt-fg", `rgb(${P.fg})`);
   $("screen").style.filter = `drop-shadow(0 0 2px ${P.glow})`;
   drawnKey = "";
-  try { localStorage.setItem("y1dbg.phosphor", p); } catch (e) {}
+  if (keep) try { localStorage.setItem("y1dbg.screen", p); } catch (e) {}
 }
 setPhosphor(phos);
-$("phosphor").onchange = e => setPhosphor(e.target.value);
+$("phosphor").onchange = e => setPhosphor(e.target.value, true);
 
 function drawScreen(now) {
   if (!S || !font) return;
@@ -282,6 +287,11 @@ function render(s) {
     (s.video.card === 4 && (s.video.control & 0x40) ? ` · graphics page ${(s.video.control >> 5) & 1}, ${s.video.control & 0x80 ? "XOR" : "OR"}` : "") +
     (s.video.card === 4 && (s.video.control2 & 1) ? " · text off" : "");
   if (s.video.card === 4 && s.video.gfx && (s.video.control & 0x40)) fetchGram(s.video);
+  const ps2 = s.video.card === 4 && !s.video.absent ? s.video.ps2 : null;
+  $("ps2box").hidden = !ps2;
+  $("mousestate").textContent = !ps2 ? "" : !ps2.mouse ? "· the card's mouse is off (a program turns it on)" :
+    ps2.pending >= 60 ? "· the card's queue is full" : "";
+  showTyping();
 
   // registers: values changed since the last stop are marked
   const r = s.regs;
@@ -387,27 +397,74 @@ $("memform").onsubmit = e => { e.preventDefault(); setMem($("memaddr").value); $
 $("memprev").onclick = () => S && setMem(hex((S.mem.addr - 256) & 0xFFFF, 4));
 $("memnext").onclick = () => S && setMem(hex((S.mem.addr + 256) & 0xFFFF, 4));
 
-// keys for the UART: sent in order, one request at a time, everything typed meanwhile in the next
-let keyq = "", sending = false;
+// keys for the UART, or for the video card V4's PS/2 keyboard (the choice under the screen): sent in order, one
+// request at a time, everything typed meanwhile in the next
+let keyq = "", sending = false, keysTo = "uart", mouseCap = false;
+try { keysTo = localStorage.getItem("y1dbg.keysto") === "ps2" ? "ps2" : "uart"; mouseCap = localStorage.getItem("y1dbg.mouse") === "1"; } catch (e) {}
+function ps2ok() { return !!(S && S.video.card === 4 && !S.video.absent && S.video.ps2); }
+function toPs2() { return keysTo === "ps2" && ps2ok(); }
 function typeKeys(t) { keyq += t; pump(); }
 async function pump() {
   if (sending || !keyq) return;
   sending = true; const t = keyq; keyq = "";
-  try { await api("/api/key", {text: t}); } catch (e) {}
+  try { await api(toPs2() ? "/api/ps2" : "/api/key", {text: t}); } catch (e) {}
   sending = false;
   if (keyq) pump(); else refresh();
 }
 $("conform").onsubmit = e => { e.preventDefault(); typeKeys($("conline").value + "\r"); $("conline").value = ""; };
 // the screen takes keys through a hidden textarea: special keys from keydown, text from input (typing, IME, paste)
-const tube = $("tube"), sink = $("sink");
-tube.addEventListener("mousedown", e => { e.preventDefault(); sink.focus(); });
-sink.addEventListener("focus", () => { tube.classList.add("focus"); $("typing").className = "typing on"; $("typing").textContent = "typing to the UART"; });
-sink.addEventListener("blur", () => { tube.classList.remove("focus"); $("typing").className = "typing"; $("typing").textContent = "click the screen to type"; });
+const tube = $("tube"), sink = $("sink"), cv = $("screen");
+tube.addEventListener("mousedown", e => {
+  e.preventDefault(); sink.focus();
+  if (mouseCap && ps2ok() && !captured() && cv.requestPointerLock) cv.requestPointerLock();
+});
+// the browser's mouse as the card's PS/2 mouse, while the screen holds it (pointer lock): its movement in the
+// card's dots, added up and sent as packets 30 times a second at most (dy positive = up), the buttons with them. A
+// packet the card drops (its mouse off, its queue full) is lost, as on the machine; the buttons are sent again
+let mAccX = 0, mAccY = 0, mButtons = 0, mSent = 0, mBusy = false;
+document.addEventListener("pointerlockchange", () => { mAccX = mAccY = 0; mButtons = 0; showTyping(); });
+document.addEventListener("mousemove", e => {
+  if (!captured()) return;
+  mAccX += e.movementX * (cv.width / SX) / (cv.clientWidth || cv.width);
+  mAccY += e.movementY * (cv.height / SY) / (cv.clientHeight || cv.height);
+});
+function mouseButtons(e) { if (!captured()) return; e.preventDefault(); mButtons = e.buttons & 7; mousePump(); }
+document.addEventListener("mousedown", mouseButtons, true);
+document.addEventListener("mouseup", mouseButtons, true);
+cv.addEventListener("contextmenu", e => e.preventDefault());
+async function mousePump() {
+  if (mBusy || !captured()) return;
+  const dx = Math.max(-255, Math.min(255, Math.trunc(mAccX))), dy = Math.max(-255, Math.min(255, Math.trunc(mAccY))), b = mButtons;
+  if (!dx && !dy && b === mSent) return;
+  mAccX -= dx; mAccY -= dy; mBusy = true;
+  try { const r = await api("/api/mouse", {dx: dx, dy: -dy, b: b}); if (r.queued) mSent = b; } catch (e) {}
+  mBusy = false;
+}
+setInterval(mousePump, 33);
+function captured() { return document.pointerLockElement === cv; }
+function showTyping() {
+  const on = document.activeElement === sink;
+  tube.classList.toggle("focus", on); $("typing").className = on ? "typing on" : "typing";
+  $("typing").textContent = !on ? "click the screen to type" :
+    (toPs2() ? "typing on the PS/2 keyboard" : "typing to the UART") + (captured() ? " · the mouse is the card's: Esc frees it" : "");
+  $("keyhint").textContent = toPs2() ?
+    "Keys go to the card's PS/2 keyboard as its controller sends them: Enter = CR, the arrows, Home, End and Page keys as ESC [ sequences, Delete = $7F." :
+    "Keys go to the UART: Enter = CR, Backspace = BS, Esc = ESC, Ctrl-letter = the control code.";
+}
+$("keysto").value = keysTo; $("mousecap").checked = mouseCap;
+$("keysto").onchange = () => { keysTo = $("keysto").value; try { localStorage.setItem("y1dbg.keysto", keysTo); } catch (e) {} showTyping(); };
+$("mousecap").onchange = () => { mouseCap = $("mousecap").checked; try { localStorage.setItem("y1dbg.mouse", mouseCap ? "1" : "0"); } catch (e) {} };
+// the keys the PS/2 controller's firmware sends as VT100 sequences (embedded/video-ps2)
+const PS2KEYS = {ArrowUp: "\x1b[A", ArrowDown: "\x1b[B", ArrowRight: "\x1b[C", ArrowLeft: "\x1b[D", Home: "\x1b[H", End: "\x1b[F",
+                 PageUp: "\x1b[5~", PageDown: "\x1b[6~", Delete: "\x7f"};
+sink.addEventListener("focus", showTyping);
+sink.addEventListener("blur", showTyping);
 sink.addEventListener("keydown", e => {
   if (/^F\d+$/.test(e.key) || e.isComposing) return;     // the F keys stay the debugger's
   let t = null;
   if (e.key === "Enter") t = "\r"; else if (e.key === "Backspace") t = "\b"; else if (e.key === "Escape") t = "\x1b";
   else if (e.key === "Tab") t = "\t";
+  else if (toPs2() && PS2KEYS[e.key]) t = PS2KEYS[e.key];
   else if (e.ctrlKey && !e.metaKey && !e.altKey && /^[a-z@\[\\\]^_]$/i.test(e.key)) t = String.fromCharCode(e.key.toUpperCase().charCodeAt(0) & 31);
   if (t !== null) { e.preventDefault(); typeKeys(t); }
 });

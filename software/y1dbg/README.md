@@ -49,6 +49,9 @@ d [ADDR] [N]       disassemble N instructions (default 16, at PC)
 trace [N]          the last N instructions run (default 20)
 screen             the video screen as text                video        the CRTC registers, the card model
 key TEXT           type into the UART (\n = Enter, \e = Esc, \xHH a byte, \\ a backslash)
+ps2 key TEXT       type on the video card V4's PS/2 keyboard (key's escapes; its Enter is \r)
+ps2 mouse DX DY [B]   one packet from its mouse: the movement in counts (DY positive = up), B the buttons held
+                   (1 left + 2 right + 4 middle). Dropped while the mouse is off or the card's queue is full
 console            the UART's output since the last `console`
 waitfor TEXT [S]   run until the UART prints TEXT (at most S seconds, default the timeout); for scripts
 sym FILE           symbols from an RC/asm listing           load FILE    an Intel-hex image into memory
@@ -138,10 +141,19 @@ commands of `-c`/`--script` run first and their output opens the page's command 
   of a tall character repeat rows 0-7 (RA0..2 only), a screen reaching past the CPU's 2K shows the hatched upper half.
   The cursor is R14:R15, lit on R10's first to R11's last scan line, and blinks as R10 bits 5-6 say: steady, off, or
   on for half of every 16 or 32 fields, the field rate worked out from R0, R4, R5 and R9 at the ROM's 10 MHz dot clock
-  (the ROM's table: 60.1 Hz, so the monitor's cursor blinks every 0.53 s). The phosphor is green, amber or white (the
-  choice is kept in the browser).
+  (the ROM's table: 60.1 Hz, so the monitor's cursor blinks every 0.53 s). The phosphor is white (the default since
+  2026-11-20: paper white, as a Mac's screen), green or amber; a choice made is kept in the browser.
 - **Typing:** click the screen; the keys go to the UART (as `key`): Enter = CR, Backspace = BS, Esc = ESC, Tab,
   Ctrl-letter = its control code, pasted text as typed. The F keys stay the debugger's.
+- **The video card V4's keyboard and mouse (2026-11-20).** With the V4 card the bar under the screen has "keys to":
+  the UART, or the card's PS/2 keyboard (as `ps2 key`). The PS/2 keyboard's bytes are what the card's controller
+  sends (`embedded/video-ps2`): ASCII, Enter = CR, the arrows, Home, End and the Page keys as `ESC [` sequences,
+  Delete = $7F. The ROM takes that keyboard as a second console, so the machine can be used from the screen alone.
+  With "and the mouse" ticked, a click on the screen takes the browser's pointer for the card's PS/2 mouse (pointer
+  lock; Esc gives it back, and the next Esc is the machine's): its movement, in the card's dots, goes as packets 30
+  times a second at most, the buttons with them (as `ps2 mouse`). The card drops a packet while its mouse is off -
+  a program turns it on, command $04 - or its queue of 63 bytes is full, as the real controller does; the bar says
+  which. Both choices are kept in the browser.
 - **Panels:** the status line (running/stopped/halted, why it stopped, PC with its symbol, the instruction and clock
   counts); Run (F5), Pause (F6, or Esc away from the screen), Step (F7), Over (F8), Reset, Quit; the registers (R0-R7
   with PC/SP/R2 marked, ACC, carry, TMP0/TMP1, the shift register, IR, the microcode step, the operand and branch
@@ -161,6 +173,8 @@ commands of `-c`/`--script` run first and their output opens the page's command 
 | `GET /api/gram` | the V4 card's graphics RAM, the page shown: `page`, `seq`, `control`, `gram` (32K as hex: plane * 2048 + the character's place) |
 | `POST /api/cmd {"cmd": ...}` | `{"out": ...}`: `Shell.exec`, as the terminal UI (`c`, `until`, `n` return `running` at once) |
 | `POST /api/key {"text": ...}` | into the UART (`key`, every byte escaped) |
+| `POST /api/ps2 {"text": ...}` | typed on the V4 card's PS/2 keyboard (`ps2 key`, every byte escaped): `queued`, `pending`, `mouse` |
+| `POST /api/mouse {"dx": n, "dy": n, "b": n}` | one packet from its mouse (`ps2 mouse`): `queued` (0 = dropped, 3), `pending`, `mouse` |
 | `POST /api/mem {"addr": ...}` | the memory window's address (400 if it is not one) |
 | `POST /api/quit` | ends the debugger |
 
@@ -197,6 +211,8 @@ and the status: `state` (`stopped`, `running`, `halted`), `reason` (why it last 
 | `poke ADDR BB...` | `bytes` | straight into memory, ROM included |
 | `set NAME VALUE` | as `regs` | `r0`..`r7`, `pc`, `sp`, `acc`, `tmp0`, `tmp1`, `carry`, `sreg` |
 | `key TEXT` | `queued`, `pending` | escapes `\n \r \t \e \\ \xHH`; CR becomes LF |
+| `ps2 key TEXT` | `queued`, `pending` (the bytes the CPU has not taken), `mouse` (1 = on) | the V4 card's PS/2 keyboard: `key`'s escapes, CR stays CR; a byte goes in while the controller's queue (63 bytes) has room |
+| `ps2 mouse DX DY [B]` | the same; `queued` 3 or 0 | one mouse packet (decimal counts, DY positive = up, B = 1 left + 2 right + 4 middle): byte 1 the buttons, bit 3 and the signs, then DX, DY. Dropped while the mouse is off or three bytes do not fit |
 | `console` | `text`, `lost` | the output since the last fetch (1 MB kept) |
 | `video` | `absent`, `model` (`behavioural` or the `-G` revision), `events` (with `-G`: the card's bus events so far), `sel`, `regs` (R0-R17), `written`, `ram` (hex, $D000-$D7FF); of the V4 card `card` (4), `control`, `control2`, `gfx` (1: its graphics chips are fitted), `gseq` (the bytes of the graphics RAM changed so far) | |
 | `gram [PAGE]` | `page`, `seq` (`gseq` now), `control`, `gram` (32K as hex) | a page of the V4 card's graphics RAM, the one shown unless PAGE (0 or 1) names one: plane p, the scan line p of every row of text, at p * 2048 |
@@ -218,7 +234,9 @@ measured twice, 2026-10-11): within about 1.5%, with the same status line to the
 
 `tests/y1dbg/run.py` (in `make check`): a breakpoint at `cmdloop`, the registers, `s`/`us`/`d`/`trace`, the
 monitor's video driver on the screen and poked inverse glyphs, BASIC typed through `key`, a run paused and watched,
-`reset`, the `-c` command line, the emulator's exit when the debugger closes or drops the connection, the UI in
+`reset`, the `-c` command line, the emulator's exit when the debugger closes or drops the connection, the V4 card's
+PS/2 keyboard and mouse (`ps2`: `ps2echo.asm` prints every byte it is handed; keys and packets through the server,
+the shell and the browser's `/api/ps2` and `/api/mouse`, the queue's limit, the mouse off), the UI in
 a pseudo-terminal (the screen pane after BASIC printed, captured with `snap`), and the browser UI driven over HTTP
 (`web`: the page, the font against `vidsim.py`'s, a breakpoint, `V I`/`V M1`/`H` typed and the text in the state's
 video RAM with the CRTC's geometry and blinking cursor, pause, the memory window following `sp`, quit; `webstop`: the

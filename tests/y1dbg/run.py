@@ -32,6 +32,13 @@ the terminal UI in a pseudo-terminal) and checks:
             page shown, the same 32K as the scene drawn in Python, and `gram 1` the untouched second page; `screen`
             and `video` say that the layer is on. The browser's /api/state and /api/gram give the same, and the page
             fetches /api/gram
+  ps2       the V4 card's PS/2 keyboard and mouse, live (2026-11-20): `ps2 key` and `ps2 mouse` of the server and the
+            shell, /api/ps2 and /api/mouse of the browser's. ps2echo.asm (here) turns the mouse on and prints every
+            byte it is handed with its source. A packet sent while the mouse is off is dropped; G3000 typed on the
+            PS/2 keyboard starts the program (the ROM takes that keyboard as its console); a packet and a key arrive
+            as M29 M05 MFD K61; with the machine stopped the card's queue takes 21 packets of 25 (63 bytes) and then
+            no key; `video` and the state show the bytes waiting and the mouse on; the page has the two calls and
+            takes the pointer (requestPointerLock); the V1.0 card refuses `ps2`
 """
 import os, re, sys, time, socket, subprocess, select, struct, json, signal, urllib.request, urllib.error
 import shutil, tempfile, importlib.util
@@ -386,6 +393,79 @@ def case_gate():
     check("gate", emulators() <= before, "left running: %s" % (emulators() - before))
 
 
+def case_ps2():
+    before = emulators()
+    d = tempfile.mkdtemp()
+    shutil.copy(os.path.join(HERE, "ps2echo.asm"), d)
+    shutil.copy(os.path.join(ROOT, "software/assembler/yacc1.def"), d); open(os.path.join(d, "rcasm.rc"), "w").write("-h\n")
+    subprocess.run([os.path.join(ROOT, "software/assembler/asm"), "ps2echo", "-d=yacc1"], cwd=d, capture_output=True)
+    img = os.path.join(d, "ps2echo.img")
+    syms = Symbols(); syms.load(MON)
+    sh = Shell(Emulator(["-m", "-f", img]), syms, timeout=60)
+    try:
+        v0 = sh.emu.ok("video")["ps2"]
+        r0 = sh.emu.ok("ps2 mouse 5 -3 1")                           # the mouse is off: dropped
+        t0 = x(sh, "ps2 mouse 5 -3 1")
+        k = sh.emu.ok("ps2 key G3000")                               # the ROM's console is this keyboard too
+        out = x(sh, "waitfor MOUSE ON 60")
+        check("ps2", v0 == {"pending": 0, "full": 0, "mouse": 0, "ints": 0, "leds": 0} and r0["queued"] == 0 and
+              "dropped" in t0 and "the mouse is off" in t0 and k["queued"] == 5 and "found" in out,
+              "%r %r %r %r %r" % (v0, r0, t0, k, out))
+        r1 = sh.emu.ok("ps2 mouse 5 -3 1"); t1 = x(sh, "ps2 key a")
+        out = x(sh, "waitfor M29 M05 MFD K61  30")
+        check("ps2", (r1["queued"], r1["pending"], r1["mouse"]) == (3, 3, 1) and "typed 1 on the PS/2 keyboard" in t1 and "found" in out,
+              "%r %r %r" % (r1, t1, out))
+        # the machine is stopped: the controller's queue fills
+        got = [sh.emu.ok("ps2 mouse %d 0" % i)["queued"] for i in range(1, 26)]
+        kf = sh.emu.ok("ps2 key z"); v = sh.emu.ok("video")["ps2"]; vt = x(sh, "video")
+        check("ps2", got == [3] * 21 + [0] * 4 and kf["queued"] == 0 and (v["pending"], v["mouse"]) == (63, 1) and
+              "PS/2: 63 bytes waiting, the mouse on" in vt, "%r %r %r %s" % (got, kf, v, vt[-80:]))
+        out = x(sh, "waitfor M08 M15 M00  60"); sh.emu.ok("ps2 key q"); out2 = x(sh, "waitfor DONE 30")
+        con = sh.con
+        check("ps2", "found" in out and "found" in out2 and "M08 M01 M00 " in con and "M08 M16" not in con and "K7A" not in con and
+              "K71 DONE" in con, "%r %r %s" % (out, out2, con[-200:]))
+        bad = []
+        for c in ("ps2", "ps2 wheel 1", "ps2 mouse 1", "ps2 mouse 1 x", "ps2 mouse 1 2 8"):
+            try: sh.emu.ok(c); bad.append("accepted: " + c)
+            except Exception as e:
+                if "ps2 key TEXT | ps2 mouse" not in str(e) and "ps2 mouse DX DY [BUTTONS]" not in str(e): bad.append(str(e))
+        check("ps2", not bad, "%r" % bad)
+    finally:
+        sh.emu.close()
+    # the browser's API
+    p, base = web_start("-f", img)
+    try:
+        http(base, "/api/ps2", {"text": "G3000"}); http(base, "/api/cmd", {"cmd": "c"})
+        st = web_until(base, lambda s: (s["video"].get("ps2") or {}).get("mouse") == 1, 60)
+        c1, m = http(base, "/api/mouse", {"dx": 7, "dy": 2, "b": 2})
+        c2, kk = http(base, "/api/ps2", {"text": "\x1b[A"})
+        st2 = web_until(base, lambda s: "K41" in "".join(s["console"]["lines"] or []), 60)
+        text = "".join(st2["console"]["lines"] or [])
+        _, page = http(base, "/")
+        check("ps2", st["video"]["ps2"]["mouse"] == 1 and c1 == 200 and m["queued"] == 3 and c2 == 200 and kk["queued"] == 3 and
+              "M0A M07 M02 K1B K5B K41" in text and all(t in page for t in ("/api/mouse", "/api/ps2", "requestPointerLock", "keysto")),
+              "mouse %r key %r console %r" % (m, kk, text[-120:]))
+        code, _ = http(base, "/api/quit", {})
+        check("ps2", code == 200 and web_gone(p) and p.returncode == 0, "quit: exit %r" % p.returncode)
+    finally:
+        if p.poll() is None: p.kill(); p.wait()
+    # the V1.0 card has no PS/2 section
+    old = os.environ.get("Y1VID_CARD"); os.environ["Y1VID_CARD"] = "v1.0"
+    try:
+        e = Emulator(["-m"])
+        try:
+            try: e.ok("ps2 key x"); why = "accepted"
+            except Exception as ex: why = str(ex)
+        finally:
+            e.close()
+    finally:
+        if old is None: del os.environ["Y1VID_CARD"]
+        else: os.environ["Y1VID_CARD"] = old
+    check("ps2", "no PS/2 section" in why, why)
+    shutil.rmtree(d, ignore_errors=True)
+    check("ps2", emulators() <= before, "left running: %s" % (emulators() - before))
+
+
 def case_gfx():
     before = emulators()
     d = tempfile.mkdtemp()
@@ -438,7 +518,7 @@ def case_gfx():
 
 CASES = {"break": case_break, "video": case_video, "basic": case_basic, "pause": case_pause, "reset": case_reset,
          "cli": case_cli, "gone": case_gone, "tui": case_tui,
-         "web": case_web, "webstop": case_webstop, "gate": case_gate, "gfx": case_gfx}
+         "web": case_web, "webstop": case_webstop, "gate": case_gate, "gfx": case_gfx, "ps2": case_ps2}
 names = [a for a in sys.argv[1:] if not a.startswith("-")] or list(CASES)
 for n in names:
     CASES[n]()

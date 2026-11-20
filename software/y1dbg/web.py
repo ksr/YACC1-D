@@ -13,13 +13,18 @@
                       the status, registers, code at PC, breakpoints and watches, the memory window, the video card
                       (the 2K display RAM, the CRTC registers and the scan geometry: debugger.geometry; of the V4 card
                       also control 1 and 2, gfx = it has its graphics chips, gseq = the changes to its graphics RAM so
-                      far), and the UART
+                      far, ps2 = its PS/2 section: bytes waiting, the mouse on), and the UART
                       console and the command output when they have grown past N (their totals so far)
   GET  /api/gram      the V4 card's graphics RAM, the page that is shown: page, seq (gseq when it was read), control
                       and gram, 32K as hex - plane p (the scan line of a row of text) at p * 2048, in it a byte for the
                       8 dots of a character's place. The page fetches it when the layer is on and gseq has grown
   POST /api/cmd       {"cmd": "..."} -> {"out": "..."}   any command of the language (shell.py); q ends the debugger
   POST /api/key       {"text": "..."}                   typed into the UART (as `key`, every byte escaped)
+  POST /api/ps2       {"text": "..."}                   typed on the video card V4's PS/2 keyboard (as `ps2 key`): bytes
+                                                        as its controller sends them, Enter = CR, the arrows and the
+                                                        editing keys the VT100 sequences the page makes of them
+  POST /api/mouse     {"dx": n, "dy": n, "b": n}        one packet from its mouse (as `ps2 mouse`): counts, dy positive =
+                                                        up, b the buttons held -> {"queued": 0 or 3, "pending", "mouse"}
   POST /api/mem       {"addr": "..."}                   the memory window: an address, kept as written, so `sp` or
                                                         `r3` follows the register
   POST /api/quit      ends the debugger (and the emulator with it)
@@ -106,6 +111,15 @@ class App:
             r = self.sh.emu.ok("key " + key_escape(text))
         return {"queued": r["queued"], "pending": r["pending"]}
 
+    def ps2key(self, text):
+        if not text: return {"queued": 0}
+        with self.lock:
+            return self.sh.emu.ok("ps2 key " + key_escape(text))
+
+    def mouse(self, dx, dy, b):
+        with self.lock:
+            return self.sh.emu.ok("ps2 mouse %d %d %d" % (int(dx), int(dy), int(b) & 7))
+
     def set_mem(self, expr):
         with self.lock:
             self.sh.addr(expr)                  # ValueError if it is not an address
@@ -137,7 +151,8 @@ class App:
             "mem": {"expr": self.mem_expr, "addr": mem, "hex": snap["mem"].hex(), "error": err},
             "video": {"absent": v.get("absent", 0), "ram": v["ram"], "regs": v["regs"], "written": v["written"],
                       "sel": v["sel"], "card": v.get("card", 1), "control2": v.get("control2", 0), "geom": geometry(v),
-                      "control": v.get("control", 0), "gfx": v.get("gfx", 0), "gseq": v.get("gseq", 0)},
+                      "control": v.get("control", 0), "gfx": v.get("gfx", 0), "gseq": v.get("gseq", 0),
+                      "ps2": v.get("ps2")},
             "console": {"total": con_total, "lines": con},
             "out": {"total": self.out_total, "lines": self.out[-500:] if self.out_total != out_seen else None},
         }
@@ -192,6 +207,10 @@ def serve(shell, port=PORT, chargen=None, announce=print, ran=()):
                 self._guard(lambda: self._json({"out": app.cmd(body.get("cmd", ""))}))
             elif self.path == "/api/key":
                 self._guard(lambda: self._json(app.key(body.get("text", ""))))
+            elif self.path == "/api/ps2":
+                self._guard(lambda: self._json(app.ps2key(body.get("text", ""))))
+            elif self.path == "/api/mouse":
+                self._guard(lambda: self._json(app.mouse(body.get("dx", 0), body.get("dy", 0), body.get("b", 0))))
             elif self.path == "/api/mem":
                 self._guard(lambda: (app.set_mem(body.get("addr", "0")), self._json({"ok": True})))
             elif self.path == "/api/quit":

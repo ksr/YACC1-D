@@ -118,7 +118,10 @@
   at the monitor's `cmdloop`, the registers, stepping, the disassembly and trace, the monitor's video driver on the
   screen (`V I`, `V M1`) and poked inverse glyphs, BASIC typed through `key`, a run paused and stopped by a write
   watch, reset, the `-c` command line, the emulator's exit when the debugger closes or drops the connection - and
-  the curses UI in a pty (its screen pane captured with `snap`). In `make check`.
+  the curses UI in a pty (its screen pane captured with `snap`). The video card V4's PS/2 keyboard and mouse
+  (2026-11-20, the case `ps2`): `ps2echo.asm` turns the mouse on and prints every byte the card hands it with its
+  source, and the debugger's `ps2 key` and `ps2 mouse` (and the browser's `/api/ps2`, `/api/mouse`) must arrive as
+  typed, a packet be dropped while the mouse is off, and the card's queue hold 63 bytes. In `make check`.
 - `y1term/` — `tools/y1term.py --send` against the microcode emulator through a pty (2026-10-08): `good.bas` (lower
   case, a tab, a blank line, a `#` comment, FOR/NEXT) sent with `--new --run` must print `Hello 1 2 3 21`; `bad.bas`
   must exit 1 naming its `print !` line as SYNTAX ERROR, the other lines stored. In `make check`.

@@ -560,9 +560,20 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
     with its title bar and frame 27,291 (0.44 s); a character 123 (a line of 40 in 0.09 s, a screen of 2,000 in
     4.5 s); the pointer 1,644 (0.03 s, and a move is two). Windows and text stand on the cell grid: that is what
     makes them a byte at a time. A window at any dot, and text at any dot, would cost several times this.
+  - **Done 2026-11-20: the debugger's keyboard and mouse are the card's.** `y1ucemu -D` has `ps2 key TEXT` and
+    `ps2 mouse DX DY [B]` (`software/videomodel.h`: a key or a whole packet into the controller's queue as
+    `embedded/video-ps2` queues it - 63 bytes, a packet dropped while the mouse is off or three bytes do not fit),
+    the shell has the same two, and the browser UI sends them: "keys to the PS/2 keyboard" under the screen, and
+    with "and the mouse" a click takes the pointer (Esc frees it), its movement in the card's dots as packets.
+    `tests/y1dbg/run.py ps2`, with `ps2echo.asm`. Tried in a browser with the desktop of `wkdemo.asm` on the
+    screen: the monitor's `H` typed on the PS/2 keyboard.
+  - **Found on the way, for the V4's ROM:** the monitor takes any byte the controller has as a key (`kbst`: FULL,
+    without a look at SRC), and never turns the mouse off. The controller starts with the mouse on when one is
+    plugged in, so on the built card moving the mouse would type into the monitor. The emulator's mouse starts off,
+    which hides it. To do with the next change of the V4 ROM: at reset the command $05 (mouse off), or `kbst`
+    throwing a mouse byte away.
   - **Next, in this order:**
-    1. The browser debugger's keyboard and mouse into the emulated card's PS/2 section (today the page types into
-       the UART and the mouse is a script, `Y1VID_MOUSE`).
+    1. (done, above)
     2. The mouse and the keys as events (the P8X's `lib_ptr`).
     3. The routines as a kernel that programs call. Where it lives is open: the OS's 16K is full, so a module
        loaded above a program (the P8X's first design, with the program's stack below it) or the routines

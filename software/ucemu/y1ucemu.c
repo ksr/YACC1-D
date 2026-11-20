@@ -926,6 +926,38 @@ static COLD void dbg_command(char *line) {
         idle_polls = 0;
         sb_add(&s, "\"queued\":%d,\"pending\":%u,", q, (uint16_t)(dbg_khead - dbg_ktail));
     }
+    else if (!strcmp(cmd, "ps2")) {              /* 2026-11-20: the V4 card's PS/2 keyboard and mouse, live */
+        NEED(vid2.card == 4 && !vid.absent, "ps2: this card has no PS/2 section");
+        NEED(argc >= 1 && (!strcmp(argv[0], "key") || !strcmp(argv[0], "mouse")), "ps2 key TEXT | ps2 mouse DX DY [BUTTONS]");
+        int q = 0;
+        if (argv[0][0] == 'k') {                 /* the text after "key" and one blank, with key's escapes; Enter is CR */
+            const char *p = rest; while (*p == ' ') p++;
+            p += 3; if (*p == ' ') p++;
+            for (; *p; p++) {
+                int c = (unsigned char)*p;
+                if (c == '\\' && p[1]) {
+                    p++;
+                    switch (*p) {
+                        case 'n': c = 0x0A; break; case 'r': c = 0x0D; break; case 't': c = 0x09; break;
+                        case 'e': c = 0x1B; break;
+                        case 'x': { char h[3] = { p[1], p[1] ? p[2] : 0, 0 }; char *e; c = (int)strtol(h, &e, 16); if (e != h + 2) c = 'x'; else p += 2; break; }
+                        default: c = (unsigned char)*p; break;
+                    }
+                }
+                if (!v2_live_key(c)) break;      /* the controller's queue is full: the rest is lost, as on the card */
+                q++;
+            }
+        } else {
+            char *e1, *e2, *e3 = NULL; long dx, dy, b = 0;
+            NEED(argc == 3 || argc == 4, "ps2 mouse DX DY [BUTTONS] (decimal; DY positive = up; 1 left, 2 right, 4 middle)");
+            dx = strtol(argv[1], &e1, 10); dy = strtol(argv[2], &e2, 10);
+            if (argc == 4) b = strtol(argv[3], &e3, 10);
+            NEED(!*e1 && !*e2 && (!e3 || !*e3) && b >= 0 && b <= 7, "ps2 mouse DX DY [BUTTONS] (decimal; DY positive = up; 1 left, 2 right, 4 middle)");
+            q = v2_live_mouse((int)dx, (int)dy, (int)b);
+        }
+        idle_polls = 0;
+        sb_add(&s, "\"queued\":%d,\"pending\":%u,\"mouse\":%d,", q, v2_pending(), vid2.mouse);
+    }
     else if (!strcmp(cmd, "console")) {
         sb_add(&s, "\"text\":"); sb_jstr(&s, dbg_con ? dbg_con : "", dbg_con_len);
         sb_add(&s, ",\"lost\":%lu,", dbg_con_lost);
@@ -934,8 +966,12 @@ static COLD void dbg_command(char *line) {
     else if (!strcmp(cmd, "video")) {
         sb_add(&s, "\"absent\":%d,\"model\":\"%s\",\"events\":%ld,\"sel\":%d,\"card\":%d,\"control2\":%u,", vid.absent,
                vgate ? vgate->name : "behavioural", vg_events, vid.sel, vid2.card, vid2.control2);   /* card: 1 V1.0, 4 V4 */
-        sb_add(&s, "\"control\":%u,\"gfx\":%d,\"gseq\":%lu,\"regs\":[", vid2.control,   /* 2026-11-20: the V4's control 1, whether */
-               vid2.card == 4 && !vid2.textonly, vid2.gseq);   /* it has its graphics chips, the changes to its graphics RAM */
+        sb_add(&s, "\"control\":%u,\"gfx\":%d,\"gseq\":%lu,", vid2.control,   /* 2026-11-20: the V4's control 1, whether it */
+               vid2.card == 4 && !vid2.textonly, vid2.gseq);   /* has its graphics chips, the changes to its graphics RAM */
+        if (vid2.card == 4)                      /* its PS/2 section: bytes waiting, the mouse on, interrupts, the LEDs */
+            sb_add(&s, "\"ps2\":{\"pending\":%u,\"full\":%d,\"mouse\":%d,\"ints\":%d,\"leds\":%d},", v2_pending(),
+                   vid2.full, vid2.mouse, vid2.ints, vid2.leds);
+        sb_add(&s, "\"regs\":[");
         for (int i = 0; i < 18; i++) sb_add(&s, i ? ",%u" : "%u", vid.reg[i]);
         sb_add(&s, "],\"written\":[");
         for (int i = 0; i < 18; i++) sb_add(&s, i ? ",%u" : "%u", vid.written[i]);

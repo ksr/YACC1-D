@@ -14,6 +14,9 @@
   trace [N]          the last N instructions run (default 20)
   screen             the video screen as text                video        the CRTC registers, the card model
   key TEXT           type into the UART (\\n = Enter, \\e = Esc, \\xHH a byte, \\\\ a backslash)
+  ps2 key TEXT       type on the video card V4's PS/2 keyboard (key's escapes; its Enter is \\r)
+  ps2 mouse DX DY [B]   one packet from its mouse: the movement in counts (DY positive = up), B the buttons held
+                     (1 left + 2 right + 4 middle). Dropped while the mouse is off or the card's queue is full
   console            the UART's output since the last `console`
   waitfor TEXT [S]   run until the UART prints TEXT (at most S seconds, default the timeout); for scripts
   sym FILE           symbols from an RC/asm listing           load FILE    an Intel-hex image into memory
@@ -177,9 +180,16 @@ class Shell:
             return "CRTC " + " ".join("%02X" % r if w else "--" for r, w in zip(v["regs"], v["written"])) + \
                 "  (R0..R17, -- = never written); address register = R%d; card: %s" % (v["sel"], card) + \
                 ("; V4 control 1 = %02X, control 2 = %02X, %d changes to the graphics RAM" % (v.get("control", 0), v["control2"],
-                 v.get("gseq", 0)) if v.get("card") == 4 else "")
+                 v.get("gseq", 0)) if v.get("card") == 4 else "") + \
+                ("; PS/2: %d bytes waiting, the mouse %s" % (v["ps2"]["pending"], "on" if v["ps2"]["mouse"] else "off")
+                 if v.get("ps2") else "")
         if cmd == "key":
             r = e.ok("key " + rest); return "typed %d" % r["queued"]
+        if cmd == "ps2":
+            r = e.ok("ps2 " + rest)
+            state = "%d bytes waiting, the mouse is %s" % (r["pending"], "on" if r["mouse"] else "off")
+            if rest.split()[:1] == ["mouse"]: return "mouse packet %s (%s)" % ("queued" if r["queued"] else "dropped", state)
+            return "typed %d on the PS/2 keyboard (%s)" % (r["queued"], state)
         if cmd == "console":
             self.fetch_console()
             t = self.con[self.con_shown:]; self.con_shown = len(self.con)
