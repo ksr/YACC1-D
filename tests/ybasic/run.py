@@ -4,7 +4,7 @@
 """tests/ybasic/run.py - BASIC in assembly against BASIC in C (2026-11-11).
 
   run.py [session ...] [--uc] [-v]
-    session   only these (expr, prog, files, limits)
+    session   only these (expr, prog, files, limits, gfx)
     --uc      the sessions on the microcode emulator too (slow: minutes)
     -v        print the transcripts' differences in full
 
@@ -20,6 +20,9 @@ the disk as /bin/basicc. Three checks:
      files   SAVE / LOAD, OPEN / PRINT# / INPUT# / EOF / CLOSE, basic FILE, basic -r FILE, < > and |
      limits  32 variables and 16 strings, GOSUB and FOR 8 deep, brackets 20 deep, numbers, the lines RUN remembers,
              a typed token, a program that uses most statements, the program area filled (?OUT OF MEMORY)
+     gfx     the graphics statements (2026-11-20): SCREEN, CLS, COLOR, PIXELW, LINE, BOX [,FILL], CIRCLE and PIXELR(),
+             what they leave on the screen as PIXELR and PEEK of the window see it, in a program and LISTed, with
+             names that only begin like a keyword, and every way to write them wrong
    A key typed while a program runs is read by the Ctrl-C check and kept for the next INPUT or prompt; one typed while
    `basic -r` runs is lost. The emulator's console always has the rest of the session waiting, so the sessions have a
    spare empty line where a key is lost.
@@ -28,6 +31,12 @@ the disk as /bin/basicc. Three checks:
 3. The speed, in instructions (the instruction-level emulator's PC histogram, the block of the program /bin/basic):
    RUN of  10 a=0 / 20 a=a+1 / 30 if a<1000 then goto 20  on both. The assembly BASIC must need less than a quarter of
    the C one's instructions (2026-11-11: 843 against 5,319 for a pass of lines 20 and 30).
+
+4. The picture (2026-11-20): one program of all the graphics statements - every ink, boxes filled and not, circles,
+   lines in every direction, shapes over each edge of the screen - RUN by both BASICs with the emulator writing the
+   video card's state (Y1VIDSTATE). The 64K of graphics RAM must be the same from the assembly BASIC and from the C
+   one on the instruction-level emulator and from the assembly one on the microcode emulator, and the same as
+   tests/ybasic/gfxref.py draws it (os/lib_gfx.c in Python); control 1 and control 2 as the last SCREEN left them.
 
 Work files in tests/ybasic/build (git-ignored).
 """
@@ -51,10 +60,10 @@ def check(name, ok, why=""):
     if not ok: fails += 1
 
 
-def run(tag, img, script, extra=()):
+def run(tag, img, script, extra=(), env=None):
     """the console output from BOOT FROM CF on, and the end of the emulator's own messages"""
     cmd = [EMUS[tag], "-x", "-m", "-c", img, "-l", LIMIT[tag]] + list(extra) + (["-E", MON_EXIT] if tag == "uc" else [])
-    r = subprocess.run(cmd, input=script, capture_output=True, timeout=3600)
+    r = subprocess.run(cmd, input=script, capture_output=True, timeout=3600, env=dict(os.environ, **(env or {})))
     out = r.stdout.decode("latin1")
     return out[max(out.find("BOOT FROM CF"), 0):], r.stderr.decode("latin1")[-200:]
 
@@ -106,6 +115,49 @@ def instructions(img, lines):
     return n
 
 
+# the picture: (statement, numbers) in order; BASIC runs them as a program, gfxref.py draws the same
+PICTURE = [("cls",), ("box", 0, 0, 639, 399), ("line", 0, 0, 639, 399), ("line", 639, 0, 0, 399), ("boxf", 20, 20, 120, 80),
+           ("color", 2), ("boxf", 40, 40, 200, 120), ("box", 30, 30, 210, 130), ("line", 0, 399, 639, 0), ("color", 1),
+           ("circle", 320, 200, 150), ("circle", 320, 200, 5), ("circle", 320, 200, 0), ("circle", 500, 100, 1),
+           ("color", 0), ("line", 20, 50, 120, 50), ("boxf", 60, 60, 70, 70), ("circle", 320, 200, 149), ("color", 1),
+           ("box", 600, 380, 700, 450), ("circle", 0, 0, 30), ("line", -20, 100, 40, 130), ("line", 300, -30, 340, 20),
+           ("boxf", -30, -30, 12, 9), ("boxf", 630, 390, 2000, 2000), ("boxf", 700, 10, 800, 20), ("boxf", 10, -50, 20, -40),
+           ("box", -10, 200, 10, 220), ("box", 250, 380, 260, 420), ("circle", 639, 399, 40), ("circle", 320, -10, 25),
+           ("line", 400, 300, 390, 280), ("line", 400, 300, 410, 280), ("line", 400, 300, 380, 310), ("line", 400, 300, 420, 310),
+           ("line", 400, 300, 380, 290), ("line", 400, 300, 420, 290), ("line", 400, 300, 390, 320), ("line", 400, 300, 410, 320),
+           ("line", 450, 300, 450, 330), ("line", 470, 330, 470, 300), ("line", 480, 300, 510, 300), ("line", 510, 310, 480, 310),
+           ("box", 520, 300, 520, 300), ("box", 530, 300, 540, 300), ("box", 550, 300, 550, 310), ("boxf", 560, 300, 560, 300),
+           ("pixelw", 100, 350), ("pixelw", 639, 0), ("pixelw", 640, 0), ("pixelw", 0, 400), ("pixelw", -1, -1),
+           ("color", 5), ("pixelw", 100, 350), ("pixelw", 102, 350), ("color", 1), ("screen", 3)]
+
+
+def picture_check(c, a):
+    sys.path.insert(0, HERE); import gfxref
+    ref = gfxref.Gfx(); lines = []
+    for n, (op, *v) in enumerate(PICTURE):
+        text = {"boxf": "box %d,%d,%d,%d,fill", "box": "box %d,%d,%d,%d", "line": "line %d,%d,%d,%d", "circle": "circle %d,%d,%d",
+                "pixelw": "pixelw %d,%d", "color": "color %d", "screen": "screen %d", "cls": "cls"}[op] % tuple(v)
+        lines.append("%d %s" % (10 * n + 10, text))
+        if op == "color": ref.ink = v[0]
+        elif op == "boxf": ref.box(*v, 1)
+        elif op in ("box", "line", "circle"): getattr(ref, op)(*v)
+        elif op == "pixelw": ref.plot(*v)
+    script = ("O\nbasic\n" + "".join(l + "\n" for l in lines) + "run\nbye\nexit\n0").encode()
+    got = {}
+    for tag, img, who in (("int", a, "assembly"), ("int", c, "C"), ("uc", a, "assembly")):
+        st = os.path.join(B, "gfx.%s.%s.vid" % (who, tag))
+        if os.path.exists(st): os.remove(st)
+        out, err = run(tag, fresh(img, "run.gfx.img"), script, ["-V"], {"Y1VIDSTATE": st})
+        d = dict(l.strip().partition(" ")[::2] for l in open(st)) if os.path.exists(st) else {}
+        g = got[who, tag] = bytes.fromhex(d.get("gram", ""))
+        bad = [i for i in range(65536) if g[i] != ref.g[i]] if len(g) == 65536 else [-1]
+        check("the picture, %s BASIC, %s" % (who, tag), "Ok" in out and not bad and d.get("control", "")[:1] == "C" and
+              d.get("control2") == "00", "%d bytes are not the reference's, the first at $%04X; control %s / %s; %s" %
+              (len(bad), bad[0] if bad else 0, d.get("control"), d.get("control2"), err.strip()[-80:]))
+    check("the picture: %d dots, the same from all three" % sum(bin(b).count("1") for b in ref.g),
+          got["assembly", "int"] == got["C", "int"] == got["assembly", "uc"] and any(ref.g) and not any(ref.g[32768:]))
+
+
 def main():
     c, a = images()
     names = [x for x in sys.argv[1:] if not x.startswith("-")] or \
@@ -122,6 +174,7 @@ def main():
         exp = open(os.path.join(ROOT, "tests/os/ybasic.%s.out" % tag), "rb").read().decode("latin1")
         check("tests/os ybasic, in C, %s" % tag, banner.sub("", got) == banner.sub("", exp),
               "not the expected transcript: " + err.strip())
+    if not [x for x in sys.argv[1:] if not x.startswith("-")]: picture_check(c, a)
     loop = ["10 a=0", "20 a=a+1", "30 if a<1000 then goto 20"]
     n = {k: instructions(img, loop + ["run"]) - instructions(img, loop) for k, img in (("C", c), ("assembly", a))}
     check("speed", n["assembly"] * 4 < n["C"], "the loop: %d instructions in assembly, %d in C" % (n["assembly"], n["C"]))

@@ -9,6 +9,8 @@
    A line with a number is stored, one without runs at once. Statements PRINT LET IF/THEN FOR/TO/STEP NEXT GOTO
    GOSUB RETURN INPUT POKE REM END; commands RUN LIST NEW SAVE LOAD HELP BYE; data files OPEN name FOR INPUT|OUTPUT,
    PRINT#, INPUT#, EOF(n), CLOSE; functions ABS RND PEEK LEN ASC VAL CHR$ LEFT$ RIGHT$ MID$ STR$ (man basic).
+   Graphics on the video card V4 (2026-11-20; ../lib_gfx.c): SCREEN n, CLS, COLOR c, PIXELW x,y, LINE x0,y0,x1,y1,
+   BOX x0,y0,x1,y1[,FILL], CIRCLE x,y,r and the function PIXELR(x,y).
    SAVE writes the program as text, as LIST shows it (one line a record, LF at the end), so a saved program can be
    read with cat, edited with vi and LOADed back; LOAD reads such a file line by line as if it were typed.
    Ctrl-C stops a running program ("BREAK IN n"): the check reads a waiting key before each line and keeps any
@@ -21,6 +23,7 @@
    program), so all of the program area holds lines; GOSUB and FOR nest 8 deep (3 before); Ctrl-C breaks; the tables
    are this program's own arrays; the banner says how many bytes the program area holds. */
 #include "../lib_fs.c"
+#include "../lib_gfx.c"
 #include "y1lib.c"
 
 #define NAMLEN 6
@@ -69,6 +72,15 @@
 #define T_STRS 162
 #define T_VAL 163
 #define T_EOF 164
+#define T_SCREEN 165
+#define T_CLS 166
+#define T_COLOR 167
+#define T_PIXELW 168
+#define T_PIXELR 169
+#define T_LINE 170
+#define T_BOX 171
+#define T_CIRCLE 172
+#define T_FILL 173
 /* relation bits */
 #define R_LT 1
 #define R_EQ 2
@@ -77,7 +89,8 @@
 /* the keywords, as words in two strings (y1cc's native passes refuse a 200-element initialiser, NODES_MAX, and a
    string literal over 160 characters): the n-th word of the two is token 128 + n, the order of the T_ numbers above */
 char *kwtab[] = { "PRINT LET IF THEN FOR TO NEXT GOTO GOSUB RETURN INPUT REM END RUN LIST NEW ABS RND PEEK POKE",
-                  "STEP BYE HELP SAVE LOAD CHR$ LEFT$ RIGHT$ MID$ LEN ASC OPEN CLOSE OUTPUT STR$ VAL EOF" };
+                  "STEP BYE HELP SAVE LOAD CHR$ LEFT$ RIGHT$ MID$ LEN ASC OPEN CLOSE OUTPUT STR$ VAL EOF",
+                  "SCREEN CLS COLOR PIXELW PIXELR LINE BOX CIRCLE FILL" };
 int pow10[] = { 10000, 1000, 100, 10, 1 };
 
 char lbuf[100];             /* the input line */
@@ -123,6 +136,8 @@ int lnum;                   /* the entered line number */
 int redir;                  /* stdin is a file or a pipe: no echo */
 int eofin;                  /* Ctrl-D / the end of the input */
 int pend;                   /* a key read by brk() that was not Ctrl-C (+256), 0 = none */
+int ink;                    /* COLOR: 1 draws, 0 erases, 2 inverts */
+int garg[4];                /* a graphics statement's numbers */
 
 int stmtline();
 int stmt();
@@ -229,7 +244,7 @@ int kwlen;
 int kwmatch(char *s) {                   /* a keyword at s? -> token, kwlen */
     char *t; int j; int tok; int k;
     tok = 128; k = 0;
-    while (k < 2) {
+    while (k < 3) {
         t = kwtab[k];
         while (*t) {
             j = 0;
@@ -263,7 +278,7 @@ int crunch() {                           /* keywords -> tokens, lbuf in place */
 int prkw(int tok) {                      /* print the keyword of a token */
     char *t; int k;
     tok = tok - 128; k = 0;
-    while (k < 2) {
+    while (k < 3) {
         t = kwtab[k];
         while (tok && *t) { if (*t == ' ') tok = tok - 1; t = t + 1; }
         if (*t) { while (*t && *t != ' ') { outc(*t); t = t + 1; } return 0; }
@@ -284,6 +299,7 @@ int cklead() {                           /* may the token at tp start a statemen
         if (c >= T_ABS && c <= T_PEEK) return 65535;       /* ABS RND PEEK */
         if (c >= T_CHRS && c <= T_ASC) return 65535;       /* CHR$ LEFT$ RIGHT$ MID$ LEN ASC */
         if (c >= T_STRS && c <= T_EOF) return 65535;       /* STR$ VAL EOF */
+        if (c == T_PIXELR || c == T_FILL) return 65535;
         return 0;
     }
     if (isletter(c)) return 0;
@@ -516,6 +532,12 @@ int factor() {
         return v;
     }
     if (c == T_EOF) { tp = tp + 1; parget(); if (fmode != 1) return 1; return flookc; }
+    if (c == T_PIXELR) {
+        tp = tp + 1; expect('('); if (err) return 0;
+        v = expr(); expect(','); if (err) return 0;
+        i = expr(); expect(')'); if (err) return 0;
+        return gfx_point(v, i);
+    }
     if (c >= '0' && c <= '9') {
         if (c == '0' && (tp[1] == 'x' || tp[1] == 'X')) { tp = tp + 2; return parsehex(); }
         return parsedec();
@@ -803,6 +825,35 @@ int st_input() {
     return vset(i, n);
 }
 int st_poke() { int a; tp = tp + 1; a = eval(); expect(','); if (err) return 0; poke(a, eval()); return 0; }
+/* the graphics statements: n numbers after the keyword, with commas between -> garg; 1 = all there */
+int gargs(int n) {
+    int i;
+    tp = tp + 1;
+    i = 0;
+    while (i < n) {
+        if (i) { expect(','); if (err) return 0; }
+        garg[i] = eval(); if (err) return 0;
+        i = i + 1;
+    }
+    return 1;
+}
+int st_screen() { if (gargs(1)) gfx_screen(garg[0]); return 0; }
+int st_color() { if (gargs(1)) ink = garg[0]; return 0; }
+int st_pixelw() { if (gargs(2)) gfx_plot(garg[0], garg[1], ink); return 0; }
+int st_line() { if (gargs(4)) gfx_line(garg[0], garg[1], garg[2], garg[3], ink); return 0; }
+int st_box() {
+    int f;
+    if (!gargs(4)) return 0;
+    f = 0; skipsp();
+    if (*tp == ',') {
+        tp = tp + 1; skipsp();
+        if ((*tp & 255) != T_FILL) return synerr();
+        tp = tp + 1; f = 1;
+    }
+    gfx_box(garg[0], garg[1], garg[2], garg[3], f, ink);
+    return 0;
+}
+int st_circle() { if (gargs(3)) gfx_circle(garg[0], garg[1], garg[2], ink); return 0; }
 int st_gosub() {
     tp = tp + 1; skipsp(); st_gotoN(); skipsp();
     if (*tp == ':') tp = tp + 1;
@@ -895,6 +946,8 @@ int st_help() {
     outs("COMMANDS: RUN LIST NEW SAVE \"f\" LOAD \"f\" HELP BYE (or Ctrl-D)\n");
     outs("FILES: OPEN \"f\" FOR OUTPUT|INPUT  PRINT# x  INPUT# x  EOF(1)  CLOSE\n");
     outs("FUNCTIONS: ABS(x) RND(n) PEEK(a) LEN ASC VAL CHR$ LEFT$ RIGHT$ MID$ STR$\n");
+    outs("GRAPHICS: SCREEN n  CLS  COLOR c  PIXELW x,y  LINE x,y,x,y  BOX x,y,x,y[,FILL]\n");
+    outs("  CIRCLE x,y,r  PIXELR(x,y)   640 x 400 dots; man basic\n");
     outs("NUMBERS: integers -32768..32767, 0x1F hex  OPERATORS: + - * / %\n");
     outs("  = <> < > <= >=   STRINGS: A$ (up to 32 chars), + joins\n");
     outs("Ctrl-C stops a running program. man basic for more.\n");
@@ -925,6 +978,13 @@ int stmt() {
     if (c == T_OPEN) return st_open();
     if (c == T_CLOSE) { tp = tp + 1; return fileclose(); }
     if (c == T_BYE) { endf = 2; return 0; }
+    if (c == T_SCREEN) return st_screen();
+    if (c == T_CLS) { tp = tp + 1; gfx_clear(); return 0; }
+    if (c == T_COLOR) return st_color();
+    if (c == T_PIXELW) return st_pixelw();
+    if (c == T_LINE) return st_line();
+    if (c == T_BOX) return st_box();
+    if (c == T_CIRCLE) return st_circle();
     return synerr();
 }
 int stmtline() {
@@ -942,7 +1002,7 @@ void main() {
     char *a; int runit; char name[52];
     vt = vtab; svt = svtab;
     newprog();
-    fmode = 0; outfile = 0; strsink = 0; lsave = 0; seed = 44257; eofin = 0;
+    fmode = 0; outfile = 0; strsink = 0; lsave = 0; seed = 44257; eofin = 0; ink = 1;
     redir = stdio() & 1;
     runit = 0;
     a = argstr();

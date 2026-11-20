@@ -40,6 +40,10 @@
 ;   and looks for a line from the current one on when its number is not below it.
 ; - A one-letter variable is found through a table of 26 addresses once it has been looked up by name.
 ; - Only the variables are cleared at the start, not the program area (C clears all its BSS: 13 K).
+; - The graphics statements (2026-11-20; basic.c with os/lib_gfx.c): COLOR's ink is kept as 0, 1 or 2 (C keeps the
+;   number and tests it at each dot); the line's two branches are one loop over a major and a minor axis; the
+;   numbers of a statement and of each shape are variables (GX_...). The dots, and the order control 1 is written
+;   in, are the C's: tests/ybasic/run.py compares the graphics RAM.
 ; =====================================================================================================================
 
         ORG 5000H
@@ -84,6 +88,15 @@ STTAB:  DW st_print
         DW synerr
         DW synerr
         DW synerr
+        DW st_screen            ; 165: the graphics statements (2026-11-20)
+        DW s_cls
+        DW st_color
+        DW st_pixelw
+        DW synerr               ; PIXELR is a function
+        DW st_line
+        DW st_box
+        DW st_circle
+        DW synerr               ; FILL
 
 ; ---- the Y1/OS syscall interface (os/lib_abi.c) ------------------------------------------------------------------
 SYSARG0:    EQU 0F06H           ; the syscall arguments and result, big-endian words
@@ -126,7 +139,9 @@ T_OUTPUT:   EQU 161
 T_STRS:     EQU 162
 T_VAL:      EQU 163
 T_EOF:      EQU 164
-NKW:        EQU 37              ; the keywords: tokens 128..164
+T_PIXELR:   EQU 169
+T_FILL:     EQU 173
+NKW:        EQU 46              ; the keywords: tokens 128..173
 
 ; =====================================================================================================================
 ; main (basic.c main): the variables cleared, the arguments, then the prompt's loop.
@@ -146,6 +161,8 @@ st_z:   LDIVR R3,0
         JSR newprog
         MVIW R3,44257
         STR R3,SEED
+        LDAI 1                  ; COLOR 1
+        STA GX_INK
         LDR R7,SY_STDIO         ; redir = stdio() & 1
         JSR sysr
         MVRLA R3
@@ -1051,6 +1068,10 @@ ck_ld:  BRZ ret0                ; cklead: may this start a statement?
         BRLT ck_in
         LDTI 165
         BRLT ck_bad             ; STR$ VAL EOF
+        LDTI T_PIXELR
+        BREQ ck_bad
+        LDTI T_FILL
+        BREQ ck_bad
         BR ck_in
 ck_ch:  JSR upch
         LDTI 65
@@ -1723,6 +1744,8 @@ factor: JSR skipsp
         BREQ fa_val
         LDTI T_EOF
         BREQ fa_eof
+        LDTI T_PIXELR
+        BREQ fa_px
 fa_syn: JSR synerr
 fa_z:   MVIW R3,0
         RET
@@ -1773,6 +1796,29 @@ fa_abs: INCR R5
         ANDI 128
         BRZ rts
         BR neg16
+fa_px:  INCR R5                 ; PIXELR(x,y): 1 if the dot is on
+        STR R5,TP
+        LDAI 40
+        JSR expect
+        LDA ERR
+        BRNZ fa_z
+        JSR expr
+        PUSHR R3
+        LDAI 44
+        JSR expect
+        LDA ERR
+        BRZ fa_px1
+        POPR R3
+        BR fa_z
+fa_px1: JSR expr
+        PUSHR R3
+        LDAI 41
+        JSR expect
+        POPR R4
+        POPR R3
+        LDA ERR
+        BRNZ fa_z
+        BR gxpoint
 fa_pk:  INCR R5                 ; PEEK(a)
         STR R5,TP
         JSR parget
@@ -2997,7 +3043,7 @@ stmt:   JSR skipsp
         BRZ rts
         LDTI 128
         BRLT sm_ch
-        LDTI 165
+        LDTI 174
         BRLT sm_tk
         BR synerr
 sm_tk:  SHL                     ; 2 x (the token - 128): its place in STTAB, which is at $5004
@@ -3031,6 +3077,652 @@ stmtline: JSR stmt
         INCR R5
         STR R5,TP
         BR stmtline
+
+; =====================================================================================================================
+; Graphics on the video card V4 (2026-11-20; basic.c's st_screen .. st_circle and os/lib_gfx.c, routine for routine)
+; 640 x 400 dots. The dot (x, y) is in plane y & 15 (chosen in control 1, OUT PC, of which GX_C1 is the copy: the port
+; cannot be read back), at $D800 + (y >> 4) * 80 + (x >> 3), the bit $80 >> (x & 7). A coordinate is a signed number:
+; off the screen it is not drawn. GX_INK is COLOR's ink, made 1 (draw), 0 (erase) or 2 (invert) when it is set.
+; =====================================================================================================================
+; gargs: ACC numbers after the keyword at R5, commas between, into GX_ARG -> ACC 1 = all there, 0 = an error
+gargs:  STA GX_N
+        INCR R5
+        STR R5,TP
+        MVIW R3,GX_ARG
+        STR R3,GX_P
+        LDAI 0
+        STA GX_I
+gxa1:   LDA GX_I
+        BRZ gxa2
+        LDAI 44
+        JSR expect
+        LDA ERR
+        BRNZ ret0
+gxa2:   JSR eval
+        LDA ERR
+        BRNZ ret0
+        LDR R6,GX_P
+        MVRHA R3
+        STAVR R6
+        INCR R6
+        MVRLA R3
+        STAVR R6
+        INCR R6
+        STR R6,GX_P
+        LDA GX_I
+        ADDI 1
+        STA GX_I
+        LDT GX_N
+        BRLT gxa1
+        BR ret1
+; SCREEN n: 0 the text, 1 the text and the graphics, 2 the graphics, 3 the two XORed
+st_screen: LDAI 1
+        JSR gargs
+        BRZ rts
+        LDR R3,GX_ARG
+        BR gxscr
+; CLS: the page's dots off
+s_cls:  INCR R5
+        STR R5,TP
+        BR gxclr
+; COLOR c: 1 draws, 0 erases, anything else inverts
+st_color: LDAI 1
+        JSR gargs
+        BRZ rts
+        LDR R3,GX_ARG
+        MVRHA R3
+        BRNZ gxo1
+        MVRLA R3
+        LDTI 2
+        BRLT gxo2
+gxo1:   LDAI 2
+gxo2:   STA GX_INK
+        RET
+; PIXELW x,y
+st_pixelw: LDAI 2
+        JSR gargs
+        BRZ rts
+        LDR R3,GX_ARG
+        LDR R4,GX_ARG+2
+        BR gxplot
+; LINE x0,y0,x1,y1
+st_line: LDAI 4
+        JSR gargs
+        BRZ rts
+        LDR R3,GX_ARG
+        STR R3,GX_X0
+        LDR R3,GX_ARG+2
+        STR R3,GX_Y0
+        LDR R3,GX_ARG+4
+        STR R3,GX_X1
+        LDR R3,GX_ARG+6
+        STR R3,GX_Y1
+        BR gxline
+; BOX x0,y0,x1,y1[,FILL]
+st_box: LDAI 4
+        JSR gargs
+        BRZ rts
+        LDAI 0
+        STA GX_FILL
+        JSR skipsp
+        LDTI 44
+        BRNEQ gxbox
+        INCR R5
+        STR R5,TP
+        JSR skipsp
+        LDTI T_FILL
+        BRNEQ synerr
+        INCR R5
+        STR R5,TP
+        LDAI 1
+        STA GX_FILL
+        BR gxbox
+; CIRCLE x,y,r
+st_circle: LDAI 3
+        JSR gargs
+        BRZ rts
+        BR gxcirc
+
+; gxctl: control 1 <- ACC, and its copy
+gxctl:  STA GX_C1
+        OUTA PC
+        RET
+; sge34: ACC = 1 if R3 >= R4 as signed numbers, else 0. uge34: the same, unsigned. eq34: 1 if R3 = R4. Keep R3, R4.
+sge34:  MVRHA R4
+        XORI 128
+        MVAT
+        MVRHA R3
+        XORI 128
+        BRLT ret0
+        BRGT ret1
+        BR gxu1
+uge34:  MVRHA R4
+        MVAT
+        MVRHA R3
+        BRLT ret0
+        BRGT ret1
+gxu1:   MVRLA R4
+        MVAT
+        MVRLA R3
+        BRLT ret0
+        BR ret1
+eq34:   MVRHA R4
+        MVAT
+        MVRHA R3
+        BRNEQ ret0
+        MVRLA R4
+        MVAT
+        MVRLA R3
+        BRNEQ ret0
+        BR ret1
+; ge640, ge400: ACC = 1 if R3 (unsigned) is off the screen's width, height
+ge640:  MVRHA R3
+        LDTI 2
+        BRGT ret1
+        BRLT ret0
+        MVRLA R3
+        LDTI 127
+        BRGT ret1
+        BR ret0
+ge400:  MVRHA R3
+        LDTI 1
+        BRGT ret1
+        BRLT ret0
+        MVRLA R3
+        LDTI 143
+        BRGT ret1
+        BR ret0
+; gxaddr: the dot (R3, R4) -> its plane chosen, R6 = its byte's address, ACC = its bit; ACC = 0: off the screen
+gxaddr: JSR ge640
+        BRNZ ret0
+        MVRHA R4
+        LDTI 1
+        BRGT ret0
+        BRLT gxd1
+        MVRLA R4
+        LDTI 143
+        BRGT ret0
+gxd1:   MVRLA R4                ; the plane: y & 15
+        ANDI 15
+        MVAT
+        LDA GX_C1
+        ANDI 15
+        BREQ gxd2
+        LDA GX_C1
+        ANDI 0F0H
+        ORT
+        JSR gxctl
+gxd2:   MVRLA R4                ; the row of text: y >> 4
+        SHR
+        SHR
+        SHR
+        SHR
+        MVAT
+        MVRHA R4
+        SHL
+        SHL
+        SHL
+        SHL
+        ORT
+        MVARL R6                ; R6 = row * 80 = (row << 6) + (row << 4)
+        LDAI 0
+        MVARH R6
+        SHL16 R6
+        SHL16 R6
+        SHL16 R6
+        SHL16 R6
+        MOVRR R6,R7
+        SHL16 R6
+        SHL16 R6
+        MVRLA R7
+        MVAT
+        MVRLA R6
+        ADDT
+        MVARL R6
+        MVRHA R7
+        MVAT
+        MVRHA R6
+        ADDTC
+        MVARH R6
+        MVRLA R3                ; + x >> 3
+        SHR
+        SHR
+        SHR
+        MVAT
+        MVRHA R3
+        SHL
+        SHL
+        SHL
+        SHL
+        SHL
+        ORT
+        JSR adda6
+        ADDIW R6,0D800H
+        MVRLA R3                ; the bit: $80 >> (x & 7)
+        ANDI 7
+        MVIW R5,GX_BIT
+        JSR adda5
+        LDAVR R5
+        RET
+; gxplot: the dot (R3, R4) in the ink GX_INK
+gxplot: JSR gxaddr
+        BRZ rts
+        STA GX_M
+        LDA GX_INK
+        BRZ gxp2
+        LDTI 1
+        BREQ gxp1
+        LDT GX_M                ; invert
+        LDAVR R6
+        XORT
+        STAVR R6
+        RET
+gxp1:   LDT GX_M                ; draw
+        LDAVR R6
+        ORT
+        STAVR R6
+        RET
+gxp2:   LDA GX_M                ; erase
+        INVA
+        MVAT
+        LDAVR R6
+        ANDT
+        STAVR R6
+        RET
+; gxpoint: R3 = 1 if the dot (R3, R4) is on, 0 if it is off or off the screen
+gxpoint: JSR gxaddr
+        BRZ gxq1
+        MVAT
+        LDAVR R6
+        ANDT
+        BRZ gxq1
+        MVIW R3,1
+        RET
+gxq1:   MVIW R3,0
+        RET
+; gxline: from (GX_X0, GX_Y0) to (GX_X1, GX_Y1). The longer distance is the major axis: major + 1 dots, the major
+; coordinate stepping by one; the error starts at major / 2, grows by minor, and at major loses major and the
+; minor coordinate steps.
+gxline: LDR R3,GX_X1
+        LDR R4,GX_X0
+        JSR sge34
+        BRZ gxl1
+        JSR sub34
+        LDAI 1
+        BR gxl2
+gxl1:   LDR R3,GX_X0
+        LDR R4,GX_X1
+        JSR sub34
+        LDAI 0
+gxl2:   STA GX_SX
+        STR R3,GX_DX
+        LDR R3,GX_Y1
+        LDR R4,GX_Y0
+        JSR sge34
+        BRZ gxl3
+        JSR sub34
+        LDAI 1
+        BR gxl4
+gxl3:   LDR R3,GX_Y0
+        LDR R4,GX_Y1
+        JSR sub34
+        LDAI 0
+gxl4:   STA GX_SY
+        STR R3,GX_DY
+        LDR R4,GX_DY            ; dx >= dy: x is the major axis
+        LDR R3,GX_DX
+        JSR uge34
+        STA GX_XM
+        BRZ gxl5
+        STR R3,GX_MAJ
+        STR R4,GX_MIN
+        BR gxl6
+gxl5:   STR R4,GX_MAJ
+        STR R3,GX_MIN
+gxl6:   LDR R3,GX_MAJ           ; e = major >> 1
+        MVRLA R3
+        SHR
+        MVARL R3
+        MVRHA R3
+        ANDI 1
+        BRZ gxl7
+        MVRLA R3
+        ORI 128
+        MVARL R3
+gxl7:   MVRHA R3
+        SHR
+        MVARH R3
+        STR R3,GX_E
+        LDR R3,GX_MAJ           ; n = major + 1
+        INCR R3
+        STR R3,GX_CNT
+gxl8:   LDR R3,GX_CNT
+        MVRLA R3
+        MVAT
+        MVRHA R3
+        ORT
+        BRZ rts
+        LDR R3,GX_X0
+        LDR R4,GX_Y0
+        JSR gxplot
+        LDA GX_XM
+        BRZ gxl9
+        JSR gxsx
+        BR gxl10
+gxl9:   JSR gxsy
+gxl10:  LDR R3,GX_E
+        LDR R4,GX_MIN
+        JSR add34
+        LDR R4,GX_MAJ
+        JSR uge34
+        BRZ gxl12
+        JSR sub34
+        STR R3,GX_E
+        LDA GX_XM
+        BRZ gxl11
+        JSR gxsy
+        BR gxl13
+gxl11:  JSR gxsx
+        BR gxl13
+gxl12:  STR R3,GX_E
+gxl13:  LDR R3,GX_CNT
+        DECR R3
+        STR R3,GX_CNT
+        BR gxl8
+gxsx:   LDR R3,GX_X0            ; x0 a step on its way
+        LDA GX_SX
+        BRZ gxsx1
+        INCR R3
+        STR R3,GX_X0
+        RET
+gxsx1:  DECR R3
+        STR R3,GX_X0
+        RET
+gxsy:   LDR R3,GX_Y0
+        LDA GX_SY
+        BRZ gxsy1
+        INCR R3
+        STR R3,GX_Y0
+        RET
+gxsy1:  DECR R3
+        STR R3,GX_Y0
+        RET
+; gxbox: the rectangle with the corners (GX_ARG, +2) and (+4, +6); GX_FILL: filled, its rows cut to the screen first.
+; The outline: the top row, the bottom row, the two columns between: every dot once.
+gxbox:  LDR R3,GX_ARG
+        STR R3,GX_BX0
+        LDR R3,GX_ARG+2
+        STR R3,GX_BY0
+        LDR R3,GX_ARG+4
+        STR R3,GX_BX1
+        LDR R3,GX_ARG+6
+        STR R3,GX_BY1
+        LDR R3,GX_BX1           ; the corners in order
+        LDR R4,GX_BX0
+        JSR sge34
+        BRNZ gxb1
+        STR R3,GX_BX0
+        STR R4,GX_BX1
+gxb1:   LDR R3,GX_BY1
+        LDR R4,GX_BY0
+        JSR sge34
+        BRNZ gxb2
+        STR R3,GX_BY0
+        STR R4,GX_BY1
+gxb2:   LDA GX_FILL
+        BRZ gxb9
+        LDR R3,GX_BX1           ; filled: nothing of it on the screen?
+        MVRHA R3
+        ANDI 128
+        BRNZ rts
+        LDR R3,GX_BY1
+        MVRHA R3
+        ANDI 128
+        BRNZ rts
+        LDR R3,GX_BX0
+        MVRHA R3
+        ANDI 128
+        BRZ gxb3
+        MVIW R3,0
+        STR R3,GX_BX0
+gxb3:   LDR R3,GX_BY0
+        MVRHA R3
+        ANDI 128
+        BRZ gxb4
+        MVIW R3,0
+        STR R3,GX_BY0
+gxb4:   LDR R3,GX_BX0
+        JSR ge640
+        BRNZ rts
+        LDR R3,GX_BY0
+        JSR ge400
+        BRNZ rts
+        LDR R3,GX_BX1
+        JSR ge640
+        BRZ gxb5
+        MVIW R3,639
+        STR R3,GX_BX1
+gxb5:   LDR R3,GX_BY1
+        JSR ge400
+        BRZ gxb6
+        MVIW R3,399
+        STR R3,GX_BY1
+gxb6:   LDR R3,GX_BY0
+        STR R3,GX_BY
+gxb7:   LDR R3,GX_BY1           ; the rows y0 .. y1
+        LDR R4,GX_BY
+        JSR uge34
+        BRZ rts
+        LDR R3,GX_BY
+        JSR gxrow
+        LDR R3,GX_BY
+        INCR R3
+        STR R3,GX_BY
+        BR gxb7
+gxb9:   LDR R3,GX_BY0           ; the outline
+        JSR gxrow
+        LDR R3,GX_BY0
+        LDR R4,GX_BY1
+        JSR eq34
+        BRNZ rts
+        LDR R3,GX_BY1
+        JSR gxrow
+        LDR R3,GX_BY0
+        INCR R3
+        STR R3,GX_BY
+gxb10:  LDR R3,GX_BY
+        LDR R4,GX_BY1
+        JSR eq34
+        BRNZ rts
+        LDR R3,GX_BX0
+        LDR R4,GX_BY
+        JSR gxplot
+        LDR R3,GX_BX0
+        LDR R4,GX_BX1
+        JSR eq34
+        BRNZ gxb11
+        LDR R3,GX_BX1
+        LDR R4,GX_BY
+        JSR gxplot
+gxb11:  LDR R3,GX_BY
+        INCR R3
+        STR R3,GX_BY
+        BR gxb10
+; gxrow: the box's row R3, from its left to its right
+gxrow:  STR R3,GX_Y0
+        STR R3,GX_Y1
+        LDR R3,GX_BX0
+        STR R3,GX_X0
+        LDR R3,GX_BX1
+        STR R3,GX_X1
+        BR gxline
+; gxcirc: the midpoint circle about (GX_ARG, +2) with the radius +4: x from 0, y from the radius, d from 1 - radius;
+; the eight dots of (x, y), each once; d < 0: d += 2x + 3, else d += 2(x - y) + 5 and y steps down; x steps up; until
+; x passes y.
+gxcirc: MVIW R3,0
+        STR R3,GX_CX
+        LDR R4,GX_ARG+4
+        STR R4,GX_CY
+        MVIW R3,1
+        JSR sub34
+        STR R3,GX_CD
+gxc1:   LDR R3,GX_CY
+        LDR R4,GX_CX
+        JSR uge34
+        BRZ rts
+        LDR R3,GX_CX
+        STR R3,GX_DA
+        LDR R3,GX_CY
+        STR R3,GX_DB
+        JSR gxdot4
+        LDR R3,GX_CX
+        LDR R4,GX_CY
+        JSR eq34
+        BRNZ gxc2
+        LDR R3,GX_CY
+        STR R3,GX_DA
+        LDR R3,GX_CX
+        STR R3,GX_DB
+        JSR gxdot4
+gxc2:   LDR R3,GX_CD
+        MVRHA R3
+        ANDI 128
+        BRZ gxc3
+        LDR R4,GX_CX
+        JSR add34
+        JSR add34
+        ADDIW R3,3
+        STR R3,GX_CD
+        BR gxc4
+gxc3:   LDR R4,GX_CX
+        JSR add34
+        JSR add34
+        LDR R4,GX_CY
+        JSR sub34
+        JSR sub34
+        ADDIW R3,5
+        STR R3,GX_CD
+        LDR R3,GX_CY
+        DECR R3
+        STR R3,GX_CY
+gxc4:   LDR R3,GX_CX
+        INCR R3
+        STR R3,GX_CX
+        BR gxc1
+; gxdot4: the four dots (cx +- GX_DA, cy +- GX_DB), each once
+gxdot4: JSR gxyp
+        JSR gxxp
+        JSR gxaz
+        BRZ gxf1
+        JSR gxxm
+gxf1:   LDR R3,GX_DB
+        MVRLA R3
+        MVAT
+        MVRHA R3
+        ORT
+        BRZ rts
+        JSR gxym
+        JSR gxxp
+        JSR gxaz
+        BRZ rts
+        BR gxxm
+gxaz:   LDR R3,GX_DA            ; ACC = 0 if GX_DA is 0
+        MVRLA R3
+        MVAT
+        MVRHA R3
+        ORT
+        RET
+gxyp:   LDR R3,GX_ARG+2         ; GX_DY2 = cy + GX_DB
+        LDR R4,GX_DB
+        JSR add34
+        STR R3,GX_DY2
+        RET
+gxym:   LDR R3,GX_ARG+2         ; GX_DY2 = cy - GX_DB
+        LDR R4,GX_DB
+        JSR sub34
+        STR R3,GX_DY2
+        RET
+gxxp:   LDR R3,GX_ARG           ; the dot (cx + GX_DA, GX_DY2)
+        LDR R4,GX_DA
+        JSR add34
+        LDR R4,GX_DY2
+        BR gxplot
+gxxm:   LDR R3,GX_ARG           ; the dot (cx - GX_DA, GX_DY2)
+        LDR R4,GX_DA
+        JSR sub34
+        LDR R4,GX_DY2
+        BR gxplot
+; gxscr: SCREEN R3. The text is switched in control 2 (OUT PF) through the ROM's copy of it at $0FF9, which is good
+; only once the ROM's video unit has been started: its flag at $0FF2 is 0 from a reset until then, and then the unit
+; is started here first (the ROM's video entry $FFBC with ACC = 1: the 6845's table, the text screen cleared, both
+; control registers 0).
+gxscr:  STR R3,GX_MODE
+        LDA 0FF2H
+        BRNZ gxs0
+        MVIW R7,0
+        LDAI 1
+        JSR 0FFBCH
+        LDAI 0
+        STA GX_C1
+gxs0:   LDR R3,GX_MODE
+        LDA 0FF9H
+        ANDI 0FEH
+        STA GX_M
+        MVRHA R3
+        BRNZ gxs1
+        MVRLA R3
+        LDTI 2
+        BRNEQ gxs1
+        LDA GX_M
+        ORI 1
+        STA GX_M
+gxs1:   LDA GX_M
+        STA 0FF9H
+        OUTA PF
+        LDA GX_C1
+        ANDI 03FH
+        STA GX_M
+        LDR R3,GX_MODE
+        MVRLA R3
+        MVAT
+        MVRHA R3
+        ORT
+        BRZ gxs2
+        LDA GX_M
+        ORI 040H
+        STA GX_M
+gxs2:   LDR R3,GX_MODE
+        MVRHA R3
+        BRNZ gxs3
+        MVRLA R3
+        LDTI 3
+        BRNEQ gxs3
+        LDA GX_M
+        ORI 080H
+        STA GX_M
+gxs3:   LDA GX_M
+        BR gxctl
+; gxclr: every dot of the page off: sixteen planes of 2K
+gxclr:  LDAI 0
+        STA GX_I
+gxk1:   LDA GX_C1
+        ANDI 0F0H
+        MVAT
+        LDA GX_I
+        ORT
+        JSR gxctl
+        MVIW R6,0D800H
+gxk2:   LDIVR R6,0
+        INCR R6
+        MVRHA R6
+        LDTI 0E0H
+        BRNEQ gxk2
+        LDA GX_I
+        ADDI 1
+        STA GX_I
+        LDTI 16
+        BRNEQ gxk1
+        RET
 
 ; =====================================================================================================================
 ; Tables and text
@@ -3073,7 +3765,17 @@ KWTAB:  DB 'PRINT',0,0,0
         DB 'STR$',0,0,0,0
         DB 'VAL',0,0,0,0,0
         DB 'EOF',0,0,0,0,0
+        DB 'SCREEN',0,0
+        DB 'CLS',0,0,0,0,0
+        DB 'COLOR',0,0,0
+        DB 'PIXELW',0,0
+        DB 'PIXELR',0,0
+        DB 'LINE',0,0,0,0
+        DB 'BOX',0,0,0,0,0
+        DB 'CIRCLE',0,0
+        DB 'FILL',0,0,0,0
         DB 0
+GX_BIT: DB 128,64,32,16,8,4,2,1
 S_USAGE:    DB 'usage: basic [file] | basic -r file   (BYE or Ctrl-D: back to the shell)',0
 S_USAGER:   DB 'usage: basic -r file',0
 S_BANNER:   DB 'Y1 BASIC  ',0
@@ -3106,6 +3808,8 @@ S_HELP:     DB 'STATEMENTS: PRINT LET IF/THEN FOR/TO/STEP NEXT GOTO GOSUB RETURN
             DB 'COMMANDS: RUN LIST NEW SAVE ',34,'f',34,' LOAD ',34,'f',34,' HELP BYE (or Ctrl-D)',10
             DB 'FILES: OPEN ',34,'f',34,' FOR OUTPUT|INPUT  PRINT# x  INPUT# x  EOF(1)  CLOSE',10
             DB 'FUNCTIONS: ABS(x) RND(n) PEEK(a) LEN ASC VAL CHR$ LEFT$ RIGHT$ MID$ STR$',10
+            DB 'GRAPHICS: SCREEN n  CLS  COLOR c  PIXELW x,y  LINE x,y,x,y  BOX x,y,x,y[,FILL]',10
+            DB '  CIRCLE x,y,r  PIXELR(x,y)   640 x 400 dots',59,' man basic',10
             DB 'NUMBERS: integers -32768..32767, 0x1F hex  OPERATORS: + - * / %',10
             DB '  = <> < > <= >=   STRINGS: A$ (up to 32 chars), + joins',10
             DB 'Ctrl-C stops a running program. man basic for more.',10,0
@@ -3177,6 +3881,39 @@ FO_STEP: DS 2
 FO_C:   DS 1
 NX_LIM: DS 2
 NX_SG:  DS 1
+GX_C1:  DS 1                    ; graphics: the copy of control 1 (OUT PC)
+GX_INK: DS 1                    ; COLOR: 1 draw, 0 erase, 2 invert
+GX_N:   DS 1
+GX_I:   DS 1
+GX_M:   DS 1
+GX_FILL: DS 1
+GX_SX:  DS 1
+GX_SY:  DS 1
+GX_XM:  DS 1
+GX_P:   DS 2
+GX_ARG: DS 8                    ; a statement's numbers
+GX_X0:  DS 2                    ; the line
+GX_Y0:  DS 2
+GX_X1:  DS 2
+GX_Y1:  DS 2
+GX_DX:  DS 2
+GX_DY:  DS 2
+GX_MAJ: DS 2
+GX_MIN: DS 2
+GX_E:   DS 2
+GX_CNT: DS 2
+GX_BX0: DS 2                    ; the box
+GX_BY0: DS 2
+GX_BX1: DS 2
+GX_BY1: DS 2
+GX_BY:  DS 2
+GX_CX:  DS 2                    ; the circle
+GX_CY:  DS 2
+GX_CD:  DS 2
+GX_DA:  DS 2
+GX_DB:  DS 2
+GX_DY2: DS 2
+GX_MODE: DS 2
 LBUF:   DS 100                  ; the input line
 NMBUF:  DS 6                    ; a name, upper case, blank-padded
 GSTK:   DS 32                   ; the GOSUB frames: line record, text

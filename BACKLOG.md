@@ -481,7 +481,23 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   (`tests/video/v40/run.py`, part 7). Not in the ROM: the monitor has 42 bytes free.
   **The layer in the debugger (2026-11-20):** the browser UI draws it with the text (`/api/gram`, the server's
   `gram`; OR / XOR, TEXT-OFF, the guns); `tests/y1dbg/run.py gfx`.
-  **Open for the V4's software:** the graphics layer in BASIC; the 70 Hz table in the driver; Y1/OS, BASIC
+  **Graphics in BASIC (2026-11-20):** `/bin/basic` (the assembly one) and `/bin/basicc` have SCREEN n, CLS, COLOR c,
+  PIXELW x,y, LINE, BOX [,FILL], CIRCLE and the function PIXELR(x,y) (`man basic`; `os/lib_gfx.c` is the C side's
+  library and the definition of every shape's dots). `tests/ybasic/run.py`: the session `gfx`, and one picture of
+  all the statements whose 64K of graphics RAM is the same from both BASICs, on both emulators, and from
+  `tests/ybasic/gfxref.py`. SCREEN starts the ROM's video unit when nothing has since the reset: the copy of control
+  2 it changes ($0FF9) is not set before that (found on the microcode emulator, whose RAM starts at $FF).
+  The C BASIC is now 32,334 bytes of the 32,768 its image, tables and program area may take: 434 to spare.
+  Not there: a filled circle, an ellipse, text drawn on the graphics layer, the second page from BASIC; and the
+  ROM's own BASIC (the monitor's I) has no graphics: the ROM is full.
+  **Next (2026-11-20): more graphics in BASIC.** As for everything in BASIC, a statement is written in the C
+  BASIC first - `os/commands/basic.c` with `os/lib_gfx.c`, the reference - and then in the assembly one, and
+  `tests/ybasic` holds the two to the same transcript and the same graphics RAM. Before the next statement
+  the C BASIC needs room: 434 bytes are left of its 32K. The ways: a smaller program area in both (PROGSZ,
+  12,288 bytes today: the two must refuse a program at the same size), or the C BASIC's code made smaller.
+  To choose with the statements wanted: a filled circle, an ellipse, text on the graphics layer, the second
+  page and a page flip, a flood fill.
+  **Open for the V4's software:** the 70 Hz table in the driver; Y1/OS, BASIC
   and the commands on 25 rows (they take the screen for 24). Scrolling the graphics apart from the text: in software (the note's section 12 has the three ways and
   their cost); in hardware it is a board change, listed in the note's "Possible later".
   A routing run needs the Mac awake: lid open, charger in

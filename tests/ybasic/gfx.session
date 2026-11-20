@@ -1,0 +1,54 @@
+basic
+help
+screen 1 : cls
+pixelw 10,10 : print pixelr(10,10); pixelr(11,10); pixelr(-1,5); pixelr(640,0); pixelr(0,400); pixelr(639,399)
+color 0 : pixelw 10,10 : print pixelr(10,10)
+color 2 : pixelw 10,10 : print pixelr(10,10) : pixelw 10,10 : print pixelr(10,10)
+color 256 : pixelw 12,10 : color -1 : pixelw 13,10 : color 1 : print pixelr(12,10); pixelr(13,10)
+line 0,0,7,0 : print peek(0xD800)
+line 8,0,23,0 : line 16,0,23,0 : print peek(0xD801); peek(0xD802)
+box 0,16,15,31,fill : print peek(0xD850); peek(0xD851); peek(0xD852)
+box 32,32,47,47 : print pixelr(32,32); pixelr(47,47); pixelr(33,33); pixelr(40,32); pixelr(32,40)
+color 2 : box 32,32,47,47 : color 1 : print pixelr(32,32); pixelr(47,47); pixelr(47,32); pixelr(32,47); pixelr(40,47)
+circle 100,100,10 : print pixelr(110,100); pixelr(90,100); pixelr(100,110); pixelr(100,90); pixelr(100,100); pixelr(107,107)
+circle 200,100,0 : circle 210,100,1 : print pixelr(200,100); pixelr(211,100); pixelr(210,101); pixelr(210,100)
+line -5,-5,5,5 : box -10,390,10,410 : circle 639,0,20 : print pixelr(5,5); pixelr(10,395); pixelr(619,0); pixelr(639,20)
+box 300,300,300,300 : box 310,300,320,300 : box 330,300,330,310 : print pixelr(300,300); pixelr(315,300); pixelr(330,305)
+line 400,300,390,280 : line 400,300,410,280 : line 400,300,380,310 : print pixelr(390,280); pixelr(410,280); pixelr(380,310)
+10 line 1,2,3,4 : box 5,6,7,8,fill : circle 9,10,11 : pixelw 1,1 : color 1 : cls : screen 0
+20 a = pixelr(3,3) + 1 : if pixelr(1,1) = 1 then print "on"
+30 for i = 0 to 3 : pixelw i * 2, 50 : next i
+list
+30
+20
+10
+x = 3 : pixelw x, x * 2 : print pixelr(3,6); pixelr(x, x + x); pixelr((x), (6))
+lines = 5 : boxes = 6 : colors = 7 : print lines + boxes + colors
+screen 2 : print peek(0x0FF9) : screen 3 : print peek(0x0FF9) : screen 0 : print peek(0x0FF9) : screen 1
+pixelw 1
+pixelw 1,
+pixelw
+line 1,2,3
+line 1,2,3,4,5
+box 1,2,3,4,5
+box 1,2,3,4,fill,
+box 1,2,3,4 fill
+circle 1,2
+circle 1,2,3,fill
+color
+screen
+cls 1
+fill = 3
+print fill
+pixelr = 2
+print pixelr(1)
+print pixelr(1,2
+print pixelr 1,2
+box = 1
+line = 2
+40 fill
+40 pixelr(1,2)
+40 print pixelr(1,2) : fill
+cls
+bye
+exit

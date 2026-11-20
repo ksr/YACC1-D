@@ -36,6 +36,27 @@ DESCRIPTION
     false; numbers compare signed, strings by character code), and
     + joins strings. Numbers are written in decimal or as 0x1F.
 
+    Graphics, on the video card's graphics layer: 640 x 400 dots,
+    x 0..639 from the left, y 0..399 from the top, each dot on or off.
+        SCREEN n       what is shown: 0 the text alone, 1 the text
+                       and the graphics, 2 the graphics alone, 3 the
+                       two XORed (text reads dark on a filled area).
+                       The first SCREEN after a reset also starts the
+                       video card, as video init does
+        CLS            every dot off (the text stays)
+        COLOR c        the ink of what is drawn next: 1 draws (as at
+                       the start), 0 erases, 2 inverts
+        PIXELW x,y     one dot
+        LINE x0,y0,x1,y1
+        BOX x0,y0,x1,y1[,FILL]   a rectangle by two opposite corners,
+                       its outline, or filled
+        CIRCLE x,y,r   a circle's outline
+        PIXELR(x,y)    a function: 1 if the dot is on, else 0
+    What is off the screen is not drawn: a shape may hang over an
+    edge. Draw with SCREEN 0 and show the picture afterwards, or with
+    SCREEN 1 and watch. The names of these statements, and FILL, can
+    no longer be variables.
+
     SAVE writes the program as text, exactly as LIST shows it, so a
     saved program can be read with cat, changed with vi and LOADed
     back. LOAD replaces the program in memory with the file's lines.
@@ -71,10 +92,17 @@ EXAMPLES
     > bye
     /> basic -r squares.bas
 
+    > 10 screen 1 : cls : box 0,0,639,399
+    > 20 for i = 0 to 390 step 30 : line 0,i,639,399-i : next i
+    > 30 circle 320,200,100 : box 280,180,360,220,fill
+    > run
+
 NOTES
     Ported from P8X basic/basic.c 2026-11-09, without its graphics
     statements. New: programs saved as text, basic -r, INPUT with a
-    prompt, Ctrl-C, deeper FOR and GOSUB.
+    prompt, Ctrl-C, deeper FOR and GOSUB. Graphics for this
+    machine's video card V4 since 2026-11-20 (os/lib_gfx.c); a
+    circle is not filled and a line is one dot wide.
     Written in C (os/commands/basic.c, now basicc, the specification)
     and 2026-11-11 again in YACC1 assembly
     (os/commands-asm/basic.asm): this basic, which behaves exactly as
