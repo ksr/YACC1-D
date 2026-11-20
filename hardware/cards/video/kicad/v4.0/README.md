@@ -394,7 +394,8 @@ share the output's pad and the ground's: the dot clock's track from the can to R
 and is as it was routed, with no second output pad hanging on it as a stub, and everything behind R20 is as it was.
 The four other pads are on the +5 V plane. C48, the oscillator's capacitor, is at the full-size can's VCC pad
 (5.6 mm) and 13.2 mm from the half-size can's, both on the planes. **It stays there (settled 2026-11-20)**: nearer
-the half-size can's pad it would stand where five signal tracks run, and those would have to be routed again.
+the half-size can's pad it would stand where signal tracks run on both sides of the board (SHS, PLANE2, CURF and
+CG4 among them), and those would have to be routed again.
 
 **Under a full-size can the two middle pads, 4 and 11, are +5 V, and the can's case is its ground pin** (CTS's
 sheet: "circuit & package ground"). The pads are bare and flat and the can stands in its socket above them, so
