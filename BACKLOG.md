@@ -1141,9 +1141,11 @@ Items below were traced to nets/pins or to test.hex and spot-checked; the report
     proof as for the `+`, and pcb-check without `--tests`: no failures. **`pcb-check --layers 4 --tests` at
     `7312c10` (2026-11-19, the board with both changes): no failures, one warning** (the DS12885+, as before); row 11
     of the order list is checked again. Its pictures of the copper draw each pad as the shape it is since pcb-check
-    `e65eabd` (before it, pin 1 of every DIP was a speck in them). Open on this card: whether the DS12885+ goes into
-    pcb-check's table of chips; the holder's own `+` inside its outline, left there (pcb-check's note stays; taking
-    it off is one more `SILK=1 build.sh`); the by-hand steps above; the order itself. After it: the clock's
+    `e65eabd` (before it, pin 1 of every DIP was a speck in them). The DS12885+ is in pcb-check's table of chips
+    since its `4b6388d` (2026-11-19: a 24-pin DIP, 0.600 inch across): with it the card has no warning (pcb-check
+    `645e7ac` without `--tests`, 2026-11-20). Open on this card: the holder's own `+` inside its outline, left
+    there (pcb-check's note stays; taking it off is one more `SILK=1 build.sh`); the by-hand steps above; the order
+    itself. After it: the clock's
     software (`docs/cards/rtc.md` section 6), and the microcode's -IO-ADDR-LD steps (L-2, below) if they are to go.
 - **2026-11-03: every name on the Y1/OS disk is lower case**, as in Unix (`/bin/cat`, `/lib/cc/cc1`, `/man`, `/docs`,
   `/src`, `fruit.txt`, `make.sh`, cc's `ccw.*`, asm's `.asm`/`.img`, `/pipe0.tmp`, `kermit.tmp`), Unix's own capitals
