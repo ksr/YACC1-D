@@ -455,7 +455,9 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   end on the same output and ground pads, so one clock track serves both, without a stub). Against the board
   checked on 2026-11-18 (`9d18abf`) that is two pads more on the +5 V plane and nothing else in copper; on the silk
   a `1` beside each can's pin 1 and `HALF CAN: UPPER 1` / `FULL CAN: LOWER 1` over the outline. ALL CHECKS PASS;
-  pcb-check without `--tests`: no failures. **To do: `pcb-check --tests` on the committed board.** **When the
+  pcb-check without `--tests`: no failures. **`pcb-check --layers 4 --tests` at `91a8299` (2026-11-20, the board
+  with the warning on its silkscreen, below): no failures, one warning** (the RAM's pin 1, accepted); row 6 of the
+  order list is checked again. **When the
   card is built: socket pins in the four holes of the can that is used and in no others** - under a full-size can
   the two middle holes are +5 V and the can's case is ground (the BOM line said "six single socket pins, which
   take both" for an hour, and was wrong: corrected the same day). The silkscreen says it too, over the outline:
