@@ -4,8 +4,8 @@ The circuit as data, checked and simulated; its schematic; and the board, 250 mm
 **every connection routed** (2026-11-12; reviewed, changed and routed again 2026-11-13; routed once more
 2026-11-14, its four clocks laid first). Not ordered, not built. The pre-order check (`pcb-check`, 2026-11-14)
 finds no failure and leaves one warning: "The pre-order check", below. Changed on the routed board since, no track
-moved: the oscillator's pin 1 tied to +5 V (2026-11-18); the oscillator a half-size can, and the labels by the power
-LED set apart (2026-11-20). `v40_netlist.py` is the card's circuit (parts, nets, the pins left open), written from the design note
+moved: the oscillator's pin 1 tied to +5 V (2026-11-18); a place that takes the oscillator in a can of either
+size, and the labels by the power LED set apart (2026-11-20). `v40_netlist.py` is the card's circuit (parts, nets, the pins left open), written from the design note
 `docs/cards/video-v4.md` (section 5 the clock and the stage, 6 the text, 7 the graphics RAM's two modes, 8 the dot
 path, 9 the ports).
 
@@ -155,7 +155,7 @@ equals `v40_netlist.py` net for net (254 nets), and its electrical rules check f
 | `gen_v40.py place <pcb>` | courtyards apart, everything inside the outline, the DIP sockets clear of each other and of the other parts |
 | `gen_v40.py clockroute <unrouted.kicad_pcb> <out.kicad_pcb>` | the four clocks, and the stubs from their sources to the series resistors, laid as locked tracks and vias; nothing else touched |
 | `gen_v40.py clocks <pcb> [report.txt]` | the clock nets as they are on a board: track, vias, the copper's length from each source to every input (`reports/clocks.txt`). Fails if an input is not reached or a clock's track is not locked |
-| `gen_v40.py verify reports/netlist.net <pcb>` | 435 key connections pin by pin, in the schematic and on the board; the layers; the planes |
+| `gen_v40.py verify reports/netlist.net <pcb>` | 437 key connections pin by pin, in the schematic and on the board; the layers; the planes |
 | `gen_v40.py drawing <pcb>` | `video-v4.0-placement.pdf` |
 | `gen_v40.py bom` | `BOM.md` |
 | `gen_v40.py fab <pcb>` | the order's files: `gerbers/` and `video-v4.0-gerbers.zip`. It orders nothing |
@@ -165,7 +165,7 @@ equals `v40_netlist.py` net for net (254 nets), and its electrical rules check f
 | `PADS=1 build.sh` | that change, whole: the schematic written anew and checked, `padnets`, the planes filled again, then the reports, the checks and the order's files. No part, track or via is touched (2026-11-18: the oscillator's pin 1) |
 | `gen_v40.py refit reports/netlist.net <pcb> REF...` | the routed board kept through a part's new footprint or place: the named parts are taken off the board and put on again as the netlist and the placement have them today. A new pad where an old one stood, on the same net, keeps the copper routed to it. Refused if a track or via would be left without its pad, or if any pad then differs from the netlist: that needs a route |
 | `gen_v40.py silk <pcb> [out] REF...` | the silkscreen for those parts alone: their labels and the legends that changed in `gen_v40.py`'s list are written and placed; every other text stays where it stands |
-| `REFIT="OSC1" RELABEL="OSC1 JP1 J4" build.sh` | that change, whole: the schematic written anew and checked, `refit` for REFIT's parts, the labels of RELABEL's parts (REFIT's, if it is not given), the planes filled again, then the reports, the checks and the order's files. No other part, no track and no via is touched (2026-11-20: the half-size oscillator). `SILK=1 RELABEL="..." build.sh` does the labels alone |
+| `REFIT="OSC1" RELABEL="OSC1 JP1 J4" build.sh` | that change, whole: the schematic written anew and checked, `refit` for REFIT's parts, the labels of RELABEL's parts (REFIT's, if it is not given), the planes filled again, then the reports, the checks and the order's files. No other part, no track and no via is touched (2026-11-20: the oscillator's place, twice). `SILK=1 RELABEL="..." build.sh` does the labels alone |
 
 ## The board (2026-11-12): 250 mm, placed and routed
 
@@ -274,7 +274,7 @@ input):
 
 | Net | Track | Vias | From its resistor to each input |
 |---|---|---|---|
-| CK (R20; 10 mm from OSC1's output, pin 5, to R20) | 187 mm | 1 | IC11.2 16, IC12.3 35, IC19.12 46, IC20.11 54, IC33.12 77, IC35.3 125, IC35.11 134 mm |
+| CK (R20; 10 mm from OSC1's output, pad 8, to R20) | 187 mm | 1 | IC11.2 16, IC12.3 35, IC19.12 46, IC20.11 54, IC33.12 77, IC35.3 125, IC35.11 134 mm |
 | D2 (R21; 6 mm from IC11 pin 12 to R21) | 288 mm | 5 | IC34.3 18, IC20.3 34, IC38.11 45, IC32.11 64, IC13.3 81, IC21.9 84, IC36.1 86, IC17.11 91 mm |
 | D3 (R22; 5 mm from IC11 pin 11 to R22) | 185 mm | 2 | IC12.11 41, IC12.2 50, IC14.6 73, IC13.1 75, IC24.2 108 mm |
 | STG (R23; 8 mm from IC13 pin 2 to R23) | 172 mm | 1 | IC22.4 70, IC15.11 71, IC16.11 102 mm |
@@ -361,48 +361,65 @@ every other file in its date alone. `pcb-check` on the new files: no failures, a
 pin alone. What is left for the buyer is in the BOM: not a
 can whose output is off with pin 1 high. The usual tri-state can is on with pin 1 high or open; no can of the other
 kind was found among the full-size 5 V cans looked at (Abracon ACO, ECS-P145X, Ecliptek EC11, Fox F5C-2E,
-Pletronics P1145). (The can is a half-size one since 2026-11-20: next.)
+Pletronics P1145). (Since 2026-11-20 the place takes a half-size can too: next.)
 
-**The oscillator is a half-size can (2026-11-20).** No full-size 25.175 MHz can was to be had: CTS's
+**The oscillator's place takes either can (2026-11-20).** No full-size 25.175 MHz can was to be had: CTS's
 MXO45-3C-25M1750 is sold by the thousand at Digi-Key and Mouser (pcb-check's `orders/ic-order.md`, 2026-11-19),
 and its half-size brother, **MXO45HS-3C-25M1750**, is in stock. From CTS's sheet for both (008-0258-0 rev. M):
 
-| | MXO45HS-3C-25M1750 |
-|---|---|
-| The can | 13.2 x 13.2 mm, 5.5 mm high; four pins 0.45 mm thick on a 7.62 mm square, an 8-pin DIP's corners: 1, 4 ground, 5 the output, 8 VCC. A dot and a sharp corner mark pin 1 |
-| Pin 1 | not connected on the MXO45HS ("STD output, no enable"); the MXO45HST is the same can with an enable there: output on with pin 1 high or open, off (high impedance) with it low. On the board the pin is tied to +5 V: either runs |
-| Supply | 5.0 V +/-10 %; 20 mA typical, 40 mA at most, from 20 to 40 MHz |
-| Output | HCMOS; rated for 50 pF at most or 10 TTL loads, as the parts list asked of the full-size can (seven 74F clock inputs and 240 mm of track, behind R20); 2.4 V and 0.4 V into 10 TTL loads; edges of 5 ns, 8 at most; 45 to 55 % |
-| "-3C-" | +/-50 ppm, -20 to +70 C |
+| | MXO45HS (half-size) | MXO45 (full-size) |
+|---|---|---|
+| The can | 13.2 x 13.2 mm, 5.5 mm high; four pins on a 7.62 mm square, an 8-pin DIP's corners: 1, 4 ground, 5 the output, 8 VCC | 20.8 x 13.2 mm, 5.1 mm high; four pins on a 14-pin DIP's corners: 1, 7 ground, 8 the output, 14 VCC |
+| Pin 1 | not connected ("STD output, no enable"). With a T in the name (MXO45HST, MXO45T) it is an enable: output on with pin 1 high or open, off (high impedance) with it low. On the board the pin is tied to +5 V: all four run | the same |
+| Supply | 5.0 V +/-10 %; 20 mA typical, 40 mA at most, from 20 to 40 MHz | the same |
+| Output | HCMOS; 50 pF at most or 10 TTL loads, what the parts list asks (seven 74F clock inputs and 240 mm of track, behind R20); 2.4 V and 0.4 V into 10 TTL loads; edges of 5 ns, 8 at most; 45 to 55 % | the same |
+| "-3C-" | +/-50 ppm, -20 to +70 C | the same |
 
-On the board the half-size can stands **at the output end of the full-size can's place**, 7.62 mm along: its output
-(pin 5) and its ground (pin 4) are on the very pads the full-size can's pins 8 and 7 had. So the dot clock's track
-from the can to R20, 10 mm on the back, is as it was routed, and so is everything behind R20. What moved is two
-pads, both on the +5 V plane: pin 1 and VCC (pin 8), from x = 109.30 to x = 116.92 mm (at y = 119.00 and 111.38),
-with their clearance holes in the GND plane and their thermal reliefs in the VCC plane. C48, the oscillator's
-capacitor, stays where the full-size can's VCC pin was: 13 mm from the half-size can's (5.5 before), both of them
-on the planes. `OSC1` and `25.175MHz` stand under the can (they stood beside R20's `R20 33`, the frequency
-beginning where the value ended: `3325.175MHz`), and the `1` for pin 1 at the can's right, beside the square pad.
+A dot and a sharp corner mark pin 1 on both.
 
-**The can is square: it goes into its socket four ways, and one is right.** Pin 1 at the silkscreen's `1` and the
-square pad. Turned half round it has +5 V on its ground pin and on its output.
+The footprint (`gen_v40.py osc_footprint()`, in `video-v4.0-local.pretty`) is KiCad's for the full-size can with two
+pads more. Its six pads carry the numbers of a 14-pin DIP's places:
 
-`REFIT="OSC1" RELABEL="OSC1 JP1 J4" build.sh` made the change on the routed board (and the labels of the two
-headers by the power LED with it, above). Measured against the board before it:
+| Pad | At (mm) | Net | Full-size can | Half-size can |
+|---|---|---|---|---|
+| 1 (square) | 109.30, 119.00 | +5 V | pin 1 | - |
+| 14 | 109.30, 111.38 | +5 V | VCC | - |
+| 4 (square) | 116.92, 119.00 | +5 V | - | pin 1 |
+| 11 | 116.92, 111.38 | +5 V | - | VCC (its pin 8) |
+| 7 | 124.54, 119.00 | GND | ground | ground (its pin 4) |
+| 8 | 124.54, 111.38 | OSCO | the output | the output (its pin 5) |
 
-- parts: OSC1 alone; pads: its four (two in place under new numbers, two moved); the 6647 tracks and vias and the
-  planes' outlines identical;
-- front and back copper: two pads gone and two new, nothing else in 3807 and 5649 shapes; both masks the same two
-  openings; the plated drill file the same two holes; the outline, the back silkscreen and the other drill file
-  the same;
-- the planes, the old fill taken from the new and the new from the old: copper differs in four places, the two
-  pads' old and new sites, 8.6 mm2 on the GND plane and 6.9 mm2 on the VCC plane; each plane one piece;
-- the front silkscreen: the can's outline, OSC1's, JP1's and J4's labels, the `1`, three legends gone and four
-  new; the board's 145 other texts as they stood;
+**The half-size can stands at the output end**, 7.62 mm along from the full-size can's pin 1. So the two cans
+share the output's pad and the ground's: the dot clock's track from the can to R20, 10 mm on the back, serves both
+and is as it was routed, with no second output pad hanging on it as a stub, and everything behind R20 is as it was.
+The four other pads are on the +5 V plane. C48, the oscillator's capacitor, is at the full-size can's VCC pad
+(5.5 mm) and 13 mm from the half-size can's, both on the planes.
+
+On the silkscreen, with the card standing: the full-size can's outline, a line across it where the half-size can
+ends, a `1` at the right of each can's pin 1 (beside the two square pads), and over the outline, where neither can
+covers it, `OSC1 25.175MHz`, `HALF CAN: UPPER 1`, `FULL CAN: LOWER 1`. (The label stood beside R20's `R20 33`, the
+frequency beginning where the value ended: `3325.175MHz`.)
+
+**The half-size can is square: it goes into its socket four ways, and one is right.** Its pin 1 at the upper `1`.
+Either can turned half round has +5 V on its ground pin and on its output.
+
+Made on the routed board in two steps the same day, each by `REFIT="OSC1" build.sh`: the half-size can's footprint
+at the output end (commit `ef7778c`, with the labels of the two headers by the power LED, above), then this one,
+for either can. Measured against the board the pre-order check passed on 2026-11-18 (`9d18abf`, the full-size can
+alone):
+
+- parts: every one where it was; the 6647 tracks and vias and the planes' outlines identical;
+- pads: two more, 4 and 11, at (116.92, 119.00) and (116.92, 111.38), both on +5 V; every other pad as it was;
+- front and back copper: those two pads and nothing else; both masks the two openings; the plated drill file the
+  two holes; the outline, the back silkscreen and the other drill file the same;
+- the planes: copper gone round those two pads and nowhere else, 8.6 mm2 of the GND plane (two clearance holes)
+  and 6.9 mm2 of the VCC plane (two thermal reliefs); each plane one piece;
+- the front silkscreen: the line across the can, the two legends and the second `1`, OSC1's label, and the texts
+  of the two headers by the power LED; every other text as it stood;
 - `build.sh: ALL CHECKS PASS`: the netlist KiCad makes of the schematic equal to `v40_netlist.py`, DRC with nothing
-  unconnected and no copper violation, the four clocks as laid (CK 187 mm, its farthest input 134 mm from R20), 435
+  unconnected and no copper violation, the four clocks as laid (CK 187 mm, its farthest input 134 mm from R20), 437
   key connections;
-- `pcb-check` (`a274432`) without `--tests`: **no failures**; its one warning is IC28's pin 1, as before. **The
+- `pcb-check` (`59f75f8`) without `--tests`: **no failures**; its one warning is IC28's pin 1, as before. **The
   check with `--tests` is to be run on the committed board.**
 
 The first run had four more warnings, all settled the same day. No bus definition, and the front edge taken for the
@@ -420,8 +437,9 @@ viewer; the VGA socket laid on a 1:1 print of the board.
 ## Next
 
 1. Before any order: `pcb-check` once more on the board as it then is, its pictures and the fab's viewer; the VGA
-   socket laid on a 1:1 print of the board. The oscillator is CTS's MXO45HS-3C-25M1750, its sheet read (above); of
-   any other make, pin 1's line and the output's load in its own sheet (the BOM says what fits).
+   socket laid on a 1:1 print of the board. The oscillator in stock is CTS's half-size MXO45HS-3C-25M1750, its
+   sheet read (above); of any other make, pin 1's line and the output's load in its own sheet (the BOM says what
+   fits).
 2. The emulators' model and the ROM's text driver are on the branch `video-v4-software` (`video-v2` until
    2026-11-18; written 2026-11-14: the V4 is that branch's card and `ROM 2026-11-14 V4` its ROM; the note's
    section 12). Open there: graphics, and Y1/OS on 25 rows.

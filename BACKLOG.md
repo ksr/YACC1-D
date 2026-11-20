@@ -450,7 +450,12 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   oscillator's label under the can, and a silkscreen step that writes the named parts' labels alone
   (`RELABEL`: the placer over the whole board moved labels of parts nobody had touched, and set R6's value beside
   R5's reference). ALL CHECKS PASS; pcb-check without `--tests`: no failures, the RAM's pin 1 its one warning.
-  **To do: `pcb-check --tests` on the committed board.** The can is square: four ways into its socket, one right.
+  The can is square: four ways into its socket, one right. **Then, the same day, a place for either can**
+  (`gen_v40.py osc_footprint()`: the full-size can's footprint with two pads more, the half-size can at its output
+  end on the same output and ground pads, so one clock track serves both, without a stub). Against the board
+  checked on 2026-11-18 (`9d18abf`) that is two pads more on the +5 V plane and nothing else in copper; on the silk
+  a `1` beside each can's pin 1 and `HALF CAN: UPPER 1` / `FULL CAN: LOWER 1` over the outline. ALL CHECKS PASS;
+  pcb-check without `--tests`: no failures. **To do: `pcb-check --tests` on the committed board.**
   **Next, before any order:** the check's pictures and the fab's gerber viewer by eye; the VGA socket laid on a
   1:1 print; then the order.
   **The emulators' model and the ROM's text driver are written (2026-11-14, branch `video-v2`, now
