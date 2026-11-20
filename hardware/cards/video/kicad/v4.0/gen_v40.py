@@ -35,13 +35,16 @@ Run with KiCad's bundled Python (pcbnew), from this folder:
   gen_v40.py place <pcb>                  -> the placement check: courtyards apart, everything inside the outline, the
                                              DIP sockets' outlines clear of each other and of the other parts
   gen_v40.py drawing <pcb> [out.pdf]      -> the placement drawing, video-v4.0-placement.pdf, on a landscape sheet
-  gen_v40.py silk <pcb> [out]             -> the silkscreen texts placed clear (board() does it on every new board)
+  gen_v40.py silk <pcb> [out] [REF...]    -> the silkscreen texts placed clear (board() does it on every new board);
+                                             with references, those parts' labels and the changed legends alone
   gen_v40.py clockroute <pcb> <out.pcb>   -> the four clocks (CK, D2, D3, STG and the stubs to their series
                                              resistors) laid as trees from their sources and locked, before Freerouting
   gen_v40.py clocks <pcb> [report.txt]    -> the clock nets on a board: track, and the copper's length to every input
   gen_v40.py planes <pcb>                 -> each plane one piece (on the routed board)
   gen_v40.py padnets <netlist> <pcb>      -> the routed board kept: open through-hole pads that the netlist now has on
                                              GND or VCC given that net (the plane joins them); any other change refused
+  gen_v40.py refit <netlist> <pcb> REF... -> the routed board kept: the named parts taken off and put on again with
+                                             today's footprint, place and nets; refused if a track loses its pad
   gen_v40.py dsn|shuffle|ses|stats ...    -> as gen_v13.py (Specctra export/import, Freerouting seeds, route stats)
   gen_v40.py link <netlist> <pcb>         -> the footprints' schematic links (path) set from the netlist, nothing else
   gen_v40.py verify <netlist> <pcb>       -> the key connections pin by pin (schematic and board), layers, planes
@@ -750,9 +753,15 @@ def cap_at(ref, pin, gnd):
 for _cap, _ic in N.DECOUPLE.items():
     if _ic.startswith("IC"):
         PLACE[_cap] = cap_at(_ic, N.POWER_PINS[_ic][0][0], N.POWER_PINS[_ic][1][0])
-_ox, _oy = COLX["N2"] + 1.1, 119.0                        # the oscillator lying under the multiplexers and the counter:
-PLACE["OSC1"] = (_ox, _oy, 0)                             # pin 1 bottom left, its output (pin 8) top right, under IC11
-PLACE["C48"] = (COLX["W1"] + 15.24 + 3.2, 112.0, 270)     # at the oscillator's VCC pin (14, top left)
+# the oscillator lying under the multiplexers and the counter. The half-size can (2026-11-20; the full-size can's
+# footprint until then, its pin 1 7.62 mm nearer the bus connector) stands at the output end of the full-size can's
+# place: its output (pin 5) and its ground (pin 4) are on the very pads the full-size can's pins 8 and 7 had, so the
+# clock's track from the can to R20 and the ground pin are as they were routed. Pin 1 and VCC (pin 8), both on the
+# +5 V plane, are the two pads that moved
+_ox, _oy = COLX["N2"] + 1.1 + 7.62, 119.0
+PLACE["OSC1"] = (_ox, _oy, 0)                             # pin 1 bottom left, its output (pin 5) top right, under IC11
+PLACE["C48"] = (COLX["W1"] + 15.24 + 3.2, 112.0, 270)     # the oscillator's capacitor, where the full-size can's VCC
+                                                          # pin (14) was: 13 mm from the half-size can's, on the planes
 PLACE["C49"] = (COLX["N10"] - 3.2, 50.2, 270)             # the ATmega's AVCC (pin 20), a little below the pin: clear of
                                                           # IC43's capacitor in the same gap
 X1F = X1R                                                 # the front edge
@@ -767,7 +776,7 @@ PLACE.update({
     # TXTONLY's pull-up (IC7), PU (the F parts)
     "R8": (GAPX("N4"), 50.0, 270), "R9": (GAPX("N3"), 108.3, 270), "R10": (GAPX("N8"), 79.2, 270),
     "R2": (GAPX("N5"), 63.9, 270),
-    # the clocks' series resistors, each beside its source: R20 from the oscillator's pin 8 up to the counter's clock
+    # the clocks' series resistors, each beside its source: R20 from the oscillator's output up to the counter's clock
     # (its pin 1 at the bottom), R21 and R22 at the counter's QC and QD, R23 at IC13's pin 2
     "R20": (GAPX("N2"), 104.0, 90), "R21": (GAPX("N5"), 85.0, 270), "R22": (GAPX("N5"), 95.0, 270),
     "R23": (GAPX("N2"), 45.0, 270),
@@ -905,16 +914,23 @@ UP = 270
 # the legends: (text, x, y, size) left-justified at (x, y) at angle 0 (the name only), or (text, x, y, size, angle)
 # centred on (x, y)
 _lx = COLX["N6"] - 0.5
-SILK = [("YACC1 Video Card V4.0", _lx, 100.3, 1.5), ("cottageworker.com", _lx, 103.6, 1.0),
+SILK = [("YACC1 Video Card V4.0", _lx + 4.0, 99.55, 1.5), ("cottageworker.com", _lx + 4.0, 103.6, 1.0),   # (where the
+        # placer set them on the first board, 4 mm from the place given then: a legend more than 3.2 mm from its
+        # place here is taken for a moved one and written again, silk_texts(b, only))
         ("TEXT-ONLY BUILD: NO IC24-IC34,", _lx + 3.2, 112.0, 1.0, UP), ("RN2, C25-C35", _lx + 1.5, 112.0, 1.0, UP),
-        ("1", _ox - 4.4, _oy + 0.2, 1.2, UP),               # the oscillator's pin 1 (V4-12): turned round it dies
+        ("1", _ox, _oy + 3.75, 1.2, UP),                    # the oscillator's pin 1 (V4-12): turned round it dies.
+                                                            # At the can's right with the card standing, beside pin 1
         ("KEYBOARD (PURPLE)", X1R - 14.6, 58.0, 1.0, UP), ("MOUSE (GREEN)", X1R - 14.6, 76.0, 1.0, UP)]
 # J4's pins run down the card as drawn: across it, 2.54 mm apart, with the card standing. Each pin's name in one of
-# two staggered columns at its left (5.08 mm for each name), the cable's colour and the unused VCC in a line beside
+# two staggered lines under it (5.08 mm for each name). Under those, centred on the header (2026-11-20): its name
+# (LABEL_AT), then the cable's black wire and the unused VCC, a line each. Until then the two notes were one line of
+# 25 mm that ran from under JP1 to R1's label, and JP1's own texts ran into the pins' names ("INT-EN GND", "ON: PS/2
+# -INTCTS"): now JP1's four short lines stand under JP1 and J4's five under J4, 3 mm and more apart
 _j4x, _j4y = PLACE["J4"][:2]
-SILK += [(t, _j4x - 2.6 - 1.6 * (k % 2), _j4y + 2.54 * k, 1.0, UP)
+_LINE = lambda k: -2.6 - 1.6 * k                           # the k-th line under the two headers, from their pins' centres
+SILK += [(t, _j4x + _LINE(k % 2), _j4y + 2.54 * k, 1.0, UP)
          for k, t in enumerate(("GND", "CTS", "VCC", "TXD", "RXD", "DTR"))]
-SILK += [("PIN 1 GND: BLACK WIRE. VCC NC", _j4x - 5.6, _j4y + 8.5, 1.0, UP)]
+SILK += [("PIN 1 GND: BLACK", _j4x + _LINE(3), _j4y + 6.35, 1.0, UP), ("PIN 3 VCC: NC", _j4x + _LINE(4), _j4y + 6.35, 1.0, UP)]
 # the jumpers' positions (the board-layout rules: every position labelled with what it selects; the function itself
 # stands beside the reference, COMPANION). SV1's four rows, top to bottom A15, A14, A13, A12: each row's address line
 # by its number at its right (2.54 mm apart across the standing card: "A15" would not fit), the key in a line above
@@ -922,7 +938,7 @@ _sv1x, _sv1y = PLACE["SV1"][:2]
 SILK += [("%d" % (15 - k), _sv1x + 4.9, _sv1y + 2.54 * k, 1.0, UP) for k in range(4)]
 SILK += [("A15-A12, ON=0", _sv1x + 6.6, _sv1y + 3.81, 1.0, UP)]
 _jp1x, _jp1y = PLACE["JP1"][:2]
-SILK += [("ON: PS/2 -INT", _jp1x - 4.2, _jp1y + 1.27, 1.0, UP)]
+SILK += [("ON: PS/2", _jp1x + _LINE(2), _jp1y + 1.27, 1.0, UP), ("-INT", _jp1x + _LINE(3), _jp1y + 1.27, 1.0, UP)]
 # the text beside a reference (the board-layout rules): each IC's type, the LED's and the jumpers' function, every
 # resistor's, network's, capacitor's and crystal's value, the oscillator's frequency
 # (as the parts list has it, the grade with it: "IC10 HD68B45SP / MC68B45P", "IC28 AS6C1008-55PCN", "IC41
@@ -935,18 +951,74 @@ COMPANION = dict({r: TYPE_SHORT.get(r, v[0]) for r, v in N.PARTS.items() if r.st
 # the parts whose companion is the footprint's own value field, shown on the silk: their library footprints have no
 # courtyard, so a free text cannot be told to belong to them (pcb-check's LABELS), but their own field can
 VALUE_FIELD = {"X1"}
+# the labels given their place (2026-11-20, as the I/O card V1.2's): {reference: (x, y, "line" | "stack")} - where the
+# reference's text stands (its centre) and how its companion stands to it: after it on its line, or on the next line
+# down the standing card. silk_place() puts these before it places the rest, and names any that is not clear where it
+# is put. The placer keeps two texts 0.15 mm apart and knows nothing of what they say:
+LABEL_AT = {
+    # the oscillator: under the can with the card standing, where the full-size can's other half lay. Its two texts
+    # stood beside R20's, and the frequency began where the resistor's value ended: "R20 3325.175MHz"
+    "OSC1": (_ox - 3.72, _oy - 3.81, "stack"),
+    # the two headers by the power LED: JP1's name under JP1, J4's under J4's pins' names (SILK, above)
+    "JP1": (_jp1x + _LINE(0), _jp1y + 1.27, "stack"),
+    "J4": (_j4x + _LINE(2), _j4y + 4.3, "line"),
+}
 UNCONNECTED = {}                                         # filled from the schematic's netlist by board()
 
 
-def silk_texts(b):
+FRESH = set()                           # silk_texts(b, only): the legends it wrote anew, for silk_place() to place
+
+
+def silk_texts(b, only=None):
     """the board's own silkscreen texts written afresh: every legend of SILK and one text per COMPANION (placed by
-    silk_place()); the old ones removed first, so a finished board takes the current lists. -> {ref: companion text}"""
+    silk_place()); the old ones removed first, so a finished board takes the current lists. -> {ref: companion text}
+
+    With only, a set of references (2026-11-20): the board's texts stay as they are but for those parts' and for the
+    legends that are new, gone or moved. Kept: a legend of SILK that stands within 3.2 mm of its place (silk_place()
+    moves a legend by up to 3 mm), every other part's companion, a value legend ("C3 C20: 100n") of other parts.
+    Taken off: the named parts' companions and value legends, and every other text that SILK no longer has. Written
+    anew: the named parts' companions, and the legends of SILK that found no text of theirs (FRESH). The placer run
+    over the whole board again moved labels of parts nobody had touched - which of them find no room beside their
+    part decides the order of all the others - and beside the VGA socket's resistors it set R6's value next to R5's
+    reference. So a change to some parts re-places those parts' labels alone. -> {ref: text} of the named parts"""
+    import math
     import pcbnew
     from pcbnew import VECTOR2I
-    FM = pcbnew.FromMM
-    for d in list(b.GetDrawings()):
-        if d.GetClass() == "PCB_TEXT" and d.GetLayer() == pcbnew.F_SilkS:
+    FM, MM = pcbnew.FromMM, pcbnew.ToMM
+    FRESH.clear()
+    fps = {fp.GetReference(): fp for fp in b.GetFootprints()}
+    old = [d for d in b.GetDrawings() if d.GetClass() == "PCB_TEXT" and d.GetLayer() == pcbnew.F_SilkS]
+    have = {}                                             # a legend's place in SILK -> the board's text that is it
+    if only is None:
+        for d in old:
             b.Delete(d)
+    else:
+        only = set(only)
+        at = lambda d: (MM(d.GetPosition().x), MM(d.GetPosition().y))
+        near = sorted((math.hypot(at(d)[0] - e[1], at(d)[1] - e[2]), k, i) for k, e in enumerate(SILK)
+                      for i, d in enumerate(old) if d.GetText() == e[0])
+        mine = set()
+        for dist, k, i in near:                           # each legend its nearest text, each text one legend
+            if dist <= 3.2 and k not in have and i not in mine:
+                have[k] = old[i]; mine.add(i)
+        drop = set()
+        for ref in sorted(only):                          # a named part's companion: the nearest text with its words
+            cands = [i for i, d in enumerate(old) if i not in mine and i not in drop and d.GetText() == COMPANION.get(ref)]
+            if cands:
+                rx, ry = at(fps[ref].Reference())
+                drop.add(min(cands, key=lambda i: math.hypot(at(old[i])[0] - rx, at(old[i])[1] - ry)))
+        others = {v for r, v in COMPANION.items() if r not in only}
+        for i, d in enumerate(old):
+            if i in mine or i in drop:
+                continue
+            m = re.match(r"((?:[A-Z]+\d+ ?)+): ", d.GetText())
+            if m and all(r in N.PARTS for r in m.group(1).split()):      # a value legend: kept if it names none of them
+                if any(r in only for r in m.group(1).split()):
+                    drop.add(i)
+            elif d.GetText() not in others:               # a legend SILK no longer has, or has somewhere else
+                drop.add(i)
+        for i in drop:
+            b.Delete(old[i])
 
     def text(s, size):
         t = pcbnew.PCB_TEXT(b)
@@ -955,7 +1027,9 @@ def silk_texts(b):
         b.Add(t)
         return t
 
-    for s, x, y, size, *ang in SILK:
+    for k, (s, x, y, size, *ang) in enumerate(SILK):
+        if k in have:
+            continue
         t = text(s, size)
         if ang:                                           # centred on (x, y), turned by ang[0]
             t.SetTextAngleDegrees(ang[0])
@@ -963,9 +1037,12 @@ def silk_texts(b):
         else:
             t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_LEFT)
         t.SetPosition(VECTOR2I(FM(x), FM(y)))
+        if only is not None:
+            FRESH.add(t.m_Uuid.AsString())
     comp = {}
-    fps = {fp.GetReference(): fp for fp in b.GetFootprints()}
     for ref, s in sorted(COMPANION.items()):
+        if only is not None and ref not in only:
+            continue
         if ref in VALUE_FIELD:
             t = comp[ref] = fps[ref].Value()
             assert t.GetText() == s, (ref, t.GetText())
@@ -977,7 +1054,7 @@ def silk_texts(b):
     return comp
 
 
-def silk_place(b, comp=None):
+def silk_place(b, comp=None, only=None):
     """R2-9 (2026-10-23), the board-layout rules (2026-10-24): the silkscreen texts placed clear of each other, of every
     footprint's silk graphics, of the pads, of the board edge and of every part's body - its own too: a reference stays
     readable with the part fitted. A DIP's body is its socket's outline (socket_check(): the widest stamped sockets),
@@ -1097,9 +1174,18 @@ def silk_place(b, comp=None):
         t.SetPosition(VECTOR2I(FM(x), FM(y)))
 
     compids = {c.m_Uuid.AsString() for c in comp.values()}
-    for d in b.GetDrawings():                           # 1. the legends, near their own place
-        if d.GetClass() != "PCB_TEXT" or d.GetLayer() != pcbnew.F_SilkS or d.m_Uuid.AsString() in compids:
-            continue
+    legends = [d for d in b.GetDrawings() if d.GetClass() == "PCB_TEXT" and d.GetLayer() == pcbnew.F_SilkS
+               and d.m_Uuid.AsString() not in compids]
+    if only is not None:                                # only: some parts' labels (silk_texts(b, only)). Every text
+        for d in legends:                               # that stays is in the way as it stands, and so is every
+            if d.m_Uuid.AsString() not in FRESH:        # other part's reference; the new legends are placed
+                placed.append(ink(d, CLR_SILK))
+        for fp in fps:
+            t = fp.Reference()
+            if fp.GetReference() not in only and t.IsVisible() and t.GetLayer() == pcbnew.F_SilkS:
+                placed.append(ink(t, CLR_IC if fp.GetReference().startswith("IC") else CLR_SILK))
+        legends = [d for d in legends if d.m_Uuid.AsString() in FRESH]
+    for d in legends:                                   # 1. the legends, near their own place
         x, y, a = MM(d.GetPosition().x), MM(d.GetPosition().y), d.GetTextAngleDegrees()
         offs = sorted({(i * 0.25, j * 0.25) for i in range(-12, 13) for j in range(-12, 13)},
                       key=lambda o: (abs(o[0]) + abs(o[1]), abs(o[1]), o))
@@ -1136,6 +1222,32 @@ def silk_place(b, comp=None):
     # chip's right as drawn (above it, with the card standing), else at its left
     SIDES = {"right": 0.0, "left": 2.0, "above": 4.0, "below": 6.0}
     del SPLIT[:]                                        # the parts whose value stands apart from the reference
+    # 1b. the labels given their place (LABEL_AT): the reference there, its companion on its line or on the next one,
+    # before the placer takes the rest. One that is not clear there is named: the place is to be chosen again
+    byref = {fp.GetReference(): fp for fp in fps}
+    for ref, (x, y, kind) in sorted(LABEL_AT.items()):
+        if only is not None and ref not in only:
+            continue
+        t, c = byref[ref].Reference(), comp.get(ref)
+        t.SetVisible(True); t.SetLayer(pcbnew.F_SilkS)
+        for u in (t, c):
+            if u is not None:
+                u.SetTextSize(VECTOR2I(FM(SILK_H), FM(SILK_H))); u.SetTextThickness(FM(SILK_W))
+                u.SetKeepUpright(False)
+                u.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_CENTER); u.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_CENTER)
+        er = extent(t, UP)
+        put(t, x, y, UP)
+        ok = free(ink(t), t)
+        if c is not None:
+            ec = extent(c, UP)                          # (the same two arrangements as the placer's "line" and "stack")
+            pc = (0.0, er[3] + 0.7 - ec[1]) if kind == "line" else (er[0] - 0.35 - ec[2], 0.0)
+            put(c, x + pc[0], y + pc[1], UP)
+            ok = ok and free(ink(c), c) and not hit(ink(c), ink(t, CLR_SILK))
+        if not ok:
+            unclear.append("%s (LABEL_AT)" % ref)
+        placed.append(ink(t, CLR_SILK))
+        if c is not None:
+            placed.append(ink(c, CLR_SILK))
     # 2. the references (ICs, then the others with a companion). A part that found no room beside it (far) is placed
     # earlier in the next round, before the neighbours that took its room; the round with the fewest such parts is kept.
     placed0, unclear0 = list(placed), list(unclear)
@@ -1150,6 +1262,8 @@ def silk_place(b, comp=None):
         for fp in sorted(fps, key=order):
             ref = fp.GetReference()
             t = fp.Reference()
+            if ref in LABEL_AT or (only is not None and ref not in only):   # placed in 1b, or not to be placed
+                continue
             if ref == "J1":                                 # the RCA library footprint hides its reference
                 t.SetVisible(True); t.SetLayer(pcbnew.F_SilkS)
             if not t.IsVisible() or t.GetLayer() != pcbnew.F_SilkS:
@@ -1377,13 +1491,24 @@ def socket_check(b):
     return probs, res[:6], len(socks)
 
 
-def silk_cmd(pcb, out=None):
-    """gen_v40.py silk <pcb> [out]: the silkscreen texts written afresh (silk_texts()) and placed (silk_place()) on a
-    finished board - texts only: no footprint, pad, track, via or zone is touched (board() does the same on every new one)"""
+def silk_cmd(pcb, *rest):
+    """gen_v40.py silk <pcb> [out] [REF...]: the silkscreen texts written afresh (silk_texts()) and placed
+    (silk_place()) on a finished board - texts only: no footprint, pad, track, via or zone is touched (board() does
+    the same on every new one). With references, those parts' labels and the legends that changed in SILK alone:
+    every other text stays where it stands (silk_texts(b, only))"""
     import pcbnew
+    out = rest[0] if rest and rest[0].endswith(".kicad_pcb") else None
+    only = set(rest[1:] if out else rest) or None
     b = pcbnew.LoadBoard(pcb)
-    unclear = silk_place(b, silk_texts(b))
+    comp = silk_texts(b, only)
+    unclear = silk_place(b, comp, only)
     pcbnew.SaveBoard(out or pcb, b)
+    if only:
+        own = {c.m_Uuid.AsString() for c in comp.values()} | FRESH
+        texts = [d for d in b.GetDrawings() if d.GetClass() == "PCB_TEXT" and d.GetLayer() == pcbnew.F_SilkS]
+        print("silk: written and placed: the labels of %s and the legends %s; the board's %d other texts stay as they stood"
+              % (" ".join(sorted(only)), ", ".join(sorted(repr(d.GetText()) for d in texts if d.m_Uuid.AsString() in FRESH)),
+                 sum(1 for d in texts if d.m_Uuid.AsString() not in own)))
     print("silk: %s" % ("every text clear" if not unclear else "still meeting something: " + ", ".join(unclear)))
     if SPLIT:
         print("silk: the value apart from the reference (each beside the part): " + ", ".join(SPLIT))
@@ -1481,6 +1606,114 @@ def padnets(netfile, pcb):
     return True
 
 
+def refit(netfile, pcb, *refs):
+    """gen_v40.py refit <netlist> <pcb> REF...: the routed board kept through a change of a part's footprint or place
+    (2026-11-20: the oscillator from the full-size can to the half-size one). Each named footprint is taken off the
+    board and put on it again as board() would put it today - its library footprint, its place (PLACE), its pads on
+    the nets of the schematic's netlist - and nothing else is touched: no other footprint, no track, no via. A pad of
+    the new footprint that stands where a pad of the old one stood, on the same net, keeps the copper routed to it.
+    Refused, and nothing saved: a pad of the new footprint whose net the board does not have; a pad of any part that
+    differs from the netlist afterwards (padnets()' comparison); a track or via that ended on a pad of an old
+    footprint and ends on no pad of its net now (that change needs a route: build.sh's whole run). The planes are
+    filled again and the silkscreen placed again by the steps build.sh runs next, and KiCad's DRC there is the judge
+    of the new pads' clearances. The title block's date follows the netlist's."""
+    import pcbnew
+    from pcbnew import VECTOR2I
+    FM, MM = pcbnew.FromMM, pcbnew.ToMM
+    nodes, comps = read_netlist(netfile)
+    open_pins = read_unconnected(netfile)
+    b = pcbnew.LoadBoard(pcb)
+    old_pads, lines = [], []
+    for ref in refs:
+        found = [f for f in b.GetFootprints() if f.GetReference() == ref]
+        if ref not in N.PARTS or ref == "X1" or len(found) != 1:
+            print("refit: %s is not a part of this board that can be put on again" % ref)
+            return False
+        old = found[0]
+        was = [(p.GetNumber(), p.GetNetname(), MM(p.GetPosition().x), MM(p.GetPosition().y),
+                max(MM(p.GetSize(pcbnew.F_Cu).x), MM(p.GetSize(pcbnew.F_Cu).y))) for p in old.Pads()]
+        was_fp = old.GetFPIDAsString()
+        was_at = (MM(old.GetPosition().x), MM(old.GetPosition().y), old.GetOrientationDegrees())
+        b.Delete(old)
+        value, symid, fpid, note = N.PARTS[ref]
+        lib, name = fpid.split(":")
+        libdir = os.path.join(HERE, lib + ".pretty") if lib in (N.BUSLIB, LOCAL) else os.path.join(KFP, lib + ".pretty")
+        fp = pcbnew.FootprintLoad(libdir, name)
+        if fp is None:
+            raise SystemExit("refit: footprint %s not found" % fpid)
+        fp.SetFPIDAsString(fpid)
+        fp.SetReference(ref)
+        fp.SetValue(value)
+        fp.SetPath(pcbnew.KIID_PATH(comps[ref]))
+        b.Add(fp)
+        x, y, rot = PLACE[ref]
+        fp.SetOrientationDegrees(rot)
+        fp.SetPosition(VECTOR2I(FM(x), FM(y)))
+        now = []
+        for p in fp.Pads():
+            key = (ref, p.GetNumber())
+            want = nodes.get(key) or open_pins.get(key) or ""
+            if want:
+                ni = b.FindNet(want)
+                if ni is None and want.startswith("unconnected-"):
+                    ni = pcbnew.NETINFO_ITEM(b, want)
+                    b.Add(ni)
+                if ni is None:
+                    print("refit: %s.%s is on %s, a net the board does not have: the whole build" % (ref, p.GetNumber(), want))
+                    return False
+                p.SetNet(ni)
+            else:
+                p.SetNetCode(0)
+            now.append((p.GetNumber(), p.GetNetname(), MM(p.GetPosition().x), MM(p.GetPosition().y)))
+        old_pads += [(ref,) + w for w in was]
+        same = lambda u, v: abs(u[2] - v[2]) < 0.001 and abs(u[3] - v[3]) < 0.001 and u[1] == v[1]
+        kept = ["%s (%s) where %s was" % (v[0], v[1].lstrip("/"), u[0]) for v in now for u in was if same(u, v)]
+        new = ["%s (%s) at (%.2f, %.2f)" % (v[0], v[1].lstrip("/") or "open", v[2], v[3])
+               for v in now if not any(same(u, v) for u in was)]
+        gone = ["%s (%s) at (%.2f, %.2f)" % (u[0], u[1].lstrip("/") or "open", u[2], u[3])
+                for u in was if not any(same(u, v) for v in now)]
+        lines.append("%s: %s at (%.2f, %.2f) %g -> %s at (%.2f, %.2f) %g" % ((ref, was_fp.split(":")[1]) + was_at
+                                                                              + (fpid.split(":")[1], x, y, rot)))
+        lines.append("  pads on the old copper: %s" % (", ".join(kept) or "none"))
+        lines.append("  new pads: %s" % (", ".join(new) or "none"))
+        lines.append("  pads gone: %s" % (", ".join(gone) or "none"))
+    # every pad of the board as the netlist has it
+    wrong = []
+    for f in b.GetFootprints():
+        for p in f.Pads():
+            if p.GetNumber():
+                key = (f.GetReference(), p.GetNumber())
+                want = nodes.get(key) or open_pins.get(key) or ""
+                if p.GetNetname() != want:
+                    wrong.append("%s.%s: on the board %s, in the netlist %s" % (key + (p.GetNetname() or "open", want or "open")))
+    # no track or via left without the pad it ended on
+    pads_now = [(p.GetNetname(), p.GetBoundingBox()) for f in b.GetFootprints() for p in f.Pads()]
+    lost = []
+    for ref, num, net, x, y, size in old_pads:
+        for t in b.GetTracks():
+            if not net or t.GetNetname() != net:
+                continue
+            ends = [t.GetPosition()] if t.Type() == pcbnew.PCB_VIA_T else [t.GetStart(), t.GetEnd()]
+            for e in ends:
+                if abs(MM(e.x) - x) <= size / 2 and abs(MM(e.y) - y) <= size / 2 \
+                        and not any(n == net and q.Contains(e) for n, q in pads_now):
+                    lost.append("%s at (%.2f, %.2f), which ended on %s.%s" % (net.lstrip("/"), MM(e.x), MM(e.y), ref, num))
+    for line in lines:
+        print("refit: " + line if not line.startswith(" ") else "refit:" + line)
+    if wrong or lost:
+        for w in wrong[:20]:
+            print("refit: NOT as the netlist: " + w)
+        for w in sorted(set(lost))[:20]:
+            print("refit: a track of %s has no pad now" % w)
+        print("refit: refused - this change needs a route: the whole build (build.sh)")
+        return False
+    b.GetTitleBlock().SetDate(N.DATE)
+    pcbnew.SaveBoard(pcb, b)
+    print("refit: every pad as the netlist has it; no track or via lost its pad; %d tracks and vias untouched"
+          % len(b.GetTracks()))
+    return True
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 # The four clocks, routed here before Freerouting sees the board (2026-11-13)
 #
@@ -1505,7 +1738,7 @@ def padnets(netfile, pcb):
 # step across a layer's grain costs CK_GRAIN[0] times its length and a slanted one CK_GRAIN[1] times, and a clock
 # changes sides in a via (CK_VIA) as well as in its own through-hole pads: 1 mm across the grain on each layer, nine
 # vias, and the board routes (2026-11-14: one order of four, 455 vias).
-CLOCKS = (("OSCO", "OSC1", "8"), ("QC", "IC11", "12"), ("QD", "IC11", "11"), ("STGO", "IC13", "2"),   # net, its source:
+CLOCKS = (("OSCO", "OSC1", "5"), ("QC", "IC11", "12"), ("QD", "IC11", "11"), ("STGO", "IC13", "2"),   # net, its source:
           ("CK", "R20", "2"), ("D2", "R21", "2"), ("D3", "R22", "2"), ("STG", "R23", "2"))            # routed in this order
 CK_GRID = 0.25
 CK_ALPHA = 0.6
@@ -1863,7 +2096,8 @@ KEY = [
     ("IC15", "11", "STG"), ("IC16", "11", "STG"), ("IC13", "1", "D3"), ("IC13", "2", "STGO"), ("IC15", "1", "GND"),
     ("IC10", "38", "RA0"), ("IC10", "35", "RA3"), ("IC18", "10", "RA0"), ("IC18", "7", "RA3"),
     # the dot clock and the counter
-    ("OSC1", "8", "OSCO"), ("OSC1", "1", "VCC"),            # pin 1 tied high (2026-11-18): either kind of can runs
+    ("OSC1", "5", "OSCO"), ("OSC1", "1", "VCC"),            # pin 1 tied high (2026-11-18): either kind of can runs
+    ("OSC1", "4", "GND"), ("OSC1", "8", "VCC"),             # the half-size can's two supply pins (2026-11-20)
     ("IC11", "2", "CK"), ("IC11", "14", "D0"), ("IC11", "13", "D1"), ("IC11", "12", "QC"),
     ("IC11", "11", "QD"), ("IC11", "1", "PU"), ("IC11", "7", "PU"), ("IC11", "9", "PU"), ("IC11", "10", "PU"),
     ("R2", "1", "VCC"), ("R2", "2", "PU"),
@@ -1984,8 +2218,8 @@ def bom():
         rows.setdefault(key, [[], note])[0].append(ref)
     nsock = collections.Counter(ic_size(r) for r in N.PARTS if "DIP-" in N.PARTS[r][2] and r.startswith("IC"))
     L = ["# Video card V4.0 - bill of materials", "",
-         "GENERATED by `gen_v40.py bom` from `v40_netlist.py` (%s) - do not edit. %d parts. Buy %s: %s, and a 4-pin "
-         "socket for the oscillator. **Text-only build**: leave off the parts marked *off*; nothing is fitted for "
+         "GENERATED by `gen_v40.py bom` from `v40_netlist.py` (%s) - do not edit. %d parts. Buy %s: %s, and a "
+         "half-size oscillator socket (four pins on an 8-pin DIP's corners) for the oscillator. **Text-only build**: leave off the parts marked *off*; nothing is fitted for "
          "that build only." % (N.DATE, len(N.PARTS), N.SOCKETS,
                                ", ".join("%d x %d-pin %.2f mm" % (n, p, w) for (p, w), n in sorted(nsock.items()))), "",
          "| Qty | Value | Footprint | References | Text-only | Buy / note |", "|---|---|---|---|---|---|"]
@@ -2048,6 +2282,8 @@ if __name__ == "__main__":
         ok = planes(*a)
     elif cmd == "padnets":
         ok = padnets(*a)
+    elif cmd == "refit":
+        ok = refit(*a)
     elif cmd == "clockroute":
         clockroute(*a)
     elif cmd == "clocks":

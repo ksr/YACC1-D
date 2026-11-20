@@ -439,9 +439,20 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   is accepted as it is, open. `pcb-check` again on the new files: no failures, the warning names the RAM's pin
   alone. Its LABELS warning was settled on the silk: IC10, IC28 and IC41 now read as the parts list
   has them (`SILK=1 build.sh`: silk only, nothing moved). Nothing is ordered.
+  **2026-11-20: the oscillator is a half-size can**, CTS MXO45HS-3C-25M1750 (no full-size 25.175 MHz can was in
+  stock: pcb-check's `orders/ic-order.md`). Its sheet (008-0258-0 rev. M) settles what was to be confirmed on the
+  bought can: pin 1 not connected (an enable, on when high or open, on the MXO45HST), the output rated for 50 pF
+  or 10 TTL loads. `REFIT="OSC1" RELABEL="OSC1 JP1 J4" build.sh` on the routed board (`gen_v40.py refit`, new):
+  the can at the output end of the full-size can's place, its output and ground on the pads that were there, so
+  the clock's track to R20 is untouched; two pads on the +5 V plane moved 7.62 mm, and that is all the copper
+  (6647 tracks and vias identical; the planes differ at those pads' old and new sites alone). With it the labels
+  of the two headers by the power LED set apart (`INT-EN GND`, `-INTCTS`, `VCC NC R1` ran together), the
+  oscillator's label under the can, and a silkscreen step that writes the named parts' labels alone
+  (`RELABEL`: the placer over the whole board moved labels of parts nobody had touched, and set R6's value beside
+  R5's reference). ALL CHECKS PASS; pcb-check without `--tests`: no failures, the RAM's pin 1 its one warning.
+  **To do: `pcb-check --tests` on the committed board.** The can is square: four ways into its socket, one right.
   **Next, before any order:** the check's pictures and the fab's gerber viewer by eye; the VGA socket laid on a
-  1:1 print; the data sheet of the oscillator that is bought (its load; its pin 1 not connected, or an enable
-  that is on when high: the BOM); then the order. `pcb-check --tests` (the system's `make check`) passes too.
+  1:1 print; then the order.
   **The emulators' model and the ROM's text driver are written (2026-11-14, branch `video-v2`, now
   `video-v4-software`):**
   the card in both emulators (`software/videomodel.h`; the branch's default card since 2026-11-18), and `ROM
@@ -469,7 +480,7 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   **Decided 2026-11-14: V2.0 is not ordered** - this card alone is built; V2.0 stays on file (the top of this entry).
   Nothing of the note's section 13 is left to decide: the control bits' places, the raster, the font and V2.0's
   order are answered. What is left before an order is the list above (the pre-order check's pictures and the fab's
-  viewer by eye, the VGA socket on a 1:1 print, the bought oscillator's data sheet), and the order itself.
+  viewer by eye, the VGA socket on a 1:1 print), and the order itself.
   **For V2.0, had it been ordered (seen 2026-11-12 while simulating this card; V2.0's files are not changed; kept
   for the record, the card will not be built):** its
   slot mode has the strobe as a term of -WE, so a write strobe that ends inside a pulse cuts the pulse short. The

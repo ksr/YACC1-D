@@ -431,7 +431,7 @@ At the machine's 1 MHz the 6845 of the V1.0 card can be tried on this card as it
 | Block | Parts | ICs |
 |---|---|---|
 | Bus, ports, registers | as V2.0: 74S85, 74LS138, 2 x 74LS32; two 74HCT273 where V2.0 has one; the status buffer (74LS244); 74HCT04, 74HCT08 | 9 |
-| The 6845 and the clock | the 6845; a 25.175 MHz oscillator (DIP-14 can) in place of the crystal circuit and the DOTS logic; 74F163A, 74F74 (the 6845's clock, DE's delay), 74ACT04; four 33 ohm resistors in series with the clocks | 4 |
+| The 6845 and the clock | the 6845; a 25.175 MHz oscillator (a half-size can, four pins on an 8-pin DIP's corners, since 2026-11-20; a DIP-14 can until then) in place of the crystal circuit and the DOTS logic; 74F163A, 74F74 (the 6845's clock, DE's delay), 74ACT04; four 33 ohm resistors in series with the clocks | 4 |
 | Text | IDT7134; 2 x 74ACT574 (the stage); 74ACT574 (the code); AT28C64B-15; 74F299; 74F74 (the cursor flag, the retimed dot); 74F21 (the load); 74ACT86; 74ACT08 | 10 |
 | Graphics, left off in the text-only build | 128K RAM; 4 x 74ACT157; the write buffer (74ACT244), the read latch (74ACT574), direct mode's read buffer (74HCT244), the byte latch (74ACT574); 74F299; 74F74 (the write flip-flop, TEXT-ONLY); a 10k x 8 network | 11 |
 | Slot logic, dots and syncs | 74F74 (the -WE pulse, the read latch's clock); 74ACT32, 74ACT00, 74ACT11; 74ACT02 (the guns); a 74HCT74 for the vertical sync; 3 x 470 ohm, the DE-15 | 6 |
@@ -480,6 +480,8 @@ copper from the order's gerbers and drill files alone and finds the schematic's 
 bus connector's 96 pins are the bus template's; the layout rules hold. Its one warning is an input with nothing on
 it: pin 1 of the graphics RAM, which is not connected inside the 128K part (accepted 2026-11-18: it stays open).
 Until 2026-11-18 it named the oscillator's pin 1 as well, an enable with its own pull-up on the cans that have one.
+(2026-11-20: the oscillator a half-size can and the labels by the power LED set apart, both on the routed board;
+the check is run again: section 13's list.)
 **That pin is tied to +5 V since 2026-11-18**, on the VCC plane through its own pad, with no track or via moved:
 the card then runs with a can whose pin 1 is not connected and with one whose pin 1 is an enable, on when high,
 whether or not the enable has a pull-up (section 13 has what is left to read on the data sheet). The order's files
@@ -658,10 +660,15 @@ questions; all four are answered (2026-11-14).
   IC24, STG at IC16), each edge rising and falling once; the simulation's closest margins (the holds of 2 ns, the retimed dot); the
   6845's E against R/-W at the first `OUT PB` (as on V2.0); and the bus's own delays, which are
   the V2.0 design's budget's.
-- The VGA socket laid on a 1:1 print of the board; the oscillator's data sheet for its load and its pin 1. Pin 1 is
-  tied to +5 V on the board (2026-11-18), so the can's pin 1 is to be not connected, or an enable that is on when
-  high (the usual tri-state can: on with pin 1 high or open). Not a can whose output is off with pin 1 high: none
-  was found among the full-size 5 V cans looked at, and the BOM names them.
+- The VGA socket laid on a 1:1 print of the board.
+- The oscillator: **a half-size can since 2026-11-20**, CTS's MXO45HS-3C-25M1750 (no full-size 25.175 MHz can was
+  in stock). Its sheet answers the two questions left open: its pin 1 is not connected (on the MXO45HST, the same
+  can with an enable, the output is on with pin 1 high or open), and the board ties that pin to +5 V (2026-11-18),
+  so either runs; its output is rated for 50 pF or ten TTL loads, what the clock asks (section 5). On the board
+  the can stands at the output end of the full-size can's place, its output and ground pins on the pads that were
+  there, so the dot clock's track to R20 is as it was routed: two pads on the +5 V plane are all the copper that
+  moved (the folder's README has the measure). The can is square and goes into its socket four ways: pin 1 at the
+  silkscreen's `1`. Of another make: not a can whose output is off with pin 1 high.
 
 **Order of work**
 1. This note, checked.
