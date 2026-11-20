@@ -457,7 +457,8 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
   a `1` beside each can's pin 1 and `HALF CAN: UPPER 1` / `FULL CAN: LOWER 1` over the outline. ALL CHECKS PASS;
   pcb-check without `--tests`: no failures. **`pcb-check --layers 4 --tests` at `91a8299` (2026-11-20, the board
   with the warning on its silkscreen, below): no failures, one warning** (the RAM's pin 1, accepted); row 6 of the
-  order list is checked again. **When the
+  order list is checked again. **C48, the oscillator's capacitor, stays where it is (settled 2026-11-20)**: 5.6 mm
+  from the full-size can's VCC pad, 13.2 mm from the half-size can's, both on the planes. **When the
   card is built: socket pins in the four holes of the can that is used and in no others** - under a full-size can
   the two middle holes are +5 V and the can's case is ground (the BOM line said "six single socket pins, which
   take both" for an hour, and was wrong: corrected the same day). The silkscreen says it too, over the outline:
