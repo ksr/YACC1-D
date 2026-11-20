@@ -227,7 +227,7 @@ parts; the panel parts are at the front edge.
 
 | | |
 |---|---|
-| WARN, FOOTPRINTS | the DS12885+ is not in pcb-check's table of chips, so its footprint is not compared with the part (as on System-5's IO panel). It is KiCad's `DIP-24_W15.24mm` |
+| WARN, FOOTPRINTS (until pcb-check `4b6388d`) | the DS12885+ was not in pcb-check's table of chips, so its footprint was not compared with the part (as on System-5's IO panel). It is KiCad's `DIP-24_W15.24mm`. The chip is in the table since `4b6388d` (2026-11-19: a 24-pin DIP, 0.600 inch across), and FOOTPRINTS passes |
 | NOTE, DESIGN | RTC-IRQ# and UINT# are open-collector lines with no pull-up of their own: each ends at its jumper (JP8, JP7), and the pull-up, RN1 on -INT, stands on the other side of it |
 | NOTE, LABELS (pcb-check `7e47352` and later) | BT1's own `+` is printed inside the holder and hidden once it is fitted. It is the library footprint's mark and is left there; the `+` under the positive pin is the one that shows |
 
@@ -253,6 +253,9 @@ the warning is the DS12885+ of the table, and its two notes are the table's. Bes
 against those of `9c96b2e` shape for shape: the four copper layers, both masks and the outline draw the same, the two
 drill files are the same line for line, and on the front silkscreen 413 strokes moved and 2 are new. The board is
 row 11 of pcb-check's `orders/next-order.md`, checked. **This is the board as it stands; nothing is ordered.**
+
+2026-11-20, pcb-check `645e7ac` (the DS12885+ in its table) without `--tests` on the same board: **no failures and
+no warning**; the two notes of the table remain.
 
 The check's four pictures of the copper draw each pad as the shape it is since pcb-check `e65eabd` (2026-11-19); in
 the pictures of the runs before it a rounded-square pad (pin 1 of every DIP) is a speck, an oval pad a circle. The
