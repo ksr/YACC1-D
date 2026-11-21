@@ -17,6 +17,7 @@ int bios(int addr, int r7, int acc);
 char *argstr(void);
 int peekw(char *p);
 void pokew(char *p, int v);
+int peek(int a);                          /* (2026-11-20) lib_err.c reads ERRTO: 0 here, messages to stderr as before */
 #define int unsigned short
 #define main asm_main
 #include "../../os/commands/asm.c"

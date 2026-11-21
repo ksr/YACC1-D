@@ -37,14 +37,15 @@ wkmouse.asm moves the pointer with the card's mouse. Checks:
    and presses in the menu bar. The 64K must then be the desktop painted afresh with the windows where the script
    left them (desk_model) - what each repaint uncovered painted again exactly - and the line its counts.
 7. The finder (/bin/finder, os/commands/finder.c) on a copy of the disk: / listed, bin pressed twice (opened),
-   dir pressed twice (run: the finder writes /finder.sh, "/bin/dir" and "finder -w /bin", and EXECs it), a key,
+   dir pressed twice (run: the finder writes /finder.sh, "-/bin/dir" and "finder -w /bin", and EXECs it), a key,
    q. dir's listing of / and the finder's prompt on the console, /finder.sh as written, and the 64K the finder back in
    /bin with nothing selected and the pointer in the middle (finder_model, from the disk's own listing of /bin).
 8. The editor (/bin/write, os/commands/write.c) on a copy of the disk with /note.txt: a press on its second line,
    then keys - characters, Backspace, the arrows, Enter, End, Ctrl-S, Ctrl-Q. The file must be what the edits make
    of it, and the 64K the window with that text, the cursor, "saved" in the menu bar (write_model).
-9. The command line (/bin/term, os/commands/term.c) on a copy of the disk: echo hello, cd /bin, pwd and bye typed.
-   /term.log must hold each prompt and line and what echo and pwd printed, and the 64K the window showing it with
+9. The command line (/bin/term, os/commands/term.c) on a copy of the disk: echo hello, nosuch, cat /nope, cd /bin,
+   pwd and bye typed. /term.log must hold each prompt and line, what echo and pwd printed and the two error
+   messages (the shell's what? and cat's, through ERRTO; the failing lines do not stop term's script), and the 64K the window showing it with
    bye typed at the last prompt (term_model).
 """
 import os, re, sys, shutil, subprocess, tempfile
@@ -303,7 +304,7 @@ def finder_check(d):
         fsh = open(os.path.join(c, "f.sh")).read() if sh.returncode == 0 else None
         check("the finder, %s: /bin opened, dir run, back" % tag,
               not bad and "fruit.txt" in out and "-- a key: back to the desktop --" in out and
-              fsh == "/bin/dir\nfinder -w /bin\n" and int(s.get("control2", "1"), 16) & 1 == 0 and "sh: stopped" not in out,
+              fsh == "-/bin/dir\nfinder -w /bin\n" and int(s.get("control2", "1"), 16) & 1 == 0 and "sh: stopped" not in out,
               "%d bytes are not the model's, the first at $%04X; /finder.sh %r; the console %r" % (
                   len(bad), bad[0] if bad else 0, fsh, out[out.find("finder"):][-500:]))
 
@@ -357,8 +358,8 @@ def write_check(d):
                   out[out.find("write"):][-300:]))
 
 
-TERM_KEYS = b"echo hello\rcd /bin\rpwd\rbye\r"
-TERM_LOG = "/> echo hello\nhello\n/> cd /bin\n/bin> pwd\n/bin\n"
+TERM_KEYS = b"echo hello\rnosuch\rcat /nope\rcd /bin\rpwd\rbye\r"
+TERM_LOG = "/> echo hello\nhello\n/> nosuch\nwhat?\n/> cat /nope\ncat: not found: /nope\n/> cd /bin\n/bin> pwd\n/bin\n"
 
 
 def term_model():
@@ -392,7 +393,7 @@ def term_check(d):
         g = subprocess.run([sys.executable, os.path.join(ROOT, "tools/p8xfs.py"), "get", run_disk, "/term.log", "--out",
                             os.path.join(c, "log.txt")], capture_output=True)
         got = open(os.path.join(c, "log.txt")).read() if g.returncode == 0 else None
-        check("the command line, %s: echo, cd, pwd, bye" % tag, not bad and got == TERM_LOG and "sh: stopped" not in out,
+        check("the command line, %s: echo, two errors, cd, pwd, bye" % tag, not bad and got == TERM_LOG and "sh: stopped" not in out,
               "%d bytes are not the model's, the first at $%04X (row %d, column %d); the log %r; the console %r" % (
                   len(bad), bad[0] if bad else 0, (bad[0] if bad else 0) % 2048 // 80, (bad[0] if bad else 0) % 80, got,
                   out[out.find("term"):][-400:]))

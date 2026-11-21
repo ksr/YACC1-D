@@ -22,7 +22,7 @@ BOOT FROM CF
 echo, assembled on the machine
 /s> asm cat.asm
 
-cat: 2327 bytes, 210 labels, load 5000 exec 5000
+cat: 2346 bytes, 211 labels, load 5000 exec 5000
 /s> run cat /fruit.txt
 
 apple 3 red
@@ -46,7 +46,7 @@ BOOT FROM CF
 quirks: 210 bytes, 11 labels, load 3000 exec 3000
 /s> asm cc4.asm
 
-cc4: 5695 bytes, 444 labels, load 5000 exec 5000
+cc4: 5738 bytes, 446 labels, load 5000 exec 5000
 /s> asm err.asm
 
 asm: 5: undefined label: NOTHERE
@@ -60,10 +60,10 @@ BOOT FROM CF
 usage: asm [-h] SRC [OUT]
 /s> dir
 
-   2327  cat  @5000
-  28704  cat.asm  @B000
-   5695  cc4  @5000
-  67192  cc4.asm  @B000
+   2346  cat  @5000
+  28917  cat.asm  @B000
+   5738  cc4  @5000
+  67629  cc4.asm  @B000
      67  echox  @5000
    1112  echox.asm  @B000
     202  err.asm  @B000

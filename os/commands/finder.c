@@ -118,7 +118,7 @@ void up() {
 /* the script that runs cmd and then the finder in this folder again (-w: after a key): /finder.sh, EXECed */
 void runit(char *cmd, int wait) {
     int h;
-    scpy(script, cmd); scat(script, "\nfinder ");
+    scpy(script, "-"); scat(script, cmd); scat(script, "\nfinder ");   /* - : it may fail, the finder comes back */
     if (wait) scat(script, "-w ");
     scat(script, path); scat(script, "\n");
     h = fcreate("/finder.sh", 0, 0);

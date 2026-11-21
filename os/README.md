@@ -131,9 +131,17 @@ lines starting with `#` are skipped; a line ends at LF or CR (so CR LF is fine) 
 - **A failure stops it**: a shell message (`what?`, `not found`, `cannot ...`: everything `eputs` prints) or a
   program that ends with a status other than 0. The shell then says `sh: stopped`, every running script ends, and
   the prompt comes back. The compiler's passes, `asm` and `make` end with status 1 after an error (2026-11-03), so a
-  build stops at its first failed step.
+  build stops at its first failed step. **A line that starts with `-` may fail** (2026-11-20, for the desktop's
+  `term` and `finder`): its failure does not stop the script.
 - **Nesting**: a script may start another (`sh`, `name.sh`, a program's EXEC); that one runs, then the first goes on
-  with its next line. Four may run at once (`sh: too deep`).
+  with its next line. Four may run at once (`sh: too deep`). A program that EXECs a script from the running script's
+  last line (2026-11-20) has that one replaced, not nested: `term` and `finder` start themselves again that way
+  after every command, without limit.
+- **Messages after the output (ERRTO, 2026-11-20).** The shell's messages and the programs' (`lib_err.c`'s `eputs`)
+  go to the raw console even when the output goes to a file. With the byte ERRTO ($4FFE: SYSTAB2's last slot, not in
+  use, cleared at boot) not 0 they go where the output goes: `term` sets it while a line runs, so its window shows a
+  command's messages too. The C kernel made room for it in its 16K by letting `dir` and a command's path use
+  `xpath`'s idle buffer (52 bytes of data).
 - **Read from its sectors**: the running script is its extent, length and read position (`SC_LBA`, `SC_LEN`,
   `SC_POS`; the interrupted ones in `SC_STK`), read through the OS's sector buffer between commands. A `cd` inside it
   changes the directory for the lines after it, and replacing the file while it runs (a nested `make` writing a new

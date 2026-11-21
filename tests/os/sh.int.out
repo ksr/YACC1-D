@@ -68,5 +68,24 @@ BOOT FROM CF
 /> 
 exec failed
 /> 
+/> echo h1
+h1
+/>  nosuch
+what?
+/>  /exe x 3
+exit 3
+/> echo h2
+h2
+/> 
+/> 
+/> 
+/> 
+/> 
+what?
+/> 
+cat: not found: /nope
+/> 
+what?
+/> 
 bye
 >

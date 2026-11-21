@@ -141,7 +141,9 @@ EXTRA = {"badhandle": [("badh.c", "/badh", 0x5000), ("", "/zero.bin", 0x6000)],
                 (b"echo d1\n/exe x 3\necho d2\n", "/d.sh", 0),
                 (b"echo e\nsh /e.sh\necho not here\n", "/e.sh", 0),
                 (b"echo f1\r\necho f2\r\n", "/f.sh", 0),
-                (b"shx /f.sh\necho g2\n", "/g.sh", 0)]}
+                (b"shx /f.sh\necho g2\n", "/g.sh", 0),
+                # 2026-11-20: a line that starts with - may fail; ERRTO ($4FFE) sends diagnostics after stdout
+                (b"echo h1\n-nosuch\n-/exe x 3\necho h2\n", "/h.sh", 0)]}
 
 
 # sessions that boot a FRESH volume (p8xfs create, the selected OS's build/y1os.bin, then these files in order, then

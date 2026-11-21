@@ -639,9 +639,14 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
          a line typed runs through the script `/term.sh` - the line with ` > /term.out`, then `term -r`, which
          adds the output to `/term.log` and shows the window (the log's last lines, the prompt with the folder).
          `cd` carries over, pipes work; `clear`, `bye`. `tests/wm/run.py`: echo, cd, pwd, bye typed on both
-         emulators - the log and the window as worked out. Open: a command's error messages go to the text
-         screen (Y1/OS has no 2>), and one that fails stops the script (the shell's prompt; type term) - both
-         need the OS: a way to catch errors too, and a script line that may fail.
+         emulators - the log and the window as worked out.
+       - (done 2026-11-20) Y1/OS, both kernels, for `term` and `finder`: a script line that starts with `-` may
+         fail; ERRTO ($4FFE) sends the shell's and the programs' messages after the output (into `term`'s window);
+         a script EXECed from the running script's last line replaces it (before, every command `term` ran nested
+         one deeper and the fifth stopped with `sh: too deep`). The C kernel: 16,316 of its 16,320 bytes, after
+         `dir` and `try_prog` moved 52 bytes of data into `xpath`'s idle buffer. `tests/os` sh session: a script
+         that goes on past two failing lines, and ERRTO's messages in a `>` file; `tests/wm`: `term` runs five
+         commands, two of them failing, and shows their messages.
   **Open for the V4's software:** the 70 Hz table in the driver; Y1/OS, BASIC
   and the commands on 25 rows (they take the screen for 24). Scrolling the graphics apart from the text: in software (the note's section 12 has the three ways and
   their cost); in hardware it is a board change, listed in the note's "Possible later".

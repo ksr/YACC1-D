@@ -113,6 +113,7 @@ char stub[] = {15, 81, 237, 0, 0, 247, 0, 0, 6, 7, 5, 241, 0, 0, 5};
 int sc_dep, sc_lba, sc_len, sc_pos, sc_csec;
 int sc_stk[9];
 char sc_err;
+char sc_ok;                    /* (2026-11-20) the script's line started with -: it may fail */
 int si_h, so_h;                 /* the shell's redirection: 0 = the console, else the handle of the < file / pipe
                                    (SI_EMPTY: a pipe stage after one that wrote its own > file: empty input) and of
                                    the > or >> file / pipe */
@@ -144,6 +145,7 @@ void eputs(char *s) {           /* a diagnostic line on the raw console, whateve
                                    never land in a > file or a pipe. It marks the line failed: a running script
                                    stops after it (2026-11-03) */
     sc_err = 1;
+    if (peek(ERRTO)) { puts(s); return; }   /* (2026-11-20) ERRTO set: to stdout, so a > file catches it (term) */
     while (*s) raw_out(*s++);
     raw_out(10);
 }
@@ -760,7 +762,8 @@ int file_of(char *path) {               /* a read handle for the shell */
 }
 
 void cmd_dir(char *path) {
-    int h, i, files; char ent[32];
+    int h, i, files; char *ent;
+    ent = xpath;                        /* (2026-11-20) its 32 bytes in xpath's, idle while the shell runs dir */
     h = dir_of(path);
     if (!h) return;
     files = 0;
@@ -827,7 +830,10 @@ void run_prog(char *args) {             /* e_* = the program (already loaded): a
         close_all();                    /* what the program left open (a pending write is registered) */
         read_free();                    /* the free pointer as the program left it: pack lowers it (2026-09-23) */
         if (ex_pend == 2) {             /* it EXECed a script: the shell runs it after this command */
-            if (resolve(xpath)) sc_push();
+            if (resolve(xpath)) {       /* from a script's last line it takes that script's place (2026-11-20) */
+                if (sc_dep && sc_pos >= sc_len) sc_pop();
+                sc_push();
+            }
             return;
         }
         if (!ex_pend || !load_file(xpath)) return;
@@ -887,7 +893,8 @@ void cmd_rmdir(char *path) { if (!fs_rmdir(path)) eputs("not an empty directory"
 
 int try_prog(char *name, char *args, int bin) {  /* /bin/name (bin = 1) or name here: the word as run_cmd lower-cased it
                                                     (2026-11-03: names on the disk are lower case; before, /BIN/NAME) */
-    char p[20];
+    char *p;
+    p = xpath;                          /* (2026-11-20) the path in xpath's 64 bytes: EXEC writes it only later */
     if (strlen(name) > 12) return 0;
     if (bin) { strcpy(p, "/bin/"); strcpy(p + 5, name); } else strcpy(p, name);
     if (!resolve(p) || e_flags != F_FILE) return 0;
@@ -949,7 +956,10 @@ int sc_line() {                         /* its next line -> line[] (up to 128 ch
             if (n < 128) line[n++] = c;
         }
         line[n] = 0;
-        if (line[0] != '#') return 1;  /* a comment: on to the next */
+        if (line[0] != '#') {
+            if (line[0] == '-') { line[0] = ' '; sc_ok = 1; }   /* (2026-11-20) it may fail: main forgets sc_err */
+            return 1;
+        }  /* a comment: on to the next */
     }
 }
 
@@ -1099,6 +1109,7 @@ void main() {
             io_reset();                 /* also after a failed stage or command: files closed, console back */
         }
         if (n > 1) { fs_delete("/pipe0.tmp"); fs_delete("/pipe1.tmp"); }
+        if (sc_ok) sc_err = sc_ok = 0;  /* a script's line that started with - may fail (2026-11-20, sc_line) */
     }
     puts("bye");
 }

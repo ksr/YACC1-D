@@ -12,7 +12,7 @@ BOOT FROM CF
 /> dir /bin | grep vi
 
    5333  vi  @5000
-   1232  video  @5000
+   1251  video  @5000
 /> sort < /fruit.txt|UNIQ|wc > /p1.txt
 
 /> cat /p1.txt

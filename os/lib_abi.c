@@ -51,6 +51,8 @@
 #define VIDPRES   0x0FF0
 #define VIDMIR    0x0FF1
 #define VIDCUR    0x0FF2
+#define ERRTO     0x4FFE    /* (2026-11-20) nonzero: diagnostics (the shell's, lib_err's eputs) go where stdout goes.
+                               SYSTAB2's last slot (31, not in use), which the OS clears at boot: RAM is not 0 at power-on */
 #define VROW      0x0FF3
 #define VCOL      0x0FF4
 #define ARGBUF    0x0F40

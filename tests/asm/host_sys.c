@@ -126,6 +126,7 @@ int bios(int addr, int r7, int acc) {       /* only CHAROUT ($FFC4): the raw con
 char *argstr(void) { return tail; }
 int peekw(char *p) { return ((unsigned char)p[0] << 8) | (unsigned char)p[1]; }
 void pokew(char *p, int v) { p[0] = (char)(v >> 8); p[1] = (char)v; }
+int peek(int a) { (void)a; return 0; }   /* (2026-11-20) only lib_err.c's ERRTO ($4FFE): never set on the host */
 
 int main(int argc, char **argv) {
     int i; size_t n = 0;

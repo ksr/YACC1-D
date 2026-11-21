@@ -79,6 +79,33 @@ BOOT FROM CF
 /> shx /nope.sh
 
 exec failed
+/> sh /h.sh
+
+/> echo h1
+h1
+/>  nosuch
+what?
+/>  /exe x 3
+exit 3
+/> echo h2
+h2
+/> dep 4ffe 01
+
+/> nosuch > /e.out
+
+/> cat /nope > /e2.out
+
+/> dep 4ffe 00
+
+/> type /e.out
+
+what?
+/> type /e2.out
+
+cat: not found: /nope
+/> nosuch
+
+what?
 /> exit
 
 bye

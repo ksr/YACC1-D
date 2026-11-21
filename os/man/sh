@@ -21,11 +21,18 @@ DESCRIPTION
     The first line that fails stops the script, and every script that
     started it: a message from the shell (what?, not found, ...) or a
     program that ends with a status other than 0 (STATUS). The shell
-    then says "sh: stopped" and the prompt comes back.
+    then says "sh: stopped" and the prompt comes back. A line that
+    starts with - may fail: the script goes on (2026-11-20).
+
+    The shell's messages and the programs' (eputs) go to the screen
+    even when the output goes to a file. With the byte ERRTO ($4FFE)
+    set to 1 (dep 4ffe 01) they go where the output goes, into the
+    > file too: term sets it while a line runs (2026-11-20).
 
     A script may start another (sh, name.sh, or a program's EXEC):
     that one runs, then the first goes on with its next line. Four
-    may be running at once.
+    may be running at once. A program that EXECs a script from the
+    running script's last line replaces it instead (2026-11-20).
 
     A script is read from its sectors as it runs: a cd inside it
     changes the directory for the lines after it and for the prompt

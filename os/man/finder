@@ -24,6 +24,6 @@ NOTES
     Needs the video card V4 and /lib/wmk, the window kernel (loaded
     again when a program has overwritten it). A program is run by
     the script /finder.sh, which the finder writes: the program,
-    then finder -w (wait for a key, then the desktop). A program
-    that ends with an error stops the script: type finder again.
+    then finder -w (wait for a key, then the desktop). The program's
+    line starts with -, so the finder comes back even when it fails.
     Written 2026-11-20 after the P8X's finder (os/lib_wm.c).

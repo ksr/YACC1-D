@@ -39,6 +39,8 @@
 ; =====================================================================================================================
 
 ; ---- the ROM's BIOS vectors (firmware/monitor/monitor.asm, org $FFC0: JSR routine / RET each) -----------------
+ERRTO:      EQU 4FFEH           ; (2026-11-20) nonzero: diagnostics go where stdout goes (a > file), not the raw console.
+                                ; SYSTAB2's last slot (31, not in use): the boot's copy of systab_init clears it
 B_CHAROUT:  EQU 0FFC4H          ; ACC -> the console (preserves every register, ACC and TMP)
 B_UARTIN:   EQU 0FFE8H          ; -> ACC: a console byte, echoed; CR becomes LF
 B_CFREAD:   EQU 0FFF0H          ; CFLBA0..2 = sector, R7 = buffer: 512 bytes in, R7 += 512, ACC = 0 ok (R6 clobbered)
@@ -131,11 +133,22 @@ ml_top: LDA SC_DEP              ; a script running (sh, 2026-11-03): a failed li
         BR ml_con
 ml_sl:  JSR sc_line             ; ... else its next line -> LINE (0: that script ended)
         BRZ ml_top
+        LDA LINE                ; (2026-11-20) a line that starts with - may fail: the - a blank, SC_OK set
+        LDTI 45
+        BRNEQ ml_s1
+        LDAI 32
+        STA LINE
+        LDAI 1
+        BR ml_s2
+ml_s1:  LDAI 0
+ml_s2:  STA SC_OK
         JSR ml_pr
         MVIW R3,LINE            ; echoed after the prompt, as if typed
         JSR puts
         BR ml_ln
-ml_con: JSR ml_pr               ; the prompt, then a console line
+ml_con: LDAI 0
+        STA SC_OK
+        JSR ml_pr               ; the prompt, then a console line
         JSR readline
         JSR crlf
 ml_ln:  LDAI 0                  ; nothing has failed on this line yet (eputs, run_prog set SC_ERR)
@@ -198,7 +211,11 @@ ml_end: LDA NSEG
         JSR fs_delete
         MVIW R3,S_PIPE1
         JSR fs_delete
-ml_nq:  LDA QUIT
+ml_nq:  LDA SC_OK                ; a line with - : whatever failed does not stop the script
+        BRZ ml_n2
+        LDAI 0
+        STA SC_ERR
+ml_n2:  LDA QUIT
         BRZ ml_top
         MVIW R3,S_BYE
         BR puts                 ; "bye", and back to the monitor
@@ -591,6 +608,8 @@ crlf:   LDAI 10
 ; diagnostic marks the line failed: a running script stops after it (SC_ERR, 2026-11-03).
 eputs:  LDAI 1
         STA SC_ERR
+        LDA ERRTO               ; (2026-11-20) ERRTO set: to stdout, so a > file catches it (term)
+        BRNZ puts
 ep_lp:  LDAVR R3
         BRZ ep_nl
         JSR conraw
@@ -3591,18 +3610,26 @@ cmd_sh: JSR is_file
 
 ; sc_push: E_* = a script's entry -> it runs next (the one running, if any, is saved in its slot). Clobbers R3-R6.
 sc_push:
-        LDA SC_DEP
-        LDTI 4
-        BRNEQ su_1
-        MVIW R3,S_SHDEEP
-        BR eputs
-su_1:   LDA ERAW+18             ; the length's bits 16-23
-        BRZ su_2
+        LDA ERAW+18             ; the length's bits 16-23
+        BRZ su_0
         MVIW R3,S_SHBIG
         BR eputs
-su_2:   LDA SC_DEP
-        BRZ su_3
-        JSR sc_slot             ; the running one -> its slot
+su_0:   LDA SC_DEP              ; (2026-11-20) a running script with no line left: the new one takes its place
+        BRZ su_n
+        LDT SC_LEN
+        LDA SC_POS
+        BRGT su_rp
+        BRLT su_d
+        LDT SC_LEN+1
+        LDA SC_POS+1
+        BRLT su_d
+        BR su_rp
+su_d:   LDA SC_DEP
+        LDTI 4
+        BRNEQ su_2
+        MVIW R3,S_SHDEEP
+        BR eputs
+su_2:   JSR sc_slot             ; the running one -> its slot
         MVIW R5,SC_LBA
         MVIB R6,6
 su_sv:  LDAVR R5
@@ -3612,15 +3639,15 @@ su_sv:  LDAVR R5
         DECR R6
         MVRLA R6
         BRNZ su_sv
-su_3:   LDR R3,E_LBA
+su_n:   LDA SC_DEP
+        ADDI 1
+        STA SC_DEP
+su_rp:  LDR R3,E_LBA
         STR R3,SC_LBA
         LDR R3,E_LEN
         STR R3,SC_LEN
         MVIW R3,0
         STR R3,SC_POS
-        LDA SC_DEP
-        ADDI 1
-        STA SC_DEP
         RET
 
 ; sc_pop: the running script ended: the one it interrupted, if any, goes on. Clobbers R4-R7.
@@ -4341,6 +4368,7 @@ QUIT:       DS 1
 ST_H:       DS 1                ; stage
 SC_DEP:     DS 1                ; scripts running (0: the console), at most 4
 SC_ERR:     DS 1                ; the line failed: a diagnostic, or a program's status other than 0
+SC_OK:      DS 1                ; (2026-11-20) the script's line started with -: it may fail
 SC_CH:      DS 1                ; sc_line's byte
 SC_STK:     DS 18               ; the interrupted scripts' SC_LBA, SC_LEN, SC_POS (3 x 6 bytes, inside one page)
 ram_end:                        ; must stay below $4FC0 (SYSTAB2; $4F1C on 2026-09-25)

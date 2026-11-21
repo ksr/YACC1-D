@@ -10,9 +10,10 @@
    EXECs it; term -r adds /term.out to /term.log and shows the window again. So cd changes the folder of the next
    prompt, and a pipe works (its last command's output is caught). The keys: characters, Backspace, Enter (the
    video card's PS/2 keyboard). `clear` empties the log; `bye`, Quit in the menu bar or Ctrl-Q ends term.
-   What does not come back: a command's error messages (they go to the text screen), and a command that fails
-   stops the script (the shell's prompt instead of term's: type term). A program that reads the keyboard reads it
-   with its output in the file. /term.log keeps its last 2,000 characters when it passes 4,000. */
+   Since 2026-11-20 the line in the script starts with - (it may fail: the script goes on to term -r) and term sets
+   ERRTO ($4FFE) before it EXECs the script, so the shell's and the programs' messages go into /term.out with the
+   output; term -r clears it. A program that reads the keyboard reads it with its output in the file. /term.log
+   keeps its last 2,000 characters when it passes 4,000. */
 #include "../lib_fs.c"
 #include "../lib_wk.c"
 #include "../lib_wm.c"
@@ -122,13 +123,14 @@ void run() {
     writelog();
     redir = 0;
     for (i = 0; i < clen; i++) if (cmd[i] == '>') redir = 1;
-    scpy(tmp, cmd);
+    scpy(tmp, "-"); scat(tmp, cmd);         /* the - : a command that fails does not stop the script */
     if (!redir) scat(tmp, " > /term.out");
     scat(tmp, "\nterm -r\n");
     h = fcreate("/term.sh", 0, 0);
     if (!h) return;
     fputs(h, tmp); fclose(h);
     wm_stop();
+    poke(ERRTO, 1);                           /* the messages go with the output, into /term.out */
     osexec("/term.sh", 0);
 }
 
@@ -137,6 +139,7 @@ void main() {
     int e, k, esc, x, y;
     a = argstr();
     while (*a == ' ') a++;
+    poke(ERRTO, 0);
     readlog();
     if (a[0] == '-' && a[1] == 'r') { addout(); writelog(); }
     getcwd(cwd);
