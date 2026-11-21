@@ -401,6 +401,7 @@ names, globs and `-` (the console until Ctrl-D) work wherever a command reads te
 | `uniq [file...]` | drop adjacent repeats |
 | `vi [file]` | the screen editor (VT100) |
 | `finder [dir]` | the desktop's file browser on the video card V4 (2026-11-20; `os/lib_wm.c` over the window kernel `/lib/wmk`): a folder in a window, a press to select, again to open - a folder listed, a program or script run (through `/finder.sh`, and the finder back afterwards), a file opened in `write` |
+| `term` | a command line in a window on the video card V4 (2026-11-20; `os/lib_wm.c`): a line typed runs through `/term.sh` with its output to `/term.out`, and `term -r` shows it in the window; the history in `/term.log` |
 | `write [file]` | the desktop's text editor on the video card V4 (2026-11-20; `os/lib_wm.c`): 78 x 22 in a window, the arrows, Home, End, the Page keys, Backspace, Delete, a press puts the cursor; Ctrl-S saves, Ctrl-Q quits; at most 4,000 characters. The finder opens a file with it |
 | `video [on\|off\|clear\|init\|probe]` | the video card (2026-09-25, below): status, mirror the console on the screen, clear it, program the CRTC |
 | `wc [file...]` | lines, words, bytes (32-bit) |

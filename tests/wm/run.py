@@ -43,6 +43,9 @@ wkmouse.asm moves the pointer with the card's mouse. Checks:
 8. The editor (/bin/write, os/commands/write.c) on a copy of the disk with /note.txt: a press on its second line,
    then keys - characters, Backspace, the arrows, Enter, End, Ctrl-S, Ctrl-Q. The file must be what the edits make
    of it, and the 64K the window with that text, the cursor, "saved" in the menu bar (write_model).
+9. The command line (/bin/term, os/commands/term.c) on a copy of the disk: echo hello, cd /bin, pwd and bye typed.
+   /term.log must hold each prompt and line and what echo and pwd printed, and the 64K the window showing it with
+   bye typed at the last prompt (term_model).
 """
 import os, re, sys, shutil, subprocess, tempfile
 
@@ -354,6 +357,47 @@ def write_check(d):
                   out[out.find("write"):][-300:]))
 
 
+TERM_KEYS = b"echo hello\rcd /bin\rpwd\rbye\r"
+TERM_LOG = "/> echo hello\nhello\n/> cd /bin\n/bin> pwd\n/bin\n"
+
+
+def term_model():
+    """term's window when bye has been typed: the log, the prompt with bye, the cursor, the pointer in the middle"""
+    sc = ["1,0,0,80,1,0ffh,0ffh", "2,0,0,80,1", "3,1,0,0ffh,'YACC1   Quit',0", "1,0,1,80,24,0aah,055h"]
+    lines = TERM_LOG.split("\n")[:-1] + ["/bin> bye"]
+    sc += desk_window(0, 1, 80, 24, "Terminal", [(r, 0, l) for r, l in enumerate(lines)])
+    sc += ["5,%d,%d,1,1" % (1 + len(lines[-1]), 2 + len(lines) - 1), "4,1,64,0,200"]
+    t = "".join("        DB %s\n" % l for l in sc) + "        DB 0\n"
+    return bytes(model(script_bytes("\nscene:\n" + t + "\nscend:\n")))
+
+
+def term_check(d):
+    """/bin/term on a copy of the disk, both emulators: echo, cd, pwd typed and run, then bye"""
+    subprocess.run(["make", "-s", "-C", os.path.join(ROOT, "os"), "disk.img"], check=True, capture_output=True)
+    c = os.path.join(d, "term"); os.makedirs(c, exist_ok=True)
+    disk = os.path.join(c, "disk.img"); shutil.copy(os.path.join(ROOT, "os/disk.img"), disk)
+    want = term_model()
+    for tag in ("int", "uc"):
+        run_disk = os.path.join(c, "run.img"); shutil.copy(disk, run_disk)
+        st = os.path.join(c, tag + ".vid")
+        if os.path.exists(st): os.remove(st)
+        cmd = [EMUS[tag], "-x", "-m", "-V", "-c", run_disk, "-l", "8000000000" if tag == "uc" else "400000000"] + \
+            (["-E", MON_EXIT] if tag == "uc" else [])
+        env = dict(os.environ, Y1VID_CARD="v4", Y1VIDSTATE=st, Y1VID_KBD="stdin")
+        rr = subprocess.run(cmd, input=b"O\rterm\r" + TERM_KEYS + b"exit\r0", capture_output=True, env=env, timeout=3600)
+        out = rr.stdout.decode("latin1").replace("\r", "")
+        s = dict(l.strip().partition(" ")[::2] for l in open(st)) if os.path.exists(st) else {}
+        gm = bytes.fromhex(s.get("gram", ""))
+        bad = [i for i in range(65536) if gm[i] != want[i]] if len(gm) == 65536 else [-1]
+        g = subprocess.run([sys.executable, os.path.join(ROOT, "tools/p8xfs.py"), "get", run_disk, "/term.log", "--out",
+                            os.path.join(c, "log.txt")], capture_output=True)
+        got = open(os.path.join(c, "log.txt")).read() if g.returncode == 0 else None
+        check("the command line, %s: echo, cd, pwd, bye" % tag, not bad and got == TERM_LOG and "sh: stopped" not in out,
+              "%d bytes are not the model's, the first at $%04X (row %d, column %d); the log %r; the console %r" % (
+                  len(bad), bad[0] if bad else 0, (bad[0] if bad else 0) % 2048 // 80, (bad[0] if bad else 0) % 80, got,
+                  out[out.find("term"):][-400:]))
+
+
 def os_check(d, want, line, menv, prog="wkc", what="the same picture and line as wkmouse"):
     """PROG.c compiled for Y1/OS and put on a copy of os/disk.img as /bin/PROG; booted and run on both emulators with
     the mouse's packets: the picture and the line it must leave, the kernel loaded from the disk"""
@@ -539,6 +583,8 @@ def main():
     finder_check(d)
     # 8. the editor (os/commands/write.c, /bin/write)
     write_check(d)
+    # 9. the command line (os/commands/term.c, /bin/term)
+    term_check(d)
     shutil.rmtree(d, ignore_errors=True)
     print("wm: %d failed" % fails)
     sys.exit(1 if fails else 0)

@@ -635,6 +635,13 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
          for a key). `tests/wm/run.py`: /note.txt edited by a press and keys on both emulators - the file saved
          as the edits make it, the window as worked out. Open: a question before quitting with changes; cut
          and paste; longer files.
+       - (done 2026-11-20) `term`, a command line in a window (`os/commands/term.c`, `man term`). No OS change:
+         a line typed runs through the script `/term.sh` - the line with ` > /term.out`, then `term -r`, which
+         adds the output to `/term.log` and shows the window (the log's last lines, the prompt with the folder).
+         `cd` carries over, pipes work; `clear`, `bye`. `tests/wm/run.py`: echo, cd, pwd, bye typed on both
+         emulators - the log and the window as worked out. Open: a command's error messages go to the text
+         screen (Y1/OS has no 2>), and one that fails stops the script (the shell's prompt; type term) - both
+         need the OS: a way to catch errors too, and a script line that may fail.
   **Open for the V4's software:** the 70 Hz table in the driver; Y1/OS, BASIC
   and the commands on 25 rows (they take the screen for 24). Scrolling the graphics apart from the text: in software (the note's section 12 has the three ways and
   their cost); in hardware it is a board change, listed in the note's "Possible later".

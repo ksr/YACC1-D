@@ -1,0 +1,26 @@
+NAME
+    term - a command line in a window (the video card V4)
+
+SYNOPSIS
+    term
+
+DESCRIPTION
+    A window on the graphics screen with a prompt. Type a command
+    line (the video card's PS/2 keyboard) and press Enter: it runs,
+    and what it printed comes back in the window, under the line.
+    cd changes the folder of the next prompt; pipes work. clear
+    empties the window. bye, Ctrl-Q or Quit in the menu bar ends
+    term.
+
+    What was typed and printed is kept in /term.log, so term shows
+    it again when it starts.
+
+NOTES
+    A line runs through the script /term.sh, which term writes: the
+    line with > /term.out, then term -r (which adds /term.out to the
+    log and shows the window). So a command's error messages go to
+    the text screen, not the window; a command that fails stops the
+    script and leaves the shell's prompt (type term); a program that
+    asks for input asks with its question in the file. /term.log
+    keeps its last 2,000 characters when it passes 4,000.
+    Needs /lib/wmk. Written 2026-11-20 after the P8X's term.
