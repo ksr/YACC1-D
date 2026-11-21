@@ -626,6 +626,15 @@ Gathered from the card/folder READMEs and the old notes so that pending work is 
        picture worked out from the disk's own listing, both emulators. The menu bar's words act when pressed (no
        pull-down menus yet); a program that ends with an error stops the script (type finder again).
     6. The applications, one at a time: `write`, `term`, `sheet`, `paint`, pictures.
+       - (done 2026-11-20) `write`, the text editor (`os/commands/write.c`, `man write`): a file in a window of
+         78 x 22, the cursor an inverted cell; the arrows, Home, End, the Page keys, Backspace, Delete; a press
+         puts the cursor; Ctrl-S / Save, Ctrl-Q / Quit (without asking); "edited" / "saved" in the menu bar;
+         4,000 characters, a line shows its first 78 (no wrapping, no sideways scroll). A key redraws its line
+         from the cursor on (a character about 120 instructions, the rest of the row a fill); a scroll the 22
+         rows. The finder now opens a file that is not a program with `write` (and comes back without waiting
+         for a key). `tests/wm/run.py`: /note.txt edited by a press and keys on both emulators - the file saved
+         as the edits make it, the window as worked out. Open: a question before quitting with changes; cut
+         and paste; longer files.
   **Open for the V4's software:** the 70 Hz table in the driver; Y1/OS, BASIC
   and the commands on 25 rows (they take the screen for 24). Scrolling the graphics apart from the text: in software (the note's section 12 has the three ways and
   their cost); in hardware it is a board change, listed in the note's "Possible later".

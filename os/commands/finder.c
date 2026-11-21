@@ -7,12 +7,12 @@
      finder [-w] [dir]     the directory dir (default /) in a window on the desktop
    A row a file: its name, its size (dir for a directory), what it is - folder, program (loaded at $5000), script
    (.sh) or file. A press on a row selects it; a press on the selected row opens it, and so do Enter and the menu
-   bar's Open: a folder is listed in the window; a program runs, a script runs, another file is shown with more -
-   and then the finder comes back. The menu bar's Up (and Backspace) goes to the folder above, Quit (and q) ends it.
+   bar's Open: a folder is listed in the window; a program runs, a script runs, another file opens in write (the
+   editor) - and then the finder comes back. The menu bar's Up (and Backspace) goes to the folder above, Quit (and q) ends it.
    The arrows move the selection; the list scrolls with it.
    How a program runs and the finder comes back: the finder writes the script /finder.sh - the program, then
-   "finder -w dir" - ends, and EXECs it. -w first waits for a key, so what the program printed can be read on the
-   text screen. The window kernel (/lib/wmk) is loaded again when a program has overwritten it. */
+   "finder -w dir" (after write: "finder dir") - ends, and EXECs it. -w first waits for a key, so what the program
+   printed can be read on the text screen. The window kernel (/lib/wmk) is loaded again when a program has overwritten it. */
 #include "../lib_fs.c"
 #include "../lib_wk.c"
 #include "../lib_wm.c"
@@ -115,10 +115,12 @@ void up() {
     readlist(); redraw();
 }
 
-/* the script that runs s and then the finder in this folder again: /finder.sh, EXECed */
-void runit(char *cmd) {
+/* the script that runs cmd and then the finder in this folder again (-w: after a key): /finder.sh, EXECed */
+void runit(char *cmd, int wait) {
     int h;
-    scpy(script, cmd); scat(script, "\nfinder -w "); scat(script, path); scat(script, "\n");
+    scpy(script, cmd); scat(script, "\nfinder ");
+    if (wait) scat(script, "-w ");
+    scat(script, path); scat(script, "\n");
     h = fcreate("/finder.sh", 0, 0);
     if (!h) return;
     fputs(h, script); fclose(h);
@@ -132,8 +134,8 @@ void open() {
     if (kinds[sel] == 4) { up(); return; }
     scpy(full, path); if (path[1]) scat(full, "/"); scat(full, names + sel * 13);
     if (kinds[sel] == 1) { scpy(path, full); readlist(); redraw(); return; }
-    if (kinds[sel] == 0) { scpy(line, "more "); scat(line, full); runit(line); return; }
-    runit(full);
+    if (kinds[sel] == 0) { scpy(line, "write "); scat(line, full); runit(line, 0); return; }
+    runit(full, 1);
 }
 
 void main() {

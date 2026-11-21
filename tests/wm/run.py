@@ -40,6 +40,9 @@ wkmouse.asm moves the pointer with the card's mouse. Checks:
    dir pressed twice (run: the finder writes /finder.sh, "/bin/dir" and "finder -w /bin", and EXECs it), a key,
    q. dir's listing of / and the finder's prompt on the console, /finder.sh as written, and the 64K the finder back in
    /bin with nothing selected and the pointer in the middle (finder_model, from the disk's own listing of /bin).
+8. The editor (/bin/write, os/commands/write.c) on a copy of the disk with /note.txt: a press on its second line,
+   then keys - characters, Backspace, the arrows, Enter, End, Ctrl-S, Ctrl-Q. The file must be what the edits make
+   of it, and the 64K the window with that text, the cursor, "saved" in the menu bar (write_model).
 """
 import os, re, sys, shutil, subprocess, tempfile
 
@@ -302,6 +305,55 @@ def finder_check(d):
                   len(bad), bad[0] if bad else 0, fsh, out[out.find("finder"):][-500:]))
 
 
+# the editor's script: a press on the second line's 7th character, then keys: XY, Backspace, two Rights, Enter, Down,
+# End, !, Ctrl-S, Ctrl-Q
+WRITE_TEXT = "first line\nsecond line\nthird\n"
+WRITE_PACKETS = [(-131, 146, 0), (-131, 0, 0), (0, 0, 1), (0, 0, 0)]
+WRITE_KEYS = b"XY\x08\x1b[C\x1b[C\r\x1b[B\x1b[F!\x13\x11"
+
+
+def write_model():
+    """the editor's window after the script -> (the 64K, the file it saved)"""
+    text = "first line\nsecondX l\nine\nthird!\n"
+    sc = ["1,0,0,80,1,0ffh,0ffh", "2,0,0,80,1", "3,1,0,0ffh,'YACC1   Save   Quit',0", "1,0,1,80,24,0aah,055h"]
+    sc += desk_window(0, 1, 80, 24, "/note.txt", [(r, 0, l) for r, l in enumerate(text.split("\n")) if l])
+    sc += ["3,68,0,0ffh,'saved  ',0", "5,7,5,1,1"]               # the status; the cursor after the ! (line 3, column 6)
+    # no pointer: a key is handled with it hidden, and Ctrl-Q ends the editor before it is shown again
+    t = "".join("        DB %s\n" % l for l in sc) + "        DB 0\n"
+    return bytes(model(script_bytes("\nscene:\n" + t + "\nscend:\n"))), text
+
+
+def write_check(d):
+    """/bin/write on a copy of the disk, both emulators: /note.txt opened, the script's press and keys, saved"""
+    subprocess.run(["make", "-s", "-C", os.path.join(ROOT, "os"), "disk.img"], check=True, capture_output=True)
+    c = os.path.join(d, "write"); os.makedirs(c, exist_ok=True)
+    disk = os.path.join(c, "disk.img"); shutil.copy(os.path.join(ROOT, "os/disk.img"), disk)
+    open(os.path.join(c, "note.txt"), "w").write(WRITE_TEXT)
+    subprocess.run([sys.executable, os.path.join(ROOT, "tools/p8xfs.py"), "put", disk, os.path.join(c, "note.txt"), "--name", "/note.txt"],
+                   check=True, capture_output=True)
+    want, text = write_model()
+    menv = {"Y1VID_KBD": "stdin", "Y1VID_MOUSE": ";".join("%d,%d,%d" % p for p in WRITE_PACKETS)}
+    for tag in ("int", "uc"):
+        run_disk = os.path.join(c, "run.img"); shutil.copy(disk, run_disk)
+        st = os.path.join(c, tag + ".vid")
+        if os.path.exists(st): os.remove(st)
+        cmd = [EMUS[tag], "-x", "-m", "-V", "-c", run_disk, "-l", "8000000000" if tag == "uc" else "400000000"] + \
+            (["-E", MON_EXIT] if tag == "uc" else [])
+        env = dict(os.environ, Y1VID_CARD="v4", Y1VIDSTATE=st, **menv)
+        rr = subprocess.run(cmd, input=b"O\rwrite /note.txt\r" + WRITE_KEYS + b"exit\r0", capture_output=True, env=env, timeout=3600)
+        out = rr.stdout.decode("latin1").replace("\r", "")
+        s = dict(l.strip().partition(" ")[::2] for l in open(st)) if os.path.exists(st) else {}
+        gm = bytes.fromhex(s.get("gram", ""))
+        bad = [i for i in range(65536) if gm[i] != want[i]] if len(gm) == 65536 else [-1]
+        g = subprocess.run([sys.executable, os.path.join(ROOT, "tools/p8xfs.py"), "get", run_disk, "/note.txt", "--out",
+                            os.path.join(c, "got.txt")], capture_output=True)
+        got = open(os.path.join(c, "got.txt")).read() if g.returncode == 0 else None
+        check("the editor, %s: a press, keys, saved" % tag, not bad and got == text and int(s.get("control2", "1"), 16) & 1 == 0,
+              "%d bytes are not the model's, the first at $%04X (row %d, column %d); the file %r; the console %r" % (
+                  len(bad), bad[0] if bad else 0, (bad[0] if bad else 0) % 2048 // 80, (bad[0] if bad else 0) % 80, got,
+                  out[out.find("write"):][-300:]))
+
+
 def os_check(d, want, line, menv, prog="wkc", what="the same picture and line as wkmouse"):
     """PROG.c compiled for Y1/OS and put on a copy of os/disk.img as /bin/PROG; booted and run on both emulators with
     the mouse's packets: the picture and the line it must leave, the kernel loaded from the disk"""
@@ -485,6 +537,8 @@ def main():
              "wmdesk", "the desktop as it would be painted afresh")
     # 7. the finder (os/commands/finder.c, /bin/finder)
     finder_check(d)
+    # 8. the editor (os/commands/write.c, /bin/write)
+    write_check(d)
     shutil.rmtree(d, ignore_errors=True)
     print("wm: %d failed" % fails)
     sys.exit(1 if fails else 0)

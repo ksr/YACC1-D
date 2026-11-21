@@ -1,0 +1,28 @@
+NAME
+    write - the desktop's text editor (the video card V4)
+
+SYNOPSIS
+    write [file]
+
+DESCRIPTION
+    Edits a text file (default /write.txt; a new one if it is not
+    there) in a window on the graphics screen, 78 characters by 22
+    lines. The cursor is an inverted cell. The keys are the video
+    card's PS/2 keyboard's:
+        a character   inserted at the cursor
+        Enter         a new line
+        Backspace     the character before the cursor out
+        Delete        the character under it out
+        the arrows    move the cursor; Home and End go to the
+                      line's start and end, Page Up and Page Down
+                      21 lines
+        Ctrl-S        save (or Save in the menu bar)
+        Ctrl-Q        quit, without saving (or Quit)
+    A press in the text puts the cursor there. The menu bar says
+    edited after a change and saved after a save.
+
+NOTES
+    At most 4,000 characters; a line longer than 78 shows its first
+    78. The finder opens a file that is not a program with write.
+    Needs the video card V4 and /lib/wmk. Written 2026-11-20 after
+    the P8X's write (os/lib_wm.c).
